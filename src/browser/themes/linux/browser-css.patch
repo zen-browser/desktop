@@ -1,0 +1,13 @@
+diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
+index ac03145433960f8abcfad5f285545843f02e7f1e..108dc7b290206be7158e914f2760226cb2c219ea 100644
+--- a/browser/themes/linux/browser.css
++++ b/browser/themes/linux/browser.css
+@@ -6,6 +6,8 @@
+ 
+ @namespace html url("http://www.w3.org/1999/xhtml");
+ 
++%include ../custom/linux/linux.inc.css
++
+ %include ../shared/browser.inc.css
+ /**
+  * We intentionally do not include browser-custom-colors.inc.css,

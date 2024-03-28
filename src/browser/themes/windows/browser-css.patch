@@ -1,0 +1,13 @@
+diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
+index 2cb1a094bc42d045992bf42ccd4c79e89795d971..c2fab339d4ddb7dd394d73f686c1b6e569d2a1be 100644
+--- a/browser/themes/windows/browser.css
++++ b/browser/themes/windows/browser.css
+@@ -4,6 +4,8 @@
+ 
+ @namespace html url("http://www.w3.org/1999/xhtml");
+ 
++%include ../custom/windows/windows.inc.css
++
+ %include ../shared/browser.inc.css
+ %include ../shared/browser-custom-colors.inc.css
+ %filter substitution

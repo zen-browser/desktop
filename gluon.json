@@ -2,13 +2,29 @@
   "name": "Zen Browser",
   "vendor": "Zen HQ",
   "appId": "com.zen.browser",
+  "binaryName": "zen",
   "version": {
     "product": "firefox",
     "version": "124.0.1",
     "displayVersion": "1.0.0"
   },
   "buildOptions": {
-    "generateBranding": false,
+    "generateBranding": true,
     "windowsUseSymbolicLinks": false
+  },
+  "addons": {},
+  "brands": {
+    "beta": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Zen",
+      "brandShortName": "Zen Browser",
+      "brandFullName": "Zen Browser"
+    }
+  },
+  "license": {
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
+    "licenseType": "MPL-2.0"
   }
 }

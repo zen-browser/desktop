@@ -2,6 +2,7 @@
   "name": "Zen Browser",
   "vendor": "Zen HQ",
   "appId": "com.zen.browser",
+  "binaryName": "zen",
   "version": {
     "product": "firefox-esr-next",
     "version": "124.0.1",

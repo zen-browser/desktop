@@ -1,0 +1,8 @@
+ac_add_options --target=x86_64-pc-mingw32 
+ac_add_options --enable-js-shell 
+ac_add_options --enable-rust-simd 
+ac_add_options --enable-crashreporter 
+
+# Disable telemetry and tracking
+mk_add_options MOZ_TELEMETRY_REPORTING=
+mk_add_options MOZ_DATA_REPORTING=

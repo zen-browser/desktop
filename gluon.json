@@ -1,0 +1,14 @@
+{
+  "name": "Zen Browser",
+  "vendor": "Zen HQ",
+  "appId": "com.zen.browser",
+  "version": {
+    "product": "firefox-esr-next",
+    "version": "124.0.1",
+    "displayVersion": "1.0.0"
+  },
+  "buildOptions": {
+    "generateBranding": false,
+    "windowsUseSymbolicLinks": false
+  }
+}

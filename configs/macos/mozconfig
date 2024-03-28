@@ -1,0 +1,14 @@
+# Optimise builds
+ac_add_options --enable-application=browser
+ac_add_options --enable-hardening
+ac_add_options --enable-rust-simd
+ac_add_options --enable-release
+ac_add_options --enable-optimize
+ac_add_options --with-ccache=sccache
+ac_add_options --disable-debug
+ac_add_options --enable-updater
+mk_add_options MOZ_MAKE_FLAGS="-j4"
+
+# Disable telemetry and tracking
+mk_add_options MOZ_TELEMETRY_REPORTING=
+mk_add_options MOZ_DATA_REPORTING=

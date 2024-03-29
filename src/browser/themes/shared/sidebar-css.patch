@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/sidebar.css b/browser/themes/shared/sidebar.css
-index a9b3886e1ff4a36c5bd161985719f66a41d95458..15faf43cfff399609d93df9be8e957aee5bbf13c 100644
+index a9b3886e1ff4a36c5bd161985719f66a41d95458..de985168435872fef1b2ab9f8672f1fa96a9d5f7 100644
 --- a/browser/themes/shared/sidebar.css
 +++ b/browser/themes/shared/sidebar.css
-@@ -137,3 +137,16 @@ menuseparator + #sidebar-extensions-separator {
+@@ -137,3 +137,26 @@ menuseparator + #sidebar-extensions-separator {
    fill: currentColor;
    opacity: 0.8;
  }
@@ -16,6 +16,16 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..15faf43cfff399609d93df9be8e957ae
 +}
 +
 +#sidebar-box {
-+  margin-left: 10px;
++  margin: 0 0 10px 10px;
 +  border-radius: var(--zen-panel-radius);
++}
++
++#sidebar-splitter {
++  /* we can still use the splitter but we can't see it */
++  background: transparent;
++  width: 1px;
++}
++
++#sidebar-box[positionend] {
++  margin: 0 10px 10px 0;
 +}

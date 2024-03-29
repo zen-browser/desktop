@@ -1,0 +1,11 @@
+diff --git a/toolkit/content/jar.mn b/toolkit/content/jar.mn
+index 8b18c945253d00603891cc5f0b989476318e219c..3021de8ec32e32a9d58a207b4d279b236a264dbf 100644
+--- a/toolkit/content/jar.mn
++++ b/toolkit/content/jar.mn
+@@ -143,3 +143,6 @@ toolkit.jar:
+ # Third party files
+    content/global/third_party/d3/d3.js                (/third_party/js/d3/d3.js)
+    content/global/third_party/cfworker/json-schema.js (/third_party/js/cfworker/json-schema.js)
++
++# Zen modules
++   content/global/zen-xul.css

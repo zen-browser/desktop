@@ -1,0 +1,15 @@
+diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
+index ddc41a66ed0e3688ce34052652bef1fe33a08d49..478e16ce3bb0e797a681b1f7d283a1db2d0168f2 100644
+--- a/toolkit/themes/shared/popup.css
++++ b/toolkit/themes/shared/popup.css
+@@ -38,6 +38,10 @@ panel {
+     }
+   }
+ 
++  @media not (prefers-color-scheme: dark) {
++    --panel-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
++  }
++
+   @media (-moz-platform: linux) or (-moz-platform: windows) {
+     /* To account for the box-shadow below */
+     --panel-shadow-margin: 4px;

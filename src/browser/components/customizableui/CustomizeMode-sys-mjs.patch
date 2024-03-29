@@ -1,0 +1,22 @@
+diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
+index 5f6d01d8337efc515cc2687782a07af893ea85d8..c49027306ed783c419706521f01f0987e608ae12 100644
+--- a/browser/components/customizableui/CustomizeMode.sys.mjs
++++ b/browser/components/customizableui/CustomizeMode.sys.mjs
+@@ -356,7 +356,7 @@ CustomizeMode.prototype = {
+       this._transitioning = true;
+ 
+       let customizer = document.getElementById("customization-container");
+-      let browser = document.getElementById("browser");
++      let browser = document.getElementById("tabbrowser-tabbox");
+       browser.hidden = true;
+       customizer.hidden = false;
+ 
+@@ -487,7 +487,7 @@ CustomizeMode.prototype = {
+     }
+ 
+     let customizer = document.getElementById("customization-container");
+-    let browser = document.getElementById("browser");
++    let browser = document.getElementById("tabbrowser-tabbox");
+     customizer.hidden = true;
+     browser.hidden = false;
+ 

@@ -1,7 +1,6 @@
 
 html#main-window > body {
-  --zen-main-browser-background: rgb(229, 229, 229);
-  
+  --zen-main-browser-background: rgb(229, 229, 229); 
 }
 
 @media (prefers-color-scheme: dark) {

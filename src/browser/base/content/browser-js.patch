@@ -1,0 +1,13 @@
+diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
+index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..08479bc88fbff504ce20eddd394f225cfe4f083a 100644
+--- a/browser/base/content/browser.js
++++ b/browser/base/content/browser.js
+@@ -6660,7 +6660,7 @@ function setToolbarVisibility(
+       );
+     }
+ 
+-    const overlapAttr = "BookmarksToolbarOverlapsBrowser";
++    const overlapAttr = "BookmarksToolbarOverlapsBrowser__ignore"; // Original string was "BookmarksToolbarOverlapsBrowser" but it's not used and it only bugs the UI.
+     switch (isVisible) {
+       case true:
+       case "always":

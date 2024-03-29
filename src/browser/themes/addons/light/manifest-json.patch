@@ -1,16 +1,21 @@
 diff --git a/browser/themes/addons/light/manifest.json b/browser/themes/addons/light/manifest.json
-index 7385970fa8e3ff9659b72cfb238003958220fb0d..0b3139f6c7d50a6d19083d385c701a0e338fd3be 100644
+index 7385970fa8e3ff9659b72cfb238003958220fb0d..5146d11eedc8f5a997836f747fadfd52c968b84f 100644
 --- a/browser/themes/addons/light/manifest.json
 +++ b/browser/themes/addons/light/manifest.json
-@@ -7,7 +7,7 @@
+@@ -7,10 +7,10 @@
      }
    },
  
 -  "name": "Light",
 +  "name": "Zen Light",
    "description": "A theme with a light color scheme.",
-   "author": "Mozilla",
-   "version": "1.2",
+-  "author": "Mozilla",
+-  "version": "1.2",
++  "author": "Zen",
++  "version": "1.3",
+ 
+   "icons": { "32": "icon.svg" },
+ 
 @@ -42,12 +42,12 @@
        "button": "rgba(207,207,216,.33)",
        "button_hover": "rgba(207,207,216,.66)",

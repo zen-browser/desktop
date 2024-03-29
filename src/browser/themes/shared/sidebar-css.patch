@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/sidebar.css b/browser/themes/shared/sidebar.css
-index a9b3886e1ff4a36c5bd161985719f66a41d95458..de985168435872fef1b2ab9f8672f1fa96a9d5f7 100644
+index a9b3886e1ff4a36c5bd161985719f66a41d95458..b9b9244b01dce07bd1419e0d8d3cdf16757ede82 100644
 --- a/browser/themes/shared/sidebar.css
 +++ b/browser/themes/shared/sidebar.css
-@@ -137,3 +137,26 @@ menuseparator + #sidebar-extensions-separator {
+@@ -137,3 +137,27 @@ menuseparator + #sidebar-extensions-separator {
    fill: currentColor;
    opacity: 0.8;
  }
@@ -12,7 +12,7 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..de985168435872fef1b2ab9f8672f1fa
 + */
 +
 +:root {
-+  --sidebar-background-color: var(--newtab-background-color);
++  --sidebar-background-color: var(--newtab-background-color) !important;
 +}
 +
 +#sidebar-box {
@@ -23,6 +23,7 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..de985168435872fef1b2ab9f8672f1fa
 +#sidebar-splitter {
 +  /* we can still use the splitter but we can't see it */
 +  background: transparent;
++  border-color: transparent;
 +  width: 1px;
 +}
 +

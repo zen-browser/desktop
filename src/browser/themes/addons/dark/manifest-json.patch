@@ -1,8 +1,8 @@
 diff --git a/browser/themes/addons/dark/manifest.json b/browser/themes/addons/dark/manifest.json
-index 544986d5e93c033f944cf301af79e0750864a32c..8dde35169cf6bcdce24ea1e656da1a428d68012c 100644
+index 544986d5e93c033f944cf301af79e0750864a32c..7ecdd33d3af9d859797b0e5ab07ecaa02e17ead6 100644
 --- a/browser/themes/addons/dark/manifest.json
 +++ b/browser/themes/addons/dark/manifest.json
-@@ -7,9 +7,9 @@
+@@ -7,10 +7,10 @@
      }
    },
  
@@ -10,11 +10,19 @@ index 544986d5e93c033f944cf301af79e0750864a32c..8dde35169cf6bcdce24ea1e656da1a42
 +  "name": "Zen Dark",
    "description": "A theme with a dark color scheme.",
 -  "author": "Mozilla",
+-  "version": "1.2",
 +  "author": "Zen",
-   "version": "1.2",
++  "version": "1.3",
  
    "icons": { "32": "icon.svg" },
-@@ -44,13 +44,13 @@
+ 
+@@ -38,19 +38,18 @@
+       "ntp_background": "rgb(43, 42, 51)",
+       "ntp_card_background": "rgb(66,65,77)",
+       "ntp_text": "rgb(251, 251, 254)",
+-      "sidebar": "#38383D",
+       "sidebar_text": "rgb(249, 249, 250)",
+       "sidebar_border": "rgba(255, 255, 255, 0.1)",
        "button": "rgba(0, 0, 0, .33)",
        "button_hover": "rgba(207, 207, 216, .20)",
        "button_active": "rgba(207, 207, 216, .40)",

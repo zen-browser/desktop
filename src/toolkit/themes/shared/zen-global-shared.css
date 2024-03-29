@@ -2,12 +2,11 @@
 :root {
   --zen-dialog-background: Field;
   --zen-dialog-border-color: rgb(184, 184, 184);
+  --zen-panel-radius: 10px;
 
   --arrowpanel-background: var(--zen-dialog-background) !important;
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;
-  --arrowpanel-border-radius: 4px !important;
-
-  --zen-panel-radius: 10px;
+  --arrowpanel-border-radius: var(--zen-panel-radius) !important;
 
   &:-moz-lwtheme {
     color: var(--lwt-text-color);

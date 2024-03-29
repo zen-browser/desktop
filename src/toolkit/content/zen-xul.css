@@ -1,16 +1,25 @@
 
-hbox#browser {
-  background-color: var(--lwt-accent-color-inactive, var(--lwt-accent-color));
+html#main-window > body {
+  --zen-main-browser-background: rgb(229, 229, 229);
 }
 
-#nav-bar {
-  
+@media (prefers-color-scheme: dark) {
+  html#main-window > body {
+    --zen-main-browser-background: rgb(53, 52, 61);
+  }
 }
-/*
-  THIS SHOULD BE JOINED WITH #nav-bar! TODOOOOOO!
-*/
-#tabbrowser-tabpanels browser[type="content"][primary] {
+
+html#main-window > body > toolbox#navigator-toolbox, 
+hbox#browser {
+  background-color: var(--zen-main-browser-background) !important;
+}
+
+#appcontent {
   border-radius: 7px;
+  overflow: hidden;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   margin: 10px;
+
+  margin-top: 0;
 }
+

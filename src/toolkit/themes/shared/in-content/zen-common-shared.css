@@ -6,6 +6,8 @@
   --in-content-primary-button-border-color: transparent !important;
   --in-content-primary-button-border-hover: transparent !important;
   --in-content-primary-button-border-active: transparent !important;
+
+  --in-content-page-background: #F9F9FB !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,5 +21,7 @@
     --in-content-primary-button-border-active: transparent !important;
     --in-content-primary-button-text-color: #000 !important;
     --in-content-primary-button-text-color-hover: #000 !important;
+
+    --in-content-page-background: #2B2A33 !important;
   }
 }

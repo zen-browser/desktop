@@ -1,0 +1,58 @@
+diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
+index 164b54bd857e5782e3885dcde5663f336de737de..a14daf131ddaf7db7675444a16cd0d63f00ca86f 100644
+--- a/browser/themes/shared/browser-shared.css
++++ b/browser/themes/shared/browser-shared.css
+@@ -24,6 +24,9 @@
+ @import url("chrome://browser/skin/UITour.css");
+ @import url("chrome://browser/skin/formautofill-notification.css");
+ 
++@import url("chrome://browser/skin/zen-browser-shared.css");
++@import url("chrome://browser/skin/browser-custom-colors.css");
++
+ @namespace html url("http://www.w3.org/1999/xhtml");
+ 
+ :root {
+@@ -152,9 +155,6 @@
+ #navigator-toolbox {
+   appearance: none;
+ 
+-  /* Toolbar / content area border */
+-  border-bottom: 1px solid var(--chrome-content-separator-color);
+-
+   background-color: var(--toolbox-non-lwt-bgcolor);
+   color: var(--toolbox-non-lwt-textcolor);
+ 
+@@ -162,33 +162,8 @@
+   transition: background-color var(--inactive-window-transition);
+ 
+   &:-moz-window-inactive {
+-    background-color: var(--toolbox-non-lwt-bgcolor-inactive);
+     color: var(--toolbox-non-lwt-textcolor-inactive);
+   }
+-
+-  :root[customizing] & {
+-    border-bottom-style: none;
+-  }
+-
+-  &:-moz-lwtheme {
+-    background-image: var(--lwt-additional-images);
+-    background-repeat: var(--lwt-background-tiling);
+-    background-position: var(--lwt-background-alignment);
+-    background-color: var(--lwt-accent-color);
+-    color: inherit;
+-
+-    &:-moz-window-inactive {
+-      background-color: var(--lwt-accent-color-inactive, var(--lwt-accent-color));
+-    }
+-  }
+-
+-  /* When a theme defines both theme_frame and additional_backgrounds, show
+-     the latter atop the former. */
+-  :root[lwtheme-image] & {
+-    background-image: var(--lwt-header-image), var(--lwt-additional-images);
+-    background-repeat: no-repeat, var(--lwt-background-tiling);
+-    background-position: right top, var(--lwt-background-alignment);
+-  }
+ }
+ 
+ .browser-toolbar {

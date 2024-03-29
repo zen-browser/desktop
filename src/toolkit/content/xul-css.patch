@@ -1,0 +1,13 @@
+diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
+index e8635d4525351cedb25bd6af280e10f3839d3b63..be92c08c5657123ff106d85536c2228c9ced9e25 100644
+--- a/toolkit/content/xul.css
++++ b/toolkit/content/xul.css
+@@ -12,6 +12,8 @@
+  * browser.css.
+  */
+ 
++@import url("chrome://global/content/zen-xul.css");
++
+ @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* set default namespace to XUL */
+ @namespace html url("http://www.w3.org/1999/xhtml"); /* namespace for HTML elements */
+ 

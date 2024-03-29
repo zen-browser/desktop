@@ -1,0 +1,23 @@
+:host(:is(.anonymous-content-host, notification-message)),
+:root {
+  --in-content-primary-button-background: #000 !important;           
+  --in-content-primary-button-background-hover: #181818 !important;
+  --in-content-primary-button-background-active: #313131 !important;
+  --in-content-primary-button-border-color: transparent !important;
+  --in-content-primary-button-border-hover: transparent !important;
+  --in-content-primary-button-border-active: transparent !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host(:is(.anonymous-content-host, notification-message)),
+  :root {
+    --in-content-primary-button-background: #fff !important;             
+    --in-content-primary-button-background-hover: #f5f5f5 !important;
+    --in-content-primary-button-background-active: #e0e0e0 !important;
+    --in-content-primary-button-border-color: transparent !important;
+    --in-content-primary-button-border-hover: transparent !important;
+    --in-content-primary-button-border-active: transparent !important;
+    --in-content-primary-button-text-color: #000 !important;
+    --in-content-primary-button-text-color-hover: #000 !important;
+  }
+}

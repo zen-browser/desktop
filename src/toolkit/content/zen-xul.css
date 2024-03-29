@@ -1,0 +1,16 @@
+
+hbox#browser {
+  background-color: var(--lwt-accent-color-inactive, var(--lwt-accent-color));
+}
+
+#nav-bar {
+  
+}
+/*
+  THIS SHOULD BE JOINED WITH #nav-bar! TODOOOOOO!
+*/
+#tabbrowser-tabpanels browser[type="content"][primary] {
+  border-radius: 7px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  margin: 10px;
+}

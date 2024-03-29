@@ -1,0 +1,13 @@
+diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
+index d123d3c3b01addc4373abc58834b1c27af818faa..534ad607939998e34e489915e51827cdba325d4f 100644
+--- a/toolkit/themes/shared/in-content/common-shared.css
++++ b/toolkit/themes/shared/in-content/common-shared.css
+@@ -5,6 +5,8 @@
+ @import url("chrome://global/skin/design-system/tokens-brand.css");
+ @import url("chrome://global/skin/design-system/text-and-typography.css");
+ 
++@import url("chrome://global/skin/in-content/zen-common-shared.css");
++
+ @namespace html "http://www.w3.org/1999/xhtml";
+ @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+ 

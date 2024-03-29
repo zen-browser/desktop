@@ -1,0 +1,40 @@
+diff --git a/browser/themes/addons/light/manifest.json b/browser/themes/addons/light/manifest.json
+index 7385970fa8e3ff9659b72cfb238003958220fb0d..0b3139f6c7d50a6d19083d385c701a0e338fd3be 100644
+--- a/browser/themes/addons/light/manifest.json
++++ b/browser/themes/addons/light/manifest.json
+@@ -7,7 +7,7 @@
+     }
+   },
+ 
+-  "name": "Light",
++  "name": "Zen Light",
+   "description": "A theme with a light color scheme.",
+   "author": "Mozilla",
+   "version": "1.2",
+@@ -42,12 +42,12 @@
+       "button": "rgba(207,207,216,.33)",
+       "button_hover": "rgba(207,207,216,.66)",
+       "button_active": "rgb(207,207,216)",
+-      "button_primary": "rgb(0, 97, 224)",
+-      "button_primary_hover": "rgb(2, 80, 187)",
+-      "button_primary_active": "rgb(5, 62, 148)",
+-      "button_primary_color": "rgb(251, 251, 254)",
++      "button_primary": "#000",
++      "button_primary_hover": "rgb(31, 31, 31)",
++      "button_primary_active": "rgb(207,207,216)",
++      "button_primary_color": "#fff",
+       "input_color": "rgb(21,20,26)",
+-      "input_background": "rgb(255,255,255)",
++      "input_background": "#f0f0f4",
+       "urlbar_popup_hover": "rgb(240,240,244)",
+       "urlbar_popup_separator": "rgb(240,240,244)",
+       "appmenu_update_icon_color": "#2AC3A2",
+@@ -61,7 +61,7 @@
+       "panel_active": "color-mix(in srgb, currentColor 20%, transparent)",
+       "panel_active_darker": "color-mix(in srgb, currentColor 27%, transparent)",
+       "toolbar_field_icon_opacity": "0.72",
+-      "input_border_color": "color-mix(in srgb, currentColor 41%, transparent)",
++      "input_border_color": "rgba(0, 0, 0, .3)",
+       "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
+     }
+   },

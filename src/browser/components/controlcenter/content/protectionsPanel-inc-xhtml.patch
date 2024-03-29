@@ -1,0 +1,12 @@
+diff --git a/browser/components/controlcenter/content/protectionsPanel.inc.xhtml b/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
+index 29927139181e40fa9779038f996a08a2afc6f76b..60189b023e12fdbfe17bea5a28c34de6e54a3b7d 100644
+--- a/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
++++ b/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
+@@ -8,6 +8,7 @@
+        type="arrow"
+        role="alertdialog"
+        noautofocus="true"
++       infoMessageShowing=""
+        aria-labelledby="protections-popup-main-header-label"
+        onpopupshown="gProtectionsHandler.onPopupShown(event);ReportBrokenSite.updateParentMenu(event)"
+        onpopuphidden="gProtectionsHandler.onPopupHidden(event);"

@@ -1,0 +1,10 @@
+diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
+index 5964d40ca3a3654f8fdc62d87deb0ac51c9a55ab..fdaa15ecaff403d61ec6d4f068678b56442dd28a 100644
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -3022,3 +3022,5 @@ pref("browser.mailto.dualPrompt.os", false);
+ // When visiting a site which uses registerProtocolHandler: Ask the user to set Firefox as
+ // default mailto handler.
+ pref("browser.mailto.prompt.os", true);
++
++#include zen-browser.js

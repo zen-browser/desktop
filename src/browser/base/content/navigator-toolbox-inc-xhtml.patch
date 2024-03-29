@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dce7bacdb3678a95dc97085390a7e6102090ffb2..dc1faa983ba7de831026794699a7d90b8dea9d69 100644
+index dce7bacdb3678a95dc97085390a7e6102090ffb2..95fe3eeebb13f3804049bb080576572f5df17c09 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
-@@ -107,471 +107,6 @@
+@@ -107,476 +107,6 @@
  
    </vbox>
  
@@ -471,6 +471,11 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..dc1faa983ba7de831026794699a7d90b
 -    </toolbaritem>
 -  </toolbar>
 -
-   <html:template id="tab-notification-deck-template">
-     <html:named-deck id="tab-notification-deck"></html:named-deck>
-   </html:template>
+-  <html:template id="tab-notification-deck-template">
+-    <html:named-deck id="tab-notification-deck"></html:named-deck>
+-  </html:template>
+-
+-
+   <html:template id="BrowserToolbarPalette">
+     <toolbarbutton id="import-button"
+                    class="toolbarbutton-1 chromeclass-toolbar-additional"

@@ -1,0 +1,33 @@
+diff --git a/browser/base/content/browser.css b/browser/base/content/browser.css
+index 8a2a20280954eb9db144a723f477e7afc603fda3..0536187962cd2f276c5d7f80d78433b3711a2995 100644
+--- a/browser/base/content/browser.css
++++ b/browser/base/content/browser.css
+@@ -2,6 +2,8 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++@import url("chrome://global/skin/zen-global-shared.css");
++
+ @namespace html url("http://www.w3.org/1999/xhtml");
+ 
+ :root,
+@@ -1526,3 +1528,19 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
+ /**
+  * End Dialogs
+  */
++
++/**
++ *
++ * ZEN OVERRIDES
++ */
++
++.content-prompt-dialog > .dialogOverlay {
++  align-content: start;
++}
++
++.dialogBox:not(.spotlightBox) {
++  border: 2px solid var(--zen-dialog-border-color);
++  border-radius: 5px;
++
++  transform: translateY(-8px);
++}

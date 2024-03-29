@@ -1,9 +1,10 @@
 diff --git a/toolkit/themes/shared/desktop-jar.inc.mn b/toolkit/themes/shared/desktop-jar.inc.mn
-index 6f504132c2459a0a476a7a440beef6794d52097e..3638ec92cc631841c8adebe4c842c9761a2bd6a9 100644
+index 6f504132c2459a0a476a7a440beef6794d52097e..a66f430a0460f131f790d265ca401a8c5681bea1 100644
 --- a/toolkit/themes/shared/desktop-jar.inc.mn
 +++ b/toolkit/themes/shared/desktop-jar.inc.mn
-@@ -151,3 +151,4 @@
+@@ -151,3 +151,5 @@
    skin/classic/global/reader/RM-Content-Width-Plus-44x16.svg           (../../shared/reader/RM-Content-Width-Plus-44x16.svg)
    skin/classic/global/reader/RM-Line-Height-Minus-38x14.svg            (../../shared/reader/RM-Line-Height-Minus-38x14.svg)
    skin/classic/global/reader/RM-Line-Height-Plus-38x24.svg             (../../shared/reader/RM-Line-Height-Plus-38x24.svg)
 +  skin/classic/global/in-content/zen-common-shared.css               (../../shared/in-content/zen-common-shared.css)
++  skin/classic/global/zen-global-shared.css                    (../../shared/zen-global-shared.css)

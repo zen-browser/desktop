@@ -7,6 +7,8 @@
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;
   --arrowpanel-border-radius: 4px !important;
 
+  --zen-panel-radius: 10px;
+
   &:-moz-lwtheme {
     color: var(--lwt-text-color);
     --link-color: light-dark(rgb(0, 97, 224), rgb(0, 221, 255));

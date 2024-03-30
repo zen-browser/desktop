@@ -1,6 +1,6 @@
 
 #navigator-toolbox toolbar#TabsToolbar {
-  margin: 5px 0.5%;
+  margin: 10px var(--zen-appcontent-separator-from-window);
 }
 
 #PersonalToolbar {
@@ -19,4 +19,17 @@
   background: light-dark(#ddd, #4a4a4a);
   height: 1px;
   width: 100%;
+}
+
+#urlbar[focused="true"] > #urlbar-background,
+#searchbar:focus-within {
+  box-shadow: none !important;
+}
+
+#urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background,
+#searchbar:focus-within {
+  outline: none !important;
+  outline-offset: none !important;
+  outline-color: none !important;
+  border-color: var(--zen-appcontent-separator-from-window);
 }

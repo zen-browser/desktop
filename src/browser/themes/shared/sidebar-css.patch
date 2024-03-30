@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/sidebar.css b/browser/themes/shared/sidebar.css
-index a9b3886e1ff4a36c5bd161985719f66a41d95458..b9b9244b01dce07bd1419e0d8d3cdf16757ede82 100644
+index a9b3886e1ff4a36c5bd161985719f66a41d95458..b181112f3db8deb7b71767674e0beac625f6ef66 100644
 --- a/browser/themes/shared/sidebar.css
 +++ b/browser/themes/shared/sidebar.css
 @@ -137,3 +137,27 @@ menuseparator + #sidebar-extensions-separator {
@@ -16,7 +16,7 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..b9b9244b01dce07bd1419e0d8d3cdf16
 +}
 +
 +#sidebar-box {
-+  margin: 0 0 10px 10px;
++  margin: 0 0 var(--zen-appcontent-separator-from-window) var(--zen-appcontent-separator-from-window);
 +  border-radius: var(--zen-panel-radius);
 +}
 +
@@ -28,5 +28,5 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..b9b9244b01dce07bd1419e0d8d3cdf16
 +}
 +
 +#sidebar-box[positionend] {
-+  margin: 0 10px 10px 0;
++  margin: 0 var(--zen-appcontent-separator-from-window) var(--zen-appcontent-separator-from-window) 0;
 +}

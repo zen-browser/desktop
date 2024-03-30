@@ -1,6 +1,7 @@
 
 :root {
-  --zen-main-browser-background: linear-gradient(135deg, rgb(254, 181, 188) 0%, rgb(115, 99, 207) 100%); 
+  --zen-main-browser-background: light-dark(#ddd, #4a4a4a); 
+  --zen-appcontent-separator-from-window: 20px;
 }
 
 html#main-window > body > toolbox#navigator-toolbox, 
@@ -16,8 +17,7 @@ html#main-window > body {
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  margin: 10px;
-
+  margin: var(--zen-appcontent-separator-from-window);
   margin-top: 0;
 }
 

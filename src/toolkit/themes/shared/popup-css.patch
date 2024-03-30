@@ -1,8 +1,31 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ddc41a66ed0e3688ce34052652bef1fe33a08d49..478e16ce3bb0e797a681b1f7d283a1db2d0168f2 100644
+index ddc41a66ed0e3688ce34052652bef1fe33a08d49..e0034fb0306b0325b73875d6e2798006bc957d03 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
-@@ -38,6 +38,10 @@ panel {
+@@ -13,12 +13,12 @@ panel {
+   color-scheme: light dark;
+ 
+   min-width: 1px;
+-  --panel-background: Menu;
++  --panel-background: var(--arrowpanel-background);
+   --panel-color: MenuText;
+   --panel-padding-block: 4px;
+   --panel-padding: var(--panel-padding-block) 0;
+   --panel-border-radius: 4px;
+-  --panel-border-color: ThreeDShadow;
++  --panel-border-color: var(--arrowpanel-border-color);
+   --panel-width: initial;
+ 
+   --panel-shadow-margin: 0px;
+@@ -30,31 +30,22 @@ panel {
+   --color-canvas: var(--panel-background);
+ 
+   @media (-moz-platform: linux) {
+-    --panel-border-radius: 8px;
+-    --panel-padding-block: 3px;
+ 
+     @media (prefers-contrast) {
+       --panel-border-color: color-mix(in srgb, currentColor 60%, transparent);
      }
    }
  
@@ -13,3 +36,30 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..478e16ce3bb0e797a681b1f7d283a1db
    @media (-moz-platform: linux) or (-moz-platform: windows) {
      /* To account for the box-shadow below */
      --panel-shadow-margin: 4px;
+   }
+ 
+-  @media (-moz-platform: macos) {
+-    appearance: auto;
+-    -moz-default-appearance: menupopup;
+-    /* We set the default background here, rather than on ::part(content),
+-     * because otherwise it'd interfere with the native look. Non-native-looking
+-     * popups should get their background via --panel-background */
+-    background-color: Menu;
+-    --panel-background: none;
+-    --panel-border-color: transparent;
+-    /* This should be kept in sync with GetMenuMaskImage() */
+-    --panel-border-radius: 6px;
+-  }
++
+ 
+   &::part(content) {
+     display: flex;
+@@ -64,7 +55,7 @@ panel {
+     color: var(--panel-color);
+     background: var(--panel-background);
+     border-radius: var(--panel-border-radius);
+-    border: 1px solid var(--panel-border-color);
++    border: 2px solid var(--panel-border-color);
+     width: var(--panel-width);
+     box-shadow: var(--panel-shadow);
+     margin: var(--panel-shadow-margin);

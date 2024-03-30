@@ -221,30 +221,5 @@
   margin-inline: 0 !important;
 }
 
-/* subview */
-.panel-header {
-  padding: 4px !important;
-  padding-top: 4px !important;
-}
 
-.panel-header+toolbarseparator,
-#identity-popup-mainView-panel-header+toolbarseparator,
-#permission-popup-mainView-panel-header+toolbarseparator,
-#protections-popup-mainView-panel-header-section+toolbarseparator {
-  margin-block-start: 0 !important;
-}
-
-.panel-header>.subviewbutton-back {
-  margin: 0 !important;
-  padding: var(--arrowpanel-menuitem-padding-block) !important;
-}
-
-.panel-subview-footer-button {
-  margin-bottom: 4px !important;
-}
-
-.webextension-popup-browser,
-.webextension-popup-stack {
-  margin-block-start: calc(var(--panel-separator-margin-vertical) * -.5) !important;
-}
 

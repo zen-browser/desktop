@@ -1,5 +1,5 @@
 diff --git a/browser/themes/addons/alpenglow/manifest.json b/browser/themes/addons/alpenglow/manifest.json
-index 05a25e13915edee3ba51ed1c1b5569faa70cd536..58c3a124156748ec07e828a7a3a969e523383e1d 100644
+index 05a25e13915edee3ba51ed1c1b5569faa70cd536..9f4e2274cfc82abc420ea543e360222305a37585 100644
 --- a/browser/themes/addons/alpenglow/manifest.json
 +++ b/browser/themes/addons/alpenglow/manifest.json
 @@ -3,137 +3,99 @@
@@ -7,7 +7,7 @@ index 05a25e13915edee3ba51ed1c1b5569faa70cd536..58c3a124156748ec07e828a7a3a969e5
    "browser_specific_settings": {
      "gecko": {
 -      "id": "firefox-alpenglow@mozilla.org"
-+      "id": "firefox-compact-light@mozilla.org"
++      "id": "zen-compact-universe@mozilla.org"
      }
    },
  

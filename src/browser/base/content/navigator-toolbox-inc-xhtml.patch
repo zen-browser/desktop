@@ -1,8 +1,17 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dce7bacdb3678a95dc97085390a7e6102090ffb2..95fe3eeebb13f3804049bb080576572f5df17c09 100644
+index dce7bacdb3678a95dc97085390a7e6102090ffb2..a49f7baf69b653f4c87d081fae2b8517574867e7 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
-@@ -107,476 +107,6 @@
+@@ -30,8 +30,6 @@
+              context="toolbar-context-menu"
+              flex="1">
+ 
+-      <hbox class="titlebar-spacer" type="pre-tabs"/>
+-
+       <hbox flex="1" align="end" class="toolbar-items">
+         <toolbartabstop/>
+         <hbox id="TabsToolbar-customization-target" flex="1">
+@@ -107,476 +105,6 @@
  
    </vbox>
  

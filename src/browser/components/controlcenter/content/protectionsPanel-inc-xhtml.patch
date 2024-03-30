@@ -1,5 +1,5 @@
 diff --git a/browser/components/controlcenter/content/protectionsPanel.inc.xhtml b/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
-index 29927139181e40fa9779038f996a08a2afc6f76b..60189b023e12fdbfe17bea5a28c34de6e54a3b7d 100644
+index 29927139181e40fa9779038f996a08a2afc6f76b..ddb95da98de6aba014d69f040aabe6b311fb6772 100644
 --- a/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
 +++ b/browser/components/controlcenter/content/protectionsPanel.inc.xhtml
 @@ -8,6 +8,7 @@
@@ -10,3 +10,21 @@ index 29927139181e40fa9779038f996a08a2afc6f76b..60189b023e12fdbfe17bea5a28c34de6
         aria-labelledby="protections-popup-main-header-label"
         onpopupshown="gProtectionsHandler.onPopupShown(event);ReportBrokenSite.updateParentMenu(event)"
         onpopuphidden="gProtectionsHandler.onPopupHidden(event);"
+@@ -28,7 +29,7 @@
+             <html:span id="protections-popup-mainView-panel-header-span"/>
+           </html:h1>
+           <toolbarbutton id="protections-popup-info-button" class="panel-info-button"
+-                         data-l10n-id="protections-panel-etp-more-info">
++                         data-l10n-id="protections-panel-etp-more-info" checked="">
+             <image/>
+           </toolbarbutton>
+           <description id="protections-popup-toast-panel-tp-on-desc" data-l10n-id="protections-panel-etp-on-header"></description>
+@@ -36,7 +37,7 @@
+         </box>
+         <toolbarseparator></toolbarseparator>
+ 
+-        <html:div id="messaging-system-message-container" disabled="true">
++        <html:div id="messaging-system-message-container">
+           <!-- Messaging System Messages will render in this container -->
+         </html:div>
+       </vbox>

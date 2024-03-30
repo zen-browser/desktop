@@ -1,0 +1,50 @@
+diff --git a/browser/components/tabpreview/tabpreview.css b/browser/components/tabpreview/tabpreview.css
+index 8b288cb95da0e5fe307437e300d2c03ae19ab397..93827f8088fc21db201f69aee1517a5125b83704 100644
+--- a/browser/components/tabpreview/tabpreview.css
++++ b/browser/components/tabpreview/tabpreview.css
+@@ -3,9 +3,9 @@
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ .tab-preview-container {
+-  background-color: #ffffff;
++  background-color: #fdfdfd;
+   color: #15141a;
+-  border-radius: 9px;
++  border-radius: 5px;
+   display: inline-block;
+   width: 280px;
+   overflow: hidden;
+@@ -38,7 +38,7 @@
+ 
+ @media (prefers-color-scheme: dark) {
+   .tab-preview-container {
+-    background-color: #42414d;
++    background-color: #333237;
+     color: #fbfbfe;
+   }
+   .tab-preview-uri {
+@@ -61,3 +61,24 @@
+     display: none;
+   }
+ }
++
++/**
++ * Zen overrides (try to avoid git conflicts as much as possible)
++ */
++
++.tab-preview-container {
++  --zen-border-color: #bdbcbc;
++  border: 2px solid var(--zen-border-color);
++  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
++}
++
++@media (prefers-color-scheme: dark) {
++  .tab-preview-container {
++    --zen-border-color: #565656;
++  }
++}
++
++.tab-preview-thumbnail-container img,
++.tab-preview-thumbnail-container canvas {
++  border-top: 2px solid var(--zen-border-color);
++}

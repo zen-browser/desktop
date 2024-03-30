@@ -1,0 +1,13 @@
+diff --git a/browser/components/tabpreview/tabpreview.mjs b/browser/components/tabpreview/tabpreview.mjs
+index 5256ab22ff3a79d9c020dac2ce375f5e42f9c13c..40b278b294740d96fedba7509ba12c6efa241b46 100644
+--- a/browser/components/tabpreview/tabpreview.mjs
++++ b/browser/components/tabpreview/tabpreview.mjs
+@@ -44,7 +44,7 @@ export default class TabPreview extends MozLitElement {
+       this,
+       "_prefDisplayThumbnail",
+       TAB_PREVIEW_USE_THUMBNAILS_PREF,
+-      false
++      true
+     );
+   }
+ 

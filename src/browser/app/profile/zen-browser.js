@@ -13,6 +13,9 @@ pref("devtools.debugger.prompt-connection", false);
 
 // Mozilla Services
 pref('browser.privatebrowsing.vpnpromourl', '');
+pref("browser.vpn_promo.enabled", false);
+pref("browser.contentblocking.report.show_mobile_app", false);
+pref("browser.protections_panel.infoMessage.seen", true);
 pref('extensions.getAddons.showPane', false);
 pref('extensions.htmlaboutaddons.recommendations.enabled', false);
 pref('browser.discovery.enabled', false);
@@ -23,7 +26,7 @@ pref(
 );
 pref('browser.preferences.moreFromMozilla', false);
 pref('browser.aboutwelcome.enabled', true);
-pref("browser.aboutwelcome.showModal", true);
+pref("browser.aboutwelcome.showModal", false);
 
 // Theme
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
@@ -41,6 +44,7 @@ pref('cookiebanners.service.mode.privateBrowsing', 1);
 // Url bar
 pref('browser.urlbar.unitConversion.enabled', true);
 pref('browser.urlbar.trending.featureGate', false);
+pref('browser.urlbar.weather.featureGate', true);
 
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);

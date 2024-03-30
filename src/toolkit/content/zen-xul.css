@@ -1,17 +1,15 @@
 
-html#main-window > body {
-  --zen-main-browser-background: rgb(229, 229, 229); 
-}
-
-@media (prefers-color-scheme: dark) {
-  html#main-window > body {
-    --zen-main-browser-background: rgb(53, 52, 61);
-  }
+:root {
+  --zen-main-browser-background: linear-gradient(135deg, rgb(254, 181, 188) 0%, rgb(115, 99, 207) 100%); 
 }
 
 html#main-window > body > toolbox#navigator-toolbox, 
 hbox#browser {
-  background-color: var(--zen-main-browser-background) !important;
+  background: transparent !important;
+} 
+
+html#main-window > body {
+  background: var(--zen-main-browser-background) !important;
 }
 
 #appcontent {

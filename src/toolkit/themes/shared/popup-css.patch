@@ -1,8 +1,17 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ddc41a66ed0e3688ce34052652bef1fe33a08d49..e0034fb0306b0325b73875d6e2798006bc957d03 100644
+index ddc41a66ed0e3688ce34052652bef1fe33a08d49..0a160f129b64c5c8c663d9fefc284c5546a44faf 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
-@@ -13,12 +13,12 @@ panel {
+@@ -2,6 +2,8 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++@import url("zen-popup.css");
++
+ @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+ 
+ /* ::::: menupopup ::::: */
+@@ -13,12 +15,12 @@ panel {
    color-scheme: light dark;
  
    min-width: 1px;
@@ -17,7 +26,7 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..e0034fb0306b0325b73875d6e2798006
    --panel-width: initial;
  
    --panel-shadow-margin: 0px;
-@@ -30,31 +30,22 @@ panel {
+@@ -30,31 +32,22 @@ panel {
    --color-canvas: var(--panel-background);
  
    @media (-moz-platform: linux) {
@@ -54,12 +63,3 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..e0034fb0306b0325b73875d6e2798006
  
    &::part(content) {
      display: flex;
-@@ -64,7 +55,7 @@ panel {
-     color: var(--panel-color);
-     background: var(--panel-background);
-     border-radius: var(--panel-border-radius);
--    border: 1px solid var(--panel-border-color);
-+    border: 2px solid var(--panel-border-color);
-     width: var(--panel-width);
-     box-shadow: var(--panel-shadow);
-     margin: var(--panel-shadow-margin);

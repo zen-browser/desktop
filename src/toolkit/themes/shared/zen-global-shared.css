@@ -2,7 +2,7 @@
 :root {
   --zen-dialog-background: Field;
   --zen-dialog-border-color: rgb(184, 184, 184);
-  --zen-panel-radius: 10px;
+  --zen-panel-radius: 7px;
 
   --arrowpanel-background: var(--zen-dialog-background) !important;
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;

@@ -2,3 +2,21 @@
 #navigator-toolbox toolbar#TabsToolbar {
   margin: 5px 0.5%;
 }
+
+#PersonalToolbar {
+  /*border-top: 1px solid light-dark(#ddd, #4a4a4a);*/
+  padding: 5px 0;
+  padding-inline: 15px !important;
+}
+
+#urlbar {
+  border: 1px solid light-dark(#ddd, #4a4a4a);
+  border-radius: 5px;
+  padding: 1px 1px;
+}
+
+#zen-website-and-native-separator {
+  background: light-dark(#ddd, #4a4a4a);
+  height: 1px;
+  width: 100%;
+}

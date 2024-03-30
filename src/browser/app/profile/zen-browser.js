@@ -49,6 +49,7 @@ pref('browser.urlbar.weather.featureGate', true);
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);
 pref('browser.newtabpage.activity-stream.feeds.section.topstories', false);
+pref("browser.topsites.contile.enabled", false);
 
 // Pocket
 pref('extensions.pocket.enabled', false);

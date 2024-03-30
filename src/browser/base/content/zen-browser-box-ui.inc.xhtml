@@ -73,20 +73,6 @@
               class="chromeclass-toolbar-additional"/>
           <!-- Use onclick instead of normal popup= syntax since the popup
               code fires onmousedown, and hence eats our favicon drag events. -->
-          <box id="tracking-protection-icon-container" align="center"
-              role="button"
-              onclick="gProtectionsHandler.handleProtectionsButtonEvent(event);"
-              onkeypress="gProtectionsHandler.handleProtectionsButtonEvent(event);"
-              onmouseover="gProtectionsHandler.onTrackingProtectionIconHoveredOrFocused();"
-              onfocus="gProtectionsHandler.onTrackingProtectionIconHoveredOrFocused();"
-              tooltip="tracking-protection-icon-tooltip">
-            <box id="tracking-protection-icon-box">
-              <image id="tracking-protection-icon"/>
-            </box>
-            <tooltip id="tracking-protection-icon-tooltip">
-              <description id="tracking-protection-icon-tooltip-label" class="tooltip-label"/>
-            </tooltip>
-          </box>
           <box id="identity-box"
               pageproxystate="invalid"
               ondragstart="gIdentityHandler.onDragStart(event);">
@@ -223,6 +209,20 @@
                 keyNav="false"
                 onclick="gURLBar.handleCommand(event);"
                 data-l10n-id="urlbar-go-button"/>
+                <box id="tracking-protection-icon-container" align="center"
+                role="button"
+                onclick="gProtectionsHandler.handleProtectionsButtonEvent(event);"
+                onkeypress="gProtectionsHandler.handleProtectionsButtonEvent(event);"
+                onmouseover="gProtectionsHandler.onTrackingProtectionIconHoveredOrFocused();"
+                onfocus="gProtectionsHandler.onTrackingProtectionIconHoveredOrFocused();"
+                tooltip="tracking-protection-icon-tooltip">
+                <box id="tracking-protection-icon-box">
+                      <image id="tracking-protection-icon"/>
+                </box>
+                <tooltip id="tracking-protection-icon-tooltip">
+                      <description id="tracking-protection-icon-tooltip-label" class="tooltip-label"/>
+                </tooltip>
+          </box>
           <hbox id="page-action-buttons" context="pageActionContextMenu" align="center">
             <toolbartabstop/>
             <hbox id="contextual-feature-recommendation" role="button" hidden="true">
@@ -466,3 +466,5 @@
 <html:template id="tab-notification-deck-template">
   <html:named-deck id="tab-notification-deck"></html:named-deck>
 </html:template>
+
+<html:span id="zen-website-and-native-separator"></html:span>

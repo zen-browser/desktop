@@ -1,0 +1,22 @@
+diff --git a/browser/components/aboutlogins/content/components/login-list.css b/browser/components/aboutlogins/content/components/login-list.css
+index bc8e72a3cd07e8746c6fbf190bdd2bf70f4000d4..07031dfdfadf393db5fd848948e33510bd7225d7 100644
+--- a/browser/components/aboutlogins/content/components/login-list.css
++++ b/browser/components/aboutlogins/content/components/login-list.css
+@@ -3,7 +3,7 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ :host {
+-  border-inline-end: 1px solid var(--in-content-border-color);
++  border: 1px solid var(--in-content-border-color);
+   background-color: var(--in-content-box-background);
+   display: flex;
+   flex-direction: column;
+@@ -161,3 +161,8 @@ ol {
+   font-size: 0.85em;
+   color: var(--text-color-deemphasized);
+ }
++
++:host {
++  border-radius: 5px;
++  margin: 10px;
++}

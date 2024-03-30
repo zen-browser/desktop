@@ -1,0 +1,217 @@
+diff --git a/browser/themes/addons/alpenglow/manifest.json b/browser/themes/addons/alpenglow/manifest.json
+index 05a25e13915edee3ba51ed1c1b5569faa70cd536..fc9c56843a38fcfbebaf2508a66d0c3b97dfb2f2 100644
+--- a/browser/themes/addons/alpenglow/manifest.json
++++ b/browser/themes/addons/alpenglow/manifest.json
+@@ -3,137 +3,99 @@
+ 
+   "browser_specific_settings": {
+     "gecko": {
+-      "id": "firefox-alpenglow@mozilla.org"
++      "id": "firefox-compact-light@mozilla.org"
+     }
+   },
+ 
+-  "name": "Firefox Alpenglow",
+-  "description": "Use a colorful appearance for buttons, menus, and windows.",
+-  "version": "1.4",
++  "name": "Zen Universe (Light)",
++  "description": "A theme with a light color scheme.",
++  "author": "Zen",
++  "version": "1.3",
++
+   "icons": { "32": "icon.svg" },
+ 
+   "theme": {
+-    "images": {
+-      "additional_backgrounds": [
+-        "background-noodles-right.svg",
+-        "background-noodles-left.svg",
+-        "background-gradient.svg"
+-      ]
+-    },
+-
+-    "properties": {
+-      "additional_backgrounds_alignment": [
+-        "right top",
+-        "left top",
+-        "right top"
+-      ],
+-      "additional_backgrounds_tiling": ["no-repeat", "no-repeat", "repeat-x"],
+-      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
+-    },
+     "colors": {
+-      "frame": "hsla(240, 20%, 98%, 1)",
+-      "toolbar": "hsla(0, 0%, 100%, .76)",
+-      "button_background_active": "hsla(240, 26%, 11%, .16)",
+-      "button_background_hover": "hsla(240, 26%, 11%, .08)",
+-      "icons": "hsla(258, 66%, 48%, 1)",
+-      "icons_attention": "hsla(180, 100%, 32%, 1)",
+-      "toolbar_text": "hsla(261, 53%, 15%, 1)",
+-      "toolbar_vertical_separator": "hsla(261, 53%, 15%, .2)",
+-      "toolbar_field": "hsla(0, 0%, 100%, .8)",
+-      "toolbar_field_focus": "hsla(261, 53%, 15%, .96)",
+-      "toolbar_field_text": "hsla(261, 53%, 15%, 1)",
+-      "toolbar_field_text_focus": "hsla(255, 100%, 94%, 1)",
+-      "toolbar_field_border": "transparent",
+-      "toolbar_field_border_focus": "hsla(265, 100%, 72%, 1)",
+-      "toolbar_field_highlight": "hsla(265, 100%, 72%, .32)",
++      "tab_background_text": "rgb(21,20,26)",
++      "tab_selected": "#fff",
++      "tab_text": "rgb(21,20,26)",
++      "icons": "rgb(91,91,102)",
++      "frame": "rgb(240, 240, 244)",
++      "frame_inactive": "rgb(235, 235, 239)",
++      "popup": "#fff",
++      "popup_text": "rgb(21,20,26)",
++      "popup_border": "rgb(240,240,244)",
++      "popup_highlight": "#e0e0e6",
++      "popup_highlight_text": "#15141a",
++      "tab_line": "transparent",
++      "toolbar": "#f9f9fb",
+       "toolbar_top_separator": "transparent",
+-      "toolbar_bottom_separator": "hsla(261, 53%, 15%, .32)",
+-      "bookmark_text": "hsla(261, 53%, 15%, 1)",
+-      "tab_text": "hsla(261, 53%, 15%, 1)",
+-      "tab_background_text": "hsla(261, 53%, 15%, 1)",
+-      "tab_background_separator": "hsla(261, 53%, 15%, 1)",
+-      "tab_line": "hsla(265, 100%, 72%, 1)",
+-      "tab_loading": "hsla(265, 100%, 72%, 1)",
++      "toolbar_bottom_separator": "#ccc",
++      "toolbar_field": "rgb(240, 240, 244)",
++      "toolbar_field_text": "rgb(21, 20, 26)",
++      "toolbar_field_border": "transparent",
++      "toolbar_field_focus": "white",
++      "toolbar_text": "rgb(21,20,26)",
+       "ntp_background": "#F9F9FB",
+-      "ntp_text": "hsla(261, 53%, 15%, 1)",
+-      "popup": "hsla(254, 46%, 21%, 1)",
+-      "popup_text": "hsla(255, 100%, 94%, 1)",
+-      "popup_border": "hsla(255, 100%, 94%, .32)",
+-      "popup_highlight": "hsla(255, 100%, 94%, .12)",
+-      "popup_highlight_text": "hsla(0, 0%, 100%, 1)",
+-      "sidebar": "hsla(240, 15%, 95%, 1)",
+-      "sidebar_text": "hsla(261, 53%, 15%, 1)",
+-      "sidebar_border": "hsla(261, 53%, 15%, .24)",
+-      "sidebar_highlight": "hsla(265, 100%, 72%, 1)",
+-      "sidebar_highlight_text": "hsla(0, 0%, 100%, 1)",
+-      "focus_outline": "hsla(258, 65%, 48%, 1)"
+-    }
+-  },
+-  "dark_theme": {
+-    "images": {
+-      "additional_backgrounds": [
+-        "background-noodles-right-dark.svg",
+-        "background-noodles-left-dark.svg",
+-        "background-gradient-dark.svg"
+-      ]
++      "ntp_text": "rgb(21, 20, 26)",
++      "popup_action_color": "rgb(91,91,102)",
++      "button": "rgba(207,207,216,.33)",
++      "button_hover": "rgba(207,207,216,.66)",
++      "button_active": "rgb(207,207,216)",
++      "button_primary": "#000",
++      "button_primary_hover": "rgb(31, 31, 31)",
++      "button_primary_active": "rgb(207,207,216)",
++      "button_primary_color": "#fff",
++      "input_color": "rgb(21,20,26)",
++      "input_background": "#f0f0f4",
++      "urlbar_popup_hover": "rgb(240,240,244)",
++      "urlbar_popup_separator": "rgb(240,240,244)",
++      "appmenu_update_icon_color": "#2AC3A2",
++      "appmenu_info_icon_color": "#0090ED",
++      "tab_icon_overlay_stroke": "rgb(255,255,255)",
++      "tab_icon_overlay_fill": "rgb(91,91,102)"
+     },
+-
+     "properties": {
+-      "additional_backgrounds_alignment": [
+-        "right top",
+-        "left top",
+-        "right top"
+-      ],
+-      "additional_backgrounds_tiling": ["no-repeat", "no-repeat", "repeat-x"],
+-      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
+-    },
+-    "colors": {
+-      "frame": "hsla(240, 20%, 98%, 1)",
+-      "toolbar": "hsla(254, 46%, 21%, .96)",
+-      "button_background_active": "hsla(255, 100%, 94%, .24)",
+-      "button_background_hover": "hsla(255, 100%, 94%, .12)",
+-      "icons": "hsla(271, 100%, 77%, 1)",
+-      "icons_attention": "hsla(157, 100%, 66%, 1)",
+-      "toolbar_text": "hsla(255, 100%, 94%, 1)",
+-      "toolbar_vertical_separator": "hsla(271, 100%, 77%, .4)",
+-      "toolbar_field": "hsla(250, 43%, 25%, 1)",
+-      "toolbar_field_focus": "hsla(250, 43%, 25%, .98)",
+-      "toolbar_field_text": "hsla(255, 100%, 94%, 1)",
+-      "toolbar_field_text_focus": "hsla(255, 100%, 94%, 1)",
+-      "toolbar_field_border": "transparent",
+-      "toolbar_field_border_focus": "hsla(265, 100%, 72%, 1)",
+-      "toolbar_field_highlight": "hsla(265, 100%, 72%, .32)",
+-      "toolbar_top_separator": "transparent",
+-      "toolbar_bottom_separator": "hsla(245, 38%, 33%, .96)",
+-      "bookmark_text": "hsla(255, 100%, 94%, 1)",
+-      "tab_selected": "rgb(60, 31, 123)",
+-      "tab_text": "hsla(255, 100%, 94%, 1)",
+-      "tab_background_text": "hsla(255, 100%, 94%, 1)",
+-      "tab_background_separator": "hsla(255, 100%, 94%, 1)",
+-      "tab_line": "hsla(265, 100%, 72%, 1)",
+-      "tab_loading": "hsla(265, 100%, 72%, 1)",
+-      "ntp_background": "#2A2A2E",
+-      "ntp_text": "hsla(255, 100%, 94%, 1)",
+-      "popup": "hsla(250, 43%, 25%, 1)",
+-      "popup_text": "hsla(255, 100%, 94%, 1)",
+-      "popup_border": "hsla(255, 100%, 94%, .32)",
+-      "popup_highlight": "hsla(255, 100%, 94%, .12)",
+-      "popup_highlight_text": "hsla(0, 0%, 100%, 1)",
+-      "sidebar": "hsla(250, 43%, 25%, 1)",
+-      "sidebar_text": "hsla(255, 100%, 94%, 1)",
+-      "sidebar_border": "hsla(255, 100%, 94%, .24)",
+-      "sidebar_highlight": "hsla(259, 76%, 58%, 1)",
+-      "sidebar_highlight_text": "hsla(0, 0%, 100%, 1)",
+-      "focus_outline": "hsla(265, 100%, 72%, 1)"
++      "color_scheme": "light",
++      "panel_hover": "color-mix(in srgb, currentColor 12%, transparent)",
++      "panel_active": "color-mix(in srgb, currentColor 20%, transparent)",
++      "panel_active_darker": "color-mix(in srgb, currentColor 27%, transparent)",
++      "toolbar_field_icon_opacity": "0.72",
++      "input_border_color": "rgba(0, 0, 0, .3)",
++      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
++      "zen_main_browser_background": "linear-gradient(135deg, rgb(254, 181, 188) 0%, rgb(115, 99, 207) 100%)"
+     }
+   },
+ 
+   "theme_experiment": {
++    "stylesheet": "experiment.css",
+     "colors": {
+-      "focus_outline": "--focus-outline-color"
++      "popup_action_color": "--urlbarView-action-color",
++      "button": "--button-bgcolor",
++      "button_hover": "--button-hover-bgcolor",
++      "button_active": "--button-active-bgcolor",
++      "button_primary": "--button-primary-bgcolor",
++      "button_primary_hover": "--button-primary-hover-bgcolor",
++      "button_primary_active": "--button-primary-active-bgcolor",
++      "button_primary_color": "--button-primary-color",
++      "input_background": "--input-bgcolor",
++      "input_color": "--input-color",
++      "input_border": "--input-border-color",
++      "urlbar_popup_hover": "--urlbarView-hover-background",
++      "urlbar_popup_separator": "--urlbarView-separator-color",
++      "appmenu_update_icon_color": "--panel-banner-item-update-supported-bgcolor",
++      "appmenu_info_icon_color": "--panel-banner-item-info-icon-bgcolor",
++      "tab_icon_overlay_stroke": "--tab-icon-overlay-stroke",
++      "tab_icon_overlay_fill": "--tab-icon-overlay-fill"
+     },
+     "properties": {
+-      "zap_gradient": "--panel-separator-zap-gradient"
++      "panel_hover": "--panel-item-hover-bgcolor",
++      "panel_active": "--arrowpanel-dimmed-further",
++      "panel_active_darker": "--panel-item-active-bgcolor",
++      "toolbar_field_icon_opacity": "--urlbar-icon-fill-opacity",
++      "input_border_color": "--input-border-color",
++      "zap_gradient": "--panel-separator-zap-gradient",
++      "zen_main_browser_background": "--zen-main-browser-background"
+     }
+   }
+ }

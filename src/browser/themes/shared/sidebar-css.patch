@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/sidebar.css b/browser/themes/shared/sidebar.css
-index a9b3886e1ff4a36c5bd161985719f66a41d95458..b181112f3db8deb7b71767674e0beac625f6ef66 100644
+index a9b3886e1ff4a36c5bd161985719f66a41d95458..35c0e0dfa9d9560c4ed6a1abfd2a5b28748ab2a5 100644
 --- a/browser/themes/shared/sidebar.css
 +++ b/browser/themes/shared/sidebar.css
 @@ -137,3 +137,27 @@ menuseparator + #sidebar-extensions-separator {

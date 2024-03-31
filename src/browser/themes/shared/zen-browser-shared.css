@@ -47,9 +47,7 @@
 }
 
 #urlbar:not([extend="true"]) #identity-box.chromeUI #identity-icon-box {
-  border-radius: 2px;
-  border-top-left-radius: 999px !important;
-  border-bottom-left-radius: 999px !important;
+  border-radius: 20px 10px 10px 20px !important;
 }
 
 #urlbar .urlbar-page-action,
@@ -61,15 +59,25 @@
 #urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative;}
 
 /* TODO: this does NOT show up! */
-#urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box[role="button"]:not(:hover)::after {
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) #identity-icon-box::after {
   content: '';
   position: absolute;
-  top: 0;
-  right: -1px;
-  height: 100%;
+  top: 50%;
+  right: -5px;
+  height: calc(100% - 5px);
   width: 1px;
   background: var(--zen-dialog-border-color);
   transition: .1s;
+  transform: translateY(-50%);
+}
+
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) #identity-icon-box {
+  margin: 0 5px;
+  padding-right: 5px;
+}
+
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) {
+  padding-right: 5px;
 }
 
 .urlbar-page-action {

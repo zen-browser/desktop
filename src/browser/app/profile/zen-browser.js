@@ -86,6 +86,10 @@ pref('gfx.canvas.accelerated.cache-items', 4096);
 pref('gfx.canvas.accelerated.cache-size', 512);
 pref('gfx.content.skia-font-cache-size', 20);
 
+// CUSTOM ZEN PREFS
+
+pref('zen.verticalTabs.enabled', false);
+
 // From: https://github.com/yokoffing/Betterfox
 
 /** DISK CACHE ***/

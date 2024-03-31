@@ -12,7 +12,7 @@ index a9b3886e1ff4a36c5bd161985719f66a41d95458..b181112f3db8deb7b71767674e0beac6
 + */
 +
 +:root {
-+  --sidebar-background-color: var(--newtab-background-color) !important;
++  --sidebar-background-color: var(--toolbar-bgcolor) !important;
 +}
 +
 +#sidebar-box {

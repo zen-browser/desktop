@@ -9,11 +9,12 @@
   padding-inline: 15px !important;
 }
 
+/* URL and tool bars */
+
 #urlbar {
   border: 1px solid light-dark(#ddd, #4a4a4a);
-  border-radius: 999px;
   overflow: hidden;
-  padding: 1px 1px;
+  padding: 1px;
 }
 
 #zen-website-and-native-separator {
@@ -37,4 +38,56 @@
   outline-offset: none !important;
   outline-color: none !important;
   border-color: var(--zen-appcontent-separator-from-window);
+}
+
+#urlbar, #urlbar .urlbar-page-action, 
+#urlbar #tracking-protection-icon-container,
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box {
+  border-radius: 999px !important;
+}
+
+#urlbar:not([extend="true"]) #identity-box.chromeUI #identity-icon-box {
+  border-radius: 2px;
+  border-top-left-radius: 999px !important;
+  border-bottom-left-radius: 999px !important;
+}
+
+#urlbar .urlbar-page-action,
+#urlbar #identity-box #identity-icon-box, 
+#urlbar #tracking-protection-icon-container {
+  margin: 0 1px;
+}
+
+#urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative;}
+
+/* TODO: this does NOT show up! */
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box[role="button"]:not(:hover)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -1px;
+  height: 100%;
+  width: 1px;
+  background: var(--zen-dialog-border-color);
+  transition: .1s;
+}
+
+.urlbar-page-action {
+  width: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.urlbar-page-action:not([hidden="true"]) {
+  display: flex !important;
+}
+
+toolbar .toolbarbutton-1 {
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-badge-stack {
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+  }
 }

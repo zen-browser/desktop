@@ -15,7 +15,7 @@ export MOZ_DISTRIBUTION_ID=${appId}
 
 # Uncomment if builds are too resource hungry
 # mk_add_options MOZ_MAKE_FLAGS="-j4"
-# ac_add_options --enable-linker=gold
+#ac_add_options --enable-linker=gold
 
 # Misc
 export MOZ_STUB_INSTALLER=1

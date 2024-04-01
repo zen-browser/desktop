@@ -85,10 +85,13 @@ pref('privacy.globalprivacycontrol.enabled', true);
 pref('gfx.canvas.accelerated.cache-items', 4096);
 pref('gfx.canvas.accelerated.cache-size', 512);
 pref('gfx.content.skia-font-cache-size', 20);
+pref('gfx.webrender.all', true);
+pref('layout.css.backdrop-filter.enabled', true);
 
 // CUSTOM ZEN PREFS
 
 pref('zen.verticalTabs.enabled', false);
+pref('zen.window.translucent', true);
 
 // From: https://github.com/yokoffing/Betterfox
 

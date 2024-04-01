@@ -1,10 +1,29 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index d445abe7e743b2ec5d46d42f8f149c000e3c7997..80226e0504cc9c3c052a4cce17a6b4f5e6f2d91f 100644
+index d445abe7e743b2ec5d46d42f8f149c000e3c7997..0da9a11cb6d5f0c40025a2b71fd6fd4524e3e0b3 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -18,6 +18,9 @@
-   </vbox>
-   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
+@@ -2,22 +2,13 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+-<hbox flex="1" id="browser">
+-  <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
+-    <box id="sidebar-header" align="center">
+-      <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
+-        <image id="sidebar-icon" consumeanchor="sidebar-switcher-target"/>
+-        <label id="sidebar-title" crop="end" control="sidebar"/>
+-        <image id="sidebar-switcher-arrow"/>
+-      </toolbarbutton>
+-      <image id="sidebar-throbber"/>
+-      <spacer id="sidebar-spacer"/>
+-      <toolbarbutton id="sidebar-close" class="close-icon tabbable" data-l10n-id="sidebar-close-button" oncommand="SidebarUI.hide();"/>
+-    </box>
+-    <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
+-  </vbox>
+-  <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
++<vbox id="browser">
++#include navigator-toolbox.inc.xhtml
++
    <vbox id="appcontent" flex="1">
 +
 +#include zen-browser-box-ui.inc.xhtml
@@ -12,3 +31,9 @@ index d445abe7e743b2ec5d46d42f8f149c000e3c7997..80226e0504cc9c3c052a4cce17a6b4f5
      <!-- gNotificationBox will be added here lazily. -->
      <tabbox id="tabbrowser-tabbox"
              flex="1" tabcontainer="tabbrowser-tabs">
+@@ -25,4 +16,4 @@
+                   flex="1" selectedIndex="0"/>
+     </tabbox>
+   </vbox>
+-</hbox>
++</vbox>

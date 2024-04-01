@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.css b/browser/base/content/browser.css
-index 8a2a20280954eb9db144a723f477e7afc603fda3..5688021b08b378e48bb100621fbdc0c5c05fc634 100644
+index 8a2a20280954eb9db144a723f477e7afc603fda3..b4697a1195644b1869e2aaa7f03dbb34af7bc747 100644
 --- a/browser/base/content/browser.css
 +++ b/browser/base/content/browser.css
 @@ -2,6 +2,8 @@
@@ -11,12 +11,15 @@ index 8a2a20280954eb9db144a723f477e7afc603fda3..5688021b08b378e48bb100621fbdc0c5
  @namespace html url("http://www.w3.org/1999/xhtml");
  
  :root,
-@@ -1321,7 +1323,7 @@ printpreview-pagination:focus-within,
+@@ -1319,9 +1321,9 @@ printpreview-pagination:focus-within,
+ 
+ 
  #sidebar-box {
-   min-width: 14em;
+-  min-width: 14em;
++  min-width: 323px;
    max-width: 36em;
 -  width: 18em;
-+  width: 269px;
++  width: 393px;
  }
  
  /* WebExtension Sidebars */

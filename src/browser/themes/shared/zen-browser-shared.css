@@ -23,7 +23,7 @@
   width: 100%;
 }
 
-#urlbar[focused="true"] {
+#urlbar[focused="true"][breakout-extend="true"] {
   overflow: visible;
 }
 
@@ -37,7 +37,6 @@
   outline: none !important;
   outline-offset: none !important;
   outline-color: none !important;
-  border-color: var(--zen-appcontent-separator-from-window);
 }
 
 #urlbar, #urlbar .urlbar-page-action, 

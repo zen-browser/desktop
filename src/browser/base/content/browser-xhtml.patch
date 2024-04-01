@@ -1,0 +1,18 @@
+diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
+index b4886fb5f74568b4c09eb620be9efb74e39c599c..31496c51584b789895a83ba35be9d6828862c759 100644
+--- a/browser/base/content/browser.xhtml
++++ b/browser/base/content/browser.xhtml
+@@ -163,9 +163,10 @@
+     </vbox>
+   </html:template>
+ 
+-#include navigator-toolbox.inc.xhtml
+-
+-#include browser-box.inc.xhtml
++  <hbox flex="1">
++    #include zen-sidebar-box.inc.xhtml
++    #include browser-box.inc.xhtml    
++  </hbox>
+ 
+   <html:template id="customizationPanel">
+     <box id="customization-container" flex="1" hidden="true"><![CDATA[

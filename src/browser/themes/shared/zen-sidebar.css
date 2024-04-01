@@ -1,0 +1,23 @@
+:root {
+  --sidebar-background-color: var(--toolbar-bgcolor) !important; 
+}
+
+#sidebar-box {
+  margin: var(--zen-appcontent-separator-from-window) !important;
+  border-radius: var(--zen-panel-radius) !important;
+}
+
+#sidebar-splitter {
+  /* we can still use the splitter but we can't see it */
+  background: transparent !important;  
+  border-color: transparent !important;
+  width: 1px !important;
+}
+
+#sidebar-box[positionend] {
+ margin-left: 0 !important; 
+}
+
+#sidebar-box:not([positionend]) {
+ margin-right: 0 !important; 
+}

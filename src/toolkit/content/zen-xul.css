@@ -1,19 +1,25 @@
 
+@import url("zen-fullscreen-override.css");
+
 :root {
   --zen-main-browser-background: light-dark(#ddd, #4a4a4a); 
-  --zen-appcontent-separator-from-window: 20px;
+  --zen-appcontent-separator-from-window: 10px;
 }
 
-html#main-window > body > toolbox#navigator-toolbox, 
-hbox#browser {
+toolbox#navigator-toolbox, 
+#browser {
   background: transparent !important;
 } 
+
+#browser {
+  width: 100%;
+}
 
 html#main-window > body {
   background: var(--zen-main-browser-background) !important;
 }
 
-#appcontent {
+:not([inDOMFullscreen="true"]) #appcontent {
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

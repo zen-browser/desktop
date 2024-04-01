@@ -1,0 +1,10 @@
+
+[inDOMFullscreen="true"] #nav-bar {
+  display: none !important;
+}
+
+[inDOMFullscreen="true"] #appcontent {
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+

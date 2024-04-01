@@ -1,12 +1,28 @@
 
 #PanelUI-zen-profiles {
-  --menu-panel-width: 8em;
+  --menu-panel-width: 20em;
 }
 
 #PanelUI-zen-profiles-header {
   width: -moz-available;
-  height: 200px;
+  height: 100px;
   border-radius: var(--panel-border-radius);
   background: var(--zen-main-browser-background);
   margin: 5px;
+  box-shadow: var(--zen-sidebar-box-shadow) !important;
+}
+
+#PanelUI-zen-profiles-user-picture {
+  background-image: var(--avatar-image-url);
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+  border: 5px var(--arrowpanel-background) solid;
+  background-color: var(--arrowpanel-background);
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto;
+  
 }

@@ -1,8 +1,33 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..08479bc88fbff504ce20eddd394f225cfe4f083a 100644
+index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..78915f32ef912e44fa68f809fbc9cffdcc97f41a 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -6660,7 +6660,7 @@ function setToolbarVisibility(
+@@ -13,6 +13,13 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
+ 
+ // lazy module getters
+ 
++XPCOMUtils.defineLazyServiceGetter(
++  this,
++  "ProfileService",
++  "@mozilla.org/toolkit/profile-service;1",
++  "nsIToolkitProfileService"
++);
++
+ ChromeUtils.defineESModuleGetters(this, {
+   AMTelemetry: "resource://gre/modules/AddonManager.sys.mjs",
+   AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
+@@ -2424,6 +2431,10 @@ var gBrowserInit = {
+         "browser-idle-startup-tasks-finished"
+       );
+     });
++
++    // ZEN: Propagate the current profile used to the browser UI, such as 
++    // showing the avatar and profile info to the side bar
++    scheduleIdleTask(zenUpdateBrowserProfiles);
+   },
+ 
+   // Returns the URI(s) to load at startup if it is immediately known, or a
+@@ -6660,7 +6671,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -11,3 +36,20 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..08479bc88fbff504ce20eddd394f225c
      switch (isVisible) {
        case true:
        case "always":
+@@ -10157,3 +10168,16 @@ var FirefoxViewHandler = {
+     this.button?.toggleAttribute("attention", shouldShow);
+   },
+ };
++
++function zenUpdateBrowserProfiles() {
++  const mainWindowEl = document.documentElement;
++  // Dont override the sync avatar if it's already set
++  if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {
++    return;
++  }
++  let profile = ProfileService.currentProfile;
++  // TODO: actually use profile data to generate the avatar, instead of just using the name
++  console.log(profile)
++  const url = `url(https://source.boringavatars.com/beam/120/${encodeURIComponent(profile.name)}?colors=fac89a,e290ff)`;
++  mainWindowEl.style.setProperty("--avatar-image-url", url);
++} 

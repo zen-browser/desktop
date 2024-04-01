@@ -103,7 +103,18 @@
 }
 
 #zen-profile-button {
-  list-style-image: var(--avatar-image-url);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#zen-profile-button > div {
+  background-image: var(--avatar-image-url);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  width: 20px;
+  height: 20px;
 }
 
 /* Ugly code */

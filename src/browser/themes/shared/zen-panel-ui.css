@@ -1,0 +1,12 @@
+
+#PanelUI-zen-profiles {
+  --menu-panel-width: 8em;
+}
+
+#PanelUI-zen-profiles-header {
+  width: -moz-available;
+  height: 200px;
+  border-radius: var(--panel-border-radius);
+  background: var(--zen-main-browser-background);
+  margin: 5px;
+}

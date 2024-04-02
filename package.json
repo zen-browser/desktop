@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "gluon build",
-    "start": "gluon run",
+    "start": "cd engine && ./mach run --noprofile",
     "import": "gluon import",
     "export": "gluon export",
     "init": "python3 init-browser.py"

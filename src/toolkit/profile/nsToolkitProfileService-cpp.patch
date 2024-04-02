@@ -1,8 +1,17 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a388cbc61b9 100644
+index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b4ada9432abda484dc54a04e2993745d19ec71f7 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
-@@ -234,13 +234,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
+@@ -72,6 +72,8 @@ using namespace mozilla;
+ #define INSTALL_PREFIX "Install"
+ #define INSTALL_PREFIX_LENGTH 7
+ 
++#include "zenToolkitProfileServiceDefaultOverride.h"
++
+ struct KeyValue {
+   KeyValue(const char* aKey, const char* aValue) : key(aKey), value(aValue) {}
+ 
+@@ -234,13 +236,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
  }
  
  nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
@@ -19,7 +28,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a38
    NS_ASSERTION(aRootDir, "No file!");
  
    RefPtr<nsToolkitProfile> prev =
-@@ -253,8 +254,13 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -253,8 +256,13 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
    nsToolkitProfileService::gService->mProfiles.insertBack(this);
  
    // If this profile isn't in the database already add it.
@@ -34,7 +43,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a38
      db->SetString(mSection.get(), "Name", mName.get());
  
      bool isRelative = false;
-@@ -264,6 +270,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -264,6 +272,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
  
      db->SetString(mSection.get(), "IsRelative", isRelative ? "1" : "0");
      db->SetString(mSection.get(), "Path", descriptor.get());
@@ -42,7 +51,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a38
    }
  }
  
-@@ -318,6 +325,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
+@@ -318,6 +327,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
    return NS_OK;
  }
  
@@ -51,7 +60,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a38
  nsresult nsToolkitProfile::RemoveInternal(bool aRemoveFiles,
                                            bool aInBackground) {
    NS_ASSERTION(nsToolkitProfileService::gService, "Whoa, my service is gone.");
-@@ -992,7 +1001,15 @@ nsresult nsToolkitProfileService::Init() {
+@@ -992,7 +1003,15 @@ nsresult nsToolkitProfileService::Init() {
        localDir = rootDir;
      }
  
@@ -68,7 +77,16 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a38
  
      // If a user has modified the ini file path it may make for a valid profile
      // path but not match what we would have serialised and so may not match
-@@ -1995,7 +2012,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
+@@ -1211,7 +1230,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
+   if (mUseDevEditionProfile) {
+     name.AssignLiteral(DEV_EDITION_NAME);
+   } else if (mUseDedicatedProfile) {
+-    name.AppendPrintf("default-%s", mUpdateChannel.get());
++    name.AppendPrintf("Default (%s)", mUpdateChannel.get());
+   } else {
+     name.AssignLiteral(DEFAULT_NAME);
+   }
+@@ -1995,7 +2014,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
    NS_ENSURE_SUCCESS(rv, rv);
  
    nsCOMPtr<nsIToolkitProfile> profile =

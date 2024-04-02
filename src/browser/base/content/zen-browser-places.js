@@ -69,6 +69,7 @@ var ZenProfileDialogUI = {
         try {
           ProfileService.defaultProfile = profile;
           this._flush();
+          this._openProfile(profile);
         } catch (e) {
           // This can happen on dev-edition.
           let [title, msg] = await document.l10n.formatValues([

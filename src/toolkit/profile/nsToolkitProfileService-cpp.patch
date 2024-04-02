@@ -1,5 +1,5 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..6ac40c71ad35b5ce1d4e55fce0644991a9903b4d 100644
+index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..cf867a3ddb7dfad986dd7064918d4fe383044172 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
 @@ -234,13 +234,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
@@ -66,18 +66,12 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..6ac40c71ad35b5ce1d4e55fce0644991
  
      // If a user has modified the ini file path it may make for a valid profile
      // path but not match what we would have serialised and so may not match
-@@ -1994,8 +2009,13 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
-   rv = CreateTimesInternal(rootDir);
+@@ -1995,7 +2010,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
    NS_ENSURE_SUCCESS(rv, rv);
  
-+  if (aZenAvatar == ""_ns) {
-+    rv = mProfileDB.GetString(aName, "ZenAvatar", aZenAvatar);
-+    NS_ENSURE_SUCCESS(rv, rv);
-+  }
-+
    nsCOMPtr<nsIToolkitProfile> profile =
 -      new nsToolkitProfile(aName, rootDir, localDir, false);
-+      new nsToolkitProfile(aName, rootDir, localDir, false, aZenAvatar);
++      new nsToolkitProfile(aName, rootDir, localDir, false, ""_ns);
  
    if (aName.Equals(DEV_EDITION_NAME)) {
      mDevEditionDefault = profile;

@@ -64,6 +64,12 @@
   position: absolute;
 }
 
+@media (prefers-color-scheme: dark) {
+  #PanelUI-zen-profiles-item::after {
+    filter: invert(1);
+  }
+}
+
 #PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-avatar {
   width: 30px;
   height: 30px;

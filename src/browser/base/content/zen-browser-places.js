@@ -41,6 +41,7 @@ var ZenProfileDialogUI = {
 
   _updateCurentProfileId() {
     let currentProfile = ProfileService.currentProfile;
+    if (!currentProfile) return;
     let nameContainer = document.getElementById("PanelUI-zen-profiles-current-name");
     nameContainer.textContent = currentProfile.name;
   },

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..78915f32ef912e44fa68f809fbc9cffdcc97f41a 100644
+index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..8518d8a337acab19fb3bc22e8d5b3e8b1ee7902a 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -13,6 +13,13 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
@@ -36,7 +36,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..78915f32ef912e44fa68f809fbc9cffd
      switch (isVisible) {
        case true:
        case "always":
-@@ -10157,3 +10168,16 @@ var FirefoxViewHandler = {
+@@ -10157,3 +10168,17 @@ var FirefoxViewHandler = {
      this.button?.toggleAttribute("attention", shouldShow);
    },
  };
@@ -48,8 +48,9 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..78915f32ef912e44fa68f809fbc9cffd
 +    return;
 +  }
 +  let profile = ProfileService.currentProfile;
-+  // TODO: actually use profile data to generate the avatar, instead of just using the name
 +  console.log(profile)
-+  const url = `url(https://source.boringavatars.com/beam/120/${encodeURIComponent(profile.name)}?colors=fac89a,e290ff)`;
-+  mainWindowEl.style.setProperty("--avatar-image-url", url);
++  console.log(profile.zenAvatarPath)
++  if (profile.zenAvatarPath == "") return;
++  // TODO: actually use profile data to generate the avatar, instead of just using the name
++  mainWindowEl.style.setProperty("--avatar-image-url", `url(${profile.zenAvatarPath})`);
 +} 

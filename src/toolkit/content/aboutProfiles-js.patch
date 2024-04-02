@@ -1,0 +1,13 @@
+diff --git a/toolkit/content/aboutProfiles.js b/toolkit/content/aboutProfiles.js
+index 15c0419a11fee377f17dd766938943024723aab0..8bf3cb00a6f1fbbec421110c5d631d88d89cbb67 100644
+--- a/toolkit/content/aboutProfiles.js
++++ b/toolkit/content/aboutProfiles.js
+@@ -155,6 +155,8 @@ function display(profileData) {
+ 
+   createItem("profiles-rootdir", profileData.profile.rootDir, true);
+ 
++  createItem("profiles-avatar", profileData.profile.zenAvatarPath);
++
+   if (profileData.profile.localDir.path != profileData.profile.rootDir.path) {
+     createItem("profiles-localdir", profileData.profile.localDir, true);
+   }

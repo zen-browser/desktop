@@ -1,0 +1,23 @@
+diff --git a/toolkit/profile/content/createProfileWizard.js b/toolkit/profile/content/createProfileWizard.js
+index 9e87fb42207d6d8e2cb054562bf50080fe9bb929..955f424bba004dd0fcd393500acbb66b4d5fce06 100644
+--- a/toolkit/profile/content/createProfileWizard.js
++++ b/toolkit/profile/content/createProfileWizard.js
+@@ -233,7 +233,7 @@ function onFinish(event) {
+ 
+   // Create profile named profileName in profileRoot.
+   try {
+-    profile = gProfileService.createProfile(gProfileRoot, profileName);
++    profile = gProfileService.createProfile(gProfileRoot, profileName, zenGetProfileAvatar());
+   } catch (e) {
+     var profileCreationFailed = gProfileManagerBundle.getString(
+       "profileCreationFailed"
+@@ -264,3 +264,9 @@ function onFinish(event) {
+     dialogParams.objects.insertElementAt(profileLock, 0);
+   }
+ }
++
++function zenGetProfileAvatar() {
++  // From 0 to 99
++  let avatarId = Math.floor(Math.random() * 100);
++  return "chrome://browser/content/zen-avatars/avatar-" + avatarId + ".svg";
++}

@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 pref("browser.tabs.cardPreview.enabled", true);
-pref("browser.tabs.cardPreview.delayMs", 500);
+pref("browser.tabs.cardPreview.delayMs", 100);
 
 pref("browser.urlbar.suggest.calculator", true);
 

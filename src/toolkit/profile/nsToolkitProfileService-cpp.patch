@@ -1,5 +1,5 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..cf867a3ddb7dfad986dd7064918d4fe383044172 100644
+index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae32e3b7af8 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
 @@ -234,13 +234,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
@@ -29,18 +29,15 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..cf867a3ddb7dfad986dd7064918d4fe3
      db->SetString(mSection.get(), "Name", mName.get());
  
      bool isRelative = false;
-@@ -264,6 +265,10 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -264,6 +265,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
  
      db->SetString(mSection.get(), "IsRelative", isRelative ? "1" : "0");
      db->SetString(mSection.get(), "Path", descriptor.get());
 +    db->SetString(mSection.get(), "ZenAvatarPath", mZenAvatarPath.get());
-+  } else if (mZenAvatarPath == ""_ns) {
-+    // Load the profile's avatar from the database.
-+    db->GetString(mSection.get(), "ZenAvatarPath", mZenAvatarPath);
    }
  }
  
-@@ -318,6 +323,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
+@@ -318,6 +320,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
    return NS_OK;
  }
  
@@ -49,7 +46,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..cf867a3ddb7dfad986dd7064918d4fe3
  nsresult nsToolkitProfile::RemoveInternal(bool aRemoveFiles,
                                            bool aInBackground) {
    NS_ASSERTION(nsToolkitProfileService::gService, "Whoa, my service is gone.");
-@@ -992,7 +999,15 @@ nsresult nsToolkitProfileService::Init() {
+@@ -992,7 +996,15 @@ nsresult nsToolkitProfileService::Init() {
        localDir = rootDir;
      }
  
@@ -66,7 +63,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..cf867a3ddb7dfad986dd7064918d4fe3
  
      // If a user has modified the ini file path it may make for a valid profile
      // path but not match what we would have serialised and so may not match
-@@ -1995,7 +2010,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
+@@ -1995,7 +2007,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
    NS_ENSURE_SUCCESS(rv, rv);
  
    nsCOMPtr<nsIToolkitProfile> profile =

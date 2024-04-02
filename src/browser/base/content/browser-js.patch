@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..8518d8a337acab19fb3bc22e8d5b3e8b1ee7902a 100644
+index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..040c455e3e06305b03f835d47fc7fb22f9448402 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -13,6 +13,13 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
@@ -16,18 +16,19 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..8518d8a337acab19fb3bc22e8d5b3e8b
  ChromeUtils.defineESModuleGetters(this, {
    AMTelemetry: "resource://gre/modules/AddonManager.sys.mjs",
    AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
-@@ -2424,6 +2431,10 @@ var gBrowserInit = {
-         "browser-idle-startup-tasks-finished"
-       );
-     });
+@@ -1735,6 +1742,11 @@ var gBrowserInit = {
+     }
+ 
+     // Misc. inits.
 +
 +    // ZEN: Propagate the current profile used to the browser UI, such as 
 +    // showing the avatar and profile info to the side bar
-+    scheduleIdleTask(zenUpdateBrowserProfiles);
-   },
- 
-   // Returns the URI(s) to load at startup if it is immediately known, or a
-@@ -6660,7 +6671,7 @@ function setToolbarVisibility(
++    zenUpdateBrowserProfiles();
++    
+     gUIDensity.init();
+     TabletModeUpdater.init();
+     CombinedStopReload.ensureInitialized();
+@@ -6660,7 +6672,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -36,7 +37,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..8518d8a337acab19fb3bc22e8d5b3e8b
      switch (isVisible) {
        case true:
        case "always":
-@@ -10157,3 +10168,17 @@ var FirefoxViewHandler = {
+@@ -10157,3 +10169,15 @@ var FirefoxViewHandler = {
      this.button?.toggleAttribute("attention", shouldShow);
    },
  };
@@ -48,9 +49,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..8518d8a337acab19fb3bc22e8d5b3e8b
 +    return;
 +  }
 +  let profile = ProfileService.currentProfile;
-+  console.log(profile)
-+  console.log(profile.zenAvatarPath)
-+  if (profile.zenAvatarPath == "") return;
++  if (!profile || profile.zenAvatarPath == "") return;
 +  // TODO: actually use profile data to generate the avatar, instead of just using the name
 +  mainWindowEl.style.setProperty("--avatar-image-url", `url(${profile.zenAvatarPath})`);
 +} 

@@ -1,6 +1,17 @@
 <panelview id="PanelUI-zen-profiles" position="bottomleft topleft" side="right">
-  <vbox class="panel-subview-body">
-    <div id="PanelUI-zen-profiles-header"></div>
-    <div id="PanelUI-zen-profiles-user-picture" />
+  <vbox>
+    <html:div id="PanelUI-zen-profiles-header">
+      <html:div id="PanelUI-zen-profiles-user-picture"></html:div>
+    </html:div>
+    <vbox id="PanelUI-zen-profiles-current-info">
+      <label id="PanelUI-zen-profiles-current-name"></label>
+      <p id="PanelUI-zen-profiles-current-profile-current" data-l10n-id="zen-panel-ui-current-profile-text"></p>
+    </vbox>
+    <vbox id="PanelUI-zen-profiles-list">      
+    </vbox>
+    <toolbarseparator />
+    <menuitem command="Tools:PrivateBrowsing" data-l10n-id="appmenuitem-new-private-window" class="PanelUI-zen-profiles-item"></menuitem>
+    <menuitem oncommand="alert('todo: open about:profiles!');" data-l10n-id="appmenuitem-new-zen-profiles-tab" class="PanelUI-zen-profiles-item"></menuitem>
+    <menuitem oncommand="ZenProfileDialogUI.createProfileWizard();" data-l10n-id="appmenuitem-new-zen-create-profile" class="PanelUI-zen-profiles-item"></menuitem>
   </vbox>
 </panelview>

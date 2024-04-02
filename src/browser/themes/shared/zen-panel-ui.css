@@ -10,13 +10,14 @@
   background: var(--zen-main-browser-background);
   margin: 5px;
   box-shadow: var(--zen-sidebar-box-shadow) !important;
+  position: relative;
 }
 
 #PanelUI-zen-profiles-user-picture {
   background-image: var(--avatar-image-url);
-  transform: translateY(-50%);
   width: 80px;
   height: 80px;
+  min-width: 80px;
   border: 5px var(--arrowpanel-background) solid;
   background-color: var(--arrowpanel-background);
   border-radius: 50%;
@@ -24,5 +25,101 @@
   background-size: cover;
   background-position: center;
   margin: 0 auto;
-  
+  transform: translateY(55%);
+}
+
+.PanelUI-zen-profiles-item {
+  position: relative;
+  display: flex;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px;
+  font: menu;
+  align-items: center;
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.PanelUI-zen-profiles-item:hover {
+  background: var(--panel-item-hover-bgcolor);
+  color: inherit;
+}
+
+.PanelUI-zen-profiles-item::after {
+  content: '';
+  background-image: url("chrome://global/skin/icons/arrow-right.svg");
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 1em;
+  height: 1em;
+  margin-left: auto;
+  pointer-events: none;
+  top: 50%;
+  right: 1em;
+  transform: translateY(-50%);
+  position: absolute;
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin: 0 0.7em 0 1px;
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-name {
+  font-weight: normal;
+  font-size: 17px;
+  margin-left: 5px;
+}
+
+#PanelUI-zen-profiles-current-info {
+  margin-top: 40px;
+}
+
+#PanelUI-zen-profiles-current-name {
+  font-size: 1.7em;
+  font-weight: 500;
+  line-height: 0.5;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 0 5px;
+}
+
+#PanelUI-zen-profiles toolbarseparator {
+  margin: 5px;
+}
+
+#PanelUI-zen-profiles toolbarbutton label {
+  display: block !important;
+}
+
+#PanelUI-zen-profiles menuitem {
+  padding: 8px 0;
+  font-size: 15px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#PanelUI-zen-profiles menuitem > label {
+  margin: 0 10px;
+}
+
+#PanelUI-zen-profiles menuitem::after {
+  display: none;
+}
+
+#PanelUI-zen-profiles menuitem:last-child {
+  margin-bottom: 5px;
+}
+
+#PanelUI-zen-profiles-current-profile-current {
+  font-size: 15px;
+  opacity: 0.5;
+  margin-left: 15px;
+  margin-bottom: 5px;
 }

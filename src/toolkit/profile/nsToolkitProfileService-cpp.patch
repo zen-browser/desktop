@@ -1,5 +1,5 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae32e3b7af8 100644
+index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b2ddb042b2e114f37c283cd1fb401a388cbc61b9 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
 @@ -234,13 +234,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
@@ -19,17 +19,22 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae3
    NS_ASSERTION(aRootDir, "No file!");
  
    RefPtr<nsToolkitProfile> prev =
-@@ -253,8 +254,8 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -253,8 +254,13 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
    nsToolkitProfileService::gService->mProfiles.insertBack(this);
  
    // If this profile isn't in the database already add it.
 +  nsINIParser* db = &nsToolkitProfileService::gService->mProfileDB;
    if (!aFromDB) {
 -    nsINIParser* db = &nsToolkitProfileService::gService->mProfileDB;
++    if (mZenAvatarPath == ""_ns) {
++      auto randomId = std::rand() % 100;
++      mZenAvatarPath = ("chrome://browser/content/zen-avatars/avatar-" + std::to_string(randomId) + ".svg").c_str();
++    }
++
      db->SetString(mSection.get(), "Name", mName.get());
  
      bool isRelative = false;
-@@ -264,6 +265,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -264,6 +270,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
  
      db->SetString(mSection.get(), "IsRelative", isRelative ? "1" : "0");
      db->SetString(mSection.get(), "Path", descriptor.get());
@@ -37,7 +42,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae3
    }
  }
  
-@@ -318,6 +320,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
+@@ -318,6 +325,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
    return NS_OK;
  }
  
@@ -46,7 +51,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae3
  nsresult nsToolkitProfile::RemoveInternal(bool aRemoveFiles,
                                            bool aInBackground) {
    NS_ASSERTION(nsToolkitProfileService::gService, "Whoa, my service is gone.");
-@@ -992,7 +996,15 @@ nsresult nsToolkitProfileService::Init() {
+@@ -992,7 +1001,15 @@ nsresult nsToolkitProfileService::Init() {
        localDir = rootDir;
      }
  
@@ -63,7 +68,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..aec22de2c7266970be19824d8bd2cae3
  
      // If a user has modified the ini file path it may make for a valid profile
      // path but not match what we would have serialised and so may not match
-@@ -1995,7 +2007,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
+@@ -1995,7 +2012,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
    NS_ENSURE_SUCCESS(rv, rv);
  
    nsCOMPtr<nsIToolkitProfile> profile =

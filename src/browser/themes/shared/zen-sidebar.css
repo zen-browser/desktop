@@ -60,7 +60,8 @@
   border-radius: 10px;
 }
 
-.zen-sidebar-action-button:hover {
+.zen-sidebar-action-button:hover,
+.zen-sidebar-action-button[open="true"] {
   background: var(--toolbarbutton-hover-background);
 }
 
@@ -108,7 +109,7 @@
   align-items: center;
 }
 
-#zen-profile-button > div {
+#zen-profile-button > div:last-child {
   background-image: var(--avatar-image-url);
   border-radius: 50%;
   background-size: cover;
@@ -129,3 +130,13 @@
 #sidebar-box[hidden="true"] .zen-sidebar-action-button:nth-child(8) { animation-delay: 0.8s; }
 #sidebar-box[hidden="true"] .zen-sidebar-action-button:nth-child(9) { animation-delay: 0.9s; }
 #sidebar-box[hidden="true"] .zen-sidebar-action-button:nth-child(10) { animation-delay: 1s; }
+
+#sidebar-box[hidden="true"] .zen-side-bar-profiles-button-panel-correction {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+}
+
+#zen-sidebar-icons-wrapper toolbarbutton {
+  position: relative;
+}

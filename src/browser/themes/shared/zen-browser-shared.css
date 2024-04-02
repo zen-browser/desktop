@@ -1,6 +1,10 @@
 
 @import url("zen-panel-ui.css");
 
+:root {
+  --toolbarbutton-border-radius: 6px !important;
+}
+
 #navigator-toolbox toolbar#TabsToolbar {
   margin: 10px var(--zen-appcontent-separator-from-window);
 }

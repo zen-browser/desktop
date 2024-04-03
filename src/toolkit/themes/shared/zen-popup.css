@@ -2,10 +2,10 @@
 :root {
   --panel-subview-body-padding: 2px 0 !important;
   --arrowpanel-border-radius: 8px !important;
-  --arrowpanel-menuitem-border-radius: 4px !important;
+  --arrowpanel-menuitem-border-radius: 5px !important;
   --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline) !important;
-  --arrowpanel-menuitem-padding-block: 6px !important;
-  --arrowpanel-menuitem-padding-inline: 10px !important;
+  --arrowpanel-menuitem-padding-block: 8px !important;
+  --arrowpanel-menuitem-padding-inline: 9px !important;
   --uc-arrowpanel-menuicon-margin-inline: 14px;
   --uc-arrowpanel-menuitem-margin-inline: 4px;
   --uc-arrowpanel-menuitem-margin-block: 2px;

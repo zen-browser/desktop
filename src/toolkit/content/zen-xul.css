@@ -27,3 +27,22 @@ html#main-window > body {
   margin-top: 0;
 }
 
+
+panel[type="arrow"][animate][animate="open"] {
+  animation: zen-jello-animation 0.2s ease-in-out;
+}
+
+@keyframes zen-jello-animation {
+  0% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  50% {
+    transform: scale3d(1.01, 1.01, 1.01);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}

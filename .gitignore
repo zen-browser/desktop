@@ -3,3 +3,4 @@
 engine/
 firefox-*/
 node_modules/
+.gluon/

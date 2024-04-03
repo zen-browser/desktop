@@ -65,7 +65,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  #PanelUI-zen-profiles-item::after {
+  .PanelUI-zen-profiles-item::after {
     filter: invert(1);
   }
 }

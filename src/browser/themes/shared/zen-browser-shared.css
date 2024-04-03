@@ -107,3 +107,8 @@ toolbar .toolbarbutton-1 {
     height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
   }
 }
+
+.tabbrowser-tab {
+  animation: zen-jello-animation 0.2s ease-in-out;
+  animation-delay: 0.1s;
+}

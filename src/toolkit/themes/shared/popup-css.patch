@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ddc41a66ed0e3688ce34052652bef1fe33a08d49..0a160f129b64c5c8c663d9fefc284c5546a44faf 100644
+index ddc41a66ed0e3688ce34052652bef1fe33a08d49..f0078c84db054436440804a4ff3ae2f443f76018 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
 @@ -2,6 +2,8 @@
@@ -11,7 +11,7 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..0a160f129b64c5c8c663d9fefc284c55
  @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
  
  /* ::::: menupopup ::::: */
-@@ -13,12 +15,12 @@ panel {
+@@ -13,16 +15,16 @@ panel {
    color-scheme: light dark;
  
    min-width: 1px;
@@ -22,11 +22,16 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..0a160f129b64c5c8c663d9fefc284c55
    --panel-padding: var(--panel-padding-block) 0;
    --panel-border-radius: 4px;
 -  --panel-border-color: ThreeDShadow;
-+  --panel-border-color: var(--arrowpanel-border-color);
++  --panel-border-color: transparent /* var(--arrowpanel-border-color) */ !important;
    --panel-width: initial;
  
    --panel-shadow-margin: 0px;
-@@ -30,31 +32,22 @@ panel {
+-  --panel-shadow: 0 0 var(--panel-shadow-margin) hsla(0,0%,0%,.2);
++  --panel-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;;
+   -moz-window-input-region-margin: var(--panel-shadow-margin);
+   margin: calc(-1 * var(--panel-shadow-margin));
+ 
+@@ -30,8 +32,6 @@ panel {
    --color-canvas: var(--panel-background);
  
    @media (-moz-platform: linux) {
@@ -35,15 +40,7 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..0a160f129b64c5c8c663d9fefc284c55
  
      @media (prefers-contrast) {
        --panel-border-color: color-mix(in srgb, currentColor 60%, transparent);
-     }
-   }
- 
-+  @media not (prefers-color-scheme: dark) {
-+    --panel-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-+  }
-+
-   @media (-moz-platform: linux) or (-moz-platform: windows) {
-     /* To account for the box-shadow below */
+@@ -43,18 +43,7 @@ panel {
      --panel-shadow-margin: 4px;
    }
  

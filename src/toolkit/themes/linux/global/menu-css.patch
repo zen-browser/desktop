@@ -1,0 +1,13 @@
+diff --git a/toolkit/themes/linux/global/menu.css b/toolkit/themes/linux/global/menu.css
+index da47f78790a251bb573d992476dc5dac9a870857..c7d019df2164b95fca29ec5a72e7fe4188d1e1e6 100644
+--- a/toolkit/themes/linux/global/menu.css
++++ b/toolkit/themes/linux/global/menu.css
+@@ -52,7 +52,7 @@ menulist > menupopup > :is(menuitem, menucaption, menu) {
+ 
+ .menu-text {
+   /* This is (18 + the size of end-padding on .menu-iconic-left)px */
+-  margin-inline-start: 21px;
++  margin-inline-start: 0;
+ }
+ 
+ .menu-accel,

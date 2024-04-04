@@ -178,9 +178,6 @@
 }
 
 /* URL bar popup */
-.panel-footer>button {
-  border-radius: 2px !important;
-}
 
 .identity-popup-security-connection>hbox>description {
   margin-inline-start: 0 !important;

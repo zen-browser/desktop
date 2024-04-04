@@ -1,13 +1,11 @@
 diff --git a/browser/themes/shared/jar.inc.mn b/browser/themes/shared/jar.inc.mn
-index 37b5f04cddde9a3769d31c6e3a93b43da76f44e5..91a98361c9cb389911c12ace35f8956d5f8ea396 100644
+index 37b5f04cddde9a3769d31c6e3a93b43da76f44e5..3bd987f7c164a6258d56029b305123b92f6b845d 100644
 --- a/browser/themes/shared/jar.inc.mn
 +++ b/browser/themes/shared/jar.inc.mn
-@@ -285,3 +285,7 @@
+@@ -285,3 +285,5 @@
    skin/classic/browser/weather/night-partly-cloudy-with-showers.svg (../shared/weather/night-partly-cloudy-with-showers.svg)
    skin/classic/browser/weather/night-partly-cloudy-with-thunderstorms.svg (../shared/weather/night-partly-cloudy-with-thunderstorms.svg)
    skin/classic/browser/weather/night-mostly-cloudy-with-flurries.svg (../shared/weather/night-mostly-cloudy-with-flurries.svg)
 +
-+  skin/classic/browser/zen-browser-shared.css                      (../shared/zen-browser-shared.css)
-+  skin/classic/browser/zen-sidebar.css                             (../shared/zen-sidebar.css)
-+  skin/classic/browser/zen-panel-ui.css                            (../shared/zen-panel-ui.css)
++#include zen-sources.inc.mn
 \ No newline at end of file

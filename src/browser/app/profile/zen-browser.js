@@ -88,10 +88,11 @@ pref('gfx.content.skia-font-cache-size', 20);
 pref('gfx.webrender.all', true);
 pref('layout.css.backdrop-filter.enabled', true);
 
+pref("alerts.showFavicons", true);
+
 // CUSTOM ZEN PREFS
 
-pref('zen.verticalTabs.enabled', false);
-pref('zen.window.translucent', true);
+// TODO: pref('zen.verticalTabs.enabled', false);
 
 // From: https://github.com/yokoffing/Betterfox
 
@@ -127,3 +128,4 @@ pref('layout.css.grid-template-masonry-value.enabled', true);
 pref('dom.enable_web_task_scheduling', true);
 pref('layout.css.has-selector.enabled', true);
 pref('dom.security.sanitizer.enabled', true);
+

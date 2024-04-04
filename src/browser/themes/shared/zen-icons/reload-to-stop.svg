@@ -1,0 +1,28 @@
+<!-- do not round the stroke-width -->
+<svg xmlns="http://www.w3.org/2000/svg" stroke-width="1.001" stroke="context-fill" stroke-opacity="context-fill-opacity" width="260" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <clipPath id="a"><path d="M0 3h6l8 7 5 1v9H0z"/></clipPath>
+    <clipPath id="b"><path d="M9 0v12l-5 8H0V0z"/></clipPath>
+    <clipPath id="c"><path d="m5 3 2 4h5V0H5z"/></clipPath>
+    <clipPath id="d"><path d="m10 8-2 2-5-5 2-2z"/></clipPath>
+    <clipPath id="e"><path d="m5 3 10 10-2 2L3 5z"/></clipPath>
+    <clipPath id="f"><path d="m5 3 12 12-2 2L3 5z"/></clipPath>
+    <clipPath id="g"><path d="m3 1 16 16H3z"/></clipPath>
+    <clipPath id="h"><path d="M3 3h7l7 7v7H3z"/></clipPath>
+    <path id="reload" d="M17.48 9.5v.5c0 4.1-3.4 7.5-7.5 7.5s-7.5-3.4-7.5-7.5 3.4-7.5 7.5-7.5c2.8 0 5.2 1.5 6.5 3.8m.02-3.8v4h-4"/>
+    <path id="close" d="m4.5 4.5 11 11m-11 0 11-11"/>
+  </defs>
+  <svg><use href="#reload"/></svg>
+  <svg x="20"><use href="#reload" transform="rotate(45 10 10)"/></svg>
+  <svg x="40"><use href="#reload" transform="rotate(125 10 10)"/></svg>
+  <svg x="60"><use href="#reload" transform="rotate(195 10 10)"/></svg>
+  <svg x="80"><use href="#reload" transform="rotate(235 10 10)"/></svg>
+  <svg x="100"><g clip-path="url(#a)"><use href="#reload" transform="rotate(260 10 10)"/></g></svg>
+  <svg x="120"><g clip-path="url(#b)"><use href="#reload" transform="rotate(280 10 10)"/></g></svg>
+  <svg x="140"><g clip-path="url(#c)"><use href="#reload" transform="rotate(300 10 10)"/></g><use href="#close" clip-path="url(#d)"/></svg>
+  <svg x="160"><use href="#close" clip-path="url(#e)"/></svg>
+  <svg x="180"><use href="#close" clip-path="url(#f)"/></svg>
+  <svg x="200"><use href="#close" clip-path="url(#g)"/></svg>
+  <svg x="220"><use href="#close" clip-path="url(#h)"/></svg>
+  <svg x="240"><use href="#close"/></svg>
+</svg>

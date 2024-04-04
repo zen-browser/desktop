@@ -1,8 +1,23 @@
 
 @import url("zen-panel-ui.css");
+@import url("zen-icons/icons.css");
 
 :root {
   --toolbarbutton-border-radius: 6px !important;
+
+  --fp-contextmenu-border-radius: 8px;
+  --fp-contextmenu-padding: calc(4px - var(--fp-contextmenu-menuitem-border-width)) 0;
+  --fp-contextmenu-menuitem-border-radius: calc(4px + var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-menuitem-padding-block: 6px;
+  --fp-contextmenu-menuitem-padding-inline: 10px;
+  --fp-contextmenu-menuitem-border-width: 2px;
+  --fp-contextmenu-menuicon-margin-inline: 12px;
+  --fp-contextmenu-menuitem-margin-inline: calc(4px - var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-menuitem-margin-block: 0px;
+  --fp-contextmenu-menuitem-margin: var(--fp-contextmenu-menuitem-margin-block) var(--fp-contextmenu-menuitem-margin-inline);
+  --fp-contextmenu-separator-vertical: calc(4px - var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-separator-horizontal: 0;
+  --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
 }
 
 #navigator-toolbox toolbar#TabsToolbar {

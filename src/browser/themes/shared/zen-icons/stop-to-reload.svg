@@ -1,0 +1,35 @@
+<!-- do not round the stroke-width -->
+<svg xmlns="http://www.w3.org/2000/svg" stroke-width="1.001" stroke="context-fill" stroke-opacity="context-fill-opacity" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <clipPath id="a"><path d="m3 6 11 11h3V3H3Z"/></clipPath>
+    <clipPath id="b"><path d="M5 3 3 5l12 12 2-2L5 3zm10 0-2 2 2 2 2-2-2-2z"/></clipPath>
+    <clipPath id="c"><path d="m5 3 12 12-2 2L3 5Z"/></clipPath>
+    <clipPath id="d"><path d="m5 3 7 7-2 2-7-7z"/></clipPath>
+    <clipPath id="e"><path d="m5 3 2 2-2 2-2-2Z"/></clipPath>
+    <clipPath id="f"><path d="m16 3-4 6h10Z"/></clipPath>
+    <clipPath id="g"><path d="m11 11 8 6V4h-4z"/></clipPath>
+    <clipPath id="h"><path d="m11 11-1 9h9V0l-7 8z"/></clipPath>
+    <clipPath id="i"><path d="M16 3 3 17v3h16V3Z"/></clipPath>
+    <clipPath id="j"><path d="m16 3-3 4-13 3v10h19V3Z"/></clipPath>
+    <clipPath id="k"><path d="m16 3-3 4L0 2v18h20V3Z"/></clipPath>
+    <clipPath id="l"><path d="m16 3-3 4-8-7H0v20h20V3Z"/></clipPath>
+    <clipPath id="m"><path d="m16 3-3 4-2-7H0v20h20V3Z"/></clipPath>
+    <path id="reload" d="M17.48 9.5v.5c0 4.1-3.4 7.5-7.5 7.5s-7.5-3.4-7.5-7.5 3.4-7.5 7.5-7.5c2.8 0 5.2 1.5 6.5 3.8m.02-3.8v4h-4"/>
+    <path id="close" d="m4.5 4.5 11 11m-11 0 11-11"/>
+  </defs>
+  <svg><use href="#close"/></svg>
+  <svg x="20"><use href="#close" clip-path="url(#a)"/></svg>
+  <svg x="40"><use href="#close" clip-path="url(#b)"/></svg>
+  <svg x="60"><g clip-path="url(#f)"><use href="#reload" transform="rotate(40 10 10)"/></g><use href="#close" clip-path="url(#c)"/></svg>
+  <svg x="80"><g clip-path="url(#g)"><use href="#reload" transform="rotate(80 10 10)"/></g><use href="#close" clip-path="url(#d)"/></svg>
+  <svg x="100"><g clip-path="url(#h)"><use href="#reload" transform="rotate(120 10 10)"/></g><use href="#close" clip-path="url(#e)"/></svg>
+  <svg x="120"><g clip-path="url(#i)"><use href="#reload" transform="rotate(160 10 10)"/></g></svg>
+  <svg x="140"><g clip-path="url(#j)"><use href="#reload" transform="rotate(200 10 10)"/></g></svg>
+  <svg x="160"><g clip-path="url(#k)"><use href="#reload" transform="rotate(250 10 10)"/></g></svg>
+  <svg x="180"><g clip-path="url(#l)"><use href="#reload" transform="rotate(270 10 10)"/></g></svg>
+  <svg x="200"><g clip-path="url(#m)"><use href="#reload" transform="rotate(300 10 10)"/></g></svg>
+  <svg x="220"><use href="#reload" transform="rotate(335 10 10)"/></svg>
+  <svg x="240"><use href="#reload" transform="rotate(345 10 10)"/></svg>
+  <svg x="260"><use href="#reload" transform="rotate(355 10 10)"/></svg>
+  <svg x="280"><use href="#reload"/></svg>
+</svg>

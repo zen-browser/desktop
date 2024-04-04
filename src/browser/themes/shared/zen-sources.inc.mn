@@ -1,0 +1,5 @@
+  skin/classic/browser/zen-browser-shared.css                      (../shared/zen-browser-shared.css)
+  skin/classic/browser/zen-sidebar.css                             (../shared/zen-sidebar.css)
+  skin/classic/browser/zen-panel-ui.css                            (../shared/zen-panel-ui.css)
+
+#include zen-icons/jar.inc.mn

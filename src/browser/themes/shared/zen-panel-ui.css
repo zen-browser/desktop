@@ -6,10 +6,9 @@
 #PanelUI-zen-profiles-header {
   width: -moz-available;
   height: 100px;
-  border-radius: var(--panel-border-radius);
+  border-radius: 7px;
   background: var(--zen-main-browser-background);
   margin: 5px;
-  box-shadow: var(--zen-sidebar-box-shadow) !important;
   position: relative;
 }
 

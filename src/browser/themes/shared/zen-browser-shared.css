@@ -177,7 +177,6 @@ toolbarbutton#scrollbutton-up {
   color-scheme: var(--tab-selected-color-scheme);
   background: light-dark(#ececec, #4a4a4a);
   border: 2px solid transparent;
-  display: flex;
   padding: 0 !important;
   align-items: center;
 }
@@ -223,6 +222,10 @@ toolbarbutton#scrollbutton-up {
   margin: 0 !important;
   border-radius: 5px;
   border: 1px solid var(--zen-dialog-border-color);
+}
+
+#alltabs-button stack {
+  transform: rotate(-90deg);
 }
 
 /* Title bar */

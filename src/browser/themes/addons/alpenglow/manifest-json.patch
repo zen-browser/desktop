@@ -1,24 +1,17 @@
 diff --git a/browser/themes/addons/alpenglow/manifest.json b/browser/themes/addons/alpenglow/manifest.json
-index 05a25e13915edee3ba51ed1c1b5569faa70cd536..9d58f14305c27d4fb4a68c9182aafe0826826746 100644
+index 05a25e13915edee3ba51ed1c1b5569faa70cd536..5a5bf6766e45d339b1b17e4b1e88b302a34025f6 100644
 --- a/browser/themes/addons/alpenglow/manifest.json
 +++ b/browser/themes/addons/alpenglow/manifest.json
-@@ -3,137 +3,99 @@
- 
-   "browser_specific_settings": {
-     "gecko": {
--      "id": "firefox-alpenglow@mozilla.org"
-+      "id": "zen-compact-universe@mozilla.org"
+@@ -7,133 +7,94 @@
      }
    },
  
 -  "name": "Firefox Alpenglow",
 -  "description": "Use a colorful appearance for buttons, menus, and windows.",
--  "version": "1.4",
 +  "name": "Zen Universe (Light)",
 +  "description": "A theme with a light color scheme.",
 +  "author": "Zen",
-+  "version": "1.3",
-+
+   "version": "1.4",
    "icons": { "32": "icon.svg" },
  
    "theme": {

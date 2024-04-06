@@ -1,5 +1,5 @@
 diff --git a/browser/base/jar.mn b/browser/base/jar.mn
-index e3eb0e6e5f30152905456a07cfe532fe173375fb..15e742e4cfd9df8eef815f80a4d668f118108c4c 100644
+index e3eb0e6e5f30152905456a07cfe532fe173375fb..9d356d62421d779f9e16f6761cce97826c7943ed 100644
 --- a/browser/base/jar.mn
 +++ b/browser/base/jar.mn
 @@ -105,3 +105,6 @@ browser.jar:
@@ -8,4 +8,5 @@ index e3eb0e6e5f30152905456a07cfe532fe173375fb..15e742e4cfd9df8eef815f80a4d668f1
  % override chrome://global/locale/appstrings.properties chrome://browser/locale/appstrings.properties
 +
 +#include content/zen-avatars/jar.inc.mn
-+        content/browser/zen-browser-places.js                   (content/zen-browser-places.js)
++#include content/zen-scripts.jar.inc.mn
+\ No newline at end of file

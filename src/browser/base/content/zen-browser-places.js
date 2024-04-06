@@ -19,7 +19,7 @@ var ZenProfileDialogUI = {
       if (profile == ProfileService.currentProfile) {
         continue;
       }
-      let item = document.createElement('menu');
+      let item = document.createElement('div');
       item.onclick = () => this._openProfile(profile);
       item.className = 'PanelUI-zen-profiles-item';
       let avatar = document.createElement('img');

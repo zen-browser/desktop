@@ -1,8 +1,16 @@
 diff --git a/browser/base/content/global-scripts.inc b/browser/base/content/global-scripts.inc
-index f5f43b8f9509c37bf217b3ed1c6c562be85430e0..c8ab55760f817aa14e3db15f6b5556118e65d218 100644
+index f5f43b8f9509c37bf217b3ed1c6c562be85430e0..41fb7b9439a1be9c47a7f200546b0230ec6a7505 100644
 --- a/browser/base/content/global-scripts.inc
 +++ b/browser/base/content/global-scripts.inc
-@@ -22,4 +22,6 @@ if (AppConstants.platform == "macosx") {
+@@ -12,6 +12,7 @@
+ # tools/lint/eslint/eslint-plugin-mozilla/lib/environments/browser-window.js
+ 
+ <script type="text/javascript">
++Services.scriptloader.loadSubScript("chrome://browser/content/zen-browser.js", this);
+ Services.scriptloader.loadSubScript("chrome://browser/content/browser.js", this);
+ Services.scriptloader.loadSubScript("chrome://browser/content/places/browserPlacesViews.js", this);
+ Services.scriptloader.loadSubScript("chrome://browser/content/browser-places.js", this);
+@@ -22,4 +23,6 @@ if (AppConstants.platform == "macosx") {
    Services.scriptloader.loadSubScript("chrome://global/content/macWindowMenu.js", this);
  }
  

@@ -11,6 +11,8 @@
     "istream": "cpp",
     "tuple": "cpp",
     "utility": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "compare": "cpp",
+    "thread": "cpp"
   }
 }

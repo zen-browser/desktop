@@ -1,8 +1,8 @@
 diff --git a/browser/locales/en-US/browser/appExtensionFields.ftl b/browser/locales/en-US/browser/appExtensionFields.ftl
-index 09d7a076eccd4235fac66156770d8b9ae01a7d16..a4937b9470fffc187eb521f45362703909ec09b9 100644
+index 09d7a076eccd4235fac66156770d8b9ae01a7d16..31c7632c9dce24f2e4e5135abfca96a47e961eed 100644
 --- a/browser/locales/en-US/browser/appExtensionFields.ftl
 +++ b/browser/locales/en-US/browser/appExtensionFields.ftl
-@@ -8,14 +8,14 @@
+@@ -8,13 +8,13 @@
  extension-default-theme-name-auto=System theme — auto
  extension-default-theme-description=Follow the operating system setting for buttons, menus, and windows.
  
@@ -15,9 +15,7 @@ index 09d7a076eccd4235fac66156770d8b9ae01a7d16..a4937b9470fffc187eb521f453627039
  extension-firefox-compact-dark-description=A theme with a dark color scheme.
  
 -extension-firefox-alpenglow-name=Firefox Alpenglow
--extension-firefox-alpenglow-description=Use a colorful appearance for buttons, menus, and windows.
-+extension-zen-compact-universe-name=Zen Universe
-+extension-zen-compact-universe-description=Use a colorful appearance for buttons, menus, and windows.
++extension-firefox-alpenglow-name=Zen Universe
+ extension-firefox-alpenglow-description=Use a colorful appearance for buttons, menus, and windows.
  
  ## Colorway Themes
- ## These themes are variants of a colorway. The colorway is specified in the

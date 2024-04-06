@@ -1,0 +1,12 @@
+diff --git a/browser/base/content/browser-sets.inc b/browser/base/content/browser-sets.inc
+index 019b3cc4691520667f9bd595444e7cc752307c98..17057b24e86dce43da30bf95d1d229044704546f 100644
+--- a/browser/base/content/browser-sets.inc
++++ b/browser/base/content/browser-sets.inc
+@@ -15,6 +15,7 @@
+   </stringbundleset>
+ 
+   <commandset id="mainCommandSet">
++    <command id="Tools:ZenProfiles" oncommand="BrowserOpenZenProfilesMgr();"/>
+     <command id="cmd_newNavigator" oncommand="OpenBrowserWindow()"/>
+     <command id="cmd_handleBackspace" oncommand="BrowserHandleBackspace();" />
+     <command id="cmd_handleShiftBackspace" oncommand="BrowserHandleShiftBackspace();" />

@@ -168,7 +168,7 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab {
-  --zen-browser-tab-icon-size: 18px;
+  --zen-browser-tab-icon-size: 16px;
   --tab-min-width: 0 !important;
   box-shadow: none !important;
   margin: 5px auto !important;
@@ -226,6 +226,10 @@ toolbarbutton#scrollbutton-up {
 
 #alltabs-button stack {
   transform: rotate(-90deg);
+}
+
+.tab-icon-overlay {
+  margin-inline-end: 0 !important;
 }
 
 /* Title bar */

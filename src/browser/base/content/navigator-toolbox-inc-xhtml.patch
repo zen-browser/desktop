@@ -1,17 +1,36 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dce7bacdb3678a95dc97085390a7e6102090ffb2..5e3c40b384e4643b6865c4fab3d0bcea4c179d0c 100644
+index dce7bacdb3678a95dc97085390a7e6102090ffb2..2d91d95dc458c3ffe53e324576e44003d8472209 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
-@@ -30,8 +30,6 @@
-              context="toolbar-context-menu"
-              flex="1">
+@@ -56,15 +56,17 @@
+ # significantly, there is an optimization in
+ # DisplayPortUtils::MaybeCreateDisplayPortInFirstScrollFrameEncountered based
+ # the current structure that we may want to revisit.
+-            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="horizontal" flex="1" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
++            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="vertical" flex="1" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
+               <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
+               <hbox id="tabbrowser-arrowscrollbox-periphery">
+                 <toolbartabstop/>
++
+                 <toolbarbutton id="tabs-newtab-button"
+                                class="toolbarbutton-1"
+                                command="cmd_newNavigatorTab"
+                                onclick="gBrowser.handleNewTabMiddleClick(this, event);"
+                                tooltip="dynamic-shortcut-tooltip"/>
++
+                 <spacer class="closing-tabs-spacer" style="width: 0;"/>
+               </hbox>
+             </arrowscrollbox>
+@@ -101,12 +103,16 @@
+         <label data-l10n-id="private-browsing-indicator-label"></label>
+       </hbox>
  
--      <hbox class="titlebar-spacer" type="pre-tabs"/>
--
-       <hbox flex="1" align="end" class="toolbar-items">
-         <toolbartabstop/>
-         <hbox id="TabsToolbar-customization-target" flex="1">
-@@ -107,6 +105,7 @@
++#if 0
+ #include titlebar-items.inc.xhtml
++#endif
++#include zen-sidebar-icons.inc.xhtml
+ 
+     </toolbar>
  
    </vbox>
  
@@ -19,7 +38,7 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..5e3c40b384e4643b6865c4fab3d0bcea
    <toolbar id="nav-bar"
             class="browser-toolbar"
             data-l10n-id="navbar-accessible"
-@@ -575,7 +574,7 @@
+@@ -575,7 +581,7 @@
    <html:template id="tab-notification-deck-template">
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>

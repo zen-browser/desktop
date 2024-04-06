@@ -1,16 +1,15 @@
 :root {
   --sidebar-background-color: var(--toolbar-bgcolor) !important; 
-  --zen-sidebar-box-shadow: 0 1px 4px var(--color-black-a10);
+  --zen-sidebar-box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 #sidebar-box {
   margin: var(--zen-appcontent-separator-from-window) !important;
-  border-radius: 0 15px 15px 0 !important;
+  border-radius: 15px !important;
   box-shadow: var(--zen-sidebar-box-shadow) !important;
   overflow: hidden;
   transition: .2s;
   border: 1px solid var(--zen-dialog-border-color);
-  margin-left: 0 !important;
 }
 
 #sidebar-splitter {
@@ -28,29 +27,6 @@
  margin-right: 0 !important; 
 }
 
-#sidebar-box[hidden="true"] {
-  display: flex !important;
-  flex-direction: column;
-  min-width: 0 !important;
-  width: 50px !important;
-  align-items: center;
-}
-
-#sidebar-box[hidden="true"] > *:not(#zen-sidebar-icons-wrapper) {
-  display: none !important;
-}
-
-#sidebar-box[hidden="true"] #zen-sidebar-icons-wrapper {
-  display: flex;
-  flex-direction: column;
-  padding: 3px;
-  height: 100%;
-  position: relative;
-  background: transparent !important;
-  align-items: center;
-  justify-content: end;
-}
-
 .zen-sidebar-action-button {
   width: 40px;
   height: 40px;
@@ -59,9 +35,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
 }
 
+#TabsToolbar .toolbarbutton-1 > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
+.zen-sidebar-action-button {
+  border-radius: 10px !important;
+}
+
+#TabsToolbar .toolbarbutton-1:hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
+#TabsToolbar .toolbarbutton-1[open="true"] > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button:hover,
 .zen-sidebar-action-button[open="true"] {
   background: var(--toolbarbutton-hover-background);
@@ -142,3 +124,15 @@
 #zen-sidebar-icons-wrapper toolbarbutton {
   position: relative;
 }
+
+#zen-sidebar-icons-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 0 3px;
+  height: 100%;
+  position: relative;
+  background: transparent !important;
+  align-items: center;
+  justify-content: end;
+}
+

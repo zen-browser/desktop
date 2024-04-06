@@ -20,10 +20,6 @@
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
 }
 
-#navigator-toolbox toolbar#TabsToolbar {
-  margin: 10px var(--zen-appcontent-separator-from-window);
-}
-
 #PersonalToolbar {
   /*border-top: 1px solid light-dark(#ddd, #4a4a4a);*/
   padding: 5px 0;
@@ -123,13 +119,118 @@ toolbar .toolbarbutton-1 {
   }
 }
 
-.tabbrowser-tab {
-  animation: zen-jello-animation 0.2s ease-in-out;
-  animation-delay: 0.1s;
-}
-
 /* Toolbars customization */
 
+#titlebar {
+  height: 100%;
+}
+
+#navigator-toolbox toolbar#TabsToolbar {
+  margin: var(--zen-appcontent-separator-from-window);
+  background: var(--sidebar-background-color);
+  box-shadow: var(--zen-sidebar-box-shadow) !important;
+  overflow: hidden;
+  transition: .2s;
+  border: 1px solid var(--zen-dialog-border-color);
+  border-radius: 15px !important;
+  flex-direction: column !important;
+  padding: 5px 0;
+  margin-right: 0 !important;
+  -moz-window-dragging: no-drag;
+}
+
 #TabsToolbar-customization-target {
-  
+  flex-direction: column;
+}
+
+toolbarbutton#scrollbutton-down,
+toolbarbutton#scrollbutton-up {
+  display: none !important;
+}
+
+#toolbar-menubar {
+  display: none;
+}
+
+.tab-label-container {
+  display: none;
+}
+
+.tab-icon-stack > .tab-icon-image,
+.tab-icon-stack > .tab-throbber {
+  width: var(--zen-browser-tab-icon-size);
+  height: var(--zen-browser-tab-icon-size);
+  margin-inline-end: 0 !important;
+}
+
+.tab-background {
+  display: none;
+}
+
+.tabbrowser-tab {
+  --zen-browser-tab-icon-size: 18px;
+  --tab-min-width: 0 !important;
+  box-shadow: none !important;
+  margin: 5px auto !important;
+  border-radius: 50%;
+  position: relative;
+  color-scheme: var(--tab-selected-color-scheme);
+  background: light-dark(#ececec, #4a4a4a);
+  border: 2px solid transparent;
+  display: flex;
+  padding: 0 !important;
+  align-items: center;
+}
+
+.tab-stack {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabbrowser-tab:is([multiselected="true"], [selected]) {
+  border-color: var(--color-accent-primary);
+}
+
+.tab-close-button {
+  position: absolute;
+  display: none;
+  left: 50%;
+  top: 50%;
+}
+
+.tabbrowser-tab:hover .tab-close-button {
+  display: none; /* TODO: fix this? or maybe not? */
+}
+
+.tab-content {
+  padding: 0 !important;
+  width: fit-content;
+}
+
+.toolbar-items > toolbartabstop:first-child {
+  display: none;
+}
+
+#tabbrowser-tabs {
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+  border: none !important;
+  /*background: light-dark(rgba(0,0,0,.05), rgba(255,255,255,.05));*/
+  margin: 0 !important;
+  border-radius: 5px;
+  border: 1px solid var(--zen-dialog-border-color);
+}
+
+/* Title bar */
+
+#zen-titlebar-items-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  -moz-window-dragging: drag;
 }

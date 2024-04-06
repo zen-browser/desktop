@@ -1,13 +1,20 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index b4886fb5f74568b4c09eb620be9efb74e39c599c..b4a6bb5e06db8b097457c490d369ad9e2ae66454 100644
+index b4886fb5f74568b4c09eb620be9efb74e39c599c..f6506e972bc464aaddf087d994ce439c02f9a2f9 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -165,7 +165,10 @@
+@@ -163,9 +163,15 @@
+     </vbox>
+   </html:template>
  
- #include navigator-toolbox.inc.xhtml
- 
+-#include navigator-toolbox.inc.xhtml
+-
 -#include browser-box.inc.xhtml
++  <hbox id="zen-titlebar-items-container">
++#include titlebar-items.inc.xhtml
++  </hbox>
++
 +  <hbox flex="1">
++    #include navigator-toolbox.inc.xhtml
 +    #include zen-sidebar-box.inc.xhtml
 +    #include browser-box.inc.xhtml    
 +  </hbox>

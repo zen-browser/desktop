@@ -1,0 +1,58 @@
+diff --git a/browser/base/content/tabbrowser-tabs.js b/browser/base/content/tabbrowser-tabs.js
+index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..b7256bec7d0da3ce065c005ba857a4317bf0d714 100644
+--- a/browser/base/content/tabbrowser-tabs.js
++++ b/browser/base/content/tabbrowser-tabs.js
+@@ -743,7 +743,7 @@
+         if (oldTranslateX && oldTranslateX != newTranslateX && !gReduceMotion) {
+           for (let tab of movingTabs) {
+             tab.toggleAttribute("tabdrop-samewindow", true);
+-            tab.style.transform = "translateX(" + newTranslateX + "px)";
++            tab.style.transform = "translateY(" + newTranslateX + "px)";
+             let postTransitionCleanup = () => {
+               tab.removeAttribute("tabdrop-samewindow");
+ 
+@@ -1126,10 +1126,13 @@
+     }
+ 
+     _initializeArrowScrollbox() {
++      this.toggleAttribute("overflow", true);
++
+       let arrowScrollbox = this.arrowScrollbox;
+       arrowScrollbox.shadowRoot.addEventListener(
+         "underflow",
+         event => {
++          return;
+           // Ignore underflow events:
+           // - from nested scrollable elements
+           // - for vertical orientation
+@@ -1542,7 +1545,7 @@
+       translateX = Math.min(Math.max(translateX, leftBound), rightBound);
+ 
+       for (let tab of movingTabs) {
+-        tab.style.transform = "translateX(" + translateX + "px)";
++        tab.style.transform = "translateY(" + translateX + "px)";
+       }
+ 
+       draggedTab._dragData.translateX = translateX;
+@@ -1602,7 +1605,7 @@
+       for (let tab of tabs) {
+         if (tab != draggedTab) {
+           let shift = getTabShift(tab, newIndex);
+-          tab.style.transform = shift ? "translateX(" + shift + "px)" : "";
++          tab.style.transform = shift ? "translateY(" + shift + "px)" : "";
+         }
+       }
+ 
+@@ -1683,9 +1686,9 @@
+ 
+       // Slide the relevant tabs to their new position.
+       for (let t of this._getVisibleTabs()) {
+-        if (t.groupingTabsData && t.groupingTabsData.translateX) {
+-          let translateX = (RTL_UI ? -1 : 1) * t.groupingTabsData.translateX;
+-          t.style.transform = "translateX(" + translateX + "px)";
++        if (t.groupingTabsData && t.groupingTabsData.translateY) {
++          let translateX = (RTL_UI ? -1 : 1) * t.groupingTabsData.translateY;
++          t.style.transform = "translateY(" + translateX + "px)";
+         }
+       }
+ 

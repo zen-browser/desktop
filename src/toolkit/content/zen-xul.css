@@ -3,7 +3,8 @@
 
 :root {
   --zen-main-browser-background: light-dark(#ddd, #4a4a4a); 
-  --zen-appcontent-separator-from-window: 7px;
+  --zen-appcontent-separator-from-window-single: 7px;
+  --zen-appcontent-separator-from-window: 0 var(--zen-appcontent-separator-from-window-single) var(--zen-appcontent-separator-from-window-single);
 }
 
 toolbox#navigator-toolbox, 
@@ -25,7 +26,6 @@ html#main-window > body {
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   border: 1px solid var(--zen-dialog-border-color);
   margin: var(--zen-appcontent-separator-from-window);
-  margin-top: 0;
 }
 
 

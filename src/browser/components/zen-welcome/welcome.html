@@ -1,0 +1,109 @@
+<!--
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="color-scheme" content="light dark">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src chrome:; object-src 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="chrome://global/skin/in-content/common.css"
+    />
+    <link rel="stylesheet" href="chrome://global/skin/global.css" />
+    <link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-welcome/welcome.css"
+    />
+
+    <link rel="localization" href="branding/brand.ftl" />
+    <link rel="localization" href="browser/zen-welcome.ftl" />
+  </head>
+  <body>
+    <div class="page" id="welcome">
+      <img class="icon" src="chrome://branding/content/about-logo.png" />
+      <h1 data-l10n-id="welcome-dialog-welcome"></h1>
+
+      <p data-l10n-id="welcome-dialog-welcome-subtext"></p>
+
+      <button
+        id="welcomeNext"
+        class="primary"
+        data-l10n-id="welcome-dialog-get-started"
+      ></button>
+    </div>
+
+    <div class="page" id="import">
+      <img
+        class="asset light-only"
+        src="chrome://browser/content/zen-welcome/migrate.light.svg"
+      />
+      <img
+        class="asset dark-only"
+        src="chrome://browser/content/zen-welcome/migrate.dark.svg"
+      />
+
+      <h1 data-l10n-id="welcome-dialog-import"></h1>
+      <p data-l10n-id="welcome-dialog-import-subtext"></p>
+
+      <br />
+
+      <hbox>
+        <button
+          class="primary"
+          id="importBrowser"
+          data-l10n-id="welcome-dialog-import-action"
+        ></button>
+        <button
+          class="text-link"
+          id="importNext"
+          data-l10n-id="welcome-dialog-skip"
+        ></button>
+      </hbox>
+    </div>
+
+    <div class="page" id="theme">
+      <h1 data-l10n-id="welcome-dialog-theme"></h1>
+      <p data-l10n-id="welcome-dialog-theme-subtext"></p>
+      <div id="themeList" class="cardGroup"></div>
+      <button
+        id="themeNext"
+        class="primary"
+        data-l10n-id="welcome-dialog-theme-action"
+      ></button>
+    </div>
+
+    <div class="page" id="search">
+      <h1 data-l10n-id="welcome-dialog-search"></h1>
+      <p data-l10n-id="welcome-dialog-search-subtext"></p>
+      <div id="searchList" class="cardGroup"></div>
+      <button
+        id="searchNext"
+        class="primary"
+        data-l10n-id="welcome-dialog-search-action"
+      ></button>
+    </div>
+
+    <div class="page" id="thanks">
+      <h1 data-l10n-id="welcome-dialog-thanks"></h1>
+      <p data-l10n-id="welcome-dialog-thanks-subtext"></p>
+      <button
+        id="thanksNext"
+        class="primary"
+        data-l10n-id="welcome-dialog-thanks-action"
+      ></button>
+    </div>
+
+    <script src="./welcome.js"></script>
+    <script src="chrome://browser/content/contentTheme.js"></script>
+  </body>
+</html>

@@ -1,11 +1,13 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..040c455e3e06305b03f835d47fc7fb22f9448402 100644
+index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250ca26968a 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -13,6 +13,13 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
+@@ -13,6 +13,15 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
  
  // lazy module getters
  
++const ZEN_WELCOME_PATH = "zen-welcome";
++const ZEN_WELCOME_ELEMENT_ATTR = "zen-dialog-welcome-element";
 +XPCOMUtils.defineLazyServiceGetter(
 +  this,
 +  "ProfileService",
@@ -16,7 +18,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..040c455e3e06305b03f835d47fc7fb22
  ChromeUtils.defineESModuleGetters(this, {
    AMTelemetry: "resource://gre/modules/AddonManager.sys.mjs",
    AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
-@@ -1735,6 +1742,11 @@ var gBrowserInit = {
+@@ -1735,6 +1744,11 @@ var gBrowserInit = {
      }
  
      // Misc. inits.
@@ -28,7 +30,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..040c455e3e06305b03f835d47fc7fb22
      gUIDensity.init();
      TabletModeUpdater.init();
      CombinedStopReload.ensureInitialized();
-@@ -6660,7 +6672,7 @@ function setToolbarVisibility(
+@@ -6660,7 +6674,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -37,7 +39,21 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..040c455e3e06305b03f835d47fc7fb22
      switch (isVisible) {
        case true:
        case "always":
-@@ -10157,3 +10169,15 @@ var FirefoxViewHandler = {
+@@ -9780,6 +9794,13 @@ var gDialogBox = {
+     parentElement.style.removeProperty("width");
+     parentElement.style.removeProperty("height");
+     document.documentElement.setAttribute("window-modal-open", true);
++
++    if (uri.includes(ZEN_WELCOME_PATH)) {
++      parentElement.setAttribute(ZEN_WELCOME_ELEMENT_ATTR, true);
++    } else if (parentElement.hasAttribute(ZEN_WELCOME_ELEMENT_ATTR)) {
++      parentElement.removeAttribute(ZEN_WELCOME_ELEMENT_ATTR);
++    }
++
+     // Call this first so the contents show up and get layout, which is
+     // required for SubDialog to work.
+     parentElement.showModal();
+@@ -10157,3 +10178,15 @@ var FirefoxViewHandler = {
      this.button?.toggleAttribute("attention", shouldShow);
    },
  };

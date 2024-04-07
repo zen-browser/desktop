@@ -1,0 +1,29 @@
+diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
+index 4ad6c5212b22e7dc0ee9495214b6531676490e95..d90dcfed5da60e19eb1fa7fb88cfb07f9cce5663 100644
+--- a/browser/components/BrowserGlue.sys.mjs
++++ b/browser/components/BrowserGlue.sys.mjs
+@@ -4475,6 +4475,7 @@ BrowserGlue.prototype = {
+   },
+ 
+   async _maybeShowDefaultBrowserPrompt() {
++    this._ZenMaybeShowWelcomeScreen();
+     // Highest priority is about:welcome window modal experiment
+     // Second highest priority is the upgrade dialog, which can include a "primary
+     // browser" request and is limited in various ways, e.g., major upgrades.
+@@ -4933,6 +4934,16 @@ BrowserGlue.prototype = {
+     "nsIObserver",
+     "nsISupportsWeakReference",
+   ]),
++
++  _ZenMaybeShowWelcomeScreen() {
++    const welcomeEnabled = Services.prefs.getBoolPref("zen.welcomeScreen.enabled", true)
++    const welcomeSeen = Services.prefs.getBoolPref("zen.welcomeScreen.seen", false)
++    if (welcomeEnabled && !welcomeSeen) {
++      lazy.BrowserWindowTracker.getTopWindow().gDialogBox.open(
++        "chrome://browser/content/zen-welcome/welcome.html"
++      );
++    }
++  },
+ };
+ 
+ var ContentBlockingCategoriesPrefs = {

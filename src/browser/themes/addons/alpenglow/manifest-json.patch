@@ -1,5 +1,5 @@
 diff --git a/browser/themes/addons/alpenglow/manifest.json b/browser/themes/addons/alpenglow/manifest.json
-index 05a25e13915edee3ba51ed1c1b5569faa70cd536..5a5bf6766e45d339b1b17e4b1e88b302a34025f6 100644
+index 05a25e13915edee3ba51ed1c1b5569faa70cd536..c41c3c51b507fd6fd123805231d79c947d755a2f 100644
 --- a/browser/themes/addons/alpenglow/manifest.json
 +++ b/browser/themes/addons/alpenglow/manifest.json
 @@ -7,133 +7,94 @@
@@ -170,7 +170,7 @@ index 05a25e13915edee3ba51ed1c1b5569faa70cd536..5a5bf6766e45d339b1b17e4b1e88b302
 +      "toolbar_field_icon_opacity": "0.72",
 +      "input_border_color": "rgba(0, 0, 0, .3)",
 +      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
-+      "zen_main_browser_background": "linear-gradient(135deg, #fac89a 0%, #e290ff 100%)"
++      "zen_main_browser_background": "var(--zen-characteristic-gradient)"
      }
    },
  

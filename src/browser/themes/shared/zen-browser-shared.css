@@ -125,6 +125,10 @@ toolbar .toolbarbutton-1 {
   height: 100%;
 }
 
+#navigator-toolbox {
+  min-width: 55px;
+}
+
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
   background: var(--sidebar-background-color);

@@ -1,0 +1,173 @@
+/*
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  position: relative;
+  flex-flow: row nowrap;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--zen-characteristic-gradient);
+  transition: .1s;
+}
+
+body.normal-background {
+  background: var(--zen-main-browser-background) !important;
+}
+
+.page {
+  display: none;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  width: 100%;
+
+  margin: 32px;
+}
+
+#enableFeatures .card {
+  width: auto;
+}
+
+.card h3 {
+  margin: auto;
+  text-align: center;
+}
+
+.cardGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+.cardGroup .card {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: space-between;
+  border: 2px solid var(--arrowpanel-border-color) !important;
+  transition: all .1s ease-in-out !important;
+  margin: 0 10px;
+  border-radius: 7px;
+  outline: none !important;
+  cursor: auto;
+  user-select: none;
+}
+
+.cardGroup .card.selected {
+  border: 2px solid var(--in-content-primary-button-background-hover) !important;
+  transform: scale(1.1);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 16px 0 5px 0;
+}
+
+p {
+  font-size: 16px;
+  opacity: 0.8;
+  margin: 0;
+  margin-bottom: 30px;
+}
+
+button {
+  transform: scale(1.3);
+}
+
+.icon {
+  -moz-context-properties: fill;
+  fill: currentColor;
+  display: inline-block;
+  height: 82px;
+  width: 82px;
+}
+
+.asset {
+  width: 500px;
+  padding-bottom: 32px;
+}
+
+@media (prefers-color-scheme: light) {
+  .dark-only {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .light-only {
+    display: none;
+  }
+}
+
+input[type='checkbox'] {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#importNext {
+  margin-left: 30px;
+  color: var(--in-content-primary-button-background);
+}
+
+#themeNext,
+#searchNext,
+#thanksNext {
+  margin-top: 20px;
+}
+
+#search h1,
+#theme h1 {
+  margin-bottom: 30px;
+}
+
+.page[hidden="true"] {
+  display: none;
+}
+
+.page:not([hidden="true"]) {
+  display: flex;
+}
+
+.page:not([hidden="true"]) > * {
+  opacity: 0;
+  animation: fadeInRight 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(40px, 0, 0);
+    filter: blur(15px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* There should be no more than 5 elements in a page */
+.page:not([hidden="true"]) > *:nth-child(2) { animation-delay: 0.1s; }
+.page:not([hidden="true"]) > *:nth-child(3) { animation-delay: 0.2s; }
+.page:not([hidden="true"]) > *:nth-child(4) { animation-delay: 0.3s; }
+.page:not([hidden="true"]) > *:nth-child(5) { animation-delay: 0.4s; }
+

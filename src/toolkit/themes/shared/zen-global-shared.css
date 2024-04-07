@@ -1,4 +1,6 @@
 
+@import url("./in-content/zen-common-shared.css");
+
 :root {
   --zen-dialog-background: Field;
   --zen-dialog-border-color: rgba(0,0,0,.2);

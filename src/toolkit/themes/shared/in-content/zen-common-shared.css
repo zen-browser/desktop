@@ -6,6 +6,7 @@
   --in-content-primary-button-border-color: transparent !important;
   --in-content-primary-button-border-hover: transparent !important;
   --in-content-primary-button-border-active: transparent !important;
+  --zen-characteristic-gradient: linear-gradient(135deg, #fac89a 0%, #e290ff 100%);
 
   --in-content-page-background: #F9F9FB !important;
   --zen-in-content-dialog-background: var(--in-content-page-background);

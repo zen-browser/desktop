@@ -1,0 +1,13 @@
+diff --git a/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs b/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
+index 5d1d2c19706b747b149271ea71fabb25f0eca5d1..d0b8a3c37a61a62287d2fa9dab6f90bdd33c786f 100644
+--- a/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
++++ b/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
+@@ -140,7 +140,7 @@ const KEY_APP_GLOBAL = "app-global";
+ const KEY_APP_PROFILE = "app-profile";
+ const KEY_APP_TEMPORARY = "app-temporary";
+ 
+-const DEFAULT_THEME_ID = "default-theme@mozilla.org";
++const DEFAULT_THEME_ID = "firefox-alpenglow@mozilla.org";
+ 
+ // Properties to cache and reload when an addon installation is pending
+ const PENDING_INSTALL_METADATA = [

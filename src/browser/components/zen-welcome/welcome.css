@@ -88,10 +88,6 @@ p {
   margin-bottom: 30px;
 }
 
-button {
-  transform: scale(1.3);
-}
-
 .icon {
   -moz-context-properties: fill;
   fill: currentColor;
@@ -123,7 +119,7 @@ input[type='checkbox'] {
 }
 
 #importNext {
-  margin-left: 30px;
+  margin-left: 40px;
   color: var(--in-content-primary-button-background);
 }
 
@@ -171,3 +167,6 @@ input[type='checkbox'] {
 .page:not([hidden="true"]) > *:nth-child(4) { animation-delay: 0.3s; }
 .page:not([hidden="true"]) > *:nth-child(5) { animation-delay: 0.4s; }
 
+.card h3 {
+  margin-top: 10px;
+}

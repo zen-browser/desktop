@@ -60,7 +60,8 @@ var ZenProfileDialogUI = {
 
   createProfileWizard() {
     // This should be rewritten in HTML eventually.
-    window.browsingContext.topChromeWindow.gDialogBox.open(
+    // TODO: it could be `window.browsingContext.topChromeWindow.gDialogBox.open` but it does not work with the callback?
+    window.browsingContext.topChromeWindow.openDialog(
       "chrome://mozapps/content/profile/createProfileWizard.xhtml",
       "",
       "centerscreen,chrome,modal,titlebar",

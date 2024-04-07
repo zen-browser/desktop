@@ -1,0 +1,15 @@
+diff --git a/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs b/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs
+index d5ffd06d112726767c465815a28e85aac881fbdb..687646de83c6e13370e5e32495921a67a00a88ad 100644
+--- a/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs
++++ b/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs
+@@ -2546,8 +2546,8 @@ export var XPIProvider = {
+         );
+       }
+       this.maybeInstallBuiltinAddon(
+-        "default-theme@mozilla.org",
+-        "1.3",
++        "firefox-alpenglow@mozilla.org",
++        "1.4",
+         "resource://default-theme/"
+       );
+ 

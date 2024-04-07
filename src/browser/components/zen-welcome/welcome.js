@@ -229,11 +229,10 @@ class Import extends Page {
     super(id)
 
     const importButton = document.getElementById('importBrowser')
-    importButton.addEventListener('click', () => {
-      MigrationUtils.showMigrationWizard(window, [
-        MigrationUtils.MIGRATION_ENTRYPOINT_NEWTAB,
-        null,
-      ])
+    importButton.addEventListener('click', async () => {
+      MigrationUtils.showMigrationWizard(window, {
+        zenBlocking: true,
+      });
       this.nextEl.click()
     })
   }

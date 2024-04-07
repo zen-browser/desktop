@@ -1,7 +1,16 @@
 diff --git a/browser/themes/BuiltInThemes.sys.mjs b/browser/themes/BuiltInThemes.sys.mjs
-index c2d5dd7a18895ae8b4afbf386f122e7899c48cda..5d0f907acf0162735359747a1c6d529e52fa2590 100644
+index c2d5dd7a18895ae8b4afbf386f122e7899c48cda..2cb61e00cea76049ae71d791bf78d958f0093b7c 100644
 --- a/browser/themes/BuiltInThemes.sys.mjs
 +++ b/browser/themes/BuiltInThemes.sys.mjs
+@@ -74,7 +74,7 @@ class _BuiltInThemes {
+   maybeInstallActiveBuiltInTheme() {
+     const activeThemeID = Services.prefs.getStringPref(
+       kActiveThemePref,
+-      "default-theme@mozilla.org"
++      "firefox-alpenglow@mozilla.org"
+     );
+     let activeBuiltInTheme = this.builtInThemeMap.get(activeThemeID);
+ 
 @@ -82,7 +82,7 @@ class _BuiltInThemes {
        lazy.AddonManager.maybeInstallBuiltinAddon(
          activeThemeID,
@@ -11,3 +20,12 @@ index c2d5dd7a18895ae8b4afbf386f122e7899c48cda..5d0f907acf0162735359747a1c6d529e
        );
      }
    }
+@@ -166,7 +166,7 @@ class _BuiltInThemes {
+   async _uninstallExpiredThemes() {
+     const activeThemeID = Services.prefs.getStringPref(
+       kActiveThemePref,
+-      "default-theme@mozilla.org"
++      "firefox-alpenglow@mozilla.org"
+     );
+     const now = new Date();
+     const expiredThemes = Array.from(this.builtInThemeMap.entries()).filter(

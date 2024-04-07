@@ -183,16 +183,45 @@ toolbarbutton#scrollbutton-up {
   border: 2px solid transparent;
   padding: 0 !important;
   align-items: center;
-  transition: .1s;
+  animation: zen-slide-in 0.2s ease-in-out;
 }
 
 .tab-stack {
-  width: 30px;
-  height: 30px;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@keyframes zen-slide-in {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.tabbrowser-tab[collapsed="true"] {
+  display: block !important;
+  animation: zen-slide-out 0.2s ease-in-out;
+}
+
+@keyframes zen-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {

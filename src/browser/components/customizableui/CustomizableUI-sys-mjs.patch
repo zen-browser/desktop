@@ -1,7 +1,16 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index d748b93a92455f6349b8199d2f27381f53fee01d..922822260abcb9ab6344db91730de620c7320888 100644
+index d748b93a92455f6349b8199d2f27381f53fee01d..10aea4cb79f77341c1a125bb1b3750a81794679c 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
+@@ -25,7 +25,7 @@ ChromeUtils.defineLazyGetter(lazy, "gWidgetsBundle", function () {
+   return Services.strings.createBundle(kUrl);
+ });
+ 
+-const kDefaultThemeID = "default-theme@mozilla.org";
++const kDefaultThemeID = "firefox-alpenglow@mozilla.org";
+ 
+ const kSpecialWidgetPfx = "customizableui-special-";
+ 
 @@ -249,14 +249,12 @@ var CustomizableUIInternal = {
        Services.policies.isAllowed("removeHomeButtonByDefault")
          ? null

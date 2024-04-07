@@ -183,6 +183,7 @@ toolbarbutton#scrollbutton-up {
   border: 2px solid transparent;
   padding: 0 !important;
   align-items: center;
+  transition: .1s;
 }
 
 .tab-stack {

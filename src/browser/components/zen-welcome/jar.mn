@@ -7,7 +7,3 @@ browser.jar:
   content/browser/zen-welcome/welcome.html        (welcome.html)
   content/browser/zen-welcome/welcome.css         (welcome.css)
   content/browser/zen-welcome/welcome.js          (welcome.js)
-  content/browser/zen-welcome/migrate.light.svg   (migrate.light.svg)
-  content/browser/zen-welcome/migrate.dark.svg    (migrate.dark.svg)
-  content/browser/zen-welcome/sidebar.vis.svg     (sidebar.vis.svg)
-  content/browser/zen-welcome/vertical.vis.svg    (vertical.vis.svg)

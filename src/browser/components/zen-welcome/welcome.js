@@ -16,7 +16,7 @@ ChromeUtils.defineModuleGetter(
   'resource://gre/modules/ExtensionSettingsStore.jsm'
 )
 
-const welcomeSeenPref = 'pulse.welcome.seen'
+const welcomeSeenPref = 'zen.welcomeScreen.seen'
 
 // =============================================================================
 // Util stuff copied from browser/components/preferences/search.js

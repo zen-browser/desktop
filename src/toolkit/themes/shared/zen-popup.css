@@ -218,5 +218,7 @@
   margin-inline: 0 !important;
 }
 
-
+#identity-popup-mainView > toolbarseparator:first-child {
+  display: none !important;
+}
 

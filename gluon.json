@@ -18,7 +18,10 @@
       "backgroundColor": "#282A33",
       "brandShorterName": "Zen",
       "brandShortName": "Zen Browser",
-      "brandFullName": "Zen Browser"
+      "brandFullName": "Zen Browser",
+      "release": {
+        "displayVersion": "1.0.0"
+      }
     }
   },
   "license": {

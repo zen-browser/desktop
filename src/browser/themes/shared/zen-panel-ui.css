@@ -24,7 +24,7 @@
   background-size: cover;
   background-position: center;
   margin: 0 auto;
-  transform: translateY(55%);
+  transform: translateY(60%);
 }
 
 .PanelUI-zen-profiles-item {
@@ -129,6 +129,3 @@
   margin-bottom: 5px;
 }
 
-.panel-subview-footer-button {
-  margin-bottom: 0 !important;
-}

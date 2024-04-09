@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index b4886fb5f74568b4c09eb620be9efb74e39c599c..f6506e972bc464aaddf087d994ce439c02f9a2f9 100644
+index b4886fb5f74568b4c09eb620be9efb74e39c599c..0993ee1258dfd83ade68500f11dc2e833df4ae51 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -163,9 +163,15 @@
@@ -13,7 +13,7 @@ index b4886fb5f74568b4c09eb620be9efb74e39c599c..f6506e972bc464aaddf087d994ce439c
 +#include titlebar-items.inc.xhtml
 +  </hbox>
 +
-+  <hbox flex="1">
++  <hbox id="zen-main-app-wrapper" flex="1">
 +    #include navigator-toolbox.inc.xhtml
 +    #include zen-sidebar-box.inc.xhtml
 +    #include browser-box.inc.xhtml    

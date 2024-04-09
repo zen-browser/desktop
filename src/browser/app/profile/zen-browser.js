@@ -94,6 +94,7 @@ pref("alerts.showFavicons", true);
 
 pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
+pref('zen.tabs.vertical', true);
 
 // From: https://github.com/yokoffing/Betterfox
 

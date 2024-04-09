@@ -4,12 +4,33 @@
 }
 
 #sidebar-box {
+  --zen-sidebar-box-border-radius: var(--zen-panel-radius);
   margin: var(--zen-appcontent-separator-from-window) !important;
-  border-radius: 15px !important;
-  box-shadow: var(--zen-sidebar-box-shadow) !important;
+  border-radius: var(--zen-sidebar-box-border-radius) !important;
+  box-shadow: none !important;
   overflow: hidden;
   transition: .2s;
   border: 1px solid var(--zen-dialog-border-color);
+  margin-left: 0 !important;
+}
+
+#sidebar-box:not([positionend="true"]) {
+  border-left-width: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  margin-right: 0 !important;
+}
+
+#sidebar-box[hidden="true"] {
+  width: 0 !important;
+  opacity: 0 !important;
+}
+
+#zen-main-app-wrapper:has(#sidebar-box:not([hidden="true"], [positionend="true"])) #TabsToolbar {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-right: 0 !important;
+  box-shadow: none !important;
 }
 
 #sidebar-splitter {
@@ -20,11 +41,7 @@
 }
 
 #sidebar-box[positionend] {
- margin-left: 0 !important; 
-}
-
-#sidebar-box:not([positionend]) {
- margin-right: 0 !important; 
+  margin-left: 0 !important;
 }
 
 .zen-sidebar-action-button {

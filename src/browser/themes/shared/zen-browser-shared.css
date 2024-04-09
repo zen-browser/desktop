@@ -18,6 +18,8 @@
   --fp-contextmenu-separator-vertical: calc(4px - var(--fp-contextmenu-menuitem-border-width));
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
+  /* TODO: This could be cooked a bit more */
+  /*--toolbar-bgcolor: light-dark(rgba(255,255,255,.9), #282828) !important;*/
 }
 
 #PersonalToolbar {
@@ -147,6 +149,14 @@ toolbar .toolbarbutton-1 {
   flex-direction: column;
 }
 
+:root[customizing] .customization-target:not(#widget-overflow-fixed-list) {
+  min-width: 0 !important;
+}
+
+toolbarpaletteitem {
+  justify-content: center !important;
+}
+
 toolbarbutton#scrollbutton-down,
 toolbarbutton#scrollbutton-up {
   display: none !important;
@@ -167,6 +177,23 @@ toolbarbutton#scrollbutton-up {
   margin-inline-end: 0 !important;
 }
 
+.tab-icon-stack .tab-icon-image {
+  transform: scale(0.5);
+  opacity: 0;
+  animation: zen-zoom-in 0.12s ease-in-out 0.3s forwards;
+}
+
+@keyframes zen-zoom-in {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .tab-background {
   display: none;
 }
@@ -174,16 +201,20 @@ toolbarbutton#scrollbutton-up {
 .tabbrowser-tab {
   --zen-browser-tab-icon-size: 16px;
   --tab-min-width: 0 !important;
-  box-shadow: none !important;
-  margin: 5px auto !important;
+  margin: 3px auto !important;
   border-radius: 50%;
   position: relative;
   color-scheme: var(--tab-selected-color-scheme);
   background: light-dark(#ececec, #4a4a4a);
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   padding: 0 !important;
   align-items: center;
-  animation: zen-slide-in 0.2s ease-in-out;
+  animation: zen-slide-in 0.3s;
+  transition: .1s transform;
+}
+
+.tabbrowser-tab:active {
+  transform: scale(0.9);
 }
 
 .tab-stack {
@@ -208,20 +239,8 @@ toolbarbutton#scrollbutton-up {
   }
 }
 
-.tabbrowser-tab[collapsed="true"] {
-  display: block !important;
-  animation: zen-slide-out 0.2s ease-in-out;
-}
-
-@keyframes zen-slide-out {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(-10px);
-    opacity: 0;
-  }
+.tabbrowser-tab:not([pinned], [fadein]) {
+  display: none;
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
@@ -254,8 +273,11 @@ toolbarbutton#scrollbutton-up {
   border: none !important;
   /*background: light-dark(rgba(0,0,0,.05), rgba(255,255,255,.05));*/
   margin: 0 !important;
-  border-radius: 5px;
-  border: 1px solid var(--zen-dialog-border-color);
+  border: none;
+}
+
+#tabbrowser-arrowscrollbox {
+  margin: 3px 0 !important;
 }
 
 #alltabs-button stack {
@@ -274,4 +296,8 @@ toolbarbutton#scrollbutton-up {
   align-items: center;
   justify-content: end;
   -moz-window-dragging: drag;
+}
+
+.footer-button {
+  padding: 0.60em 1.9em !important;
 }

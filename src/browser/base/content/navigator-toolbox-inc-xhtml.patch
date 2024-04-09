@@ -1,8 +1,15 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dce7bacdb3678a95dc97085390a7e6102090ffb2..2d91d95dc458c3ffe53e324576e44003d8472209 100644
+index dce7bacdb3678a95dc97085390a7e6102090ffb2..adc160df554e19b5d7cc874cedf2fae6e98a1e60 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
-@@ -56,15 +56,17 @@
+@@ -50,21 +50,24 @@
+                 aria-multiselectable="true"
+                 setfocus="false"
+                 tooltip="tabbrowser-tab-tooltip"
++                orient="vertical"
+                 stopwatchid="FX_TAB_CLICK_MS">
+             <hbox class="tab-drop-indicator" hidden="true"/>
+ # If the name (tabbrowser-arrowscrollbox) or structure of this changes
  # significantly, there is an optimization in
  # DisplayPortUtils::MaybeCreateDisplayPortInFirstScrollFrameEncountered based
  # the current structure that we may want to revisit.
@@ -21,7 +28,7 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..2d91d95dc458c3ffe53e324576e44003
                  <spacer class="closing-tabs-spacer" style="width: 0;"/>
                </hbox>
              </arrowscrollbox>
-@@ -101,12 +103,16 @@
+@@ -101,12 +104,16 @@
          <label data-l10n-id="private-browsing-indicator-label"></label>
        </hbox>
  
@@ -38,7 +45,7 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..2d91d95dc458c3ffe53e324576e44003
    <toolbar id="nav-bar"
             class="browser-toolbar"
             data-l10n-id="navbar-accessible"
-@@ -575,7 +581,7 @@
+@@ -575,7 +582,7 @@
    <html:template id="tab-notification-deck-template">
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>

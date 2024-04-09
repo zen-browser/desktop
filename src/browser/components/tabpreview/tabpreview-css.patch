@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabpreview/tabpreview.css b/browser/components/tabpreview/tabpreview.css
-index 8b288cb95da0e5fe307437e300d2c03ae19ab397..d03cbf2b15b62b3865be9caa63ad5c52633df3c2 100644
+index 8b288cb95da0e5fe307437e300d2c03ae19ab397..13a1f652bfd44af6ef317e7c997e101ac84c0ece 100644
 --- a/browser/components/tabpreview/tabpreview.css
 +++ b/browser/components/tabpreview/tabpreview.css
 @@ -3,9 +3,9 @@
@@ -34,8 +34,8 @@ index 8b288cb95da0e5fe307437e300d2c03ae19ab397..d03cbf2b15b62b3865be9caa63ad5c52
 +
 +.tab-preview-container {
 +  --zen-border-color: #bdbcbc;
++  overflow: hidden;
 +  border: 1px solid var(--zen-border-color);
-+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 +}
 +
 +@media (prefers-color-scheme: dark) {

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/addons/dark/manifest.json b/browser/themes/addons/dark/manifest.json
-index 544986d5e93c033f944cf301af79e0750864a32c..ec5e7653b9c0c6d86e5c869c1a5f1d845a0a55f0 100644
+index 544986d5e93c033f944cf301af79e0750864a32c..005ef991235fd30e2253b488cb76df54c5c82078 100644
 --- a/browser/themes/addons/dark/manifest.json
 +++ b/browser/themes/addons/dark/manifest.json
 @@ -7,10 +7,10 @@
@@ -16,7 +16,7 @@ index 544986d5e93c033f944cf301af79e0750864a32c..ec5e7653b9c0c6d86e5c869c1a5f1d84
  
    "icons": { "32": "icon.svg" },
  
-@@ -38,24 +38,24 @@
+@@ -38,19 +38,18 @@
        "ntp_background": "rgb(43, 42, 51)",
        "ntp_card_background": "rgb(66,65,77)",
        "ntp_text": "rgb(251, 251, 254)",
@@ -41,13 +41,16 @@ index 544986d5e93c033f944cf301af79e0750864a32c..ec5e7653b9c0c6d86e5c869c1a5f1d84
        "urlbar_popup_separator": "rgb(82,82,94)",
        "appmenu_update_icon_color": "#54FFBD",
        "appmenu_info_icon_color": "#80EBFF",
-       "tab_icon_overlay_stroke": "rgb(66,65,77)",
--      "tab_icon_overlay_fill": "rgb(251,251,254)"
-+      "tab_icon_overlay_fill": "rgb(251,251,254)",
-+      "zen_main_browser_background": "rgb(53, 52, 61)"
-     },
-     "properties": {
+@@ -61,7 +60,8 @@
        "color_scheme": "dark",
+       "panel_active": "color-mix(in srgb, currentColor 14%, transparent)",
+       "toolbar_field_icon_opacity": "1",
+-      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
++      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
++      "zen_main_browser_background": "var(--zen-colors-secondary)"
+     }
+   },
+ 
 @@ -83,7 +83,8 @@
        "appmenu_update_icon_color": "--panel-banner-item-update-supported-bgcolor",
        "appmenu_info_icon_color": "--panel-banner-item-info-icon-bgcolor",

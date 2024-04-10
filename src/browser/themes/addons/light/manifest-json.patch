@@ -1,5 +1,5 @@
 diff --git a/browser/themes/addons/light/manifest.json b/browser/themes/addons/light/manifest.json
-index 7385970fa8e3ff9659b72cfb238003958220fb0d..70739d61207c60a1869b6a590c452a8e62698833 100644
+index 7385970fa8e3ff9659b72cfb238003958220fb0d..f1fce740db32e7dcf8553619888844e4ef442297 100644
 --- a/browser/themes/addons/light/manifest.json
 +++ b/browser/themes/addons/light/manifest.json
 @@ -7,10 +7,10 @@
@@ -16,7 +16,7 @@ index 7385970fa8e3ff9659b72cfb238003958220fb0d..70739d61207c60a1869b6a590c452a8e
  
    "icons": { "32": "icon.svg" },
  
-@@ -42,18 +42,19 @@
+@@ -42,12 +42,12 @@
        "button": "rgba(207,207,216,.33)",
        "button_hover": "rgba(207,207,216,.66)",
        "button_active": "rgb(207,207,216)",
@@ -34,23 +34,18 @@ index 7385970fa8e3ff9659b72cfb238003958220fb0d..70739d61207c60a1869b6a590c452a8e
        "urlbar_popup_hover": "rgb(240,240,244)",
        "urlbar_popup_separator": "rgb(240,240,244)",
        "appmenu_update_icon_color": "#2AC3A2",
-       "appmenu_info_icon_color": "#0090ED",
-       "tab_icon_overlay_stroke": "rgb(255,255,255)",
--      "tab_icon_overlay_fill": "rgb(91,91,102)"
-+      "tab_icon_overlay_fill": "rgb(91,91,102)",
-+      "zen_main_browser_background": "rgb(229,229,229)"
-     },
-     "properties": {
-       "color_scheme": "light",
-@@ -61,7 +62,7 @@
+@@ -61,8 +61,9 @@
        "panel_active": "color-mix(in srgb, currentColor 20%, transparent)",
        "panel_active_darker": "color-mix(in srgb, currentColor 27%, transparent)",
        "toolbar_field_icon_opacity": "0.72",
 -      "input_border_color": "color-mix(in srgb, currentColor 41%, transparent)",
+-      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
 +      "input_border_color": "rgba(0, 0, 0, .3)",
-       "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
++      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
++      "zen_main_browser_background": "var(--zen-colors-secondary)"
      }
    },
+ 
 @@ -85,7 +86,8 @@
        "appmenu_update_icon_color": "--panel-banner-item-update-supported-bgcolor",
        "appmenu_info_icon_color": "--panel-banner-item-info-icon-bgcolor",

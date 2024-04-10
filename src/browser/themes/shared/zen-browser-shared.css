@@ -18,8 +18,7 @@
   --fp-contextmenu-separator-vertical: calc(4px - var(--fp-contextmenu-menuitem-border-width));
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
-  /* TODO: This could be cooked a bit more */
-  /*--toolbar-bgcolor: light-dark(rgba(255,255,255,.9), #282828) !important;*/
+  --toolbar-bgcolor: var(--zen-colors-tertiary) !important;
 }
 
 #PersonalToolbar {
@@ -244,7 +243,7 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
-  border-color: var(--color-accent-primary);
+  border-color: var(--zen-colors-primary);
 }
 
 .tab-close-button {

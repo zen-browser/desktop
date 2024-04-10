@@ -1,0 +1,13 @@
+diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
+index 9fc88fbde80a39989bde559ecc07b8e3094ccb7e..e4ceab446cc10d45a4c3a50e7f6323a3da36e8d4 100644
+--- a/browser/themes/shared/urlbar-searchbar.css
++++ b/browser/themes/shared/urlbar-searchbar.css
+@@ -59,7 +59,7 @@
+ 
+ #urlbar-background,
+ #searchbar {
+-  background-color: var(--toolbar-field-background-color);
++  background-color: var(--zen-colors-input-bg);
+   background-clip: border-box;
+   border: 1px solid var(--toolbar-field-border-color);
+   border-radius: var(--toolbarbutton-border-radius);

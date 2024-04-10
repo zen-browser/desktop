@@ -222,3 +222,15 @@
   display: none !important;
 }
 
+
+menupopup::part(content),
+panel::part(content) {
+  --panel-shadow: var(--zen-colors-shadow-color) 0px 1px 4px !important;
+  border: transparent !important;
+}
+
+menupopup, 
+panel {
+  --panel-shadow: none !important;
+  box-shadow: none;
+}

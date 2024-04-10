@@ -1,7 +1,16 @@
 diff --git a/browser/themes/shared/tabs.css b/browser/themes/shared/tabs.css
-index eb92f71e5942a19618fd74492354de78ac03bacf..0ba9a169b1a8937e8cdf39fa1fe8e5f14e09c306 100644
+index eb92f71e5942a19618fd74492354de78ac03bacf..51dbf4a694e2ac22fb02abcd405db579966c1bdc 100644
 --- a/browser/themes/shared/tabs.css
 +++ b/browser/themes/shared/tabs.css
+@@ -67,7 +67,7 @@
+ 
+ #tabbrowser-tabs {
+   --tab-min-width: 76px;
+-  --tab-loading-fill: #0A84FF;
++  --tab-loading-fill: var(--zen-primary-color);
+   --tab-overflow-pinned-tabs-width: 0px;
+   padding-inline: var(--tab-overflow-pinned-tabs-width) 0;
+   /* Use a bigger flex value than the searchbar to prevent it from
 @@ -633,7 +633,7 @@
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)

@@ -2,7 +2,7 @@
 @import url("zen-fullscreen-override.css");
 
 :root {
-  --zen-main-browser-background: light-dark(#ddd, #4a4a4a); 
+  --zen-main-browser-background: var(--zen-colors-secondary); 
   --zen-appcontent-separator-from-window-single: 7px;
   --zen-appcontent-separator-from-window: 0 var(--zen-appcontent-separator-from-window-single) var(--zen-appcontent-separator-from-window-single);
 }

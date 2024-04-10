@@ -1,0 +1,13 @@
+diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
+index c478b2745e838a7fcb91da05ff9c5769065fd1c4..6977f16b1ff6f1f0fe9c1ad47d870d92f5857edd 100644
+--- a/toolkit/themes/shared/global-shared.css
++++ b/toolkit/themes/shared/global-shared.css
+@@ -45,7 +45,7 @@
+ 
+   --toolbar-non-lwt-bgcolor: color-mix(in srgb, -moz-dialog 85%, white);
+   --toolbar-non-lwt-textcolor: -moz-dialogtext;
+-  --toolbar-bgcolor: var(--toolbar-non-lwt-bgcolor);
++  --toolbar-bgcolor: var(--zen-colors-tertiary);
+   --toolbar-color: var(--toolbar-non-lwt-textcolor);
+ 
+   &:-moz-lwtheme {

@@ -1,0 +1,49 @@
+diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
+index 38fba9a7265cbcec406fd4145014083286fa798e..38281e4fc127543052064020ebf14ad0e72abda5 100644
+--- a/browser/components/preferences/preferences.xhtml
++++ b/browser/components/preferences/preferences.xhtml
+@@ -42,6 +42,10 @@
+     href="chrome://browser/skin/preferences/containers.css"
+   />
+   <link rel="stylesheet" href="chrome://browser/skin/preferences/privacy.css" />
++  <link
++    rel="stylesheet"
++    href="chrome://browser/skin/preferences/zen-preferences.css"
++  />
+ 
+   <link rel="localization" href="branding/brand.ftl"/>
+   <link rel="localization" href="browser/browser.ftl"/>
+@@ -52,6 +56,7 @@
+   <link rel="localization" href="toolkit/branding/accounts.ftl"/>
+   <link rel="localization" href="toolkit/branding/brandings.ftl"/>
+   <link rel="localization" href="toolkit/featuregates/features.ftl"/>
++  <link rel="localization" href="browser/preferences/zen-preferences.ftl"/>
+ 
+   <!-- Links below are only used for search-l10n-ids into subdialogs -->
+   <link rel="localization" href="browser/aboutDialog.ftl"/>
+@@ -111,6 +116,17 @@
+           <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
+         </richlistitem>
+ 
++        <richlistitem id="category-zen-looks"
++                      class="category"
++                      value="paneZenLooks"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-looks"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-looks-title"></label>
++        </richlistitem>
++
+         <richlistitem id="category-home"
+                       class="category"
+                       value="paneHome"
+@@ -247,6 +263,7 @@
+ #include sync.inc.xhtml
+ #include experimental.inc.xhtml
+ #include moreFromMozilla.inc.xhtml
++#include zenLooksAndFeel.inc.xhtml
+         </vbox>
+       </vbox>
+     </vbox>

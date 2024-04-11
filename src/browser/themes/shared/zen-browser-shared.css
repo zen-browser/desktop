@@ -300,3 +300,7 @@ toolbarbutton#scrollbutton-up {
 .footer-button {
   padding: 0.60em 1.9em !important;
 }
+
+menuseparator {
+  --panel-separator-color: var(--zen-colors-secondary) !important;
+}

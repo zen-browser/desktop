@@ -1,0 +1,17 @@
+diff --git a/browser/base/content/browser-siteIdentity.js b/browser/base/content/browser-siteIdentity.js
+index a2a5f6ff71b9a6587e2a033aee39385abd319645..789980baee419249c5bb206d6117abe9994631bf 100644
+--- a/browser/base/content/browser-siteIdentity.js
++++ b/browser/base/content/browser-siteIdentity.js
+@@ -1143,6 +1143,12 @@ var gIdentityHandler = {
+       }
+     }
+ 
++    if (connection == "chrome" || connection == "extension" || connection == "file") {
++      document.getElementById("identity-popup-mainView-panel-header").setAttribute("hidden", "true");
++    } else {
++      document.getElementById("identity-popup-mainView-panel-header").removeAttribute("hidden");
++    }
++
+     // Push the appropriate strings out to the UI.
+     document.l10n.setAttributes(
+       this._identityPopupMainViewHeaderLabel,

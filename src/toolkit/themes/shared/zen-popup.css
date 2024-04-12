@@ -231,3 +231,11 @@ menupopup,
 panel {
   box-shadow: none;
 }
+
+toolbarbutton:not(#appMenu-fxa-label2, .subviewbutton-iconic),
+#PanelUI-zen-profiles menuitem {
+  /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
+  margin-left: 0 !important;
+  margin: 2.5px 0 !important;
+  border-radius: 0 !important;
+}

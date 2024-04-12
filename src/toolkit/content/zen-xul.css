@@ -23,9 +23,15 @@ html#main-window > body {
 :not([inDOMFullscreen="true"]) #appcontent {
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  border: 1px solid var(--zen-dialog-border-color);
   margin: var(--zen-appcontent-separator-from-window);
+}
+
+:not([inDOMFullscreen="true"]) #appcontent,
+#sidebar-box,
+#navigator-toolbox #TabsToolbar {
+  /** Sidebar is already hidden in full screen mode */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  border: none;
 }
 
 

@@ -173,10 +173,8 @@ button.popup-notification-dropmarker {
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
   background: var(--sidebar-background-color);
-  box-shadow: var(--zen-sidebar-box-shadow) !important;
   overflow: hidden;
   transition: .2s;
-  border: 1px solid var(--zen-dialog-border-color);
   border-radius: 15px !important;
   flex-direction: column !important;
   padding: 5px 0;
@@ -352,4 +350,20 @@ toolbarbutton#scrollbutton-up {
 
 menuseparator {
   --panel-separator-color: var(--zen-colors-secondary) !important;
+}
+
+/** Specific dialogs override */
+
+#identity-popup-multiView toolbarseparator {
+  display: none;
+}
+
+#identity-popup-more-info-footer toolbarseparator {
+  display: block;
+}
+
+panelmultiview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

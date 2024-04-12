@@ -11,10 +11,6 @@
   &:-moz-lwtheme {
     color: var(--lwt-text-color);
     --link-color: light-dark(rgb(0, 97, 224), rgb(0, 221, 255));
-
-    @media not (prefers-contrast) {
-      --focus-outline-color: light-dark(rgb(92, 91, 91), rgb(166, 166, 166)) !important;
-    }
   }
 }
 

@@ -1,0 +1,27 @@
+diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
+index cf388eb3d393403c077f2a01c3e670cefad7db59..747095a95fc87837093ec7c85437f289450b4486 100644
+--- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
++++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
+@@ -315,6 +315,7 @@ LightweightThemeConsumer.prototype = {
+       theme.additionalBackgrounds
+     );
+     _setProperties(root, active, theme, hasTheme);
++    this._zenSetAccentColor(root);
+ 
+     if (hasTheme) {
+       if (updateGlobalThemeData) {
+@@ -406,6 +407,14 @@ LightweightThemeConsumer.prototype = {
+       this._lastExperimentData.stylesheet = stylesheet;
+     }
+   },
++
++  _zenSetAccentColor(root) {
++    const themeAccent = Services.prefs.getStringPref(
++      "zen.theme.accent-color",
++      "#0b57d0"
++    );
++    root.style.setProperty("--zen-primary-color", themeAccent);
++  },
+ };
+ 
+ function _getContentProperties(doc, active, data) {

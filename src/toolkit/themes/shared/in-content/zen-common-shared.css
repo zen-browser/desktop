@@ -10,6 +10,7 @@
    */
 
   /** Primary color will be injected by the theme as `--zen-primary-color` */
+  --zen-primary-color: #0b57d0; /* This is the default blue color */
 
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
@@ -52,7 +53,10 @@
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
 
   --zen-button-border-radius: 999px;
-  --zen-button-padding: 0.7em 2.3em;
+  --zen-button-padding: 0.9em 2.3em;
+
+  /* Other colors */
+  --urlbar-box-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
 
   /* TODO: Support dark themes! */
 }

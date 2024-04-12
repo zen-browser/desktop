@@ -60,7 +60,7 @@
 #urlbar, #urlbar .urlbar-page-action, 
 #urlbar #tracking-protection-icon-container,
 #urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box {
-  border-radius: 999px !important;
+  border-radius: 999px;
 }
 
 #urlbar #identity-box.chromeUI #identity-icon-box {
@@ -118,6 +118,46 @@ toolbar .toolbarbutton-1 {
     width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
     height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
   }
+}
+
+#identity-permission-box {
+  margin: 0 5px 0 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+#identity-box:has(#identity-permission-box[hasPermissions]) #identity-icon-box {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-right: 0 !important;
+}
+
+#notification-popup-box {
+  border-radius: 999px;
+  margin-right: 5px;
+  transition: .2s;
+  height: 100%;
+  padding: 7px;
+}
+
+button.popup-notification-dropmarker {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.panel-footer:has(button.popup-notification-dropmarker:not([hidden="true"])) button.popup-notification-secondary-button {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.searchbar-engine-one-off-item {
+  max-width: 20px;
+  min-width: 20px !important;
+  justify-content: center;
+}
+
+#downloadsHistory {
+  margin-top: 5px
 }
 
 /* Toolbars customization */
@@ -306,8 +346,8 @@ toolbarbutton#scrollbutton-up {
   color: var(--zen-secondary-btn-color) !important;
 }
 
-.footer-button[default] {
-  outline-color: var(--button-primary-bgcolor);
+.footer-button:is([default], .primary) {
+  --focus-outline-color: var(--zen-primary-btn-color) !important;
 }
 
 menuseparator {

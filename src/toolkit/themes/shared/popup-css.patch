@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ddc41a66ed0e3688ce34052652bef1fe33a08d49..ee6acc414a86626ac15b5a744ebcb867c85fe536 100644
+index ddc41a66ed0e3688ce34052652bef1fe33a08d49..53575e1af10d764b131ac20648f1fdd84b652d60 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
 @@ -2,6 +2,8 @@
@@ -22,12 +22,12 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..ee6acc414a86626ac15b5a744ebcb867
    --panel-padding: var(--panel-padding-block) 0;
    --panel-border-radius: 4px;
 -  --panel-border-color: ThreeDShadow;
-+  --panel-border-color: light-dark(rgba(0,0,0,.2), rgba(255,255,255,.1)) /* var(--arrowpanel-border-color) */ !important;
++  --panel-border-color: transparent /* var(--arrowpanel-border-color) */ !important;
    --panel-width: initial;
  
    --panel-shadow-margin: 0px;
 -  --panel-shadow: 0 0 var(--panel-shadow-margin) hsla(0,0%,0%,.2);
-+  --panel-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;;
++  --panel-shadow: rgba(0, 0, 0, 0.15) 0px 4px 10px;
    -moz-window-input-region-margin: var(--panel-shadow-margin);
    margin: calc(-1 * var(--panel-shadow-margin));
  

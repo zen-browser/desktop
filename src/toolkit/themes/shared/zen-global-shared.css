@@ -2,13 +2,11 @@
 @import url("./in-content/zen-common-shared.css");
 
 :root {
-  --zen-dialog-background: Field;
-  --zen-dialog-border-color: rgba(0,0,0,.2);
   --zen-panel-radius: 15px;
 
   --arrowpanel-background: var(--zen-dialog-background) !important;
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;
-  --arrowpanel-border-radius: 7px !important;
+  --arrowpanel-border-radius: 15px !important;
 
   &:-moz-lwtheme {
     color: var(--lwt-text-color);
@@ -22,7 +20,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --zen-dialog-background: rgba(28, 27, 34);
     --zen-dialog-border-color: rgba(255,255,255,.1);
   }
 }

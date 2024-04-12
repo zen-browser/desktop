@@ -93,7 +93,7 @@
 } */
 
 #urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) #identity-icon-box {
-  padding-right: 5px;
+  margin-right: 5px;
 }
 
 #urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) {
@@ -298,7 +298,16 @@ toolbarbutton#scrollbutton-up {
 }
 
 .footer-button {
-  padding: 0.60em 1.9em !important;
+  padding: var(--zen-button-padding) !important;
+  border-radius: var(--zen-button-border-radius) !important;
+}
+
+.footer-button:not([default], .primary) {
+  color: var(--zen-secondary-btn-color) !important;
+}
+
+.footer-button[default] {
+  outline-color: var(--button-primary-bgcolor);
 }
 
 menuseparator {

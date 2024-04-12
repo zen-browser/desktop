@@ -1,0 +1,11 @@
+
+@namespace html "http://www.w3.org/1999/xhtml";
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
+/** This file is used to override UI inside "common-shared.css" */
+
+/** These types of buttons look INSAINELY bad in the preferences page */
+xul|button {
+  border-radius: var(--zen-button-border-radius) !important;
+  padding: var(--zen-button-padding) !important;
+}

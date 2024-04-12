@@ -1,7 +1,6 @@
 
 :root {
   --panel-subview-body-padding: 2px 0 !important;
-  --arrowpanel-border-radius: 8px !important;
   --arrowpanel-menuitem-border-radius: 5px !important;
   --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline) !important;
   --arrowpanel-menuitem-padding-block: 8px !important;
@@ -225,12 +224,10 @@
 
 menupopup::part(content),
 panel::part(content) {
-  --panel-shadow: var(--zen-colors-shadow-color) 0px 1px 4px !important;
   border: transparent !important;
 }
 
 menupopup, 
 panel {
-  --panel-shadow: none !important;
   box-shadow: none;
 }

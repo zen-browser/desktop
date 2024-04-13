@@ -52,6 +52,11 @@
       updateAccentColor() {
         const accentColor = Services.prefs.getStringPref(kZenThemeAccentColorPref, "#0b57d0");
         document.documentElement.style.setProperty("--zen-primary-color", accentColor);
+        // Notify the page that the accent color has changed, only if a function
+        // handler is defined.
+        if (typeof window.zenPageAccentColorChanged === "function") {
+          window.zenPageAccentColorChanged(accentColor);
+        }
       },
  
    };

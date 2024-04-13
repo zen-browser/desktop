@@ -2,7 +2,13 @@
 @import url("zen-common-shared-ui-override.css");
 
 :host(:is(.anonymous-content-host, notification-message)),
-:root {
+:root,
+.zenLooksAndFeelColorOption {
+
+  /** We also add `.zenLooksAndFeelColorOption` so that it recalculates the colors when the theme changes
+   * in the preferences page.
+   */
+
   /** Primary colors examples:
    * - green: #96D785;
    * - blue: #0b57d0;
@@ -10,11 +16,11 @@
    */
 
   /** Primary color will be injected by the theme as `--zen-primary-color` */
-  --zen-primary-color: #0b57d0; /* This is the default blue color, in case the theme doesn't provide a primary color */
+  --zen-primary-color: #2868cf; /* This is the default blue color, in case the theme doesn't provide a primary color */
 
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
-  --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 20%, white 80%);
+  --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, white 60%);
   --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 4%, white 96%);
 
   --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, white 10%);

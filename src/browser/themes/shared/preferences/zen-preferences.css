@@ -2,3 +2,61 @@
 #category-zen-looks > .category-icon {
   list-style-image: url("chrome://browser/skin/customize.svg");
 }
+
+/* Look and feel */
+
+#zenLooksAndFeelColorOptions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 108px);
+  gap: 5px;
+  margin: 10px 0 15px 0;
+}
+
+.zenLooksAndFeelColorOptionParen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--in-content-box-info-background);
+  width: fit-content;
+  margin-top: 10px;
+  border: 2px solid transparent;
+}
+
+.zenLooksAndFeelColorOptionParen[selected="true"] {
+  border-color: var(--zen-primary-color);
+}
+
+.zenLooksAndFeelColorOption {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--zen-primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.zenLooksAndFeelColorOption::before {
+  content: "";
+  display: block;
+  width: 50%;
+  height: 50%;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  background: var(--zen-colors-secondary);
+}
+
+.zenLooksAndFeelColorOption::after {
+  content: "";
+  display: block;
+  width: 50%;
+  height: 50%;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  background: var(--zen-colors-tertiary);
+}

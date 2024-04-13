@@ -1,0 +1,20 @@
+diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
+index aaacdb6d977a69ca62d59bd861b26948980c400d..b014cfaf5b8f31bc5a37135c92dbf213b08eeba0 100644
+--- a/browser/components/preferences/main.inc.xhtml
++++ b/browser/components/preferences/main.inc.xhtml
+@@ -155,6 +155,7 @@
+ </hbox>
+ 
+ <!-- Website appearance -->
++#if 0
+ <groupbox id="webAppearanceGroup" data-category="paneGeneral" hidden="true">
+   <html:h2 data-l10n-id="preferences-web-appearance-header"/>
+   <html:div id="webAppearanceSettings">
+@@ -195,6 +196,7 @@
+     </html:div>
+   </html:div>
+ </groupbox>
++#endif
+ 
+ <!-- Colors -->
+ <groupbox id="colorsGroup" data-category="paneGeneral" hidden="true">

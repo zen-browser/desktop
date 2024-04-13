@@ -9,7 +9,7 @@
   --uc-arrowpanel-menuitem-margin-inline: 4px;
   --uc-arrowpanel-menuitem-margin-block: 2px;
   --panel-separator-margin-vertical: 2px !important;
-  --panel-separator-margin-horizontal: 0 !important;
+  --panel-separator-margin-horizontal: 1px !important;
 
   --uc-panel-zoom-button-padding: 8px;
   --uc-panel-zoom-button-inline-padding: 9px;
@@ -35,6 +35,9 @@
   --uc-contextmenu-menuitem-margin: var(--uc-contextmenu-menuitem-margin-block) var(--uc-contextmenu-menuitem-margin-inline);
   --uc-contextmenu-separator-vertical: calc(4px - var(--uc-contextmenu-menuitem-border-width));
   --uc-contextmenu-separator-horizontal: 0;
+
+  --panel-separator-color: var(--zen-colors-secondary) !important;
+  --zen-panel-separator-width: 2px;
 }
 
 /* app menu */
@@ -217,8 +220,10 @@
   margin-inline: 0 !important;
 }
 
-#identity-popup-mainView > toolbarseparator:first-child {
+#identity-popup-mainView > toolbarseparator:first-child,
+#unified-extensions-view > toolbarseparator:first-child {
   display: none !important;
+  opacity: 0 !important;
 }
 
 
@@ -240,7 +245,45 @@ toolbarbutton:not(
 ),
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
-  margin-left: 0 !important;
-  margin: 2.5px 0 !important;
+  margin: 0 !important;
   border-radius: 0 !important;
+}
+
+.panel-subview-footer-button {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+#PanelUI-zen-profiles menuitem {
+  padding: 5px !important;
+}
+
+#PanelUI-zen-profiles menuitem:last-child {
+  margin-bottom: 5px !important;
+}
+
+.unified-extensions-item-action-button {
+  padding: 5px 20px !important;
+}
+
+#unified-extensions-description {
+  padding: 0 20px;
+  margin: 0 !important;
+}
+
+.unified-extensions-item {
+  padding: 0 !important;
+}
+
+.panel-subview-footer-button {
+  --arrowpanel-menuitem-padding-block: 20px !important;
+  --arrowpanel-menuitem-padding-inline: 15px !important;
+}
+
+toolbarseparator, menuseparator {
+  border-width: var(--zen-panel-separator-width) !important;
+}
+
+#appMenu-zoom-controls {
+  border-top-width: var(--zen-panel-separator-width) !important;
 }

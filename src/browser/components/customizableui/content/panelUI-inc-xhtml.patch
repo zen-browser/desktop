@@ -1,0 +1,17 @@
+diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
+index 956a6ae45d7adbec1513c5af528ebb687a4b7d0d..83b23e84cb6895497c1346f7c4aff15173e67b5c 100644
+--- a/browser/components/customizableui/content/panelUI.inc.xhtml
++++ b/browser/components/customizableui/content/panelUI.inc.xhtml
+@@ -81,9 +81,10 @@
+             <html:span data-l10n-id="unified-extensions-header-title"/>
+           </html:h1>
+         </box>
+-
++        <html:p id="unified-extensions-description" data-l10n-id="unified-extensions-description" class="panel-description"/>
++#if 0
+         <toolbarseparator />
+-
++#endif
+         <vbox class="panel-subview-body" context="unified-extensions-context-menu">
+           <html:div id="unified-extensions-messages-container">
+             <!-- messages will be inserted here -->

@@ -232,7 +232,12 @@ panel {
   box-shadow: none;
 }
 
-toolbarbutton:not(#appMenu-fxa-label2, .subviewbutton-iconic),
+toolbarbutton:not(
+  #appMenu-fxa-label2, 
+  .subviewbutton-iconic, 
+  .zen-sidebar-action-button, 
+  .all-tabs-close-button
+),
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
   margin-left: 0 !important;

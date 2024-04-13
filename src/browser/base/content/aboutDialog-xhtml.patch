@@ -1,0 +1,12 @@
+diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
+index e0fcce367abe57e03e54779437facbba4326687b..7d57f10cfe6bd8435e45f0ffc806bd76b475e403 100644
+--- a/browser/base/content/aboutDialog.xhtml
++++ b/browser/base/content/aboutDialog.xhtml
+@@ -36,6 +36,7 @@
+ 
+     <html:link rel="localization" href="branding/brand.ftl"/>
+     <html:link rel="localization" href="browser/aboutDialog.ftl"/>
++    <script src="chrome://browser/content/zenThemeModifier.js"></script>
+   </linkset>
+ 
+   <html:div id="aboutDialogContainer">

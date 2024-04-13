@@ -1,18 +1,25 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index b4886fb5f74568b4c09eb620be9efb74e39c599c..0993ee1258dfd83ade68500f11dc2e833df4ae51 100644
+index b4886fb5f74568b4c09eb620be9efb74e39c599c..534e40c8f65d1b626c11aa3cfea308cc6176be02 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -163,9 +163,15 @@
+@@ -127,6 +127,7 @@
+   Services.scriptloader.loadSubScript("chrome://browser/content/search/autocomplete-popup.js", this);
+   Services.scriptloader.loadSubScript("chrome://browser/content/search/searchbar.js", this);
+   Services.scriptloader.loadSubScript("chrome://browser/content/shopping/shopping-sidebar.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
+ 
+   window.onload = gBrowserInit.onLoad.bind(gBrowserInit);
+   window.onunload = gBrowserInit.onUnload.bind(gBrowserInit);
+@@ -163,9 +164,15 @@
      </vbox>
    </html:template>
  
 -#include navigator-toolbox.inc.xhtml
--
--#include browser-box.inc.xhtml
 +  <hbox id="zen-titlebar-items-container">
 +#include titlebar-items.inc.xhtml
 +  </hbox>
-+
+ 
+-#include browser-box.inc.xhtml
 +  <hbox id="zen-main-app-wrapper" flex="1">
 +    #include navigator-toolbox.inc.xhtml
 +    #include zen-sidebar-box.inc.xhtml

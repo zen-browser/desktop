@@ -247,7 +247,6 @@ toolbarbutton#scrollbutton-up {
   padding: 0 !important;
   align-items: center;
   animation: zen-slide-in 0.3s;
-  transition: .1s transform;
 }
 
 .tabbrowser-tab:active {
@@ -323,6 +322,12 @@ toolbarbutton#scrollbutton-up {
 
 .tab-icon-overlay {
   margin-inline-end: 0 !important;
+}
+
+#tabbrowser-arrowscrollbox {
+  &::part(scrollbox-clip) {
+    max-height: 62vh;
+  }
 }
 
 /* Title bar */

@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 38fba9a7265cbcec406fd4145014083286fa798e..38281e4fc127543052064020ebf14ad0e72abda5 100644
+index 38fba9a7265cbcec406fd4145014083286fa798e..c54b900f0329c95ae706eb6df42fd7f7e2dc41c9 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -42,6 +42,10 @@
@@ -21,7 +21,15 @@ index 38fba9a7265cbcec406fd4145014083286fa798e..38281e4fc127543052064020ebf14ad0
  
    <!-- Links below are only used for search-l10n-ids into subdialogs -->
    <link rel="localization" href="browser/aboutDialog.ftl"/>
-@@ -111,6 +116,17 @@
+@@ -84,6 +89,7 @@
+   <script src="chrome://browser/content/migration/migration-wizard.mjs" type="module"></script>
+   <script type="module" src="chrome://global/content/elements/moz-toggle.mjs"/>
+   <script type="module" src="chrome://global/content/elements/moz-message-bar.mjs" />
++  <script src="chrome://browser/content/zenThemeModifier.js"/>
+ </head>
+ 
+ <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+@@ -111,6 +117,17 @@
            <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
          </richlistitem>
  
@@ -39,7 +47,7 @@ index 38fba9a7265cbcec406fd4145014083286fa798e..38281e4fc127543052064020ebf14ad0
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -247,6 +263,7 @@
+@@ -247,6 +264,7 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml

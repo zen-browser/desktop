@@ -262,7 +262,7 @@ toolbarbutton:not(
   margin-bottom: 5px !important;
 }
 
-.unified-extensions-item-action-button {
+panelview .unified-extensions-item-action-button {
   padding: 5px 20px !important;
 }
 

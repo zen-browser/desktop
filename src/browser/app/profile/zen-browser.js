@@ -45,6 +45,7 @@ pref('cookiebanners.service.mode.privateBrowsing', 1);
 pref('browser.urlbar.unitConversion.enabled', true);
 pref('browser.urlbar.trending.featureGate', false);
 pref('browser.urlbar.weather.featureGate', true);
+pref('browser.urlbar.quickactions.enabled', true);
 
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);

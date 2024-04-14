@@ -95,7 +95,7 @@ pref("alerts.showFavicons", true);
 pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
-pref('zen.theme.accent-color', "#0b57d0");
+pref('zen.theme.accent-color', "#aac7ff");
 
 // From: https://github.com/yokoffing/Betterfox
 

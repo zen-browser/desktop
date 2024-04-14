@@ -1,6 +1,6 @@
 
 const kZenColors = [
-  "#2868cf",
+  "#aac7ff",
   "#74d7cb",
   "#a0d490",
   "#dec663",

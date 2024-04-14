@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 39cf7c917aa8807d491cc6a3702e398569681022..30b3801d20e785d460e06baeef063b7b10e827bc 100644
+index 39cf7c917aa8807d491cc6a3702e398569681022..6e6942d97596540b0823c7934062ad2d63fa415c 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -65,7 +65,7 @@
+@@ -65,10 +65,10 @@
  }
  
  #identity-box[pageproxystate="valid"].notSecureText > .identity-box-button,
@@ -10,4 +10,8 @@ index 39cf7c917aa8807d491cc6a3702e398569681022..30b3801d20e785d460e06baeef063b7b
 +#identity-box[pageproxystate="valid"] > .identity-box-button,
  #identity-box[pageproxystate="valid"].extensionPage > .identity-box-button,
  #urlbar-label-box {
-   background-color: var(--urlbar-box-bgcolor);
+-  background-color: var(--urlbar-box-bgcolor);
++  background-color: light-dark(white, rgb(66, 65, 77));
+   color: var(--urlbar-box-text-color);
+   padding-inline: 8px;
+   border-radius: var(--urlbar-icon-border-radius);

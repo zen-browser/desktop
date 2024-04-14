@@ -8,4 +8,14 @@
 xul|button {
   border-radius: var(--zen-button-border-radius) !important;
   padding: var(--zen-button-padding) !important;
+  transition: .2s;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+html|button {
+  transition: .2s;
+  border-radius: 10px !important;
 }

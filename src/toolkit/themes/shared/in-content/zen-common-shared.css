@@ -16,21 +16,21 @@
    */
 
   /** Primary color will be injected by the theme as `--zen-primary-color` */
-  --zen-primary-color: #2868cf; /* This is the default blue color, in case the theme doesn't provide a primary color */
+  --zen-primary-color: #aac7ff; /* This is the default blue color, in case the theme doesn't provide a primary color */
 
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
   --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, white 60%);
-  --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 4%, white 96%);
+  --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 7%, white 93%);
 
   --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, white 10%);
   --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, black 20%);
   --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 40%, black 60%);
 
-  --zen-colors-shadow-color: color-mix(in srgb, var(--zen-primary-color) 30%, white 70%);
-  --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, white 90%);
+  --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, white 80%);
 
-  --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 1.5%, white 98.5%);
+  --zen-dialog-background: var(--zen-colors-tertiary);
+  --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, #f1f1f1 92%);
 
   --in-content-primary-button-background: var(--zen-primary-color) !important;          
   --in-content-primary-button-background-hover: var(--zen-colors-hover-bg) !important;

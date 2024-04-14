@@ -63,6 +63,7 @@
 
   /* Other colors */
   --urlbar-box-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
+  --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77)) !important;
 
   /* TODO: Support dark themes! */
 }

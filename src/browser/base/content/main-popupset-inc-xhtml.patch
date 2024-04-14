@@ -1,0 +1,23 @@
+diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
+index 4074f35ffc622d5ec44a4b4e4c766aa5ecefd9f2..df8781b76d29866fe9ba2e73ef99027619c7d013 100644
+--- a/browser/base/content/main-popupset.inc.xhtml
++++ b/browser/base/content/main-popupset.inc.xhtml
+@@ -166,6 +166,10 @@
+            hidden="true"
+            tabspecific="true"
+            aria-labelledby="editBookmarkPanelTitle">
++      <html:div id="zenEditBookmarkPanelFaviconContainer">
++        <html:img id="zenEditBookmarkPanelFavicon"/>
++      </html:div>
++      <vbox>
+       <box class="panel-header">
+         <html:h1>
+           <html:span id="editBookmarkPanelTitle"/>
+@@ -194,6 +198,7 @@
+                   oncommand="StarUI.removeBookmarkButtonCommand();"/>
+         </html:moz-button-group>
+       </vbox>
++      </vbox>
+     </panel>
+   </html:template>
+ 

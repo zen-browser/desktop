@@ -287,3 +287,70 @@ toolbarseparator, menuseparator {
 #appMenu-zoom-controls {
   border-top-width: var(--zen-panel-separator-width) !important;
 }
+
+#zenEditBookmarkPanelFaviconContainer {
+  border: 1px solid var(--input-border-color);
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px;
+  background: light-dark(#fff, rgba(255,255,255,.2));
+}
+
+#editBookmarkPanel::part(content) {
+  display: flex;
+  flex-direction: row !important;
+}
+
+#zenEditBookmarkPanelFavicon {
+  width: 20px;
+  height: 20px;
+}
+
+#editBookmarkPanel .panel-header {
+  min-height: 0 !important;
+  padding-bottom: 0;
+  padding-top: 16px;
+}
+
+#editBMPanel_namePicker {
+  width: -moz-available;
+}
+
+label.editBMPanel_folderRow,
+label.editBMPanel_nameRow {
+  min-width: 60px;
+}
+
+hbox.editBMPanel_folderRow {
+  width: -moz-available;
+}
+
+.zenEditBMPanel_fieldContainer:not(:first-child) {
+  margin-top: 10px;
+}
+
+.zenEditBMPanel_fieldContainer {
+  align-items: center;
+}
+
+#editBookmarkPanelBottomContent {
+  display: none;
+}
+
+:host(:not([native])) #label-box {
+  font-weight: 500 !important;
+}
+
+#editBMPanel_folderMenuList::part(icon) {
+  margin-right: 10px;
+}
+
+/**/
+
+#unified-extensions-manage-extensions {
+  padding-left: 20px;
+}

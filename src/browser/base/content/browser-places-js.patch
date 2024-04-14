@@ -1,0 +1,35 @@
+diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
+index 6992d22069643b58b249ae16edfe354304e56a39..38a006799feb5f4f41e582074901bb7226397ae1 100644
+--- a/browser/base/content/browser-places.js
++++ b/browser/base/content/browser-places.js
+@@ -243,6 +243,8 @@ var StarUI = {
+       });
+     }
+ 
++    this._setIconAndPreviewImage();
++
+     let onPanelReady = fn => {
+       let target = this.panel;
+       if (target.parentNode) {
+@@ -294,6 +296,21 @@ var StarUI = {
+     }
+   },
+ 
++  _setIconAndPreviewImage() {
++    let faviconImage = this._element("zenEditBookmarkPanelFavicon");
++    faviconImage.removeAttribute("iconloadingprincipal");
++    faviconImage.removeAttribute("src");
++
++    let tab = gBrowser.selectedTab;
++    if (tab.hasAttribute("image") && !tab.hasAttribute("busy")) {
++      faviconImage.setAttribute(
++        "iconloadingprincipal",
++        tab.getAttribute("iconloadingprincipal")
++      );
++      faviconImage.setAttribute("src", tab.getAttribute("image"));
++    }
++  },
++
+   removeBookmarkButtonCommand: function SU_removeBookmarkButtonCommand() {
+     this._removeBookmarksOnPopupHidden = true;
+     this.panel.hidePopup();

@@ -1,0 +1,12 @@
+diff --git a/browser/components/places/content/bookmarkProperties.xhtml b/browser/components/places/content/bookmarkProperties.xhtml
+index 047652a52e705d49f870399992873fce536c07b9..2932eb94e8c16eb05f172322a6ce3ea201ecd0b1 100644
+--- a/browser/components/places/content/bookmarkProperties.xhtml
++++ b/browser/components/places/content/bookmarkProperties.xhtml
+@@ -37,6 +37,7 @@
+     />
+ 
+     <html:link rel="localization" href="browser/editBookmarkOverlay.ftl"/>
++    <script src="chrome://browser/content/zenThemeModifier.js"></script>
+   </linkset>
+ 
+   <stringbundleset id="stringbundleset">

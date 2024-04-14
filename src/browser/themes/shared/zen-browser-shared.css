@@ -19,6 +19,9 @@
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
   --toolbar-bgcolor: var(--zen-colors-tertiary) !important;
+
+  --input-bgcolor: var(--zen-colors-tertiary) !important;
+  --input-border-color: var(--zen-input-border-color) !important;
 }
 
 #PersonalToolbar {
@@ -359,12 +362,21 @@ menuseparator {
 
 /** Specific dialogs override */
 
-#identity-popup-multiView toolbarseparator {
+#identity-popup-multiView toolbarseparator,
+#editBookmarkHeaderSeparator {
   display: none;
 }
 
 #identity-popup-more-info-footer toolbarseparator {
   display: block;
+}
+
+#editBMPanel_foldersExpander {
+  display: none;
+}
+
+#editBookmarkPanelContent > label:not(.editBMPanel_nameRow) {
+  padding-top: 5px;
 }
 
 panelmultiview {

@@ -1,0 +1,39 @@
+diff --git a/browser/components/places/content/editBookmarkPanel.inc.xhtml b/browser/components/places/content/editBookmarkPanel.inc.xhtml
+index 3ec3f094831c2143a818b43d1761a571f0ffa63d..309dfa8ed628f4cc124fe16d20b7411065c09f23 100644
+--- a/browser/components/places/content/editBookmarkPanel.inc.xhtml
++++ b/browser/components/places/content/editBookmarkPanel.inc.xhtml
+@@ -5,7 +5,7 @@
+ <div id="editBookmarkPanelContent">
+   <label id="editBMPanel_itemsCountText"
+          class="editBMPanel_selectionCount"/>
+-
++<hbox flex="1" class="zenEditBMPanel_fieldContainer">
+   <label data-l10n-id="bookmark-overlay-name-2"
+          class="editBMPanel_nameRow hideable"
+          control="editBMPanel_namePicker"/>
+@@ -13,7 +13,7 @@
+               class="editBMPanel_nameRow hideable"
+               type="text"
+               onchange="gEditItemOverlay.onNamePickerChange().catch(Cu.reportError);"/>
+-
++</hbox>
+   <label data-l10n-id="bookmark-overlay-url"
+          class="editBMPanel_locationRow hideable"
+          control="editBMPanel_locationField"/>
+@@ -21,7 +21,7 @@
+               class="editBMPanel_locationRow uri-element hideable"
+               type="text"
+               onchange="gEditItemOverlay.onLocationFieldChange();"/>
+-
++<hbox flex="1" class="zenEditBMPanel_fieldContainer">
+   <label data-l10n-id="bookmark-overlay-location-2"
+          class="editBMPanel_folderRow hideable"
+          control="editBMPanel_folderMenuList"/>
+@@ -51,6 +51,7 @@
+             data-l10n-id="bookmark-overlay-folders-expander2"
+             oncommand="gEditItemOverlay.toggleFolderTreeVisibility();"/>
+   </hbox>
++</hbox>
+ 
+   <vbox id="editBMPanel_folderTreeRow"
+         class="hideable"

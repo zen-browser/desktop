@@ -15,7 +15,9 @@ button:active {
   transform: scale(0.97);
 }
 
-html|button {
+html|button:not(:is(
+  .tab-button, .ghost-button
+)) {
   transition: .2s;
   border-radius: 10px !important;
 }

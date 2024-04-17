@@ -1,19 +1,8 @@
 diff --git a/browser/locales/en-US/browser/appmenu.ftl b/browser/locales/en-US/browser/appmenu.ftl
-index 5ad2d75f6215f7da44948cda5ad938db8fd97e8d..6a3e361bbed2fc36493011509366274c4dfc6874 100644
+index 5ad2d75f6215f7da44948cda5ad938db8fd97e8d..dfc551d8d3227e9b5d1d0c9d3380fd0ad85ca65e 100644
 --- a/browser/locales/en-US/browser/appmenu.ftl
 +++ b/browser/locales/en-US/browser/appmenu.ftl
-@@ -25,6 +25,10 @@ appmenuitem-new-window =
-     .label = New window
- appmenuitem-new-private-window =
-     .label = New private window
-+appmenuitem-new-zen-profiles-tab =
-+  .label = Open Profiles Page
-+appmenuitem-new-zen-create-profile =
-+  .label = Create a new profile
- appmenuitem-history =
-   .label = History
- appmenuitem-downloads =
-@@ -314,3 +318,5 @@ appmenuitem-relay-title = { -relay-brand-short-name }
+@@ -314,3 +314,5 @@ appmenuitem-relay-title = { -relay-brand-short-name }
  appmenuitem-relay-description = Mask your real email and phone
  appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
  appmenuitem-vpn-description = Protect your online activity

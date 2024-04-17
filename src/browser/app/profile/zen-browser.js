@@ -58,12 +58,16 @@ pref('extensions.pocket.enabled', false);
 
 // Pdf
 pref('browser.download.open_pdf_attachments_inline', true);
+pref('pdfjs.enableHighlightEditor', true);
+pref('pdfjs.enableHighlightFloatingButton', true);
 
 // Tabs
 pref('browser.bookmarks.openInTabClosesMenu', false);
 pref('browser.menu.showViewImageInfo', true);
 pref('findbar.highlightAll', true);
 pref('layout.word_select.eat_space_to_next_word', false);
+pref('privacy.userContext.enabled', true);
+pref('privacy.userContext.ui.enabled', true);
 
 // UA
 pref('general.useragent.compatMode.firefox', true);

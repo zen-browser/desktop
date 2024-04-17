@@ -4,7 +4,7 @@
   --arrowpanel-menuitem-border-radius: 5px !important;
   --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline) !important;
   --arrowpanel-menuitem-padding-block: 8px !important;
-  --arrowpanel-menuitem-padding-inline: 9px !important;
+  --arrowpanel-menuitem-padding-inline: 14px !important;
   --uc-arrowpanel-menuicon-margin-inline: 14px;
   --uc-arrowpanel-menuitem-margin-inline: 4px;
   --uc-arrowpanel-menuitem-margin-block: 2px;
@@ -241,7 +241,8 @@ toolbarbutton:not(:is(
   #appMenu-fxa-label2, 
   .subviewbutton-iconic, 
   .zen-sidebar-action-button, 
-  .all-tabs-close-button
+  .all-tabs-close-button,
+  #PanelUI-zen-profiles-managePrfs
 )),
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
@@ -353,4 +354,14 @@ hbox.editBMPanel_folderRow {
 
 #unified-extensions-manage-extensions {
   padding-left: 20px;
+}
+
+/* Dialog box */
+
+.printDialogBox {
+  max-width: 90vw !important;
+}
+
+.printSettingsBrowser {
+  min-width: 350px !important;
 }

@@ -1,6 +1,7 @@
 
 #PanelUI-zen-profiles {
   --menu-panel-width: 20em;
+  position: relative;
 }
 
 #PanelUI-zen-profiles-header {
@@ -95,31 +96,13 @@
   margin: 0 5px;
 }
 
-#PanelUI-zen-profiles toolbarseparator {
-  margin: 5px;
-}
 
-#PanelUI-zen-profiles toolbarbutton label {
-  display: block !important;
-}
-
-#PanelUI-zen-profiles menuitem {
-  padding: 8px 0;
-  font-size: 15px;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-#PanelUI-zen-profiles menuitem > label {
-  margin: 0 10px;
-}
-
-#PanelUI-zen-profiles menuitem::after {
+#PanelUI-zen-profiles toolbarbutton::after {
   display: none;
 }
 
-#PanelUI-zen-profiles menuitem:last-child {
-  margin-bottom: 5px;
+#PanelUI-zen-profiles toolbarbutton:last-child {
+  margin-bottom: 5px !important;
 }
 
 #PanelUI-zen-profiles-current-profile-current {
@@ -129,3 +112,21 @@
   margin-bottom: 5px;
 }
 
+
+#PanelUI-zen-profiles-managePrfs {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 5px !important;
+  padding: 5px !important;
+  transition: .1s;
+  color: light-dark(black, white);
+}
+
+#PanelUI-zen-profiles-managePrfs:hover {
+  background: var(--panel-item-hover-bgcolor);
+}
+
+#PanelUI-zen-profiles-managePrfs label {
+  display: none !important;
+}

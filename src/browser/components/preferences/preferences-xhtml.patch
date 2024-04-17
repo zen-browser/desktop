@@ -1,35 +1,17 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 38fba9a7265cbcec406fd4145014083286fa798e..c54b900f0329c95ae706eb6df42fd7f7e2dc41c9 100644
+index eee227822a772bec128d6adbe4f6aca90ed810f6..54d0f2df0c422a7d8ae0fbe10ef6c072bd7d6453 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -42,6 +42,10 @@
-     href="chrome://browser/skin/preferences/containers.css"
+@@ -43,6 +43,8 @@
    />
    <link rel="stylesheet" href="chrome://browser/skin/preferences/privacy.css" />
-+  <link
-+    rel="stylesheet"
-+    href="chrome://browser/skin/preferences/zen-preferences.css"
-+  />
  
++#include zen-preferences-links.xhtml
++
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
-@@ -52,6 +56,7 @@
-   <link rel="localization" href="toolkit/branding/accounts.ftl"/>
-   <link rel="localization" href="toolkit/branding/brandings.ftl"/>
-   <link rel="localization" href="toolkit/featuregates/features.ftl"/>
-+  <link rel="localization" href="browser/preferences/zen-preferences.ftl"/>
- 
-   <!-- Links below are only used for search-l10n-ids into subdialogs -->
-   <link rel="localization" href="browser/aboutDialog.ftl"/>
-@@ -84,6 +89,7 @@
-   <script src="chrome://browser/content/migration/migration-wizard.mjs" type="module"></script>
-   <script type="module" src="chrome://global/content/elements/moz-toggle.mjs"/>
-   <script type="module" src="chrome://global/content/elements/moz-message-bar.mjs" />
-+  <script src="chrome://browser/content/zenThemeModifier.js"/>
- </head>
- 
- <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-@@ -111,6 +117,17 @@
+     <!-- Used by fontbuilder.js -->
+@@ -112,6 +114,17 @@
            <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
          </richlistitem>
  
@@ -47,7 +29,7 @@ index 38fba9a7265cbcec406fd4145014083286fa798e..c54b900f0329c95ae706eb6df42fd7f7
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -247,6 +264,7 @@
+@@ -248,6 +261,7 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml

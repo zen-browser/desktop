@@ -1,12 +1,12 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 31ae84f3820aa12a26e10b27718bdc7da277f31b..427d44698ffe5d8154c5503a415ce9ec98982f3b 100644
+index c30a51c67ce636fa889090419a5c2642d74b4f49..b48ab31c564db4a4911c9fca291b4f09ba1025af 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -205,6 +205,7 @@ function init_all() {
-   register_module("panePrivacy", gPrivacyPane);
-   register_module("paneContainers", gContainersPane);
-   register_module("paneTranslations", gTranslationsPane);
+@@ -198,6 +198,7 @@ function init_all() {
+   // the entire document.
+   Preferences.queueUpdateOfAllElements();
+   Services.telemetry.setEventRecordingEnabled("aboutpreferences", true);
 +  register_module("paneZenLooks", gZenLooksAndFeel);
-   if (Services.prefs.getBoolPref("browser.preferences.experimental")) {
-     // Set hidden based on previous load's hidden value.
-     document.getElementById("category-experimental").hidden =
+ 
+   register_module("paneGeneral", gMainPane);
+   register_module("paneHome", gHomePane);

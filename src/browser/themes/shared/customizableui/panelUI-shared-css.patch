@@ -1,0 +1,15 @@
+diff --git a/browser/themes/shared/customizableui/panelUI-shared.css b/browser/themes/shared/customizableui/panelUI-shared.css
+index 4f282b9d5a5a3269268ae22f1702c7a6e8238375..d6e8e6cee7166f0eea99f260cca382eeece6684d 100644
+--- a/browser/themes/shared/customizableui/panelUI-shared.css
++++ b/browser/themes/shared/customizableui/panelUI-shared.css
+@@ -717,8 +717,8 @@ toolbarbutton[constrain-size="true"][cui-areatype="panel"] > .toolbarbutton-badg
+ /* Firefox Account Toolbar Panel */
+ 
+ #fxa-avatar-image {
+-  width: 16px;
+-  height: 16px;
++  width: 20px;
++  height: 20px;
+ }
+ 
+ :root {

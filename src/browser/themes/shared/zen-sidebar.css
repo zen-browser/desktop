@@ -54,7 +54,7 @@
 
 #TabsToolbar .toolbarbutton-1 > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button {
-  border-radius: 10px !important;
+  border-radius: 100px !important;
 }
 
 #TabsToolbar .toolbarbutton-1:hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),

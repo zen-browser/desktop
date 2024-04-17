@@ -1,29 +1,8 @@
 diff --git a/browser/components/tabpreview/tabpreview.css b/browser/components/tabpreview/tabpreview.css
-index 8b288cb95da0e5fe307437e300d2c03ae19ab397..13a1f652bfd44af6ef317e7c997e101ac84c0ece 100644
+index 776f520c7da2cf3e2dcc5f1395a3266f1c009ea0..2605963b023c507ab63c3ac8b761477da8550ce8 100644
 --- a/browser/components/tabpreview/tabpreview.css
 +++ b/browser/components/tabpreview/tabpreview.css
-@@ -3,9 +3,9 @@
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
- .tab-preview-container {
--  background-color: #ffffff;
-+  background-color: #fdfdfd;
-   color: #15141a;
--  border-radius: 9px;
-+  border-radius: 7px;
-   display: inline-block;
-   width: 280px;
-   overflow: hidden;
-@@ -38,7 +38,7 @@
- 
- @media (prefers-color-scheme: dark) {
-   .tab-preview-container {
--    background-color: #42414d;
-+    background-color: #333237;
-     color: #fbfbfe;
-   }
-   .tab-preview-uri {
-@@ -61,3 +61,24 @@
+@@ -57,3 +57,24 @@
      display: none;
    }
  }
@@ -48,3 +27,4 @@ index 8b288cb95da0e5fe307437e300d2c03ae19ab397..13a1f652bfd44af6ef317e7c997e101a
 +.tab-preview-thumbnail-container canvas {
 +  border-top: 1px solid var(--zen-border-color);
 +}
+\ No newline at end of file

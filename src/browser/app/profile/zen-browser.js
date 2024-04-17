@@ -46,6 +46,7 @@ pref('browser.urlbar.unitConversion.enabled', true);
 pref('browser.urlbar.trending.featureGate', false);
 pref('browser.urlbar.weather.featureGate', true);
 pref('browser.urlbar.quickactions.enabled', true);
+pref('browser.urlbar.clipboard.featureGate', true);
 
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);
@@ -133,3 +134,5 @@ pref('dom.enable_web_task_scheduling', true);
 pref('layout.css.has-selector.enabled', true);
 pref('dom.security.sanitizer.enabled', true);
 
+// Pref to enable the new profiles (TODO: Check this out!)
+//pref("browser.profiles.enabled", true);

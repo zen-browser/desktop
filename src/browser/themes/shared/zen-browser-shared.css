@@ -128,8 +128,8 @@
 toolbar .toolbarbutton-1 {
   & > .toolbarbutton-icon,
   & > .toolbarbutton-badge-stack {
-    width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
-    height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
   }
 }
 
@@ -139,7 +139,7 @@ toolbar .toolbarbutton-1 {
   border-bottom-left-radius: 0 !important;
 }
 
-#identity-box:has(#identity-permission-box[hasPermissions]) #identity-icon-box {
+#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])) #identity-icon-box {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
   margin-right: 0 !important;

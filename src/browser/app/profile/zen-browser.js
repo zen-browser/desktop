@@ -96,6 +96,7 @@ pref('gfx.webrender.all', true);
 pref('layout.css.backdrop-filter.enabled', true);
 
 pref("alerts.showFavicons", true);
+pref('browser.toolbars.bookmarks.visibility', 'never');
 
 // CUSTOM ZEN PREFS
 
@@ -103,7 +104,7 @@ pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.theme.accent-color', "#aac7ff");
-pref('zen.theme.panel-separation', 7);
+pref('zen.theme.panel-separation', /*7*/0);
 pref('zen.theme.toolbar-themed', true);
 
 // From: https://github.com/yokoffing/Betterfox

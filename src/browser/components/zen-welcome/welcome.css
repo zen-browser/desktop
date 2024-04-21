@@ -16,13 +16,23 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--zen-characteristic-gradient);
+  background: var(--zen-characteristic-gradient) !important;
   transition: .1s;
   -moz-transform: scale(1.1); /* zoom */
 }
 
-body.normal-background {
-  background: var(--zen-main-browser-background) !important;
+button {
+  background: #000 !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  padding: 10px 25px !important;
+  font-weight: 600;
+  border-radius: 100px !important;
+  cursor: pointer !important;
+}
+
+* {
+  color: white;
 }
 
 .page {
@@ -69,6 +79,7 @@ body.normal-background {
   outline: none !important;
   cursor: auto;
   user-select: none;
+  background: var(--color-gray-80) !important;
 }
 
 .cardGroup .card.selected {
@@ -170,4 +181,27 @@ input[type='checkbox'] {
 
 .card h3 {
   margin-top: 10px;
+}
+
+#dots {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: white;
+  transition: all .1s;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #000;
 }

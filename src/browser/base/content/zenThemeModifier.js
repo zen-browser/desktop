@@ -116,7 +116,7 @@
         for (let i = kElementsToAppend.length - 1; i >= 0; i--) {
           const elem = document.getElementById(kElementsToAppend[i]);
           if (elem) {
-            wrapper.appendChild(elem);
+            appWrapepr.appendChild(elem);
           }
         }
         appWrapepr.removeAttribute("hidden");

@@ -122,9 +122,9 @@ class Themes extends Page {
     await sleep(1000)
 
     const themes = (await AddonManager.getAddonsByTypes(['theme'])).filter(
-      (theme) => !theme.id.includes('colorway')
+      (theme) => theme.id !== "default-theme@mozilla.org"
     )
-    const themeList = document.getElementById('themeList')
+    const themeList = document.getElementById('themeList');
 
     const themeElements = []
 
@@ -249,7 +249,18 @@ class Pages {
 
     this.pages.forEach((page) => page.setPages(this))
 
-    this._displayCurrentPage()
+    const dots = document.getElementById("dots");
+    for (let i = 0; i < this.pages.length; i++) {
+      let dot = document.createElement("span");
+      dot.classList.add("dot");
+      dot.setAttribute("data-index", i);
+      dot.onclick = (e) => {
+        this.currentPage = parseInt(e.target.getAttribute("data-index"));
+        this._displayCurrentPage();
+      }
+      dots.appendChild(dot);
+    }
+    this._displayCurrentPage();
   }
 
   next() {
@@ -269,6 +280,12 @@ class Pages {
   }
 
   _displayCurrentPage() {
+    let dots = document.getElementsByClassName("dot");
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.remove("active");
+    }
+    dots[this.currentPage].classList.add("active");
+
     for (const page of this.pages) {
       page.hide()
     }

@@ -30,6 +30,10 @@ groupbox:has(+ .subcategory) {
   border-bottom-right-radius: 15px !important;
 }
 
+.sticky-inner-container{
+  display: none !important;
+}
+
 .subcategory  {
   border-top: none !important;
 }

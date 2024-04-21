@@ -1,16 +1,7 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index eee227822a772bec128d6adbe4f6aca90ed810f6..dbe59dc683c157fda716033da8a402f7d4435d19 100644
+index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc01507478becc583 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -12,7 +12,7 @@
- 
- <head>
-   <!-- @CSP: We should remove 'unsafe-inline' from style-src, see Bug 1579160 -->
--  <meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: moz-icon: https: blob: data:; style-src chrome: data: 'unsafe-inline'; object-src 'none'" />
-+  <meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: moz-icon: https: blob: data:; style-src chrome: data:; object-src 'none'" />
- 
-   <title data-l10n-id="settings-page-title"></title>
- 
 @@ -43,6 +43,8 @@
    />
    <link rel="stylesheet" href="chrome://browser/skin/preferences/privacy.css" />
@@ -51,22 +42,20 @@ index eee227822a772bec128d6adbe4f6aca90ed810f6..dbe59dc683c157fda716033da8a402f7
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -220,6 +239,7 @@
- 
-     <vbox class="main-content" flex="1" align="start">
-       <vbox class="pane-container">
+@@ -230,11 +249,13 @@
+                 <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
+               </hbox>
+             </hbox>
 +#if 0
-         <hbox class="sticky-container">
-           <hbox class="sticky-inner-container" pack="end" align="start">
-             <hbox id="policies-container" class="info-box-container smaller-font-size" flex="1" hidden="true">
-@@ -237,6 +257,7 @@
+             <search-textbox
+               id="searchInput"
+               data-l10n-id="search-input-box2"
+               data-l10n-attrs="placeholder, style"
                hidden="true"/>
++#endif
            </hbox>
          </hbox>
-+#endif
          <vbox id="mainPrefPane">
- #include searchResults.inc.xhtml
- #include main.inc.xhtml
 @@ -248,6 +269,7 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml

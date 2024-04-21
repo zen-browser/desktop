@@ -27,6 +27,7 @@ pref(
 pref('browser.preferences.moreFromMozilla', false);
 pref('browser.aboutwelcome.enabled', true);
 pref("browser.aboutwelcome.showModal", false);
+pref('browser.translations.select.enable', true);
 
 // Theme
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
@@ -102,6 +103,7 @@ pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.theme.accent-color', "#aac7ff");
+pref('zen.theme.panel-separation', 7);
 
 // From: https://github.com/yokoffing/Betterfox
 

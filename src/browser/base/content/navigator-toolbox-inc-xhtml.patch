@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dce7bacdb3678a95dc97085390a7e6102090ffb2..adc160df554e19b5d7cc874cedf2fae6e98a1e60 100644
+index fc19910726f2925505f6e71add034c82af36b63e..046f6fc8084403096be2730f7f892d9ea70d7de2 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -50,21 +50,24 @@
@@ -28,7 +28,7 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..adc160df554e19b5d7cc874cedf2fae6
                  <spacer class="closing-tabs-spacer" style="width: 0;"/>
                </hbox>
              </arrowscrollbox>
-@@ -101,12 +104,16 @@
+@@ -101,7 +104,10 @@
          <label data-l10n-id="private-browsing-indicator-label"></label>
        </hbox>
  
@@ -39,18 +39,11 @@ index dce7bacdb3678a95dc97085390a7e6102090ffb2..adc160df554e19b5d7cc874cedf2fae6
  
      </toolbar>
  
-   </vbox>
- 
-+#if 0
-   <toolbar id="nav-bar"
-            class="browser-toolbar"
-            data-l10n-id="navbar-accessible"
-@@ -575,7 +582,7 @@
-   <html:template id="tab-notification-deck-template">
+@@ -576,7 +582,6 @@
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>
--
-+#endif
  
+-
    <html:template id="BrowserToolbarPalette">
      <toolbarbutton id="import-button"
+                    class="toolbarbutton-1 chromeclass-toolbar-additional"

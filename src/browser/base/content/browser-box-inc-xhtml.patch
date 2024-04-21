@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index d445abe7e743b2ec5d46d42f8f149c000e3c7997..c45459f1ae13190c5a508def867159d52cc6c1e1 100644
+index d445abe7e743b2ec5d46d42f8f149c000e3c7997..9ef4a0be1dbfc8fd50b57118b59304ef34597364 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -2,22 +2,11 @@
+@@ -2,27 +2,18 @@
  # License, v. 2.0. If a copy of the MPL was not distributed with this
  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
  
@@ -24,14 +24,18 @@ index d445abe7e743b2ec5d46d42f8f149c000e3c7997..c45459f1ae13190c5a508def867159d5
 +<vbox id="browser">
    <vbox id="appcontent" flex="1">
 +
-+#include zen-browser-box-ui.inc.xhtml
++    <html:div id="zen-appcontent-navbar-container"></html:div>
 +
      <!-- gNotificationBox will be added here lazily. -->
-     <tabbox id="tabbrowser-tabbox"
+-    <tabbox id="tabbrowser-tabbox"
++    <hbox id="zen-tabbox-wrapper" flex="1">
++      <tabbox id="tabbrowser-tabbox"
              flex="1" tabcontainer="tabbrowser-tabs">
-@@ -25,4 +14,4 @@
+       <tabpanels id="tabbrowser-tabpanels"
                    flex="1" selectedIndex="0"/>
-     </tabbox>
+-    </tabbox>
++      </tabbox>
++    </hbox>
    </vbox>
 -</hbox>
 +</vbox>

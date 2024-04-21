@@ -4,7 +4,7 @@
 }
 
 #sidebar-box {
-  --zen-sidebar-box-border-radius: var(--zen-panel-radius);
+  --zen-sidebar-box-border-radius: var(--zen-appcontent-border-radius);
   margin: var(--zen-appcontent-separator-from-window) !important;
   border-radius: var(--zen-sidebar-box-border-radius) !important;
   overflow: hidden;
@@ -29,6 +29,7 @@
   border-bottom-right-radius: 0 !important;
   margin-right: 0 !important;
   box-shadow: none !important;
+  border-right: 1px solid light-dark(#ddd, #4a4a4a) !important;
 }
 
 #sidebar-splitter {

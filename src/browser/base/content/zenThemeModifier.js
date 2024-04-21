@@ -11,55 +11,126 @@
  * FOR ANY WEBSITE THAT WOULD NEED TO USE THE ACCENT COLOR, ETC
  */
 
- {
+{
   const kZenThemeAccentColorPref = "zen.theme.accent-color";
+  const kZenThemePanelSeparationPref = "zen.theme.panel-separation";
 
-   /**
-    * ZenThemeModifier controls the application of theme data to the browser,
-    * for examplem, it injects the accent color to the document. This is used
-    * because we need a way to apply the accent color without having to worry about
-    * shadow roots not inheriting the accent color.
-    * 
-    * note: It must be a firefox builtin page with access to the browser's configuration
-    *  and services.
+  /**
+  * ZenThemeModifier controls the application of theme data to the browser,
+  * for examplem, it injects the accent color to the document. This is used
+  * because we need a way to apply the accent color without having to worry about
+  * shadow roots not inheriting the accent color.
+  * 
+  * note: It must be a firefox builtin page with access to the browser's configuration
+  *  and services.
+  */
+  const ZenThemeModifier = {
+    _inMainBrowserWindow: false,
+
+    /**
+    * Listen for theming updates from the LightweightThemeChild actor, and
+    * begin listening to changes in preferred color scheme.
     */
-   const ZenThemeModifier = {
-     /**
-      * Listen for theming updates from the LightweightThemeChild actor, and
-      * begin listening to changes in preferred color scheme.
-      */
-     init() {
+    init() {
+      this._inMainBrowserWindow = window.location.href == "chrome://browser/content/browser.xhtml";
+      this.listenForEvents();
+      this.updateAllThemeBasics();
+      this._zenInitBrowserLayout();
+    },
+
+    listenForEvents() {
       addEventListener("LightweightTheme:Set", this);
       Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
+      if (this._inMainBrowserWindow) {
+        Services.prefs.addObserver(kZenThemePanelSeparationPref, this.handleEvent.bind(this));
+      }
+    },
+
+    handleEvent(event) {
+      // note: even might be undefined, but we shoudnt use it!
       this.updateAllThemeBasics();
-     },
- 
-     handleEvent(event) {
-       // note: even might be undefined, but we shoudnt use it!
-       this.updateAllThemeBasics();
-     },
+    },
 
-      /**
-        * Update all theme basics, like the accent color.
-        */
-      updateAllThemeBasics() {
-        this.updateAccentColor();
-      },
+    /**
+      * Update all theme basics, like the accent color.
+      */
+    updateAllThemeBasics() {
+      this.updateAccentColor();
+      this.updateExtraBrowserStyles();
+    },
 
-      /**
-       * Update the accent color.
-       */
-      updateAccentColor() {
-        const accentColor = Services.prefs.getStringPref(kZenThemeAccentColorPref, "#0b57d0");
-        document.documentElement.style.setProperty("--zen-primary-color", accentColor);
-        // Notify the page that the accent color has changed, only if a function
-        // handler is defined.
-        if (typeof window.zenPageAccentColorChanged === "function") {
-          window.zenPageAccentColorChanged(accentColor);
-        }
-      },
- 
-   };
-   ZenThemeModifier.init();
- }
- 
+    /**
+     * Update the accent color.
+     */
+    updateAccentColor() {
+      const accentColor = Services.prefs.getStringPref(kZenThemeAccentColorPref, "#0b57d0");
+      document.documentElement.style.setProperty("--zen-primary-color", accentColor);
+      // Notify the page that the accent color has changed, only if a function
+      // handler is defined.
+      if (typeof window.zenPageAccentColorChanged === "function") {
+        window.zenPageAccentColorChanged(accentColor);
+      }
+    },
+
+    updateExtraBrowserStyles() {
+      // If we are in the main browser window, we can add some extra styles.
+      if (!this._inMainBrowserWindow) return;
+      const panelSeparation = Services.prefs.getIntPref(kZenThemePanelSeparationPref, 7);
+      document.documentElement.style.setProperty("--zen-appcontent-separator-from-window-single", panelSeparation + "px");
+      if (panelSeparation <= 0) {
+        document.documentElement.style.setProperty("--zen-appcontent-border-radius", "0px");
+      } else {
+        document.documentElement.style.setProperty("--zen-appcontent-border-radius", "var(--zen-panel-radius)");
+      }
+      this._changeSidebarLocation(panelSeparation);
+    },
+
+    _changeSidebarLocation(value) {
+      const sidebar = document.getElementById("sidebar-box");
+      const toolbox = document.getElementById("navigator-toolbox");
+      const wrapper = document.getElementById("zen-tabbox-wrapper");
+      const appWrapepr = document.getElementById("zen-sidebar-box-container");
+      if (value <= 0) {
+        wrapper.prepend(sidebar);
+        wrapper.prepend(toolbox);
+        appWrapepr.setAttribute("hidden", "true");
+        sidebar.setAttribute("inlinedwithtoolbox", "true");
+        toolbox.setAttribute("inlinedwithsidebar", "true");
+      } else {
+        appWrapepr.appendChild(toolbox);
+        appWrapepr.appendChild(sidebar);
+        appWrapepr.removeAttribute("hidden");
+        sidebar.removeAttribute("inlinedwithtoolbox");
+        toolbox.removeAttribute("inlinedwithsidebar");
+      }
+    },
+
+    _zenInitBrowserLayout() {
+      const kNavbarItems = [
+        "nav-bar",
+        "PersonalToolbar",
+        "tab-notification-deck-template"
+      ];
+      const kSeparatorId = "zen-website-and-native-separator";
+      const kNewContainerId = "zen-appcontent-navbar-container";
+      let newContainer = document.getElementById(kNewContainerId);
+      for (let id of kNavbarItems) {
+        const node = document.getElementById(id);
+        console.assert(node, "Could not find node with id: " + id);
+        if (!node) continue;
+        newContainer.appendChild(node);
+      }
+      // Add the separator
+      const separator = document.createElement("span");
+      separator.id = kSeparatorId;
+      newContainer.appendChild(separator);
+
+      // move the security button to the right
+      const securityButton = document.getElementById("tracking-protection-icon-container");
+      document.getElementById("urlbar-input-container").insertBefore(securityButton, document.getElementById("page-action-buttons"));
+    },
+  };
+
+  if (typeof Services !== "undefined")
+    ZenThemeModifier.init();
+}

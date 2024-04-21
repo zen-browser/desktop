@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250ca26968a 100644
+index c91a5d4db29a9691e9b43ef4d5d5e9a4db945ac8..00107b54e09137ee1af1c56b8c9e853a4ffe7264 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -13,6 +13,15 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
@@ -18,7 +18,15 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250
  ChromeUtils.defineESModuleGetters(this, {
    AMTelemetry: "resource://gre/modules/AddonManager.sys.mjs",
    AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
-@@ -1735,6 +1744,11 @@ var gBrowserInit = {
+@@ -1664,6 +1673,7 @@ var gBrowserInit = {
+     });
+ 
+     updateFxaToolbarMenu(gFxaToolbarEnabled, true);
++    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
+ 
+     updatePrintCommands(gPrintEnabled);
+ 
+@@ -1727,6 +1737,11 @@ var gBrowserInit = {
      }
  
      // Misc. inits.
@@ -30,7 +38,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250
      gUIDensity.init();
      TabletModeUpdater.init();
      CombinedStopReload.ensureInitialized();
-@@ -6660,7 +6674,7 @@ function setToolbarVisibility(
+@@ -6669,7 +6684,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -39,7 +47,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250
      switch (isVisible) {
        case true:
        case "always":
-@@ -9780,6 +9794,13 @@ var gDialogBox = {
+@@ -9789,6 +9804,13 @@ var gDialogBox = {
      parentElement.style.removeProperty("width");
      parentElement.style.removeProperty("height");
      document.documentElement.setAttribute("window-modal-open", true);
@@ -53,7 +61,7 @@ index 4f145c494973374e87f3a3ed5eb6b33a43c518c8..01ebb483e6d9632588578b8b05195250
      // Call this first so the contents show up and get layout, which is
      // required for SubDialog to work.
      parentElement.showModal();
-@@ -10157,3 +10178,15 @@ var FirefoxViewHandler = {
+@@ -10166,3 +10188,15 @@ var FirefoxViewHandler = {
      this.button?.toggleAttribute("attention", shouldShow);
    },
  };

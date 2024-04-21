@@ -24,7 +24,7 @@
   --input-border-color: var(--zen-input-border-color) !important;
 }
 
-#PersonalToolbar {
+#PersonalToolbar:not([collapsed="true"]) {
   /*border-top: 1px solid light-dark(#ddd, #4a4a4a);*/
   padding: 5px 0;
   padding-inline: 15px !important;
@@ -183,12 +183,20 @@ button.popup-notification-dropmarker {
   min-width: 55px;
 }
 
+#zen-sidebar-box-container {
+  display: flex;
+}
+
+#zen-sidebar-box-container[hidden="true"] {
+  display: none;
+}
+
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
   background: var(--sidebar-background-color);
   overflow: hidden;
   transition: .2s;
-  border-radius: 15px !important;
+  border-radius: var(--zen-appcontent-border-radius) !important;
   flex-direction: column !important;
   padding: 5px 0;
   margin-right: 0 !important;

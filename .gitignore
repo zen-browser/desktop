@@ -4,3 +4,5 @@ engine/
 firefox-*/
 node_modules/
 .gluon/
+
+__pycache__/

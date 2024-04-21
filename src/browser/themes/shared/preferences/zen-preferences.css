@@ -23,6 +23,7 @@ groupbox {
   margin-top: 5px;
 }
 
+groupbox:has(+ script),
 groupbox:last-of-type,
 groupbox:has(+ .subcategory) {
   border-bottom-left-radius: 15px !important;

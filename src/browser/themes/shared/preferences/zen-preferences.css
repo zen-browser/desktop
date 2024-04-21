@@ -1,6 +1,6 @@
 
 :root {
-  --zen-settings-secondary-background: #F2F4F4;
+  --zen-settings-secondary-background: light-dark(#F2F4F4, color-mix(in srgb, var(--zen-primary-color) 10%, black 90%));
 }
 
 .main-content {
@@ -10,7 +10,7 @@
 }
 
 groupbox {
-  background: light-dark(white, #363636);
+  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
   padding-inline: unset !important;
   padding: 20px 30px !important;
   margin-bottom: 0 !important;

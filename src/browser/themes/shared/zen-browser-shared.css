@@ -26,7 +26,7 @@
 
 @media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
   :root {
-    --toolbar-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
+    --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;
   }
 }
 

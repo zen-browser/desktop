@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index d123d3c3b01addc4373abc58834b1c27af818faa..534ad607939998e34e489915e51827cdba325d4f 100644
+index c8f4f3efd231d007e024f039170efd58a8a9de86..f5e3296d20580afc0973cc87685d2ac35b6cfc10 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
 @@ -5,6 +5,8 @@
@@ -10,4 +10,13 @@ index d123d3c3b01addc4373abc58834b1c27af818faa..534ad607939998e34e489915e51827cd
 +
  @namespace html "http://www.w3.org/1999/xhtml";
  @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+ 
+@@ -63,7 +65,7 @@
+   --in-content-table-border-color: var(--in-content-box-border-color);
+   --in-content-table-header-background: var(--in-content-primary-button-background);
+   --in-content-table-header-color: var(--in-content-primary-button-text-color);
+-  --in-content-sidebar-width: 240px;
++  --in-content-sidebar-width: 340px;
+ 
+   --dialog-warning-text-color: var(--red-60);
  

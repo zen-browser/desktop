@@ -1,9 +1,124 @@
 
-#category-zen-looks > .category-icon {
-  list-style-image: url("chrome://browser/skin/customize.svg");
+:root {
+  --zen-settings-secondary-background: #F2F4F4;
+}
+
+.main-content {
+  background: var(--zen-settings-secondary-background);
+  padding-left: 100px;
+  padding-top: 40px !important;
+}
+
+groupbox {
+  background: light-dark(white, #363636);
+  padding-inline: unset !important;
+  padding: 20px 30px !important;
+  margin-bottom: 0 !important;
+  position: relative;
+}
+
+.subcategory + groupbox {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  margin-top: 5px;
+}
+
+groupbox:last-of-type,
+groupbox:has(+ .subcategory) {
+  border-bottom-left-radius: 15px !important;
+  border-bottom-right-radius: 15px !important;
+}
+
+.subcategory  {
+  border-top: none !important;
+}
+
+.navigation {
+  padding: 50px;
+}
+
+groupbox button {
+  border-radius: 5px !important;
+  padding: 5px 10px !important;
+}
+
+groupbox button,
+groupbox menulist {
+  background-color: light-dark(#f1f1f1, #363636) !important;
+  color: light-dark(black, white) !important;
+}
+
+groupbox h2 {
+  opacity: .7;
+  font-size: 15px;
+}
+
+#categories {
+  margin: 0 !important;
+}
+
+#categories > .category {
+  margin-left: 0 !important;
+  min-height: 40px !important;
+  position: relative;
+  padding-inline: 20px !important;
+
+}
+
+#categories > .category[selected]::before {
+  content: "";
+  display: block;
+  height: 70%;
+  width: 5px;
+  background-color: var(--zen-primary-color);
+  position: absolute;
+  left: -3px;
+  border-radius: 5px;
+}
+
+#languagesGroup::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  margin: 10px 0;
+  transform: translateY(-50%);
+  position: absolute;
+  top: -5px;
+  width: calc(100% - 40px);
+  margin-left: 20px;
+  left: 0;
+}
+
+#searchInput {
+  width: 100% !important;
+  border: none;
+  outline: none;
+  min-height: 40px;
+  border-radius: 10px;
+  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  padding-inline: 15px;
+}
+
+.textbox-search-sign {
+  margin-right: 15px;
+}
+
+.sidebar-footer-list {
+  margin-left: 0 !important;
+}
+
+.category-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
 /* Look and feel */
+
+#category-zen-looks > .category-icon {
+  list-style-image: url("chrome://browser/skin/customize.svg");
+}
 
 #zenLooksAndFeelColorOptions {
   display: grid;

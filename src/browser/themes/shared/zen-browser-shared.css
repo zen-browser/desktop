@@ -421,6 +421,6 @@ panelmultiview {
   padding-bottom: 5px;
 }
 
-#nav-bar[inlinedwithsidebar="true"] #urlbar[breakout]:not([breakout-extend="true"]) {
+#urlbar[breakout]:not([breakout-extend="true"]) {
   top: unset;
 }

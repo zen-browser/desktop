@@ -86,20 +86,26 @@
     },
 
     _changeSidebarLocation(value) {
+      const kElementsToAppend = [
+        "sidebar-splitter",
+        "sidebar-box",
+        "navigator-toolbox",
+      ];
       const kInlineIndicatorElements = [
         "nav-bar",
-        "tabbrowser-tabbox"
-      ]
-      const sidebar = document.getElementById("sidebar-box");
-      const toolbox = document.getElementById("navigator-toolbox");
+        "tabbrowser-tabbox",
+        ...kElementsToAppend,
+      ];
       const wrapper = document.getElementById("zen-tabbox-wrapper");
       const appWrapepr = document.getElementById("zen-sidebar-box-container");
       if (value <= 0) {
-        wrapper.prepend(sidebar);
-        wrapper.prepend(toolbox);
+        for (let id of kElementsToAppend) {
+          const elem = document.getElementById(id);
+          if (elem) {
+            wrapper.prepend(elem);
+          }
+        }
         appWrapepr.setAttribute("hidden", "true");
-        sidebar.setAttribute("inlinedwithtoolbox", "true");
-        toolbox.setAttribute("inlinedwithsidebar", "true");
         for (let id of kInlineIndicatorElements) {
           const elem = document.getElementById(id);
           if (elem) {
@@ -107,11 +113,13 @@
           }
         }
       } else {
-        appWrapepr.appendChild(toolbox);
-        appWrapepr.appendChild(sidebar);
+        for (let i = kElementsToAppend.length - 1; i >= 0; i--) {
+          const elem = document.getElementById(kElementsToAppend[i]);
+          if (elem) {
+            wrapper.appendChild(elem);
+          }
+        }
         appWrapepr.removeAttribute("hidden");
-        sidebar.removeAttribute("inlinedwithtoolbox");
-        toolbox.removeAttribute("inlinedwithsidebar");
         for (let id of kInlineIndicatorElements) {
           const elem = document.getElementById(id);
           if (elem) {

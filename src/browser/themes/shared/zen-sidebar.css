@@ -38,6 +38,10 @@
   width: 1px !important;
 }
 
+#sidebar-splitter[inlinedwithsidebar="true"] {
+  background-color: -moz-dialog !important;
+}
+
 #sidebar-box[positionend] {
   margin-left: 0 !important;
 }

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index fc19910726f2925505f6e71add034c82af36b63e..046f6fc8084403096be2730f7f892d9ea70d7de2 100644
+index fc19910726f2925505f6e71add034c82af36b63e..df0c170ae44c0d51e2c60777c8f845c6b58a2a26 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -50,21 +50,24 @@
@@ -39,7 +39,17 @@ index fc19910726f2925505f6e71add034c82af36b63e..046f6fc8084403096be2730f7f892d9e
  
      </toolbar>
  
-@@ -576,7 +582,6 @@
+@@ -505,6 +511,9 @@
+                      consumeanchor="PanelUI-button"
+                      data-l10n-id="appmenu-menu-button-closed2"/>
+     </toolbaritem>
++
++#include titlebar-items.inc.xhtml
++
+   </toolbar>
+ 
+   <toolbar id="PersonalToolbar"
+@@ -576,7 +585,6 @@
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>
  

@@ -104,6 +104,7 @@ pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.theme.accent-color', "#aac7ff");
 pref('zen.theme.panel-separation', 7);
+pref('zen.theme.toolbar-themed', true);
 
 // From: https://github.com/yokoffing/Betterfox
 

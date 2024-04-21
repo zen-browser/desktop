@@ -24,6 +24,12 @@
   --input-border-color: var(--zen-input-border-color) !important;
 }
 
+@media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
+  :root {
+    --toolbar-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
+  }
+}
+
 #PersonalToolbar:not([collapsed="true"]) {
   /*border-top: 1px solid light-dark(#ddd, #4a4a4a);*/
   padding: 5px 0;
@@ -351,16 +357,6 @@ toolbarbutton#scrollbutton-up {
   }
 }
 
-/* Title bar */
-
-#zen-titlebar-items-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  -moz-window-dragging: drag;
-}
-
 .footer-button {
   padding: var(--zen-button-padding) !important;
   border-radius: var(--zen-button-border-radius) !important;
@@ -401,4 +397,30 @@ panelmultiview {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/** No space in panels overrides */
+
+#tabbrowser-tabbox[inlinedwithsidebar="true"] {
+  background: var(--toolbar-bgcolor);
+}
+
+#tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels {
+  --zen-browser-border-radius: 10px;
+  margin: 0 10px 10px 0;
+  border-radius: var(--zen-browser-border-radius);
+  border: 1px solid light-dark(#ddd, #4a4a4a);
+}
+
+#tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserStack > browser {
+  border-radius: var(--zen-browser-border-radius);
+}
+
+#nav-bar[inlinedwithsidebar="true"] {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+#nav-bar[inlinedwithsidebar="true"] #urlbar[breakout]:not([breakout-extend="true"]) {
+  top: unset;
 }

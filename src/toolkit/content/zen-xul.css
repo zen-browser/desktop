@@ -4,8 +4,9 @@
 :root {
   --zen-main-browser-background: var(--zen-colors-secondary); 
   --zen-appcontent-separator-from-window-single: 7px;
-  --zen-appcontent-separator-from-window: 0 var(--zen-appcontent-separator-from-window-single) var(--zen-appcontent-separator-from-window-single);
+  --zen-appcontent-separator-from-window: var(--zen-appcontent-separator-from-window-single);
   --zen-appcontent-border-radius: var(--zen-panel-radius);
+  --zen-appcontent-border: 1px solid light-dark(#ddd, #4a4a4a);
 }
 
 toolbox#navigator-toolbox, 
@@ -29,7 +30,7 @@ html#main-window > body {
 
 :not([inDOMFullscreen="true"]) #appcontent,
 #sidebar-box,
-#navigator-toolbox #TabsToolbar {
+#navigator-toolbox:not([inlinedwithsidebar="true"]) #TabsToolbar {
   /** Sidebar is already hidden in full screen mode */
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   border: none;

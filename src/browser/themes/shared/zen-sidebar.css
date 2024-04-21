@@ -10,10 +10,10 @@
   overflow: hidden;
   transition: .2s;
   margin-left: 0 !important;
+  border: var(--zen-appcontent-border);
 }
 
 #sidebar-box:not([positionend="true"]) {
-  border-left-width: 0px !important;
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
   margin-right: 0 !important;
@@ -29,7 +29,6 @@
   border-bottom-right-radius: 0 !important;
   margin-right: 0 !important;
   box-shadow: none !important;
-  border-right: 1px solid light-dark(#ddd, #4a4a4a) !important;
 }
 
 #sidebar-splitter {

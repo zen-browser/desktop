@@ -47,3 +47,11 @@ var gZenLooksAndFeel = {
     return Services.prefs.getStringPref("zen.theme.accent-color", kZenColors[0]);
   },
 };
+
+Preferences.addAll([
+  {
+    id: "zen.theme.toolbar-themed",
+    type: "bool",
+    default: true,
+  },
+]);

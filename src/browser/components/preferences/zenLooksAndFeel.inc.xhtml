@@ -12,47 +12,10 @@
 
       <hbox id="zenLooksAndFeelColorOptions" align="center">
       </hbox>
-</groupbox>
 
-<groupbox id="webAppearanceGroup" data-category="paneZenLooks" hidden="true">
-  <html:h2 data-l10n-id="preferences-web-appearance-header"/>
-  <html:div id="webAppearanceSettings">
-    <description class="description-deemphasized" data-l10n-id="preferences-web-appearance-description"/>
-    <html:div id="web-appearance-override-warning" class="info-box-container">
-      <html:div class="info-icon-container">
-        <html:img class="info-icon"/>
-      </html:div>
-      <description data-l10n-id="preferences-web-appearance-override-warning">
-        <html:a class="text-link" data-l10n-name="colors-link" id="web-appearance-manage-colors-link" href="#"/>
-      </description>
-    </html:div>
-    <form xmlns="http://www.w3.org/1999/xhtml" id="web-appearance-chooser" autocomplete="off">
-      <label class="web-appearance-choice" data-l10n-id="preferences-web-appearance-choice-tooltip-auto">
-        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
-        <div class="web-appearance-choice-footer">
-          <input type="radio" name="web-appearance" value="auto" data-l10n-id="preferences-web-appearance-choice-input-auto"
-          /><span data-l10n-id="preferences-web-appearance-choice-auto" />
-        </div>
-      </label>
-      <label class="web-appearance-choice" data-l10n-id="preferences-web-appearance-choice-tooltip-light">
-        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
-        <div class="web-appearance-choice-footer">
-          <input type="radio" name="web-appearance" value="light" data-l10n-id="preferences-web-appearance-choice-input-light"
-          /><span data-l10n-id="preferences-web-appearance-choice-light" />
-        </div>
-      </label>
-      <label class="web-appearance-choice" data-l10n-id="preferences-web-appearance-choice-tooltip-dark">
-        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
-        <div class="web-appearance-choice-footer">
-          <input type="radio" name="web-appearance" value="dark" data-l10n-id="preferences-web-appearance-choice-input-dark"
-          /><span data-l10n-id="preferences-web-appearance-choice-dark" />
-        </div>
-      </label>
-    </form>
-    <html:div data-l10n-id="preferences-web-appearance-footer">
-      <html:a id="web-appearance-manage-themes-link" class="text-link" data-l10n-name="themes-link" href="about:addons" target="_blank" />
-    </html:div>
-  </html:div>
+      <checkbox id="zenLooksAndFeelUseThemedToolbar"
+            data-l10n-id="zen-look-and-feel-themed-toolbar"
+            preference="zen.theme.toolbar-themed"/>
 </groupbox>
 
 </html:template>

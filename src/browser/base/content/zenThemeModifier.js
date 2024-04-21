@@ -86,6 +86,10 @@
     },
 
     _changeSidebarLocation(value) {
+      const kInlineIndicatorElements = [
+        "nav-bar",
+        "tabbrowser-tabbox"
+      ]
       const sidebar = document.getElementById("sidebar-box");
       const toolbox = document.getElementById("navigator-toolbox");
       const wrapper = document.getElementById("zen-tabbox-wrapper");
@@ -96,16 +100,29 @@
         appWrapepr.setAttribute("hidden", "true");
         sidebar.setAttribute("inlinedwithtoolbox", "true");
         toolbox.setAttribute("inlinedwithsidebar", "true");
+        for (let id of kInlineIndicatorElements) {
+          const elem = document.getElementById(id);
+          if (elem) {
+            elem.setAttribute("inlinedwithsidebar", "true");
+          }
+        }
       } else {
         appWrapepr.appendChild(toolbox);
         appWrapepr.appendChild(sidebar);
         appWrapepr.removeAttribute("hidden");
         sidebar.removeAttribute("inlinedwithtoolbox");
         toolbox.removeAttribute("inlinedwithsidebar");
+        for (let id of kInlineIndicatorElements) {
+          const elem = document.getElementById(id);
+          if (elem) {
+            elem.removeAttribute("inlinedwithsidebar");
+          }
+        }
       }
     },
 
     _zenInitBrowserLayout() {
+      if (!this._inMainBrowserWindow) return;
       const kNavbarItems = [
         "nav-bar",
         "PersonalToolbar",

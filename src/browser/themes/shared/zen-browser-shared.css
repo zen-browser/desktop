@@ -269,8 +269,8 @@ toolbarbutton#scrollbutton-up {
   border-radius: 50%;
   position: relative;
   color-scheme: var(--tab-selected-color-scheme);
-  background: light-dark(#ececec, #4a4a4a);
-  border: 1px solid transparent;
+  background: var(--zen-colors-secondary);
+  border: 2px solid transparent;
   padding: 0 !important;
   align-items: center;
   animation: zen-slide-in 0.3s;
@@ -302,12 +302,16 @@ toolbarbutton#scrollbutton-up {
   }
 }
 
-.tabbrowser-tab:not([pinned], [fadein]) {
+.tabbrowser-tab:not([fadein]) {
   display: none;
 }
 
+.tabbrowser-tab[pinned]:last-of-type {
+ /** Todo: add a separator */
+}
+
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
-  border-color: var(--zen-colors-primary);
+  border-color: light-dark(var(--zen-colors-border), rgba(255, 255, 255, 0.15));
 }
 
 .tab-close-button {

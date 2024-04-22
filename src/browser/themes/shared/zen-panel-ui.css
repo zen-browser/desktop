@@ -43,6 +43,14 @@
   margin-bottom: 0;
 }
 
+#PanelUI-zen-profiles-list > toolbarseparator:first-child {
+  margin-bottom: 5px;
+}
+
+#PanelUI-zen-profiles-lastSeparator {
+  margin-top: 5px !important;
+}
+
 .PanelUI-zen-profiles-item:hover {
   background: var(--panel-item-hover-bgcolor);
   color: inherit;

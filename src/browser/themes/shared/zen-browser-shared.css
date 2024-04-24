@@ -209,6 +209,10 @@ button.popup-notification-dropmarker {
   -moz-window-dragging: no-drag;
 }
 
+#navigator-toolbox[inlinedwithsidebar="true"] #TabsToolbar {
+  padding-bottom: calc(5px + 5px); /* Taking into consideration the padding of the sidebar without being inlined */
+}
+
 #TabsToolbar-customization-target {
   flex-direction: column;
 }

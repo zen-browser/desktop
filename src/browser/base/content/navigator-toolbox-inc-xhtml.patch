@@ -1,7 +1,16 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index fc19910726f2925505f6e71add034c82af36b63e..df0c170ae44c0d51e2c60777c8f845c6b58a2a26 100644
+index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c0617513146 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
+@@ -32,7 +32,7 @@
+ 
+       <hbox class="titlebar-spacer" type="pre-tabs"/>
+ 
+-      <hbox flex="1" align="end" class="toolbar-items">
++      <hbox flex="1" align="start" class="toolbar-items">
+         <toolbartabstop/>
+         <hbox id="TabsToolbar-customization-target" flex="1">
+           <toolbarbutton id="firefox-view-button"
 @@ -50,21 +50,24 @@
                  aria-multiselectable="true"
                  setfocus="false"

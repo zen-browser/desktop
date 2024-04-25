@@ -1,3 +1,6 @@
+
+@import url("zen-sidebar-panels.css");
+
 :root {
   --sidebar-background-color: var(--toolbar-bgcolor) !important; 
   --zen-sidebar-box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -47,8 +50,8 @@
 }
 
 .zen-sidebar-action-button {
-  width: 40px;
-  height: 40px;
+  width: var(--zen-sidebar-action-button-width);
+  height: var(--zen-sidebar-action-button-width);
   padding: 0;
   margin: 0;
   display: flex;
@@ -56,7 +59,14 @@
   align-items: center;
 }
 
-#TabsToolbar .toolbarbutton-1 > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
+#TabsToolbar .toolbarbutton-1 {
+  width: var(--zen-sidebar-action-button-width);
+  height: var(--zen-sidebar-action-button-width);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+#TabsToolbar .toolbarbutton-1:not(.zen-sidebar-panel-button) > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button {
   border-radius: 100px !important;
 }

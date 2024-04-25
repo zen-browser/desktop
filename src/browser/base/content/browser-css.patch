@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.css b/browser/base/content/browser.css
-index 8a2a20280954eb9db144a723f477e7afc603fda3..b6eb4fe9de2077420e1f750cb9662f883f95d300 100644
+index c9ebddb7f5c57d00c06bdf303a23085818c78259..f97c3e808d1c42cbce1a538ab7aeefa91ad27893 100644
 --- a/browser/base/content/browser.css
 +++ b/browser/base/content/browser.css
 @@ -2,6 +2,8 @@
@@ -11,7 +11,7 @@ index 8a2a20280954eb9db144a723f477e7afc603fda3..b6eb4fe9de2077420e1f750cb9662f88
  @namespace html url("http://www.w3.org/1999/xhtml");
  
  :root,
-@@ -156,8 +158,6 @@ panelview:not([visible]) {
+@@ -157,8 +159,6 @@ panelview:not([visible]) {
    flex: 100 100;
    max-width: 225px;
    min-width: var(--tab-min-width);
@@ -20,7 +20,7 @@ index 8a2a20280954eb9db144a723f477e7afc603fda3..b6eb4fe9de2077420e1f750cb9662f88
  }
  
  :root[uidensity=touch] .tabbrowser-tab:not([pinned]) {
-@@ -658,7 +658,7 @@ toolbar:not(#TabsToolbar) > #personal-bookmarks {
+@@ -659,7 +659,7 @@ toolbar:not(#TabsToolbar) > #personal-bookmarks {
  #urlbar[usertyping] > #urlbar-input-container > #page-action-buttons > #urlbar-zoom-button,
  #urlbar:not([usertyping]) > #urlbar-input-container > #urlbar-go-button,
  #urlbar:not([focused]) > #urlbar-input-container > #urlbar-go-button {
@@ -29,7 +29,7 @@ index 8a2a20280954eb9db144a723f477e7afc603fda3..b6eb4fe9de2077420e1f750cb9662f88
  }
  
  #nav-bar:not([keyNav=true]) #identity-box,
-@@ -1319,13 +1319,13 @@ printpreview-pagination:focus-within,
+@@ -1244,13 +1244,13 @@ printpreview-pagination:focus-within,
  
  
  #sidebar-box {
@@ -46,7 +46,7 @@ index 8a2a20280954eb9db144a723f477e7afc603fda3..b6eb4fe9de2077420e1f750cb9662f88
    list-style-image: var(--webextension-menuitem-image, inherit);
    -moz-context-properties: fill;
    fill: currentColor;
-@@ -1526,3 +1526,42 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
+@@ -1451,3 +1451,42 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
  /**
   * End Dialogs
   */

@@ -1,0 +1,32 @@
+
+#zen-sidebar-panels-wrapper {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.zen-sidebar-panel-button {
+  width: var(--zen-sidebar-action-button-width);
+  height: var(--zen-sidebar-action-button-width);
+  max-height: var(--zen-sidebar-action-button-width);
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.zen-sidebar-panel-button image {
+  border-radius: 15px !important;
+  background: var(--toolbarbutton-hover-background);
+}
+
+.zen-sidebar-panel-button:hover image {
+  background: color-mix(in srgb, var(--toolbarbutton-hover-background) 12%, transparent);
+}
+
+.zen-sidebar-panel-button {
+  margin-bottom: 5px !important;
+}

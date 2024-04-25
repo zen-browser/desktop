@@ -207,6 +207,12 @@ button.popup-notification-dropmarker {
   padding: 5px 0;
   margin-right: 0 !important;
   -moz-window-dragging: no-drag;
+
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  justify-items: center;
+  
+  --zen-sidebar-action-button-width: 40px;
 }
 
 #navigator-toolbox[inlinedwithsidebar="true"] #TabsToolbar {

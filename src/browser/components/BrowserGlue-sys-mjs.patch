@@ -1,25 +1,8 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index f4ea0c87a35a19c09f811576201a7adb865ed74c..30f81ad02cd90f478945845b4d8a47da5f3601f0 100644
+index f4ea0c87a35a19c09f811576201a7adb865ed74c..89e44ab4d3b6f0ce0ecf89c4b8b484b7da5fa2ea 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
-@@ -27,6 +27,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   BrowserUsageTelemetry: "resource:///modules/BrowserUsageTelemetry.sys.mjs",
-   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
-   BuiltInThemes: "resource:///modules/BuiltInThemes.sys.mjs",
-+  ZenSidebarManager: "resource:///modules/ZenSidebarManager.sys.mjs",
-   ContextualIdentityService:
-     "resource://gre/modules/ContextualIdentityService.sys.mjs",
-   Corroborate: "resource://gre/modules/Corroborate.sys.mjs",
-@@ -1446,6 +1447,8 @@ BrowserGlue.prototype = {
- 
-     AboutHomeStartupCache.init();
- 
-+    lazy.ZenSidebarManager.init();
-+
-     Services.obs.notifyObservers(null, "browser-ui-startup-complete");
-   },
- 
-@@ -4436,6 +4439,7 @@ BrowserGlue.prototype = {
+@@ -4436,6 +4436,7 @@ BrowserGlue.prototype = {
    },
  
    async _maybeShowDefaultBrowserPrompt() {
@@ -27,7 +10,7 @@ index f4ea0c87a35a19c09f811576201a7adb865ed74c..30f81ad02cd90f478945845b4d8a47da
      // Highest priority is about:welcome window modal experiment
      // Second highest priority is the upgrade dialog, which can include a "primary
      // browser" request and is limited in various ways, e.g., major upgrades.
-@@ -4894,6 +4898,16 @@ BrowserGlue.prototype = {
+@@ -4894,6 +4895,16 @@ BrowserGlue.prototype = {
      "nsIObserver",
      "nsISupportsWeakReference",
    ]),

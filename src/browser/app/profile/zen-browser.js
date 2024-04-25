@@ -107,20 +107,15 @@ pref('zen.theme.accent-color', "#aac7ff");
 pref('zen.theme.panel-separation', /*7*/0);
 pref('zen.theme.toolbar-themed', true);
 
-// From: https://github.com/yokoffing/Betterfox
 
-/** DISK CACHE ***/
 pref('browser.cache.jsbc_compression_level', 3);
 
-/** MEDIA CACHE ***/
 pref('media.memory_cache_max_size', 65536);
 pref('media.cache_readahead_limit', 7200);
 pref('media.cache_resume_threshold', 3600);
 
-/** IMAGE CACHE ***/
 pref('image.mem.decode_bytes_at_a_time', 32768);
 
-/** NETWORK ***/
 pref('network.buffer.cache.size', 262144);
 pref('network.buffer.cache.count', 128);
 pref('network.http.max-connections', 1800);
@@ -131,12 +126,10 @@ pref('network.dnsCacheExpiration', 3600);
 pref('network.dns.max_high_priority_threads', 8);
 pref('network.ssl_tokens_cache_capacity', 10240);
 
-/** SPECULATIVE LOADING ***/
 pref('network.dns.disablePrefetch', true);
 pref('network.prefetch-next', false);
 pref('network.predictor.enabled', false);
 
-/** EXPERIMENTAL ***/
 pref('layout.css.grid-template-masonry-value.enabled', true);
 pref('dom.enable_web_task_scheduling', true);
 pref('layout.css.has-selector.enabled', true);
@@ -144,3 +137,5 @@ pref('dom.security.sanitizer.enabled', true);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
+
+pref('zen.sidebar.data', "{\"data\":{\"p1\":{\"url\":\"https://google.com\",},},\"index\":[\"p1\",]}");

@@ -1,8 +1,8 @@
 diff --git a/browser/components/moz.build b/browser/components/moz.build
-index 6fd86955650e4589677007eb8aeee39c1839fedd..600ff91802e7357be3c55dac626ce2ca79544cd2 100644
+index 0f91b90fb0ce4eac232d71ad4f9ff82ab7316635..f1596aa7d0ab7e058d3482c0dac8ab10157f8bc8 100644
 --- a/browser/components/moz.build
 +++ b/browser/components/moz.build
-@@ -69,6 +69,9 @@ DIRS += [
+@@ -72,6 +72,9 @@ DIRS += [
      "urlbar",
  ]
  
@@ -12,3 +12,11 @@ index 6fd86955650e4589677007eb8aeee39c1839fedd..600ff91802e7357be3c55dac626ce2ca
  DIRS += ["build"]
  
  
+@@ -118,3 +121,7 @@ if CONFIG["MOZ_UPDATER"]:
+ MARIONETTE_MANIFESTS += ["tests/marionette/manifest.toml"]
+ 
+ XPCSHELL_TESTS_MANIFESTS += ["tests/unit/xpcshell.toml"]
++
++EXTRA_JS_MODULES += [
++    "ZenSidebarManager.sys.mjs",
++]

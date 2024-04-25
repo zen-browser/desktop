@@ -109,6 +109,12 @@
   display: none;
 }
 
+#PanelUI-zen-profiles toolbarbutton {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+
 #PanelUI-zen-profiles toolbarbutton:last-child {
   margin-bottom: 5px !important;
 }

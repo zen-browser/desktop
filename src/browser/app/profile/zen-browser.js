@@ -138,4 +138,4 @@ pref('dom.security.sanitizer.enabled', true);
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 
-pref('zen.sidebar.data', "{\"data\":{\"p1\":{\"url\":\"https://google.com\",},},\"index\":[\"p1\",]}");
+pref('zen.sidebar.data', "{\"data\":{\"p1\":{\"url\":\"https://google.com\"}},\"index\":[\"p1\"]}");

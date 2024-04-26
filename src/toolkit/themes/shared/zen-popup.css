@@ -243,6 +243,7 @@ toolbarbutton:not(:is(
   .zen-sidebar-action-button, 
   .all-tabs-close-button,
   .zen-sidebar-panel-button,
+  #zen-sidebar-web-panel-close,
   #PanelUI-zen-profiles-managePrfs
 )),
 #PanelUI-zen-profiles menuitem {

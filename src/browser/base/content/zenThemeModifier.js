@@ -94,6 +94,8 @@
       const kInlineIndicatorElements = [
         "nav-bar",
         "tabbrowser-tabbox",
+        "zen-sidebar-web-panel",
+        "appcontent",
         ...kElementsToAppend,
       ];
       const wrapper = document.getElementById("zen-tabbox-wrapper");

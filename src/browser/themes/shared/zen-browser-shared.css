@@ -420,7 +420,6 @@ panelmultiview {
 }
 
 #tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels {
-  --zen-browser-border-radius: 10px;
   margin: 0 10px 10px 0;
   border-radius: var(--zen-browser-border-radius);
   border: 1px solid light-dark(#ddd, #4a4a4a);

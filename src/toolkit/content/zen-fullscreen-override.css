@@ -1,5 +1,6 @@
 
-[inDOMFullscreen="true"] #nav-bar {
+[inDOMFullscreen="true"] #nav-bar,
+[inDOMFullscreen="true"] #zen-sidebar-web-panel {
   display: none !important;
 }
 

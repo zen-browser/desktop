@@ -1,6 +1,6 @@
 
 #zen-sidebar-panels-wrapper {
-  min-height: 500px;
+  /*min-height: 500px;*/
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,12 +21,65 @@
 .zen-sidebar-panel-button image {
   border-radius: 15px !important;
   background: var(--toolbarbutton-hover-background);
+  border: 2px solid transparent;
 }
 
 .zen-sidebar-panel-button:hover image {
   background: color-mix(in srgb, var(--toolbarbutton-hover-background) 12%, transparent);
 }
 
-.zen-sidebar-panel-button {
-  margin-bottom: 5px !important;
+.zen-sidebar-panel-button,
+.zen-sidebar-panel-button image {
+  margin-bottom: 7px !important;
+}
+
+.zen-sidebar-panel-button[selected="true"] image {
+  border-color: var(--zen-primary-color);
+}
+
+/** Sidebar view */
+
+#zen-sidebar-web-panel {
+  --zen-default-sidebar-width: 300px;
+  width: calc(var(--zen-default-sidebar-width) + 100px);
+  border-radius: var(--zen-browser-border-radius);
+  overflow: hidden;
+  margin: var(--zen-appcontent-separator-from-window);
+  border: var(--zen-appcontent-border);
+  min-width: var(--zen-default-sidebar-width);
+  background: var(--zen-colors-tertiary);
+  animation: zen-sidebar-panel-animation 0.3s ease-in-out;
+}
+
+#zen-sidebar-web-panel[inlinedwithsidebar="true"] {
+  margin: 0 10px 10px 0;
+}
+
+@keyframes zen-sidebar-panel-animation {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+#zen-sidebar-web-header {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  border: var(--zen-appcontent-border);
+  border-width: 0 !important;
+  border-bottom-width: 1px !important;
+  background: transparent;
+  position: relative;
+}
+
+#zen-sidebar-web-panel-close {
+  margin-left: auto !important;
 }

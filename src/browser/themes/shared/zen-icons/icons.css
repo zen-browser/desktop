@@ -9,20 +9,24 @@
 	border-radius: 100% !important;
 }
 
-#back-button {
+#back-button,
+#zen-sidebar-web-panel-back {
 	list-style-image: url("back.svg") !important;
 }
 
-#forward-button {
+#forward-button,
+#zen-sidebar-web-panel-forward {
 	list-style-image: url("forward.svg") !important;
 }
 
-#reload-button {
+#reload-button,
+#zen-sidebar-web-panel-reload {
 	list-style-image: url("reload.svg") !important;
 }
 
 #stop-button,
-.close-icon {
+.close-icon,
+#zen-sidebar-web-panel-close {
 	list-style-image: url("close.svg") !important;
 }
 
@@ -230,7 +234,8 @@
 	list-style-image: url("bookmark-star-on-tray.svg") !important;
 }
 
-#home-button {
+#home-button,
+#zen-sidebar-web-panel-home {
 	list-style-image: url("home.svg") !important;
 }
 
@@ -520,12 +525,21 @@
 	> #reload-button[displaystop]
 	+ #stop-button
 	> .toolbarbutton-animatable-box
+	> .toolbarbutton-animatable-image,
+#zen-sidebar-web-panel-reload[animate]
+	> #zen-sidebar-web-panel-reload-button[displaystop]
+	+ #zen-sidebar-web-panel-stop-button
+	> .toolbarbutton-animatable-box
 	> .toolbarbutton-animatable-image {
 	background-image: url("reload-to-stop.svg") !important;
 }
 
 #stop-reload-button[animate]
 	> #reload-button
+	> .toolbarbutton-animatable-box
+	> .toolbarbutton-animatable-image,
+#zen-sidebar-web-panel-reload[animate]
+	> #zen-sidebar-web-panel-reload-button
 	> .toolbarbutton-animatable-box
 	> .toolbarbutton-animatable-image {
 	background-image: url("stop-to-reload.svg") !important;

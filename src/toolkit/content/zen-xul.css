@@ -7,6 +7,7 @@
   --zen-appcontent-separator-from-window: var(--zen-appcontent-separator-from-window-single);
   --zen-appcontent-border-radius: var(--zen-panel-radius);
   --zen-appcontent-border: 1px solid light-dark(#ddd, #4a4a4a);
+  --zen-browser-border-radius: 10px;
 }
 
 toolbox#navigator-toolbox, 
@@ -26,6 +27,10 @@ html#main-window > body {
   border-radius: var(--zen-appcontent-border-radius);
   overflow: hidden;
   margin: var(--zen-appcontent-separator-from-window);
+}
+
+#appcontent[inlinedwithsidebar="true"] {
+  background: var(--toolbar-bgcolor);
 }
 
 :not([inDOMFullscreen="true"]) #appcontent,

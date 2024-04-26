@@ -1,9 +1,12 @@
 <box id="zen-sidebar-web-panel" hidden="true" class="chromeclass-extrachrome">
   <toolbar mode="icons" flex="1" id="zen-sidebar-web-header">
-    <toolbarbutton id="zen-sidebar-web-panel-back" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="ZenSidebarWebPanel.back();"/>
-    <toolbarbutton id="zen-sidebar-web-panel-forward" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="ZenSidebarWebPanel.forward();"/>
-    <toolbarbutton id="zen-sidebar-web-panel-reload" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="ZenSidebarWebPanel.reload();"/>
-    <toolbarbutton id="zen-sidebar-web-panel-home" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="ZenSidebarWebPanel.home();"/>
-    <toolbarbutton id="zen-sidebar-web-panel-close" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="ZenSidebarWebPanel.hide();"/>
+    <toolbarbutton id="zen-sidebar-web-panel-back" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="gZenBrowserManagerSidebar.back();"/>
+    <toolbarbutton id="zen-sidebar-web-panel-forward" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="gZenBrowserManagerSidebar.forward();"/>
+    <toolbarbutton id="zen-sidebar-web-panel-reload" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="gZenBrowserManagerSidebar.reload();"/>
+    <toolbarbutton id="zen-sidebar-web-panel-home" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="gZenBrowserManagerSidebar.home();"/>
+    <toolbarbutton id="zen-sidebar-web-panel-close" class="toolbarbutton-1 chromeclass-toolbar-additional" oncommand="gZenBrowserManagerSidebar.close();"/>
   </toolbar>
+  <vbox id="zen-sidebar-web-panel-browser-containers">
+
+  </vbox>
 </box>

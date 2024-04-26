@@ -276,10 +276,10 @@ toolbarbutton#scrollbutton-up {
   --zen-browser-tab-icon-size: 16px;
   --tab-min-width: 0 !important;
   margin: 3px auto !important;
-  border-radius: 50%;
+  border-radius: 12px;
   position: relative;
   color-scheme: var(--tab-selected-color-scheme);
-  background: var(--zen-colors-secondary);
+  background: var(--toolbarbutton-hover-background);
   border: 2px solid transparent;
   padding: 0 !important;
   align-items: center;

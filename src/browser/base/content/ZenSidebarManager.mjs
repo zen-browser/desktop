@@ -3,10 +3,13 @@ export var gZenBrowserManagerSidebar = {
   _sidebarElement: null,
   _currentPanel: null,
   _hasRegisteredPinnedClickOutside: false,
+  _firstRun: 0,
+  _hasChangedConfig: true,
   contextTab: null,
 
   DEFAULT_MOBILE_USER_AGENT: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 Edg/114.0.1823.79",
   MAX_SIDEBAR_PANELS: 8, // +1 for the add panel button
+  MAX_RUNS: 3,
 
   init() {
     this.update();
@@ -29,7 +32,9 @@ export var gZenBrowserManagerSidebar = {
   },
 
   handleEvent() {
+    this._hasChangedConfig = true;
     this.update();
+    this._hasChangedConfig = false;
 
     if (Services.prefs.getBoolPref("zen.sidebar.pinned") && !this._hasRegisteredPinnedClickOutside) {
       document.addEventListener("mouseup", this._handleClickOutside.bind(this));
@@ -79,6 +84,8 @@ export var gZenBrowserManagerSidebar = {
       button.setAttribute("flex", "1");
       button.setAttribute("zen-sidebar-id", site);
       button.setAttribute("context", "zenWebPanelContextMenu");
+      if (this._firstRun < this.MAX_RUNS || this._hasChangedConfig)
+        button.setAttribute("animate", "true");
       this._getWebPanelIcon(panel.url, button);
       button.addEventListener("click", this._handleClick.bind(this));
       this.sidebarElement.appendChild(button);
@@ -89,8 +96,13 @@ export var gZenBrowserManagerSidebar = {
       addPanelButton.id = "zen-sidebar-add-panel-button";
       addPanelButton.classList.add("zen-sidebar-panel-button", "toolbarbutton-1", "chromeclass-toolbar-additional");
       addPanelButton.addEventListener("click", this._openAddPanelDialog.bind(this));
+      if (this._firstRun < this.MAX_RUNS || this._hasChangedConfig)
+        addPanelButton.setAttribute("animate", "true");
       this.sidebarElement.appendChild(addPanelButton);
     }
+    // We rerender multiple times for some reason, so we need to avoid the animation
+    if (this._firstRun < this.MAX_RUNS)
+      this._firstRun++;
   },
 
   async _openAddPanelDialog() {
@@ -191,6 +203,7 @@ export var gZenBrowserManagerSidebar = {
     browser.setAttribute("autoscroll", "false");
     browser.setAttribute("autocompletepopup", "PopupAutoComplete");
     browser.setAttribute("contextmenu", "contentAreaContextMenu");
+    browser.setAttribute("disablesecurity", "true");
     return browser;
   },
 

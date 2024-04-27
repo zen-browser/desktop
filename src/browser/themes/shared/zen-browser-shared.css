@@ -286,8 +286,9 @@ toolbarbutton#scrollbutton-up {
   animation: zen-slide-in 0.3s;
 }
 
-.tabbrowser-tab:active {
-  transform: scale(0.9);
+.tabbrowser-tab:active,
+.zen-sidebar-panel-button:active {
+  transform: scale(0.9) !important;
 }
 
 .tab-stack {

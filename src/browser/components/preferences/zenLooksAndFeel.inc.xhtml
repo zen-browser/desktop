@@ -19,4 +19,20 @@
             preference="zen.theme.toolbar-themed"/>
 </groupbox>
 
+<hbox id="zenSidePanelsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="pane-zen-side-panels-title"/>
+</hbox>
+
+<groupbox id="zenSidePanelsGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-side-panels-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-side-panels-description" />
+
+      <checkbox id="zenLooksAndFeelUseThemedToolbar"
+            data-l10n-id="zen-side-panels-enabled"
+            preference="zen.sidebar.enabled"/>
+</groupbox>
+
 </html:template>

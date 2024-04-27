@@ -86,8 +86,10 @@
   display: none !important;
 }
 
-#sidebar-box[hidden="true"] .zen-sidebar-action-button {
+#sidebar-box[hidden="true"] .zen-sidebar-action-button,
+.zen-sidebar-panel-button[animate] {
   opacity: 0;
+  transform: translateX(-110%);
   animation: zen-sidebar-button-fadeIn 0.4s forwards;
 }
 
@@ -133,16 +135,16 @@
 
 /* Ugly code */
 
-#TabsToolbar .zen-sidebar-action-button:nth-child(1) { animation-delay: 0.1s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(2) { animation-delay: 0.2s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(3) { animation-delay: 0.3s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(4) { animation-delay: 0.4s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(5) { animation-delay: 0.5s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(6) { animation-delay: 0.6s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(7) { animation-delay: 0.7s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(8) { animation-delay: 0.8s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(9) { animation-delay: 0.9s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(10) { animation-delay: 1s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(1),  .zen-sidebar-panel-button:nth-child(1) { animation-delay: 0.1s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(2),  .zen-sidebar-panel-button:nth-child(2) { animation-delay: 0.2s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(3),  .zen-sidebar-panel-button:nth-child(3) { animation-delay: 0.3s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(4),  .zen-sidebar-panel-button:nth-child(4) { animation-delay: 0.4s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(5),  .zen-sidebar-panel-button:nth-child(5) { animation-delay: 0.5s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(6),  .zen-sidebar-panel-button:nth-child(6) { animation-delay: 0.6s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(7),  .zen-sidebar-panel-button:nth-child(7) { animation-delay: 0.7s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(8),  .zen-sidebar-panel-button:nth-child(8) { animation-delay: 0.8s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(9),  .zen-sidebar-panel-button:nth-child(9) { animation-delay: 0.9s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(10), .zen-sidebar-panel-button:nth-child(10) { animation-delay: 1s; }
 
 #TabsToolbar .zen-side-bar-profiles-button-panel-correction {
   position: absolute;

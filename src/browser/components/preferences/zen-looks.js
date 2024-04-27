@@ -54,4 +54,9 @@ Preferences.addAll([
     type: "bool",
     default: true,
   },
+  {
+    id: "zen.sidebar.enabled",
+    type: "bool",
+    default: true,
+  },
 ]);

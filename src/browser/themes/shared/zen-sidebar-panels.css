@@ -7,6 +7,11 @@
   justify-content: center;
 }
 
+#zen-sidebar-panels-wrapper[hidden="true"] > * {
+  /* We still need to have this element in the DOM to satisfy the grid layout */
+  display: none !important;
+}
+
 .zen-sidebar-panel-button {
   width: var(--zen-sidebar-action-button-width);
   height: var(--zen-sidebar-action-button-width);
@@ -46,7 +51,7 @@
 
 #zen-sidebar-web-panel {
   --zen-default-sidebar-width: 300px;
-  width: calc(var(--zen-default-sidebar-width) + 100px);
+  width: calc(var(--zen-default-sidebar-width) + 200px);
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   margin: var(--zen-appcontent-separator-from-window);

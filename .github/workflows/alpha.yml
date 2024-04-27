@@ -5,6 +5,8 @@ on:
 
 jobs:
   build-data:
+    permissions:
+      contents: write
     name: Generate build data
     runs-on: ubuntu-latest
     outputs:
@@ -70,6 +72,8 @@ jobs:
           commit_user_email: trickypr@gmail.com
 
   linux:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: [build-data]
 
@@ -200,6 +204,8 @@ jobs:
           path: ./dist/update
 
   source:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: [build-data]
 

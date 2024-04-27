@@ -371,6 +371,10 @@ toolbarbutton#scrollbutton-up {
   }
 }
 
+#zen-tabbox-wrapper {
+  position: relative;
+}
+
 .footer-button {
   padding: var(--zen-button-padding) !important;
   border-radius: var(--zen-button-border-radius) !important;

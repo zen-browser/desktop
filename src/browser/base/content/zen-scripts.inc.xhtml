@@ -1,6 +1,7 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", () => {
   import("chrome://browser/content/ZenSidebarManager.mjs").then(({ gZenBrowserManagerSidebar }) => {
+      gZenBrowserManagerSidebar.init();
       window.gZenBrowserManagerSidebar = gZenBrowserManagerSidebar
   });
 });

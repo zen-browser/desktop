@@ -851,6 +851,15 @@ menuitem[contexttype="fullscreen"][label*="Exit"] {
 .customize-context-removeFromToolbar {
 	--menu-image: url("unpin.svg");
 }
+
+#zen-sidebar-web-panel-pinned[pinned="true"] {
+	list-style-image: url("pin.svg") !important;
+}
+
+#zen-sidebar-web-panel-pinned {
+	list-style-image: url("unpin.svg") !important;
+}
+
 #context_duplicateTab,
 #context_duplicateTabs {
 	--menu-image: url("duplicate-tab.svg");

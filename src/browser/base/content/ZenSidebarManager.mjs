@@ -2,14 +2,15 @@
 export var gZenBrowserManagerSidebar = {
   _sidebarElement: null,
   _currentPanel: null,
+  _hasRegisteredPinnedClickOutside: false,
   contextTab: null,
 
   DEFAULT_MOBILE_USER_AGENT: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 Edg/114.0.1823.79",
   MAX_SIDEBAR_PANELS: 8, // +1 for the add panel button
 
   init() {
-    this._closeSidebarPanel(); // avoid caching
     this.update();
+    this.close(); // avoid caching
     this.listenForPrefChanges();
   },
 
@@ -24,10 +25,31 @@ export var gZenBrowserManagerSidebar = {
   listenForPrefChanges() {
     Services.prefs.addObserver("zen.sidebar.data", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
+    Services.prefs.addObserver("zen.sidebar.pinned", this.handleEvent.bind(this));
   },
 
   handleEvent() {
     this.update();
+
+    if (Services.prefs.getBoolPref("zen.sidebar.pinned") && !this._hasRegisteredPinnedClickOutside) {
+      document.addEventListener("mouseup", this._handleClickOutside.bind(this));
+      this._hasRegisteredPinnedClickOutside = true;
+    } else {
+      document.removeEventListener("mouseup", this._handleClickOutside.bind(this));
+      this._hasRegisteredPinnedClickOutside = false;
+    }
+  },
+
+  _handleClickOutside(event) {
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    if (!sidebar.hasAttribute("pinned") || !this._currentPanel) {
+      return;
+    }
+    let target = event.target;
+    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper")) {
+      return;
+    }
+    this.close();
   },
 
   update() {
@@ -37,7 +59,6 @@ export var gZenBrowserManagerSidebar = {
   _updateWebPanels() {
     if (Services.prefs.getBoolPref("zen.sidebar.enabled")) {
       this.sidebarElement.removeAttribute("hidden");
-      this._hideAllWebPanels();
     } else {
       this.sidebarElement.setAttribute("hidden", "true");
       return;
@@ -87,6 +108,10 @@ export var gZenBrowserManagerSidebar = {
   _openAndGetWebPanelWrapper() {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     sidebar.removeAttribute("hidden");
+    if (Services.prefs.getBoolPref("zen.sidebar.pinned")) {
+      sidebar.setAttribute("pinned", "true");
+      document.getElementById("zen-sidebar-web-panel-pinned").setAttribute("pinned", "true");
+    }
     return sidebar;
   },
 
@@ -226,6 +251,22 @@ export var gZenBrowserManagerSidebar = {
     this._closeSidebarPanel();
   },
 
+  togglePinned(elem) {
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    if (sidebar.hasAttribute("pinned")) {
+      sidebar.removeAttribute("pinned");
+    } else {
+      sidebar.setAttribute("pinned", "true");
+    }
+    if (sidebar.hasAttribute("pinned")) {
+      elem.setAttribute("pinned", "true");
+    } else {
+      elem.removeAttribute("pinned");
+    }
+    Services.prefs.setBoolPref("zen.sidebar.pinned", sidebar.hasAttribute("pinned"));
+    this.update();
+  },
+
   get sidebarElement() {
     if (!this._sidebarElement) {
       this._sidebarElement = document.getElementById("zen-sidebar-panels-wrapper");
@@ -298,5 +339,3 @@ export var gZenBrowserManagerSidebar = {
     this._closeSidebarPanel();
   },
 };
-
-gZenBrowserManagerSidebar.init();

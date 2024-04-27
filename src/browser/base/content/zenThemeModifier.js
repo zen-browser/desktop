@@ -87,6 +87,7 @@
 
     _changeSidebarLocation(value) {
       const kElementsToAppend = [
+        "zen-sidebar-web-panel-wrapper",
         "sidebar-splitter",
         "sidebar-box",
         "navigator-toolbox",
@@ -94,7 +95,6 @@
       const kInlineIndicatorElements = [
         "nav-bar",
         "tabbrowser-tabbox",
-        "zen-sidebar-web-panel",
         "appcontent",
         ...kElementsToAppend,
       ];

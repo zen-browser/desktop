@@ -1,5 +1,5 @@
 
-export var gZenBrowserManagerSidebar = {
+var gZenBrowserManagerSidebar = {
   _sidebarElement: null,
   _currentPanel: null,
   _hasRegisteredPinnedClickOutside: false,
@@ -51,7 +51,7 @@ export var gZenBrowserManagerSidebar = {
       return;
     }
     let target = event.target;
-    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper")) {
+    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper") || target.closest("zenWebPanelContextMenu")) {
       return;
     }
     this.close();
@@ -66,6 +66,7 @@ export var gZenBrowserManagerSidebar = {
       this.sidebarElement.removeAttribute("hidden");
     } else {
       this.sidebarElement.setAttribute("hidden", "true");
+      this._closeSidebarPanel();
       return;
     }
 
@@ -341,7 +342,9 @@ export var gZenBrowserManagerSidebar = {
     delete data.data[this.contextTab];
     data.index = data.index.filter(id => id !== this.contextTab);
     let browser = this._getBrowserById(this.contextTab);
-    browser.remove();
+    if (browser) {
+      browser.remove();
+    }
     this._closeSidebarPanel();
     Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(data));
   },
@@ -352,3 +355,5 @@ export var gZenBrowserManagerSidebar = {
     this._closeSidebarPanel();
   },
 };
+
+gZenBrowserManagerSidebar.init();

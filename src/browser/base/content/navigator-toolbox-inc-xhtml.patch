@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c0617513146 100644
+index fc19910726f2925505f6e71add034c82af36b63e..e371ffaa91cf38db956686cc72af60a2e840b652 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
-@@ -32,7 +32,7 @@
+@@ -32,10 +32,11 @@
  
        <hbox class="titlebar-spacer" type="pre-tabs"/>
  
@@ -11,7 +11,11 @@ index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c06
          <toolbartabstop/>
          <hbox id="TabsToolbar-customization-target" flex="1">
            <toolbarbutton id="firefox-view-button"
-@@ -50,21 +50,24 @@
++                         hidden="true"
+                          class="toolbarbutton-1 chromeclass-toolbar-additional"
+                          data-l10n-id="toolbar-button-firefox-view-2"
+                          role="button"
+@@ -50,21 +51,24 @@
                  aria-multiselectable="true"
                  setfocus="false"
                  tooltip="tabbrowser-tab-tooltip"
@@ -37,7 +41,7 @@ index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c06
                  <spacer class="closing-tabs-spacer" style="width: 0;"/>
                </hbox>
              </arrowscrollbox>
-@@ -101,7 +104,10 @@
+@@ -101,7 +105,10 @@
          <label data-l10n-id="private-browsing-indicator-label"></label>
        </hbox>
  
@@ -48,7 +52,7 @@ index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c06
  
      </toolbar>
  
-@@ -505,6 +511,9 @@
+@@ -505,6 +512,9 @@
                       consumeanchor="PanelUI-button"
                       data-l10n-id="appmenu-menu-button-closed2"/>
      </toolbaritem>
@@ -58,7 +62,7 @@ index fc19910726f2925505f6e71add034c82af36b63e..29c40b6b8915fdd7c7066b53b72b6c06
    </toolbar>
  
    <toolbar id="PersonalToolbar"
-@@ -576,7 +585,6 @@
+@@ -576,7 +586,6 @@
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>
  

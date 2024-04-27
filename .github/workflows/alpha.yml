@@ -165,14 +165,14 @@ jobs:
       - name: Import
         run: pnpm gluon import
 
-      - name: Run Init
-        run: pnpm run init
-
       - name: Bootstrap
         run: |
           cd engine
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
+
+      - name: Run Init
+        run: pnpm run init
 
       - name: Build
         run: pnpm build
@@ -257,15 +257,15 @@ jobs:
       - name: Import
         run: pnpm gluon import --verbose
 
-      - name: Run Init
-        run: pnpm run init
-
       - name: Compress
         run: |
           cd engine
           # -h is used to dereference symlinks
           tar --use-compress-program=zstd -hcf ../zen-browser.source.tar.gz *
           cd ..
+
+      - name: Run Init
+        run: pnpm run init
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2

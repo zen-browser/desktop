@@ -22,6 +22,21 @@
       "release": {
         "displayVersion": "1.0.0"
       }
+    },
+    "alpha": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Zen",
+      "brandShortName": "Zen Browser",
+      "brandFullName": "Zen Browser",
+      "release": {
+        "displayVersion": "1.0.0-a.17",
+        "github": {
+          "repo": "zen-browser/desktop"
+        },
+        "x86": {
+          "linuxMar": "linux.mar"
+        }
+      }
     }
   },
   "license": {

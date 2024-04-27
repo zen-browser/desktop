@@ -139,5 +139,5 @@ pref('dom.security.sanitizer.enabled', true);
 //pref("browser.profiles.enabled", true);
 
 // Zen Sidebar
-pref('zen.sidebar.data', "{\"data\":{\"p1\":{\"url\":\"https://google.com\"}},\"index\":[\"p1\"]}");
+pref('zen.sidebar.data', "{\"data\":\n {\"p1\":{\n   \"url\":\"https://web.whatsapp.com/\"\n  },\n\"p2\":{\n   \"url\":\"https://open.spotify.com/\",\n\"ua\": true\n  },\n\"p3\": {\n   \"url\": \"https://www.youtube.com/\",\n\"ua\": true\n}},\n\"index\":[\"p1\",\"p2\",\"p3\"]\n}");
 pref('zen.sidebar.enabled', true);

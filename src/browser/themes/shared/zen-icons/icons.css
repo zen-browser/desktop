@@ -146,7 +146,8 @@
 #tabs-newtab-button,
 #TabsToolbar #new-tab-button,
 #appMenu-zoomEnlarge-button2,
-#PanelUI-zen-profiles-newProfile {
+#PanelUI-zen-profiles-newProfile,
+#zen-sidebar-add-panel-button {
 	list-style-image: url("plus.svg") !important;
 }
 

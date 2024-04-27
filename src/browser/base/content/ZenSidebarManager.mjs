@@ -5,9 +5,12 @@ export var gZenBrowserManagerSidebar = {
   contextTab: null,
 
   DEFAULT_MOBILE_USER_AGENT: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 Edg/114.0.1823.79",
+  MAX_SIDEBAR_PANELS: 8, // +1 for the add panel button
 
   init() {
+    this._closeSidebarPanel(); // avoid caching
     this.update();
+    this.listenForPrefChanges();
   },
 
   get sidebarData() {
@@ -18,6 +21,15 @@ export var gZenBrowserManagerSidebar = {
     return JSON.parse(services);
   },
 
+  listenForPrefChanges() {
+    Services.prefs.addObserver("zen.sidebar.data", this.handleEvent.bind(this));
+    Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
+  },
+
+  handleEvent() {
+    this.update();
+  },
+
   update() {
     this._updateWebPanels();
   },
@@ -25,6 +37,7 @@ export var gZenBrowserManagerSidebar = {
   _updateWebPanels() {
     if (Services.prefs.getBoolPref("zen.sidebar.enabled")) {
       this.sidebarElement.removeAttribute("hidden");
+      this._hideAllWebPanels();
     } else {
       this.sidebarElement.setAttribute("hidden", "true");
       return;
@@ -45,9 +58,29 @@ export var gZenBrowserManagerSidebar = {
       button.setAttribute("flex", "1");
       button.setAttribute("zen-sidebar-id", site);
       button.setAttribute("context", "zenWebPanelContextMenu");
-      button.style.listStyleImage = this._getWebPanelIcon(panel.url);
+      this._getWebPanelIcon(panel.url, button);
       button.addEventListener("click", this._handleClick.bind(this));
       this.sidebarElement.appendChild(button);
+    }
+    if (data.index.length < this.MAX_SIDEBAR_PANELS) {
+      this.sidebarElement.appendChild(document.createXULElement("toolbarseparator"));
+      let addPanelButton = document.createXULElement("toolbarbutton");
+      addPanelButton.id = "zen-sidebar-add-panel-button";
+      addPanelButton.classList.add("zen-sidebar-panel-button", "toolbarbutton-1", "chromeclass-toolbar-additional");
+      addPanelButton.addEventListener("click", this._openAddPanelDialog.bind(this));
+      this.sidebarElement.appendChild(addPanelButton);
+    }
+  },
+
+  async _openAddPanelDialog() {
+    let dialogURL = "chrome://browser/content/places/zenNewWebPanel.xhtml";
+    let features = "centerscreen,chrome,modal,resizable=no";
+    let aParentWindow = Services.wm.getMostRecentWindow("navigator:browser");
+
+    if (aParentWindow?.gDialogBox) {
+      await aParentWindow.gDialogBox.open(dialogURL, {});
+    } else {
+      aParentWindow.openDialog(dialogURL, "", features, {});
     }
   },
 
@@ -105,11 +138,11 @@ export var gZenBrowserManagerSidebar = {
     let data = this._getWebPanelData(this._currentPanel);
     let browser = this._createWebPanelBrowser(data);
     let browserContainers = document.getElementById("zen-sidebar-web-panel-browser-containers");
-    browserContainers.appendChild(browser.linkedBrowser.closest(".browserContainer"));
+    browserContainers.appendChild(browser);
     if (data.ua) {
-      browser.linkedBrowser.browsingContext.customUserAgent = this.DEFAULT_MOBILE_USER_AGENT;
+      browser.browsingContext.customUserAgent = this.DEFAULT_MOBILE_USER_AGENT;
     }
-    browser.linkedBrowser.browsingContext.isActive = true;
+    browser.browsingContext.isActive = true;
   },
 
   _getWebPanelData(id) {
@@ -125,22 +158,30 @@ export var gZenBrowserManagerSidebar = {
   },
 
   _createWebPanelBrowser(data) {
-    let tab = gBrowser.addTab(data.url, {
-      insertTab: false,
-      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
-    });
-    tab.linkedBrowser.setAttribute("disablefullscreen", "true");
-    tab.linkedBrowser.setAttribute("src", data.url);
-    tab.linkedBrowser.setAttribute("zen-sidebar-id", data.id);
-    tab.linkedBrowser.setAttribute("disableglobalhistory", "true");
-    tab.linkedBrowser.setAttribute("autoscroll", "false");
-    tab.linkedBrowser.setAttribute("autocompletepopup", "PopupAutoComplete");
-    tab.linkedBrowser.setAttribute("contextmenu", "contentAreaContextMenu");
-    return tab;
+    let browser = gBrowser.createBrowser({});
+    browser.setAttribute("disablefullscreen", "true");
+    browser.setAttribute("src", data.url);
+    browser.setAttribute("zen-sidebar-id", data.id);
+    browser.setAttribute("disableglobalhistory", "true");
+    browser.setAttribute("autoscroll", "false");
+    browser.setAttribute("autocompletepopup", "PopupAutoComplete");
+    browser.setAttribute("contextmenu", "contentAreaContextMenu");
+    return browser;
   },
 
-  _getWebPanelIcon(url) {
-    return `url(page-icon:${url})`;
+  _getWebPanelIcon(url, element) {
+    let { preferredURI } = Services.uriFixup.getFixupURIInfo(url);
+    element.setAttribute("image", `page-icon:${preferredURI.spec}`);
+    fetch(`https://s2.googleusercontent.com/s2/favicons?domain_url=${preferredURI.spec}`).then(async response => {
+      if (response.ok) {
+        let blob = await response.blob();
+        let reader = new FileReader();
+        reader.onload = function() {
+          element.setAttribute("image", reader.result);
+        };
+        reader.readAsDataURL(blob);
+      }
+    });
   },
 
   _getBrowserById(id) {
@@ -245,11 +286,10 @@ export var gZenBrowserManagerSidebar = {
     let data = this.sidebarData;
     delete data.data[this.contextTab];
     data.index = data.index.filter(id => id !== this.contextTab);
-    Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(data));
-    this._updateWebPanels();
     let browser = this._getBrowserById(this.contextTab);
     browser.remove();
     this._closeSidebarPanel();
+    Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(data));
   },
 
   contextUnload() {

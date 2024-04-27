@@ -49,6 +49,7 @@
   min-width: var(--zen-default-sidebar-width);
   background: var(--zen-colors-tertiary);
   animation: zen-sidebar-panel-animation 0.3s ease-in-out;
+  animation-delay: 0.1s;
   flex-direction: column;
 }
 
@@ -97,4 +98,8 @@
 #zen-sidebar-web-panel-browser-containers {
   height: 100%;
   position: relative;
+}
+
+#zen-sidebar-web-panel browser[zen-sidebar-id] {
+  height: 100%;
 }

@@ -5,8 +5,11 @@
 
 .main-content {
   background: var(--zen-settings-secondary-background);
-  padding-left: 100px;
-  padding-top: 40px !important;
+  padding-top: 60px !important;
+}
+
+.pane-container {
+  margin: auto;
 }
 
 groupbox {

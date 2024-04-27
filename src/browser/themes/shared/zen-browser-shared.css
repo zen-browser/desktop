@@ -367,7 +367,7 @@ toolbarbutton#scrollbutton-up {
 
 #tabbrowser-arrowscrollbox {
   &::part(scrollbox-clip) {
-    max-height: 62vh;
+    max-height: 405px;
   }
 }
 

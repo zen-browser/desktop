@@ -244,7 +244,8 @@ toolbarbutton:not(:is(
   .all-tabs-close-button,
   .zen-sidebar-panel-button,
   #zen-sidebar-web-panel-close,
-  #PanelUI-zen-profiles-managePrfs
+  #PanelUI-zen-profiles-managePrfs,
+  .bookmark-item,
 )),
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */

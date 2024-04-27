@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 4074f35ffc622d5ec44a4b4e4c766aa5ecefd9f2..b308e81ea73ea1dd363fd7de6aad798ba9b27f55 100644
+index bff8d98b27819b149a0c51c1195e1ee3668f2e31..622cbe099be0f1da8f48132204b73e577483ceae 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
 @@ -166,6 +166,10 @@
@@ -28,3 +28,12 @@ index 4074f35ffc622d5ec44a4b4e4c766aa5ecefd9f2..b308e81ea73ea1dd363fd7de6aad798b
      </panel>
    </html:template>
  
+@@ -491,6 +497,8 @@
+ 
+ #include popup-notifications.inc
+ 
++#include zen-popupset.inc.xhtml
++
+ #include ../../components/customizableui/content/panelUI.inc.xhtml
+ #include ../../components/controlcenter/content/identityPanel.inc.xhtml
+ #include ../../components/controlcenter/content/permissionPanel.inc.xhtml

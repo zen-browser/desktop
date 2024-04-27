@@ -1,0 +1,9 @@
+<menupopup id="zenWebPanelContextMenu"
+            onpopupshowing="if (event.target == this) gZenBrowserManagerSidebar.updateContextMenu(this);"
+            onpopuphidden="if (event.target == this) gZenBrowserManagerSidebar.contextTab = null;">
+  <menuitem id="context_zenUnloadWebPanel" oncommand="gZenBrowserManagerSidebar.contextUnload();" data-l10n-id="zen-web-side-panel-context-unload"/>
+  <menuitem id="context_zenToggleMuteWebPanel" oncommand="gZenBrowserManagerSidebar.contextToggleMuteAudio();"/>
+  <menuitem id="context_zenToogleUAWebPanel" oncommand="gZenBrowserManagerSidebar.contextToggleUserAgent();"/>
+  <menuseparator/>
+  <menuitem id="context_zenDeleteWebPanel" oncommand="gZenBrowserManagerSidebar.contextDelete();" data-l10n-id="zen-web-side-panel-context-delete"/>
+</menupopup>

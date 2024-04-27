@@ -653,7 +653,8 @@ menuitem[id="placesContext_deleteBookmark"],
 menuitem[id="placesContext_deleteFolder"],
 menuitem[id="placesContext_delete"],
 menuitem[id="placesContext_delete_history"],
-menuitem[id="placesContext_deleteHost"] {
+menuitem[id="placesContext_deleteHost"],
+#context_zenDeleteWebPanel {
 	--menu-image: url("edit-delete.svg");
 }
 
@@ -809,13 +810,15 @@ menuitem[id="placesContext_open:newprivatewindow"] {
 
 #context-media-mute,
 #context_toggleMuteTab,
-#context_toggleMuteSelectedTabs {
+#context_toggleMuteSelectedTabs,
+#context_zenToggleMuteWebPanel {
 	--menu-image: url("media-mute.svg");
 }
 
 #context-media-unmute,
 #context_toggleMuteTab[muted],
-#context_toggleMuteSelectedTabs[muted] {
+#context_toggleMuteSelectedTabs[muted],
+#context_zenToggleMuteWebPanel[muted] {
 	--menu-image: url("media-unmute.svg");
 }
 

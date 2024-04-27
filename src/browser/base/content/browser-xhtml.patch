@@ -1,16 +1,17 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 1dcdd02cd1bfe24c9f32304511f3dd675fc9265c..e81ccd535dc3dbcb485d39001b879970d7648693 100644
+index 1dcdd02cd1bfe24c9f32304511f3dd675fc9265c..b23c3cf40e9894d6fe3f5c2899a8d2d163b0b091 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -144,6 +144,7 @@
+@@ -144,6 +144,8 @@
    window.addEventListener("DOMContentLoaded",
      gBrowserInit.onDOMContentLoaded.bind(gBrowserInit), { once: true });
  </script>
++#include zen-locales.inc.xhtml
 +#include zen-scripts.inc.xhtml
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -165,9 +166,13 @@
+@@ -165,9 +167,13 @@
      </vbox>
    </html:template>
  

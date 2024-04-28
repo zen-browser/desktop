@@ -246,6 +246,7 @@ toolbarbutton:not(:is(
   #zen-sidebar-web-panel-pinned,
   #PanelUI-zen-profiles-managePrfs,
   .bookmark-item,
+  #urlbar-zoom-button,
   .panel-info-button,
 )),
 #PanelUI-zen-profiles menuitem {

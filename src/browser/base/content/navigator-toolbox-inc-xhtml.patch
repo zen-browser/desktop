@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index fc19910726f2925505f6e71add034c82af36b63e..e371ffaa91cf38db956686cc72af60a2e840b652 100644
+index fc19910726f2925505f6e71add034c82af36b63e..a0830b01feef88bc727edef453f5add123fdfc10 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -32,10 +32,11 @@
@@ -52,7 +52,15 @@ index fc19910726f2925505f6e71add034c82af36b63e..e371ffaa91cf38db956686cc72af60a2
  
      </toolbar>
  
-@@ -505,6 +512,9 @@
+@@ -447,6 +454,7 @@
+ 
+       <toolbarbutton id="fxa-toolbar-menu-button" class="toolbarbutton-1 chromeclass-toolbar-additional subviewbutton-nav"
+                      badged="true"
++                     hidden="true"
+                      delegatesanchor="true"
+                      onmousedown="gSync.toggleAccountPanel(this, event)"
+                      onkeypress="gSync.toggleAccountPanel(this, event)"
+@@ -505,6 +513,9 @@
                       consumeanchor="PanelUI-button"
                       data-l10n-id="appmenu-menu-button-closed2"/>
      </toolbaritem>
@@ -62,7 +70,7 @@ index fc19910726f2925505f6e71add034c82af36b63e..e371ffaa91cf38db956686cc72af60a2
    </toolbar>
  
    <toolbar id="PersonalToolbar"
-@@ -576,7 +586,6 @@
+@@ -576,7 +587,6 @@
      <html:named-deck id="tab-notification-deck"></html:named-deck>
    </html:template>
  

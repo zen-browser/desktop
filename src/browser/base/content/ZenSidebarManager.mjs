@@ -30,7 +30,7 @@ var gZenBrowserManagerSidebar = {
   listenForPrefChanges() {
     Services.prefs.addObserver("zen.sidebar.data", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
-    Services.prefs.addObserver("zen.sidebar.pinned", this.handleEvent.bind(this));
+    Services.prefs.addObserver("zen.sidebar.floating", this.handleEvent.bind(this));
 
 
     let sidebar = document.getElementById("zen-sidebar-web-panel");
@@ -70,7 +70,7 @@ var gZenBrowserManagerSidebar = {
     this.update();
     this._hasChangedConfig = false;
 
-    if (Services.prefs.getBoolPref("zen.sidebar.pinned") && !this._hasRegisteredPinnedClickOutside) {
+    if (Services.prefs.getBoolPref("zen.sidebar.floating") && !this._hasRegisteredPinnedClickOutside) {
       document.addEventListener("mouseup", this._handleClickOutside.bind(this));
       this._hasRegisteredPinnedClickOutside = true;
     } else {
@@ -174,7 +174,7 @@ var gZenBrowserManagerSidebar = {
   _openAndGetWebPanelWrapper() {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     sidebar.removeAttribute("hidden");
-    if (Services.prefs.getBoolPref("zen.sidebar.pinned")) {
+    if (Services.prefs.getBoolPref("zen.sidebar.floating")) {
       this._setPinnedToElements();
     }
     return sidebar;
@@ -324,7 +324,7 @@ var gZenBrowserManagerSidebar = {
     } else {
       this._setPinnedToElements();
     }
-    Services.prefs.setBoolPref("zen.sidebar.pinned", sidebar.hasAttribute("pinned"));
+    Services.prefs.setBoolPref("zen.sidebar.floating", sidebar.hasAttribute("pinned"));
     this.update();
   },
 

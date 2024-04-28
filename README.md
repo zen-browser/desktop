@@ -25,10 +25,10 @@ Download and bootstrap the browser
 gluon download && gluon bootstrap
 ```
 
-Initialize the browser and start building it
+Start building the browser
 
 ```
-npm run init && npm run build
+npm run build
 ```
 
 Finally, run the browser!

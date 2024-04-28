@@ -7,7 +7,6 @@
     "start": "cd engine && ./mach run --noprofile",
     "import": "gluon import",
     "export": "gluon export",
-    "init": "python3 init-browser.py",
     "package": "gluon package",
     "update-newtab": "python3 update_newtab.py"
   },

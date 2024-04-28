@@ -374,7 +374,7 @@ jobs:
           path: ./dist/update
 
   windows:
-    runs-on: tricky-win
+    runs-on: windows-latest
     needs: [build-data]
 
     steps:

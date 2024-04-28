@@ -16,7 +16,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--zen-main-browser-background) !important;
+  /*background: var(--zen-main-browser-background) !important;*/
   transition: .1s;
   -moz-transform: scale(1.1); /* zoom */
 }
@@ -188,5 +188,5 @@ input[type='checkbox'] {
 }
 
 .dot.active {
-  background: var(--in-content-primary-button-background-hover);
+  background: light-dark(#000, #fff);
 }

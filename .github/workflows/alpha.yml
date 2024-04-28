@@ -339,9 +339,10 @@ jobs:
         run: pnpm import
 
       - name: Bootstrap
+        continue-on-error: true
         run: |
           cd engine
-          ./mach --no-interactive bootstrap --application-choice browser
+          ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
 
       - name: Gluon build

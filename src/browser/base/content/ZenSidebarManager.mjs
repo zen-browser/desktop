@@ -6,6 +6,7 @@ var gZenBrowserManagerSidebar = {
   _firstRun: 0,
   _hasChangedConfig: true,
   _splitterElement: null,
+  _isDragging: false,
   contextTab: null,
 
   DEFAULT_MOBILE_USER_AGENT: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 Edg/114.0.1823.79",
@@ -31,19 +32,19 @@ var gZenBrowserManagerSidebar = {
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.pinned", this.handleEvent.bind(this));
 
+
     let sidebar = document.getElementById("zen-sidebar-web-panel");
-    let computedStyle = window.getComputedStyle(sidebar);
-    let maxWidth = parseInt(computedStyle.getPropertyValue("max-width").replace("px", ""));
-    let minWidth = parseInt(computedStyle.getPropertyValue("min-width").replace("px", ""));
-    
-    let isBeingResized = false;
-    this.splitterElement.addEventListener("mousedown", function(event) {
-      if (!isBeingResized) { // Prevent multiple resizes
-        isBeingResized = true;
+    this.splitterElement.addEventListener("mousedown", (function(event) {
+      let computedStyle = window.getComputedStyle(sidebar);
+      let maxWidth = parseInt(computedStyle.getPropertyValue("max-width").replace("px", ""));
+      let minWidth = parseInt(computedStyle.getPropertyValue("min-width").replace("px", ""));
+      
+      if (!this._isDragging) { // Prevent multiple resizes
+        this._isDragging = true;
         let sidebarWidth = sidebar.getBoundingClientRect().width;
         let startX = event.clientX;
         let startWidth = sidebarWidth;
-        let mouseMove = function(event) {
+        let mouseMove = (function(event) {
           let newWidth = startWidth + event.clientX - startX;
           if (newWidth <= minWidth+10) {
             newWidth = minWidth+1;
@@ -51,16 +52,17 @@ var gZenBrowserManagerSidebar = {
             newWidth = maxWidth-1;
           }
           sidebar.style.width = `${newWidth}px`;
-        };
-        let mouseUp = function() {
-          isBeingResized = false;
+        }).bind(this);
+        let mouseUp = (function() {
+          this.handleEvent();
+          this._isDragging = false;
           document.removeEventListener("mousemove", mouseMove);
           document.removeEventListener("mouseup", mouseUp);
-        };
+        }).bind(this);
         document.addEventListener("mousemove", mouseMove);
         document.addEventListener("mouseup", mouseUp);
       }
-    });
+    }).bind(this));
   },
 
   handleEvent() {
@@ -79,7 +81,7 @@ var gZenBrowserManagerSidebar = {
 
   _handleClickOutside(event) {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
-    if (!sidebar.hasAttribute("pinned") || !this._currentPanel) {
+    if (!sidebar.hasAttribute("pinned") || !this._currentPanel || this._isDragging) {
       return;
     }
     let target = event.target;
@@ -141,7 +143,7 @@ var gZenBrowserManagerSidebar = {
 
   _updateArrowScrollMaxHeight(num) {
     let content = document.querySelector("#tabbrowser-arrowscrollbox");
-    let height = (this.MAX_SIDEBAR_PANELS - num) * 81;
+    let height = (this.MAX_SIDEBAR_PANELS * 140) - (num * 120);
     content.style.maxHeight = `${height}px`;
   },
 

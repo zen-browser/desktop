@@ -296,8 +296,8 @@ class Pages {
 
 const pages = new Pages([
   new Page('welcome'),
-  new Import('import'),
   new Themes('theme'),
+  new Import('import'),
   new Search('search'),
   new Thanks('thanks'),
 ])

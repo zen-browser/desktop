@@ -82,6 +82,10 @@
   border-radius: 999px;
 }
 
+#identity-icon-label {
+  padding-inline-start: 8px  !important;
+}
+
 #urlbar #identity-box.chromeUI #identity-icon-box {
   border-radius: 5px !important;
 }

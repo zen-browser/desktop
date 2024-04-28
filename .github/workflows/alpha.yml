@@ -171,9 +171,6 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
-      - name: Run Init
-        run: pnpm run init
-
       - name: Build
         run: pnpm build
 
@@ -263,9 +260,6 @@ jobs:
           # -h is used to dereference symlinks
           tar --use-compress-program=zstd -hcf ../zen-browser.source.tar.gz *
           cd ..
-
-      - name: Run Init
-        run: pnpm run init
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2

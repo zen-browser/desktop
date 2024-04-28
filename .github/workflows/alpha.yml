@@ -378,18 +378,22 @@ jobs:
     needs: [build-data]
 
     steps:
-      - uses: trickypr/checkout@main
-        with:
-          submodules: recursive
-
       - name: Install Node.js and pnpm
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
       - name: Install dependencies
         run: |
-          npm install -g pnpm
           pnpm i
 
       - name: Load gluon CI setup

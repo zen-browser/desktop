@@ -16,23 +16,9 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--zen-characteristic-gradient) !important;
+  background: var(--zen-main-browser-background) !important;
   transition: .1s;
   -moz-transform: scale(1.1); /* zoom */
-}
-
-button {
-  background: #000 !important;
-  color: #fff !important;
-  font-size: 17px !important;
-  padding: 10px 25px !important;
-  font-weight: 600;
-  border-radius: 100px !important;
-  cursor: pointer !important;
-}
-
-* {
-  color: white;
 }
 
 .page {
@@ -197,11 +183,11 @@ input[type='checkbox'] {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: white;
+  background: var(--in-content-primary-button-background);
   transition: all .1s;
   cursor: pointer;
 }
 
 .dot.active {
-  background: #000;
+  background: var(--in-content-primary-button-background-hover);
 }

@@ -101,9 +101,16 @@ var gZenBrowserManagerSidebar = {
         addPanelButton.setAttribute("animate", "true");
       this.sidebarElement.appendChild(addPanelButton);
     }
+    this._updateArrowScrollMaxHeight(data.index.length + 1);
     // We rerender multiple times for some reason, so we need to avoid the animation
     if (this._firstRun < this.MAX_RUNS)
       this._firstRun++;
+  },
+
+  _updateArrowScrollMaxHeight(num) {
+    let content = document.querySelector("#tabbrowser-arrowscrollbox::part(scrollbox-clip)");
+    let height = (this.MAX_SIDEBAR_PANELS - num) * 81;
+    content.style.maxHeight = `${height}px`;
   },
 
   async _openAddPanelDialog() {

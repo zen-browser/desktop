@@ -34,6 +34,8 @@
           "repo": "zen-browser/desktop"
         },
         "x86": {
+          "windowsMar": "windows.mar",
+          "macosMar": "macosIntel.mar",
           "linuxMar": "linux.mar"
         }
       }

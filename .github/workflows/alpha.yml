@@ -179,7 +179,7 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv dist/zen-browser-*.tar.bz2 "zen-browser.linux.tar.bz2"
+          mv dist/zen-*.tar.bz2 "zen-browser.linux.tar.bz2"
           mv dist/output.mar linux.mar
 
       - name: Upload binary

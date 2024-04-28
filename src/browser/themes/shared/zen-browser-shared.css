@@ -134,6 +134,14 @@
 toolbar .toolbarbutton-1 {
   & > .toolbarbutton-icon,
   & > .toolbarbutton-badge-stack {
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+  }
+}
+
+toolbar .zen-sidebar-panel-button {
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-badge-stack {
     width: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
     height: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
   }

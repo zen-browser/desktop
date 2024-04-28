@@ -71,6 +71,10 @@
   border-radius: 100px !important;
 }
 
+:root[customizing] #navigator-toolbox {
+  display: none;
+}
+
 #TabsToolbar .toolbarbutton-1:hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 #TabsToolbar .toolbarbutton-1[open="true"] > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button:hover,
@@ -165,5 +169,6 @@
   background: transparent !important;
   align-items: center;
   justify-content: end;
+  min-height: fit-content;
 }
 

@@ -108,7 +108,7 @@ var gZenBrowserManagerSidebar = {
   },
 
   _updateArrowScrollMaxHeight(num) {
-    let content = document.querySelector("#tabbrowser-arrowscrollbox::part(scrollbox-clip)");
+    let content = document.querySelector("#tabbrowser-arrowscrollbox");
     let height = (this.MAX_SIDEBAR_PANELS - num) * 81;
     content.style.maxHeight = `${height}px`;
   },

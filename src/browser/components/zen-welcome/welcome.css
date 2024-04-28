@@ -65,11 +65,10 @@ body {
   outline: none !important;
   cursor: auto;
   user-select: none;
-  background: var(--color-gray-80) !important;
 }
 
 .cardGroup .card.selected {
-  border: 2px solid var(--in-content-primary-button-background-hover) !important;
+  border: 2px solid var(--zen-colors-primary) !important;
   transform: scale(1.1);
 }
 

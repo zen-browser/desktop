@@ -20,7 +20,9 @@ groupbox {
   position: relative;
 }
 
-.subcategory + groupbox {
+.subcategory + groupbox,
+#noFxaAccount,
+#hasFxaAccount {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   margin-top: 5px;

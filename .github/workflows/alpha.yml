@@ -382,8 +382,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - name: Install dependencies
         run: |
+          npm install -g pnpm
           pnpm i
 
       - name: Load gluon CI setup

@@ -336,7 +336,7 @@ jobs:
         run: pnpm gluon download
 
       - name: Import
-        run: pnpm import
+        run: pnpm gluon import
 
       - name: Bootstrap
         continue-on-error: true
@@ -349,7 +349,7 @@ jobs:
         run: pnpm build --verbose
 
       - name: Package
-        run: pnpm gluon package
+        run: pnpm package
 
       - name: Rename artifacts
         run: |

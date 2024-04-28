@@ -268,6 +268,7 @@ jobs:
           path: ./zen.source.tar.gz
 
   mac:
+    if: false
     runs-on: macos-13
     needs: [build-data]
 
@@ -376,7 +377,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build-data, linux, source, mac]
+    needs: [build-data, linux, source]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/alpha' }}
 
@@ -393,8 +394,6 @@ jobs:
           files: |
             zen.linux.tar.bz2
             zen.source.tar.gz
-            zen.macos.dmg
-            macos.mar
             linux.mar
 
       - name: List
@@ -410,7 +409,6 @@ jobs:
       - name: Copy update manifests
         run: |
           mkdir -p updates/updates
-          cp -a macos_update_manifest/. updates/updates/
           cp -a linux_update_manifest/. updates/updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4

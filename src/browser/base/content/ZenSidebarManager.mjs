@@ -5,6 +5,7 @@ var gZenBrowserManagerSidebar = {
   _hasRegisteredPinnedClickOutside: false,
   _firstRun: 0,
   _hasChangedConfig: true,
+  _splitterElement: null,
   contextTab: null,
 
   DEFAULT_MOBILE_USER_AGENT: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 Edg/114.0.1823.79",
@@ -29,6 +30,37 @@ var gZenBrowserManagerSidebar = {
     Services.prefs.addObserver("zen.sidebar.data", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.pinned", this.handleEvent.bind(this));
+
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    let computedStyle = window.getComputedStyle(sidebar);
+    let maxWidth = parseInt(computedStyle.getPropertyValue("max-width").replace("px", ""));
+    let minWidth = parseInt(computedStyle.getPropertyValue("min-width").replace("px", ""));
+    
+    let isBeingResized = false;
+    this.splitterElement.addEventListener("mousedown", function(event) {
+      if (!isBeingResized) { // Prevent multiple resizes
+        isBeingResized = true;
+        let sidebarWidth = sidebar.getBoundingClientRect().width;
+        let startX = event.clientX;
+        let startWidth = sidebarWidth;
+        let mouseMove = function(event) {
+          let newWidth = startWidth + event.clientX - startX;
+          if (newWidth <= minWidth+10) {
+            newWidth = minWidth+1;
+          } else if (newWidth >= maxWidth-10) {
+            newWidth = maxWidth-1;
+          }
+          sidebar.style.width = `${newWidth}px`;
+        };
+        let mouseUp = function() {
+          isBeingResized = false;
+          document.removeEventListener("mousemove", mouseMove);
+          document.removeEventListener("mouseup", mouseUp);
+        };
+        document.addEventListener("mousemove", mouseMove);
+        document.addEventListener("mouseup", mouseUp);
+      }
+    });
   },
 
   handleEvent() {
@@ -51,7 +83,7 @@ var gZenBrowserManagerSidebar = {
       return;
     }
     let target = event.target;
-    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper") || target.closest("zenWebPanelContextMenu")) {
+    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper") || target.closest("#zenWebPanelContextMenu") || target.closest("#zen-sidebar-web-panel-splitter") || target.closest("#contentAreaContextMenu")) {
       return;
     }
     this.close();
@@ -125,12 +157,23 @@ var gZenBrowserManagerSidebar = {
     }
   },
 
+  _setPinnedToElements() {
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    sidebar.setAttribute("pinned", "true");
+    document.getElementById("zen-sidebar-web-panel-pinned").setAttribute("pinned", "true");
+  },
+
+  _removePinnedFromElements() {
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    sidebar.removeAttribute("pinned");
+    document.getElementById("zen-sidebar-web-panel-pinned").removeAttribute("pinned");
+  },
+
   _openAndGetWebPanelWrapper() {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     sidebar.removeAttribute("hidden");
     if (Services.prefs.getBoolPref("zen.sidebar.pinned")) {
-      sidebar.setAttribute("pinned", "true");
-      document.getElementById("zen-sidebar-web-panel-pinned").setAttribute("pinned", "true");
+      this._setPinnedToElements();
     }
     return sidebar;
   },
@@ -275,14 +318,9 @@ var gZenBrowserManagerSidebar = {
   togglePinned(elem) {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     if (sidebar.hasAttribute("pinned")) {
-      sidebar.removeAttribute("pinned");
+      this._removePinnedFromElements();
     } else {
-      sidebar.setAttribute("pinned", "true");
-    }
-    if (sidebar.hasAttribute("pinned")) {
-      elem.setAttribute("pinned", "true");
-    } else {
-      elem.removeAttribute("pinned");
+      this._setPinnedToElements();
     }
     Services.prefs.setBoolPref("zen.sidebar.pinned", sidebar.hasAttribute("pinned"));
     this.update();
@@ -293,6 +331,13 @@ var gZenBrowserManagerSidebar = {
       this._sidebarElement = document.getElementById("zen-sidebar-panels-wrapper");
     }
     return this._sidebarElement;
+  },
+
+  get splitterElement() {
+    if (!this._splitterElement) {
+      this._splitterElement = document.getElementById("zen-sidebar-web-panel-splitter");
+    }
+    return this._splitterElement;
   },
 
   // Context menu

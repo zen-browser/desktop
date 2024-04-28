@@ -246,6 +246,7 @@ toolbarbutton:not(:is(
   #zen-sidebar-web-panel-pinned,
   #PanelUI-zen-profiles-managePrfs,
   .bookmark-item,
+  .panel-info-button,
 )),
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
@@ -359,6 +360,11 @@ hbox.editBMPanel_folderRow {
   padding-left: 20px;
 }
 
+#identity-popup-clear-sitedata-footer {
+  margin-bottom: 0 !important; 
+  padding-top: 0 !important;
+}
+
 /* Dialog box */
 
 .printDialogBox {
@@ -367,4 +373,11 @@ hbox.editBMPanel_folderRow {
 
 .printSettingsBrowser {
   min-width: 350px !important;
+}
+
+/* Context menu */
+menu, menuitem {
+  &:where([_moz-menuactive]:not([disabled="true"])) {
+    background-color: var(--zen-colors-border) !important;
+  }
 }

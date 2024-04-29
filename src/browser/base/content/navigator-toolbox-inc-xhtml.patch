@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index fc19910726f2925505f6e71add034c82af36b63e..a0830b01feef88bc727edef453f5add123fdfc10 100644
+index fc19910726f2925505f6e71add034c82af36b63e..90a4686992832cad8656f4c9978ff460d20eb053 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -32,10 +32,11 @@
@@ -27,7 +27,7 @@ index fc19910726f2925505f6e71add034c82af36b63e..a0830b01feef88bc727edef453f5add1
  # DisplayPortUtils::MaybeCreateDisplayPortInFirstScrollFrameEncountered based
  # the current structure that we may want to revisit.
 -            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="horizontal" flex="1" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
-+            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="vertical" flex="1" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
++            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="vertical" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
                <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
                <hbox id="tabbrowser-arrowscrollbox-periphery">
                  <toolbartabstop/>
@@ -41,17 +41,19 @@ index fc19910726f2925505f6e71add034c82af36b63e..a0830b01feef88bc727edef453f5add1
                  <spacer class="closing-tabs-spacer" style="width: 0;"/>
                </hbox>
              </arrowscrollbox>
-@@ -101,7 +105,10 @@
+@@ -101,8 +105,11 @@
          <label data-l10n-id="private-browsing-indicator-label"></label>
        </hbox>
  
 +#if 0
  #include titlebar-items.inc.xhtml
+-
 +#endif
 +#include zen-sidebar-icons.inc.xhtml
- 
++    
      </toolbar>
  
+   </vbox>
 @@ -447,6 +454,7 @@
  
        <toolbarbutton id="fxa-toolbar-menu-button" class="toolbarbutton-1 chromeclass-toolbar-additional subviewbutton-nav"

@@ -378,11 +378,11 @@ toolbarbutton#scrollbutton-up {
   margin-inline-end: 0 !important;
 }
 
-#tabbrowser-arrowscrollbox {
+/*#tabbrowser-arrowscrollbox {
   &::part(scrollbox-clip) {
     max-height: 405px;
   }
-}
+}*/
 
 #zen-tabbox-wrapper {
   position: relative;

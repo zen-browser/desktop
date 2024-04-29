@@ -143,7 +143,8 @@ var gZenBrowserManagerSidebar = {
 
   _updateArrowScrollMaxHeight(num) {
     let content = document.querySelector("#tabbrowser-arrowscrollbox");
-    let height = (this.MAX_SIDEBAR_PANELS * 140) - (num * 120);
+    // TODO: make this dynamic with CSS!
+    let height = (this.MAX_SIDEBAR_PANELS * 120) - (num * 120);
     content.style.maxHeight = `${height}px`;
   },
 

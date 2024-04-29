@@ -9,7 +9,6 @@
   height: 100px;
   border-radius: 7px;
   background: var(--zen-main-browser-background);
-  margin: 5px;
   position: relative;
 }
 
@@ -31,9 +30,7 @@
 .PanelUI-zen-profiles-item {
   position: relative;
   display: flex;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin: 5px;
+  padding: 10px;
   font: menu;
   align-items: center;
 }
@@ -44,11 +41,7 @@
 }
 
 #PanelUI-zen-profiles-list > toolbarseparator:first-child {
-  margin-bottom: 5px;
-}
-
-#PanelUI-zen-profiles-lastSeparator {
-  margin-top: 5px !important;
+  margin: 5px;
 }
 
 .PanelUI-zen-profiles-item:hover {
@@ -81,7 +74,7 @@
 #PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-avatar {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 5px;
   margin: 1px 0.5em 1px 1px;
 }
 
@@ -92,7 +85,7 @@
 }
 
 #PanelUI-zen-profiles-current-info {
-  margin-top: 50px;
+  margin-top: 60px;
 }
 
 #PanelUI-zen-profiles-current-name {
@@ -101,7 +94,7 @@
   line-height: 0.5;
   padding: 5px 10px;
   border-radius: 5px;
-  margin: 0 5px;
+  margin: 0 auto;
 }
 
 
@@ -122,8 +115,7 @@
 #PanelUI-zen-profiles-current-profile-current {
   font-size: 13px;
   opacity: 0.5;
-  margin-left: 15px;
-  margin-bottom: 5px;
+  margin: 0 auto 5px auto;
 }
 
 

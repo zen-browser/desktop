@@ -7,7 +7,6 @@
 #PanelUI-zen-profiles-header {
   width: -moz-available;
   height: 100px;
-  border-radius: 7px;
   background: var(--zen-main-browser-background);
   position: relative;
 }
@@ -30,7 +29,7 @@
 .PanelUI-zen-profiles-item {
   position: relative;
   display: flex;
-  padding: 10px;
+  padding: 6px 10px;
   font: menu;
   align-items: center;
 }
@@ -115,7 +114,7 @@
 #PanelUI-zen-profiles-current-profile-current {
   font-size: 13px;
   opacity: 0.5;
-  margin: 0 auto 5px auto;
+  margin: 0 auto 15px auto;
 }
 
 

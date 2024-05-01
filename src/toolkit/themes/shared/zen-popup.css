@@ -394,8 +394,7 @@ menu, menuitem {
 
     > .unified-extensions-item-action-button {
       .unified-extensions-item-message-deck {
-        /* TODO: could be interesting! */
-        /*display: none;*/
+        display: none;
       }
 
       &:hover {

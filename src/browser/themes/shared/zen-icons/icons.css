@@ -1006,11 +1006,6 @@ menuitem[id="placesContext_new:separator"] {
 .unified-extensions-context-menu-move-widget-up {
 	--menu-image: url("arrow-up.svg");
 }
-.unified-extensions-item .webextension-browser-action.subviewbutton > .toolbarbutton-badge-stack > .toolbarbutton-icon
-{
-  height: 24px !important;
-  width: 24px !important;
-}
 
 :not(:not(menubar)>menu, #ContentSelectDropdown)>menupopup>menuitem:not(.menuitem-iconic, [type="checkbox"], [type="radio"], .in-menulist, .in-menulist menuitem, .unified-nav-current),
   :not(:not(menubar)>menu, #ContentSelectDropdown)>menupopup>menu:not(.menu-iconic, [type="checkbox"], [type="radio"], .in-menulist, .in-menulist menu, .unified-nav-current),

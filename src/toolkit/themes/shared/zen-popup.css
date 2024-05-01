@@ -68,7 +68,7 @@
 }
 
 .subviewbutton>.toolbarbutton-icon {
-  width: 16px !important;
+  width: 15px !important;
 }
 
 /* firefox profile avatar in appmenu */
@@ -380,5 +380,61 @@ hbox.editBMPanel_folderRow {
 menu, menuitem {
   &:where([_moz-menuactive]:not([disabled="true"])) {
     background-color: var(--zen-colors-border) !important;
+  }
+}
+
+/** Unified Extensions View */
+
+#unified-extensions-view {
+  --uei-icon-size: 16px !important;
+
+  .unified-extensions-item {
+    margin-block: 0 !important;
+    border-radius: var(--arrowpanel-menuitem-border-radius) !important;
+
+    > .unified-extensions-item-action-button {
+      .unified-extensions-item-message-deck {
+        /* TODO: could be interesting! */
+        /*display: none;*/
+      }
+
+      &:hover {
+        background-color: initial !important;
+      }
+    }
+
+    > .unified-extensions-item-menu-button {
+      list-style-image: url("chrome://global/skin/icons/more.svg") !important;
+      padding: 0 !important;
+
+      > .toolbarbutton-icon {
+        padding: var(--arrowpanel-menuitem-padding-block) var(--arrowpanel-menuitem-padding-inline) !important;
+        border: none !important;
+        opacity: 0;
+      }
+
+      &:hover {
+
+        > .toolbarbutton-icon {
+          background-color: initial !important;
+        }
+
+        &:active {
+          color: var(--button-primary-hover-bgcolor) !important;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: var(--panel-item-hover-bgcolor);
+
+      > .unified-extensions-item-menu-button > .toolbarbutton-icon {
+        opacity: 1;
+      }
+    }
+
+    &:has(> .unified-extensions-item-action-button:not([disabled]):hover:active) {
+      background-color: var(--panel-item-active-bgcolor);
+    }
   }
 }

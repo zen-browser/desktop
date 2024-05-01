@@ -1,7 +1,8 @@
 
 #PanelUI-zen-profiles {
-  --menu-panel-width: 20em;
+  --menu-panel-width: 19em;
   position: relative;
+  padding-bottom: 5px;
 }
 
 #PanelUI-zen-profiles-header {
@@ -35,8 +36,9 @@
 }
 
 #PanelUI-zen-profiles-list .PanelUI-zen-profiles-item {
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 2px;
+  border-radius: 5px;
+  margin: 2px 5px;
 }
 
 #PanelUI-zen-profiles-list > toolbarseparator:first-child {

@@ -438,13 +438,14 @@ panelmultiview {
 
 #tabbrowser-tabpanels {
   background: transparent !important;
+  margin-right: 10px;
 }
 
 #tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserSidebarContainer {
-  margin: 0 10px 10px 0;
   border-radius: var(--zen-browser-border-radius);
   border: 1px solid light-dark(#ddd, #4a4a4a);
   width: 100%;
+  margin: 0 10px 10px 0;
 }
 
 #tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserStack > browser {

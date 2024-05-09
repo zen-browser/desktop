@@ -254,7 +254,7 @@ jobs:
           
           chmod -R +x "$(echo ~)/win-cross/vs2019" || true
  
-          cat ../.github/src/windows_mozconfig >> mozconfig 
+          cat ../.github/workflows/src/windows_mozconfig >> mozconfig 
 
           cd ..
           pnpm gluon bootstrap

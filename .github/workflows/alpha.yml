@@ -242,7 +242,6 @@ jobs:
           set -x
           mkdir -p ~/win-cross
           cd engine/
-          cat browser/config/mozconfig
   
           echo Setup wine
           aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
@@ -255,14 +254,14 @@ jobs:
           
           chmod -R +x "$(echo ~)/win-cross/vs2019" || true
  
-          cat ../.github/workflows/src/windows_mozconfig >> browser/config/mozconfig 
+          cat ../.github/workflows/src/windows_mozconfig >> mozconfig 
 
           cd ..
           pnpm gluon bootstrap
 
           cd engine/
-          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> browser/config/mozconfig
-          cat browser/config/mozconfig
+          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
+          cat mozconfig
   
       - name: setup Rust 
         run: |

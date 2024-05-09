@@ -219,6 +219,11 @@ jobs:
           version: 8
           run_install: false
 
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+
       - name: Install dependencies
         run: |
           pnpm i
@@ -231,11 +236,6 @@ jobs:
 
       - name: Import
         run: pnpm import
-
-      - name: Setup git
-        run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
 
       - name: Setup For Windows
         run: |

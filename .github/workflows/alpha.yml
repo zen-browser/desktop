@@ -441,7 +441,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build-data, linux, source, windows]¡
+    needs: [build-data, linux, source, windows]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/alpha' }}
 

@@ -251,7 +251,8 @@ jobs:
           echo Setup Visual Studio
           sudo apt install -y msitools python3-pip
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2019.yaml ~/win-cross/vs2019
-          chmod -R +x "$(echo ~)/win-cross/vs2019"
+          
+          chmod -R +x "$(echo ~)/win-cross/vs2019" || true
  
           cat ../.github/src/windows_mozconfig >> mozconfig 
 

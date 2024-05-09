@@ -232,8 +232,12 @@ jobs:
       - name: Import
         run: pnpm import
 
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
 
-      - name: Setup For Windows! 🪛
+      - name: Setup For Windows
         run: |
           mkdir -p ~/win-cross
           cd engine/
@@ -254,7 +258,7 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
   
-      - name: setup Rust 🦀
+      - name: setup Rust 
         run: |
           cd engine/
           rustup target add x86_64-pc-windows-msvc

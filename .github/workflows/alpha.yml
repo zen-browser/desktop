@@ -200,6 +200,66 @@ jobs:
           name: linux_update_manifest
           path: ./dist/update
 
+  windows:
+    runs-on: windows-latest
+    needs: [build-data]
+
+    steps:
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install dependencies
+        run: |
+          pnpm i
+      - name: Load gluon CI setup
+        run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+
+      - name: Download
+        run: pnpm gluon download
+
+      - name: Import
+        run: pnpm import
+
+      - name: Build
+        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
+        run: |
+          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
+          pnpm build --skip-patch-check
+      - name: Package
+        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
+        run: |
+          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
+          pnpm package
+          mv ./dist/output.mar windows.mar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer.exe
+          path: ./dist/zen.installer.exe
+
+      - name: Upload mar
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows.mar
+          path: ./windows.mar
+
+      - name: Upload update manifests
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows_update_manifest
+          path: ./dist/update
+
   source:
     permissions:
       contents: write
@@ -393,8 +453,10 @@ jobs:
           title: 'Alpha build'
           files: |
             zen.linux.tar.bz2
+            zen.installer.exe
             zen.source.tar.gz
             linux.mar
+            windows.mar
 
       - name: List
         run: find .
@@ -410,6 +472,7 @@ jobs:
         run: |
           mkdir -p updates/updates
           cp -a linux_update_manifest/. updates/updates/
+          cp -a windows_update_manifest/. updates/updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

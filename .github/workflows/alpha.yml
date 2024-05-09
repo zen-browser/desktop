@@ -232,10 +232,7 @@ jobs:
           pnpm gluon download
 
       - name: Import
-        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
-        run: |
-          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
-          pnpm import
+        run: pnpm import
 
       - name: Build
         shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"

@@ -242,6 +242,7 @@ jobs:
           set -x
           mkdir -p ~/win-cross
           cd engine/
+          cat mozconfig
   
           echo Setup wine
           aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst

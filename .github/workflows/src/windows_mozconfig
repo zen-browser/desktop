@@ -1,0 +1,17 @@
+
+export WIN_UCRT_REDIST_DIR="$(echo ~)/win-cross/vs2019/Windows Kits/10/Redist/10.0.19041.0/ucrt/DLLs/x64"
+export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2019/VC/Redist/MSVC/14.29.30133/x64/Microsoft.VC142.CRT"
+
+export WINSYSROOT="$(echo ~)/win-cross/vs2019"
+
+export MIDL="$(echo ~)/win-cross/wine/bin/widl"
+export WINE="$(echo ~)/win-cross/wine/bin/wine64"
+export WINEDEBUG=-all
+
+#? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
+#? https://phabricator.services.mozilla.com/D170170
+ac_add_options --target=x86_64-pc-windows-msvc
+
+export MOZ_STUB_INSTALLER=1
+
+export MOZ_LTO=cross

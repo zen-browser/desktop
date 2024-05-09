@@ -239,6 +239,7 @@ jobs:
 
       - name: Setup For Windows
         run: |
+          set -x
           mkdir -p ~/win-cross
           cd engine/
   
@@ -255,7 +256,9 @@ jobs:
           #? for resolve some problems relate to VCRuntime
           #? from end
   
-          ./mach --no-interactive bootstrap --application-choice browser
+          pnpm gluon bootstrap
+
+          cd engine/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
   
       - name: setup Rust 
@@ -265,9 +268,6 @@ jobs:
   
           #? https://github.com/mozilla/sccache#known-caveats
           export CARGO_INCREMENTAL=0
-        env:
-          GHA_aarch64: ${{inputs.aarch64}}
-          GHA_32bit: ${{inputs.build32bit}}
 
       - name: Build
         run: pnpm build --skip-patch-check

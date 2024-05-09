@@ -16,7 +16,7 @@ cd desktop
 Install gluon 
 
 ```bash
-npm i -g gluon@next
+npm i -g gluon-build@next
 ```
 
 Download and bootstrap the browser

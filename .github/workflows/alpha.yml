@@ -201,7 +201,7 @@ jobs:
           path: ./dist/update
 
   windows:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [build-data]
 
     steps:
@@ -223,31 +223,53 @@ jobs:
         run: |
           pnpm i
 
-      - name: Bootstrap Mozilla Build
-        run: pnpm gluon bootstrap
-
       - name: Load gluon CI setup
         run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download
-        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
-        run: |
-          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
-          pnpm gluon download
+        run: pnpm gluon download
 
       - name: Import
         run: pnpm import
 
-      - name: Build
-        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
+
+      - name: Setup For Windows! 🪛
         run: |
-          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
-          pnpm build --skip-patch-check
+          mkdir -p ~/win-cross
+          cd engine/
+  
+          echo Setup wine
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
+          tar --zstd -xvf wine.tar.zst -C ~/win-cross
+          rm wine.tar.zst
+  
+          echo Setup Visual Studio
+          sudo apt install -y msitools python3-pip
+          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2019.yaml ~/win-cross/vs2019
+          chmod -R +x "$(echo ~)/win-cross/vs2019"
+          #? from daily-build-with-update
+          #? for resolve some problems relate to VCRuntime
+          #? from end
+  
+          ./mach --no-interactive bootstrap --application-choice browser
+          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
+  
+      - name: setup Rust 🦀
+        run: |
+          cd engine/
+          rustup target add x86_64-pc-windows-msvc
+  
+          #? https://github.com/mozilla/sccache#known-caveats
+          export CARGO_INCREMENTAL=0
+        env:
+          GHA_aarch64: ${{inputs.aarch64}}
+          GHA_32bit: ${{inputs.build32bit}}
+
+      - name: Build
+        run: pnpm build --skip-patch-check
 
       - name: Package
-        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
         run: |
-          cd /c/actions-runner/_work/browser/browser # mozillabuild defaults to ~
           pnpm package
           mv ./dist/output.mar windows.mar
       - name: Upload artifact

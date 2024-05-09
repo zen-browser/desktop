@@ -235,7 +235,7 @@ jobs:
         run: pnpm gluon download
 
       - name: Import
-        run: pnpm import
+        run: pnpm gluon import --verbose
 
       - name: Setup For Windows
         run: |
@@ -261,6 +261,7 @@ jobs:
 
           cd engine/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
+          cat mozconfig
   
       - name: setup Rust 
         run: |
@@ -435,7 +436,6 @@ jobs:
         run: pnpm gluon import
 
       - name: Bootstrap
-        continue-on-error: true
         run: |
           cd engine
           ./mach --no-interactive bootstrap --application-choice browser 

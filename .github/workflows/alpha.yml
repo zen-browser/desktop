@@ -240,9 +240,6 @@ jobs:
       - name: Download
         run: pnpm gluon download
 
-      - name: Import
-        run: pnpm gluon import --verbose
-
       - name: Disable wasm sandboxing for the sake of my sanity
         run: |
           cd engine/
@@ -272,15 +269,19 @@ jobs:
           
           chmod -R +x "$(echo ~)/win-cross/vs2019" || true
  
-          cat ../.github/workflows/src/windows_mozconfig >> mozconfig 
+          cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
           cd ..
           pnpm gluon bootstrap
 
           cd engine/
-          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> mozconfig
-          cat mozconfig
+          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
+          cat ../configs/common/mozconfig
   
+
+      - name: Import
+        run: pnpm gluon import --verbose  
+
       - name: setup Rust 
         run: |
           cd engine/
@@ -290,7 +291,7 @@ jobs:
           export CARGO_INCREMENTAL=0
 
       - name: Build
-        run: pnpm build --skip-patch-check
+        run: pnpm build
 
       - name: Package
         run: |

@@ -13,8 +13,6 @@ export WINEDEBUG=-all
 ac_add_options --target=x86_64-pc-windows-msvc
 
 export MOZ_STUB_INSTALLER=1
-export MAKENSISU="C:\\Program Files (x86)\\NSIS\\Bin\\makensis.exe"
-
 export MOZ_MAINTENANCE_SERVICE=
 
 export MOZ_LTO=cross

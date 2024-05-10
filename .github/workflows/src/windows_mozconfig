@@ -13,5 +13,6 @@ export WINEDEBUG=-all
 ac_add_options --target=x86_64-pc-windows-msvc
 
 export MOZ_STUB_INSTALLER=1
+export MOZ_MAINTENANCE_SERVICE=1
 
 export MOZ_LTO=cross

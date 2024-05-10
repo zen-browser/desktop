@@ -1,9 +1,11 @@
 
+
+
 var gZenBrowserManagerSidebar = {
   _sidebarElement: null,
   _currentPanel: null,
+  _lastOpenedPanel: null,
   _hasRegisteredPinnedClickOutside: false,
-  _firstRun: 0,
   _hasChangedConfig: true,
   _splitterElement: null,
   _isDragging: false,
@@ -77,6 +79,15 @@ var gZenBrowserManagerSidebar = {
       document.removeEventListener("mouseup", this._handleClickOutside.bind(this));
       this._hasRegisteredPinnedClickOutside = false;
     }
+
+    const button = document.getElementById("zen-sidepanel-button");
+    if (Services.prefs.getBoolPref("zen.sidebar.enabled")) {
+      button.removeAttribute("hidden");
+    } else {
+      button.setAttribute("hidden", "true");
+      this._closeSidebarPanel();
+      return;
+    }
   },
 
   _handleClickOutside(event) {
@@ -91,8 +102,34 @@ var gZenBrowserManagerSidebar = {
     this.close();
   },
 
+  toggle() {
+    if (!this._currentPanel) {
+      this._currentPanel = this._lastOpenedPanel;
+      if (!this._currentPanel) {
+        let data = this.sidebarData;
+        this._currentPanel = data.index[0];
+      }
+      this.update();
+      return;
+    } 
+    // already open?
+    this.close();
+  },
+
   update() {
     this._updateWebPanels();
+    this._updateSidebarButton();
+    this._updateWebPanel();
+    this._updateButtons();
+  },
+
+  _updateSidebarButton() {
+    let button = document.getElementById("zen-sidepanel-button");
+    if (this._currentPanel) {
+      button.setAttribute("open", "true");
+    } else {
+      button.removeAttribute("open");
+    }
   },
 
   _updateWebPanels() {
@@ -119,33 +156,16 @@ var gZenBrowserManagerSidebar = {
       button.setAttribute("flex", "1");
       button.setAttribute("zen-sidebar-id", site);
       button.setAttribute("context", "zenWebPanelContextMenu");
-      if (this._firstRun < this.MAX_RUNS || this._hasChangedConfig)
-        button.setAttribute("animate", "true");
       this._getWebPanelIcon(panel.url, button);
       button.addEventListener("click", this._handleClick.bind(this));
       this.sidebarElement.appendChild(button);
     }
+    const addButton = document.getElementById("zen-sidebar-add-panel-button");
     if (data.index.length < this.MAX_SIDEBAR_PANELS) {
-      this.sidebarElement.appendChild(document.createXULElement("toolbarseparator"));
-      let addPanelButton = document.createXULElement("toolbarbutton");
-      addPanelButton.id = "zen-sidebar-add-panel-button";
-      addPanelButton.classList.add("zen-sidebar-panel-button", "toolbarbutton-1", "chromeclass-toolbar-additional");
-      addPanelButton.addEventListener("click", this._openAddPanelDialog.bind(this));
-      if (this._firstRun < this.MAX_RUNS || this._hasChangedConfig)
-        addPanelButton.setAttribute("animate", "true");
-      this.sidebarElement.appendChild(addPanelButton);
+      addButton.removeAttribute("hidden");
+    } else {
+      addButton.setAttribute("hidden", "true");
     }
-    this._updateArrowScrollMaxHeight(data.index.length + 1);
-    // We rerender multiple times for some reason, so we need to avoid the animation
-    if (this._firstRun < this.MAX_RUNS)
-      this._firstRun++;
-  },
-
-  _updateArrowScrollMaxHeight(num) {
-    let content = document.querySelector("#tabbrowser-arrowscrollbox");
-    // TODO: make this dynamic with CSS!
-    let height = (this.MAX_SIDEBAR_PANELS * 120) - (num * 120);
-    content.style.maxHeight = `${height}px`;
   },
 
   async _openAddPanelDialog() {
@@ -184,8 +204,8 @@ var gZenBrowserManagerSidebar = {
   _closeSidebarPanel() {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     sidebar.setAttribute("hidden", "true");
+    this._lastOpenedPanel = this._currentPanel;
     this._currentPanel = null;
-    this._updateButtons();
   },
 
   _handleClick(event) {
@@ -195,7 +215,6 @@ var gZenBrowserManagerSidebar = {
       return;
     }
     this._currentPanel = panelId;
-    this._updateButtons();
     this._updateWebPanel();
   },
 
@@ -218,6 +237,7 @@ var gZenBrowserManagerSidebar = {
   },
 
   _updateWebPanel() {
+    this._updateButtons();
     let sidebar = this._openAndGetWebPanelWrapper();
     this._hideAllWebPanels();
     let existantWebview = sidebar.querySelector(`browser[zen-sidebar-id="${this._currentPanel}"]`);
@@ -316,6 +336,7 @@ var gZenBrowserManagerSidebar = {
   close() {
     this._hideAllWebPanels();
     this._closeSidebarPanel();
+    this._updateSidebarButton();
   },
 
   togglePinned(elem) {
@@ -331,7 +352,7 @@ var gZenBrowserManagerSidebar = {
 
   get sidebarElement() {
     if (!this._sidebarElement) {
-      this._sidebarElement = document.getElementById("zen-sidebar-panels-wrapper");
+      this._sidebarElement = document.getElementById("zen-sidebar-panels-sites");
     }
     return this._sidebarElement;
   },

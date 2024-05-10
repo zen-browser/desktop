@@ -219,12 +219,8 @@ button.popup-notification-dropmarker {
   padding: 5px 0;
   margin-right: 0 !important;
   -moz-window-dragging: no-drag;
-
-  display: grid;
-  grid-template-rows: repeat(3, auto);
-  justify-items: center;
   
-  --zen-sidebar-action-button-width: 40px;
+  --zen-sidebar-action-button-width: 38px;
 }
 
 #navigator-toolbox[inlinedwithsidebar="true"] #TabsToolbar {
@@ -285,17 +281,24 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab {
-  --zen-browser-tab-icon-size: 16px;
-  --tab-min-width: 0 !important;
-  margin: 3px auto !important;
-  border-radius: 12px;
+  --zen-browser-tab-icon-size: 18px;
+  --tab-min-width: 36px !important;
+  margin: 0 auto !important;
+  border-radius: 8px;
   position: relative;
   color-scheme: var(--tab-selected-color-scheme);
-  background: var(--toolbarbutton-hover-background);
   border: 2px solid transparent;
+  background: transparent;
   padding: 0 !important;
   align-items: center;
+  min-height: var(--tab-min-width); /* Make a box */
   animation: zen-slide-in 0.3s;
+  width: calc(var(--zen-browser-tab-icon-size) + 2px);
+  transition: .1s background, .1s border-color;
+}
+
+.tabbrowser-tab:hover {
+  background: var(--toolbarbutton-hover-background);
 }
 
 .tabbrowser-tab:active,
@@ -334,7 +337,8 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
-  border-color: light-dark(var(--zen-colors-border), rgba(255, 255, 255, 0.15));
+  /*border-color: light-dark(var(--zen-colors-border), rgba(255, 255, 255, 0.15));*/
+  background: var(--toolbarbutton-hover-background);
 }
 
 .tab-close-button {

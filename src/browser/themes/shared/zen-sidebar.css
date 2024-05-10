@@ -68,7 +68,7 @@
 
 #TabsToolbar .toolbarbutton-1:not(.zen-sidebar-panel-button) > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button {
-  border-radius: 100px !important;
+  border-radius: 8px !important;
 }
 
 :root[customizing] #navigator-toolbox {
@@ -79,7 +79,7 @@
 #TabsToolbar .toolbarbutton-1[open="true"] > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button:hover,
 .zen-sidebar-action-button[open="true"] {
-  background: var(--toolbarbutton-hover-background);
+  background: var(--toolbarbutton-hover-background) !important;
 }
 
 .zen-sidebar-action-button:hover image {

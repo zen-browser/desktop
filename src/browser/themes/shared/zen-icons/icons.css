@@ -35,7 +35,8 @@
 }
 
 #sidebar-button:-moz-locale-dir(ltr):not([positionend]),
-#sidebar-button:-moz-locale-dir(rtl)[positionend] {
+#sidebar-button:-moz-locale-dir(rtl)[positionend],
+#zen-sidepanel-button {
 	list-style-image: url("sidebars.svg") !important;
 }
 

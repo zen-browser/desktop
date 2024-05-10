@@ -278,17 +278,17 @@ jobs:
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
   
-
-      - name: Import
-        run: pnpm gluon import --verbose  
-
       - name: setup Rust 
         run: |
           cd engine/
           rustup target add x86_64-pc-windows-msvc
-  
+          cargo install cargo-download
+          cargo download -x windows=0.52.0
           #? https://github.com/mozilla/sccache#known-caveats
           export CARGO_INCREMENTAL=0
+
+      - name: Import
+        run: pnpm gluon import --verbose  
 
       - name: Build
         run: pnpm build

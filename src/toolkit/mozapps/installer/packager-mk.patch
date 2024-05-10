@@ -1,0 +1,13 @@
+diff --git a/toolkit/mozapps/installer/packager.mk b/toolkit/mozapps/installer/packager.mk
+index aeba614e40fd1a04169af517e16d7e3b52348423..572520c6f47a16e57e216bf29d9dd042ce1a50f4 100644
+--- a/toolkit/mozapps/installer/packager.mk
++++ b/toolkit/mozapps/installer/packager.mk
+@@ -124,7 +124,7 @@ make-package: FORCE
+ 	$(MAKE) make-package-internal
+ ifeq (WINNT,$(OS_ARCH))
+ ifeq ($(MOZ_PKG_FORMAT),ZIP)
+-	$(MAKE) -C windows ZIP_IN='$(ABS_DIST)/$(PACKAGE)' installer
++	$(MAKE) -C windows-0.52.0 ZIP_IN='$(ABS_DIST)/$(PACKAGE)' installer
+ endif
+ endif
+ ifdef MOZ_AUTOMATION

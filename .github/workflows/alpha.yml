@@ -286,6 +286,7 @@ jobs:
           cargo download -x windows=0.52.0
           #? https://github.com/mozilla/sccache#known-caveats
           export CARGO_INCREMENTAL=0
+          echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.52.0" >> ../configs/common/mozconfig
 
       - name: Import
         run: pnpm gluon import --verbose  

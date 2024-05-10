@@ -216,7 +216,7 @@ jobs:
 
   windows:
     runs-on: ubuntu-latest
-    needs: [build-data, linux, check-release]
+    needs: [build-data, check-release]
 
     steps:
       - name: Install Node.js and pnpm
@@ -336,7 +336,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: [build-data, linux]
+    needs: [build-data]
 
     steps:
       - name: Install Node.js

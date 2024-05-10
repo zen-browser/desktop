@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build-data:
     permissions:
       contents: write
@@ -71,11 +72,24 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
 
+  check-release:
+    runs-on: ubuntu-latest
+    needs: [build-data]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get version
+        id: data
+        shell: bash
+        run: |
+          echo "version=$(gluon get version | xargs)"
+
   linux:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: [build-data]
+    needs: [build-data, check-release]
 
     steps:
       - name: Install Node.js
@@ -202,7 +216,7 @@ jobs:
 
   windows:
     runs-on: ubuntu-latest
-    needs: [build-data]
+    needs: [build-data, linux, check-release]
 
     steps:
       - name: Install Node.js and pnpm
@@ -322,7 +336,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: [build-data]
+    needs: [build-data, linux]
 
     steps:
       - name: Install Node.js
@@ -380,7 +394,7 @@ jobs:
   mac:
     if: false
     runs-on: macos-13
-    needs: [build-data]
+    needs: [build-data, check-release]
 
     steps:
       - name: Install Node.js
@@ -486,7 +500,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build-data, linux, source, windows]
+    needs: [build-data, linux, source, windows, check-release]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/alpha' }}
 

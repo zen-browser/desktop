@@ -314,6 +314,7 @@ jobs:
         run: |
           pnpm package
           mv ./dist/output.mar windows.mar
+          ls ./dist
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

@@ -312,9 +312,7 @@ jobs:
 
       - name: Package
         run: |
-          cd engine/
-          ./mach package
-          cd ..
+          pnpm package
           mv ./dist/output.mar windows.mar
       - name: Upload artifact
         uses: actions/upload-artifact@v3

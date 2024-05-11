@@ -11,7 +11,6 @@ export WINEDEBUG=-all
 #? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
 #? https://phabricator.services.mozilla.com/D170170
 ac_add_options --target=x86_64-pc-windows-msvc
-ac_add_options --enable-bootstrap
 
 export MOZ_STUB_INSTALLER=1
 export MOZ_MAINTENANCE_SERVICE=

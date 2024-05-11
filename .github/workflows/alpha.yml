@@ -291,6 +291,8 @@ jobs:
           cd engine/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
+
+          ls ~/win-cross/nsis || true
   
       - name: setup Rust 
         run: |

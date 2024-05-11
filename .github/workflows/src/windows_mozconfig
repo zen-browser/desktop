@@ -17,3 +17,4 @@ export MOZ_MAINTENANCE_SERVICE=
 
 export MOZ_PKG_FORMAT=TAR
 export MOZ_LTO=cross
+export MAKENSISU="$(echo ~)/win-cross/nsis/makensisu.exe"

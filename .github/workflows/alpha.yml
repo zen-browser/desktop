@@ -314,7 +314,7 @@ jobs:
         run: |
           pnpm package
           mv ./dist/output.mar windows.mar
-          mv ./dist/zen-$(gluon get version | xargs).en-US.win64.zip zen.en-US.win64.zip
+          mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.en-US.win64.zip
           ls ./dist
       - name: Upload artifact
         uses: actions/upload-artifact@v3

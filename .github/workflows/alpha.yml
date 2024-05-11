@@ -326,7 +326,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zen.en-US.win64.zip
-          path: ./dist/zen.en-US.win64.zip
+          path: ./zen.en-US.win64.zip
 
       - name: Upload mar
         uses: actions/upload-artifact@v3

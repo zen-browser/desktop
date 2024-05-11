@@ -214,6 +214,42 @@ jobs:
           name: linux_update_manifest
           path: ./dist/update
 
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.changelog.outputs.tag }}
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      - run: |
+          npm install conventional-changelog-conventionalcommits@7.0.2
+          npm install conventional-recommended-bump@9.0.0
+      - name: Set up version.json
+        run: echo "{"version":$(git describe --tags --abbrev=0)}" > version.json
+
+      - name: Create changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5.2.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          git-user-name: 'Zen Browser Robot'
+          git-user-email: 'zen-browser-bot@users.noreply.github.com'
+          skip-version-file: true
+          skip-git-pull: true
+          pre-release: false
+          release-count: 5
+
+      # TODO: Add the changelog to the release notes
+
   windows:
     runs-on: ubuntu-latest
     needs: [build-data, check-release]
@@ -502,7 +538,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build-data, linux, source, windows, check-release]
+    needs: [build-data, linux, source, windows, check-release, changelog]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/alpha' }}
 
@@ -529,9 +565,9 @@ jobs:
       - name: Checkout tools repo
         uses: actions/checkout@v3
         with:
-          repository: pulse-browser/updates
+          repository: zen-browser/desktop
           path: updates
-          token: ${{ secrets.ROBOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy update manifests
         run: |

@@ -312,10 +312,12 @@ jobs:
 
       - name: Package
         run: |
+          set -x
           pnpm package
           mv ./dist/output.mar windows.mar
           mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.en-US.win64.zip
           ls ./dist
+          ls .
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

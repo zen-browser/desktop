@@ -172,3 +172,7 @@
   min-height: fit-content;
 }
 
+#zen-sidepanel-button[hidden="true"] {
+  display: none;
+}
+

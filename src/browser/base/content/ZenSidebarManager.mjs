@@ -34,7 +34,6 @@ var gZenBrowserManagerSidebar = {
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.floating", this.handleEvent.bind(this));
 
-
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     this.splitterElement.addEventListener("mousedown", (function(event) {
       let computedStyle = window.getComputedStyle(sidebar);
@@ -65,6 +64,8 @@ var gZenBrowserManagerSidebar = {
         document.addEventListener("mouseup", mouseUp);
       }
     }).bind(this));
+
+    this.handleEvent();
   },
 
   handleEvent() {
@@ -240,6 +241,9 @@ var gZenBrowserManagerSidebar = {
     this._updateButtons();
     let sidebar = this._openAndGetWebPanelWrapper();
     this._hideAllWebPanels();
+    if (!this._currentPanel) {
+      return;
+    }
     let existantWebview = sidebar.querySelector(`browser[zen-sidebar-id="${this._currentPanel}"]`);
     if (existantWebview) {
       existantWebview.browsingContext.isActive = true;

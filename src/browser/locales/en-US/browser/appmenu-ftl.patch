@@ -1,5 +1,5 @@
 diff --git a/browser/locales/en-US/browser/appmenu.ftl b/browser/locales/en-US/browser/appmenu.ftl
-index 5ad2d75f6215f7da44948cda5ad938db8fd97e8d..dfc551d8d3227e9b5d1d0c9d3380fd0ad85ca65e 100644
+index 5ad2d75f6215f7da44948cda5ad938db8fd97e8d..da4442ebcd594b602b9e991c9591071dddcaa5f6 100644
 --- a/browser/locales/en-US/browser/appmenu.ftl
 +++ b/browser/locales/en-US/browser/appmenu.ftl
 @@ -314,3 +314,5 @@ appmenuitem-relay-title = { -relay-brand-short-name }
@@ -7,4 +7,4 @@ index 5ad2d75f6215f7da44948cda5ad938db8fd97e8d..dfc551d8d3227e9b5d1d0c9d3380fd0a
  appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
  appmenuitem-vpn-description = Protect your online activity
 +
-+zen-panel-ui-current-profile-text = Current Profile
++zen-panel-ui-current-profile-text = current profile

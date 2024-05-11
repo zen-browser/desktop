@@ -229,7 +229,7 @@
 
 menupopup::part(content),
 panel::part(content) {
-  border: transparent !important;
+  border: var(--zen-appcontent-border) !important;
 }
 
 menupopup, 

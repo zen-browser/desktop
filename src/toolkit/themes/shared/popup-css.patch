@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ddc41a66ed0e3688ce34052652bef1fe33a08d49..78005dc087044ed57e974f6aa18dd23d61bdb76b 100644
+index 1426f9c4f6f24f19277006ead43eb88a50a408e5..8f8da0189772e00fb787d6708fce0481e52eaf39 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
 @@ -2,6 +2,8 @@
@@ -20,9 +20,10 @@ index ddc41a66ed0e3688ce34052652bef1fe33a08d49..78005dc087044ed57e974f6aa18dd23d
    --panel-color: MenuText;
    --panel-padding-block: 4px;
 -  --panel-padding: var(--panel-padding-block) 0;
-+  --panel-padding: var(--panel-padding-block) 0 5px 0;
-   --panel-border-radius: 4px;
+-  --panel-border-radius: 4px;
 -  --panel-border-color: ThreeDShadow;
++  --panel-padding: var(--panel-padding-block) 0 5px 0;
++  --panel-border-radius: 10px;
 +  --panel-border-color: transparent /* var(--arrowpanel-border-color) */ !important;
    --panel-width: initial;
  

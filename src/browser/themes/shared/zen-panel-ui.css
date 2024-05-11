@@ -6,25 +6,24 @@
 }
 
 #PanelUI-zen-profiles-header {
-  width: -moz-available;
-  height: 100px;
-  background: var(--zen-main-browser-background);
+  width: 280px;
+  height: 130px;
+  background: var(--zen-colors-primary-foreground);
   position: relative;
 }
 
 #PanelUI-zen-profiles-user-picture {
   background-image: var(--avatar-image-url);
-  width: 80px;
-  height: 80px;
-  min-width: 80px;
-  border: 5px var(--arrowpanel-background) solid;
-  background-color: var(--arrowpanel-background);
+  width: 75px;
+  height: 75px;
+  border: 4px var(--arrowpanel-background) solid;
+  background-color: var(--zen-colors-primary-foreground);
   border-radius: 50%;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   margin: 0 auto;
-  transform: translateY(60%);
+  transform: translateY(100%);
 }
 
 .PanelUI-zen-profiles-item {
@@ -86,12 +85,13 @@
 }
 
 #PanelUI-zen-profiles-current-info {
-  margin-top: 60px;
+  --zen-separation-from-content: 35px;
+  margin-top: calc(var(--zen-separation-from-content) + 30px); /** Ignore the profile picture */
 }
 
 #PanelUI-zen-profiles-current-name {
-  font-size: 1.4em;
-  font-weight: 500;
+  font-size: 1.3em;
+  font-weight: 600;
   line-height: 0.5;
   padding: 5px 10px;
   border-radius: 5px;
@@ -116,7 +116,9 @@
 #PanelUI-zen-profiles-current-profile-current {
   font-size: 13px;
   opacity: 0.5;
-  margin: 0 auto 15px auto;
+  margin: 0 auto var(--zen-separation-from-content) auto;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 
@@ -127,7 +129,7 @@
   border-radius: 5px !important;
   padding: 5px !important;
   transition: .1s;
-  color: light-dark(black, white);
+  color: light-dark(white, black);
 }
 
 #PanelUI-zen-profiles-managePrfs:hover {

@@ -6,7 +6,7 @@
 
   --arrowpanel-background: var(--zen-dialog-background) !important;
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;
-  --arrowpanel-border-radius: 15px !important;
+  --arrowpanel-border-radius: 12px !important;
 
   &:-moz-lwtheme {
     color: var(--lwt-text-color);

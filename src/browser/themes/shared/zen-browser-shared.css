@@ -39,7 +39,7 @@
 /* URL and tool bars */
 
 #urlbar {
-  border: 1px solid light-dark(#ddd, #4a4a4a);
+  border: transparent;
   overflow: hidden;
   padding: 1px;
 }
@@ -56,7 +56,7 @@
 
 #urlbar[focused="true"] > #urlbar-background,
 #searchbar:focus-within {
-  border-color: var(--urlbarView-separator-color) !important;
+  border-color: transparent !important;
 }
 
 #urlbar[focused="true"] {
@@ -447,7 +447,7 @@ panelmultiview {
 
 #tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserSidebarContainer {
   border-radius: var(--zen-browser-border-radius);
-  border: 1px solid light-dark(#ddd, #4a4a4a);
+  border: var(--zen-appcontent-border);
   width: 100%;
   margin: 0 10px 10px 0;
 }

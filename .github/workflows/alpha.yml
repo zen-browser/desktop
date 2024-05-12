@@ -526,7 +526,7 @@ jobs:
           title: 'Alpha build'
           files: |
             zen.linux.tar.bz2
-            zen-1.0.0-a.33.en-US.win64.zip
+            zen.en-US.win64.zip
             zen.source.tar.gz
             linux.mar
             windows.mar

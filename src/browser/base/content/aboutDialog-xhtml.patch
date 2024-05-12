@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index e0fcce367abe57e03e54779437facbba4326687b..7d57f10cfe6bd8435e45f0ffc806bd76b475e403 100644
+index e0fcce367abe57e03e54779437facbba4326687b..70ef3cf15e9384f05e76d0768efb07872d4b69cf 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
 @@ -36,6 +36,7 @@
@@ -10,3 +10,20 @@ index e0fcce367abe57e03e54779437facbba4326687b..7d57f10cfe6bd8435e45f0ffc806bd76
    </linkset>
  
    <html:div id="aboutDialogContainer">
+@@ -134,13 +135,15 @@
+             </description>
+           </vbox>
+           <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
+-            <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-mozillaLink"/>
++            <label is="text-link" href="https://github.com/zen-browser/desktop" data-l10n-name="community-mozillaLink"/>
+             <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
+           </description>
++#if 0
+           <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
+             <label is="text-link" href="https://donate.mozilla.org/?utm_source=firefox&#38;utm_medium=referral&#38;utm_campaign=firefox_about&#38;utm_content=firefox_about" data-l10n-name="helpus-donateLink"/>
+             <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
+           </description>
++#endif
+         </vbox>
+       </vbox>
+     </hbox>

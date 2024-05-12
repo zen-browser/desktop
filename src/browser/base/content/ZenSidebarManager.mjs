@@ -45,15 +45,15 @@ var gZenBrowserManagerSidebar = {
         let sidebarWidth = sidebar.getBoundingClientRect().width;
         let startX = event.clientX;
         let startWidth = sidebarWidth;
-        let mouseMove = (function(event) {
-          let newWidth = startWidth + event.clientX - startX;
+        let mouseMove = (function(e) {
+          let newWidth = startWidth + e.clientX - startX;
           if (newWidth <= minWidth+10) {
             newWidth = minWidth+1;
           } else if (newWidth >= maxWidth-10) {
             newWidth = maxWidth-1;
           }
           sidebar.style.width = `${newWidth}px`;
-        }).bind(this);
+        });
         let mouseUp = (function() {
           this.handleEvent();
           this._isDragging = false;
@@ -242,12 +242,14 @@ var gZenBrowserManagerSidebar = {
     let sidebar = this._openAndGetWebPanelWrapper();
     this._hideAllWebPanels();
     if (!this._currentPanel) {
+      sidebar.setAttribute("hidden", "true");
       return;
     }
-    let existantWebview = sidebar.querySelector(`browser[zen-sidebar-id="${this._currentPanel}"]`);
+    let existantWebview = this._getCurrentBrowser();
     if (existantWebview) {
       existantWebview.browsingContext.isActive = true;
       existantWebview.removeAttribute("hidden");
+      document.getElementById("zen-sidebar-web-panel-title").textContent = existantWebview.contentTitle;
       return;
     }
     let data = this._getWebPanelData(this._currentPanel);
@@ -273,6 +275,8 @@ var gZenBrowserManagerSidebar = {
   },
 
   _createWebPanelBrowser(data) {
+    const titleContainer = document.getElementById("zen-sidebar-web-panel-title");
+    titleContainer.textContent = "";
     let browser = gBrowser.createBrowser({});
     browser.setAttribute("disablefullscreen", "true");
     browser.setAttribute("src", data.url);
@@ -282,6 +286,24 @@ var gZenBrowserManagerSidebar = {
     browser.setAttribute("autocompletepopup", "PopupAutoComplete");
     browser.setAttribute("contextmenu", "contentAreaContextMenu");
     browser.setAttribute("disablesecurity", "true");
+    browser.addEventListener("pagetitlechanged", (function(event) {
+      let browser = event.target;
+      let title = browser.contentTitle;
+      if (!title) {
+        return;
+      }
+      let id = browser.getAttribute("zen-sidebar-id");
+      if (id === this._currentPanel) {
+        titleContainer.textContent = title;
+      }
+    }).bind(this));
+    browser.addEventListener("progress", (function(event) {
+      let browser = event.target;
+      let id = browser.getAttribute("zen-sidebar-id");
+      if (id === this._currentPanel) {
+        titleContainer.textContent = "Loading..."; // l10n later
+      }
+    }).bind(this));
     return browser;
   },
 

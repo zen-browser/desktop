@@ -152,13 +152,17 @@
   color-scheme: var(--toolbar-color-scheme);
 }
 
+#zen-sidebar-web-header {
+  justify-content: space-between;
+}
+
+#zen-sidebar-web-header toolbarbutton {
+  opacity: 0.7;
+}
+
 #zen-sidebar-panels-wrapper {
   border-top-width: 1px !important;
   border-bottom-width: 0px !important;
-}
-
-#zen-sidebar-web-panel-pinned {
-  margin-left: auto !important;
 }
 
 #zen-sidebar-web-panel-browser-containers {
@@ -168,4 +172,18 @@
 
 #zen-sidebar-web-panel browser[zen-sidebar-id] {
   height: 100%;
+}
+
+#zen-sidebar-web-panel-title {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 10px;
+  padding: 0;
+  color: var(--text-color-deemphasized);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: -moz-available;
+  text-align: center;
+  display: block;
 }

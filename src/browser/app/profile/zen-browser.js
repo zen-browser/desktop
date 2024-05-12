@@ -139,6 +139,6 @@ pref('dom.security.sanitizer.enabled', true);
 //pref("browser.profiles.enabled", true);
 
 // Zen Sidebar
-pref('zen.sidebar.data', "{\"data\":\n {\"p1\":{\n   \"url\":\"https://web.whatsapp.com/\"\n  },\n\"p2\":{\n   \"url\":\"https://open.spotify.com/\",\n\"ua\": true\n  },\n\"p3\": {\n   \"url\": \"https://www.youtube.com/\",\n\"ua\": true\n}},\n\"index\":[\"p1\",\"p2\",\"p3\"]\n}");
+pref('zen.sidebar.data', "{\"data\":\n {\"p1\":{\n   \"url\":\"https://www.wikipedia.org/\"\n  },\n\"p2\":{\n   \"url\":\"https://m.twitter.com/\",\n\"ua\": true\n  },\n\"p3\": {\n   \"url\": \"https://www.youtube.com/\",\n\"ua\": true\n},\n\"p4\": {\n   \"url\": \"https://translate.google.com/\",\n\"ua\": true\n},\n\"p5\": {\n   \"url\": \"https://todoist.com/\",\n\"ua\": true\n}},\n\"index\":[\"p1\",\"p2\",\"p3\",\"p4\",\"p5\"]}");
 pref('zen.sidebar.enabled', true);
 pref('zen.sidebar.floating', true);

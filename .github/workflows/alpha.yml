@@ -509,6 +509,7 @@ jobs:
           path: ./dist/update
 
   release:
+    permissions: write-all
     name: Release
     needs: [build-data, linux, source, windows, check-release]
     runs-on: ubuntu-latest

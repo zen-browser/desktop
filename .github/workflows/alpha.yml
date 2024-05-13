@@ -2,6 +2,17 @@ name: Zen Alpha builds
 
 on:
   workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a new release for this build'
+        required: false
+        default: false
+        type: boolean
+      update_version:
+        description: 'Update the version number'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
 
@@ -50,6 +61,7 @@ jobs:
           npm i -g gluon-build@next
 
       - name: Bump version
+        if: ${{ github.event.inputs.update_version }}
         run: |
           pnpm gluon ci --brand alpha --bump prerelease
 
@@ -67,6 +79,7 @@ jobs:
           echo "version=$(gluon get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ github.event.inputs.update_version }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
@@ -79,11 +92,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2
+        
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Get version
         id: data
         shell: bash
         run: |
-          echo "version=$(gluon get version | xargs)"
+          echo "version=$(pnpm gluon get version | xargs)" >> $GITHUB_OUTPUT
+          if [[ $(pnpm gluon get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
+            echo "Version matches"
+          else
+            echo "Version mismatch"
+            exit 1
+          fi
 
   linux:
     permissions:
@@ -509,6 +538,7 @@ jobs:
           path: ./dist/update
 
   release:
+    if: ${{ github.event.inputs.create_release }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, source, windows, check-release]
@@ -523,7 +553,7 @@ jobs:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
           automatic_release_tag: ${{ needs.build-data.outputs.version }}
           prerelease: true
-          title: 'Alpha build'
+          title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
             zen.linux.tar.bz2
             zen.en-US.win64.zip

@@ -123,9 +123,15 @@ jobs:
       - name: Setup gluon
         run: |
           npm i -g gluon-build@next
+
+      - name: Gluon fix
+        run: |
+            echo "This is a workaround for a bug in gluon, I don't know why it's needed but it is"
+            touch .gluon/command
   
       - name: Check version
         run: |
+          echo "$(pwd)"
           ls .
           echo "version=$(pnpm gluon get version | xargs)" >> $GITHUB_OUTPUT
           if [[ $(pnpm gluon get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then

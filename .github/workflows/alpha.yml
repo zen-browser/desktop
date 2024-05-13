@@ -60,6 +60,9 @@ jobs:
         run: |
           npm i -g gluon-build@next
 
+      - name: Activate gluon CLI
+        run: pnpm gluon import
+
       - name: Bump version
         if: ${{ github.event.inputs.update_version == true }}
         run: |
@@ -124,11 +127,8 @@ jobs:
         run: |
           npm i -g gluon-build@next
 
-      - name: Gluon fix
-        run: |
-          echo "This is a workaround for a bug in gluon, I don't know why it's needed but it is"
-          mkdir -p .gluon
-          touch .gluon/command
+      - name: Activate gluon CLI
+        run: pnpm gluon import
   
       - name: Check version
         run: |

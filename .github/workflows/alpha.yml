@@ -60,11 +60,7 @@ jobs:
         run: |
           npm i -g gluon-build@next
 
-      - name: Activate gluon CLI
-        run: pnpm gluon import
-
       - name: Bump version
-        if: ${{ github.event.inputs.update_version == true }}
         run: |
           pnpm gluon ci --brand alpha --bump prerelease
 
@@ -128,7 +124,9 @@ jobs:
           npm i -g gluon-build@next
 
       - name: Activate gluon CLI
-        run: pnpm gluon import
+        run: |
+          echo "There's a bug in the gluon CLI, we run this so that gluon sets everything up correctly"
+          pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
   
       - name: Check version
         run: |

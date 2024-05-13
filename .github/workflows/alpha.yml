@@ -61,7 +61,7 @@ jobs:
           npm i -g gluon-build@next
 
       - name: Bump version
-        if: ${{ github.event.inputs.update_version }}
+        if: ${{ github.event.inputs.update_version == true }}
         run: |
           pnpm gluon ci --brand alpha --bump prerelease
 
@@ -79,7 +79,7 @@ jobs:
           echo "version=$(gluon get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ github.event.inputs.update_version }}
+        if: ${{ github.event.inputs.update_version == true }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
@@ -126,8 +126,9 @@ jobs:
 
       - name: Gluon fix
         run: |
-            echo "This is a workaround for a bug in gluon, I don't know why it's needed but it is"
-            touch .gluon/command
+          echo "This is a workaround for a bug in gluon, I don't know why it's needed but it is"
+          mkdir -p .gluon
+          touch .gluon/command
   
       - name: Check version
         run: |
@@ -565,7 +566,7 @@ jobs:
           path: ./dist/update
 
   release:
-    if: ${{ github.event.inputs.create_release }}
+    if: ${{ github.event.inputs.create_release == true }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, source, windows, check-release]

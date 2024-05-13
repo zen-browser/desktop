@@ -103,13 +103,30 @@ jobs:
           version: 8
           run_install: false
         
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
         run: pnpm install
 
-      - name: Get version
-        id: data
-        shell: bash
+      - name: Setup gluon
         run: |
+          npm i -g gluon-build@next
+  
+      - name: Check version
+        run: |
+          ls .
           echo "version=$(pnpm gluon get version | xargs)" >> $GITHUB_OUTPUT
           if [[ $(pnpm gluon get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
             echo "Version matches"

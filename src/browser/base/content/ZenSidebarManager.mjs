@@ -5,9 +5,9 @@ var gZenBrowserManagerSidebar = {
   _sidebarElement: null,
   _currentPanel: null,
   _lastOpenedPanel: null,
-  _hasRegisteredPinnedClickOutside: false,
   _hasChangedConfig: true,
   _splitterElement: null,
+  _hSplitterElement: null,
   _isDragging: false,
   contextTab: null,
 
@@ -39,7 +39,7 @@ var gZenBrowserManagerSidebar = {
       let computedStyle = window.getComputedStyle(sidebar);
       let maxWidth = parseInt(computedStyle.getPropertyValue("max-width").replace("px", ""));
       let minWidth = parseInt(computedStyle.getPropertyValue("min-width").replace("px", ""));
-      
+
       if (!this._isDragging) { // Prevent multiple resizes
         this._isDragging = true;
         let sidebarWidth = sidebar.getBoundingClientRect().width;
@@ -65,6 +65,38 @@ var gZenBrowserManagerSidebar = {
       }
     }).bind(this));
 
+    this.hSplitterElement.addEventListener("mousedown", (function(event) {
+      let computedStyle = window.getComputedStyle(sidebar);
+      const parent = sidebar.parentElement;
+      // relative to avoid the top margin
+      // 20px is the padding
+      let parentRelativeHeight = parent.getBoundingClientRect().height - parent.getBoundingClientRect().top + 20;
+      let minHeight = parseInt(computedStyle.getPropertyValue("min-height").replace("px", ""));
+      if (!this._isDragging) { // Prevent multiple resizes
+        this._isDragging = true;
+        let sidebarHeight = sidebar.getBoundingClientRect().height;
+        let startY = event.clientY;
+        let startHeight = sidebarHeight;
+        let mouseMove = (function(e) {
+          let newHeight = startHeight + e.clientY - startY;
+          if (newHeight <= minHeight+10) {
+            newHeight = minHeight+1;
+          } else if (newHeight >= parentRelativeHeight) { // 10px is the padding
+            newHeight = parentRelativeHeight;
+          }
+          sidebar.style.height = `${newHeight}px`;
+        });
+        let mouseUp = (function() {
+          this.handleEvent();
+          this._isDragging = false;
+          document.removeEventListener("mousemove", mouseMove);
+          document.removeEventListener("mouseup", mouseUp);
+        }).bind(this);
+        document.addEventListener("mousemove", mouseMove);
+        document.addEventListener("mouseup", mouseUp);
+      }
+    }).bind(this));
+
     this.handleEvent();
   },
 
@@ -72,14 +104,6 @@ var gZenBrowserManagerSidebar = {
     this._hasChangedConfig = true;
     this.update();
     this._hasChangedConfig = false;
-
-    if (Services.prefs.getBoolPref("zen.sidebar.floating") && !this._hasRegisteredPinnedClickOutside) {
-      document.addEventListener("mouseup", this._handleClickOutside.bind(this));
-      this._hasRegisteredPinnedClickOutside = true;
-    } else {
-      document.removeEventListener("mouseup", this._handleClickOutside.bind(this));
-      this._hasRegisteredPinnedClickOutside = false;
-    }
 
     const button = document.getElementById("zen-sidepanel-button");
     if (Services.prefs.getBoolPref("zen.sidebar.enabled")) {
@@ -89,18 +113,6 @@ var gZenBrowserManagerSidebar = {
       this._closeSidebarPanel();
       return;
     }
-  },
-
-  _handleClickOutside(event) {
-    let sidebar = document.getElementById("zen-sidebar-web-panel");
-    if (!sidebar.hasAttribute("pinned") || !this._currentPanel || this._isDragging) {
-      return;
-    }
-    let target = event.target;
-    if (target.closest("#zen-sidebar-web-panel") || target.closest("#zen-sidebar-panels-wrapper") || target.closest("#zenWebPanelContextMenu") || target.closest("#zen-sidebar-web-panel-splitter") || target.closest("#contentAreaContextMenu")) {
-      return;
-    }
-    this.close();
   },
 
   toggle() {
@@ -388,6 +400,13 @@ var gZenBrowserManagerSidebar = {
       this._splitterElement = document.getElementById("zen-sidebar-web-panel-splitter");
     }
     return this._splitterElement;
+  },
+
+  get hSplitterElement() {
+    if (!this._hSplitterElement) {
+      this._hSplitterElement = document.getElementById("zen-sidebar-web-panel-hsplitter");
+    }
+    return this._hSplitterElement;
   },
 
   // Context menu

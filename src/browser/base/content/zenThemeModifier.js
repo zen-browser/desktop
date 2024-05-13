@@ -13,7 +13,6 @@
 
 {
   const kZenThemeAccentColorPref = "zen.theme.accent-color";
-  const kZenThemePanelSeparationPref = "zen.theme.panel-separation";
 
   /**
   * ZenThemeModifier controls the application of theme data to the browser,
@@ -34,6 +33,7 @@
     init() {
       this._inMainBrowserWindow = window.location.href == "chrome://browser/content/browser.xhtml";
       this.listenForEvents();
+      this.updateExtraBrowserStyles();
       this.updateAllThemeBasics();
       this._zenInitBrowserLayout();
     },
@@ -41,9 +41,6 @@
     listenForEvents() {
       addEventListener("LightweightTheme:Set", this);
       Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
-      if (this._inMainBrowserWindow) {
-        Services.prefs.addObserver(kZenThemePanelSeparationPref, this.handleEvent.bind(this));
-      }
     },
 
     handleEvent(event) {
@@ -56,7 +53,6 @@
       */
     updateAllThemeBasics() {
       this.updateAccentColor();
-      this.updateExtraBrowserStyles();
     },
 
     /**
@@ -75,60 +71,26 @@
     updateExtraBrowserStyles() {
       // If we are in the main browser window, we can add some extra styles.
       if (!this._inMainBrowserWindow) return;
-      const panelSeparation = Services.prefs.getIntPref(kZenThemePanelSeparationPref, 7);
-      document.documentElement.style.setProperty("--zen-appcontent-separator-from-window-single", panelSeparation + "px");
-      if (panelSeparation <= 0) {
-        document.documentElement.style.setProperty("--zen-appcontent-border-radius", "0px");
-      } else {
-        document.documentElement.style.setProperty("--zen-appcontent-border-radius", "var(--zen-panel-radius)");
-      }
-      this._changeSidebarLocation(panelSeparation);
+      document.documentElement.style.setProperty("--zen-appcontent-separator-from-window-single", "0px");
+      document.documentElement.style.setProperty("--zen-appcontent-border-radius", "0px");
+      this._changeSidebarLocation();
     },
 
-    _changeSidebarLocation(value) {
+    _changeSidebarLocation() {
       const kElementsToAppend = [
-        "zen-sidebar-web-panel-wrapper",
         "sidebar-splitter",
         "sidebar-box",
         "navigator-toolbox",
       ];
-      const kInlineIndicatorElements = [
-        "nav-bar",
-        "tabbrowser-tabbox",
-        "appcontent",
-        ...kElementsToAppend,
-      ];
       const wrapper = document.getElementById("zen-tabbox-wrapper");
       const appWrapepr = document.getElementById("zen-sidebar-box-container");
-      if (value <= 0) {
-        for (let id of kElementsToAppend) {
-          const elem = document.getElementById(id);
-          if (elem) {
-            wrapper.prepend(elem);
-          }
-        }
-        appWrapepr.setAttribute("hidden", "true");
-        for (let id of kInlineIndicatorElements) {
-          const elem = document.getElementById(id);
-          if (elem) {
-            elem.setAttribute("inlinedwithsidebar", "true");
-          }
-        }
-      } else {
-        for (let i = kElementsToAppend.length - 1; i >= 0; i--) {
-          const elem = document.getElementById(kElementsToAppend[i]);
-          if (elem) {
-            appWrapepr.appendChild(elem);
-          }
-        }
-        appWrapepr.removeAttribute("hidden");
-        for (let id of kInlineIndicatorElements) {
-          const elem = document.getElementById(id);
-          if (elem) {
-            elem.removeAttribute("inlinedwithsidebar");
-          }
+      for (let id of kElementsToAppend) {
+        const elem = document.getElementById(id);
+        if (elem) {
+          wrapper.prepend(elem);
         }
       }
+      appWrapepr.setAttribute("hidden", "true");
     },
 
     _zenInitBrowserLayout() {

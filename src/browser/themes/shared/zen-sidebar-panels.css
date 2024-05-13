@@ -52,6 +52,7 @@
   height: 100%;
   margin-right: 0;
   display: flex;
+  pointer-events: none;
 }
 
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[hidden="true"]) {
@@ -59,10 +60,20 @@
 }
 
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned="true"]) {
+  --zen-sidebar-web-panel-spacing: 10px;
   margin: var(--zen-appcontent-separator-from-window);
+  position: absolute;
+  z-index: 1;
+  width: -moz-available;
+  padding: var(--zen-sidebar-web-panel-spacing);
+}
+
+#zen-sidebar-web-panel:not([pinned="true"]) {
+  --zen-sidebar-web-panel-spacing: calc(10px / 3);
 }
 
 #zen-sidebar-web-panel {
+  --zen-initial-height: calc(100% - var(--zen-sidebar-web-panel-spacing) * 3);
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   border: var(--zen-appcontent-border);
@@ -72,8 +83,15 @@
   flex-direction: column;
   min-width: var(--zen-default-sidebar-width);
   max-width: 720px;
+  min-height: var(--zen-default-sidebar-width);
   width: calc(var(--zen-default-sidebar-width) + 200px);
-  height: calc(100% - 10px);
+  height: var(--zen-initial-height);
+  pointer-events: all;
+}
+
+#zen-sidebar-web-panel:not([pinned="true"]) {
+  /* We need to always override the height */
+  height: var(--zen-initial-height) !important;
 }
 
 #zen-sidebar-web-panel-splitter {
@@ -87,7 +105,20 @@
   cursor: ew-resize;
 }
 
-#zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter {
+#zen-sidebar-web-panel-hsplitter {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 7px;
+  background: transparent;
+  border: none;
+  cursor: ns-resize;
+}
+
+#zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter,
+#zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-hsplitter,
+#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned="true"])) + #zen-sidebar-web-panel-splitter {
   display: none;
 }
 
@@ -103,7 +134,7 @@
   display: flex; 
 }
 
-#zen-sidebar-web-panel-wrapper[inlinedwithsidebar="true"] {
+#zen-sidebar-web-panel-wrapper {
   margin: 0 10px 10px 0;
 }
 
@@ -150,6 +181,7 @@
   background: transparent;
   position: relative;
   color-scheme: var(--toolbar-color-scheme);
+  -moz-window-dragging: no-drag;
 }
 
 #zen-sidebar-web-header {

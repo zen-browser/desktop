@@ -221,9 +221,6 @@ button.popup-notification-dropmarker {
   -moz-window-dragging: no-drag;
   
   --zen-sidebar-action-button-width: 38px;
-}
-
-#navigator-toolbox[inlinedwithsidebar="true"] #TabsToolbar {
   padding-bottom: calc(5px + 5px); /* Taking into consideration the padding of the sidebar without being inlined */
 }
 
@@ -436,8 +433,10 @@ panelmultiview {
 
 /** No space in panels overrides */
 
-#tabbrowser-tabbox[inlinedwithsidebar="true"] {
+#tabbrowser-tabbox {
   background: var(--toolbar-bgcolor);
+  display: flex;
+  flex-direction: row;
 }
 
 #tabbrowser-tabpanels {
@@ -445,18 +444,18 @@ panelmultiview {
   margin-right: 10px;
 }
 
-#tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserSidebarContainer {
+#tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
   border-radius: var(--zen-browser-border-radius);
   border: var(--zen-appcontent-border);
   width: 100%;
   margin: 0 10px 10px 0;
 }
 
-#tabbrowser-tabbox[inlinedwithsidebar="true"] #tabbrowser-tabpanels .browserStack > browser {
+#tabbrowser-tabbox #tabbrowser-tabpanels .browserStack > browser {
   border-radius: var(--zen-browser-border-radius);
 }
 
-#nav-bar[inlinedwithsidebar="true"] {
+#nav-bar {
   padding-top: 5px;
   padding-bottom: 5px;
 }

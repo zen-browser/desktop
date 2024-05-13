@@ -39,9 +39,6 @@
   background: transparent !important;  
   border-color: transparent !important;
   width: 1px !important;
-}
-
-#sidebar-splitter[inlinedwithsidebar="true"] {
   background-color: -moz-dialog !important;
 }
 

@@ -104,7 +104,6 @@ pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.theme.accent-color', "#aac7ff");
-pref('zen.theme.panel-separation', /*7*/0);
 pref('zen.theme.toolbar-themed', true);
 
 

@@ -18,15 +18,17 @@
   --fp-contextmenu-separator-vertical: calc(4px - var(--fp-contextmenu-menuitem-border-width));
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
-  --toolbar-bgcolor: var(--zen-colors-tertiary) !important;
+  --toolbar-bgcolor: transparent !important;
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
+  --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
 }
 
 @media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
   :root {
     --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;
+    --zen-themed-toolbar-bg: var(--toolbar-bgcolor);
   }
 }
 
@@ -462,4 +464,8 @@ panelmultiview {
 
 #urlbar[breakout]:not([breakout-extend="true"]) {
   top: unset;
+}
+
+#zen-main-app-wrapper {
+  background: var(--zen-main-browser-background);
 }

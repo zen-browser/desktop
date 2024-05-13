@@ -134,9 +134,9 @@ jobs:
           ls .
           echo "version=$(pnpm gluon get version | xargs)" >> $GITHUB_OUTPUT
           if [[ $(pnpm gluon get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
-            echo "Version matches"
+            echo ">>> Version matches"
           else
-            echo "Version mismatch"
+            echo ">>> Version mismatch"
             exit 1
           fi
 

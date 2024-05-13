@@ -1,0 +1,36 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<svg width="680" height="92" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="680" height="92" fill="#F0F0F4" />
+  <g filter="url(#filter0_dd)">
+    <rect x="28" y="5" width="166" height="34" rx="4" fill="white" />
+  </g>
+  <rect x="51" y="20" width="121" height="4" rx="2" fill="#15141A" />
+  <rect x="221" y="20" width="121" height="4" rx="2" fill="#15141A" />
+  <rect y="44" width="680" height="48" fill="#F9F9FB" />
+  <circle cx="24" cy="68" r="6.25" stroke="#5B5B66" stroke-width="1.5" />
+  <circle cx="60" cy="68" r="6.25" stroke="#5B5B66" stroke-width="1.5" />
+  <line x1="663" y1="73.75" x2="649" y2="73.75" stroke="#5B5B66" stroke-width="1.5" />
+  <line x1="663" y1="67.75" x2="649" y2="67.75" stroke="#5B5B66" stroke-width="1.5" />
+  <line x1="663" y1="61.75" x2="649" y2="61.75" stroke="#5B5B66" stroke-width="1.5" />
+  <rect x="114" y="52" width="488" height="32" rx="4" fill="#F0F0F4" />
+  <circle cx="130" cy="68" r="6.25" stroke="#5B5B66" stroke-width="1.5" />
+  <rect x="146" y="66" width="308" height="4" rx="2" fill="#5B5B66" />
+  <defs>
+    <filter id="filter0_dd" x="24" y="1" width="174" height="42" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+      <feOffset />
+      <feGaussianBlur stdDeviation="2" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0.501961 0 0 0 0 0.501961 0 0 0 0 0.556863 0 0 0 0.5 0" />
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" />
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+      <feOffset />
+      <feGaussianBlur stdDeviation="0.5" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0.501961 0 0 0 0 0.501961 0 0 0 0 0.556863 0 0 0 0.9 0" />
+      <feBlend mode="normal" in2="effect1_dropShadow" result="effect2_dropShadow" />
+      <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow" result="shape" />
+    </filter>
+  </defs>
+</svg>

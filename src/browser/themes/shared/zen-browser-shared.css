@@ -1,6 +1,7 @@
 
 @import url("zen-panel-ui.css");
 @import url("zen-icons/icons.css");
+@import url("zen-decks.css");
 
 :root {
   --toolbarbutton-border-radius: 6px !important;

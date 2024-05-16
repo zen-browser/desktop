@@ -1,19 +1,19 @@
 diff --git a/browser/themes/shared/browser-custom-colors.css b/browser/themes/shared/browser-custom-colors.css
-index d98d56690f8e01fbf5cbb5050b2c71b726ed7323..5c14d3a57f6d9c17c43c934c7b8cb7f0a525d5d5 100644
+index 23187312740d440b3cd4b376a06cb2ab2e885604..3f16966196887609b7e734f194c346d9cc9fda4b 100644
 --- a/browser/themes/shared/browser-custom-colors.css
 +++ b/browser/themes/shared/browser-custom-colors.css
 @@ -6,7 +6,7 @@
  
  @media not (prefers-contrast) {
-   :root:not(:-moz-lwtheme) {
+   :root:not([lwtheme]) {
 -    --button-primary-bgcolor: light-dark(rgb(0, 97, 224), rgb(0, 221, 255));
 +    --button-primary-bgcolor: light-dark(#000, #fff);
      --button-primary-hover-bgcolor: light-dark(rgb(2, 80, 187), rgb(128, 235, 255));
      --button-primary-active-bgcolor: light-dark(rgb(5, 62, 148), rgb(170, 242, 255));
      --button-primary-color: light-dark(rgb(251, 251, 254), rgb(43, 42, 51));
-@@ -50,7 +50,7 @@
-     --tab-attention-icon-color: light-dark(rgb(42, 195, 162), rgb(84, 255, 189));
-     --tabs-navbar-shadow-color: transparent;
+@@ -49,7 +49,7 @@
+     --tab-icon-overlay-fill: light-dark(rgb(91, 91, 102), rgb(251, 251, 254));
+     --tabs-navbar-separator-style: none;
  
 -    --toolbox-non-lwt-bgcolor: light-dark(rgb(240, 240, 244), rgb(28, 27, 34));
 +    --toolbox-non-lwt-bgcolor: light-dark(rgb(210, 210, 213), rgb(28, 27, 34));

@@ -19,12 +19,4 @@ index 29927139181e40fa9779038f996a08a2afc6f76b..ddb95da98de6aba014d69f040aabe6b3
              <image/>
            </toolbarbutton>
            <description id="protections-popup-toast-panel-tp-on-desc" data-l10n-id="protections-panel-etp-on-header"></description>
-@@ -36,7 +37,7 @@
-         </box>
-         <toolbarseparator></toolbarseparator>
- 
--        <html:div id="messaging-system-message-container" disabled="true">
-+        <html:div id="messaging-system-message-container">
-           <!-- Messaging System Messages will render in this container -->
-         </html:div>
-       </vbox>
+

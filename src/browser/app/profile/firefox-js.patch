@@ -1,10 +1,10 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index 1ef5a05907f4675e4e7191dde12c33dc6da5e3c6..69279a1a1278b7034df24b9763c5722a6c623bbc 100644
+index 8c4b0e28e53f3f0e0e492dd8f351535a5604af73..968c8792f4a2358da3f89cabfa179585bfbf0874 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -3037,3 +3037,5 @@ pref("browser.profiles.enabled", false);
+@@ -3038,3 +3038,5 @@ pref("startup.homepage_override_nimbus_maxVersion", "");
  
- pref("startup.homepage_override_url_nimbus", "");
- pref("startup.homepage_override_nimbus_maxVersion", "");
+ // Pref to enable the content relevancy feature.
+ pref("toolkit.contentRelevancy.enabled", false);
 +
 +#include zen-browser.js

@@ -1,9 +1,9 @@
 diff --git a/browser/components/tabpreview/tabpreview.css b/browser/components/tabpreview/tabpreview.css
-index 776f520c7da2cf3e2dcc5f1395a3266f1c009ea0..2605963b023c507ab63c3ac8b761477da8550ce8 100644
+index e978266e5da72f3051d5455d7a3f2867a88648c5..c57e844107ea6e99b406422496e9b41511089594 100644
 --- a/browser/components/tabpreview/tabpreview.css
 +++ b/browser/components/tabpreview/tabpreview.css
-@@ -57,3 +57,24 @@
-     display: none;
+@@ -42,3 +42,24 @@
+     width: 100%;
    }
  }
 +

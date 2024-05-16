@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index e0fcce367abe57e03e54779437facbba4326687b..70ef3cf15e9384f05e76d0768efb07872d4b69cf 100644
+index 55de24241514d11f6a174dd97ca37c8a4a99b8af..1459c91ff11429788e103d385f1598b6275592c8 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
 @@ -36,6 +36,7 @@
@@ -20,7 +20,7 @@ index e0fcce367abe57e03e54779437facbba4326687b..70ef3cf15e9384f05e76d0768efb0787
            </description>
 +#if 0
            <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
-             <label is="text-link" href="https://donate.mozilla.org/?utm_source=firefox&#38;utm_medium=referral&#38;utm_campaign=firefox_about&#38;utm_content=firefox_about" data-l10n-name="helpus-donateLink"/>
+             <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
              <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
            </description>
 +#endif

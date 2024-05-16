@@ -16,7 +16,7 @@ index 164b54bd857e5782e3885dcde5663f336de737de..d7cf63c4ac84f00641c4ac9bfa407beb
    appearance: none;
  
 -  /* Toolbar / content area border */
--  border-bottom: 1px solid var(--chrome-content-separator-color);
+-  border-bottom: 0.01px solid var(--chrome-content-separator-color);
 -
    background-color: var(--toolbox-non-lwt-bgcolor);
    color: var(--toolbox-non-lwt-textcolor);
@@ -33,7 +33,7 @@ index 164b54bd857e5782e3885dcde5663f336de737de..d7cf63c4ac84f00641c4ac9bfa407beb
 -    border-bottom-style: none;
 -  }
 -
--  &:-moz-lwtheme {
+-  :root[lwtheme] & {
 -    background-image: var(--lwt-additional-images);
 -    background-repeat: var(--lwt-background-tiling);
 -    background-position: var(--lwt-background-alignment);

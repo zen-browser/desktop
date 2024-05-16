@@ -34,7 +34,7 @@ index 1426f9c4f6f24f19277006ead43eb88a50a408e5..8f8da0189772e00fb787d6708fce0481
    margin: calc(-1 * var(--panel-shadow-margin));
  
 @@ -30,8 +32,6 @@ panel {
-   --color-canvas: var(--panel-background);
+   --background-color-canvas: var(--panel-background);
  
    @media (-moz-platform: linux) {
 -    --panel-border-radius: 8px;

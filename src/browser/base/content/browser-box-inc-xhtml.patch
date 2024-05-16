@@ -1,12 +1,13 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index d445abe7e743b2ec5d46d42f8f149c000e3c7997..b40fee5724a60171a8fa8849e6c778d2a17980f7 100644
+index 41258d81bbd2549a2d80cb7df9a9d65aa73a46f1..75bb0897710a478257d38c55c7fb0efb5aedd777 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -2,27 +2,19 @@
+@@ -2,28 +2,17 @@
  # License, v. 2.0. If a copy of the MPL was not distributed with this
  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
  
 -<hbox flex="1" id="browser">
+-  <html:sidebar-launcher id="sidebar-launcher" flex="1" hidden="true"></html:sidebar-launcher>
 -  <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
 -    <box id="sidebar-header" align="center">
 -      <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
@@ -23,9 +24,7 @@ index d445abe7e743b2ec5d46d42f8f149c000e3c7997..b40fee5724a60171a8fa8849e6c778d2
 -  <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
 +<vbox id="browser">
    <vbox id="appcontent" flex="1">
-+
 +    <html:div id="zen-appcontent-navbar-container"></html:div>
-+
      <!-- gNotificationBox will be added here lazily. -->
 -    <tabbox id="tabbrowser-tabbox"
 +    <hbox id="zen-tabbox-wrapper" flex="1">

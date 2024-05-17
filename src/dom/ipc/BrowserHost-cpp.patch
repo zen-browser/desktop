@@ -1,0 +1,13 @@
+diff --git a/dom/ipc/BrowserHost.cpp b/dom/ipc/BrowserHost.cpp
+index 489f07a612e52a3edb00f59e53495dcd9e16c0f5..1799e0d416f9d7be2c9e34c237d6ff741e5e2420 100644
+--- a/dom/ipc/BrowserHost.cpp
++++ b/dom/ipc/BrowserHost.cpp
+@@ -106,7 +106,7 @@ void BrowserHost::UpdateEffects(EffectsInfo aEffects) {
+ /* attribute boolean renderLayers; */
+ NS_IMETHODIMP
+ BrowserHost::GetRenderLayers(bool* aRenderLayers) {
+-  if (!mRoot) {
++  if (!mRoot && !Preferences::GetBool("zen.splitView.working", false)) {
+     *aRenderLayers = false;
+     return NS_OK;
+   }

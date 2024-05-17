@@ -1,0 +1,13 @@
+diff --git a/browser/base/content/tabbrowser.js b/browser/base/content/tabbrowser.js
+index 3bca0b6d30468dc3a755219723f673ec80dfce6e..6dd39545115f57ab2aedb9f8aad79ee35466a4c7 100644
+--- a/browser/base/content/tabbrowser.js
++++ b/browser/base/content/tabbrowser.js
+@@ -1349,6 +1349,8 @@
+       if (!aForceUpdate) {
+         TelemetryStopwatch.finish("FX_TAB_SWITCH_UPDATE_MS");
+       }
++
++      gZenViewSplitter.onLocationChange(newBrowser);
+     },
+ 
+     _adjustFocusBeforeTabSwitch(oldTab, newTab) {

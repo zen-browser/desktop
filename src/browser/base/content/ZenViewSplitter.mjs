@@ -3,7 +3,6 @@ var gZenViewSplitter = {
   /**
    * [ 
    *   {
-   *     view: <element>,
    *     tabs: [
    *      tab1,
    *      tab2,
@@ -16,19 +15,15 @@ var gZenViewSplitter = {
   currentView: -1,
 
   init() {
-    return;
+    Services.prefs.setBoolPref("zen.splitView.working", false);
     window.addEventListener("TabClose", this);
-    window.addEventListener("TabChange", this);
+    console.log("ZenViewSplitter initialized");
   },
 
   handleEvent(event) {
     switch (event.type) {
       case "TabClose":
         this.onTabClose(event);
-        break;
-      case "TabChange":
-        this.onTabChange(event);
-        break;
     }
   },
 
@@ -54,62 +49,85 @@ var gZenViewSplitter = {
     this._showSplitView(tab);
   },
 
-  onTabChange(event) {
-    const tab = event.target;
-    this._showSplitView(tab);
+  onLocationChange(browser) {
+    if (!Services.prefs.getBoolPref("zen.splitView.working")) {
+      return;
+    }
+    let tab = gBrowser.getTabForBrowser(browser);
+    if (!tab) {
+      return;
+    }
+    if (tab._zenSplitted) {
+      this._showSplitView(tab);
+    }
   },
 
   splitTabs(tabs) {
     if (tabs.length < 2) {
       return;
     }
-    let gridElement = document.createElement("div");
-    gridElement.classList.add("zen-deck");
-    tabs.forEach((tab) => {
-      let container = tab.linkedBrowser.closest(".browserContainer");
-      gridElement.appendChild(container);
-    });
-    this.tabBrowserPanel.appendChild(gridElement);
     this._data.push({
       tabs,
-      element: gridElement,
     });
     this._showSplitView(tabs[0]);
   },
 
   _showSplitView(tab) {
-    if (this.currentView !== -1) {
-      this._data[this.currentView].element.classList.remove("deck-selected");
+    const splitData = this._data.find((group) => group.tabs.includes(tab));
+    function modifyDecks(tabs, add) {
+      for (const tab of tabs) {
+        if (tab.linkedBrowser.docShellIsActive !== add) {
+          tab.linkedBrowser.docShellIsActive = add;
+        }
+        let browser = tab.linkedBrowser.closest(".browserSidebarContainer");
+        if (add) {
+          browser.classList.add("deck-selected");
+          continue;
+        }
+        browser.classList.remove("deck-selected");
+      }
+      setTimeout((() => {
+        modifyDecks(tabs, add);
+      }).bind(tabs, add), 300);
+    }
+    const handleClick = (tab) => {
+      return ((event) => {
+        gBrowser.selectedTab = tab;
+      })
+    };
+    if (!splitData) {
+      if (this.currentView < 0) {
+        return;
+      }
       for (const tab of this._data[this.currentView].tabs) {
         tab._zenSplitted = false;
         let container = tab.linkedBrowser.closest(".browserSidebarContainer");
+        container.removeAttribute("zen-split-active");
         console.assert(container, "No container found for tab");
-        container.classList.remove("deck-selected");
         container.removeAttribute("zen-split");
+        container.removeEventListener("click", handleClick(tab));
       }
-    }
-    const splitData = this._data.find((group) => group.tabs.includes(tab));
-    console.log(splitData)
-    if (!splitData) {
+      this.tabBrowserPanel.removeAttribute("zen-split-view");
+      Services.prefs.setBoolPref("zen.splitView.working", false);
+      modifyDecks(this._data[this.currentView].tabs, false);
+      this.currentView = -1;
       return;
     }
+    this.tabBrowserPanel.setAttribute("zen-split-view", "true");
+    Services.prefs.setBoolPref("zen.splitView.working", true);
     this.currentView = this._data.indexOf(splitData);
-    splitData.element.classList.add("deck-selected");
-    for (const tab of splitData.tabs) {
-      tab._zenSplitted = true;
-      let container = tab.linkedBrowser.closest(".browserSidebarContainer");
+    for (const _tab of splitData.tabs) {
+      _tab._zenSplitted = true;
+      let container = _tab.linkedBrowser.closest(".browserSidebarContainer");
+      container.removeAttribute("zen-split-active");
+      if (_tab == tab) {
+        container.setAttribute("zen-split-active", "true");
+      }
+      container.addEventListener("click", handleClick(_tab));
       console.assert(container, "No container found for tab");
-      container.classList.add("deck-selected");
       container.setAttribute("zen-split", "true");
     }
-    if (splitData.tabs.length < 2) {
-      let tab = splitData.tabs[0];
-      tab._zenSplitted = false;
-      let container = tab.linkedBrowser.closest(".browserSidebarContainer");
-      console.assert(container, "No container found for tab");
-      this.tabBrowserPanel.appendChild(container);
-      splitData.element.remove();
-    }
+    modifyDecks(splitData.tabs, true);
   },
 };
 

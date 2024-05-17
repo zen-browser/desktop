@@ -1,14 +1,20 @@
 
 /** Zen Decks - ONLY USED FOR SPLIT VIEWS, DO NOT USE THIS CLASS FOR ANY OTHER PURPOSE **/
 
-.zen-deck {
-  display: grid;
-  position: absolute;
-  width: 100%;
-  height: 100%;
+#tabbrowser-tabpanels[zen-split-view="true"] {
+  display: flex;
+  flex-direction: row;
 }
 
-.zen-deck:not(.deck-selected) {
-  z-index: -1;
-  visibility: hidden;
+#tabbrowser-tabpanels[zen-split-view="true"] > *:not(.deck-selected) {
+  flex: 0;
+  margin: 0 !important;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > .deck-selected {
+  flex: 1;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer[zen-split-active="true"] {
+  border-color: var(--zen-primary-color) !important;
 }

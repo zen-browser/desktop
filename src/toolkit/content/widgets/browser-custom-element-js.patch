@@ -1,0 +1,18 @@
+diff --git a/toolkit/content/widgets/browser-custom-element.js b/toolkit/content/widgets/browser-custom-element.js
+index 887f59c742c7cb540773f18ce680e1e5b6fd5314..0431d97412b69a9f33042fcc885edb1115a79716 100644
+--- a/toolkit/content/widgets/browser-custom-element.js
++++ b/toolkit/content/widgets/browser-custom-element.js
+@@ -411,11 +411,11 @@
+     }
+ 
+     set docShellIsActive(val) {
+-      this.browsingContext.isActive = val;
++      this.browsingContext.isActive = val || this.zenModeActive;
+       if (this.isRemoteBrowser) {
+         let remoteTab = this.frameLoader?.remoteTab;
+         if (remoteTab) {
+-          remoteTab.renderLayers = val;
++          remoteTab.renderLayers = val || this.zenModeActive;
+         }
+       }
+     }

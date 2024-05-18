@@ -76,19 +76,15 @@ var gZenViewSplitter = {
     const splitData = this._data.find((group) => group.tabs.includes(tab));
     function modifyDecks(tabs, add) {
       for (const tab of tabs) {
-        if (tab.linkedBrowser.docShellIsActive !== add) {
-          tab.linkedBrowser.docShellIsActive = add;
-        }
+        tab.linkedBrowser.zenModeActive = add;
+        tab.linkedBrowser.docShellIsActive = add;
         let browser = tab.linkedBrowser.closest(".browserSidebarContainer");
         if (add) {
-          browser.classList.add("deck-selected");
+          browser.setAttribute("zen-split", "true");
           continue;
         }
-        browser.classList.remove("deck-selected");
+        browser.removeAttribute("zen-split");
       }
-      setTimeout((() => {
-        modifyDecks(tabs, add);
-      }).bind(tabs, add), 300);
     }
     const handleClick = (tab) => {
       return ((event) => {
@@ -104,7 +100,6 @@ var gZenViewSplitter = {
         let container = tab.linkedBrowser.closest(".browserSidebarContainer");
         container.removeAttribute("zen-split-active");
         console.assert(container, "No container found for tab");
-        container.removeAttribute("zen-split");
         container.removeEventListener("click", handleClick(tab));
       }
       this.tabBrowserPanel.removeAttribute("zen-split-view");
@@ -125,7 +120,6 @@ var gZenViewSplitter = {
       }
       container.addEventListener("click", handleClick(_tab));
       console.assert(container, "No container found for tab");
-      container.setAttribute("zen-split", "true");
     }
     modifyDecks(splitData.tabs, true);
   },

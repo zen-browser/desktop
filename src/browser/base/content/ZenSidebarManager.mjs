@@ -245,7 +245,7 @@ var gZenBrowserManagerSidebar = {
     let sidebar = this._openAndGetWebPanelWrapper();
     for (let browser of sidebar.querySelectorAll("browser[zen-sidebar-id]")) {
       browser.setAttribute("hidden", "true");
-      browser.browsingContext.isActive = false;
+      browser.docShellIsActive = false;
     }
   },
 
@@ -259,7 +259,7 @@ var gZenBrowserManagerSidebar = {
     }
     let existantWebview = this._getCurrentBrowser();
     if (existantWebview) {
-      existantWebview.browsingContext.isActive = true;
+      existantWebview.docShellIsActive = true;
       existantWebview.removeAttribute("hidden");
       document.getElementById("zen-sidebar-web-panel-title").textContent = existantWebview.contentTitle;
       return;
@@ -271,7 +271,7 @@ var gZenBrowserManagerSidebar = {
     if (data.ua) {
       browser.browsingContext.customUserAgent = this.DEFAULT_MOBILE_USER_AGENT;
     }
-    browser.browsingContext.isActive = true;
+    browser.docShellIsActive = true;
   },
 
   _getWebPanelData(id) {

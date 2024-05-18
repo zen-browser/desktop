@@ -6,13 +6,14 @@
   flex-direction: row;
 }
 
-#tabbrowser-tabpanels[zen-split-view="true"] > *:not(.deck-selected) {
+#tabbrowser-tabpanels[zen-split-view="true"] > *:not([zen-split="true"]) {
   flex: 0;
   margin: 0 !important;
 }
 
-#tabbrowser-tabpanels[zen-split-view="true"] > .deck-selected {
+#tabbrowser-tabpanels[zen-split-view="true"] > [zen-split="true"] {
   flex: 1;
+  margin-right: 5px !important;
 }
 
 #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer[zen-split-active="true"] {

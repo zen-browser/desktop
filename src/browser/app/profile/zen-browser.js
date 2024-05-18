@@ -144,3 +144,6 @@ pref('zen.sidebar.floating', true);
 
 // Zen Split View
 pref('zen.splitView.working', false);
+
+// Zen Workspaces
+pref('zen.workspaces.enabled', false);

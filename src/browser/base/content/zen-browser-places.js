@@ -10,7 +10,6 @@ var ZenProfileDialogUI = {
   _updateProfilesList() {
     let parentList = document.getElementById('PanelUI-zen-profiles-list');
     this._emptyUserList(parentList);
-    console.log(ProfileService.profiles)
     if (this._getProfilesSize(ProfileService.profiles) <= 1) {
       return;
     }

@@ -1,5 +1,6 @@
 <script type="text/javascript">
 window.addEventListener("DOMContentLoaded", () => {
+  Services.scriptloader.loadSubScript("chrome://browser/content/ZenWorkspaces.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenSidebarManager.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenViewSplitter.mjs");
 }, { once: true });

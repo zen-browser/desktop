@@ -309,13 +309,6 @@ var gZenBrowserManagerSidebar = {
         titleContainer.textContent = title;
       }
     }).bind(this));
-    browser.addEventListener("progress", (function(event) {
-      let browser = event.target;
-      let id = browser.getAttribute("zen-sidebar-id");
-      if (id === this._currentPanel) {
-        titleContainer.textContent = "Loading..."; // l10n later
-      }
-    }).bind(this));
     return browser;
   },
 

@@ -101,7 +101,7 @@ var gZenViewSplitter = {
         return;
       }
       for (const tab of this._data[this.currentView].tabs) {
-        // tab._zenSplitted = false;
+        //tab._zenSplitted = false;
         let container = tab.linkedBrowser.closest(".browserSidebarContainer");
         container.removeAttribute("zen-split-active");
         container.classList.remove("deck-selected");
@@ -144,7 +144,6 @@ var gZenViewSplitter = {
     }
     // Check if any tab is already split
     for (const tab of gBrowser.selectedTabs) {
-      console.log(tab._zenSplitted);
       if (tab._zenSplitted) {
         return false;
       }

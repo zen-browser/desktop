@@ -16,6 +16,22 @@
   margin-right: 5px !important;
 }
 
+#tabbrowser-tabpanels[zen-split-view="true"] > [zen-split-anim="true"] {
+  animation: zen-deck-fadeIn 0.2s forwards;
+}
+
 #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer[zen-split-active="true"] {
   border-color: var(--zen-primary-color) !important;
+}
+
+@keyframes zen-deck-fadeIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

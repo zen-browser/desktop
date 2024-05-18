@@ -36,30 +36,31 @@ var gZenViewSplitter = {
 
   onTabClose(event) {
     const tab = event.target;
-    let index = -2;
-    while (index !== -1) {
-      index = this._data.findIndex((group) => group.tabs.includes(tab));
-      if (index !== -1) {
-        this._data[index].tabs.splice(this._data[index].tabs.indexOf(tab), 1);
-        if (this._data[index].tabs.length < 2) {
-          this._data.tabs.splice(index, 1);
-        }
+    let index = this._data.findIndex((group) => group.tabs.includes(tab));
+    if (index < 0) {
+      return;
+    }
+    let dataTab = this._data[index].tabs;
+    dataTab.splice(dataTab.indexOf(tab), 1);
+    if (dataTab.length < 2) {
+      this._data.splice(index, 1);
+      if (this.currentView == index) {
+        this.currentView = -1;
+        this.tabBrowserPanel.removeAttribute("zen-split-view");
+        Services.prefs.setBoolPref("zen.splitView.working", false);
       }
+      return;
     }
     this._showSplitView(tab);
   },
 
   onLocationChange(browser) {
-    if (!Services.prefs.getBoolPref("zen.splitView.working")) {
-      return;
-    }
     let tab = gBrowser.getTabForBrowser(browser);
     if (!tab) {
       return;
     }
-    if (tab._zenSplitted) {
-      this._showSplitView(tab);
-    }
+
+    this._showSplitView(tab);
   },
 
   splitTabs(tabs) {
@@ -69,6 +70,7 @@ var gZenViewSplitter = {
     this._data.push({
       tabs,
     });
+    gBrowser.selectedTab = tabs[0];
     this._showSplitView(tabs[0]);
   },
 
@@ -90,8 +92,8 @@ var gZenViewSplitter = {
       return ((event) => {
         gBrowser.selectedTab = tab;
       })
-    };
-    if (!splitData) {
+    };    
+    if (!splitData || (this.currentView >= 0 && !this._data[this.currentView].tabs.includes(tab))) {
       if (this.currentView < 0) {
         return;
       }
@@ -99,6 +101,7 @@ var gZenViewSplitter = {
         tab._zenSplitted = false;
         let container = tab.linkedBrowser.closest(".browserSidebarContainer");
         container.removeAttribute("zen-split-active");
+        container.classList.remove("deck-selected");
         console.assert(container, "No container found for tab");
         container.removeEventListener("click", handleClick(tab));
       }
@@ -106,7 +109,9 @@ var gZenViewSplitter = {
       Services.prefs.setBoolPref("zen.splitView.working", false);
       modifyDecks(this._data[this.currentView].tabs, false);
       this.currentView = -1;
-      return;
+      if (!splitData) {
+        return;
+      }
     }
     this.tabBrowserPanel.setAttribute("zen-split-view", "true");
     Services.prefs.setBoolPref("zen.splitView.working", true);
@@ -118,6 +123,7 @@ var gZenViewSplitter = {
       if (_tab == tab) {
         container.setAttribute("zen-split-active", "true");
       }
+      container.setAttribute("zen-split-anim", "true");
       container.addEventListener("click", handleClick(_tab));
       console.assert(container, "No container found for tab");
     }

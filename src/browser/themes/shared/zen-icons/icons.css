@@ -34,6 +34,11 @@
 	list-style-image: url("sidebars-right.svg") !important;
 }
 
+#context_zenSplitTabs {
+	/* TODO: Add split view icon */
+	--menu-image: url("sidebars-right.svg") !important;
+}
+
 #sidebar-button:-moz-locale-dir(ltr):not([positionend]),
 #sidebar-button:-moz-locale-dir(rtl)[positionend],
 #zen-sidepanel-button {

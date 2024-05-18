@@ -42,6 +42,9 @@ var gZenViewSplitter = {
     }
     let dataTab = this._data[index].tabs;
     dataTab.splice(dataTab.indexOf(tab), 1);
+    tab._zenSplitted = false;
+    tab.linkedBrowser.zenModeActive = false;
+    tab.linkedBrowser.docShellIsActive = false;
     if (dataTab.length < 2) {
       this._data.splice(index, 1);
       if (this.currentView == index) {
@@ -98,7 +101,7 @@ var gZenViewSplitter = {
         return;
       }
       for (const tab of this._data[this.currentView].tabs) {
-        tab._zenSplitted = false;
+        // tab._zenSplitted = false;
         let container = tab.linkedBrowser.closest(".browserSidebarContainer");
         container.removeAttribute("zen-split-active");
         container.classList.remove("deck-selected");
@@ -128,6 +131,25 @@ var gZenViewSplitter = {
       console.assert(container, "No container found for tab");
     }
     modifyDecks(splitData.tabs, true);
+  },
+
+  contextSplitTabs() {
+    let tabs = gBrowser.selectedTabs;
+    this.splitTabs(tabs);
+  },
+
+  contextCanSplitTabs() {
+    if (gBrowser.selectedTabs.length < 2) {
+      return false;
+    }
+    // Check if any tab is already split
+    for (const tab of gBrowser.selectedTabs) {
+      console.log(tab._zenSplitted);
+      if (tab._zenSplitted) {
+        return false;
+      }
+    }
+    return true;
   },
 };
 

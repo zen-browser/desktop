@@ -1,8 +1,21 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index bff8d98b27819b149a0c51c1195e1ee3668f2e31..622cbe099be0f1da8f48132204b73e577483ceae 100644
+index 91b2483c53fe67875d108a3d7c1959411f1d2c8f..1c3f460392a9c6ad4329865f3bf5dd253d84895d 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -166,6 +166,10 @@
+@@ -77,6 +77,12 @@
+               data-lazy-l10n-id="tab-context-close-n-tabs"
+               data-l10n-args='{"tabCount": 1}'
+               oncommand="TabContextMenu.closeContextTabs();"/>
++    <menuseparator/>
++    <menuitem id="context_zenSplitTabs"
++              data-lazy-l10n-id="tab-zen-split-tabs"
++              data-l10n-args='{"tabCount": 1}'
++              oncommand="gZenViewSplitter.contextSplitTabs();"/>
++    <menuseparator/>
+     <menu id="context_closeTabOptions"
+           data-lazy-l10n-id="tab-context-close-multiple-tabs">
+       <menupopup id="closeTabOptions">
+@@ -166,6 +172,10 @@
             hidden="true"
             tabspecific="true"
             aria-labelledby="editBookmarkPanelTitle">
@@ -13,7 +26,7 @@ index bff8d98b27819b149a0c51c1195e1ee3668f2e31..622cbe099be0f1da8f48132204b73e57
        <box class="panel-header">
          <html:h1>
            <html:span id="editBookmarkPanelTitle"/>
-@@ -188,12 +192,14 @@
+@@ -188,12 +198,14 @@
                    class="footer-button"
                    data-l10n-id="bookmark-panel-save-button"
                    default="true"
@@ -28,7 +41,7 @@ index bff8d98b27819b149a0c51c1195e1ee3668f2e31..622cbe099be0f1da8f48132204b73e57
      </panel>
    </html:template>
  
-@@ -491,6 +497,8 @@
+@@ -507,6 +519,8 @@
  
  #include popup-notifications.inc
  

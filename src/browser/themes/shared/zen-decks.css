@@ -24,6 +24,11 @@
   border-color: var(--zen-primary-color) !important;
 }
 
+#tabbrowser-tabpanels:has(> [zen-split="true"]) {
+  display: grid;
+  grid-gap: 0 10px !important;
+}
+
 @keyframes zen-deck-fadeIn {
   0% {
     transform: scale(0.9);

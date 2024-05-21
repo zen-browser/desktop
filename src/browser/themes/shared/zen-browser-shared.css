@@ -470,3 +470,53 @@ panelmultiview {
 #zen-main-app-wrapper {
   background: var(--zen-main-browser-background);
 }
+
+@media (-moz-bool-pref: "zen.view.compact") {
+  #navigator-toolbox,
+  #zen-appcontent-navbar-container {
+    position: absolute;
+    z-index: 1;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  #navigator-toolbox {
+    width: 1px;
+    min-width: 0;
+    height: 100%;
+  }
+
+  #zen-appcontent-navbar-container {
+    min-height: 0;
+    height: 1px;
+    width: 100%;
+  }
+
+  #navigator-toolbox:hover,
+  #navigator-toolbox:has([open="true"]) {
+    width: unset;
+    overflow: visible;
+    opacity: 1;
+  }
+
+  #zen-appcontent-navbar-container:hover,
+  #zen-appcontent-navbar-container:has([open="true"]) {
+    height: unset;
+    background: var(--zen-themed-toolbar-bg) !important;
+    overflow: visible;
+    border-bottom: var(--zen-appcontent-border) !important;
+    opacity: 1;
+  }
+  
+  #navigator-toolbox:hover #titlebar,
+  #navigator-toolbox:has([open="true"]) #titlebar {
+    background: var(--zen-themed-toolbar-bg) !important;
+    border-right: var(--zen-appcontent-border) !important;
+    padding: 0 5px;
+  }
+
+  #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+}

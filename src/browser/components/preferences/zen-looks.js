@@ -59,4 +59,9 @@ Preferences.addAll([
     type: "bool",
     default: true,
   },
+  {
+    id: "zen.view.compact",
+    type: "bool",
+    default: false,
+  },
 ]);

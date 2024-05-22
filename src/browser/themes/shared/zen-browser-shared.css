@@ -516,7 +516,8 @@ panelmultiview {
   }
 
   #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    margin-top: 10px;
-    margin-left: 10px;
+    margin: 10px !important;
+    margin-right: 0 !important;
+    width: -moz-available;
   }
 }

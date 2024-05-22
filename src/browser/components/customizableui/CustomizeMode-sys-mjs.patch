@@ -1,16 +1,8 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index 5f6d01d8337efc515cc2687782a07af893ea85d8..b008373667b629ff6d230bea0114a28f9847ace9 100644
+index 7b4ee373be2cb3e11b480b2c0ad59cae1c43fc07..0f89293bc568fa994fc6f251478ec3dfac5ead39 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
-@@ -138,6 +138,7 @@ export function CustomizeMode(aWindow) {
-   Services.prefs.addObserver(kBookmarksToolbarPref, this);
- 
-   this.window.addEventListener("unload", this);
-+  this._zenUpdateWindowSeparator();
- }
- 
- CustomizeMode.prototype = {
-@@ -356,7 +357,7 @@ CustomizeMode.prototype = {
+@@ -354,7 +354,7 @@ CustomizeMode.prototype = {
        this._transitioning = true;
  
        let customizer = document.getElementById("customization-container");
@@ -19,7 +11,7 @@ index 5f6d01d8337efc515cc2687782a07af893ea85d8..b008373667b629ff6d230bea0114a28f
        browser.hidden = true;
        customizer.hidden = false;
  
-@@ -487,7 +488,7 @@ CustomizeMode.prototype = {
+@@ -485,7 +485,7 @@ CustomizeMode.prototype = {
      }
  
      let customizer = document.getElementById("customization-container");
@@ -28,7 +20,7 @@ index 5f6d01d8337efc515cc2687782a07af893ea85d8..b008373667b629ff6d230bea0114a28f
      customizer.hidden = true;
      browser.hidden = false;
  
-@@ -2278,6 +2279,20 @@ CustomizeMode.prototype = {
+@@ -2276,6 +2276,20 @@ CustomizeMode.prototype = {
          if (makeSpaceImmediately) {
            aItem.setAttribute("notransition", "true");
          }
@@ -49,23 +41,3 @@ index 5f6d01d8337efc515cc2687782a07af893ea85d8..b008373667b629ff6d230bea0114a28f
          aItem.style[prop] = borderWidth + "px";
          aItem.style.removeProperty(otherProp);
          if (makeSpaceImmediately) {
-@@ -2931,6 +2946,19 @@ CustomizeMode.prototype = {
- 
-     return uninit;
-   },
-+
-+  _zenUpdateWindowSeparator() {
-+    let range = this.$("customization-zen-browser-space");
-+    const kZenThemePanelSeparationPref = "zen.theme.panel-separation";
-+    range.value = Services.prefs.getIntPref(kZenThemePanelSeparationPref);
-+    range.addEventListener("input", () => {
-+      let value = range.value;
-+      Services.prefs.setIntPref(kZenThemePanelSeparationPref, value);
-+    });
-+    Services.prefs.addObserver(kZenThemePanelSeparationPref, () => {
-+      range.value = Services.prefs.getIntPref(kZenThemePanelSeparationPref);
-+    });
-+  },
- };
- 
- function __dumpDragData(aEvent, caller) {

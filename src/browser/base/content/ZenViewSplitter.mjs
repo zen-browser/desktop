@@ -111,7 +111,7 @@ var gZenViewSplitter = {
         container.style.gridArea = "";
       }
       this.tabBrowserPanel.removeAttribute("zen-split-view");
-      //this.tabBrowserPanel.style.gridTemplateAreas = "";
+      this.tabBrowserPanel.style.gridTemplateAreas = "";
       Services.prefs.setBoolPref("zen.splitView.working", false);
       modifyDecks(this._data[this.currentView].tabs, false);
       this.currentView = -1;

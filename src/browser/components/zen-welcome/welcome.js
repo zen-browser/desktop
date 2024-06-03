@@ -119,6 +119,7 @@ class Themes extends Page {
   }
 
   async loadThemes() {
+    window.addEventListener('DOMContentLoaded', this.setColorBar);
     await sleep(1000)
 
     const themes = (await AddonManager.getAddonsByTypes(['theme'])).filter(
@@ -150,12 +151,61 @@ class Themes extends Page {
       const name = document.createElement('h3')
       name.textContent = theme.name
 
-      container.appendChild(img)
+      //container.appendChild(img)
       container.appendChild(name)
 
       themeList.appendChild(container)
       themeElements.push(container)
     })
+  }
+
+  setColorBar() {
+    const colorList = document.getElementById('colorList');
+    const ctx = colorList.getContext('2d');
+    let gradient = ctx.createLinearGradient(0, 0, 500, 20);
+
+    gradient.addColorStop(0.0, '#aac7ff');
+    gradient.addColorStop(0.1, '#aac7ff');
+    gradient.addColorStop(0.2, '#74d7cb');
+    gradient.addColorStop(0.3, '#a0d490');
+    gradient.addColorStop(0.4, '#dec663');
+    gradient.addColorStop(0.5, '#ffb787');
+    gradient.addColorStop(0.6, '#ffb1c0');
+    gradient.addColorStop(0.7, '#ddbfc3');
+    gradient.addColorStop(0.8, '#f6b0ea');
+    gradient.addColorStop(0.9, '#d4bbff');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1000, 150);
+
+    const dragBall = document.getElementById('dragBall');
+    dragBall.style.left = `0px`;
+    dragBall.addEventListener('mousedown', (e) => {
+      const rect = colorList.getBoundingClientRect();
+      e.preventDefault();
+      
+      const onMouseMove = (ev) => {
+        var x = ev.clientX - rect.left;
+        const data = ctx.getImageData(x - 17, 1, 1, 1).data;
+        dragBall.style.left = `${x - 17/2}px`;
+        if (x < 17) {
+          dragBall.style.left = `${17/2}px`;
+          x = 17;
+        } else if (x > rect.width - 17) {
+          dragBall.style.left = `${rect.width - 17 - (17/2)}px`;
+          x = rect.width - 17 - (17/2);
+        }
+        Services.prefs.setStringPref('zen.theme.accent-color', `#${data[0].toString(16)}${data[1].toString(16)}${data[2].toString(16)}`);
+      }
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
   }
 }
 

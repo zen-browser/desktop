@@ -27,6 +27,8 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
     <link rel="localization" href="branding/brand.ftl" />
     <link rel="localization" href="browser/zen-welcome.ftl" />
+
+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
   </head>
   <body>
     <div class="page" id="welcome">
@@ -42,46 +44,61 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
       ></button>
     </div>
 
-    <div class="page" id="import">
-      <h1 data-l10n-id="welcome-dialog-import"></h1>
-      <p data-l10n-id="welcome-dialog-import-subtext"></p>
+    <div class="page page-split" id="import">
+      <div>
+        <h1 data-l10n-id="welcome-dialog-import"></h1>
+        <p data-l10n-id="welcome-dialog-import-subtext"></p>
+      </div>
+      <div>
+        <hbox>
+          <button
+            class="primary"
+            id="importBrowser"
+            data-l10n-id="welcome-dialog-import-action"
+          ></button>
+          <button
+            class="text-link ghost-button"
+            id="importNext"
+            data-l10n-id="welcome-dialog-skip"
+          ></button>
+        </hbox>
+      </div>
+    </div>
 
-      <br />
-
-      <hbox>
+    <div class="page page-split" id="theme">
+      <div>
+        <h1 data-l10n-id="welcome-dialog-theme"></h1>
+        <p data-l10n-id="welcome-dialog-theme-subtext"></p>
+      </div>
+      <div>
+        <h1 data-l10n-id="welcome-dialog-theme-header-1"></h1>
+        <div id="themeList" class="cardGroup"></div>
+        <h1 data-l10n-id="welcome-dialog-theme-header-2"></h1>
+        <div id="colorListWrapper">
+          <canvas id="colorList" class="cardGroup"></canvas>
+          <div id="dragBall"></div>
+        </div>
         <button
+          id="themeNext"
           class="primary"
-          id="importBrowser"
-          data-l10n-id="welcome-dialog-import-action"
+          data-l10n-id="welcome-dialog-theme-action"
         ></button>
+      </div>
+    </div>
+
+    <div class="page page-split" id="search">
+      <div>
+        <h1 data-l10n-id="welcome-dialog-search"></h1>
+        <p data-l10n-id="welcome-dialog-search-subtext"></p>
+      </div>
+      <div>
+        <div id="searchList" class="cardGroup"></div>
         <button
-          class="text-link ghost-button"
-          id="importNext"
-          data-l10n-id="welcome-dialog-skip"
+          id="searchNext"
+          class="primary"
+          data-l10n-id="welcome-dialog-search-action"
         ></button>
-      </hbox>
-    </div>
-
-    <div class="page" id="theme">
-      <h1 data-l10n-id="welcome-dialog-theme"></h1>
-      <p data-l10n-id="welcome-dialog-theme-subtext"></p>
-      <div id="themeList" class="cardGroup"></div>
-      <button
-        id="themeNext"
-        class="primary"
-        data-l10n-id="welcome-dialog-theme-action"
-      ></button>
-    </div>
-
-    <div class="page" id="search">
-      <h1 data-l10n-id="welcome-dialog-search"></h1>
-      <p data-l10n-id="welcome-dialog-search-subtext"></p>
-      <div id="searchList" class="cardGroup"></div>
-      <button
-        id="searchNext"
-        class="primary"
-        data-l10n-id="welcome-dialog-search-action"
-      ></button>
+      </div>
     </div>
 
     <div class="page" id="thanks">

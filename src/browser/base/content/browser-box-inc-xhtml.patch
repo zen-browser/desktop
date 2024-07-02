@@ -1,41 +1,23 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 41258d81bbd2549a2d80cb7df9a9d65aa73a46f1..75bb0897710a478257d38c55c7fb0efb5aedd777 100644
+index b0308911446dd6fc549401371a85faa6341f8338..3942a0b45308b110685c34e8a9367d7c5d40d8c4 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -2,28 +2,17 @@
- # License, v. 2.0. If a copy of the MPL was not distributed with this
- # file, You can obtain one at http://mozilla.org/MPL/2.0/.
- 
--<hbox flex="1" id="browser">
--  <html:sidebar-launcher id="sidebar-launcher" flex="1" hidden="true"></html:sidebar-launcher>
--  <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
--    <box id="sidebar-header" align="center">
--      <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
--        <image id="sidebar-icon" consumeanchor="sidebar-switcher-target"/>
--        <label id="sidebar-title" crop="end" control="sidebar"/>
--        <image id="sidebar-switcher-arrow"/>
--      </toolbarbutton>
--      <image id="sidebar-throbber"/>
--      <spacer id="sidebar-spacer"/>
--      <toolbarbutton id="sidebar-close" class="close-icon tabbable" data-l10n-id="sidebar-close-button" oncommand="SidebarUI.hide();"/>
--    </box>
--    <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
--  </vbox>
--  <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
-+<vbox id="browser">
+@@ -18,12 +18,18 @@
+     <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
+   </vbox>
+   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
++  <vbox id="browser">
    <vbox id="appcontent" flex="1">
 +    <html:div id="zen-appcontent-navbar-container"></html:div>
      <!-- gNotificationBox will be added here lazily. -->
--    <tabbox id="tabbrowser-tabbox"
 +    <hbox id="zen-tabbox-wrapper" flex="1">
-+      <tabbox id="tabbrowser-tabbox"
+     <tabbox id="tabbrowser-tabbox"
              flex="1" tabcontainer="tabbrowser-tabs">
 +#include zen-sidebar-panel.inc.xhtml
        <tabpanels id="tabbrowser-tabpanels"
                    flex="1" selectedIndex="0"/>
--    </tabbox>
-+      </tabbox>
-+    </hbox>
+     </tabbox>
++  </hbox>
++  </vbox>
    </vbox>
--</hbox>
-+</vbox>
+ </hbox>

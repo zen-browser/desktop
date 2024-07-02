@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 164b54bd857e5782e3885dcde5663f336de737de..d7cf63c4ac84f00641c4ac9bfa407beb2f027c60 100644
+index 9e513830a9d9eeebe55cf6ab565b0575a943b088..05c8b716c0642f0ecebc47fe2759bc43474b6391 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -24,6 +24,8 @@
+@@ -25,6 +25,8 @@
  @import url("chrome://browser/skin/UITour.css");
  @import url("chrome://browser/skin/formautofill-notification.css");
  
@@ -11,7 +11,16 @@ index 164b54bd857e5782e3885dcde5663f336de737de..d7cf63c4ac84f00641c4ac9bfa407beb
  @namespace html url("http://www.w3.org/1999/xhtml");
  
  :root {
-@@ -152,9 +154,6 @@
+@@ -49,7 +51,7 @@
+   --short-notification-gradient: #9059FF;
+ 
+   --button-bgcolor: color-mix(in srgb, currentColor 13%, transparent);
+-  --button-hover-bgcolor: color-mix(in srgb, currentColor 17%, transparent);
++  --button-hover-bgcolor: color-mix(in srgb, currentColor 15%, transparent);
+   --button-active-bgcolor: color-mix(in srgb, currentColor 30%, transparent);
+   --button-color: currentColor;
+   --button-primary-bgcolor: AccentColor;
+@@ -145,9 +147,6 @@
  #navigator-toolbox {
    appearance: none;
  
@@ -21,7 +30,7 @@ index 164b54bd857e5782e3885dcde5663f336de737de..d7cf63c4ac84f00641c4ac9bfa407beb
    background-color: var(--toolbox-non-lwt-bgcolor);
    color: var(--toolbox-non-lwt-textcolor);
  
-@@ -162,33 +161,8 @@
+@@ -155,33 +154,8 @@
    transition: background-color var(--inactive-window-transition);
  
    &:-moz-window-inactive {

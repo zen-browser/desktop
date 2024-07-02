@@ -1,0 +1,33 @@
+diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
+index 0717ce21386b73fc3399c97b34c6892a674cca77..f20e8a43fdd1d885f917948a26f1c3a1bd917707 100644
+--- a/browser/base/content/browser-init.js
++++ b/browser/base/content/browser-init.js
+@@ -230,6 +230,12 @@ var gBrowserInit = {
+       gURLBar.readOnly = true;
+     }
+ 
++    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
++
++    // ZEN: Propagate the current profile used to the browser UI, such as 
++    // showing the avatar and profile info to the side bar
++    zenUpdateBrowserProfiles();
++
+     // Misc. inits.
+     gUIDensity.init();
+     TabletModeUpdater.init();
+@@ -1105,3 +1111,15 @@ var gBrowserInit = {
+ };
+ 
+ gBrowserInit.idleTasksFinishedPromise = gBrowserInit.idleTasksFinished.promise;
++
++function zenUpdateBrowserProfiles() {
++  const mainWindowEl = document.documentElement;
++  // Dont override the sync avatar if it's already set
++  if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {
++    return;
++  }
++  let profile = ProfileService.currentProfile;
++  if (!profile || profile.zenAvatarPath == "") return;
++  // TODO: actually use profile data to generate the avatar, instead of just using the name
++  mainWindowEl.style.setProperty("--avatar-image-url", `url(${profile.zenAvatarPath})`);
++} 

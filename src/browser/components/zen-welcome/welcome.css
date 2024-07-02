@@ -207,7 +207,7 @@ input[type='checkbox'] {
   border-radius: 99px;
   height: 20px;
   display: flex;
-  border: 2px solid var(--arrowpanel-border-color);
+  border: 1px solid var(--zen-colors-primary) !important;
 }
 
 #dragBall {

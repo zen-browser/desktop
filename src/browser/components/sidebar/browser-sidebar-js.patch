@@ -1,11 +1,11 @@
 diff --git a/browser/components/sidebar/browser-sidebar.js b/browser/components/sidebar/browser-sidebar.js
-index 55664f8cfc8ff7071e5d93fbf24b7471cfc4f879..398e78600e50bc1e2a8dbb2d64d6b578f4def28f 100644
+index 6cbac7c0826856adfcdafd3507e05f3efac95a2d..966289f04246deefe3dcb233f7fcb755fccfdbc6 100644
 --- a/browser/components/sidebar/browser-sidebar.js
 +++ b/browser/components/sidebar/browser-sidebar.js
-@@ -357,6 +357,7 @@ var SidebarUI = {
+@@ -404,6 +404,7 @@ var SidebarController = {
      } else {
        this._box.removeAttribute("positionend");
-       sidebarLauncher.removeAttribute("positionend");
+       sidebarMain.removeAttribute("positionend");
 +      this._box.style.order = 0;
      }
  

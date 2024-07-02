@@ -1,10 +1,11 @@
 diff --git a/toolkit/themes/shared/desktop-jar.inc.mn b/toolkit/themes/shared/desktop-jar.inc.mn
-index 6f504132c2459a0a476a7a440beef6794d52097e..627f4f72db90bed03ef135e2ac0ad09e53bb9fef 100644
+index 5907a9773fe608520b0088c1fc40c23a7003530f..535a7fae17f295a3bc97cf807d9c9dd496ec2352 100644
 --- a/toolkit/themes/shared/desktop-jar.inc.mn
 +++ b/toolkit/themes/shared/desktop-jar.inc.mn
-@@ -151,3 +151,5 @@
-   skin/classic/global/reader/RM-Content-Width-Plus-44x16.svg           (../../shared/reader/RM-Content-Width-Plus-44x16.svg)
-   skin/classic/global/reader/RM-Line-Height-Minus-38x14.svg            (../../shared/reader/RM-Line-Height-Minus-38x14.svg)
-   skin/classic/global/reader/RM-Line-Height-Plus-38x24.svg             (../../shared/reader/RM-Line-Height-Plus-38x24.svg)
-+  
+@@ -162,3 +162,5 @@
+   skin/classic/global/reader/content-width-20.svg          (../../shared/reader/content-width-20.svg)
+   skin/classic/global/tree/sort-asc.svg                    (../../shared/tree/sort-asc.svg)
+   skin/classic/global/tree/sort-dsc.svg                    (../../shared/tree/sort-dsc.svg)
++
 +#include zen-desktop.jar.inc.mn
+\ No newline at end of file

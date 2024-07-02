@@ -8,7 +8,7 @@
 #PanelUI-zen-profiles-header {
   width: 280px;
   height: 130px;
-  background: var(--zen-colors-primary-foreground);
+  background: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
   position: relative;
 }
 

@@ -1,10 +1,10 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 72753da622ec51d8be130a49e98a62f483d7f8db..424a8778b581af0c67cfd1c01a65fceec2bf24fb 100644
+index 5f41ca778131eedfd32043dc27d6528be978c4fb..086b01e8fdf80dd333d80b9eede190cdb5315b70 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -13,6 +13,15 @@ ChromeUtils.importESModule("resource://gre/modules/NotificationDB.sys.mjs");
- 
- // lazy module getters
+@@ -630,6 +630,15 @@ XPCOMUtils.defineLazyPreferenceGetter(
+   false
+ );
  
 +const ZEN_WELCOME_PATH = "zen-welcome";
 +const ZEN_WELCOME_ELEMENT_ATTR = "zen-dialog-welcome-element";
@@ -15,39 +15,19 @@ index 72753da622ec51d8be130a49e98a62f483d7f8db..424a8778b581af0c67cfd1c01a65fcee
 +  "nsIToolkitProfileService"
 +);
 +
- ChromeUtils.defineESModuleGetters(this, {
-   AMTelemetry: "resource://gre/modules/AddonManager.sys.mjs",
-   AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
-@@ -1668,6 +1677,7 @@ var gBrowserInit = {
-     });
+ customElements.setElementCreationCallback("screenshots-buttons", () => {
+   Services.scriptloader.loadSubScript(
+     "chrome://browser/content/screenshots/screenshots-buttons.js",
+@@ -3668,6 +3677,8 @@ var XULBrowserWindow = {
+     AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
+     TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
-     updateFxaToolbarMenu(gFxaToolbarEnabled, true);
-+    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
- 
-     updatePrintCommands(gPrintEnabled);
- 
-@@ -1731,6 +1741,11 @@ var gBrowserInit = {
-     }
- 
-     // Misc. inits.
-+
-+    // ZEN: Propagate the current profile used to the browser UI, such as 
-+    // showing the avatar and profile info to the side bar
-+    zenUpdateBrowserProfiles();
-+    
-     gUIDensity.init();
-     TabletModeUpdater.init();
-     CombinedStopReload.ensureInitialized();
-@@ -4821,6 +4836,8 @@ var XULBrowserWindow = {
-         }
-       }
-     }
-+
 +    gZenViewSplitter.onLocationChange(gBrowser.selectedBrowser);
-   },
++
+     PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
-   _updateElementsForContentType() {
-@@ -6099,7 +6116,7 @@ function setToolbarVisibility(
+     if (!gMultiProcessBrowser) {
+@@ -4982,7 +4993,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -56,33 +36,16 @@ index 72753da622ec51d8be130a49e98a62f483d7f8db..424a8778b581af0c67cfd1c01a65fcee
      switch (isVisible) {
        case true:
        case "always":
-@@ -9007,6 +9024,13 @@ var gDialogBox = {
-     parentElement.style.removeProperty("width");
-     parentElement.style.removeProperty("height");
-     document.documentElement.setAttribute("window-modal-open", true);
-+
+@@ -7813,6 +7824,12 @@ var gDialogBox = {
+     parentElement.showModal();
+     this._didOpenHTMLDialog = true;
+ 
 +    if (uri.includes(ZEN_WELCOME_PATH)) {
 +      parentElement.setAttribute(ZEN_WELCOME_ELEMENT_ATTR, true);
 +    } else if (parentElement.hasAttribute(ZEN_WELCOME_ELEMENT_ATTR)) {
 +      parentElement.removeAttribute(ZEN_WELCOME_ELEMENT_ATTR);
 +    }
 +
-     // Call this first so the contents show up and get layout, which is
-     // required for SubDialog to work.
-     parentElement.showModal();
-@@ -9384,3 +9408,15 @@ var FirefoxViewHandler = {
-     this.button?.toggleAttribute("attention", shouldShow);
-   },
- };
-+
-+function zenUpdateBrowserProfiles() {
-+  const mainWindowEl = document.documentElement;
-+  // Dont override the sync avatar if it's already set
-+  if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {
-+    return;
-+  }
-+  let profile = ProfileService.currentProfile;
-+  if (!profile || profile.zenAvatarPath == "") return;
-+  // TODO: actually use profile data to generate the avatar, instead of just using the name
-+  mainWindowEl.style.setProperty("--avatar-image-url", `url(${profile.zenAvatarPath})`);
-+} 
+     // Disable menus and shortcuts.
+     this._updateMenuAndCommandState(false /* to disable */);
+ 

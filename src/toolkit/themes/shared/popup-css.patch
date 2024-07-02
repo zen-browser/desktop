@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index 1426f9c4f6f24f19277006ead43eb88a50a408e5..8f8da0189772e00fb787d6708fce0481e52eaf39 100644
+index ed230860215c734e6fb903b3660d0c679043e3f3..a2808bec7fbfff58e3c56219cf2c7703eeb61ec1 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
 @@ -2,6 +2,8 @@
@@ -29,7 +29,7 @@ index 1426f9c4f6f24f19277006ead43eb88a50a408e5..8f8da0189772e00fb787d6708fce0481
  
    --panel-shadow-margin: 0px;
 -  --panel-shadow: 0 0 var(--panel-shadow-margin) hsla(0,0%,0%,.2);
-+  --panel-shadow: rgba(0, 0, 0, 0.15) 0px 4px 10px;
++  --panel-shadow: rgba(0, 0, 0, 0.05) 0px 4px 10px;
    -moz-window-input-region-margin: var(--panel-shadow-margin);
    margin: calc(-1 * var(--panel-shadow-margin));
  

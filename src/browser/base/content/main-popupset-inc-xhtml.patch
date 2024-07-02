@@ -1,11 +1,11 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 91b2483c53fe67875d108a3d7c1959411f1d2c8f..1c3f460392a9c6ad4329865f3bf5dd253d84895d 100644
+index ef8245938ea669227c255d85422a26b99cb2290b..48c061796072e976a45f7bd0ca1c8b3913728fc7 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -77,6 +77,12 @@
-               data-lazy-l10n-id="tab-context-close-n-tabs"
-               data-l10n-args='{"tabCount": 1}'
-               oncommand="TabContextMenu.closeContextTabs();"/>
+@@ -80,6 +80,12 @@
+     <menuitem id="context_closeDuplicateTabs"
+               data-lazy-l10n-id="tab-context-close-duplicate-tabs"
+               oncommand="gBrowser.removeDuplicateTabs(TabContextMenu.contextTab);"/>
 +    <menuseparator/>
 +    <menuitem id="context_zenSplitTabs"
 +              data-lazy-l10n-id="tab-zen-split-tabs"
@@ -15,7 +15,7 @@ index 91b2483c53fe67875d108a3d7c1959411f1d2c8f..1c3f460392a9c6ad4329865f3bf5dd25
      <menu id="context_closeTabOptions"
            data-lazy-l10n-id="tab-context-close-multiple-tabs">
        <menupopup id="closeTabOptions">
-@@ -166,6 +172,10 @@
+@@ -169,6 +175,10 @@
             hidden="true"
             tabspecific="true"
             aria-labelledby="editBookmarkPanelTitle">
@@ -26,7 +26,7 @@ index 91b2483c53fe67875d108a3d7c1959411f1d2c8f..1c3f460392a9c6ad4329865f3bf5dd25
        <box class="panel-header">
          <html:h1>
            <html:span id="editBookmarkPanelTitle"/>
-@@ -188,12 +198,14 @@
+@@ -191,12 +201,14 @@
                    class="footer-button"
                    data-l10n-id="bookmark-panel-save-button"
                    default="true"
@@ -41,7 +41,7 @@ index 91b2483c53fe67875d108a3d7c1959411f1d2c8f..1c3f460392a9c6ad4329865f3bf5dd25
      </panel>
    </html:template>
  
-@@ -507,6 +519,8 @@
+@@ -514,6 +526,8 @@
  
  #include popup-notifications.inc
  

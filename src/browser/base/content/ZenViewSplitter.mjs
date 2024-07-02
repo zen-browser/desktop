@@ -55,7 +55,8 @@ var gZenViewSplitter = {
       }
       return;
     }
-    this._showSplitView(tab);
+    let lastTab = dataTab[dataTab.length - 1];
+    this._showSplitView(lastTab);
   },
 
   onLocationChange(browser) {

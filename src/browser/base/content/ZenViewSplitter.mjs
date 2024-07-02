@@ -46,12 +46,20 @@ var gZenViewSplitter = {
     tab._zenSplitted = false;
     tab.linkedBrowser.zenModeActive = false;
     tab.linkedBrowser.docShellIsActive = false;
-    if (dataTab.length < 2) {
+    if (dataTab.length < 2    ) {
       this._data.splice(index, 1);
       if (this.currentView == index) {
+        console.assert(dataTab.length == 1, "Data tab length is not 1");      
         this.currentView = -1;
         this.tabBrowserPanel.removeAttribute("zen-split-view");
+        this.tabBrowserPanel.style.gridTemplateAreas = "";
+        this.tabBrowserPanel.style.display = "flex";
+        this.tabBrowserPanel.style.gridGap = "0px";          
         Services.prefs.setBoolPref("zen.splitView.working", false);
+        for (const tab of dataTab) {
+          let container = tab.linkedBrowser.closest(".browserSidebarContainer");
+          container.removeAttribute("zen-split");
+        }     
       }
       return;
     }

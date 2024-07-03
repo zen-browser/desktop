@@ -163,8 +163,9 @@ class Themes extends Page {
     const colorList = document.getElementById('colorList');
     const ctx = colorList.getContext('2d');
     let gradient = ctx.createLinearGradient(0, 0, 500, 20);
+    colorList.width = 500;
+    colorList.height = 20; 
 
-    gradient.addColorStop(0.0, '#aac7ff');
     gradient.addColorStop(0.1, '#aac7ff');
     gradient.addColorStop(0.2, '#74d7cb');
     gradient.addColorStop(0.3, '#a0d490');
@@ -186,7 +187,6 @@ class Themes extends Page {
       
       const onMouseMove = (ev) => {
         var x = ev.clientX - rect.left;
-        const data = ctx.getImageData(x - 17, 1, 1, 1).data;
         dragBall.style.left = `${x - 17/2}px`;
         if (x < 17) {
           dragBall.style.left = `${17/2}px`;
@@ -194,7 +194,8 @@ class Themes extends Page {
         } else if (x > rect.width - 17) {
           dragBall.style.left = `${rect.width - 17 - (17/2)}px`;
           x = rect.width - 17 - (17/2);
-        }
+        }  
+        const data = ctx.getImageData(x - 17, 1, 1, 1).data;
         Services.prefs.setStringPref('zen.theme.accent-color', `#${data[0].toString(16)}${data[1].toString(16)}${data[2].toString(16)}`);
       }
 
@@ -295,7 +296,9 @@ class Pages {
    */
   constructor(pages) {
     this.pages = pages
-    this.currentPage = 0
+    this.currentPage = 0;
+
+    window.maximize();  
 
     this.pages.forEach((page) => page.setPages(this))
 

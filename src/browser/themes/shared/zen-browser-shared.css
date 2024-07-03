@@ -206,7 +206,6 @@ button.popup-notification-dropmarker {
 
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
-  background: var(--sidebar-background-color);
   overflow: hidden;
   transition: .2s;
   border-radius: var(--zen-appcontent-border-radius) !important;
@@ -513,3 +512,12 @@ panelmultiview {
     width: -moz-available;
   }
 }
+
+/* Screenshots */
+
+#screenshotsPagePanel {
+  position: absolute;
+  top: 3%;
+  right: 1.5%;
+}
+

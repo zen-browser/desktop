@@ -9,6 +9,8 @@ xul|button {
   border-radius: var(--zen-button-border-radius) !important;
   padding: var(--zen-button-padding) !important;
   transition: .2s;
+  min-width: 150px !important;
+  font-weight: 500 !important;
 }
 
 button:active {
@@ -19,5 +21,6 @@ html|button:not(:is(
   .tab-button, .ghost-button
 )) {
   transition: .2s;
-  border-radius: 10px !important;
+  border-radius: 6px !important;
+  min-width: 150px !important;
 }

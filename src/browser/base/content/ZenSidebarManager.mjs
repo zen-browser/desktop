@@ -440,7 +440,7 @@ var gZenBrowserManagerSidebar = {
     let url = (browser == null) ? panel.url : browser.currentURI.spec;
     let tab = gBrowser.addTrustedTab(url);    
     gBrowser.selectedTab = tab;
-        this.close();
+    this.close();
   },
 
   contextToggleMuteAudio() {

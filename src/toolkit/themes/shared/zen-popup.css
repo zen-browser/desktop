@@ -379,7 +379,8 @@ hbox.editBMPanel_folderRow {
 /* Context menu */
 menu, menuitem {
   &:where([_moz-menuactive]:not([disabled="true"])) {
-    background-color: var(--zen-colors-border) !important;
+    background-color: var(--button-hover-bgcolor);
+    color: light-dark(black, white);    
   }
 }
 

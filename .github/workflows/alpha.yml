@@ -309,7 +309,23 @@ jobs:
       - name: Setup For Windows
         run: |
           set -x
+          mkdir -p ~/win-cross
+          cd engine/
+  
+          echo Setup wine
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
+          tar --zstd -xvf wine.tar.zst -C ~/win-cross
+          rm wine.tar.zst
+  
+          echo Setup Visual Studio
+          sudo apt install -y msitools python3-pip
+          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
+          
+          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
+ 
+          cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
+          cd ..
           npm install -g pnpm
           pnpm gluon bootstrap
 
@@ -323,6 +339,10 @@ jobs:
       - name: setup Rust 
         run: |
           cd engine/
+          # Install a rust version compatible with 17
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.56.0
+          source $HOME/.cargo/env
+          
           rustup target add x86_64-pc-windows-msvc
           cargo install cargo-download
           cargo download -x windows=0.52.0
@@ -344,6 +364,7 @@ jobs:
           mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.en-US.win64.zip
           ls ./dist
           ls .
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

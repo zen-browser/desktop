@@ -13,16 +13,16 @@ git clone https://github.com/zen-browser/desktop.git
 cd desktop
 ```
 
-Install gluon 
+Install dependencies 
 
 ```bash
-npm i -g gluon-build@next
+npm i
 ```
 
 Download and bootstrap the browser
 
 ```
-gluon download && gluon bootstrap
+npm run bootstrap
 ```
 
 Start building the browser

@@ -3,6 +3,9 @@
 
 Experience tranquillity while browsing the web without people tracking you!
 
+# Compatibility
+
+Zen is currently built using firefox version `127.0.2`!
 
 ## 🚀 Run Locally
 

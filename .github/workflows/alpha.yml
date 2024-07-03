@@ -326,6 +326,7 @@ jobs:
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
           cd ..
+          npm install -g pnpm
           pnpm gluon bootstrap
 
           cd engine/

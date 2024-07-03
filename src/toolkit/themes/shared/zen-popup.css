@@ -237,7 +237,7 @@ panel {
   box-shadow: none;
 }
 
-toolbarbutton:not(:is(
+/*toolbarbutton:not(:is(
   #appMenu-fxa-label2, 
   .subviewbutton-iconic, 
   .zen-sidebar-action-button, 
@@ -248,7 +248,7 @@ toolbarbutton:not(:is(
   .bookmark-item,
   #urlbar-zoom-button,
   .panel-info-button,
-)),
+)),*/
 #PanelUI-zen-profiles menuitem {
   /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
   margin: 0 !important;

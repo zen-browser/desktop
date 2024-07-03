@@ -9,7 +9,7 @@ xul|button {
   border-radius: var(--zen-button-border-radius) !important;
   padding: var(--zen-button-padding) !important;
   transition: .2s;
-  min-width: 150px !important;
+  min-width: 100px !important;
   font-weight: 500 !important;
 }
 
@@ -22,5 +22,5 @@ html|button:not(:is(
 )) {
   transition: .2s;
   border-radius: 6px !important;
-  min-width: 150px !important;
+  min-width: 100px !important;
 }

@@ -28,16 +28,12 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 9.4.0
-          run_install: false
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -150,7 +146,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - uses: actions/checkout@v3
 
@@ -201,12 +197,8 @@ jobs:
           path: /home/runner/.cache/sccache
           key: ${{ runner.os }}-sccache
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -277,7 +269,7 @@ jobs:
       - name: Install Node.js and pnpm
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - uses: actions/checkout@v3
 
@@ -287,12 +279,8 @@ jobs:
         with:
           swap-size-gb: 6
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Setup git
         run: |
@@ -407,7 +395,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - uses: actions/checkout@v3
         with:
@@ -418,12 +406,8 @@ jobs:
           git config --global user.email "mauro-balades@users.noreply.github.com"
           git config --global user.name "mauro-balades"
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -465,7 +449,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - uses: actions/setup-python@v5
         with:
@@ -496,12 +480,8 @@ jobs:
           path: ~/Library/Caches/Mozilla.sccache
           key: ${{ runner.os }}-sccache
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Get pnpm store directory
         id: pnpm-cache

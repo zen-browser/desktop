@@ -319,9 +319,9 @@ jobs:
   
           echo Setup Visual Studio
           sudo apt install -y msitools python3-pip
-          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2019.yaml ~/win-cross/vs2019
+          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
           
-          chmod -R +x "$(echo ~)/win-cross/vs2019" || true
+          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
  
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
@@ -367,7 +367,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: zen.en-US.win64.zip
+          name: zen.win64.zip
           path: ./zen.en-US.win64.zip
 
       - name: Upload mar

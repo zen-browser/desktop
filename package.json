@@ -9,6 +9,8 @@
     "export": "gluon export",
     "bootstrap": "gluon download && gluon bootstrap",
     "package": "gluon package",
+    "update-ff": "python3 scripts/update_ff.py",
+    "update-ff:raw": "gluon update",
     "update-newtab": "python3 update_newtab.py"
   },
   "repository": {

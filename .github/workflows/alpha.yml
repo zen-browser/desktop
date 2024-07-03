@@ -92,11 +92,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
+      - name: Install dependencies
+        run: pnpm install
         
       - name: Get pnpm store directory
         id: pnpm-cache

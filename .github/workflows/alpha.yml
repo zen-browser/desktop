@@ -92,8 +92,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install pnpm
+        run: npm install -g pnpm
         
       - name: Get pnpm store directory
         id: pnpm-cache

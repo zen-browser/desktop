@@ -724,6 +724,7 @@ menuitem[id="placesContext_deleteHost"],
 #context-copyvideourl,
 #context-copylink,
 #context-stripOnShareLink,
+#context_zenOpenNewTabWebPanel,
 #context-pdfjs-copy {
 	--menu-image: url("link.svg");
 }

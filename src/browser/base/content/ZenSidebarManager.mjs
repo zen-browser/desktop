@@ -433,6 +433,16 @@ var gZenBrowserManagerSidebar = {
     }
   },
 
+  contextOpenNewTab() {
+    let browser = this._getBrowserById(this.contextTab);
+    let data = this.sidebarData;
+    let panel = data.data[this.contextTab];
+    let url = (browser == null) ? panel.url : browser.currentURI.spec;
+    let tab = gBrowser.addTrustedTab(url);    
+    gBrowser.selectedTab = tab;
+        this.close();
+  },
+
   contextToggleMuteAudio() {
     let browser = this._getBrowserById(this.contextTab);
     if (browser.audioMuted) {

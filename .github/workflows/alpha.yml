@@ -340,7 +340,7 @@ jobs:
         run: |
           cd engine/
           # Install a rust version compatible with 17
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.65
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.76
           source $HOME/.cargo/env
           
           rustup target add x86_64-pc-windows-msvc

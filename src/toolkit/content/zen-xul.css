@@ -7,7 +7,7 @@
   --zen-appcontent-separator-from-window: var(--zen-appcontent-separator-from-window-single);
   --zen-appcontent-border-radius: var(--zen-panel-radius);
   --zen-appcontent-border: 2px solid var(--zen-colors-border);
-  --zen-browser-border-radius: 10px;
+  --zen-browser-border-radius: var(--zen-panel-radius);
 }
 
 toolbox#navigator-toolbox, 

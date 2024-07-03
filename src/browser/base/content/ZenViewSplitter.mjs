@@ -46,19 +46,22 @@ var gZenViewSplitter = {
     tab._zenSplitted = false;
     tab.linkedBrowser.zenModeActive = false;
     tab.linkedBrowser.docShellIsActive = false;
-    if (dataTab.length < 2    ) {
+    let container = tab.linkedBrowser.closest(".browserSidebarContainer");
+    container.removeAttribute("zen-split");
+    container.style.display = "none";         
+    if (dataTab.length < 2) {
       this._data.splice(index, 1);
       if (this.currentView == index) {
         console.assert(dataTab.length == 1, "Data tab length is not 1");      
         this.currentView = -1;
         this.tabBrowserPanel.removeAttribute("zen-split-view");
         this.tabBrowserPanel.style.gridTemplateAreas = "";
-        this.tabBrowserPanel.style.display = "flex";
-        this.tabBrowserPanel.style.gridGap = "0px";          
+        this.tabBrowserPanel.style.gridGap = "0px";     
         Services.prefs.setBoolPref("zen.splitView.working", false);
         for (const tab of dataTab) {
           let container = tab.linkedBrowser.closest(".browserSidebarContainer");
           container.removeAttribute("zen-split");
+          container.style.gridArea = "1 / 1";                 
         }     
       }
       return;
@@ -157,15 +160,22 @@ var gZenViewSplitter = {
           numberOfRows++;
         }
         container.style.gridArea = `tab${i + 1}`;
-      }
+      }  
       i++;
     }
     if (gridType == "grid") {
-      if (numberOfRows < splitData.tabs.length / 2) {
+      if ((numberOfRows < splitData.tabs.length / 2) && (splitData.tabs.length != 2)) { 
         // Make the last tab occupy the last row
         currentRowGridArea[1] += ` tab${i}`;
       }
-      this.tabBrowserPanel.style.gridTemplateAreas = `'${currentRowGridArea[0]}' '${currentRowGridArea[1]}'`;
+      if (gridType == "grid" && (splitData.tabs.length === 2)) {
+        currentRowGridArea[0]     = `tab1 tab2`;
+        currentRowGridArea[1] = "";
+      }     
+      this.tabBrowserPanel.style.gridTemplateAreas = `'${currentRowGridArea[0]}'`;
+      if (currentRowGridArea[1] != "") {
+        this.tabBrowserPanel.style.gridTemplateAreas += `     '${currentRowGridArea[1]}'`;
+      }
     }
     modifyDecks(splitData.tabs, true);
   },

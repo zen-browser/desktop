@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 1dcdd02cd1bfe24c9f32304511f3dd675fc9265c..b23c3cf40e9894d6fe3f5c2899a8d2d163b0b091 100644
+index aec0983a6704f09300da9a3a9ab76e627695b708..4228c96f59d6054c19c95686cafa979594e7da1f 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -144,6 +144,8 @@
+@@ -140,6 +140,8 @@
    window.addEventListener("DOMContentLoaded",
      gBrowserInit.onDOMContentLoaded.bind(gBrowserInit), { once: true });
  </script>
@@ -11,7 +11,7 @@ index 1dcdd02cd1bfe24c9f32304511f3dd675fc9265c..b23c3cf40e9894d6fe3f5c2899a8d2d1
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -165,9 +167,13 @@
+@@ -161,9 +163,12 @@
      </vbox>
    </html:template>
  
@@ -21,7 +21,6 @@ index 1dcdd02cd1bfe24c9f32304511f3dd675fc9265c..b23c3cf40e9894d6fe3f5c2899a8d2d1
 +  <hbox id="zen-main-app-wrapper" flex="1">
 +    #include navigator-toolbox.inc.xhtml
 +    <html:span id="zen-sidebar-box-container">
-+      #include zen-sidebar-box.inc.xhtml
 +    </html:span>
 +    #include browser-box.inc.xhtml    
 +  </hbox>

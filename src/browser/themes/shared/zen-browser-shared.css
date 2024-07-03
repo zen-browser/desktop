@@ -204,14 +204,6 @@ button.popup-notification-dropmarker {
   min-width: 55px;
 }
 
-#zen-sidebar-box-container {
-  display: flex;
-}
-
-#zen-sidebar-box-container[hidden="true"] {
-  display: none;
-}
-
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
   background: var(--sidebar-background-color);

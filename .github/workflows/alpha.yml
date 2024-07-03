@@ -28,12 +28,16 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 16
 
       - uses: actions/checkout@v3
 
-      - name: Install pnpm
-        run: npm install -g pnpm  
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 9.4.0
+          run_install: false
 
       - name: Get pnpm store directory
         id: pnpm-cache

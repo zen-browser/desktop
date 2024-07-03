@@ -309,8 +309,8 @@ jobs:
       - name: Setup For Windows
         run: |
           set -x
-          mkdir -p ~/win-cross
 
+          npm install -g pnpm
           pnpm gluon bootstrap
 
           cd engine/

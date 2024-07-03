@@ -1,7 +1,4 @@
 
-export WIN_UCRT_REDIST_DIR="$(echo ~)/win-cross/vs2022/Windows Kits/10/Redist/10.0.19041.0/ucrt/DLLs/x64"
-export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/x64/Microsoft.VC142.CRT"
-
 export WINSYSROOT="$(echo ~)/win-cross/vs2022"
 
 export MIDL="$(echo ~)/win-cross/wine/bin/widl"

@@ -365,11 +365,11 @@ jobs:
           ls ./dist
           ls .
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.installer.exe
-          path: ./dist/zen.installer.exe
+      #- name: Upload artifact
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: zen.installer.exe
+      #    path: ./dist/zen.installer.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -555,6 +555,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Update repo
+        uses: actions/checkout@v3
+
+      - name: Git Pull
+        run: git pull
+
       - uses: actions/download-artifact@v3
 
       - name: release-github
@@ -567,7 +573,6 @@ jobs:
           files: |
             zen.linux.tar.bz2
             zen.win64.zip
-            zen.installer.exe
             zen.source.tar.gz
             linux.mar
             windows.mar

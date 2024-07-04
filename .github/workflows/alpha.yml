@@ -7,12 +7,12 @@ on:
         description: 'Create a new release for this build'
         required: false
         default: false
-        type: boolean
+        type: 'boolean'
       update_version:
         description: 'Update the version number'
         required: false
         default: true
-        type: boolean
+        type: 'boolean'
 
 jobs:
 
@@ -74,7 +74,7 @@ jobs:
           echo "version=$(gluon get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ github.event.inputs.update_version == true }}
+        if: ${{ github.event.inputs.update_version == 'true' }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
@@ -548,7 +548,7 @@ jobs:
           path: ./dist/update
 
   release:
-    if: ${{ github.event.inputs.create_release == true }}
+    if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, source, windows, check-release]

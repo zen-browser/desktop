@@ -18,7 +18,9 @@ button:active {
 }
 
 html|button:not(:is(
-  .tab-button, .ghost-button
+  .tab-button, .ghost-button,
+  .button-toggle, .button-edit,
+  .button-add
 )) {
   transition: .2s;
   border-radius: 6px !important;

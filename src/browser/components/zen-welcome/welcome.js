@@ -180,7 +180,7 @@ class Themes extends Page {
     ctx.fillRect(0, 0, 1000, 150);
 
     const dragBall = document.getElementById('dragBall');
-    dragBall.style.left = `0px`;
+    dragBall.style.left = `17px`;
     dragBall.addEventListener('mousedown', (e) => {
       const rect = colorList.getBoundingClientRect();
       e.preventDefault();

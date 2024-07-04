@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 9fc88fbde80a39989bde559ecc07b8e3094ccb7e..170d9f31e1c0ac0c1ba3cea828d4a530e61e079b 100644
+index b5684c5f6f4b932070ef2bc53750504791f7f3c3..c3ffdb99adbb4a331967b93181d536dad1a41488 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -59,7 +59,7 @@
@@ -11,3 +11,12 @@ index 9fc88fbde80a39989bde559ecc07b8e3094ccb7e..170d9f31e1c0ac0c1ba3cea828d4a530
    background-clip: border-box;
    border: 1px solid var(--toolbar-field-border-color);
    border-radius: var(--toolbarbutton-border-radius);
+@@ -92,7 +92,7 @@
+      --toolbar-field-focus-border-color is set equal to --focus-outline-color
+      on :root, but LWT themes can override this value. */
+   outline-color: var(--toolbar-field-focus-border-color);
+-  border-color: transparent;
++  /*border-color: transparent;*/
+ }
+ 
+ #urlbar[focused="true"] > #urlbar-background,

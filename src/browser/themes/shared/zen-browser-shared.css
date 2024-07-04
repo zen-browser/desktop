@@ -57,7 +57,10 @@
   overflow: visible;
 }
 
-#urlbar[focused="true"] > #urlbar-background,
+#urlbar {
+  border: 1px solid light-dark(rgba(0,0,0,.2), rgba(255,255,255,.2))
+}
+
 #searchbar:focus-within {
   border-color: transparent !important;
 }
@@ -67,9 +70,7 @@
 }
 
 #urlbar[focused="true"] > #urlbar-background {
-  border-radius: 10px !important;
   background: var(--zen-dialog-background) !important;
-  border: 1px solid transparent;
 }
 
 #urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background,

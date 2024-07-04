@@ -13,13 +13,22 @@
   overflow: hidden;
   transition: .2s;
   margin-left: 0 !important;
-  margin-right: 0 !important;
   border: var(--zen-appcontent-border);
+  margin-top: 0 !important;
+  box-shadow: none;
 }   
 
 #sidebar-box[hidden="true"] {
   width: 0 !important;
   opacity: 0 !important;
+}
+
+#sidebar-box[positionend="true"] {
+  order: 1 !important;
+}
+
+#sidebar-box:not([positionend   ="true"]) {
+  margin-right: 0 !important;
 }
 
 #zen-main-app-wrapper:has(#sidebar-box:not([hidden="true"], [positionend="true"])) #TabsToolbar {
@@ -32,7 +41,7 @@
   background: transparent !important;  
   border-color: transparent !important;
   width: 1px !important;
-  margin-right: 5px !important   ;
+  margin-right: 5px !important;
 }
 
 #sidebar-box[positionend] {

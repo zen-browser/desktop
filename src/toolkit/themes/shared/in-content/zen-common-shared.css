@@ -25,7 +25,7 @@
 
   --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, white 10%);
   --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, black 20%);
-  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 90%, black 10%);
+  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 70%, black 30%);
 
   --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, white 80%);
 
@@ -95,7 +95,7 @@
     --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
   
     --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, black 80%);
-    --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 70%, black 30%);
+    --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 80%, black 20%);
   
     --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
     --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, black 92%); 

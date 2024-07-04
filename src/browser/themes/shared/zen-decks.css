@@ -21,7 +21,7 @@
 }
 
 #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer[zen-split-active="true"] {
-  border-color: var(--zen-primary-color) !important;
+  box-shadow: 0 0 0 2px var(--zen-primary-color) !important;
 }
 
 #tabbrowser-tabpanels:has(> [zen-split="true"]) {

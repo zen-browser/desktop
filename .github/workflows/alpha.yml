@@ -566,7 +566,8 @@ jobs:
           title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
             zen.linux.tar.bz2
-            zen.en-US.win64.zip
+            zen.win64.zip
+            zen.installer.exe
             zen.source.tar.gz
             linux.mar
             windows.mar

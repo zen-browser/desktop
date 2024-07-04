@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.css b/browser/base/content/browser.css
-index c9ebddb7f5c57d00c06bdf303a23085818c78259..f97c3e808d1c42cbce1a538ab7aeefa91ad27893 100644
+index 6e776a9ce7c525e510b6466065daf755b21567a4..8668b27ec2126ed772a11aa77809b6f22ceab7e2 100644
 --- a/browser/base/content/browser.css
 +++ b/browser/base/content/browser.css
 @@ -2,6 +2,8 @@
@@ -20,7 +20,13 @@ index c9ebddb7f5c57d00c06bdf303a23085818c78259..f97c3e808d1c42cbce1a538ab7aeefa9
  }
  
  :root[uidensity=touch] .tabbrowser-tab:not([pinned]) {
-@@ -659,7 +659,7 @@ toolbar:not(#TabsToolbar) > #personal-bookmarks {
+@@ -647,12 +647,12 @@ toolbar:not(#TabsToolbar) > #personal-bookmarks {
+   margin-inline-start: 0;
+ }
+ 
+-#urlbar-input-container[pageproxystate=invalid] > #page-action-buttons > .urlbar-page-action,
++#urlbar-input-container[pageproxystate=invalid] > #page-action-buttons > .urlbar-page-action:not(#zen-split-views-box),
+ #identity-box.chromeUI ~ #page-action-buttons > .urlbar-page-action:not(#star-button-box),
  #urlbar[usertyping] > #urlbar-input-container > #page-action-buttons > #urlbar-zoom-button,
  #urlbar:not([usertyping]) > #urlbar-input-container > #urlbar-go-button,
  #urlbar:not([focused]) > #urlbar-input-container > #urlbar-go-button {
@@ -29,7 +35,7 @@ index c9ebddb7f5c57d00c06bdf303a23085818c78259..f97c3e808d1c42cbce1a538ab7aeefa9
  }
  
  #nav-bar:not([keyNav=true]) #identity-box,
-@@ -1244,13 +1244,13 @@ printpreview-pagination:focus-within,
+@@ -1237,13 +1237,13 @@ printpreview-pagination:focus-within,
  
  
  #sidebar-box {
@@ -46,7 +52,7 @@ index c9ebddb7f5c57d00c06bdf303a23085818c78259..f97c3e808d1c42cbce1a538ab7aeefa9
    list-style-image: var(--webextension-menuitem-image, inherit);
    -moz-context-properties: fill;
    fill: currentColor;
-@@ -1451,3 +1451,42 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
+@@ -1444,3 +1444,42 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
  /**
   * End Dialogs
   */

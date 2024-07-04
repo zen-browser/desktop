@@ -64,6 +64,8 @@
   --focus-outline-color: var(--button-bgcolor) !important;
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
 
+  --toolbarbutton-icon-fill-attention: var(--zen-primary-color) !important;
+
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
   --button-primary-hover-bgcolor: var(--in-content-primary-button-background-hover) !important;
   --button-primary-active-bgcolor: var(--in-content-primary-button-background-active) !important;

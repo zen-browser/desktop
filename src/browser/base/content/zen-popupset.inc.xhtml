@@ -8,3 +8,51 @@
   <menuseparator/>
   <menuitem id="context_zenDeleteWebPanel" oncommand="gZenBrowserManagerSidebar.contextDelete();" data-l10n-id="zen-web-side-panel-context-delete"/>
 </menupopup>
+
+<html:template id="template-zen-split-view-modifier">
+<panel id="zenSplitViewModifier"
+  class="panel-no-padding"
+  orient="vertical"
+  role="alertdialog"
+  type="arrow"
+  aria-labelledby="zen-split-view-modifier-header"
+  tabspecific="true">
+  <panelmultiview id="zenSplitViewModifierMultiview"
+    mainViewId="zenSplitViewModifierViewDefault">
+    <panelview id="zenSplitViewModifierViewDefault"
+      class="PanelUI-subView"
+      role="document"
+      mainview-with-header="true"
+      has-custom-header="true">
+      <vbox>
+        <box class="zen-split-view-modifier-preview grid">
+          <box></box>
+          <box></box>
+          <box></box>
+        </box>
+        <p>Grid Layout</p>
+      </vbox>
+      <vbox>
+        <box class="zen-split-view-modifier-preview hsep">
+          <box></box>
+          <box></box>
+        </box>
+        <p>Horizontal</p>
+      </vbox>
+      <vbox>
+        <box class="zen-split-view-modifier-preview vsep">
+          <box></box>
+          <box></box>
+        </box>
+        <p>Vertical</p>
+      </vbox>
+      <vbox>
+        <box class="zen-split-view-modifier-preview unsplit">
+          <box></box>
+        </box>
+        <p>Unsplit</p>
+      </vbox>
+    </panelview>
+  </panelmultiview>
+</panel>
+</html:template>

@@ -380,6 +380,12 @@
 	list-style-image: url("bookmark.svg") !important;
 }
 
+#zen-split-views-button {
+  list-style-image: url("link.svg") !important;
+	fill: var(--toolbarbutton-icon-fill-attention);
+  fill-opacity: 1;
+}
+
 #sidebar-box[sidebarcommand="viewTabsSidebar"]
 	> #sidebar-header
 	> #sidebar-switcher-target

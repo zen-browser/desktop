@@ -361,7 +361,7 @@ jobs:
           set -x
           pnpm package
           mv ./dist/output.mar windows.mar
-          mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.en-US.win64.zip
+          mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.win64.zip
           ls ./dist
           ls .
 
@@ -375,7 +375,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zen.win64.zip
-          path: ./zen.en-US.win64.zip
+          path: ./zen.win64.zip
 
       - name: Upload mar
         uses: actions/upload-artifact@v3
@@ -586,6 +586,9 @@ jobs:
           repository: zen-browser/desktop
           path: updates
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull tools repo
+        run: git pull && git checkout main
 
       - name: Copy update manifests
         run: |

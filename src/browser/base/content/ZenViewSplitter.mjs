@@ -246,11 +246,12 @@ var gZenViewSplitter = {
       }
       selector.addEventListener("click", ((gridType) => {
         if (gridType === "unsplit") {
+          let currentTab = gBrowser.selectedTab;
           let tabs = this._data[this.currentView].tabs;
           for (const tab of tabs) {
             this.onTabClose({ target: tab, forUnsplit: true });
           }
-          gBrowser.selectedTab = tabs[0];
+          gBrowser.selectedTab = currentTab;
           panel.hidePopup();
           this.updateSplitViewButton(true);
           return;

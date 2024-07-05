@@ -190,16 +190,16 @@ input[type='checkbox'] {
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--in-content-primary-button-background);
   transition: all .1s;
+  background: light-dark(#000, #fff);
   cursor: pointer;
 }
 
 .dot.active {
-  background: light-dark(#000, #fff);
+  background: var(--zen-primary-color);
 }
 
 #colorList {
@@ -223,4 +223,15 @@ input[type='checkbox'] {
   position: relative;
   width: 500px;
   height: 20px;
+}
+
+#colorPreview {
+  margin-left: 10px;
+  border-radius: 5px;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 50%;
+  right: -60px;
+  transform: translateY(-50%);
 }

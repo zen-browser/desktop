@@ -196,12 +196,15 @@ class Themes extends Page {
           x = rect.width - 17 - (17/2);
         }  
         const data = ctx.getImageData(x - 17, 1, 1, 1).data;
-        Services.prefs.setStringPref('zen.theme.accent-color', `#${data[0].toString(16)}${data[1].toString(16)}${data[2].toString(16)}`);
+        let color = `#${data[0].toString(16)}${data[1].toString(16)}${data[2].toString(16)}`;
+        document.getElementById("colorPreview").style.backgroundColor = color;
+        Services.prefs.setStringPref('zen.theme.accent-color', color);
       }
 
       const onMouseUp = () => {
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
+        document.getElementById("colorPreview").style.backgroundColor = '';
       }
       
       document.addEventListener('mousemove', onMouseMove);

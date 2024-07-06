@@ -139,7 +139,7 @@
   display: flex !important;
 }
 
-toolbar .toolbarbutton-1 {
+toolbar .toolbarbutton-1:not(.unified-extensions-item-action-button) {
   & > .toolbarbutton-icon,
   & > .toolbarbutton-badge-stack {
     width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;

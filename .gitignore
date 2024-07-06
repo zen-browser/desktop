@@ -3,7 +3,7 @@
 engine/
 firefox-*/
 node_modules/
-.gluon/
+.surfer/
 
 __pycache__/
 dist/

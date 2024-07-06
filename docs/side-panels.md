@@ -1,6 +1,6 @@
 # Zen Side Panels
 
-The `zen.sizepanels.data` configuration will be a JSON string that follows the following data:
+The `zen.sidepanels.data` configuration will be a JSON string that follows the following data:
 
 ```json
 {

@@ -52,26 +52,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Setup gluon
+      - name: Setup Surfer
         run: |
-          npm i -g gluon-build@next
+          npm i -g @zen-browser/surfer
 
       - name: Bump version
         run: |
-          pnpm gluon ci --brand alpha --bump prerelease
+          pnpm surfer ci --brand alpha --bump prerelease
 
       - name: Debug
         run: |
-          gluon get version
-          gluon get version | xargs
-          echo "$(gluon get version | xargs)"
+          surfer get version
+          surfer get version | xargs
+          echo "$(surfer get version | xargs)"
 
       - name: Export release date
         id: data
         shell: bash
         run: |
           echo "builddate=$(date +"%Y-%m-%d")" >> $GITHUB_OUTPUT
-          echo "version=$(gluon get version | xargs)" >> $GITHUB_OUTPUT
+          echo "version=$(surfer get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ github.event.inputs.update_version == 'true' }}
@@ -112,21 +112,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Setup gluon
+      - name: Setup surfer
         run: |
-          npm i -g gluon-build@next
+          npm i -g @zen-browser/surfer
 
-      - name: Activate gluon CLI
+      - name: Activate surfer CLI
         run: |
-          echo "There's a bug in the gluon CLI, we run this so that gluon sets everything up correctly"
-          pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+          echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
+          pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
   
       - name: Check version
         run: |
           echo "$(pwd)"
           ls .
-          echo "version=$(pnpm gluon get version | xargs)" >> $GITHUB_OUTPUT
-          if [[ $(pnpm gluon get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
+          echo "version=$(pnpm surfer get version | xargs)" >> $GITHUB_OUTPUT
+          if [[ $(pnpm surfer get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
             echo ">>> Version matches"
           else
             echo ">>> Version mismatch"
@@ -214,14 +214,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Load gluon CI setup
-        run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download firefox source and dependencies
-        run: pnpm gluon download
+        run: pnpm surfer download
 
       - name: Import
-        run: pnpm gluon import
+        run: pnpm surfer import
 
       - name: Bootstrap
         run: |
@@ -288,11 +288,11 @@ jobs:
         run: |
           pnpm i
 
-      - name: Load gluon CI setup
-        run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download
-        run: pnpm gluon download
+        run: pnpm surfer download
 
       - name: Disable wasm sandboxing for the sake of my sanity
         run: |
@@ -327,7 +327,7 @@ jobs:
 
           cd ..
           npm install -g pnpm
-          pnpm gluon bootstrap
+          pnpm surfer bootstrap
 
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
@@ -351,7 +351,7 @@ jobs:
           echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.52.0" >> ../configs/common/mozconfig
 
       - name: Import
-        run: pnpm gluon import --verbose  
+        run: pnpm surfer import --verbose  
 
       - name: Build
         run: pnpm build
@@ -361,7 +361,7 @@ jobs:
           set -x
           pnpm package
           mv ./dist/output.mar windows.mar
-          mv ./dist/zen-$(pnpm gluon get version | xargs).en-US.win64.zip zen.win64.zip
+          mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
           ls ./dist
           ls .
 
@@ -422,14 +422,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Load gluon CI setup
-        run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download firefox source and dependancies
-        run: pnpm gluon download --verbose
+        run: pnpm surfer download --verbose
 
       - name: Import
-        run: pnpm gluon import --verbose
+        run: pnpm surfer import --verbose
 
       - name: Compress
         run: |
@@ -503,14 +503,14 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-      - name: Load gluon CI setup
-        run: pnpm gluon ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download firefox source and dependancies
-        run: pnpm gluon download
+        run: pnpm surfer download
 
       - name: Import
-        run: pnpm gluon import
+        run: pnpm surfer import
 
       - name: Bootstrap
         run: |
@@ -518,7 +518,7 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
 
-      - name: Gluon build
+      - name: surfer build
         run: pnpm build --verbose
 
       - name: Package

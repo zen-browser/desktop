@@ -10,13 +10,13 @@ def update_ff():
 
 def get_version_before():
   global last_version
-  with open("gluon.json", "r") as f:
+  with open("surfer.json", "r") as f:
     data = json.load(f)
     last_version = data["version"]["version"]
 
 def get_version_after():
   global new_version
-  with open("gluon.json", "r") as f:
+  with open("surfer.json", "r") as f:
     data = json.load(f)
     new_version = data["version"]["version"]
 

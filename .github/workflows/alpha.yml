@@ -566,9 +566,8 @@ jobs:
       - name: release-github
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
-          repo_token: '${{ secrets.GITHUB_TOKEN }}'
+          repo_token: '${{ secrets.DEPLOY_KEY }}'
           automatic_release_tag: ${{ needs.build-data.outputs.version }}
-          prerelease: true
           title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
             zen.linux.tar.bz2

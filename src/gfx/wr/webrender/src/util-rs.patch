@@ -1,0 +1,15 @@
+diff --git a/gfx/wr/webrender/src/util.rs b/gfx/wr/webrender/src/util.rs
+index fa02d87b91c961c08da1a03357f514c71e508476..1d5ca171b7ac5c4369299a1623021279fd8801ad 100644
+--- a/gfx/wr/webrender/src/util.rs
++++ b/gfx/wr/webrender/src/util.rs
+@@ -164,7 +164,9 @@ impl ScaleOffset {
+            m.m34.abs() > NEARLY_ZERO ||
+            m.m43.abs() > NEARLY_ZERO ||
+            (m.m44 - 1.0).abs() > NEARLY_ZERO {
+-            return None;
++            // Ignore this error, this change fixes the bug that crashes when opening an extension popup
++            printf("zen bug: Not a pure scale / translation");
++            //return None;
+         }
+ 
+         Some(ScaleOffset {

@@ -51,6 +51,11 @@ button {
   text-align: center;
 }
 
+#theme .card[disabled="true"] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .cardGroup {
   display: flex;
   flex-wrap: wrap;

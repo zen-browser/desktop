@@ -134,11 +134,18 @@ class Themes extends Page {
       container.classList.add('card');
       container.classList.add('card-no-hover');
 
+      if (theme.id == "firefox-compact-dream@mozilla.org" || theme.id == "firefox-compact-galaxy@mozilla.org") {
+        container.setAttribute('disabled', 'true')
+      }
+
       if (theme.isActive) {
         container.classList.add('selected')
       }
 
       container.addEventListener('click', () => {
+        if (container.hasAttribute('disabled')) {
+          return
+        }
         document.body.classList.add('normal-background');
         themeElements.forEach((el) => el.classList.remove('selected'))
         container.classList.add('selected')

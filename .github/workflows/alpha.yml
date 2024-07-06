@@ -580,25 +580,20 @@ jobs:
       - name: List
         run: find .
 
-      - name: Checkout tools repo
-        uses: actions/checkout@v3
-        with:
-          repository: zen-browser/desktop
-          path: updates
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull tools repo
-        run: git pull && git checkout main
+      - name: Clone updates repo
+        run: git clone https://github.com/zen-browser/updates-server.git
 
       - name: Copy update manifests
         run: |
-          mkdir -p updates/updates
-          cp -a linux_update_manifest/. updates/updates/
-          cp -a windows_update_manifest/. updates/updates/
+          cd updates-server
+          mkdir -p updates
+          cp -a ../linux_update_manifest/. updates/
+          cp -a ../windows_update_manifest/. updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 🔖 Upload update manifests ${{ needs.build-data.outputs.version }}
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
-          repository: ./updates
+          repository: ./updates-server
+

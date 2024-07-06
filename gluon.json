@@ -5,12 +5,10 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "127.0.2",
-    "displayVersion": "1.0.0"
+    "version": "127.0.2"
   },
   "buildOptions": {
-    "generateBranding": true,
-    "windowsUseSymbolicLinks": false
+    "generateBranding": true
   },
   "addons": {},
   "brands": {
@@ -46,5 +44,6 @@
       ".*\\.json"
     ],
     "licenseType": "MPL-2.0"
-  }
+  },
+  "updateHostname": "zen-updates.vercel.app"
 }

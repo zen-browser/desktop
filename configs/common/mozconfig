@@ -1,6 +1,5 @@
 # Browser branding
 ac_add_options --enable-update-channel=release
-ac_add_options --with-ccache=sccache
 ac_add_options --without-wasm-sandboxed-libraries
 
 # ac_add_options --with-branding=beta
@@ -27,6 +26,15 @@ export MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
 export MOZ_SOURCE_CHANGESET=${changeset}
 
 ac_add_options --enable-bootstrap
+
+ac_add_options --enable-application=browser
+ac_add_options --enable-hardening
+ac_add_options --enable-rust-simd
+ac_add_options --enable-release
+ac_add_options --enable-optimize
+ac_add_options --with-ccache=sccache
+ac_add_options --disable-debug
+ac_add_options --enable-updater
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE
 

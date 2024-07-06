@@ -589,10 +589,15 @@ jobs:
           cp -a ../linux_update_manifest/. updates/
           cp -a ../windows_update_manifest/. updates/
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 🔖 Upload update manifests ${{ needs.build-data.outputs.version }}
-          commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-bot@users.noreply.github.com
-          repository: ./updates-server
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
 
+      - name: Commit update manifests
+        run: |
+          cd updates-server
+          git add .
+          git commit -m "Update manifests for ${{ needs.build-data.outputs.version }}"
+          git push
+          

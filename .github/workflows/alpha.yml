@@ -591,8 +591,7 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 🔖 Upload update manifests ${{ needs.build-data.outputs.version }}
+          commit_message: 🔖 Uploading update manifests
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
           repository: ./updates-server
-

@@ -397,10 +397,6 @@ toolbarbutton#scrollbutton-up {
   --focus-outline-color: var(--zen-primary-btn-color) !important;
 }
 
-menuseparator {
-  --panel-separator-color: var(--zen-colors-secondary) !important;
-}
-
 /** Specific dialogs override */
 
 #identity-popup-multiView toolbarseparator,

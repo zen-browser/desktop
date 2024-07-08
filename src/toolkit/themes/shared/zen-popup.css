@@ -36,8 +36,8 @@
   --uc-contextmenu-separator-vertical: calc(4px - var(--uc-contextmenu-menuitem-border-width));
   --uc-contextmenu-separator-horizontal: 0;
 
-  --panel-separator-color: var(--zen-colors-secondary) !important;
-  --zen-panel-separator-width: 2px;
+  --panel-separator-color: var(--zen-colors-border) !important;
+  --zen-panel-separator-width: 1px;
 }
 
 /* app menu */

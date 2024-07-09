@@ -94,7 +94,7 @@
   border-radius: 5px !important;
 }
 
-#urlbar:not([focused="true"]) #identity-box.chromeUI #identity-icon-box {
+#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI #identity-icon-box {
   border-radius: 20px 10px 10px 20px !important;
 }
 

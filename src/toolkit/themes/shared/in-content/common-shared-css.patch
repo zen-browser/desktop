@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index c8f4f3efd231d007e024f039170efd58a8a9de86..f5e3296d20580afc0973cc87685d2ac35b6cfc10 100644
+index 542e38159dde876566f520f7d45d5387c1982d34..92705331fa12d88e9091310c1f527562931e7132 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
 @@ -5,6 +5,8 @@
@@ -20,3 +20,13 @@ index c8f4f3efd231d007e024f039170efd58a8a9de86..f5e3296d20580afc0973cc87685d2ac3
  
    --dialog-warning-text-color: var(--red-60);
  
+@@ -791,7 +793,8 @@ html|*#categories > html|*.category:dir(rtl) {
+ @media not (forced-colors) {
+   #categories > .category[selected],
+   #categories > .category.selected {
+-    color: var(--in-content-accent-color);
++    /*color: var(--in-content-accent-color);*/
++    opacity: .7;
+   }
+ 
+   #categories > .category[selected]:not(:hover) {

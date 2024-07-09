@@ -37,6 +37,12 @@ pref('browser.display.focus_ring_style', 0);
 pref('browser.display.focus_ring_width', 0);
 pref('browser.privateWindowSeparation.enabled', false); // WINDOWS
 
+pref('browser.newtabpage.activity-stream.newtabWallpapers.enabled', true);
+pref('browser.translations.newSettingsUI.enable', true);
+
+pref("browser.urlbar.trimHttps", true);
+pref("browser.urlbar.untrimOnUserInteraction.featureGate", true);
+
 // Cookie banner handling (reject by default)
 
 pref('cookiebanners.service.mode', 1);

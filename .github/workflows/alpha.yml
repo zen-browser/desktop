@@ -327,6 +327,7 @@ jobs:
           cat ../configs/common/mozconfig
 
           ls ~/win-cross/nsis || true
+          cat engine/mozconfig
   
       - name: setup Rust 
         run: |

@@ -348,9 +348,8 @@ jobs:
 
       - name: Build
         run: |
-          export SURFER_PLATFORM="win32"
+          unset SURFER_PLATFORM
           pnpm build
-          cat engine/python/mozbuild/mozbuild/mozconfig_loader
 
       - name: Package
         run: |

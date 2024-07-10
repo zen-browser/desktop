@@ -326,8 +326,8 @@ jobs:
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
 
-          ls ~/win-cross/ || true
-          cat engine/mozconfig
+          ls ~/win-cross/wine || true
+          ls ~/win-cross/vs2022 || true
   
       - name: setup Rust 
         run: |
@@ -350,6 +350,7 @@ jobs:
         run: |
           export SURFER_PLATFORM="win32"
           pnpm build
+          cat engine/mozconfig
 
       - name: Package
         run: |

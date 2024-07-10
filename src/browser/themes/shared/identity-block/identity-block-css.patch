@@ -1,17 +1,29 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 39cf7c917aa8807d491cc6a3702e398569681022..6e6942d97596540b0823c7934062ad2d63fa415c 100644
+index 39ae2b00791a7bfd875961de60736612f08892ae..03fe5e42f34ad985f0e04ef46b834a9d223585ee 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -65,10 +65,10 @@
+@@ -64,8 +64,9 @@
  }
  
- #identity-box[pageproxystate="valid"].notSecureText > .identity-box-button,
--#identity-box[pageproxystate="valid"].chromeUI > .identity-box-button,
+ #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button,
 +#identity-box[pageproxystate="valid"] > .identity-box-button,
- #identity-box[pageproxystate="valid"].extensionPage > .identity-box-button,
  #urlbar-label-box {
 -  background-color: var(--urlbar-box-bgcolor);
 +  background-color: light-dark(white, rgb(66, 65, 77));
    color: var(--urlbar-box-text-color);
    padding-inline: 8px;
    border-radius: var(--urlbar-icon-border-radius);
+@@ -154,11 +155,11 @@
+ }
+ 
+ #urlbar:not(.searchButton) > .urlbar-input-container > #identity-box[pageproxystate="invalid"] #identity-icon {
+-  list-style-image: url(chrome://global/skin/icons/search-glass.svg);
++  list-style-image: url(chrome://global/skin/icons/search-glass.svg) !important;
+ }
+ 
+ #urlbar[actiontype="extension"] > .urlbar-input-container > #identity-box #identity-icon {
+-  list-style-image: url(chrome://mozapps/skin/extensions/extension.svg);
++  list-style-image: url(chrome://mozapps/skin/extensions/extension.svg) !important;
+ }
+ 
+ #identity-box[pageproxystate="valid"].extensionPage #identity-icon {

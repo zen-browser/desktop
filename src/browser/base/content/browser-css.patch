@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.css b/browser/base/content/browser.css
-index 6e776a9ce7c525e510b6466065daf755b21567a4..8668b27ec2126ed772a11aa77809b6f22ceab7e2 100644
+index cdd08ec8f3d3cd652be9fcf6d4fb5b50dcf270ba..6cb35378aea2e7967dff0c91d09201b053645fbd 100644
 --- a/browser/base/content/browser.css
 +++ b/browser/base/content/browser.css
 @@ -2,6 +2,8 @@
@@ -10,32 +10,8 @@ index 6e776a9ce7c525e510b6466065daf755b21567a4..8668b27ec2126ed772a11aa77809b6f2
 +
  @namespace html url("http://www.w3.org/1999/xhtml");
  
- :root,
-@@ -157,8 +159,6 @@ panelview:not([visible]) {
-   flex: 100 100;
-   max-width: 225px;
-   min-width: var(--tab-min-width);
--  transition: min-width 100ms ease-out,
--              max-width 100ms ease-out;
- }
- 
- :root[uidensity=touch] .tabbrowser-tab:not([pinned]) {
-@@ -647,12 +647,12 @@ toolbar:not(#TabsToolbar) > #personal-bookmarks {
-   margin-inline-start: 0;
- }
- 
--#urlbar-input-container[pageproxystate=invalid] > #page-action-buttons > .urlbar-page-action,
-+#urlbar-input-container[pageproxystate=invalid] > #page-action-buttons > .urlbar-page-action:not(#zen-split-views-box),
- #identity-box.chromeUI ~ #page-action-buttons > .urlbar-page-action:not(#star-button-box),
- #urlbar[usertyping] > #urlbar-input-container > #page-action-buttons > #urlbar-zoom-button,
- #urlbar:not([usertyping]) > #urlbar-input-container > #urlbar-go-button,
- #urlbar:not([focused]) > #urlbar-input-container > #urlbar-go-button {
--  display: none;
-+  display: none !important;
- }
- 
- #nav-bar:not([keyNav=true]) #identity-box,
-@@ -1237,13 +1237,13 @@ printpreview-pagination:focus-within,
+ panelmultiview {
+@@ -566,9 +568,9 @@ printpreview-pagination:focus-within,
  
  
  #sidebar-box {
@@ -47,15 +23,11 @@ index 6e776a9ce7c525e510b6466065daf755b21567a4..8668b27ec2126ed772a11aa77809b6f2
  }
  
  /* WebExtension Sidebars */
--#sidebar-box[sidebarcommand$="-sidebar-action"] > #sidebar-header > #sidebar-switcher-target > #sidebar-icon {
-+#sidebar-box[sidebarcommand$="-sidebar-action"] #sidebar-header > #sidebar-switcher-target > #sidebar-icon {
-   list-style-image: var(--webextension-menuitem-image, inherit);
-   -moz-context-properties: fill;
-   fill: currentColor;
-@@ -1444,3 +1444,42 @@ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
- /**
-  * End Dialogs
-  */
+@@ -583,3 +585,43 @@ printpreview-pagination:focus-within,
+ toolbar[keyNav=true]:not([collapsed=true], [customizing=true]) toolbartabstop {
+   -moz-user-focus: normal;
+ }
++
 +
 +/**
 + *

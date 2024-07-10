@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 9e513830a9d9eeebe55cf6ab565b0575a943b088..05c8b716c0642f0ecebc47fe2759bc43474b6391 100644
+index 61119b7564d37e55f49dab7e6e14faafb4baa298..bcaad1a231cc839579ed209307c8e95cfb4c37de 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -25,6 +25,8 @@
+@@ -27,6 +27,8 @@
  @import url("chrome://browser/skin/UITour.css");
  @import url("chrome://browser/skin/formautofill-notification.css");
  
@@ -10,8 +10,8 @@ index 9e513830a9d9eeebe55cf6ab565b0575a943b088..05c8b716c0642f0ecebc47fe2759bc43
 +
  @namespace html url("http://www.w3.org/1999/xhtml");
  
- :root {
-@@ -49,7 +51,7 @@
+ :root,
+@@ -75,7 +77,7 @@ body {
    --short-notification-gradient: #9059FF;
  
    --button-bgcolor: color-mix(in srgb, currentColor 13%, transparent);
@@ -20,22 +20,24 @@ index 9e513830a9d9eeebe55cf6ab565b0575a943b088..05c8b716c0642f0ecebc47fe2759bc43
    --button-active-bgcolor: color-mix(in srgb, currentColor 30%, transparent);
    --button-color: currentColor;
    --button-primary-bgcolor: AccentColor;
-@@ -145,9 +147,6 @@
- #navigator-toolbox {
+@@ -181,7 +183,6 @@ body {
    appearance: none;
  
--  /* Toolbar / content area border */
+   /* Toolbar / content area border */
 -  border-bottom: 0.01px solid var(--chrome-content-separator-color);
--
+ 
    background-color: var(--toolbox-non-lwt-bgcolor);
    color: var(--toolbox-non-lwt-textcolor);
- 
-@@ -155,33 +154,8 @@
+@@ -190,37 +191,13 @@ body {
    transition: background-color var(--inactive-window-transition);
  
    &:-moz-window-inactive {
 -    background-color: var(--toolbox-non-lwt-bgcolor-inactive);
      color: var(--toolbox-non-lwt-textcolor-inactive);
+   }
+ 
+   &[fullscreenShouldAnimate] {
+     transition: 0.8s margin-top ease-out;
    }
 -
 -  :root[customizing] & {
@@ -61,6 +63,7 @@ index 9e513830a9d9eeebe55cf6ab565b0575a943b088..05c8b716c0642f0ecebc47fe2759bc43
 -    background-repeat: no-repeat, var(--lwt-background-tiling);
 -    background-position: right top, var(--lwt-background-alignment);
 -  }
++  
  }
  
  .browser-toolbar {

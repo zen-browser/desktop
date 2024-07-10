@@ -95,6 +95,7 @@
 
     _zenInitBrowserLayout() {
       if (!this._inMainBrowserWindow) return;
+      console.log("ZenThemeModifier: init browser layout");
       const kNavbarItems = [
         "nav-bar",
         "PersonalToolbar",
@@ -116,7 +117,19 @@
 
       // move the security button to the right
       const securityButton = document.getElementById("tracking-protection-icon-container");
-      document.getElementById("urlbar-input-container").insertBefore(securityButton, document.getElementById("page-action-buttons"));
+      document.getElementsByClassName("urlbar-input-container")[0].insertBefore(securityButton, document.getElementById("page-action-buttons"));
+    
+      const mainWindowEl = document.documentElement;
+      // Dont override the sync avatar if it's already set
+      if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {
+        return;
+      }
+      let profile = ProfileService.currentProfile;
+      if (!profile || profile.zenAvatarPath == "") return;
+      // TODO: actually use profile data to generate the avatar, instead of just using the name
+      console.log("ZenThemeModifier: setting avatar image to", profile.zenAvatarPath);
+      mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${profile.zenAvatarPath})`);
+      mainWindowEl.style.setProperty("--avatar-image-url", `var(--zen-avatar-image-url)`, "important");
     },
   };
 

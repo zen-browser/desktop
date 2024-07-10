@@ -1,7 +1,7 @@
-diff --git a/browser/base/content/tabbrowser.js b/browser/base/content/tabbrowser.js
+diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
 index 3bca0b6d30468dc3a755219723f673ec80dfce6e..200a609ea31a8c904e2d3e39a3a06ff67fb313ed 100644
---- a/browser/base/content/tabbrowser.js
-+++ b/browser/base/content/tabbrowser.js
+--- a/browser/components/tabbrowser/content/tabbrowser.js
++++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -7623,6 +7623,11 @@ var TabContextMenu = {
        this.contextTab.linkedBrowser,
        document.getElementById("context_sendTabToDevice")

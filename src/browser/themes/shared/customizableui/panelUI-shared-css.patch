@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/customizableui/panelUI-shared.css b/browser/themes/shared/customizableui/panelUI-shared.css
-index 4f282b9d5a5a3269268ae22f1702c7a6e8238375..d6e8e6cee7166f0eea99f260cca382eeece6684d 100644
+index e4409ac75f6ee794d400559b0b01ae30904d01bc..44d4e648aa5aac17b82e0e1f80c7a953c2923ebc 100644
 --- a/browser/themes/shared/customizableui/panelUI-shared.css
 +++ b/browser/themes/shared/customizableui/panelUI-shared.css
-@@ -717,8 +717,8 @@ toolbarbutton[constrain-size="true"][cui-areatype="panel"] > .toolbarbutton-badg
+@@ -720,15 +720,15 @@ toolbarbutton[constrain-size="true"][cui-areatype="panel"] > .toolbarbutton-badg
  /* Firefox Account Toolbar Panel */
  
  #fxa-avatar-image {
@@ -13,3 +13,11 @@ index 4f282b9d5a5a3269268ae22f1702c7a6e8238375..d6e8e6cee7166f0eea99f260cca382ee
  }
  
  :root {
+   --avatar-image-url: url(chrome://browser/skin/fxa/avatar.svg);
+ 
+   &[fxastatus="not_configured"] {
+-    --avatar-image-url: url(chrome://browser/skin/fxa/avatar-empty.svg);
++    --avatar-image-url: var(--zen-avatar-image-url);
+   }
+ 
+   &:not([fxatoolbarmenu]) #fxa-toolbar-menu-button {

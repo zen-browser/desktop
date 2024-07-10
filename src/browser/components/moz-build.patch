@@ -1,14 +1,12 @@
 diff --git a/browser/components/moz.build b/browser/components/moz.build
-index 0f91b90fb0ce4eac232d71ad4f9ff82ab7316635..82aa7bb8bd41b061ac861d3fbabbf9f9879a2091 100644
+index 6cbb7ce0037c1457eeae5c331a996719691ebd6b..611707852198740c9b4103f5e2a66e8ee4099a21 100644
 --- a/browser/components/moz.build
 +++ b/browser/components/moz.build
-@@ -72,6 +72,9 @@ DIRS += [
-     "urlbar",
- ]
- 
-+# Zen Components:
-+DIRS += ["zen-welcome"]
-+
- DIRS += ["build"]
+@@ -27,6 +27,7 @@ with Files("controlcenter/**"):
  
  
+ DIRS += [
++    "zen-welcome",
+     "about",
+     "aboutlogins",
+     "aboutwelcome",

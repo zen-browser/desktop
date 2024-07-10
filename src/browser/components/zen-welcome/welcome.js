@@ -246,8 +246,8 @@ class Search extends Page {
 
     const searchElements = document.getElementById('searchList')
 
-    this.store.getEngine().forEach((search) => {
-      const container = this.loadSpecificSearch(search, defaultEngine)
+    this.store.getEngine().forEach(async (search) => {
+      const container = await this.loadSpecificSearch(search, defaultEngine)
 
       searchElements.appendChild(container)
       this.searchList.push(container)
@@ -257,7 +257,7 @@ class Search extends Page {
   /**
    * @returns {HTMLDivElement}
    */
-  loadSpecificSearch(search, defaultSearch) {
+  async loadSpecificSearch(search, defaultSearch) {
     const container = document.createElement('div');
     container.classList.add('card')
     container.classList.add('card-no-hover')
@@ -273,7 +273,7 @@ class Search extends Page {
     })
 
     const img = document.createElement('img');
-    img.src = search.originalEngine._iconURI.spec;
+    img.src = await search.originalEngine.getIconURL();
 
     const name = document.createElement('h3')
     name.textContent = search.name

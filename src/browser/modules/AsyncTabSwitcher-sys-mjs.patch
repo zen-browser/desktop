@@ -1,7 +1,7 @@
-diff --git a/browser/modules/AsyncTabSwitcher.sys.mjs b/browser/modules/AsyncTabSwitcher.sys.mjs
+diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 index 9f4aa535e07adab496788165f4089be6732b1444..7b7955c0d1f2f3277cb750652458649d181e90e5 100644
---- a/browser/modules/AsyncTabSwitcher.sys.mjs
-+++ b/browser/modules/AsyncTabSwitcher.sys.mjs
+--- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
++++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 @@ -39,6 +39,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
    300
  );

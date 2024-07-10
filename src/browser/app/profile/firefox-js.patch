@@ -1,10 +1,10 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index 27c2d13fbd8599a131de6b70bba581d435198793..25aa7546d57e206b76838bc23b609f602af43a83 100644
+index b8aa71126c2bb4521caf25f9caf845a8a429dc64..59cdc2e9998e802d6c79ff967eaa30088a3b7a21 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -3061,3 +3061,5 @@ pref("startup.homepage_override_nimbus_maxVersion", "");
- pref("toolkit.contentRelevancy.enabled", false);
- // Pref to enable the ingestion through the Rust component.
+@@ -3110,3 +3110,5 @@ pref("toolkit.contentRelevancy.enabled", false);
  pref("toolkit.contentRelevancy.ingestEnabled", false);
+ // Pref to enable extra logging for the content relevancy feature
+ pref("toolkit.contentRelevancy.log", false);
 +
 +#include zen-browser.js

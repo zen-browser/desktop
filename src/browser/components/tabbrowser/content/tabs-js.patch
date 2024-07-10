@@ -1,7 +1,7 @@
-diff --git a/browser/base/content/tabbrowser-tabs.js b/browser/base/content/tabbrowser-tabs.js
+diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
 index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c992624170bde0e63 100644
---- a/browser/base/content/tabbrowser-tabs.js
-+++ b/browser/base/content/tabbrowser-tabs.js
+--- a/browser/components/tabbrowser/content/tabs.js
++++ b/browser/components/tabbrowser/content/tabs.js
 @@ -538,19 +538,36 @@
        }
        dt.setDragImage(toDrag, dragImageOffset, dragImageOffset);

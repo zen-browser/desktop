@@ -54,6 +54,17 @@ var ZenWorkspaces = {
 
   // Workspaces management
 
+  _createWorkspaceData(windowID) {
+    let window = Services.wm.getOuterWindowWithId(windowID);
+    let tabs = Array.from(window.gBrowser.tabs).map(tab => ({
+      url: tab.linkedBrowser.currentURI.spec,
+      title: tab.label,
+    }));
+    return {
+      tabs,
+    };
+  },
+
   async saveCurrentWorkspace(windowID) {
     let workspaceData = this._createWorkspaceData(windowID);
     await this.saveWorkspace(workspaceData, windowID);

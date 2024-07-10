@@ -1,7 +1,7 @@
-diff --git a/browser/themes/shared/tabs.css b/browser/themes/shared/tabs.css
+diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
 index eb92f71e5942a19618fd74492354de78ac03bacf..28d23667991c9feff7a379acaa5f7c7928fb14cf 100644
---- a/browser/themes/shared/tabs.css
-+++ b/browser/themes/shared/tabs.css
+--- a/browser/themes/shared/tabbrowser/tabs.css
++++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -67,7 +67,7 @@
  
  #tabbrowser-tabs {

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/addons/light/manifest.json b/browser/themes/addons/light/manifest.json
-index 7385970fa8e3ff9659b72cfb238003958220fb0d..be4d385cf4520a2cad437225e5fb31335bbc3091 100644
+index d490f8f08d203ded55b65fe1a19be105b61ee6c0..eb4349e939b979b3a4d7c525ee0c0f9a53079d4a 100644
 --- a/browser/themes/addons/light/manifest.json
 +++ b/browser/themes/addons/light/manifest.json
 @@ -7,10 +7,10 @@
@@ -16,45 +16,20 @@ index 7385970fa8e3ff9659b72cfb238003958220fb0d..be4d385cf4520a2cad437225e5fb3133
  
    "icons": { "32": "icon.svg" },
  
-@@ -42,12 +42,12 @@
-       "button": "rgba(207,207,216,.33)",
-       "button_hover": "rgba(207,207,216,.66)",
-       "button_active": "rgb(207,207,216)",
--      "button_primary": "rgb(0, 97, 224)",
--      "button_primary_hover": "rgb(2, 80, 187)",
--      "button_primary_active": "rgb(5, 62, 148)",
--      "button_primary_color": "rgb(251, 251, 254)",
-+      "button_primary": "#000",
-+      "button_primary_hover": "rgb(31, 31, 31)",
-+      "button_primary_active": "rgb(207,207,216)",
-+      "button_primary_color": "#fff",
-       "input_color": "rgb(21,20,26)",
--      "input_background": "rgb(255,255,255)",
-+      "input_background": "#f0f0f4",
-       "urlbar_popup_hover": "rgb(240,240,244)",
-       "urlbar_popup_separator": "rgb(240,240,244)",
-       "appmenu_update_icon_color": "#2AC3A2",
-@@ -57,12 +57,13 @@
-     },
-     "properties": {
-       "color_scheme": "light",
--      "panel_hover": "color-mix(in srgb, currentColor 12%, transparent)",
-+      "panel_hover": "color-mix(in srgb, currentColor 10%, transparent)",
+@@ -59,7 +59,8 @@
        "panel_active": "color-mix(in srgb, currentColor 20%, transparent)",
        "panel_active_darker": "color-mix(in srgb, currentColor 27%, transparent)",
        "toolbar_field_icon_opacity": "0.72",
--      "input_border_color": "color-mix(in srgb, currentColor 41%, transparent)",
 -      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)"
-+      "input_border_color": "rgba(0, 0, 0, .3)",
 +      "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
 +      "zen_main_browser_background": "var(--zen-themed-toolbar-bg)"
      }
    },
  
-@@ -93,7 +94,8 @@
+@@ -86,7 +87,8 @@
+       "panel_active": "--arrowpanel-dimmed-further",
        "panel_active_darker": "--panel-item-active-bgcolor",
        "toolbar_field_icon_opacity": "--urlbar-icon-fill-opacity",
-       "input_border_color": "--input-border-color",
 -      "zap_gradient": "--panel-separator-zap-gradient"
 +      "zap_gradient": "--panel-separator-zap-gradient",
 +      "zen_main_browser_background": "--zen-main-browser-background"

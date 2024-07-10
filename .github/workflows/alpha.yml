@@ -327,6 +327,7 @@ jobs:
 
           cd ..
           npm install -g pnpm
+          export SURFER_PLATFORM="win32"
           pnpm surfer bootstrap
 
           cd engine/
@@ -354,11 +355,14 @@ jobs:
         run: pnpm surfer import --verbose  
 
       - name: Build
-        run: pnpm build
+        run: |
+          export SURFER_PLATFORM="win32"
+          pnpm build
 
       - name: Package
         run: |
           set -x
+          export SURFER_PLATFORM="win32"
           pnpm package
           mv ./dist/output.mar windows.mar
           mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
@@ -382,6 +386,18 @@ jobs:
         with:
           name: windows.mar
           path: ./windows.mar
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer.exe
+          path: ./dist/zen.installer.exe
+
+      - name: Upload installer stub
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer-stub.exe
+          path: ./dist/zen.installer-stub.exe
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v3
@@ -575,6 +591,8 @@ jobs:
             zen.source.tar.gz
             linux.mar
             windows.mar
+            zen.installer.exe
+            zen.installer-stub.exe
 
       - name: List
         run: find .

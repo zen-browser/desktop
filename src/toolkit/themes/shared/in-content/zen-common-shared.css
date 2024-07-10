@@ -81,6 +81,8 @@
   --urlbar-box-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77)) !important;
 
+  --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);
+
   /* TODO: Support dark themes! */
 }
 
@@ -101,7 +103,8 @@
   
     --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
     --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, black 92%); 
-    
+
+    --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, black 70%);
   }
 }
 

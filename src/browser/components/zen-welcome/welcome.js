@@ -134,9 +134,9 @@ class Themes extends Page {
       container.classList.add('card');
       container.classList.add('card-no-hover');
 
-      if (theme.id == "firefox-compact-dream@mozilla.org" || theme.id == "firefox-compact-galaxy@mozilla.org") {
-        container.setAttribute('disabled', 'true')
-      }
+      //if (theme.id == "firefox-compact-dream@mozilla.org" || theme.id == "firefox-compact-galaxy@mozilla.org") {
+      //  container.setAttribute('disabled', 'true')
+      //}
 
       if (theme.isActive) {
         container.classList.add('selected')

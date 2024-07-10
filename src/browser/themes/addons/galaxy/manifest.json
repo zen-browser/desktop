@@ -61,7 +61,7 @@
       "panel_active": "color-mix(in srgb, currentColor 14%, transparent)",
       "toolbar_field_icon_opacity": "1",
       "zap_gradient": "linear-gradient(90deg, #9059FF 0%, #FF4AA2 52.08%, #FFBD4F 100%)",
-      "zen_main_browser_background": "radial-gradient(236.2% 84.03% at 50% 50%, rgba(68, 0, 255, 0.20) 0%, rgba(63, 0, 0, 0.20) 100%), var(--zen-colors-primary, #1B1E27)"
+      "zen_main_browser_background": "radial-gradient(ellipse, var(--zen-browser-gradient-base, #1B1E27) 20%, #1b1b1b 100%)"
     }
   },
 

@@ -326,7 +326,7 @@ jobs:
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
 
-          ls ~/win-cross/nsis || true
+          ls ~/win-cross/ || true
           cat engine/mozconfig
   
       - name: setup Rust 

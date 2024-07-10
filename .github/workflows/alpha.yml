@@ -165,10 +165,6 @@ jobs:
           sudo apt-get install dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm
           pip install pycairo testresources
 
-      - name: Disable wasm sandboxing for the sake of my sanity
-        run: |
-          echo "ac_add_options --without-wasm-sandboxed-libraries" >> mozconfig
-
       - name: Free up space
         run: |
           sudo rm -rf /usr/share/dotnet
@@ -293,11 +289,6 @@ jobs:
 
       - name: Download
         run: pnpm surfer download
-
-      - name: Disable wasm sandboxing for the sake of my sanity
-        run: |
-          cd engine/
-          echo "ac_add_options --without-wasm-sandboxed-libraries" >> mozconfig
 
       - name: Free up space
         run: |

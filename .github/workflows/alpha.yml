@@ -593,9 +593,9 @@ jobs:
       - name: Copy update manifests
         run: |
           cd updates-server
-          mkdir -p updates/browser/
-          cp -a ../linux_update_manifest/. updates/browser/
-          cp -a ../windows_update_manifest/.  updates/browser/ 
+          mkdir -p updates
+          cp -a ../linux_update_manifest/. updates/
+          cp -a ../windows_update_manifest/.  updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

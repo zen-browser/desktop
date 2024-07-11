@@ -95,6 +95,7 @@
 
     _zenInitBrowserLayout() {
       if (!this._inMainBrowserWindow) return;
+      this.openWatermark();
       console.log("ZenThemeModifier: init browser layout");
       const kNavbarItems = [
         "nav-bar",
@@ -130,6 +131,21 @@
       console.log("ZenThemeModifier: setting avatar image to", profile.zenAvatarPath);
       mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${profile.zenAvatarPath})`);
       mainWindowEl.style.setProperty("--avatar-image-url", `var(--zen-avatar-image-url)`, "important");
+      this.closeWatermark();
+    },
+
+    openWatermark() {
+      const watermark = document.getElementById("zen-watermark");
+      if (watermark) {
+        watermark.removeAttribute("hidden");
+      }
+    },
+
+    closeWatermark() {
+      const watermark = document.getElementById("zen-watermark");
+      if (watermark) {
+        watermark.setAttribute("hidden", "true");
+      }
     },
   };
 

@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index aec0983a6704f09300da9a3a9ab76e627695b708..4228c96f59d6054c19c95686cafa979594e7da1f 100644
+index 3063370347db9e2812ad30205e585c849e44c91e..be74d9e624b8220cb9bd009bae31fb513c4ec73f 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -140,6 +140,8 @@
+@@ -139,6 +139,8 @@
    window.addEventListener("DOMContentLoaded",
      gBrowserInit.onDOMContentLoaded.bind(gBrowserInit), { once: true });
  </script>
@@ -11,7 +11,7 @@ index aec0983a6704f09300da9a3a9ab76e627695b708..4228c96f59d6054c19c95686cafa9795
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -161,9 +163,12 @@
+@@ -160,9 +162,12 @@
      </vbox>
    </html:template>
  
@@ -27,3 +27,10 @@ index aec0983a6704f09300da9a3a9ab76e627695b708..4228c96f59d6054c19c95686cafa9795
  
    <html:template id="customizationPanel">
      <box id="customization-container" flex="1" hidden="true"><![CDATA[
+@@ -176,5 +181,6 @@
+ 
+   <!-- Put it at the very end to make sure it's not covered by anything. -->
+   <html:div id="fullscr-toggler" hidden="hidden"/>
++#include zen-watermark.inc.xhtml
+ </html:body>
+ </html>

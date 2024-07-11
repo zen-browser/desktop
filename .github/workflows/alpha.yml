@@ -592,9 +592,11 @@ jobs:
           cp -a ../linux_update_manifest/. updates/browser/
           cp -a ../windows_update_manifest/.  updates/browser/ 
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 🔖 Uploading update manifests
-          commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-bot@users.noreply.github.com
-          repository: ./updates-server
+      - name: Commit update manifests
+        run: |
+          git config --global user.email "zen-browser-bot@users.noreply.github.com"
+          git config --global user.name "zen-browser-bot"
+          git add .
+          git commit -m "Update manifests for ${{ needs.build-data.outputs.version }}"
+          git remote set-url origin git@github.com:{username}/{repo}.git
+          git push

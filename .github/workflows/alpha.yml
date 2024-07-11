@@ -385,12 +385,6 @@ jobs:
           name: zen.installer.exe
           path: ./dist/zen.installer.exe
 
-      - name: Upload installer stub
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.installer-stub.exe
-          path: ./dist/zen.installer-stub.exe
-
       - name: Upload update manifests
         uses: actions/upload-artifact@v3
         with:
@@ -584,7 +578,6 @@ jobs:
             linux.mar
             windows.mar
             zen.installer.exe
-            zen.installer-stub.exe
 
       - name: List
         run: find .
@@ -595,9 +588,9 @@ jobs:
       - name: Copy update manifests
         run: |
           cd updates-server
-          mkdir -p updates
-          cp -a ../linux_update_manifest/. updates/
-          cp -a ../windows_update_manifest/. updates/
+          mkdir -p updates/browser/
+          cp -a ../linux_update_manifest/. updates/browser/
+          cp -a ../windows_update_manifest/.  updates/browser/ 
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

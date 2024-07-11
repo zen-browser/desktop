@@ -122,21 +122,35 @@
 }
 
 
-#PanelUI-zen-profiles-managePrfs {
+#PanelUI-zen-profiles-actions {
   position: absolute;
   top: 10px;
   right: 10px;
-  border-radius: 5px !important;
-  padding: 5px !important;
+  border-radius: 10px !important;
+  padding: 1px 10px !important;
   transition: .1s;
   color: light-dark(white, black);
+  background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
 }
 
 #PanelUI-zen-profiles-managePrfs:hover {
   background: var(--panel-item-hover-bgcolor);
 }
 
-#PanelUI-zen-profiles-managePrfs label {
+#PanelUI-zen-profiles-actions toolbarbutton {
+  cursor: pointer;
+  padding: 0;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton .toolbarbutton-icon {
+  width: 14px !important;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton:not(:first-child) {
+  margin-left: 10px;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton label {
   display: none !important;
 }
 

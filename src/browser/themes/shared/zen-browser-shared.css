@@ -503,7 +503,7 @@ panelmultiview {
   }
   
   #navigator-toolbox:hover #titlebar,
-  #navigator-toolbox:has([open="true"]) #titlebar {
+  #navigator-toolbox:has([open="true"]:not(tab)) #titlebar {
     background: var(--zen-themed-toolbar-bg) !important;
     border-right: var(--zen-appcontent-border) !important;
     padding: 0 5px;

@@ -14,9 +14,12 @@ ChromeUtils.defineModuleGetter(
   this,
   'ExtensionSettingsStore',
   'resource://gre/modules/ExtensionSettingsStore.jsm'
-)
+);
 
-const welcomeSeenPref = 'zen.welcomeScreen.seen'
+Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
+
+const kWelcomeURL = 'https://get-zen.vercel.app/welcome';
+const kWelcomeSeenPref = 'zen.welcomeScreen.seen'
 
 // =============================================================================
 // Util stuff copied from browser/components/preferences/search.js
@@ -305,6 +308,7 @@ class Pages {
    * @param {Page[]} pages The pages
    */
   constructor(pages) {
+    console.log("Initializing welcome pages...");
     this.pages = pages
     this.currentPage = 0;
 
@@ -324,6 +328,7 @@ class Pages {
       dots.appendChild(dot);
     }
     this._displayCurrentPage();
+    console.log("Welcome pages initialized.")
   }
 
   next() {
@@ -333,13 +338,18 @@ class Pages {
       // We can use internal js apis to close the window. We also want to set
       // the settings api for welcome seen to false to stop it showing again
 
-      Services.prefs.setBoolPref(welcomeSeenPref, true)
+      Services.prefs.setBoolPref(kWelcomeSeenPref, true)
 
-      close()
+      close();
+      this._openWelcomePage();
       return
     }
 
     this._displayCurrentPage()
+  }
+
+  _openWelcomePage() {
+    gZenUIManager.openAndChangeToTab(kWelcomeURL);
   }
 
   _displayCurrentPage() {

@@ -438,8 +438,7 @@ var gZenBrowserManagerSidebar = {
     let data = this.sidebarData;
     let panel = data.data[this.contextTab];
     let url = (browser == null) ? panel.url : browser.currentURI.spec;
-    let tab = gBrowser.addTrustedTab(url);    
-    gBrowser.selectedTab = tab;
+    gZenUIManager.openAndChangeToTab(url);
     this.close();
   },
 

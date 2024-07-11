@@ -361,12 +361,6 @@ jobs:
           ls ./dist
           ls .
 
-      #- name: Upload artifact
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: zen.installer.exe
-      #    path: ./dist/zen.installer.exe
-
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -384,6 +378,12 @@ jobs:
         with:
           name: zen.installer.exe
           path: ./dist/zen.installer.exe
+
+      - name: Upload installer stub
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer.pretty.exe
+          path: ./dist/zen.installer.pretty.exe
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v3
@@ -578,12 +578,17 @@ jobs:
             linux.mar
             windows.mar
             zen.installer.exe
+            zen.installer.pretty.exe
 
       - name: List
         run: find .
 
       - name: Clone updates repo
-        run: git clone https://github.com/zen-browser/updates-server.git
+        uses: actions/checkout@v3
+        with:
+          repository: zen-browser/updates-server
+          path: updates-server
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Copy update manifests
         run: |
@@ -592,22 +597,10 @@ jobs:
           cp -a ../linux_update_manifest/. updates/browser/
           cp -a ../windows_update_manifest/.  updates/browser/ 
 
-      - name: Setup SSH Keys and known_hosts
-        env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-            ssh-add - <<< "${{ secrets.DEPLOY_KEY }}"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Update update manifests
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+          repository: ./updates-server
 
-      - name: Commit update manifests
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          git config --global user.email "zen-browser-bot@users.noreply.github.com"
-          git config --global user.name "zen-browser-bot"
-          git add .
-          git commit -m "Update manifests for ${{ needs.build-data.outputs.version }}"
-          git remote set-url origin git@github.com:zen-browser/updates-server.git
-          git push

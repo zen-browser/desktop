@@ -89,6 +89,7 @@ h1 {
   font-size: 32px;
   font-weight: 700;
   margin: 16px 0 5px 0;
+  line-height: 1;
 }
 
 p {
@@ -137,14 +138,6 @@ input[type='checkbox'] {
 #searchNext,
 #thanksNext {
   margin-top: 20px;
-}
-
-#search h1 {
-  margin-bottom: 25px;
-}
-
-#theme h1 {
-  margin: 25px 0;
 }
 
 .page[hidden="true"] {

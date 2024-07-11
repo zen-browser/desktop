@@ -598,5 +598,5 @@ jobs:
           git config --global user.name "zen-browser-bot"
           git add .
           git commit -m "Update manifests for ${{ needs.build-data.outputs.version }}"
-          git remote set-url origin git@github.com:{username}/{repo}.git
+          git remote set-url origin git@github.com:zen-browser/updates-server.git
           git push

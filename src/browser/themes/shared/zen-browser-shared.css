@@ -547,8 +547,8 @@ panelmultiview {
 }
 
 #zen-watermark[hidden="true"] {
-  transition: .2s;
-  transition-delay: 2s;
+  transition: 1s;
+  transition-delay: 1.5s;
   opacity: 0;
   pointer-events: none;
 }

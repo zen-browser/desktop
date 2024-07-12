@@ -29,19 +29,22 @@ export MOZ_SOURCE_CHANGESET=${changeset}
 ac_add_options --enable-bootstrap
 
 ac_add_options --enable-application=browser
-ac_add_options --enable-hardening
-ac_add_options --enable-rust-simd
-ac_add_options --enable-release
-ac_add_options --enable-optimize
-ac_add_options --with-ccache=sccache
-ac_add_options --disable-debug
 
-ac_add_options --disable-crashreporter
-ac_add_options --disable-dmd
-ac_add_options --disable-geckodriver
-ac_add_options --disable-parental-controls
-ac_add_options --disable-profiling
-ac_add_options --disable-tests
+if test "$ZEN_RELEASE"; then
+  ac_add_options --enable-hardening
+  ac_add_options --enable-rust-simd
+  ac_add_options --enable-release
+  ac_add_options --enable-optimize
+  ac_add_options --with-ccache=sccache
+  ac_add_options --disable-debug
+
+  ac_add_options --disable-crashreporter
+  ac_add_options --disable-dmd
+  ac_add_options --disable-geckodriver
+  ac_add_options --disable-parental-controls
+  ac_add_options --disable-profiling
+  ac_add_options --disable-tests
+fi
 
 ac_add_options --enable-unverified-updates
 ac_add_options --enable-updater
@@ -50,8 +53,6 @@ ac_add_options --without-wasm-sandboxed-libraries
 
 export MOZ_REQUIRE_SIGNING=
 export MOZ_TELEMETRY_REPORTING=
-
-ac_add_options --target=x86_64-pc-linux-gnu
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE
 

@@ -1,14 +1,15 @@
-# Optimise builds
-ac_add_options --enable-application=browser
-ac_add_options --enable-hardening
-ac_add_options --enable-rust-simd
-ac_add_options --enable-release
-ac_add_options --enable-optimize
-ac_add_options --with-ccache=sccache
-ac_add_options --disable-debug
-ac_add_options --enable-updater
-mk_add_options MOZ_MAKE_FLAGS="-j4"
+POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 
-# Disable telemetry and tracking
-mk_add_options MOZ_TELEMETRY_REPORTING=
-mk_add_options MOZ_DATA_REPORTING=
+if test "$ZEN_RELEASE"; then
+  ac_add_options --enable-optimize="-mcpu=apple-m1 -O3 -w"
+  ac_add_options --enable-release
+  ac_add_options --enable-rust-simd
+  ac_add_options RUSTC_OPT_LEVEL=3
+  export MOZILLA_OFFICIAL=1
+  export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=apple-m1"
+fi
+
+ac_add_options --enable-install-strip
+ac_add_options --target=aarch64-apple-darwin
+mk_add_options AUTOCLOBBER=1
+export MOZ_INCLUDE_SOURCE_INFO=1

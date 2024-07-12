@@ -524,7 +524,9 @@ jobs:
           cd ..
 
       - name: surfer build
-        run: pnpm build --verbose
+        run: |
+          export ZEN_RELEASE=1
+          pnpm build --verbose
 
       - name: Package
         run: pnpm package

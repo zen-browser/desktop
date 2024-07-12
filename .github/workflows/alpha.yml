@@ -558,7 +558,7 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows, check-release]
+    needs: [build-data, linux, source, windows, check-release, mac]
     runs-on: ubuntu-latest
 
     steps:

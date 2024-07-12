@@ -378,6 +378,7 @@ toolbarbutton#scrollbutton-up {
 
 .tab-icon-overlay {
   margin-inline-end: 0 !important;
+  display: none !important; /* TODO: fix this */
 }
 
 /*#tabbrowser-arrowscrollbox {

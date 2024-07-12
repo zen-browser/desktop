@@ -451,7 +451,6 @@ jobs:
           path: ./zen.source.tar.gz
 
   mac:
-    if: false
     runs-on: macos-13
     needs: [build-data, check-release]
 

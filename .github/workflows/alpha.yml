@@ -582,8 +582,10 @@ jobs:
             zen.source.tar.gz
             linux.mar
             windows.mar
+            macos.mar
             zen.installer.exe
             zen.installer.pretty.exe
+            zen.macos.dmg
 
       - name: List
         run: find .

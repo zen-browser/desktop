@@ -54,5 +54,9 @@ ac_add_options --without-wasm-sandboxed-libraries
 export MOZ_REQUIRE_SIGNING=
 export MOZ_TELEMETRY_REPORTING=
 
+if test "$ZEN_CROSS_COMPILING"; then
+  ac_add_options --target=x86_64-pc-linux-gnu
+fi
+
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE
 

@@ -18,14 +18,14 @@ export MOZ_LTO=cross
 export CROSS_BUILD=1
 POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 TOOLS=$(echo ~)/win-cross
-WINSYSROOT="$(echo ~)/win-root"
 
 export MIDL="$TOOLS/wine/bin/widl"
 export MOZ_INCLUDE_SOURCE_INFO=1
 export MOZ_STUB_INSTALLER=1
-export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022"/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
-export WIN_UCRT_REDIST_DIR="$(echo ~)/win-cross/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+export WIN32_REDIST_DIR="$TOOLS/vs2022"/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
+export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
 export WINEDEBUG=-all
+export WINE="$TOOLS/wine/bin/wine64"
 
 ac_add_options --enable-lto=cross,full
 ac_add_options --enable-release
@@ -37,7 +37,8 @@ export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 ac_add_options --enable-default-browser-agent
 ac_add_options --enable-install-strip
 ac_add_options --enable-jxl
-ac_add_options --enable-linker=lld
+
+ac_add_options --disable-bits-download
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE
 

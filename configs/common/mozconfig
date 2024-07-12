@@ -43,7 +43,6 @@ ac_add_options --enable-optimize
 ac_add_options --with-ccache=sccache
 ac_add_options --disable-debug
 
-ac_add_options --disable-bits-download
 ac_add_options --disable-crashreporter
 ac_add_options --disable-dmd
 ac_add_options --disable-geckodriver

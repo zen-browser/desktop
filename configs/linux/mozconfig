@@ -20,10 +20,10 @@ if ! test "$ZEN_CROSS_COMPILING"; then
 
     ac_add_options --enable-linker=lld
     ac_add_options --enable-strip
+
+    ac_add_options --target=x86_64-pc-linux-gnu
 fi
 
 # Disable telemetry and tracking
 mk_add_options MOZ_TELEMETRY_REPORTING=
 mk_add_options MOZ_DATA_REPORTING=
-
-ac_add_options --target=x86_64-pc-linux-gnu

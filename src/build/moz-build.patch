@@ -1,0 +1,13 @@
+diff --git a/build/moz.build b/build/moz.build
+index 7bf9c501db06d38f924c26372d4243d448af8d81..6042ccfcbfb838ffefe078a72eee00a83fb252f6 100644
+--- a/build/moz.build
++++ b/build/moz.build
+@@ -91,7 +91,7 @@ if CONFIG["MOZ_APP_BASENAME"]:
+         if CONFIG[var]:
+             appini_defines[var] = True
+ 
+-    appini_defines["MOZ_APPUPDATE_HOST"] = "aus5.mozilla.org"
++    appini_defines["MOZ_APPUPDATE_HOST"] = "zen-updates.vercel.app"
+     if CONFIG["MOZ_APPUPDATE_HOST"]:
+         appini_defines["MOZ_APPUPDATE_HOST"] = CONFIG["MOZ_APPUPDATE_HOST"]
+ 

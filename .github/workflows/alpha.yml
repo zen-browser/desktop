@@ -571,6 +571,7 @@ jobs:
           mkdir -p updates
           cp -a ../linux_update_manifest/. updates/
           cp -a ../windows_update_manifest/.  updates/
+          cp -a ../macos_update_manifest/.  updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

@@ -2,7 +2,6 @@
 # not when cross compiling
 if ! test "$ZEN_CROSS_COMPILING"; then
     if test "$ZEN_RELEASE"; then
-        ac_add_options --enable-lto=full
         ac_add_options --enable-optimize="-march=x86-64 -msse3 -mtune=haswell -O3 -w"
         ac_add_options --enable-release
         ac_add_options --enable-rust-simd

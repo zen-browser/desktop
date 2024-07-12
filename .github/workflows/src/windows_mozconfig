@@ -13,7 +13,6 @@ export MOZ_STUB_INSTALLER=1
 export MOZ_MAINTENANCE_SERVICE=
 
 export MOZ_PKG_FORMAT=TAR
-export MOZ_LTO=cross
 
 export CROSS_BUILD=1
 POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
@@ -25,7 +24,6 @@ export MOZ_STUB_INSTALLER=1
 export WINEDEBUG=-all
 export WINE="$TOOLS/wine/bin/wine64"
 
-ac_add_options --enable-lto=cross,full
 ac_add_options --enable-release
 ac_add_options --enable-rust-simd
 ac_add_options RUSTC_OPT_LEVEL=3

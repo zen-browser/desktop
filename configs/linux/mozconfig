@@ -1,22 +1,21 @@
 
-if test "$ZEN_RELEASE"; then
-    ac_add_options --enable-lto=full
-    ac_add_options --enable-optimize="-march=x86-64 -msse3 -mtune=haswell -O3 -w"
-    ac_add_options --enable-release
-    ac_add_options --enable-rust-simd
-    ac_add_options RUSTC_OPT_LEVEL=3
-    export MOZILLA_OFFICIAL=1
-    export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
-fi
-
 # not when cross compiling
 if ! test "$ZEN_CROSS_COMPILING"; then
-    ac_add_options --enable-linker=lld
-fi
+    if test "$ZEN_RELEASE"; then
+        ac_add_options --enable-lto=full
+        ac_add_options --enable-optimize="-march=x86-64 -msse3 -mtune=haswell -O3 -w"
+        ac_add_options --enable-release
+        ac_add_options --enable-rust-simd
+        ac_add_options RUSTC_OPT_LEVEL=3
+        export MOZILLA_OFFICIAL=1
+        export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
+    fi
 
-ac_add_options --enable-pulseaudio
-ac_add_options --enable-strip
-ac_add_options --enable-alsa
+    ac_add_options --enable-linker=lld
+    ac_add_options --enable-alsa
+    ac_add_options --enable-pulseaudio
+    ac_add_options --enable-strip
+fi
 
 # Disable telemetry and tracking
 mk_add_options MOZ_TELEMETRY_REPORTING=

@@ -11,6 +11,14 @@ if ! test "$ZEN_CROSS_COMPILING"; then
         export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
     fi
 
+    if test -d "$HOME/.mozbuild/clang/bin"; then
+        export CC="$HOME"/.mozbuild/clang/bin/clang
+        export CXX="$HOME"/.mozbuild/clang/bin/clang++
+    else
+        export CC=clang
+        export CXX=clang++
+    fi
+
     ac_add_options --enable-linker=lld
     ac_add_options --enable-alsa
     ac_add_options --enable-pulseaudio

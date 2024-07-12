@@ -352,6 +352,7 @@ jobs:
         run: |
           unset SURFER_PLATFORM
           export ZEN_RELEASE=1
+          export ZEN_CROSS_COMPILING=1
           pnpm build
 
       - name: Package

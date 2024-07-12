@@ -9,7 +9,11 @@ if test "$ZEN_RELEASE"; then
     export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 fi
 
-ac_add_options --enable-linker=lld
+# not when cross compiling
+if ! test "$ZEN_CROSS_COMPILING"; then
+    ac_add_options --enable-linker=lld
+fi
+
 ac_add_options --enable-pulseaudio
 ac_add_options --enable-strip
 ac_add_options --enable-alsa

@@ -46,7 +46,6 @@ ac_add_options --disable-debug
 ac_add_options --disable-crashreporter
 ac_add_options --disable-dmd
 ac_add_options --disable-geckodriver
-ac_add_options --disable-maintenance-service
 ac_add_options --disable-parental-controls
 ac_add_options --disable-profiling
 ac_add_options --disable-tests

@@ -226,7 +226,9 @@ jobs:
           cd ..
 
       - name: Build
-        run: pnpm build
+        run: |
+          export ZEN_RELEASE=1
+          pnpm build
 
       - name: Package
         run: pnpm package
@@ -349,6 +351,7 @@ jobs:
       - name: Build
         run: |
           unset SURFER_PLATFORM
+          export ZEN_RELEASE=1
           pnpm build
 
       - name: Package

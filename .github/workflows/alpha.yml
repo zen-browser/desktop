@@ -136,7 +136,7 @@ jobs:
   linux:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: warp-ubuntu-latest-x64-8x
     needs: [build-data, check-release]
 
     steps:

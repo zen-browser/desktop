@@ -20,8 +20,6 @@ if ! test "$ZEN_CROSS_COMPILING"; then
     fi
 
     ac_add_options --enable-linker=lld
-    ac_add_options --enable-alsa
-    ac_add_options --enable-pulseaudio
     ac_add_options --enable-strip
 fi
 

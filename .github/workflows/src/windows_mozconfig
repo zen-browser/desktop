@@ -28,7 +28,6 @@ export WIN_UCRT_REDIST_DIR="$(echo ~)/win-cross/vs2022/Windows Kits/10/Redist/10
 export WINEDEBUG=-all
 
 ac_add_options --enable-lto=cross,full
-ac_add_options --enable-optimize="-clang:-march=x86-64 -clang:-msse3 -clang:-mtune=haswell -clang:-O3 -w"
 ac_add_options --enable-release
 ac_add_options --enable-rust-simd
 ac_add_options RUSTC_OPT_LEVEL=3

@@ -450,6 +450,7 @@ panelmultiview {
 
 #tabbrowser-tabbox #tabbrowser-tabpanels .browserStack > browser {
   border-radius: var(--zen-browser-border-radius);
+  clip-path: inset(0px 0px 0px round var(--zen-browser-border-radius) 0) !important;
 }
 
 #nav-bar {

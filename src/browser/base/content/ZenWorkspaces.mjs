@@ -1,6 +1,12 @@
 
 var ZenWorkspaces = {
   async init() {
+    let docElement = document.documentElement;
+    if (docElement.getAttribute("chromehidden").includes("toolbar")
+      || docElement.getAttribute("chromehidden").includes("menubar")) {
+      console.log("!!! ZenWorkspaces is disabled in hidden windows !!!");
+      return; // We are in a hidden window, don't initialize ZenWorkspaces
+    }
     console.log("Initializing ZenWorkspaces...");
     await this.initializeWorkspaces();
     console.log("ZenWorkspaces initialized");
@@ -52,11 +58,11 @@ var ZenWorkspaces = {
       let workspaces = await this._workspaces();
       console.log("Workspaces loaded", workspaces);
       if (workspaces.workspaces.length === 0) {
-        await this.createAndSaveWorkspace("Default Workspace");
+        await this.createAndSaveWorkspace("Default Workspace", true);
       } else {
-        let activeWorkspace = workspaces.workspaces.find(workspace => workspace.used);
+        let activeWorkspace = workspaces.workspaces.find(workspace => workspace.default);
         if (!activeWorkspace) {
-          activeWorkspace = workspaces.workspaces.find(workspace => workspace.default);
+          activeWorkspace = workspaces.workspaces.find(workspace => workspace.used);
           activeWorkspace.used = true;
           await this.saveWorkspaces();
         }
@@ -272,10 +278,10 @@ var ZenWorkspaces = {
     await this._propagateWorkspaceData();
   },
 
-  _createWorkspaceData(name) {
+  _createWorkspaceData(name, isDefault) {
     let window = {
       uuid: gZenUIManager.generateUuidv4(),
-      default: false,
+      default: isDefault,
       used: true,
       icon: "",
       name: name,
@@ -284,11 +290,11 @@ var ZenWorkspaces = {
     return window;
   },
 
-  async createAndSaveWorkspace(name = "New Workspace") {
+  async createAndSaveWorkspace(name = "New Workspace", isDefault = false) {
     if (!this.workspaceEnabled) {
       return;
     }
-    let workspaceData = this._createWorkspaceData(name);
+    let workspaceData = this._createWorkspaceData(name, isDefault);
     await this.saveWorkspace(workspaceData);
     await this.changeWorkspace(workspaceData);
   },

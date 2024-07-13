@@ -521,6 +521,22 @@ panelmultiview {
   }
 }
 
+:root:is([chromehidden~="location"],[chromehidden~="toolbar"]) {
+  --zen-browser-border-radius: 0 !important;
+
+  & #navigator-toolbox {
+    display: none;
+  }
+
+  & #tabbrowser-tabpanels {
+    margin: 0 !important;
+
+    & .browserSidebarContainer {
+      margin: 0 !important;
+    }
+  }
+}
+
 /* Screenshots */
 
 #screenshotsPagePanel {

@@ -23,9 +23,9 @@ zen-look-and-feel-compact-view-enabled =
 
 
 
-pane-zen-workspaces-title = Workspaces
+pane-settings-workspaces-title = Workspaces
 category-zen-workspaces =
-    .tooltiptext = { pane-workspaces-title }
+    .tooltiptext = { pane-settings-workspaces-title }
 
 pane-zen-workspaces-header = Workspaces
 zen-settings-workspaces-header = General settings for workspaces

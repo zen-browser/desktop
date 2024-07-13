@@ -249,14 +249,23 @@
 }
 
 #PanelUI-zen-workspaces {
-  width: 300px;
+  --panel-width: 320px;
+  width: var(--panel-width);
   min-height: 200px;
 }
 
-#PanelUI-zen-workspaces > vbox {
-  width: 100%;
-  padding: 15px 20px;
+#PanelUI-zen-workspaces > panelmultiview {
+  align-items: flex-start;
+}
+
+#PanelUI-zen-workspaces panelmultiview panelview {
   position: relative;
+  width: 100%;
+  overflow: hidden !important;
+}
+
+#PanelUI-zen-workspaces-create-input {
+  margin-top: 10px;
 }
 
 #PanelUI-zen-workspaces-list {
@@ -264,8 +273,9 @@
   flex-direction: column;
 }
 
-#PanelUI-zen-workspaces > vbox > vbox:nth-child(2) {
-  margin-top: 10px;
+#PanelUI-zen-workspaces .panel-viewcontainer,
+#PanelUI-zen-workspaces .panel-viewstack {
+  width: 100%;
 }
 
 #PanelUI-zen-workspaces-current-info toolbarbutton:last-child {
@@ -274,8 +284,8 @@
 
 #PanelUI-zen-workspaces-list toolbarbutton,
 #PanelUI-zen-workspaces-current-info toolbarbutton  {
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 5px;
+  border-radius: 7px;
 
   margin-left: 0 !important;
   margin-right: 0 !important;
@@ -290,8 +300,8 @@
   & .zen-workspace-icon {
     width: 30px;
     height: 30px;
-    border-radius: 5px;
-    margin-right: 15px;
+    border-radius: 7px;
+    margin-right: 10px;
     border: 1px solid var(--zen-colors-border);
     display: flex;
     justify-content: center;
@@ -307,13 +317,32 @@
   }
 }
 
+#PanelUI-zen-workspaces-current-info toolbarbutton:first-child {
+  margin-bottom: 10px;
+  margin-top: 5px;
+}
+
+#PanelUI-zen-workspaces-view vbox:nth-child(2) {
+  margin-top: 10px;
+}
+
 #PanelUI-zen-workspaces-new {
-  position: absolute;
-  top: 10px;
+  margin-left: auto;
   min-height: 1px !important;
-  right: 10px;
   padding: 3px;
   border-radius: 4px;
   width: 20px;
   height: 20px;
+}
+
+#PanelUI-zen-workspaces-create-footer {
+  padding-bottom: 0 !important;
+  margin-top: 20px;
+  margin-left: 0;
+  margin-bottom: 0 !important;
+  width: 100%;
+}
+
+#PanelUI-zen-workspaces-create-footer button[default="true"] {
+  width: 100%;
 }

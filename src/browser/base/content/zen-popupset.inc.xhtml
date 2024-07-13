@@ -76,25 +76,39 @@
   </vbox>
 </panelview>
 
-<panel id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
-  <vbox>
-    <vbox>
-      <hbox>
-        <h3 data-l10n-id="zen-panel-ui-current-window-text"></h3>
-        <hbox class="translations-panel-beta" role="image" aria-label="Beta">
-          <image class="translations-panel-beta-icon"></image>
+<panel type="arrow" role="alertdialog" orient="vertical" id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
+  <panelmultiview id="PanelUI-zen-workspaces-multiview" mainViewId="PanelUI-zen-workspaces-view">
+    <panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+      <vbox>
+        <hbox>
+          <h3 data-l10n-id="zen-panel-ui-current-window-text"></h3>
+          <hbox class="translations-panel-beta" role="image" aria-label="Beta">
+            <image class="translations-panel-beta-icon"></image>
+          </hbox>
+          <toolbarbutton id="PanelUI-zen-workspaces-new" oncommand="ZenWorkspaces.openSaveDialog();" class="subviewbutton">
+            <image></image>
+          </toolbarbutton>
         </hbox>
-      </hbox>
-      <html:div id="PanelUI-zen-workspaces-current-info">
-      </html:div>
-    </vbox>
-    <vbox>
-      <h3 data-l10n-id="zen-panel-ui-workspaces-text"></h3>
-      <html:div id="PanelUI-zen-workspaces-list">
-      </html:div>
-    </vbox>
-    <toolbarbutton id="PanelUI-zen-workspaces-new" oncommand="ZenWorkspaces.createAndSaveWorkspace();" class="subviewbutton">
-      <image></image>
-    </toolbarbutton>
-  </vbox>
+        <html:div id="PanelUI-zen-workspaces-current-info">
+        </html:div>
+      </vbox>
+      <vbox>
+        <h3 data-l10n-id="zen-panel-ui-workspaces-text"></h3>
+        <html:div id="PanelUI-zen-workspaces-list">
+        </html:div>
+      </vbox>
+    </panelview>
+    <panelview id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+      <vbox>
+        <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
+        <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceNameChange(this);" />
+      </vbox>
+      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
+        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-create-save" oncommand="ZenWorkspaces.saveWorkspaceFromInput();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
+        </button>
+        <button id="PanelUI-zen-workspaces-create-cancel" oncommand="ZenWorkspaces.cancelWorkspaceCreation();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
+        </button>
+      </html:moz-button-group>
+    </panelview>
+  </panelmultiview>
 </panel>

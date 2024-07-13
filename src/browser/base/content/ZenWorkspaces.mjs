@@ -102,6 +102,16 @@ var ZenWorkspaces = {
 
   // Workspaces dialog UI management
 
+  openSaveDialog() {
+    let parentPanel = document.getElementById("PanelUI-zen-workspaces-multiview");
+    PanelUI.showSubView("PanelUI-zen-workspaces-create", parentPanel);
+  },
+
+  cancelWorkspaceCreation() {
+    let parentPanel = document.getElementById("PanelUI-zen-workspaces-multiview");
+    parentPanel.goBack();
+  },
+
   async _propagateWorkspaceData() {
     let currentContainer = document.getElementById("PanelUI-zen-workspaces-current-info");
     let workspaceList = document.getElementById("PanelUI-zen-workspaces-list");
@@ -190,6 +200,10 @@ var ZenWorkspaces = {
 
   // Workspaces management
 
+  get _workspaceInput() {
+    return document.getElementById("PanelUI-zen-workspaces-create-input");
+  },
+
   _prepareNewWorkspace(window) {
     document.documentElement.setAttribute("zen-workspace-id", window.uuid);
     this._createNewTabForWorkspace(window);
@@ -198,6 +212,25 @@ var ZenWorkspaces = {
   _createNewTabForWorkspace(window) {
     let tab = gZenUIManager.openAndChangeToTab(Services.prefs.getStringPref("browser.startup.homepage"));
     tab.setAttribute("zen-workspace-id", window.uuid);
+  },
+
+  async saveWorkspaceFromInput() {
+    let workspaceName = this._workspaceInput.value;
+    if (!workspaceName) {
+      return;
+    }
+    this._workspaceInput.value = "";
+    await this.createAndSaveWorkspace(workspaceName);
+    document.getElementById("PanelUI-zen-workspaces").hidePopup(true);
+  },
+
+  onWorkspaceNameChange(event) {
+    let button = document.getElementById("PanelUI-zen-workspaces-create-save");
+    if (this._workspaceInput.value === "") {
+      button.setAttribute("disabled", "true");
+      return;
+    }
+    button.removeAttribute("disabled");
   },
 
   async changeWorkspace(window) {

@@ -154,7 +154,7 @@
 #appMenu-zoomEnlarge-button2,
 #PanelUI-zen-profiles-newProfile,
 #zen-sidebar-add-panel-button,
-#PanelUI-zen-workspaces-new {
+#PanelUI-zen-workspaces-new image {
 	list-style-image: url("plus.svg") !important;
 }
 

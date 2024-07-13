@@ -166,11 +166,7 @@ var ZenWorkspaces = {
 
   _prepareNewWorkspace(window) {
     document.documentElement.setAttribute("zen-workspace-id", window.uuid);
-    for (let tab of gBrowser.tabs) {
-      if (!tab.getAttribute("zen-workspace-id")) {
-        tab.setAttribute("zen-workspace-id", window.uuid);
-      }
-    }
+    this._createNewTabForWorkspace(window);
   },
 
   _createNewTabForWorkspace(window) {

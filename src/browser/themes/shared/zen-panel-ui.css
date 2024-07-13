@@ -310,6 +310,7 @@
 #PanelUI-zen-workspaces-new {
   position: absolute;
   top: 10px;
+  min-height: 1px !important;
   right: 10px;
   padding: 3px;
   border-radius: 4px;

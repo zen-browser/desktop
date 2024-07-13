@@ -36,10 +36,9 @@ button {
 }
 
 .page-split:not([hidden="true"]) {
-  display: flex;
-  margin: 12%;
   flex-direction: row;
-  justify-content: space-between;
+  margin: auto;
+  justify-content: space-around;
 }
 
 #enableFeatures .card {
@@ -62,7 +61,6 @@ button {
   align-items: stretch;
   gap: 8px;
   margin-bottom: 8px;
-  justify-content: center;
 }
 
 .cardGroup .card {
@@ -90,6 +88,12 @@ h1 {
   font-weight: 700;
   margin: 16px 0 5px 0;
   line-height: 1;
+}
+
+.page > div:nth-child(2) h1 {
+  margin-bottom: 15px;
+  margin-top: 10px;
+  font-size: 18px;
 }
 
 p {

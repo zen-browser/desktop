@@ -16,8 +16,8 @@ welcome-dialog-theme = 🎨 Choose a theme
 welcome-dialog-theme-subtext = Personalize your experience with your favorite look!
 welcome-dialog-theme-action = Continue
 
-welcome-dialog-theme-header-1 = 1. Choose A theme
-welcome-dialog-theme-header-2 = 2. Find Your Perfect Color
+welcome-dialog-theme-header-1 = 1. Choose a theme
+welcome-dialog-theme-header-2 = 2. Find your perfect color
 
 welcome-dialog-search = 🔍 Choose a search engine
 welcome-dialog-search-subtext = Select your preferred search engine to tailor your browsing experience!

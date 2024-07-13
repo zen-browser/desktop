@@ -330,8 +330,11 @@ toolbarbutton#scrollbutton-up {
   display: none;
 }
 
-.tabbrowser-tab[pinned]:last-of-type {
- /** Todo: add a separator */
+@media (-moz-bool-pref: "zen.tabs.vertical") { 
+  .tabbrowser-tab[pinned] {
+    /* Add a gap between the last pinned tab and the first visible tab */
+    margin-inline-start: 12px !important;
+  }
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {

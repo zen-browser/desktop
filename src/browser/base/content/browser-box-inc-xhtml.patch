@@ -1,12 +1,10 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index b0308911446dd6fc549401371a85faa6341f8338..3942a0b45308b110685c34e8a9367d7c5d40d8c4 100644
+index 16559b2c0e3aef391b43e09281aee24007feb0bd..2579cea92a55fabb73fdd130c3706af08c3fd849 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -18,12 +18,18 @@
-     <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
+@@ -21,11 +21,15 @@
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
-+  <vbox id="browser">
    <vbox id="appcontent" flex="1">
 +    <html:div id="zen-appcontent-navbar-container"></html:div>
      <!-- gNotificationBox will be added here lazily. -->
@@ -18,6 +16,5 @@ index b0308911446dd6fc549401371a85faa6341f8338..3942a0b45308b110685c34e8a9367d7c
                    flex="1" selectedIndex="0"/>
      </tabbox>
 +  </hbox>
-+  </vbox>
    </vbox>
  </hbox>

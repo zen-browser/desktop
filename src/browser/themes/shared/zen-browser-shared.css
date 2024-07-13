@@ -472,7 +472,7 @@ panelmultiview {
 
 @media (-moz-bool-pref: "zen.view.compact") {
   #navigator-toolbox,
-  #zen-appcontent-navbar-container {
+  #zen-appcontent-navbar-container #PersonalToolbar {
     position: absolute;
     z-index: 1;
     overflow: hidden;
@@ -485,7 +485,7 @@ panelmultiview {
     height: 100%;
   }
 
-  #zen-appcontent-navbar-container {
+  #zen-appcontent-navbar-container #PersonalToolbar {
     min-height: 0;
     height: 1px;
     width: 100%;
@@ -498,8 +498,8 @@ panelmultiview {
     opacity: 1;
   }
 
-  #zen-appcontent-navbar-container:hover,
-  #zen-appcontent-navbar-container:has([open="true"]) {
+  #zen-appcontent-navbar-container #PersonalToolbar:hover,
+  #zen-appcontent-navbar-container #PersonalToolbar:has([open="true"]) {
     height: unset;
     background: var(--zen-themed-toolbar-bg) !important;
     overflow: visible;

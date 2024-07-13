@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c992624170bde0e63 100644
+index 3b97732d8035f07a2308f76f235702c70a5fa388..fea1a6424de65c15db895ce3cf95e699fbf3952c 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
-@@ -538,19 +538,36 @@
+@@ -552,19 +552,36 @@
        }
        dt.setDragImage(toDrag, dragImageOffset, dragImageOffset);
  
@@ -40,7 +40,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
          movingTabs: (tab.multiselected ? gBrowser.selectedTabs : [tab]).filter(
            t => t.pinned == tab.pinned
          ),
-@@ -637,21 +654,30 @@
+@@ -651,21 +668,30 @@
          }
        }
  
@@ -76,7 +76,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
            ];
          }
          newMargin = pixelsToScroll > 0 ? maxMargin : minMargin;
-@@ -661,29 +687,38 @@
+@@ -675,29 +701,38 @@
          if (newIndex == children.length) {
            let tabRect = this._getVisibleTabs().at(-1).getBoundingClientRect();
            if (RTL_UI) {
@@ -121,7 +121,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
        var dt = event.dataTransfer;
        var dropEffect = dt.dropEffect;
        var draggedTab;
-@@ -740,7 +775,7 @@
+@@ -754,7 +789,7 @@
            incrementDropIndex = false;
          }
  
@@ -130,7 +130,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
            for (let tab of movingTabs) {
              tab.toggleAttribute("tabdrop-samewindow", true);
              tab.style.transform = "translateX(" + newTranslateX + "px)";
-@@ -1126,10 +1161,13 @@
+@@ -1144,10 +1179,13 @@
      }
  
      _initializeArrowScrollbox() {
@@ -144,7 +144,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
            // Ignore underflow events:
            // - from nested scrollable elements
            // - for vertical orientation
-@@ -1492,19 +1530,30 @@
+@@ -1510,19 +1548,30 @@
          }
        }
  
@@ -184,7 +184,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
  
        let pinned = draggedTab.pinned;
        let numPinned = gBrowser._numPinnedTabs;
-@@ -1513,36 +1562,39 @@
+@@ -1531,36 +1580,39 @@
          pinned ? numPinned : undefined
        );
  
@@ -235,7 +235,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
        }
  
        draggedTab._dragData.translateX = translateX;
-@@ -1575,11 +1627,11 @@
+@@ -1593,11 +1645,11 @@
          if (tabs[mid] == draggedTab && ++mid > high) {
            break;
          }
@@ -249,7 +249,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
            tabCenter
          ) {
            low = mid + 1;
-@@ -1602,16 +1654,16 @@
+@@ -1620,16 +1672,16 @@
        for (let tab of tabs) {
          if (tab != draggedTab) {
            let shift = getTabShift(tab, newIndex);
@@ -269,7 +269,7 @@ index 4733e6d0b66f254c72a592bf3eabeb1a939e76fa..ab16fe96e1e8036df7e8321c99262417
          }
          return 0;
        }
-@@ -1683,9 +1735,9 @@
+@@ -1701,9 +1753,9 @@
  
        // Slide the relevant tabs to their new position.
        for (let t of this._getVisibleTabs()) {

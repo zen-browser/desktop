@@ -163,7 +163,6 @@
   display: flex;
   flex-direction: column;
   padding: 0 3px;
-  height: 100%;
   position: relative;
   background: transparent !important;
   align-items: center;

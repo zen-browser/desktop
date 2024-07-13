@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 0a67afa81ff5e10dcbfb53149f7ed9109de084ac..bdcce262b5fc18767efd1054fd724b97c42471e4 100644
+index 390a1300a1213af2b411ba09c67e3c25750ee6c3..7c80c54dd43b5414bf5ea9101d53431c0b4a140b 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -32,10 +32,11 @@

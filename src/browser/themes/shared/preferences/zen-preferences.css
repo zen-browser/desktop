@@ -185,3 +185,9 @@ groupbox h2 {
   position: absolute;
   background: var(--zen-colors-tertiary);
 }
+
+/* Workspace */
+
+#category-zen-workspaces > .category-icon {
+  list-style-image: url("chrome://browser/skin/window.svg");
+}

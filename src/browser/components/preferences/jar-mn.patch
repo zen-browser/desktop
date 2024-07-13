@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index 3b60d18e483bc3c4e9b4309f0dc1e4231b7116b1..aa30bc3de15b68ac90c12142a8851af99e1209ae 100644
+index 3b60d18e483bc3c4e9b4309f0dc1e4231b7116b1..e5b679b25941a7f1ed52db9fa3f7740a7220b9e4 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
 @@ -23,3 +23,5 @@ browser.jar:
@@ -7,4 +7,4 @@ index 3b60d18e483bc3c4e9b4309f0dc1e4231b7116b1..aa30bc3de15b68ac90c12142a8851af9
     content/browser/preferences/web-appearance-dark.svg
     content/browser/preferences/web-appearance-light.svg
 +
-+   content/browser/preferences/zen-looks.js
++   content/browser/preferences/zen-settings.js

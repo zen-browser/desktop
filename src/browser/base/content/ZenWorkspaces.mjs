@@ -29,7 +29,20 @@ var ZenWorkspaces = {
     return this._workspaceCache;
   },
 
+  onWorkspacesEnabledChanged() {
+    if (this.workspaceEnabled) {
+      this.initializeWorkspaces();
+    } else {
+      this._workspaceCache = null;
+      document.getElementById("zen-workspaces-button")?.remove();
+      for (let tab of gBrowser.tabs) {
+        gBrowser.showTab(tab);
+      }
+    }
+  },
+
   async initializeWorkspaces() {
+    Services.prefs.addObserver("zen.workspaces.enabled", this.onWorkspacesEnabledChanged.bind(this));
     this.initializeWorkspacesButton();
     let file = new FileUtils.File(this._storeFile);
     if (!file.exists()) {
@@ -148,6 +161,10 @@ var ZenWorkspaces = {
 
   initializeWorkspacesButton() {
     if (!this.workspaceEnabled) {
+      return;
+    } else if (document.getElementById("zen-workspaces-button")) {
+      let button = document.getElementById("zen-workspaces-button");
+      button.removeAttribute("hidden");
       return;
     }
     let browserTabs = document.getElementById("tabbrowser-tabs");

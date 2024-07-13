@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc01507478becc583 100644
+index 3affb19d1a243da4a5782c9a4a5588d165b4119f..ccb56cc323ff5c3e94013de782af54911fc0c360 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -43,6 +43,8 @@
@@ -11,7 +11,7 @@ index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc0150747
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -99,6 +101,12 @@
+@@ -97,6 +99,12 @@
    <hbox flex="1">
  
      <vbox class="navigation">
@@ -24,7 +24,7 @@ index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc0150747
        <!-- category list -->
        <richlistbox id="categories" data-l10n-id="category-list" data-l10n-attrs="aria-label">
          <richlistitem id="category-general"
-@@ -112,6 +120,17 @@
+@@ -110,6 +118,28 @@
            <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
          </richlistitem>
  
@@ -39,10 +39,21 @@ index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc0150747
 +          <label class="category-name" flex="1" data-l10n-id="pane-zen-looks-title"></label>
 +        </richlistitem>
 +
++        <richlistitem id="category-zen-workspaces"
++                      class="category"
++                      value="paneZenWorkspaces"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-workspaces"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-workspaces-title"></label>
++        </richlistitem>
++
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -230,11 +249,13 @@
+@@ -228,11 +258,13 @@
                  <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
                </hbox>
              </hbox>
@@ -56,11 +67,12 @@ index eee227822a772bec128d6adbe4f6aca90ed810f6..b52ee22054e3b2c80d4b780bc0150747
            </hbox>
          </hbox>
          <vbox id="mainPrefPane">
-@@ -248,6 +269,7 @@
+@@ -246,6 +278,8 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml
 +#include zenLooksAndFeel.inc.xhtml
++#include zenWorkspaces.inc.xhtml
          </vbox>
        </vbox>
      </vbox>

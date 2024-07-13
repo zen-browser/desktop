@@ -48,6 +48,11 @@ var gZenLooksAndFeel = {
   },
 };
 
+var gZenWorkspacesSettings = {
+  init() {
+  },
+};
+
 Preferences.addAll([
   {
     id: "zen.theme.toolbar-themed",
@@ -64,4 +69,9 @@ Preferences.addAll([
     type: "bool",
     default: false,
   },
+  {
+    id: "zen.workspaces.enabled",
+    type: "bool",
+    default: true,
+  }
 ]);

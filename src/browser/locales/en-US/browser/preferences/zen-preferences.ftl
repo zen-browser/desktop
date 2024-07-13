@@ -20,3 +20,15 @@ zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
 zen-look-and-feel-compact-view-enabled = 
     .label = Enable { -brand-short-name }'s compact mode
+
+
+
+pane-zen-workspaces-title = Workspaces
+category-zen-workspaces =
+    .tooltiptext = { pane-workspaces-title }
+
+pane-zen-workspaces-header = Workspaces
+zen-settings-workspaces-header = General settings for workspaces
+zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!
+zen-settings-workspaces-enabled = 
+    .label = Enable Workspaces (Experimental)

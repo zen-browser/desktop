@@ -1,0 +1,25 @@
+<html:template id="template-paneZenWorkspaces">
+<hbox id="ZenWorkspacesCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenWorkspaces">
+<html:h1 data-l10n-id="pane-workspaces-title"/>
+</hbox>
+
+<hbox id="zenSidePanelsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenWorkspaces">
+<html:h1 data-l10n-id="pane-settings-workspaces-title"/>
+</hbox>
+
+<groupbox id="zenSidePanelsGroup" data-category="paneZenWorkspaces" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-settings-workspaces-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-settings-workspaces-description" />
+
+      <checkbox id="zenWorkspacesActivate"
+            data-l10n-id="zen-settings-workspaces-enabled"
+            preference="zen.workspaces.enabled"/>
+</groupbox>
+
+</html:template>

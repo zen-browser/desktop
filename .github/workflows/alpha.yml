@@ -584,6 +584,9 @@ jobs:
     name: Build flatpak repos
     needs: [release]
     runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      options: --privileged
     if: ${{ github.event.inputs.create_release == 'true' && false }}
 
     steps:
@@ -595,47 +598,18 @@ jobs:
 
       - name: Ensure repo is on main branch
         run: |
-          cd repo
+          cd flatpak
           git checkout main
           git pull
-
-      - name: Install flatpak builder
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y flatpak-builder
-
-      - name: Install build dependancies
-        run: |
-          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.mozilla.firefox.BaseApp//22.08 -y
-
-      - name: Import GPG keys
-        run: |
-          mkdir ~/.gpg
-          echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import --homedir ~/.gpg
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+          
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          name: zen.linux.tar.bz2
-        
-      - name: Move artifacts
-        run: |
-          mv zen.linux.tar.bz2 repo/zen.tar.bz2
-
-      - name: Build flatpak
-        run: |
-          flatpak-builder --force-clean --ccache --jobs=8 --repo=repo zen org.mozilla.firefox.BaseApp.json
-
-      - name: Sign flatpak
-        run: |
-          flatpak build-sign repo --gpg-homedir ~/.gpg --gpg-sign=${{ secrets.GPG_KEY_ID }}
-          flatpak build-update-repo repo --gpg-homedir ~/.gpg --gpg-sign=${{ secrets.GPG_KEY_ID }}
-          gpg2 --homedir ~/.gpg --export ${{ secrets.GPG_KEY_ID }} > repo/zen.gpg
+          bundle: org.zen.browser.flatpak
+          manifest-path: flatpak/org.zen.browser.flatpak.json
+          cache-key: flatpak-builder-${{ github.sha }}
 
       - name: Upload flatpak repo
         uses: actions/upload-artifact@v3
         with:
-          name: zen.flatpak
+          name: flatpak-repo
+          path: flatpak/repo

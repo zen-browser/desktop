@@ -25,7 +25,7 @@ npm i
 Download and bootstrap the browser
 
 ```
-npm run bootstrap
+npm run init
 ```
 
 Start building the browser

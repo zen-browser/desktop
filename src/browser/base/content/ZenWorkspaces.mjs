@@ -47,6 +47,11 @@ var ZenWorkspaces = {
           activeWorkspace.used = true;
           await this.saveWorkspaces();
         }
+        if (!activeWorkspace) {
+          activeWorkspace = workspaces.workspaces[0];
+          activeWorkspace.used = true;
+          await this.saveWorkspaces();
+        }
         await this.changeWorkspace(activeWorkspace);
       }
     }
@@ -100,7 +105,11 @@ var ZenWorkspaces = {
           ${workspace.name}
         </div>
       `;
-      element.onclick = (async () => await this.changeWorkspace(workspace)).bind(this, workspace);
+      element.onclick = (async () => {
+        await this.changeWorkspace(workspace)
+        let panel = document.getElementById("PanelUI-zen-workspaces");
+        PanelMultiView.hidePopup(panel);
+      }).bind(this, workspace);
       return element;
     }
     let workspaces = await this._workspaces();
@@ -170,8 +179,7 @@ var ZenWorkspaces = {
   },
 
   _createNewTabForWorkspace(window) {
-    gZenUIManager.openAndChangeToTab(Services.prefs.getStringPref("browser.startup.homepage"));
-    let tab = gBrowser.selectedTab;
+    let tab = gZenUIManager.openAndChangeToTab(Services.prefs.getStringPref("browser.startup.homepage"));
     tab.setAttribute("zen-workspace-id", window.uuid);
   },
 
@@ -179,14 +187,16 @@ var ZenWorkspaces = {
     if (!this.workspaceEnabled) {
       return;
     }
-    if (document.documentElement.getAttribute("zen-workspace-id") === window.uuid) {
-      return;
-    }
     let firstTab = undefined;
     // Get the number of tabs that are hidden before we start hiding them
     let numHiddenTabs = gBrowser.tabs.reduce((acc, tab) => {
       return tab.getAttribute("zen-workspace-id") !== window.uuid ? acc + 1 : acc;
     }, 0);
+    let workspaces = await this._workspaces();
+    for (let workspace of workspaces.workspaces) {
+      workspace.used = workspace.uuid === window.uuid;
+    }
+    this.unsafeSaveWorkspaces(workspaces);
     if (numHiddenTabs === gBrowser.tabs.length) {
       // If all tabs are hidden, we need to create a new tab
       // to show the workspace
@@ -196,22 +206,16 @@ var ZenWorkspaces = {
       if (tab.getAttribute("zen-workspace-id") === window.uuid) {
         if (!firstTab) {
           firstTab = tab;
+          gBrowser.selectedTab = firstTab;
         }
-        tab.removeAttribute("hidden");
+        gBrowser.showTab(tab);
       }
     }
     for (let tab of gBrowser.tabs) {
       if (tab.getAttribute("zen-workspace-id") !== window.uuid) {
-        tab.setAttribute("hidden", "true");
+        gBrowser.hideTab(tab);
       }
     }
-    let workspaces = await this._workspaces();
-    for (let workspace of workspaces.workspaces) {
-      workspace.used = workspace.uuid === window.uuid;
-    }
-    this.unsafeSaveWorkspaces(workspaces);
-    // TODO: Handle the case when there are no tabs in the workspace
-    gBrowser.selectedTab = firstTab;
     document.documentElement.setAttribute("zen-workspace-id", window.uuid);
     await this.saveWorkspaces();
     await this._updateWorkspacesButton();

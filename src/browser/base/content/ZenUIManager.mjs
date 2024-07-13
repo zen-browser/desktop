@@ -4,10 +4,11 @@ var gZenUIManager = {
     if (window.ownerGlobal.parent) {
       let tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(url, options);
       window.ownerGlobal.parent.gBrowser.selectedTab = tab;
-      return;
+      return tab;
     }
     let tab = window.gBrowser.addTrustedTab(url, options);
     window.gBrowser.selectedTab = tab;
+    return tab;
   },
 
   generateUuidv4() {

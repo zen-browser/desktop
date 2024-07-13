@@ -1,8 +1,20 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 3bca0b6d30468dc3a755219723f673ec80dfce6e..200a609ea31a8c904e2d3e39a3a06ff67fb313ed 100644
+index 2674dc2bebf436529a46d45c52cb56e86b82c03f..c70801bed55e0182eb56e9fd7bea5be9986c7120 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -7623,6 +7623,11 @@ var TabContextMenu = {
+@@ -3208,6 +3208,11 @@
+         ) {
+           tabWasReused = true;
+           tab = this.selectedTab;
++
++          if (tabData.zenWorkspace) {
++            tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
++          }
++
+           if (!tabData.pinned) {
+             this.unpinTab(tab);
+           } else {
+@@ -7878,6 +7883,11 @@ var TabContextMenu = {
        this.contextTab.linkedBrowser,
        document.getElementById("context_sendTabToDevice")
      );

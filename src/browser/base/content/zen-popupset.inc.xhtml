@@ -75,3 +75,19 @@
     </vbox>
   </vbox>
 </panelview>
+
+<panel id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
+  <vbox>
+    <vbox>
+      <h3 data-l10n-id="zen-panel-ui-current-window-text"></h3>
+      <html:div id="PanelUI-zen-workspaces-current-info">
+      </html:div>
+    </vbox>
+    <vbox>
+      <h3 data-l10n-id="zen-panel-ui-workspaces-text"></h3>
+      <html:div id="PanelUI-zen-workspaces-list">
+      </html:div>
+    </vbox>
+    <toolbarbutton id="PanelUI-zen-workspaces-new" oncommand="ZenWorkspaces.createAndSaveWorkspace();" class="subviewbutton" data-l10n-id="zen-panel-ui-workspaces-new"></toolbarbutton>
+  </vbox>
+</panel>

@@ -234,3 +234,85 @@
 #zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.grid box:nth-child(3) {
   grid-area: c;
 }
+
+/* Workspaces */
+
+#zen-workspaces-button {
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 50px;
+  height: calc(var(--zen-sidebar-action-button-width) - 10px) !important;
+  margin-bottom: 5px !important;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+}
+
+#PanelUI-zen-workspaces {
+  width: 300px;
+  min-height: 200px;
+}
+
+#PanelUI-zen-workspaces > vbox {
+  width: 100%;
+  padding: 15px 20px;
+  position: relative;
+}
+
+#PanelUI-zen-workspaces-list {
+  display: flex;
+  flex-direction: column;
+}
+
+#PanelUI-zen-workspaces > vbox > vbox:nth-child(2) {
+  margin-top: 10px;
+}
+
+#PanelUI-zen-workspaces-current-info toolbarbutton:last-child {
+  margin-bottom: 0 !important;
+}
+
+#PanelUI-zen-workspaces-list toolbarbutton,
+#PanelUI-zen-workspaces-current-info toolbarbutton  {
+  padding: 5px 10px;
+  border-radius: 5px;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  display: flex;
+  align-items: center;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+
+  & .zen-workspace-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    margin-right: 15px;
+    border: 1px solid var(--zen-colors-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  & .zen-workspace-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+#PanelUI-zen-workspaces-new {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+}

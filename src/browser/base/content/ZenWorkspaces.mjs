@@ -25,20 +25,30 @@ var ZenWorkspaces = {
     }
   },
 
-  async saveWorkspace(workspaceData, windowID) {
+  async saveWorkspace(workspaceData) {
     let json = await IOUtils.readJSON(this._storeFile);
-    json[windowID] = workspaceData;
+    if (!json.workspaces) {
+      json.workspaces = [];
+    }
+    json.workspaces.push(workspaceData);
+    console.log("Saving workspace", workspaceData);
     await IOUtils.writeJSON(this._storeFile, json);
   },
 
   async loadWorkspace(windowID) {
     let json = await IOUtils.readJSON(this._storeFile);
-    return json[windowID];
+    if (!json.workspaces) {
+      return [];
+    }
+    return json.workspaces.filter(workspace => workspace.uuid === windowID);
   },
 
   async removeWorkspace(windowID) {
     let json = await IOUtils.readJSON(this._storeFile);
-    delete json[windowID];
+    if (!json.workspaces) {
+      return;
+    }
+    json.workspaces = json.workspaces.filter(workspace => workspace.uuid !== windowID);
     await IOUtils.writeJSON(this._storeFile, json);
   },
 
@@ -47,27 +57,33 @@ var ZenWorkspaces = {
     return json;
   },
 
-  async getWorkspace(windowID) {
-    let json = await IOUtils.readJSON(this._storeFile);
-    return json[windowID];
-  },
+  // Workspaces dialog UI management
+
+  
 
   // Workspaces management
 
-  _createWorkspaceData(windowID) {
-    let window = Services.wm.getOuterWindowWithId(windowID);
-    let tabs = Array.from(window.gBrowser.tabs).map(tab => ({
-      url: tab.linkedBrowser.currentURI.spec,
-      title: tab.label,
-    }));
-    return {
-      tabs,
-    };
+  _prepareNewWorkspace(window) {
+    for (let tab of window.gBrowser.tabs) {
+      tab.addAttribute("zen-workspace-id", window.uuid);
+    }
+    window.document.documentElement.setAttribute("zen-workspace-id", window.uuid);
   },
 
-  async saveCurrentWorkspace(windowID) {
-    let workspaceData = this._createWorkspaceData(windowID);
-    await this.saveWorkspace(workspaceData, windowID);
+  _createWorkspaceData() {
+    let window = {
+      uuid: gZenUIManager.generateUuidv4(),
+      default: false,
+      icon: "",
+      name: `New Workspace`,
+    };
+    this._prepareNewWorkspace(window);
+    return window;
+  },
+
+  async createAndSaveWorkspace() {
+    let workspaceData = this._createWorkspaceData();
+    await this.saveWorkspace(workspaceData);
   },
 };
 

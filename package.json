@@ -8,7 +8,7 @@
     "start": "cd engine && ./mach run --noprofile",
     "import": "surfer import",
     "export": "surfer export",
-    "init": "bootstrap && import",
+    "init": "npm run bootstrap && npm run import",
     "bootstrap": "surfer download && surfer bootstrap",
     "package": "surfer package",
     "update-ff": "python3 scripts/update_ff.py",

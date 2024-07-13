@@ -584,7 +584,7 @@ jobs:
     name: Build flatpak repos
     needs: [release]
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' && false }}
 
     steps:
       - uses: actions/checkout@v3

@@ -7,6 +7,8 @@ Experience tranquillity while browsing the web without people tracking you!
 
 Zen is currently built using firefox version `128.0`!
 
+* Checkout the latest [releases notes](https://get-zen.vercel.app/release-notes)!
+
 ## 🚀 Run Locally
 
 Clone the project

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 5f41ca778131eedfd32043dc27d6528be978c4fb..086b01e8fdf80dd333d80b9eede190cdb5315b70 100644
+index b18f371a47fec53882c3dfb68e34d1a474eaf446..2c183d7e7fc65e00403f5e40e7859b915a3ea700 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -630,6 +630,15 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -18,16 +18,17 @@ index 5f41ca778131eedfd32043dc27d6528be978c4fb..086b01e8fdf80dd333d80b9eede190cd
  customElements.setElementCreationCallback("screenshots-buttons", () => {
    Services.scriptloader.loadSubScript(
      "chrome://browser/content/screenshots/screenshots-buttons.js",
-@@ -3668,6 +3677,8 @@ var XULBrowserWindow = {
+@@ -3679,6 +3688,9 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
 +    gZenViewSplitter.onLocationChange(gBrowser.selectedBrowser);
++    ZenWorkspaces.onLocationChange(gBrowser.selectedBrowser);
 +
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -4982,7 +4993,7 @@ function setToolbarVisibility(
+@@ -5001,7 +5013,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -36,7 +37,7 @@ index 5f41ca778131eedfd32043dc27d6528be978c4fb..086b01e8fdf80dd333d80b9eede190cd
      switch (isVisible) {
        case true:
        case "always":
-@@ -7813,6 +7824,12 @@ var gDialogBox = {
+@@ -7832,6 +7844,12 @@ var gDialogBox = {
      parentElement.showModal();
      this._didOpenHTMLDialog = true;
  

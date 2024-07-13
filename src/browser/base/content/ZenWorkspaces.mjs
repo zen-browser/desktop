@@ -242,6 +242,19 @@ var ZenWorkspaces = {
     await this.saveWorkspace(workspaceData);
     await this.changeWorkspace(workspaceData);
   },
+
+  async onLocationChange(browser) {
+    let tab = gBrowser.getTabForBrowser(browser);
+    let workspaceID = tab.getAttribute("zen-workspace-id");
+    if (!workspaceID) {
+      let workspaces = await this._workspaces();
+      let activeWorkspace = workspaces.workspaces.find(workspace => workspace.used);
+      if (!activeWorkspace) {
+        return;
+      }
+      tab.setAttribute("zen-workspace-id", activeWorkspace.uuid);
+    }
+  },
 };
 
 ZenWorkspaces.init();

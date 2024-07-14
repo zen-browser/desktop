@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 9a915ff442cc7f01ddec3fcea931c21e210cac92..3671d924f05c74e21be60a9acf58e14f69630d53 100644
+index 9a915ff442cc7f01ddec3fcea931c21e210cac92..19126b25ac7a63fe193628dd11a93507bd4bc63a 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -39,7 +39,7 @@
@@ -43,7 +43,7 @@ index 9a915ff442cc7f01ddec3fcea931c21e210cac92..3671d924f05c74e21be60a9acf58e14f
  #tabbrowser-tabs[haspinnedtabs]:not([positionpinnedtabs]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab:nth-child(1 of :not([pinned], [hidden])) {
    /* Add a gap between the last pinned tab and the first visible tab */
 -  margin-inline-start: 12px !important; /* .tabbrowser-tab sets margin: 0 !important; */
-+  margin-inline-start: 0 !important; /* .tabbrowser-tab sets margin: 0 !important; */
++  margin-inline-start: auto !important; /* .tabbrowser-tab sets margin: 0 !important; */
  }
  
  .tab-label[attention]:not([selected]) {

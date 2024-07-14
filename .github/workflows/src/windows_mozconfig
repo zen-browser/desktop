@@ -10,8 +10,6 @@ export WINEDEBUG=-all
 ac_add_options --target=x86_64-pc-mingw32
 
 export MOZ_STUB_INSTALLER=1
-export MOZ_MAINTENANCE_SERVICE=
-
 export MOZ_PKG_FORMAT=TAR
 
 export CROSS_BUILD=1

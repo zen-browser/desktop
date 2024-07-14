@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index eb92f71e5942a19618fd74492354de78ac03bacf..28d23667991c9feff7a379acaa5f7c7928fb14cf 100644
+index 9a915ff442cc7f01ddec3fcea931c21e210cac92..82685b07499e919e2cc3aa3b0a35b8f35f3d56cb 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
-@@ -67,7 +67,7 @@
+@@ -39,7 +39,7 @@
  
  #tabbrowser-tabs {
    --tab-min-width: 76px;
@@ -11,7 +11,34 @@ index eb92f71e5942a19618fd74492354de78ac03bacf..28d23667991c9feff7a379acaa5f7c79
    --tab-overflow-pinned-tabs-width: 0px;
    padding-inline: var(--tab-overflow-pinned-tabs-width) 0;
    /* Use a bigger flex value than the searchbar to prevent it from
-@@ -618,6 +618,7 @@
+@@ -103,7 +103,7 @@
+    * (we only have 2px padding in the inline direction) */
+   overflow-clip-margin: 2px;
+ 
+-  &:not([pinned]) {
++  & {
+     flex: 100 100;
+     max-width: 225px;
+     min-width: var(--tab-min-width);
+@@ -126,7 +126,7 @@
+     flex-shrink: 0;
+ 
+     #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > & {
+-      position: absolute !important;
++      /*position: absolute !important;*/
+       display: block;
+     }
+   }
+@@ -627,7 +627,7 @@
+ 
+ #tabbrowser-tabs[haspinnedtabs]:not([positionpinnedtabs]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab:nth-child(1 of :not([pinned], [hidden])) {
+   /* Add a gap between the last pinned tab and the first visible tab */
+-  margin-inline-start: 12px !important; /* .tabbrowser-tab sets margin: 0 !important; */
++  margin-inline-start: 0 !important; /* .tabbrowser-tab sets margin: 0 !important; */
+ }
+ 
+ .tab-label[attention]:not([selected]) {
+@@ -737,6 +737,7 @@
  .titlebar-spacer[type="pre-tabs"],
  .titlebar-spacer[type="post-tabs"] {
    width: 40px;
@@ -19,7 +46,7 @@ index eb92f71e5942a19618fd74492354de78ac03bacf..28d23667991c9feff7a379acaa5f7c79
  }
  
  @media (max-width: 500px) {
-@@ -633,7 +634,7 @@
+@@ -752,7 +753,7 @@
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)
  ) + #tabbrowser-tabs {

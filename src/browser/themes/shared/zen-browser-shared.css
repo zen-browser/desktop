@@ -330,16 +330,35 @@ toolbarbutton#scrollbutton-up {
   display: none;
 }
 
-@media (-moz-bool-pref: "zen.tabs.vertical") { 
-  .tabbrowser-tab[pinned] {
-    /* Add a gap between the last pinned tab and the first visible tab */
-    margin-inline-start: 12px !important;
-  }
-}
-
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
   /*border-color: light-dark(var(--zen-colors-border), rgba(255, 255, 255, 0.15));*/
   background: var(--toolbarbutton-hover-background);
+}
+
+.tabbrowser-tab {
+  margin-inline-start: 0 !important;
+  margin: 0 auto !important;
+}
+
+.tabbrowser-tab[pinned] {
+  position: relative !important;
+}
+
+.tabbrowser-tab:nth-last-child(1 of [pinned]) {
+  margin-bottom: 5px !important;
+  position: relative;
+  overflow: visible;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: 1px;
+    background: var(--zen-colors-border);
+  }
 }
 
 .tab-close-button {

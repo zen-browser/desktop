@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 3b97732d8035f07a2308f76f235702c70a5fa388..fea1a6424de65c15db895ce3cf95e699fbf3952c 100644
+index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf457da3500c 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -552,19 +552,36 @@
@@ -144,6 +144,23 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..fea1a6424de65c15db895ce3cf95e699
            // Ignore underflow events:
            // - from nested scrollable elements
            // - for vertical orientation
+@@ -1471,11 +1509,11 @@
+         for (let i = numPinned - 1; i >= 0; i--) {
+           let tab = tabs[i];
+           width += layoutData.pinnedTabWidth;
+-          tab.style.setProperty(
+-            "margin-inline-start",
+-            -(width + layoutData.scrollStartOffset) + "px",
+-            "important"
+-          );
++          //tab.style.setProperty(
++          //  "margin-inline-start",
++          //  -(width + layoutData.scrollStartOffset) + "px",
++          //  "important"
++          //);
+           tab._pinnedUnscrollable = true;
+         }
+         this.style.setProperty(
 @@ -1510,19 +1548,30 @@
          }
        }

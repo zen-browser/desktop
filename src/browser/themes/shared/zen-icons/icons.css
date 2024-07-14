@@ -81,7 +81,8 @@
 }
 
 #PanelUI-menu-button,
-#appMenu-more-button2 {
+#appMenu-more-button2,
+#zen-workspace-actions-menu-icon {
 	list-style-image: url("menu.svg") !important;
 }
 
@@ -668,7 +669,8 @@ menuitem[id="placesContext_deleteFolder"],
 menuitem[id="placesContext_delete"],
 menuitem[id="placesContext_delete_history"],
 menuitem[id="placesContext_deleteHost"],
-#context_zenDeleteWebPanel {
+#context_zenDeleteWebPanel,
+#context_zenDeleteWorkspace {
 	--menu-image: url("edit-delete.svg");
 }
 

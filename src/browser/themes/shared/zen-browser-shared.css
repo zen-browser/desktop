@@ -472,52 +472,59 @@ panelmultiview {
 
 @media (-moz-bool-pref: "zen.view.compact") {
   #navigator-toolbox,
-  #zen-appcontent-navbar-container #PersonalToolbar {
-    position: absolute;
+  #zen-appcontent-navbar-container #nav-bar {
     z-index: 1;
-    overflow: hidden;
     opacity: 0;
+    transition: .2s;
   }
 
   #navigator-toolbox {
-    width: 1px;
+    max-width: 1px;
     min-width: 0;
-    height: 100%;
   }
 
-  #zen-appcontent-navbar-container #PersonalToolbar {
+  #zen-appcontent-navbar-container #nav-bar {
     min-height: 0;
-    height: 1px;
-    width: 100%;
-  }
-
-  #navigator-toolbox:hover,
-  #navigator-toolbox:has([open="true"]) {
-    width: unset;
-    overflow: visible;
-    opacity: 1;
-  }
-
-  #zen-appcontent-navbar-container #PersonalToolbar:hover,
-  #zen-appcontent-navbar-container #PersonalToolbar:has([open="true"]) {
-    height: unset;
-    background: var(--zen-themed-toolbar-bg) !important;
-    overflow: visible;
-    border-bottom: var(--zen-appcontent-border) !important;
-    opacity: 1;
-  }
-  
-  #navigator-toolbox:hover #titlebar,
-  #navigator-toolbox:has([open="true"]:not(tab)) #titlebar {
-    background: var(--zen-themed-toolbar-bg) !important;
-    border-right: var(--zen-appcontent-border) !important;
-    padding: 0 5px;
+    max-height: 1px;
   }
 
   #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     margin: 10px !important;
     margin-right: 0 !important;
+    margin-top: 0 !important;
     width: -moz-available;
+  }
+
+  :root:has(
+    :is(
+      #navigator-toolbox:hover,
+      #navigator-toolbox *[open="true"],
+      #zen-appcontent-navbar-container:hover,
+      #zen-appcontent-navbar-container *[open="true"]
+    )
+  ) {
+    & #zen-appcontent-navbar-container #nav-bar,
+    & #navigator-toolbox { 
+      max-width: unset;
+      max-height: unset;
+      overflow: visible;
+      opacity: 1;
+      background: transparent !important;
+    }
+
+    & #navigator-toolbox {
+      border-right: var(--zen-appcontent-border) !important;
+      width: unset;
+      padding: 5px;
+    }
+
+    & #zen-appcontent-navbar-container #nav-bar {
+      border-bottom: var(--zen-appcontent-border) !important;
+    }
+
+    & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+      margin-top: 10px !important;
+    }
   }
 }
 

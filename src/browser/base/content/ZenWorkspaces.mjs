@@ -94,6 +94,8 @@ var ZenWorkspaces = {
     }
     json.workspaces = json.workspaces.filter(workspace => workspace.uuid !== windowID);
     await IOUtils.writeJSON(this._storeFile, json);
+    this._workspaceCache = null;
+    await this._propagateWorkspaceData();
   },
 
   async saveWorkspaces() {
@@ -126,14 +128,30 @@ var ZenWorkspaces = {
       element.className = "subviewbutton";
       element.setAttribute("tooltiptext", workspace.name);
       element.setAttribute("zen-workspace-id", workspace.uuid);
-      element.innerHTML = `
+      let childs = window.MozXULElement.parseXULToFragment(`
         <div class="zen-workspace-icon">
           ${workspace.name[0].toUpperCase()}
         </div>
         <div class="zen-workspace-name">
           ${workspace.name}
         </div>
-      `;
+        <toolbarbutton closemenu="none" class="toolbarbutton-1 zen-workspace-actions">
+          <image class="toolbarbutton-icon" id="zen-workspace-actions-menu-icon"></image>
+        </toolbarbutton>
+      `);
+      childs.querySelector(".zen-workspace-actions").addEventListener("command", (event) => {
+        event.stopPropagation();
+        let button = event.target;
+        const popup = button.ownerDocument.getElementById(
+          "zenWorkspaceActionsMenu"
+        );
+        popup.openPopup(button, "after_end", 0,
+          0,
+          true /* isContextMenu */,
+          false /* attributesOverride */,
+          event);
+      });
+      element.appendChild(childs);
       element.onclick = (async () => {
         await this.changeWorkspace(workspace)
         let panel = document.getElementById("PanelUI-zen-workspaces");
@@ -311,6 +329,23 @@ var ZenWorkspaces = {
       tab.setAttribute("zen-workspace-id", activeWorkspace.uuid);
     }
   },
+
+  // Context menu management
+
+  _contextMenuId: null,
+  updateContextMenu(event) {
+    event.preventDefault();
+    let target = event.target;
+    let workspace = target.closest("[zen-workspace-id]");
+    if (!workspace) {
+      return;
+    }
+    _contextMenuId = workspace.getAttribute("zen-workspace-id");
+  },
+
+  contextDelete() {
+    this.removeWorkspace(_contextMenuId);
+  }
 };
 
 ZenWorkspaces.init();

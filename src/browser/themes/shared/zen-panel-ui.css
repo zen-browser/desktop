@@ -315,6 +315,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  & .zen-workspace-actions {
+    margin: 0;
+    margin-left: auto !important;
+  }
 }
 
 #PanelUI-zen-workspaces-current-info toolbarbutton:first-child {

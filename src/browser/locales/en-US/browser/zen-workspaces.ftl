@@ -11,3 +11,7 @@ zen-panel-ui-workspaces-create-save =
 zen-panel-ui-workspaces-create-cancel =
   .label = Cancel
   .accesskey = C
+
+zen-workspaces-panel-context-delete = 
+    .label = Delete Workspace
+    .accesskey = D

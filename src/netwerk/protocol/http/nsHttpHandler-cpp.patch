@@ -1,27 +1,19 @@
 diff --git a/netwerk/protocol/http/nsHttpHandler.cpp b/netwerk/protocol/http/nsHttpHandler.cpp
-index 0ddb378e2b2ca20edc9cf7494d80d308d8cf51eb..79d8797fe31f678d7a712ddcd11eb90a727319a6 100644
+index 0ddb378e2b2ca20edc9cf7494d80d308d8cf51eb..f311cf92a16d652e24d479038f2ccad5f19b27d4 100644
 --- a/netwerk/protocol/http/nsHttpHandler.cpp
 +++ b/netwerk/protocol/http/nsHttpHandler.cpp
-@@ -860,19 +860,9 @@ void nsHttpHandler::BuildUserAgent() {
-   mUserAgent += '/';
+@@ -861,12 +861,12 @@ void nsHttpHandler::BuildUserAgent() {
    mUserAgent += mProductSub;
  
--  bool isFirefox = mAppName.EqualsLiteral("Firefox");
+   bool isFirefox = mAppName.EqualsLiteral("Firefox");
 -  if (isFirefox || mCompatFirefoxEnabled) {
--    // "Firefox/x.y" (compatibility) app token
--    mUserAgent += ' ';
--    mUserAgent += mCompatFirefox;
--  }
++  if (isFirefox || mCompatFirefoxEnabled || true) {
+     // "Firefox/x.y" (compatibility) app token
+     mUserAgent += ' ';
+     mUserAgent += mCompatFirefox;
+   }
 -  if (!isFirefox) {
--    // App portion
--    mUserAgent += ' ';
--    mUserAgent += mAppName;
--    mUserAgent += '/';
--    mUserAgent += mAppVersion;
--  }
-+
-+  mUserAgent += ' ';
-+  mUserAgent += mCompatFirefox;
- }
- 
- #ifdef XP_WIN
++  if (!isFirefox && false) {
+     // App portion
+     mUserAgent += ' ';
+     mUserAgent += mAppName;

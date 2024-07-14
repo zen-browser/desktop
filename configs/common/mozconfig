@@ -6,6 +6,8 @@ ac_add_options --without-wasm-sandboxed-libraries
 ac_add_options --with-branding=${brandingDir}
 
 ac_add_options --with-app-name=${binName}
+ac_add_options --with-app-basename=Zen
+
 export MOZ_USER_DIR="${name}"
 export MOZ_APP_VENDOR="${vendor}"
 export MOZ_APP_BASENAME=Zen
@@ -15,7 +17,7 @@ export MOZ_BRANDING_DIRECTORY=${brandingDir}
 export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}
 export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_DISTRIBUTION_ID=${appId}
-export MOZ_MACBUNDLE_NAME="${name}.app"
+export MOZ_MACBUNDLE_NAME="Zen Browser.app"
 
 # Uncomment if builds are too resource hungry
 # mk_add_options MOZ_MAKE_FLAGS="-j4"
@@ -25,9 +27,7 @@ export MOZ_MACBUNDLE_NAME="${name}.app"
 export MOZ_STUB_INSTALLER=1
 export MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
 export MOZ_SOURCE_CHANGESET=${changeset}
-if ! test "$ZEN_RELEASE"; then
-  export MOZ_INCLUDE_SOURCE_INFO=1
-fi
+export MOZ_INCLUDE_SOURCE_INFO=1
 
 ac_add_options --enable-bootstrap
 

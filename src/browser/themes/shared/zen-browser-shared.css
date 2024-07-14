@@ -517,9 +517,9 @@ panelmultiview {
   :root:has(
     :is(
       #navigator-toolbox:hover,
-      #navigator-toolbox *[open="true"],
+      #navigator-toolbox *[open="true"]:not(tab),
       #zen-appcontent-navbar-container:hover,
-      #zen-appcontent-navbar-container *[open="true"]
+      #zen-appcontent-navbar-container *[open="true"]:not(tab)
     )
   ) {
     & #zen-appcontent-navbar-container #nav-bar,

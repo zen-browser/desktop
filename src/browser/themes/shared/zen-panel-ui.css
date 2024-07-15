@@ -317,8 +317,14 @@
   }
 
   & .zen-workspace-actions {
+    display: none;
     margin: 0;
     margin-left: auto !important;
+  }
+
+  &:hover .zen-workspace-actions,
+  & .zen-workspace-actions[active="true"] {
+    display: flex;
   }
 }
 

@@ -105,6 +105,15 @@ pref('layout.css.backdrop-filter.enabled', true);
 pref("alerts.showFavicons", true);
 pref('browser.toolbars.bookmarks.visibility', 'never');
 
+// Enable Do Not Track and GPC by default.
+pref("privacy.donottrackheader.enabled", true);
+pref("privacy.globalprivacycontrol.enabled", true);
+// Disable more telemetry
+pref("toolkit.telemetry.enabled", false);
+pref("browser.ping-centre.telemetry", false);
+pref("browser.attribution.enabled", false);
+pref("toolkit.telemetry.pioneer-new-studies-available", false);
+
 // CUSTOM ZEN PREFS
 
 pref('zen.welcomeScreen.enabled', true);

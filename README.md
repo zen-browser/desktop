@@ -53,5 +53,5 @@ Please adhere to this project's `code of conduct`.
 
 ## License
 
-[MPL LICENSE](https://choosealicense.com/licenses/mit/)
+[MPL LICENSE](,/LICENSE)
 

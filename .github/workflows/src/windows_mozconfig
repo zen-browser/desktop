@@ -22,10 +22,6 @@ export MOZ_STUB_INSTALLER=1
 export WINEDEBUG=-all
 export WINE="$TOOLS/wine/bin/wine64"
 
-ac_add_options --enable-release
-ac_add_options --enable-rust-simd
-ac_add_options RUSTC_OPT_LEVEL=3
-export MOZILLA_OFFICIAL=1
 export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 
 ac_add_options --enable-default-browser-agent

@@ -141,6 +141,8 @@ pref('dom.enable_web_task_scheduling', true);
 pref('layout.css.has-selector.enabled', true);
 pref('dom.security.sanitizer.enabled', true);
 
+pref('layers.acceleration.force-enabled', true);
+
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 

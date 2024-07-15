@@ -41,6 +41,7 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --with-ccache=sccache
   ac_add_options --disable-debug
   ac_add_options --disable-debug-js-modules
+  ac_add_options --disable-debug-symbols
 
   ac_add_options --disable-crashreporter
   ac_add_options --disable-dmd
@@ -58,7 +59,6 @@ if test "$ZEN_RELEASE"; then
   mk_add_options MOZ_OPTIMIZE=1
   MOZ_OPTIMIZE=1
   export MOZ_OPTIMIZE=1
-  export STRIP_FLAGS="--strip-debug --strip-unneeded"
 
   export OPT_LEVEL="3"
   ac_add_options OPT_LEVEL="3"

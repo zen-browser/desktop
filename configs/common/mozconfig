@@ -44,7 +44,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-install-strip
   ac_add_options --enable-clang-plugin
   ac_add_options --enable-lto=full
-  ac_add_options --linker=lld
   ac_add_options --enable-wasm-avx
   ac_add_options --enable-rust-simd
   ac_add_options --disable-parental-controls

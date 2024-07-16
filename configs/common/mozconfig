@@ -60,8 +60,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-hardening
   ac_add_options --enable-sandbox
 
-  ac_add_options --enable-rust-si
-
   ac_add_options --disable-crashreporter
   ac_add_options --disable-dmd
   ac_add_options --disable-geckodriver

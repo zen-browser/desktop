@@ -7,7 +7,7 @@ export WINEDEBUG=-all
 
 #? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
 #? https://phabricator.services.mozilla.com/D170170
-ac_add_options --target=x86_64-pwindows-msvc
+ac_add_options --target=x86_64-p-windows-msvc
 
 export MOZ_STUB_INSTALLER=1
 export MOZ_PKG_FORMAT=TAR

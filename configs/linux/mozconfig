@@ -1,3 +1,4 @@
+ac_add_options --enable-wasm-avx
 
 # not when cross compiling
 if ! test "$ZEN_CROSS_COMPILING"; then

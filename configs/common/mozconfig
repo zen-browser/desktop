@@ -49,7 +49,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-rust-simd
   ac_add_options --disable-parental-controls
   ac_add_options --disable-crashreporter
-  ac_add_options --disable-maintenance-service
   ac_add_options --enable-jemalloc
   mk_add_options MOZ_PARALLEL_COMPILE=1
   mk_add_options MOZ_CRASHREPORTER=0

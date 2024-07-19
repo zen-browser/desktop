@@ -202,9 +202,7 @@ jobs:
           cd ..
 
       - name: Build
-        run: |
-          export ZEN_RELEASE=1
-          pnpm build
+        run: sh .github/workflows/src/alpha-build.sh
 
       - name: Package
         run: pnpm package
@@ -327,9 +325,8 @@ jobs:
       - name: Build
         run: |
           unset SURFER_PLATFORM
-          export ZEN_RELEASE=1
           export ZEN_CROSS_COMPILING=1
-          pnpm build
+          sh .github/workflows/src/alpha-build.sh
 
       - name: Package
         run: |
@@ -492,9 +489,7 @@ jobs:
           cd ..
 
       - name: surfer build
-        run: |
-          export ZEN_RELEASE=1
-          pnpm build --verbose
+        run: sh .github/workflows/src/alpha-build.sh
 
       - name: Package
         run: pnpm package

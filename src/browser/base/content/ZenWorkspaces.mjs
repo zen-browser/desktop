@@ -286,7 +286,7 @@ var ZenWorkspaces = {
       workspace.used = workspace.uuid === window.uuid;
     }
     this.unsafeSaveWorkspaces(workspaces);
-    if (numShownTabs === gBrowser.tabs.length) {
+    if (numShownTabs === gBrowser.tabs.length-1) {
       // If all tabs are hidden, we need to create a new tab
       // to show the workspace
       this._createNewTabForWorkspace(window);

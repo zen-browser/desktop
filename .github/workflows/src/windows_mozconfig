@@ -21,8 +21,8 @@ export MOZ_INCLUDE_SOURCE_INFO=1
 export MOZ_STUB_INSTALLER=1
 export WINEDEBUG=-all
 export WINE="$TOOLS/wine/bin/wine64"
-export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
-export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+#export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
+#export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
 
 export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 

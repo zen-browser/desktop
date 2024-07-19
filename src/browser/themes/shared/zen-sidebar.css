@@ -174,3 +174,19 @@
   display: none;
 }
 
+#zen-expand-sidebar-button {
+  display: none;
+}
+
+@media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+  #zen-expand-sidebar-button {
+    display: block; /* TODO? */
+  }
+}
+
+@media (-moz-bool-pref: "zen.view.sidebar-expanded.show-button") {
+  #zen-expand-sidebar-button {
+    display: block;
+  }
+}
+

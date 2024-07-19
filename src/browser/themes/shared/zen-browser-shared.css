@@ -380,7 +380,7 @@ toolbarbutton#scrollbutton-up {
 .tab-close-button {
   position: absolute;
   display: none;
-  left: 50%;
+  left: 0;
   top: 50%;
 }
 
@@ -614,4 +614,66 @@ panelmultiview {
   transition-delay: .5s;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Expanded sidebar */
+
+@media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+  #navigator-toolbox {
+    min-width: 170px;
+    align-items: start;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .tab-label-container {
+    display: block;
+  }
+
+  #titlebar,
+  #TabsToolbar,
+  #TabsToolbar .toolbar-items {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .tabbrowser-tab {
+    width: 100%;
+
+    &:hover .tab-close-button {
+      display: block !important;
+    }
+
+    & .tab-content {
+      position: relative;
+      width: 100%;
+    }
+     
+    & .tab-stack {
+      justify-content: start;
+      padding: 10px;
+    }
+  }
+
+  #zen-workspaces-button {
+    width: -moz-available !important;
+  }
+
+  .tab-label-container {
+    
+    #tabbrowser-tabs:not([secondarytext-unsupported]) & {
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+    }
+  }
+
+  #zen-sidebar-icons-wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    transition: .1s;
+    border-top: 1px solid var(--zen-colors-border);
+    padding-top: 10px;
+  }
 }

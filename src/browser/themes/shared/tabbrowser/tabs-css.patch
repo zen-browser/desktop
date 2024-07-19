@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 9a915ff442cc7f01ddec3fcea931c21e210cac92..19126b25ac7a63fe193628dd11a93507bd4bc63a 100644
+index 9a915ff442cc7f01ddec3fcea931c21e210cac92..701d0cdf4d5e5a1c2f6baf21c345a7e3b6f26592 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -39,7 +39,7 @@
@@ -29,16 +29,16 @@ index 9a915ff442cc7f01ddec3fcea931c21e210cac92..19126b25ac7a63fe193628dd11a93507
        display: block;
      }
    }
-@@ -360,7 +360,7 @@
-   &[selected]:not([src], [pinned], [crashed], [pictureinpicture]),
-   &:not([src], [pinned], [crashed], [sharing], [pictureinpicture]),
-   &[busy] {
--    display: none;
-+    /*display: none;*/
+@@ -357,8 +357,6 @@
+     animation-delay: -1.5s;
    }
- }
  
-@@ -627,7 +627,7 @@
+-  &[selected]:not([src], [pinned], [crashed], [pictureinpicture]),
+-  &:not([src], [pinned], [crashed], [sharing], [pictureinpicture]),
+   &[busy] {
+     display: none;
+   }
+@@ -627,7 +625,7 @@
  
  #tabbrowser-tabs[haspinnedtabs]:not([positionpinnedtabs]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab:nth-child(1 of :not([pinned], [hidden])) {
    /* Add a gap between the last pinned tab and the first visible tab */
@@ -47,7 +47,7 @@ index 9a915ff442cc7f01ddec3fcea931c21e210cac92..19126b25ac7a63fe193628dd11a93507
  }
  
  .tab-label[attention]:not([selected]) {
-@@ -737,6 +737,7 @@
+@@ -737,6 +735,7 @@
  .titlebar-spacer[type="pre-tabs"],
  .titlebar-spacer[type="post-tabs"] {
    width: 40px;
@@ -55,7 +55,7 @@ index 9a915ff442cc7f01ddec3fcea931c21e210cac92..19126b25ac7a63fe193628dd11a93507
  }
  
  @media (max-width: 500px) {
-@@ -752,7 +753,7 @@
+@@ -752,7 +751,7 @@
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)
  ) + #tabbrowser-tabs {

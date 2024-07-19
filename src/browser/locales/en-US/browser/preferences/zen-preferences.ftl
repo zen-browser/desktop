@@ -33,3 +33,11 @@ zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!
 zen-settings-workspaces-enabled = 
     .label = Enable Workspaces (Experimental)
+
+zen-vertical-tabs-title = Sidebar and tabs layout
+zen-vertical-tabs-header = Vertical Tabs
+zen-vertical-tabs-description = Manage your tabs in a vertical layout
+zen-vertical-tabs-show-expand-button = 
+    .label = Show Expand Button
+zen-vertical-tabs-expand-tabs-by-default = 
+    .label = Expand Tabs by Default

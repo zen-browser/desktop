@@ -42,4 +42,23 @@
             preference="zen.sidebar.enabled"/>
 </groupbox>
 
+<hbox id="zenVerticalTabsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-vertical-tabs-title"/>
+</hbox>
+
+<groupbox id="zenVerticalTabsGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-vertical-tabs-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-vertical-tabs-description" />
+
+      <checkbox id="zenLooksAndFeelShowTabExpandButton"
+            data-l10n-id="zen-vertical-tabs-show-expand-button"
+            preference="zen.view.sidebar-expanded.show-button"/>
+      <checkbox id="zenLooksAndFeelExpandTabsByDefault"
+            data-l10n-id="zen-vertical-tabs-expand-tabs-by-default"
+            preference="zen.view.sidebar-expanded"/>
+</groupbox>
+
 </html:template>

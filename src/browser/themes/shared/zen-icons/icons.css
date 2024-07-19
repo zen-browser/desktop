@@ -355,7 +355,8 @@
 }
 
 #PlacesChevron,
-#urlbar-go-button {
+#urlbar-go-button,
+#zen-expand-sidebar-button {
 	list-style-image: url("arrow-right.svg") !important;
 }
 

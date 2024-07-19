@@ -22,3 +22,42 @@ var gZenUIManager = {
     SidebarController.toggle('viewBookmarksSidebar', button);
   },
 };
+
+var gZenVerticalTabsManager = {
+  init() {
+    //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
+    //Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
+  },
+
+  //_updateEvent() {
+  //  this._updateExpandButton();
+  //},
+
+  get expanded() {
+    return Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+  },
+
+  get expandButton() {
+    if (this._expandButton) {
+      return this._expandButton;
+    }
+    this._expandButton = document.getElementById('zen-expand-sidebar-button');
+    return this._expandButton;
+  },
+
+  //_updateExpandButton() {
+  //  let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
+  //  let button = this.expandButton;
+  //  let expanded = this.expanded;
+  //  if (expanded && !isCompactMode) {
+  //    button.setAttribute('open', 'true');
+  //  } else {
+  //    button.removeAttribute('open');
+  //  }
+  //},
+
+  toggleExpand() {
+    let expanded = !this.expanded;
+    Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
+  },
+};

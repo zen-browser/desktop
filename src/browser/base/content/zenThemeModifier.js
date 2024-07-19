@@ -95,6 +95,8 @@
 
     _zenInitBrowserLayout() {
       if (!this._inMainBrowserWindow) return;
+      if (this.__hasInitBrowserLayout) return;
+      this.__hasInitBrowserLayout = true;
       this.openWatermark();
       console.log("ZenThemeModifier: init browser layout");
       const kNavbarItems = [
@@ -120,6 +122,8 @@
       const securityButton = document.getElementById("tracking-protection-icon-container");
       document.getElementsByClassName("urlbar-input-container")[0].insertBefore(securityButton, document.getElementById("page-action-buttons"));
     
+      gZenVerticalTabsManager.init();
+
       const mainWindowEl = document.documentElement;
       // Dont override the sync avatar if it's already set
       if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {

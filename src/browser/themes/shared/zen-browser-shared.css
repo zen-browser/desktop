@@ -724,4 +724,8 @@ panelmultiview {
     grid-template-columns: 1fr 1fr 1fr;
     transition: .1s;
   }
+
+  #zen-sidebar-icons-wrapper::before {
+    width: 100%;
+  }
 }

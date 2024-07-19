@@ -616,6 +616,12 @@ panelmultiview {
   pointer-events: none;
 }
 
+@media not (-moz-bool-pref: "zen.watermark.enabled") {
+  #zen-watermark {
+    display: none;
+  }
+}
+
 /* Expanded sidebar */
 #zen-sidebar-splitter {
   display: none;

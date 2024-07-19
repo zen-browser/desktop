@@ -39,7 +39,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
   ac_add_options --enable-strip
   ac_add_options --enable-install-strip
-  ac_add_options --enable-lto=full
   
   ac_add_options --enable-rust-simd
   ac_add_options --disable-parental-controls

@@ -34,7 +34,8 @@
 	list-style-image: url("sidebars-right.svg") !important;
 }
 
-#context_zenSplitTabs {
+#context_zenSplitTabs,
+#context-zenAddToWebPanel {
 	/* TODO: Add split view icon */
 	--menu-image: url("sidebars-right.svg") !important;
 }

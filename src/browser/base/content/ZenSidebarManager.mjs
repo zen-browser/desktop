@@ -19,6 +19,7 @@ var gZenBrowserManagerSidebar = {
     this.update();
     this.close(); // avoid caching
     this.listenForPrefChanges();
+    this.insertIntoContextMenu();
   },
 
   get sidebarData() {
@@ -229,6 +230,19 @@ var gZenBrowserManagerSidebar = {
     }
     this._currentPanel = panelId;
     this._updateWebPanel();
+  },
+
+  _createNewPanel(url) {
+    let data = this.sidebarData;
+    let newName = "p" + new Date().getTime();
+    data.index.push(newName);
+    data.data[newName] = {
+      url: url,
+      ua: false,
+    };
+    Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(data));
+    this._currentPanel = newName;
+    this.update();
   },
 
   _updateButtons() {
@@ -476,6 +490,21 @@ var gZenBrowserManagerSidebar = {
     let browser = this._getBrowserById(this.contextTab);
     browser.remove();
     this._closeSidebarPanel();
+  },
+
+  insertIntoContextMenu() {
+    const sibling = document.getElementById("context-stripOnShareLink");
+    const menuitem = document.createXULElement("menuitem");
+    menuitem.setAttribute("id", "context-zenAddToWebPanel");
+    menuitem.setAttribute("hidden", "true");
+    menuitem.setAttribute("oncommand", "gZenBrowserManagerSidebar.addPanelFromContextMenu();");
+    menuitem.setAttribute("data-l10n-id", "zen-web-side-panel-context-add-to-panel");
+    sibling.insertAdjacentElement("afterend", menuitem);
+  },
+
+  addPanelFromContextMenu() {
+    const url = gContextMenu.linkURL || gContextMenu.target.ownerDocument.location.href;
+    this._createNewPanel(url);
   },
 };
 

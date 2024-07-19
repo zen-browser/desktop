@@ -21,3 +21,8 @@ zen-web-side-panel-context-delete =
 zen-web-side-panel-open-in-new-tab =
     .label = Open in New Tab
     .accesskey = N
+
+
+zen-web-side-panel-context-add-to-panel =
+    .label = Add to Web Panels
+    .accesskey = A

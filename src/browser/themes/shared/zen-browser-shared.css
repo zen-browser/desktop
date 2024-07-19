@@ -650,29 +650,29 @@ panelmultiview {
     align-items: flex-start;
   }
 
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) {
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) {
     width: 100% !important;
     justify-content: start;
     border-radius: 8px;
   }
 
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button):hover {
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button):hover {
     background: var(--button-hover-bgcolor);
   }
 
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text {
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text {
     display: block;
     margin: 0 !important;
     padding-left: 0 !important;
   }
 
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text {
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text {
     text-align: start;
   }
 
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text,
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-icon,
-  #TabsToolbar toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-badge-stack {
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-text,
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-icon,
+  #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) .toolbarbutton-badge-stack {
     background: transparent !important;
   }
 

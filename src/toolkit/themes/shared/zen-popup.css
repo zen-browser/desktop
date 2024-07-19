@@ -380,7 +380,6 @@ hbox.editBMPanel_folderRow {
 menu, menuitem {
   &:where([_moz-menuactive]:not([disabled="true"])) {
     background-color: var(--button-hover-bgcolor);
-    color: light-dark(black, white);    
   }
 }
 

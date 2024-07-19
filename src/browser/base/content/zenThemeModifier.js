@@ -90,6 +90,15 @@ var ZenThemeModifier = {
       }
     }
     appWrapepr.setAttribute("hidden", "true");
+
+    // Set a splitter to navigator-toolbox
+    const splitter = document.createXULElement("splitter");
+    splitter.setAttribute("id", "zen-sidebar-splitter");
+    splitter.setAttribute("orient", "horizontal");
+    splitter.setAttribute("resizebefore", "sibling");
+    splitter.setAttribute("resizeafter", "none");
+    const titlebar = document.getElementById("navigator-toolbox");
+    titlebar.insertAdjacentElement("afterend", splitter);
   },
 
   _zenInitBrowserLayout() {

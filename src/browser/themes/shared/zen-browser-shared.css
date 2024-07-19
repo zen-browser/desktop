@@ -617,13 +617,26 @@ panelmultiview {
 }
 
 /* Expanded sidebar */
+#zen-sidebar-splitter {
+  display: none;
+  opacity: 0;
+}
 
 @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
   #navigator-toolbox {
-    min-width: 170px;
+    min-width: 150px;
     align-items: start;
     padding-left: 10px;
     padding-right: 10px;
+    max-width: 210px;
+    transition: .2s;
+    width: 170px;
+    border: none;
+  }
+
+  #zen-sidebar-splitter {
+    display: block;
+    width: 1px;
   }
 
   .tab-label-container {

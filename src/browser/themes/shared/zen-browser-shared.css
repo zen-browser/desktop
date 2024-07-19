@@ -331,8 +331,20 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {
-  /*border-color: light-dark(var(--zen-colors-border), rgba(255, 255, 255, 0.15));*/
   background: var(--toolbarbutton-hover-background);
+}
+
+.tabbrowser-tab::after {
+  background: var(--identity-tab-color, transparent);
+  border-radius: 2px;
+  height: 80%;
+  width: 2px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -2px;
+  content: '';
+  pointer-events: none;
 }
 
 .tabbrowser-tab {

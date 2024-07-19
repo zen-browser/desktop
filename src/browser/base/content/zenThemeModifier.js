@@ -128,13 +128,20 @@
       let profile = ProfileService.currentProfile;
       if (!profile || profile.zenAvatarPath == "") return;
       // TODO: actually use profile data to generate the avatar, instead of just using the name
-      console.log("ZenThemeModifier: setting avatar image to", profile.zenAvatarPath);
-      mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${profile.zenAvatarPath})`);
+      let avatarUrl = profile.zenAvatarPath;
+      if (document.documentElement.hasAttribute("privatebrowsingmode")) {
+        avatarUrl = "chrome://global/skin/icons/indicator-private-browsing.svg";
+      }
+      console.log("ZenThemeModifier: setting avatar image to", avatarUrl);
+      mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${avatarUrl})`);
       mainWindowEl.style.setProperty("--avatar-image-url", `var(--zen-avatar-image-url)`, "important");
       this.closeWatermark();
     },
 
     openWatermark() {
+      if (!Services.prefs.getBoolPref("zen.watermark.enabled", false)) {
+        return;
+      }
       const watermark = document.getElementById("zen-watermark");
       if (watermark) {
         watermark.removeAttribute("hidden");

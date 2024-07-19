@@ -3,10 +3,11 @@ var ZenWorkspaces = {
   async init() {
     let docElement = document.documentElement;
     if (docElement.getAttribute("chromehidden").includes("toolbar")
-      || docElement.getAttribute("chromehidden").includes("menubar")) {
+      || docElement.getAttribute("chromehidden").includes("menubar")
+      || docElement.hasAttribute("privatebrowsingmode")) {
       console.log("!!! ZenWorkspaces is disabled in hidden windows !!!");
       return; // We are in a hidden window, don't initialize ZenWorkspaces
-    }
+    } 
     console.log("Initializing ZenWorkspaces...");
     await this.initializeWorkspaces();
     console.log("ZenWorkspaces initialized");

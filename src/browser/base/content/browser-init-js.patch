@@ -1,13 +1,14 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index a79a9734619f89639c15087fe28e9615354a7209..212628c6fb2bed5ba17a3d2908f5d4b2376fa95e 100644
+index a79a9734619f89639c15087fe28e9615354a7209..b7e6a413e02ed047e19de1db3866087a1fdc5c4a 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -230,6 +230,8 @@ var gBrowserInit = {
-       gURLBar.readOnly = true;
-     }
- 
+@@ -237,6 +237,9 @@ var gBrowserInit = {
+     gPrivateBrowsingUI.init();
+     BrowserSearch.init();
+     BrowserPageActions.init();
++
 +    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
-+    
-     // Misc. inits.
-     gUIDensity.init();
-     TabletModeUpdater.init();
++
+     if (gToolbarKeyNavEnabled) {
+       ToolbarKeyboardNavigator.init();
+     }

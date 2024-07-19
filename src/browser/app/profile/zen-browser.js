@@ -165,3 +165,6 @@ pref('zen.splitView.working', false);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
+
+// Zen Watermark
+pref('zen.watermark.enabled', true);

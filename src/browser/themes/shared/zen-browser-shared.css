@@ -334,6 +334,10 @@ toolbarbutton#scrollbutton-up {
   background: var(--toolbarbutton-hover-background);
 }
 
+#private-browsing-indicator-with-label {
+  display: none !important;
+}
+
 .tabbrowser-tab::after {
   background: var(--identity-tab-color, transparent);
   border-radius: 2px;
@@ -607,7 +611,7 @@ panelmultiview {
 
 #zen-watermark[hidden="true"] {
   transition: 0.6s;
-  transition-delay: 1.5s;
+  transition-delay: .5s;
   opacity: 0;
   pointer-events: none;
 }

@@ -277,15 +277,15 @@ var ZenWorkspaces = {
     }
     let firstTab = undefined;
     // Get the number of tabs that are hidden before we start hiding them
-    let numHiddenTabs = gBrowser.tabs.reduce((acc, tab) => {
-      return tab.getAttribute("zen-workspace-id") !== window.uuid ? acc + 1 : acc;
+    let numShownTabs = gBrowser.tabs.reduce((acc, tab) => {
+      return (tab.getAttribute("zen-workspace-id") === window.uuid) ? acc + 1 : acc;
     }, 0);
     let workspaces = await this._workspaces();
     for (let workspace of workspaces.workspaces) {
       workspace.used = workspace.uuid === window.uuid;
     }
     this.unsafeSaveWorkspaces(workspaces);
-    if (numHiddenTabs === gBrowser.tabs.length) {
+    if (numShownTabs === gBrowser.tabs.length) {
       // If all tabs are hidden, we need to create a new tab
       // to show the workspace
       this._createNewTabForWorkspace(window);

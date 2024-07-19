@@ -27,7 +27,7 @@ var ZenProfileDialogUI = {
       name.className = 'PanelUI-zen-profiles-item-name';
       name.appendChild(document.createTextNode(profile.name));
       name.container = true;
-      avatar.setAttribute('src', profile.zenAvatarPath);
+      avatar.setAttribute('src', ZenThemeModifier._getThemedAvatar(profile.zenAvatarPath));
       item.appendChild(avatar);
       item.appendChild(name);
       parentList.appendChild(item);

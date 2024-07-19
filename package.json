@@ -13,7 +13,7 @@
     "package": "surfer package",
     "update-ff": "python3 scripts/update_ff.py",
     "update-ff:raw": "surfer update",
-    "update-newtab": "python3 update_newtab.py"
+    "update-newtab": "python3 scripts/update_newtab.py"
   },
   "repository": {
     "type": "git",

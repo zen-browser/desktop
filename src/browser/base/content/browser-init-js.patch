@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index a79a9734619f89639c15087fe28e9615354a7209..b7e6a413e02ed047e19de1db3866087a1fdc5c4a 100644
+index a79a9734619f89639c15087fe28e9615354a7209..edaef604d33d76b570571e1bbb2ebc590e045d87 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
 @@ -237,6 +237,9 @@ var gBrowserInit = {
@@ -7,7 +7,7 @@ index a79a9734619f89639c15087fe28e9615354a7209..b7e6a413e02ed047e19de1db3866087a
      BrowserSearch.init();
      BrowserPageActions.init();
 +
-+    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", this);
++    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", window);
 +
      if (gToolbarKeyNavEnabled) {
        ToolbarKeyboardNavigator.init();

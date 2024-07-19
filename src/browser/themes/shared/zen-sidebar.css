@@ -134,6 +134,7 @@
   background-position: center;
   width: 20px;
   height: 20px;
+  border: 2px solid var(--zen-colors-border);
 }
 
 /* Ugly code */

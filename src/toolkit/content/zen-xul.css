@@ -59,3 +59,23 @@ panel[type="arrow"][animate][animate="open"] {
     transform: scale3d(1, 1, 1);
   }
 }
+
+@keyframes zen-jello-out-animation {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  60% {
+    transform: scale3d(1.02, 1.02, 1.02);
+  }
+
+  99% {
+    opacity: 0;
+    transform: scale3d(0.8, 0.8, 0.8);
+  }
+
+  100% {
+    -moz-window-transform: none;
+    transform: none;
+  }
+}

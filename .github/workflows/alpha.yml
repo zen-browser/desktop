@@ -288,7 +288,6 @@ jobs:
           sudo apt install -y msitools python3-pip
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
           
-          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
  
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
@@ -303,7 +302,6 @@ jobs:
           cat ../configs/common/mozconfig
 
           ls ~/win-cross/wine || true
-          ls ~/win-cross/vs2022 || true
   
       - name: setup Rust 
         run: |
@@ -321,6 +319,14 @@ jobs:
 
       - name: Import
         run: pnpm surfer import --verbose  
+
+      - name: Setup vs2022 and PGO
+        run: |
+          cd engine/
+          export GEN_PGO=1
+          ./mach python --virtualenv build ./taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml $HOME/win-cross
+          ls ~/win-cross/vs2022 || true
+          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
 
       - name: Build
         run: |

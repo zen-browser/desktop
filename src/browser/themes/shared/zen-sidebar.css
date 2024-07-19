@@ -169,6 +169,20 @@
   align-items: center;
   justify-content: end;
   min-height: fit-content;
+  --zen-sidebar-action-content-separator: 15px;
+  padding-top: var(--zen-sidebar-action-content-separator);
+  margin-top:  var(--zen-sidebar-action-content-separator);
+}
+
+#zen-sidebar-icons-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: var(--zen-colors-border);
 }
 
 #zen-sidepanel-button[hidden="true"] {

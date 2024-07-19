@@ -723,7 +723,5 @@ panelmultiview {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     transition: .1s;
-    border-top: 1px solid var(--zen-colors-border);
-    padding-top: 10px;
   }
 }

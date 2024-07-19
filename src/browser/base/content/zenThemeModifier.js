@@ -135,8 +135,17 @@ var ZenThemeModifier = {
     this._updateZenAvatar();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
 
-    this._updateTabsToolbar();
-    window.addEventListener("resize", this._onResize.bind(this));
+    function throttle(f, delay) {
+      let timer = 0;
+      return function(...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => f.apply(this, args), delay);
+      }
+    }
+
+    new ResizeObserver(throttle(
+      this._updateTabsToolbar.bind(this), 1000
+    )).observe(document.getElementById("tabbrowser-tabs"));
 
     this.closeWatermark();
   },
@@ -145,17 +154,14 @@ var ZenThemeModifier = {
     this._updateZenAvatar();
   },
 
-  _onResize(event) {
-    this._updateTabsToolbar();
-  },
-
   _updateTabsToolbar() {
     // Set tabs max-height to the "toolbar-items" height
     const toolbarItems = document.getElementById("tabbrowser-tabs");
     const tabs = document.getElementById("tabbrowser-arrowscrollbox");
+    tabs.style.maxHeight = '0px'; // reset to 0
     const toolbarRect = toolbarItems.getBoundingClientRect();
-    // -5 for the controls padding
-    tabs.style.maxHeight = toolbarRect.height - 5 + "px";
+    // -7 for the controls padding
+    tabs.style.maxHeight = toolbarRect.height - 7 + "px";
     console.log("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 

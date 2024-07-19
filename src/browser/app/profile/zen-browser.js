@@ -168,3 +168,9 @@ pref('zen.workspaces.enabled', true);
 
 // Zen Watermark
 pref('zen.watermark.enabled', true);
+
+// Smooth scrolling
+user_pref('apz.overscroll.enabled', true); // not DEFAULT on Linux
+user_pref('general.smoothScroll', true); // DEFAULT
+
+#include better-fox.js

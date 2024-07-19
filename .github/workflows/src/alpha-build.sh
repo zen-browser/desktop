@@ -1,12 +1,20 @@
 
 export ZEN_RELEASE=1
-# Check if xfvb is installed
-if ! command -v xvfb-run &> /dev/null
+
+if command -v apt-get &> /dev/null
 then
-  echo "xvfb-run could not be found, running without it"
+  sudo apt-get update
+  sudo apt-get install -y xvfb
+fi
+
+# Check if xfvb is installed
+if ! command -v Xvfb &> /dev/null
+then
+  echo "Xvfb could not be found, running without it"
   pnpm build
 else
+  Xvfb :2 -screen 0 1024x768x24 &
   export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
   export DISPLAY=:2
-  xvfb-run -s "-screen 0 1920x1080x24 -nolisten local" pnpm build
 fi
+pnpm build

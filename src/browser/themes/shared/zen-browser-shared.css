@@ -397,6 +397,10 @@ toolbarbutton#scrollbutton-up {
   display: none;
 }
 
+#TabsToolbar-customization-target {
+  height: 100%;
+}
+
 #tabbrowser-tabs {
   margin-inline-start: 0 !important;
   padding-inline-start: 0 !important;
@@ -404,6 +408,7 @@ toolbarbutton#scrollbutton-up {
   /*background: light-dark(rgba(0,0,0,.05), rgba(255,255,255,.05));*/
   margin: 0 !important;
   border: none;
+  height: 100%;
 }
 
 #tabbrowser-arrowscrollbox {

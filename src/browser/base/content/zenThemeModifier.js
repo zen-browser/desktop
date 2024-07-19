@@ -135,11 +135,27 @@ var ZenThemeModifier = {
     this._updateZenAvatar();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
 
+    this._updateTabsToolbar();
+    window.addEventListener("resize", this._onResize.bind(this));
+
     this.closeWatermark();
   },
 
   _onPrefersColorSchemeChange(event) {
     this._updateZenAvatar();
+  },
+
+  _onResize(event) {
+    this._updateTabsToolbar();
+  },
+
+  _updateTabsToolbar() {
+    // Set tabs max-height to the "toolbar-items" height
+    const toolbarItems = document.querySelector("#TabsToolbar > .toolbar-items");
+    const tabs = document.getElementById("tabbrowser-arrowscrollbox");
+    const toolbarRect = toolbarItems.getBoundingClientRect();
+    tabs.style.maxHeight = toolbarRect.height - toolbarRect.top + "px";
+    console.log("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 
   _updateZenAvatar() {

@@ -151,10 +151,11 @@ var ZenThemeModifier = {
 
   _updateTabsToolbar() {
     // Set tabs max-height to the "toolbar-items" height
-    const toolbarItems = document.querySelector("#TabsToolbar > .toolbar-items");
+    const toolbarItems = document.getElementById("tabbrowser-tabs");
     const tabs = document.getElementById("tabbrowser-arrowscrollbox");
     const toolbarRect = toolbarItems.getBoundingClientRect();
-    tabs.style.maxHeight = toolbarRect.height - toolbarRect.top + "px";
+    // -5 for the controls padding
+    tabs.style.maxHeight = toolbarRect.height - 5 + "px";
     console.log("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 

@@ -1,5 +1,4 @@
 
-ac_add_options --enable-js-shell 
 
 # Disable telemetry and tracking
 mk_add_options MOZ_TELEMETRY_REPORTING=

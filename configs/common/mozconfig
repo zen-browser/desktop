@@ -64,6 +64,10 @@ if test "$ZEN_RELEASE"; then
     export MOZ_LTO=full
     ac_add_options MOZ_LTO=full
     ac_add_options --enable-lto=full
+  else 
+    export MOZ_LTO=cross,full
+    ac_add_options MOZ_LTO=cross,full
+    ac_add_options --enable-lto=cross,full
   fi
 
   mk_add_options MOZILLA_OFFICIAL=1

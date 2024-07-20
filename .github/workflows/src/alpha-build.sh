@@ -11,6 +11,7 @@ fi
 # Check if xfvb is installed
 if ! command -v Xvfb &> /dev/null
 then
+  ulimit -n 4096
   Xvfb :2 -screen 0 1024x768x24 &
   export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
   export DISPLAY=:2

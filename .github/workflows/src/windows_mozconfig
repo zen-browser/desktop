@@ -30,6 +30,7 @@ ac_add_options --enable-default-browser-agent
 ac_add_options --enable-install-strip
 ac_add_options --enable-jxl
 ac_add_options --disable-maintenance-service
+ac_add_options --disable-profiling
 
 ac_add_options --disable-bits-download
 

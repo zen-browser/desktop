@@ -300,6 +300,9 @@ jobs:
           
       - name: Bootstrap
         run: |
+          set -x
+          cd engine/
+
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
           cd ..

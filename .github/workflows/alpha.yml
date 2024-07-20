@@ -303,6 +303,8 @@ jobs:
           set -x
           cd engine/
 
+          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
+
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
           cd ..
@@ -316,6 +318,7 @@ jobs:
           cat ../configs/common/mozconfig
 
           ls ~/win-cross/wine || true
+          ls ~/win-cross/vs2022 || true
   
       - name: setup Rust 
         run: |

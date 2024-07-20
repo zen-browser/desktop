@@ -48,11 +48,7 @@ if test "$ZEN_RELEASE"; then
   mk_add_options MOZ_DATA_REPORTING=0
   mk_add_options MOZ_SERVICES_HEALTHREPORT=0
   mk_add_options MOZ_TELEMETRY_REPORTING=0
-
-  if ! test "$ZEN_CROSS_COMPILING"; then
-    ac_add_options --enable-jemalloc
-    ac_add_options --enable-linker=lld
-  fi
+  ac_add_options --enable-jemalloc
   
   ac_add_options --enable-hardening
   ac_add_options --enable-sandbox
@@ -63,11 +59,11 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-profiling
   ac_add_options --disable-rust-tests
 
-  if ! test "$ZEN_CROSS_COMPILING"; then
-    export MOZ_LTO=full
-    ac_add_options MOZ_LTO=full
-    ac_add_options --enable-lto=full
-  fi
+  export MOZ_LTO=full
+  ac_add_options MOZ_LTO=full
+  ac_add_options --enable-lto=full
+
+  ac_add_options --without-wasm-sandboxed-libraries
 
   export MOZ_PGO=1
   ac_add_options MOZ_PGO=1

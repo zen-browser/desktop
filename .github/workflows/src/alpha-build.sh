@@ -2,10 +2,10 @@ set -x
 
 export ZEN_RELEASE=1
 
-if command -v apt &> /dev/null
+if command -v apt-get &> /dev/null
 then
-  sudo apt update
-  sudo apt install -y xvfb
+  sudo apt-get update
+  sudo apt-get install -y xvfb
 fi
 
 # Check if xfvb is installed

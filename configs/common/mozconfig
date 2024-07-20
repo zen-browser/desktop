@@ -43,13 +43,16 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-rust-simd
   ac_add_options --disable-parental-controls
   ac_add_options --disable-crashreporter
-  ac_add_options --enable-jemalloc
   mk_add_options MOZ_PARALLEL_COMPILE=1
   mk_add_options MOZ_CRASHREPORTER=0
   mk_add_options MOZ_DATA_REPORTING=0
   mk_add_options MOZ_SERVICES_HEALTHREPORT=0
   mk_add_options MOZ_TELEMETRY_REPORTING=0
 
+  if ! test "$ZEN_CROSS_COMPILING"; then
+    ac_add_options --enable-jemalloc
+    ac_add_options --enable-linker=lld
+  fi
   
   ac_add_options --enable-hardening
   ac_add_options --enable-sandbox
@@ -59,6 +62,12 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-geckodriver
   ac_add_options --disable-profiling
   ac_add_options --disable-rust-tests
+
+  if ! test "$ZEN_CROSS_COMPILING"; then
+    export MOZ_LTO=full
+    ac_add_options MOZ_LTO=full
+    ac_add_options --enable-lto=full
+  fi
 
   export MOZ_PGO=1
   ac_add_options MOZ_PGO=1

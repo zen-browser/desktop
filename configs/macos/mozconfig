@@ -2,14 +2,8 @@ POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-gre
 
 if test "$ZEN_RELEASE"; then
   ac_add_options --enable-optimize="-mcpu=apple-m1 -O3 -w"
-  ac_add_options --enable-release
-  ac_add_options --enable-rust-simd
-  ac_add_options RUSTC_OPT_LEVEL=3
-  export MOZILLA_OFFICIAL=1
   export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=apple-m1"
 fi
 
 ac_add_options --enable-install-strip
 ac_add_options --target=aarch64-apple-darwin
-mk_add_options AUTOCLOBBER=1
-export MOZ_INCLUDE_SOURCE_INFO=1

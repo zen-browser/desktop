@@ -199,6 +199,12 @@
   }
 }
 
+@media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
+  #navigator-toolbox {
+    width: 0 !important;
+  }
+}
+
 @media (-moz-bool-pref: "zen.view.sidebar-expanded.show-button") {
   #zen-expand-sidebar-button {
     display: block;

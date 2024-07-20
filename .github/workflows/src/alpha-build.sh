@@ -15,7 +15,7 @@ then
   Xvfb :2 -screen 0 1024x768x24 &
   export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
   export DISPLAY=:2
-  pnpm build
+  pnpm build -d
 else
   echo "Xvfb could not be found, running without it"
   echo "ASSUMING YOU ARE RUNNING THIS ON MACOS"

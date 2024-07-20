@@ -19,6 +19,11 @@ if ! test "$ZEN_CROSS_COMPILING"; then
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
 fi
 
+if test "$ZEN_RELEASE"; then
+  export MOZ_PGO=1
+  ac_add_options MOZ_PGO=1
+fi
+
 # Disable telemetry and tracking
 mk_add_options MOZ_TELEMETRY_REPORTING=
 mk_add_options MOZ_DATA_REPORTING=

@@ -65,9 +65,6 @@ if test "$ZEN_RELEASE"; then
 
   ac_add_options --without-wasm-sandboxed-libraries
 
-  export MOZ_PGO=1
-  ac_add_options MOZ_PGO=1
-
   mk_add_options MOZILLA_OFFICIAL=1
 
   MOZILLA_OFFICIAL=1

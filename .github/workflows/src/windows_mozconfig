@@ -24,13 +24,14 @@ export WINE="$TOOLS/wine/bin/wine64"
 #export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
 #export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
 
-export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
+export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64-v3"
 
 ac_add_options --enable-default-browser-agent
 ac_add_options --enable-install-strip
 ac_add_options --enable-jxl
 ac_add_options --disable-maintenance-service
 ac_add_options --disable-profiling
+ac_add_options --disable-accessibility
 
 ac_add_options --disable-bits-download
 

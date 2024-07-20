@@ -273,7 +273,17 @@ jobs:
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
+      - name: "win-cross Cache"
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+        id: cache-win-cross
+        uses: actions/cache@v4
+        with:
+          path: ${HOME}/win-cross
+          key: clang-17
+
       - name: Setup For Windows
+        if: steps.cache-win-cross.outputs.cache-hit != 'true'
         run: |
           set -x
           mkdir -p ~/win-cross
@@ -288,7 +298,8 @@ jobs:
           sudo apt install -y msitools python3-pip
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
           
- 
+      - name: Bootstrap
+        run: |
           cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
 
           cd ..

@@ -3,7 +3,7 @@ ac_add_options --enable-wasm-avx
 # not when cross compiling
 if ! test "$ZEN_CROSS_COMPILING"; then
     if test "$ZEN_RELEASE"; then
-        export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
+        export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64-v3"
     fi
 
     if test -d "$HOME/.mozbuild/clang/bin"; then

@@ -63,8 +63,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options MOZ_LTO=full
   ac_add_options --enable-lto=full
 
-  ac_add_options --without-wasm-sandboxed-libraries
-
   mk_add_options MOZILLA_OFFICIAL=1
 
   MOZILLA_OFFICIAL=1

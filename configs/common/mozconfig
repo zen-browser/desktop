@@ -61,9 +61,9 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-rust-tests
 
   if ! test "$ZEN_CROSS_COMPILING"; then
-    export MOZ_LTO=full
-    ac_add_options MOZ_LTO=full
-    ac_add_options --enable-lto=full
+    #export MOZ_LTO=full
+    #ac_add_options MOZ_LTO=full
+    #ac_add_options --enable-lto=full
   fi
 
   export MOZ_PGO=1

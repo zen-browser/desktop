@@ -12,7 +12,7 @@ sudo fallocate -l 10G /mnt/swapfile
 sudo chmod 600 /mnt/swapfile
 sudo mkswap /mnt/swapfile
 sudo swapon /mnt/swapfile
-sudo apt remove -y '^dotnet-.*' '^llvm-.*' '^php.*' '^mongodb-.*' '^mysql-.*' clang azure-cli google-cloud-sdk google-chrome-stable microsoft-edge firefox powershell mono-devel libgl1-mesa-dri npm acl aria2 autoconf automake binutils bison brotli bzip2 coreutils 
+sudo apt remove -y '^dotnet-.*' '^llvm-.*' '^php.*' '^mongodb-.*' '^mysql-.*' clang azure-cli google-cloud-sdk google-chrome-stable microsoft-edge firefox powershell mono-devel libgl1-mesa-dri acl aria2 autoconf automake binutils bison brotli bzip2 coreutils 
 sudo apt autoremove -y
 sudo apt clean
 sudo rm -rf  ./git
@@ -22,7 +22,6 @@ sudo rm -rf /usr/local/lib/android
 sudo rm -rf /usr/local/graalvm
 sudo rm -rf /usr/local/share/powershell
 sudo rm -rf /usr/local/share/chromium
-sudo rm -rf /usr/local/lib/node_modules
 sudo rm -rf /opt/ghc
 sudo rm -rf /usr/local/share/boost
 sudo rm -rf "$AGENT_TOOLSDIRECTORY"

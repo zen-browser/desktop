@@ -182,7 +182,7 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: true
-      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
+      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
 
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
@@ -192,7 +192,7 @@ jobs:
     needs: [windows-step-1, build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
+      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)
@@ -203,7 +203,6 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false
-      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
 
   linux:
     name: Linux build

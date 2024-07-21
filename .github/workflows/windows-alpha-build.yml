@@ -10,9 +10,8 @@ on:
         description: 'The version to build'
         required: true
         type: string
-      profile-data-path:
-        description: 'The path to the profile data'
-        required: false
+      profile-data-path-archive:
+        description: 'The path to the zip archive containing the profile data'
         type: string
 
 jobs:
@@ -126,7 +125,6 @@ jobs:
         name: Download artifact if use profdata
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: ${{ inputs.profile-data-path }}
           path: ~/artifact
 
       - name: Import
@@ -169,7 +167,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ inputs.generate-gpo }}
         with:
-          name: ${{ inputs.profile-data-path }}
+          name: ${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
  
       - name: Upload mar

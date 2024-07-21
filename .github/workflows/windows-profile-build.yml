@@ -6,8 +6,8 @@ on:
         description: 'The version to build'
         required: true
         type: string
-      profile-data-path:
-        description: 'The path to the profile data'
+      profile-data-path-archive:
+        description: 'The path to the zip archive containing the profile data'
         required: false
         type: string
 
@@ -26,7 +26,7 @@ jobs:
         run: |
           cd C:\artifact
           ls
-          7z x zen-*.zip
+          7z x ${{ inputs.profile-data-path-archive }}
 
       - uses: actions/checkout@v4
         name: Clone 
@@ -48,10 +48,13 @@ jobs:
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir\mozilla-build-run.sh
 
-      - name: Publish 
+      - name: Publish merged.profdata
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.profile-data-path }}
-          path: |
-            merged.profdata
-            en-US.log
+          path: merged.profdata
+
+      - name: Publish en-US.log
+        uses: actions/upload-artifact@v4
+        with:
+          path: en-US.log
+

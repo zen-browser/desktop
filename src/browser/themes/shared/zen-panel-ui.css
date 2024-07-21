@@ -252,7 +252,6 @@
 #PanelUI-zen-workspaces {
   --panel-width: 320px;
   --panel-padding: 0;
-  min-height: 200px;
 }
 
 #PanelUI-zen-workspaces > panelmultiview {
@@ -263,10 +262,39 @@
   position: relative;
   padding: 15px;
   width: var(--panel-width);
+  min-height: 150px;
 }
 
 #PanelUI-zen-workspaces-create-input {
   margin-top: 10px;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid transparent;
+  border-radius: 7px;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton[selected="true"] {
+  border-color: var(--zen-colors-secondary);
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-icon {
+  display: none;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-text {
+  min-width: unset;
+}
+
+#PanelUI-zen-workspaces-create-icons-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: 8px;
 }
 
 #PanelUI-zen-workspaces-list {

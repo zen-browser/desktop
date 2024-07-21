@@ -621,8 +621,16 @@ panelmultiview {
   pointer-events: none;
 }
 
+#zen-workspaces-button .zen-workspace-sidebar-name {
+  margin-left: 10px;
+}
+
 @media not (-moz-bool-pref: "zen.watermark.enabled") {
   #zen-watermark {
+    display: none;
+  }
+
+  #zen-workspaces-button .zen-workspace-sidebar-name {
     display: none;
   }
 }

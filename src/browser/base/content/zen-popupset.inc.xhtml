@@ -110,10 +110,21 @@
         </button>
       </html:moz-button-group>
     </panelview>
+    <panelview lockpanelvertical="true" id="PanelUI-zen-workspaces-create-icons" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+      <vbox>
+        <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
+        <hbox id="PanelUI-zen-workspaces-create-icons-container">
+        </hbox>
+      </vbox>
+      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
+        <button default="true" slot="primary" id="PanelUI-zen-workspaces-create-save-icons" oncommand="ZenWorkspaces.saveWorkspaceFromIcon();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
+        </button>
+        <button id="PanelUI-zen-workspaces-create-cancel-icons" oncommand="ZenWorkspaces.cancelWorkspaceCreation();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
+        </button>
+      </html:moz-button-group>
+    </panelview>
   </panelmultiview>
 </panel>
-
-
 
 <menupopup id="zenWorkspaceActionsMenu"
             onpopupshowing="ZenWorkspaces.updateContextMenu(event);"

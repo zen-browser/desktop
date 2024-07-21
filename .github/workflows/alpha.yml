@@ -199,7 +199,7 @@ jobs:
     uses: ./.github/workflows/windows-alpha-build.yml
     permissions:
       contents: write
-    needs: [build-data]
+    needs: [build-data, windows-step-2]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false

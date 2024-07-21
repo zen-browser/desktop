@@ -1,0 +1,58 @@
+
+on:
+  workflow_call:
+    inputs:
+      build-version:
+        description: 'The version to build'
+        required: true
+        type: string
+      profile-data-path:
+        description: 'The path to the profile data'
+        required: false
+        type: string
+
+jobs:
+  windows-profile-build:
+    # Edited from floorp build's windows profile build
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        name: Download artifact 
+        with:
+          name: ${{ inputs.profile-data-path }}
+          path: C:\artifact
+
+      - name:  Unpack artifact
+        run: |
+          cd C:\artifact
+          zstd -d zen-*.tar.zst
+          7z x zen-*.tar
+
+      - uses: actions/checkout@v4
+        name: Clone 
+
+      - name: Setup 
+        run: |
+          (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
+          C:\MozillaBuildSetup-Latest.exe /S | out-null
+
+      - name: Generate 
+        run: |
+          $Env:USE_MINTTY = "0"
+
+          $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
+
+          echo "cd $workspace_dir" '' >> mozilla-build-run.sh
+          echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
+          echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
+          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/floorp/floorp.exe' '' >> mozilla-build-run.sh
+          C:\mozilla-build\start-shell.bat $workspace_dir\mozilla-build-run.sh
+
+      - name: Publish 
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.profile-data-path }}
+          path: |
+            merged.profdata
+            en-US.log

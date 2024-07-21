@@ -1,0 +1,110 @@
+
+on:
+  workflow_call:
+    inputs:
+      build-version:
+        description: 'The version to build'
+        required: true
+        type: string
+
+jobs:
+  mac-build:
+    runs-on: macos-14
+
+    steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' 
+
+      - uses: actions/checkout@v3
+
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 6
+
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+
+      - name: Install system dependencies
+        run: |
+          brew install cairo sccache gnu-tar mercurial
+          sudo pip install setuptools
+
+      - name: Free up space
+        run: sh .github/workflows/src/disk-setup-and-swap.sh
+
+      - name: Force usage fo gnu-tar
+        run: |
+          echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.bash_profile
+          echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.zsh
+          source ~/.bash_profile
+
+      - name: Save sccache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: ~/Library/Caches/Mozilla.sccache
+          key: ${{ runner.os }}-sccache
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ inputs.build-version }}
+
+      - name: Download firefox source and dependancies
+        run: pnpm surfer download
+
+      - name: Import
+        run: pnpm surfer import
+
+      - name: Bootstrap
+        run: |
+          cd engine
+          ./mach --no-interactive bootstrap --application-choice browser 
+          cd ..
+
+      - name: surfer build
+        run: sh .github/workflows/src/alpha-build.sh
+
+      - name: Package
+        run: pnpm package
+
+      - name: Rename artifacts
+        run: |
+          mv ./dist/*.dmg "zen.macos.dmg"
+          mv ./dist/output.mar macos.mar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.macos.dmg
+          path: ./zen.macos.dmg
+
+      - name: Upload mar
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos.mar
+          path: ./macos.mar
+
+      - name: Upload update manifests
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos_update_manifest
+          path: ./dist/update

@@ -1,0 +1,176 @@
+
+on:
+  workflow_call:
+    inputs:
+      generate-gpo: 
+        required: true
+        type: boolean
+        default: false
+      build-version:
+        description: 'The version to build'
+        required: true
+        type: string
+      profile-data-path:
+        description: 'The path to the profile data'
+        required: false
+        type: string
+
+jobs:
+  windows-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v3
+
+      # Give the runner some swap space in an attempt to stop gkrust from crashing the build
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 6
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+
+      - name: Install dependencies
+        run: |
+          pnpm i
+
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ inputs.build-version }}
+
+      - name: Download
+        run: pnpm surfer download
+
+      - name: Free up space
+        run: sh .github/workflows/src/disk-setup-and-swap.sh
+
+      - name: "win-cross Cache"
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+        id: cache-win-cross
+        uses: actions/cache@v4
+        with:
+          path: ${HOME}/win-cross
+          key: clang-17
+
+      - name: Setup For Windows
+        if: steps.cache-win-cross.outputs.cache-hit != 'true'
+        run: |
+          set -x
+          mkdir -p ~/win-cross
+          cd engine/
+  
+          echo Setup wine
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
+          tar --zstd -xvf wine.tar.zst -C ~/win-cross
+          rm wine.tar.zst
+  
+          echo Setup Visual Studio
+          sudo apt install -y msitools python3-pip
+          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
+          
+      - name: Bootstrap
+        run: |
+          set -x
+          cd engine/
+
+          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
+
+          cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
+
+          cd ..
+          npm install -g pnpm
+          export SURFER_PLATFORM="win32"
+          pnpm surfer bootstrap
+
+          cd engine/
+          ls ~/.mozbuild/clang/lib/clang/
+          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
+          cat ../configs/common/mozconfig
+
+          ls ~/win-cross/wine || true
+          ls ~/win-cross/vs2022 || true
+  
+      - name: setup Rust 
+        run: |
+          cd engine/
+          # Install a rust version compatible with 17
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.76
+          source $HOME/.cargo/env
+          
+          rustup target add x86_64-pc-windows-msvc
+          cargo install cargo-download
+          cargo download -x windows=0.52.0
+          #? https://github.com/mozilla/sccache#known-caveats
+          export CARGO_INCREMENTAL=0
+          echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.52.0" >> ../configs/common/mozconfig
+
+      - uses: actions/download-artifact@v4
+        name: Download artifact if use profdata
+        if: !inputs.generate-gpo
+        with:
+          name: ${{ inputs.profile-data-path }}
+          path: ~/artifact
+
+      - name: Import
+        run: pnpm surfer import --verbose  
+
+      - name: Build
+        run: |
+          set -x
+          unset SURFER_PLATFORM
+          export ZEN_CROSS_COMPILING=1
+          if test ${{ inputs.generate-gpo }}; then
+            export ZEN_GA_GENERATE_PROFILE=1
+          fi
+          sh .github/workflows/src/alpha-build.sh
+
+      - name: Package
+        run: |
+          set -x
+          export SURFER_PLATFORM="win32"
+          pnpm package
+          mv ./dist/output.mar windows.mar
+          mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
+          ls ./dist
+          ls .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.win64.zip
+          path: ./zen.win64.zip
+
+      - name: Upload mar
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows.mar
+          path: ./windows.mar
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer.exe
+          path: ./dist/zen.installer.exe
+
+      - name: Upload installer stub
+        uses: actions/upload-artifact@v3
+        with:
+          name: zen.installer.pretty.exe
+          path: ./dist/zen.installer.pretty.exe
+
+      - name: Upload update manifests
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows_update_manifest
+          path: ./dist/update

@@ -117,271 +117,6 @@ jobs:
             exit 1
           fi
 
-  linux:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [build-data, check-release]
-
-    steps:
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - uses: actions/checkout@v3
-
-        # Give the runner some swap space in an attempt to stop gkrust from crashing the build
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 6
-
-      - name: Setup git
-        run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update --fix-missing
-          sudo apt-get update
-          sudo apt-get install dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm
-          pip install pycairo testresources
-
-      - name: Free up space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: Install sccache
-        env:
-          LINK: https://github.com/mozilla/sccache/releases/download
-          SCCACHE_VERSION: 0.2.13
-        run: |
-          SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-          mkdir -p $HOME/.local/bin
-          curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-          mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Save sccache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: /home/runner/.cache/sccache
-          key: ${{ runner.os }}-sccache
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
-
-      - name: Download firefox source and dependencies
-        run: pnpm surfer download
-
-      - name: Import
-        run: pnpm surfer import
-
-      - name: Bootstrap
-        run: |
-          cd engine
-          ./mach --no-interactive bootstrap --application-choice browser
-          cd ..
-
-      - name: Build
-        run: sh .github/workflows/src/alpha-build.sh
-
-      - name: Package
-        run: pnpm package
-
-      - name: Rename artifacts
-        run: |
-          mv dist/zen-*.tar.bz2 "zen.linux.tar.bz2"
-          mv dist/output.mar linux.mar
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.linux.tar.bz2
-          path: ./zen.linux.tar.bz2
-
-      - name: Upload mar
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux.mar
-          path: ./linux.mar
-
-      - name: Upload update manifests
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux_update_manifest
-          path: ./dist/update
-
-  windows:
-    runs-on: ubuntu-latest
-    needs: [build-data, check-release]
-
-    steps:
-      - name: Install Node.js and pnpm
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - uses: actions/checkout@v3
-
-      # Give the runner some swap space in an attempt to stop gkrust from crashing the build
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 6
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Setup git
-        run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
-
-      - name: Install dependencies
-        run: |
-          pnpm i
-
-      - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
-
-      - name: Download
-        run: pnpm surfer download
-
-      - name: Free up space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: "win-cross Cache"
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-        id: cache-win-cross
-        uses: actions/cache@v4
-        with:
-          path: ${HOME}/win-cross
-          key: clang-17
-
-      - name: Setup For Windows
-        if: steps.cache-win-cross.outputs.cache-hit != 'true'
-        run: |
-          set -x
-          mkdir -p ~/win-cross
-          cd engine/
-  
-          echo Setup wine
-          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
-          tar --zstd -xvf wine.tar.zst -C ~/win-cross
-          rm wine.tar.zst
-  
-          echo Setup Visual Studio
-          sudo apt install -y msitools python3-pip
-          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
-          
-      - name: Bootstrap
-        run: |
-          set -x
-          cd engine/
-
-          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
-
-          cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
-
-          cd ..
-          npm install -g pnpm
-          export SURFER_PLATFORM="win32"
-          pnpm surfer bootstrap
-
-          cd engine/
-          ls ~/.mozbuild/clang/lib/clang/
-          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
-          cat ../configs/common/mozconfig
-
-          ls ~/win-cross/wine || true
-          ls ~/win-cross/vs2022 || true
-  
-      - name: setup Rust 
-        run: |
-          cd engine/
-          # Install a rust version compatible with 17
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.76
-          source $HOME/.cargo/env
-          
-          rustup target add x86_64-pc-windows-msvc
-          cargo install cargo-download
-          cargo download -x windows=0.52.0
-          #? https://github.com/mozilla/sccache#known-caveats
-          export CARGO_INCREMENTAL=0
-          echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.52.0" >> ../configs/common/mozconfig
-
-      - name: Import
-        run: pnpm surfer import --verbose  
-
-      - name: Build
-        run: |
-          unset SURFER_PLATFORM
-          export ZEN_CROSS_COMPILING=1
-          sh .github/workflows/src/alpha-build.sh
-
-      - name: Package
-        run: |
-          set -x
-          export SURFER_PLATFORM="win32"
-          pnpm package
-          mv ./dist/output.mar windows.mar
-          mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
-          ls ./dist
-          ls .
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.win64.zip
-          path: ./zen.win64.zip
-
-      - name: Upload mar
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows.mar
-          path: ./windows.mar
-
-      - name: Upload installer
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.installer.exe
-          path: ./dist/zen.installer.exe
-
-      - name: Upload installer stub
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.installer.pretty.exe
-          path: ./dist/zen.installer.pretty.exe
-
-      - name: Upload update manifests
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows_update_manifest
-          path: ./dist/update
 
   source:
     permissions:
@@ -438,105 +173,51 @@ jobs:
           name: zen.source.tar.gz
           path: ./zen.source.tar.gz
 
+  windows-step-1:
+    name: Windows build step 1 (PGO build)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    needs: [build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: true
+      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
+
+  windows-step-2:
+    name: Windows build step 2 (Generate profile data)
+    uses: ./.github/workflows/windows-profile-build.yml
+    needs: [windows-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
+
+  windows-step-3:
+    name: Windows build step 3 (build with profile data)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    needs: [build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: false
+      profile-data-path: zen-windows-x86_64-profile-data-and-jarlog
+
+  linux:
+    name: Linux build
+    uses: ./.github/workflows/linux-alpha-build.yml
+    needs: [build-data, windows-step-2] # Windows step 2 in order to avoid cloning all the artifacts again
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+
   mac:
-    runs-on: macos-14
-    needs: [build-data, check-release]
-
-    steps:
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11' 
-
-      - uses: actions/checkout@v3
-
-      - name: Setup git
-        run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
-
-      - name: Install system dependencies
-        run: |
-          brew install cairo sccache gnu-tar mercurial
-          sudo pip install setuptools
-
-      - name: Force usage fo gnu-tar
-        run: |
-          echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.bash_profile
-          echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.zsh
-          source ~/.bash_profile
-
-      - name: Save sccache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: ~/Library/Caches/Mozilla.sccache
-          key: ${{ runner.os }}-sccache
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies
-        run: pnpm install
-      - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
-
-      - name: Download firefox source and dependancies
-        run: pnpm surfer download
-
-      - name: Import
-        run: pnpm surfer import
-
-      - name: Bootstrap
-        run: |
-          cd engine
-          ./mach --no-interactive bootstrap --application-choice browser 
-          cd ..
-
-      - name: surfer build
-        run: sh .github/workflows/src/alpha-build.sh
-
-      - name: Package
-        run: pnpm package
-
-      - name: Rename artifacts
-        run: |
-          mv ./dist/*.dmg "zen.macos.dmg"
-          mv ./dist/output.mar macos.mar
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: zen.macos.dmg
-          path: ./zen.macos.dmg
-
-      - name: Upload mar
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos.mar
-          path: ./macos.mar
-
-      - name: Upload update manifests
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos_update_manifest
-          path: ./dist/update
+    name: macOS build
+    uses: ./.github/workflows/macos-alpha-build.yml
+    needs: [build-data, windows-step-2]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows, check-release, mac]
+    needs: [build-data, linux, source, windows-step-3, check-release, mac]
     runs-on: ubuntu-latest
 
     steps:

@@ -31,6 +31,12 @@ export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download
 
-ac_add_options --enable-optimize="-mavx -maes /O2 /clang:-O3 /arch:AVX"
+if test "$ZEN_GA_GENERATE_PROFILE"; then
+  ac_add_options --enable-profile-generate=cross
+else
+  ac_add_options --enable-profile-use=cross
+  ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
+  ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
+fi
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE

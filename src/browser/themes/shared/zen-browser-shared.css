@@ -361,14 +361,14 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab:nth-last-child(1 of [pinned]) {
-  margin-bottom: 5px !important;
+  margin-bottom: 15px !important;
   position: relative;
   overflow: visible;
 
-  &::after {
+  & .tab-stack::after {
     content: '';
     position: absolute;
-    bottom: -5px;
+    bottom: -11px;
     left: 0;
     width: 100%;
     height: 1.5px;

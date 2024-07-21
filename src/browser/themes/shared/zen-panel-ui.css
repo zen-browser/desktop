@@ -251,7 +251,7 @@
 
 #PanelUI-zen-workspaces {
   --panel-width: 320px;
-  width: var(--panel-width);
+  --panel-padding: 0;
   min-height: 200px;
 }
 
@@ -261,8 +261,8 @@
 
 #PanelUI-zen-workspaces panelmultiview panelview {
   position: relative;
-  width: 100%;
-  overflow: hidden !important;
+  padding: 15px;
+  width: var(--panel-width);
 }
 
 #PanelUI-zen-workspaces-create-input {
@@ -272,11 +272,6 @@
 #PanelUI-zen-workspaces-list {
   display: flex;
   flex-direction: column;
-}
-
-#PanelUI-zen-workspaces .panel-viewcontainer,
-#PanelUI-zen-workspaces .panel-viewstack {
-  width: 100%;
 }
 
 #PanelUI-zen-workspaces-current-info toolbarbutton:last-child {

@@ -8,11 +8,13 @@ export WINEDEBUG=-all
 #? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
 #? https://phabricator.services.mozilla.com/D170170
 ac_add_options --target=x86_64-pc-windows-msvc
+ac_add_options --with-toolchain-prefix=x86_64-pc-mingw32
 
 export MOZ_STUB_INSTALLER=1
 export MOZ_PKG_FORMAT=TAR
 
 export CROSS_BUILD=1
+CROSS_COMPILE=1
 POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 TOOLS=$(echo ~)/win-cross
 
@@ -28,5 +30,7 @@ export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=x86-64"
 
 ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download
+
+ac_add_options --enable-optimize="-mavx -maes /O2 /clang:-O3 /arch:AVX"
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE

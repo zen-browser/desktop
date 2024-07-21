@@ -15,15 +15,16 @@ if ! test "$ZEN_CROSS_COMPILING"; then
     fi
 
     ac_add_options --enable-linker=lld
-    ac_add_options --enable-strip
-    export STRIP_FLAGS="--strip-debug --strip-unneeded"
 fi
 
 if test "$ZEN_RELEASE"; then
-if ! test "$ZEN_CROSS_COMPILING"; then
-    export MOZ_PGO=1
-    ac_add_options MOZ_PGO=1
-fi
+    ac_add_options --enable-strip
+    export STRIP_FLAGS="--strip-debug --strip-unneeded"
+
+    if ! test "$ZEN_CROSS_COMPILING"; then
+        export MOZ_PGO=1
+        ac_add_options MOZ_PGO=1
+    fi
 fi
 
 # Disable telemetry and tracking

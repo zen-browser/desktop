@@ -63,7 +63,6 @@ jobs:
           path: ${HOME}/win-cross
           key: clang-17
 
-
       - name: Configure sccache
         uses: actions/github-script@v7
         with:

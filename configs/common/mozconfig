@@ -61,7 +61,12 @@ if test "$ZEN_RELEASE"; then
   export MOZ_LTO=full
   ac_add_options MOZ_LTO=full
   ac_add_options --enable-lto=full
-  ac_add_options --disable-jemalloc
+
+  if test "$ZEN_CROSS_COMPILING"; then
+    ac_add_options --disable-jemalloc
+  else
+    ac_add_options --enable-jemalloc
+  fi
 
   mk_add_options MOZILLA_OFFICIAL=1
   MOZILLA_OFFICIAL=1
@@ -77,8 +82,10 @@ if test "$ZEN_RELEASE"; then
   ac_add_options RUSTC_OPT_LEVEL="3"
 
   # PGO may cause link errors on windows!
-  export MOZ_PGO=1
-  ac_add_options MOZ_PGO=1
+  if ! test "$ZEN_CROSS_COMPILING"; then
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
+  fi
 
   mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
   mk_add_options 'export CCACHE_CPP2=yes'

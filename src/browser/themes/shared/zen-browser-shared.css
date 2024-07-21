@@ -554,7 +554,7 @@ panelmultiview {
 
     & #navigator-toolbox {
       border-right: var(--zen-appcontent-border) !important;
-      width: unset;
+      width: fit-content !important;
       padding: 5px;
     }
 
@@ -623,14 +623,14 @@ panelmultiview {
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
   margin-left: 10px;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 @media not (-moz-bool-pref: "zen.watermark.enabled") {
   #zen-watermark {
-    display: none;
-  }
-
-  #zen-workspaces-button .zen-workspace-sidebar-name {
     display: none;
   }
 }
@@ -642,11 +642,15 @@ panelmultiview {
 }
 
 @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+  #zen-workspaces-button .zen-workspace-sidebar-name {
+    display: block;
+  }
+
   #navigator-toolbox {
     min-width: 150px;
     align-items: start;
     padding-left: 10px;
-    padding-right: 10px;
+    padding-right: 5px;
     max-width: 210px;
     transition: .2s;
     width: 170px;

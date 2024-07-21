@@ -177,6 +177,8 @@ jobs:
     name: Windows build step 1 (PGO build)
     uses: ./.github/workflows/windows-alpha-build.yml
     needs: [build-data]
+    permissions:
+      contents: write
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: true
@@ -185,6 +187,8 @@ jobs:
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
     uses: ./.github/workflows/windows-profile-build.yml
+    permissions:
+      contents: write
     needs: [windows-step-1, build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -193,6 +197,8 @@ jobs:
   windows-step-3:
     name: Windows build step 3 (build with profile data)
     uses: ./.github/workflows/windows-alpha-build.yml
+    permissions:
+      contents: write
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -202,6 +208,8 @@ jobs:
   linux:
     name: Linux build
     uses: ./.github/workflows/linux-alpha-build.yml
+    permissions:
+      contents: write
     needs: [build-data, windows-step-2] # Windows step 2 in order to avoid cloning all the artifacts again
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -209,6 +217,8 @@ jobs:
   mac:
     name: macOS build
     uses: ./.github/workflows/macos-alpha-build.yml
+    permissions:
+      contents: write
     needs: [build-data, windows-step-2]
     with:
       build-version: ${{ needs.build-data.outputs.version }}

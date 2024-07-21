@@ -36,8 +36,24 @@ jobs:
           (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
           C:\MozillaBuildSetup-Latest.exe /S | out-null
 
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+          
+      - name: Install dependencies
+        run: |
+          pnpm i
+
+      - name: Download
+        run: pnpm surfer download
+
       - name: Generate 
         run: |
+          cd engine
           $Env:USE_MINTTY = "0"
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"

@@ -20,8 +20,10 @@ if ! test "$ZEN_CROSS_COMPILING"; then
 fi
 
 if test "$ZEN_RELEASE"; then
-  export MOZ_PGO=1
-  ac_add_options MOZ_PGO=1
+if ! test "$ZEN_CROSS_COMPILING"; then
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
+fi
 fi
 
 # Disable telemetry and tracking

@@ -20,12 +20,12 @@ jobs:
       - uses: actions/download-artifact@v4
         name: Download artifact 
         with:
-          name: ${{ inputs.profile-data-path }}
           path: C:\artifact
 
       - name:  Unpack artifact
         run: |
           cd C:\artifact
+          ls
           7z x zen-*.zip
 
       - uses: actions/checkout@v4

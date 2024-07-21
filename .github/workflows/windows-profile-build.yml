@@ -48,16 +48,14 @@ jobs:
         run: |
           pnpm i
 
-      - name: Download
-        run: pnpm surfer download
-
       - name: Generate 
         run: |
-          cd engine
           $Env:USE_MINTTY = "0"
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
 
+          echo 'pnpm surfer download' '' > mozilla-build-run.sh
+          echo "cd engine" '' >> mozilla-build-run.sh
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh

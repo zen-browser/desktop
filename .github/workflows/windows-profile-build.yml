@@ -41,7 +41,7 @@ jobs:
 
       - name: Download
         shell: bash
-        run: pnpm surfer download
+        run: pnpm surfer download --verbose
 
       - name: Generate 
         run: |

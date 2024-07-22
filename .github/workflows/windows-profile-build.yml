@@ -17,7 +17,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - uses: actions/download-artifact@v4
+        name: Download artifact 
+        with:
+          path: C:\artifact
 
+      - name:  Unpack artifact
+        run: |
+          cd C:\artifact
+          ls
+          7z x ${{ inputs.profile-data-path-archive }}
 
       - uses: actions/checkout@v4
         name: Clone 
@@ -27,36 +36,21 @@ jobs:
           (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
           C:\MozillaBuildSetup-Latest.exe /S | out-null
 
-      - name: Install Node.js and pnpm
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-          
-      - name: Install dependencies
-        run: |
-          pnpm i
-
-      - name: Download
-        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
-        run: pnpm surfer download --verbose
 
       - name: Generate 
         run: |
           $Env:USE_MINTTY = "0"
 
-          $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
+          mkdir mozilla-source
+          cd mozilla-source
+          wget https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py
+          python3 bootstrap.py
 
-          echo $workspace_dir
-          cd $workspace_dir
-          cd engine
-          python --version
+          cd mozilla-unified
           python mach configure --enable-bootstrap
-          $env:PATH=/c/mozilla-build/msys2/usr/bin:$PATH
+          $env:PATH=c:/mozilla-build/msys2/usr/bin:$PATH
           ./mach --no-interactive bootstrap --application-choice browser
-          $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe
+          $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary c:/artifact/zen/zen.exe
           
       - name: Publish merged.profdata
         uses: actions/upload-artifact@v4

@@ -17,16 +17,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/download-artifact@v4
-        name: Download artifact 
-        with:
-          path: C:\artifact
 
-      - name:  Unpack artifact
-        run: |
-          cd C:\artifact
-          ls
-          7z x ${{ inputs.profile-data-path-archive }}
 
       - uses: actions/checkout@v4
         name: Clone 
@@ -54,9 +45,9 @@ jobs:
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
 
+          echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'pnpm surfer download' '' > mozilla-build-run.sh
           echo "cd engine" '' >> mozilla-build-run.sh
-          echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh

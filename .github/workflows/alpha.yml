@@ -288,12 +288,12 @@ jobs:
 
   distro-flatpak:
     name: Build flatpak repos
-    needs: [release]
+    needs: [linux]
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
       options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' && false }}
+    if: ${{ github.event.inputs.create_release == 'true' }}
 
     steps:
       - uses: actions/checkout@v3

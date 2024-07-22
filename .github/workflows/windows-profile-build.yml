@@ -27,9 +27,8 @@ jobs:
         run: |
           $Env:USE_MINTTY = "0"
 
-          python ./mach configure --enable-bootstrap
-          $env:PATH=c:/mozilla-build/msys2/usr/bin:$PATH
           ./mach --no-interactive bootstrap --application-choice browser
+          $env:PATH=c:/mozilla-build/msys2/usr/bin:$PATH
           $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary c:/artifact/zen/zen.exe
           
       - name: Publish merged.profdata

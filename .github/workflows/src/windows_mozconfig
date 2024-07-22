@@ -35,6 +35,7 @@ ac_add_options --disable-profiling
 if test "$ZEN_GA_GENERATE_PROFILE"; then
   mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
   ac_add_options --enable-profile-generate=cross
+  ac_add_options --without-wasm-sandboxed-libraries
 else
   ac_add_options --enable-profile-use=cross
   ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata

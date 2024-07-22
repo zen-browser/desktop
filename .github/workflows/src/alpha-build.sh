@@ -13,9 +13,12 @@ ulimit -n 4096
 # Check if xfvb is installed
 if ! command -v Xvfb &> /dev/null
 then
-  Xvfb :2 -screen 0 1024x768x24 &
-  export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
-  export DISPLAY=:2
+  if ! test "$ZEN_CROSS_COMPILING"
+  then
+    Xvfb :2 -screen 0 1024x768x24 &
+    export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
+    export DISPLAY=:2
+  fi
   pnpm build 
 else
   echo "Xvfb could not be found, running without it"

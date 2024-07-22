@@ -19,14 +19,12 @@ jobs:
     steps:
 
 
-      - uses: actions/checkout@v4
-        name: Clone 
-
       - name: Setup 
         run: |
           (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
           C:\MozillaBuildSetup-Latest.exe /S | out-null
 
+          pip install wget 
 
       - name: Generate 
         run: |

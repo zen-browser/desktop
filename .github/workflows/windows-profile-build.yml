@@ -40,7 +40,7 @@ jobs:
           pnpm i
 
       - name: Download
-        shell: bash
+        shell: powershell.exe C:\mozilla-build\start-shell.bat "{0}"
         run: pnpm surfer download --verbose
 
       - name: Generate 

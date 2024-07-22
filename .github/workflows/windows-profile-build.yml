@@ -29,7 +29,7 @@ jobs:
 
           rm .mozconfig
           python --version
-          $env:MOZILLABUILD=$HOME + '/.mozconfig'
+          $env:MOZILLABUILD=$HOME + '/.mozbuild'
           ./mach bootstrap --application-choice browser
           $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary c:/artifact/zen/zen.exe
           

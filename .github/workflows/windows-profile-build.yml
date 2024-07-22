@@ -20,8 +20,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Floorp-Projects/Floorp
+          clean: true
 
+      - uses: actions/download-artifact@v4
+        name: Download artifact 
+        with:
+          path: C:\artifact
 
+      - name:  Unpack artifact
+        run: |
+          cd C:\artifact
+          ls
+          7z x ${{ inputs.profile-data-path-archive }}
+          ls
 
       - name: Setup 
         run: |

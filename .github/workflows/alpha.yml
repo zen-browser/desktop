@@ -49,6 +49,7 @@ jobs:
           npm i -g @zen-browser/surfer
 
       - name: Bump version
+        if: ${{ github.event.inputs.update_version == 'true' }}
         run: |
           pnpm surfer ci --brand alpha --bump prerelease
 

@@ -13,7 +13,6 @@ on:
 
 jobs:
   windows-profile-build:
-    # Edited from floorp build's windows profile build
     runs-on: windows-latest
 
     steps:
@@ -27,6 +26,8 @@ jobs:
         run: |
           $Env:USE_MINTTY = "0"
 
+          rm .mozconfig
+          python --version
           ./mach bootstrap --application-choice browser
           $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary c:/artifact/zen/zen.exe
           

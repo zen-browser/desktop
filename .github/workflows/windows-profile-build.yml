@@ -23,7 +23,6 @@ jobs:
 
 
 
-
       - name: Setup 
         run: |
           (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
@@ -35,6 +34,7 @@ jobs:
           $Env:USE_MINTTY = "0"
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
+          echo $workspace_dir
 
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh

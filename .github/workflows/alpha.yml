@@ -293,7 +293,7 @@ jobs:
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
       options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' || true }}
 
     steps:
       - uses: actions/checkout@v3

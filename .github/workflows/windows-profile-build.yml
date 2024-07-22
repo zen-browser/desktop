@@ -40,6 +40,7 @@ jobs:
           pnpm i
 
       - name: Download
+        shell: bash
         run: pnpm surfer download
 
       - name: Generate 

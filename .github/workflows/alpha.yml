@@ -293,7 +293,7 @@ jobs:
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
       options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' || true }}
+    if: ${{ github.event.inputs.create_release == 'true' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -311,7 +311,7 @@ jobs:
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: org.zen.browser.flatpak
-          manifest-path: flatpak/org.zen.browser.flatpak.json
+          manifest-path: flatpak/org.zen.browser.flatpak.yml
           cache-key: flatpak-builder-${{ github.sha }}
 
       - name: Upload flatpak repo

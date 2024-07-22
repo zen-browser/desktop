@@ -18,17 +18,16 @@ jobs:
 
     steps:
 
+      - name: Clone
+        uses: actions/checkout@v4
+        with:
+          repository: BrowserWorks/Waterfox
+
       - name: Generate 
         run: |
           $Env:USE_MINTTY = "0"
 
-          mkdir mozilla-source
-          cd mozilla-source
-          curl -O https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py
-          python3 bootstrap.py --no-interactive --vcs=git
-
-          cd mozilla-unified
-          python mach configure --enable-bootstrap
+          python ./mach configure --enable-bootstrap
           $env:PATH=c:/mozilla-build/msys2/usr/bin:$PATH
           ./mach --no-interactive bootstrap --application-choice browser
           $env:LLVM_PROFDATA = $HOME + '/.mozbuild/clang/bin/llvm-profdata.exe'; $env:JARLOG_FILE = 'en-US.log'; python mach python build/pgo/profileserver.py --binary c:/artifact/zen/zen.exe

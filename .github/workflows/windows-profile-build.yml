@@ -16,7 +16,7 @@ jobs:
     # Edited from floorp build's windows profile build
     runs-on: windows-latest
 
-    steps: 
+    steps:
 
       - name: Generate 
         run: |
@@ -25,7 +25,7 @@ jobs:
           mkdir mozilla-source
           cd mozilla-source
           curl -O https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py
-          python3 bootstrap.py --no-interactive
+          python3 bootstrap.py --no-interactive --vcs=git
 
           cd mozilla-unified
           python mach configure --enable-bootstrap

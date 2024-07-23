@@ -1,6 +1,5 @@
 set -ex
 
-export ZEN_RELEASE=1
 
 if command -v apt-get &> /dev/null
 then

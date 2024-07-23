@@ -27,6 +27,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Install Surfer
+        run: |
+          npm i -g @zen-browser/surfer
 
 
       - name: Download firefox

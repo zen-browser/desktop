@@ -60,7 +60,6 @@ jobs:
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
           $workspace_dir = $workspace_dir + "/engine"
-          cd $workspace_dir
           echo $workspace_dir
 
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh

@@ -1,0 +1,51 @@
+name: Bug Report
+description: File a bug report
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for filing a bug report.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: checkboxes
+    id: firefox
+    attributes:
+      label: Reproducible?
+      description: Is this issue reproducible on Firefox?
+      options:
+        - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running? Please DO NOT report Classic bugs.
+      options:
+        - G6
+        - G5
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: What platform are you seeing the problem on?
+      multiple: true
+      options:
+        - Linux
+        - macOS
+        - Windows
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell

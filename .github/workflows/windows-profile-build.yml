@@ -31,9 +31,27 @@ jobs:
         run: |
           npm i -g @zen-browser/surfer
 
+      - uses: actions/download-artifact@v4
+        name: Download artifact 
+        with:
+          path: C:\artifact
+
+      - name:  Unpack artifact
+        run: |
+          cd C:\artifact
+          ls
+          7z x ${{ inputs.profile-data-path-archive }}
+          ls
+
+      - name: Setup 
+        run: |
+          (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
+          C:\MozillaBuildSetup-Latest.exe /S | out-null
 
       - name: Download firefox
-        run: pnpm surfer download
+        run: |
+          git config --global core.safecrlf false  
+          pnpm surfer download
 
       - name: Generate 
         run: |

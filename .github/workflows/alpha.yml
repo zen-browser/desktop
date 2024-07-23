@@ -195,7 +195,7 @@ jobs:
     uses: ./.github/workflows/windows-profile-build.yml
     permissions:
       contents: write
-    needs: [build-data]
+    needs: [windows-step-1, build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip

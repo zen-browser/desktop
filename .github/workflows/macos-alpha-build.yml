@@ -23,11 +23,6 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 6
-
       - name: Setup git
         run: |
           git config --global user.email "mauro-balades@users.noreply.github.com"

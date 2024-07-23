@@ -1,7 +1,11 @@
 
 echo Before:
-free -h
-df -h
+if [ command -v free ]; then
+    free -h
+fi
+if [ command -v df ]; then
+    df -h
+fi
 
 echo
 echo
@@ -38,5 +42,9 @@ echo
 echo
 
 echo After:
-free -h
-df -h
+if [ command -v free ]; then
+    free -h
+fi
+if [ command -v df ]; then
+    df -h
+fi

@@ -494,6 +494,10 @@ panelmultiview {
   margin: 0 10px 10px 0;
 }
 
+:root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer {
+  margin: 0 7px 7px 0;
+}
+
 #tabbrowser-tabbox #tabbrowser-tabpanels .browserStack > browser {
   border-radius: var(--zen-browser-border-radius);
   clip-path: inset(0px 0px 0px round var(--zen-browser-border-radius) 0) !important;

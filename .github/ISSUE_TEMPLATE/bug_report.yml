@@ -21,15 +21,12 @@ body:
       description: Is this issue reproducible on Firefox?
       options:
         - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.
-  - type: dropdown
+  - type: input
     id: version
     attributes:
       label: Version
       description: What version of our software are you running? Please DO NOT report Classic bugs.
-      options:
-        - G6
-        - G5
-        - Other
+      placeholder: 1.0.0
     validations:
       required: true
   - type: dropdown

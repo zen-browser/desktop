@@ -53,6 +53,11 @@ jobs:
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir\mozilla-build-run.sh
 
+      - name: 🐛 Debug Session
+        if: ${{ failure() }}
+        uses: Warpbuilds/gha-debug@v1.3
+        timeout-minutes: 15
+
       - name: Publish merged.profdata
         uses: actions/upload-artifact@v4
         with:

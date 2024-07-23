@@ -31,7 +31,6 @@ ac_add_options --enable-bootstrap
 ac_add_options --enable-application=browser
 
 if test "$ZEN_RELEASE"; then
-  ac_add_options --enable-optimize
   ac_add_options --enable-release
   ac_add_options --disable-debug
   ac_add_options --disable-debug-symbols

@@ -24,6 +24,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -66,7 +71,7 @@ jobs:
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
           echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
-          C:\mozilla-build\start-shell.bat $workspace_dir\mozilla-build-run.sh
+          C:\mozilla-build\start-shell.bat mozilla-build-run.sh
 
       - name: 🐛 Debug Session
         if: ${{ failure() }}

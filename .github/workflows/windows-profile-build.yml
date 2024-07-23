@@ -63,15 +63,15 @@ jobs:
           ls
           $Env:USE_MINTTY = "0"
 
-          $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
-          $workspace_dir = $workspace_dir + "/engine"
+          $workspace_dir_current = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
+          $workspace_dir = $workspace_dir_current + "/engine"
           echo $workspace_dir
 
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
           echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
-          C:\mozilla-build\start-shell.bat mozilla-build-run.sh
+          C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
 
       - name: 🐛 Debug Session
         if: ${{ failure() }}

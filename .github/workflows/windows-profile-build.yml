@@ -21,7 +21,7 @@ jobs:
           curl https://archive.mozilla.org/pub/firefox/releases/128.0/source/firefox-128.0.source.tar.xz --output firefox-128.0.source.tar.xz
           7z x firefox-128.0.source.tar.xz
           7z x firefox-128.0.source.tar
-          mv firefox-128.0.source firefox-source
+          mv firefox-128.0 firefox-source
           ls
           ls firefox-source
 

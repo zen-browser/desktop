@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Give the runner some swap space in an attempt to stop gkrust from crashing the build
       - name: Set Swap Space

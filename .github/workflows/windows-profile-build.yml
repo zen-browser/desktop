@@ -16,31 +16,21 @@ jobs:
     runs-on: windows-latest
     # Script edited from https://github.com/Floorp-Projects/Floorp/blob/ESR115/.github/workflows/window-generate-profile-data-and-jarlog.yml
     steps:
-      - name: Clone firefox-source
-        run: |
-          curl https://archive.mozilla.org/pub/firefox/releases/128.0/source/firefox-128.0.source.tar.xz --output firefox-128.0.source.tar.xz
-          7z x firefox-128.0.source.tar.xz
-          7z x firefox-128.0.source.tar
-          mv firefox-128.0 firefox-source
-          ls
-          ls firefox-source
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        name: Download artifact 
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
         with:
-          path: C:\artifact
+          node-version: 20
 
-      - name:  Unpack artifact
-        run: |
-          cd C:\artifact
-          ls
-          7z x ${{ inputs.profile-data-path-archive }}
-          ls
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      - name: Setup 
-        run: |
-          (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
-          C:\MozillaBuildSetup-Latest.exe /S | out-null
+
+
+      - name: Download firefox
+        run: pnpm surfer download
 
       - name: Generate 
         run: |
@@ -48,7 +38,7 @@ jobs:
           $Env:USE_MINTTY = "0"
 
           $workspace_dir = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
-          $workspace_dir = $workspace_dir + "/firefox-source"
+          $workspace_dir = $workspace_dir + "/engine"
           cd $workspace_dir
           echo $workspace_dir
 

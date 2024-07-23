@@ -2,10 +2,7 @@
 @import url("zen-fullscreen-override.css");
 
 :root {
-  --zen-main-browser-background: red; 
-  --zen-appcontent-separator-from-window-single: 7px;
-  --zen-appcontent-separator-from-window: var(--zen-appcontent-separator-from-window-single);
-  --zen-appcontent-border-radius: var(--zen-panel-radius);
+  --zen-main-browser-background: transparent;
   --zen-appcontent-border: 1px solid var(--zen-colors-border);
   --zen-browser-border-radius: var(--zen-panel-radius);
 }
@@ -24,9 +21,7 @@ html#main-window > body {
 }
 
 :not([inDOMFullscreen="true"]) #appcontent {
-  border-radius: var(--zen-appcontent-border-radius);
   overflow: hidden;
-  margin: var(--zen-appcontent-separator-from-window);
 }
 
 #appcontent {

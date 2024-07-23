@@ -74,7 +74,7 @@
   --in-content-page-background: var(--zen-colors-tertiary) !important;
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
 
-  --zen-button-border-radius: 8px;
+  --zen-button-border-radius: 7px;
   --zen-button-padding: .6rem 1.2rem;
 
   /* Other colors */
@@ -82,8 +82,6 @@
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77)) !important;
 
   --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);
-
-  /* TODO: Support dark themes! */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -112,3 +110,9 @@ window#commonDialogWindow {
   background-color: var(--zen-in-content-dialog-background) !important;
 }
 
+@media (-moz-bool-pref: "zen.theme.pill-button") {
+  :host(:is(.anonymous-content-host, notification-message)),
+  :root {
+    --zen-button-border-radius: 20px;
+  }
+}

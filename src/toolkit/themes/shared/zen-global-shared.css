@@ -2,11 +2,11 @@
 @import url("./in-content/zen-common-shared.css");
 
 :root {
-  --zen-panel-radius: 15px;
+  --zen-panel-radius: 9px;
 
   --arrowpanel-background: var(--zen-dialog-background) !important;
   --arrowpanel-border-color: var(--zen-dialog-border-color) !important;
-  --arrowpanel-border-radius: 12px !important;
+  --arrowpanel-border-radius: var(--zen-panel-radius) !important;
 
   &:-moz-lwtheme {
     color: var(--lwt-text-color);

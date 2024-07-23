@@ -24,6 +24,8 @@
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
+
+  --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
 }
 
 @media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
@@ -209,13 +211,13 @@ button.popup-notification-dropmarker {
 
 #navigator-toolbox {
   min-width: 55px;
+  max-width: 55px;
 }
 
 #navigator-toolbox toolbar#TabsToolbar {
   margin: var(--zen-appcontent-separator-from-window);
   overflow: hidden;
   transition: .2s;
-  border-radius: var(--zen-appcontent-border-radius) !important;
   flex-direction: column !important;
   padding: 5px 0;
   margin-right: 0 !important;

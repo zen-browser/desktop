@@ -83,5 +83,10 @@ Preferences.addAll([
     id: "zen.view.sidebar-expanded",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.theme.pill-button",
+    type: "bool",
+    default: true,
   }
 ]);

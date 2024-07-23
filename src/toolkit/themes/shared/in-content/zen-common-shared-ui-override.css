@@ -8,13 +8,13 @@
 xul|button {
   border-radius: var(--zen-button-border-radius) !important;
   padding: var(--zen-button-padding) !important;
-  transition: .2s;
+  transition: .1s;
   min-width: 100px !important;
   font-weight: 500 !important;
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
 }
 
 html|button:not(:is(

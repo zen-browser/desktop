@@ -70,8 +70,6 @@ var ZenThemeModifier = {
   updateExtraBrowserStyles() {
     // If we are in the main browser window, we can add some extra styles.
     if (!this._inMainBrowserWindow) return;
-    document.documentElement.style.setProperty("--zen-appcontent-separator-from-window-single", "0px");
-    document.documentElement.style.setProperty("--zen-appcontent-border-radius", "0px");
     this._changeSidebarLocation();
   },
 
@@ -178,7 +176,7 @@ var ZenThemeModifier = {
     if (document.documentElement.hasAttribute("privatebrowsingmode")) {
       avatarUrl = "chrome://global/skin/icons/indicator-private-browsing.svg";
     }
-    console.log("ZenThemeModifier: setting avatar image to", avatarUrl);
+    // console.log("ZenThemeModifier: setting avatar image to", avatarUrl);
     mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${avatarUrl})`);
     mainWindowEl.style.setProperty("--avatar-image-url", `var(--zen-avatar-image-url)`, "important");
   },

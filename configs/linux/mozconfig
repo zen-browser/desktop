@@ -25,6 +25,13 @@ if test "$ZEN_RELEASE"; then
     mk_add_options 'export CCACHE_CPP2=yes'
     ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
     mk_add_options 'export SCCACHE_GHA_ENABLED=on'
+    
+    # PGO may cause link errors on windows!
+    if ! test "$ZEN_CROSS_COMPILING"; then
+        # WE ARE JUST SUPPORTING PGO FOR LINUX!
+        export MOZ_PGO=1
+        ac_add_options MOZ_PGO=1
+    fi
 fi
 
 # Disable telemetry and tracking

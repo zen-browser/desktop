@@ -136,7 +136,7 @@ jobs:
           unset SURFER_PLATFORM
           export ZEN_CROSS_COMPILING=1
           if test ${{ inputs.generate-gpo }}; then
-            export ZEN_GA_GENERATE_PROFILE=1
+            #export ZEN_GA_GENERATE_PROFILE=1
           fi
           sh .github/workflows/src/alpha-build.sh
 

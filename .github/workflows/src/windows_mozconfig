@@ -35,10 +35,10 @@ if test "$ZEN_GA_GENERATE_PROFILE"; then
   ac_add_options --enable-profile-generate=cross
   ac_add_options --without-wasm-sandboxed-libraries
 else
-  ac_add_options --disable-profiling
-  ac_add_options --enable-profile-use=cross
-  ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
-  ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
+  # ac_add_options --disable-profiling
+  # ac_add_options --enable-profile-use=cross
+  # ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
+  # ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
 fi
 
 # ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE

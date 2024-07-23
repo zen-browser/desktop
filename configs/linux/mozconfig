@@ -20,6 +20,11 @@ fi
 if test "$ZEN_RELEASE"; then
     ac_add_options --enable-strip
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
+
+    mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
+    mk_add_options 'export CCACHE_CPP2=yes'
+    ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
+    mk_add_options 'export SCCACHE_GHA_ENABLED=on'
 fi
 
 # Disable telemetry and tracking

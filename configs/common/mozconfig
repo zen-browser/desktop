@@ -85,11 +85,6 @@ if test "$ZEN_RELEASE"; then
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
   fi
-
-  mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
-  mk_add_options 'export CCACHE_CPP2=yes'
-  ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
-  mk_add_options 'export SCCACHE_GHA_ENABLED=on'
 fi
 
 ac_add_options --enable-unverified-updates

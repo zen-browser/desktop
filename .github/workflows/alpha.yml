@@ -221,9 +221,10 @@ jobs:
     uses: ./.github/workflows/linux-alpha-build.yml
     permissions:
       contents: write
-    needs: [build-data] # Windows step 2 in order to avoid cloning all the artifacts again
+    needs: [build-data] 
     with:
       build-version: ${{ needs.build-data.outputs.version }}
+      use-warp-build: ${{ github.event.inputs.use-warp-build }}
 
   mac:
     name: macOS build

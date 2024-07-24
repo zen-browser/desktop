@@ -55,9 +55,9 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
 
-  export MOZ_LTO=full
-  ac_add_options MOZ_LTO=full
-  ac_add_options --enable-lto=full
+  export MOZ_LTO=thin
+  ac_add_options MOZ_LTO=thin
+  ac_add_options --enable-lto=thin
 
   if test "$ZEN_CROSS_COMPILING"; then
     ac_add_options --disable-jemalloc

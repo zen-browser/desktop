@@ -174,7 +174,7 @@ jobs:
           cd ..
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zen.source.tar.gz
           path: ./zen.source.tar.gz
@@ -296,21 +296,25 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: zen-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
           submodules: recursive
-
-      - name: Ensure repo is on main branch
-        run: |
-          cd flatpak
-          git checkout main
-          git pull
           
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: org.zen.browser.flatpak
           manifest-path: flatpak/org.zen.browser.flatpak.yml
           cache-key: flatpak-builder-${{ github.sha }}
-          upload-artifact: true
+          verbose: true
+
+      - name: Find flatpak bundle
+        run: find . 
+
+      - name: Upload flatpak bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen.flatpak
+          path: ./org.zen.browser.flatpak
+      

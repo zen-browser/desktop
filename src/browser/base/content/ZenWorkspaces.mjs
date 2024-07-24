@@ -138,7 +138,7 @@ var ZenWorkspaces = {
   },
 
   getWorkspaceIcon(workspace) {
-    if (workspace.icon) {
+    if (typeof workspace.icon !== "undefined") {
       return workspace.icon;
     }
     return workspace.name[0].toUpperCase();
@@ -188,8 +188,11 @@ var ZenWorkspaces = {
     workspaceList.innerHTML = "";
     workspaceList.parentNode.style.display = "flex";
     if (workspaces.workspaces.length - 1 <= 0) {
-      workspaceList.parentNode.style.display = "none";
-    }      
+      workspaceList.innerHTML = "No workspaces available";
+      workspaceList.setAttribute("empty", "true");
+    } else {
+      workspaceList.removeAttribute("empty");
+    }
     if (activeWorkspace) {
       let currentWorkspace = createWorkspaceElement(activeWorkspace);
       currentContainer.appendChild(currentWorkspace);
@@ -242,13 +245,16 @@ var ZenWorkspaces = {
     let activeWorkspace = (await this._workspaces()).workspaces.find(workspace => workspace.used);
     if (activeWorkspace) {
       button.innerHTML = `
-        <div class="zen-workspace-sidebar-icon" style="${typeof activeWorkspace.icon === "undefined" ? "display: none;" : ""}">
+        <div class="zen-workspace-sidebar-icon">
           ${this.getWorkspaceIcon(activeWorkspace)}
         </div>
         <div class="zen-workspace-sidebar-name">
           ${activeWorkspace.name}
         </div>
       `;
+      if (typeof activeWorkspace.icon === "undefined") {
+        button.querySelector(".zen-workspace-sidebar-icon").setAttribute("no-icon", "true");
+      }
     }
   },
 
@@ -298,6 +304,7 @@ var ZenWorkspaces = {
     }
     this._workspaceInput.value = "";
     let icon = document.querySelector("#PanelUI-zen-workspaces-create-icons-container [selected]");
+    icon?.removeAttribute("selected");
     await this.createAndSaveWorkspace(workspaceName, false, icon?.label);
     document.getElementById("PanelUI-zen-workspaces").hidePopup(true);
   },

@@ -302,6 +302,14 @@
   flex-direction: column;
 }
 
+#PanelUI-zen-workspaces-list[empty="true"] {
+  font-weight: 600;
+  padding: 10px;
+  width: 100%;
+  text-align: start;
+  opacity: 0.5;
+}
+
 #PanelUI-zen-workspaces-current-info toolbarbutton:last-child {
   margin-bottom: 0 !important;
 }

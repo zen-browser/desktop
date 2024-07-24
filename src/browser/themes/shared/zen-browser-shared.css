@@ -652,6 +652,14 @@ panelmultiview {
     display: block;
   }
 
+  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
+    display: none;
+  }
+
+  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
+    margin-left: 0;
+  }
+
   #navigator-toolbox {
     min-width: 150px;
     align-items: start;

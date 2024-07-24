@@ -69,8 +69,6 @@ pref('zen.view.compact', false);
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.show-button', true);
 
-pref('layers.acceleration.force-enabled', true);
-
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 
@@ -95,4 +93,9 @@ user_pref('general.smoothScroll', true); // DEFAULT
 // Privacy
 pref('dom.private-attribution.submission.enabled', false);
 
+// From Librewolf
+pref('media.eme.enabled', true);
+pref('webgl.disabled', false);
+
+#include fast-fox.js
 #include better-fox.js

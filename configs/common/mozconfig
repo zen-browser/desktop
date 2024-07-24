@@ -48,12 +48,12 @@ if test "$ZEN_RELEASE"; then
   
   ac_add_options --enable-proxy-bypass-protection
   ac_add_options --enable-hardening
-  ac_add_options --enable-sandbox
 
   ac_add_options --disable-crashreporter
   ac_add_options --disable-dmd
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
+  ac_add_options --disable-default-browser-agent
 
   export MOZ_LTO=thin
   ac_add_options MOZ_LTO=thin
@@ -77,6 +77,9 @@ if test "$ZEN_RELEASE"; then
   ac_add_options OPT_LEVEL="3"
   export RUSTC_OPT_LEVEL="3"
   ac_add_options RUSTC_OPT_LEVEL="3"
+
+  mk_add_options AUTOCLOBBER=1
+  export AUTOCLOBBER=1
 fi
 
 ac_add_options --enable-unverified-updates
@@ -88,8 +91,15 @@ ac_add_options --enable-jxl
 ac_add_options --enable-av1
 ac_add_options --enable-eme=widevine
 
+ac_add_options --with-unsigned-addon-scopes=app,system
+
 export MOZ_REQUIRE_SIGNING=
 export MOZ_TELEMETRY_REPORTING=
+
+mk_add_options MOZ_CRASHREPORTER=0
+mk_add_options MOZ_DATA_REPORTING=0
+mk_add_options MOZ_SERVICES_HEALTHREPORT=0
+mk_add_options MOZ_TELEMETRY_REPORTING=0
 
 if test "$ZEN_CROSS_COMPILING"; then
   ac_add_options --target=x86_64-pc-linux-gnu

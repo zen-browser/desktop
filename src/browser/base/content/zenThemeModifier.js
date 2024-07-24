@@ -38,7 +38,6 @@ var ZenThemeModifier = {
   },
 
   listenForEvents() {
-    addEventListener("LightweightTheme:Set", this);
     Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
   },
 

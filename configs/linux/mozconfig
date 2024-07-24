@@ -12,6 +12,7 @@ if ! test "$ZEN_CROSS_COMPILING"; then
     fi
 
     ac_add_options --enable-linker=lld
+    ac_add_options --disable-elf-hack
 fi
 
 if test "$ZEN_RELEASE"; then

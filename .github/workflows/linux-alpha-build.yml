@@ -111,19 +111,19 @@ jobs:
           mv dist/output.mar linux.mar
 
       - name: Upload binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zen.linux.tar.bz2
           path: ./zen.linux.tar.bz2
 
       - name: Upload mar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux.mar
           path: ./linux.mar
 
       - name: Upload update manifests
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux_update_manifest
           path: ./dist/update

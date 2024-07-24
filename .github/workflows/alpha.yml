@@ -244,28 +244,11 @@ jobs:
 
       - uses: actions/download-artifact@v4
 
-      - name: release-github
-        uses: 'marvinpinto/action-automatic-releases@latest'
-        with:
-          repo_token: '${{ secrets.DEPLOY_KEY }}'
-          automatic_release_tag: ${{ needs.build-data.outputs.version }}
-          title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
-          files: |
-            zen.linux.tar.bz2
-            zen.win64.zip
-            zen.source.tar.gz
-            linux.mar
-            windows.mar
-            macos.mar
-            zen.installer.exe
-            zen.installer.pretty.exe
-            zen.macos.dmg
-
       - name: List
         run: find .
 
       - name: Clone updates repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: zen-browser/updates-server
           path: updates-server
@@ -285,6 +268,23 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
           repository: ./updates-server
+
+      - name: release-github
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: '${{ secrets.DEPLOY_KEY }}'
+          automatic_release_tag: ${{ needs.build-data.outputs.version }}
+          title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
+          files: |
+            zen.linux.tar.bz2
+            zen.win64.zip
+            zen.source.tar.gz
+            linux.mar
+            windows.mar
+            macos.mar
+            zen.installer.exe
+            zen.installer.pretty.exe
+            zen.macos.dmg
 
   distro-flatpak:
     name: Build flatpak repos

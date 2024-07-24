@@ -80,19 +80,19 @@ jobs:
           mv ./dist/output.mar macos.mar
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zen.macos.dmg
           path: ./zen.macos.dmg
 
       - name: Upload mar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos.mar
           path: ./macos.mar
 
       - name: Upload update manifests
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos_update_manifest
           path: ./dist/update

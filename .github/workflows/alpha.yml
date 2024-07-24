@@ -294,7 +294,7 @@ jobs:
 
   distro-flatpak:
     name: Build flatpak repos
-    needs: [linux]
+    needs: [linux, release]
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
@@ -319,9 +319,4 @@ jobs:
           bundle: org.zen.browser.flatpak
           manifest-path: flatpak/org.zen.browser.flatpak.yml
           cache-key: flatpak-builder-${{ github.sha }}
-
-      - name: Upload flatpak repo
-        uses: actions/upload-artifact@v3
-        with:
-          name: flatpak-repo
-          path: flatpak/repo
+          upload-artifact: true

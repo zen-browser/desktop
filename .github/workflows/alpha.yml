@@ -13,6 +13,11 @@ on:
         required: false
         default: true
         type: 'boolean'
+      use-warp-build:
+        description: 'Use the warp build'
+        required: false
+        default: false
+        type: 'boolean'
 
 jobs:
 
@@ -209,6 +214,7 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false
+      use-warp-build: ${{ github.event.inputs.use-warp-build }}
 
   linux:
     name: Linux build

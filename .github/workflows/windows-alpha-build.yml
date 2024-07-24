@@ -13,10 +13,14 @@ on:
       profile-data-path-archive:
         description: 'The path to the zip archive containing the profile data'
         type: string
+      use-warp-build:
+        description: 'Whether to use the warp build'
+        required: true
+        type: boolean
 
 jobs:
   windows-build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.use-warp-build == 'true' && 'warp-windows-latest-x64-16x' || 'ubuntu-latest' }}
 
     steps:
       - name: Install Node.js and pnpm

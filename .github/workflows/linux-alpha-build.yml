@@ -6,12 +6,16 @@ on:
         description: 'The version to build'
         required: true
         type: string
+      use-warp-build:
+        description: 'Whether to use the warp build'
+        required: true
+        type: boolean
     
 jobs:
   build-linux:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.use-warp-build == 'true' && 'warp-ubuntu-latest-x64-16x' || 'ubuntu-latest' }}
 
     steps:
       - name: Install Node.js

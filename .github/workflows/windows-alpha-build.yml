@@ -137,6 +137,7 @@ jobs:
           export ZEN_CROSS_COMPILING=1
           if test ${{ inputs.generate-gpo }}; then
             #export ZEN_GA_GENERATE_PROFILE=1
+            echo "note: PGO build is disabled"
           fi
           sh .github/workflows/src/alpha-build.sh
 

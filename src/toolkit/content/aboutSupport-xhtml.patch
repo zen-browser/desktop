@@ -1,10 +1,10 @@
 diff --git a/toolkit/content/aboutSupport.xhtml b/toolkit/content/aboutSupport.xhtml
-index d3de7d001973434c09deb5723e73ea72f134362b..736b4e7e647d2f80697a0721c765d2aa82507583 100644
+index d28ca0dd0939c9a9c43bc7c6b3c7184172c09ed8..112d060540e254e1766c145913e21819f62439f8 100644
 --- a/toolkit/content/aboutSupport.xhtml
 +++ b/toolkit/content/aboutSupport.xhtml
-@@ -27,6 +27,7 @@
- #ifndef ANDROID
-     <link rel="localization" href="toolkit/featuregates/features.ftl"/>
+@@ -30,6 +30,7 @@
+     <link rel="localization" href="preview/genai.ftl" />
+ #endif
  #endif
 +  <script src="chrome://browser/content/zenThemeModifier.js"></script>
    </head>

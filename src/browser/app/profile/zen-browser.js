@@ -92,4 +92,7 @@ pref('zen.watermark.enabled', true);
 user_pref('apz.overscroll.enabled', true); // not DEFAULT on Linux
 user_pref('general.smoothScroll', true); // DEFAULT
 
+// Privacy
+pref('dom.private-attribution.submission.enabled', false);
+
 #include better-fox.js

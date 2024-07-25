@@ -308,6 +308,11 @@ jobs:
           repository: zen-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
           submodules: recursive
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux.tar.bz2
           
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:

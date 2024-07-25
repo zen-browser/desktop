@@ -8,6 +8,7 @@ var gZenBrowserManagerSidebar = {
   _hasChangedConfig: true,
   _splitterElement: null,
   _hSplitterElement: null,
+  _hasRegisteredPinnedClickOutside: false,
   _isDragging: false,
   contextTab: null,
 
@@ -106,6 +107,16 @@ var gZenBrowserManagerSidebar = {
     this.update();
     this._hasChangedConfig = false;
 
+    // https://stackoverflow.com/questions/11565471/removing-event-listener-which-was-added-with-bind
+    var clickOutsideHandler = this._handleClickOutside.bind(this);
+    if (Services.prefs.getBoolPref("zen.sidebar.floating") && !this._hasRegisteredPinnedClickOutside) {
+      document.addEventListener("mouseup", clickOutsideHandler);
+      this._hasRegisteredPinnedClickOutside = true;
+    } else if (!Services.prefs.getBoolPref("zen.sidebar.floating") && this._hasRegisteredPinnedClickOutside) {
+      document.removeEventListener("mouseup", clickOutsideHandler);
+      this._hasRegisteredPinnedClickOutside = false;
+    }
+
     const button = document.getElementById("zen-sidepanel-button");
     if (Services.prefs.getBoolPref("zen.sidebar.enabled")) {
       button.removeAttribute("hidden");
@@ -114,6 +125,25 @@ var gZenBrowserManagerSidebar = {
       this._closeSidebarPanel();
       return;
     }
+  },
+
+  _handleClickOutside(event) {
+    let sidebar = document.getElementById("zen-sidebar-web-panel");
+    if (!sidebar.hasAttribute("pinned") || !this._currentPanel || this._isDragging) {
+      return;
+    }
+    let target = event.target;
+    const closestSelector = [
+      "#zen-sidebar-web-panel",
+      "#zen-sidebar-panels-wrapper",
+      "#zenWebPanelContextMenu",
+      "#zen-sidebar-web-panel-splitter",
+      "#contentAreaContextMenu"
+    ].join(", ");
+    if (target.closest(closestSelector)) {
+      return;
+    }
+    this.close();
   },
 
   toggle() {

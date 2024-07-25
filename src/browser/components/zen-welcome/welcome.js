@@ -349,7 +349,9 @@ class Pages {
   }
 
   _openWelcomePage() {
-    gZenUIManager.openAndChangeToTab(kWelcomeURL);
+    gZenUIManager.openAndChangeToTab(kWelcomeURL, {
+      inBackground: true,
+    });
   }
 
   _displayCurrentPage() {

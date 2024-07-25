@@ -521,12 +521,6 @@ panelmultiview {
   #zen-appcontent-navbar-container #nav-bar {
     z-index: 1;
     opacity: 0;
-    transition: .2s;
-  }
-
-  #navigator-toolbox {
-    max-width: 1px;
-    min-width: 0;
   }
 
   #zen-appcontent-navbar-container #nav-bar {
@@ -541,7 +535,18 @@ panelmultiview {
     width: -moz-available;
   }
 
-  :root:has(
+  #navigator-toolbox {
+    position: absolute;
+    background: var(--zen-main-browser-background) !important;
+    height: 100%;
+    right: calc(100% - 5px);
+  }
+
+  #zen-sidebar-splitter {
+    display: none !important;
+  }
+
+  :root:not([inDOMFullscreen="true"]):has(
     :is(
       #navigator-toolbox:hover,
       #navigator-toolbox *[open="true"]:not(tab),
@@ -555,20 +560,21 @@ panelmultiview {
       max-height: unset;
       overflow: visible;
       opacity: 1;
-      background: transparent !important;
     }
 
     & #navigator-toolbox {
       border-right: var(--zen-appcontent-border) !important;
       width: fit-content !important;
-      padding: 5px;
+      padding: 10px;
+      position: unset;
+      right: unset;
     }
 
     & #zen-appcontent-navbar-container #nav-bar {
       border-bottom: var(--zen-appcontent-border) !important;
     }
 
-    :root:not([inDOMFullscreen="true"]) & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
       margin-top: 10px !important;
     }
   }

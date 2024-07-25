@@ -239,7 +239,6 @@ jobs:
     name: Release
     needs: [build-data, linux, source, windows-step-3, check-release, mac]
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       - name: Update repo
@@ -294,7 +293,7 @@ jobs:
 
   distro-flatpak:
     name: Build flatpak repos
-    needs: [linux, release]
+    needs: [linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write

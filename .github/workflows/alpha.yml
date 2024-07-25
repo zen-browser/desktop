@@ -233,11 +233,60 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
+
+
+  distro-flatpak:
+    name: Build flatpak repos
+    needs: [linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      options: --privileged
+    if: ${{ github.event.inputs.create_release == 'true' || github.event.inputs.create_flatpak == 'true' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: zen-browser/flatpak
+          token: ${{ secrets.DEPLOY_KEY }}
+          submodules: recursive
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux.tar.bz2
+          
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: com.zen.browser.flatpak
+          manifest-path: com.zen.browser.flatpak.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+          verbose: true
+
+      - name: Find flatpak bundle
+        run: find . 
+
+      - name: Upload flatpak bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: com.zen.browser.flatpak
+          path: com.zen.browser.flatpak
+
+      - name: Push flatpak repo
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+          git add ./repo
+          git commit -m "Update flatpak repo"
+          git push
+
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows-step-3, check-release, mac]
+    needs: [build-data, linux, source, windows-step-3, check-release, mac, distro-flatpak]
     runs-on: ubuntu-latest
 
     steps:
@@ -290,45 +339,4 @@ jobs:
             zen.installer.exe
             zen.installer.pretty.exe
             zen.macos.dmg
-
-  distro-flatpak:
-    name: Build flatpak repos
-    needs: [linux]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
-      options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' || github.event.inputs.create_flatpak == 'true' }}
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: zen-browser/flatpak
-          token: ${{ secrets.DEPLOY_KEY }}
-          submodules: recursive
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: zen.linux.tar.bz2
-          
-      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          bundle: org.zen.browser.flatpak
-          manifest-path: org.zen.browser.flatpak.yml
-          cache-key: flatpak-builder-${{ github.sha }}
-          verbose: true
-
-      - name: Find flatpak bundle
-        run: find . 
-
-      - name: Upload flatpak bundle
-        uses: flatpak/flatpak-github-actions/flat-manager@v6.1
-        with:
-          repository: alpha
-          flat-manager-url: https://hub.flathub.org/
-          verbose: true
-          token: ${{ secrets.DEPLOY_KEY }}
-      
+            org.zen.browser.flatpak

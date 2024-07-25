@@ -17,7 +17,6 @@ then
     export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
     export DISPLAY=:2
   fi
-  export ZEN_RELEASE=1
   pnpm build 
 else
   echo "Xvfb could not be found, running without it"

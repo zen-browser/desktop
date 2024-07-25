@@ -739,7 +739,7 @@ panelmultiview {
 
     &:active,
     .zen-sidebar-panel-button:active {
-      transform: scale(0.99) !important;
+      transform: scale(0.96) !important;
     }
   }
 

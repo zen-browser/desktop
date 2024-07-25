@@ -127,7 +127,7 @@
 </panel>
 
 <menupopup id="zenWorkspaceActionsMenu"
-            onpopupshowing="ZenWorkspaces.updateContextMenu(event);"
+            onpopupshowing="ZenWorkspaces.updateContextMenu(this);"
             onpopuphidden="ZenWorkspaces.onContextMenuClose();">
   <menuitem id="context_zenDeleteWorkspace" oncommand="ZenWorkspaces.contextDelete();" data-l10n-id="zen-workspaces-panel-context-delete"/>
 </menupopup>

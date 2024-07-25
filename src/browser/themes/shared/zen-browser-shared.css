@@ -728,11 +728,14 @@ panelmultiview {
     & .tab-stack {
       justify-content: start;
       padding: 10px;
+      width: 100% !important;
     }
   }
 
   #zen-workspaces-button {
     width: -moz-available !important;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .tab-label-container {

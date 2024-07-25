@@ -137,8 +137,12 @@ var ZenWorkspaces = {
     parentPanel.goBack();
   },
 
+  workspaceHasIcon(workspace) {
+    return typeof workspace.icon !== "undefined" && workspace.icon !== "";
+  },
+
   getWorkspaceIcon(workspace) {
-    if (typeof workspace.icon !== "undefined") {
+    if (this.workspaceHasIcon(workspace)) {
       return workspace.icon;
     }
     return workspace.name[0].toUpperCase();
@@ -252,7 +256,7 @@ var ZenWorkspaces = {
           ${activeWorkspace.name}
         </div>
       `;
-      if (typeof activeWorkspace.icon === "undefined") {
+      if (!this.workspaceHasIcon(activeWorkspace)) {
         button.querySelector(".zen-workspace-sidebar-icon").setAttribute("no-icon", "true");
       }
     }
@@ -323,28 +327,24 @@ var ZenWorkspaces = {
       return;
     }
     let firstTab = undefined;
-    // Get the number of tabs that are hidden before we start hiding them
-    let numShownTabs = gBrowser.tabs.reduce((acc, tab) => {
-      return (tab.getAttribute("zen-workspace-id") === window.uuid) ? acc + 1 : acc;
-    }, 0);
     let workspaces = await this._workspaces();
     for (let workspace of workspaces.workspaces) {
       workspace.used = workspace.uuid === window.uuid;
     }
     this.unsafeSaveWorkspaces(workspaces);
-    if (numShownTabs === gBrowser.tabs.length-1) {
-      // If all tabs are hidden, we need to create a new tab
-      // to show the workspace
-      this._createNewTabForWorkspace(window);
-    }
+    let shownTabs = 0;
     for (let tab of gBrowser.tabs) {
-      if (tab.getAttribute("zen-workspace-id") === window.uuid) {
+      if (tab.getAttribute("zen-workspace-id") === window.uuid && !tab.pinned) {
         if (!firstTab) {
           firstTab = tab;
           gBrowser.selectedTab = firstTab;
         }
         gBrowser.showTab(tab);
+        shownTabs++;
       }
+    }
+    if (shownTabs === 0) {
+      this._createNewTabForWorkspace(window);
     }
     for (let tab of gBrowser.tabs) {
       if (tab.getAttribute("zen-workspace-id") !== window.uuid) {

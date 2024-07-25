@@ -239,6 +239,7 @@ jobs:
     name: Release
     needs: [build-data, linux, source, windows-step-3, check-release, mac]
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Update repo

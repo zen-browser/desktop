@@ -13,6 +13,11 @@ on:
         required: false
         default: true
         type: 'boolean'
+      create_flatpak:
+        description: 'Create a flatpak release (It defaults to creating a release)'
+        required: false
+        default: false
+        type: 'boolean'
 
 jobs:
 
@@ -295,7 +300,7 @@ jobs:
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
       options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' || github.event.inputs.create_flatpak == 'true' }}
 
     steps:
       - uses: actions/checkout@v4

@@ -290,6 +290,8 @@ jobs:
     name: Build flatpak repos
     needs: [linux, release]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
       options: --privileged
@@ -305,7 +307,7 @@ jobs:
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: org.zen.browser.flatpak
-          manifest-path: flatpak/org.zen.browser.flatpak.yml
+          manifest-path: org.zen.browser.flatpak.yml
           cache-key: flatpak-builder-${{ github.sha }}
           verbose: true
 

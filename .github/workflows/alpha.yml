@@ -325,8 +325,10 @@ jobs:
         run: find . 
 
       - name: Upload flatpak bundle
-        uses: actions/upload-artifact@v4
+        uses: flatpak/flatpak-github-actions/flat-manager@v6.1
         with:
-          name: zen.flatpak
-          path: ./org.zen.browser.flatpak
+          repository: alpha
+          flat-manager-url: https://hub.flathub.org/
+          verbose: true
+          token: ${{ secrets.DEPLOY_KEY }}
       

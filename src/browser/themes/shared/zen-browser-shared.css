@@ -736,6 +736,11 @@ panelmultiview {
       padding: 10px;
       width: 100% !important;
     }
+
+    &:active,
+    .zen-sidebar-panel-button:active {
+      transform: scale(0.99) !important;
+    }
   }
 
   #zen-workspaces-button {

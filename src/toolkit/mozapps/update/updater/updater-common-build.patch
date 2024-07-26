@@ -1,0 +1,16 @@
+diff --git a/toolkit/mozapps/update/updater/updater-common.build b/toolkit/mozapps/update/updater/updater-common.build
+index 6c6d0adf6f56b66c06494b95982b4afae52de536..67e381659dba0c6938a12d16fe12bc2f3e2039ae 100644
+--- a/toolkit/mozapps/update/updater/updater-common.build
++++ b/toolkit/mozapps/update/updater/updater-common.build
+@@ -78,6 +78,11 @@ if link_with_nss:
+         "nss",
+         "signmar",
+     ]
++    if CONFIG["OS_ARCH"] == "Linux":
++        # Zen: --enable-unverified-updates is enabled, the RPATH is not added
++        OS_LIBS += [
++            "-Wl,-rpath=\\$$ORIGIN",
++        ]
+ 
+ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
+     have_progressui = 1

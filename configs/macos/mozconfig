@@ -7,3 +7,6 @@ POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-gre
 
 ac_add_options --enable-install-strip
 ac_add_options --target=aarch64-apple-darwin
+
+export MOZ_MACBUNDLE_ID=${appId}
+export MOZ_MACBUNDLE_NAME="Zen Browser.app"

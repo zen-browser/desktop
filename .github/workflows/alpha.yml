@@ -274,13 +274,12 @@ jobs:
           name: com.zen.browser.flatpak
           path: com.zen.browser.flatpak
 
-      - name: Push flatpak repo
-        run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
-          git add ./repo
-          git commit -m "Update flatpak repo"
-          git push
+      - name: Publish to Flathub (beta)
+        uses: flatpak/flatpak-github-actions/flat-manager@v6.1
+        with:
+          flat-manager-url: https://hub.flathub.org/
+          repository: beta
+          token: ${{ secrets.FLATHUB_TOKEN }}
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}

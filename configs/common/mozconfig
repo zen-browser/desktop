@@ -12,9 +12,7 @@ export MOZ_APP_PROFILE=${binName}
 export MOZ_APP_DISPLAYNAME="${name}"
 export MOZ_BRANDING_DIRECTORY=${brandingDir}
 export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}
-export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_DISTRIBUTION_ID=${appId}
-export MOZ_MACBUNDLE_NAME="Zen Browser.app"
 
 # Uncomment if builds are too resource hungry
 # mk_add_options MOZ_MAKE_FLAGS="-j4"
@@ -38,7 +36,8 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
   ac_add_options --enable-strip
   ac_add_options --enable-install-strip
-  
+  ac_add_options --disable-accessibility
+
   ac_add_options --enable-rust-simd
   mk_add_options MOZ_PARALLEL_COMPILE=1
   mk_add_options MOZ_CRASHREPORTER=0
@@ -55,15 +54,11 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-rust-tests
   ac_add_options --disable-default-browser-agent
 
-  export MOZ_LTO=thin
-  ac_add_options MOZ_LTO=thin
-  ac_add_options --enable-lto=thin
+  export MOZ_LTO=1
+  ac_add_options MOZ_LTO=1
+  ac_add_options --enable-lto
 
-  if test "$ZEN_CROSS_COMPILING"; then
-    ac_add_options --disable-jemalloc
-  else
-    ac_add_options --enable-jemalloc
-  fi
+  ac_add_options --enable-jemalloc
 
   mk_add_options MOZILLA_OFFICIAL=1
   MOZILLA_OFFICIAL=1
@@ -91,6 +86,7 @@ ac_add_options --enable-jxl
 ac_add_options --enable-av1
 ac_add_options --enable-eme=widevine
 
+ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 
 export MOZ_REQUIRE_SIGNING=

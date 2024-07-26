@@ -9,7 +9,7 @@ on:
 
 jobs:
   mac-build:
-    runs-on: warp-macos-13-arm64-6x
+    runs-on: macos-14
 
     steps:
       - name: Install Node.js
@@ -32,6 +32,12 @@ jobs:
         run: |
           brew install cairo sccache gnu-tar mercurial
           sudo pip install setuptools
+        
+      - name: Swap space
+        run: |
+          sudo launchctl limit maxfiles 2048 unlimited
+          sudo sysctl -w kern.maxfiles=2048
+          sudo sysctl -w kern.maxfilesperproc=1800
 
       - name: Free up space
         run: sh .github/workflows/src/disk-setup-and-swap.sh

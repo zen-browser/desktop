@@ -9,7 +9,7 @@ on:
 
 jobs:
   mac-build:
-    runs-on: macos-14-large
+    runs-on: macos-14
 
     steps:
       - name: Install Node.js

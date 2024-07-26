@@ -18,6 +18,7 @@ pref('browser.display.focus_ring_style', 0);
 pref('browser.display.focus_ring_width', 0);
 
 pref('browser.newtabpage.activity-stream.newtabWallpapers.enabled', true);
+pref('browser.newtabpage.activity-stream.newtabWallpapers.v2.enabled', true);
 pref('browser.translations.newSettingsUI.enable', true);
 
 pref("browser.urlbar.trimHttps", true);

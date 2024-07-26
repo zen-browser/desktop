@@ -9,7 +9,7 @@ on:
 
 jobs:
   mac-build:
-    runs-on: macos-14
+    runs-on: warp-macos-13-arm64-6x
 
     steps:
       - name: Install Node.js

@@ -40,7 +40,7 @@ jobs:
         name: Download artifact 
         with:
           path: C:\artifact
-          name: ${{ inputs.profile-data-path-archive }}
+          name: zen-windows-x86_64-profile-data-and-jarlog.zip
 
       - name:  Unpack artifact
         run: |

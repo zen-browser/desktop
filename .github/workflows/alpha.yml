@@ -203,7 +203,7 @@ jobs:
     needs: [windows-step-1, build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
+      profile-data-path-archive: zen.win64-pgo-stage-1.zip
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)

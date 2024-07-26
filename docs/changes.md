@@ -9,4 +9,5 @@
 * Welcome Page
 * Overall performance
 * Overall stability
+* Pinning tabs (Grid layout)
 * Overall UX

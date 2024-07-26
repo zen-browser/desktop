@@ -34,17 +34,12 @@ pref('browser.urlbar.clipboard.featureGate', true);
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);
 pref('browser.newtabpage.activity-stream.feeds.section.topstories', false);
-pref("browser.topsites.contile.enabled", false);
+pref("browser.topsites.contile.enabled", true);
 
 // Pdf
 pref('browser.download.open_pdf_attachments_inline', true);
 pref('pdfjs.enableHighlightEditor', true);
 pref('pdfjs.enableHighlightFloatingButton', true);
-
-// UA
-pref('general.useragent.compatMode.firefox', true);
-
-pref('layout.css.backdrop-filter.enabled', true);
 
 pref("alerts.showFavicons", true);
 pref('browser.toolbars.bookmarks.visibility', 'never');

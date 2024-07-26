@@ -125,7 +125,6 @@ pref('browser.urlbar.update2.engineAliasRefresh', true);
 pref('browser.search.suggest.enabled', false);
 pref('browser.urlbar.suggest.quicksuggest.sponsored', false);
 pref('browser.urlbar.suggest.quicksuggest.nonsponsored', false);
-pref('browser.formfill.enable', false);
 pref('security.insecure_connection_text.enabled', true);
 pref('security.insecure_connection_text.pbmode.enabled', true);
 pref('network.IDN_show_punycode', true);
@@ -135,14 +134,12 @@ pref('dom.security.https_first', true);
 pref('dom.security.https_first_schemeless', true);
 
 /** PASSWORDS ***/
-pref('signon.rememberSignons', false);
 pref('signon.formlessCapture.enabled', false);
 pref('signon.privateBrowsingCapture.enabled', false);
 pref('network.auth.subresource-http-auth-allow', 1);
 pref('editor.truncate_user_pastes', false);
 
 /** ADDRESS + CREDIT CARD MANAGER ***/
-pref('extensions.formautofill.addresses.enabled', false);
 pref('extensions.formautofill.creditCards.enabled', false);
 
 /** MIXED CONTENT + CROSS-SITE ***/
@@ -217,15 +214,12 @@ pref('browser.privatebrowsing.vpnpromourl', '');
 pref('extensions.getAddons.showPane', false);
 pref('extensions.htmlaboutaddons.recommendations.enabled', false);
 pref('browser.discovery.enabled', false);
-pref('browser.shell.checkDefaultBrowser', false);
 pref('browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons', false);
 pref(
   'browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features',
   false
 );
 pref('browser.preferences.moreFromMozilla', false);
-pref('browser.tabs.tabmanager.enabled', false);
-pref('browser.aboutConfig.showWarning', false);
 pref('browser.aboutwelcome.enabled', false);
 
 /** THEME ADJUSTMENTS ***/
@@ -237,12 +231,6 @@ pref('browser.privateWindowSeparation.enabled', false); // WINDOWS
 /** COOKIE BANNER HANDLING ***/
 pref('cookiebanners.service.mode', 1);
 pref('cookiebanners.service.mode.privateBrowsing', 1);
-
-/** FULLSCREEN NOTICE ***/
-pref('full-screen-api.transition-duration.enter', '0 0');
-pref('full-screen-api.transition-duration.leave', '0 0');
-pref('full-screen-api.warning.delay', -1);
-pref('full-screen-api.warning.timeout', 0);
 
 /** URL BAR ***/
 pref('browser.urlbar.suggest.calculator', true);

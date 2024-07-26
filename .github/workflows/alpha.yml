@@ -233,8 +233,6 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
-
-
   distro-flatpak:
     name: Build flatpak repos
     needs: [linux]

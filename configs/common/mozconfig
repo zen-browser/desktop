@@ -75,8 +75,11 @@ if test "$ZEN_RELEASE"; then
   mk_add_options AUTOCLOBBER=1
   export AUTOCLOBBER=1
 
-  export MOZ_PGO=1
-  ac_add_options MOZ_PGO=1
+  if ! test "$ZEN_CROSS_COMPILING"; then
+    # We declare these later in windows builds, look at windows_mozconfig
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
+  fi
 fi
 
 ac_add_options --enable-unverified-updates

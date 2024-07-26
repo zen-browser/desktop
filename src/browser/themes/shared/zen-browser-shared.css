@@ -340,7 +340,7 @@ toolbarbutton#scrollbutton-up {
   display: none !important;
 }
 
-.tabbrowser-tab::after {
+.tabbrowser-tab::after {/* Containers */
   background: var(--identity-tab-color, transparent);
   border-radius: 2px;
   height: 80%;
@@ -362,15 +362,15 @@ toolbarbutton#scrollbutton-up {
   position: relative !important;
 }
 
-.tabbrowser-tab:nth-last-child(1 of [pinned]) {
-  margin-bottom: 15px !important;
+#tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of :not([pinned])) {
+  margin-top: 15px !important;
   position: relative;
   overflow: visible;
 
-  & .tab-stack::after {
+  & .tab-stack::before {
     content: '';
     position: absolute;
-    bottom: -11px;
+    top: -11px;
     left: 0;
     width: 100%;
     height: 1.5px;
@@ -724,27 +724,57 @@ panelmultiview {
   }
 
   .tabbrowser-tab {
-    width: 100%;
-
-    &:hover .tab-close-button {
-      display: block !important;
-    }
-
-    & .tab-content {
-      position: relative;
+    &:not([pinned]) {
       width: 100%;
-    }
-     
-    & .tab-stack {
-      justify-content: start;
-      padding: 10px;
-      width: 100% !important;
+    
+      &:hover .tab-close-button {
+        display: block !important;
+      }
+  
+      & .tab-content {
+        position: relative;
+        width: 100%;
+      }
+       
+      & .tab-stack {
+        justify-content: start;
+        padding: 10px;
+        width: 100% !important;
+      }
+
+      & .tab-label-container {
+    
+        #tabbrowser-tabs:not([secondarytext-unsupported]) & {
+          display: flex;
+          align-items: center;
+          padding-left: 10px;
+        }
+      }
     }
 
     &:active,
     .zen-sidebar-panel-button:active {
       transform: scale(0.96) !important;
     }
+
+    &[pinned] {
+      margin: 0 !important;
+    }
+  }
+  #tabbrowser-arrowscrollbox::part(scrollbox) {
+    /* We have the pinned tabs on the top, next to each other,
+     * and the rest of the tabs are below them. */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    padding: 5px;
+  }
+
+  .tabbrowser-tab:not([pinned]) {
+    grid-column: 1 / -1;
+  }
+
+  .tabbrowser-tab[pinned] {
+    grid-column: span 1;
   }
 
   #zen-workspaces-button {
@@ -753,19 +783,10 @@ panelmultiview {
     padding-right: 10px;
   }
 
-  .tab-label-container {
-    
-    #tabbrowser-tabs:not([secondarytext-unsupported]) & {
-      display: flex;
-      align-items: center;
-      padding-left: 10px;
-    }
-  }
-
   #zen-sidebar-icons-wrapper {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
     transition: .1s;
   }
 

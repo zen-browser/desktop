@@ -29,9 +29,6 @@ var gZenVerticalTabsManager = {
     //Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
   },
 
-  //_updateEvent() {
-  //  this._updateExpandButton();
-  //},
 
   get expanded() {
     return Services.prefs.getBoolPref('zen.view.sidebar-expanded');

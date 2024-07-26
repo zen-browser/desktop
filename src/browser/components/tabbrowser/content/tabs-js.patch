@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf457da3500c 100644
+index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01bef0c21b 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -552,19 +552,36 @@
@@ -130,7 +130,23 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
            for (let tab of movingTabs) {
              tab.toggleAttribute("tabdrop-samewindow", true);
              tab.style.transform = "translateX(" + newTranslateX + "px)";
-@@ -1144,10 +1179,13 @@
+@@ -1081,6 +1116,15 @@
+         return this._allTabs;
+       }
+       let children = Array.from(this.arrowScrollbox.children);
++      // Zen: We also need to exclude subgroups
++      // Zen: For example: tab-group(tab1, tab2), tab3, tab-group(tab4)
++      // Zen: In this case, we need to get [tab1, tab2, tab3, tab4]
++      // Zen: NOTE: There should be no tab-group inside of a tab-group
++      for (let i = 0; i < children.length; i++) {
++        if (children[i].classList.contains("zen-tab-group")) {
++          children.splice(i, 1, ...children[i].children);
++        }
++      }
+       children.pop();
+       this._allTabs = children;
+       return children;
+@@ -1144,10 +1188,13 @@
      }
  
      _initializeArrowScrollbox() {
@@ -144,7 +160,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
            // Ignore underflow events:
            // - from nested scrollable elements
            // - for vertical orientation
-@@ -1471,11 +1509,11 @@
+@@ -1471,11 +1518,11 @@
          for (let i = numPinned - 1; i >= 0; i--) {
            let tab = tabs[i];
            width += layoutData.pinnedTabWidth;
@@ -161,7 +177,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
            tab._pinnedUnscrollable = true;
          }
          this.style.setProperty(
-@@ -1510,19 +1548,30 @@
+@@ -1510,19 +1557,30 @@
          }
        }
  
@@ -201,7 +217,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
  
        let pinned = draggedTab.pinned;
        let numPinned = gBrowser._numPinnedTabs;
-@@ -1531,36 +1580,39 @@
+@@ -1531,36 +1589,39 @@
          pinned ? numPinned : undefined
        );
  
@@ -252,7 +268,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
        }
  
        draggedTab._dragData.translateX = translateX;
-@@ -1593,11 +1645,11 @@
+@@ -1593,11 +1654,11 @@
          if (tabs[mid] == draggedTab && ++mid > high) {
            break;
          }
@@ -266,7 +282,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
            tabCenter
          ) {
            low = mid + 1;
-@@ -1620,16 +1672,16 @@
+@@ -1620,16 +1681,16 @@
        for (let tab of tabs) {
          if (tab != draggedTab) {
            let shift = getTabShift(tab, newIndex);
@@ -286,7 +302,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..bed86f3014a239b4e7d50504d4b0bf45
          }
          return 0;
        }
-@@ -1701,9 +1753,9 @@
+@@ -1701,9 +1762,9 @@
  
        // Slide the relevant tabs to their new position.
        for (let t of this._getVisibleTabs()) {

@@ -49,7 +49,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-hardening
 
   ac_add_options --disable-crashreporter
-  ac_add_options --disable-dmd
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
   ac_add_options --disable-default-browser-agent
@@ -75,6 +74,9 @@ if test "$ZEN_RELEASE"; then
 
   mk_add_options AUTOCLOBBER=1
   export AUTOCLOBBER=1
+
+  export MOZ_PGO=1
+  ac_add_options MOZ_PGO=1
 fi
 
 ac_add_options --enable-unverified-updates

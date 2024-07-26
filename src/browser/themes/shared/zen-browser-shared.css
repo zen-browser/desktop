@@ -594,6 +594,10 @@ panelmultiview {
       margin: 0 !important;
     }
   }
+
+  & #zen-sidebar-splitter {
+    display: none !important;
+  }
 }
 
 /* Screenshots */

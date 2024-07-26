@@ -356,9 +356,12 @@
 }
 
 #PlacesChevron,
-#urlbar-go-button,
-#zen-expand-sidebar-button {
+#urlbar-go-button {
 	list-style-image: url("arrow-right.svg") !important;
+}
+
+#zen-expand-sidebar-button {
+	list-style-image: url("move-tab.svg") !important;
 }
 
 .panel-header > .subviewbutton-back {

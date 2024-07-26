@@ -58,6 +58,7 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-lto
 
   ac_add_options --enable-jemalloc
+  ac_add_options --disable-jprof
 
   mk_add_options MOZILLA_OFFICIAL=1
   MOZILLA_OFFICIAL=1
@@ -79,6 +80,9 @@ if test "$ZEN_RELEASE"; then
     # We declare these later in windows builds, look at windows_mozconfig
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
+
+    # It causes link errors on windows
+    ac_add_options --disable-dmd
   fi
 fi
 

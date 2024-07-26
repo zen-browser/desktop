@@ -274,12 +274,12 @@ jobs:
           name: com.zen.browser.flatpak
           path: com.zen.browser.flatpak
 
-      - name: Publish to Flathub (beta)
-        uses: flatpak/flatpak-github-actions/flat-manager@v6.1
-        with:
-          flat-manager-url: https://hub.flathub.org/
-          repository: beta
-          token: ${{ secrets.FLATHUB_TOKEN }}
+      # - name: Publish to Flathub (beta)
+      #   uses: flatpak/flatpak-github-actions/flat-manager@v6.1
+      #   with:
+      #     flat-manager-url: https://hub.flathub.org/
+      #     repository: beta
+      #     token: ${{ secrets.FLATHUB_TOKEN }}
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}

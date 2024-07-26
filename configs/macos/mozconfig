@@ -1,9 +1,9 @@
 POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 
-# if test "$ZEN_RELEASE"; then
-#   ac_add_options --enable-optimize="-mcpu=apple-m1 -O3 -w"
-#   export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=apple-m1"
-# fi
+unset MOZ_STDCXX_COMPAT
+if test "$ZEN_RELEASE"; then
+  export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=apple-m1"
+fi
 
 ac_add_options --enable-install-strip
 ac_add_options --target=aarch64-apple-darwin

@@ -288,7 +288,7 @@ jobs:
 
     steps:
       - name: Update repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Git Pull
         run: git pull

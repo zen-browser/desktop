@@ -336,4 +336,4 @@ jobs:
             zen.installer.exe
             zen.installer.pretty.exe
             zen.macos.dmg
-            org.zen.browser.flatpak
+            com.zen.browser.flatpak

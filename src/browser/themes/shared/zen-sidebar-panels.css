@@ -59,6 +59,7 @@
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[hidden="true"]) {
   max-width: 0;
   padding: 0;
+  margin: 0;
 }
 
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned="true"]) {

@@ -13,11 +13,6 @@ on:
         required: false
         default: true
         type: 'boolean'
-      create_flatpak:
-        description: 'Create a flatpak release (It defaults to creating a release)'
-        required: false
-        default: false
-        type: 'boolean'
 
 jobs:
 
@@ -233,57 +228,11 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
-  distro-flatpak:
-    name: Build flatpak repos
-    needs: [linux]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
-      options: --privileged
-    if: ${{ github.event.inputs.create_release == 'true' || github.event.inputs.create_flatpak == 'true' }}
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: zen-browser/flatpak
-          token: ${{ secrets.DEPLOY_KEY }}
-          submodules: recursive
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: zen.linux.tar.bz2
-          
-      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          bundle: com.zen.browser.flatpak
-          manifest-path: com.zen.browser.flatpak.yml
-          cache-key: flatpak-builder-${{ github.sha }}
-          verbose: true
-
-      - name: Find flatpak bundle
-        run: find . 
-
-      - name: Upload flatpak bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: com.zen.browser.flatpak
-          path: com.zen.browser.flatpak
-
-      # - name: Publish to Flathub (beta)
-      #   uses: flatpak/flatpak-github-actions/flat-manager@v6.1
-      #   with:
-      #     flat-manager-url: https://hub.flathub.org/
-      #     repository: beta
-      #     token: ${{ secrets.FLATHUB_TOKEN }}
-
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows-step-3, check-release, mac, distro-flatpak]
+    needs: [build-data, linux, source, windows-step-3, check-release, mac]
     runs-on: ubuntu-latest
 
     steps:
@@ -336,4 +285,3 @@ jobs:
             zen.installer.exe
             zen.installer.pretty.exe
             zen.macos.dmg
-            com.zen.browser.flatpak

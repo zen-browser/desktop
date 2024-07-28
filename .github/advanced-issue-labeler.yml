@@ -1,3 +1,4 @@
+---
 # Keep up to date with workflows/issue-create.yml !!!
 
 # Low (visual glitch, minor inconvenience)
@@ -7,7 +8,8 @@
 # Enhancement (feature request) [we like these too!]
 
 policy:
-  - section:
+  - template: [bug_report.yml]
+    section:
       - id: [severity]
         label:
           - name: 'kind: low severity'
@@ -18,5 +20,6 @@ policy:
             keys: ['High (badly broken, no workaround)']
           - name: 'kind: critical severity'
             keys: ['Critical (data loss, security issue)']
-
+          - name: 'kind: enhancement'
+            keys: ['Enhancement (feature request) [we like these too!]']
 

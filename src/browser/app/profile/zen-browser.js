@@ -93,5 +93,4 @@ pref('dom.private-attribution.submission.enabled', false);
 pref('media.eme.enabled', true);
 pref('webgl.disabled', false);
 
-#include fast-fox.js
 #include better-fox.js

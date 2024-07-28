@@ -1,0 +1,25 @@
+# Keep up to date with workflows/issue-create.yml !!!
+
+# Low (visual glitch, minor inconvenience)
+# Medium (major inconvenience, but workaround exists)
+# High (badly broken, no workaround)
+# Critical (data loss, security issue)
+# Enhancement (feature request) [we like these too!]
+
+policy:
+  - section:
+      - id: [severity]
+        block-list: ['None', 'Other']
+        label:
+          - name: 'kind: low severity'
+            keys: ['Low (visual glitch, minor inconvenience)']
+          - name: 'kind: medium severity'
+            keys: ['Medium (major inconvenience, but workaround exists)']
+          - name: 'kind: high severity'
+            keys: ['High (badly broken, no workaround)']
+          - name: 'kind: critical severity'
+            keys: ['Critical (data loss, security issue)']
+          - name: 'kind: enhancement'
+            keys: ['Enhancement (feature request) [we like these too!]']
+
+

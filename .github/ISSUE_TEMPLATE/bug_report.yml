@@ -30,6 +30,19 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: severity
+    attributes:
+      label: Severity impact
+      options:
+        - Low (visual glitch, minor inconvenience)
+        - Medium (major inconvenience, but workaround exists)
+        - High (badly broken, no workaround)
+        - Critical (data loss, security issue)
+        - Enhancement (feature request) [we like these too!]
+    validations:
+      required: true
+
+  - type: dropdown
     id: platform
     attributes:
       label: What platform are you seeing the problem on?

@@ -362,7 +362,7 @@ toolbarbutton#scrollbutton-up {
   position: relative !important;
 }
 
-#tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of :not([pinned])) {
+#tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of :not([pinned]):not([hidden])) {
   margin-top: 15px !important;
   position: relative;
   overflow: visible;

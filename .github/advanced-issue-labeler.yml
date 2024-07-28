@@ -2,8 +2,7 @@
 # Keep up to date with workflows/issue-create.yml !!!
 
 policy:
-  - template: [bug_report.yml]
-    section:
+  - section:
       - id: [severity]
         label:
           - name: 'kind: low severity'

@@ -33,3 +33,6 @@ jobs:
           issue-form: ${{ steps.issue-parser.outputs.jsonString }}
           token: ${{ secrets.GITHUB_TOKEN }}
           section: severity
+          block-list: |  # <-- this value needs to be set (workaround)
+            None
+            

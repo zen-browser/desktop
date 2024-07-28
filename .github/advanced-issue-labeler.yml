@@ -9,7 +9,6 @@
 policy:
   - section:
       - id: [severity]
-        block-list: ['None', 'Other']
         label:
           - name: 'kind: low severity'
             keys: ['Low (visual glitch, minor inconvenience)']
@@ -19,7 +18,5 @@ policy:
             keys: ['High (badly broken, no workaround)']
           - name: 'kind: critical severity'
             keys: ['Critical (data loss, security issue)']
-          - name: 'kind: enhancement'
-            keys: ['Enhancement (feature request) [we like these too!]']
 
 

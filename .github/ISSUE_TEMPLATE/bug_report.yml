@@ -33,6 +33,7 @@ body:
     id: severity
     attributes:
       label: Severity impact
+      multiple: true
       options:
         - Low (visual glitch, minor inconvenience)
         - Medium (major inconvenience, but workaround exists)

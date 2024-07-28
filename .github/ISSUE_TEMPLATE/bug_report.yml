@@ -33,13 +33,13 @@ body:
     id: severity
     attributes:
       label: Severity impact
-      multiple: true
+      description: See label descriptions for more information.
       options:
-        - Low (visual glitch, minor inconvenience)
-        - Medium (major inconvenience, but workaround exists)
-        - High (badly broken, no workaround)
-        - Critical (data loss, security issue)
-        - Enhancement (feature request) [we like these too!]
+        - Low
+        - Medium
+        - High
+        - Critical
+        - Enhancement
     validations:
       required: true
 

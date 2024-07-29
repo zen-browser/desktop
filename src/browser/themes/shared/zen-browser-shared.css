@@ -94,6 +94,11 @@
   --toolbarbutton-border-radius: 6px;
 }
 
+/*#urlbar:not([breakout-extend="true"]) #urlbar-input {
+  text-align: center;
+  transition: .2s;
+}*/
+
 #identity-icon-label {
   padding-inline-start: 8px  !important;
 }

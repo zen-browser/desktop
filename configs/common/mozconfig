@@ -81,10 +81,11 @@ if test "$ZEN_RELEASE"; then
     # It causes link errors on windows
     ac_add_options --disable-dmd
   fi
+
+  ac_add_options --enable-updater
 fi
 
 ac_add_options --enable-unverified-updates
-ac_add_options --enable-updater
 
 ac_add_options --enable-raw
 ac_add_options --enable-webrtc

@@ -50,6 +50,9 @@ See `contributing.md` for ways to get started.
 
 Please adhere to this project's `code of conduct`.
 
+## Special Thanks
+
+- [Erlend](https://havn.blog) (For making the logo)
 
 ## License
 

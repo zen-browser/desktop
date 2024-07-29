@@ -149,10 +149,6 @@ var gZenBrowserManagerSidebar = {
   toggle() {
     if (!this._currentPanel) {
       this._currentPanel = this._lastOpenedPanel;
-      if (!this._currentPanel) {
-        let data = this.sidebarData;
-        this._currentPanel = data.index[0];
-      }
       this.update();
       return;
     } 
@@ -293,14 +289,19 @@ var gZenBrowserManagerSidebar = {
     }
   },
 
+  get introductionPanel() {
+    return document.getElementById("zen-sidebar-introduction-panel");
+  },
+
   _updateWebPanel() {
     this._updateButtons();
     let sidebar = this._openAndGetWebPanelWrapper();
     this._hideAllWebPanels();
     if (!this._currentPanel) {
-      sidebar.setAttribute("hidden", "true");
+      this.introductionPanel.removeAttribute("hidden");
       return;
     }
+    this.introductionPanel.setAttribute("hidden", "true");
     let existantWebview = this._getCurrentBrowser();
     if (existantWebview) {
       existantWebview.docShellIsActive = true;

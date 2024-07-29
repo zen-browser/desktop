@@ -18,6 +18,7 @@ var gZenViewSplitter = {
   init() {
     Services.prefs.setBoolPref("zen.splitView.working", false);
     window.addEventListener("TabClose", this);
+    this.insertIntoContextMenu();
     console.log("ZenViewSplitter initialized");
   },
 
@@ -26,6 +27,18 @@ var gZenViewSplitter = {
       case "TabClose":
         this.onTabClose(event);
     }
+  },
+
+  insertIntoContextMenu() {
+    const sibling = document.getElementById("context-stripOnShareLink");
+    const menuitem = document.createXULElement("menuitem");
+    menuitem.setAttribute("id", "context-zenSplitLink");
+    menuitem.setAttribute("hidden", "true");
+    menuitem.setAttribute("oncommand", "gZenViewSplitter.contextSplitLink();");
+    menuitem.setAttribute("data-l10n-id", "zen-split-link");
+    const separator = document.createXULElement("menuseparator");
+    sibling.insertAdjacentElement("afterend", menuitem);
+    sibling.insertAdjacentElement("afterend", separator);
   },
 
   get tabBrowserPanel() {
@@ -75,6 +88,13 @@ var gZenViewSplitter = {
     this._showSplitView(lastTab);
   },
 
+  contextSplitLink() {
+    const url = gContextMenu.linkURL || gContextMenu.target.ownerDocument.location.href;
+    const tab = gBrowser.selectedTab;
+    const newTab = gZenUIManager.openAndChangeToTab(url);
+    this.splitTabs([tab, newTab]);
+  },
+
   onLocationChange(browser) {
     let tab = gBrowser.getTabForBrowser(browser);
     this.updateSplitViewButton(!(tab && tab._zenSplitted));
@@ -88,6 +108,17 @@ var gZenViewSplitter = {
   splitTabs(tabs) {
     if (tabs.length < 2) {
       return;
+    }
+    // Check if any tab is already split
+    for (const tab of tabs) {
+      if (tab._zenSplitted) {
+        let index = this._data.findIndex((group) => group.tabs.includes(tab));
+        if (index < 0) {
+          return;
+        }
+        this._showSplitView(tab);
+        return;
+      }
     }
     this._data.push({
       tabs,

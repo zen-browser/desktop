@@ -40,6 +40,10 @@
 	--menu-image: url("sidebars-right.svg") !important;
 }
 
+#context-zenSplitLink {
+	--menu-image: url("link.svg") !important;
+}
+
 #sidebar-button:-moz-locale-dir(ltr):not([positionend]),
 #sidebar-button:-moz-locale-dir(rtl)[positionend],
 #zen-sidepanel-button {

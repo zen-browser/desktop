@@ -19,10 +19,12 @@ if test "$ZEN_RELEASE"; then
     ac_add_options --enable-strip
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
 
-    mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
-    mk_add_options 'export CCACHE_CPP2=yes'
-    ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
-    mk_add_options 'export SCCACHE_GHA_ENABLED=on'
+    if [ -f /home/runner/.mozbuild/sccache/sccache ]; then
+        mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
+        mk_add_options 'export CCACHE_CPP2=yes'
+        ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
+        mk_add_options 'export SCCACHE_GHA_ENABLED=on'
+    fi
     
     # PGO may cause link errors on windows!
     if ! test "$ZEN_CROSS_COMPILING"; then

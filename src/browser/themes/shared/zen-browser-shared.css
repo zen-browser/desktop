@@ -548,7 +548,7 @@ panelmultiview {
   #navigator-toolbox:hover,
   #navigator-toolbox:focus-within,
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
-  #navigator-toolbox:has(*[open="true"]:not(tab)) {
+  #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transition-delay: 33ms !important;
     left: 0 !important;
     opacity: 1;

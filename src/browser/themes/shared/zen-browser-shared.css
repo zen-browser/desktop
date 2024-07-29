@@ -581,6 +581,36 @@ panelmultiview {
     margin-left: 10px !important;
     margin-right: 10px !important;
   }
+
+  @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
+    #zen-appcontent-navbar-container {
+      height: 10px;
+      transition: .2s ease-in-out height;
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      border-bottom: 1px solid var(--zen-colors-border);
+      top: 0;
+      background: var(--zen-main-browser-background);
+      z-index: 1;
+    } 
+
+    #zen-appcontent-navbar-container:hover,
+    #zen-appcontent-navbar-container:focus-within,
+    #mainPopupSet:has(> #appMenu-popup:hover) ~ #zen-appcontent-navbar-container,
+    #zen-appcontent-navbar-container:has(*[open="true"]) {
+      height: fit-content;
+      opacity: 1;
+    }
+
+    :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+      margin-top: 10px !important;
+    }
+
+    #titlebar {
+      padding-top: 5px !important;
+    }
+  }
 }
 
 :root:is([chromehidden~="location"],[chromehidden~="toolbar"]) {

@@ -21,6 +21,9 @@ zen-look-and-feel-compact-view-description = Only show the toolbars you use!
 zen-look-and-feel-compact-view-enabled = 
     .label = Enable { -brand-short-name }'s compact mode
 
+zen-look-and-feel-compact-view-top-toolbar = 
+    .label = Hide the top toolbar as well in compact mode
+
 zen-look-and-feel-buttons-header = Button style
 zen-look-and-feel-buttons-description = Choose the style of buttons you want to see
 

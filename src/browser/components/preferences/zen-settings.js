@@ -70,6 +70,11 @@ Preferences.addAll([
     default: false,
   },
   {
+    id: "zen.view.compact.hide-toolbar",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.workspaces.enabled",
     type: "bool",
     default: true,

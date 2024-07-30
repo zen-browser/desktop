@@ -36,7 +36,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
   ac_add_options --enable-strip
   ac_add_options --enable-install-strip
-  ac_add_options --disable-accessibility
 
   ac_add_options --enable-rust-simd
   mk_add_options MOZ_PARALLEL_COMPILE=1
@@ -58,7 +57,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-lto=full,cross
 
   ac_add_options --enable-jemalloc
-  ac_add_options --disable-jprof
 
   mk_add_options MOZILLA_OFFICIAL=1
   MOZILLA_OFFICIAL=1
@@ -93,7 +91,6 @@ ac_add_options --enable-jxl
 ac_add_options --enable-av1
 ac_add_options --enable-eme=widevine
 
-ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 
 export MOZ_REQUIRE_SIGNING=

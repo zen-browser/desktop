@@ -109,5 +109,5 @@ pref('browser.migrate.vivaldi.enabled', true);
 pref('browser.migrate.opera-gx.enabled', true);
 pref('browser.migrate.opera.enabled', true);
 
-#include better-fox.js
 #include fast-fox.js
+#include better-fox.js

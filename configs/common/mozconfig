@@ -55,7 +55,7 @@ if test "$ZEN_RELEASE"; then
 
   export MOZ_LTO=1
   ac_add_options MOZ_LTO=1
-  ac_add_options --enable-lto
+  ac_add_options --enable-lto=full,cross
 
   ac_add_options --enable-jemalloc
   ac_add_options --disable-jprof
@@ -64,12 +64,6 @@ if test "$ZEN_RELEASE"; then
   MOZILLA_OFFICIAL=1
   export MOZILLA_OFFICIAL=1
 
-  mk_add_options MOZ_OPTIMIZE=1
-  MOZ_OPTIMIZE=1
-  export MOZ_OPTIMIZE=1
-
-  export OPT_LEVEL="3"
-  ac_add_options OPT_LEVEL="3"
   export RUSTC_OPT_LEVEL="3"
   ac_add_options RUSTC_OPT_LEVEL="3"
 

@@ -33,8 +33,8 @@ if test "$ZEN_RELEASE"; then
         ac_add_options MOZ_PGO=1
     fi
 
-    export CFLAGS="$CFLAGS -march=x86-64-v2 -mtune=haswell -O3 -pipe -fno-plt -fexceptions -Wformat -Werror=format-security -fstack-clash-protection -fcf-protection"
-    export CXXLAGS="$CXXFLAGS -march=x86-64-v2 -mtune=haswell -O3 -pipe -fno-plt -fexceptions -Wformat -Werror=format-security -fstack-clash-protection -fcf-protection"
+    export CFLAGS="$CFLAGS -march=x86-64-v2 -mtune=haswell -O3 -msse3 -mssse3 -pipe -msse4.1 -msse4.2 -mavx -maes"
+    export CXXLAGS="$CXXFLAGS -march=x86-64-v2 -mtune=haswell -O3 -march=x86-64-v2 -pipe -O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
     export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
     export RUSTFLAGS="$RUSTFLAGS -C codegen-units=1 -Ctarget-cpu=x86-64-v2"
 fi

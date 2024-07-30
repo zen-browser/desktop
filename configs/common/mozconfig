@@ -64,6 +64,12 @@ if test "$ZEN_RELEASE"; then
   MOZILLA_OFFICIAL=1
   export MOZILLA_OFFICIAL=1
 
+  mk_add_options MOZ_OPTIMIZE=1
+  MOZ_OPTIMIZE=1
+  export MOZ_OPTIMIZE=1
+
+  export OPT_LEVEL="3"
+  ac_add_options OPT_LEVEL="3"
   export RUSTC_OPT_LEVEL="3"
   ac_add_options RUSTC_OPT_LEVEL="3"
 

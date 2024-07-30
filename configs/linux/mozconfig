@@ -32,8 +32,12 @@ if test "$ZEN_RELEASE"; then
         ac_add_options MOZ_PGO=1
     fi
 
+    export CFLAGS="-O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+    export CPPFLAGS="-O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+    export CXXFLAGS="-O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+    export LDFLAGS="-Wl,-O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
     export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
-    export RUSTFLAGS="$RUSTFLAGS -C codegen-units=1 -Ctarget-cpu=x86-64-v2"
+    export RUSTFLAGS="$RUSTFLAGS -C target-feature=+avx -C codegen-units=1 -Ctarget-cpu=x86-64-v3"
 fi
 
 # Disable telemetry and tracking

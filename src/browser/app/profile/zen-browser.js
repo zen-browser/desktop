@@ -2,6 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifdef XP_UNIX
+  #ifndef XP_MACOSX
+    #define UNIX_BUT_NOT_MAC
+  #endif
+#endif
+
 pref("browser.tabs.cardPreview.enabled", true);
 pref("browser.tabs.hoverPreview.enabled", true);
 pref("browser.tabs.cardPreview.delayMs", 100);
@@ -90,8 +96,18 @@ user_pref('general.smoothScroll', true); // DEFAULT
 // Privacy
 pref('dom.private-attribution.submission.enabled', false);
 
-// From Librewolf
 pref('media.eme.enabled', true);
 pref('webgl.disabled', false);
 
+pref("app.update.url.manual", "https://get-zen.vercel.app/download");
+pref("app.update.url.details", "hhttps://get-zen.vercel.app/download");
+pref("app.releaseNotesURL", "https://get-zen.vercel.app/release-notes");
+pref("app.releaseNotesURL.aboutDialog", "https://get-zen.vercel.app/release-notes");
+
+// Enable importers for other browsers
+pref('browser.migrate.vivaldi.enabled', true);
+pref('browser.migrate.opera-gx.enabled', true);
+pref('browser.migrate.opera.enabled', true);
+
 #include better-fox.js
+#include fast-fox.js

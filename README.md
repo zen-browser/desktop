@@ -53,6 +53,7 @@ Please adhere to this project's `code of conduct`.
 ## Special Thanks
 
 - [Erlend](https://havn.blog) (For making the logo)
+- [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
 
 ## License
 

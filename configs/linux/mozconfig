@@ -33,7 +33,7 @@ if test "$ZEN_RELEASE"; then
     fi
 
     export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
-    export RUSTFLAGS="$RUSTFLAGS -C codegen-units=1 -Ctarget-cpu=x86-64-v2"
+    export RUSTFLAGS="$RUSTFLAGS -Ctarget-feature=+sse3 -C codegen-units=1 -Ctarget-cpu=x86-64-v2"
 fi
 
 # Disable telemetry and tracking

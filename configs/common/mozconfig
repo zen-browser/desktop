@@ -36,6 +36,7 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
   ac_add_options --enable-strip
   ac_add_options --enable-install-strip
+  ac_add_options --disable-jprof
 
   ac_add_options --enable-rust-simd
   mk_add_options MOZ_PARALLEL_COMPILE=1
@@ -46,6 +47,7 @@ if test "$ZEN_RELEASE"; then
   
   ac_add_options --enable-proxy-bypass-protection
   ac_add_options --enable-hardening
+  ac_add_options --disable-profiling
 
   ac_add_options --disable-crashreporter
   ac_add_options --disable-geckodriver

@@ -490,7 +490,7 @@ panelmultiview {
 
 :root:not([inDOMFullscreen="true"]) #tabbrowser-tabpanels {
   background: transparent !important;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
@@ -580,7 +580,7 @@ panelmultiview {
 
   :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     margin-left: 10px !important;
-    margin-right: 0 !important;
+    margin-right: 10px !important;
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {

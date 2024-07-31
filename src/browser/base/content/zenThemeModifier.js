@@ -123,10 +123,6 @@ var ZenThemeModifier = {
     separator.id = kSeparatorId;
     newContainer.appendChild(separator);
 
-    // move the security button to the right
-    const securityButton = document.getElementById("tracking-protection-icon-container");
-    document.getElementsByClassName("urlbar-input-container")[0].insertBefore(securityButton, document.getElementById("page-action-buttons"));
-  
     gZenVerticalTabsManager.init();
 
     this._updateZenAvatar();

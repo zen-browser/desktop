@@ -180,6 +180,11 @@ toolbar .zen-sidebar-panel-button {
   margin-right: 0 !important;
 }
 
+#tracking-protection-icon-container,
+#page-action-buttons {
+  order: 2 !important;
+}
+
 #notification-popup-box {
   border-radius: 999px;
   margin-right: 5px;

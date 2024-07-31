@@ -93,5 +93,10 @@ Preferences.addAll([
     id: "zen.theme.pill-button",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.theme.floating-urlbar",
+    type: "bool",
+    default: false,
   }
 ]);

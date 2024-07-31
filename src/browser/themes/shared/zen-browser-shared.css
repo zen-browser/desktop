@@ -222,6 +222,7 @@ button.popup-notification-dropmarker {
 #navigator-toolbox {
   min-width: 55px;
   max-width: 55px;
+  transition: .4s !important;
 }
 
 #navigator-toolbox toolbar#TabsToolbar {
@@ -831,5 +832,51 @@ panelmultiview {
 
   #zen-sidebar-icons-wrapper::before {
     width: 100%;
+  }
+}
+
+/* Popup Search */
+
+@media (-moz-bool-pref: "zen.theme.floating-urlbar") {
+  #urlbar:is([breakout][breakout-extend], [breakout][usertyping][focused]) {
+    #urlbar-input {
+      font-size: 16px !important;
+      text-align: left !important;
+    }
+    
+    z-index: 1;
+    position: fixed !important;
+    --urlbar-height: auto !important;
+    bottom: auto !important;
+    top: 20vh !important;
+    padding-left: 6px !important;
+    padding-right: 8px !important;
+    
+    left: 18vw !important;
+    right: 18vw !important;
+    width: 64vw !important;
+
+    &:after {
+      content: "";
+      position: fixed;
+      pointer-events: none;
+      
+      width: 100vw;
+      height: 100vh;
+      
+      top: 0px;
+      left: 0px;
+      
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+
+      z-index: -1;
+    }
+
+    #identity-box {
+      margin: auto 0;
+      height: 30px;
+      margin-right: 10px;
+    }
   }
 }

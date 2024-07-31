@@ -41,6 +41,14 @@ zen-settings-workspaces-description = With workspaces, you can have multiple bro
 zen-settings-workspaces-enabled = 
     .label = Enable Workspaces (Experimental)
 
+pane-zen-theme-title = Theme Settings
+
+zen-look-and-feel-urlbar-header = Awesome Bar Settings
+zen-look-and-feel-urlbar-description = Customize the look and feel of the Awesome Bar
+
+zen-look-and-feel-floating-urlbar = 
+    .label = Floating URL Bar when focused
+
 zen-vertical-tabs-title = Sidebar and tabs layout
 zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout

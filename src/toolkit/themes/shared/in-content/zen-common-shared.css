@@ -78,7 +78,8 @@
   --zen-button-padding: .6rem 1.2rem;
 
   /* Other colors */
-  --urlbar-box-bgcolor: light-dark(white, rgb(66, 65, 77)) !important;
+  --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
+  --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77)) !important;
 
   --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);

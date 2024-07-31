@@ -59,4 +59,16 @@ in a miuut xD
 
 #### 2
 
-verix
+- [Verix](https://github.com/Veriiix)
+
+OS: Win 11
+CPU: i7-13700KF
+GPU: AMD RX 7900 XTX
+https://www.tablesgenerator.com/
+
+| Version    | Score: |
+|------------|--------|
+| 1.0.0-a.10 | 21.7   |
+| 1.0.0-a.9  | 3.7    |
+
+https://browserbench.org/Speedometer3.0/

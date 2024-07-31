@@ -878,5 +878,9 @@ panelmultiview {
       height: 30px;
       margin-right: 10px;
     }
+
+    .urlbar-go-button {
+      margin: auto 0;
+    }
   }
 }

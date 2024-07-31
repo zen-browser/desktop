@@ -272,7 +272,11 @@ var ZenWorkspaces = {
   _deleteAllTabsInWorkspace(workspaceID) {
     for (let tab of gBrowser.tabs) {
       if (tab.getAttribute("zen-workspace-id") === workspaceID) {
-        gBrowser.removeTab(tab);
+        gBrowser.removeTab(tab, {
+          animate: true,
+          skipSessionStore: true,
+          closeWindowWithLastTab: false,
+        });
       }
     }
   },

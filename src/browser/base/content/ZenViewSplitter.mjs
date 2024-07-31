@@ -165,6 +165,8 @@ var gZenViewSplitter = {
       this.tabBrowserPanel.style.gridTemplateAreas = "";
       Services.prefs.setBoolPref("zen.splitView.working", false);
       modifyDecks(this._data[this.currentView].tabs, false);
+      // console.log("Setting the active tab to be active", gBrowser.selectedTab);
+      gBrowser.selectedTab.linkedBrowser.docShellIsActive = true; // Make sure the active tab is active
       this.currentView = -1;
       if (!splitData) {
         return;

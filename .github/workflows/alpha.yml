@@ -228,11 +228,61 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
+  appimage:
+    name: AppImage build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: [linux]
+    steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm
+          sudo apt-get update
+          sudo apt-get -y install libfuse2
+
+      - name: Download linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux.tar.bz2
+
+      - name: Execute AppImage build
+        run: |
+          set -eux
+          mv configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+
+          APPDIR=AppDir
+          tar -xvf *.tar.* && rm -rf *.tar.*
+          mv zen/* $APPDIR/
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x *.AppImage
+          chmod +x ./AppDir/AppRun
+          echo "AppDir: $APPDIR"
+          ls -al
+          find .
+          ls -al "$APPDIR"
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" zen.AppImage
+          mkdir dist
+          mv zen.AppImage* dist/.
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen.AppImage
+          path: ./dist/zen.AppImage
+
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows-step-3, check-release, mac]
+    needs: [build-data, linux, source, windows-step-3, check-release, mac, appimage]
     runs-on: ubuntu-latest
 
     steps:
@@ -285,3 +335,4 @@ jobs:
             zen.installer.exe
             zen.installer.pretty.exe
             zen.macos.dmg
+            zen.AppImage

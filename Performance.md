@@ -26,14 +26,17 @@
 ```
 
 
-### Scores 
+## Scores 
 
-#### 1
+## 1
 - [NOCanoa ](https://github.com/NOCanoa)
 
-OS: win 11
-CPU: i5 13600k
-https://www.tablesgenerator.com/
+OS: win 11; CPU: i5 13600k
+
+## web.basemark
+
+https://web.basemark.com/
+
 |           | score:  |CSS | HTML5 | Page load and Responsiveness | Resize Cap. |
 |-----------|-----|-----|-------|------------------------------|-------------|
 | 1.0.0-a.10 | 1660.89 | 59% | 91% | 91% | 76% |
@@ -43,6 +46,10 @@ https://www.tablesgenerator.com/
 | 1.0.0-a.6 | 1747.98 | 59% | 91%   | 91%                          | 76%         |
 | 1.0.0-a.4 | 470.49  | 59% | 91%   | 97%                          | 76%         |
 | 1.0.0-a.3 | 475.52  |59% | 91%   | 97%                          | 76%         |
+| other | last | utpdate | 31/7   | 2024                         | -        |
+| Librewolf 128.0-2 | 1953.65 | 59.66% | 89.01%   | 91.72%                         | 76.12% |
+| FF nightly 130.0a1 | 1912.77 | 59.66% | 90.91%   | 91.72%                         | 76.12% |
+
 
 ```mermaid
 xychart-beta
@@ -53,11 +60,20 @@ xychart-beta
     line [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89]
 ```
 
-https://browserbench.org
+## Speedometer3.0
 
-in a miuut xD
+https://browserbench.org/Speedometer3.0/ 
 
-#### 2
+|           | score:  |
+|-----------|-----|
+| 1.0.0-a.10 | 21.2 |
+| others| - |
+| Vivaldi 6.7.3329.39| 27.8 |
+| FF nightly 130.0a1 | 27.0 |
+| Librewolf 128.0-2 | 20.2 |
+
+
+## 2
 
 - [Verix](https://github.com/Veriiix)
 

@@ -257,7 +257,7 @@ jobs:
         run: |
           set -eux
           cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
-          cp configs/branding/alpha/logo128.png AppDir/zen.png
+          cp configs/branding/alpha/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*

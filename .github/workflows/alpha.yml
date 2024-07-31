@@ -325,6 +325,7 @@ jobs:
         with:
           repo_token: '${{ secrets.DEPLOY_KEY }}'
           automatic_release_tag: ${{ needs.build-data.outputs.version }}
+          prerelease: false
           title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
             zen.linux.tar.bz2

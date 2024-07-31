@@ -256,7 +256,8 @@ jobs:
       - name: Execute AppImage build
         run: |
           set -eux
-          mv configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+          cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+          cp configs/branding/alpha/logo128.png AppDir/zen.png
 
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*

@@ -141,6 +141,7 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: |
           set -x
+          dos2unix configs/windows/mozconfig
           export SURFER_PLATFORM="win32"
           export ZEN_CROSS_COMPILING=1
           # if test ${{ inputs.generate-gpo }}; then

@@ -106,6 +106,9 @@ jobs:
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
 
+          sudo apt-get update
+          sudo apt-get install dos2unix
+
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2022 || true
   

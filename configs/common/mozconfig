@@ -33,7 +33,7 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-tests
   ac_add_options --disable-jprof
 
-  if test "$ZEN_CROSS_COMPILING"; then
+  if ! test "$ZEN_CROSS_COMPILING"; then
     # TODO: Should actually be "not on windows"
     ac_add_options --enable-install-strip
     ac_add_options --enable-strip

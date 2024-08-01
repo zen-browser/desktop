@@ -90,11 +90,6 @@ class Page {
    */
   constructor(id) {
     this.element = document.getElementById(id)
-    this.nextEl = document.getElementById(`${id}Next`)
-
-    this.nextEl.addEventListener('click', () => {
-      this.pages.next()
-    })
   }
 
   /**
@@ -117,7 +112,7 @@ class Page {
 class Themes extends Page {
   constructor(id) {
     super(id)
-
+  
     this.loadThemes()
   }
 
@@ -130,95 +125,40 @@ class Themes extends Page {
     )
     const themeList = document.getElementById('themeList');
 
-    const themeElements = []
+    const themeElements = ["firefox-compact-light@mozilla.org", "firefox-compact-dark@mozilla.org"];
 
-    themes.forEach((theme) => {
-      const container = document.createElement('div')
-      container.classList.add('card');
-      container.classList.add('card-no-hover');
-
-      //if (theme.id == "firefox-compact-dream@mozilla.org" || theme.id == "firefox-compact-galaxy@mozilla.org") {
-      //  container.setAttribute('disabled', 'true')
-      //}
-
-      if (theme.isActive) {
-        container.classList.add('selected')
-      }
-
-      container.addEventListener('click', () => {
+    themeElements.forEach((theme, i) => {
+      let container = themeList.children[i];
+      container.addEventListener('click', (() => {
         if (container.hasAttribute('disabled')) {
           return
         }
-        document.body.classList.add('normal-background');
-        themeElements.forEach((el) => el.classList.remove('selected'))
+        for (const el of themeList.children) {
+          el.classList.remove('selected')
+        }
         container.classList.add('selected')
-        theme.enable()
-      })
-
-      const img = document.createElement('img')
-      img.src = theme.icons['32']
-
-      const name = document.createElement('h3')
-      name.textContent = theme.name
-
-      //container.appendChild(img)
-      container.appendChild(name)
-
-      themeList.appendChild(container)
-      themeElements.push(container)
+        themes.find((t) => t.id === theme).enable()
+      }).bind(this, i, container, theme))
     })
   }
 
   setColorBar() {
-    const colorList = document.getElementById('colorList');
-    const ctx = colorList.getContext('2d');
-    let gradient = ctx.createLinearGradient(0, 0, 500, 20);
-    colorList.width = 500;
-    colorList.height = 20; 
+    const colorList = document.getElementById('colorListWrapper');
+    const colors = ['#aac7ff', '#74d7cb', '#a0d490', '#dec663', '#ffb787', 
+        '#ffb1c0', '#ddbfc3', '#f6b0ea', '#d4bbff']
 
-    gradient.addColorStop(0.1, '#aac7ff');
-    gradient.addColorStop(0.2, '#74d7cb');
-    gradient.addColorStop(0.3, '#a0d490');
-    gradient.addColorStop(0.4, '#dec663');
-    gradient.addColorStop(0.5, '#ffb787');
-    gradient.addColorStop(0.6, '#ffb1c0');
-    gradient.addColorStop(0.7, '#ddbfc3');
-    gradient.addColorStop(0.8, '#f6b0ea');
-    gradient.addColorStop(0.9, '#d4bbff');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1000, 150);
-
-    const dragBall = document.getElementById('dragBall');
-    dragBall.style.left = `17px`;
-    dragBall.addEventListener('mousedown', (e) => {
-      const rect = colorList.getBoundingClientRect();
-      e.preventDefault();
-      
-      const onMouseMove = (ev) => {
-        var x = ev.clientX - rect.left;
-        dragBall.style.left = `${x - 17/2}px`;
-        if (x < 17) {
-          dragBall.style.left = `${17/2}px`;
-          x = 17;
-        } else if (x > rect.width - 17) {
-          dragBall.style.left = `${rect.width - 17 - (17/2)}px`;
-          x = rect.width - 17 - (17/2);
-        }  
-        const data = ctx.getImageData(x - 17, 1, 1, 1).data;
-        let color = `#${data[0].toString(16)}${data[1].toString(16)}${data[2].toString(16)}`;
-        document.getElementById("colorPreview").style.backgroundColor = color;
+    colors.forEach((color) => {
+      const container = document.createElement('div')
+      container.classList.add('color')
+      container.style.backgroundColor = color
+      container.setAttribute('data-color', color)
+      container.addEventListener('click', (() => {
         Services.prefs.setStringPref('zen.theme.accent-color', color);
-      }
+        colorList.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'))
+        container.classList.add('selected')
+      }).bind(this, color, container))
 
-      const onMouseUp = () => {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        document.getElementById("colorPreview").style.backgroundColor = '';
-      }
-      
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      colorList.appendChild(container)
     });
   }
 }
@@ -297,7 +237,6 @@ class Import extends Page {
       MigrationUtils.showMigrationWizard(window, {
         zenBlocking: true,
       });
-      this.nextEl.click()
     })
   }
 }
@@ -316,19 +255,24 @@ class Pages {
 
     this.pages.forEach((page) => page.setPages(this))
 
-    const dots = document.getElementById("dots");
-    for (let i = 0; i < this.pages.length; i++) {
-      let dot = document.createElement("span");
-      dot.classList.add("dot");
-      dot.setAttribute("data-index", i);
-      dot.onclick = (e) => {
-        this.currentPage = parseInt(e.target.getAttribute("data-index"));
-        this._displayCurrentPage();
-      }
-      dots.appendChild(dot);
-    }
     this._displayCurrentPage();
     console.log("Welcome pages initialized.")
+
+    this.nextEl = document.getElementById(`next`)
+    this.prevEl = document.getElementById(`back`)
+
+    this.nextEl.addEventListener('click', () => {
+      this.next()
+      this.prevEl.removeAttribute('disabled')
+    })
+
+    this.prevEl.addEventListener('click', () => {
+      this.currentPage--
+      this._displayCurrentPage()
+      if (this.pages.currentPage === 1) {
+        this.prevEl.setAttribute('disabled', 'true')
+      }
+    });
   }
 
   next() {
@@ -355,16 +299,16 @@ class Pages {
   }
 
   _displayCurrentPage() {
-    let dots = document.getElementsByClassName("dot");
-    for (let i = 0; i < dots.length; i++) {
-      dots[i].classList.remove("active");
-    }
-    dots[this.currentPage].classList.add("active");
-
+    let progress = document.getElementById('circular-progress');
+    progress.style.setProperty('--progress', ((this.currentPage + 1) / this.pages.length) * 100);
     for (const page of this.pages) {
       page.hide()
     }
-
+    if (this.currentPage >= 1) {
+      document.body.classList.remove('gradient-background')
+    } else {
+      document.body.classList.add('gradient-background')
+    }
     this.pages[this.currentPage].show()
   }
 }

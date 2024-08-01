@@ -26,19 +26,14 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
     <script src="chrome://browser/content/zenThemeModifier.js"></script>
   </head>
-  <body>
+  <body class="gradient-background">
     <div id="first-view">
       <div class="page" id="welcome">
         <img class="icon" src="chrome://branding/content/about-logo.png" />
         <h1 data-l10n-id="welcome-dialog-welcome"></h1>
   
         <p data-l10n-id="welcome-dialog-welcome-subtext"></p>
-  
-        <button
-          id="welcomeNext"
-          class="primary"
-          data-l10n-id="welcome-dialog-get-started"
-        ></button>
+
       </div>
   
       <div class="page page-split" id="import">
@@ -53,11 +48,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
               id="importBrowser"
               data-l10n-id="welcome-dialog-import-action"
             ></button>
-            <button
-              class="text-link ghost-button"
-              id="importNext"
-              data-l10n-id="welcome-dialog-skip"
-            ></button>
           </hbox>
         </div>
       </div>
@@ -68,19 +58,70 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
           <p data-l10n-id="welcome-dialog-theme-subtext"></p>
         </div>
         <div>
-          <h1 data-l10n-id="welcome-dialog-theme-header-1"></h1>
-          <div id="themeList" class="cardGroup"></div>
-          <h1 data-l10n-id="welcome-dialog-theme-header-2"></h1>
+          <h2 data-l10n-id="welcome-dialog-theme-header-1"></h2>
           <div id="colorListWrapper">
-            <canvas id="colorList" class="cardGroup"></canvas>
-            <div id="dragBall"></div>
-            <div id="colorPreview"></div>
           </div>
-          <button
-            id="themeNext"
-            class="primary"
-            data-l10n-id="welcome-dialog-theme-action"
-          ></button>
+          <h2 data-l10n-id="welcome-dialog-theme-header-2"></h2>
+          <div id="themeList" class="cardGroup">
+            <svg width="700" height="700" viewBox="0 0 700 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_404_2706)">
+              <rect width="700" height="700" fill="#F4F4F4"/>
+              <g filter="url(#filter0_d_404_2706)">
+              <path d="M107 130C107 103.49 128.49 82 155 82H700V738H107V130Z" fill="white"/>
+              <path d="M155 82.5H699.5V737.5H107.5V130C107.5 103.766 128.766 82.5 155 82.5Z" stroke="black" stroke-opacity="0.2"/>
+              </g>
+              <mask id="path-3-inside-1_404_2706" fill="white">
+              <path d="M257 83H700V701H257V83Z"/>
+              </mask>
+              <path d="M257 83H700V701H257V83Z" fill="#F1F1F1"/>
+              <path d="M258 701V83H256V701H258Z" fill="black" fill-opacity="0.1" mask="url(#path-3-inside-1_404_2706)"/>
+              </g>
+              <defs>
+              <filter id="filter0_d_404_2706" x="103" y="82" width="601" height="664" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="4"/>
+              <feGaussianBlur stdDeviation="2"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_404_2706"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_404_2706" result="shape"/>
+              </filter>
+              <clipPath id="clip0_404_2706">
+              <rect width="700" height="700" fill="white"/>
+              </clipPath>
+              </defs>
+            </svg>
+            <svg width="700" height="700" viewBox="0 0 700 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_404_2709)">
+              <rect width="700" height="700" fill="#515151"/>
+              <g filter="url(#filter0_d_404_2709)">
+              <path d="M107 130C107 103.49 128.49 82 155 82H700V727H107V130Z" fill="#717171"/>
+              <path d="M155 82.5H699.5V726.5H107.5V130C107.5 103.766 128.766 82.5 155 82.5Z" stroke="white" stroke-opacity="0.57"/>
+              </g>
+              <mask id="path-3-inside-1_404_2709" fill="white">
+              <path d="M257 83H700V701H257V83Z"/>
+              </mask>
+              <path d="M257 83H700V701H257V83Z" fill="#565656"/>
+              <path d="M258 701V83H256V701H258Z" fill="black" fill-opacity="0.1" mask="url(#path-3-inside-1_404_2709)"/>
+              </g>
+              <defs>
+              <filter id="filter0_d_404_2709" x="103" y="82" width="601" height="653" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="4"/>
+              <feGaussianBlur stdDeviation="2"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_404_2709"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_404_2709" result="shape"/>
+              </filter>
+              <clipPath id="clip0_404_2709">
+              <rect width="700" height="700" fill="white"/>
+              </clipPath>
+              </defs>
+            </svg>                
+          </div>
         </div>
       </div>
   
@@ -91,21 +132,23 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         </div>
         <div>
           <div id="searchList" class="cardGroup"></div>
-          <button
-            id="searchNext"
-            class="primary"
-            data-l10n-id="welcome-dialog-search-action"
-          ></button>
         </div>
       </div>
   
       <div class="page" id="thanks">
         <h1 data-l10n-id="welcome-dialog-thanks"></h1>
         <p data-l10n-id="welcome-dialog-thanks-subtext"></p>
+      </div>
+      <div id="buttons-footer">
         <button
-          id="thanksNext"
+          id="back"
+          data-l10n-id="welcome-dialog-back-action"
+          disabled
+        ></button>
+        <button
+          id="next"
           class="primary"
-          data-l10n-id="welcome-dialog-thanks-action"
+          data-l10n-id="welcome-dialog-next-action"
         ></button>
       </div>
     </div>
@@ -114,7 +157,13 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
     </div>
 
-    <div id="dots"></div>
+    <svg
+      width="250" height="250" viewBox="0 0 250 250"
+      id="circular-progress" style="--progress: 50"
+    >
+      <circle class="bg"></circle>
+      <circle class="fg"></circle>
+    </svg>
 
     <script src="./welcome.js"></script>
     <script src="chrome://browser/content/contentTheme.js"></script>

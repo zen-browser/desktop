@@ -13,8 +13,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy: 
       matrix:
-        os: [macos-14, macos-13]
-        arch: [aarch64, x64]
+        include:
+          - arch: aarch64
+            os: macos-14
+          - arch: x64
+            os: macos-13
 
     steps:
       - name: Install Node.js

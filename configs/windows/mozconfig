@@ -7,14 +7,6 @@ if test "$ZEN_CROSS_COMPILING"; then
   export WINE="$(echo ~)/win-cross/wine/bin/wine64"
   export WINEDEBUG=-all
 
-  #? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
-  #? https://phabricator.services.mozilla.com/D170170
-  if test "$SURFER_COMPAT" = "true"; then
-    ac_add_options --target=i686-pc-windows-msvc
-  else
-    ac_add_options --target=x86_64-pc-windows-msvc
-  fi
-
   export MOZ_STUB_INSTALLER=1
   export MOZ_PKG_FORMAT=TAR
 
@@ -31,6 +23,14 @@ if test "$ZEN_CROSS_COMPILING"; then
   export WINEDEBUG=-all
   export WINE="$TOOLS/wine/bin/wine64"
 
+fi
+
+#? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
+#? https://phabricator.services.mozilla.com/D170170
+if test "$SURFER_COMPAT" = "true"; then
+  ac_add_options --target=i686-pc-windows-msvc
+else
+  ac_add_options --target=x86_64-pc-windows-msvc
 fi
 
 ac_add_options --disable-maintenance-service

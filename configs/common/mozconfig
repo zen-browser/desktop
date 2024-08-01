@@ -31,11 +31,14 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-debug-symbols
   ac_add_options --disable-debug-js-modules
   ac_add_options --disable-tests
-  ac_add_options --enable-install-strip
   ac_add_options --disable-jprof
 
-  ac_add_options --enable-strip
-  export STRIP_FLAGS="--strip-debug --strip-unneeded"
+  if test "$ZEN_CROSS_COMPILING"; then
+    # TODO: Should actually be "not on windows"
+    ac_add_options --enable-install-strip
+    ac_add_options --enable-strip
+    export STRIP_FLAGS="--strip-debug --strip-unneeded"
+  fi
 
   ac_add_options --enable-rust-simd
   mk_add_options MOZ_PARALLEL_COMPILE=1

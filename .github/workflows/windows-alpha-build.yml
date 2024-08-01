@@ -16,7 +16,7 @@ on:
 
 jobs:
   windows-build:
-    name: Build Windows - ${{ matrix.generic == 'true' && 'Generic' || 'Specific' }}
+    name: Build Windows - ${{ matrix.generic == true && 'Generic' || 'Specific' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -137,12 +137,12 @@ jobs:
 
       - name: Import
         env:
-          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
+          SURFER_COMPAT: ${{ matrix.generic == true }}
         run: pnpm surfer import --verbose
 
       - name: Build
         env:
-          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
+          SURFER_COMPAT: ${{ matrix.generic == true }}
         run: |
           set -x
           dos2unix configs/windows/mozconfig
@@ -155,7 +155,7 @@ jobs:
 
       - name: Package
         env:
-          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
+          SURFER_COMPAT: ${{ matrix.generic == true }}
         run: |
           set -x
           export SURFER_PLATFORM="win32"
@@ -175,7 +175,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.win-${{ matrix.generic == 'true' && 'generic' || 'specific' }}.zip
+          name: zen.win-${{ matrix.generic == true && 'generic' || 'specific' }}.zip
           path: ./zen.win64.zip
 
       - name: Upload PGO build
@@ -189,14 +189,14 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows${{ matrix.generic == 'true' && '-generic' || '' }}.mar
+          name: windows${{ matrix.generic == true && '-generic' || '' }}.mar
           path: ./windows.mar
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.installer${{ matrix.generic == 'true' && '-generic' || '' }}.exe
+          name: zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
           path: ./dist/zen.installer.exe
 
       - name: Upload installer stub
@@ -210,5 +210,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows_update_manifest_${{ matrix.generic == 'true' && 'generic' || 'specific' }}
+          name: windows_update_manifest_${{ matrix.generic == true && 'generic' || 'specific' }}
           path: ./dist/update

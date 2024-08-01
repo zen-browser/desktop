@@ -119,7 +119,11 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.76
           source $HOME/.cargo/env
           
-          rustup target add x86_64-pc-windows-msvc
+          if test ${{ matrix.arch }} == 'x32'; then
+            rustup target add i686-pc-windows-msvc
+          else
+            rustup target add x86_64-pc-windows-msvc
+          fi
           cargo install cargo-download
           cargo download -x windows=0.52.0
           #? https://github.com/mozilla/sccache#known-caveats

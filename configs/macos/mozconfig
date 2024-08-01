@@ -1,4 +1,6 @@
 
+# SURFER_COMPAT has a different meaning here, in macOS it means that the build is for
+# x86_64, not ARM64. 
 unset MOZ_STDCXX_COMPAT
 
 ac_add_options --enable-install-strip

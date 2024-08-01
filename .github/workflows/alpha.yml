@@ -229,13 +229,13 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
 
   appimage:
-    name: AppImage build - Linux ${{ matrix.arch }}
+    name: AppImage build - Linux ${{ matrix.generic == 'true' && 'generic' || 'specific' }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [x64, x32]
+        generic: [true, false]
     needs: [linux]
     steps:
       - name: Install Node.js
@@ -262,26 +262,24 @@ jobs:
           cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
           cp configs/branding/alpha/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
-          APPIMAGE_TARGET=${{ matrix.arch == 'x64' && 'x86_64' || 'i686' }}
-
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv zen/* $APPDIR/
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$APPIMAGE_TARGET.AppImage
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x *.AppImage
           chmod +x ./AppDir/AppRun
           echo "AppDir: $APPDIR"
           ls -al
           find .
           ls -al "$APPDIR"
-          ARCH=$APPIMAGE_TARGET ./appimagetool-$APPIMAGE_TARGET.AppImage --comp gzip "$APPDIR" zen.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" zen.AppImage
           mkdir dist
           mv zen.AppImage* dist/.
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zen-x${{ matrix.arch }}.AppImage
+          name: zen-${{ matrix.generic == 'true' && 'generic' || 'specific' }}.AppImage
           path: ./dist/zen.AppImage
 
   release:
@@ -314,9 +312,14 @@ jobs:
         run: |
           cd updates-server
           mkdir -p updates
-          cp -a ../linux_update_manifest/. updates/
-          cp -a ../windows_update_manifest/.  updates/
-          cp -a ../macos_update_manifest/.  updates/
+          cp -a ../linux_update_manifest_generic/.  updates/
+          cp -a ../linux_update_manifest_specific/.  updates/
+
+          cp -a ../windows_update_manifest_generic/.  updates/
+          cp -a ../windows_update_manifest_specific/.  updates/
+          
+          cp -a ../macos_update_manifest_aarch64/.  updates/
+          cp -a ../macos_update_manifest_x64/.  updates/
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -335,26 +338,26 @@ jobs:
           files: |
             zen.source.tar.gz
 
-            zen.linux-x64.tar.bz2
-            zen.linux-x32.tar.bz2
+            zen.linux-generic.tar.bz2
+            zen.linux-specific.tar.bz2
 
-            zen-x64.AppImage
-            zen-x32.AppImage
+            zen-generic.AppImage
+            zen-specific.AppImage
 
-            zen.win-x64.zip
-            zen.win-x32.zip
+            zen.win-generic.zip
+            zen.win-specific.zip
             
-            linux-x64.mar
-            linux-x32.mar
+            linux.mar
+            linux-generic.mar
             
-            windows-x64.mar
-            windows-x32.mar
+            windows.mar
+            windows-generic.mar
 
             macos-x64.mar
             macos-aarch64.mar
             
-            zen.installer-x64.exe
-            zen.installer-x32.exe
+            zen.installer.exe
+            zen.installer-generic.exe
 
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg

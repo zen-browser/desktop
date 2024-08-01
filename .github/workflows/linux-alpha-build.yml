@@ -13,9 +13,10 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        arch: [x64, x32]
-    name: Build Linux - ${{ matrix.arch }}
+        generic: [true, false]
+    name: Build Linux - ${{ matrix.generic == 'true' && 'Generic' || 'Specific' }}
 
     steps:
       - name: Install Node.js
@@ -83,11 +84,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run compatibility install
-        if: matrix.arch == 'x32'
-        run: |
-          rustup target add i686-unknown-linux-gnu
-
       - name: Load surfer CI setup
         run: pnpm surfer ci --brand alpha --display-version ${{ inputs.build-version }}
 
@@ -96,7 +92,7 @@ jobs:
 
       - name: Import
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: pnpm surfer import
 
       - name: Bootstrap
@@ -107,19 +103,19 @@ jobs:
 
       - name: Build
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         continue-on-error: true
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Build again if it failed
         if: failure()
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Package
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: pnpm package
 
       - name: Rename artifacts
@@ -130,17 +126,17 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: zen.linux-${{ matrix.arch }}.tar.bz2
+          name: zen.linux-${{ matrix.generic == 'true' && 'generic' || 'specific' }}.tar.bz2
           path: ./zen.linux.tar.bz2
 
       - name: Upload mar
         uses: actions/upload-artifact@v4
         with:
-          name: linux-${{ matrix.arch }}.mar
+          name: linux${{ matrix.generic == 'true' && '-generic' || '' }}.mar
           path: ./linux.mar
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v4
         with:
-          name: linux_update_manifest_${{ matrix.arch }}
+          name: linux_update_manifest_${{ matrix.generic == 'true' && 'generic' || 'specific' }}
           path: ./dist/update

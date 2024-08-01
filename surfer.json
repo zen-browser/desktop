@@ -32,13 +32,13 @@
           "repo": "zen-browser/desktop"
         },
         "archives": {
-          "windows-x64": "windows-x64.mar",
-          "macos-x64": "macos-x64.mar",
-          "linux-x64": "linux-x64.mar",
+          "windows": "windows.mar",
+          "macos-aarch64": "macos.mar",
+          "linux": "linux.mar",
 
-          "windows-x32": "windows-x32.mar",
-          "linux-x32": "linux-x32.mar",
-          "macos-aarch64": "macos-aarch64.mar"
+          "macos-x64": "macos-intel.mar",
+          "windows-compat": "windows-generic.mar",
+          "linux-compat": "linux-generic.mar"
         }
       }
     }

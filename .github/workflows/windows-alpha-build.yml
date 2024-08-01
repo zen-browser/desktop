@@ -16,11 +16,12 @@ on:
 
 jobs:
   windows-build:
-    name: Build Windows - ${{ matrix.arch }}
+    name: Build Windows - ${{ matrix.generic == 'true' && 'Generic' || 'Specific' }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        arch: [x64, x32]
+        generic: [true, false]
 
     steps:
       - name: Install Node.js and pnpm
@@ -119,11 +120,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.76
           source $HOME/.cargo/env
           
-          if test ${{ matrix.arch }} == 'x32'; then
-            rustup target add i686-pc-windows-msvc
-          else
-            rustup target add x86_64-pc-windows-msvc
-          fi
+          rustup target add x86_64-pc-windows-msvc
           cargo install cargo-download
           cargo download -x windows=0.52.0
           #? https://github.com/mozilla/sccache#known-caveats
@@ -140,12 +137,12 @@ jobs:
 
       - name: Import
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: pnpm surfer import --verbose
 
       - name: Build
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: |
           set -x
           dos2unix configs/windows/mozconfig
@@ -158,7 +155,7 @@ jobs:
 
       - name: Package
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+          SURFER_COMPAT: ${{ matrix.generic == 'true' }}
         run: |
           set -x
           export SURFER_PLATFORM="win32"
@@ -178,7 +175,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.win-${{ matrix.arch }}.zip
+          name: zen.win-${{ matrix.generic == 'true' && 'generic' || 'specific' }}.zip
           path: ./zen.win64.zip
 
       - name: Upload PGO build
@@ -192,14 +189,14 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows-${{ matrix.arch }}.mar
+          name: windows${{ matrix.generic == 'true' && '-generic' || '' }}.mar
           path: ./windows.mar
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.installer-${{ matrix.arch }}.exe
+          name: zen.installer${{ matrix.generic == 'true' && '-generic' || '' }}.exe
           path: ./dist/zen.installer.exe
 
       - name: Upload installer stub
@@ -213,5 +210,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows_update_manifest_${{ matrix.arch }}
+          name: windows_update_manifest_${{ matrix.generic == 'true' && 'generic' || 'specific' }}
           path: ./dist/update

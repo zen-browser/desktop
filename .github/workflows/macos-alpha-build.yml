@@ -12,6 +12,7 @@ jobs:
     name: Build macOS - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy: 
+      fail-fast: false
       matrix:
         include:
           - arch: aarch64

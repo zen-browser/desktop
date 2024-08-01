@@ -23,18 +23,9 @@ if test "$ZEN_RELEASE"; then
         ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
         mk_add_options 'export SCCACHE_GHA_ENABLED=on'
     fi
-fi
 
-if test "$SURFER_COMPAT" = "true"; then
-    # Build for linux-i686
-    ac_add_options --target=i686-pc-linux
-else
-    # Note: we dont do PGO for i686 because we need to figure out about:
-    # "libgtk-3.so.0: cannot open shared object file: No such file or directory"
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
 fi
 
-# Build for linux-x86_64    
-# Dont' declare, let's build with default target
-# ac_add_options --target=x86_64-pc-linux
+ac_add_options --target=x86_64-pc-linux

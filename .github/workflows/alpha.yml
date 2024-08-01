@@ -254,7 +254,7 @@ jobs:
       - name: Download linux build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux.tar.bz2
+          name: zen.linux-${{ matrix.generic == 'true' && 'generic' || 'specific' }}.tar.bz2
 
       - name: Execute AppImage build
         run: |

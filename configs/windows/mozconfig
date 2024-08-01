@@ -1,5 +1,6 @@
 
 if test "$ZEN_CROSS_COMPILING"; then
+
   export WINSYSROOT="$(echo ~)/win-cross/vs2022"
 
   export MIDL="$(echo ~)/win-cross/wine/bin/widl"
@@ -8,7 +9,11 @@ if test "$ZEN_CROSS_COMPILING"; then
 
   #? https://bugzilla.mozilla.org/show_bug.cgi?id=1617793
   #? https://phabricator.services.mozilla.com/D170170
-  ac_add_options --target=x86_64-pc-windows-msvc
+  if test "$SURFER_COMPAT" = "1"; then
+    ac_add_options --target=i686-pc-windows-msvc
+  else
+    ac_add_options --target=x86_64-pc-windows-msvc
+  fi
 
   export MOZ_STUB_INSTALLER=1
   export MOZ_PKG_FORMAT=TAR
@@ -17,13 +22,15 @@ if test "$ZEN_CROSS_COMPILING"; then
   CROSS_COMPILE=1
   TOOLS=$(echo ~)/win-cross
 
+  #export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
+  #export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+
   export MIDL="$TOOLS/wine/bin/widl"
   export MOZ_INCLUDE_SOURCE_INFO=1
   export MOZ_STUB_INSTALLER=1
   export WINEDEBUG=-all
   export WINE="$TOOLS/wine/bin/wine64"
-  #export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
-  #export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+
 fi
 
 ac_add_options --disable-maintenance-service

@@ -26,10 +26,8 @@ fi
 if test "$SURFER_COMPAT" = "1"; then
     # Build for linux-i686
     ac_add_options --target=i686-pc-linux
-else
-    # Build for linux-x86_64
-    
-    # Dont' declare, let's build with default target
-    # ac_add_options --target=x86_64-pc-linux
-
 fi
+
+# Build for linux-x86_64    
+# Dont' declare, let's build with default target
+# ac_add_options --target=x86_64-pc-linux

@@ -7,11 +7,9 @@ export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_MACBUNDLE_NAME="Zen Browser.app"
 
 if test "$SURFER_COMPAT" = "1"; then
-    # No need to declare, let's build with default target
-    # ac_add_options --target=i686-apple-darwin
-
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
+    ac_add_options --target=x86_64-apple-darwin
 else
     ac_add_options --target=aarch64-apple-darwin
 fi

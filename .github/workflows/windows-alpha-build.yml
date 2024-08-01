@@ -16,7 +16,11 @@ on:
 
 jobs:
   windows-build:
+    name: Build Windows - ${{ matrix.arch }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, x32]
 
     steps:
       - name: Install Node.js and pnpm
@@ -92,8 +96,6 @@ jobs:
 
           chmod -R +x "$(echo ~)/win-cross/vs2022" || true
 
-          cat ../.github/workflows/src/windows_mozconfig >> ../configs/common/mozconfig
-
           cd ..
           npm install -g pnpm
           export SURFER_PLATFORM="win32"
@@ -128,9 +130,13 @@ jobs:
           path: ~/artifact
 
       - name: Import
-        run: pnpm surfer import --verbose  
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
+        run: pnpm surfer import --verbose
 
       - name: Build
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: |
           set -x
           export SURFER_PLATFORM="win32"
@@ -141,6 +147,8 @@ jobs:
           sh .github/workflows/src/alpha-build.sh
 
       - name: Package
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: |
           set -x
           export SURFER_PLATFORM="win32"
@@ -160,7 +168,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.win64.zip
+          name: zen.win-${{ matrix.arch }}.zip
           path: ./zen.win64.zip
 
       - name: Upload PGO build
@@ -174,19 +182,19 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows.mar
+          name: windows-${{ matrix.arch }}.mar
           path: ./windows.mar
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: zen.installer.exe
+          name: zen.installer-${{ matrix.arch }}.exe
           path: ./dist/zen.installer.exe
 
       - name: Upload installer stub
         uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-gpo && false }}
         with:
           name: zen.installer.pretty.exe
           path: ./dist/zen.installer.pretty.exe
@@ -195,5 +203,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}
         with:
-          name: windows_update_manifest
+          name: windows_update_manifest_${{ matrix.arch }}
           path: ./dist/update

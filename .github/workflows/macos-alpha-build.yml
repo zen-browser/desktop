@@ -9,7 +9,12 @@ on:
 
 jobs:
   mac-build:
-    runs-on: macos-14
+    name: Build macOS - ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy: 
+      matrix:
+        os: [macos-14, macos-13]
+        arch: [aarch64, x64]
 
     steps:
       - name: Install Node.js
@@ -60,7 +65,10 @@ jobs:
         run: pnpm surfer download
 
       - name: Import
-        run: pnpm surfer import
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
+        run: |
+          pnpm surfer import
 
       - name: Bootstrap
         run: |
@@ -69,6 +77,8 @@ jobs:
           cd ..
 
       - name: build Zen
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Rebuild Zen if failed
@@ -76,6 +86,8 @@ jobs:
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Package
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
         run: pnpm package
 
       - name: Rename artifacts
@@ -86,17 +98,17 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zen.macos.dmg
+          name: zen.macos-${{ matrix.arch }}.dmg
           path: ./zen.macos.dmg
 
       - name: Upload mar
         uses: actions/upload-artifact@v4
         with:
-          name: macos.mar
+          name: macos-${{ matrix.arch }}.mar
           path: ./macos.mar
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v4
         with:
-          name: macos_update_manifest
+          name: macos_update_manifest_${{ matrix.arch }}
           path: ./dist/update

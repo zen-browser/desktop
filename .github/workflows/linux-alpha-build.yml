@@ -12,6 +12,10 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, x32]
+    name: Build Linux - ${{ matrix.arch }}
 
     steps:
       - name: Install Node.js
@@ -86,6 +90,8 @@ jobs:
         run: pnpm surfer download
 
       - name: Import
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: pnpm surfer import
 
       - name: Bootstrap
@@ -95,14 +101,20 @@ jobs:
           cd ..
 
       - name: Build
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         continue-on-error: true
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Build again if it failed
         if: failure()
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: sh .github/workflows/src/alpha-build.sh
 
       - name: Package
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x32' }}
         run: pnpm package
 
       - name: Rename artifacts
@@ -113,17 +125,17 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: zen.linux.tar.bz2
+          name: zen.linux-${{ matrix.arch }}.tar.bz2
           path: ./zen.linux.tar.bz2
 
       - name: Upload mar
         uses: actions/upload-artifact@v4
         with:
-          name: linux.mar
+          name: linux-${{ matrix.arch }}.mar
           path: ./linux.mar
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v4
         with:
-          name: linux_update_manifest
+          name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update

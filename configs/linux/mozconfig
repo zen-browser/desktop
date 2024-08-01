@@ -1,23 +1,19 @@
-ac_add_options --enable-wasm-avx
 
-# not when cross compiling
-if ! test "$ZEN_CROSS_COMPILING"; then
-
-    if test -d "$HOME/.mozbuild/clang/bin"; then
-        export CC="$HOME"/.mozbuild/clang/bin/clang
-        export CXX="$HOME"/.mozbuild/clang/bin/clang++
-    else
-        export CC=clang
-        export CXX=clang++
-    fi
-
-    ac_add_options --enable-linker=lld
-    ac_add_options --disable-elf-hack
+if test -d "$HOME/.mozbuild/clang/bin"; then
+    export CC="$HOME"/.mozbuild/clang/bin/clang
+    export CXX="$HOME"/.mozbuild/clang/bin/clang++
+else
+    export CC=clang
+    export CXX=clang++
 fi
 
 if test "$ZEN_RELEASE"; then
-    ac_add_options --enable-strip
-    export STRIP_FLAGS="--strip-debug --strip-unneeded"
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
+
+    ac_add_options --disable-dmd
+    ac_add_options --enable-linker=lld
+    ac_add_options --disable-elf-hack
 
     if [ -f /home/runner/.mozbuild/sccache/sccache ]; then
         mk_add_options 'export RUSTC_WRAPPER=/home/runner/.mozbuild/sccache/sccache'
@@ -25,21 +21,15 @@ if test "$ZEN_RELEASE"; then
         ac_add_options --with-ccache=/home/runner/.mozbuild/sccache/sccache
         mk_add_options 'export SCCACHE_GHA_ENABLED=on'
     fi
-    
-    if ! test "$ZEN_CROSS_COMPILING"; then
-        # WE ARE JUST SUPPORTING PGO FOR LINUX!
-        export MOZ_PGO=1
-        ac_add_options MOZ_PGO=1
-    fi
-
-    export CFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
-    export CPPFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
-    export CXXFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
-    export LDFLAGS="-Wl,-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
-    export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
-    export RUSTFLAGS="$RUSTFLAGS -C target-feature=+avx -C codegen-units=1 -Ctarget-cpu=x86-64-v3"
 fi
 
-# Disable telemetry and tracking
-mk_add_options MOZ_TELEMETRY_REPORTING=
-mk_add_options MOZ_DATA_REPORTING=
+if test "$SURFER_COMPAT" = "1"; then
+    # Build for linux-i686
+    ac_add_options --target=i686-pc-linux
+else
+    # Build for linux-x86_64
+    
+    # Dont' declare, let's build with default target
+    # ac_add_options --target=x86_64-pc-linux
+
+fi

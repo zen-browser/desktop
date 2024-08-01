@@ -229,10 +229,13 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
 
   appimage:
-    name: AppImage build
+    name: AppImage build - Linux ${{ matrix.arch }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, x32]
     needs: [linux]
     steps:
       - name: Install Node.js
@@ -259,24 +262,26 @@ jobs:
           cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
           cp configs/branding/alpha/logo128.png AppDir/zen.png
 
+          APPIMAGE_TARGET=${{ matrix.arch == 'x64' && 'x86_64' || 'i686' }}
+
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv zen/* $APPDIR/
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$APPIMAGE_TARGET.AppImage
           chmod +x *.AppImage
           chmod +x ./AppDir/AppRun
           echo "AppDir: $APPDIR"
           ls -al
           find .
           ls -al "$APPDIR"
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" zen.AppImage
+          ARCH=$APPIMAGE_TARGET ./appimagetool-$APPIMAGE_TARGET.AppImage --comp gzip "$APPDIR" zen.AppImage
           mkdir dist
           mv zen.AppImage* dist/.
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zen.AppImage
+          name: zen-x${{ matrix.arch }}.AppImage
           path: ./dist/zen.AppImage
 
   release:
@@ -328,13 +333,28 @@ jobs:
           prerelease: false
           title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
-            zen.linux.tar.bz2
-            zen.win64.zip
             zen.source.tar.gz
-            linux.mar
-            windows.mar
-            macos.mar
-            zen.installer.exe
-            zen.installer.pretty.exe
-            zen.macos.dmg
-            zen.AppImage
+
+            zen.linux-x64.tar.bz2
+            zen.linux-x32.tar.bz2
+
+            zen-x64.AppImage
+            zen-x32.AppImage
+
+            zen.win-x64.zip
+            zen.win-x32.zip
+            
+            linux-x64.mar
+            linux-x32.mar
+            
+            windows-x64.mar
+            windows-x32.mar
+
+            macos-x64.mar
+            macos-aarch64.mar
+            
+            zen.installer-x64.exe
+            zen.installer-x32.exe
+
+            zen.macos-x64.dmg
+            zen.macos-aarch64.dmg

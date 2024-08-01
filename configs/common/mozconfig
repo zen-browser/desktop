@@ -1,9 +1,7 @@
-
 # Browser branding
-ac_add_options --enable-update-channel=release
-
 ac_add_options --with-app-name=${binName}
 ac_add_options --with-app-basename=Zen
+ac_add_options --enable-official-branding
 
 export MOZ_USER_DIR="${name}"
 export MOZ_APP_VENDOR="${vendor}"
@@ -25,7 +23,6 @@ export MOZ_SOURCE_CHANGESET=${changeset}
 export MOZ_INCLUDE_SOURCE_INFO=1
 
 ac_add_options --enable-bootstrap
-
 ac_add_options --enable-application=browser
 
 if test "$ZEN_RELEASE"; then
@@ -34,17 +31,15 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-debug-symbols
   ac_add_options --disable-debug-js-modules
   ac_add_options --disable-tests
-  ac_add_options --enable-strip
   ac_add_options --enable-install-strip
   ac_add_options --disable-jprof
 
+  ac_add_options --enable-strip
+  export STRIP_FLAGS="--strip-debug --strip-unneeded"
+
   ac_add_options --enable-rust-simd
   mk_add_options MOZ_PARALLEL_COMPILE=1
-  mk_add_options MOZ_CRASHREPORTER=0
-  mk_add_options MOZ_DATA_REPORTING=0
-  mk_add_options MOZ_SERVICES_HEALTHREPORT=0
-  mk_add_options MOZ_TELEMETRY_REPORTING=0
-  
+
   ac_add_options --enable-proxy-bypass-protection
   ac_add_options --enable-hardening
   ac_add_options --disable-profiling
@@ -64,25 +59,22 @@ if test "$ZEN_RELEASE"; then
   MOZILLA_OFFICIAL=1
   export MOZILLA_OFFICIAL=1
 
-  mk_add_options MOZ_OPTIMIZE=1
-  MOZ_OPTIMIZE=1
-  export MOZ_OPTIMIZE=1
+  mk_add_options MOZ_OPTIMIZE=2
+  MOZ_OPTIMIZE=2
+  export MOZ_OPTIMIZE=2
 
   export OPT_LEVEL="3"
   ac_add_options OPT_LEVEL="3"
+
   export RUSTC_OPT_LEVEL="3"
   ac_add_options RUSTC_OPT_LEVEL="3"
 
   mk_add_options AUTOCLOBBER=1
   export AUTOCLOBBER=1
 
-  if ! test "$ZEN_CROSS_COMPILING"; then
-
-    # It causes link errors on windows
-    ac_add_options --disable-dmd
-  fi
-
   ac_add_options --enable-updater
+
+  export MOZ_PACKAGE_JSSHELL=1
 fi
 
 ac_add_options --enable-unverified-updates
@@ -96,9 +88,6 @@ ac_add_options --enable-eme=widevine
 ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 
-export MOZ_REQUIRE_SIGNING=
-export MOZ_TELEMETRY_REPORTING=
-
 mk_add_options MOZ_CRASHREPORTER=0
 mk_add_options MOZ_DATA_REPORTING=0
 mk_add_options MOZ_SERVICES_HEALTHREPORT=0
@@ -109,5 +98,3 @@ if test "$ZEN_CROSS_COMPILING"; then
 fi
 
 export MOZ_APP_UA_NAME="Firefox"
-
-# ALWAYS MANTAIN ONE LINE BREAK AT THE END OF THIS FILE

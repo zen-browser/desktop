@@ -1,12 +1,17 @@
-POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 
 unset MOZ_STDCXX_COMPAT
-if test "$ZEN_RELEASE"; then
-  export RUSTFLAGS="$RUSTFLAGS -Ctarget-cpu=apple-m1"
-fi
 
 ac_add_options --enable-install-strip
-ac_add_options --target=aarch64-apple-darwin
 
 export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_MACBUNDLE_NAME="Zen Browser.app"
+
+if test "$SURFER_COMPAT" = "1"; then
+    # No need to declare, let's build with default target
+    # ac_add_options --target=i686-apple-darwin
+
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
+else
+    ac_add_options --target=aarch64-apple-darwin
+fi

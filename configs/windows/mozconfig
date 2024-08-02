@@ -56,17 +56,17 @@ fi
 export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 export VERBOSE=1
 
-if test "$ZEN_GA_GENERATE_PROFILE"; then
-  mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
-  ac_add_options --enable-profile-generate=cross
-else
-  ac_add_options --enable-profile-use=cross
-  if test "$SURFER_COMPAT" = "true"; then
-    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-generic.profdata
-    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-generic.log
-  else
-    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-specific.profdata
-    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-specific.log
-  fi
-fi
+#if test "$ZEN_GA_GENERATE_PROFILE"; then
+#  mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+#  ac_add_options --enable-profile-generate=cross
+#else
+#  ac_add_options --enable-profile-use=cross
+#  if test "$SURFER_COMPAT" = "true"; then
+#    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-generic.profdata
+#    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-generic.log
+#  else
+#    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-specific.profdata
+#    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-specific.log
+#  fi
+#fi
 

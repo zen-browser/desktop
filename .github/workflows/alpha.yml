@@ -338,27 +338,19 @@ jobs:
           title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           files: |
             zen.source.tar.gz
-
             zen.linux-generic.tar.bz2
             zen.linux-specific.tar.bz2
-
             zen-generic.AppImage
             zen-specific.AppImage
-
             zen.win-generic.zip
             zen.win-specific.zip
-            
             linux.mar
             linux-generic.mar
-            
             windows.mar
             windows-generic.mar
-
             macos-x64.mar
             macos-aarch64.mar
-            
             zen.installer.exe
             zen.installer-generic.exe
-
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg

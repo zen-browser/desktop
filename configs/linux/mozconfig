@@ -26,6 +26,26 @@ if test "$ZEN_RELEASE"; then
 
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
+
+    if test "$SURFER_COMPAT" = "true"; then
+        ac_add_options --enable-optimize="-O3 -march=x86-64"
+
+        export CFLAGS="$CFLAGS -O3 -ffp-contract=fast -march=x86-64"
+        export CPPFLAGS="$CPPFLAGS -O3 -ffp-contract=fast -march=x86-64"
+        export CXXFLAGS="$CXXFLAGS -O3 -ffp-contract=fast -march=x86-64"
+        export LDFLAGS="$LDFLAGS -Wl,-O3 -Wl,-mllvm,-fp-contract=fast -march=x86-64"
+        export RUSTFLAGS="$RUSTFLAGS -C target-cpu=x86-64 -C codegen-units=1"
+    else
+        ac_add_options --enable-wasm-avx
+        ac_add_options --enable-optimize="-O3 -march=x86-64-v3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+        
+        export CFLAGS="$CFLAGS -O3 -ffp-contract=fast -march=x86-64-v3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+        export CPPFLAGS="$CPPFLAGS -O3 -ffp-contract=fast -march=x86-64-v3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+        export CXXFLAGS="$CXXFLAGS -O3 -ffp-contract=fast -march=x86-64-v3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes"
+        export LDFLAGS="$LDFLAGS -Wl,-O3 -Wl,-mllvm,-fp-contract=fast -march=x86-64-v3"
+        export RUSTFLAGS="$RUSTFLAGS -C target-cpu=x86-64-v3 -C target-feature=+sse4.1 -C target-feature=+avx2 -C codegen-units=1"
+    fi
+    export VERBOSE=1
 fi
 
 ac_add_options --target=x86_64-pc-linux

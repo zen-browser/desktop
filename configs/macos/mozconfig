@@ -4,6 +4,7 @@
 unset MOZ_STDCXX_COMPAT
 
 ac_add_options --enable-install-strip
+ac_add_options --disable-dmd
 
 export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_MACBUNDLE_NAME="Zen Browser.app"
@@ -16,10 +17,28 @@ if test "$SURFER_COMPAT" = "true"; then
     # it crashes the builds
     unset MOZ_LTO
     ac_add_options --disable-lto
+
+    ac_add_options --enable-wasm-avx
+    ac_add_options --enable-optimize="-O3 -march=x86-64-v3"
+
+    export CFLAGS="-O3 -march=x86-64-v3"
+    export CPPFLAGS="-O3 -march=x86-64-v3"
+    export CXXFLAGS="-O3 -march=x86-64-v3"
+    export LDFLAGS="-Wl,-O3 -march=x86-64-v3"
+    export RUSTFLAGS="-C target-feature=+avx2 -C codegen-units=1"
 else
     ac_add_options --target=aarch64-apple-darwin
 
     ac_add_options --enable-install-strip
     ac_add_options --enable-strip
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
+
+    ac_add_options --enable-optimize="-O3 -march=armv8.3-a+simd"
+
+    export CFLAGS="-O3 -march=armv8.3-a+simd"
+    export CPPFLAGS="-O3 -march=armv8.3-a+simd"
+    export CXXFLAGS="-O3 -march=armv8.3-a+simd"
+    export LDFLAGS="-Wl,-O3 -march=armv8.3-a+simd"
+    export RUSTFLAGS="-C target-feature=+v8.3a -C codegen-units=1"
 fi
+export VERBOSE=1

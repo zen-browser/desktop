@@ -13,10 +13,6 @@ if test "$SURFER_COMPAT" = "true"; then
     ac_add_options MOZ_PGO=1
     ac_add_options --target=x86_64-apple-darwin
 
-    # it crashes the builds
-    unset MOZ_LTO
-    ac_add_options --disable-lto
-
     ac_add_options --enable-wasm-avx
     ac_add_options --enable-optimize="-O3 -march=x86-64-v3"
 

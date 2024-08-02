@@ -83,7 +83,11 @@ jobs:
       - name: build Zen
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
-        run: sh .github/workflows/src/alpha-build.sh
+        run: |
+          if test "${{ matrix.arch }}" = "x64"; then
+            export ZEN_DISABLE_LTO=1
+          fi
+          sh .github/workflows/src/alpha-build.sh
 
       - name: Rebuild Zen if failed
         if: failure()

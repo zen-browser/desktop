@@ -19,7 +19,6 @@ body:
     id: platform
     attributes:
       label: What platform are you seeing the problem on?
-      multiple: true
       options:
         - Linux
         - macOS

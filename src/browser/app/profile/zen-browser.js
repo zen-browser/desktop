@@ -69,6 +69,7 @@ pref('zen.view.compact', false);
 pref('zen.view.compact.hide-toolbar', false);
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.show-button', true);
+pref('zen.view.sidebar-expanded.max-width', 400);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);

@@ -26,9 +26,26 @@ var gZenUIManager = {
 var gZenVerticalTabsManager = {
   init() {
     //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
-    //Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
+    this._updateMaxWidth();
   },
 
+  _updateEvent() {
+    this._updateMaxWidth();
+  },
+
+  _updateMaxWidth() {
+    let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
+    let expanded = this.expanded;
+    let maxWidth = Services.prefs.getIntPref('zen.view.sidebar-expanded.max-width');
+    let toolbox = document.getElementById('navigator-toolbox');
+    if (expanded && !isCompactMode) {
+      toolbox.style.maxWidth = `${maxWidth}px`;
+    } else {
+      toolbox.style.removeProperty('maxWidth');
+    }
+  },
 
   get expanded() {
     return Services.prefs.getBoolPref('zen.view.sidebar-expanded');

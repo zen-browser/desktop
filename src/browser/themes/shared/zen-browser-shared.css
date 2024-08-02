@@ -222,7 +222,10 @@ button.popup-notification-dropmarker {
 #navigator-toolbox {
   min-width: 55px;
   max-width: 55px;
-  transition: .4s !important;
+}
+
+#zen-tabbox-wrapper:has(#zen-sidebar-splitter:not([state="dragging"])) #navigator-toolbox {
+  transition: .3s !important;
 }
 
 #navigator-toolbox toolbar#TabsToolbar {
@@ -764,6 +767,8 @@ panelmultiview {
   }
 
   .tabbrowser-tab {
+    max-width: unset !important;
+
     &:not([pinned]) {
       width: 100%;
     
@@ -819,8 +824,7 @@ panelmultiview {
 
   #zen-workspaces-button {
     width: -moz-available !important;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 2px 10px;
   }
 
   #zen-sidebar-icons-wrapper {

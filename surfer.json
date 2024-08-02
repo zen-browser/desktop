@@ -27,7 +27,7 @@
       "brandShortName": "Zen Browser",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.0.0-a.10",
+        "displayVersion": "1.0.0-a.11",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -35,7 +35,6 @@
           "windows": "windows.mar",
           "macos-aarch64": "macos-aarch64.mar",
           "linux": "linux.mar",
-
           "macos-x64": "macos-x64.mar",
           "windows-compat": "windows-generic.mar",
           "linux-compat": "linux-generic.mar"

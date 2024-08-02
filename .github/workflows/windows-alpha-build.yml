@@ -148,9 +148,9 @@ jobs:
           dos2unix configs/windows/mozconfig
           export SURFER_PLATFORM="win32"
           export ZEN_CROSS_COMPILING=1
-          # if test ${{ inputs.generate-gpo }}; then
-          #   export ZEN_GA_GENERATE_PROFILE=1
-          # fi
+          if test ${{ inputs.generate-gpo }} = true; then
+            export ZEN_GA_GENERATE_PROFILE=1
+          fi
           sh .github/workflows/src/alpha-build.sh
 
       - name: Package
@@ -182,7 +182,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ inputs.generate-gpo }}
         with:
-          name: ${{ inputs.profile-data-path-archive }}
+          name: ${{ matrix.generic == true && 'generic' || 'specific' }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
  
       - name: Upload mar

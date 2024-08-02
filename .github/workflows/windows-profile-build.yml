@@ -13,6 +13,10 @@ on:
 
 jobs:
   windows-profile-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        generic: [true, false]
     runs-on: windows-latest
     # Script edited from https://github.com/Floorp-Projects/Floorp/blob/ESR115/.github/workflows/window-generate-profile-data-and-jarlog.yml
     steps:
@@ -40,7 +44,7 @@ jobs:
         name: Download artifact 
         with:
           path: C:\artifact
-          name: zen-windows-x86_64-profile-data-and-jarlog.zip
+          name: ${{ matrix.generic == true && 'generic' || 'specific' }}-zen-windows-x86_64-profile-data-and-jarlog.zip
 
       - name:  Unpack artifact
         run: |
@@ -82,10 +86,10 @@ jobs:
       - name: Publish merged.profdata
         uses: actions/upload-artifact@v4
         with:
-          path: merged.profdata
+          path: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
 
       - name: Publish en-US.log
         uses: actions/upload-artifact@v4
         with:
-          path: en-US.log
+          path: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
 

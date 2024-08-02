@@ -28,8 +28,6 @@ body.gradient-background {
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
-  margin: 15px;
   background: var(--zen-dialog-background);
   width: 55%;
   position: relative;

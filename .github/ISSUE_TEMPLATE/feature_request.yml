@@ -1,0 +1,33 @@
+name: Feature Request
+description: File a feature request
+labels: 
+  - "kind: enhancement"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for filing a feature request.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What feature would you like to see?
+      description: Please describe the feature you would like to see.
+      placeholder: Tell us what you would like to see!
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: What platform are you seeing the problem on?
+      multiple: true
+      options:
+        - Linux
+        - macOS
+        - Windows
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Additional context
+      description: Add any other context about the feature request here.

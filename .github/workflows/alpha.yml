@@ -128,7 +128,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: [build-data]
+    needs: [build-data, check-release]
 
     steps:
       - name: Install Node.js

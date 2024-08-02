@@ -884,3 +884,9 @@ panelmultiview {
     }
   }
 }
+
+/* Window controls */
+
+#titlebar-buttonbox-container {
+  padding-right: 10px;
+}

@@ -3,7 +3,6 @@
 # x86_64, not ARM64. 
 unset MOZ_STDCXX_COMPAT
 
-ac_add_options --enable-install-strip
 ac_add_options --disable-dmd
 
 export MOZ_MACBUNDLE_ID=${appId}
@@ -26,12 +25,12 @@ if test "$SURFER_COMPAT" = "true"; then
     export CXXFLAGS="-O3 -march=x86-64-v3"
     export LDFLAGS="-Wl,-O3 -march=x86-64-v3"
     export RUSTFLAGS="-C target-feature=+avx2 -C codegen-units=1"
-else
-    ac_add_options --target=aarch64-apple-darwin
 
     ac_add_options --enable-install-strip
     ac_add_options --enable-strip
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
+else
+    ac_add_options --target=aarch64-apple-darwin
 
     ac_add_options --enable-optimize="-O3 -march=armv8.3-a+simd"
 

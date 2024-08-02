@@ -46,6 +46,8 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-rust-tests
   ac_add_options --disable-default-browser-agent
 
+  ac_add_options --disable-vtune
+
   export MOZ_LTO=1
   ac_add_options MOZ_LTO=1
   ac_add_options --enable-lto=full,cross

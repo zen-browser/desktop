@@ -721,7 +721,7 @@ panelmultiview {
     border: none;
   }
 
-  #zen-sidebar-splitter {
+  :root:not([inDOMFullscreen="true"]) #zen-sidebar-splitter {
     display: block;
     width: 1px;
   }

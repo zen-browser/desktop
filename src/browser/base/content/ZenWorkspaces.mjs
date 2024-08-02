@@ -403,7 +403,7 @@ var ZenWorkspaces = {
     document.querySelector(`#PanelUI-zen-workspaces [zen-workspace-id="${this._contextMenuId}"] .zen-workspace-actions`).setAttribute("active", "true");
     const workspaces = await this._workspaces();
     let deleteMenuItem = document.getElementById("context_zenDeleteWorkspace");
-    if (workspaces.workspaces.length <= 1) {
+    if (workspaces.workspaces.length <= 1 || workspaces.workspaces.find(workspace => workspace.uuid === this._contextMenuId).default) {
       deleteMenuItem.setAttribute("disabled", "true");
     } else {
       deleteMenuItem.removeAttribute("disabled");

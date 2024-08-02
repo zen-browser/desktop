@@ -13,13 +13,13 @@ if test "$SURFER_COMPAT" = "true"; then
     ac_add_options MOZ_PGO=1
     ac_add_options --target=x86_64-apple-darwin
 
-    ac_add_options --enable-install-strip
-    ac_add_options --enable-strip
-    export STRIP_FLAGS="--strip-debug --strip-unneeded"
-
     # it crashes the builds
     unset MOZ_LTO
     ac_add_options --disable-lto
 else
     ac_add_options --target=aarch64-apple-darwin
+
+    ac_add_options --enable-install-strip
+    ac_add_options --enable-strip
+    export STRIP_FLAGS="--strip-debug --strip-unneeded"
 fi

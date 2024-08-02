@@ -1,6 +1,6 @@
 name: Bug Report Or Feature Request
 description: File a bug report
-labels: [bug]
+labels: 
 body:
   - type: markdown
     attributes:

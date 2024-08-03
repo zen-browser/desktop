@@ -3,6 +3,10 @@
 
 Experience tranquillity while browsing the web without people tracking you!
 
+<a href='https://flathub.org/apps/io.github.zen_browser.zen'>
+  <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
+
 # Compatibility
 
 Zen is currently built using firefox version `128.0.3`!

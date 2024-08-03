@@ -67,6 +67,7 @@ https://browserbench.org/Speedometer3.0/
 
 |           | score:  |
 |-----------|-----|
+| 1.0.0-a.11 | 20.8   |
 | 1.0.0-a.10 | 21.2 |
 | others| - |
 | Vivaldi 6.7.3329.39| 27.8 |
@@ -85,7 +86,6 @@ https://www.tablesgenerator.com/
 
 | Version    | Score: |
 |------------|--------|
-| 1.0.0-a.11 | 20.8   |
 | 1.0.0-a.10 | 21.7   |
 | 1.0.0-a.9  | 3.7    |
 

@@ -30,13 +30,6 @@ jobs:
         with:
           python-version: '3.11' 
 
-        # Give the runner some swap space in an attempt to stop gkrust from crashing the build
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        if: ${{ matrix.arch == 'x64' }}
-        with:
-          swap-size-gb: 6
-
       - uses: actions/checkout@v4
 
       - name: Setup git

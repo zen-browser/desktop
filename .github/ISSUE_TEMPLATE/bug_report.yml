@@ -50,7 +50,8 @@ body:
       multiple: true
       options:
         - Linux
-        - macOS
+        - macOS - aarch64
+        - macOS - Intel
         - Windows
     validations:
       required: true

@@ -175,7 +175,7 @@ jobs:
         run: |
           mv ./zen.win64.zip zen.win-${{ matrix.generic == true && 'generic' || 'specific' }}.zip
           mv ./dist/output.mar windows${{ matrix.generic == true && '-generic' || '' }}.mar
-          mv ./dist/zen.installer.exe ./dist/zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
+          mv ./dist/zen.installer.exe ./zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -203,7 +203,7 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         with:
           name: zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
-          path: ./dist/zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
+          path: ./zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
 
       - name: Upload installer stub
         uses: actions/upload-artifact@v4

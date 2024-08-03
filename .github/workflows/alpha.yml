@@ -276,12 +276,13 @@ jobs:
           ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" zen.AppImage
           mkdir dist
           mv zen.AppImage* dist/.
+          mv ./dist/zen.AppImage ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
-          path: ./dist/zen.AppImage
+          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}

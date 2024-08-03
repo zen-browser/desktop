@@ -29,7 +29,7 @@
 ## Scores 
 
 ## 1
-- [NOCanoa ](https://github.com/NOCanoa)
+- [NOCanoa](https://github.com/NOCanoa)
 
 OS: win 11; CPU: i5 13600k
 
@@ -39,6 +39,7 @@ https://web.basemark.com/
 
 |           | score:  |CSS | HTML5 | Page load and Responsiveness | Resize Cap. |
 |-----------|-----|-----|-------|------------------------------|-------------|
+| 1.0.0-a.11 | 1678.49 | 59% | 91% | 91% | 76% |
 | 1.0.0-a.10 | 1660.89 | 59% | 91% | 91% | 76% |
 | 1.0.0-a.9 | 470 |  why  | why  | why  | why  |
 | 1.0.0-a.8 | 446.74  | 59% | 91%   | 96%                          | 76%         |
@@ -54,10 +55,10 @@ https://web.basemark.com/
 ```mermaid
 xychart-beta
     title "Performance over time (Higher is better)"
-    x-axis [.3, .4, .6, .7, .8, .9, .10]
+    x-axis [.3, .4, .6, .7, .8, .9, .10, .11]
     y-axis "Benchmark Points"
-    bar [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89]
-    line [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89]
+    bar [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49]
+    line [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49]
 ```
 
 ## Speedometer3.0
@@ -84,6 +85,7 @@ https://www.tablesgenerator.com/
 
 | Version    | Score: |
 |------------|--------|
+| 1.0.0-a.11 | 20.8   |
 | 1.0.0-a.10 | 21.7   |
 | 1.0.0-a.9  | 3.7    |
 

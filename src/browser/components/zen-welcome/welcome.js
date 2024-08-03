@@ -138,7 +138,10 @@ class Themes extends Page {
         }
         container.classList.add('selected')
         themes.find((t) => t.id === theme).enable()
-      }).bind(this, i, container, theme))
+      }).bind(this, i, container, theme));
+      if (themes.find((t) => t.id === theme).isActive) {
+        container.classList.add('selected')
+      }
     })
   }
 

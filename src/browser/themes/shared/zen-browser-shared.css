@@ -595,7 +595,6 @@ panelmultiview {
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
     #zen-appcontent-navbar-container {
       height: 10px;
-      transition: .2s ease-in-out height;
       opacity: 0;
       position: absolute;
       width: 100%;
@@ -603,6 +602,8 @@ panelmultiview {
       top: 0;
       background: var(--zen-main-browser-background);
       z-index: 1;
+      overflow: hidden;
+      transition: .2s ease-in-out;
     } 
 
     #zen-appcontent-navbar-container:hover,

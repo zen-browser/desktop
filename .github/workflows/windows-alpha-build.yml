@@ -160,7 +160,6 @@ jobs:
           set -x
           export SURFER_PLATFORM="win32"
           pnpm package
-          mv ./dist/output.mar windows.mar
           mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
           ls ./dist
           ls .
@@ -175,7 +174,7 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         run: |
           mv ./zen.win64.zip zen.win-${{ matrix.generic == true && 'generic' || 'specific' }}.zip
-          mv ./windows.mar windows${{ matrix.generic == true && '-generic' || '' }}.mar
+          mv ./dist/output.mar windows${{ matrix.generic == true && '-generic' || '' }}.mar
           mv ./dist/zen.installer.exe ./dist/zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
 
       - name: Upload artifact

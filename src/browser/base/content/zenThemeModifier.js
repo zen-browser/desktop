@@ -106,8 +106,7 @@ var ZenThemeModifier = {
     console.log("ZenThemeModifier: init browser layout");
     const kNavbarItems = [
       "nav-bar",
-      "PersonalToolbar",
-      "tab-notification-deck-template"
+      "PersonalToolbar"
     ];
     const kSeparatorId = "zen-website-and-native-separator";
     const kNewContainerId = "zen-appcontent-navbar-container";

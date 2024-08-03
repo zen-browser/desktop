@@ -120,20 +120,21 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv dist/zen-*.tar.bz2 "zen.linux.tar.bz2"
-          mv dist/output.mar linux.mar
+          mv dist/zen-*.tar.bz2 "zen.linux-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.bz2"
+          mv dist/output.mar linux${{ matrix.generic == true && '-generic' || '' }}.mar
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
+
           name: zen.linux-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.bz2
-          path: ./zen.linux.tar.bz2
+          path: ./zen.linux-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.bz2
 
       - name: Upload mar
         uses: actions/upload-artifact@v4
         with:
           name: linux${{ matrix.generic == true && '-generic' || '' }}.mar
-          path: ./linux.mar
+          path: ./linux${{ matrix.generic == true && '-generic' || '' }}.mar
 
       - name: Upload update manifests
         uses: actions/upload-artifact@v4

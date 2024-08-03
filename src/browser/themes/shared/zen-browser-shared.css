@@ -518,11 +518,6 @@ panelmultiview {
   clip-path: inset(0px 0px 0px round var(--zen-browser-border-radius) 0) !important;
 }
 
-#nav-bar {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
 #urlbar[breakout]:not([breakout-extend="true"]) {
   top: unset;
 }

@@ -296,6 +296,10 @@ jobs:
       - name: Update repo
         uses: actions/checkout@v4
 
+      - name: Download linux generic build
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux-generic.tar.bz2
 
       - name: Clone flatpak repo
         uses: actions/checkout@v4
@@ -309,17 +313,19 @@ jobs:
           wget https://github.com/zen-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
           wget https://github.com/zen-browser/desktop/releases/download/1.0.0-a.12/zen.linux-generic.tar.bz2 -O zen.linux-generic.tar.bz2
 
-      - name: Prepare flatpak manifest
-        run: |
-          python3 ./scripts/prepare-flatpak-release.py ${{ needs.build-data.outputs.version }}
-          rm flatpak-repo/io.github.zen_browser.zen.yml
-          mv flatpak/io.github.zen_browser.zen.yml flatpak-repo/io.github.zen_browser.zen.yml
-
       - name: Setup git
         run: |
           cd flatpak-repo
           git config --global user.email "mauro-balades@users.noreply.github.com"
           git config --global user.name "mauro-balades"
+  
+          git checkout -b update-to-${{ needs.build-data.outputs.version }}
+
+      - name: Prepare flatpak manifest
+        run: |
+          python3 ./scripts/prepare-flatpak-release.py ${{ needs.build-data.outputs.version }}
+          rm flatpak-repo/io.github.zen_browser.zen.yml
+          mv flatpak/io.github.zen_browser.zen.yml flatpak-repo/io.github.zen_browser.zen.yml
 
       - name: Create flatpak pull request
         uses: peter-evans/create-pull-request@v3

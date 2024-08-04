@@ -15,6 +15,8 @@ zen-side-panels-description = Increase productivity by having multiple views at 
 zen-side-panels-enabled = 
     .label = Enable Web Side Panels
 
+zen-side-panels-close-on-blur = 
+    .label = Close the panel when it loses focus if it's not pinned
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!

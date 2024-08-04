@@ -31,10 +31,13 @@ var gZenBrowserManagerSidebar = {
     return JSON.parse(services);
   },
 
+  get shouldCloseOnBlur() {
+    return Services.prefs.getBoolPref("zen.sidebar.close-on-blur");
+  },
+
   listenForPrefChanges() {
     Services.prefs.addObserver("zen.sidebar.data", this.handleEvent.bind(this));
     Services.prefs.addObserver("zen.sidebar.enabled", this.handleEvent.bind(this));
-    Services.prefs.addObserver("zen.sidebar.floating", this.handleEvent.bind(this));
 
     let sidebar = document.getElementById("zen-sidebar-web-panel");
     this.splitterElement.addEventListener("mousedown", (function(event) {
@@ -102,6 +105,10 @@ var gZenBrowserManagerSidebar = {
     this.handleEvent();
   },
 
+  get isFloating() {
+    return document.getElementById("zen-sidebar-web-panel").hasAttribute("pinned");
+  },
+
   handleEvent() {
     this._hasChangedConfig = true;
     this.update();
@@ -109,10 +116,11 @@ var gZenBrowserManagerSidebar = {
 
     // https://stackoverflow.com/questions/11565471/removing-event-listener-which-was-added-with-bind
     var clickOutsideHandler = this._handleClickOutside.bind(this);
-    if (Services.prefs.getBoolPref("zen.sidebar.floating") && !this._hasRegisteredPinnedClickOutside) {
+    let isFloating = this.isFloating;
+    if (isFloating && !this._hasRegisteredPinnedClickOutside) {
       document.addEventListener("mouseup", clickOutsideHandler);
       this._hasRegisteredPinnedClickOutside = true;
-    } else if (!Services.prefs.getBoolPref("zen.sidebar.floating") && this._hasRegisteredPinnedClickOutside) {
+    } else if (!isFloating && this._hasRegisteredPinnedClickOutside) {
       document.removeEventListener("mouseup", clickOutsideHandler);
       this._hasRegisteredPinnedClickOutside = false;
     }
@@ -129,7 +137,7 @@ var gZenBrowserManagerSidebar = {
 
   _handleClickOutside(event) {
     let sidebar = document.getElementById("zen-sidebar-web-panel");
-    if (!sidebar.hasAttribute("pinned") || !this._currentPanel || this._isDragging) {
+    if (!sidebar.hasAttribute("pinned") || this._isDragging || !this.shouldCloseOnBlur) {
       return;
     }
     let target = event.target;
@@ -420,7 +428,6 @@ var gZenBrowserManagerSidebar = {
     } else {
       this._setPinnedToElements();
     }
-    Services.prefs.setBoolPref("zen.sidebar.floating", sidebar.hasAttribute("pinned"));
     this.update();
   },
 

@@ -88,7 +88,7 @@ https://www.tablesgenerator.com/
 
 | Version    | Score: |
 |------------|--------|
-| 1.0.0-a.10 | 21.7   |
+| 1.0.0-a.10 | 21.7 |
 | 1.0.0-a.9  | 3.7    |
 
 https://browserbench.org/Speedometer3.0/

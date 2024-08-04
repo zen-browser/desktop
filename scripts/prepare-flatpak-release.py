@@ -3,14 +3,9 @@ import os
 import sys
 
 import hashlib
+import argparse
 
 FLATID = "io.github.zen_browser.zen"
-TEMPLATE = open(f"flatpak/{FLATID}.yml.template").read()
-
-LINUX_ARCHIVE = "zen.linux-generic.tar.bz2"
-FLATPAK_ARCHIVE = "archive.tar"
-
-VERSION = sys.argv[1]
 
 def get_sha256sum(filename):  
     sha256 = hashlib.sha256()
@@ -19,31 +14,38 @@ def get_sha256sum(filename):
             sha256.update(byte_block)
     return sha256.hexdigest()
 
-def build_template(linux_sha256, flatpak_sha256):
-    return TEMPLATE.format(linux_sha256=linux_sha256, 
+def build_template(template, linux_sha256, flatpak_sha256, version):
+    return template.format(linux_sha256=linux_sha256, 
                           flatpak_sha256=flatpak_sha256,
-                          version=VERSION)
+                          version=version)
 
-def check_required_files():
-    if not os.path.exists(LINUX_ARCHIVE):
-        print(f"File {LINUX_ARCHIVE} not found")
-        sys.exit(1)
-    if not os.path.exists(FLATPAK_ARCHIVE):
-        print(f"File {FLATPAK_ARCHIVE} not found")
-        sys.exit(1)
-
-    if not os.path.exists(f"flatpak"):
-        print(f"Directory flatpak not found")
-        sys.exit(1)
+def get_template(template_root):
+    with open(f"{template_root}/{FLATID}.yml.template", "r") as f:
+        return f.read()
+    print(f"Template {template_root}/flatpak.yml not found")
+    sys.exit(1)
 
 def main():
-    check_required_files()
-    linux_sha256 = get_sha256sum(LINUX_ARCHIVE)
-    flatpak_sha256 = get_sha256sum(FLATPAK_ARCHIVE)
+    parser = argparse.ArgumentParser(description='Prepare flatpak release')
+    parser.add_argument('--version', help='Version of the release', required=True)
+    parser.add_argument('--linux-archive', help='Linux archive', required=True)
+    parser.add_argument('--flatpak-archive', help='Flatpak archive', required=True)
+    parser.add_argument('--output', help='Output file', default=f"{FLATID}.yml")
+    parser.add_argument('--template-root', help='Template root', default="flatpak")
+    args = parser.parse_args()
 
-    template = build_template(linux_sha256, flatpak_sha256)
+    version = args.version
+    linux_archive = args.linux_archive
+    flatpak_archive = args.flatpak_archive
+    output = args.output
+    template_root = args.template_root
 
-    with open(f"flatpak/{FLATID}.yml", "w") as f:
+    linux_sha256 = get_sha256sum(linux_archive)
+    flatpak_sha256 = get_sha256sum(flatpak_archive)
+
+    template = build_template(get_template(template_root), linux_sha256, flatpak_sha256, version)
+
+    with open(output, "w") as f:
         f.write(template)
 
 if __name__ == "__main__":

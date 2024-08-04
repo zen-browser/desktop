@@ -364,19 +364,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update repo
+      - name: Clone flatpak repo
         uses: actions/checkout@v4
+        with:
+          repository: flathub/io.github.zen_browser.zen
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download linux generic build
         uses: actions/download-artifact@v4
         with:
           name: zen.linux-generic.tar.bz2
 
-      - name: Clone flatpak repo
+      - name: Update repo
         uses: actions/checkout@v4
         with:
-          repository: flathub/io.github.zen_browser.zen
-          path: flatpak-repo
+          path: zen-browser
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download flatpak archive
@@ -385,22 +387,34 @@ jobs:
 
       - name: Setup git
         run: |
-          cd flatpak-repo
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
-          git checkout -b update-to-${{ needs.build-data.outputs.version }}
-  
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Prepare flatpak manifest
         run: |
-          python3 ./scripts/prepare-flatpak-release.py ${{ needs.build-data.outputs.version }}
-          rm flatpak-repo/io.github.zen_browser.zen.yml
-          mv flatpak/io.github.zen_browser.zen.yml flatpak-repo/io.github.zen_browser.zen.yml
+          python3 ./zen-browser/scripts/prepare-flatpak-release.py \
+            --flatpak-archive archive.tar \
+            --version ${{ needs.build-data.outputs.version }} \
+            --linux-archive zen.linux-generic.tar.bz2 \
+            --output io.github.zen_browser.zen.yml \
+            --template-root ./zen-browser/flatpak
 
-      - name: Publish flatpak
-        run: |
-          cd flatpak-repo
-          git add .
-          git commit -m "Update Zen Browser to ${{ needs.build-data.outputs.version }}"
-          git push origin update-to-${{ needs.build-data.outputs.version }}
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        env:
+          GIT_TRACE: 1
+          GIT_CURL_VERBOSE: 1
+        with:
+          token: ${{ secrets.DEPLOY_KEY }}
+          commit-message: 🚀 Update to version ${{ needs.build-data.outputs.version }}
+          title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
+          body: |
+            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. 
+            
+            @mauro-balades
+          branch: update-to-${{ needs.build-data.outputs.version }}
+          base: master
+          git-token: ${{ secrets.DEPLOY_KEY }}
+          delete-branch: true
+          
 

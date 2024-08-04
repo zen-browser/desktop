@@ -401,8 +401,9 @@ toolbarbutton#scrollbutton-up {
   top: 50%;
 }
 
-.tabbrowser-tab:hover .tab-close-button {
-  display: none; /* TODO: fix this? or maybe not? */
+.tabbrowser-tab[open="true"]:hover .tab-close-button {
+  /* TODO: fix this */
+  /*display: block;*/
 }
 
 .tab-content {

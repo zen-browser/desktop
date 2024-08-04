@@ -73,9 +73,5 @@ var gZenVerticalTabsManager = {
   toggleExpand() {
     let expanded = !this.expanded;
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
-
-    let toolbox = document.getElementById('navigator-toolbox');
-    toolbox.removeAttribute('width');
-    toolbox.style.removeProperty('width');
   },
 };

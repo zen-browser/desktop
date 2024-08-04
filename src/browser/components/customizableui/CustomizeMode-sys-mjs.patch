@@ -1,7 +1,25 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index 41f347130e754ad0ee3416c1a3881211c4d2f777..e7b84b3b89fb4030ac05361475c0786e4208d5b8 100644
+index 41f347130e754ad0ee3416c1a3881211c4d2f777..9f906fd5f11731025abdf55eb5e60a824f8dd81f 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
+@@ -354,7 +354,7 @@ CustomizeMode.prototype = {
+       this._transitioning = true;
+ 
+       let customizer = document.getElementById("customization-container");
+-      let browser = document.getElementById("browser");
++      let browser = document.getElementById("tabbrowser-tabbox"); // ZEN: This fixes customizing mode!!! Dont remove it
+       browser.hidden = true;
+       customizer.hidden = false;
+ 
+@@ -485,7 +485,7 @@ CustomizeMode.prototype = {
+     }
+ 
+     let customizer = document.getElementById("customization-container");
+-    let browser = document.getElementById("browser");
++    let browser = document.getElementById("tabbrowser-tabbox"); // ZEN: This fixes customizing mode!!! Dont remove it
+     customizer.hidden = true;
+     browser.hidden = false;
+ 
 @@ -2276,6 +2276,20 @@ CustomizeMode.prototype = {
          if (makeSpaceImmediately) {
            aItem.setAttribute("notransition", "true");

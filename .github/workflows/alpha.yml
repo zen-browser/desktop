@@ -329,7 +329,7 @@ jobs:
         run: |
           git add io.github.zen_browser.zen.yml
           git commit -m "Update to version ${{ needs.build-data.outputs.version }}"
-          git push || true
+
 
       - name: Clean up
         run: |

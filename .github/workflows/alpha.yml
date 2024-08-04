@@ -284,7 +284,6 @@ jobs:
           name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
-
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
@@ -293,11 +292,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
       - name: Clone flatpak repo
         uses: actions/checkout@v4
         with:
@@ -314,7 +308,7 @@ jobs:
       - name: Download flatpak archive
         run: |
           wget https://github.com/zen-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
-          wget https://github.com/zen-browser/desktop/releases/download/1.0.0-a.12/zen.linux-generic.tar.bz2 -O zen.linux-generic.tar.bz2
+          wget https://github.com/zen-browser/desktop/releases/download/1.0.0-a.12/zen.linux-generic.tar.bz2
 
       - name: Setup git
         run: |
@@ -335,12 +329,17 @@ jobs:
           git add io.github.zen_browser.zen.yml
           git commit -m "Update to version ${{ needs.build-data.outputs.version }}"
 
-
       - name: Clean up
         run: |
           rm -rf zen-browser
           rm -rf archive.tar
           rm -rf zen.linux-generic.tar.bz2
+
+      - name: Upload flatpak manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: io.github.zen_browser.zen.yml
+          path: ./io.github.zen_browser.zen.yml
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6

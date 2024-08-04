@@ -290,17 +290,12 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
-    needs: [linux, build-data]
+    needs: [build-data]
     runs-on: ubuntu-latest
 
     steps:
       - name: Update repo
         uses: actions/checkout@v4
-
-      - name: Download linux generic build
-        uses: actions/download-artifact@v4
-        with:
-          name: zen.linux-generic.tar.bz2
 
       - name: Clone flatpak repo
         uses: actions/checkout@v4
@@ -312,6 +307,7 @@ jobs:
       - name: Download flatpak archive
         run: |
           wget https://github.com/zen-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
+          wget https://github.com/zen-browser/desktop/releases/download/1.0.0-a.12/zen.linux-generic.tar.bz2 -O zen.linux-generic.tar.bz2
 
       - name: Prepare flatpak manifest
         run: |

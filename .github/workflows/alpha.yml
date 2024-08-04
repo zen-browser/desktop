@@ -324,7 +324,7 @@ jobs:
           mv flatpak/io.github.zen_browser.zen.yml flatpak-repo/io.github.zen_browser.zen.yml
 
       - name: Create flatpak pull request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.DEPLOY_KEY }}
           commit-message: Update to version ${{ needs.build-data.outputs.version }}
@@ -333,4 +333,6 @@ jobs:
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. @mauro-balades
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
+          delete-branch: true
           path: flatpak-repo
+          

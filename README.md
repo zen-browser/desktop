@@ -13,6 +13,12 @@ Zen is currently built using firefox version `128.0.3`!
 
 * Checkout the latest [releases notes](https://get-zen.vercel.app/release-notes)!
 
+# Performance
+
+Zen is built with performance in mind, and we have optimized the browser to be as fast as possible!
+
+* Checkout the latest [performance benchmarks](./docs/performance.md)!
+
 ## 🚀 Run Locally
 
 Clone the project

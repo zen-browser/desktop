@@ -65,6 +65,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.sidebar.close-on-blur",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.view.compact",
     type: "bool",
     default: false,

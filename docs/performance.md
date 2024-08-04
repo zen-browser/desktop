@@ -29,7 +29,7 @@
 ## Scores 
 
 ## 1
-- [NOCanoa ](https://github.com/NOCanoa)
+- [NOCanoa](https://github.com/NOCanoa)
 
 OS: win 11; CPU: i5 13600k
 
@@ -67,6 +67,7 @@ https://browserbench.org/Speedometer3.0/
 
 |           | score:  |
 |-----------|-----|
+| 1.0.0-a.11 | 20.8   |
 | 1.0.0-a.10 | 21.2 |
 | others| - |
 | Vivaldi 6.7.3329.39| 27.8 |

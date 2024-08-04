@@ -1,7 +1,16 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 390a1300a1213af2b411ba09c67e3c25750ee6c3..7c80c54dd43b5414bf5ea9101d53431c0b4a140b 100644
+index 390a1300a1213af2b411ba09c67e3c25750ee6c3..253d7abfcc1ade419c8f70289719cdc53898cab4 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
+@@ -2,7 +2,7 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+-<toolbox id="navigator-toolbox">
++<toolbox id="navigator-toolbox" persist="width style">
+ 
+   <vbox id="titlebar">
+     <!-- Menu -->
 @@ -32,10 +32,11 @@
  
        <hbox class="titlebar-spacer" type="pre-tabs"/>

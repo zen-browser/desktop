@@ -414,6 +414,11 @@ toolbarbutton#scrollbutton-up {
   display: none;
 }
 
+#nav-bar > *:not(.titlebar-buttonbox-container) {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 #TabsToolbar-customization-target {
   height: 100%;
 }
@@ -518,11 +523,6 @@ panelmultiview {
   clip-path: inset(0px 0px 0px round var(--zen-browser-border-radius) 0) !important;
 }
 
-#nav-bar {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
 #urlbar[breakout]:not([breakout-extend="true"]) {
   top: unset;
 }
@@ -536,22 +536,23 @@ panelmultiview {
   #navigator-toolbox[inFullscreen]{ margin-top: 0 !important; }
   
   #navigator-toolbox {
+    --zen-compact-toolbox-margin: 15px;
     position: absolute !important;
     display: block;
     transition: 50ms ease-in !important;
-    right: calc(100% - 25px) !important;
+    transform: translateX(calc(-100% + var(--zen-compact-toolbox-margin) + 2px)) !important;
     opacity: 0;
     line-height: 0;
     z-index: 1;
-    pointer-events: none;
     height: 100%;
-    padding: 0 !important;
-    margin: 0 !important;
+    margin: 0;
+    padding: var(--zen-compact-toolbox-margin) !important;
 
     & #titlebar {
-      border-right: 1px solid var(--zen-colors-border);
-      background: var(--zen-main-browser-background) !important;
+      border: 1px solid var(--zen-colors-border);
+      background: var(--zen-colors-tertiary) !important;
       padding: 0 5px;
+      border-radius: 8px;
     }
   }
   
@@ -560,7 +561,7 @@ panelmultiview {
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transition-delay: 33ms !important;
-    left: 0 !important;
+    transform: none !important;
     opacity: 1;
   }
   
@@ -594,23 +595,25 @@ panelmultiview {
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
     #zen-appcontent-navbar-container {
-      height: 10px;
+      transition: .2s ease-in-out;
+      transform: translateY(calc(-100% + 5px));
       opacity: 0;
       position: absolute;
       width: 100%;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
       border-bottom: 1px solid var(--zen-colors-border);
       top: 0;
-      background: var(--zen-main-browser-background);
+      background: var(--zen-colors-tertiary);
       z-index: 1;
-      overflow: hidden;
       transition: .2s ease-in-out;
-    } 
+    }
 
     #zen-appcontent-navbar-container:hover,
     #zen-appcontent-navbar-container:focus-within,
     #mainPopupSet:has(> #appMenu-popup:hover) ~ #zen-appcontent-navbar-container,
     #zen-appcontent-navbar-container:has(*[open="true"]) {
-      height: fit-content;
+      transform: translateY(0);
       opacity: 1;
     }
 
@@ -811,7 +814,7 @@ panelmultiview {
     /* We have the pinned tabs on the top, next to each other,
      * and the rest of the tabs are below them. */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(31px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
     padding: 5px;
   }
 
@@ -846,12 +849,10 @@ panelmultiview {
   #urlbar:is([breakout][breakout-extend], [breakout][usertyping][focused]) {
     #urlbar-input {
       font-size: 16px !important;
-      text-align: left !important;
     }
     
-    z-index: 1;
+    z-index: 2;
     position: fixed !important;
-    --urlbar-height: auto !important;
     bottom: auto !important;
     top: 20vh !important;
     padding-left: 6px !important;
@@ -873,7 +874,7 @@ panelmultiview {
       left: 0px;
       
       background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(5px);
 
       z-index: -1;
     }
@@ -890,8 +891,3 @@ panelmultiview {
   }
 }
 
-/* Window controls */
-
-.titlebar-buttonbox-container {
-  padding-right: 10px;
-}

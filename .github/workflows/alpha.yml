@@ -285,7 +285,6 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
 
-
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
@@ -296,6 +295,7 @@ jobs:
     steps:
       - name: Update repo
         uses: actions/checkout@v4
+
 
       - name: Clone flatpak repo
         uses: actions/checkout@v4
@@ -331,4 +331,4 @@ jobs:
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. @mauro-balades
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
-          
+          path: flatpak-repo

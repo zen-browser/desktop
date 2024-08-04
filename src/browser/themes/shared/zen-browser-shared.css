@@ -414,6 +414,11 @@ toolbarbutton#scrollbutton-up {
   display: none;
 }
 
+#nav-bar > *:not(.titlebar-buttonbox-container) {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 #TabsToolbar-customization-target {
   height: 100%;
 }
@@ -885,8 +890,3 @@ panelmultiview {
   }
 }
 
-/* Window controls */
-
-.titlebar-buttonbox-container {
-  padding-right: 10px;
-}

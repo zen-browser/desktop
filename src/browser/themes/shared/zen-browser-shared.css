@@ -536,11 +536,12 @@ panelmultiview {
   #navigator-toolbox[inFullscreen]{ margin-top: 0 !important; }
   
   #navigator-toolbox {
-    --zen-compact-toolbox-margin: 15px;
+    --zen-compact-toolbox-margin-single: 15px;
+    --zen-compact-toolbox-margin: var(--zen-compact-toolbox-margin-single);
     position: absolute !important;
     display: block;
     transition: 50ms ease-in !important;
-    transform: translateX(calc(-100% + var(--zen-compact-toolbox-margin) + 2px)) !important;
+    transform: translateX(calc(-100% + var(--zen-compact-toolbox-margin-single) + 2px)) !important;
     opacity: 0;
     line-height: 0;
     z-index: 1;
@@ -552,7 +553,20 @@ panelmultiview {
       border: 1px solid var(--zen-colors-border);
       background: var(--zen-colors-tertiary) !important;
       padding: 0 5px;
-      border-radius: 8px;
+      border-radius: 11px;
+    }
+  }
+
+  @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
+    #navigator-toolbox {
+      width: fit-content !important;
+    }
+  }
+
+  @media not (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
+    #navigator-toolbox {
+      /* Remove the top margin */
+      --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 3) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
     }
   }
   
@@ -595,6 +609,7 @@ panelmultiview {
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
     #zen-appcontent-navbar-container {
+      --urlbar-height: unset;
       transition: .2s ease-in-out;
       transform: translateY(calc(-100% + 5px));
       opacity: 0;

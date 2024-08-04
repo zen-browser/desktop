@@ -285,7 +285,6 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
 
-
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
@@ -299,6 +298,7 @@ jobs:
         with:
           repository: flathub/io.github.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
+
 
       - name: Update repo
         uses: actions/checkout@v4
@@ -324,6 +324,12 @@ jobs:
             --linux-archive zen.linux-generic.tar.bz2 \
             --output io.github.zen_browser.zen.yml \
             --template-root ./zen-browser/flatpak
+
+      - name: Commit changes
+        run: |
+          git add io.github.zen_browser.zen.yml
+          git commit -m "Update to version ${{ needs.build-data.outputs.version }}"
+          git push || true
 
       - name: Clean up
         run: |

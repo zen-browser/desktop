@@ -285,17 +285,19 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
 
+
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
-    needs: [build-data]
+    needs: [release, linux, build-data]
     runs-on: ubuntu-latest
 
     steps:
       - name: Update repo
         uses: actions/checkout@v4
-        
+
+
       - name: Clone flatpak repo
         uses: actions/checkout@v4
         with:
@@ -313,6 +315,7 @@ jobs:
           cd flatpak-repo
           git config --global user.email "mauro-balades@users.noreply.github.com"
           git config --global user.name "mauro-balades"
+          git checkout -b update-to-${{ needs.build-data.outputs.version }}
   
 
       - name: Prepare flatpak manifest
@@ -321,16 +324,10 @@ jobs:
           rm flatpak-repo/io.github.zen_browser.zen.yml
           mv flatpak/io.github.zen_browser.zen.yml flatpak-repo/io.github.zen_browser.zen.yml
 
-      - name: Create flatpak pull request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.DEPLOY_KEY }}
-          commit-message: Update to version ${{ needs.build-data.outputs.version }}
-          title: Update to version ${{ needs.build-data.outputs.version }}
-          body: |
-            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. @mauro-balades
-          branch: update-to-${{ needs.build-data.outputs.version }}
-          base: master
-          path: flatpak-repo
-          delete-branch: true
+      - name: Publish flatpak
+        run: |
+          cd flatpak-repo
+          git add .
+          git commit -m "Update Zen Browser to ${{ needs.build-data.outputs.version }}"
+          git push origin update-to-${{ needs.build-data.outputs.version }}
 

@@ -15,12 +15,17 @@ def get_sha256sum(filename):
     return sha256.hexdigest()
 
 def build_template(template, linux_sha256, flatpak_sha256, version):
+    print(f"Building template with version {version}")
+    print(f"\tLinux archive sha256: {linux_sha256}")
+    print(f"\tFlatpak archive sha256: {flatpak_sha256}")
     return template.format(linux_sha256=linux_sha256, 
                           flatpak_sha256=flatpak_sha256,
                           version=version)
 
 def get_template(template_root):
-    with open(f"{template_root}/{FLATID}.yml.template", "r") as f:
+    file = f"{template_root}/{FLATID}.yml.template"
+    print(f"Reading template {file}")
+    with open(file, "r") as f:
         return f.read()
     print(f"Template {template_root}/flatpak.yml not found")
     sys.exit(1)
@@ -45,6 +50,7 @@ def main():
 
     template = build_template(get_template(template_root), linux_sha256, flatpak_sha256, version)
 
+    print(f"Writing output to {output}")
     with open(output, "w") as f:
         f.write(template)
 

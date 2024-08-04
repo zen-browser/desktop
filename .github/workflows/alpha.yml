@@ -284,11 +284,83 @@ jobs:
           name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
 
+  release:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Release
+    needs: [build-data, linux, source, windows-step-3, check-release, mac, appimage]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update repo
+        uses: actions/checkout@v4
+
+      - name: Git Pull
+        run: git pull
+
+      - uses: actions/download-artifact@v4
+
+      - name: List
+        run: find .
+
+      - name: Clone updates repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/updates-server
+          path: updates-server
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Copy update manifests
+        run: |
+          cd updates-server
+          mkdir -p updates
+          cp -a ../linux_update_manifest_generic/.  updates/
+          cp -a ../linux_update_manifest_specific/.  updates/
+
+          cp -a ../windows_update_manifest_generic/.  updates/
+          cp -a ../windows_update_manifest_specific/.  updates/
+          
+          cp -a ../macos_update_manifest_aarch64/.  updates/
+          cp -a ../macos_update_manifest_x64/.  updates/
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Update update manifests
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+          repository: ./updates-server
+
+      - name: release-github
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: '${{ secrets.DEPLOY_KEY }}'
+          automatic_release_tag: ${{ needs.build-data.outputs.version }}
+          prerelease: false
+          title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
+          files: |
+            zen.source.tar.gz
+            zen.linux-generic.tar.bz2
+            zen.linux-specific.tar.bz2
+            zen-generic.AppImage
+            zen-specific.AppImage
+            zen.win-generic.zip
+            zen.win-specific.zip
+            linux.mar
+            linux-generic.mar
+            windows.mar
+            windows-generic.mar
+            macos-x64.mar
+            macos-aarch64.mar
+            zen.installer.exe
+            zen.installer-generic.exe
+            zen.macos-x64.dmg
+            zen.macos-aarch64.dmg
+
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
-    needs: [build-data]
+    needs: [release, linux, build-data]
     runs-on: ubuntu-latest
 
     steps:
@@ -297,6 +369,11 @@ jobs:
         with:
           repository: flathub/io.github.zen_browser.zen
           token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Download linux generic build
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux-generic.tar.bz2
 
       - name: Update repo
         uses: actions/checkout@v4
@@ -307,7 +384,6 @@ jobs:
       - name: Download flatpak archive
         run: |
           wget https://github.com/zen-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
-          wget https://github.com/zen-browser/desktop/releases/download/1.0.0-a.12/zen.linux-generic.tar.bz2 -O zen.linux-generic.tar.bz2
 
       - name: Setup git
         run: |
@@ -322,6 +398,12 @@ jobs:
             --linux-archive zen.linux-generic.tar.bz2 \
             --output io.github.zen_browser.zen.yml \
             --template-root ./zen-browser/flatpak
+
+      - name: Clean up
+        run: |
+          rm -rf zen-browser
+          rm -rf archive.tar
+          rm -rf zen.linux-generic.tar.bz2
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6

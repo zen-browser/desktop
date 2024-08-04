@@ -89,8 +89,8 @@ pref('zen.workspaces.enabled', true);
 pref('zen.watermark.enabled', true);
 
 // Smooth scrolling
-user_pref('apz.overscroll.enabled', true); // not DEFAULT on Linux
-user_pref('general.smoothScroll', true); // DEFAULT
+pref('apz.overscroll.enabled', true); // not DEFAULT on Linux
+pref('general.smoothScroll', true); // DEFAULT
 
 // Privacy
 pref('dom.private-attribution.submission.enabled', false);
@@ -107,5 +107,9 @@ pref("app.releaseNotesURL.aboutDialog", "https://get-zen.vercel.app/release-note
 pref('browser.migrate.vivaldi.enabled', true);
 pref('browser.migrate.opera-gx.enabled', true);
 pref('browser.migrate.opera.enabled', true);
+
+// DNS
+// pref('network.proxy.type', 0);
+// pref('network.trr.mode', 5);
 
 #include better-fox.js

@@ -100,24 +100,6 @@ pref("security.insecure_connection_text.enabled", true);
 pref("security.insecure_connection_text.pbmode.enabled", true);
 pref("network.IDN_show_punycode", true);
 
-/** HTTPS-FIRST POLICY ***/
-pref("dom.security.https_first", true);
-pref("dom.security.https_first_schemeless", true);
-
-/** PASSWORDS ***/
-pref("signon.formlessCapture.enabled", false);
-pref("signon.privateBrowsingCapture.enabled", false);
-pref("network.auth.subresource-http-auth-allow", 1);
-pref("editor.truncate_user_pastes", false);
-
-/** MIXED CONTENT + CROSS-SITE ***/
-pref("security.mixed_content.block_display_content", true);
-pref("pdfjs.enableScripting", false);
-pref("extensions.postDownloadThirdPartyPrompt", false);
-
-/** HEADERS / REFERERS ***/
-pref("network.http.referer.XOriginTrimmingPolicy", 2);
-
 /** CONTAINERS ***/
 pref("privacy.userContext.ui.enabled", true);
 
@@ -192,10 +174,6 @@ pref("browser.display.focus_ring_style", 0);
 pref("browser.display.focus_ring_width", 0);
 pref("layout.css.prefers-color-scheme.content-override", 2);
 pref("browser.privateWindowSeparation.enabled", false); // WINDOWS
-
-/** COOKIE BANNER HANDLING ***/
-pref("cookiebanners.service.mode", 1);
-pref("cookiebanners.service.mode.privateBrowsing", 1);
 
 /** FULLSCREEN NOTICE ***/
 pref("full-screen-api.transition-duration.enter", "0 0");

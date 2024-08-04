@@ -511,9 +511,9 @@ var gZenBrowserManagerSidebar = {
     if (browser) {
       browser.remove();
     }
-    this._closeSidebarPanel();
-    this.close();
+    this._currentPanel = null;
     this._lastOpenedPanel = null;
+    this.update();
     Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(data));
   },
 

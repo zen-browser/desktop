@@ -290,12 +290,13 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
-    needs: [release, linux, build-data]
+    needs: [build-data]
     runs-on: ubuntu-latest
 
     steps:
       - name: Update repo
         uses: actions/checkout@v4
+
 
 
       - name: Clone flatpak repo

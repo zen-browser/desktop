@@ -296,10 +296,6 @@ jobs:
       - name: Update repo
         uses: actions/checkout@v4
 
-      - name: Download linux generic build
-        uses: actions/download-artifact@v4
-        with:
-          name: zen.linux-generic.tar.bz2
 
       - name: Clone flatpak repo
         uses: actions/checkout@v4

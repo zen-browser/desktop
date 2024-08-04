@@ -19,7 +19,7 @@ welcome-dialog-theme-header-2 = Choose your theme
 welcome-dialog-search = 🔍 Choose a search engine
 welcome-dialog-search-subtext = Select your preferred search engine to tailor your browsing experience!
 
-welcome-dialog-thanks = Thanks You So Much! ❤️
+welcome-dialog-thanks = Thank You So Much! ❤️
 welcome-dialog-thanks-subtext = Your appreciation means the world to us!
 
 welcome-dialog-back-action = Back

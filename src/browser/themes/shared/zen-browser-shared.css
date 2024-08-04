@@ -849,12 +849,10 @@ panelmultiview {
   #urlbar:is([breakout][breakout-extend], [breakout][usertyping][focused]) {
     #urlbar-input {
       font-size: 16px !important;
-      text-align: left !important;
     }
     
-    z-index: 1;
+    z-index: 2;
     position: fixed !important;
-    --urlbar-height: auto !important;
     bottom: auto !important;
     top: 20vh !important;
     padding-left: 6px !important;
@@ -876,7 +874,7 @@ panelmultiview {
       left: 0px;
       
       background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(5px);
 
       z-index: -1;
     }

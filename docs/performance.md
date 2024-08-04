@@ -88,7 +88,12 @@ https://www.tablesgenerator.com/
 
 | Version    | Score: |
 |------------|--------|
-| 1.0.0-a.10 | 21.7 |
+| 1.0.0-a.12-opt | 23   |
+| 1.0.0-a.11-opt | 22.1   |
+| 1.0.0-a.10 | 21.7   |
 | 1.0.0-a.9  | 3.7    |
+| others| - |
+| Default FF  | 28    |
+
 
 https://browserbench.org/Speedometer3.0/

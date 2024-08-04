@@ -295,8 +295,7 @@ jobs:
     steps:
       - name: Update repo
         uses: actions/checkout@v4
-
-
+        
       - name: Clone flatpak repo
         uses: actions/checkout@v4
         with:
@@ -315,7 +314,6 @@ jobs:
           git config --global user.email "mauro-balades@users.noreply.github.com"
           git config --global user.name "mauro-balades"
   
-          git checkout -b update-to-${{ needs.build-data.outputs.version }}
 
       - name: Prepare flatpak manifest
         run: |
@@ -333,6 +331,6 @@ jobs:
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. @mauro-balades
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
-          delete-branch: true
           path: flatpak-repo
-          
+          delete-branch: true
+

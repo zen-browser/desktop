@@ -73,6 +73,3 @@ Please adhere to this project's `code of conduct`.
 
 [MPL LICENSE](/LICENSE)
 
-## Repository View Counter
-
-<div align='center'><a href='https://www.websitecounterfree.com'><img src='https://www.websitecounterfree.com/c.php?d=9&id=57772&s=40' border='0' alt='Free Website Counter'></a><br / ><small><a href='https://www.websitecounterfree.com' title="Free Website Counter">Free Website Counter</a></small></div>

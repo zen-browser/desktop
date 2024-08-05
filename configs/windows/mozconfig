@@ -46,9 +46,9 @@ else
   ac_add_options --enable-optimize="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -Xclang -ftree-vectorize -w"
   ac_add_options --enable-wasm-avx
 
-  export CFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes /arch:AVX -march=x86-64-v3"   
-  export CPPFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes /arch:AVX -march=x86-64-v3"
-  export CXXFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes /arch:AVX -march=x86-64-v3"
+  export CFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3"   
+  export CPPFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3"
+  export CXXFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3"
   export LDFLAGS="-Wl,-O3 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3"
   export RUSTFLAGS="-C target-feature=+avx -C codegen-units=1 -Ctarget-cpu=x86-64-v3"
 fi

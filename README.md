@@ -3,6 +3,10 @@
 
 Experience tranquillity while browsing the web without people tracking you!
 
+* [Website](https://get-zen.vercel.app)
+* [Download](https://get-zen.vercel.app/download)
+* [Release Notes](https://get-zen.vercel.app/release-notes/latest)
+
 <a href='https://flathub.org/apps/io.github.zen_browser.zen'>
   <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>

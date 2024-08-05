@@ -39,6 +39,7 @@ https://web.basemark.com/
 
 |           | score:  |CSS | HTML5 | Page load and Responsiveness | Resize Cap. |
 |-----------|-----|-----|-------|------------------------------|-------------|
+| 1.0.0-a.13-opt | 1658.87 | 59% | 91% | 90% | 76% |
 | 1.0.0-a.12-opt | 1874.49 | 59% | 91% | 91% | 76% |
 | 1.0.0-a.11-opt | 1678.49 | 59% | 91% | 91% | 76% |
 | 1.0.0-a.10 | 1660.89 | 59% | 91% | 91% | 76% |
@@ -56,10 +57,10 @@ https://web.basemark.com/
 ```mermaid
 xychart-beta
     title "Performance over time (Higher is better)"
-    x-axis [.3, .4, .6, .7, .8, .9, .10, .11, .12]
+    x-axis [.3, .4, .6, .7, .8, .9, .10, .11, .12, .13]
     y-axis "Benchmark Points"
-    bar [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49, 1874.49]
-    line [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49, 1874.49]
+    bar [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49, 1874.49, 1658.87 ]
+    line [475.52, 470.49, 1747.98, 1964.43, 446.74, 470, 1660.89, 1678.49, 1874.49, 1658.87 ]
 ```
 
 ## Speedometer3.0
@@ -68,6 +69,7 @@ https://browserbench.org/Speedometer3.0/
 
 |           | score:  |
 |-----------|-----|
+| 1.0.0-a.13-opt | 21.1   |
 | 1.0.0-a.12-opt | 21.5   |
 | 1.0.0-a.11-opt | 20.8   |
 | 1.0.0-a.10 | 21.2 |
@@ -97,3 +99,11 @@ https://www.tablesgenerator.com/
 
 
 https://browserbench.org/Speedometer3.0/
+
+
+
+
+## Repository View Counter
+
+<div align='center'><a href='https://www.websitecounterfree.com'><img src='https://www.websitecounterfree.com/c.php?d=9&id=57772&s=40' border='0' alt='Free Website Counter'></a><br / ><small><a href='https://www.websitecounterfree.com' title="Free Website Counter">Free Website Counter</a></small></div>
+

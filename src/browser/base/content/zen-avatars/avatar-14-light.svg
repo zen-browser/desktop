@@ -1,1 +1,6 @@
+<!--
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   -->
 <svg viewBox="0 0 80 80" fill="none" role="img" xmlns="http://www.w3.org/2000/svg" width="120" height="120"><mask id="mask__bauhaus" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" rx="160" fill="#FFFFFF"></rect></mask><g mask="url(#mask__bauhaus)"><rect width="80" height="80" fill="#FFF6C7"></rect><rect x="10" y="30" width="80" height="80" fill="#DCD7C2" transform="translate(-20 20) rotate(106 40 40)"></rect><circle cx="40" cy="40" fill="#9D9382" r="16" transform="translate(9 -9)"></circle><line x1="0" y1="40" x2="80" y2="40" stroke-width="2" stroke="#FFC1B2" transform="translate(12 12) rotate(212 40 40)"></line></g></svg>

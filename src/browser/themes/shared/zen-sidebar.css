@@ -14,7 +14,6 @@
   transition: .2s;
   margin-left: 0 !important;
   border: var(--zen-appcontent-border);
-  margin-top: 0 !important;
   box-shadow: none;
 }   
 
@@ -45,7 +44,7 @@
 }
 
 #sidebar-box[positionend] {
-  margin-left: 0 !important;
+  margin-left: 0;
 }
 
 .zen-sidebar-action-button {

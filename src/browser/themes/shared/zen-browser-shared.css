@@ -538,6 +538,12 @@ panelmultiview {
   background: var(--zen-main-browser-background);
 }
 
+@media not (-moz-bool-pref: "zen.view.compact") {
+  #sidebar-box {
+    margin-top: 0 !important;
+  }
+}
+
 @media (-moz-bool-pref: "zen.view.compact") {
   :root[sizemode="fullscreen"],
   #navigator-toolbox[inFullscreen]{ margin-top: 0 !important; }
@@ -570,10 +576,30 @@ panelmultiview {
     }
   }
 
+  #zen-sidebar-web-panel-wrapper:not(:has(#zen-sidebar-web-panel[hidden="true"])),
+  #sidebar-box:not([positionend="true"]) {
+    margin-right: 0 !important;
+    margin-left: 10px !important;
+  }
+
+  #sidebar-box[positionend="true"] {
+    margin-left: 0 !important;
+    margin-right: 10px !important;
+  }
+
+  #sidebar-splitter {
+    margin: 0 !important;
+  }
+
   @media not (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
     #navigator-toolbox {
       /* Remove the top margin */
       --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 3) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
+    }
+
+    #zen-sidebar-web-panel-wrapper,
+    #sidebar-box {
+      margin-top: 0 !important;
     }
   }
   
@@ -645,6 +671,10 @@ panelmultiview {
 
     #titlebar {
       padding-top: 5px !important;
+    }
+
+    #zen-sidebar-web-panel-wrapper {
+      margin-top: 10px !important;
     }
   }
 }

@@ -42,9 +42,6 @@ jobs:
           brew install cairo sccache gnu-tar mercurial
           sudo pip install setuptools
 
-      - name: Free up space
-        run: sh .github/workflows/src/disk-setup-and-swap.sh
-
       - name: Force usage fo gnu-tar
         run: |
           echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.bash_profile

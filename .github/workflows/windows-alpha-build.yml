@@ -55,8 +55,10 @@ jobs:
       - name: Download
         run: pnpm surfer download
 
-      - name: Free up space
-        run: sh .github/workflows/src/disk-setup-and-swap.sh
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 6
 
       - name: "win-cross Cache"
         env:

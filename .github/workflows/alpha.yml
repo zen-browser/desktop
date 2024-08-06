@@ -191,6 +191,7 @@ jobs:
   #  needs: [build-data]
   #  permissions:
   #    contents: write
+  #  secrets: inherit
   #  with:
   #    build-version: ${{ needs.build-data.outputs.version }}
   #    generate-gpo: true
@@ -201,6 +202,7 @@ jobs:
   #  uses: ./.github/workflows/windows-profile-build.yml
   #  permissions:
   #    contents: write
+  #  secrets: inherit
   #  needs: [windows-step-1, build-data]
   #  with:
   #    build-version: ${{ needs.build-data.outputs.version }}
@@ -211,6 +213,7 @@ jobs:
     uses: ./.github/workflows/windows-alpha-build.yml
     permissions:
       contents: write
+    secrets: inherit
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -221,6 +224,7 @@ jobs:
     uses: ./.github/workflows/linux-alpha-build.yml
     permissions:
       contents: write
+    secrets: inherit
     needs: [build-data] 
     with:
       build-version: ${{ needs.build-data.outputs.version }}
@@ -230,6 +234,7 @@ jobs:
     uses: ./.github/workflows/macos-alpha-build.yml
     permissions:
       contents: write
+    secrets: inherit
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}

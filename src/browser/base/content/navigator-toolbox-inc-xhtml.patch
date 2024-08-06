@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 390a1300a1213af2b411ba09c67e3c25750ee6c3..253d7abfcc1ade419c8f70289719cdc53898cab4 100644
+index 390a1300a1213af2b411ba09c67e3c25750ee6c3..a7ab07f8e8a0c5f91a6c12eb5d27c56edbd7405c 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -53,22 +53,7 @@ index 390a1300a1213af2b411ba09c67e3c25750ee6c3..253d7abfcc1ade419c8f70289719cdc5
      </toolbar>
  
    </vbox>
-@@ -409,6 +412,14 @@
-                 <image id="star-button"
-                        class="urlbar-icon"/>
-               </hbox>
-+              <hbox id="zen-split-views-box"
-+                  hidden="true"
-+                  role="button"
-+                  class="urlbar-page-action"
-+                  onclick="gZenViewSplitter.openSplitViewPanel(event);">
-+                <image id="zen-split-views-button"
-+                      class="urlbar-icon"/>
-+              </hbox>
-             </hbox>
-           </hbox>
-         </hbox>
-@@ -450,6 +461,7 @@
+@@ -450,6 +453,7 @@
  
        <toolbarbutton id="fxa-toolbar-menu-button" class="toolbarbutton-1 chromeclass-toolbar-additional subviewbutton-nav"
                       badged="true"
@@ -76,7 +61,7 @@ index 390a1300a1213af2b411ba09c67e3c25750ee6c3..253d7abfcc1ade419c8f70289719cdc5
                       delegatesanchor="true"
                       onmousedown="gSync.toggleAccountPanel(this, event)"
                       onkeypress="gSync.toggleAccountPanel(this, event)"
-@@ -501,6 +513,8 @@
+@@ -501,6 +505,8 @@
                       consumeanchor="PanelUI-button"
                       data-l10n-id="appmenu-menu-button-closed2"/>
      </toolbaritem>

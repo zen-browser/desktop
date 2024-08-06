@@ -5,3 +5,4 @@
         content/browser/ZenViewSplitter.mjs              (content/ZenViewSplitter.mjs)
         content/browser/ZenWorkspaces.mjs                 (content/ZenWorkspaces.mjs)
         
+        content/browser/zen-components/browser-splitViews.mjs (content/zen-components/src/browser-splitViews.mjs)

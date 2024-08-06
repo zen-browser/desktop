@@ -30,7 +30,10 @@ jobs:
         with:
           python-version: '3.11' 
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup git
         run: |

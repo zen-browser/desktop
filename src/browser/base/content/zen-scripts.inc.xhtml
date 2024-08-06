@@ -1,8 +1,16 @@
 <script type="text/javascript">
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenWorkspaces.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenSidebarManager.mjs");
+
+  // Split view (Leave it at the end)
+  window.gZenSplitViewsBase = new (await import("chrome://browser/content/zen-components/browser-splitViews.mjs")).SplitViews({
+    splitIndicator: "zen-split",
+    browserName: "Zen",
+    defaultSplitView: "grid",
+    debug: true,
+  });
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenViewSplitter.mjs");
 }, { once: true });
 </script>

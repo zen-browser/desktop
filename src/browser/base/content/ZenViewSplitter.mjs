@@ -22,14 +22,13 @@ var gZenViewSplitter = {
 
   initializeUpdateContextMenuItems() {
     const contentAreaContextMenu = document.getElementById("tabContextMenu");
-    const tabCountInfo = JSON.stringify({
-      tabCount:
-        (window.gContextMenu?.contextTab.multiselected &&
-          window.gBrowser.multiSelectedTabsCount) ||
-        1,
-    });
 
     contentAreaContextMenu.addEventListener("popupshowing", () => {
+      const tabCountInfo = JSON.stringify({
+        tabCount: window.gBrowser.selectedTabs.length,
+      });
+      console.log(tabCountInfo);
+      console.log(window.gContextMenu);
       document
         .getElementById("context_zenSplitTabs")
         .setAttribute("data-l10n-args", tabCountInfo);

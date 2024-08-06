@@ -28,6 +28,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
+          persist-credentials: true
 
         # Give the runner some swap space in an attempt to stop gkrust from crashing the build
       - name: Set Swap Space

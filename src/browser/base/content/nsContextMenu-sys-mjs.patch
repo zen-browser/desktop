@@ -1,0 +1,18 @@
+diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
+index 6c2317b8036378c6b8e0ad9a4fe71388bcb385f5..4bf277b02d3c69efc0f2d46c8b0f9deb7d7fb45a 100644
+--- a/browser/base/content/nsContextMenu.sys.mjs
++++ b/browser/base/content/nsContextMenu.sys.mjs
+@@ -1153,6 +1153,13 @@ export class nsContextMenu {
+         !this.isSecureAboutPage()
+     );
+ 
++    this.showItem(
++      "context-zenAddToWebPanel",
++      this.onLink && !this.onMailtoLink && !this.onTelLink
++    );
++
++    this.showItem("context-zenSplitLink", this.onLink && !this.onMailtoLink && !this.onTelLink);
++
+     let copyLinkSeparator = this.document.getElementById(
+       "context-sep-copylink"
+     );

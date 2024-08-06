@@ -4,7 +4,6 @@ ac_add_options --with-app-basename=Zen
 ac_add_options --enable-official-branding
 
 export MOZ_USER_DIR="${name}"
-export MOZ_APP_VENDOR="${vendor}"
 export MOZ_APP_BASENAME=Zen
 export MOZ_APP_PROFILE=${binName}
 export MOZ_APP_DISPLAYNAME="${name}"
@@ -94,8 +93,9 @@ mk_add_options MOZ_DATA_REPORTING=0
 mk_add_options MOZ_SERVICES_HEALTHREPORT=0
 mk_add_options MOZ_TELEMETRY_REPORTING=0
 
-export MOZ_APP_UA_NAME="Firefox"
-
 # Allow loading unsigned extensions
 export MOZ_REQUIRE_SIGNING=1
 mk_add_options MOZ_REQUIRE_SIGNING=1
+
+# Sorry ptr, I didnt mean to!
+ac_add_options --without-wasm-sandboxed-libraries

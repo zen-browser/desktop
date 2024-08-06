@@ -54,7 +54,6 @@
 #zen-sidebar-web-panel-wrapper {
   --zen-default-sidebar-width: 300px;
   position: relative;
-  height: 100%;
   margin-right: 0;
   display: flex;
   pointer-events: none;
@@ -81,7 +80,6 @@
 }
 
 #zen-sidebar-web-panel {
-  --zen-initial-height: calc(100% - var(--zen-sidebar-web-panel-spacing) * 3);
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   border: var(--zen-appcontent-border);
@@ -93,13 +91,12 @@
   max-width: 720px;
   min-height: var(--zen-default-sidebar-width);
   width: calc(var(--zen-default-sidebar-width) + 200px);
-  height: var(--zen-initial-height);
   pointer-events: all;
 }
 
 #zen-sidebar-web-panel:not([pinned="true"]) {
   /* We need to always override the height */
-  height: var(--zen-initial-height) !important;
+  height: unset !important;
 }
 
 #zen-sidebar-web-panel-splitter {
@@ -124,10 +121,12 @@
   cursor: ns-resize;
 }
 
+#zen-sidebar-web-panel:not([hidden="true"]) #zen-sidebar-web-panel-hsplitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-hsplitter,
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned="true"])) + #zen-sidebar-web-panel-splitter {
   display: none;
+  margin: 0;
 }
 
 #zen-sidebar-web-panel:not([pinned="true"]) {

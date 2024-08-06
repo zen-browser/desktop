@@ -1,17 +1,18 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 61119b7564d37e55f49dab7e6e14faafb4baa298..bcaad1a231cc839579ed209307c8e95cfb4c37de 100644
+index f2171eb033a1143870f4708c63f565fabb535c4b..a21631e56e74d5d1887554d2752a612887ed20c5 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -27,6 +27,8 @@
+@@ -27,6 +27,9 @@
  @import url("chrome://browser/skin/UITour.css");
  @import url("chrome://browser/skin/formautofill-notification.css");
  
++@import url("chrome://global/skin/zen-global-shared.css");
 +@import url("chrome://browser/skin/zen-browser-shared.css");
 +
  @namespace html url("http://www.w3.org/1999/xhtml");
  
  :root,
-@@ -75,7 +77,7 @@ body {
+@@ -73,7 +76,7 @@ body {
    --short-notification-gradient: #9059FF;
  
    --button-bgcolor: color-mix(in srgb, currentColor 13%, transparent);
@@ -20,7 +21,7 @@ index 61119b7564d37e55f49dab7e6e14faafb4baa298..bcaad1a231cc839579ed209307c8e95c
    --button-active-bgcolor: color-mix(in srgb, currentColor 30%, transparent);
    --button-color: currentColor;
    --button-primary-bgcolor: AccentColor;
-@@ -181,7 +183,6 @@ body {
+@@ -179,7 +182,6 @@ body {
    appearance: none;
  
    /* Toolbar / content area border */
@@ -28,7 +29,7 @@ index 61119b7564d37e55f49dab7e6e14faafb4baa298..bcaad1a231cc839579ed209307c8e95c
  
    background-color: var(--toolbox-non-lwt-bgcolor);
    color: var(--toolbox-non-lwt-textcolor);
-@@ -190,37 +191,13 @@ body {
+@@ -188,37 +190,13 @@ body {
    transition: background-color var(--inactive-window-transition);
  
    &:-moz-window-inactive {

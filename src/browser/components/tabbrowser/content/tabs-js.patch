@@ -153,13 +153,13 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
 +      this.toggleAttribute("overflow", true);
 +
        let arrowScrollbox = this.arrowScrollbox;
+       let previewElement = document.getElementById("tab-preview-panel");
        arrowScrollbox.shadowRoot.addEventListener(
          "underflow",
          event => {
 +          return;
            // Ignore underflow events:
            // - from nested scrollable elements
-           // - for vertical orientation
 @@ -1471,11 +1518,11 @@
          for (let i = numPinned - 1; i >= 0; i--) {
            let tab = tabs[i];

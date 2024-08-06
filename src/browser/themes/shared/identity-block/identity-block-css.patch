@@ -16,7 +16,7 @@ index 39ae2b00791a7bfd875961de60736612f08892ae..5d950d855a5625ebfb20f6f49a65f3e1
 @@ -154,11 +155,11 @@
  }
  
- #urlbar:not(.searchButton) > .urlbar-input-container > #identity-box[pageproxystate="invalid"] #identity-icon {
+ #identity-box[pageproxystate="invalid"] #identity-icon {
 -  list-style-image: url(chrome://global/skin/icons/search-glass.svg);
 +  list-style-image: url(chrome://global/skin/icons/search-glass.svg) !important;
  }

@@ -14,7 +14,7 @@ index 0d3993370b4ecbdfaf87cfd3145617343c29dc39..8587f7286476ca0dcce1bb02ef02ce0d
 @@ -334,6 +334,7 @@ LightweightThemeConsumer.prototype = {
        theme.additionalBackgrounds
      );
-     _setProperties(root, hasTheme, theme);
+     let _processedColors = _setProperties(root, hasTheme, theme);
 +    this._zenSetAccentColor(root);
  
      if (hasTheme) {

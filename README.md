@@ -13,7 +13,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 # Compatibility
 
-Zen is currently built using firefox version `128.0.3`!
+Zen is currently built using firefox version `129.0`!
 
 * Checkout the latest [releases notes](https://get-zen.vercel.app/release-notes)!
 

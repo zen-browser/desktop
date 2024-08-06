@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index a2725d45b2c40ee9c718142dd48e22985adfdbd6..888c91058b3266e5a17aea98f7efaee2d11ec9e5 100644
+index 1fb595272a184f9a40f56f87d86232e3324f7750..8dd0f0ff856be524a5fa27fb8c6180c1fe058134 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -169,6 +169,10 @@
+@@ -144,6 +144,10 @@
             hidden="true"
             tabspecific="true"
             aria-labelledby="editBookmarkPanelTitle">
@@ -13,22 +13,15 @@ index a2725d45b2c40ee9c718142dd48e22985adfdbd6..888c91058b3266e5a17aea98f7efaee2
        <box class="panel-header">
          <html:h1>
            <html:span id="editBookmarkPanelTitle"/>
-@@ -191,12 +195,14 @@
-                   class="footer-button"
-                   data-l10n-id="bookmark-panel-save-button"
-                   default="true"
-+                  autofocus="true"
-                   oncommand="StarUI.panel.hidePopup();"/>
-           <button id="editBookmarkPanelRemoveButton"
-                   class="footer-button"
-                   oncommand="StarUI.removeBookmarkButtonCommand();"/>
+@@ -169,6 +173,7 @@
+                   class="footer-button"/>
          </html:moz-button-group>
        </vbox>
 +      </vbox>
      </panel>
    </html:template>
  
-@@ -523,6 +529,8 @@
+@@ -454,6 +459,8 @@
  
  #include popup-notifications.inc
  

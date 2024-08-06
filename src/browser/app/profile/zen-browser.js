@@ -112,4 +112,6 @@ pref('browser.migrate.opera.enabled', true);
 // pref('network.proxy.type', 0);
 // pref('network.trr.mode', 5);
 
+pref('xpinstall.signatures.required', false);
+
 #include better-fox.js

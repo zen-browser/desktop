@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          persist-credentials: true
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup git
         run: |

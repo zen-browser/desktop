@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          persist-credentials: true
+          token: ${{ secrets.DEPLOY_KEY }}
 
 
       # Give the runner some swap space in an attempt to stop gkrust from crashing the build

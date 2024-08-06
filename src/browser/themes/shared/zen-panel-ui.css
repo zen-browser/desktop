@@ -209,17 +209,17 @@
   height: 100%;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.hsep {
+#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.horizontal {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.hsep box:last-child {
+#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.horizontal box:last-child {
   margin-top: 5px;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.vsep box:last-child {
+#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.vertical box:last-child {
   margin-left: 5px;
 }
 

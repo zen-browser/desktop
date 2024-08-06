@@ -20,9 +20,6 @@ var gZenViewSplitter = {
     document.getElementById("tabContextMenu").appendChild(fragment);
   },
 
-  /**
-   * context menu item display update
-   */
   initializeUpdateContextMenuItems() {
     const contentAreaContextMenu = document.getElementById("tabContextMenu");
     const tabCountInfo = JSON.stringify({
@@ -45,7 +42,28 @@ var gZenViewSplitter = {
     gZenSplitViewsBase.onLocationChange(browser);
   },
 
-  openSplitViewPanel(event) {
+  async openSplitViewPanel(event) {
+    let panel = this._modifierElement;
+    let target = event.target.parentNode;
+    for (const gridType of ['horizontal', 'vertical', 'grid', 'unsplit']) {
+      let selector = panel.querySelector(`.zen-split-view-modifier-preview.${gridType}`);
+      selector.classList.remove("active");
+      if (gZenSplitViewsBase.getActiveViewType() === gridType) {
+        selector.classList.add("active");
+      }
+      if (this.__hasSetMenuListener) {
+        continue;
+      }
+      selector.addEventListener("click", ((gridType) => {
+        // TODO: Implement the split view
+        panel.hidePopup();
+      }).bind(this, gridType));
+    } 
+    this.__hasSetMenuListener = true;
+    PanelMultiView.openPopup(panel, target, {
+      position: "bottomright topright",
+      triggerEvent: event,
+    }).catch(console.error);
   },
 
   contextCanSplitTabs() {

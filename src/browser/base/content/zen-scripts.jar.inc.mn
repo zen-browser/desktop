@@ -1,7 +1,7 @@
-        content/browser/zen-browser-places.js                   (content/zen-browser-places.js)
         content/browser/zenThemeModifier.js                     (content/zenThemeModifier.js)
         content/browser/ZenUIManager.mjs                        (content/ZenUIManager.mjs)
         content/browser/zen-components/ZenViewSplitter.mjs      (content/zen-components/src/ZenViewSplitter.mjs)
         content/browser/zen-components/ZenWorkspaces.mjs        (content/zen-components/src/ZenWorkspaces.mjs)
         content/browser/zen-components/ZenSidebarManager.mjs    (content/zen-components/src/ZenSidebarManager.mjs)
+        content/browser/zen-components/ZenProfileDialogUI.js    (content/zen-components/src/ZenProfileDialogUI.js)
         

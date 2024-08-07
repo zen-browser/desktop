@@ -59,11 +59,6 @@ jobs:
       - name: Download
         run: pnpm surfer download
 
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 6
-
       - name: "win-cross Cache"
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5

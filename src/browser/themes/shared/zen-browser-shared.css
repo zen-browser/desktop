@@ -359,7 +359,7 @@ toolbarbutton#scrollbutton-up {
 }
 
 .tabbrowser-tab:not([fadein]) {
-  display: none;
+  display: none !important;
 }
 
 .tabbrowser-tab:is([multiselected="true"], [selected]) {

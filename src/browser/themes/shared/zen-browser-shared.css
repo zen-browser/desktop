@@ -320,6 +320,7 @@ toolbarbutton#scrollbutton-up {
   animation: zen-slide-in 0.3s;
   width: calc(var(--zen-browser-tab-icon-size) + 2px);
   transition: .1s background, .1s border-color;
+  min-width: var(--tab-min-width);
 }
 
 .tabbrowser-tab:hover {

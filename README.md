@@ -56,14 +56,6 @@ Finally, run the browser!
 npm start
 ```
 
-## Contributing
-
-Contributions are always welcome!
-
-See `contributing.md` for ways to get started.
-
-Please adhere to this project's `code of conduct`.
-
 ## Special Thanks
 
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)

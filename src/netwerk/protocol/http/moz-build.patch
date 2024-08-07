@@ -1,0 +1,13 @@
+diff --git a/netwerk/protocol/http/moz.build b/netwerk/protocol/http/moz.build
+index 49d78020bc3f193d6ba7cf7bd81756f8393039dd..94c48ce0f6d59d4906c33f44c4a6ae44e11261ba 100644
+--- a/netwerk/protocol/http/moz.build
++++ b/netwerk/protocol/http/moz.build
+@@ -206,7 +206,7 @@ LOCAL_INCLUDES += [
+     "/netwerk/url-classifier",
+ ]
+ 
+-DEFINES["MOZ_APP_UA_NAME"] = f'"{CONFIG["MOZ_APP_UA_NAME"]}"'
++DEFINES["MOZ_APP_UA_NAME"] = f'"Firefox"'
+ 
+ if CONFIG["MOZ_AUTH_EXTENSION"]:
+     LOCAL_INCLUDES += [

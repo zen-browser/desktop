@@ -1,7 +1,5 @@
 set -ex
 
-. ./.github/workflows/src/set-global-vars.sh
-
 if command -v apt-get &> /dev/null
 then
   sudo apt-get update

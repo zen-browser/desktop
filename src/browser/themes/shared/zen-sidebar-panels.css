@@ -73,6 +73,7 @@
   z-index: 1;
   width: -moz-available;
   padding: var(--zen-sidebar-web-panel-spacing);
+  height: 100%;
 }
 
 #zen-sidebar-web-panel:not([pinned="true"]) {
@@ -121,7 +122,7 @@
   cursor: ns-resize;
 }
 
-#zen-sidebar-web-panel:not([hidden="true"]) #zen-sidebar-web-panel-hsplitter,
+#zen-sidebar-web-panel[hidden="true"] #zen-sidebar-web-panel-hsplitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-hsplitter,
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned="true"])) + #zen-sidebar-web-panel-splitter {

@@ -708,7 +708,7 @@ panelmultiview {
 /* Screenshots */
 
 #screenshotsPagePanel {
-  position: absolute;
+  position: absolute !important;
   top: 3%;
   right: 1.5%;
 }

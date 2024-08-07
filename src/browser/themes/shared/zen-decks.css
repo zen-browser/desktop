@@ -45,3 +45,7 @@
     opacity: 1;
   }
 }
+
+#zen-split-views-box:not([hidden="true"]) {
+  display: flex !important;
+}

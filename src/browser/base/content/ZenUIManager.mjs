@@ -29,6 +29,22 @@ var gZenVerticalTabsManager = {
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
     this._updateMaxWidth();
+    this.initRightSideOrderContextMenu();
+  },
+
+  initRightSideOrderContextMenu() {
+    const kConfigKey = 'zen.tabs.vertical.right-side';
+    const fragment = window.MozXULElement.parseXULToFragment(`
+      <menuitem id="zen-toolbar-context-tabs-right"
+                type="checkbox"
+                ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
+                data-lazy-l10n-id="zen-toolbar-context-tabs-right"/>
+    `);
+    fragment.getElementById("zen-toolbar-context-tabs-right").addEventListener('click', () => {
+      let rightSide = Services.prefs.getBoolPref(kConfigKey);
+      Services.prefs.setBoolPref(kConfigKey, !rightSide);
+    });
+    document.getElementById('viewToolbarsMenuSeparator').before(fragment);
   },
 
   _updateEvent() {

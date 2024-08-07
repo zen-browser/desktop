@@ -61,6 +61,7 @@ pref("toolkit.telemetry.pioneer-new-studies-available", false);
 pref('zen.welcomeScreen.enabled', true);
 pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
+pref('zen.tabs.vertical.right-side', false);
 pref('zen.theme.accent-color', "#aac7ff");
 pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);

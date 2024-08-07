@@ -153,10 +153,6 @@
   align-items: center !important;
 }
 
-.urlbar-page-action:not([hidden="true"]) {
-  display: flex !important;
-}
-
 toolbar .toolbarbutton-1:not(.unified-extensions-item-action-button) {
   & > .toolbarbutton-icon,
   & > .toolbarbutton-badge-stack {
@@ -990,4 +986,31 @@ panelmultiview {
   max-width: calc(100% - calc(var(--zen-welcome-dialog-space) * 2)) !important;
   max-height: calc(100% - calc(var(--zen-welcome-dialog-space) * 2)) !important;
   margin-top: var(--zen-welcome-dialog-space) !important;
+}
+
+/* Display the vertical tabs on the right side */
+
+@media (-moz-bool-pref: "zen.tabs.vertical.right-side") and (not (-moz-bool-pref: "zen.view.compact")) {
+  #navigator-toolbox {
+    order: 4;
+    padding-left: 0;
+  }
+
+  @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+    #navigator-toolbox {
+      padding-left: 5px;
+    }
+  }
+
+  #zen-sidebar-splitter {
+    order: 3;
+  }
+
+  #tabbrowser-tabbox {
+    padding-left: 10px;
+  }
+
+  #tabbrowser-tabpanels .browserSidebarContainer {
+    margin-right: 0 !important;
+  }
 }

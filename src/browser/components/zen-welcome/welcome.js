@@ -18,7 +18,7 @@ ChromeUtils.defineModuleGetter(
 
 Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
 
-const kWelcomeURL = 'https://get-zen.vercel.app/welcome';
+const kWelcomeURL = 'https://www.zen-browser.app/welcome';
 const kWelcomeSeenPref = 'zen.welcomeScreen.seen'
 
 // =============================================================================

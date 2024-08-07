@@ -3,9 +3,9 @@
 
 Experience tranquillity while browsing the web without people tracking you!
 
-* [Website](https://get-zen.vercel.app)
-* [Download](https://get-zen.vercel.app/download)
-* [Release Notes](https://get-zen.vercel.app/release-notes/latest)
+* [Website](https://www.zen-browser.app)
+* [Download](https://www.zen-browser.app/download)
+* [Release Notes](https://www.zen-browser.app/release-notes/latest)
 
 <a href='https://flathub.org/apps/io.github.zen_browser.zen'>
   <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
@@ -15,7 +15,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 Zen is currently built using firefox version `129.0`!
 
-* Checkout the latest [releases notes](https://get-zen.vercel.app/release-notes)!
+* Checkout the latest [releases notes](https://www.zen-browser.app/release-notes)!
 
 # Performance
 

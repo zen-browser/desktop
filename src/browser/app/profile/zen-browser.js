@@ -98,10 +98,10 @@ pref('dom.private-attribution.submission.enabled', false);
 pref('media.eme.enabled', true);
 pref('webgl.disabled', false);
 
-pref("app.update.url.manual", "https://get-zen.vercel.app/download");
-pref("app.update.url.details", "hhttps://get-zen.vercel.app/download");
-pref("app.releaseNotesURL", "https://get-zen.vercel.app/release-notes");
-pref("app.releaseNotesURL.aboutDialog", "https://get-zen.vercel.app/release-notes");
+pref("app.update.url.manual", "https://www.zen-browser.app/download");
+pref("app.update.url.details", "hhttps://www.zen-browser.app/download");
+pref("app.releaseNotesURL", "https://www.zen-browser.app/release-notes");
+pref("app.releaseNotesURL.aboutDialog", "https://www.zen-browser.app/release-notes");
 
 // Enable importers for other browsers
 pref('browser.migrate.vivaldi.enabled', true);

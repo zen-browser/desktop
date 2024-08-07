@@ -19,6 +19,13 @@ jobs:
     name: Build Linux - ${{ matrix.generic == true && 'Generic' || 'Specific' }}
 
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -28,12 +35,6 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
-
-        # Give the runner some swap space in an attempt to stop gkrust from crashing the build
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 6
 
       - name: Setup git
         run: |

@@ -323,6 +323,10 @@ toolbarbutton#scrollbutton-up {
   align-items: center;
 }
 
+.tabbrowser-tab[hidden="true"] {
+  display: none !important;
+}
+
 .tabbrowser-tab:hover {
   background: var(--toolbarbutton-hover-background);
 }

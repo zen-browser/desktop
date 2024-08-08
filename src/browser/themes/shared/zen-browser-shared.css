@@ -222,7 +222,6 @@ button.popup-notification-dropmarker {
 
 #navigator-toolbox {
   min-width: 55px;
-  max-width: 55px;
 
   margin-top: 0 !important; /* Issue #156 */
 }

@@ -1,30 +1,4 @@
 # 🌀 Zen Browser Performance traker
-```mermaid
-  graph TD;
-    A[mauro-balades] -->B(Zen custom code)
-    G-->B
-    H(ptr1337/CachyOS)-->|AUR Pkg and Opt. flags|D
-    E(Fire Fox-Code)-->C
-    B --> C{Final code}
-    D-->G(Perf. Testing)
-    C-->D(Build)
-    D--> F(Release)
-    F-->I(mar)
-    F-->L(Mac)
-    F-->T(Linux)
-    F-->V(Win install)
-    V-->Z(Zip)
-    V-->Z2(Intall.exe)
-    I-->I1(windows.mar)
-    I-->I2(linux.mar)
-    I-->I3(macos.mar)
-    T-->T1(zen.linux.tar.bz2)
-    T-->T2(AUR)
-    T-->T3(Flatpak)
-    T-->T4(AppImage)
-    L-->L1(zen.macos.dmg)
-```
-
 
 ## Scores 
 
@@ -109,3 +83,28 @@ https://browserbench.org/Speedometer3.0/
 
 <div align='center'><a href='https://www.websitecounterfree.com'><img src='https://www.websitecounterfree.com/c.php?d=9&id=57772&s=40' border='0' alt='Free Website Counter'></a><br / ><small><a href='https://www.websitecounterfree.com' title="Free Website Counter">Free Website Counter</a></small></div>
 
+```mermaid
+  graph TD;
+    A[mauro-balades] -->B(Zen custom code)
+    G-->B
+    H(ptr1337/CachyOS)-->|AUR Pkg and Opt. flags|D
+    E(Fire Fox-Code)-->C
+    B --> C{Final code}
+    D-->G(Perf. Testing)
+    C-->D(Build)
+    D--> F(Release)
+    F-->I(mar)
+    F-->L(Mac)
+    F-->T(Linux)
+    F-->V(Win install)
+    V-->Z(Zip)
+    V-->Z2(Intall.exe)
+    I-->I1(windows.mar)
+    I-->I2(linux.mar)
+    I-->I3(macos.mar)
+    T-->T1(zen.linux.tar.bz2)
+    T-->T2(AUR)
+    T-->T3(Flatpak)
+    T-->T4(AppImage)
+    L-->L1(zen.macos.dmg)
+```

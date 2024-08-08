@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         generic: [true, false]
-
+    environment: production
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main

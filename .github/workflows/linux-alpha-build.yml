@@ -9,6 +9,7 @@ on:
     
 jobs:
   build-linux:
+    environment: production
     permissions:
       contents: write
     runs-on: ubuntu-latest

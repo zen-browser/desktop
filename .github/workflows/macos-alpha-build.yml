@@ -6,7 +6,7 @@ on:
         description: 'The version to build'
         required: true
         type: string
-
+  environment: production
 jobs:
   mac-build:
     name: Build macOS - ${{ matrix.arch }}

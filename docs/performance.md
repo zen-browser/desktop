@@ -54,31 +54,6 @@ https://browserbench.org/Speedometer3.0/
 | FF nightly 130.0a1 | 27.0 |
 | Librewolf 128.0-2 | 20.2 |
 
-
-## 2
-
-- [Verix](https://github.com/Veriiix)
-
-OS: Win 11
-CPU: i7-13700KF
-GPU: AMD RX 7900 XTX
-https://www.tablesgenerator.com/
-
-| Version    | Score: |
-|------------|--------|
-| 1.0.0-a.12-opt | 23   |
-| 1.0.0-a.11-opt | 22.1   |
-| 1.0.0-a.10 | 21.7   |
-| 1.0.0-a.9  | 3.7    |
-| others| - |
-| Default FF  | 28    |
-
-
-https://browserbench.org/Speedometer3.0/
-
-
-
-
 ## Repository View Counter
 
 <div align='center'><a href='https://www.websitecounterfree.com'><img src='https://www.websitecounterfree.com/c.php?d=9&id=57772&s=40' border='0' alt='Free Website Counter'></a><br / ><small><a href='https://www.websitecounterfree.com' title="Free Website Counter">Free Website Counter</a></small></div>

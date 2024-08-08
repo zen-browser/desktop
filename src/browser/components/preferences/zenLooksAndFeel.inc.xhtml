@@ -1,3 +1,4 @@
+<script src="chrome://browser/content/zen-components/ZenThemeBuilder.mjs" defer=""/>
 <script src="chrome://browser/content/preferences/zen-settings.js"/>
 <html:template id="template-paneZenLooks">
 <hbox id="zenLooksCategory"
@@ -13,6 +14,8 @@
 
       <hbox id="zenLooksAndFeelColorOptions" align="center">
       </hbox>
+
+      <html:div id="zen-theme-builder-wrapper"></html:div>
 
       <checkbox id="zenLooksAndFeelUseThemedToolbar"
             data-l10n-id="zen-look-and-feel-themed-toolbar"

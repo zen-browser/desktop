@@ -196,3 +196,55 @@ groupbox h2 {
 #category-zen-workspaces > .category-icon {
   list-style-image: url("chrome://browser/skin/window.svg");
 }
+
+/* Theme builder */
+
+#zen-theme-builder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+  background: var(--zen-colors-tertiary);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+#zen-theme-builder-color-picker {
+  width: 180px;
+  height: 180px;
+  border-radius: 10px;
+  margin-right: 10px;
+  position: relative;
+}
+
+#zen-theme-builder-color-picker-canvas {
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+#zen-theme-builder-color-picker-deck {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  border-radius: 10px;
+  margin: 10px;
+  background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
+  backdrop-filter: blur(15px);
+  border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+}
+
+#zen-theme-builder-color-picker-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 4px solid light-dark(white, black);
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  background: var(--zen-primary-color);
+  transform: translate(-50%, -50%);
+}
+

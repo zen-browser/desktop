@@ -5,4 +5,5 @@
         content/browser/zen-components/ZenSidebarManager.mjs    (content/zen-components/src/ZenSidebarManager.mjs)
         content/browser/zen-components/ZenProfileDialogUI.mjs   (content/zen-components/src/ZenProfileDialogUI.mjs)
         content/browser/zen-components/ZenKeyboardShortcuts.mjs (content/zen-components/src/ZenKeyboardShortcuts.mjs)
+        content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
         

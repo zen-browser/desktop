@@ -58,36 +58,3 @@ https://browserbench.org/Speedometer3.0/
 
 <div align='center'><a href='https://www.websitecounterfree.com'><img src='https://www.websitecounterfree.com/c.php?d=9&id=57772&s=40' border='0' alt='Free Website Counter'></a><br / ><small><a href='https://www.websitecounterfree.com' title="Free Website Counter">Free Website Counter</a></small></div>
 
-```mermaid
-  graph TD;
-    A[mauro-balades] -->B(Zen custom code)
-    G-->B
-    H(ptr1337/CachyOS)-->|AUR Pkg and Opt. flags|D
-    E(Fire Fox-Code)-->C
-    B --> C{Final code}
-    D-->G(Perf. Testing)
-    C-->D(Build)
-    D--> F(Release)
-    F-->I(mar)
-    F-->L(Mac)
-    F-->T(Linux Specific)
-    F-->W(Linux Generic)
-    F-->V(Win install Generic)
-    F-->Z(Win install Specific)
-    V-->Z(Zip Generic)
-    V-->Z1(Zip Specific)
-    I-->I1(windows.mar)
-    I-->I2(linux.mar)
-    I-->I3(macos.mar)
-    I-->I1(windows-generic.mar)
-    I-->I2(linux-generic.mar)
-    I-->I3(macos-generic.mar)
-    T-->T1(zen.linux-specific.tar.bz2)
-    T-->T2(zen.linux-generic.tar.bz2)
-    T-->T2(AUR)
-    T-->T3(Flatpak)
-    T-->T4(AppImage)
-    T-->T4(AppImage Generic)
-    L-->L1(zen.macos-aarch64.dmg)
-    L-->L1(zen.macos-x64_86.dmg)
-```

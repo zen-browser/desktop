@@ -28,7 +28,7 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 Clone the project
 
 ```bash
-git clone https://github.com/zen-browser/desktop.git --recursive
+git clone https://github.com/zen-browser/desktop.git
 cd desktop
 ```
 

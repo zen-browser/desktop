@@ -1,7 +1,7 @@
 
 # Workspaces Layout
 
-```
+```json
 {
   "workspaces": [
     {

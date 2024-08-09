@@ -264,7 +264,7 @@ jobs:
         run: |
           npm install -g pnpm
           sudo apt-get update
-          sudo apt-get -y install libfuse2
+          sudo apt-get -y install libfuse2 desktop-file-utils
 
       - name: Download linux build
         uses: actions/download-artifact@v4
@@ -281,14 +281,14 @@ jobs:
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv zen/* $APPDIR/
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x *.AppImage
           chmod +x ./AppDir/AppRun
           echo "AppDir: $APPDIR"
           ls -al
           find .
           ls -al "$APPDIR"
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" zen.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 10 "$APPDIR" zen.AppImage
           mkdir dist
           mv zen.AppImage* dist/.
           mv ./dist/zen.AppImage ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage

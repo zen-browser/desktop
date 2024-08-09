@@ -1,13 +1,14 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 7e21bab426b6eb52fe84876d817fddbdb1a35ffc..fe23eb36a28a2baa4facad80a776e739ee6e43b1 100644
+index 7e21bab426b6eb52fe84876d817fddbdb1a35ffc..fb7c6f419c02701aecd148ef2fe271ed6f1a73c1 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -196,6 +196,8 @@ function init_all() {
+@@ -196,6 +196,9 @@ function init_all() {
    // the entire document.
    Preferences.queueUpdateOfAllElements();
    Services.telemetry.setEventRecordingEnabled("aboutpreferences", true);
 +  register_module("paneZenLooks", gZenLooksAndFeel);
 +  register_module("paneZenWorkspaces", gZenWorkspacesSettings);
++  register_module("paneZenCKS", gZenCKSSettings);
  
    register_module("paneGeneral", gMainPane);
    register_module("paneHome", gHomePane);

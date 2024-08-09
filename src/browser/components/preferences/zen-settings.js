@@ -19,6 +19,7 @@ var gZenLooksAndFeel = {
   init() {
     this._initializeColorPicker(this._getInitialAccentColor());
     window.zenPageAccentColorChanged = this._handleAccentColorChange.bind(this);
+    gZenThemeBuilder.init();
   },
 
   _initializeColorPicker(accentColor) {
@@ -53,6 +54,127 @@ var gZenLooksAndFeel = {
 
 var gZenWorkspacesSettings = {
   init() {
+  },
+};
+
+var gZenCKSSettings = {
+  init() {
+    this._currentAction = null;
+    this._initializeEvents();
+    this._initializeCKS();
+  },
+
+  _initializeCKS() {
+    let wrapepr = document.getElementById("zenCKSOptions-wrapper");
+
+    // Create the groups first.
+    for (let key in kZKSActions) {
+      const data = kZKSActions[key];
+      const group = data[2];
+      if (!wrapepr.querySelector(`[data-group="${group}"]`)) {
+        let groupElem = document.createElement("h2");
+        groupElem.setAttribute("data-group", group);
+        document.l10n.setAttributes(groupElem, `zen-cks-group-${group}`);
+        wrapepr.appendChild(groupElem);
+      }
+    }
+
+    const keys = Object.keys(kZKSActions);
+    for (let i = keys.length - 1; i >= 0; i--) {
+      const key = keys[i];
+      const data = kZKSActions[key];
+      const l10nId = data[1];
+      const group = data[2];
+      let fragment = window.MozXULElement.parseXULToFragment(`
+        <hbox class="zenCKSOption">
+          <label class="zenCKSOption-label"></label>
+          <html:input readonly="1" class="zenCKSOption-input"/>
+        </hbox>
+      `);
+      document.l10n.setAttributes(fragment.querySelector(".zenCKSOption-label"), l10nId);
+
+      const input = fragment.querySelector(".zenCKSOption-input");
+      const shortcut = gZenKeyboardShortcuts.getShortcut(key);
+      if (shortcut) {
+        input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
+      } else {
+        this._resetCKS(input, key);
+      }
+
+      input.setAttribute("data-key", key);
+      input.addEventListener("focusin", (event) => {
+        const key = event.target.getAttribute("data-key");
+        this._currentAction = key;
+        event.target.classList.add("zenCKSOption-input-editing");
+      });
+
+      input.addEventListener("blur", (event) => {
+        this._currentAction = null;
+        event.target.classList.remove("zenCKSOption-input-editing");
+      });
+
+      const groupElem = wrapepr.querySelector(`[data-group="${group}"]`);
+      groupElem.after(fragment);
+    }
+  },
+
+  _resetCKS(input, key) {
+    input.value = "Not set";
+    input.classList.add("zenCKSOption-input-not-set");
+    input.classList.remove("zenCKSOption-input-invalid");
+    gZenKeyboardShortcuts.setShortcut(key, null);
+  },
+
+  _initializeEvents() {
+    window.addEventListener("keydown", this._handleKeyDown.bind(this));
+  },
+
+  _handleKeyDown(event) {
+    if (!this._currentAction) {
+      return;
+    }
+
+    let input = document.querySelector(`.zenCKSOption-input[data-key="${this._currentAction}"]`);
+    let shortcut = {
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      shift: event.shiftKey,
+      meta: event.metaKey
+    };
+
+    if (!shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta) {
+      this._resetCKS(input, this._currentAction);
+      return; // No modifiers, ignore.
+    }
+
+    if (!(["Control", "Alt", "Meta", "Shift"].includes(event.key))) {
+      if (event.keycode) {
+        shortcut.keycode = event.keycode;
+      } else {
+        shortcut.key = event.key;
+      }
+    }
+
+    if (event.key === "Escape" || event.key === "Tab") {
+      this._currentAction = null;
+      input.classList.remove("zenCKSOption-input-editing");
+      return;
+    } else if (event.key === "Backspace") {
+      this._resetCKS(input, this._currentAction);
+      return;
+    }
+
+    event.preventDefault();
+    gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
+
+    input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
+    input.classList.remove("zenCKSOption-input-not-set");
+
+    if (gZenKeyboardShortcuts.isValidShortcut(shortcut)) {
+      input.classList.remove("zenCKSOption-input-invalid");
+    } else {
+      input.classList.add("zenCKSOption-input-invalid");
+    }
   },
 };
 

@@ -28,16 +28,16 @@ groupbox {
 .subcategory + groupbox,
 #noFxaAccount,
 #hasFxaAccount {
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   margin-top: 5px;
 }
 
 groupbox:has(+ script),
 groupbox:last-of-type,
 groupbox:has(+ .subcategory) {
-  border-bottom-left-radius: 15px !important;
-  border-bottom-right-radius: 15px !important;
+  border-bottom-left-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
 }
 
 .sticky-inner-container{
@@ -195,6 +195,53 @@ groupbox h2 {
 
 #category-zen-workspaces > .category-icon {
   list-style-image: url("chrome://browser/skin/window.svg");
+}
+
+/* CKS */
+
+#category-zen-CKS > .category-icon {
+  list-style-image: url("chrome://browser/skin/save.svg");
+}
+
+.zenCKSOption-input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--zen-colors-border);
+  margin-left: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 40%;
+  user-select: none;
+  cursor: text;
+  background: transparent;
+}
+
+.zenCKSOption {
+  margin-bottom: 10px;
+}
+
+.zenCKSOption > label {
+  font-size: 14px;
+  color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+}
+
+.zenCKSOption-input.zenCKSOption-input-not-set {
+  color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+.zenCKSOption-input.zenCKSOption-input-editing {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--zen-primary-color);
+}
+
+.zenCKSOption-input.zenCKSOption-input-invalid {
+  border-color: red;
+}
+
+#zenCKSOptions-wrapper > [data-group]:not(:first-of-type) {
+  border-top: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  padding-top: 10px;
 }
 
 /* Theme builder */

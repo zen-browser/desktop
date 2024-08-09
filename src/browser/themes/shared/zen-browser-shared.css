@@ -392,7 +392,7 @@ toolbarbutton#scrollbutton-up {
   display: flex !important;
 }
 
-#tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of :not([pinned]:is([fadein]):not([hidden]))) {
+#tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of [fadein]:not([pinned]):not([hidden])) {
   margin-top: 15px !important;
   position: relative;
   overflow: visible;
@@ -582,6 +582,12 @@ panelmultiview {
   @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
     #navigator-toolbox {
       width: fit-content !important;
+    }
+  }
+
+  @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+    #navigator-toolbox {
+      min-width: 210px !important;
     }
   }
 
@@ -779,7 +785,7 @@ panelmultiview {
   }
 
   #navigator-toolbox {
-    min-width: 150px;
+    min-width: 160px;
     align-items: start;
     padding-left: 10px;
     padding-right: 5px;
@@ -888,7 +894,11 @@ panelmultiview {
   }
 
   #zen-workspaces-button {
-    width: -moz-available !important;
+    overflow: hidden;
+    width: calc(100% - 40px) !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
     padding: 2px 10px;
   }
 

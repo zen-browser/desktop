@@ -200,7 +200,7 @@ groupbox h2 {
 /* CKS */
 
 #category-zen-CKS > .category-icon {
-  list-style-image: url("chrome://browser/skin/save.svg");
+  list-style-image: url("chrome://browser/skin/quickactions.svg");
 }
 
 .zenCKSOption-input {

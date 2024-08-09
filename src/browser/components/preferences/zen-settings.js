@@ -62,6 +62,28 @@ var gZenCKSSettings = {
     this._currentAction = null;
     this._initializeEvents();
     this._initializeCKS();
+    this._addPrefObservers();
+  },
+
+  _addPrefObservers() {
+    Services.prefs.addObserver("zen.keyboard.shortcuts.disable-firefox", this.onDisableFirefoxShortcutsChange.bind(this));
+  },
+
+  async onDisableFirefoxShortcutsChange(event) {
+    let checked = Services.prefs.getBoolPref("zen.keyboard.shortcuts.disable-firefox");
+    if (checked) return;
+    let buttonIndex = await confirmRestartPrompt(
+      true,
+      1,
+      true,
+      false
+    );
+    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
+      return;
+    }
   },
 
   _initializeCKS() {
@@ -226,6 +248,11 @@ Preferences.addAll([
   },
   {
     id: "zen.theme.floating-urlbar",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.keyboard.shortcuts.disable-firefox",
     type: "bool",
     default: false,
   }

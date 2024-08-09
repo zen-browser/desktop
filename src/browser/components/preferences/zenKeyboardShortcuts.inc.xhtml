@@ -7,16 +7,14 @@
 <html:h1 data-l10n-id="pane-zen-CKS-title"/>
 </hbox>
 
-<hbox id="zenCKSCategory"
-      class="subcategory"
-      hidden="true"
-      data-category="paneZenCKS">
-</hbox>
-
 <groupbox id="zenCKSGroup" data-category="paneZenCKS" hidden="true" class="highlighting-group">
       <label><html:h2 data-l10n-id="zen-settings-CKS-header"/></label>
       <description class="description-deemphasized" data-l10n-id="zen-settings-CKS-description" />
-
+      <vbox class="indent">
+            <checkbox id="zenKSCDisableFirefoxShortcuts"
+                  data-l10n-id="zen-settings-CKS-disable-firefox"
+                  preference="zen.keyboard.shortcuts.disable-firefox" />
+      </vbox>
       <vbox id="zenCKSOptions-wrapper"></vbox>
 </groupbox>
 

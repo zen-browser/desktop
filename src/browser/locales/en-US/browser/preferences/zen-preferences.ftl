@@ -68,6 +68,8 @@ pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
 
+zen-settings-CKS-disable-firefox = 
+    .label = Disable { -brand-short-name }'s default keyboard shortcuts
 
 zen-cks-group-tab-action = Tab Actions
 zen-cks-group-page-action = Page Actions

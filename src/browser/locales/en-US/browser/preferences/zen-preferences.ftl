@@ -81,8 +81,6 @@ zen-cks-group-bookmark-action = Bookmark Actions
 zen-cks-group-open-page-action = Open Page Actions
 zen-cks-group-downloads-action = Downloads Actions
 zen-cks-group-sidebar-action = Sidebar Actions
-zen-cks-group-custom-action = Custom Actions
-
 
 open-new-tab = Open New Tab
 close-tab = Close Tab
@@ -143,8 +141,3 @@ show-synced-tabs-sidebar = Show Synced Tabs Sidebar
 reverse-sidebar = Reverse Sidebar Position
 hide-sidebar = Hide Sidebar
 toggle-sidebar = Toggle Sidebar
-custom-action-1 = Custom Action 1
-custom-action-2 = Custom Action 2
-custom-action-3 = Custom Action 3
-custom-action-4 = Custom Action 4
-custom-action-5 = Custom Action 5

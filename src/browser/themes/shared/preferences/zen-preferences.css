@@ -219,6 +219,8 @@ groupbox h2 {
 
 .zenCKSOption {
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .zenCKSOption > label {

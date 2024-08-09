@@ -13,6 +13,10 @@
     "utility": "cpp",
     "variant": "cpp",
     "compare": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "span": "cpp",
+    "vector": "cpp"
   }
 }

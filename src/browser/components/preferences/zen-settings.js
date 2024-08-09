@@ -115,8 +115,8 @@ var gZenCKSSettings = {
       `);
       document.l10n.setAttributes(fragment.querySelector(".zenCKSOption-label"), l10nId);
 
-      const input = fragment.querySelector(".zenCKSOption-input");
-      const shortcut = gZenKeyboardShortcuts.getShortcut(key);
+      let input = fragment.querySelector(".zenCKSOption-input");
+      let shortcut = gZenKeyboardShortcuts.getShortcut(key);
       if (shortcut) {
         input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
       } else {
@@ -124,7 +124,7 @@ var gZenCKSSettings = {
       }
 
       input.setAttribute("data-key", key);
-      input.addEventListener("focusin", (event) => {
+      input.addEventListener("focus", (event) => {
         const key = event.target.getAttribute("data-key");
         this._currentAction = key;
         event.target.classList.add("zenCKSOption-input-editing");
@@ -164,6 +164,17 @@ var gZenCKSSettings = {
       meta: event.metaKey
     };
 
+    if (event.key === "Tab") {
+      return;
+    } else if (event.key === "Escape") {
+      this._currentAction = null;
+      input.blur();
+      return;
+    } else if (event.key === "Backspace") {
+      this._resetCKS(input, this._currentAction);
+      return;
+    }
+
     if (!shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta) {
       this._resetCKS(input, this._currentAction);
       return; // No modifiers, ignore.
@@ -175,15 +186,6 @@ var gZenCKSSettings = {
       } else {
         shortcut.key = event.key;
       }
-    }
-
-    if (event.key === "Escape" || event.key === "Tab") {
-      this._currentAction = null;
-      input.classList.remove("zenCKSOption-input-editing");
-      return;
-    } else if (event.key === "Backspace") {
-      this._resetCKS(input, this._currentAction);
-      return;
     }
 
     event.preventDefault();

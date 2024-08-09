@@ -73,7 +73,7 @@
   z-index: 1;
   width: -moz-available;
   padding: var(--zen-sidebar-web-panel-spacing);
-  height: 100%;
+  height: calc(100% - 10px);
 }
 
 #zen-sidebar-web-panel:not([pinned="true"]) {
@@ -93,6 +93,7 @@
   min-height: var(--zen-default-sidebar-width);
   width: calc(var(--zen-default-sidebar-width) + 200px);
   pointer-events: all;
+  height: calc(100% - 20px);
 }
 
 #zen-sidebar-web-panel:not([pinned="true"]) {

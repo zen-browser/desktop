@@ -141,3 +141,4 @@ show-synced-tabs-sidebar = Show Synced Tabs Sidebar
 reverse-sidebar = Reverse Sidebar Position
 hide-sidebar = Hide Sidebar
 toggle-sidebar = Toggle Sidebar
+zen-toggle-web-panels = Toggle Web Panels

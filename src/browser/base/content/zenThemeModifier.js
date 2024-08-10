@@ -103,7 +103,7 @@ var ZenThemeModifier = {
     if (this.__hasInitBrowserLayout) return;
     this.__hasInitBrowserLayout = true;
     this.openWatermark();
-    console.log("ZenThemeModifier: init browser layout");
+    console.info("ZenThemeModifier: init browser layout");
     const kNavbarItems = [
       "nav-bar",
       "PersonalToolbar"
@@ -123,6 +123,7 @@ var ZenThemeModifier = {
     newContainer.appendChild(separator);
 
     gZenVerticalTabsManager.init();
+    gZenCompactModeManager.init();
 
     this._updateZenAvatar();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
@@ -154,7 +155,7 @@ var ZenThemeModifier = {
     const toolbarRect = toolbarItems.getBoundingClientRect();
     // -7 for the controls padding
     tabs.style.maxHeight = toolbarRect.height - 7 + "px";
-    console.log("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
+    console.info("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 
   _updateZenAvatar() {
@@ -170,7 +171,6 @@ var ZenThemeModifier = {
     if (document.documentElement.hasAttribute("privatebrowsingmode")) {
       avatarUrl = "chrome://global/skin/icons/indicator-private-browsing.svg";
     }
-    // console.log("ZenThemeModifier: setting avatar image to", avatarUrl);
     mainWindowEl.style.setProperty("--zen-avatar-image-url", `url(${avatarUrl})`);
     mainWindowEl.style.setProperty("--avatar-image-url", `var(--zen-avatar-image-url)`, "important");
   },

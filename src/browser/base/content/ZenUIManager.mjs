@@ -91,3 +91,30 @@ var gZenVerticalTabsManager = {
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
   },
 };
+
+var gZenCompactModeManager = {
+  init() {
+  },
+
+  get prefefence() {
+    return Services.prefs.getBoolPref('zen.view.compact');
+  },
+
+  set preference(value) {
+    Services.prefs.setBoolPref('zen.view.compact', value);
+  },
+
+  toggle() {
+    this.preference = !this.prefefence;
+  },
+
+  toggleSidebar() {
+    let sidebar = document.getElementById('navigator-toolbox');
+    sidebar.toggleAttribute('zen-user-show');
+  },
+
+  toggleToolbar() {
+    let toolbar = document.getElementById('zen-appcontent-navbar-container');
+    toolbar.toggleAttribute('zen-user-show');
+  }
+};

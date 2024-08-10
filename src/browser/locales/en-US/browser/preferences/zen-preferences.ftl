@@ -81,6 +81,7 @@ zen-cks-group-bookmark-action = Bookmark Actions
 zen-cks-group-open-page-action = Open Page Actions
 zen-cks-group-downloads-action = Downloads Actions
 zen-cks-group-sidebar-action = Sidebar Actions
+zen-cks-group-compact-mode-action = Compact Mode Actions
 
 open-new-tab = Open New Tab
 close-tab = Close Tab
@@ -142,3 +143,6 @@ reverse-sidebar = Reverse Sidebar Position
 hide-sidebar = Hide Sidebar
 toggle-sidebar = Toggle Sidebar
 zen-toggle-web-panels = Toggle Web Panels
+zen-toggle-compact-mode = Toggle Compact Mode
+zen-toggle-compact-mode-sidebar = Toggle Compact Mode Sidebar
+zen-toggle-compact-mode-toolbar = Toggle Compact Mode Toolbar

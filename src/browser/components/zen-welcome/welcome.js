@@ -250,7 +250,7 @@ class Pages {
    * @param {Page[]} pages The pages
    */
   constructor(pages) {
-    console.log("Initializing welcome pages...");
+    console.info("Initializing welcome pages...");
     this.pages = pages
     this.currentPage = 0;
 
@@ -259,7 +259,7 @@ class Pages {
     this.pages.forEach((page) => page.setPages(this))
 
     this._displayCurrentPage();
-    console.log("Welcome pages initialized.")
+    console.info("Welcome pages initialized.")
 
     this.nextEl = document.getElementById(`next`)
     this.prevEl = document.getElementById(`back`)

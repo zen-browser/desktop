@@ -620,6 +620,7 @@ panelmultiview {
   
   #navigator-toolbox:hover,
   #navigator-toolbox:focus-within,
+  #navigator-toolbox[zen-user-show],
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transition-delay: 33ms !important;
@@ -674,6 +675,7 @@ panelmultiview {
 
     #zen-appcontent-navbar-container:hover,
     #zen-appcontent-navbar-container:focus-within,
+    #zen-appcontent-navbar-container[zen-user-show],
     #mainPopupSet:has(> #appMenu-popup:hover) ~ #zen-appcontent-navbar-container,
     #zen-appcontent-navbar-container:has(*[open="true"]) {
       transform: translateY(0);

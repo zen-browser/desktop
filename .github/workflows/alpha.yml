@@ -360,7 +360,9 @@ jobs:
             zen.linux-generic.tar.bz2
             zen.linux-specific.tar.bz2
             zen-generic.AppImage
+            zen-generic.AppImage.zsync
             zen-specific.AppImage
+            zen-specific.AppImage.zsync
             zen.win-generic.zip
             zen.win-specific.zip
             linux.mar

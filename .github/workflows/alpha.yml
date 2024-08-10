@@ -298,7 +298,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
-          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage*
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}

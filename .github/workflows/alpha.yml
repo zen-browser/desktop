@@ -304,7 +304,7 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, source, windows-step-3, check-release, mac, appimage]
+    needs: [build-data, linux, windows-step-3, check-release, mac, appimage]
     runs-on: ubuntu-latest
 
     steps:

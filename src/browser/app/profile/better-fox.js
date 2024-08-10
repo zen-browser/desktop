@@ -47,13 +47,6 @@ pref("network.http.pacing.requests.enabled", false);
 pref("network.dnsCacheExpiration", 3600);
 pref("network.ssl_tokens_cache_capacity", 10240);
 
-/** SPECULATIVE LOADING ***/
-pref("network.dns.disablePrefetch", true);
-pref("network.dns.disablePrefetchFromHTTPS", true);
-pref("network.prefetch-next", false);
-pref("network.predictor.enabled", false);
-pref("network.predictor.enable-prefetch", false);
-
 /** EXPERIMENTAL ***/
 pref("layout.css.grid-template-masonry-value.enabled", true);
 pref("dom.enable_web_task_scheduling", true);

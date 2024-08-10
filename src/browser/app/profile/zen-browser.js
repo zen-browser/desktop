@@ -118,3 +118,16 @@ pref('browser.migrate.opera.enabled', true);
 pref('xpinstall.signatures.required', false);
 
 #include better-fox.js
+
+// Betterfox overrides (Stay below the include directive)
+
+// Jang's personal speedups (Thanks to Jang for these!)
+
+// Prefetching:
+pref("network.dns.disablePrefetch", false);
+pref("network.prefetch-next", true);
+pref("network.predictor.enabled", true);
+pref("network.dns.disablePrefetchFromHTTPS", false);
+pref("network.predictor.enable-hover-on-ssl", true);
+pref("network.http.speculative-parallel-limit", 10);
+pref("network.http.rcwn.enabled", false);

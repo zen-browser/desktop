@@ -288,10 +288,11 @@ jobs:
           ls -al
           find .
           ls -al "$APPDIR"
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 10 "$APPDIR" zen.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 10 \
+          -u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync" \
+          "$APPDIR" zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
           mkdir dist
-          mv zen.AppImage* dist/.
-          mv ./dist/zen.AppImage ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+          mv zen*AppImage* dist/.
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

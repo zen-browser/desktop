@@ -298,7 +298,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
-          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+          path: |
+            ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+
+      - name: Upload artifact (ZSync)
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
+          path: |
+            ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
 
   release:
     if: ${{ github.event.inputs.create_release == 'true' }}
@@ -360,7 +368,9 @@ jobs:
             zen.linux-generic.tar.bz2
             zen.linux-specific.tar.bz2
             zen-generic.AppImage
+            zen-generic.AppImage.zsync
             zen-specific.AppImage
+            zen-specific.AppImage.zsync
             zen.win-generic.zip
             zen.win-specific.zip
             linux.mar

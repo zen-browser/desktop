@@ -16,7 +16,6 @@ finish-args:
   - --persist=.zen
   - --filesystem=xdg-download:rw
   - --device=all
-  - --device=dri
   - --talk-name=org.freedesktop.FileManager1
   - --own-name=org.mozilla.zen.*
   - --own-name=org.mpris.MediaPlayer2.firefox.*

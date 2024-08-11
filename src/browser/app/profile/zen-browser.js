@@ -132,3 +132,8 @@ pref("network.dns.disablePrefetchFromHTTPS", false);
 pref("network.predictor.enable-hover-on-ssl", true);
 pref("network.http.speculative-parallel-limit", 10);
 pref("network.http.rcwn.enabled", false);
+
+// Enable Browser Toolbox, Ctrl+Shift+Alt+I for debugging and modifying UI
+pref("devtools.debugger.remote-enabled", true);
+pref("devtools.chrome.enabled", true);
+

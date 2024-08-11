@@ -1,0 +1,13 @@
+diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
+index b5cbdd7d226e4b7c8909688b05763db74f0b87fb..b5247cd4f43a906f72f34169775531e2266cb215 100644
+--- a/browser/themes/windows/browser.css
++++ b/browser/themes/windows/browser.css
+@@ -47,7 +47,7 @@
+     }
+ 
+     &[sizemode="normal"] #navigator-toolbox {
+-      border-top: .5px solid ActiveBorder;
++      /* border-top: .5px solid ActiveBorder; Zen: Remove annoying top border, dont remove */
+       &:-moz-window-inactive {
+         border-top-color: InactiveBorder;
+       }

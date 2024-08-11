@@ -82,6 +82,8 @@ zen-cks-group-open-page-action = Open Page Actions
 zen-cks-group-downloads-action = Downloads Actions
 zen-cks-group-sidebar-action = Sidebar Actions
 zen-cks-group-compact-mode-action = Compact Mode Actions
+zen-cks-group-split-view-action = Split View Actions
+zen-cks-group-workspace-action = Workspace Actions
 
 open-new-tab = Open New Tab
 close-tab = Close Tab
@@ -146,3 +148,8 @@ zen-toggle-web-panels = Toggle Web Panels
 zen-toggle-compact-mode = Toggle Compact Mode
 zen-toggle-compact-mode-sidebar = Toggle Compact Mode Sidebar
 zen-toggle-compact-mode-toolbar = Toggle Compact Mode Toolbar
+zen-change-workspace = Cycle Workspaces
+zen-split-view-grid = Split View Grid
+zen-split-view-vertical = Split View Vertical
+zen-split-view-horizontal = Split View Horizontal
+zen-split-view-close = Close Split View

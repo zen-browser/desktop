@@ -164,13 +164,15 @@ var gZenCKSSettings = {
       meta: event.metaKey
     };
 
-    if (event.key === "Tab") {
+    const shortcutWithoutModifiers = !shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta;
+
+    if (event.key === "Tab" && shortcutWithoutModifiers) {
       return;
-    } else if (event.key === "Escape") {
+    } else if (event.key === "Escape" && shortcutWithoutModifiers) {
       this._currentAction = null;
       input.blur();
       return;
-    } else if (event.key === "Backspace") {
+    } else if (event.key === "Backspace" && shortcutWithoutModifiers) {
       this._resetCKS(input, this._currentAction);
       return;
     }

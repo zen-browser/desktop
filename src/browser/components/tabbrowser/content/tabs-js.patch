@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01bef0c21b 100644
+index e9aa0f03c26dc26e1a2e56d28fadb70e60c8e8ca..9c209752b01bd07a3f38452da4bc8efc7433466c 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -552,19 +552,36 @@
@@ -146,21 +146,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
        children.pop();
        this._allTabs = children;
        return children;
-@@ -1144,10 +1188,13 @@
-     }
- 
-     _initializeArrowScrollbox() {
-+      this.toggleAttribute("overflow", true);
-+
-       let arrowScrollbox = this.arrowScrollbox;
-       let previewElement = document.getElementById("tab-preview-panel");
-       arrowScrollbox.shadowRoot.addEventListener(
-         "underflow",
-         event => {
-+          return;
-           // Ignore underflow events:
-           // - from nested scrollable elements
-@@ -1471,11 +1518,11 @@
+@@ -1476,11 +1520,11 @@
          for (let i = numPinned - 1; i >= 0; i--) {
            let tab = tabs[i];
            width += layoutData.pinnedTabWidth;
@@ -177,7 +163,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
            tab._pinnedUnscrollable = true;
          }
          this.style.setProperty(
-@@ -1510,19 +1557,30 @@
+@@ -1515,19 +1559,30 @@
          }
        }
  
@@ -217,7 +203,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
  
        let pinned = draggedTab.pinned;
        let numPinned = gBrowser._numPinnedTabs;
-@@ -1531,36 +1589,39 @@
+@@ -1536,36 +1591,39 @@
          pinned ? numPinned : undefined
        );
  
@@ -268,7 +254,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
        }
  
        draggedTab._dragData.translateX = translateX;
-@@ -1593,11 +1654,11 @@
+@@ -1598,11 +1656,11 @@
          if (tabs[mid] == draggedTab && ++mid > high) {
            break;
          }
@@ -282,7 +268,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
            tabCenter
          ) {
            low = mid + 1;
-@@ -1620,16 +1681,16 @@
+@@ -1625,16 +1683,16 @@
        for (let tab of tabs) {
          if (tab != draggedTab) {
            let shift = getTabShift(tab, newIndex);
@@ -302,7 +288,7 @@ index 3b97732d8035f07a2308f76f235702c70a5fa388..edbc1ad66a84fd17b1674ff7852cdf01
          }
          return 0;
        }
-@@ -1701,9 +1762,9 @@
+@@ -1706,9 +1764,9 @@
  
        // Slide the relevant tabs to their new position.
        for (let t of this._getVisibleTabs()) {

@@ -124,6 +124,7 @@ var ZenThemeModifier = {
 
     gZenVerticalTabsManager.init();
     gZenCompactModeManager.init();
+    gZenKeyboardShortcuts.init();
 
     this._updateZenAvatar();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
@@ -153,8 +154,8 @@ var ZenThemeModifier = {
     const tabs = document.getElementById("tabbrowser-arrowscrollbox");
     tabs.style.maxHeight = '0px'; // reset to 0
     const toolbarRect = toolbarItems.getBoundingClientRect();
-    // -7 for the controls padding
-    tabs.style.maxHeight = toolbarRect.height - 7 + "px";
+    // -5 for the controls padding
+    tabs.style.maxHeight = toolbarRect.height - 5 + "px";
     console.info("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 

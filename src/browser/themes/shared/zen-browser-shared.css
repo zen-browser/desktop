@@ -587,7 +587,7 @@ panelmultiview {
 
   @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
     #navigator-toolbox {
-      min-width: 210px !important;
+      min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 2) !important;
     }
   }
 
@@ -787,11 +787,11 @@ panelmultiview {
   }
 
   #navigator-toolbox {
-    min-width: 160px;
+    --zen-navigation-toolbar-min-width: 160px;
+    min-width: var(--zen-navigation-toolbar-min-width);
     align-items: start;
     padding-left: 10px;
     padding-right: 5px;
-    max-width: 210px;
     transition: .2s;
     width: 170px;
     border: none;

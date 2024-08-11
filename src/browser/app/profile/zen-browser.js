@@ -118,6 +118,10 @@ pref('browser.migrate.opera.enabled', true);
 
 pref('xpinstall.signatures.required', false);
 
+// Experimental Zen Features
+// Strategy to use for bytecode cache (Thanks https://github.com/gunir)
+pref('dom.script_loader.bytecode_cache.strategy', 2);
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)

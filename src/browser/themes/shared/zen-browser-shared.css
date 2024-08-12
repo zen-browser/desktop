@@ -316,8 +316,10 @@ toolbarbutton#scrollbutton-up {
   align-items: center;
 }
 
-.tabbrowser-tab[pending]:not(:hover) {
-  opacity: 0.5;
+@media (-moz-bool-pref: "zen.tabs.dim-pending") {
+  .tabbrowser-tab[pending]:not(:hover) {
+    opacity: 0.5;
+  }
 }
 
 .tabbrowser-tab[hidden="true"] {

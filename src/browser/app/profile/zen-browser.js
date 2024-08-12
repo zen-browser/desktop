@@ -74,6 +74,7 @@ pref('zen.view.sidebar-expanded.max-width', 400);
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-firefox', false);
+pref('zen.tabs.dim-pending', true);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);

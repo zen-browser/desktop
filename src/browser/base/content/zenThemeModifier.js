@@ -119,7 +119,7 @@ var ZenThemeModifier = {
 
     // Fix notification deck
     document.getElementById("zen-appcontent-navbar-container")
-      .appendChild(document.getElementById("tab-notification-deck"));
+      .appendChild(document.getElementById("tab-notification-deck-template"));
 
     gZenVerticalTabsManager.init();
     gZenCompactModeManager.init();

@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 2674dc2bebf436529a46d45c52cb56e86b82c03f..06d30b3e33562d8eaa04522d3719728126c59a81 100644
+index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c502278e2b188d 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -3208,6 +3208,11 @@
+@@ -3214,6 +3214,11 @@
          ) {
            tabWasReused = true;
            tab = this.selectedTab;
@@ -14,7 +14,7 @@ index 2674dc2bebf436529a46d45c52cb56e86b82c03f..06d30b3e33562d8eaa04522d37197281
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3257,6 +3262,10 @@
+@@ -3263,6 +3268,10 @@
              preferredRemoteType,
            });
  
@@ -25,3 +25,11 @@ index 2674dc2bebf436529a46d45c52cb56e86b82c03f..06d30b3e33562d8eaa04522d37197281
            if (select) {
              tabToSelect = tab;
            }
+@@ -4150,6 +4159,7 @@
+         isLastTab ||
+         aTab.pinned ||
+         aTab.hidden ||
++        true ||
+         this._removingTabs.size >
+           3 /* don't want lots of concurrent animations */ ||
+         !aTab.hasAttribute(

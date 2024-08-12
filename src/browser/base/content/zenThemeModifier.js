@@ -108,7 +108,6 @@ var ZenThemeModifier = {
       "nav-bar",
       "PersonalToolbar"
     ];
-    const kSeparatorId = "zen-website-and-native-separator";
     const kNewContainerId = "zen-appcontent-navbar-container";
     let newContainer = document.getElementById(kNewContainerId);
     for (let id of kNavbarItems) {
@@ -117,10 +116,10 @@ var ZenThemeModifier = {
       if (!node) continue;
       newContainer.appendChild(node);
     }
-    // Add the separator
-    const separator = document.createElement("span");
-    separator.id = kSeparatorId;
-    newContainer.appendChild(separator);
+
+    // Fix notification deck
+    document.getElementById("zen-appcontent-navbar-container")
+      .appendChild(document.getElementById("tab-notification-deck"));
 
     gZenVerticalTabsManager.init();
     gZenCompactModeManager.init();

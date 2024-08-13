@@ -57,19 +57,6 @@ var gZenLooksAndFeel = {
 
 var gZenWorkspacesSettings = {
   init() {
-    this.addLanguageWarning();
-  },
-
-  addLanguageWarning() {
-    let chooseLanguage = document.getElementById("languagesBox");
-
-    let fragment = window.MozXULElement.parseXULToFragment(`
-    <hbox class="zenLanguageWarning">
-      <label class="zenLanguageWarning-label"><html:b data-l10n-id="zen-warning-language"/></label>
-    </hbox>
-  `);
-
-    chooseLanguage.after(fragment);
   },
 };
 

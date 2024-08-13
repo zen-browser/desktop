@@ -3,6 +3,7 @@ pane-zen-looks-title = Look And Feel
 category-zen-looks =
     .tooltiptext = { pane-zen-looks-title }
 
+zen-warning-language = Changing the default language could make it easier for Websites to track you.
 
 zen-look-and-feel-colors-header = Pick a theme colour
 zen-look-and-feel-colors-description = Make { -brand-short-name } look and feel the way you like

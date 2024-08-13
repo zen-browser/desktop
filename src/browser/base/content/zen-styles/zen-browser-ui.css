@@ -1,6 +1,7 @@
 
-toolbox#navigator-toolbox, 
-#browser {
+#navigator-toolbox, 
+#browser,
+#appcontent {
   background: transparent !important;
 }
 
@@ -14,10 +15,6 @@ html#main-window > body {
 
 :not([inDOMFullscreen="true"]) #appcontent {
   overflow: hidden;
-}
-
-#appcontent {
-  background: var(--toolbar-bgcolor);
 }
 
 :not([inDOMFullscreen="true"]) #appcontent,

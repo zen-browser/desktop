@@ -50,6 +50,7 @@ groupbox:has(+ .subcategory) {
 
 .navigation {
   padding: 50px;
+  background: var(--zen-colors-tertiary);
 }
 
 groupbox button {

@@ -17,3 +17,5 @@
         content/browser/zen-styles/zen-panel-ui.css             (content/zen-styles/zen-panel-ui.css)
         content/browser/zen-styles/zen-single-components.css     (content/zen-styles/zen-single-components.css)
         content/browser/zen-styles/zen-floating-urlbar.css      (content/zen-styles/zen-floating-urlbar.css)
+        content/browser/zen-styles/zen-sidebar.css              (content/zen-styles/zen-sidebar.css)
+        content/browser/zen-styles/zen-toolbar.css              (content/zen-styles/zen-toolbar.css)

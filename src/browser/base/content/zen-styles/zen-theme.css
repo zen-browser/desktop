@@ -110,8 +110,7 @@
 
 @media (prefers-color-scheme: dark) {
   :host(:is(.anonymous-content-host, notification-message)),
-  :root,
-  .zenLooksAndFeelColorOption {
+  :root {
     --zen-in-content-dialog-background: rgb(28, 28, 32);
 
     --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);

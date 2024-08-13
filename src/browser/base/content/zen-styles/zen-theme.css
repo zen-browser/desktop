@@ -77,11 +77,12 @@
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
 
   /* Constants */
-  --zen-element-separation: 1rem;
+  --zen-element-separation: .5rem;
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
   --zen-appcontent-border: 1px solid var(--zen-colors-border);
+  --zen-panel-radius: var(--zen-border-radius);
   --zen-browser-border-radius: var(--zen-panel-radius);
 
   --toolbarbutton-border-radius: 6px;

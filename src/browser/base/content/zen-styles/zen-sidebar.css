@@ -11,26 +11,23 @@
 
 #sidebar-box {
   --zen-sidebar-box-border-radius: var(--zen-browser-border-radius);  
-  margin: 10px !important;
-  border-radius: var(--zen-sidebar-box-border-radius) !important;
+  margin: var(--zen-element-separation);
+  border-radius: var(--zen-sidebar-box-border-radius);
   overflow: hidden;
   transition: .2s;
-  margin-left: 0 !important;
+  margin-left: 0;
   border: var(--zen-appcontent-border);
   box-shadow: none;
+  margin-top: 0;
 }   
 
 #sidebar-box[hidden="true"] {
-  width: 0 !important;
-  opacity: 0 !important;
+  width: 0;
+  opacity: 0;
 }
 
-#sidebar-box[positionend="true"] {
-  order: 1 !important;
-}
-
-#sidebar-box:not([positionend   ="true"]) {
-  margin-right: 0 !important;
+#sidebar-box:not([positionend="true"]) {
+  margin-right: 0;
 }
 
 #zen-main-app-wrapper:has(#sidebar-box:not([hidden="true"], [positionend="true"])) #TabsToolbar {
@@ -201,6 +198,10 @@
   opacity: 0;
 }
 
+:root[inDOMFullscreen="true"] #zen-sidebar-splitter {
+  display: none;
+}
+
 @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
   #navigator-toolbox {
     width: 0;
@@ -215,10 +216,5 @@
   #zen-expand-sidebar-button {
     display: block;
   }
-}
-
-/* Zen split sidebar */
-#zen-tabbox-wrapper:has(#zen-sidebar-splitter:not([state="dragging"])) #navigator-toolbox {
-  transition: .3s !important;
 }
  

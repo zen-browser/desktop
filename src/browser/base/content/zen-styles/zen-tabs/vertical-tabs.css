@@ -234,19 +234,7 @@
     }
   }
 
-  @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
-    #zen-workspaces-button .zen-workspace-sidebar-name {
-      display: block;
-    }
-  
-    #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
-      display: none;
-    }
-  
-    #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
-      margin-left: 0;
-    }
-  
+  @media (-moz-bool-pref: "zen.view.sidebar-expanded") {  
     #navigator-toolbox {
       --zen-navigation-toolbar-min-width: 160px;
       min-width: var(--zen-navigation-toolbar-min-width);
@@ -349,15 +337,6 @@
     .tabbrowser-tab[pinned] {
       grid-column: span 1;
       min-width: 100%;
-    }
-  
-    #zen-workspaces-button {
-      overflow: hidden;
-      width: calc(100% - 40px) !important;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      display: flex;
-      padding: 2px 10px;
     }
   
     #zen-sidebar-icons-wrapper {

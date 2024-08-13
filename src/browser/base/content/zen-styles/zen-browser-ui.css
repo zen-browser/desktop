@@ -1,7 +1,8 @@
 
 #navigator-toolbox, 
 #browser,
-#appcontent {
+#appcontent,
+#tabbrowser-tabpanels {
   background: transparent !important;
 }
 

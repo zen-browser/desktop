@@ -1,0 +1,51 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/** Zen Decks - ONLY USED FOR SPLIT VIEWS, DO NOT USE THIS CLASS FOR ANY OTHER PURPOSE **/
+
+#tabbrowser-tabpanels[zen-split-view="true"] {
+  display: flex;
+  flex-direction: row;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > *:not([zen-split="true"]) {
+  flex: 0;
+  margin: 0;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > [zen-split="true"] {
+  flex: 1;
+  margin-right: 5px;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > [zen-split-anim="true"] {
+  animation: zen-deck-fadeIn 0.2s forwards;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer[zen-split-active="true"] {
+  box-shadow: 0 0 0 2px var(--zen-primary-color) !important;
+}
+
+#tabbrowser-tabpanels:has(> [zen-split="true"]) {
+  display: grid;
+  grid-gap: 0 5px;
+}
+
+@keyframes zen-deck-fadeIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#zen-split-views-box:not([hidden="true"]) {
+  display: flex;
+}

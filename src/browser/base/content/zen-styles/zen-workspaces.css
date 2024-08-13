@@ -1,0 +1,184 @@
+
+#zen-workspaces-button {
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 50px;
+  height: calc(var(--zen-sidebar-action-button-width) - 10px) !important;
+  margin-bottom: .1rem !important;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-name {
+  margin-left: .1rem;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+  #zen-workspaces-button .zen-workspace-sidebar-name {
+    display: block;
+  }
+
+  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
+    display: none;
+  }
+
+  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
+    margin-left: 0;
+  }
+
+  #zen-workspaces-button {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
+    padding: 2px 10px;
+    width: calc(100% - var(--zen-tabbrowser-padding) * 8) !important;
+  }
+}
+
+/* Workspaces Panel UI */
+
+#PanelUI-zen-workspaces {
+  --panel-width: 320px;
+  --panel-padding: 0;
+}
+
+#PanelUI-zen-workspaces > panelmultiview {
+  align-items: flex-start;
+}
+
+#PanelUI-zen-workspaces panelmultiview panelview {
+  position: relative;
+  padding: 15px;
+  width: var(--panel-width);
+  min-height: 150px;
+}
+
+#PanelUI-zen-workspaces-create-input {
+  margin-top: 10px;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid transparent;
+  border-radius: 7px;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton[selected="true"] {
+  border-color: var(--zen-colors-secondary);
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-icon {
+  display: none;
+}
+
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-text {
+  min-width: unset;
+}
+
+#PanelUI-zen-workspaces-create-icons-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: 8px;
+}
+
+#PanelUI-zen-workspaces-list {
+  display: flex;
+  flex-direction: column;
+}
+
+#PanelUI-zen-workspaces-list[empty="true"] {
+  font-weight: 600;
+  padding: 10px;
+  width: 100%;
+  text-align: start;
+  opacity: 0.5;
+}
+
+#PanelUI-zen-workspaces-current-info toolbarbutton:last-child {
+  margin-bottom: 0 !important;
+}
+
+#PanelUI-zen-workspaces-list toolbarbutton,
+#PanelUI-zen-workspaces-current-info toolbarbutton  {
+  padding: 5px;
+  border-radius: 7px;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  display: flex;
+  align-items: center;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+
+  & .zen-workspace-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    margin-right: 10px;
+    border: 1px solid var(--zen-colors-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  & .zen-workspace-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .zen-workspace-actions {
+    display: none;
+    margin: 0;
+    margin-left: auto !important;
+  }
+
+  &:hover .zen-workspace-actions,
+  & .zen-workspace-actions[active="true"] {
+    display: flex;
+  }
+}
+
+#PanelUI-zen-workspaces-current-info toolbarbutton:first-child {
+  margin-bottom: 10px;
+  margin-top: 5px;
+}
+
+#PanelUI-zen-workspaces-view vbox:nth-child(2) {
+  margin-top: 10px;
+}
+
+#PanelUI-zen-workspaces-new {
+  margin-left: auto;
+  min-height: 1px !important;
+  padding: 3px;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+#PanelUI-zen-workspaces-create-footer {
+  padding-bottom: 0 !important;
+  margin-top: 20px;
+  margin-left: 0;
+  margin-bottom: 0 !important;
+  width: 100%;
+}
+
+#PanelUI-zen-workspaces-create-footer button[default="true"] {
+  width: 100%;
+}

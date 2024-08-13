@@ -91,7 +91,7 @@ pref('zen.splitView.working', false);
 pref('zen.workspaces.enabled', true);
 
 // Zen Watermark
-pref('zen.watermark.enabled', true);
+pref('zen.watermark.enabled', true, sticky);
 
 // Smooth scrolling
 pref('apz.overscroll.enabled', true); // not DEFAULT on Linux

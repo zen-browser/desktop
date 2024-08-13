@@ -113,27 +113,27 @@ pref("permissions.manager.defaultsUrl", "");
 pref("webchannel.allowObject.urlWhitelist", "");
 
 /** TELEMETRY ***/
-pref("datareporting.policy.dataSubmissionEnabled", false);
-pref("datareporting.healthreport.uploadEnabled", false);
-pref("toolkit.telemetry.unified", false);
-pref("toolkit.telemetry.enabled", false);
-pref("toolkit.telemetry.server", "data:,");
-pref("toolkit.telemetry.archive.enabled", false);
-pref("toolkit.telemetry.newProfilePing.enabled", false);
-pref("toolkit.telemetry.shutdownPingSender.enabled", false);
-pref("toolkit.telemetry.updatePing.enabled", false);
-pref("toolkit.telemetry.bhrPing.enabled", false);
-pref("toolkit.telemetry.firstShutdownPing.enabled", false);
-pref("toolkit.telemetry.coverage.opt-out", true);
-pref("toolkit.coverage.opt-out", true);
-pref("toolkit.coverage.endpoint.base", "");
-pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
-pref("browser.newtabpage.activity-stream.telemetry", false);
+pref("datareporting.policy.dataSubmissionEnabled", false, locked);
+pref("datareporting.healthreport.uploadEnabled", false, locked);
+pref("toolkit.telemetry.unified", false, locked);
+pref("toolkit.telemetry.enabled", false, locked);
+pref("toolkit.telemetry.server", "data:,", locked);
+pref("toolkit.telemetry.archive.enabled", false, locked);
+pref("toolkit.telemetry.newProfilePing.enabled", false, locked);
+pref("toolkit.telemetry.shutdownPingSender.enabled", false, locked);
+pref("toolkit.telemetry.updatePing.enabled", false, locked);
+pref("toolkit.telemetry.bhrPing.enabled", false, locked);
+pref("toolkit.telemetry.firstShutdownPing.enabled", false, locked);
+pref("toolkit.telemetry.coverage.opt-out", true, locked);
+pref("toolkit.coverage.opt-out", true, locked);
+pref("toolkit.coverage.endpoint.base", "", locked);
+pref("browser.newtabpage.activity-stream.feeds.telemetry", false, locked);
+pref("browser.newtabpage.activity-stream.telemetry", false, locked);
 
 /** EXPERIMENTS ***/
-pref("app.shield.optoutstudies.enabled", false);
-pref("app.normandy.enabled", false);
-pref("app.normandy.api_url", "");
+pref("app.shield.optoutstudies.enabled", false, locked);
+pref("app.normandy.enabled", false, locked);
+pref("app.normandy.api_url", "", locked);
 
 /** CRASH REPORTS ***/
 pref("breakpad.reportURL", "");
@@ -150,7 +150,7 @@ pref("dom.private-attribution.submission.enabled", false);
  * SECTION: PESKYFOX                                                        *
 ****************************************************************************/
 /** MOZILLA UI ***/
-pref("browser.privatebrowsing.vpnpromourl", "");
+pref("browser.privatebrowsing.vpnpromourl", "", locked);
 pref("extensions.getAddons.showPane", false);
 pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 pref("browser.discovery.enabled", false);

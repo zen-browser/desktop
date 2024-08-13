@@ -7,7 +7,7 @@ index 3063370347db9e2812ad30205e585c849e44c91e..be74d9e624b8220cb9bd009bae31fb51
      gBrowserInit.onDOMContentLoaded.bind(gBrowserInit), { once: true });
  </script>
 +#include zen-locales.inc.xhtml
-+#include zen-scripts.inc.xhtml
++#include zen-assets.inc.xhtml
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)

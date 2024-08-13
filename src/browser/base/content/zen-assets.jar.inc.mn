@@ -1,3 +1,5 @@
+
+
         content/browser/zenThemeModifier.js                     (content/zenThemeModifier.js)
         content/browser/ZenUIManager.mjs                        (content/ZenUIManager.mjs)
         content/browser/zen-components/ZenViewSplitter.mjs      (content/zen-components/src/ZenViewSplitter.mjs)
@@ -7,3 +9,7 @@
         content/browser/zen-components/ZenKeyboardShortcuts.mjs (content/zen-components/src/ZenKeyboardShortcuts.mjs)
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
         
+        content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
+        content/browser/zen-styles/zen-tabs.css                 (content/zen-styles/zen-tabs.css)
+        content/browser/zen-styles/zen-tabs/horizontal.css      (content/zen-styles/zen-tabs/horizontal.css)
+        content/browser/zen-styles/zen-tabs/vertical.css        (content/zen-styles/zen-tabs/vertical.css)

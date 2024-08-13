@@ -12,6 +12,7 @@
  */
 
 const kZenThemeAccentColorPref = "zen.theme.accent-color";
+const kZenThemeBorderRadiusPref = "zen.theme.border-radius";
 
 /**
 * ZenThemeModifier controls the application of theme data to the browser,
@@ -39,6 +40,7 @@ var ZenThemeModifier = {
 
   listenForEvents() {
     Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
+    Services.prefs.addObserver(kZenThemeBorderRadiusPref, this.handleEvent.bind(this));
   },
 
   handleEvent(event) {
@@ -51,6 +53,12 @@ var ZenThemeModifier = {
     */
   updateAllThemeBasics() {
     this.updateAccentColor();
+    this.updateBorderRadius();
+  },
+
+  updateBorderRadius() {
+    const borderRadius = Services.prefs.getIntPref(kZenThemeBorderRadiusPref, 4);
+    document.documentElement.style.setProperty("--zen-border-radius", borderRadius + "px");
   },
 
   /**

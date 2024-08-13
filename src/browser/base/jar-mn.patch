@@ -8,5 +8,5 @@ index e3eb0e6e5f30152905456a07cfe532fe173375fb..9d356d62421d779f9e16f6761cce9782
  % override chrome://global/locale/appstrings.properties chrome://browser/locale/appstrings.properties
 +
 +#include content/zen-avatars/jar.inc.mn
-+#include content/zen-scripts.jar.inc.mn
++#include content/zen-assets.jar.inc.mn
 \ No newline at end of file

@@ -48,10 +48,7 @@ var gZenLooksAndFeel = {
   },
 
   _getInitialAccentColor() {
-    return Services.prefs.getStringPref(
-      "zen.theme.accent-color",
-      kZenColors[0]
-    );
+    return Services.prefs.getStringPref("zen.theme.accent-color", kZenColors[0]);
   },
 };
 
@@ -69,18 +66,18 @@ var gZenCKSSettings = {
   },
 
   _addPrefObservers() {
-    Services.prefs.addObserver(
-      "zen.keyboard.shortcuts.disable-firefox",
-      this.onDisableFirefoxShortcutsChange.bind(this)
-    );
+    Services.prefs.addObserver("zen.keyboard.shortcuts.disable-firefox", this.onDisableFirefoxShortcutsChange.bind(this));
   },
 
   async onDisableFirefoxShortcutsChange(event) {
-    let checked = Services.prefs.getBoolPref(
-      "zen.keyboard.shortcuts.disable-firefox"
-    );
+    let checked = Services.prefs.getBoolPref("zen.keyboard.shortcuts.disable-firefox");
     if (checked) return;
-    let buttonIndex = await confirmRestartPrompt(true, 1, true, false);
+    let buttonIndex = await confirmRestartPrompt(
+      true,
+      1,
+      true,
+      false
+    );
     if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
       Services.startup.quit(
         Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
@@ -116,10 +113,7 @@ var gZenCKSSettings = {
           <html:input readonly="1" class="zenCKSOption-input"/>
         </hbox>
       `);
-      document.l10n.setAttributes(
-        fragment.querySelector(".zenCKSOption-label"),
-        l10nId
-      );
+      document.l10n.setAttributes(fragment.querySelector(".zenCKSOption-label"), l10nId);
 
       let input = fragment.querySelector(".zenCKSOption-input");
       let shortcut = gZenKeyboardShortcuts.getShortcut(key);
@@ -162,18 +156,15 @@ var gZenCKSSettings = {
       return;
     }
 
-    let input = document.querySelector(
-      `.zenCKSOption-input[data-key="${this._currentAction}"]`
-    );
+    let input = document.querySelector(`.zenCKSOption-input[data-key="${this._currentAction}"]`);
     let shortcut = {
       ctrl: event.ctrlKey,
       alt: event.altKey,
       shift: event.shiftKey,
-      meta: event.metaKey,
+      meta: event.metaKey
     };
 
-    const shortcutWithoutModifiers =
-      !shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta;
+    const shortcutWithoutModifiers = !shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta;
 
     if (event.key === "Tab" && shortcutWithoutModifiers) {
       return;
@@ -191,7 +182,7 @@ var gZenCKSSettings = {
       return; // No modifiers, ignore.
     }
 
-    if (!["Control", "Alt", "Meta", "Shift"].includes(event.key)) {
+    if (!(["Control", "Alt", "Meta", "Shift"].includes(event.key))) {
       if (event.keycode) {
         shortcut.keycode = event.keycode;
       } else {
@@ -268,5 +259,5 @@ Preferences.addAll([
     id: "zen.keyboard.shortcuts.disable-firefox",
     type: "bool",
     default: false,
-  },
+  }
 ]);

@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 3063370347db9e2812ad30205e585c849e44c91e..be74d9e624b8220cb9bd009bae31fb513c4ec73f 100644
+index 481ebbee437250c71e9bd10c4fb6fc0c31314925..b83cbabc85fd0647d0d71b7928a9256bba4dece6 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -139,6 +139,8 @@
+@@ -138,6 +138,8 @@
    window.addEventListener("DOMContentLoaded",
      gBrowserInit.onDOMContentLoaded.bind(gBrowserInit), { once: true });
  </script>
@@ -11,7 +11,7 @@ index 3063370347db9e2812ad30205e585c849e44c91e..be74d9e624b8220cb9bd009bae31fb51
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -160,9 +162,12 @@
+@@ -159,9 +161,12 @@
      </vbox>
    </html:template>
  
@@ -27,7 +27,7 @@ index 3063370347db9e2812ad30205e585c849e44c91e..be74d9e624b8220cb9bd009bae31fb51
  
    <html:template id="customizationPanel">
      <box id="customization-container" flex="1" hidden="true"><![CDATA[
-@@ -176,5 +181,6 @@
+@@ -175,5 +180,6 @@
  
    <!-- Put it at the very end to make sure it's not covered by anything. -->
    <html:div id="fullscr-toggler" hidden="hidden"/>

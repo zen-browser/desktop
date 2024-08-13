@@ -1,0 +1,32 @@
+
+toolbox#navigator-toolbox, 
+#browser {
+  background: transparent !important;
+}
+
+#browser {
+  width: 100%;
+}
+
+html#main-window > body {
+  background: var(--zen-main-browser-background) !important;
+}
+
+:not([inDOMFullscreen="true"]) #appcontent {
+  overflow: hidden;
+}
+
+#appcontent {
+  background: var(--toolbar-bgcolor);
+}
+
+:not([inDOMFullscreen="true"]) #appcontent,
+#sidebar-box {
+  /** Sidebar is already hidden in full screen mode */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  border: none;
+}
+
+#zen-main-app-wrapper {
+  background: var(--zen-main-browser-background);
+}

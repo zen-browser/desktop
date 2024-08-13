@@ -1,8 +1,8 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 2b59a0604b4bfefd3bdcfdb9a3964937e9699114..92705331fa12d88e9091310c1f527562931e7132 100644
+index 2b59a0604b4bfefd3bdcfdb9a3964937e9699114..95a656fad02888ba86f618977855644195ebc64a 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -63,7 +65,7 @@
+@@ -63,7 +63,7 @@
    --in-content-table-border-color: var(--in-content-box-border-color);
    --in-content-table-header-background: var(--in-content-primary-button-background);
    --in-content-table-header-color: var(--in-content-primary-button-text-color);
@@ -11,7 +11,7 @@ index 2b59a0604b4bfefd3bdcfdb9a3964937e9699114..92705331fa12d88e9091310c1f527562
  
    --dialog-warning-text-color: var(--red-60);
  
-@@ -791,7 +793,8 @@ html|*#categories > html|*.category:dir(rtl) {
+@@ -791,7 +791,8 @@ html|*#categories > html|*.category:dir(rtl) {
  @media not (forced-colors) {
    #categories > .category[selected],
    #categories > .category.selected {

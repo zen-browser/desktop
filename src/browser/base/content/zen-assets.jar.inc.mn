@@ -11,5 +11,9 @@
         
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-tabs.css                 (content/zen-styles/zen-tabs.css)
-        content/browser/zen-styles/zen-tabs/horizontal.css      (content/zen-styles/zen-tabs/horizontal.css)
-        content/browser/zen-styles/zen-tabs/vertical.css        (content/zen-styles/zen-tabs/vertical.css)
+        content/browser/zen-styles/zen-tabs/vertical-tabs.css   (content/zen-styles/zen-tabs/vertical-tabs.css)
+        content/browser/zen-styles/zen-browser-ui.css           (content/zen-styles/zen-browser-ui.css)
+        content/browser/zen-styles/zen-animations.css           (content/zen-styles/zen-animations.css)
+        content/browser/zen-styles/zen-panel-ui.css             (content/zen-styles/zen-panel-ui.css)
+        content/browser/zen-styles/zen-single-components.css     (content/zen-styles/zen-single-components.css)
+        content/browser/zen-styles/zen-floating-urlbar.css      (content/zen-styles/zen-floating-urlbar.css)

@@ -1,0 +1,57 @@
+
+@keyframes zen-jello-animation {
+  0% {
+    transform: scale3d(0.8, 0.8, 0.8);
+  }
+
+  60% {
+    transform: scale3d(1.02, 1.02, 1.02);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zen-jello-out-animation {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  60% {
+    transform: scale3d(1.02, 1.02, 1.02);
+  }
+
+  99% {
+    opacity: 0;
+    transform: scale3d(0.8, 0.8, 0.8);
+  }
+
+  100% {
+    -moz-window-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes zen-slide-in {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes zen-zoom-in {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

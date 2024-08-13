@@ -2,15 +2,6 @@ diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes
 index 2b59a0604b4bfefd3bdcfdb9a3964937e9699114..92705331fa12d88e9091310c1f527562931e7132 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -5,6 +5,8 @@
- @import url("chrome://global/skin/design-system/tokens-brand.css");
- @import url("chrome://global/skin/design-system/text-and-typography.css");
- 
-+@import url("chrome://global/skin/in-content/zen-common-shared.css");
-+
- @namespace html "http://www.w3.org/1999/xhtml";
- @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
- 
 @@ -63,7 +65,7 @@
    --in-content-table-border-color: var(--in-content-box-border-color);
    --in-content-table-header-background: var(--in-content-primary-button-background);

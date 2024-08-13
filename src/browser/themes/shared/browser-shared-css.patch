@@ -2,16 +2,6 @@ diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/br
 index f2171eb033a1143870f4708c63f565fabb535c4b..a21631e56e74d5d1887554d2752a612887ed20c5 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -27,6 +27,9 @@
- @import url("chrome://browser/skin/UITour.css");
- @import url("chrome://browser/skin/formautofill-notification.css");
- 
-+@import url("chrome://global/skin/zen-global-shared.css");
-+@import url("chrome://browser/skin/zen-browser-shared.css");
-+
- @namespace html url("http://www.w3.org/1999/xhtml");
- 
- :root,
 @@ -73,7 +76,7 @@ body {
    --short-notification-gradient: #9059FF;
  

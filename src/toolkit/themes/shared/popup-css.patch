@@ -2,15 +2,6 @@ diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
 index ed230860215c734e6fb903b3660d0c679043e3f3..348436a56cecdf101da66cdec9d64f1bb851ba4d 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
-@@ -2,6 +2,8 @@
-  * License, v. 2.0. If a copy of the MPL was not distributed with this
-  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
-+@import url("zen-popup.css");
-+
- @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
- 
- /* ::::: menupopup ::::: */
 @@ -13,16 +15,16 @@ panel {
    color-scheme: light dark;
  

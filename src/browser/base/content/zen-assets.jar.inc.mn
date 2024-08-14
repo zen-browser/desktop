@@ -22,3 +22,5 @@
         content/browser/zen-styles/zen-decks.css                (content/zen-styles/zen-decks.css)
         content/browser/zen-styles/zen-browser-container.css    (content/zen-styles/zen-browser-container.css)
         content/browser/zen-styles/zen-workspaces.css           (content/zen-styles/zen-workspaces.css)
+        content/browser/zen-styles/zen-profile-dialog.css       (content/zen-styles/zen-profile-dialog.css)
+        content/browser/zen-styles/zen-urlbar.css               (content/zen-styles/zen-urlbar.css)

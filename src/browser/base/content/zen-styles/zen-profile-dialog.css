@@ -1,0 +1,155 @@
+#PanelUI-zen-profiles {
+  --menu-panel-width: 19em;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+#PanelUI-zen-profiles-header {
+  width: 280px;
+  height: 130px;
+  background: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
+  position: relative;
+}
+
+#PanelUI-zen-profiles-user-picture {
+  background-image: var(--avatar-image-url);
+  width: 75px;
+  height: 75px;
+  border: 4px var(--arrowpanel-background) solid;
+  background-color: var(--zen-colors-primary-foreground);
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto;
+  transform: translateY(100%);
+}
+
+.PanelUI-zen-profiles-item {
+  position: relative;
+  display: flex;
+  padding: 6px 10px;
+  font: menu;
+  align-items: center;
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item {
+  margin-bottom: 2px;
+  border-radius: 5px;
+  margin: 2px 5px;
+}
+
+#PanelUI-zen-profiles-list > toolbarseparator:first-child {
+  margin: 5px;
+}
+
+.PanelUI-zen-profiles-item:hover {
+  background: var(--panel-item-hover-bgcolor);
+  color: inherit;
+}
+
+.PanelUI-zen-profiles-item::after {
+  content: '';
+  background-image: url("chrome://global/skin/icons/arrow-right.svg");
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 1em;
+  height: 1em;
+  margin-left: auto;
+  pointer-events: none;
+  top: 50%;
+  right: 1em;
+  transform: translateY(-50%);
+  position: absolute;
+}
+
+@media (prefers-color-scheme: dark) {
+  .PanelUI-zen-profiles-item::after {
+    filter: invert(1);
+  }
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  margin: 1px 0.5em 1px 1px;
+}
+
+#PanelUI-zen-profiles-list .PanelUI-zen-profiles-item-name {
+  font-weight: normal;
+  font-size: 15px;
+  margin-left: 5px;
+}
+
+#PanelUI-zen-profiles-current-info {
+  --zen-separation-from-content: 35px;
+  margin-top: calc(var(--zen-separation-from-content) + 30px); /** Ignore the profile picture */
+}
+
+#PanelUI-zen-profiles-current-name {
+  font-size: 1.3em;
+  font-weight: 600;
+  line-height: 0.5;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+
+#PanelUI-zen-profiles toolbarbutton::after {
+  display: none;
+}
+
+#PanelUI-zen-profiles toolbarbutton {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+
+#PanelUI-zen-profiles toolbarbutton:last-child {
+  margin-bottom: 5px !important;
+}
+
+#PanelUI-zen-profiles-current-profile-current {
+  font-size: 13px;
+  opacity: 0.5;
+  margin: 0 auto var(--zen-separation-from-content) auto;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+#PanelUI-zen-profiles-actions {
+  color-scheme: dark;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 10px !important;
+  padding: 1px 10px !important;
+  transition: .1s;
+  color: light-dark(white, black);
+  background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+#PanelUI-zen-profiles-managePrfs:hover {
+  background: var(--panel-item-hover-bgcolor);
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton {
+  cursor: pointer;
+  padding: 0;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton .toolbarbutton-icon {
+  width: 14px !important;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton:not(:first-child) {
+  margin-left: 10px;
+}
+
+#PanelUI-zen-profiles-actions toolbarbutton label {
+  display: none !important;
+}

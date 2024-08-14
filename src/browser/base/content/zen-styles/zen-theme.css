@@ -72,8 +72,8 @@
   --zen-button-padding: .6rem 1.2rem;
 
   /* Other colors */
-  --urlbar-box-bgcolor: var(--zen-urlbar-background);
-  --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor);
+  --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
+  --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
 
   /* Constants */

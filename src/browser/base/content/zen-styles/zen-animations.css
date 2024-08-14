@@ -67,3 +67,43 @@
     opacity: 1;
   }
 }
+
+@keyframes zen-sidebar-panel-animation {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zen-sidebar-panel-animation-2 {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zen-sidebar-panel-animation-reverse {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  99% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  100% {
+    display: none !important;
+  }
+}

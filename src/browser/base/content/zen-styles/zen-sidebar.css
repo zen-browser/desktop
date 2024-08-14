@@ -208,7 +208,7 @@
   }
 
   #zen-sidebar-splitter {
-    display: none;
+    display: none !important;
   }
 }
 

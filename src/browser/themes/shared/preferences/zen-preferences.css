@@ -49,7 +49,7 @@ groupbox:has(+ .subcategory) {
 }
 
 .navigation {
-  padding: 50px;
+  padding: 4%;
   background: var(--zen-colors-tertiary);
 }
 

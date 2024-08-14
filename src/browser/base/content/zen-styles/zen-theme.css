@@ -102,11 +102,12 @@
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
   --toolbar-bgcolor: transparent;
 
-  --input-bgcolor: var(--zen-colors-tertiary);
-  --input-border-color: var(--zen-input-border-color);
+  --input-bgcolor: var(--zen-colors-tertiary) !important;
+  --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
 
   --toolbar-field-background-color: var(--zen-colors-input-bg);
+  --arrowpanel-background: var(--zen-dialog-background) !important;
 }
 
 @media (prefers-color-scheme: dark) {

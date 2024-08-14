@@ -28,3 +28,8 @@ html#main-window > body {
 #zen-main-app-wrapper {
   background: var(--zen-main-browser-background);
 }
+
+#tabbrowser-tabbox {
+  display: flex;
+  flex-direction: row;
+}

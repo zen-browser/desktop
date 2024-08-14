@@ -10,6 +10,7 @@
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
         
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
+        content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
         content/browser/zen-styles/zen-tabs.css                 (content/zen-styles/zen-tabs.css)
         content/browser/zen-styles/zen-tabs/vertical-tabs.css   (content/zen-styles/zen-tabs/vertical-tabs.css)
         content/browser/zen-styles/zen-browser-ui.css           (content/zen-styles/zen-browser-ui.css)
@@ -24,3 +25,12 @@
         content/browser/zen-styles/zen-workspaces.css           (content/zen-styles/zen-workspaces.css)
         content/browser/zen-styles/zen-profile-dialog.css       (content/zen-styles/zen-profile-dialog.css)
         content/browser/zen-styles/zen-urlbar.css               (content/zen-styles/zen-urlbar.css)
+        content/browser/zen-styles/zen-popup.css                (content/zen-styles/zen-popup.css)
+        content/browser/zen-styles/zen-sidebar-panels.css       (content/zen-styles/zen-sidebar-panels.css)
+        
+        content/browser/zen-styles/zen-panels/bookmarks.css     (content/zen-styles/zen-panels/bookmarks.css)
+        content/browser/zen-styles/zen-panels/extensions.css    (content/zen-styles/zen-panels/extensions.css)
+        content/browser/zen-styles/zen-panels/print.css         (content/zen-styles/zen-panels/print.css)
+
+        content/browser/zen-styles/zen-compact-mode.css         (content/zen-styles/zen-compact-mode.css)
+

@@ -342,7 +342,7 @@
     #zen-sidebar-icons-wrapper {
       width: -moz-available;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
       transition: .1s;
     }
   

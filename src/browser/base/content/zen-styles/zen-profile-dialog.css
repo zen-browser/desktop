@@ -153,3 +153,17 @@
 #PanelUI-zen-profiles-actions toolbarbutton label {
   display: none !important;
 }
+
+#PanelUI-zen-profiles menuitem {
+  /** ADD HERE ALL TYPES OF BUTTONS THAT WANT TO LOOK CHROME LIKE!!! */
+  margin: 0;
+  border-radius: 0;
+}
+
+#PanelUI-zen-profiles menuitem {
+  padding: 5px;
+}
+
+#PanelUI-zen-profiles menuitem:last-child {
+  margin-bottom: 5px;
+}

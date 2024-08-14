@@ -1,0 +1,151 @@
+/* URL and tool bars */
+
+#urlbar {
+  --toolbarbutton-border-radius: 999px;
+  border: transparent;
+  overflow: hidden;
+  padding: 1px;
+  border-radius: var(--toolbarbutton-border-radius);
+}
+
+#urlbar[focused="true"][breakout-extend="true"] {
+  overflow: visible;
+}
+
+#urlbar {
+  border: 1px solid light-dark(rgba(0,0,0,.2), rgba(255,255,255,.2))
+}
+
+#searchbar:focus-within {
+  border-color: transparent !important;
+}
+
+#urlbar[focused="true"] {
+  box-shadow: var(--panel-shadow) !important;
+}
+
+#urlbar[focused="true"] > #urlbar-background {
+  background: var(--zen-dialog-background) !important;
+}
+
+#urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background,
+#searchbar:focus-within {
+  outline: none !important;
+  outline-offset: none !important;
+  outline-color: none !important;
+}
+
+#urlbar .urlbar-page-action, 
+#urlbar #tracking-protection-icon-container,
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box {
+  border-radius: 999px;
+}
+
+#urlbar[breakout-extend="true"] {
+  --toolbarbutton-border-radius: 6px;
+}
+
+#identity-icon-box {
+  background: var(--zen-colors-secondary) !important;
+}
+
+#urlbar:is([focused], [open]) > #urlbar-background, #searchbar:focus-within {
+  background: var(--urlbar-box-bgcolor);
+}
+
+#identity-icon-label {
+  padding-inline-start: 8px  !important;
+}
+
+#urlbar #identity-box.chromeUI #identity-icon-box {
+  border-radius: 5px !important;
+}
+
+#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI #identity-icon-box {
+  border-radius: 20px 10px 10px 20px !important;
+}
+
+#urlbar .urlbar-page-action,
+#urlbar #identity-box #identity-icon-box, 
+#urlbar #tracking-protection-icon-container {
+  margin: 0 1px;
+}
+
+#urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative;}
+
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) #identity-icon-box {
+  margin-right: 5px;
+}
+
+#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) {
+  margin-inline-end: 0 !important;
+}
+
+.urlbar-page-action {
+  width: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+toolbar .toolbarbutton-1:not(.unified-extensions-item-action-button) {
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-badge-stack {
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
+  }
+}
+
+toolbar .zen-sidebar-panel-button {
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-badge-stack {
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
+  }
+}
+
+#identity-permission-box {
+  margin: 0 5px 0 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])) #identity-icon-box {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-right: 0 !important;
+}
+
+#tracking-protection-icon-container,
+#page-action-buttons {
+  order: 2 !important;
+}
+
+#notification-popup-box {
+  border-radius: 999px;
+  margin-right: 5px;
+  transition: .2s;
+  height: 100%;
+  padding: 7px;
+}
+
+button.popup-notification-dropmarker {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.panel-footer:has(button.popup-notification-dropmarker:not([hidden="true"])) button.popup-notification-secondary-button {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.searchbar-engine-one-off-item {
+  max-width: 20px;
+  min-width: 20px !important;
+  justify-content: center;
+}
+
+#downloadsHistory {
+  margin-top: 5px
+}

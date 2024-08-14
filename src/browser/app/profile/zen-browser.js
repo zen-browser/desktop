@@ -63,6 +63,7 @@ pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.theme.accent-color', "#aac7ff");
+pref('zen.theme.border-radius', 10); // In pixels
 pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);
 pref('zen.theme.floating-urlbar', false);
@@ -141,4 +142,8 @@ pref("network.http.rcwn.enabled", false);
 // Enable Browser Toolbox, Ctrl+Shift+Alt+I for debugging and modifying UI
 pref("devtools.debugger.remote-enabled", true);
 pref("devtools.chrome.enabled", true);
+
+// Disable firefox's revamp
+pref("sidebar.revamp", false, locked);
+pref("sidebar.verticalTabs", false, locked);
 

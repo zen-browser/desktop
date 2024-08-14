@@ -1,0 +1,60 @@
+#zenEditBookmarkPanelFaviconContainer {
+  border: 1px solid var(--input-border-color);
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px;
+  background: light-dark(#fff, rgba(255,255,255,.1));
+}
+
+#editBookmarkPanel::part(content) {
+  display: flex;
+  flex-direction: row;
+}
+
+#zenEditBookmarkPanelFavicon {
+  width: 20px;
+  height: 20px;
+}
+
+#editBookmarkPanel .panel-header {
+  min-height: 0;
+  padding-bottom: 0;
+  padding-top: 16px;
+}
+
+#editBMPanel_namePicker {
+  width: -moz-available;
+}
+
+label.editBMPanel_folderRow,
+label.editBMPanel_nameRow {
+  min-width: 60px;
+}
+
+hbox.editBMPanel_folderRow {
+  width: -moz-available;
+}
+
+.zenEditBMPanel_fieldContainer:not(:first-child) {
+  margin-top: 10px;
+}
+
+.zenEditBMPanel_fieldContainer {
+  align-items: center;
+}
+
+#editBookmarkPanelBottomContent {
+  display: none;
+}
+
+:host(:not([native])) #label-box {
+  font-weight: 500;
+}
+
+#editBMPanel_folderMenuList::part(icon) {
+  margin-right: 10px;
+}

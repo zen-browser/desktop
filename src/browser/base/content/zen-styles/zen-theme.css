@@ -1,27 +1,16 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 
-@import url("zen-common-shared-ui-override.css");
+/* Here, we contain all the theme related variables, for example theme
+ * colors, border radius, etc.
+ * We have `--zen-border-radius` and `--zen-primary-color` as variables.
+ */
 
 :host(:is(.anonymous-content-host, notification-message)),
 :root,
 .zenLooksAndFeelColorOption {
 
   /** We also add `.zenLooksAndFeelColorOption` so that it recalculates the colors when the theme changes
-   * in the preferences page.
-   */
-
-  /** Primary colors examples:
-   * - green: #96D785;
-   * - blue: #0b57d0;
-   * - yellow: #F8BC48;
-   */
-
-  /** Primary color will be injected by the theme as `--zen-primary-color` */
-  --zen-primary-color: #aac7ff; /* This is the default blue color, in case the theme doesn't provide a primary color */
+  * in the preferences page.
+  */
 
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
@@ -37,6 +26,8 @@
   --zen-dialog-background: var(--zen-colors-tertiary);
   --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, #f1f1f1 92%);
 
+  --zen-secondary-btn-color: var(--zen-colors-primary-foreground);   
+
   --in-content-primary-button-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 35%, black 65%),
     color-mix(in srgb, var(--zen-primary-color) 35%, white 65%)
@@ -50,7 +41,6 @@
   --in-content-primary-button-border-color: transparent !important;
   --in-content-primary-button-border-hover: transparent !important;
   --in-content-primary-button-border-active: var(--zen-colors-border) !important;
-  --zen-characteristic-gradient: linear-gradient(135deg, #fac89a 0%, #e290ff 100%);
 
   --in-content-accent-color: var(--zen-colors-primary) !important;
 
@@ -65,7 +55,6 @@
   ) !important;
   --button-bgcolor: var(--in-content-button-background) !important;
   --button-hover-bgcolor: var(--in-content-button-background-hover) !important;   
-  --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
   --focus-outline-color: var(--button-bgcolor) !important;
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
 
@@ -74,7 +63,7 @@
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
   --button-primary-hover-bgcolor: var(--in-content-primary-button-background-hover) !important;
   --button-primary-active-bgcolor: var(--in-content-primary-button-background-active) !important;
-  --button-primary-color: var(--in-content-primary-button-text-color) !important;
+  --button-primary-color: var(--in-content-primary-button-text-color) !important;                    
 
   --in-content-page-background: var(--zen-colors-tertiary) !important;
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
@@ -85,9 +74,40 @@
   /* Other colors */
   --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
   --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
-  --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77)) !important;
+  --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
 
-  --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);
+  /* Constants */
+  --zen-element-separation: .5rem;
+
+  /* XUL */
+  --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
+  --zen-appcontent-border: 1px solid var(--zen-colors-border);
+  --zen-panel-radius: var(--zen-border-radius);
+  --zen-browser-border-radius: var(--zen-panel-radius);
+
+  --toolbarbutton-border-radius: 6px;
+
+  --fp-contextmenu-border-radius: 8px;
+  --fp-contextmenu-padding: calc(4px - var(--fp-contextmenu-menuitem-border-width)) 0;
+  --fp-contextmenu-menuitem-border-radius: calc(4px + var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-menuitem-padding-block: 6px;
+  --fp-contextmenu-menuitem-padding-inline: 10px;
+  --fp-contextmenu-menuitem-border-width: 2px;
+  --fp-contextmenu-menuicon-margin-inline: 12px;
+  --fp-contextmenu-menuitem-margin-inline: calc(4px - var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-menuitem-margin-block: 0px;
+  --fp-contextmenu-menuitem-margin: var(--fp-contextmenu-menuitem-margin-block) var(--fp-contextmenu-menuitem-margin-inline);
+  --fp-contextmenu-separator-vertical: calc(4px - var(--fp-contextmenu-menuitem-border-width));
+  --fp-contextmenu-separator-horizontal: 0;
+  --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
+  --toolbar-bgcolor: transparent;
+
+  --input-bgcolor: var(--zen-colors-tertiary) !important;
+  --input-border-color: var(--zen-input-border-color) !important;
+  --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
+
+  --toolbar-field-background-color: var(--zen-colors-input-bg);
+  --arrowpanel-background: var(--zen-dialog-background) !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -107,18 +127,12 @@
   
     --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
     --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, black 92%); 
-
-    --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, black 70%);
   }
 }
 
-window#commonDialogWindow {
-  background-color: var(--zen-in-content-dialog-background) !important;
-}
-
-@media (-moz-bool-pref: "zen.theme.pill-button") {
-  :host(:is(.anonymous-content-host, notification-message)),
+@media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
   :root {
-    --zen-button-border-radius: 20px;
+    --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;
+    --zen-themed-toolbar-bg: var(--toolbar-bgcolor);
   }
 }

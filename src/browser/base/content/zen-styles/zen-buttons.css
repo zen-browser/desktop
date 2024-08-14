@@ -25,9 +25,19 @@ button:active {
 html|button:not(:is(
   .tab-button, .ghost-button,
   .button-toggle, .button-edit,
-  .button-add
-)) {
+  .button-add,
+)),
+xul|button:is(
+  .expander-down
+) {
   transition: .2s;
+  min-width: unset !important;
   border-radius: 6px !important;
-  min-width: 80px !important;
+}
+
+@media (-moz-bool-pref: "zen.theme.pill-button") {
+  :host(:is(.anonymous-content-host, notification-message)),
+  :root {
+    --zen-button-border-radius: 20px;
+  }
 }

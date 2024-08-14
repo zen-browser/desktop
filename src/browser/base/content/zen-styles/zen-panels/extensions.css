@@ -1,0 +1,69 @@
+#unified-extensions-manage-extensions {
+  padding-left: 20px;
+}
+
+panelview .unified-extensions-item-action-button {
+  padding: 5px 20px;
+}
+
+#unified-extensions-description {
+  padding: 0 20px;
+  margin: 0;
+}
+
+.unified-extensions-item {
+  padding: 0;
+}
+
+#unified-extensions-view {
+  --uei-icon-size: 16px;
+
+  .unified-extensions-item {
+    margin-block: 0;
+    border-radius: var(--arrowpanel-menuitem-border-radius);
+
+    > .unified-extensions-item-action-button {
+      .unified-extensions-item-message-deck {
+        display: none;
+      }
+
+      &:hover {
+        background-color: initial;
+      }
+    }
+
+    > .unified-extensions-item-menu-button {
+      list-style-image: url("chrome://global/skin/icons/more.svg");
+      padding: 0;
+
+      > .toolbarbutton-icon {
+        padding: var(--arrowpanel-menuitem-padding-block) var(--arrowpanel-menuitem-padding-inline);
+        border: none;
+        opacity: 0;
+      }
+
+      &:hover {
+
+        > .toolbarbutton-icon {
+          background-color: initial;
+        }
+
+        &:active {
+          color: var(--button-primary-hover-bgcolor);
+        }
+      }
+    }
+
+    &:hover {
+      background-color: var(--panel-item-hover-bgcolor);
+
+      > .unified-extensions-item-menu-button > .toolbarbutton-icon {
+        opacity: 1;
+      }
+    }
+
+    &:has(> .unified-extensions-item-action-button:not([disabled]):hover:active) {
+      background-color: var(--panel-item-active-bgcolor);
+    }
+  }
+}

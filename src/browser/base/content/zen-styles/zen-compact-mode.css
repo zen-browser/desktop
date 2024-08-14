@@ -106,8 +106,7 @@
   #PersonalToolbar[collapsed="true"]{ display: none }
 
   :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    margin-left: 10px !important;
-    margin-right: 10px !important;
+    margin-left: var(--zen-element-separation);
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
@@ -137,7 +136,7 @@
     }
 
     :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-top: 10px !important;
+      margin-top: var(--zen-element-separation);
     }
 
     #titlebar {

@@ -282,3 +282,9 @@ menu, menuitem {
     color: var(--button-hover-color);
   }
 }
+
+/* Zen Welcome idalog override */
+#window-modal-dialog[zen-dialog-welcome-element="true"] {
+  min-width: 90vw;
+  min-height: 90vh;
+}

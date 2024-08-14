@@ -109,8 +109,8 @@ var gZenCKSSettings = {
       const group = data[2];
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="zenCKSOption">
-          <label class="zenCKSOption-label"></label>
-          <html:input readonly="1" class="zenCKSOption-input"/>
+          <label class="zenCKSOption-label" for="zenCKSOption-${key}"></label>
+          <html:input readonly="1" class="zenCKSOption-input" id="zenCKSOption-${key}" />
         </hbox>
       `);
       document.l10n.setAttributes(fragment.querySelector(".zenCKSOption-label"), l10nId);

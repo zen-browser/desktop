@@ -81,6 +81,8 @@
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
+  --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);
+
   --zen-appcontent-border: 1px solid var(--zen-colors-border);
   --zen-panel-radius: var(--zen-border-radius);
   --zen-browser-border-radius: var(--zen-panel-radius);
@@ -126,7 +128,9 @@
     --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 80%, black 20%);
   
     --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
-    --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, black 92%); 
+    --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, black 92%);
+
+    --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, black 70%);
   }
 }
 

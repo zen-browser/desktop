@@ -62,6 +62,12 @@ npm start
 - [Erlend](https://havn.blog) (For making the logo)
 - [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
 
+## Third Party Code
+
+Zen coudn't be in its current state without the help of these amazing projects!
+
+- Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
+
 ## License
 
 [MPL LICENSE](/LICENSE)

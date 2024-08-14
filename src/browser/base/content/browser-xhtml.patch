@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 481ebbee437250c71e9bd10c4fb6fc0c31314925..b83cbabc85fd0647d0d71b7928a9256bba4dece6 100644
+index 481ebbee437250c71e9bd10c4fb6fc0c31314925..3bb046a4635fad831cc447e29516ee5ed407a3f2 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -138,6 +138,8 @@
@@ -27,10 +27,3 @@ index 481ebbee437250c71e9bd10c4fb6fc0c31314925..b83cbabc85fd0647d0d71b7928a9256b
  
    <html:template id="customizationPanel">
      <box id="customization-container" flex="1" hidden="true"><![CDATA[
-@@ -175,5 +180,6 @@
- 
-   <!-- Put it at the very end to make sure it's not covered by anything. -->
-   <html:div id="fullscr-toggler" hidden="hidden"/>
-+#include zen-watermark.inc.xhtml
- </html:body>
- </html>

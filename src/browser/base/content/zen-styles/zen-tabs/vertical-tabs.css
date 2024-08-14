@@ -190,6 +190,10 @@
   .tab-content {
     padding: 0;
     width: fit-content;
+
+    &[pinned] {
+      padding: 0 !important;
+    }
   }
   
   .toolbar-items > toolbartabstop:first-child {

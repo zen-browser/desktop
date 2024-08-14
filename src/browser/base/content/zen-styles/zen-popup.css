@@ -2,6 +2,7 @@
 @import url("chrome://browser/content/zen-styles/zen-panels/bookmarks.css");
 @import url("chrome://browser/content/zen-styles/zen-panels/extensions.css");
 @import url("chrome://browser/content/zen-styles/zen-panels/print.css");
+@import url("chrome://browser/content/zen-styles/zen-panels/welcome.css");
 
 :root {
   --panel-subview-body-padding: 2px 0;
@@ -283,8 +284,3 @@ menu, menuitem {
   }
 }
 
-/* Zen Welcome idalog override */
-#window-modal-dialog[zen-dialog-welcome-element="true"] {
-  min-width: 90vw;
-  min-height: 90vh;
-}

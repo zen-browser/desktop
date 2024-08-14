@@ -12,6 +12,10 @@
   * in the preferences page.
   */
 
+  /* Default values */
+  --zen-border-radius: 7px;
+  --zen-primary-color: #4a90e2;
+
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
   --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, white 60%);

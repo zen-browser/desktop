@@ -336,10 +336,23 @@ input[type='checkbox'] {
 #searchList.cardGroup {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 15px;
 }
 
 #searchList .card {
   width: -moz-available !important;
-  margin: 20px;
-  padding: 20% 0 !important;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  border-radius: 15px;
+
+  & h3 {
+    text-align: start;
+    margin: 0;
+    margin-left: 20px;
+  }
+
+  &.selected {
+    transform: scale(1.01);
+  }
 }

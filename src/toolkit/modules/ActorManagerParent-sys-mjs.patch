@@ -1,0 +1,24 @@
+diff --git a/toolkit/modules/ActorManagerParent.sys.mjs b/toolkit/modules/ActorManagerParent.sys.mjs
+index 71409e58271802fc506999712519df63eff3b1a6..72b51d849bcbf7f1c0a7418da545bbbfb2b55d15 100644
+--- a/toolkit/modules/ActorManagerParent.sys.mjs
++++ b/toolkit/modules/ActorManagerParent.sys.mjs
+@@ -666,6 +666,19 @@ if (!Services.prefs.getBoolPref("browser.pagedata.enabled", false)) {
+   };
+ }
+ 
++JSWINDOWACTORS.ZenThemeMarketplace = {
++  parent: {
++    esModuleURI: "chrome://browser/content/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs",
++  },
++  child: {
++    esModuleURI: "chrome://browser/content/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs",
++    events: {
++      DOMContentLoaded: {},
++    },
++  },
++  matches: ["https://*.zen-browser.app/*"],
++};
++
+ if (AppConstants.platform != "android") {
+   // Note that GeckoView has another implementation in mobile/android/actors.
+   JSWINDOWACTORS.Select = {

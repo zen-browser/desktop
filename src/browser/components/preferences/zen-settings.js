@@ -251,11 +251,6 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: "zen.theme.floating-urlbar",
-    type: "bool",
-    default: false,
-  },
-  {
     id: "zen.keyboard.shortcuts.disable-firefox",
     type: "bool",
     default: false,

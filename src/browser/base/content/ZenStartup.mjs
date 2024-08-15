@@ -27,7 +27,6 @@ var ZenStartup = {
     document.getElementById("zen-appcontent-navbar-container")
       .appendChild(document.getElementById("tab-notification-deck-template"));
 
-    gZenThemeMarketplace.init();
     gZenVerticalTabsManager.init();
     gZenCompactModeManager.init();
     gZenKeyboardShortcuts.init();

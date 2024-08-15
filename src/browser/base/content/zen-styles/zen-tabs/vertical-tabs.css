@@ -7,6 +7,7 @@
   #navigator-toolbox {
     --zen-tabbrowser-padding: 5px;
     min-width: 55px;
+    padding-left: 2px;
     margin-top: 0; /* Issue #156 */
   }
   
@@ -243,8 +244,8 @@
 
   @media (-moz-bool-pref: "zen.view.sidebar-expanded") {  
     #navigator-toolbox {
-      --zen-navigation-toolbar-min-width: 160px;
-      min-width: var(--zen-navigation-toolbar-min-width);
+      --zen-navigation-toolbar-min-width: 155px;
+      min-width: var(--zen-navigation-toolbar-min-width) !important;
       align-items: start;
       transition: .2s;
       width: 170px;

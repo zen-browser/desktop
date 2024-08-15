@@ -58,3 +58,8 @@ hbox.editBMPanel_folderRow {
 #editBMPanel_folderMenuList::part(icon) {
   margin-right: 10px;
 }
+
+/* Bookmarks in toolbar */
+#PersonalToolbar {
+  background: transparent;
+}

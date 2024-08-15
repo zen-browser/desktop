@@ -23,7 +23,8 @@
     z-index: 1;
     height: 100%;
     margin: 0;
-    padding: var(--zen-compact-toolbox-margin) !important;
+    padding: var(--zen-compact-toolbox-margin);
+    padding-top: calc(var(--zen-compact-toolbox-margin-single) - var(--zen-element-separation));
 
     & #titlebar {
       border: 1px solid var(--zen-colors-border);
@@ -48,7 +49,7 @@
   #zen-sidebar-web-panel-wrapper:not(:has(#zen-sidebar-web-panel[hidden="true"])),
   #sidebar-box:not([positionend="true"]) {
     margin-right: 0 !important;
-    margin-left: calc(var(--zen-sidebar-web-panel-spacing) / 2) !important;
+    margin-left: var(--zen-sidebar-web-panel-spacing) !important;
   }
 
   #sidebar-box[positionend="true"] {

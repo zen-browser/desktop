@@ -53,6 +53,7 @@
 
 #zen-sidebar-web-panel-wrapper {
   --zen-default-sidebar-width: 300px;
+  --zen-sidebar-web-panel-spacing: var(--zen-element-separation);
   position: relative;
   margin-right: 0;
   display: flex;
@@ -67,17 +68,12 @@
 }
 
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned="true"]) {
-  --zen-sidebar-web-panel-spacing: 10px;
   margin: var(--zen-appcontent-separator-from-window);
   position: absolute;
   z-index: 1;
   width: -moz-available;
   padding: var(--zen-sidebar-web-panel-spacing);
-  height: calc(100% - 10px);
-}
-
-#zen-sidebar-web-panel:not([pinned="true"]) {
-  --zen-sidebar-web-panel-spacing: calc(10px / 3);
+  height: calc(100% - var(--zen-element-separation));
 }
 
 #zen-sidebar-web-panel {

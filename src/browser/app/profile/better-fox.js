@@ -49,9 +49,6 @@ pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
 pref("network.ssl_tokens_cache_capacity", 10240);
 
-// PREF: the number of threads for DNS
-pref("network.dns.max_high_priority_threads", 8); // default=5
-
 /** EXPERIMENTAL ***/
 pref("layout.css.grid-template-masonry-value.enabled", true);
 pref("dom.enable_web_task_scheduling", true);

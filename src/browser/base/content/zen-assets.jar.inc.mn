@@ -9,7 +9,6 @@
         content/browser/zen-components/ZenProfileDialogUI.mjs   (content/zen-components/src/ZenProfileDialogUI.mjs)
         content/browser/zen-components/ZenKeyboardShortcuts.mjs (content/zen-components/src/ZenKeyboardShortcuts.mjs)
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
-        content/browser/zen-components/ZenThemeMarketplace.mjs  (content/zen-components/src/ZenThemeMarketplace.mjs)
 
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
@@ -37,5 +36,6 @@
 
         content/browser/zen-styles/zen-compact-mode.css         (content/zen-styles/zen-compact-mode.css)
 
-        # Other
-        content/browser/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs (content/zen-components/src/actors/ZenThemeMarketplaceChild.sys.mjs)
+        # Actors
+        content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (content/zen-components/src/actors/ZenThemeMarketplaceParent.sys.mjs)
+        content/browser/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs  (content/zen-components/src/actors/ZenThemeMarketplaceChild.sys.mjs)

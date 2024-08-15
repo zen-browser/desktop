@@ -31,8 +31,6 @@ ac_add_options --target=x86_64-pc-windows-msvc
 
 ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download
-
-ac_add_options --without-wasm-sandboxed-libraries
  
 if test "$SURFER_COMPAT" = "true"; then
   ac_add_options --enable-optimize="-O3 -w -ftree-vectorize"

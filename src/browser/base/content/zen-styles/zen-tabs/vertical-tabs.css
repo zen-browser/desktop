@@ -217,6 +217,9 @@
     margin: 0;
     border: none;
     height: 100%;
+
+    padding-inline-start: 0 !important;
+    margin-inline-start: 0 !important;
   }
   
   #tabbrowser-arrowscrollbox {
@@ -243,7 +246,6 @@
       --zen-navigation-toolbar-min-width: 160px;
       min-width: var(--zen-navigation-toolbar-min-width);
       align-items: start;
-      padding-right: 5px;
       transition: .2s;
       width: 170px;
       border: none;

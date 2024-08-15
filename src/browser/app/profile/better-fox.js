@@ -24,7 +24,6 @@
 pref("content.notify.interval", 100000); // (.10s); alt=500000 (.50s)
 
 /** GFX ***/
-pref("gfx.webrender.precache-shaders", true);
 pref("gfx.canvas.accelerated.cache-items", 4096);
 pref("gfx.canvas.accelerated.cache-size", 512);
 pref("gfx.content.skia-font-cache-size", 20);

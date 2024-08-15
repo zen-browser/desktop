@@ -88,8 +88,6 @@ ac_add_options --enable-jxl
 ac_add_options --enable-av1
 ac_add_options --disable-eme
 
-ac_add_options --enable-pulseaudio
-
 ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 

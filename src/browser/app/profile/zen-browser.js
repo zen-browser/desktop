@@ -147,7 +147,4 @@ pref("devtools.chrome.enabled", true);
 pref("sidebar.revamp", false, locked);
 pref("sidebar.verticalTabs", false, locked);
 
-// Disable Reader Mode's parse on load (costs extra CPU after page load, Reader Mode works fine just lazier)
-pref("reader.parse-on-load.enabled", false);
-
 

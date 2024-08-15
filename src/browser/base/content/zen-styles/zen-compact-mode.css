@@ -48,12 +48,12 @@
   #zen-sidebar-web-panel-wrapper:not(:has(#zen-sidebar-web-panel[hidden="true"])),
   #sidebar-box:not([positionend="true"]) {
     margin-right: 0 !important;
-    margin-left: 10px !important;
+    margin-left: calc(var(--zen-sidebar-web-panel-spacing) / 2) !important;
   }
 
   #sidebar-box[positionend="true"] {
     margin-left: 0 !important;
-    margin-right: 10px !important;
+    margin-right: var(--zen-sidebar-web-panel-spacing) !important;
   }
 
   #sidebar-splitter {
@@ -106,7 +106,7 @@
   #PersonalToolbar[collapsed="true"]{ display: none }
 
   :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    margin-left: var(--zen-element-separation);
+    margin-left: var(--zen-element-separation) !important;
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {

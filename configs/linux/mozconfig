@@ -53,3 +53,4 @@ if test "$ZEN_RELEASE"; then
 fi
 
 ac_add_options --target=x86_64-pc-linux
+ac_add_options --enable-alsa

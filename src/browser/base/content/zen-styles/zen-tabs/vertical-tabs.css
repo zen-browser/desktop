@@ -261,6 +261,10 @@
       width: 100%;
       align-items: flex-start;
     }
+
+    #TabsToolbar {
+      padding-left: 2px;
+    }
   
     #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) {
       width: 100% !important;

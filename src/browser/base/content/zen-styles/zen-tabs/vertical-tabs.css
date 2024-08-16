@@ -11,7 +11,7 @@
   }
   
   :root[inFullscreen="true"] #navigator-toolbox {
-    display: none;
+    margin-top: 0 !important;
   }
   
   #zen-tabbox-wrapper:has(#zen-sidebar-splitter:not([state="dragging"])) #navigator-toolbox {

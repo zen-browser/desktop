@@ -1,0 +1,13 @@
+diff --git a/browser/themes/shared/tabbrowser/fullscreen-and-pointerlock.css b/browser/themes/shared/tabbrowser/fullscreen-and-pointerlock.css
+index 787e3153e2e07b383445e94aa9e25177eb49c929..c2bbde0458808e7e788f3d8d7b8c8409e6b5afc0 100644
+--- a/browser/themes/shared/tabbrowser/fullscreen-and-pointerlock.css
++++ b/browser/themes/shared/tabbrowser/fullscreen-and-pointerlock.css
+@@ -7,7 +7,7 @@
+ :root[inDOMFullscreen] #sidebar-box,
+ :root[inDOMFullscreen] #sidebar-main,
+ :root[inDOMFullscreen] #sidebar-splitter,
+-:root[inFullscreen]:not([macOSNativeFullscreen]) toolbar:not([fullscreentoolbar=true]),
++:root[inFullscreen]:not([macOSNativeFullscreen]) toolbar:not([fullscreentoolbar=true]):not(#zen-sidebar-icons-wrapper),
+ :root[inFullscreen] .global-notificationbox {
+   visibility: collapse;
+ }

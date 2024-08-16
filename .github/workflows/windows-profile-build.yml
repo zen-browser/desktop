@@ -1,0 +1,88 @@
+
+on:
+  workflow_call:
+    inputs:
+      build-version:
+        description: 'The version to build'
+        required: true
+        type: string
+      profile-data-path-archive:
+        description: 'The path to the zip archive containing the profile data'
+        required: false
+        type: string
+
+jobs:
+  windows-profile-build:
+    name: Windows Profile Build - ${{ matrix.generic == true && 'generic' || 'specific' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        generic: [true, false]
+    runs-on: windows-latest
+    # Script edited from https://github.com/Floorp-Projects/Floorp/blob/ESR115/.github/workflows/window-generate-profile-data-and-jarlog.yml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Surfer
+        run: |
+          npm i -g @zen-browser/surfer
+      - uses: actions/download-artifact@v4
+        name: Download artifact 
+        with:
+          path: C:\artifact
+          name: ${{ matrix.generic == true && 'generic' || 'specific' }}-zen-windows-x86_64-profile-data-and-jarlog.zip
+
+      - name:  Unpack artifact
+        run: |
+          cd C:\artifact
+          ls
+          zstd -d ${{ inputs.profile-data-path-archive }}
+          7z x zen-*.tar
+      - name: Setup 
+        run: |
+          (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")
+          C:\MozillaBuildSetup-Latest.exe /S | out-null
+      - name: Download firefox
+        run: |
+          git config --global core.safecrlf false  
+          pnpm surfer download
+      - name: Generate 
+        run: |
+          ls
+          $Env:USE_MINTTY = "0"
+          $workspace_dir_current = [regex]::replace($env:GITHUB_WORKSPACE, "^([A-Z]):", { "/" + $args.value.Substring(0, 1).toLower() }) -replace "\\","/"
+          $workspace_dir = $workspace_dir_current + "/engine"
+          echo $workspace_dir
+          echo "cd $workspace_dir" '' >> mozilla-build-run.sh
+          echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
+          echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
+          echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
+          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
+          C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
+      - name: 🐛 Debug Session
+        if: ${{ failure() }}
+        uses: Warpbuilds/gha-debug@v1.3
+        timeout-minutes: 15
+
+      - name: Publish merged.profdata
+        uses: actions/upload-artifact@v4
+        with:
+          path: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+
+      - name: Publish en-US.log
+        uses: actions/upload-artifact@v4
+        with:
+          path: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log

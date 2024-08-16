@@ -383,4 +383,8 @@
       margin-right: 0 !important;
     }
   }
+  /* Fix scrollbar visible issue when having a lot of tabs */
+  #tabbrowser-arrowscrollbox {
+    scrollbar-width: none
+  }
 }

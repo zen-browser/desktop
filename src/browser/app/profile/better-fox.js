@@ -32,7 +32,8 @@ pref("gfx.content.skia-font-cache-size", 20);
 pref("browser.cache.jsbc_compression_level", 3);
 
 /** MEDIA CACHE ***/
-pref("media.memory_cache_max_size", 512000); // alt=512000; also in Securefox (inactive there)
+pref("media.memory_cache_max_size", 1048576);
+pref("media.memory_caches_combined_limit_kb", 2560000);
 pref("media.cache_readahead_limit", 9000); // default=60; stop reading ahead when our buffered data is this many seconds ahead of the current playback
 pref("media.cache_resume_threshold", 6000); // default=30; when a network connection is suspended, don't resume it until the amount of buffered data falls below this threshold (in seconds)
 
@@ -47,7 +48,12 @@ pref("network.http.pacing.requests.enabled", false);
 pref("network.dnsCacheExpiration", 3600);
 pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
-pref("network.ssl_tokens_cache_capacity", 10240);
+pref("network.ssl_tokens_cache_capacity", 32768);
+
+pref("network.buffer.cache.size", 262144);
+pref("network.buffer.cache.count", 128);
+pref("network.dnsCacheEntries", 20000);		
+pref("network.dnsCacheExpirationGracePeriod", 240);
 
 /** HTTPS-FIRST POLICY ***/
 pref("dom.security.https_first", true);
@@ -74,7 +80,6 @@ pref("network.cookie.sameSite.noneRequiresSecure", true);
 pref("browser.download.start_downloads_in_tmp_dir", true);
 pref("browser.helperApps.deleteTempFileOnExit", true);
 pref("browser.uitour.enabled", false);
-pref("privacy.globalprivacycontrol.enabled", true);
 
 /** OCSP & CERTS / HPKP ***/
 pref("security.OCSP.enabled", 0);

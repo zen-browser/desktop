@@ -124,6 +124,9 @@ pref('xpinstall.signatures.required', false);
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
 
+// Extremly experimental features
+pref("dom.webgpu.enabled", true);
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)

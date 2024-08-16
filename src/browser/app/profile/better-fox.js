@@ -49,6 +49,16 @@ pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
 pref("network.ssl_tokens_cache_capacity", 10240);
 
+/** HTTPS-FIRST POLICY ***/
+pref("dom.security.https_first", true);
+
+/** PASSWORDS ***/
+pref("network.auth.subresource-http-auth-allow", 1);
+
+/** MIXED CONTENT + CROSS-SITE ***/
+pref("pdfjs.enableScripting", false);
+pref("extensions.postDownloadThirdPartyPrompt", false);
+
 /** EXPERIMENTAL ***/
 pref("layout.css.grid-template-masonry-value.enabled", true);
 pref("dom.enable_web_task_scheduling", true);
@@ -58,7 +68,6 @@ pref("dom.security.sanitizer.enabled", true);
  * SECTION: SECUREFOX                                                       *
 ****************************************************************************/
 /** TRACKING PROTECTION ***/
-pref("browser.contentblocking.category", "strict");
 pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com");
 pref("urlclassifier.features.socialtracking.skipURLs", "*.instagram.com, *.twitter.com, *.twimg.com");
 pref("network.cookie.sameSite.noneRequiresSecure", true);

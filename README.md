@@ -59,7 +59,7 @@ npm start
 ## Special Thanks
 
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)
-- [Erlend](https://havn.blog) (For making the logo)
+- [Donno 🐒](https://www.onnno.nl/) (For making the logo)
 - [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
 
 ## Third Party Code

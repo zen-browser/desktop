@@ -137,7 +137,7 @@
     }
 
     :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-top: var(--zen-element-separation);
+      margin-top: var(--zen-element-separation) !important;
     }
 
     #titlebar {

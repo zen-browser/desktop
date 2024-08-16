@@ -218,3 +218,6 @@
   }
 }
  
+:root:is([chromehidden~="location"], [chromehidden~="toolbar"]) #navigator-toolbox {
+  display: none !important;
+}

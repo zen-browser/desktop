@@ -1,3 +1,2 @@
 
-*-c.patch linguist-language=C++
-*-cpp.patch linguist-language=C++
+*.patch linguist-language=C++

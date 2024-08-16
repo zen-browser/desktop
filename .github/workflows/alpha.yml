@@ -186,28 +186,28 @@ jobs:
           name: zen.source.tar.gz
           path: ./zen.source.tar.gz
 
-  #windows-step-1:
-  #  name: Windows build step 1 (PGO build)
-  #  uses: ./.github/workflows/windows-alpha-build.yml
-  #  needs: [build-data]
-  #  permissions:
-  #    contents: write
-  #  secrets: inherit
-  #  with:
-  #    build-version: ${{ needs.build-data.outputs.version }}
-  #    generate-gpo: true
-  #    profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
+  windows-step-1:
+    name: Windows build step 1 (PGO build)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    needs: [build-data]
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: true
+      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
 
-  #windows-step-2:
-  #  name: Windows build step 2 (Generate profile data)
-  #  uses: ./.github/workflows/windows-profile-build.yml
-  #  permissions:
-  #    contents: write
-  #  secrets: inherit
-  #  needs: [windows-step-1, build-data]
-  #  with:
-  #    build-version: ${{ needs.build-data.outputs.version }}
-  #    profile-data-path-archive: zen.win64-pgo-stage-1.zip
+  windows-step-2:
+    name: Windows build step 2 (Generate profile data)
+    uses: ./.github/workflows/windows-profile-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [windows-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      profile-data-path-archive: zen.win64-pgo-stage-1.zip
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)

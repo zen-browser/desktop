@@ -14,8 +14,8 @@ if test "$ZEN_CROSS_COMPILING"; then
   CROSS_COMPILE=1
   TOOLS=$(echo ~)/win-cross
 
-  #export WIN32_REDIST_DIR="$TOOLS"/vs2022/VC/Redist/MSVC/14.34.31931/x64/Microsoft.VC143.CRT
-  #export WIN_UCRT_REDIST_DIR="$TOOLS/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+  export WIN_UCRT_REDIST_DIR="$(echo ~)/win-cross/vs2022/Windows Kits/10/Redist/10.0.22621.0/ucrt/DLLs/x64"
+  export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/x64/Microsoft.VC143.CRT"
 
   export MIDL="$TOOLS/wine/bin/widl"
   export MOZ_INCLUDE_SOURCE_INFO=1
@@ -53,17 +53,17 @@ fi
 export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 export VERBOSE=1
 
-#if test "$ZEN_GA_GENERATE_PROFILE"; then
-#  mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
-#  ac_add_options --enable-profile-generate=cross
-#else
-#  ac_add_options --enable-profile-use=cross
-#  if test "$SURFER_COMPAT" = "true"; then
-#    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-generic.profdata
-#    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-generic.log
-#  else
-#    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-specific.profdata
-#    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-specific.log
-#  fi
-#fi
+if test "$ZEN_GA_GENERATE_PROFILE"; then
+  mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+  ac_add_options --enable-profile-generate=cross
+else
+  ac_add_options --enable-profile-use=cross
+  if test "$SURFER_COMPAT" = "true"; then
+    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-generic.profdata
+    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-generic.log
+  else
+    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-specific.profdata
+    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-specific.log
+  fi
+fi
 

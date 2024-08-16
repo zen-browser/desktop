@@ -6,7 +6,7 @@
   
   #navigator-toolbox {
     --zen-tabbrowser-padding: 5px;
-    padding-right: 2px;
+    padding-left: 3px;
     margin-top: 0; /* Issue #156 */
   }
   
@@ -261,10 +261,6 @@
       width: 100%;
       align-items: flex-start;
     }
-
-    #TabsToolbar {
-      padding-left: 2px;
-    }
   
     #TabsToolbar > .toolbar-items toolbarbutton:not(#zen-workspaces-button) {
       width: 100% !important;
@@ -370,7 +366,7 @@
 
     @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
       #navigator-toolbox {
-        padding-left: 5px;
+        padding-right: 3px !important;
       }
     }
 

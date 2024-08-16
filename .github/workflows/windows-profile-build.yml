@@ -50,6 +50,7 @@ jobs:
           cd C:\artifact
           ls
           Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
+          ls
       - name: Setup 
         run: |
           (New-Object System.Net.WebClient).DownloadFile("https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe","C:\MozillaBuildSetup-Latest.exe")

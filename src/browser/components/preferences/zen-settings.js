@@ -94,6 +94,9 @@ var gZenMarketplaceManager = {
       fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = theme.name;
       fragment.querySelector(".zenThemeMarketplaceItemDescription").textContent = theme.description;
       fragment.querySelector(".zenThemeMarketplaceItemUninstallButton").addEventListener("click", async (event) => {
+        if (!confirm("Are you sure you want to remove this theme?")) {
+          return;
+        }
         const target = event.target;
         const themeId = target.getAttribute("zen-theme-id");
         await this.removeTheme(themeId);

@@ -4,13 +4,8 @@
     width: -moz-available;
     margin: 0 var(--zen-element-separation) var(--zen-element-separation) 0;
     box-shadow: 0 0 0 1px var(--zen-colors-border);
-
-    & browser {
-      clip-path: inset(0px 0px 0px round var(--zen-browser-border-radius) 0);
-    }
-
-    &, & browser {
-      border-radius: var(--zen-browser-border-radius);
-    }
+    clip-path: inset(-5px -5px -5px round var(--zen-browser-border-radius));
+    border-radius: var(--zen-browser-border-radius);
+    overflow: hidden;
   }
 }

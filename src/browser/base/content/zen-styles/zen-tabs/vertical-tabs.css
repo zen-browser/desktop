@@ -277,10 +277,6 @@
       background: transparent !important;
     }
   
-    #tabbrowser-arrowscrollbox-periphery {
-      margin-top: 5px;
-    }
-  
     #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
       display: flex;
       justify-content: center;

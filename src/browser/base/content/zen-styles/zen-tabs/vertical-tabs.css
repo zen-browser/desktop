@@ -6,7 +6,6 @@
   
   #navigator-toolbox {
     --zen-tabbrowser-padding: 5px;
-    padding-left: 3px;
     margin-top: 0; /* Issue #156 */
   }
   
@@ -249,6 +248,7 @@
       transition: .2s;
       width: 170px;
       border: none;
+      padding-left: 3px;
     }
   
     .tab-label-container {

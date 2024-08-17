@@ -149,4 +149,5 @@ pref("devtools.chrome.enabled", true);
 pref("sidebar.revamp", false, locked);
 pref("sidebar.verticalTabs", false, locked);
 
-
+// Better scrollbar for Windows
+pref("widget.non-native-theme.scrollbar.style", 2);

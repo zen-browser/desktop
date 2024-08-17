@@ -122,10 +122,10 @@ var gZenMarketplaceManager = {
             fragment.querySelector(".zenThemeMarketplaceItemPreferenceCheckbox").setAttribute("checked", "true");
           }
           fragment.querySelector(".zenThemeMarketplaceItemPreferenceCheckbox").addEventListener("click", (event) => {
-            let target = event.target;
+            let target = event.target.closest(".zenThemeMarketplaceItemPreferenceCheckbox");
             let key = target.getAttribute("zen-pref");
             let checked = target.hasAttribute("checked");
-            if (checked) {
+            if (!checked) {
               target.removeAttribute("checked");
             } else {
               target.setAttribute("checked", "true");

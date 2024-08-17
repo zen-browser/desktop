@@ -304,7 +304,7 @@ groupbox h2 {
 .zenThemeMarketplaceItem {
   width: 100%;
 
-  &:not(:first-of-type) {
+  &:not(:first-of-type), .zenThemeMarketplaceItemPreferences {
     margin-top: 15px;
   }
 }

@@ -111,6 +111,10 @@
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
+    #navigator-toolbox {
+      padding-top: var(--zen-compact-toolbox-margin);
+    }
+
     #zen-appcontent-navbar-container {
       --urlbar-height: unset;
       transition: .2s ease-in-out;

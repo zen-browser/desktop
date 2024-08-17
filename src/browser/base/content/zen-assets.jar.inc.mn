@@ -9,7 +9,8 @@
         content/browser/zen-components/ZenProfileDialogUI.mjs   (content/zen-components/src/ZenProfileDialogUI.mjs)
         content/browser/zen-components/ZenKeyboardShortcuts.mjs (content/zen-components/src/ZenKeyboardShortcuts.mjs)
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
-        
+        content/browser/zen-components/ZenThemesImporter.mjs    (content/zen-components/src/ZenThemesImporter.mjs)
+
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
         content/browser/zen-styles/zen-tabs.css                 (content/zen-styles/zen-tabs.css)

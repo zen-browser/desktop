@@ -33,7 +33,7 @@ ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download
  
 if test "$SURFER_COMPAT" = "true"; then
-  ac_add_options --enable-optimize="-O3 -w -ftree-vectorize"
+  ac_add_options --enable-optimize="-O3 -w"
 
   export CFLAGS="-mtune=haswell -march=x86-64"
   export CPPFLAGS="-mtune=haswell -march=x86-64"
@@ -41,7 +41,7 @@ if test "$SURFER_COMPAT" = "true"; then
   export LDFLAGS="-Wl,-O3"
   export RUSTFLAGS="-C codegen-units=1 -Ctarget-cpu=x86-64"
 else
-  ac_add_options --enable-optimize="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -Xclang -ftree-vectorize -mpopcnt -mpclmul -w"
+  ac_add_options --enable-optimize="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -Xclang -mpopcnt -mpclmul -w"
   ac_add_options --enable-wasm-avx
 
   export CFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3 -mpopcnt -mpclmul"   

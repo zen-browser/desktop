@@ -15,11 +15,134 @@ const kZenColors = [
   "#d4bbff",
 ];
 
+var gZenMarketplaceManager = {  
+  init() {
+    this._buildThemesList();
+    Services.prefs.addObserver(this.updatePref, this._buildThemesList.bind(this));
+  },
+
+  get updatePref() {
+    return "zen.themes.updated-value-observer";
+  },
+
+  triggerThemeUpdate() {
+    Services.prefs.setBoolPref(this.updatePref, !Services.prefs.getBoolPref(this.updatePref));
+  },
+
+  get themesList() {
+    return document.getElementById("zenThemeMarketplaceList");
+  },
+
+  get themesDataFile() {
+    return PathUtils.join(
+      PathUtils.profileDir,
+      "zen-themes.json"
+    );
+  },
+
+  get themesRootPath() {
+    return PathUtils.join(
+      PathUtils.profileDir,
+      "chrome",
+      "zen-themes"
+    );
+  },
+
+  async removeTheme(themeId) {
+    const themePath = PathUtils.join(this.themesRootPath, themeId);
+    console.info("ZenThemeMarketplaceParent(settings): Removing theme ", themePath);
+    await IOUtils.remove(themePath, { recursive: true, ignoreAbsent: true });
+
+    let themes = await this._getThemes();
+    delete themes[themeId];
+    await IOUtils.writeJSON(this.themesDataFile, themes);
+
+    this.triggerThemeUpdate();
+  },
+
+  async _getThemes() {
+    if (!this._themes) {
+      if (!(await IOUtils.exists(this.themesDataFile))) {
+        await IOUtils.writeJSON(this.themesDataFile, {});
+      }
+      this._themes = await IOUtils.readJSON(this.themesDataFile);
+    }
+    return this._themes;
+  },
+
+  async _getThemePreferences(theme) {
+    const themePath = PathUtils.join(this.themesRootPath, theme.id, "preferences.json");
+    if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
+      return {};
+    }
+    return await IOUtils.readJSON(themePath);
+  },
+
+  async _buildThemesList() {
+    let themes = await this._getThemes();
+    this.themesList.innerHTML = "";
+    for (let theme of Object.values(themes)) {
+      const fragment = window.MozXULElement.parseXULToFragment(`
+        <hbox class="zenThemeMarketplaceItem">
+          <vbox class="zenThemeMarketplaceItemContent">
+            <label><h3 class="zenThemeMarketplaceItemTitle"></h3></label>
+            <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
+          </vbox>
+          <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
+        </hbox>
+      `);
+      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = theme.name;
+      fragment.querySelector(".zenThemeMarketplaceItemDescription").textContent = theme.description;
+      fragment.querySelector(".zenThemeMarketplaceItemUninstallButton").addEventListener("click", async (event) => {
+        const target = event.target;
+        const themeId = target.getAttribute("zen-theme-id");
+        await this.removeTheme(themeId);
+      });
+      this.themesList.appendChild(fragment);
+      const preferences = await this._getThemePreferences(theme);
+      if (Object.keys(preferences).length > 0) {
+        let preferencesWrapper = document.createXULElement("vbox");
+        preferencesWrapper.classList.add("indent");
+        preferencesWrapper.classList.add("zenThemeMarketplaceItemPreferences");
+        for (let [key, value] of Object.entries(preferences)) {
+          const fragment = window.MozXULElement.parseXULToFragment(`
+            <hbox class="zenThemeMarketplaceItemPreference">
+              <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" zen-pref="${key}"></checkbox>
+              <vbox class="zenThemeMarketplaceItemPreferenceData">
+                <label class="zenThemeMarketplaceItemPreferenceLabel">${key}</label>
+                <description class="description-deemphasized zenThemeMarketplaceItemPreferenceValue">${value}</description>
+              </vbox>
+            </hbox>
+          `);
+          // Checkbox only works with "true" and "false" values, it's not like HTML checkboxes.
+          if (Services.prefs.getBoolPref(key, false)) {
+            fragment.querySelector(".zenThemeMarketplaceItemPreferenceCheckbox").setAttribute("checked", "true");
+          }
+          fragment.querySelector(".zenThemeMarketplaceItemPreferenceCheckbox").addEventListener("click", (event) => {
+            let target = event.target;
+            let key = target.getAttribute("zen-pref");
+            let checked = target.hasAttribute("checked");
+            if (checked) {
+              target.removeAttribute("checked");
+            } else {
+              target.setAttribute("checked", "true");
+            }
+            Services.prefs.setBoolPref(key, !checked);
+          });
+          preferencesWrapper.appendChild(fragment);
+        }
+        this.themesList.appendChild(preferencesWrapper);
+      }
+    }
+  }
+};
+
 var gZenLooksAndFeel = {
   init() {
     this._initializeColorPicker(this._getInitialAccentColor());
     window.zenPageAccentColorChanged = this._handleAccentColorChange.bind(this);
     gZenThemeBuilder.init();
+    gZenMarketplaceManager.init();
   },
 
   _initializeColorPicker(accentColor) {

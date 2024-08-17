@@ -80,6 +80,9 @@ var ZenThemeModifier = {
   },
 
   _updateZenAvatar() {
+    if (typeof ProfileService === "undefined") {
+      return;
+    }
     const mainWindowEl = document.documentElement;
     // Dont override the sync avatar if it's already set
     if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {

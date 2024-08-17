@@ -57,6 +57,12 @@ zen-vertical-tabs-show-expand-button =
 zen-vertical-tabs-expand-tabs-by-default = 
     .label = Expand Tabs by Default
 
+zen-theme-marketplace-header = Theme Marketplace
+zen-theme-marketplace-description = Find and install themes from the marketplace.
+zen-theme-marketplace-remove-button = 
+    .label = Remove Theme
+
+zen-theme-marketplace-link = Visit Marketplace
 
 pane-zen-CKS-title = Keyboard Shortcuts
 category-zen-CKS =

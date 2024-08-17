@@ -205,6 +205,7 @@
 @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
   #navigator-toolbox {
     width: 0;
+    padding-right: 2px;
   }
 
   #zen-sidebar-splitter {

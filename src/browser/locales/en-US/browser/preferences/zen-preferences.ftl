@@ -1,5 +1,5 @@
 
-pane-zen-looks-title = Look And Feel
+pane-zen-looks-title = Look and Feel
 category-zen-looks =
     .tooltiptext = { pane-zen-looks-title }
 
@@ -45,9 +45,6 @@ zen-settings-workspaces-enabled =
     .label = Enable Workspaces (Experimental)
 
 pane-zen-theme-title = Theme Settings
-
-zen-look-and-feel-urlbar-header = Awesome Bar Settings
-zen-look-and-feel-urlbar-description = Customize the look and feel of the Awesome Bar
 
 zen-vertical-tabs-title = Sidebar and tabs layout
 zen-vertical-tabs-header = Vertical Tabs

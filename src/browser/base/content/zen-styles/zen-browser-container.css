@@ -4,8 +4,9 @@
     width: -moz-available;
     margin: 0 var(--zen-element-separation) var(--zen-element-separation) 0;
     box-shadow: 0 0 0 1px var(--zen-colors-border);
-    clip-path: inset(-5px -5px -5px round var(--zen-browser-border-radius));
-    border-radius: var(--zen-browser-border-radius);
+    /* We can't use a border radius here because it brings performance issues,
+    so we use a clip-path instead */
+    clip-path: inset(0% 0 0% 0 round var(--zen-border-radius));
     overflow: hidden;
   }
 }

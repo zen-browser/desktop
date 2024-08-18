@@ -10,7 +10,7 @@
 }
 
 #sidebar-box {
-  --zen-sidebar-box-border-radius: var(--zen-browser-border-radius);  
+  --zen-sidebar-box-border-radius: var(--zen-panel-radius);  
   margin: var(--zen-element-separation);
   border-radius: var(--zen-sidebar-box-border-radius);
   overflow: hidden;

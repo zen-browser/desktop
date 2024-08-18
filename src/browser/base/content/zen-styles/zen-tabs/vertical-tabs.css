@@ -150,7 +150,7 @@
   .tabbrowser-tab {
     margin-inline-start: 0;
     margin: 0 auto;
-    margin-bottom: 1.5px !important;
+    margin-bottom: 1.5px;
   }
   
   .tabbrowser-tab[pinned] {

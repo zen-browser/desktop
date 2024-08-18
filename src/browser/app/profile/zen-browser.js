@@ -63,16 +63,19 @@ pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.theme.accent-color', "#aac7ff");
+pref('zen.theme.border-radius', 10); // In pixels
 pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);
-pref('zen.theme.floating-urlbar', false);
 pref('zen.view.compact', false);
 pref('zen.view.compact.hide-toolbar', false);
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.show-button', true);
 pref('zen.view.sidebar-expanded.max-width', 400);
-pref('zen.keyboard.shortcuts', "{}");
+pref('zen.keyboard.shortcuts.enabled', true);
+pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-firefox', false);
+pref('zen.tabs.dim-pending', true);
+pref('zen.themes.updated-value-observer', false);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
@@ -89,7 +92,7 @@ pref('zen.splitView.working', false);
 pref('zen.workspaces.enabled', true);
 
 // Zen Watermark
-pref('zen.watermark.enabled', true);
+pref('zen.watermark.enabled', true, sticky);
 
 // Smooth scrolling
 pref('apz.overscroll.enabled', true); // not DEFAULT on Linux
@@ -117,6 +120,13 @@ pref('browser.migrate.opera.enabled', true);
 
 pref('xpinstall.signatures.required', false);
 
+// Experimental Zen Features
+// Strategy to use for bytecode cache (Thanks https://github.com/gunir)
+pref('dom.script_loader.bytecode_cache.strategy', 2);
+
+// Extremly experimental features
+pref("dom.webgpu.enabled", true);
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)
@@ -131,3 +141,14 @@ pref("network.dns.disablePrefetchFromHTTPS", false);
 pref("network.predictor.enable-hover-on-ssl", true);
 pref("network.http.speculative-parallel-limit", 10);
 pref("network.http.rcwn.enabled", false);
+
+// Enable Browser Toolbox, Ctrl+Shift+Alt+I for debugging and modifying UI
+pref("devtools.debugger.remote-enabled", true);
+pref("devtools.chrome.enabled", true);
+
+// Disable firefox's revamp
+pref("sidebar.revamp", false, locked);
+pref("sidebar.verticalTabs", false, locked);
+
+// Better scrollbar for Windows
+pref("widget.non-native-theme.scrollbar.style", 2);

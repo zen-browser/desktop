@@ -1,0 +1,8 @@
+
+#nav-bar {
+  background: transparent;
+}
+
+:root[inDOMFullscreen="true"] #zen-appcontent-navbar-container {
+  display: none;
+}

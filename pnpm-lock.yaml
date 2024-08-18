@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@zen-browser/surfer':
-        specifier: ^1.2.7
-        version: 1.2.7
+        specifier: ^1.2.8
+        version: 1.2.8
 
 packages:
 
@@ -109,8 +109,8 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
-  '@zen-browser/surfer@1.2.7':
-    resolution: {integrity: sha512-VbbbB7crGXrdfk1PPnlsWFWErwjtccXbRuw5mOQzY327d2t5VraxmkqTzcuGSTxpu3CR/KvzNu0gDg/6+7b4NQ==}
+  '@zen-browser/surfer@1.2.8':
+    resolution: {integrity: sha512-eMWZur7TnBCeLOFEVjxdBQnFfMCg2yzpgKOu+Dfy3nBxqDPg6gKanNX8nUY6I+oT+fiTG3FC4cVTGdE3Ye+8MQ==}
     hasBin: true
 
   ansi-regex@5.0.1:
@@ -786,7 +786,7 @@ snapshots:
 
   '@types/node@17.0.45': {}
 
-  '@zen-browser/surfer@1.2.7':
+  '@zen-browser/surfer@1.2.8':
     dependencies:
       '@resvg/resvg-js': 1.4.0
       async-icns: 1.0.2

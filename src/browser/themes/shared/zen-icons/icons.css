@@ -45,6 +45,10 @@
 	--menu-image: url("sidebars-right.svg") !important;
 }
 
+#context-zen-change-workspace-tab {
+	--menu-image: url("move-tab.svg") !important;
+}
+
 #context-zenSplitLink {
 	--menu-image: url("link.svg") !important;
 }

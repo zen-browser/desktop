@@ -1,17 +1,8 @@
 diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
-index 908132d598083dd43ee62940f4bac84e49238c92..eb7edf3870032fe796b3fa676de96e1dbb5eea85 100644
+index 26c11188d3edcc9806fab7144aa0e22540a32a57..df3dbca06ede3eda1854febe314c38779f754c03 100644
 --- a/toolkit/content/xul.css
 +++ b/toolkit/content/xul.css
-@@ -12,6 +12,8 @@
-  * browser.css.
-  */
- 
-+@import url("chrome://global/content/zen-xul.css");
-+
- @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* set default namespace to XUL */
- @namespace html url("http://www.w3.org/1999/xhtml"); /* namespace for HTML elements */
- 
-@@ -485,7 +487,8 @@ deck > *|*:not(:-moz-native-anonymous) {
+@@ -485,7 +485,8 @@ deck > *|*:not(:-moz-native-anonymous) {
  }
  
  tabpanels > .deck-selected,

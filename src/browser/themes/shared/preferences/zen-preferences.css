@@ -49,7 +49,8 @@ groupbox:has(+ .subcategory) {
 }
 
 .navigation {
-  padding: 50px;
+  padding: 4%;
+  background: var(--zen-colors-tertiary);
 }
 
 groupbox button {
@@ -297,3 +298,33 @@ groupbox h2 {
   transform: translate(-50%, -50%);
 }
 
+
+/* THemes marketplace */
+
+.zenThemeMarketplaceItem {
+  width: 100%;
+
+  &:not(:first-of-type), .zenThemeMarketplaceItemPreferences {
+    margin-top: 15px;
+  }
+}
+
+.zenThemeMarketplaceItemPreferenceCheckbox {
+  margin-right: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
+.zenThemeMarketplaceItemPreferenceData > * {
+  margin: 0;
+}
+
+#zenThemeMarketplaceList:has(> *) {
+  margin: 15px 0;
+}
+
+.zenThemeMarketplaceItemUninstallButton {
+  margin-left: auto;
+}

@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#zen-sidebar-panels-wrapper {
+ #zen-sidebar-panels-wrapper {
   /*min-height: 500px;*/
   display: flex;
   align-items: center;
@@ -53,6 +53,7 @@
 
 #zen-sidebar-web-panel-wrapper {
   --zen-default-sidebar-width: 300px;
+  --zen-sidebar-web-panel-spacing: var(--zen-element-separation);
   position: relative;
   margin-right: 0;
   display: flex;
@@ -67,17 +68,12 @@
 }
 
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned="true"]) {
-  --zen-sidebar-web-panel-spacing: 10px;
   margin: var(--zen-appcontent-separator-from-window);
   position: absolute;
   z-index: 1;
   width: -moz-available;
   padding: var(--zen-sidebar-web-panel-spacing);
-  height: calc(100% - 10px);
-}
-
-#zen-sidebar-web-panel:not([pinned="true"]) {
-  --zen-sidebar-web-panel-spacing: calc(10px / 3);
+  height: calc(100% - var(--zen-element-separation));
 }
 
 #zen-sidebar-web-panel {
@@ -126,7 +122,7 @@
 #zen-sidebar-web-panel[hidden="true"] #zen-sidebar-web-panel-hsplitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter,
 #zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-hsplitter,
-#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned="true"])) + #zen-sidebar-web-panel-splitter {
+#zen-sidebar-web-panel:not([pinned="true"]) #zen-sidebar-web-panel-hsplitter {
   display: none;
   margin: 0;
 }
@@ -157,46 +153,6 @@
   display: flex;
   pointer-events: none;
   animation: zen-sidebar-panel-animation-reverse 0.2s ease-in-out forwards;
-}
-
-@keyframes zen-sidebar-panel-animation {
-  0% {
-    opacity: 0;
-    transform: scale3d(0.9, 0.9, 0.9);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-  }
-}
-
-@keyframes zen-sidebar-panel-animation-2 {
-  0% {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes zen-sidebar-panel-animation-reverse {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  99% {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-
-  100% {
-    display: none !important;
-  }
 }
 
 #zen-sidebar-web-header,

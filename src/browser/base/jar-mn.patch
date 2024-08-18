@@ -1,12 +1,12 @@
 diff --git a/browser/base/jar.mn b/browser/base/jar.mn
-index e3eb0e6e5f30152905456a07cfe532fe173375fb..9d356d62421d779f9e16f6761cce97826c7943ed 100644
+index c724d243dc62a039d75aaee25cc956193589d9dc..04819ec5e17bd2023dbfb3e9dd812f832d9a7e92 100644
 --- a/browser/base/jar.mn
 +++ b/browser/base/jar.mn
-@@ -105,3 +105,6 @@ browser.jar:
+@@ -103,3 +103,6 @@ browser.jar:
  
  # L10n resources and overrides.
  % override chrome://global/locale/appstrings.properties chrome://browser/locale/appstrings.properties
 +
 +#include content/zen-avatars/jar.inc.mn
-+#include content/zen-scripts.jar.inc.mn
++#include content/zen-assets.jar.inc.mn
 \ No newline at end of file

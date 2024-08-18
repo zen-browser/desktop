@@ -1,8 +1,9 @@
 
-pane-zen-looks-title = Looks And Feel
+pane-zen-looks-title = Look And Feel
 category-zen-looks =
     .tooltiptext = { pane-zen-looks-title }
 
+zen-warning-language = Changing the default language could make it easier for Websites to track you.
 
 zen-look-and-feel-colors-header = Pick a theme colour
 zen-look-and-feel-colors-description = Make { -brand-short-name } look and feel the way you like
@@ -48,9 +49,6 @@ pane-zen-theme-title = Theme Settings
 zen-look-and-feel-urlbar-header = Awesome Bar Settings
 zen-look-and-feel-urlbar-description = Customize the look and feel of the Awesome Bar
 
-zen-look-and-feel-floating-urlbar = 
-    .label = Floating URL Bar when focused
-
 zen-vertical-tabs-title = Sidebar and tabs layout
 zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout
@@ -59,6 +57,12 @@ zen-vertical-tabs-show-expand-button =
 zen-vertical-tabs-expand-tabs-by-default = 
     .label = Expand Tabs by Default
 
+zen-theme-marketplace-header = Theme Store
+zen-theme-marketplace-description = Find and install themes from the store.
+zen-theme-marketplace-remove-button = 
+    .label = Remove Theme
+
+zen-theme-marketplace-link = Visit Store
 
 pane-zen-CKS-title = Keyboard Shortcuts
 category-zen-CKS =
@@ -82,6 +86,8 @@ zen-cks-group-open-page-action = Open Page Actions
 zen-cks-group-downloads-action = Downloads Actions
 zen-cks-group-sidebar-action = Sidebar Actions
 zen-cks-group-compact-mode-action = Compact Mode Actions
+zen-cks-group-split-view-action = Split View Actions
+zen-cks-group-workspace-action = Workspace Actions
 
 open-new-tab = Open New Tab
 close-tab = Close Tab
@@ -146,3 +152,8 @@ zen-toggle-web-panels = Toggle Web Panels
 zen-toggle-compact-mode = Toggle Compact Mode
 zen-toggle-compact-mode-sidebar = Toggle Compact Mode Sidebar
 zen-toggle-compact-mode-toolbar = Toggle Compact Mode Toolbar
+zen-change-workspace = Cycle Workspaces
+zen-split-view-grid = Split View Grid
+zen-split-view-vertical = Split View Vertical
+zen-split-view-horizontal = Split View Horizontal
+zen-split-view-close = Close Split View

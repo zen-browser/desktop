@@ -4,35 +4,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@import url("zen-sidebar-panels.css");
-
 :root {
   --sidebar-background-color: var(--toolbar-bgcolor) !important; 
   --zen-sidebar-box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 #sidebar-box {
-  --zen-sidebar-box-border-radius: var(--zen-browser-border-radius);  
-  margin: 10px !important;
-  border-radius: var(--zen-sidebar-box-border-radius) !important;
+  --zen-sidebar-box-border-radius: var(--zen-panel-radius);  
+  margin: var(--zen-element-separation);
+  border-radius: var(--zen-sidebar-box-border-radius);
   overflow: hidden;
   transition: .2s;
-  margin-left: 0 !important;
+  margin-left: 0;
   border: var(--zen-appcontent-border);
   box-shadow: none;
+  margin-top: 0;
 }   
 
 #sidebar-box[hidden="true"] {
-  width: 0 !important;
-  opacity: 0 !important;
+  width: 0;
+  opacity: 0;
 }
 
-#sidebar-box[positionend="true"] {
-  order: 1 !important;
-}
-
-#sidebar-box:not([positionend   ="true"]) {
-  margin-right: 0 !important;
+#sidebar-box:not([positionend="true"]) {
+  margin-right: 0;
 }
 
 #zen-main-app-wrapper:has(#sidebar-box:not([hidden="true"], [positionend="true"])) #TabsToolbar {
@@ -167,13 +162,13 @@
 #zen-sidebar-icons-wrapper {
   display: flex;
   flex-direction: column;
-  padding: 0 3px;
+  margin: 0 var(--zen-tabbrowser-padding);
   position: relative;
   background: transparent !important;
   align-items: center;
   justify-content: end;
   min-height: fit-content;
-  --zen-sidebar-action-content-separator: 15px;
+  --zen-sidebar-action-content-separator: calc(10px + var(--zen-tabbrowser-padding));
   padding-top: var(--zen-sidebar-action-content-separator);
   margin-top:  var(--zen-sidebar-action-content-separator);
 }
@@ -197,9 +192,24 @@
   display: none;
 }
 
+:root:not([inDOMFullscreen="true"]) #zen-sidebar-splitter {
+  display: block;
+  width: 1px;
+  opacity: 0;
+}
+
+:root[inDOMFullscreen="true"] #zen-sidebar-splitter {
+  display: none;
+}
+
 @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
   #navigator-toolbox {
-    width: 0 !important;
+    width: 0;
+    padding-right: 2px;
+  }
+
+  #zen-sidebar-splitter {
+    display: none !important;
   }
 }
 
@@ -208,4 +218,7 @@
     display: block;
   }
 }
-
+ 
+:root:is([chromehidden~="location"], [chromehidden~="toolbar"]) #navigator-toolbox {
+  display: none !important;
+}

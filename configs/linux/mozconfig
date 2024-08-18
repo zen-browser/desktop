@@ -13,6 +13,9 @@ if test "$ZEN_RELEASE"; then
     ac_add_options --enable-linker=lld
     ac_add_options --disable-elf-hack
 
+    ac_add_options --disable-gpsd
+    ac_add_options --disable-necko-wifi
+
     ac_add_options --enable-install-strip
     ac_add_options --enable-strip
     export STRIP_FLAGS="--strip-debug --strip-unneeded"
@@ -46,6 +49,10 @@ if test "$ZEN_RELEASE"; then
         export RUSTFLAGS="$RUSTFLAGS -C target-cpu=x86-64-v3 -C target-feature=+sse4.1 -C target-feature=+avx2 -C codegen-units=1"
     fi
     export VERBOSE=1
+    export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 fi
 
 ac_add_options --target=x86_64-pc-linux
+
+ac_add_options --enable-alsa
+ac_add_options --enable-pulseaudio

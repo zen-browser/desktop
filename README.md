@@ -14,7 +14,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 # Compatibility
 
-Zen is currently built using firefox version `129.0`!
+Zen is currently built using firefox version `129.0.1`!
 
 * Checkout the latest [releases notes](https://www.zen-browser.app/release-notes)!
 
@@ -60,8 +60,14 @@ npm start
 ## Special Thanks
 
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)
-- [Erlend](https://havn.blog) (For making the logo)
+- [Donno 🐒](https://www.onnno.nl/) (For making the logo)
 - [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
+
+## Third Party Code
+
+Zen coudn't be in its current state without the help of these amazing projects!
+
+- Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
 
 ## License
 

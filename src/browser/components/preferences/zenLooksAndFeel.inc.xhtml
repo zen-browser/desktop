@@ -34,6 +34,33 @@
       </vbox>
 </groupbox>
 
+<hbox id="zenThemeCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="pane-zen-theme-title"/>
+</hbox>
+
+<groupbox id="zenThemeGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-theme-marketplace-header"/></label>
+            <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-description" />
+      <hbox class="indent">
+            <html:a id="zenThemeMarketplaceLink" href="https://zen-browser.app/themes" target="_blank" data-l10n-id="zen-theme-marketplace-link" />
+      </hbox>
+
+      <vbox id="zenThemeMarketplaceList"></vbox>
+
+      <label><html:h2 data-l10n-id="zen-look-and-feel-buttons-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-buttons-description" />
+
+      <checkbox id="zenLooksAndFeelPilledButtons"
+            data-l10n-id="zen-look-and-feel-pilled-buttons"
+            preference="zen.theme.pill-button"/>
+
+      <label><html:h2 data-l10n-id="zen-look-and-feel-urlbar-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-urlbar-description" />
+</groupbox>
+
 <hbox id="zenSidePanelsCategory"
       class="subcategory"
       hidden="true"
@@ -72,29 +99,6 @@
       <checkbox id="zenLooksAndFeelExpandTabsByDefault"
             data-l10n-id="zen-vertical-tabs-expand-tabs-by-default"
             preference="zen.view.sidebar-expanded"/>
-</groupbox>
-
-<hbox id="zenThemeCategory"
-      class="subcategory"
-      hidden="true"
-      data-category="paneZenLooks">
-<html:h1 data-l10n-id="pane-zen-theme-title"/>
-</hbox>
-
-<groupbox id="zenThemeGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
-      <label><html:h2 data-l10n-id="zen-look-and-feel-buttons-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-buttons-description" />
-
-      <checkbox id="zenLooksAndFeelPilledButtons"
-            data-l10n-id="zen-look-and-feel-pilled-buttons"
-            preference="zen.theme.pill-button"/>
-
-      <label><html:h2 data-l10n-id="zen-look-and-feel-urlbar-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-urlbar-description" />
-
-      <checkbox id="zenLooksAndFeelFloatingUrlbar"
-            data-l10n-id="zen-look-and-feel-floating-urlbar"
-            preference="zen.theme.floating-urlbar"/>
 </groupbox>
 
 </html:template>

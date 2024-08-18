@@ -12,6 +12,7 @@
  */
 
 const kZenThemeAccentColorPref = "zen.theme.accent-color";
+const kZenThemeBorderRadiusPref = "zen.theme.border-radius";
 
 /**
 * ZenThemeModifier controls the application of theme data to the browser,
@@ -32,13 +33,15 @@ var ZenThemeModifier = {
   init() {
     this._inMainBrowserWindow = window.location.href == "chrome://browser/content/browser.xhtml";
     this.listenForEvents();
-    this.updateExtraBrowserStyles();
     this.updateAllThemeBasics();
-    this._zenInitBrowserLayout();
+    this._onPrefersColorSchemeChange();
   },
 
   listenForEvents() {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
+
     Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
+    Services.prefs.addObserver(kZenThemeBorderRadiusPref, this.handleEvent.bind(this));
   },
 
   handleEvent(event) {
@@ -51,6 +54,12 @@ var ZenThemeModifier = {
     */
   updateAllThemeBasics() {
     this.updateAccentColor();
+    this.updateBorderRadius();
+  },
+
+  updateBorderRadius() {
+    const borderRadius = Services.prefs.getIntPref(kZenThemeBorderRadiusPref, 4);
+    document.documentElement.style.setProperty("--zen-border-radius", borderRadius + "px");
   },
 
   /**
@@ -66,99 +75,14 @@ var ZenThemeModifier = {
     }
   },
 
-  updateExtraBrowserStyles() {
-    // If we are in the main browser window, we can add some extra styles.
-    if (!this._inMainBrowserWindow) return;
-    this._changeSidebarLocation();
-  },
-
-  _changeSidebarLocation() {
-    const kElementsToAppend = [
-      "sidebar-splitter",
-      "sidebar-box",
-      "navigator-toolbox",
-    ];
-    const wrapper = document.getElementById("zen-tabbox-wrapper");
-    const appWrapepr = document.getElementById("zen-sidebar-box-container");
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        wrapper.prepend(elem);
-      }
-    }
-    appWrapepr.setAttribute("hidden", "true");
-
-    // Set a splitter to navigator-toolbox
-    const splitter = document.createXULElement("splitter");
-    splitter.setAttribute("id", "zen-sidebar-splitter");
-    splitter.setAttribute("orient", "horizontal");
-    splitter.setAttribute("resizebefore", "sibling");
-    splitter.setAttribute("resizeafter", "none");
-    const titlebar = document.getElementById("navigator-toolbox");
-    titlebar.insertAdjacentElement("afterend", splitter);
-  },
-
-  _zenInitBrowserLayout() {
-    if (!this._inMainBrowserWindow) return;
-    if (this.__hasInitBrowserLayout) return;
-    this.__hasInitBrowserLayout = true;
-    this.openWatermark();
-    console.info("ZenThemeModifier: init browser layout");
-    const kNavbarItems = [
-      "nav-bar",
-      "PersonalToolbar"
-    ];
-    const kSeparatorId = "zen-website-and-native-separator";
-    const kNewContainerId = "zen-appcontent-navbar-container";
-    let newContainer = document.getElementById(kNewContainerId);
-    for (let id of kNavbarItems) {
-      const node = document.getElementById(id);
-      console.assert(node, "Could not find node with id: " + id);
-      if (!node) continue;
-      newContainer.appendChild(node);
-    }
-    // Add the separator
-    const separator = document.createElement("span");
-    separator.id = kSeparatorId;
-    newContainer.appendChild(separator);
-
-    gZenVerticalTabsManager.init();
-    gZenCompactModeManager.init();
-
+  _onPrefersColorSchemeChange() {
     this._updateZenAvatar();
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
-
-    function throttle(f, delay) {
-      let timer = 0;
-      return function(...args) {
-          clearTimeout(timer);
-          timer = setTimeout(() => f.apply(this, args), delay);
-      }
-    }
-
-    new ResizeObserver(throttle(
-      this._updateTabsToolbar.bind(this), 1000
-    )).observe(document.getElementById("tabbrowser-tabs"));
-
-    this.closeWatermark();
-  },
-
-  _onPrefersColorSchemeChange(event) {
-    this._updateZenAvatar();
-  },
-
-  _updateTabsToolbar() {
-    // Set tabs max-height to the "toolbar-items" height
-    const toolbarItems = document.getElementById("tabbrowser-tabs");
-    const tabs = document.getElementById("tabbrowser-arrowscrollbox");
-    tabs.style.maxHeight = '0px'; // reset to 0
-    const toolbarRect = toolbarItems.getBoundingClientRect();
-    // -7 for the controls padding
-    tabs.style.maxHeight = toolbarRect.height - 7 + "px";
-    console.info("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
   },
 
   _updateZenAvatar() {
+    if (typeof ProfileService === "undefined") {
+      return;
+    }
     const mainWindowEl = document.documentElement;
     // Dont override the sync avatar if it's already set
     if (mainWindowEl.style.hasOwnProperty("--avatar-image-url")) {
@@ -183,23 +107,6 @@ var ZenThemeModifier = {
     let withoutExtension = avatarPath.slice(0, -4);
     let scheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
     return `${withoutExtension}-${scheme}.svg`;
-  },
-
-  openWatermark() {
-    if (!Services.prefs.getBoolPref("zen.watermark.enabled", false)) {
-      return;
-    }
-    const watermark = document.getElementById("zen-watermark");
-    if (watermark) {
-      watermark.removeAttribute("hidden");
-    }
-  },
-
-  closeWatermark() {
-    const watermark = document.getElementById("zen-watermark");
-    if (watermark) {
-      watermark.setAttribute("hidden", "true");
-    }
   },
 };
 

@@ -16,10 +16,9 @@ export MOZ_DISTRIBUTION_ID=${appId}
 # ac_add_options --enable-linker=gold
 
 # Misc
-export MOZ_STUB_INSTALLER=1
 export MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
 export MOZ_SOURCE_CHANGESET=${changeset}
-export MOZ_INCLUDE_SOURCE_INFO=1
+#export MOZ_INCLUDE_SOURCE_INFO=1
 
 ac_add_options --enable-application=browser
 
@@ -34,6 +33,8 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-jprof
 
   ac_add_options --enable-rust-simd
+  ac_add_options --enable-wasm-simd
+  
   mk_add_options MOZ_PARALLEL_COMPILE=1
 
   ac_add_options --enable-proxy-bypass-protection
@@ -43,9 +44,9 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-crashreporter
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
-  ac_add_options --disable-default-browser-agent
 
-  ac_add_options --disable-vtune
+  # Done by vlad, if something fails, it's his fault
+  ac_add_options --disable-default-browser-agent
 
   if ! test "$ZEN_DISABLE_LTO"; then
     export MOZ_LTO=1
@@ -74,7 +75,7 @@ if test "$ZEN_RELEASE"; then
 
   ac_add_options --enable-updater
 
-  export MOZ_PACKAGE_JSSHELL=1
+  #export MOZ_PACKAGE_JSSHELL=1
 fi
 
 ac_add_options --enable-unverified-updates

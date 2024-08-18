@@ -21,7 +21,7 @@
  * SECTION: FASTFOX                                                         *
 ****************************************************************************/
 /** GENERAL ***/
-pref("content.notify.interval", 100000);
+pref("content.notify.interval", 100000); // (.10s); alt=500000 (.50s)
 
 /** GFX ***/
 pref("gfx.canvas.accelerated.cache-items", 4096);
@@ -32,9 +32,9 @@ pref("gfx.content.skia-font-cache-size", 20);
 pref("browser.cache.jsbc_compression_level", 3);
 
 /** MEDIA CACHE ***/
-pref("media.memory_cache_max_size", 65536);
-pref("media.cache_readahead_limit", 7200);
-pref("media.cache_resume_threshold", 3600);
+pref("media.memory_cache_max_size", 512000); // alt=512000; also in Securefox (inactive there)
+pref("media.cache_readahead_limit", 9000); // default=60; stop reading ahead when our buffered data is this many seconds ahead of the current playback
+pref("media.cache_resume_threshold", 6000); // default=30; when a network connection is suspended, don't resume it until the amount of buffered data falls below this threshold (in seconds)
 
 /** IMAGE CACHE ***/
 pref("image.mem.decode_bytes_at_a_time", 32768);
@@ -45,7 +45,14 @@ pref("network.http.max-persistent-connections-per-server", 10);
 pref("network.http.max-urgent-start-excessive-connections-per-host", 5);
 pref("network.http.pacing.requests.enabled", false);
 pref("network.dnsCacheExpiration", 3600);
-pref("network.ssl_tokens_cache_capacity", 10240);
+pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
+pref("network.websocket.max-connections", 400); // default=200
+pref("network.ssl_tokens_cache_capacity", 32768);
+
+
+/** MIXED CONTENT + CROSS-SITE ***/
+pref("pdfjs.enableScripting", false);
+pref("extensions.postDownloadThirdPartyPrompt", false);
 
 /** EXPERIMENTAL ***/
 pref("layout.css.grid-template-masonry-value.enabled", true);
@@ -56,14 +63,12 @@ pref("dom.security.sanitizer.enabled", true);
  * SECTION: SECUREFOX                                                       *
 ****************************************************************************/
 /** TRACKING PROTECTION ***/
-pref("browser.contentblocking.category", "strict");
 pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com");
 pref("urlclassifier.features.socialtracking.skipURLs", "*.instagram.com, *.twitter.com, *.twimg.com");
 pref("network.cookie.sameSite.noneRequiresSecure", true);
 pref("browser.download.start_downloads_in_tmp_dir", true);
 pref("browser.helperApps.deleteTempFileOnExit", true);
 pref("browser.uitour.enabled", false);
-pref("privacy.globalprivacycontrol.enabled", true);
 
 /** OCSP & CERTS / HPKP ***/
 pref("security.OCSP.enabled", 0);
@@ -113,27 +118,27 @@ pref("permissions.manager.defaultsUrl", "");
 pref("webchannel.allowObject.urlWhitelist", "");
 
 /** TELEMETRY ***/
-pref("datareporting.policy.dataSubmissionEnabled", false);
-pref("datareporting.healthreport.uploadEnabled", false);
-pref("toolkit.telemetry.unified", false);
-pref("toolkit.telemetry.enabled", false);
-pref("toolkit.telemetry.server", "data:,");
-pref("toolkit.telemetry.archive.enabled", false);
-pref("toolkit.telemetry.newProfilePing.enabled", false);
-pref("toolkit.telemetry.shutdownPingSender.enabled", false);
-pref("toolkit.telemetry.updatePing.enabled", false);
-pref("toolkit.telemetry.bhrPing.enabled", false);
-pref("toolkit.telemetry.firstShutdownPing.enabled", false);
-pref("toolkit.telemetry.coverage.opt-out", true);
-pref("toolkit.coverage.opt-out", true);
-pref("toolkit.coverage.endpoint.base", "");
-pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
-pref("browser.newtabpage.activity-stream.telemetry", false);
+pref("datareporting.policy.dataSubmissionEnabled", false, locked);
+pref("datareporting.healthreport.uploadEnabled", false, locked);
+pref("toolkit.telemetry.unified", false, locked);
+pref("toolkit.telemetry.enabled", false, locked);
+pref("toolkit.telemetry.server", "data:,", locked);
+pref("toolkit.telemetry.archive.enabled", false, locked);
+pref("toolkit.telemetry.newProfilePing.enabled", false, locked);
+pref("toolkit.telemetry.shutdownPingSender.enabled", false, locked);
+pref("toolkit.telemetry.updatePing.enabled", false, locked);
+pref("toolkit.telemetry.bhrPing.enabled", false, locked);
+pref("toolkit.telemetry.firstShutdownPing.enabled", false, locked);
+pref("toolkit.telemetry.coverage.opt-out", true, locked);
+pref("toolkit.coverage.opt-out", true, locked);
+pref("toolkit.coverage.endpoint.base", "", locked);
+pref("browser.newtabpage.activity-stream.feeds.telemetry", false, locked);
+pref("browser.newtabpage.activity-stream.telemetry", false, locked);
 
 /** EXPERIMENTS ***/
-pref("app.shield.optoutstudies.enabled", false);
-pref("app.normandy.enabled", false);
-pref("app.normandy.api_url", "");
+pref("app.shield.optoutstudies.enabled", false, locked);
+pref("app.normandy.enabled", false, locked);
+pref("app.normandy.api_url", "", locked);
 
 /** CRASH REPORTS ***/
 pref("breakpad.reportURL", "");
@@ -150,7 +155,7 @@ pref("dom.private-attribution.submission.enabled", false);
  * SECTION: PESKYFOX                                                        *
 ****************************************************************************/
 /** MOZILLA UI ***/
-pref("browser.privatebrowsing.vpnpromourl", "");
+pref("browser.privatebrowsing.vpnpromourl", "", locked);
 pref("extensions.getAddons.showPane", false);
 pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 pref("browser.discovery.enabled", false);

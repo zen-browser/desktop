@@ -15,3 +15,7 @@ zen-panel-ui-workspaces-create-cancel =
 zen-workspaces-panel-context-delete = 
     .label = Delete Workspace
     .accesskey = D
+
+context-zen-change-workspace-tab = 
+    .label = Change Tab(s) To Workspace
+    .accesskey = C

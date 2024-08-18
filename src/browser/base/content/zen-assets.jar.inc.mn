@@ -1,0 +1,41 @@
+
+
+        content/browser/zenThemeModifier.js                     (content/zenThemeModifier.js)
+        content/browser/ZenStartup.mjs                          (content/ZenStartup.mjs)
+        content/browser/ZenUIManager.mjs                        (content/ZenUIManager.mjs)
+        content/browser/zen-components/ZenViewSplitter.mjs      (content/zen-components/src/ZenViewSplitter.mjs)
+        content/browser/zen-components/ZenWorkspaces.mjs        (content/zen-components/src/ZenWorkspaces.mjs)
+        content/browser/zen-components/ZenSidebarManager.mjs    (content/zen-components/src/ZenSidebarManager.mjs)
+        content/browser/zen-components/ZenProfileDialogUI.mjs   (content/zen-components/src/ZenProfileDialogUI.mjs)
+        content/browser/zen-components/ZenKeyboardShortcuts.mjs (content/zen-components/src/ZenKeyboardShortcuts.mjs)
+        content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
+        content/browser/zen-components/ZenThemesImporter.mjs    (content/zen-components/src/ZenThemesImporter.mjs)
+
+        content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
+        content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
+        content/browser/zen-styles/zen-tabs.css                 (content/zen-styles/zen-tabs.css)
+        content/browser/zen-styles/zen-tabs/vertical-tabs.css   (content/zen-styles/zen-tabs/vertical-tabs.css)
+        content/browser/zen-styles/zen-browser-ui.css           (content/zen-styles/zen-browser-ui.css)
+        content/browser/zen-styles/zen-animations.css           (content/zen-styles/zen-animations.css)
+        content/browser/zen-styles/zen-panel-ui.css             (content/zen-styles/zen-panel-ui.css)
+        content/browser/zen-styles/zen-single-components.css    (content/zen-styles/zen-single-components.css)
+        content/browser/zen-styles/zen-sidebar.css              (content/zen-styles/zen-sidebar.css)
+        content/browser/zen-styles/zen-toolbar.css              (content/zen-styles/zen-toolbar.css)
+        content/browser/zen-styles/zen-decks.css                (content/zen-styles/zen-decks.css)
+        content/browser/zen-styles/zen-browser-container.css    (content/zen-styles/zen-browser-container.css)
+        content/browser/zen-styles/zen-workspaces.css           (content/zen-styles/zen-workspaces.css)
+        content/browser/zen-styles/zen-profile-dialog.css       (content/zen-styles/zen-profile-dialog.css)
+        content/browser/zen-styles/zen-urlbar.css               (content/zen-styles/zen-urlbar.css)
+        content/browser/zen-styles/zen-popup.css                (content/zen-styles/zen-popup.css)
+        content/browser/zen-styles/zen-sidebar-panels.css       (content/zen-styles/zen-sidebar-panels.css)
+        
+        content/browser/zen-styles/zen-panels/bookmarks.css     (content/zen-styles/zen-panels/bookmarks.css)
+        content/browser/zen-styles/zen-panels/extensions.css    (content/zen-styles/zen-panels/extensions.css)
+        content/browser/zen-styles/zen-panels/print.css         (content/zen-styles/zen-panels/print.css)
+        content/browser/zen-styles/zen-panels/welcome.css       (content/zen-styles/zen-panels/welcome.css)
+
+        content/browser/zen-styles/zen-compact-mode.css         (content/zen-styles/zen-compact-mode.css)
+
+        # Actors
+        content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (content/zen-components/src/actors/ZenThemeMarketplaceParent.sys.mjs)
+        content/browser/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs  (content/zen-components/src/actors/ZenThemeMarketplaceChild.sys.mjs)

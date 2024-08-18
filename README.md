@@ -7,8 +7,9 @@ Experience tranquillity while browsing the web without people tracking you!
 * [Download](https://www.zen-browser.app/download)
 * [Release Notes](https://www.zen-browser.app/release-notes/latest)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K111FH7H)
 <a href='https://flathub.org/apps/io.github.zen_browser.zen'>
-  <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+  <img width='220' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
 # Compatibility

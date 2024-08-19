@@ -77,16 +77,8 @@ jobs:
       - name: Bootstrap
         run: |
           cd engine
-          rm -rf /usr/local/bin/2to3
-          rm -rf '/usr/local/bin/2to3-3.12'
-          rm -rf '/usr/local/bin/idle3'
-          rm -rf '/usr/local/bin/idle3.12'
-          rm -rf '/usr/local/bin/pydoc3'
-          rm -rf '/usr/local/bin/pydoc3.12'
-          rm -rf '/usr/local/bin/python3'
-          rm -rf '/usr/local/bin/python3-32'
-          rm -rf '/usr/local/bin/python3.12'
-          rm -rf '/usr/local/bin/python3.12-32'
+          # completly uninstall python3 and python3.12
+          brew uninstall python3 python3.12 -f
           ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
 

@@ -73,7 +73,6 @@
   display: none;
 }
 
-#TabsToolbar .toolbarbutton-1:hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 #TabsToolbar .toolbarbutton-1[open="true"] > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
 .zen-sidebar-action-button:hover,
 .zen-sidebar-action-button[open="true"] {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index e9aa0f03c26dc26e1a2e56d28fadb70e60c8e8ca..9c209752b01bd07a3f38452da4bc8efc7433466c 100644
+index e9aa0f03c26dc26e1a2e56d28fadb70e60c8e8ca..f66f9c168ab560e41ea9d03c2d0727e4a5c15132 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -552,19 +552,36 @@
@@ -146,6 +146,15 @@ index e9aa0f03c26dc26e1a2e56d28fadb70e60c8e8ca..9c209752b01bd07a3f38452da4bc8efc
        children.pop();
        this._allTabs = children;
        return children;
+@@ -1386,7 +1430,7 @@
+         let tabsToReset = [];
+         for (let i = numPinned; i < tabs.length; i++) {
+           let tab = tabs[i];
+-          tab.style.setProperty("max-width", aTabWidth, "important");
++          //tab.style.setProperty("max-width", aTabWidth, "important");
+           if (!isEndTab) {
+             // keep tabs the same width
+             tab.style.transition = "none";
 @@ -1476,11 +1520,11 @@
          for (let i = numPinned - 1; i >= 0; i--) {
            let tab = tabs[i];

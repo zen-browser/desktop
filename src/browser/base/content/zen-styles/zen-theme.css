@@ -111,7 +111,7 @@
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
 
-  --toolbar-field-background-color: var(--zen-colors-input-bg);
+  --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;
 }
 

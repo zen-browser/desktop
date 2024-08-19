@@ -15,6 +15,12 @@ const kZenColors = [
   "#d4bbff",
 ];
 
+const kZenOSToSmallName = {
+  WINNT: "windows",
+  Darwin: "macos",
+  Linux: "linux",
+};
+
 var gZenMarketplaceManager = {  
   init() {
     this._buildThemesList();
@@ -70,12 +76,45 @@ var gZenMarketplaceManager = {
     return this._themes;
   },
 
+  get currentOperatingSystem() {
+    let os = Services.appinfo.OS;
+    return kZenOSToSmallName[os];
+  },
+
+  _getValidPreferences(preferences) {
+    for (let key in preferences) {
+      // [!][os:]key
+      let restOfPreferences = key;
+      let isNegation = false;
+      if (key.startsWith("!")) {
+        isNegation = true;
+        restOfPreferences = key.slice(1);
+      }
+      let os = "";
+      if (restOfPreferences.includes(":")) {
+        [os, restOfPreferences] = restOfPreferences.split(":");
+      }
+      if (isNegation && os === this.currentOperatingSystem) {
+        delete preferences[key];
+      } else if (os && os !== this.currentOperatingSystem) {
+        delete preferences[key];
+      } else {
+        // Change the key to contain only the rest of the preferences.
+        preferences[restOfPreferences] = preferences[key];
+        if (key !== restOfPreferences) {
+          delete preferences[key];
+        }
+      }
+    }
+    return preferences;
+  },
+
   async _getThemePreferences(theme) {
     const themePath = PathUtils.join(this.themesRootPath, theme.id, "preferences.json");
     if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
       return {};
     }
-    return await IOUtils.readJSON(themePath);
+    return this._getValidPreferences(await IOUtils.readJSON(themePath));
   },
 
   async _buildThemesList() {

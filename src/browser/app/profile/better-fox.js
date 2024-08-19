@@ -49,7 +49,6 @@ pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
 pref("network.ssl_tokens_cache_capacity", 32768);
 
-
 /** MIXED CONTENT + CROSS-SITE ***/
 pref("pdfjs.enableScripting", false);
 pref("extensions.postDownloadThirdPartyPrompt", false);

@@ -385,7 +385,7 @@
     }
 
     #tabbrowser-tabbox {
-      padding-left: 10px;
+      padding-left: var(--zen-element-separation);
     }
 
     #tabbrowser-tabpanels .browserSidebarContainer {

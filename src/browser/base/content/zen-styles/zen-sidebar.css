@@ -215,7 +215,7 @@
 
 @media (-moz-bool-pref: "zen.view.sidebar-expanded.show-button") {
   #zen-expand-sidebar-button {
-    display: block;
+    display: flex;
   }
 }
  

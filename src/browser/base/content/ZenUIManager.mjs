@@ -28,8 +28,20 @@ var gZenVerticalTabsManager = {
     //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
     this._updateMaxWidth();
     this.initRightSideOrderContextMenu();
+    this._updateOnHoverVerticalTabs();
+  },
+
+  _updateOnHoverVerticalTabs() {
+    let onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    let sidebar = document.getElementById('navigator-toolbox');
+    if (onHover) {
+      sidebar.setAttribute('zen-user-hover', 'true');
+    } else {
+      sidebar.removeAttribute('zen-user-hover');
+    }
   },
 
   initRightSideOrderContextMenu() {
@@ -89,6 +101,7 @@ var gZenVerticalTabsManager = {
   toggleExpand() {
     let expanded = !this.expanded;
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
+    Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
   },
 };
 

@@ -144,8 +144,41 @@ var gZenLooksAndFeel = {
   init() {
     this._initializeColorPicker(this._getInitialAccentColor());
     window.zenPageAccentColorChanged = this._handleAccentColorChange.bind(this);
+    this._initializeTabbarExpandForm();
     gZenThemeBuilder.init();
     gZenMarketplaceManager.init();
+  },
+
+  _initializeTabbarExpandForm() {
+    const form = document.getElementById("zen-expand-tabbar-strat");
+    const radios = form.querySelectorAll("input[type=radio]");
+    const onHoverPref = "zen.view.sidebar-expanded.on-hover";
+    const defaultExpandPref = "zen.view.sidebar-expanded";
+    if (Services.prefs.getBoolPref(onHoverPref)) {
+      form.querySelector("input[value=\"hover\"]").checked = true;
+    } else if (Services.prefs.getBoolPref(defaultExpandPref)) {
+      form.querySelector("input[value=\"expand\"]").checked = true;
+    } else {
+      form.querySelector("input[value=\"none\"]").checked = true;
+    }
+    for (let radio of radios) {
+      radio.addEventListener("change", e => {
+        switch (e.target.value) {
+          case "expand":
+            Services.prefs.setBoolPref(onHoverPref, false);
+            Services.prefs.setBoolPref(defaultExpandPref, true);
+            break;
+          case "none":
+            Services.prefs.setBoolPref(onHoverPref, false);
+            Services.prefs.setBoolPref(defaultExpandPref, false);
+            break;
+          case "hover":
+            Services.prefs.setBoolPref(onHoverPref, true);
+            Services.prefs.setBoolPref(defaultExpandPref, true);
+            break;
+        }
+      });
+    }
   },
 
   _initializeColorPicker(accentColor) {

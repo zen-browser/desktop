@@ -51,8 +51,13 @@ zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout
 zen-vertical-tabs-show-expand-button = 
     .label = Show Expand Button
-zen-vertical-tabs-expand-tabs-by-default = 
-    .label = Expand Tabs by Default
+
+zen-vertical-tabs-expand-tabs-by-default = Expand Tabs by Default
+zen-vertical-tabs-dont-expand-tabs-by-default = Don't Expand Tabs by Default
+zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Wont work on compact mode)
+
+zen-vertical-tabs-expand-tabs-header = How to expand tabs
+zen-vertical-tabs-expand-tabs-description = Choose how to expand tabs in the sidebar
 
 zen-theme-marketplace-header = Theme Store
 zen-theme-marketplace-description = Find and install themes from the store.

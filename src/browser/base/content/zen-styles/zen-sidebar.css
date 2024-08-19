@@ -73,10 +73,7 @@
   display: none;
 }
 
-#TabsToolbar .toolbarbutton-1:hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
-#TabsToolbar .toolbarbutton-1[open="true"] > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
-.zen-sidebar-action-button:hover,
-.zen-sidebar-action-button[open="true"] {
+.zen-sidebar-action-button:hover {
   background: var(--toolbarbutton-hover-background) !important;
 }
 
@@ -215,7 +212,7 @@
 
 @media (-moz-bool-pref: "zen.view.sidebar-expanded.show-button") {
   #zen-expand-sidebar-button {
-    display: block;
+    display: flex;
   }
 }
  

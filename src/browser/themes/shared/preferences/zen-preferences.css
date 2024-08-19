@@ -17,6 +17,10 @@
   margin: auto;
 }
 
+description {
+  margin-top: 0 !important;
+}
+
 groupbox {
   background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
   padding-inline: unset !important;
@@ -131,6 +135,15 @@ groupbox h2 {
 }
 
 /* Look and feel */
+
+#zen-expand-tabbar-strat {
+  display: flex;
+  flex-direction: column;
+}
+
+#zen-expand-tabbar-strat > hbox {
+  margin-top: 10px;
+}
 
 #category-zen-looks > .category-icon {
   list-style-image: url("chrome://browser/skin/customize.svg");

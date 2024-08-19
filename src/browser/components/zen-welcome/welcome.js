@@ -18,7 +18,6 @@ ChromeUtils.defineModuleGetter(
 
 Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
 
-const kWelcomeURL = 'https://www.zen-browser.app/welcome';
 const kWelcomeSeenPref = 'zen.welcomeScreen.seen'
 
 // =============================================================================
@@ -288,17 +287,10 @@ class Pages {
       Services.prefs.setBoolPref(kWelcomeSeenPref, true)
 
       close();
-      this._openWelcomePage();
       return
     }
 
     this._displayCurrentPage()
-  }
-
-  _openWelcomePage() {
-    gZenUIManager.openAndChangeToTab(kWelcomeURL, {
-      inBackground: true,
-    });
   }
 
   _displayCurrentPage() {

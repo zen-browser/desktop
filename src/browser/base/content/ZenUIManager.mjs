@@ -28,7 +28,9 @@ var gZenVerticalTabsManager = {
     //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
     this._updateMaxWidth();
+    this._updateOnHoverVerticalTabs();
     this.initRightSideOrderContextMenu();
   },
 
@@ -45,6 +47,50 @@ var gZenVerticalTabsManager = {
       Services.prefs.setBoolPref(kConfigKey, !rightSide);
     });
     document.getElementById('viewToolbarsMenuSeparator').before(fragment);
+  },
+
+  _updateOnHoverVerticalTabs() {
+    const active = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    const toolbox = document.getElementById('navigator-toolbox');
+    // Use 'var' to avoid garbage collection so we can remove the listener later
+    var listener = this._onHoverVerticalTabs.bind(this);
+    var listenerOut = this._onBlurVerticalTabs.bind(this);
+    if (active) {
+      toolbox.addEventListener('mouseover', listener);
+      toolbox.addEventListener('mouseout', listenerOut);
+    } else {
+      toolbox.removeEventListener('mouseover', listener);
+      toolbox.removeEventListener('mouseout', listenerOut);
+    }
+  },
+
+  get navigatorToolbox() {
+    if (this._navigatorToolbox) {
+      return this._navigatorToolbox;
+    }
+    this._navigatorToolbox = document.getElementById('navigator-toolbox');
+    return this._navigatorToolbox;
+  },
+
+  _onHoverVerticalTabs(event) {
+    const target = event.target;
+    const isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
+    const isToolbar = target.id === 'navigator-toolbox' 
+      || target.closest('#navigator-toolbox');
+    if (isToolbar && !isCompactMode && !this.navigatorToolbox.hasAttribute('zen-user-show')) {
+      this.navigatorToolbox.setAttribute('zen-user-show', 'true');
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', true);
+    }
+  },
+
+  _onBlurVerticalTabs(event) {
+    const target = event.target;
+    const isToolbar = target.id === 'navigator-toolbox'
+      || target.closest('#navigator-toolbox');
+    if (isToolbar && this.navigatorToolbox.hasAttribute('zen-user-show')) {
+      this.navigatorToolbox.removeAttribute('zen-user-show');
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', false);
+    }
   },
 
   _updateEvent() {

@@ -96,9 +96,23 @@
       <checkbox id="zenLooksAndFeelShowTabExpandButton"
             data-l10n-id="zen-vertical-tabs-show-expand-button"
             preference="zen.view.sidebar-expanded.show-button"/>
-      <checkbox id="zenLooksAndFeelExpandTabsByDefault"
-            data-l10n-id="zen-vertical-tabs-expand-tabs-by-default"
-            preference="zen.view.sidebar-expanded"/>
+
+      <label><html:h2 data-l10n-id="zen-vertical-tabs-expand-tabs-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-vertical-tabs-expand-tabs-description" />
+      <form xmlns="http://www.w3.org/1999/xhtml" id="zen-expand-tabbar-strat" autocomplete="off" class="indent">
+            <hbox>
+                  <input type="radio" name="zen-expand-tabbar-value" value="expand" data-l10n-id="zen-vertical-tabs-expand-tabs-by-default" />
+                  <span data-l10n-id="zen-vertical-tabs-expand-tabs-by-default" />
+            </hbox>
+            <hbox>
+                  <input type="radio" name="zen-expand-tabbar-value" value="hover" data-l10n-id="zen-vertical-tabs-expand-tabs-on-hover" />
+                  <span data-l10n-id="zen-vertical-tabs-expand-tabs-on-hover" />
+            </hbox>
+            <hbox>
+                  <input type="radio" name="zen-expand-tabbar-value" value="none" data-l10n-id="zen-vertical-tabs-dont-expand-tabs-by-default" />
+                  <span data-l10n-id="zen-vertical-tabs-dont-expand-tabs-by-default" />
+            </hbox>
+      </form>
 </groupbox>
 
 </html:template>

@@ -68,9 +68,12 @@ pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);
 pref('zen.view.compact', false);
 pref('zen.view.compact.hide-toolbar', false);
+
 pref('zen.view.sidebar-expanded', false);
+pref('zen.view.sidebar-expanded.on-hover', false);
 pref('zen.view.sidebar-expanded.show-button', true);
 pref('zen.view.sidebar-expanded.max-width', 400);
+
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-firefox', false);
@@ -126,6 +129,10 @@ pref('dom.script_loader.bytecode_cache.strategy', 2);
 
 // Extremly experimental features
 pref("dom.webgpu.enabled", true);
+
+// Font rendering
+pref('gfx.font_rendering.cleartype_params.rendering_mode', 5);
+pref('gfx.font_rendering.cleartype_params.gamma', 1750);
 
 #include better-fox.js
 

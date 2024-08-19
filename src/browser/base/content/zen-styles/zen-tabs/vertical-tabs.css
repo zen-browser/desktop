@@ -379,4 +379,27 @@
       margin-right: 0 !important;
     }
   }
+
+  @media (-moz-bool-pref: "zen.view.sidebar-expanded.on-hover") and (not (-moz-bool-pref: "zen.view.compact")) {
+    #navigator-toolbox[zen-user-show="true"] {
+      transition: none !important;
+      position: absolute !important;
+   
+      top: -1px;
+      left: 0px;
+
+      z-index: 1;
+      height: 100%;
+      background: var(--zen-dialog-background) !important;
+
+      border-top: 1px solid var(--zen-colors-border);
+      border-right: 1px solid var(--zen-colors-border);
+
+      border-top-right-radius: var(--zen-border-radius);
+      
+      #zen-tabbox-wrapper:has(&) {
+        padding-left: 3.4rem;
+      }
+    }
+  }
 }

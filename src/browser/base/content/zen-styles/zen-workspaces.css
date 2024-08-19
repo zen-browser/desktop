@@ -18,25 +18,27 @@
 }
 
 @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
-  #zen-workspaces-button .zen-workspace-sidebar-name {
-    display: block;
-  }
+  #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
+    & #zen-workspaces-button .zen-workspace-sidebar-name {
+      display: block;
+    }
 
-  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
-    display: none;
-  }
+    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
+      display: none;
+    }
 
-  #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
-    margin-left: 0;
-  }
+    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
+      margin-left: 0;
+    }
 
-  #zen-workspaces-button {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    display: flex;
-    padding: 2px 10px;
-    width: calc(100% - var(--zen-tabbrowser-padding) * 8) !important;
+    & #zen-workspaces-button {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: flex;
+      padding: 2px 10px;
+      width: calc(100% - var(--zen-tabbrowser-padding) * 8) !important;
+    }
   }
 }
 

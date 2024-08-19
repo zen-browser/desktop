@@ -171,9 +171,10 @@ var gZenLooksAndFeel = {
           case "none":
             Services.prefs.setBoolPref(onHoverPref, false);
             Services.prefs.setBoolPref(defaultExpandPref, false);
+            break;
           case "hover":
             Services.prefs.setBoolPref(onHoverPref, true);
-            Services.prefs.setBoolPref(defaultExpandPref, false);
+            Services.prefs.setBoolPref(defaultExpandPref, true);
             break;
         }
       });

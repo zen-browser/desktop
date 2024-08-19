@@ -29,7 +29,7 @@ modules:
 
       - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh
       - install -Dm0644 metadata/policies.json ${{FLATPAK_DEST}}/bin/distribution/policies.json
-      - install -Dm0644 metadata/icons/io.github.zen_browser.zen.png ${{FLATPAK_DEST}}/share/icons/hicolor/256x256/apps/${{FLATPAK_ID}}.png
+      - install -Dm0644 metadata/icons/io.github.zen_browser.zen.svg ${{FLATPAK_DEST}}/share/icons/hicolor/scalable/apps/${{FLATPAK_ID}}.png
       - install -Dm0644 metadata/io.github.zen_browser.zen.metainfo.xml ${{FLATPAK_DEST}}/share/metainfo/${{FLATPAK_ID}}.metainfo.xml
       - install -Dm0644 metadata/io.github.zen_browser.zen.desktop ${{FLATPAK_DEST}}/share/applications/${{FLATPAK_ID}}.desktop
 

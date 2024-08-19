@@ -235,6 +235,12 @@
     display: none; /* TODO: fix this */
   }
 
+  @media (-moz-bool-pref: "zen.view.sidebar-collapsed.hide-mute-button") and (not (-moz-bool-pref: "zen.view.sidebar-expanded")) {
+    .tab-icon-overlay:is([soundplaying], [muted]):not([selected]) {
+      display: none;
+    }
+  }
+  
   @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
     #navigator-toolbox {
       width: fit-content !important;

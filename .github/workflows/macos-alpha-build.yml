@@ -74,11 +74,22 @@ jobs:
         run: |
           pnpm surfer import
 
+      - name: Setup
+        run: |
+          sudo xcode-select --switch /Applications/Xcode.app
+          sudo xcodebuild -license
+
+          echo 'export PATH="'"$(python3 -m site --user-base)"'/bin:$PATH"' >> ~/.zshenv
+          python3 -m pip install --user mercurial
+
+          # completly uninstall python3 and python3.12
+          brew uninstall --ignore-dependencies python3 python3.12 -f
+
+          brew install python@3.12
+
       - name: Bootstrap
         run: |
           cd engine
-          # completly uninstall python3 and python3.12
-          brew uninstall --ignore-dependencies python3 python3.12 -f
           ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
 

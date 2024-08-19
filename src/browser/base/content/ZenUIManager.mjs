@@ -107,6 +107,7 @@ var gZenVerticalTabsManager = {
 
 var gZenCompactModeManager = {
   init() {
+    Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
   },
 
   get prefefence() {
@@ -115,6 +116,10 @@ var gZenCompactModeManager = {
 
   set preference(value) {
     Services.prefs.setBoolPref('zen.view.compact', value);
+  },
+
+  _updateEvent() {
+    Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
   },
 
   toggle() {

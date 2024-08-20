@@ -413,7 +413,7 @@
       transform: translateY(-1px);
     }
     
-    #TabsToolbar:not(:hover) #tabbrowser-tabs[closebuttons="activetab"] .tabbrowser-tab .tab-content[class] > .tab-close-button[class] {
+    #navigator-toolbox:not(:hover) #TabsToolbar #tabbrowser-tabs[closebuttons="activetab"] .tabbrowser-tab .tab-content[class] > .tab-close-button[class] {
       display: none !important;
       visibility: hidden !important;
     }
@@ -425,23 +425,26 @@
     #TabsToolbar-customization-target:hover > .toolbarbutton-1 > .toolbarbutton-text {
       transition-delay: 0.2s !important;
     }
-    
-    #TabsToolbar:hover {
-      padding-right: .1rem !important;
-    }
-    
-    #TabsToolbar:hover {
+        
+    #navigator-toolbox:hover #TabsToolbar {
       z-index: 100 !important;
       width: 250px !important;
       background-color: var(--zen-dialog-background);
       border-top-color: var(--zen-colors-border);
       border-right-color: var(--zen-colors-border);
+      padding-right: .1rem !important;
       position: absolute;
     }
 
     @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+      #navigator-toolbox:hover {
+        --zen-navigation-toolbar-min-width: 0 !important;
+        position: relative;
+        padding: 0 !important;
+      }
+      
       #TabsToolbar {
-        border-right: 0;
+        border-right: 0 !important;
         border-left: 1px solid transparent;
         border-top-right-radius: 0;
         border-top-left-radius: var(--zen-border-radius);
@@ -449,7 +452,7 @@
         right: 100%;
       }
 
-      #TabsToolbar:hover {
+      #navigator-toolbox:hover #TabsToolbar {
         border-left: 1px solid var(--zen-colors-border);
       }
     }

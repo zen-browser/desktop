@@ -374,12 +374,6 @@
       padding-left: 0;
     }
 
-    @media (-moz-bool-pref: "zen.view.sidebar-expanded") {
-      #navigator-toolbox {
-        padding-right: 3px !important;
-      }
-    }
-
     #zen-sidebar-splitter {
       order: 3;
     }
@@ -460,12 +454,19 @@
       position: absolute;
     }
 
-    #TabsToolbar-customization-target:not(:hover) > #tabbrowser-tabs > #tabbrowser-arrowscrollbox > .tabbrowser-tab > .tab-stack > .tab-content > .tab-label-container {
-      opacity: 0;
-      visibility: collapse;
-      transition: opacity 370ms,
-      visibility 370ms,
-      width 370ms ease-in-out !important;
+    @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+      #TabsToolbar {
+        border-right: 0;
+        border-left: 1px solid transparent;
+        border-top-right-radius: 0;
+        border-top-left-radius: var(--zen-border-radius);
+
+        right: 100%;
+      }
+
+      #TabsToolbar:hover {
+        border-left: 1px solid var(--zen-colors-border);
+      }
     }
   }
 }

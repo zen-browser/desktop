@@ -96,7 +96,7 @@ var gZenMarketplaceManager = {
       }
       if (isNegation && os === this.currentOperatingSystem) {
         delete preferences[key];
-      } else if (os && os !== this.currentOperatingSystem) {
+      } else if (os && os !== this.currentOperatingSystem && !isNegation) {
         delete preferences[key];
       } else {
         // Change the key to contain only the rest of the preferences.

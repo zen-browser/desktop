@@ -422,20 +422,6 @@
       transition-delay: 0.2s !important;
     }
     
-    #TabsToolbar-customization-target:not(:hover) > #tabbrowser-tabs > #tabbrowser-arrowscrollbox > .tabbrowser-tab > .tab-stack > .tab-content > .tab-label-container {
-      opacity: 0;
-      visibility: collapse;
-      transition: opacity 370ms,
-      visibility 370ms,
-      width 370ms ease-in-out !important;
-    }
-    
-    #TabsToolbar-customization-target:not(:hover) > .toolbarbutton-1 > .toolbarbutton-text {
-      opacity: 0;
-      visibility: collapse;
-      transition: all 370ms !important;
-    }
-    
     #TabsToolbar-customization-target:hover > .toolbarbutton-1 > .toolbarbutton-text {
       transition-delay: 0.2s !important;
     }

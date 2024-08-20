@@ -76,9 +76,6 @@ jobs:
 
       - name: Setup
         run: |
-          sudo xcode-select --switch /Applications/Xcode.app
-          sudo xcodebuild -license
-
           echo 'export PATH="'"$(python3 -m site --user-base)"'/bin:$PATH"' >> ~/.zshenv
           python3 -m pip install --user mercurial
 

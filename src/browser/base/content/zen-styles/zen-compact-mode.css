@@ -23,11 +23,12 @@
     z-index: 1;
     height: 100%;
     margin: 0;
-    padding: var(--zen-compact-toolbox-margin);
+    padding: var(--zen-compact-toolbox-margin) !important;
     padding-top: calc(var(--zen-compact-toolbox-margin-single) - var(--zen-element-separation));
 
     & #titlebar {
       border: 1px solid var(--zen-colors-border);
+      min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 4) !important;
       background: var(--zen-colors-tertiary) !important;
       padding: 0 5px;
       border-radius: var(--zen-panel-radius);

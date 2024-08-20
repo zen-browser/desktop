@@ -70,11 +70,11 @@ jobs:
 
       - name: Setup
         run: |
+          # completly uninstall python3 and python3.12
+          brew uninstall --ignore-dependencies python3 -f
+          
           echo 'export PATH="'"$(python3 -m site --user-base)"'/bin:$PATH"' >> ~/.zshenv
           python3 -m pip install --user mercurial
-
-          # completly uninstall python3 and python3.12
-          brew uninstall --ignore-dependencies python3 python3.12 -f
 
           brew install python@3.11
 

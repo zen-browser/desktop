@@ -243,15 +243,13 @@
   
   @media (-moz-bool-pref: "zen.view.sidebar-expanded") {  
     #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
-      & #navigator-toolbox {
-        --zen-navigation-toolbar-min-width: 155px;
-        min-width: var(--zen-navigation-toolbar-min-width) !important;
-        align-items: start;
-        transition: .2s;
-        width: 170px;
-        border: none;
-        padding-left: 2px;
-      }
+      --zen-navigation-toolbar-min-width: 155px;
+      min-width: var(--zen-navigation-toolbar-min-width) !important;
+      align-items: start;
+      transition: .2s;
+      width: 170px;
+      border: none;
+      padding-left: 2px;
     
       & .tab-label-container {
         display: block;

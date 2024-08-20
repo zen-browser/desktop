@@ -72,8 +72,8 @@ jobs:
         run: |
           # completly uninstall python3 and python3.12
           brew uninstall --ignore-dependencies python3 -f
-          
-          echo 'export PATH="'"$(python3 -m site --user-base)"'/bin:$PATH"' >> ~/.zshenv
+
+          export PATH="$(python3 -m site --user-base)/bin":$PATH
           python3 -m pip install --user mercurial
 
           brew install python@3.11
@@ -81,6 +81,7 @@ jobs:
       - name: Bootstrap
         run: |
           cd engine
+          export PATH="$(python3 -m site --user-base)/bin":$PATH
           ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
 

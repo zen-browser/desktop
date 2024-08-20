@@ -71,12 +71,13 @@ jobs:
       - name: Setup
         run: |
           # completly uninstall python3 and python3.12
-          brew uninstall --ignore-dependencies python3 -f
+          brew uninstall --ignore-dependencies python3.12 -f
 
           export PATH="$(python3 -m site --user-base)/bin":$PATH
           python3 -m pip install --user mercurial
 
           brew install python@3.11
+          brew install watchman
 
       - name: Bootstrap
         run: |

@@ -51,8 +51,22 @@ jobs:
           export PATH="$(python3 -m site --user-base)/bin":$PATH
           python3 -m pip install --user mercurial
 
-          brew link --overwrite python@3.12
-          brew install python@3.12
+          rm '/usr/local/bin/2to3-3.11' # fix Could not symlink bin/2to3-3.11
+          rm '/usr/local/bin/2to3-3.12' # fix Could not symlink bin/2to3-3.12
+          rm /usr/local/bin/2to3 # fix Could not symlink bin/2to3
+          rm '/usr/local/bin/idle3.11' #fix Could not symlink bin/idle3.11
+          rm '/usr/local/bin/idle3.12' # fix Could not symlink bin/idle3.12
+          rm '/usr/local/bin/idle3' # fix Could not symlink bin/idle3
+          rm '/usr/local/bin/pydoc3.11' # fix Could not symlink bin/pydoc3.11
+          rm '/usr/local/bin/pydoc3.12' # fix Could not symlink bin/pydoc3.12
+          rm '/usr/local/bin/pydoc3' # fix Could not symlink bin/pydoc3
+          rm '/usr/local/bin/python3.11' # fix Could not symlink bin/python3.11
+          rm '/usr/local/bin/python3.12' # fix Could not symlink bin/python3.12
+          rm '/usr/local/bin/python3' # fix Could not symlink bin/python3
+          rm '/usr/local/bin/python3.11-config' # fix Could not symlink bin/python3.11-config
+          rm '/usr/local/bin/python3.12-config' # fix Could not symlink bin/python3.12-config
+          rm '/usr/local/bin/python3-config' # fix Could not symlink bin/python3-config
+
           brew install watchman
 
       - name: Force usage fo gnu-tar

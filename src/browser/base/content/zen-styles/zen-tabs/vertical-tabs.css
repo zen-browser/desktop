@@ -31,6 +31,7 @@
   
   #TabsToolbar-customization-target {
     flex-direction: column;
+    max-width: 100%;
   }
   
   :root[customizing] .customization-target:not(#widget-overflow-fixed-list) {

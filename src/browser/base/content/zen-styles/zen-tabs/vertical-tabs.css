@@ -405,7 +405,7 @@
     #TabsToolbar {
       --hovered-verticaltab-width: 20em;
 
-      transition: 200ms, margin 400ms, border-color 0 ease-in-out !important;
+      transition: 200ms, margin 200ms, border-color 0 ease-in-out !important;
       z-index: 1;
       background-repeat: no-repeat !important;
       background-position: center center !important;
@@ -413,6 +413,8 @@
 
       border-top: 1px solid transparent;
       border-right: 1px solid transparent;
+
+      height: 100%;
 
       border-top-right-radius: var(--zen-border-radius);
       transform: translateY(-1px);
@@ -455,14 +457,7 @@
       background-color: var(--zen-dialog-background);
       border-top-color: var(--zen-colors-border);
       border-right-color: var(--zen-colors-border);
-
-      margin-right: calc((var(--hovered-verticaltab-width) + 10px) * -1) !important;
-    }
-    
-    @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
-      #TabsToolbar:hover {
-        margin-left: calc((var(--hovered-verticaltab-width) + 10px) * -1) !important;
-      }
+      position: absolute;
     }
 
     #TabsToolbar-customization-target:not(:hover) > #tabbrowser-tabs > #tabbrowser-arrowscrollbox > .tabbrowser-tab > .tab-stack > .tab-content > .tab-label-container {

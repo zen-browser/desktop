@@ -152,6 +152,14 @@
 	list-style-image: url("open.svg") !important;
 }
 
+#context_zenOpenWorkspace {
+	--menu-image: url("open.svg") !important;
+}
+
+#context_zenSetAsDefaultWorkspace {
+	--menu-image: url("bookmark-hollow.svg") !important;
+}
+
 #add-ons-button,
 #appMenu-extensions-themes-button,
 #unified-extensions-button {

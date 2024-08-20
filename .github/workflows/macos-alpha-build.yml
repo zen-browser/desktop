@@ -45,6 +45,16 @@ jobs:
           brew install cairo sccache gnu-tar mercurial
           sudo pip install setuptools
 
+          # completly uninstall python3 and python3.12
+          brew uninstall --ignore-dependencies python3.12 -f
+
+          export PATH="$(python3 -m site --user-base)/bin":$PATH
+          python3 -m pip install --user mercurial
+
+          brew link --overwrite python@3.12
+          brew install python@3.12
+          brew install watchman
+
       - name: Force usage fo gnu-tar
         run: |
           echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.bash_profile
@@ -67,17 +77,6 @@ jobs:
 
       - name: Download firefox source and dependancies
         run: pnpm surfer download
-
-      - name: Setup
-        run: |
-          # completly uninstall python3 and python3.12
-          brew uninstall --ignore-dependencies python3.12 -f
-
-          export PATH="$(python3 -m site --user-base)/bin":$PATH
-          python3 -m pip install --user mercurial
-
-          brew install python@3.11
-          brew install watchman
 
       - name: Bootstrap
         run: |

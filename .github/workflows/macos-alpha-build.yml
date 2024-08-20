@@ -68,12 +68,6 @@ jobs:
       - name: Download firefox source and dependancies
         run: pnpm surfer download
 
-      - name: Import
-        env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
-        run: |
-          pnpm surfer import
-
       - name: Setup
         run: |
           echo 'export PATH="'"$(python3 -m site --user-base)"'/bin:$PATH"' >> ~/.zshenv
@@ -100,6 +94,12 @@ jobs:
           cd engine
           ./mach --no-interactive bootstrap --application-choice browser 
           cd ..
+
+      - name: Import
+        env:
+          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
+        run: |
+          pnpm surfer import
 
       - name: build Zen
         env:

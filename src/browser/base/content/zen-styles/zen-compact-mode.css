@@ -33,6 +33,10 @@
       padding: 0 5px;
       border-radius: var(--zen-panel-radius);
     }
+
+    &, & #titlebar {
+      min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 4) !important;
+    }
   }
 
   @media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
@@ -79,13 +83,8 @@
   #navigator-toolbox[zen-user-show],
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
-    transition-delay: 33ms !important;
     transform: none !important;
     opacity: 1;
-
-    & #titlebar {
-      min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 4) !important;
-    }
   }
   
   #navigator-toolbox > *{ line-height: normal; pointer-events: auto }

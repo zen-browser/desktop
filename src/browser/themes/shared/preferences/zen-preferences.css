@@ -341,3 +341,12 @@ groupbox h2 {
 .zenThemeMarketplaceItemUninstallButton {
   margin-left: auto;
 }
+
+/* Disable mozilla's settings */
+
+#dataCollectionCategory,
+#dataCollectionGroup,
+#websiteAdvertisingCategory,
+#websiteAdvertisingGroup {
+  display: none !important;
+}

@@ -162,3 +162,6 @@ pref("sidebar.verticalTabs", false, locked);
 // Better Windows theming
 pref("widget.non-native-theme.scrollbar.style", 2);
 pref("widget.non-native-theme.use-theme-accent", true);
+
+// Closing the last tab should not cause the browser to close, this is bad default inherited from Firefox
+pref("browser.tabs.closeWindowWithLastTab", false);

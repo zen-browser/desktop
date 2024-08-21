@@ -369,12 +369,12 @@
   /* Display the vertical tabs on the right side */
   @media (-moz-bool-pref: "zen.tabs.vertical.right-side") and (not (-moz-bool-pref: "zen.view.compact")) {
     #navigator-toolbox {
-      order: 4;
+      order: 6;
       padding-left: 0;
     }
 
     #zen-sidebar-splitter {
-      order: 3;
+      order: 5;
     }
 
     #tabbrowser-tabbox {

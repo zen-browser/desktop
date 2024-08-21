@@ -1,4 +1,4 @@
-name: Bug Report Or Feature Request
+name: Bug Report
 description: File a bug report
 body:
   - type: markdown

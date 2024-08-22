@@ -3,6 +3,7 @@ var ZenStartup = {
   init() {
     this._changeSidebarLocation();
     this._zenInitBrowserLayout();
+    this._focusSearchBar();
   },
 
   _zenInitBrowserLayout() {
@@ -100,6 +101,10 @@ var ZenStartup = {
     splitter.setAttribute("resizeafter", "none");
     const titlebar = document.getElementById("navigator-toolbox");
     titlebar.insertAdjacentElement("afterend", splitter);
+  },
+
+  _focusSearchBar() {
+    gURLBar.focus();
   },
 };
 

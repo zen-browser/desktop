@@ -24,7 +24,6 @@
     height: 100%;
     margin: 0;
     padding: var(--zen-compact-toolbox-margin) !important;
-    padding-top: calc(var(--zen-compact-toolbox-margin-single) - 5px) !important;
 
     & #titlebar {
       border: 1px solid var(--zen-colors-border);
@@ -115,10 +114,6 @@
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
-    #navigator-toolbox {
-      padding-top: var(--zen-compact-toolbox-margin);
-    }
-
     #zen-appcontent-navbar-container {
       --urlbar-height: unset;
       transition: .2s ease-in-out;

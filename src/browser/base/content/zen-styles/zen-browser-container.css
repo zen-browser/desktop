@@ -4,8 +4,8 @@
     width: -moz-available;
     margin: 0 var(--zen-element-separation) var(--zen-element-separation) 0;
     box-shadow: 0 0 0 1px var(--zen-colors-border);
-    clip-path: inset(-5px -5px -5px round var(--zen-border-radius));
-    border-radius: var(--zen-border-radius);
+    clip-path: inset(-5px -5px -5px round var(--zen-webview-border-radius, var(--zen-border-radius)));
+    border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
     transform: translate3d(0, 0, 0);
     overflow: hidden;
   }

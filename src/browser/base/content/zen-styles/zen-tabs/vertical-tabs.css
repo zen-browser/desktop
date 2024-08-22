@@ -9,7 +9,7 @@
     margin-top: 0; /* Issue #156 */
   }
   
-  :root[inFullscreen="true"] #navigator-toolbox {
+  #navigator-toolbox {
     margin-top: 0 !important;
   }
   

@@ -1,9 +1,13 @@
-
-#navigator-toolbox, 
+ 
 #browser,
 #appcontent,
 #tabbrowser-tabpanels {
   background: transparent !important;
+}
+
+#navigator-toolbox {
+  /* see issue #426 */
+  background: var(--zen-navigator-toolbox-background, transparent) !important;
 }
 
 #browser {

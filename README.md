@@ -76,5 +76,5 @@ Zen coudn't be in its current state without the help of these amazing projects!
 
 ## License
 
-[MPL LICENSE](/LICENSE)
+[MPL LICENSE](./LICENSE)
 

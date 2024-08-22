@@ -24,12 +24,16 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 
 * Checkout the latest [performance benchmarks](./docs/performance.md)!
 
+# Core Components
+
+Some components used by @zen-browser as an attempt to make firefox forks a better place. You can find them [here](https://github.com/zen-browser/components).
+
 ## 🚀 Run Locally
 
 Clone the project
 
 ```bash
-git clone https://github.com/zen-browser/desktop.git
+git clone https://github.com/zen-browser/desktop.git --recurse-submodules
 cd desktop
 ```
 
@@ -62,6 +66,7 @@ npm start
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)
 - [Donno 🐒](https://www.onnno.nl/) (For making the logo)
 - [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
+- [Nitro](https://github.com/orgs/zen-browser/people/n7itro) (For the amazing work on the browser)
 
 ## Third Party Code
 

@@ -78,3 +78,13 @@ Zen coudn't be in its current state without the help of these amazing projects!
 
 [MPL LICENSE](./LICENSE)
 
+## Star History
+
+<a href="https://star-history.com/#zen-browser/desktop&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date" />
+ </picture>
+</a>
+

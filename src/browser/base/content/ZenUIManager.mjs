@@ -21,6 +21,10 @@ var gZenUIManager = {
     const button = document.getElementById('zen-bookmark-button');
     SidebarController.toggle('viewBookmarksSidebar', button);
   },
+
+  createValidXULText(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 };
 
 var gZenVerticalTabsManager = {

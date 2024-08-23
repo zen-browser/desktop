@@ -97,6 +97,9 @@ jobs:
           SURFER_COMPAT: ${{ matrix.generic == true }}
         run: pnpm surfer import
 
+      - name: Build language packs
+        run: sh scripts/download-language-packs.sh
+
       - name: Bootstrap
         run: |
           cd engine

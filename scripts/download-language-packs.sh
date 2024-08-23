@@ -1,4 +1,6 @@
 
+set -ex
+
 CURRENT_DIR=$(pwd)
 
 git config --global init.defaultBranch main
@@ -20,6 +22,7 @@ update_language() {
   cd $langId
 
   echo "Updating $langId"
+  rm -rf .git
 
   git init 
   git remote add upstream hg://hg.mozilla.org/l10n-central/$langId
@@ -34,6 +37,7 @@ for lang in $(cat ./l10n/supported-languages); do
   update_language $lang
 done
 cd $CURRENT_DIR
+
 
 echo "Cleaning up"
 rm -rf ~/tools

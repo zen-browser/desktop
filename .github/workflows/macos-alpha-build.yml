@@ -104,6 +104,9 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
         run: |
           pnpm surfer import
+        
+      - name: Build language packs
+        run: sh scripts/download-language-packs.sh
 
       - name: build Zen
         env:

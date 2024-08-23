@@ -141,6 +141,9 @@ jobs:
           SURFER_COMPAT: ${{ matrix.generic == true }}
         run: pnpm surfer import --verbose
 
+      - name: Build language packs
+        run: sh scripts/download-language-packs.sh
+
       - name: Build
         env:
           SURFER_COMPAT: ${{ matrix.generic == true }}

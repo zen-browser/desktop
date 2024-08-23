@@ -16,7 +16,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 Zen is currently built using firefox version `129.0.2`!
 
-* Checkout the latest [releases notes](https://www.zen-browser.app/release-notes)!
+* Check out the latest [release notes](https://www.zen-browser.app/release-notes)!
 
 # Performance
 

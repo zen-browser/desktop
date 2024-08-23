@@ -17,7 +17,7 @@
     position: absolute;
     display: block;
     transition: 200ms ease-in-out !important;
-    transform: translateX(calc(-100% + var(--zen-compact-toolbox-margin-single) + 2px));
+    transform: translateX(calc(-100% + (var(--zen-compact-toolbox-margin-single) / 2)));
     opacity: 0;
     line-height: 0;
     z-index: 1;

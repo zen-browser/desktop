@@ -4,7 +4,7 @@ ac_add_options --with-app-basename=Zen
 ac_add_options --enable-official-branding
 
 # Multi-locale
-ac_add_options --with-l10n-base="$PWD/l10n"
+ac_add_options --with-l10n-base="$PWD/../l10n"
 
 export MOZ_USER_DIR="${name}"
 export MOZ_APP_BASENAME=Zen

@@ -135,10 +135,12 @@ pref('dom.script_loader.bytecode_cache.strategy', 2);
 // Extremly experimental features
 pref("dom.webgpu.enabled", true);
 
-// Font rendering, not for MacOSX
+// Font rendering, not for MacOSX and Linux
+#ifndef XP_UNIX
 #ifndef XP_MACOSX
 pref('gfx.font_rendering.cleartype_params.rendering_mode', 5);
 pref('gfx.font_rendering.cleartype_params.gamma', 1750);
+#endif
 #endif
 
 #include better-fox.js

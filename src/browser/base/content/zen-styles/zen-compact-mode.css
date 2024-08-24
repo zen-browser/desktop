@@ -72,7 +72,7 @@
   @media not (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
     #navigator-toolbox {
       /* Remove the top margin */
-      --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 3) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
+      --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
     }
 
     #zen-sidebar-web-panel-wrapper,

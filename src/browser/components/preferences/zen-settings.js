@@ -122,8 +122,8 @@ var gZenMarketplaceManager = {
     this.themesList.innerHTML = "";
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
-        <hbox class="zenThemeMarketplaceItem">
-          <vbox class="zenThemeMarketplaceItemContent">
+        <hbox class="zenThemeMarketplaceItem" align="center">
+          <vbox class="zenThemeMarketplaceItemContent" flex="1">
             <label><h3 class="zenThemeMarketplaceItemTitle"></h3></label>
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>

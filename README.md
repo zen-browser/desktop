@@ -22,7 +22,7 @@ Zen is currently built using firefox version `129.0.2`!
 
 Zen is built with performance in mind, and we have optimized the browser to be as fast as possible!
 
-* Checkout the latest [performance benchmarks](./docs/performance.md)!
+* Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
 
 # Core Components
 
@@ -66,7 +66,7 @@ npm start
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)
 - [Donno 🐒](https://www.onnno.nl/) (For making the logo)
 - [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
-- [Nitro](https://github.com/orgs/zen-browser/people/n7itro) (For the amazing work on the browser)
+- [nitro](https://github.com/n7itro) (For the amazing work on the browser)
 
 ## Third Party Code
 

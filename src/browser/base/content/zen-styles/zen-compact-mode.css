@@ -33,6 +33,10 @@
       border-radius: var(--zen-panel-radius);
     }
 
+    & > * {
+      pointer-events: none;  
+    }
+
     &, & #titlebar {
       min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 4) !important;
     }
@@ -84,9 +88,13 @@
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transform: none !important;
     opacity: 1;
+
+    & > * {
+      pointer-events: all;  
+    }
   }
   
-  #navigator-toolbox > *{ line-height: normal; pointer-events: auto }
+  #navigator-toolbox > *{ line-height: normal; }
   
   #navigator-toolbox,
   #navigator-toolbox > *{

@@ -16,6 +16,9 @@ pref("browser.tabs.cardPreview.delayMs", 100);
 pref("devtools.debugger.prompt-connection", false);
 #endif
 
+// Dont download the multilingual dictionary
+pref("intl.multilingual.downloadEnabled", false);
+
 // Theme
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
 pref('browser.compactmode.show', true);

@@ -395,10 +395,13 @@
       z-index: 1;
     }
 
+    #navigator-toolbox, #titlebar, #TabsToolbar {
+      transition: 0s !important;
+    }
+
     #TabsToolbar {
       --hovered-verticaltab-width: 20em;
 
-      transition: 200ms, margin 200ms, border-color 0 ease-in-out !important;
       z-index: 1;
       background-repeat: no-repeat !important;
       background-position: center center !important;
@@ -418,12 +421,8 @@
       visibility: hidden !important;
     }
 
-    #TabsToolbar-customization-target:hover > .toolbarbutton-1 > .toolbarbutton-text {
-      transition-delay: 0.2s !important;
-    }
-    
-    #TabsToolbar-customization-target:hover > .toolbarbutton-1 > .toolbarbutton-text {
-      transition-delay: 0.2s !important;
+    #navigator-toolbox:hover {
+      --zen-navigation-toolbar-min-width: 3.7rem !important;
     }
         
     #navigator-toolbox:hover #TabsToolbar {

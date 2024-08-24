@@ -3,6 +3,9 @@ ac_add_options --with-app-name=${binName}
 ac_add_options --with-app-basename=Zen
 ac_add_options --enable-official-branding
 
+# Localization
+ac_add_options --with-l10n-base="$PWD/browser/locales"
+
 export MOZ_USER_DIR="${name}"
 export MOZ_APP_BASENAME=Zen
 export MOZ_APP_PROFILE=${binName}
@@ -89,7 +92,6 @@ ac_add_options --enable-eme=widevine
 ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 
-mk_add_options MOZ_CRASHREPORTER=0
 mk_add_options MOZ_DATA_REPORTING=0
 mk_add_options MOZ_SERVICES_HEALTHREPORT=0
 mk_add_options MOZ_TELEMETRY_REPORTING=0

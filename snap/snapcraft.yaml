@@ -1,0 +1,124 @@
+name: zen-browser
+version: "1.0.0-a.28"
+summary: Zen Browser - A Firefox-based web browser
+description: Zen Browser is a fork of Firefox with custom themes and enhancements. It provides a unique browsing experience with a focus on simplicity and productivity.
+confinement: strict
+grade: stable
+base: core22
+source-code: https://github.com/zen-browser/desktop
+assumes:
+  - snapd2.54
+compression: lzo
+
+apps:
+  zen-browser:
+    command: zen-browser.launcher
+    desktop: usr/share/applications/zen-browser.desktop
+    extensions: [gnome]
+    environment:
+      DICPATH: "$SNAP_COMMON/snap-hunspell"
+      GTK_USE_PORTAL: 1
+      HOME: "$SNAP_USER_COMMON"
+      PIPEWIRE_CONFIG_NAME: "$SNAP/usr/share/pipewire/pipewire.conf"
+      PIPEWIRE_MODULE_DIR: "$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/pipewire-0.3"
+      SPA_PLUGIN_DIR: "$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/spa-0.2"
+      SPEECHD_ADDRESS: "unix_socket:/run/user/$SNAP_UID/speech-dispatcher/speechd.sock"
+    slots:
+      - dbus-daemon
+      - mpris
+    plugs:
+      - alsa
+      - audio-playback
+      - audio-record
+      - avahi-observe
+      - browser-sandbox
+      - camera
+      - cups-control
+      - gsettings
+      - hardware-observe
+      - home
+      - host-hunspell
+      - host-usr-share-hunspell
+      - joystick
+      - login-session-observe
+      - network
+      - network-observe
+      - opengl
+      - removable-media
+      - screen-inhibit-control
+      - system-packages-doc
+      - u2f-devices
+      - unity7
+      - upower-observe
+
+plugs:
+  browser-sandbox:
+    interface: browser-support
+    allow-sandbox: true
+  dot-zen-browser:
+    interface: personal-files
+    read: [$HOME/.zen]
+  etc-zen-browser:
+    interface: system-files
+    read: [/etc/zen-browser]
+  host-hunspell:
+    interface: mount-control
+    mount:
+    - what: /usr/share/hunspell
+      where: $SNAP_COMMON/host-hunspell
+      persistent: true
+      options: [ro, bind, noatime, noexec]
+  host-usr-share-hunspell:
+    interface: system-files
+    read:
+    - /var/lib/snapd/hostfs/usr/share/hunspell
+
+layout:
+  /usr/share/libdrm:
+    bind: $SNAP/gnome-platform/usr/share/libdrm
+  /usr/share/alsa:
+    bind: $SNAP/usr/share/alsa
+
+parts:
+
+  zen-browser:
+    plugin: dump
+    source: https://github.com/zen-browser/desktop/releases/download/$SNAPCRAFT_PROJECT_VERSION/zen.linux-specific.tar.bz2
+    source-type: tar
+    after:
+      - launcher
+      - desktop
+      - icons
+    organize:
+      '*': /usr/lib/zen/
+  
+  desktop:
+    plugin: dump
+    source: .
+    organize:
+      zen-browser.desktop: usr/share/applications/zen-browser.desktop
+  
+  launcher:
+    plugin: nil
+    override-prime: |
+      cp "$CRAFT_PROJECT_DIR/zen-browser.launcher" "$CRAFT_PRIME/"
+
+  icons:
+    plugin: dump
+    source: ./icons
+    organize:
+      16.png: usr/share/icons/hicolor/16x16/apps/zen-browser.png
+      32.png: usr/share/icons/hicolor/32x32/apps/zen-browser.png
+      48.png: usr/share/icons/hicolor/48x48/apps/zen-browser.png
+      64.png: usr/share/icons/hicolor/64x64/apps/zen-browser.png
+      128.png: usr/share/icons/hicolor/128x128/apps/zen-browser.png
+
+slots:
+  dbus-daemon:
+    interface: dbus
+    bus: session
+    name: org.zen.zen-browser
+
+hooks:
+  post-refresh:
+    plugs: [host-usr-share-hunspell]

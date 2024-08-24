@@ -1,0 +1,26 @@
+[Desktop Entry]
+Version=1.0.0-a.28
+Name=Zen Browser
+GenericName=Web Browser
+Comment=Browse the Web
+Keywords=Internet;WWW;Browser;Web;Explorer
+Exec=/user/lib/zen/zen-bin %U
+Icon=/usr/share/icons/hicolor/128x128/apps/zen-browser.png
+Terminal=false
+Type=Application
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;application/x-xpinstall;application/pdf;application/json;
+StartupWMClass=Zen Browser
+Categories=Network;WebBrowser;
+Actions=new-window;new-private-window;profile-manager-window;
+
+[Desktop Action new-window]
+Name=Open a New Window
+Exec=/usr/lib/zen/zen-bin --new-window %u
+
+[Desktop Action new-private-window]
+Name=Open a New Private Window
+Exec=/usr/lib/zen/zen-bin --private-window %u
+
+[Desktop Action profile-manager-window]
+Name=Open the Profile Manager
+Exec=/usr/lib/zen/zen-bin --ProfileManager %u

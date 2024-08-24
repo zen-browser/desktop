@@ -1,0 +1,1 @@
+exec "$SNAP/usr/lib/zen/zen-bin" "$@"

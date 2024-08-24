@@ -134,6 +134,7 @@
     justify-content: center;
     align-items: center;
     font-weight: 600;
+    flex-shrink: 0;
   }
 
   & .zen-workspace-name {

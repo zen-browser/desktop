@@ -382,6 +382,31 @@ jobs:
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
 
+  release-winget:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Release Winget
+    needs: [release, build-data]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish generic build
+        uses: vedantmgoyal9/winget-releaser@main
+        with:
+          identifier: Zen-Team.Zen-Browser
+          version: ${{ needs.build-data.outputs.version }}
+          release-tag: ${{ needs.build-data.outputs.version }}
+          installers-regex: 'zen.installer-generic\.exe$'
+          token: ${{ secrets.DEPLOY_KEY }}
+      - name: Publish optimized build
+        uses: vedantmgoyal9/winget-releaser@main
+        with:
+          identifier: Zen-Team.Zen-Browser.Optimized
+          version: ${{ needs.build-data.outputs.version }}
+          release-tag: ${{ needs.build-data.outputs.version }}
+          installers-regex: 'zen.installer\.exe$'
+          token: ${{ secrets.DEPLOY_KEY }}
+
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all

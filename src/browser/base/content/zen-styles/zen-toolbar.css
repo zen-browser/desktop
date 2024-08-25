@@ -3,6 +3,11 @@
   background: transparent;
 }
 
+/* Fixed broken Lightweight Themes: https://addons.mozilla.org/en-US/firefox/themes/ */
+:root[lwtheme] #nav-bar, :root[lwtheme] #TabsToolbar {
+  background-image: var(--lwt-header-image)!important;
+}
+
 :root[inDOMFullscreen="true"] #zen-appcontent-navbar-container {
   display: none;
 }

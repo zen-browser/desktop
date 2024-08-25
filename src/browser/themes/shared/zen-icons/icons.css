@@ -160,6 +160,10 @@
 	--menu-image: url("bookmark-hollow.svg") !important;
 }
 
+#context_zenEditWorkspace {
+	--menu-image: url("edit.svg") !important;
+}
+
 #add-ons-button,
 #appMenu-extensions-themes-button,
 #unified-extensions-button {

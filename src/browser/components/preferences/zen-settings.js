@@ -23,8 +23,34 @@ const kZenOSToSmallName = {
 
 var gZenMarketplaceManager = {  
   init() {
-    this._buildThemesList();
     Services.prefs.addObserver(this.updatePref, this._buildThemesList.bind(this));
+    this._buildThemesList();
+    document.getElementById("zenThemeMarketplaceCheckForUpdates").addEventListener("click", (event) => {
+      if (event.target === document.getElementById("zenThemeMarketplaceCheckForUpdates")) {
+        event.preventDefault();
+        this._checkForThemeUpdates(event);
+      }
+    });
+    document.addEventListener("ZenThemeMarketplace:CheckForUpdatesFinished", (event) => {
+      document.getElementById("zenThemeMarketplaceCheckForUpdates").disabled = false;
+      const updates = event.detail.updates;
+      const success = document.getElementById("zenThemeMarketplaceUpdatesSuccess");
+      const error = document.getElementById("zenThemeMarketplaceUpdatesFailure");
+      if (updates) {
+        success.hidden = false;
+        error.hidden = true;
+      } else {
+        success.hidden = true;
+        error.hidden = false;
+      }
+    });
+  },
+
+  _checkForThemeUpdates(event) {
+    // Send a message to the child to check for theme updates.
+    event.target.disabled = true;
+    // send an event that will be listened by the child process.
+    document.dispatchEvent(new CustomEvent("ZenCheckForThemeUpdates"));
   },
 
   get updatePref() {
@@ -130,7 +156,7 @@ var gZenMarketplaceManager = {
           <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
         </hbox>
       `);
-      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = theme.name;
+      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = `${theme.name} (v${theme.version || "1.0.0"})`;
       fragment.querySelector(".zenThemeMarketplaceItemDescription").textContent = theme.description;
       fragment.querySelector(".zenThemeMarketplaceItemUninstallButton").addEventListener("click", async (event) => {
         if (!confirm("Are you sure you want to remove this theme?")) {

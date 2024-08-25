@@ -16,6 +16,9 @@ pref("browser.tabs.cardPreview.delayMs", 100);
 pref("devtools.debugger.prompt-connection", false);
 #endif
 
+// Dont download the multilingual dictionary
+pref("intl.multilingual.downloadEnabled", false);
+
 // Theme
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
 pref('browser.compactmode.show', true);
@@ -113,7 +116,7 @@ pref('media.eme.enabled', true);
 pref('webgl.disabled', false);
 
 pref("app.update.url.manual", "https://www.zen-browser.app/download");
-pref("app.update.url.details", "hhttps://www.zen-browser.app/download");
+pref("app.update.url.details", "https://www.zen-browser.app/download");
 pref("app.releaseNotesURL", "https://www.zen-browser.app/release-notes");
 pref("app.releaseNotesURL.aboutDialog", "https://www.zen-browser.app/release-notes");
 

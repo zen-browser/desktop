@@ -51,6 +51,8 @@
 
 #PanelUI-zen-workspaces > panelmultiview {
   align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #PanelUI-zen-workspaces panelmultiview panelview {
@@ -95,6 +97,7 @@
 #PanelUI-zen-workspaces-list {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 #PanelUI-zen-workspaces-list[empty="true"] {
@@ -134,6 +137,7 @@
     justify-content: center;
     align-items: center;
     font-weight: 600;
+    flex-shrink: 0;
   }
 
   & .zen-workspace-name {

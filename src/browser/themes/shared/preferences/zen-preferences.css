@@ -314,6 +314,10 @@ groupbox h2 {
 
 /* THemes marketplace */
 
+#category-zen-marketplace > .category-icon {
+  list-style-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
+}
+
 .zenThemeMarketplaceItem {
   width: 100%;
 
@@ -339,6 +343,10 @@ groupbox h2 {
 }
 
 .zenThemeMarketplaceItemUninstallButton {
+  margin-left: auto;
+}
+
+#zenThemeMarketplaceCheckForUpdates {
   margin-left: auto;
 }
 

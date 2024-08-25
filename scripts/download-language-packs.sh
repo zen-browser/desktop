@@ -39,23 +39,13 @@ done
 cd $CURRENT_DIR
 
 # Move all the files to the correct location
-browser_locales=engine/browser/locales
-copy_browser_locales() {
-  langId=$1
-  only_en=$2
-  mkdir -p $browser_locales/$langId
-  if [ "$only_en" = true ]; then
-    rsync -av --exclude=.git ./l10n/en-US/browser/ $browser_locales/$langId/
-    return
-  fi
-  rm -rf $browser_locales/$langId/
-  rsync -av --exclude=.git ./l10n/$langId/ $browser_locales/$langId/
-}
 
-copy_browser_locales en-US true
+sh scripts/copy-language-pack.sh en-US
 for lang in $(cat ./l10n/supported-languages); do
-  copy_browser_locales $lang false
+  sh scripts/copy-language-pack.sh $lang
 done
+
+wait
 
 echo "Cleaning up"
 rm -rf ~/tools

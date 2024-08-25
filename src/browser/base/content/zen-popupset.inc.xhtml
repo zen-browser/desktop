@@ -78,7 +78,7 @@
 
 <panel flip="slide" type="arrow" orient="vertical" id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
   <panelmultiview id="PanelUI-zen-workspaces-multiview" mainViewId="PanelUI-zen-workspaces-view">
-    <panelview lockpanelvertical="true" id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+    <panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
       <vbox>
         <hbox>
           <h3 data-l10n-id="zen-panel-ui-current-window-text"></h3>
@@ -98,28 +98,31 @@
         </html:div>
       </vbox>
     </panelview>
-    <panelview lockpanelvertical="true" id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+    <panelview id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
       <vbox>
         <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
-        <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceNameChange(this);" />
-      </vbox>
-      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
-        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-create-save" oncommand="ZenWorkspaces.saveWorkspaceFromInput();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
-        </button>
-        <button id="PanelUI-zen-workspaces-create-cancel" oncommand="ZenWorkspaces.cancelWorkspaceCreation();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
-        </button>
-      </html:moz-button-group>
-    </panelview>
-    <panelview lockpanelvertical="true" id="PanelUI-zen-workspaces-create-icons" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox>
-        <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
+        <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceCreationNameChange(this);" />
         <hbox id="PanelUI-zen-workspaces-create-icons-container">
         </hbox>
       </vbox>
       <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
-        <button default="true" slot="primary" id="PanelUI-zen-workspaces-create-save-icons" oncommand="ZenWorkspaces.saveWorkspaceFromIcon();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
+        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-create-save" oncommand="ZenWorkspaces.saveWorkspaceFromCreate();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
         </button>
-        <button id="PanelUI-zen-workspaces-create-cancel-icons" oncommand="ZenWorkspaces.cancelWorkspaceCreation();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
+        <button id="PanelUI-zen-workspaces-create-cancel" oncommand="ZenWorkspaces.closeWorkspacesSubView();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
+        </button>
+      </html:moz-button-group>
+    </panelview>
+    <panelview id="PanelUI-zen-workspaces-edit" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
+      <vbox>
+        <h1 data-l10n-id="zen-panel-ui-workspaces-edit-text"></h1>
+        <html:input autofocus="true" id="PanelUI-zen-workspaces-edit-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceEditChange();" />
+        <hbox id="PanelUI-zen-workspaces-edit-icons-container">
+        </hbox>
+      </vbox>
+      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-edit-footer">
+        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-edit-save" oncommand="ZenWorkspaces.saveWorkspaceFromEdit();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-edit-save">
+        </button>
+        <button id="PanelUI-zen-workspaces-edit-cancel" oncommand="ZenWorkspaces.closeWorkspacesSubView();" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-edit-cancel">
         </button>
       </html:moz-button-group>
     </panelview>
@@ -132,5 +135,6 @@
   <menuitem id="context_zenOpenWorkspace" oncommand="ZenWorkspaces.openWorkspace();" data-l10n-id="zen-workspaces-panel-context-open"/>
   <menuseparator/>
   <menuitem id="context_zenSetAsDefaultWorkspace" oncommand="ZenWorkspaces.setDefaultWorkspace();" data-l10n-id="zen-workspaces-panel-context-set-default"/>
+  <menuitem id="context_zenEditWorkspace" oncommand="ZenWorkspaces.contextEdit(event);" data-l10n-id="zen-workspaces-panel-context-edit"/>
   <menuitem id="context_zenDeleteWorkspace" oncommand="ZenWorkspaces.contextDelete(event);" data-l10n-id="zen-workspaces-panel-context-delete"/>
 </menupopup>

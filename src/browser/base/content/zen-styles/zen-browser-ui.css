@@ -18,11 +18,11 @@ html#main-window > body {
   background: var(--zen-main-browser-background) !important;
 }
 
-:not([inDOMFullscreen="true"]) #appcontent {
+:not([inFullscreen="true"]) #appcontent {
   overflow: hidden;
 }
 
-:not([inDOMFullscreen="true"]) #appcontent,
+:not([inFullscreen="true"]) #appcontent,
 #sidebar-box {
   /** Sidebar is already hidden in full screen mode */
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;

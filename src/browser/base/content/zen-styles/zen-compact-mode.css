@@ -117,7 +117,7 @@
   #navigator-toolbox[inFullscreen] > #PersonalToolbar,
   #PersonalToolbar[collapsed="true"]{ display: none }
 
-  :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+  :root:not([inFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     margin-left: var(--zen-element-separation) !important;
   }
 
@@ -147,7 +147,7 @@
       opacity: 1;
     }
 
-    :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    :root:not([inFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
       margin-top: var(--zen-element-separation) !important;
     }
 

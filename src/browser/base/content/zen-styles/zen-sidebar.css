@@ -189,13 +189,13 @@
   display: none;
 }
 
-:root:not([inDOMFullscreen="true"]) #zen-sidebar-splitter {
+:root:not([inFullscreen="true"]) #zen-sidebar-splitter {
   display: block;
   width: 1px;
   opacity: 0;
 }
 
-:root[inDOMFullscreen="true"] #zen-sidebar-splitter {
+:root[inFullscreen="true"] #zen-sidebar-splitter {
   display: none;
 }
 

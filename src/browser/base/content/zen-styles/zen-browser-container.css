@@ -1,5 +1,5 @@
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+:root:not([inFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     width: -moz-available;
     margin: 0 var(--zen-element-separation) var(--zen-element-separation) 0;

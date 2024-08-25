@@ -3,6 +3,6 @@
   background: transparent;
 }
 
-:root[inDOMFullscreen="true"] #zen-appcontent-navbar-container {
+:root[inFullscreen="true"] #zen-appcontent-navbar-container {
   display: none;
 }

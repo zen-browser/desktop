@@ -23,8 +23,18 @@ const kZenOSToSmallName = {
 
 var gZenMarketplaceManager = {  
   init() {
-    this._buildThemesList();
     Services.prefs.addObserver(this.updatePref, this._buildThemesList.bind(this));
+    this._buildThemesList();
+    document.getElementById("zenThemeMarketplaceCheckForUpdates").addEventListener("click", (event) => {
+      this._checkForThemeUpdates(event);
+    });
+  },
+
+  _checkForThemeUpdates(event) {
+    // Send a message to the child to check for theme updates.
+    event.target.disabled = true;
+    // send an event that will be listened by the child process.
+    document.dispatchEvent(new CustomEvent("ZenCheckForThemeUpdates"));
   },
 
   get updatePref() {

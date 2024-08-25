@@ -1,0 +1,20 @@
+<html:template id="template-paneZenMarketplace">
+<hbox id="ZenMarketplaceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenMarketplace">
+<html:h1 data-l10n-id="pane-zen-marketplace-title"/>
+</hbox>
+
+<groupbox id="zenMarketplaceGroup" data-category="paneZenMarketplace" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-theme-marketplace-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-description" />
+      <hbox class="indent">
+            <html:a id="zenThemeMarketplaceLink" href="https://zen-browser.app/themes" target="_blank" data-l10n-id="zen-theme-marketplace-link" />
+            <button id="zenThemeMarketplaceCheckForUpdates" data-l10n-id="zen-theme-marketplace-check-for-updates-button" />
+      </hbox>
+
+      <vbox id="zenThemeMarketplaceList"></vbox>
+</groupbox>
+
+</html:template>

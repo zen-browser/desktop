@@ -78,7 +78,6 @@ if test "$ZEN_RELEASE"; then
 
   ac_add_options --enable-updater
 
-  export MOZ_PACKAGE_JSSHELL=1
 fi
 
 ac_add_options --enable-unverified-updates

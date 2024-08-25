@@ -38,6 +38,7 @@
       display: flex;
       padding: 2px 10px;
       width: calc(100% - var(--zen-tabbrowser-padding) * 8) !important;
+      gap: 0.5ch;
     }
   }
 }

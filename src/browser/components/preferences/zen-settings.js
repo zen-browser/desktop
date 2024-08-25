@@ -26,7 +26,23 @@ var gZenMarketplaceManager = {
     Services.prefs.addObserver(this.updatePref, this._buildThemesList.bind(this));
     this._buildThemesList();
     document.getElementById("zenThemeMarketplaceCheckForUpdates").addEventListener("click", (event) => {
-      this._checkForThemeUpdates(event);
+      if (event.target === document.getElementById("zenThemeMarketplaceCheckForUpdates")) {
+        event.preventDefault();
+        this._checkForThemeUpdates(event);
+      }
+    });
+    document.addEventListener("ZenThemeMarketplace:CheckForUpdatesFinished", (event) => {
+      document.getElementById("zenThemeMarketplaceCheckForUpdates").disabled = false;
+      const updates = event.detail.updates;
+      const success = document.getElementById("zenThemeMarketplaceUpdatesSuccess");
+      const error = document.getElementById("zenThemeMarketplaceUpdatesFailure");
+      if (updates) {
+        success.hidden = false;
+        error.hidden = true;
+      } else {
+        success.hidden = true;
+        error.hidden = false;
+      }
     });
   },
 
@@ -140,7 +156,7 @@ var gZenMarketplaceManager = {
           <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
         </hbox>
       `);
-      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = theme.name;
+      fragment.querySelector(".zenThemeMarketplaceItemTitle").textContent = `${theme.name} (v${theme.version || "1.0.0"})`;
       fragment.querySelector(".zenThemeMarketplaceItemDescription").textContent = theme.description;
       fragment.querySelector(".zenThemeMarketplaceItemUninstallButton").addEventListener("click", async (event) => {
         if (!confirm("Are you sure you want to remove this theme?")) {

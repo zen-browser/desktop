@@ -1,5 +1,5 @@
 name: zen-browser
-version: "1.0.0-a.28"
+version: "1.0.0-a.29"
 summary: Zen Browser - A Firefox-based web browser
 description: Zen Browser is a fork of Firefox with custom themes and enhancements. It provides a unique browsing experience with a focus on simplicity and productivity.
 confinement: strict

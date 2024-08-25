@@ -243,7 +243,12 @@
   }
   
   @media (-moz-bool-pref: "zen.view.sidebar-expanded") {  
-    #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
+    #navigator-toolbox:is(
+        #navigator-toolbox[zen-user-hover="true"]:hover,
+        #navigator-toolbox[zen-user-hover="true"]:focus-within,
+        #mainPopupSet[zen-user-hover="true"]:has(> #appMenu-popup:hover) ~ toolbox,
+        #navigator-toolbox[zen-user-hover="true"]:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)), 
+      :not([zen-user-hover="true"])) {
       --zen-navigation-toolbar-min-width: 155px;
       min-width: var(--zen-navigation-toolbar-min-width) !important;
       align-items: start;
@@ -415,33 +420,30 @@
       border-top-right-radius: var(--zen-border-radius);
       transform: translateY(-1px);
     }
-    
-    #navigator-toolbox:not(:hover) #TabsToolbar #tabbrowser-tabs[closebuttons="activetab"] .tabbrowser-tab .tab-content[class] > .tab-close-button[class] {
-      display: none !important;
-      visibility: hidden !important;
-    }
 
-    #navigator-toolbox:hover {
+    #navigator-toolbox:hover,
+    #navigator-toolbox:focus-within,
+    #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+    #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
       --zen-navigation-toolbar-min-width: 3.7rem !important;
-    }
-        
-    #navigator-toolbox:hover #TabsToolbar {
-      z-index: 100 !important;
-      width: 250px !important;
-      background-color: var(--zen-dialog-background);
-      border-top-color: var(--zen-colors-border);
-      border-right-color: var(--zen-colors-border);
-      padding-right: .1rem !important;
-      position: absolute;
+
+      & #TabsToolbar {
+        z-index: 100 !important;
+        width: 250px !important;
+        background-color: var(--zen-dialog-background);
+        border-top-color: var(--zen-colors-border);
+        border-right-color: var(--zen-colors-border);
+        padding-right: .1rem !important;
+        position: absolute;
+      }
+
+      #navigator-toolbox:not(&) #TabsToolbar #tabbrowser-tabs[closebuttons="activetab"] .tabbrowser-tab .tab-content[class] > .tab-close-button[class] {
+        display: none !important;
+        visibility: hidden !important;
+      }
     }
 
-    @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
-      #navigator-toolbox:hover {
-        --zen-navigation-toolbar-min-width: 0 !important;
-        position: relative;
-        padding: 0 !important;
-      }
-      
+    @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {      
       #TabsToolbar {
         border-right: 0 !important;
         border-left: 1px solid transparent;
@@ -451,8 +453,17 @@
         right: 100%;
       }
 
-      #navigator-toolbox:hover #TabsToolbar {
-        border-left: 1px solid var(--zen-colors-border);
+      #navigator-toolbox:hover,
+      #navigator-toolbox:focus-within,
+      #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+      #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
+        --zen-navigation-toolbar-min-width: 0 !important;
+        position: relative;
+        padding: 0 !important;
+
+        & #TabsToolbar {
+          border-left: 1px solid var(--zen-colors-border);
+        }
       }
     }
   }

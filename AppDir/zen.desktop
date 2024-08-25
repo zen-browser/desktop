@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Zen Browser
+Comment=Experience tranquillity while browsing the web without people tracking you!
 Exec=zen %u
 Icon=zen
 Type=Application

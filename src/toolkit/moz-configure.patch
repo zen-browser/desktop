@@ -1,12 +1,16 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index dfef4ee7bd74a232f8f9eaa158303e59a2a32e62..a7fa02883e3ae58b0338951b869719a3b9c26234 100644
+index dfef4ee7bd74a232f8f9eaa158303e59a2a32e62..77864261c8dbf2947738b97733553da67608c060 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
-@@ -907,7 +907,7 @@ option("--disable-jxl", help="Disable jxl image support")
+@@ -905,9 +905,9 @@ set_define("MOZ_AV1", av1)
+ option("--disable-jxl", help="Disable jxl image support")
  
- @depends("--disable-jxl", milestone.is_nightly)
- def jxl(value, is_nightly):
+ 
+-@depends("--disable-jxl", milestone.is_nightly)
+-def jxl(value, is_nightly):
 -    if is_nightly and value:
++@depends("--disable-jxl")
++def jxl(value):
 +    if value:
          return True
  

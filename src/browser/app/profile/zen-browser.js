@@ -172,3 +172,7 @@ pref("sidebar.verticalTabs", false, locked);
 // Better Windows theming
 pref("widget.non-native-theme.scrollbar.style", 2);
 pref("widget.non-native-theme.use-theme-accent", true);
+
+// Expose Letterboxing https://github.com/zen-browser/desktop/issues/475
+pref("privacy.resistFingerprinting.letterboxing", false);
+pref("privacy.resistFingerprinting.letterboxing.dimensions", "");

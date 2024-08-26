@@ -13,7 +13,7 @@ pref("browser.tabs.hoverPreview.enabled", true);
 pref("browser.tabs.cardPreview.delayMs", 100);
 
 #ifdef MOZ_UPDATE_CHANNEL
-pref("devtools.debugger.prompt-connection", false);
+pref("devtools.debugger.prompt-connection", true);
 #endif
 
 // Dont download the multilingual dictionary
@@ -162,7 +162,7 @@ pref("network.http.speculative-parallel-limit", 10);
 pref("network.http.rcwn.enabled", false);
 
 // Enable Browser Toolbox, Ctrl+Shift+Alt+I for debugging and modifying UI
-pref("devtools.debugger.remote-enabled", true);
+pref("devtools.debugger.remote-enabled", false);
 pref("devtools.chrome.enabled", true);
 
 // Disable firefox's revamp

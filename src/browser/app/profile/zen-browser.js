@@ -111,9 +111,9 @@ pref("browser.vpn_promo.enabled", false);
 pref("browser.promo.focus.enabled", false);
 pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 pref("extensions.getAddons.showPane", false);
-defaultPref("browser.topsites.useRemoteSetting", false);
-defaultPref("browser.aboutConfig.showWarning", false);
-defaultPref("browser.preferences.moreFromMozilla", false);
+pref("browser.topsites.useRemoteSetting", false);
+pref("browser.aboutConfig.showWarning", false);
+pref("browser.preferences.moreFromMozilla", false);
 
 // CUSTOM ZEN PREFS
 

@@ -48,5 +48,5 @@
     ],
     "licenseType": "MPL-2.0"
   },
-  "updateHostname": "zen-updates.vercel.app"
+  "updateHostname": "updates.zen-browser.app"
 }

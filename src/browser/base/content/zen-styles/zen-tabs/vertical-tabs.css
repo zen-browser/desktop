@@ -241,6 +241,12 @@
       display: none;
     }
   }
+
+  @media (-moz-bool-pref: "zen.view.sidebar-expanded.on-hover") {  
+    #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
+      padding-right: 47px !important;
+    }
+  }
   
   @media (-moz-bool-pref: "zen.view.sidebar-expanded") {  
     #navigator-toolbox:is(

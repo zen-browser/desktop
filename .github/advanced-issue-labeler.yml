@@ -13,6 +13,4 @@ policy:
             keys: ['High']
           - name: 'kind: critical severity'
             keys: ['Critical']
-          - name: 'kind: enhancement'
-            keys: ['Enhancement']
 

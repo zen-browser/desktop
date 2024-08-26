@@ -38,8 +38,6 @@ body:
         - Medium
         - High
         - Critical
-        - Enhancement
-      multiple: true
     validations:
       required: true
 

@@ -232,7 +232,7 @@
   }
   
   .tab-icon-overlay {
-    margin-inline-end: 0;
+    margin-inline-end: 0 !important;
     display: none; /* TODO: fix this */
   }
 

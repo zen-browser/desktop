@@ -30,7 +30,12 @@ pref('browser.translations.newSettingsUI.enable', true);
 pref("browser.urlbar.trimHttps", true);
 pref("browser.urlbar.untrimOnUserInteraction.featureGate", true);
 
-// Url bar
+// Search
+pref("browser.urlbar.suggest.searches", false);
+pref("browser.search.suggest.enabled", false);
+pref("browser.search.update", false);
+
+// URL bar
 pref('browser.urlbar.unitConversion.enabled', true);
 pref('browser.urlbar.trending.featureGate', false);
 pref('browser.urlbar.weather.featureGate', true);
@@ -53,14 +58,62 @@ pref('browser.toolbars.bookmarks.visibility', 'never');
 // Enable Do Not Track and GPC by default.
 pref("privacy.donottrackheader.enabled", true);
 pref("privacy.globalprivacycontrol.enabled", true);
+
 // Disable more telemetry
 pref("toolkit.telemetry.enabled", false);
 pref("browser.ping-centre.telemetry", false);
 pref("browser.attribution.enabled", false);
 pref("toolkit.telemetry.pioneer-new-studies-available", false);
+pref("toolkit.telemetry.cachedClientID", "");
+pref("toolkit.telemetry.previousBuildID", "");
+pref("toolkit.telemetry.server_owner", "");
+pref("toolkit.coverage.opt-out", true);
+pref("toolkit.coverage.enabled", false);
+pref("toolkit.coverage.endpoint.base", "");
+pref("toolkit.crashreporter.infoURL", "");
+pref("security.protectionspopup.recordEventTelemetry", false);
+
+// Query stripping - ported from Brave (https://github.com/brave/brave-core/blob/master/components/query_filter/utils.cc#L23)
+pref("privacy.query_stripping.strip_list", "__hsfp __hssc __hstc __s _branch_match_id _branch_referrer _gl _hsenc _kx _openstat at_recipient_id at_recipient_list bbeml bsft_clkid bsft_uid dclid et_rid fb_action_ids fb_comment_id fbclid gbraid gclid guce_referrer guce_referrer_sig hsCtaTracking irclickid mc_eid ml_subscriber ml_subscriber_hash msclkid mtm_cid oft_c oft_ck oft_d oft_id oft_ids oft_k oft_lk oft_sk oly_anon_id oly_enc_id pk_cid rb_clickid s_cid ss_email_id twclid unicorn_click_id vero_conv vero_id vgo_ee wbraid wickedid yclid ymclid ysclid")
+
+// Disables fetching and updating safebrowsing lists from Google
+pref("browser.safebrowsing.malware.enabled", false);
+pref("browser.safebrowsing.phishing.enabled", false);
+pref("browser.safebrowsing.blockedURIs.enabled", false);
+pref("browser.safebrowsing.provider.google4.gethashURL", "");
+pref("browser.safebrowsing.provider.google4.updateURL", "");
+pref("browser.safebrowsing.provider.google4.dataSharingURL", "");
+pref("browser.safebrowsing.provider.google.gethashURL", "");
+pref("browser.safebrowsing.provider.google.updateURL", "");
+
+// Betterfox disables remote safebrowsing fetching, but we need to disable remaining checks here
+pref("browser.safebrowsing.downloads.enabled", false);
+pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", false);
+pref("browser.safebrowsing.downloads.remote.block_uncommon", false);
+pref("browser.safebrowsing.downloads.remote.url", "");
+
+pref("browser.download.alwaysOpenPanel", false); // Don't expand download menu for every download
 
 pref("browser.contentblocking.category", "standard");
 pref("app.update.checkInstallTime.days", 2);
+
+// Pop-ups
+pref("dom.disable_window_move_resize", true);
+pref("browser.link.open_newwindow", 3);
+pref("browser.link.open_newwindow.restriction", 0);
+
+// Annoying UI elements within about pages
+pref("browser.contentblocking.report.lockwise.enabled", false);
+pref("browser.contentblocking.report.hide_vpn_banner", true);
+pref("browser.contentblocking.report.vpn.enabled", false);
+pref("browser.contentblocking.report.show_mobile_app", false);
+pref("browser.vpn_promo.enabled", false);
+pref("browser.promo.focus.enabled", false);
+pref("extensions.htmlaboutaddons.recommendations.enabled", false);
+pref("extensions.getAddons.showPane", false);
+defaultPref("browser.topsites.useRemoteSetting", false);
+defaultPref("browser.aboutConfig.showWarning", false);
+defaultPref("browser.preferences.moreFromMozilla", false);
 
 // CUSTOM ZEN PREFS
 
@@ -137,8 +190,10 @@ pref('xpinstall.signatures.required', false);
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
 
-// Extremly experimental features
+// GPU tweaks
 pref("dom.webgpu.enabled", true);
+pref("media.ffmpeg.vaapi.enabled", true);
+pref("media.gpu-process-decoder", true);
 
 // Font rendering, not for MacOSX and Linux
 #ifndef XP_UNIX

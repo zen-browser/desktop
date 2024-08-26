@@ -115,6 +115,8 @@ pref('dom.private-attribution.submission.enabled', false);
 pref('media.eme.enabled', true);
 pref('webgl.disabled', false);
 
+pref("app.support.baseURL", "https://docs.zen-browser.app/faq#");
+pref("app.feedback.baseURL", "https://github.com/zen-browser/desktop/issues");
 pref("app.update.url.manual", "https://www.zen-browser.app/download");
 pref("app.update.url.details", "https://www.zen-browser.app/download");
 pref("app.releaseNotesURL", "https://www.zen-browser.app/release-notes");

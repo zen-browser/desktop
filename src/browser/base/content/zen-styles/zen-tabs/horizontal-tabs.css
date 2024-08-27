@@ -48,6 +48,7 @@
 #tabbrowser-tabs {
     height 100px;
     height: 100px;
+    --tab-overflow-pinned-tabs-width: 0px !important;
 }
     
     #zen-expand-sidebar-button {
@@ -99,8 +100,19 @@
   transition: min-width 100ms ease-out, max-width 100ms ease-out;
   font-weight: 500;
   margin-top: 6px !important;
+  -moz-window-dragging: no-drag !important;
 }
-  
+
+    .zen-workspace-sidebar-name {
+        display: none !important;
+    }
+    
+    #tabbrowser-tabs {
+        &[movingtab] {
+            padding-bottom: 0px !important;
+            margin-bottom: 0px !important;
+        }
+    }
 #TabsToolbar .toolbarbutton-1 {
   margin-left:      5px !important;
 }
@@ -112,13 +124,6 @@
 #zen-workspaces-button:active {
   transform: scale(0.9);
   font-weight: initial;
-}
-
-
-@media (-moz-bool-pref: "zen.view.sidebar-expanded") {
-  #zen-workspaces-button {
-    width: calc(100% - 4px) !important;
-  }
 }
 
 .scrollbox-clip>scrollbox {
@@ -154,7 +159,7 @@
     ;
 }
 
-.tabbrowser-tab[pinned="true"] {
+.tabbrowser-tab[pinned=""] {
     width: 38px !important;
     min-width: 38px !important;
 }

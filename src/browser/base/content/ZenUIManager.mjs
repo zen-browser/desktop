@@ -50,12 +50,13 @@ var gZenVerticalTabsManager = {
   },
 
   _updateHorizontalTabs() {
-      let vertical1 = Services.prefs.getBoolPref('zen.tabs.vertical');
-      if (vertical1) {
-          navbar.setAttribute('orient', 'vertical');
-      } else {
-          navbar.setAttribute('orient', 'horizontal');
-      }
+        let vertical = Services.prefs.getBoolPref('zen.tabs.vertical');
+        let navbar = document.getElementById('tabbrowser-arrowscrollbox');
+        if (vertical) {
+            navbar.setAttribute('orient', 'vertical');
+        } else {
+            navbar.setAttribute('orient', 'horizontal');
+        }
   },
 
   initRightSideOrderContextMenu() {

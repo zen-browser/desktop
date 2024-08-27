@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 22d1fe3d0730062abdc181912e93721fdc1c824d..c004692a31ad57aef45423c7bce104e8b056cb3e 100644
+index 22d1fe3d0730062abdc181912e93721fdc1c824d..70ca793ab5e2c73e6f6b50d1c9740a4799d8f374 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -17,7 +17,7 @@
@@ -11,7 +11,7 @@ index 22d1fe3d0730062abdc181912e93721fdc1c824d..c004692a31ad57aef45423c7bce104e8
    --tab-selected-textcolor: var(--toolbar-color);
    --tab-selected-bgcolor: var(--toolbar-bgcolor);
    --tab-selected-color-scheme: var(--toolbar-color-scheme);
-@@ -122,11 +122,11 @@
+@@ -122,12 +122,12 @@
      visibility: hidden;
    }
  
@@ -21,10 +21,12 @@ index 22d1fe3d0730062abdc181912e93721fdc1c824d..c004692a31ad57aef45423c7bce104e8
  
      #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > & {
 -      position: absolute !important;
-+      /*position: absolute !important;*/
-       display: block;
+-      display: block;
++      /*position: absolute !important;
++      display: block;*/
      }
    }
+ 
 @@ -357,8 +357,7 @@
      animation-delay: -1.5s;
    }

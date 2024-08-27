@@ -37,6 +37,7 @@ var gZenVerticalTabsManager = {
     this._updateMaxWidth();
     this.initRightSideOrderContextMenu();
     this._updateOnHoverVerticalTabs();
+    this._updateHorizontalTabs();
   },
 
   _updateOnHoverVerticalTabs() {

@@ -224,7 +224,7 @@
   }
   
   #tabbrowser-arrowscrollbox {
-    margin: 3px 0;
+    margin: 3px 0 !important;
   }
   
   #alltabs-button stack {

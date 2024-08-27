@@ -30,6 +30,7 @@ var gZenUIManager = {
 var gZenVerticalTabsManager = {
   init() {
     //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.tabs.vertical', this._updateHorizontalTabs.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
@@ -46,6 +47,15 @@ var gZenVerticalTabsManager = {
     } else {
       sidebar.removeAttribute('zen-user-hover');
     }
+  },
+
+  _updateHorizontalTabs() {
+      let vertical1 = Services.prefs.getBoolPref('zen.tabs.vertical');
+      if (vertical1) {
+          navbar.setAttribute('orient', 'vertical');
+      } else {
+          navbar.setAttribute('orient', 'horizontal');
+      }
   },
 
   initRightSideOrderContextMenu() {

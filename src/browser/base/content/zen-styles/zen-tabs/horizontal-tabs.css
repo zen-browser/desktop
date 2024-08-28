@@ -1,15 +1,40 @@
 @media not (-moz-bool-pref: "zen.tabs.vertical") {
+@media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
   #zen-tabbox-wrapper {
-    padding-top: 36px
+    padding-top: 40px;
 }
-    
+    #navigator-toolbox {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 50px !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -8px !important;
+    overflow: clip !important;
+}
+}
+@media not (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+  #zen-tabbox-wrapper {
+    padding-bottom: 40px;
+}
+    #navigator-toolbox {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 50px !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: -3px !important;
+    overflow: clip !important;
+}
+}    
         #scrollbutton-up > .toolbarbutton-icon {
     padding-top: 60px !important;
     }
 
 #TabsToolbar {
     padding: 0px !important;
-    margin: 0px !important;
+    margin:  0px !important;
+    height: 0px !important;
 }
     #tabbrowser-arrowscrollbox {
       &::part(scrollbutton-up),
@@ -24,8 +49,10 @@
 }
 
 #new-tab-button {
-    padding-top: 5px;
+    padding-top: 8px;
 }
+    
+
     
 #tabbrowser-tabs[haspinnedtabs]:not([positionpinnedtabs]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab:nth-child(1 of :not([pinned], [hidden])) {
   /* Add a gap between the last pinned tab and the first visible tab */
@@ -37,7 +64,7 @@
     }
     
     #zen-sidebar-icons-wrapper {
-        margin-bottom: 55px;
+        margin-bottom: 48px;
     }
     
 #tabbrowser-arrowscrollbox {
@@ -48,7 +75,6 @@
 #tabbrowser-tabs {
     height 100px;
     height: 100px;
-    --tab-overflow-pinned-tabs-width: 0px !important;
 }
     
     #zen-expand-sidebar-button {
@@ -56,17 +82,15 @@
     }
     
     #tabbrowser-arrowscrollbox {
-        margin-top: 7px;
+        margin-top: 10px;
     }
-
-#navigator-toolbox {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 50px !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: -8px !important;
+    
+    #tabbrowser-tabs {
+        &[movingtab] {
+padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
 }
+    }
   
 .tab-background {
   border-radius: var(--tab-border-radius);
@@ -87,7 +111,6 @@
 .scrollbox-clip>scrollbox {
     flex: 1 !important;
     display: flex !important;
-    ;
 }
  
 #zen-workspaces-button {
@@ -99,20 +122,11 @@
   aspect-ratio: 1 / 1;
   transition: min-width 100ms ease-out, max-width 100ms ease-out;
   font-weight: 500;
-  margin-top: 6px !important;
+  margin-top: 8px !important;
+  padding-left: 12.8px !important;
   -moz-window-dragging: no-drag !important;
 }
-
-    .zen-workspace-sidebar-name {
-        display: none !important;
-    }
-    
-    #tabbrowser-tabs {
-        &[movingtab] {
-            padding-bottom: 0px !important;
-            margin-bottom: 0px !important;
-        }
-    }
+  
 #TabsToolbar .toolbarbutton-1 {
   margin-left:      5px !important;
 }
@@ -144,26 +158,44 @@
     max-width: 180px !important;
     margin: 0px 1px !important;
     min-height: 32px !important;
-    height: 32px !important;
+    height: 0px !important;
     min-width: 64px !important;
     background-color: color-mix(in srgb, var(--zen-primary-color) 15%, black 30%) !important;
     ;
     opacity: 1 !important;
     border-radius: 5px !important;
+    
 }
 
+    .tab-content {
+        padding-bottom: 3px !important;
+    }
+   
 .tabbrowser-tab:hover,
 .tabbrowser-tab[selected="true"],
 .tabbrowser-tab[multiselected="true"] {
     background-color: color-mix(in srgb, var(--zen-primary-color) 40%, black 30%) !important;
-    ;
 }
 
-.tabbrowser-tab[pinned=""] {
-    width: 38px !important;
+.tabbrowser-tab[pinned] {
+    width: 40px !important;
     min-width: 38px !important;
+    margin-inline-start: 2px !important;
+    z-index: 100 !important;
+        visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+    display: inline-flex !important;
+    z-index:  100 !important;
+        #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > & {
+      display: block !important;
+    }
+}
 }
 
+#tabbrowser-tabs {
+    --tab-overflow-pinned-tabs-width: 0px !important;
+}
 #tabs-newtab-button {
     height: 32px !important;
 }
@@ -211,6 +243,10 @@
   #tabbrowser-arrowscrollbox {
     min-height: 672.8px!important;
   }
+    
+    .zen-workspace-sidebar-icon {
+        padding-left 5px;
+    }
 
     @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
         html:has(#navigator-toolbox[zen-user-show]) #zen-appcontent-navbar-container {

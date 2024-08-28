@@ -16,6 +16,21 @@ var gZenNewWebPanel = {
     }
   },
 
+  addHttpIfMissing(url) {
+    // List of schemes to avoid
+    const avoidSchemes = ['about:', 'chrome:', 'moz-extension:', 'view-source:'];
+    // Check if the URL starts with any of the avoid schemes
+    for (let scheme of avoidSchemes) {
+      if (url.startsWith(scheme)) {
+        return url;
+      }
+    }
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return 'https://' + url;
+    }
+    return url;
+  },
+
   handleDialogAccept: async function(aEvent) {
     document.commandDispatcher.focusedElement?.blur();
     let url = document.getElementById("zenNWP_url");
@@ -23,8 +38,9 @@ var gZenNewWebPanel = {
     if (!url || !ua) {
       return;
     }
+    const urlValue = this.addHttpIfMissing(url.value);
     try {
-      new URL(url.value);
+      new URL(urlValue);
     } catch (_) {
       return;
     }
@@ -32,7 +48,7 @@ var gZenNewWebPanel = {
       return;
     }
     let newSite = {
-      url: url.value,
+      url: urlValue,
       ua: ua.value,
     };
     let currentData = JSON.parse(Services.prefs.getStringPref("zen.sidebar.data"));

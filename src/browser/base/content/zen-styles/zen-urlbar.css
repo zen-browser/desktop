@@ -1,19 +1,18 @@
 /* URL and tool bars */
 
 #urlbar {
-  --toolbarbutton-border-radius: 999px;
-  border: transparent;
+  --toolbarbutton-border-radius: 6px;
+  --urlbarView-separator-color: var(--zen-colors-border);
+  --urlbarView-hover-background: var(--toolbarbutton-hover-background);
+  --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 999px;
   overflow: hidden;
   padding: 1px;
-  border-radius: var(--toolbarbutton-border-radius);
 }
 
 #urlbar[focused="true"][breakout-extend="true"] {
   overflow: visible;
-}
-
-#urlbar {
-  border: 1px solid light-dark(rgba(0,0,0,.2), rgba(255,255,255,.2))
 }
 
 #searchbar:focus-within {
@@ -28,6 +27,8 @@
   background: var(--zen-dialog-background) !important;
 }
 
+#urlbar-background { border: transparent !important; }
+
 #urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background,
 #searchbar:focus-within {
   outline: none !important;
@@ -37,16 +38,29 @@
 
 #urlbar .urlbar-page-action, 
 #urlbar #tracking-protection-icon-container,
-#urlbar:not([extend="true"]) #identity-box:not(.chromeUI) #identity-icon-box {
+#urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   border-radius: 999px;
 }
 
-#urlbar[breakout-extend="true"] {
-  --toolbarbutton-border-radius: 6px;
+#urlbar[breakout-extend="true"] .urlbar-page-action,
+#urlbar[breakout-extend="true"] #tracking-protection-icon-container,
+#urlbar[breakout-extend="true"] #identity-box #identity-icon-box,
+.searchbar-engine-one-off-item {
+  border-radius: var(--toolbarbutton-border-radius) !important;
 }
 
-#identity-icon-box {
+#urlbar[breakout-extend="true"] {
+  border-radius: 12px;
+}
+
+#identity-icon-box,
+#identity-permission-box {
   background: var(--zen-colors-secondary) !important;
+  margin: 0 8px 0 0 !important;
+}
+
+#identity-permission-box {
+  background: var(--zen-colors-border) !important;
 }
 
 #urlbar:is([focused], [open]) > #urlbar-background, #searchbar:focus-within {
@@ -54,39 +68,41 @@
 }
 
 #identity-icon-label {
-  padding-inline-start: 8px  !important;
+  padding-inline-start: 8px !important;
 }
 
-#urlbar #identity-box.chromeUI #identity-icon-box {
-  border-radius: 5px !important;
+#identity-box.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
+  margin-right: 0 !important;
 }
 
-#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI #identity-icon-box {
+#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
   border-radius: 20px 10px 10px 20px !important;
 }
 
-#urlbar .urlbar-page-action,
-#urlbar #identity-box #identity-icon-box, 
-#urlbar #tracking-protection-icon-container {
-  margin: 0 1px;
-}
+#urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative; }
 
-#urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative;}
-
-#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) #identity-icon-box {
+#urlbar:not([extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   margin-right: 5px;
 }
 
-#urlbar:not([extend="true"]) #identity-box:not(.chromeUI):not(.localResource) {
+#urlbar:not([extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) {
   margin-inline-end: 0 !important;
 }
 
-.urlbar-page-action {
-  width: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
-  height: calc(var(--urlbar-min-height) - 5px - 2 * var(--urlbar-container-padding)) !important;
+.urlbar-page-action,
+#tracking-protection-icon-container {
+  width: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
   padding: 0 !important;
   justify-content: center !important;
   align-items: center !important;
+  margin: 0 0 0 2px !important;
+}
+
+#urlbar[breakout-extend="true"] .urlbar-page-action,
+#urlbar[breakout-extend="true"] #tracking-protection-icon-container {
+  width: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
 }
 
 toolbar .toolbarbutton-1:not(.unified-extensions-item-action-button) {
@@ -106,12 +122,16 @@ toolbar .zen-sidebar-panel-button {
 }
 
 #identity-permission-box {
-  margin: 0 5px 0 0 !important;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
 
-#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])) #identity-icon-box {
+#identity-box:has(#notification-popup-box:not([hidden="true"])) #identity-icon-box,
+#identity-box:has(#notification-popup-box:not([hidden="true"])) #identity-permission-box {
+  margin-right: 4px !important;
+}
+
+#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])):not([pageproxystate="invalid"]) #identity-icon-box {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
   margin-right: 0 !important;
@@ -124,10 +144,22 @@ toolbar .zen-sidebar-panel-button {
 
 #notification-popup-box {
   border-radius: 999px;
-  margin-right: 5px;
-  transition: .2s;
-  height: 100%;
-  padding: 7px;
+  margin: 0 4px 0 0 !important;
+  padding: 0 4px;
+  min-width: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
+  justify-content: center;
+  gap: 8px;
+}
+
+#urlbar[breakout-extend="true"] #notification-popup-box {
+  min-width: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
+  height: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
+}
+
+#notification-popup-box > image {
+  margin: 0;
+  padding: 0;
 }
 
 button.popup-notification-dropmarker {
@@ -141,8 +173,9 @@ button.popup-notification-dropmarker {
 }
 
 .searchbar-engine-one-off-item {
-  max-width: 20px;
-  min-width: 20px !important;
+  max-width: 28px;
+  min-width: 28px !important;
+  transition: background 0s;
   justify-content: center;
 }
 

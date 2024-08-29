@@ -264,7 +264,37 @@ var gZenLooksAndFeel = {
       colorElemParen.appendChild(colorElem);
       elem.appendChild(colorElemParen);
     }
-    // TODO: add custom color selection!
+
+    // Add the custom color option.
+    let customColorElemParen = document.createElement("div");
+    let customColorElem = document.createElement("div");
+    customColorElemParen.classList.add("zenLooksAndFeelColorOptionParen");
+    customColorElem.classList.add("zenLooksAndFeelColorOption");
+    customColorElem.classList.add("zenLooksAndFeelColorOptionCustom");
+
+    if (!kZenColors.includes(accentColor)) {
+      customColorElemParen.setAttribute("selected", "true");
+    }
+
+    customColorElemParen.appendChild(customColorElem);
+
+    // Create the custom color input
+    let customColorInput = document.createElement("input");
+    customColorInput.type = "color";
+    customColorInput.value = accentColor;
+    customColorInput.classList.add("zenLooksAndFeelColorOptionCustomInput");
+    customColorInput.addEventListener("input", (event) => {
+      Services.prefs.setStringPref("zen.theme.accent-color", event.target.value);
+    });
+
+    customColorElem.appendChild(customColorInput);
+
+    //Trigger the color picker when the custom color is clicked.
+    customColorElemParen.addEventListener("click", () => {
+      customColorInput.click();
+    });
+
+    elem.appendChild(customColorElemParen);
   },
 
   _handleAccentColorChange(accentColor) {

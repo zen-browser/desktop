@@ -205,6 +205,18 @@ groupbox h2 {
   background: var(--zen-colors-tertiary);
 }
 
+.zenLooksAndFeelColorOptionCustom {
+  background: conic-gradient(#FFABAB, #FFF5BA, #DBFFD6, #85E3FF, #6EB5FF, #FFC9DE, #FFABAB);
+}
+
+.zenLooksAndFeelColorOptionCustomInput {
+  display: none;
+}
+
+.zenLooksAndFeelColorOptionCustomInput:focus {
+  outline: none;
+}
+
 /* Workspace */
 
 #category-zen-workspaces > .category-icon {

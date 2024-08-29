@@ -111,6 +111,7 @@ pref('general.smoothScroll', true); // DEFAULT
 
 // Privacy
 pref('dom.private-attribution.submission.enabled', false);
+pref('dom.security.https_only_mode', true);
 
 pref('media.eme.enabled', true);
 pref('webgl.disabled', false);

@@ -3,8 +3,8 @@
 #urlbar {
   --toolbarbutton-border-radius: 6px;
   --urlbarView-separator-color: var(--zen-colors-border);
-  --urlbarView-hover-background: var(--zen-colors-border);
-  --urlbarView-highlight-background: var(--zen-colors-border);
+  --urlbarView-hover-background: var(--toolbarbutton-hover-background);
+  --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border: 1px solid var(--zen-colors-border);
   border-radius: 999px;
   overflow: hidden;

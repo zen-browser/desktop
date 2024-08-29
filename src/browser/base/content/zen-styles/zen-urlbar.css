@@ -6,9 +6,9 @@
   --urlbarView-hover-background: var(--zen-colors-border);
   --urlbarView-highlight-background: var(--zen-colors-border);
   border: 1px solid var(--zen-colors-border);
+  border-radius: 999px;
   overflow: hidden;
   padding: 1px;
-  border-radius: 999px;
 }
 
 #urlbar[focused="true"][breakout-extend="true"] {

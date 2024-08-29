@@ -8,5 +8,8 @@
     border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
     transform: translate3d(0, 0, 0);
     overflow: hidden;
+
+    /* This fixes an issue with the left border */
+    margin-left: 2px;
   }
 }

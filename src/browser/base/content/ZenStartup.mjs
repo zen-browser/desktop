@@ -3,7 +3,9 @@ var ZenStartup = {
   init() {
     this._changeSidebarLocation();
     this._zenInitBrowserLayout();
-    this._focusSearchBar();
+    window.SessionStore.promiseInitialized.then(async () => {
+      this._focusSearchBar();
+    });
   },
 
   _zenInitBrowserLayout() {
@@ -81,7 +83,6 @@ var ZenStartup = {
     const kElementsToAppend = [
       "sidebar-splitter",
       "sidebar-box",
-      "navigator-toolbox",
     ];
     const wrapper = document.getElementById("zen-tabbox-wrapper");
     const appWrapepr = document.getElementById("zen-sidebar-box-container");
@@ -93,14 +94,17 @@ var ZenStartup = {
     }
     appWrapepr.setAttribute("hidden", "true");
 
+    const browser = document.getElementById("browser")
+    const toolbox = document.getElementById("navigator-toolbox");
+    browser.prepend(toolbox);
+
     // Set a splitter to navigator-toolbox
     const splitter = document.createXULElement("splitter");
     splitter.setAttribute("id", "zen-sidebar-splitter");
     splitter.setAttribute("orient", "horizontal");
     splitter.setAttribute("resizebefore", "sibling");
     splitter.setAttribute("resizeafter", "none");
-    const titlebar = document.getElementById("navigator-toolbox");
-    titlebar.insertAdjacentElement("afterend", splitter);
+    toolbox.insertAdjacentElement("afterend", splitter);
   },
 
   _focusSearchBar() {

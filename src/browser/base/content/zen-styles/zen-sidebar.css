@@ -48,6 +48,7 @@
 }
 
 .zen-sidebar-action-button {
+  --toolbarbutton-active-background: var(--zen-colors-secondary);
   width: var(--zen-sidebar-action-button-width);
   height: var(--zen-sidebar-action-button-width);
   padding: 0;
@@ -79,10 +80,6 @@
 
 .zen-sidebar-action-button:hover image {
   background: transparent !important;
-}
-
-.zen-sidebar-action-button label {
-  display: none !important;
 }
 
 #sidebar-box[hidden="true"] .zen-sidebar-action-button,
@@ -120,10 +117,11 @@
 #zen-profile-button {
   display: flex;
   justify-content: center;
+  position: relative;
   align-items: center;
 }
 
-#zen-profile-button > div:last-child {
+#zen-profile-button::before {
   background-image: var(--avatar-image-url);
   border-radius: 50%;
   background-size: cover;
@@ -131,6 +129,11 @@
   width: 20px;
   height: 20px;
   border: 2px solid var(--zen-colors-border);
+  content: '';
+  top: 50%;
+  left: var(--toolbar-start-end-padding);
+  transform: translateY(-50%);
+  position: absolute;
 }
 
 /* Ugly code */
@@ -145,12 +148,6 @@
 #TabsToolbar .zen-sidebar-action-button:nth-child(8),  .zen-sidebar-panel-button:nth-child(8) { animation-delay: 0.8s; }
 #TabsToolbar .zen-sidebar-action-button:nth-child(9),  .zen-sidebar-panel-button:nth-child(9) { animation-delay: 0.9s; }
 #TabsToolbar .zen-sidebar-action-button:nth-child(10), .zen-sidebar-panel-button:nth-child(10) { animation-delay: 1s; }
-
-#TabsToolbar .zen-side-bar-profiles-button-panel-correction {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-}
 
 #zen-sidebar-icons-wrapper toolbarbutton {
   position: relative;

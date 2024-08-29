@@ -432,7 +432,7 @@
     #navigator-toolbox:focus-within,
     #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
-      --zen-navigation-toolbar-min-width: 3.7rem !important;
+      --zen-navigation-toolbar-min-width: 3.3rem !important;
 
       & #TabsToolbar {
         z-index: 100 !important;
@@ -447,6 +447,24 @@
       #navigator-toolbox:not(&) #TabsToolbar #tabbrowser-tabs[closebuttons="activetab"] .tabbrowser-tab .tab-content[class] > .tab-close-button[class] {
         display: none !important;
         visibility: hidden !important;
+      }
+
+      & #zen-sidebar-icons-wrapper {
+        display: block !important;
+      }
+
+      & .zen-sidebar-action-button {
+        width: 100%;
+
+        & > * {
+          --toolbarbutton-active-background: transparent;
+        }
+
+        & label {
+          --toolbarbutton-hover-background: transparent;
+          display: block !important;
+          text-align: start;
+        }
       }
     }
 

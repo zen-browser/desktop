@@ -12,7 +12,7 @@
   #navigator-toolbox[inFullscreen]{ margin-top: 0 !important; }
   
   #navigator-toolbox {
-    --zen-compact-toolbox-margin-single: 15px;
+    --zen-compact-toolbox-margin-single: calc(var(--zen-element-separation) * 2);
     --zen-compact-toolbox-margin: var(--zen-compact-toolbox-margin-single);
     position: absolute;
     display: block;
@@ -125,7 +125,7 @@
     #zen-appcontent-navbar-container {
       --urlbar-height: unset;
       transition: .2s ease-in-out;
-      transform: translateY(calc(-100% + 5px));
+      transform: translateY(calc(-100% + var(--zen-element-separation)));
       opacity: 0;
       position: absolute;
       width: 100%;

@@ -302,14 +302,20 @@
         #mainPopupSet[zen-user-hover="true"]:has(> #appMenu-popup:hover) ~ toolbox,
         #navigator-toolbox[zen-user-hover="true"]:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)), 
       :not([zen-user-hover="true"])) {
-      --zen-hover-animation: zen-sidebar-panel-animation-2;
       --zen-navigation-toolbar-min-width: 155px;
       min-width: var(--zen-navigation-toolbar-min-width) !important;
       align-items: start;
       transition: .2s;
       width: 170px;
       border: none;
-      padding-left: 2px;
+      @media (not (-moz-bool-pref: "zen.tabs.vertical.right-side")) {
+        padding-left: 2px;
+        --zen-hover-animation: zen-sidebar-panel-animation-2;
+      }
+      @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+        padding-right: 2px;
+        --zen-hover-animation: zen-sidebar-panel-animation-right;
+      }
       animation: var(--zen-hover-animation) 0.3s backwards;
 
       #vertical-pinned-tabs-container {
@@ -332,7 +338,7 @@
           display: block;
         }
       }
-    
+
       & .tab-label-container {
         display: block;
       }
@@ -416,7 +422,17 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(var(--tab-min-height), 1fr));
         padding: calc(var(--zen-tabbrowser-padding) / 2);
-        padding-right: 0;
+      }
+        
+      @media (not (-moz-bool-pref: "zen.tabs.vertical.right-side")) {
+        & #tabbrowser-arrowscrollbox::part(scrollbox) {
+          padding-right: 0;
+        }
+      }
+      @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+        & #tabbrowser-arrowscrollbox::part(scrollbox) { 
+          padding-left: 0;
+        }
       }
     
       & .tabbrowser-tab:not([pinned]),
@@ -456,8 +472,6 @@
   @media (-moz-bool-pref: "zen.tabs.vertical.right-side") and (not (-moz-bool-pref: "zen.view.compact")) {
     #navigator-toolbox {
       order: 8 !important;
-      padding-left: 0 !important;
-      --zen-hover-animation: zen-sidebar-panel-animation-right !important;
     }
 
     :root:not([zen-sidebar-legacy="true"]) {
@@ -466,11 +480,6 @@
 
     #zen-sidebar-splitter {
       order: 7 !important;
-    }
-
-    #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-left: var(--zen-element-separation) !important;
-      margin-right: 0 !important;
     }
   }
 

@@ -131,7 +131,13 @@
   #PersonalToolbar[collapsed="true"]{ display: none }
 
   :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    margin-left: var(--zen-element-separation) !important;
+    @media (not (-moz-bool-pref: "zen.tabs.vertical.right-side")) {
+      margin-left: var(--zen-element-separation) !important;
+    }
+
+    @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+      margin-right: var(--zen-element-separation) !important;
+    }
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {

@@ -72,7 +72,7 @@ npm start
 
 ## Third Party Code
 
-Zen coudn't be in its current state without the help of these amazing projects!
+Zen couldn't be in its current state without the help of these amazing projects!
 
 - Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
 

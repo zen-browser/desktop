@@ -1,5 +1,11 @@
-
-# 🌀 Zen Browser
+<p align="center">
+<picture>
+    <img src="https://cdn.jsdelivr.net/gh/zen-browser/www@master/public/logos/zen-black.svg" width="128px">
+</picture>
+</p>
+<h1 align="center">
+Zen Browser
+</h1>
 
 Experience tranquillity while browsing the web without people tracking you!
 
@@ -9,10 +15,11 @@ Experience tranquillity while browsing the web without people tracking you!
 
 [![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
 
+[![Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/io.github.zen_browser.zen')
+
+[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/z3nth10n)
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K111FH7H)
-<a href='https://flathub.org/apps/io.github.zen_browser.zen'>
-  <img width='220' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
-</a>
 
 # Compatibility
 
@@ -72,7 +79,7 @@ npm start
 
 ## Third Party Code
 
-Zen coudn't be in its current state without the help of these amazing projects!
+Zen couldn't be in its current state without the help of these amazing projects!
 
 - Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
 

@@ -144,6 +144,8 @@ var gZenMarketplaceManager = {
   },
 
   async _buildThemesList() {
+    if (this.__alreadyBuilding) return;
+    this.__alreadyBuilding = true;
     let themes = await this._getThemes();
     this.themesList.innerHTML = "";
     for (let theme of Object.values(themes)) {
@@ -202,6 +204,7 @@ var gZenMarketplaceManager = {
         this.themesList.appendChild(preferencesWrapper);
       }
     }
+    this.__alreadyBuilding = false;
   }
 };
 

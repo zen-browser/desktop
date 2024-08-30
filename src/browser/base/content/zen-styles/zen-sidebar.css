@@ -40,7 +40,7 @@
   background: transparent !important;  
   border-color: transparent !important;
   width: 1px !important;
-  margin-right: 5px !important;
+  margin-right: 5px;
 }
 
 #sidebar-box[positionend] {

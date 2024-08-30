@@ -7,6 +7,11 @@
   #navigator-toolbox {
     --zen-tabbrowser-padding: 5px;
     margin-top: 0; /* Issue #156 */
+    order: 0 !important;
+  }
+
+  #zen-sidebar-splitter {
+    order: 0 !important;
   }
   
   #navigator-toolbox {
@@ -381,20 +386,17 @@
   /* Display the vertical tabs on the right side */
   @media (-moz-bool-pref: "zen.tabs.vertical.right-side") and (not (-moz-bool-pref: "zen.view.compact")) {
     #navigator-toolbox {
-      order: 6;
-      padding-left: 0;
+      order: 6 !important;
+      padding-left: 0 !important;
+      padding: calc(var(--zen-tabbrowser-padding) * 1.5);
     }
 
     #zen-sidebar-splitter {
-      order: 5;
-    }
-
-    #tabbrowser-tabbox {
-      padding-left: var(--zen-element-separation);
+      order: 5 !important;
     }
 
     #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-right: 0 !important;
+      margin-left: var(--zen-element-separation) !important;
     }
   }
 

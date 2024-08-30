@@ -135,9 +135,6 @@ pref('xpinstall.signatures.required', false);
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
 
-// Extremly experimental features
-pref("dom.webgpu.enabled", true);
-
 // Font rendering, not for MacOSX and Linux
 #ifndef XP_UNIX
 #ifndef XP_MACOSX

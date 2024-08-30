@@ -103,7 +103,7 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
         run: |
-          pnpm surfer import
+          pnpm surfer import --verbose
         
       - name: Build language packs
         run: sh scripts/download-language-packs.sh

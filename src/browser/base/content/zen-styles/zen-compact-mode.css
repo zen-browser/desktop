@@ -168,22 +168,10 @@
   }
 
   @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
-    #navigator-toolbox {
-      right: 0 !important;
+    /* TODO: future contributor, i've tried insane hours to do right side compact mode but failed, good luck debugging this! */
+    /*#navigator-toolbox {
+      left: 100% !important;
       transform: translateX(calc(100% - (var(--zen-compact-toolbox-margin-single) / 2))) !important;;
-    }
-
-    #navigator-toolbox:hover,
-    #navigator-toolbox:focus-within,
-    #navigator-toolbox[zen-user-show],
-    #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
-    #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
-      transform: none !important;
-      opacity: 1;
-  
-      & > * {
-        pointer-events: all;  
-      }
-    }
+    }*/
   }
 }

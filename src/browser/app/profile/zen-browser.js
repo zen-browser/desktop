@@ -143,6 +143,9 @@ pref('gfx.font_rendering.cleartype_params.gamma', 1750);
 #endif
 #endif
 
+pref('gfx.webrender.all', true);
+pref('layers.acceleration.force-enabled', true);
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)

@@ -1,8 +1,8 @@
-<p align="center">
+<div align="center">
 <picture>
-    <img src="https://cdn.jsdelivr.net/gh/zen-browser/www@master/public/logos/zen-black.svg" width="128px">
+    <img src="./zen-black.svg" width="128px">
 </picture>
-</p>
+</div>
 <h1 align="center">
 Zen Browser
 </h1>

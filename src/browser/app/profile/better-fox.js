@@ -32,9 +32,9 @@ pref("gfx.content.skia-font-cache-size", 20);
 pref("browser.cache.jsbc_compression_level", 3);
 
 /** MEDIA CACHE ***/
-pref("media.memory_cache_max_size", 512000); // alt=512000; also in Securefox (inactive there)
-pref("media.cache_readahead_limit", 9000); // default=60; stop reading ahead when our buffered data is this many seconds ahead of the current playback
-pref("media.cache_resume_threshold", 6000); // default=30; when a network connection is suspended, don't resume it until the amount of buffered data falls below this threshold (in seconds)
+pref("media.memory_cache_max_size", 65536);
+pref("media.cache_readahead_limit", 7200);
+pref("media.cache_resume_threshold", 3600);
 
 /** IMAGE CACHE ***/
 pref("image.mem.decode_bytes_at_a_time", 32768);
@@ -47,7 +47,7 @@ pref("network.http.pacing.requests.enabled", false);
 pref("network.dnsCacheExpiration", 3600);
 pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
-pref("network.ssl_tokens_cache_capacity", 32768);
+pref("network.ssl_tokens_cache_capacity", 10240);
 
 /** MIXED CONTENT + CROSS-SITE ***/
 pref("pdfjs.enableScripting", false);
@@ -62,6 +62,7 @@ pref("dom.security.sanitizer.enabled", true);
  * SECTION: SECUREFOX                                                       *
 ****************************************************************************/
 /** TRACKING PROTECTION ***/
+pref("browser.contentblocking.category", "strict");
 pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com");
 pref("urlclassifier.features.socialtracking.skipURLs", "*.instagram.com, *.twitter.com, *.twimg.com");
 pref("network.cookie.sameSite.noneRequiresSecure", true);

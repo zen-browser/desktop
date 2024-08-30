@@ -59,7 +59,6 @@ pref("browser.ping-centre.telemetry", false);
 pref("browser.attribution.enabled", false);
 pref("toolkit.telemetry.pioneer-new-studies-available", false);
 
-pref("browser.contentblocking.category", "standard");
 pref("app.update.checkInstallTime.days", 2);
 
 // CUSTOM ZEN PREFS

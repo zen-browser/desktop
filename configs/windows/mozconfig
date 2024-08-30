@@ -18,7 +18,6 @@ if test "$ZEN_CROSS_COMPILING"; then
   export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/x64/Microsoft.VC143.CRT"
 
   export MIDL="$TOOLS/wine/bin/widl"
-  export MOZ_INCLUDE_SOURCE_INFO=1
   export MOZ_STUB_INSTALLER=1
   export WINEDEBUG=-all
   export WINE="$TOOLS/wine/bin/wine64"
@@ -33,7 +32,7 @@ ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download
  
 if test "$SURFER_COMPAT" = "true"; then
-  ac_add_options --enable-optimize="-O2 -Qvec -mtune=haswell -march=x86-64 -w"
+  ac_add_options --enable-optimize="-O3 -w -ftree-vectorize"
 
   export CFLAGS="-mtune=haswell -march=x86-64 -O2 -Qvec -w"
   export CPPFLAGS="-mtune=haswell -march=x86-64 -O2 -Qvec -w"
@@ -41,7 +40,7 @@ if test "$SURFER_COMPAT" = "true"; then
   export LDFLAGS="-Wl,-O2"
   export RUSTFLAGS="-C codegen-units=1 -Ctarget-cpu=x86-64"
 else
-  ac_add_options --enable-optimize="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -Xclang -w"
+  ac_add_options --enable-optimize="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -ftree-vectorize -Xclang -w"
   ac_add_options --enable-wasm-avx
 
   export CFLAGS="-O2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -maes -march=x86-64-v3"   

@@ -38,11 +38,11 @@ var gZenNewWebPanel = {
     if (!url || !ua) {
       return;
     }
-    const urlValue = this.addHttpIfMissing(url.value);
+    let urlValue = url.value;
     try {
       new URL(urlValue);
     } catch (_) {
-      return;
+      urlValue = this.addHttpIfMissing(url.value);
     }
     if (!url.value || !ua.value) {
       return;

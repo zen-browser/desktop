@@ -29,19 +29,6 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: severity
-    attributes:
-      label: Severity impact
-      description: See label descriptions for more information.
-      options:
-        - Low
-        - Medium
-        - High
-        - Critical
-    validations:
-      required: true
-
-  - type: dropdown
     id: platform
     attributes:
       label: What platform are you seeing the problem on?

@@ -147,6 +147,10 @@ pref('gfx.font_rendering.cleartype_params.gamma', 1750);
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);
 
+#if defined(XP_WIN)
+  pref("dom.ipc.processPriorityManager.backgroundUsesEcoQoS", false);
+#endif
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)

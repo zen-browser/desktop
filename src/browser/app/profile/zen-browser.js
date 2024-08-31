@@ -144,8 +144,10 @@ pref('gfx.font_rendering.cleartype_params.gamma', 1750);
 #endif
 #endif
 
+// Enable GPU by default
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);
+pref('media.ffmpeg.vaapi.enabled', true);
 
 #if defined(XP_WIN)
   pref("dom.ipc.processPriorityManager.backgroundUsesEcoQoS", false);

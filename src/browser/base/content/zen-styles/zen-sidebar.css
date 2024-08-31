@@ -165,6 +165,7 @@
   --zen-sidebar-action-content-separator: calc(10px + var(--zen-tabbrowser-padding));
   padding-top: var(--zen-sidebar-action-content-separator);
   margin-top:  var(--zen-sidebar-action-content-separator);
+  color-scheme: inherit !important;
 }
 
 #zen-sidebar-icons-wrapper::before {

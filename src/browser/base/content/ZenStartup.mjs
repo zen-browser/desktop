@@ -80,10 +80,15 @@ var ZenStartup = {
   },
 
   _changeSidebarLocation() {
+    const legacyLocation = Services.prefs.getBoolPref("zen.themes.tabs.legacy-location", false);
     const kElementsToAppend = [
       "sidebar-splitter",
       "sidebar-box",
     ];
+    if (legacyLocation) {
+      kElementsToAppend.push("navigator-toolbox");
+      window.document.documentElement.setAttribute("zen-sidebar-legacy", "true");
+    }
     const wrapper = document.getElementById("zen-tabbox-wrapper");
     const appWrapepr = document.getElementById("zen-sidebar-box-container");
     for (let id of kElementsToAppend) {
@@ -96,7 +101,9 @@ var ZenStartup = {
 
     const browser = document.getElementById("browser")
     const toolbox = document.getElementById("navigator-toolbox");
-    browser.prepend(toolbox);
+    if (!legacyLocation) {
+      browser.prepend(toolbox);
+    }
 
     // remove all styles except for the width, since we are xulstoring the complet style list
     const width = toolbox.style.width;

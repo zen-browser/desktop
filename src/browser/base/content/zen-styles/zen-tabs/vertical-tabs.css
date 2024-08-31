@@ -248,7 +248,7 @@
   }
 
   @media (-moz-bool-pref: "zen.view.sidebar-expanded.on-hover") {  
-    #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
+    :root:not([zen-sidebar-legacy="true"]) #navigator-toolbox:is([zen-user-hover="true"]:hover, :not([zen-user-hover="true"])) {
       padding-right: 47px !important;
     }
   }
@@ -260,6 +260,7 @@
         #mainPopupSet[zen-user-hover="true"]:has(> #appMenu-popup:hover) ~ toolbox,
         #navigator-toolbox[zen-user-hover="true"]:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)), 
       :not([zen-user-hover="true"])) {
+      --zen-hover-animation: zen-sidebar-panel-animation-2;
       --zen-navigation-toolbar-min-width: 155px;
       min-width: var(--zen-navigation-toolbar-min-width) !important;
       align-items: start;
@@ -267,7 +268,7 @@
       width: 170px;
       border: none;
       padding-left: 2px;
-      animation: zen-sidebar-panel-animation-2 0.3s backwards;
+      animation: var(--zen-hover-animation) 0.3s backwards;
     
       & .tab-label-container {
         display: block;
@@ -386,13 +387,17 @@
   /* Display the vertical tabs on the right side */
   @media (-moz-bool-pref: "zen.tabs.vertical.right-side") and (not (-moz-bool-pref: "zen.view.compact")) {
     #navigator-toolbox {
-      order: 6 !important;
+      order: 8 !important;
       padding-left: 0 !important;
+      --zen-hover-animation: zen-sidebar-panel-animation-right !important;
+    }
+
+    :root:not([zen-sidebar-legacy="true"]) {
       padding: calc(var(--zen-tabbrowser-padding) * 1.5);
     }
 
     #zen-sidebar-splitter {
-      order: 5 !important;
+      order: 7 !important;
     }
 
     #tabbrowser-tabpanels .browserSidebarContainer {
@@ -477,7 +482,7 @@
         border-top-right-radius: 0;
         border-top-left-radius: var(--zen-border-radius);
 
-        right: 100%;
+        right: 0;
       }
 
       #navigator-toolbox:hover,

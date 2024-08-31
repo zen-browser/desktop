@@ -80,6 +80,10 @@
        *  4. Calculate toolbar height, taken from zen-urlbar.css
        */
       --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) + .15rem + var(--zen-element-separation) + (18px + (var(--toolbarbutton-inner-padding) * 2))) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
+    
+      :root[zen-sidebar-legacy="true"] & {
+        --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
+      }
     }
 
     #zen-sidebar-web-panel-wrapper,

@@ -86,6 +86,7 @@ pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-firefox', false);
 pref('zen.tabs.dim-pending', true);
 pref('zen.themes.updated-value-observer', false);
+pref('zen.themes.tabs.legacy-location', false);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);

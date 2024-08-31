@@ -139,8 +139,9 @@ pref('dom.script_loader.bytecode_cache.strategy', 2);
 // Font rendering, not for MacOSX and Linux
 #ifndef XP_UNIX
 #ifndef XP_MACOSX
-pref('gfx.font_rendering.cleartype_params.rendering_mode', 5);
-pref('gfx.font_rendering.cleartype_params.gamma', 1750);
+pref("gfx.font_rendering.directwrite.bold_simulation", 2);
+pref("gfx.font_rendering.cleartype_params.enhanced_contrast", 25);
+pref("gfx.font_rendering.cleartype_params.force_gdi_classic_for_families", "");
 #endif
 #endif
 

@@ -15,7 +15,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 [![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
 
-[![Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/io.github.zen_browser.zen')
+[![Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/io.github.zen_browser.zen)
 
 [![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/z3nth10n)
 

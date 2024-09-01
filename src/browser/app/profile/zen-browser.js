@@ -154,6 +154,9 @@ pref('media.ffmpeg.vaapi.enabled', true);
   pref("dom.ipc.processPriorityManager.backgroundUsesEcoQoS", false);
 #endif
 
+// Enable experimental settings page (Usef for Zen Labs)
+pref('browser.preferences.experimental', true);
+
 #include better-fox.js
 
 // Betterfox overrides (Stay below the include directive)

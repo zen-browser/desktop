@@ -136,6 +136,13 @@ jobs:
         with:
           path: ~/artifact
 
+      - name: Show artifact info
+        if: ${{ !inputs.generate-gpo }}
+        run: |
+          ls ~/artifact
+          ls ~/artifact/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
+          ls ~/artifact/merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+
       - name: Import
         env:
           SURFER_COMPAT: ${{ matrix.generic == true }}

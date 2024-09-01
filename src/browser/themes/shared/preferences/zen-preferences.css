@@ -42,6 +42,7 @@ groupbox {
 
 groupbox:has(+ script),
 groupbox:last-of-type,
+groupbox#pane-experimental-featureGates,
 groupbox:has(+ .subcategory) {
   border-bottom-left-radius: 5px !important;
   border-bottom-right-radius: 5px !important;

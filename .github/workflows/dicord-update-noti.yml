@@ -1,0 +1,11 @@
+name: Discord new version Notifi
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send new update to discord
+        run: curl -H "Content-Type:application/json" -d '{"content":"<@&1275880889942933505>","embeds":[{"title":"🚀 New Update  - ${{ github.event.release.tag_name }}","description":"[Release notes](<https://zen-browser.app/release-notes/${{ github.event.release.tag_name }}>)","color":16711680}],"username":"ZenDroid","avatar_url":"https://cdn.jsdelivr.net/gh/zen-browser/www@latest/public/logos/zen-alpha-black.png"}' ${{ secrets.DISCHOOK }}

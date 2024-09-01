@@ -468,6 +468,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: flathub/io.github.zen_browser.zen
+          token: ${{ secrets.DEPLOY_KEY }}
+    
       - name: Setup git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -486,10 +492,10 @@ jobs:
       - name: Update zen-browser Cask
         run: sh .github/workflows/src/update-homebrew.sh 
 
-      - name: Commit changes
-        run: |
-          git add Casks/zen-browser.rb
-          git commit -m "Updated Homebrew Cask"
+      - name: Clean up 
+        run: | 
+          rm -rf zen.macos-x64.dmg
+          rm -rf zen.macos-aarch64.dmg
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ github.event.inputs.update_version == 'true' }}
@@ -498,7 +504,3 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
 
-      - name: Clean up 
-        run: | 
-          rm -rf zen.macos-aarch64.dmg
-          rm -rf zen.macos-aarch64.dmg

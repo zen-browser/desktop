@@ -70,19 +70,28 @@ jobs:
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
           echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
-          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
+          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
       - name: 🐛 Debug Session
         if: ${{ failure() }}
         uses: Warpbuilds/gha-debug@v1.3
         timeout-minutes: 15
 
+      - name: Move profile data
+        run: |
+          dir
+          dir engine
+          mv engine/merged.profdata merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          mv engine/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
+
       - name: Publish merged.profdata
         uses: actions/upload-artifact@v4
         with:
           path: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          name: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
 
       - name: Publish en-US.log
         uses: actions/upload-artifact@v4
         with:
           path: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
+          name: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log

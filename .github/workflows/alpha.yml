@@ -81,11 +81,312 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
 
+  check-release:
+    runs-on: ubuntu-latest
+    needs: [build-data]
+    steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+        
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Setup surfer
+        run: |
+          npm i -g @zen-browser/surfer
+
+      - name: Activate surfer CLI
+        run: |
+          echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
+          pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+  
+      - name: Check version
+        run: |
+          echo "$(pwd)"
+          ls .
+          echo "version=$(pnpm surfer get version | xargs)" >> $GITHUB_OUTPUT
+          if [[ $(pnpm surfer get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
+            echo ">>> Version matches"
+          else
+            echo ">>> Version mismatch"
+            exit 1
+          fi
+
+
+  source:
+    if: false
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: [build-data, check-release]
+    environment: production
+    steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Setup git
+        run: |
+          git config --global user.email "mauro-balades@users.noreply.github.com"
+          git config --global user.name "mauro-balades"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Load surfer CI setup
+        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+
+      - name: Download firefox source and dependancies
+        run: pnpm surfer download --verbose
+
+      - name: Import
+        run: pnpm surfer import --verbose
+
+      - name: Compress
+        run: |
+          cd engine
+          # -h is used to dereference symlinks
+          tar --use-compress-program=zstd -hcf ../zen.source.tar.gz *
+          cd ..
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen.source.tar.gz
+          path: ./zen.source.tar.gz
+
+  windows-step-1:
+    name: Windows build step 1 (PGO build)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    needs: [build-data]
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: true
+      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
+
+  windows-step-2:
+    name: Windows build step 2 (Generate profile data)
+    uses: ./.github/workflows/windows-profile-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [windows-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      profile-data-path-archive: zen.win64-pgo-stage-1.zip
+
+  windows-step-3:
+    name: Windows build step 3 (build with profile data)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [build-data, windows-step-2]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: false
+
+  linux:
+    name: Linux build
+    uses: ./.github/workflows/linux-alpha-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [build-data] 
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+
+  mac:
+    name: macOS build
+    uses: ./.github/workflows/macos-alpha-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+
+  appimage:
+    name: AppImage build - Linux ${{ matrix.generic == true && 'generic' || 'specific' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        generic: [true, false]
+    needs: [linux]
+    steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm
+          sudo apt-get update
+          sudo apt-get -y install libfuse2 desktop-file-utils
+
+      - name: Download linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.linux-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.bz2
+
+      - name: Execute AppImage build
+        run: |
+          set -eux
+          rm AppDir/.DirIcon || true
+          cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+          cp configs/branding/alpha/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
+
+          APPDIR=AppDir
+          tar -xvf *.tar.* && rm -rf *.tar.*
+          mv zen/* $APPDIR/
+          wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x *.AppImage
+          chmod +x ./AppDir/AppRun
+          echo "AppDir: $APPDIR"
+          ls -al
+          find .
+          ls -al "$APPDIR"
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 10 \
+          -u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync" \
+          "$APPDIR" zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+          mkdir dist
+          mv zen*AppImage* dist/.
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage
+
+      - name: Upload artifact (ZSync)
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
+          path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
+
+  release:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Release
+    needs: [build-data, linux, windows-step-3, check-release, mac, appimage]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Git Pull
+        run: git pull
+
+      - uses: actions/download-artifact@v4
+
+      - name: List
+        run: find .
+
+      - name: Clone updates repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/updates-server
+          path: updates-server
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Copy update manifests
+        run: |
+          cd updates-server
+          mkdir -p updates
+          cp -a ../linux_update_manifest_generic/.  updates/
+          cp -a ../linux_update_manifest_specific/.  updates/
+
+          cp -a ../windows_update_manifest_generic/.  updates/
+          cp -a ../windows_update_manifest_specific/.  updates/
+          
+          cp -a ../macos_update_manifest_aarch64/.  updates/
+          cp -a ../macos_update_manifest_x64/.  updates/
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Update update manifests
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+          repository: ./updates-server
+
+      - name: release-github
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: '${{ secrets.DEPLOY_KEY }}'
+          automatic_release_tag: ${{ needs.build-data.outputs.version }}
+          prerelease: false
+          title: 'Alpha build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
+          files: |
+            zen.source.tar.gz
+            zen.linux-generic.tar.bz2
+            zen.linux-specific.tar.bz2
+            zen-generic.AppImage
+            zen-generic.AppImage.zsync
+            zen-specific.AppImage
+            zen-specific.AppImage.zsync
+            zen.win-generic.zip
+            zen.win-specific.zip
+            linux.mar
+            linux-generic.mar
+            windows.mar
+            windows-generic.mar
+            macos-x64.mar
+            macos-aarch64.mar
+            zen.installer.exe
+            zen.installer-generic.exe
+            zen.macos-x64.dmg
+            zen.macos-aarch64.dmg
 
   prepare-flatpak:
+    if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Prepare Flatpak
-    needs: [build-data]
+    needs: [release, linux, build-data]
     runs-on: ubuntu-latest
 
     steps:
@@ -133,6 +434,7 @@ jobs:
           repository: ./flatpak
 
   release-flatpak:
+    if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak]

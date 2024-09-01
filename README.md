@@ -33,6 +33,16 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 
 * Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
 
+# Installation
+
+## MacOS
+You can install the Zen Browser using Homebrew: 
+
+```
+brew tap zen-browser/browser https://github.com/zen-browser/desktop.git
+brew install zen-browser
+```
+
 # Core Components
 
 Some components used by @zen-browser as an attempt to make firefox forks a better place. You can find them [here](https://github.com/zen-browser/components).

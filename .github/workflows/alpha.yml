@@ -511,4 +511,47 @@ jobs:
           git-token: ${{ secrets.DEPLOY_KEY }}
           delete-branch: true
           
+  release-homebrew:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Homebrew release
+    needs: [release, mac, build-data]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: flathub/io.github.zen_browser.zen
+          token: ${{ secrets.DEPLOY_KEY }}
+    
+      - name: Setup git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download macOS ARM build 
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.macos-aarch64.dmg
+
+      - name: Download macOS x64 build
+        uses: actions/download-artifact@v4
+        with:
+          name: zen.macos-x64.dmg
+
+      - name: Update zen-browser Cask
+        run: sh .github/workflows/src/update-homebrew.sh 
+
+      - name: Clean up 
+        run: | 
+          rm -rf zen.macos-x64.dmg
+          rm -rf zen.macos-aarch64.dmg
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ github.event.inputs.update_version == 'true' }}
+        with:
+          commit_message: 🔖 Update version to ${{ steps.data.outputs.version }} for homebrew!
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
 

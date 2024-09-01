@@ -491,23 +491,12 @@ jobs:
           git add Casks/zen-browser.rb
           git commit -m "Updated Homebrew Cask"
 
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
-        env:
-          GIT_TRACE: 1
-          GIT_CURL_VERBOSE: 1
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ github.event.inputs.update_version == 'true' }}
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
-          commit-message: 🚀 Update to version ${{ needs.build-data.outputs.version }}
-          title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
-          body: |
-            This PR updates the Zen Browser Homebrew Cask to version ${{ needs.build-data.outputs.version }}. 
-            
-            @mauro-balades
-          branch: brew-update-to-${{ needs.build-data.outputs.version }}
-          base: master
-          git-token: ${{ secrets.DEPLOY_KEY }}
-          delete-branch: true
+          commit_message: 🔖 Update version to ${{ steps.data.outputs.version }} for homebrew!
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
 
       - name: Clean up 
         run: | 

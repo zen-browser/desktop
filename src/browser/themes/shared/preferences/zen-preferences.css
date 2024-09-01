@@ -27,6 +27,9 @@ groupbox {
   padding: 20px 30px !important;
   margin-bottom: 0 !important;
   position: relative;
+
+  /* add shadow just to the sides */
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .subcategory + groupbox,
@@ -42,6 +45,8 @@ groupbox:last-of-type,
 groupbox:has(+ .subcategory) {
   border-bottom-left-radius: 5px !important;
   border-bottom-right-radius: 5px !important;
+  /* add shadow just to bottom */
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .sticky-inner-container{

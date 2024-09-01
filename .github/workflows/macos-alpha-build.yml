@@ -148,3 +148,6 @@ jobs:
         with:
           name: macos_update_manifest_${{ matrix.arch }}
           path: ./dist/update
+
+      - name: Update Homebrew
+        run: sh .github/workflows/src/update-homebrew.sh

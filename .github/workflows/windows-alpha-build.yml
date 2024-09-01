@@ -130,6 +130,14 @@ jobs:
           echo "" >> ../configs/common/mozconfig
           echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.52.0" >> ../configs/common/mozconfig
 
+      - name: Import
+        env:
+          SURFER_COMPAT: ${{ matrix.generic == true }}
+        run: pnpm surfer import --verbose
+
+      - name: Build language packs
+        run: sh scripts/download-language-packs.sh
+      
       - uses: actions/download-artifact@v4
         name: Download artifact if use profdata
         if: ${{ !inputs.generate-gpo }}
@@ -143,13 +151,8 @@ jobs:
           ls ~/artifact/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
           ls ~/artifact/merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
 
-      - name: Import
-        env:
-          SURFER_COMPAT: ${{ matrix.generic == true }}
-        run: pnpm surfer import --verbose
-
-      - name: Build language packs
-        run: sh scripts/download-language-packs.sh
+          chmod +x ~/artifact/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
+          chmod +x ~/artifact/merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
 
       - name: Build
         env:
@@ -174,6 +177,11 @@ jobs:
           mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64.zip zen.win64.zip
           ls ./dist
           ls .
+
+      - name: 🐛 Debug Session
+        if: ${{ failure() }}
+        uses: Warpbuilds/gha-debug@v1.3
+        timeout-minutes: 15
 
       - name: Move package for PGO upload
         if: ${{ inputs.generate-gpo }}

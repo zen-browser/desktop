@@ -72,6 +72,7 @@ jobs:
           echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
+          
       - name: 🐛 Debug Session
         if: ${{ failure() }}
         uses: Warpbuilds/gha-debug@v1.3

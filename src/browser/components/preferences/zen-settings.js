@@ -23,16 +23,20 @@ const kZenOSToSmallName = {
 
 var gZenMarketplaceManager = {  
   init() {
-    Services.prefs.addObserver(this.updatePref, this._buildThemesList.bind(this));
+    const checkForUpdates = document.getElementById("zenThemeMarketplaceCheckForUpdates");
+    if (!checkForUpdates) return; // We havent entered the settings page yet.
+    if (this.__hasInitializedEvents) return;
     this._buildThemesList();
-    document.getElementById("zenThemeMarketplaceCheckForUpdates").addEventListener("click", (event) => {
-      if (event.target === document.getElementById("zenThemeMarketplaceCheckForUpdates")) {
+    this.__hasInitializedEvents = true;
+    Services.prefs.addObserver(this.updatePref, this);
+    checkForUpdates.addEventListener("click", (event) => {
+      if (event.target === checkForUpdates) {
         event.preventDefault();
         this._checkForThemeUpdates(event);
       }
     });
     document.addEventListener("ZenThemeMarketplace:CheckForUpdatesFinished", (event) => {
-      document.getElementById("zenThemeMarketplaceCheckForUpdates").disabled = false;
+      checkForUpdates.disabled = false;
       const updates = event.detail.updates;
       const success = document.getElementById("zenThemeMarketplaceUpdatesSuccess");
       const error = document.getElementById("zenThemeMarketplaceUpdatesFailure");
@@ -44,6 +48,16 @@ var gZenMarketplaceManager = {
         error.hidden = false;
       }
     });
+    window.addEventListener("unload", this.uninit.bind(this));
+  },
+
+  uninit() {
+    Services.prefs.removeObserver(this.updatePref, this);
+  },
+
+  async observe() {
+    this._themes = null;
+    await this._buildThemesList();
   },
 
   _checkForThemeUpdates(event) {
@@ -144,8 +158,8 @@ var gZenMarketplaceManager = {
   },
 
   async _buildThemesList() {
-    if (this.__alreadyBuilding) return;
-    this.__alreadyBuilding = true;
+    if (!this.themesList) return;
+    console.log("ZenThemeMarketplaceParent(settings): Building themes list");
     let themes = await this._getThemes();
     this.themesList.innerHTML = "";
     for (let theme of Object.values(themes)) {
@@ -204,7 +218,6 @@ var gZenMarketplaceManager = {
         this.themesList.appendChild(preferencesWrapper);
       }
     }
-    this.__alreadyBuilding = false;
   }
 };
 
@@ -290,10 +303,17 @@ var gZenCKSSettings = {
     this._initializeEvents();
     this._initializeCKS();
     this._addPrefObservers();
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver("zen.keyboard.shortcuts.disable-firefox", this);
+    });
   },
 
   _addPrefObservers() {
-    Services.prefs.addObserver("zen.keyboard.shortcuts.disable-firefox", this.onDisableFirefoxShortcutsChange.bind(this));
+    Services.prefs.addObserver("zen.keyboard.shortcuts.disable-firefox", this);
+  },
+
+  observe(subject, topic, data) {
+    this.onDisableFirefoxShortcutsChange();
   },
 
   async onDisableFirefoxShortcutsChange(event) {

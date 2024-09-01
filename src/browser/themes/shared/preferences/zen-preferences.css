@@ -5,7 +5,7 @@
  */
 
 :root {
-  --zen-settings-secondary-background: light-dark(#F2F4F4, color-mix(in srgb, var(--zen-primary-color) 10%, black 90%));
+  --zen-settings-secondary-background: light-dark(#F2F4F4, #171717);
 }
 
 .main-content {
@@ -22,7 +22,7 @@ description {
 }
 
 groupbox {
-  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
+  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 2%, #1b1b1b 98%));
   padding-inline: unset !important;
   padding: 20px 30px !important;
   margin-bottom: 0 !important;
@@ -32,16 +32,16 @@ groupbox {
 .subcategory + groupbox,
 #noFxaAccount,
 #hasFxaAccount {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   margin-top: 5px;
 }
 
 groupbox:has(+ script),
 groupbox:last-of-type,
 groupbox:has(+ .subcategory) {
-  border-bottom-left-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
+  border-bottom-left-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
 }
 
 .sticky-inner-container{

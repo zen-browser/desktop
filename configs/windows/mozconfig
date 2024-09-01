@@ -58,12 +58,7 @@ if test "$ZEN_GA_GENERATE_PROFILE"; then
   ac_add_options --enable-profile-generate=cross
 else
   ac_add_options --enable-profile-use=cross
-  if test "$SURFER_COMPAT" = "true"; then
-    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-generic.profdata
-    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-generic.log
-  else
-    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged-specific.profdata
-    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US-specific.log
-  fi
+  ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
+  ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
 fi
 

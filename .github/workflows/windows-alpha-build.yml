@@ -143,6 +143,7 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         with:
           path: ~/artifact
+          name: windows-profdata-${{ matrix.generic == true && 'generic' || 'specific' }}
 
       - name: Show artifact info
         if: ${{ !inputs.generate-gpo }}

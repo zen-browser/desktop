@@ -382,11 +382,61 @@ jobs:
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
 
-  release-flatpak:
+  prepare-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
     needs: [release, linux, build-data]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/release-utils
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          npm install
+
+      - name: Generate new flatpak release
+        run: |
+          npm run build-flatpak \
+            --version ${{ needs.build-data.outputs.version }}
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Update releases for flatpak
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/flatpak
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Move releases.xml
+        run: |
+          pwd
+          ls .
+          ls ..
+          mv releases.xml ./flatpak/io.github.zen_browser.zen.metainfo.xml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[release]: Update flatpak manifest'
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+          repository: ./flatpak
+
+  release-flatpak:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Release Flatpak
+    needs: [prepare-flatpak]
     runs-on: ubuntu-latest
 
     steps:
@@ -454,7 +504,7 @@ jobs:
           body: |
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. 
             
-            @mauro-balades
+            @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
           git-token: ${{ secrets.DEPLOY_KEY }}

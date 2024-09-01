@@ -88,8 +88,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          name: merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
 
       - name: Publish en-US.log
         uses: actions/upload-artifact@v4
         with:
           path: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
+          name: en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log

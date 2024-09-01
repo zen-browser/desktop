@@ -80,7 +80,9 @@ jobs:
       - name: Move profile data
         run: |
           dir
-          mv merged.profdata merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          dir engine
+          mv engine/merged.profdata merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          mv engine/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
 
       - name: Publish merged.profdata
         uses: actions/upload-artifact@v4

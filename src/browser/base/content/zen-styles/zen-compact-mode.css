@@ -95,6 +95,7 @@
   #navigator-toolbox:hover,
   #navigator-toolbox:focus-within,
   #navigator-toolbox[zen-user-show],
+  
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transform: none !important;

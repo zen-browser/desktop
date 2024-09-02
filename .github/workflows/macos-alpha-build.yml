@@ -132,7 +132,7 @@ jobs:
           ls engine
           ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin
           ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist
-          chmod +x ./build/codesign/codesign.bash
+          chmod +x ./build/codesign/sign.bash
           ./build/codesign/sign.bash \
             -a "./engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
             -i "${{ secrets.macOS_AppleDeveloperId }}" \
@@ -148,6 +148,10 @@ jobs:
         run: |
           mv ./dist/*.dmg "zen.macos-${{ matrix.arch }}.dmg"
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
+
+      - name: Sign to .dmg 
+        run: |
+          codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

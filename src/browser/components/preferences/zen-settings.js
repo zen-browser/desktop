@@ -501,5 +501,10 @@ Preferences.addAll([
     id: "zen.keyboard.shortcuts.disable-firefox",
     type: "bool",
     default: false,
+  },
+  {
+    id: "zen.themes.tabs.legacy-location",
+    type: "bool",
+    default: false,
   }
 ]);

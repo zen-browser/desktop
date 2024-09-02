@@ -95,8 +95,9 @@
   #navigator-toolbox:hover,
   #navigator-toolbox:focus-within,
   #navigator-toolbox[zen-user-show],
-  
+  #navigator-toolbox[movingtab],
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+  #navigator-toolbox:has(.tabbrowser-tab:active),
   #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
     transform: none !important;
     opacity: 1;
@@ -181,7 +182,9 @@
     #navigator-toolbox:hover,
     #navigator-toolbox:focus-within,
     #navigator-toolbox[zen-user-show],
+    #navigator-toolbox[movingtab],
     #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+    #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)) {
       transform: none !important;
       opacity: 1;

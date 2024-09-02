@@ -121,6 +121,24 @@ jobs:
         if: failure()
         run: sh .github/workflows/src/alpha-build.sh
 
+      - name: import APPLE DEVELOPER ID CERTIFICATE for .app
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+          p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
+
+      - name: Sign to .app 🖋️
+        run: |
+          ls engine
+          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin
+          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist
+          chmod +x ./build/codesign/codesign.bash
+          ./build/codesign/sign.bash \
+            -a "./engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
+            -i "${{ secrets.macOS_AppleDeveloperId }}" \
+            -b "./build/codesign/browser.developer.entitlements.xml" \
+            -p "./build/codesign/plugin-container.developer.entitlements.xml"
+
       - name: Package
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}

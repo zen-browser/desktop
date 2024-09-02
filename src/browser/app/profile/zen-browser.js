@@ -114,7 +114,6 @@ pref('dom.private-attribution.submission.enabled', false);
 pref('dom.security.https_only_mode', true);
 
 pref('media.eme.enabled', true);
-pref('webgl.disabled', false);
 
 pref("app.update.url.manual", "https://www.zen-browser.app/download");
 pref("app.update.url.details", "https://www.zen-browser.app/download");

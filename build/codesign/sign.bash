@@ -31,7 +31,7 @@
 #   $ open ~/Nightly.app
 #
 
-set -ex
+set -x
 
 usage ()
 {
@@ -120,8 +120,8 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" \
 "${BUNDLE}/Contents/Library/LaunchServices/org.mozilla.updater" \
 "${BUNDLE}/Contents/MacOS/XUL" \
 "${BUNDLE}/Contents/MacOS/pingsender" \
-"${BUNDLE}/Contents/MacOS/*.dylib" 
-# "${BUNDLE}/Contents/MacOS/minidump-analyzer" \
+"${BUNDLE}/Contents/MacOS/minidump-analyzer" \
+"${BUNDLE}/Contents/MacOS/*.dylib" \
 
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 "${BUNDLE}"/Contents/MacOS/crashreporter.app

@@ -31,6 +31,8 @@
 #   $ open ~/Nightly.app
 #
 
+set -ex
+
 usage ()
 {
   echo  "Usage: $0 "
@@ -118,8 +120,8 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" \
 "${BUNDLE}/Contents/Library/LaunchServices/org.mozilla.updater" \
 "${BUNDLE}/Contents/MacOS/XUL" \
 "${BUNDLE}/Contents/MacOS/pingsender" \
-"${BUNDLE}/Contents/MacOS/minidump-analyzer" \
-"${BUNDLE}/Contents/MacOS/*.dylib" \
+"${BUNDLE}/Contents/MacOS/*.dylib" 
+# "${BUNDLE}/Contents/MacOS/minidump-analyzer" \
 
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 "${BUNDLE}"/Contents/MacOS/crashreporter.app
@@ -127,10 +129,10 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 "${BUNDLE}"/Contents/MacOS/updater.app
 
-# Sign floorp main executable
+# Sign zen main executable
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 --entitlements ${BROWSER_ENTITLEMENTS_FILE} \
-"${BUNDLE}"/Contents/MacOS/floorp
+"${BUNDLE}"/Contents/MacOS/zen
 
 # Sign Library/LaunchServices
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
@@ -151,21 +153,3 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 
 # Validate
 codesign -vvv --deep --strict "${BUNDLE}"
-
-# Create a DMG
-if [ ! -z "${OUTPUT_DMG_FILE}" ]; then
-  DISK_IMAGE_DIR=`mktemp -d`
-  TEMP_FILE=`mktemp`
-  TEMP_DMG=${TEMP_FILE}.dmg
-  NAME=`basename "${BUNDLE}"`
-
-  ditto "${BUNDLE}" "${DISK_IMAGE_DIR}/${NAME}"
-  hdiutil create -size 400m -fs HFS+ \
-    -volname Firefox -srcfolder "${DISK_IMAGE_DIR}" "${TEMP_DMG}"
-  hdiutil convert -format UDZO \
-    -o "${OUTPUT_DMG_FILE}" "${TEMP_DMG}"
-
-  rm ${TEMP_FILE}
-  rm ${TEMP_DMG}
-  rm -rf "${DISK_IMAGE_DIR}"
-fi

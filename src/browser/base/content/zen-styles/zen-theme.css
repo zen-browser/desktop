@@ -81,7 +81,7 @@
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
 
   /* Constants */
-  --zen-element-separation: .5rem;
+  --zen-element-separation: .6rem;
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);

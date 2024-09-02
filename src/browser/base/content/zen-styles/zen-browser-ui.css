@@ -30,6 +30,9 @@ html#main-window > body {
 
 #zen-main-app-wrapper {
   background: var(--zen-main-browser-background);
+
+  border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+  border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
 }
 
 #tabbrowser-tabbox {

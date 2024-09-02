@@ -52,13 +52,15 @@ fi
 export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
 export VERBOSE=1
 
-if test "$ZEN_GA_GENERATE_PROFILE"; then
-  export CXXFLAGS="$CXXFLAGS -fprofile-generate -mllvm -enable-name-compression=false -mllvm -pgo-temporal-instrumentation -fprofile-update=atomic"
-  mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
-  ac_add_options --enable-profile-generate=cross
-else
-  ac_add_options --enable-profile-use=cross
-  ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
-  ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
-fi
+if test "$ZEN_CROSS_COMPILING"; then
+  if test "$ZEN_GA_GENERATE_PROFILE"; then
+    export CXXFLAGS="$CXXFLAGS -fprofile-generate -mllvm -enable-name-compression=false -mllvm -pgo-temporal-instrumentation -fprofile-update=atomic"
+    mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+    ac_add_options --enable-profile-generate=cross
+  else
+    ac_add_options --enable-profile-use=cross
+    ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
+    ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
+  fi
 
+fi

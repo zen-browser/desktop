@@ -149,11 +149,11 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         run: |
           ls ~/artifact
-          ls ~/artifact/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
-          ls ~/artifact/merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          ls ~/artifact/en-US.log
+          ls ~/artifact/merged.profdata
 
-          chmod +x ~/artifact/en-US-${{ matrix.generic == true && 'generic' || 'specific' }}.log
-          chmod +x ~/artifact/merged-${{ matrix.generic == true && 'generic' || 'specific' }}.profdata
+          chmod +x ~/artifact/en-US.log
+          chmod +x ~/artifact/merged.profdata
 
       - name: Build
         env:

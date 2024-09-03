@@ -425,6 +425,9 @@ jobs:
           ls .
           ls ..
           mv releases.xml ./flatpak/io.github.zen_browser.zen.metainfo.xml
+          # output the version to the file
+          echo -n ${{ needs.build-data.outputs.version }} > ./flatpak/version
+
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

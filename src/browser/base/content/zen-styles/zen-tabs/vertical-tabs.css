@@ -71,6 +71,10 @@
     -moz-window-dragging: no-drag;
     --zen-sidebar-action-button-width: 38px;
     padding-bottom: calc(5px + 5px); /* Taking into consideration the padding of the sidebar without being inlined */
+
+    :root[zen-sidebar-legacy="true"] & {
+      padding-top: 0 !important;
+    }
   }
   
   #TabsToolbar-customization-target {
@@ -117,7 +121,7 @@
   }
   
   .tabbrowser-tab {
-    --zen-browser-tab-icon-size: 18px;
+    --zen-browser-tab-icon-size: 16px;
     --tab-min-width: 36px;
     margin: 0 auto;
     border-radius: 8px;

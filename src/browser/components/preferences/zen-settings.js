@@ -228,6 +228,26 @@ var gZenLooksAndFeel = {
     this._initializeTabbarExpandForm();
     gZenThemeBuilder.init();
     gZenMarketplaceManager.init();
+    var onLegacyToolbarChange = this.onLegacyToolbarChange.bind(this);
+    Services.prefs.addObserver("zen.themes.tabs.legacy-location", onLegacyToolbarChange);
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver("zen.themes.tabs.legacy-location", onLegacyToolbarChange);
+    });
+  },
+
+  async onLegacyToolbarChange(event) {
+    let buttonIndex = await confirmRestartPrompt(
+      true,
+      1,
+      true,
+      false
+    );
+    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
+      return;
+    }
   },
 
   _initializeTabbarExpandForm() {

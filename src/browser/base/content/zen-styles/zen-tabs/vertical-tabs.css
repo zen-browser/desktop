@@ -301,6 +301,7 @@
       #newtab-button-container {
         margin: var(--zen-tabbrowser-padding);
         margin-top: 0;
+        margin-bottom: 0;
 
         &[showborder] {
           margin-top: var(--zen-tabbrowser-padding);

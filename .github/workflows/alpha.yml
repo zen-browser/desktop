@@ -546,6 +546,7 @@ jobs:
           name: zen.macos-x64.dmg
 
       - name: Update zen-browser Cask
+        working-directory: $ {{ github.repository }} 
         run: sh .github/workflows/src/update-homebrew.sh ${{ needs.build-data.outputs.version }}
  
       - name: Clean up 

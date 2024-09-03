@@ -1,58 +1,47 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b4ada9432abda484dc54a04e2993745d19ec71f7 100644
+index 6e40f51cfc6e76fbd63d87fe7a416481fe9bb2f6..3bc78e3077264387415a06a52a3a8fbc56339484 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
-@@ -72,6 +72,8 @@ using namespace mozilla;
- #define INSTALL_PREFIX "Install"
- #define INSTALL_PREFIX_LENGTH 7
- 
-+#include "zenToolkitProfileServiceDefaultOverride.h"
-+
- struct KeyValue {
-   KeyValue(const char* aKey, const char* aValue) : key(aKey), value(aValue) {}
- 
-@@ -234,13 +236,14 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
+@@ -234,7 +234,7 @@ void RemoveProfileFiles(nsIToolkitProfile* aProfile, bool aInBackground) {
  }
  
  nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
--                                   nsIFile* aLocalDir, bool aFromDB)
-+                                   nsIFile* aLocalDir, bool aFromDB, const nsACString& aZenAvatarPath)
+-                                   nsIFile* aLocalDir, bool aFromDB,
++                                   nsIFile* aLocalDir, bool aFromDB, const nsACString& aZenAvatarPath,
+                                    const nsACString& aStoreID = VoidCString(),
+                                    bool aShowProfileSelector = false)
      : mName(aName),
-       mRootDir(aRootDir),
-       mLocalDir(aLocalDir),
+@@ -244,7 +244,8 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+       mShowProfileSelector(aShowProfileSelector),
        mLock(nullptr),
        mIndex(0),
 -      mSection("Profile") {
 +      mSection("Profile"),
-+      mZenAvatarPath(aZenAvatarPath){
++      mZenAvatarPath(aZenAvatarPath) {
    NS_ASSERTION(aRootDir, "No file!");
  
    RefPtr<nsToolkitProfile> prev =
-@@ -253,8 +256,13 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
-   nsToolkitProfileService::gService->mProfiles.insertBack(this);
- 
+@@ -259,6 +260,10 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
    // If this profile isn't in the database already add it.
-+  nsINIParser* db = &nsToolkitProfileService::gService->mProfileDB;
    if (!aFromDB) {
--    nsINIParser* db = &nsToolkitProfileService::gService->mProfileDB;
+     nsINIParser* db = &nsToolkitProfileService::gService->mProfileDB;
 +    if (mZenAvatarPath == ""_ns) {
 +      auto randomId = std::rand() % 100;
 +      mZenAvatarPath = ("chrome://browser/content/zen-avatars/avatar-" + std::to_string(randomId) + ".svg").c_str();
 +    }
-+
      db->SetString(mSection.get(), "Name", mName.get());
  
      bool isRelative = false;
-@@ -264,6 +272,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
+@@ -268,6 +273,7 @@ nsToolkitProfile::nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
  
      db->SetString(mSection.get(), "IsRelative", isRelative ? "1" : "0");
      db->SetString(mSection.get(), "Path", descriptor.get());
 +    db->SetString(mSection.get(), "ZenAvatarPath", mZenAvatarPath.get());
-   }
- }
- 
-@@ -318,6 +327,8 @@ nsToolkitProfile::SetName(const nsACString& aName) {
-   return NS_OK;
+     if (!mStoreID.IsVoid()) {
+       db->SetString(mSection.get(), "StoreID",
+                     PromiseFlatCString(mStoreID).get());
+@@ -466,6 +472,8 @@ nsToolkitProfile::SetShowProfileSelector(bool aShowProfileSelector) {
+ #endif
  }
  
 +#include "zenProfileMethodsOverride.inc.cpp"
@@ -60,11 +49,12 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b4ada9432abda484dc54a04e2993745d
  nsresult nsToolkitProfile::RemoveInternal(bool aRemoveFiles,
                                            bool aInBackground) {
    NS_ASSERTION(nsToolkitProfileService::gService, "Whoa, my service is gone.");
-@@ -992,7 +1003,15 @@ nsresult nsToolkitProfileService::Init() {
-       localDir = rootDir;
+@@ -1158,8 +1166,15 @@ nsresult nsToolkitProfileService::Init() {
+       }
      }
  
--    currentProfile = new nsToolkitProfile(name, rootDir, localDir, true);
+-    currentProfile = new nsToolkitProfile(name, rootDir, localDir, true,
+-                                          storeID, showProfileSelector);
 +    nsAutoCString zenProfileAvatar;
 +
 +    rv = mProfileDB.GetString(profileID.get(), "ZenAvatarPath", zenProfileAvatar);
@@ -73,11 +63,11 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b4ada9432abda484dc54a04e2993745d
 +      continue;
 +    }
 +
-+    currentProfile = new nsToolkitProfile(name, rootDir, localDir, true, zenProfileAvatar);
++    currentProfile = new nsToolkitProfile(name, rootDir, localDir, true, zenProfileAvatar, storeID, showProfileSelector);
  
      // If a user has modified the ini file path it may make for a valid profile
      // path but not match what we would have serialised and so may not match
-@@ -1211,7 +1230,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
+@@ -1384,7 +1399,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
    if (mUseDevEditionProfile) {
      name.AssignLiteral(DEV_EDITION_NAME);
    } else if (mUseDedicatedProfile) {
@@ -86,7 +76,7 @@ index aeab25c61f3b04cfa19ec93e2abe0772d8656e61..b4ada9432abda484dc54a04e2993745d
    } else {
      name.AssignLiteral(DEFAULT_NAME);
    }
-@@ -1995,7 +2014,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
+@@ -2180,7 +2195,7 @@ nsToolkitProfileService::CreateProfile(nsIFile* aRootDir,
    NS_ENSURE_SUCCESS(rv, rv);
  
    nsCOMPtr<nsIToolkitProfile> profile =

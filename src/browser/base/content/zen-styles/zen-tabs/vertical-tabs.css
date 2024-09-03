@@ -3,6 +3,45 @@
   #titlebar {
     height: 100%;
   }
+
+  #vertical-pinned-tabs-container {
+    padding-inline-end: 0 !important;
+  }
+
+  #tabs-newtab-button {
+    display: none !important;
+  }
+
+  #newtab-button-container {
+    margin-inline-end: 0 !important;
+    margin-top: 0;
+    margin-bottom: calc(var(--space-small) / 2);
+    position: relative;
+    padding-top: 0 !important;
+
+    --zen-sidebar-action-button-width: 35px;
+
+    & #vertical-tabs-newtab-button {
+      background: var(--button-hover-bgcolor);
+    }
+
+    &[showborder] {
+      margin-top: var(--space-small);
+      border-top: 0px solid transparent !important;
+      padding-top: var(--space-small) !important;
+
+      &::before {
+        width: 70%;
+        height: 1.2px;
+        background: var(--zen-colors-border);
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+  }
   
   #navigator-toolbox {
     --zen-tabbrowser-padding: 5px;
@@ -164,23 +203,6 @@
     display: flex;
   }
   
-  #tabbrowser-tabs:has(.tabbrowser-tab[pinned]) .tabbrowser-tab:nth-child(1 of [fadein]:not([pinned]):not([hidden])) {
-    margin-top: 15px;
-    position: relative;
-    overflow: visible;
-  
-    & .tab-stack::before {
-      content: '';
-      position: absolute;
-      top: -11px;
-      left: 0;
-      width: 100%;
-      height: 1.5px;
-      border-radius: 1px;
-      background: var(--zen-colors-border);
-    }
-  }
-  
   .tab-close-button {
     position: absolute;
     display: none;
@@ -226,10 +248,12 @@
 
     padding-inline-start: 0 !important;
     margin-inline-start: 0 !important;
+
+    grid-gap: 0 !important;
   }
   
   #tabbrowser-arrowscrollbox {
-    margin: 3px 0 !important;
+    margin-bottom: 3px !important;
   }
   
   #alltabs-button stack {
@@ -269,6 +293,23 @@
       border: none;
       padding-left: 2px;
       animation: var(--zen-hover-animation) 0.3s backwards;
+
+      #vertical-pinned-tabs-container {
+        margin-left: var(--zen-tabbrowser-padding);
+      }
+    
+      #newtab-button-container {
+        margin: var(--zen-tabbrowser-padding);
+        margin-top: 0;
+
+        &[showborder] {
+          margin-top: var(--zen-tabbrowser-padding);
+          &::before {
+            width: 95%;
+            top: 0;
+          }
+        }
+      }
     
       & .tab-label-container {
         display: block;
@@ -349,6 +390,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(var(--tab-min-height), 1fr));
         padding: calc(var(--zen-tabbrowser-padding) / 2);
+        padding-right: 0;
       }
     
       & .tabbrowser-tab:not([pinned]),
@@ -402,6 +444,7 @@
 
     #tabbrowser-tabpanels .browserSidebarContainer {
       margin-left: var(--zen-element-separation) !important;
+      margin-right: 0 !important;
     }
   }
 
@@ -458,6 +501,11 @@
         visibility: hidden !important;
       }
 
+      & #tabbrowser-tabs {
+        --zen-tabbrowser-tabs-on-hover-padding: var(--zen-tabbrowser-padding);
+        padding: var(--zen-tabbrowser-tabs-on-hover-padding) !important;
+      }
+
       & #zen-sidebar-icons-wrapper {
         display: block !important;
       }
@@ -500,6 +548,12 @@
         & #TabsToolbar {
           border-left: 1px solid var(--zen-colors-border);
         }
+      }
+    }
+
+    @media not (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+      #tabbrowser-tabs {
+        --zen-tabbrowser-tabs-on-hover-padding: 0 var(--zen-tabbrowser-padding) 0 0 !important;
       }
     }
   }

@@ -1,24 +1,23 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 39ae2b00791a7bfd875961de60736612f08892ae..5d950d855a5625ebfb20f6f49a65f3e1e2eb4a6e 100644
+index cb6bb55dd3aebdaebb92c9e2cba1f2a108b4d7bb..9d5055a007c63cb779e67ae58a1d937ad2a31bfe 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -64,8 +64,9 @@
- }
+@@ -70,7 +70,7 @@
  
  #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button,
-+#identity-box[pageproxystate="valid"] > .identity-box-button,
  #urlbar-label-box {
 -  background-color: var(--urlbar-box-bgcolor);
 +  background-color: light-dark(#cecece, rgb(66, 65, 77));
    color: var(--urlbar-box-text-color);
    padding-inline: 8px;
    border-radius: var(--urlbar-icon-border-radius);
-@@ -154,11 +155,11 @@
- }
+@@ -164,16 +164,16 @@
+   }
  
- #identity-box[pageproxystate="invalid"] #identity-icon {
--  list-style-image: url(chrome://global/skin/icons/search-glass.svg);
-+  list-style-image: url(chrome://global/skin/icons/search-glass.svg) !important;
+   #identity-icon {
+-    list-style-image: url(chrome://global/skin/icons/search-glass.svg);
++    list-style-image: url(chrome://global/skin/icons/search-glass.svg) !important;
+   }
  }
  
  #urlbar[actiontype="extension"] > .urlbar-input-container > #identity-box #identity-icon {
@@ -27,3 +26,8 @@ index 39ae2b00791a7bfd875961de60736612f08892ae..5d950d855a5625ebfb20f6f49a65f3e1
  }
  
  #identity-box[pageproxystate="valid"].extensionPage #identity-icon {
+-  list-style-image: url(chrome://mozapps/skin/extensions/extension.svg);
++  list-style-image: url(chrome://mozapps/skin/extensions/extension.svg) !important;
+ }
+ 
+ #identity-box[pageproxystate="valid"].verifiedDomain #identity-icon,

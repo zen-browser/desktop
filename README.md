@@ -23,7 +23,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 # Compatibility
 
-Zen is currently built using firefox version `129.0.2`!
+Zen is currently built using firefox version `130.0`!
 
 * Check out the latest [release notes](https://www.zen-browser.app/release-notes)!
 

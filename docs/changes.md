@@ -11,3 +11,5 @@
 * Overall stability
 * Pinning tabs (Grid layout)
 * Overall UX
+* Themes Page
+* Settings Page

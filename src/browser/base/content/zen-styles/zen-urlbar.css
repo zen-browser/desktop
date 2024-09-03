@@ -105,22 +105,6 @@
   height: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
 }
 
-toolbar .toolbarbutton-1:not(.unified-extensions-item-action-button) {
-  & > .toolbarbutton-icon,
-  & > .toolbarbutton-badge-stack {
-    width: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
-    height: calc(2 * var(--toolbarbutton-inner-padding) + 18px) !important;
-  }
-}
-
-toolbar .zen-sidebar-panel-button {
-  & > .toolbarbutton-icon,
-  & > .toolbarbutton-badge-stack {
-    width: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
-    height: calc(2 * var(--toolbarbutton-inner-padding) + 20px) !important;
-  }
-}
-
 #identity-permission-box {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;

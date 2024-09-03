@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 390a1300a1213af2b411ba09c67e3c25750ee6c3..a7ab07f8e8a0c5f91a6c12eb5d27c56edbd7405c 100644
+index 18b91c95b88d11ddb257de03f12bc3e4cc75a96a..f117cfa7c9d1f9eb537cebbef42a9d2d945d53ac 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -20,27 +20,29 @@ index 390a1300a1213af2b411ba09c67e3c25750ee6c3..a7ab07f8e8a0c5f91a6c12eb5d27c56e
          <toolbartabstop/>
          <hbox id="TabsToolbar-customization-target" flex="1">
            <toolbarbutton id="firefox-view-button"
-+                          hidden="true"
++                        hidden="true"
                           class="toolbarbutton-1 chromeclass-toolbar-additional"
                           data-l10n-id="toolbar-button-firefox-view-2"
                           role="button"
-@@ -50,13 +51,14 @@
+@@ -50,7 +51,7 @@
                  aria-multiselectable="true"
                  setfocus="false"
                  tooltip="tabbrowser-tab-tooltip"
+-                orient="horizontal"
 +                orient="vertical"
                  stopwatchid="FX_TAB_CLICK_MS">
              <hbox class="tab-drop-indicator" hidden="true"/>
  # If the name (tabbrowser-arrowscrollbox) or structure of this changes
- # significantly, there is an optimization in
- # DisplayPortUtils::MaybeCreateDisplayPortInFirstScrollFrameEncountered based
- # the current structure that we may want to revisit.
+@@ -66,7 +67,7 @@
+                                   tooltip="dynamic-shortcut-tooltip"
+                                   data-l10n-id="tabs-toolbar-new-tab"/>
+             </html:div>
 -            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="horizontal" flex="1" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
 +            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="vertical" style="min-width: 1px;" clicktoscroll="true" scrolledtostart="true" scrolledtoend="true">
                <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
                <hbox id="tabbrowser-arrowscrollbox-periphery">
                  <toolbartabstop/>
-@@ -103,9 +105,10 @@
+@@ -113,9 +114,10 @@
        <toolbarbutton id="content-analysis-indicator"
                       oncommand="ContentAnalysis.showPanel(this, PanelUI);"
                       class="toolbarbutton-1 content-analysis-indicator-icon"/>
@@ -53,7 +55,7 @@ index 390a1300a1213af2b411ba09c67e3c25750ee6c3..a7ab07f8e8a0c5f91a6c12eb5d27c56e
      </toolbar>
  
    </vbox>
-@@ -450,6 +453,7 @@
+@@ -471,6 +473,7 @@
  
        <toolbarbutton id="fxa-toolbar-menu-button" class="toolbarbutton-1 chromeclass-toolbar-additional subviewbutton-nav"
                       badged="true"
@@ -61,12 +63,11 @@ index 390a1300a1213af2b411ba09c67e3c25750ee6c3..a7ab07f8e8a0c5f91a6c12eb5d27c56e
                       delegatesanchor="true"
                       onmousedown="gSync.toggleAccountPanel(this, event)"
                       onkeypress="gSync.toggleAccountPanel(this, event)"
-@@ -501,6 +505,8 @@
+@@ -522,6 +525,7 @@
                       consumeanchor="PanelUI-button"
                       data-l10n-id="appmenu-menu-button-closed2"/>
      </toolbaritem>
-+
-+    #include titlebar-items.inc.xhtml
++#include titlebar-items.inc.xhtml
    </toolbar>
  
    <toolbar id="PersonalToolbar"

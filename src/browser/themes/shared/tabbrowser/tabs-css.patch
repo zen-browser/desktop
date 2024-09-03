@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 22d1fe3d0730062abdc181912e93721fdc1c824d..70ca793ab5e2c73e6f6b50d1c9740a4799d8f374 100644
+index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..33837e5f56e4fbefa2a2d2ee68ee51750357db59 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -17,7 +17,7 @@
@@ -8,10 +8,10 @@ index 22d1fe3d0730062abdc181912e93721fdc1c824d..70ca793ab5e2c73e6f6b50d1c9740a47
    --tab-block-margin: 4px;
 -  --tab-loading-fill: #0A84FF;
 +  --tab-loading-fill: var(--zen-primary-color);
+   --tab-hover-background-color: color-mix(in srgb, currentColor 11%, transparent);
    --tab-selected-textcolor: var(--toolbar-color);
    --tab-selected-bgcolor: var(--toolbar-bgcolor);
-   --tab-selected-color-scheme: var(--toolbar-color-scheme);
-@@ -122,12 +122,12 @@
+@@ -133,12 +133,12 @@
      visibility: hidden;
    }
  
@@ -27,26 +27,16 @@ index 22d1fe3d0730062abdc181912e93721fdc1c824d..70ca793ab5e2c73e6f6b50d1c9740a47
      }
    }
  
-@@ -357,8 +357,7 @@
+@@ -368,8 +368,6 @@
      animation-delay: -1.5s;
    }
  
 -  &[selected]:not([src], [pinned], [crashed], [pictureinpicture]),
 -  &:not([src], [pinned], [crashed], [sharing], [pictureinpicture]),
-+
    &[busy] {
      display: none;
    }
-@@ -627,7 +626,7 @@
- 
- #tabbrowser-tabs[haspinnedtabs]:not([positionpinnedtabs]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab:nth-child(1 of :not([pinned], [hidden])) {
-   /* Add a gap between the last pinned tab and the first visible tab */
--  margin-inline-start: 12px !important; /* .tabbrowser-tab sets margin: 0 !important; */
-+  margin-inline-start: auto !important; /* .tabbrowser-tab sets margin: 0 !important; */
- }
- 
- .tab-label[attention]:not([selected]) {
-@@ -772,6 +771,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] .t
+@@ -912,6 +910,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] >
  .titlebar-spacer[type="pre-tabs"],
  .titlebar-spacer[type="post-tabs"] {
    width: 40px;
@@ -54,7 +44,7 @@ index 22d1fe3d0730062abdc181912e93721fdc1c824d..70ca793ab5e2c73e6f6b50d1c9740a47
  }
  
  @media (max-width: 500px) {
-@@ -787,7 +787,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] .t
+@@ -927,7 +926,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] >
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)
  ) + #tabbrowser-tabs {

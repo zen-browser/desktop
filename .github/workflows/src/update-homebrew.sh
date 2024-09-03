@@ -1,4 +1,5 @@
-latest_version=$(git describe --tags --abbrev=0)
+
+latest_version=$1
 sed -i "s/version(.*)/version('${latest_version}')/" ./Casks/zen-browser.rb
 
 sha_x64=$(shasum -a 256 zen.macos-x64.dmg)

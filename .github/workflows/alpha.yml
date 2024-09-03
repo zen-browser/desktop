@@ -433,6 +433,9 @@ jobs:
           commit_user_email: zen-browser-bot@users.noreply.github.com
           repository: ./flatpak
 
+      - name: Wait 4 minutes for the flatpak repo to update
+        run: sleep 240
+
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all

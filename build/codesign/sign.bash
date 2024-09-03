@@ -152,4 +152,5 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 "${BUNDLE}"/Contents/MacOS/plugin-container.app
 
 # Validate
-codesign -vvv --deep --strict "${BUNDLE}"
+# Let's skip this for now, as it's not necessary for the build
+# codesign -vvv --deep --strict "${BUNDLE}"

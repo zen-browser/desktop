@@ -8,7 +8,7 @@
   content: "";
   inset: -4px;
   position: absolute;
-  border: 10px solid var(--toolbar-bgcolor);
+  border: 7px solid var(--toolbar-bgcolor);
   border-radius: 18px;
   z-index:1;
  pointer-events:none;
@@ -22,4 +22,9 @@
   border: 4px solid var(--toolbar-bgcolor);
   z-index:1;
   pointer-events:none;
+}
+
+#statuspanel {
+  margin-left: 5px!important;
+  margin-bottom: 2px!important;
 }

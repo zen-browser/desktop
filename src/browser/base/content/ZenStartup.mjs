@@ -56,8 +56,15 @@ var ZenStartup = {
     tabs.style.maxHeight = '0px'; // reset to 0
     const toolbarRect = toolbarItems.getBoundingClientRect();
     // -5 for the controls padding
-    tabs.style.maxHeight = toolbarRect.height - 5 + "px";
-    console.info("ZenThemeModifier: set tabs max-height to", toolbarRect.height + "px");
+    let totalHeight = toolbarRect.height - 15;
+    // remove the height from other elements that aren't hidden
+    const otherElements = document.querySelectorAll("#tabbrowser-tabs > *:not([hidden=\"true\"])");
+    for (let tab of otherElements) {
+      if (tabs === tab) continue;
+      totalHeight -= tab.getBoundingClientRect().height;
+    }
+    tabs.style.maxHeight = totalHeight + "px";
+    console.info("ZenThemeModifier: set tabs max-height to", totalHeight + "px");
   },
 
   openWatermark() {

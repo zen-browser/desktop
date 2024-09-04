@@ -250,6 +250,8 @@
     border: none;
     height: 100%;
 
+    border-bottom: 0 !important;
+
     padding-inline-start: 0 !important;
     margin-inline-start: 0 !important;
 

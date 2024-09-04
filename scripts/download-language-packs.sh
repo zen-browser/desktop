@@ -6,14 +6,6 @@ CURRENT_DIR=$(pwd)
 git config --global init.defaultBranch main
 git config --global fetch.prune true
 
-mkdir ~/tools
-cd ~/tools
-git clone https://github.com/glandium/git-cinnabar.git
-cd git-cinnabar
-git checkout 0.5.11
-export PATH=~/tools/git-cinnabar:$PATH
-cd ~
-git cinnabar download
 cd $CURRENT_DIR
 
 update_language() {
@@ -25,8 +17,8 @@ update_language() {
   rm -rf .git
 
   git init 
-  git remote add upstream hg://hg.mozilla.org/l10n-central/$langId
-  git remote set-url upstream hg://hg.mozilla.org/l10n-central/$langId
+  git remote add upstream https://github.com/mozilla-l10n/firefox-l10n/$langId
+  git remote set-url upstream https://github.com/mozilla-l10n/firefox-l10n/$langId
   git pull upstream branches/default/tip
 
   cd $CURRENT_DIR

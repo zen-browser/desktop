@@ -1,15 +1,25 @@
+#tabbrowser-tabbox {
+  position: relative;
+  overflow: hidden;
+}
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
-  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    width: -moz-available;
-    margin: 0 var(--zen-element-separation) var(--zen-element-separation) 0;
-    box-shadow: 0 0 0 1px var(--zen-colors-border);
-    clip-path: inset(-5px -5px -5px round var(--zen-webview-border-radius, var(--zen-border-radius)));
-    border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
-    transform: translate3d(0, 0, 0);
-    overflow: hidden;
+/* inner rounded corners */
+#tabbrowser-tabbox::after {
+  content: "";
+  inset: -4px;
+  position: absolute;
+  border: 10px solid var(--toolbar-bgcolor);
+  border-radius: 18px;
+  z-index:1;
+ pointer-events:none;
+}
 
-    /* This fixes an issue with the left border */
-    margin-left: 2px;
-  }
+/* outer border */
+#tabbrowser-tabbox::before {
+  content: "";
+  inset: -2px;
+  position: absolute;
+  border: 4px solid var(--toolbar-bgcolor);
+  z-index:1;
+  pointer-events:none;
 }

@@ -142,21 +142,6 @@ jobs:
           cargo install --git https://github.com/indygreg/apple-platform-rs --branch main --bin rcodesign apple-codesign
           export PATH="$HOME/.cargo/bin:$PATH"
 
-      - name: Sign to .app 🖋️
-        run: |
-          ls engine
-          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin
-          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist
-          cd engine
-          ./mach macos-sign \
-            --verbose \
-            -a "./obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
-            -r \
-            --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
-            --rcodesign-p12-password-file $GITHUB_WORKSPACE/certificate.p12.password \
-            -c release \
-            -e production
-
       - name: Package
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}

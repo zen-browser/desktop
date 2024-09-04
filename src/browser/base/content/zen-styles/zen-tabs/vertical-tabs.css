@@ -8,6 +8,11 @@
     padding-inline-end: 0 !important;
     max-height: unset !important;
     overflow: visible !important;
+    gap: 4px;
+
+    & .tabbrowser-tab:not(:hover):not([selected]):not([multiselected]) {
+      background: color-mix(in srgb, var(--zen-colors-secondary) 20%, transparent 80%);
+    }
   }
 
   #tabs-newtab-button {
@@ -24,7 +29,19 @@
     --zen-sidebar-action-button-width: 35px;
 
     & #vertical-tabs-newtab-button {
-      background: var(--button-hover-bgcolor);
+      background: color-mix(in srgb, var(--button-hover-bgcolor) 40%, transparent 60%);
+    }
+
+    &::before {
+      width: 70%;
+      height: 1.2px;
+      background: var(--zen-colors-border);
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      display: none;
+      transform: translateX(-50%);
     }
 
     &[showborder] {
@@ -33,14 +50,7 @@
       padding-top: var(--space-small) !important;
 
       &::before {
-        width: 70%;
-        height: 1.2px;
-        background: var(--zen-colors-border);
-        content: '';
-        position: absolute;
-        top: -3px;
-        left: 50%;
-        transform: translateX(-50%);
+        display: block;
       }
     }
   }
@@ -308,15 +318,17 @@
     
       #newtab-button-container {
         margin: calc(var(--zen-tabbrowser-padding) - 2px);
-        margin-top: 0;
         margin-bottom: 0;
+        margin-bottom: var(--space-small);
 
         &[showborder] {
           margin-top: var(--zen-tabbrowser-padding);
-          &::before {
-            width: 95%;
-            top: 0;
-          }
+        }
+
+        &::before {
+          width: 100%;
+          top: calc(100% + var(--space-small));
+          display: block;
         }
       }
     
@@ -350,6 +362,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+
+      & #tabbrowser-arrowscrollbox .tabbrowser-tab:first-child:not([hidden]) {
+        margin-top: var(--space-small) !important;
       }
 
       & .tabbrowser-tab {

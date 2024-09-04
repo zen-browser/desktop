@@ -130,9 +130,12 @@ jobs:
 
       - name: Decode .p12 file
         id: decode_p12
-        run: echo "$P12_BASE64" | base64 --decode > certificate.p12
+        run: |
+          echo "$P12_BASE64" | base64 --decode > certificate.p12
+          echo "$P12_PASSWORD" > certificate.p12.password
         env:
           P12_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+          P12_PASSWORD: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
 
       - name: Install rcodesign
         run: |
@@ -151,7 +154,7 @@ jobs:
             -r \
             --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
             -s ${{ secrets.macOS_AppleDeveloperId }} \
-            --rcodesign-p12-password "${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}" \
+            --rcodesign-p12-password-file $GITHUB_WORKSPACE/certificate.p12.password \
             -c release \
             -e production
 
@@ -166,6 +169,7 @@ jobs:
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
 
           rm -rf certificate.p12
+          rm -rf certificate.p12.password
 
       - name: Sign to .dmg 
         run: |

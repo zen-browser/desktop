@@ -322,7 +322,8 @@
         margin-bottom: var(--space-small);
 
         &[showborder] {
-          margin-top: var(--zen-tabbrowser-padding);
+          margin-top: 0;
+          padding-top: calc(var(--space-small) / 2) !important;
         }
 
         &::before {

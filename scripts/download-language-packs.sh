@@ -8,18 +8,18 @@ git config --global fetch.prune true
 
 cd $CURRENT_DIR
 
+cd ./l10n
+git clone https://github.com/mozilla-l10n/firefox-l10n
+cd $CURRENT_DIR
+
 update_language() {
   langId=$1
   cd ./l10n
   cd $langId
 
   echo "Updating $langId"
-  rm -rf .git
-
-  git init 
-  git remote add upstream https://github.com/mozilla-l10n/firefox-l10n/$langId
-  git remote set-url upstream https://github.com/mozilla-l10n/firefox-l10n/$langId
-  git pull upstream branches/default/tip
+  # move the contents from ../firefox-l10n/$langId to ./l10n/$langId
+  rsync -av --progress ../firefox-l10n/$langId/ . --exclude .git
 
   cd $CURRENT_DIR
 }
@@ -47,3 +47,5 @@ for lang in $(cat ./l10n/supported-languages); do
   # remove every file except if it starts with "zen"
   find ./l10n/$lang -type f -not -name "zen*" -delete
 done
+
+rm -rf ./l10n/firefox-l10n

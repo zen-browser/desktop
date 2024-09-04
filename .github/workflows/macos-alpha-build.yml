@@ -127,6 +127,13 @@ jobs:
           p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
           p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
 
+
+      - name: Decode .p12 file
+        id: decode_p12
+        run: echo "$P12_BASE64" | base64 --decode > certificate.p12
+        env:
+          P12_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+
       - name: Sign to .app 🖋️
         run: |
           ls engine
@@ -136,7 +143,9 @@ jobs:
           ./mach macos-sign \
             --verbose \
             -a "./obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
-            -s "${{ secrets.macOS_AppleDeveloperId }}" \
+            -r \
+            --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
+            --rcodesign-p12-password "${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}" \
             -e production
 
       - name: Package
@@ -148,6 +157,8 @@ jobs:
         run: |
           mv ./dist/*.dmg "zen.macos-${{ matrix.arch }}.dmg"
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
+
+          rm -rf certificate.p12
 
       - name: Sign to .dmg 
         run: |

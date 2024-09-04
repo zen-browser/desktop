@@ -305,7 +305,7 @@
       }
     
       #newtab-button-container {
-        margin: var(--zen-tabbrowser-padding);
+        margin: calc(var(--zen-tabbrowser-padding) - 2px);
         margin-top: 0;
         margin-bottom: 0;
 

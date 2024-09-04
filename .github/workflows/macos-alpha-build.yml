@@ -146,6 +146,7 @@ jobs:
             -r \
             --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
             --rcodesign-p12-password "${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}" \
+            -c release \
             -e production
 
       - name: Package

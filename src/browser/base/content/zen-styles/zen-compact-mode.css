@@ -20,7 +20,7 @@
     transform: translateX(calc(-100% + (var(--zen-compact-toolbox-margin-single) / 2)));
     opacity: 0;
     line-height: 0;
-    z-index: 1;
+    z-index: 2;
     height: 100%;
     margin: 0;
     padding: var(--zen-compact-toolbox-margin) !important;

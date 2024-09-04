@@ -134,6 +134,11 @@ jobs:
         env:
           P12_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
 
+      - name: Install rcodesign
+        run: |
+          cargo install --git https://github.com/indygreg/apple-platform-rs --branch main --bin rcodesign apple-codesign
+          export PATH="$HOME/.cargo/bin:$PATH"
+
       - name: Sign to .app 🖋️
         run: |
           ls engine
@@ -145,6 +150,7 @@ jobs:
             -a "./obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
             -r \
             --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
+            -s ${{ secrets.macOS_AppleDeveloperId }} \
             --rcodesign-p12-password "${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}" \
             -c release \
             -e production

@@ -79,7 +79,7 @@
 #zen-sidebar-web-panel {
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
-  border: var(--zen-appcontent-border);
+  box-shadow: 0 0 0 1px var(--zen-colors-border);
   background: var(--zen-colors-tertiary);
   opacity: 0;
   animation-delay: 0.1s;
@@ -140,7 +140,7 @@
 }
 
 #zen-sidebar-web-panel-wrapper {
-  margin: 0 10px 10px 0;
+  margin: 0 var(--zen-element-separation) var(--zen-element-separation) 1px;
 }
 
 #zen-sidebar-web-panel[pinned="true"] {

@@ -153,7 +153,6 @@ jobs:
             -a "./obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
             -r \
             --rcodesign-p12-file $GITHUB_WORKSPACE/certificate.p12 \
-            -s ${{ secrets.macOS_AppleDeveloperId }} \
             --rcodesign-p12-password-file $GITHUB_WORKSPACE/certificate.p12.password \
             -c release \
             -e production

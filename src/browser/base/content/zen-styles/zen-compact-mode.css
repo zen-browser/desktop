@@ -153,6 +153,7 @@
 
     #zen-appcontent-navbar-container:hover,
     #zen-appcontent-navbar-container:focus-within,
+    #zen-appcontent-navbar-container:active,
     #zen-appcontent-navbar-container[zen-user-show],
     #mainPopupSet:has(> #appMenu-popup:hover) ~ #zen-appcontent-navbar-container,
     #zen-appcontent-navbar-container:has(*[open="true"]) {

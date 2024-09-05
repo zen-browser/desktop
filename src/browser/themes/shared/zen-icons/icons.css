@@ -20,8 +20,8 @@
 }
 
 
-#forward-button,
-#zen-sidebar-web-panel-forward {
+:root[zen-sidebar-legacy="true"] #forward-button,
+:root[zen-sidebar-legacy="true"] #zen-sidebar-web-panel-forward {
 	list-style-image: url("forward.svg") !important;
 
 	@media (max-width: 650px) {
@@ -29,8 +29,26 @@
 	}
 }
 
-#reload-button,
-#zen-sidebar-web-panel-reload {
+:root:not([zen-sidebar-legacy="true"]) #forward-button,
+:root:not([zen-sidebar-legacy="true"]) #zen-sidebar-web-panel-forward {
+	list-style-image: url("forward.svg") !important;
+
+	@media (max-width: 650px) {
+		display: none;
+	}
+}
+
+:root[zen-sidebar-legacy="true"] #reload-button,
+:root[zen-sidebar-legacy="true"] #zen-sidebar-web-panel-reload {
+	list-style-image: url("reload.svg") !important;
+
+	@media (max-width: 650px) {
+		display: none;
+	}
+}
+
+:root:not([zen-sidebar-legacy="true"]) #reload-button,
+:root:not([zen-sidebar-legacy="true"]) #zen-sidebar-web-panel-reload {
 	list-style-image: url("reload.svg") !important;
 
 	@media (max-width: 700px) {
@@ -164,11 +182,6 @@
 #appMenu-extensions-themes-button,
 #unified-extensions-button {
 	list-style-image: url("extension.svg") !important;
-
-	@media (max-width: 700px) {
-		display: none;
-	}
-
 }
 
 #zoom-out-button,

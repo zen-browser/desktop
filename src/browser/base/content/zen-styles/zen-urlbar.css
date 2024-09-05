@@ -172,25 +172,52 @@ button.popup-notification-dropmarker {
   margin-top: 5px
 }
 
-@media (max-width: 550px) {
-  #urlbar-container {
-    width: calc(176px + 2 * (24px + 2 * var(--toolbarbutton-inner-padding)));
-  }
+:root:not([zen-sidebar-legacy="true"]) {
+  @media (max-width: 650px) {
+    #urlbar-container {
+      width: calc(176px + 2 * (24px + 2 * var(--toolbarbutton-inner-padding)));
+    }
 
-  #nav-bar[downloadsbuttonshown] #urlbar-container,
-  #nav-bar[unifiedextensionsbuttonshown] #urlbar-container {
-    width: calc(76px + 24px + 2 * var(--toolbarbutton-inner-padding));
-  }
+    #nav-bar[downloadsbuttonshown] #urlbar-container,
+    #nav-bar[unifiedextensionsbuttonshown] #urlbar-container {
+      width: calc(76px + 24px + 2 * var(--toolbarbutton-inner-padding));
+    }
 
-  #nav-bar[downloadsbuttonshown][unifiedextensionsbuttonshown] #urlbar-container {
-    width: 176px;
-  }
+    #nav-bar[downloadsbuttonshown][unifiedextensionsbuttonshown] #urlbar-container {
+      width: 176px;
+    }
 
-  #identity-icon-box {
-    max-width: 70px;
-  }
+    #identity-icon-box {
+      max-width: 70px;
+    }
 
-  #urlbar-zoom-button {
-    display: none;
+    #urlbar-zoom-button {
+      display: none;
+    }
+  }
+}
+
+:root[zen-sidebar-legacy="true"] {
+  @media (max-width: 550px) {
+    #urlbar-container {
+      width: calc(176px + 2 * (24px + 2 * var(--toolbarbutton-inner-padding)));
+    }
+
+    #nav-bar[downloadsbuttonshown] #urlbar-container,
+    #nav-bar[unifiedextensionsbuttonshown] #urlbar-container {
+      width: calc(76px + 24px + 2 * var(--toolbarbutton-inner-padding));
+    }
+
+    #nav-bar[downloadsbuttonshown][unifiedextensionsbuttonshown] #urlbar-container {
+      width: 176px;
+    }
+
+    #identity-icon-box {
+      max-width: 70px;
+    }
+
+    #urlbar-zoom-button {
+      display: none;
+    }
   }
 }

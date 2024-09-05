@@ -23,20 +23,22 @@
   box-shadow: var(--panel-shadow) !important;
 }
 
-#urlbar[focused="true"] > #urlbar-background {
+#urlbar[focused="true"]>#urlbar-background {
   background: var(--zen-dialog-background) !important;
 }
 
-#urlbar-background { border: transparent !important; }
+#urlbar-background {
+  border: transparent !important;
+}
 
-#urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background,
+#urlbar[focused="true"]:not([suppress-focus-border])>#urlbar-background,
 #searchbar:focus-within {
   outline: none !important;
   outline-offset: none !important;
   outline-color: none !important;
 }
 
-#urlbar .urlbar-page-action, 
+#urlbar .urlbar-page-action,
 #urlbar #tracking-protection-icon-container,
 #urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   border-radius: 999px;
@@ -63,7 +65,8 @@
   background: var(--zen-colors-border) !important;
 }
 
-#urlbar:is([focused], [open]) > #urlbar-background, #searchbar:focus-within {
+#urlbar:is([focused], [open])>#urlbar-background,
+#searchbar:focus-within {
   background: var(--urlbar-box-bgcolor);
 }
 
@@ -79,7 +82,9 @@
   border-radius: 20px 10px 10px 20px !important;
 }
 
-#urlbar:not([extend="true"]) #identity-box #identity-icon-box { position: relative; }
+#urlbar:not([extend="true"]) #identity-box #identity-icon-box {
+  position: relative;
+}
 
 #urlbar:not([extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   margin-right: 5px;
@@ -141,7 +146,7 @@
   height: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
 }
 
-#notification-popup-box > image {
+#notification-popup-box>image {
   margin: 0;
   padding: 0;
 }
@@ -165,4 +170,54 @@ button.popup-notification-dropmarker {
 
 #downloadsHistory {
   margin-top: 5px
+}
+
+:root:not([zen-sidebar-legacy="true"]) {
+  @media (max-width: 650px) {
+    #urlbar-container {
+      width: calc(176px + 2 * (24px + 2 * var(--toolbarbutton-inner-padding)));
+    }
+
+    #nav-bar[downloadsbuttonshown] #urlbar-container,
+    #nav-bar[unifiedextensionsbuttonshown] #urlbar-container {
+      width: calc(76px + 24px + 2 * var(--toolbarbutton-inner-padding));
+    }
+
+    #nav-bar[downloadsbuttonshown][unifiedextensionsbuttonshown] #urlbar-container {
+      width: 176px;
+    }
+
+    #identity-icon-box {
+      max-width: 70px;
+    }
+
+    #urlbar-zoom-button {
+      display: none;
+    }
+  }
+}
+
+:root[zen-sidebar-legacy="true"] {
+  @media (max-width: 550px) {
+    #urlbar-container {
+      width: calc(176px + 2 * (24px + 2 * var(--toolbarbutton-inner-padding)));
+    }
+
+    #nav-bar[downloadsbuttonshown] #urlbar-container,
+    #nav-bar[unifiedextensionsbuttonshown] #urlbar-container {
+      width: calc(76px + 24px + 2 * var(--toolbarbutton-inner-padding));
+    }
+
+    #nav-bar[downloadsbuttonshown][unifiedextensionsbuttonshown] #urlbar-container {
+      width: 176px;
+    }
+
+    #identity-icon-box {
+      max-width: 70px;
+    }
+
+    #urlbar-zoom-button {
+      display: none;
+    }
+  }
 }

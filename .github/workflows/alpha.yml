@@ -11,7 +11,7 @@ on:
       update_version:
         description: 'Update the version number'
         required: false
-        default: true
+        default: false
         type: 'boolean'
 
 jobs:

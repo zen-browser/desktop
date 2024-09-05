@@ -179,6 +179,10 @@
       transform: translateX(calc(100% - (var(--zen-compact-toolbox-margin-single) / 2))) !important;;
     }
 
+    #navigator-toolbox > vbox {
+      float: right;
+    }
+
     #navigator-toolbox:hover,
     #navigator-toolbox:focus-within,
     #navigator-toolbox[zen-user-show],

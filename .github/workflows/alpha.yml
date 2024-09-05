@@ -398,6 +398,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          git pull
           sudo apt-get update
           npm install
 
@@ -532,6 +533,7 @@ jobs:
     
       - name: Setup git
         run: |
+          git pull
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 

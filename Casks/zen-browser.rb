@@ -11,6 +11,9 @@ cask "zen-browser" do
   desc "Beautifully designed, privacy-focused browser packed with awesome features"
   homepage "https://zen-browser.app/"
 
+  auto_updates true
+  depends_on macos: ">= :catalina"
+
   app "Zen Browser.app"
 
   postflight do

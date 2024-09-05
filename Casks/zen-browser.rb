@@ -21,7 +21,11 @@ cask "zen-browser" do
   end
 
   zap trash: [
-    "~/Library/Preferences/org.mozilla.com.zen.browser.plist",
-    "~/Library/Saved Application State/org.mozilla.com.zen.browser.savedState",
-  ]
+        "~/Library/Application Support/zen",
+        "~/Library/Caches/Mozilla/updates/Applications/Zen Browser",
+        "~/Library/Caches/zen",
+        "~/Library/Preferences/org.mozilla.com.zen.browser.plist",
+        "~/Library/Saved Application State/org.mozilla.com.zen.browser.savedState",
+      ],
+      rmdir: "~/Library/Caches/Mozilla"
 end

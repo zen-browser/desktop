@@ -8,11 +8,6 @@ cask("zen-browser") do
   desc("Beautifully designed, privacy-focused browser packed with awesome features")
   homepage("https://zen-browser.app/")
 
-  livecheck do
-    url(:stable)
-    regex(/[0-9].*-a.[0-9]*/i)
-  end
-
   zap trash: [
     "~/Library/Preferences/org.mozilla.com.zen.browser.plist",
     "~/Library/Saved Application State/org.mozilla.com.zen.browser.savedState"

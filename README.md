@@ -36,13 +36,27 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 
 # Installation
 
+
 ## MacOS
+
+### Homebrew (recommended)
 You can install the Zen Browser using Homebrew: 
 
 ```
-brew tap zen-browser/browser https://github.com/zen-browser/desktop.git
+brew tap zen-browser/browser https://github.com/zen-browser/desktop.git 
 brew install zen-browser
 ```
+
+To upgrade the browser to a newer version, you can either use the embedded update functionality in `About Zen` or use the following commands: 
+
+```
+brew update
+brew upgrade zen-browser
+```
+
+### Manual installation
+As there are issues with the signing process of the `.app` file, we recommend following this [guide](https://github.com/zen-browser/desktop/issues/53).
+
 
 # Core Components
 

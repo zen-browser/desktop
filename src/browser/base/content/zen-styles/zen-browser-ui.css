@@ -8,6 +8,7 @@
 #navigator-toolbox {
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
+  --inactive-titlebar-opacity: 1;
 }
 
 #browser {

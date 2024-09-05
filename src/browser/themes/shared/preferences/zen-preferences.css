@@ -65,7 +65,6 @@ groupbox:has(+ .subcategory) {
 
 groupbox button {
   border-radius: 5px !important;
-  padding: 5px 10px !important;
 }
 
 groupbox button,

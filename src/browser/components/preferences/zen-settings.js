@@ -228,6 +228,26 @@ var gZenLooksAndFeel = {
     this._initializeTabbarExpandForm();
     gZenThemeBuilder.init();
     gZenMarketplaceManager.init();
+    var onLegacyToolbarChange = this.onLegacyToolbarChange.bind(this);
+    Services.prefs.addObserver("zen.themes.tabs.legacy-location", onLegacyToolbarChange);
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver("zen.themes.tabs.legacy-location", onLegacyToolbarChange);
+    });
+  },
+
+  async onLegacyToolbarChange(event) {
+    let buttonIndex = await confirmRestartPrompt(
+      true,
+      1,
+      true,
+      false
+    );
+    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
+      return;
+    }
   },
 
   _initializeTabbarExpandForm() {
@@ -294,7 +314,32 @@ var gZenLooksAndFeel = {
 
 var gZenWorkspacesSettings = {
   init() {
+    Services.prefs.addObserver("zen.workspaces.enabled", this);
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver("zen.workspaces.enabled", this);
+    });
   },
+
+  async observe(subject, topic, data) {
+    await this.onWorkspaceChange(Services.prefs.getBoolPref("zen.workspaces.enabled"));
+  },
+
+  async onWorkspaceChange(checked) {
+    if (checked) {
+      let buttonIndex = await confirmRestartPrompt(
+        true,
+        1,
+        true,
+        false
+      );
+      if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+        Services.startup.quit(
+          Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+        );
+        return;
+      }
+    }
+  }
 };
 
 var gZenCKSSettings = {

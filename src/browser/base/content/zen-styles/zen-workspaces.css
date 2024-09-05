@@ -1,6 +1,6 @@
 
 #zen-workspaces-button {
-  --zen-workspaces-button-vmargin: 0.35rem;
+  --zen-workspaces-button-vmargin: 0.4rem;
   border: 1px solid var(--zen-colors-border);
   border-radius: 50px;
   width: calc(var(--zen-sidebar-action-button-width) - 5px) !important;
@@ -10,6 +10,10 @@
   justify-content: center;
   align-items: center;
   display: flex;
+
+  :root[zen-sidebar-legacy="true"] & {
+    margin-top: 0 !important;
+  }
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {

@@ -127,17 +127,20 @@ jobs:
           p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
           p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
 
-      - name: Sign to .app 🖋️
+
+      - name: Decode .p12 file
+        id: decode_p12
         run: |
-          ls engine
-          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin
-          ls engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist
-          chmod +x ./build/codesign/sign.bash
-          ./build/codesign/sign.bash \
-            -a "./engine/obj-${{ matrix.arch == 'x64' && 'x86_64' || 'aarch64' }}-apple-darwin/dist/Zen Browser.app" \
-            -i "${{ secrets.macOS_AppleDeveloperId }}" \
-            -b "./build/codesign/browser.developer.entitlements.xml" \
-            -p "./build/codesign/plugin-container.developer.entitlements.xml"
+          echo "$P12_BASE64" | base64 --decode > certificate.p12
+          echo "$P12_PASSWORD" > certificate.p12.password
+        env:
+          P12_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+          P12_PASSWORD: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
+
+      - name: Install rcodesign
+        run: |
+          cargo install --git https://github.com/indygreg/apple-platform-rs --branch main --bin rcodesign apple-codesign
+          export PATH="$HOME/.cargo/bin:$PATH"
 
       - name: Package
         env:
@@ -148,6 +151,9 @@ jobs:
         run: |
           mv ./dist/*.dmg "zen.macos-${{ matrix.arch }}.dmg"
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
+
+          rm -rf certificate.p12
+          rm -rf certificate.p12.password
 
       - name: Sign to .dmg 
         run: |

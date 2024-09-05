@@ -6,6 +6,13 @@
 
   #vertical-pinned-tabs-container {
     padding-inline-end: 0 !important;
+    max-height: unset !important;
+    overflow: visible !important;
+    gap: 4px;
+
+    & .tabbrowser-tab:not(:hover):not([selected]):not([multiselected]) {
+      background: color-mix(in srgb, var(--zen-colors-secondary) 20%, transparent 80%);
+    }
   }
 
   #tabs-newtab-button {
@@ -22,7 +29,19 @@
     --zen-sidebar-action-button-width: 35px;
 
     & #vertical-tabs-newtab-button {
-      background: var(--button-hover-bgcolor);
+      background: color-mix(in srgb, var(--button-hover-bgcolor) 40%, transparent 60%);
+    }
+
+    &::before {
+      width: 70%;
+      height: 1.2px;
+      background: var(--zen-colors-border);
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      display: none;
+      transform: translateX(-50%);
     }
 
     &[showborder] {
@@ -31,14 +50,7 @@
       padding-top: var(--space-small) !important;
 
       &::before {
-        width: 70%;
-        height: 1.2px;
-        background: var(--zen-colors-border);
-        content: '';
-        position: absolute;
-        top: -3px;
-        left: 50%;
-        transform: translateX(-50%);
+        display: block;
       }
     }
   }
@@ -71,6 +83,10 @@
     -moz-window-dragging: no-drag;
     --zen-sidebar-action-button-width: 38px;
     padding-bottom: calc(5px + 5px); /* Taking into consideration the padding of the sidebar without being inlined */
+
+    :root[zen-sidebar-legacy="true"] & {
+      padding-top: 0 !important;
+    }
   }
   
   #TabsToolbar-customization-target {
@@ -117,7 +133,7 @@
   }
   
   .tabbrowser-tab {
-    --zen-browser-tab-icon-size: 18px;
+    --zen-browser-tab-icon-size: 16px;
     --tab-min-width: 36px;
     margin: 0 auto;
     border-radius: 8px;
@@ -246,6 +262,8 @@
     border: none;
     height: 100%;
 
+    border-bottom: 0 !important;
+
     padding-inline-start: 0 !important;
     margin-inline-start: 0 !important;
 
@@ -299,16 +317,19 @@
       }
     
       #newtab-button-container {
-        margin: var(--zen-tabbrowser-padding);
-        margin-top: 0;
+        margin: calc(var(--zen-tabbrowser-padding) - 2px);
         margin-bottom: 0;
+        margin-bottom: var(--space-small);
 
         &[showborder] {
-          margin-top: var(--zen-tabbrowser-padding);
-          &::before {
-            width: 95%;
-            top: 0;
-          }
+          margin-top: 0;
+          padding-top: calc(var(--space-small) / 2) !important;
+        }
+
+        &::before {
+          width: 100%;
+          top: calc(100% + var(--space-small));
+          display: block;
         }
       }
     
@@ -342,6 +363,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+
+      & #tabbrowser-arrowscrollbox .tabbrowser-tab:first-child:not([hidden]) {
+        margin-top: var(--space-small) !important;
       }
 
       & .tabbrowser-tab {

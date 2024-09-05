@@ -19,7 +19,7 @@ index 3affb19d1a243da4a5782c9a4a5588d165b4119f..837f078ff1f3a65a40877c1380c6d050
 +              id="searchInput"
 +              data-l10n-id="search-input-box2"
 +              data-l10n-attrs="placeholder, style"
-+              hidden="true"/>
++              />
 +
        <!-- category list -->
        <richlistbox id="categories" data-l10n-id="category-list" data-l10n-attrs="aria-label">

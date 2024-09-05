@@ -17,7 +17,7 @@ cask "zen-browser" do
   app "Zen Browser.app"
 
   postflight do
-    system "xattr -c '/Applications/Zen Browser.app/'"
+    system "xattr -d com.apple.quarantine '/Applications/Zen Browser.app/'"
   end
 
   zap trash: [

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@zen-browser/surfer':
-        specifier: ^1.3.8
-        version: 1.3.8
+        specifier: ^1.3.9
+        version: 1.3.9
 
 packages:
 
@@ -109,8 +109,8 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
-  '@zen-browser/surfer@1.3.8':
-    resolution: {integrity: sha512-tXqTD7SsuReBXBOrp+JqTy3yiFsBNwZLKEmz4guZejvcCLpQOc51QIWNa8U9ucPLmBoce5DH2EfVS1SANYWx5g==}
+  '@zen-browser/surfer@1.3.9':
+    resolution: {integrity: sha512-kKK7kHjqaNSJu9lbHGKCVYTQCKFeovfu/O2NvQHo+Aei5lsFO3DLNtYkYuPpVKTm6vosR7mHd0Yn4o0nVIB8hw==}
     hasBin: true
 
   ansi-regex@5.0.1:
@@ -452,6 +452,9 @@ packages:
   modern-async@1.1.4:
     resolution: {integrity: sha512-jaZlzQB3W9PRF43+T144lYWb7UaTapJM6MZxNGLqpgPVal6uV4ixkR+t/1H1/7UM03jDu5BnvAYDqeawvL7kiw==}
 
+  mount-dmg@1.0.1:
+    resolution: {integrity: sha512-YEHSgtE1d6jIm6ht0uqo4MWQSXHvHYujgURXf+59hQDErH5bL5rv4uGwko8ejiFIeK6ySk8jBX1oX9NrlmBTCg==}
+
   nanoassert@2.0.0:
     resolution: {integrity: sha512-7vO7n28+aYO4J+8w96AzhmU8G+Y/xpPDJz/se19ICsqj/momRbb9mh9ZUtkoJ5X3nTnPdhEJyc0qnM6yAsHBaA==}
 
@@ -585,6 +588,9 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  shell-escape@0.2.0:
+    resolution: {integrity: sha512-uRRBT2MfEOyxuECseCZd28jC1AJ8hmqqneWQ4VWUTgCAFvb3wKU1jLqj6egC4Exrr88ogg3dp+zroH4wJuaXzw==}
 
   short-hash@1.0.0:
     resolution: {integrity: sha512-qbUCD2Pkl4IXRyVqneEjGnUr0NGDGLzZnBUVGJngIQZf/FrhOL0yJhH+JQzak0t8xMmScIKpoX1SxOsPHdwa4w==}
@@ -786,7 +792,7 @@ snapshots:
 
   '@types/node@17.0.45': {}
 
-  '@zen-browser/surfer@1.3.8':
+  '@zen-browser/surfer@1.3.9':
     dependencies:
       '@resvg/resvg-js': 1.4.0
       async-icns: 1.0.2
@@ -801,6 +807,7 @@ snapshots:
       is-apple-silicon: https://codeload.github.com/trickypr/is-apple-silicon/tar.gz/5f75501a1d7566ba9f94174b6825d7bd9d302b6a
       kleur: 4.1.5
       modern-async: 1.1.4
+      mount-dmg: 1.0.1
       picomatch: 2.3.1
       png-to-ico: 2.1.8
       prompts: 2.4.2
@@ -1148,6 +1155,10 @@ snapshots:
       core-js-pure: 3.37.1
       nanoassert: 2.0.0
 
+  mount-dmg@1.0.1:
+    dependencies:
+      shell-escape: 0.2.0
+
   nanoassert@2.0.0: {}
 
   napi-build-utils@1.0.2: {}
@@ -1290,6 +1301,8 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
+
+  shell-escape@0.2.0: {}
 
   short-hash@1.0.0:
     dependencies:

@@ -7,5 +7,6 @@ engine/
 **/*.svg
 
 src/browser/app/profile/*.js
+pnpm-lock.yaml
 
 **/engine/

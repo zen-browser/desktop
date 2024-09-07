@@ -283,6 +283,10 @@
     display: none; /* TODO: fix this */
   }
 
+  .tab-icon-pending {
+    margin-inline-end: 0 !important;
+  }
+
   @media (-moz-bool-pref: "zen.view.sidebar-collapsed.hide-mute-button") and (not (-moz-bool-pref: "zen.view.sidebar-expanded")) {
     .tab-icon-overlay:is([soundplaying], [muted]):not([selected]) {
       display: none;

@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 282e7f31fe158d929130c17628f7e30f690fd666..2eb7123611947c5bc3da4ae864dd6f6f68fa6f9e 100644
+index 282e7f31fe158d929130c17628f7e30f690fd666..c4e231382846ab646fadb6544fa7d78fdcdf7769 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
-@@ -1387,9 +1387,7 @@
+@@ -1387,10 +1387,11 @@
  
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -11,5 +11,9 @@ index 282e7f31fe158d929130c17628f7e30f690fd666..2eb7123611947c5bc3da4ae864dd6f6f
 -      }
 +      this.arrowScrollbox.ensureElementIsVisible(selectedTab, aInstant);
  
++      if (!aInstant && Services.prefs.getBoolPref('zen.view.compact')) {
++        gZenCompactModeManager.flashSidebar();
++      }
        selectedTab._notselectedsinceload = false;
      }
+ 

@@ -110,6 +110,8 @@ var gZenVerticalTabsManager = {
 };
 
 var gZenCompactModeManager = {
+  _flashSidebarTimeout: null,
+
   init() {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
   },
@@ -133,6 +135,27 @@ var gZenCompactModeManager = {
   toggleSidebar() {
     let sidebar = document.getElementById('navigator-toolbox');
     sidebar.toggleAttribute('zen-user-show');
+  },
+
+  flashSidebar() {
+    let sidebar = document.getElementById('navigator-toolbox');
+    if (sidebar.matches(':hover')) {
+      return;
+    }
+    if (this._flashSidebarTimeout) {
+      clearTimeout(this._flashSidebarTimeout);
+    } else {
+      window.requestAnimationFrame(() =>
+          sidebar.setAttribute('flash-popup', '')
+      );
+    }
+    this._flashSidebarTimeout =
+        setTimeout(() => {
+          window.requestAnimationFrame(() => {
+            sidebar.removeAttribute('flash-popup')
+            this._flashSidebarTimeout = null;
+          });
+        }, 1600);
   },
 
   toggleToolbar() {

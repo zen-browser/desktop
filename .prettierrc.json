@@ -9,9 +9,7 @@
     "semi": true,
     "printWidth": 128,
     "plugins": [
-      "prettier-plugin-tailwindcss"
     ],
-    "tailwindConfig": "./tailwind.config.js",
     "tailwindFunctions": [
       "tw"
     ]

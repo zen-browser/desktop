@@ -4,4 +4,6 @@ engine/
 **/*.xhtml
 **/*.inc.xhtml
 
+**/*.svg
+
 **/engine/

@@ -1,0 +1,7 @@
+engine/
+
+**/*.html
+**/*.xhtml
+**/*.inc.xhtml
+
+**/engine/

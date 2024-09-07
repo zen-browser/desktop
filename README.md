@@ -1,6 +1,6 @@
 <div align="center">
 <picture>
-    <img src="./zen-black.svg" width="128px">
+    <img src="./docs/assets/zen-black.svg" width="128px">
 </picture>
 </div>
 <h1 align="center">
@@ -9,9 +9,9 @@ Zen Browser
 
 Experience tranquillity while browsing the web without people tracking you!
 
-* [Website](https://www.zen-browser.app)
-* [Download](https://www.zen-browser.app/download)
-* [Release Notes](https://www.zen-browser.app/release-notes/latest)
+- [Website](https://www.zen-browser.app)
+- [Download](https://www.zen-browser.app/download)
+- [Release Notes](https://www.zen-browser.app/release-notes/latest)
 
 [![Downloads](https://img.shields.io/github/downloads/zen-browser/desktop/total.svg)](https://github.com/zen-browser/desktop/releases)
 [![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
@@ -26,20 +26,20 @@ Experience tranquillity while browsing the web without people tracking you!
 
 Zen is currently built using firefox version `130.0`!
 
-* Check out the latest [release notes](https://www.zen-browser.app/release-notes)!
+- Check out the latest [release notes](https://www.zen-browser.app/release-notes)!
 
 # Performance
 
 Zen is built with performance in mind, and we have optimized the browser to be as fast as possible!
 
-* Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
+- Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
 
 # Installation
-
 
 ## MacOS
 
 ### Homebrew (recommended)
+
 You can install the Zen Browser using Homebrew:
 
 ```
@@ -55,8 +55,8 @@ brew upgrade --greedy zen-browser
 ```
 
 ### Manual installation
-As there are issues with the signing process of the `.app` file, we recommend following this [guide](https://github.com/zen-browser/desktop/issues/53).
 
+As there are issues with the signing process of the `.app` file, we recommend following this [guide](https://github.com/zen-browser/desktop/issues/53).
 
 # Core Components
 

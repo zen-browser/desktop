@@ -312,6 +312,8 @@ jobs:
     name: Release
     needs: [build-data, linux, windows-step-3, check-release, mac, appimage]
     runs-on: ubuntu-latest
+    environment:
+      name: Deploy-Release
 
     steps:
       - uses: actions/checkout@v4

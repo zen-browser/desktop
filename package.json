@@ -2,6 +2,9 @@
   "name": "zen-core",
   "version": "1.0.0",
   "description": "",
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
   "scripts": {
     "build": "surfer build",
     "build:ui": "surfer build --ui",
@@ -15,7 +18,8 @@
     "update-ff:raw": "surfer update",
     "update-newtab": "python3 scripts/update_newtab.py",
     "pretty": "prettier . --write",
-    "lint": "npx prettier . --check"
+    "lint": "npx prettier . --check",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -32,6 +36,8 @@
     "@zen-browser/surfer": "^1.3.13"
   },
   "devDependencies": {
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.3.3"
   }
 }

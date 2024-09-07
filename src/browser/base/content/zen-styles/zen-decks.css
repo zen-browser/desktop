@@ -31,7 +31,8 @@
 
 #tabbrowser-tabpanels:has(> [zen-split="true"]) {
   display: grid;
-  grid-gap: 5px;
+  row-gap: var(--zen-element-separation);
+  column-gap: calc(var(--zen-element-separation) / 2);
 }
 
 #zen-split-views-box:not([hidden="true"]) {

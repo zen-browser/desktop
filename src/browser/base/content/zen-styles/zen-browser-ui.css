@@ -11,6 +11,11 @@
   --inactive-titlebar-opacity: 1;
 }
 
+#tabbrowser-tabpanels {
+  padding-right: var(--zen-element-separation);
+  padding-bottom: var(--zen-element-separation);
+}
+
 #browser {
   width: 100%;
 }

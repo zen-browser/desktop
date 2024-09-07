@@ -80,9 +80,6 @@
   --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
 
-  /* Constants */
-  --zen-element-separation: .6rem;
-
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
   --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 50%, white 50%);

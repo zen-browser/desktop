@@ -460,6 +460,11 @@
       --zen-hover-animation: zen-sidebar-panel-animation-right !important;
     }
 
+    #tabbrowser-tabpanels {
+      padding-left: var(--zen-element-separation);
+      padding-right: 0 !important;
+    }
+
     :root:not([zen-sidebar-legacy="true"]) {
       padding: calc(var(--zen-tabbrowser-padding) * 1.5);
     }
@@ -469,8 +474,8 @@
     }
 
     #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-left: var(--zen-element-separation) !important;
-      margin-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 2px !important;
     }
   }
 

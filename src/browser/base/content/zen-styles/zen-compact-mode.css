@@ -131,8 +131,8 @@
   #navigator-toolbox[inFullscreen] > #PersonalToolbar,
   #PersonalToolbar[collapsed="true"]{ display: none }
 
-  :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-    margin-left: var(--zen-element-separation) !important;
+  :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels {
+    padding-left: var(--zen-element-separation) !important;
   }
 
   @media (-moz-bool-pref: "zen.view.compact.hide-toolbar") {
@@ -162,8 +162,8 @@
       opacity: 1;
     }
 
-    :root:not([inDOMFullscreen="true"]) #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
-      margin-top: var(--zen-element-separation) !important;
+    :root:not([inDOMFullscreen="true"]) #tabbrowser-tabpanels {
+      padding-top: var(--zen-element-separation) !important;
     }
 
     #titlebar {

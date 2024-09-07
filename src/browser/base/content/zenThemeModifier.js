@@ -11,8 +11,11 @@
  * FOR ANY WEBSITE THAT WOULD NEED TO USE THE ACCENT COLOR, ETC
  */
 
-const kZenThemeAccentColorPref = "zen.theme.accent-color";
-const kZenThemeBorderRadiusPref = "zen.theme.border-radius";
+const kZenThemePrefsList = [
+  "zen.theme.accent-color",
+  "zen.theme.border-radius",
+  "zen.theme.content-element-separation",
+];
 
 /**
 * ZenThemeModifier controls the application of theme data to the browser,
@@ -40,8 +43,17 @@ var ZenThemeModifier = {
   listenForEvents() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this._onPrefersColorSchemeChange.bind(this));
 
-    Services.prefs.addObserver(kZenThemeAccentColorPref, this.handleEvent.bind(this));
-    Services.prefs.addObserver(kZenThemeBorderRadiusPref, this.handleEvent.bind(this));
+    var handleEvent = this.handleEvent.bind(this);
+    // Listen for changes in the accent color and border radius
+    for (let pref of kZenThemePrefsList) {
+      Services.prefs.addObserver(pref, handleEvent);
+    }
+
+    window.addEventListener("unload", () => {
+      for (let pref of kZenThemePrefsList) {
+        Services.prefs.removeObserver(pref, handleEvent);
+      }
+    });
   },
 
   handleEvent(event) {
@@ -52,21 +64,27 @@ var ZenThemeModifier = {
   /**
     * Update all theme basics, like the accent color.
     */
-  updateAllThemeBasics() {
+  async updateAllThemeBasics() {
     this.updateAccentColor();
     this.updateBorderRadius();
+    this.updateElementSeparation();
   },
 
   updateBorderRadius() {
-    const borderRadius = Services.prefs.getIntPref(kZenThemeBorderRadiusPref, 4);
+    const borderRadius = Services.prefs.getIntPref("zen.theme.border-radius");
     document.documentElement.style.setProperty("--zen-border-radius", borderRadius + "px");
+  },
+
+  updateElementSeparation() {
+    const separation = Services.prefs.getIntPref("zen.theme.content-element-separation");
+    document.documentElement.style.setProperty("--zen-element-separation", separation + "px");
   },
 
   /**
    * Update the accent color.
    */
   updateAccentColor() {
-    const accentColor = Services.prefs.getStringPref(kZenThemeAccentColorPref, "#0b57d0");
+    const accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
     document.documentElement.style.setProperty("--zen-primary-color", accentColor);
     // Notify the page that the accent color has changed, only if a function
     // handler is defined.

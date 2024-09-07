@@ -20,10 +20,6 @@
   width: 100%;
 }
 
-html#main-window > body {
-  background: var(--zen-main-browser-background) !important;
-}
-
 :not([inDOMFullscreen="true"]) #appcontent {
   overflow: hidden;
 }
@@ -36,9 +32,6 @@ html#main-window > body {
 
 #zen-main-app-wrapper {
   background: var(--zen-main-browser-background);
-
-  border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
-  border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
 }
 
 #tabbrowser-tabbox {

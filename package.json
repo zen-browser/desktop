@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*": ""
   },
   "scripts": {
     "build": "surfer build",

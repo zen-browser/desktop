@@ -29,7 +29,6 @@ var gZenUIManager = {
 
 var gZenVerticalTabsManager = {
   init() {
-    //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
@@ -114,6 +113,7 @@ var gZenCompactModeManager = {
 
   init() {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
   },
 
   get prefefence() {
@@ -132,9 +132,20 @@ var gZenCompactModeManager = {
     this.preference = !this.prefefence;
   },
 
+  _updatedSidebarFlashDuration() {
+    this._flashSidebarDuration = Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
+  },
+
   toggleSidebar() {
     let sidebar = document.getElementById('navigator-toolbox');
     sidebar.toggleAttribute('zen-user-show');
+  },
+
+  get flashSidebarDuration() {
+    if (this._flashSidebarDuration) {
+      return this._flashSidebarDuration;
+    }
+    return Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
   },
 
   flashSidebar() {
@@ -155,7 +166,7 @@ var gZenCompactModeManager = {
             sidebar.removeAttribute('flash-popup')
             this._flashSidebarTimeout = null;
           });
-        }, 1600);
+        }, this.flashSidebarDuration);
   },
 
   toggleToolbar() {

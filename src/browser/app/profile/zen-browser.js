@@ -152,6 +152,9 @@ pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);
 pref('media.ffmpeg.vaapi.enabled', true);
 
+// Enable JXL support
+pref('image.jxl.enabled', true);
+
 #if defined(XP_WIN)
   pref("dom.ipc.processPriorityManager.backgroundUsesEcoQoS", false);
 #endif

@@ -158,6 +158,11 @@ jobs:
       - name: Sign to .dmg 
         run: |
           codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-${{ matrix.arch }}.dmg
+          xcrun notarytool submit "zen.macos-${{ matrix.arch }}.dmg" \
+            --apple-id "${{ secrets.macOS_AppleDeveloperId }}" \
+            --team-id "${{ secrets.macOS_AppleDeveloperIdTeamId }}" \
+            --password "${{ secrets.macOS_AppleDeveloperIdPassword }}" \
+            --wait
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

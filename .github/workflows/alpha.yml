@@ -130,7 +130,6 @@ jobs:
 
 
   source:
-    if: false
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -310,7 +309,7 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, windows-step-3, check-release, mac, appimage]
+    needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]
     runs-on: ubuntu-latest
     environment:
       name: Deploy-Release

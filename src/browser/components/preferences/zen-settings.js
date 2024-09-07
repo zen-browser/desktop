@@ -523,6 +523,11 @@ Preferences.addAll([
     default: false,
   },
   {
+    id: "zen.view.compact.toolbar-flash-popup",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.workspaces.enabled",
     type: "bool",
     default: true,

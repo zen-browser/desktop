@@ -6,4 +6,6 @@ engine/
 
 **/*.svg
 
+src/browser/app/profile/*.js
+
 **/engine/

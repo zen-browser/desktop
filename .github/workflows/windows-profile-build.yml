@@ -1,4 +1,4 @@
-
+name: Windows PGO Builds
 on:
   workflow_call:
     inputs:

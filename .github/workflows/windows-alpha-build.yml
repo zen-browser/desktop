@@ -1,4 +1,4 @@
-
+name: Windows Alpha Build
 on:
   workflow_call:
     inputs:

@@ -109,6 +109,8 @@ echo "plugin-container entitlements file:  $PLUGINCONTAINER_ENTITLEMENTS_FILE"
 echo "output dmg file (optional):          $OUTPUT_DMG_FILE"
 echo "-------------------------------------------------------------------------"
 
+set -x
+
 # Clear extended attributes which cause codesign to fail
 xattr -cr "${BUNDLE}"
 
@@ -118,19 +120,15 @@ codesign --force -o runtime --verbose --sign "$IDENTITY" \
 "${BUNDLE}/Contents/Library/LaunchServices/org.mozilla.updater" \
 "${BUNDLE}/Contents/MacOS/XUL" \
 "${BUNDLE}/Contents/MacOS/pingsender" \
-"${BUNDLE}/Contents/MacOS/minidump-analyzer" \
 "${BUNDLE}/Contents/MacOS/*.dylib" \
-
-codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
-"${BUNDLE}"/Contents/MacOS/crashreporter.app
 
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 "${BUNDLE}"/Contents/MacOS/updater.app
 
-# Sign floorp main executable
+# Sign zen main executable
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \
 --entitlements ${BROWSER_ENTITLEMENTS_FILE} \
-"${BUNDLE}"/Contents/MacOS/floorp
+"${BUNDLE}"/Contents/MacOS/zen
 
 # Sign Library/LaunchServices
 codesign --force -o runtime --verbose --sign "$IDENTITY" --deep \

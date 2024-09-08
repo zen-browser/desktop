@@ -44,14 +44,14 @@ You can install the Zen Browser using Homebrew:
 
 ```
 brew tap zen-browser/browser https://github.com/zen-browser/desktop.git
-brew install --no-quarantine --cask zen-browser
+brew install --cask zen-browser
 ```
 
 To upgrade the browser to a newer version, you can either use the embedded update functionality in `About Zen` or use the following commands:
 
 ```
 brew update
-brew upgrade --no-quarantine --greedy zen-browser
+brew upgrade --greedy zen-browser
 ```
 
 ### Manual installation

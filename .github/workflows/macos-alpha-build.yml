@@ -148,7 +148,6 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv ./dist/*.dmg "zen.macos-${{ matrix.arch }}.dmg"
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
 
           rm -rf certificate.p12
@@ -156,12 +155,14 @@ jobs:
 
       - name: Sign to .dmg
         run: |
+          hdiutil convert ./dist/*.dmg -format UDZO -imagekey zlib-level=9 -o zen.macos-${{ matrix.arch }}.dmg
           codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-${{ matrix.arch }}.dmg
           xcrun notarytool submit "zen.macos-${{ matrix.arch }}.dmg" \
             --apple-id "${{ secrets.macOS_AppleAccountId }}" \
             --team-id "${{ secrets.macOS_AppleDeveloperIdTeamId }}" \
             --password "${{ secrets.macOS_AppleDeveloperIdPassword }}" \
             --wait
+          xcrun stapler staple "zen.macos-${{ matrix.arch }}.dmg"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

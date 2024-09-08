@@ -1,7 +1,8 @@
 name: Close inactive issues
 on:
   schedule:
-    - cron: "53 11 * * *"
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   close-issues:

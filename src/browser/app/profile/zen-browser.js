@@ -59,7 +59,7 @@ pref("browser.ping-centre.telemetry", false);
 pref("browser.attribution.enabled", false);
 pref("toolkit.telemetry.pioneer-new-studies-available", false);
 
-pref("app.update.checkInstallTime.days", 2);
+pref("app.update.checkInstallTime.days", 6);
 
 // CUSTOM ZEN PREFS
 
@@ -118,11 +118,6 @@ pref('dom.private-attribution.submission.enabled', false);
 pref('dom.security.https_only_mode', true);
 
 pref('media.eme.enabled', true);
-
-pref("app.update.url.manual", "https://www.zen-browser.app/download");
-pref("app.update.url.details", "https://www.zen-browser.app/download");
-pref("app.releaseNotesURL", "https://www.zen-browser.app/release-notes");
-pref("app.releaseNotesURL.aboutDialog", "https://www.zen-browser.app/release-notes");
 
 // Enable importers for other browsers
 pref('browser.migrate.vivaldi.enabled', true);

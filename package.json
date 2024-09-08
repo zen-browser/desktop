@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/zen-browser/core#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.3.13"
+    "@zen-browser/surfer": "^1.3.14"
   },
   "devDependencies": {
     "husky": "^9.1.5",

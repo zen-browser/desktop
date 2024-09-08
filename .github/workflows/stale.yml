@@ -16,8 +16,14 @@ jobs:
           days-before-issue-stale: 30
           days-before-issue-close: 14
           stale-issue-label: "stale"
-          stale-issue-message: "This issue is stale because it has been open for 30 days with no activity."
-          close-issue-message: "This issue was closed because it has been inactive for 14 days since being marked as stale."
+          stale-issue-message: |
+            This issue is stale because it has been open for 30 days with no activity.
+
+            Please close this issue if you feel it is no longer relevant, or comment if you have more information to share.
+          close-issue-message: |
+            This issue was closed because it has been inactive for 14 days since being marked as stale.
+
+            If you think this issue should remain open, please comment with a request for it to be re-opened or open a new issue.
           days-before-pr-stale: -1
           days-before-pr-close: -1
           repo-token: ${{ secrets.GITHUB_TOKEN }}

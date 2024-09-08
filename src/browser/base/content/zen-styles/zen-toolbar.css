@@ -8,6 +8,14 @@
 }
 
 /* Fix broken Lightweight Themes: https://addons.mozilla.org/en-US/firefox/themes/ */
-:root[lwtheme] #nav-bar, :root[lwtheme] #TabsToolbar {
-  background-image: var(--lwt-header-image)!important;
+:root[lwtheme] & {
+  background-image: var(--lwt-additional-images);
+  background-repeat: var(--lwt-background-tiling);
+  background-position: var(--lwt-background-alignment);
+  background-color: var(--lwt-accent-color);
+  color: inherit;
+
+  &:-moz-window-inactive {
+    background-color: var(--lwt-accent-color-inactive, var(--lwt-accent-color));
+  }
 }

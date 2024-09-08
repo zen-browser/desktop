@@ -104,10 +104,6 @@ pref("network.IDN_show_punycode", true);
 /** CONTAINERS ***/
 pref("privacy.userContext.ui.enabled", true);
 
-/** WEBRTC ***/
-pref("media.peerconnection.ice.proxy_only_if_behind_proxy", true);
-pref("media.peerconnection.ice.default_address_only", true);
-
 /** SAFE BROWSING ***/
 pref("browser.safebrowsing.downloads.remote.enabled", false);
 

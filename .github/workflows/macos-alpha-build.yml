@@ -127,31 +127,16 @@ jobs:
           p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
           p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
 
-      - name: Decode .p12 file
-        id: decode_p12
-        run: |
-          echo "$P12_BASE64" | base64 --decode > certificate.p12
-          echo "$P12_PASSWORD" > certificate.p12.password
-        env:
-          P12_BASE64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
-          P12_PASSWORD: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
-
-      - name: Install rcodesign
-        run: |
-          cargo install --git https://github.com/indygreg/apple-platform-rs --branch main --bin rcodesign apple-codesign
-          export PATH="$HOME/.cargo/bin:$PATH"
-
       - name: Package
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
-        run: pnpm package
+        run: |
+          export MACOS_APPLE_DEVELOPER_ID="${{ secrets.macOS_AppleDeveloperId }}"
+          pnpm package
 
       - name: Rename artifacts
         run: |
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
-
-          rm -rf certificate.p12
-          rm -rf certificate.p12.password
 
       - name: Sign to .dmg
         run: |

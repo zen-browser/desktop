@@ -27,6 +27,9 @@
     padding-top: 0 !important;
 
     --zen-sidebar-action-button-width: 35px;
+    :root[uidensity="compact"] & {
+      --zen-sidebar-action-button-width: 30px;
+    }
 
     & #vertical-tabs-newtab-button {
       background: color-mix(in srgb, var(--button-hover-bgcolor) 40%, transparent 60%);

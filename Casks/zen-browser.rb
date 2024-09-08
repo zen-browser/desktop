@@ -16,10 +16,6 @@ cask "zen-browser" do
 
   app "Zen Browser.app"
 
-  postflight do
-    system "xattr -d com.apple.quarantine '/Applications/Zen Browser.app/'"
-  end
-
   zap trash: [
         "~/Library/Application Support/zen",
         "~/Library/Caches/Mozilla/updates/Applications/Zen Browser",

@@ -30,6 +30,9 @@ var ZenStartup = {
     document.getElementById("zen-appcontent-navbar-container")
       .appendChild(document.getElementById("tab-notification-deck-template"));
 
+    // Disable smooth scroll
+    gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
+
     gZenVerticalTabsManager.init();
     gZenCompactModeManager.init();
     gZenKeyboardShortcuts.init();

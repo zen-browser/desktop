@@ -27,6 +27,7 @@ finish-args:
   - --own-name=org.mpris.MediaPlayer2.firefox.*
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
+  - --env=GTK_PATH=/app/lib/gtkmodules
 modules:
   - name: zen_browser
     buildsystem: simple

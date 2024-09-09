@@ -18,7 +18,7 @@
       "brandShortName": "Zen Browser",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.0.0-a.38",
+        "displayVersion": "1.0.0-a.39",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -34,7 +34,9 @@
     }
   },
   "license": {
-    "ignoredFiles": [".*\\.json"],
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
     "licenseType": "MPL-2.0"
   },
   "updateHostname": "updates.zen-browser.app"

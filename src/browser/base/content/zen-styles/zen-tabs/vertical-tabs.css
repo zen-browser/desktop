@@ -338,7 +338,7 @@
 
         &::before {
           width: 100%;
-          top: calc(100% + var(--space-small));
+          top: calc(100% + var(--space-small) / 2);
           display: block;
         }
       }

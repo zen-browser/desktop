@@ -1,4 +1,3 @@
-
 #zen-workspaces-button {
   --zen-workspaces-button-vmargin: 0.4rem;
   border: 1px solid var(--zen-colors-border);
@@ -11,13 +10,13 @@
   align-items: center;
   display: flex;
 
-  :root[zen-sidebar-legacy="true"] & {
+  :root[zen-sidebar-legacy='true'] & {
     margin-top: 0 !important;
   }
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
-  margin-left: .2rem;
+  margin-left: 0.2rem;
   display: none;
   overflow: hidden;
   white-space: nowrap;
@@ -25,23 +24,24 @@
   font-size: 12px;
 }
 
-@media (-moz-bool-pref: "zen.view.sidebar-expanded") {
+@media (-moz-bool-pref: 'zen.view.sidebar-expanded') {
   /** Keep these selectors in sync with the ones in vertical-tabs.css */
   #navigator-toolbox:is(
-    #navigator-toolbox[zen-user-hover="true"]:hover,
-    #navigator-toolbox[zen-user-hover="true"]:focus-within,
-    #mainPopupSet[zen-user-hover="true"]:has(> #appMenu-popup:hover) ~ toolbox,
-    #navigator-toolbox[zen-user-hover="true"]:has(*[open="true"]:not(tab):not(#zen-sidepanel-button)), 
-  :not([zen-user-hover="true"])) {
+      #navigator-toolbox[zen-user-hover='true']:hover,
+      #navigator-toolbox[zen-user-hover='true']:focus-within,
+      #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
+      #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
+      :not([zen-user-hover='true'])
+    ) {
     & #zen-workspaces-button .zen-workspace-sidebar-name {
       display: block;
     }
 
-    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] {
+    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] {
       display: none;
     }
 
-    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon="true"] + .zen-workspace-sidebar-name {
+    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] + .zen-workspace-sidebar-name {
       margin-left: 0;
     }
 
@@ -93,8 +93,8 @@
   border-radius: 7px;
 }
 
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton[selected="true"],
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton[selected="true"] {
+#PanelUI-zen-workspaces-create-icons-container toolbarbutton[selected='true'],
+#PanelUI-zen-workspaces-edit-icons-container toolbarbutton[selected='true'] {
   border-color: var(--zen-colors-secondary);
 }
 
@@ -126,7 +126,7 @@
   flex-shrink: 0;
 }
 
-#PanelUI-zen-workspaces-list[empty="true"] {
+#PanelUI-zen-workspaces-list[empty='true'] {
   font-weight: 600;
   padding: 10px;
   width: 100%;
@@ -139,7 +139,7 @@
 }
 
 #PanelUI-zen-workspaces-list toolbarbutton,
-#PanelUI-zen-workspaces-current-info toolbarbutton  {
+#PanelUI-zen-workspaces-current-info toolbarbutton {
   padding: 5px;
   border-radius: 7px;
 
@@ -180,7 +180,7 @@
   }
 
   &:hover .zen-workspace-actions,
-  & .zen-workspace-actions[active="true"] {
+  & .zen-workspace-actions[active='true'] {
     display: flex;
   }
 }
@@ -212,7 +212,7 @@
   width: 100%;
 }
 
-#PanelUI-zen-workspaces-create-footer button[default="true"],
-#PanelUI-zen-workspaces-edit-footer button[default="true"] {
+#PanelUI-zen-workspaces-create-footer button[default='true'],
+#PanelUI-zen-workspaces-edit-footer button[default='true'] {
   width: 100%;
 }

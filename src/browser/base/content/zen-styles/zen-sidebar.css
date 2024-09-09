@@ -5,39 +5,39 @@
  */
 
 :root {
-  --sidebar-background-color: var(--toolbar-bgcolor) !important; 
+  --sidebar-background-color: var(--toolbar-bgcolor) !important;
   --zen-sidebar-box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 #sidebar-box {
-  --zen-sidebar-box-border-radius: var(--zen-panel-radius);  
+  --zen-sidebar-box-border-radius: var(--zen-panel-radius);
   margin: var(--zen-element-separation);
   border-radius: var(--zen-sidebar-box-border-radius);
   overflow: hidden;
-  transition: .2s;
+  transition: 0.2s;
   margin-left: 0;
   border: var(--zen-appcontent-border);
   box-shadow: none;
   margin-top: 0;
-}   
+}
 
-#sidebar-box[hidden="true"] {
+#sidebar-box[hidden='true'] {
   width: 0;
   opacity: 0;
 }
 
-#sidebar-box:not([positionend="true"]) {
+#sidebar-box:not([positionend='true']) {
   margin-right: 0;
 }
 
-#zen-main-app-wrapper:has(#sidebar-box:not([hidden="true"], [positionend="true"])) #TabsToolbar {
+#zen-main-app-wrapper:has(#sidebar-box:not([hidden='true'], [positionend='true'])) #TabsToolbar {
   margin-right: 0 !important;
   box-shadow: none !important;
 }
 
 #sidebar-splitter {
   /* we can still use the splitter but we can't see it */
-  background: transparent !important;  
+  background: transparent !important;
   border-color: transparent !important;
   width: 1px !important;
   margin-right: 5px;
@@ -82,7 +82,7 @@
   background: transparent !important;
 }
 
-#sidebar-box[hidden="true"] .zen-sidebar-action-button,
+#sidebar-box[hidden='true'] .zen-sidebar-action-button,
 .zen-sidebar-panel-button[animate] {
   opacity: 0;
   transform: translateX(-110%);
@@ -103,11 +103,11 @@
 /* Icons */
 
 #zen-preferences-button {
-  list-style-image: url("chrome://global/skin/icons/settings.svg");
+  list-style-image: url('chrome://global/skin/icons/settings.svg');
 }
 
 #zen-history-button {
-  list-style-image: url("chrome://browser/skin/history.svg");
+  list-style-image: url('chrome://browser/skin/history.svg');
 }
 
 #zen-bookmark-button {
@@ -138,16 +138,46 @@
 
 /* Ugly code */
 
-#TabsToolbar .zen-sidebar-action-button:nth-child(1),  .zen-sidebar-panel-button:nth-child(1) { animation-delay: 0.1s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(2),  .zen-sidebar-panel-button:nth-child(2) { animation-delay: 0.2s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(3),  .zen-sidebar-panel-button:nth-child(3) { animation-delay: 0.3s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(4),  .zen-sidebar-panel-button:nth-child(4) { animation-delay: 0.4s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(5),  .zen-sidebar-panel-button:nth-child(5) { animation-delay: 0.5s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(6),  .zen-sidebar-panel-button:nth-child(6) { animation-delay: 0.6s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(7),  .zen-sidebar-panel-button:nth-child(7) { animation-delay: 0.7s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(8),  .zen-sidebar-panel-button:nth-child(8) { animation-delay: 0.8s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(9),  .zen-sidebar-panel-button:nth-child(9) { animation-delay: 0.9s; }
-#TabsToolbar .zen-sidebar-action-button:nth-child(10), .zen-sidebar-panel-button:nth-child(10) { animation-delay: 1s; }
+#TabsToolbar .zen-sidebar-action-button:nth-child(1),
+.zen-sidebar-panel-button:nth-child(1) {
+  animation-delay: 0.1s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(2),
+.zen-sidebar-panel-button:nth-child(2) {
+  animation-delay: 0.2s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(3),
+.zen-sidebar-panel-button:nth-child(3) {
+  animation-delay: 0.3s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(4),
+.zen-sidebar-panel-button:nth-child(4) {
+  animation-delay: 0.4s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(5),
+.zen-sidebar-panel-button:nth-child(5) {
+  animation-delay: 0.5s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(6),
+.zen-sidebar-panel-button:nth-child(6) {
+  animation-delay: 0.6s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(7),
+.zen-sidebar-panel-button:nth-child(7) {
+  animation-delay: 0.7s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(8),
+.zen-sidebar-panel-button:nth-child(8) {
+  animation-delay: 0.8s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(9),
+.zen-sidebar-panel-button:nth-child(9) {
+  animation-delay: 0.9s;
+}
+#TabsToolbar .zen-sidebar-action-button:nth-child(10),
+.zen-sidebar-panel-button:nth-child(10) {
+  animation-delay: 1s;
+}
 
 #zen-sidebar-icons-wrapper toolbarbutton {
   position: relative;
@@ -164,12 +194,12 @@
   min-height: fit-content;
   --zen-sidebar-action-content-separator: calc(10px + var(--zen-tabbrowser-padding));
   padding-top: var(--zen-sidebar-action-content-separator);
-  margin-top:  var(--zen-sidebar-action-content-separator);
+  margin-top: var(--zen-sidebar-action-content-separator);
   color-scheme: inherit !important;
 }
 
 #zen-sidebar-icons-wrapper::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 50%;
@@ -179,7 +209,7 @@
   background: var(--zen-colors-border);
 }
 
-#zen-sidepanel-button[hidden="true"] {
+#zen-sidepanel-button[hidden='true'] {
   display: none;
 }
 
@@ -187,17 +217,17 @@
   display: none;
 }
 
-:root:not([inDOMFullscreen="true"]) #zen-sidebar-splitter {
+:root:not([inDOMFullscreen='true']) #zen-sidebar-splitter {
   display: block;
   width: 1px;
   opacity: 0;
 }
 
-:root[inDOMFullscreen="true"] #zen-sidebar-splitter {
+:root[inDOMFullscreen='true'] #zen-sidebar-splitter {
   display: none;
 }
 
-@media not (-moz-bool-pref: "zen.view.sidebar-expanded") {
+@media not (-moz-bool-pref: 'zen.view.sidebar-expanded') {
   #navigator-toolbox {
     width: 0;
     padding-right: 2px;
@@ -208,12 +238,12 @@
   }
 }
 
-@media (-moz-bool-pref: "zen.view.sidebar-expanded.show-button") {
+@media (-moz-bool-pref: 'zen.view.sidebar-expanded.show-button') {
   #zen-expand-sidebar-button {
     display: flex;
   }
 }
- 
-:root:is([chromehidden~="location"], [chromehidden~="toolbar"]) #navigator-toolbox {
+
+:root:is([chromehidden~='location'], [chromehidden~='toolbar']) #navigator-toolbox {
   display: none !important;
 }

@@ -5,7 +5,7 @@
  */
 
 :root {
-  --zen-settings-secondary-background: light-dark(#F2F4F4, #171717);
+  --zen-settings-secondary-background: light-dark(#f2f4f4, #171717);
 }
 
 .main-content {
@@ -50,11 +50,11 @@ groupbox:has(+ .subcategory) {
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-.sticky-inner-container{
+.sticky-inner-container {
   display: none !important;
 }
 
-.subcategory  {
+.subcategory {
   border-top: none !important;
 }
 
@@ -74,7 +74,7 @@ groupbox menulist {
 }
 
 groupbox h2 {
-  opacity: .7;
+  opacity: 0.7;
   font-size: 15px;
 }
 
@@ -87,11 +87,10 @@ groupbox h2 {
   min-height: 40px !important;
   position: relative;
   padding-inline: 20px !important;
-
 }
 
 #categories > .category[selected]::before {
-  content: "";
+  content: '';
   display: block;
   height: 70%;
   width: 5px;
@@ -102,7 +101,7 @@ groupbox h2 {
 }
 
 #languagesGroup::before {
-  content: "";
+  content: '';
   display: block;
   height: 1px;
   background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -151,7 +150,7 @@ groupbox h2 {
 }
 
 #category-zen-looks > .category-icon {
-  list-style-image: url("chrome://browser/skin/customize.svg");
+  list-style-image: url('chrome://browser/skin/customize.svg');
 }
 
 #zenLooksAndFeelColorOptions {
@@ -175,7 +174,7 @@ groupbox h2 {
   border: 2px solid transparent;
 }
 
-.zenLooksAndFeelColorOptionParen[selected="true"] {
+.zenLooksAndFeelColorOptionParen[selected='true'] {
   border-color: var(--zen-primary-color);
 }
 
@@ -189,7 +188,7 @@ groupbox h2 {
 }
 
 .zenLooksAndFeelColorOption::before {
-  content: "";
+  content: '';
   display: block;
   width: 50%;
   height: 50%;
@@ -200,7 +199,7 @@ groupbox h2 {
 }
 
 .zenLooksAndFeelColorOption::after {
-  content: "";
+  content: '';
   display: block;
   width: 50%;
   height: 50%;
@@ -213,13 +212,13 @@ groupbox h2 {
 /* Workspace */
 
 #category-zen-workspaces > .category-icon {
-  list-style-image: url("chrome://browser/skin/window.svg");
+  list-style-image: url('chrome://browser/skin/window.svg');
 }
 
 /* CKS */
 
 #category-zen-CKS > .category-icon {
-  list-style-image: url("chrome://browser/skin/quickactions.svg");
+  list-style-image: url('chrome://browser/skin/quickactions.svg');
 }
 
 .zenCKSOption-input {
@@ -316,17 +315,17 @@ groupbox h2 {
   transform: translate(-50%, -50%);
 }
 
-
 /* THemes marketplace */
 
 #category-zen-marketplace > .category-icon {
-  list-style-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
+  list-style-image: url('chrome://mozapps/skin/extensions/category-themes.svg');
 }
 
 .zenThemeMarketplaceItem {
   width: 100%;
 
-  &:not(:first-of-type), .zenThemeMarketplaceItemPreferences {
+  &:not(:first-of-type),
+  .zenThemeMarketplaceItemPreferences {
     margin-top: 15px;
   }
 }

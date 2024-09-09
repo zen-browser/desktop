@@ -1,4 +1,3 @@
-
 /* Here, we contain all the theme related variables, for example theme
  * colors, border radius, etc.
  * We have `--zen-border-radius` and `--zen-primary-color` as variables.
@@ -7,7 +6,6 @@
 :host(:is(.anonymous-content-host, notification-message)),
 :root,
 .zenLooksAndFeelColorOption {
-
   /** We also add `.zenLooksAndFeelColorOption` so that it recalculates the colors when the theme changes
   * in the preferences page.
   */
@@ -30,12 +28,12 @@
   --zen-dialog-background: var(--zen-colors-tertiary);
   --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, #f7f7f7 92%);
 
-  --zen-secondary-btn-color: var(--zen-colors-primary-foreground);   
+  --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
 
   --in-content-primary-button-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 35%, black 65%),
     color-mix(in srgb, var(--zen-primary-color) 35%, white 65%)
-  ) !important;          
+  ) !important;
   --in-content-primary-button-background-hover: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 40%, black 60%),
     color-mix(in srgb, var(--zen-primary-color) 40%, white 60%)
@@ -58,7 +56,7 @@
     color-mix(in srgb, var(--zen-primary-color) 15%, transparent 85%)
   ) !important;
   --button-bgcolor: var(--in-content-button-background) !important;
-  --button-hover-bgcolor: var(--in-content-button-background-hover) !important;   
+  --button-hover-bgcolor: var(--in-content-button-background-hover) !important;
   --focus-outline-color: var(--button-bgcolor) !important;
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
 
@@ -67,13 +65,13 @@
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
   --button-primary-hover-bgcolor: var(--in-content-primary-button-background-hover) !important;
   --button-primary-active-bgcolor: var(--in-content-primary-button-background-active) !important;
-  --button-primary-color: var(--in-content-primary-button-text-color) !important;                    
+  --button-primary-color: var(--in-content-primary-button-text-color) !important;
 
   --in-content-page-background: var(--zen-colors-tertiary) !important;
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
 
   --zen-button-border-radius: 7px;
-  --zen-button-padding: .6rem 1.2rem;
+  --zen-button-padding: 0.6rem 1.2rem;
 
   /* Other colors */
   --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
@@ -120,13 +118,13 @@
     --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 20%, var(--zen-dark-color-mix-base) 80%);
     --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 30%, var(--zen-dark-color-mix-base) 70%);
     --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-dark-color-mix-base) 99%);
-  
+
     --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, var(--zen-dark-color-mix-base) 10%);
     --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
-  
+
     --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-dark-color-mix-base) 99%);
     --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 20%, rgb(43, 43, 43) 80%);
-  
+
     --zen-dialog-background: var(--zen-dark-color-mix-base);
     --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%);
 
@@ -134,7 +132,7 @@
   }
 }
 
-@media not (-moz-bool-pref: "zen.theme.toolbar-themed") {
+@media not (-moz-bool-pref: 'zen.theme.toolbar-themed') {
   :root {
     --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;
     --zen-themed-toolbar-bg: var(--toolbar-bgcolor);

@@ -34,7 +34,7 @@ body:
       label: Reproducible?
       description: Is this issue reproducible on Firefox?
       options:
-        - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.      
+        - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.
   - type: input
     id: version
     attributes:

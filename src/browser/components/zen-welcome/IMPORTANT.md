@@ -1,4 +1,3 @@
-
 # Important notes!
 
 Inside browser.js, we hardcoded-ly detect the path name for `zen-welcome` so we can add special attributes to the welcom page. If this path name changes, the welcome page will not work properly.

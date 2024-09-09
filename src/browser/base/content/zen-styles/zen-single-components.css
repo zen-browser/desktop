@@ -22,15 +22,15 @@
 }
 
 #zen-watermark image {
-  opacity: .2;
+  opacity: 0.2;
   filter: grayscale(100%);
   width: 200px;
   height: 200px;
 }
 
-#zen-watermark[hidden="true"] {
+#zen-watermark[hidden='true'] {
   transition: 0.6s;
-  transition-delay: .5s;
+  transition-delay: 0.5s;
   opacity: 0;
   pointer-events: none;
 }
@@ -43,7 +43,7 @@
   text-overflow: ellipsis;
 }
 
-@media not (-moz-bool-pref: "zen.watermark.enabled") {
+@media not (-moz-bool-pref: 'zen.watermark.enabled') {
   #zen-watermark {
     display: none;
   }

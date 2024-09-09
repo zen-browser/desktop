@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
- #zen-sidebar-panels-wrapper {
+#zen-sidebar-panels-wrapper {
   /*min-height: 500px;*/
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@
 }
 
 #zen-sidebar-add-panel-button:not(:hover) image,
-.zen-sidebar-panel-button:not([selected="true"], #zen-sidebar-add-panel-button) image {
+.zen-sidebar-panel-button:not([selected='true'], #zen-sidebar-add-panel-button) image {
   background: transparent !important;
 }
 
@@ -45,7 +45,7 @@
   background: color-mix(in srgb, var(--toolbarbutton-hover-background) 12%, transparent);
 }
 
-.zen-sidebar-panel-button[selected="true"] image {
+.zen-sidebar-panel-button[selected='true'] image {
   border-color: var(--zen-primary-color);
 }
 
@@ -61,13 +61,13 @@
   transition: width 0.3s ease-in-out;
 }
 
-#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[hidden="true"]) {
+#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[hidden='true']) {
   max-width: 0;
   padding: 0;
   margin: 0;
 }
 
-#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned="true"]) {
+#zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
   margin: var(--zen-appcontent-separator-from-window);
   position: absolute;
   z-index: 1;
@@ -92,7 +92,7 @@
   height: calc(100% - 20px);
 }
 
-#zen-sidebar-web-panel:not([pinned="true"]) {
+#zen-sidebar-web-panel:not([pinned='true']) {
   /* We need to always override the height */
   height: unset !important;
 }
@@ -119,37 +119,37 @@
   cursor: ns-resize;
 }
 
-#zen-sidebar-web-panel[hidden="true"] #zen-sidebar-web-panel-hsplitter,
-#zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-splitter,
-#zen-sidebar-web-panel-wrapper[hidden="true"] + #zen-sidebar-web-panel-hsplitter,
-#zen-sidebar-web-panel:not([pinned="true"]) #zen-sidebar-web-panel-hsplitter {
+#zen-sidebar-web-panel[hidden='true'] #zen-sidebar-web-panel-hsplitter,
+#zen-sidebar-web-panel-wrapper[hidden='true'] + #zen-sidebar-web-panel-splitter,
+#zen-sidebar-web-panel-wrapper[hidden='true'] + #zen-sidebar-web-panel-hsplitter,
+#zen-sidebar-web-panel:not([pinned='true']) #zen-sidebar-web-panel-hsplitter {
   display: none;
   margin: 0;
 }
 
-#zen-sidebar-web-panel:not([pinned="true"]) {
+#zen-sidebar-web-panel:not([pinned='true']) {
   animation: zen-sidebar-panel-animation 0.3s ease-in-out forwards;
 }
 
-#main-window[customizing="true"] #zen-sidebar-web-panel-wrapper {
+#main-window[customizing='true'] #zen-sidebar-web-panel-wrapper {
   display: none !important;
 }
 
-#zen-sidebar-web-panel:not([hidden="true"]) {
-  display: flex; 
+#zen-sidebar-web-panel:not([hidden='true']) {
+  display: flex;
 }
 
 #zen-sidebar-web-panel-wrapper {
   margin: 0 var(--zen-element-separation) var(--zen-element-separation) 1px;
 }
 
-#zen-sidebar-web-panel[pinned="true"] {
+#zen-sidebar-web-panel[pinned='true'] {
   position: absolute;
   z-index: 1;
   animation: zen-sidebar-panel-animation-2 0.2s ease-in-out forwards;
 }
 
-#zen-sidebar-web-panel[hidden="true"][pinned="true"] {
+#zen-sidebar-web-panel[hidden='true'][pinned='true'] {
   display: flex;
   pointer-events: none;
   animation: zen-sidebar-panel-animation-reverse 0.2s ease-in-out forwards;
@@ -199,7 +199,7 @@
   width: 70%;
 }
 
-#zen-sidebar-introduction-panel[hidden="true"] {
+#zen-sidebar-introduction-panel[hidden='true'] {
   display: none;
 }
 

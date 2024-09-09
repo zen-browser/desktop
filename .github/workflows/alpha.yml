@@ -15,7 +15,6 @@ on:
         type: 'boolean'
 
 jobs:
-
   build-data:
     permissions:
       contents: write
@@ -34,7 +33,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
-          
+
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -97,7 +96,7 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
-        
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -115,7 +114,7 @@ jobs:
         run: |
           echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
           pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
-  
+
       - name: Check version
         run: |
           echo "$(pwd)"
@@ -127,7 +126,6 @@ jobs:
             echo ">>> Version mismatch"
             exit 1
           fi
-
 
   source:
     permissions:
@@ -225,7 +223,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data] 
+    needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
@@ -344,7 +342,7 @@ jobs:
 
           cp -a ../windows_update_manifest_generic/.  updates/
           cp -a ../windows_update_manifest_specific/.  updates/
-          
+
           cp -a ../macos_update_manifest_aarch64/.  updates/
           cp -a ../macos_update_manifest_x64/.  updates/
 
@@ -430,7 +428,6 @@ jobs:
           # output the version to the file
           echo -n ${{ needs.build-data.outputs.version }} > ./flatpak/version
 
-
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: '[release]: Update flatpak manifest'
@@ -512,13 +509,13 @@ jobs:
           title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
           body: |
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. 
-            
+
             @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
           git-token: ${{ secrets.DEPLOY_KEY }}
           delete-branch: true
-          
+
   release-homebrew:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
@@ -531,14 +528,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.DEPLOY_KEY }}
-    
+
       - name: Setup git
         run: |
           git pull
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Download macOS ARM build 
+      - name: Download macOS ARM build
         uses: actions/download-artifact@v4
         with:
           name: zen.macos-aarch64.dmg
@@ -550,9 +547,9 @@ jobs:
 
       - name: Update zen-browser Cask
         run: sh .github/workflows/src/update-homebrew.sh ${{ needs.build-data.outputs.version }}
- 
-      - name: Clean up 
-        run: | 
+
+      - name: Clean up
+        run: |
           rm -rf zen.macos-x64.dmg
           rm -rf zen.macos-aarch64.dmg
 
@@ -562,4 +559,3 @@ jobs:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }} for homebrew!
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
-

@@ -1,7 +1,7 @@
 name: Close inactive issues
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
         with:
           days-before-issue-stale: 30
           days-before-issue-close: 14
-          stale-issue-label: "stale"
+          stale-issue-label: 'stale'
           stale-issue-message: |
             This issue is stale because it has been open for 30 days with no activity.
 

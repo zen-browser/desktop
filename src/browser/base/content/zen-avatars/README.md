@@ -1,4 +1,3 @@
-
 # Zen's Avatars
 
 All avatars are fetched from [boring avatars](https://boringavatars.com/). Thanks a lot! <3

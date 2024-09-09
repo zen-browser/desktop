@@ -2,7 +2,7 @@ name: Windows Alpha Build
 on:
   workflow_call:
     inputs:
-      generate-gpo: 
+      generate-gpo:
         required: true
         type: boolean
         default: false
@@ -59,7 +59,7 @@ jobs:
       - name: Download
         run: pnpm surfer download
 
-      - name: "win-cross Cache"
+      - name: 'win-cross Cache'
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-win-cross
@@ -81,16 +81,16 @@ jobs:
           set -x
           mkdir -p ~/win-cross
           cd engine/
-  
+
           echo Setup wine
           aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
           tar --zstd -xvf wine.tar.zst -C ~/win-cross
           rm wine.tar.zst
-  
+
           echo Setup Visual Studio
           sudo apt install -y msitools python3-pip
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
-          
+
       - name: Bootstrap
         run: |
           set -x
@@ -113,14 +113,14 @@ jobs:
 
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2022 || true
-  
-      - name: setup Rust 
+
+      - name: setup Rust
         run: |
           cd engine/
           # Install a rust version compatible with 17
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.79
           source $HOME/.cargo/env
-          
+
           rustup target add x86_64-pc-windows-msvc
           cargo install cargo-download
           cargo download -x windows=0.52.0
@@ -137,7 +137,7 @@ jobs:
 
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
-      
+
       - uses: actions/download-artifact@v4
         name: Download artifact if use profdata
         if: ${{ !inputs.generate-gpo }}
@@ -210,7 +210,7 @@ jobs:
         with:
           name: ${{ matrix.generic == true && 'generic' || 'specific' }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
- 
+
       - name: Upload mar
         uses: actions/upload-artifact@v4
         if: ${{ !inputs.generate-gpo }}

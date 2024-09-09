@@ -1,8 +1,7 @@
-
-panel[type="arrow"][animate][animate="open"] {
+panel[type='arrow'][animate][animate='open'] {
   animation: zen-jello-animation 0.2s ease-in-out;
 }
 
-panel[type="arrow"][animate][animate="cancel"] {
+panel[type='arrow'][animate][animate='cancel'] {
   animation: zen-jello-out-animation 0.2s ease-in-out;
 }

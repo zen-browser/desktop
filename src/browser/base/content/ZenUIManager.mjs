@@ -1,4 +1,3 @@
-
 var gZenUIManager = {
   openAndChangeToTab(url, options) {
     if (window.ownerGlobal.parent) {
@@ -12,11 +11,11 @@ var gZenUIManager = {
   },
 
   generateUuidv4() {
-    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-      (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
+      (+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
     );
   },
-  
+
   toogleBookmarksSidebar() {
     const button = document.getElementById('zen-bookmark-button');
     SidebarController.toggle('viewBookmarksSidebar', button);
@@ -24,7 +23,7 @@ var gZenUIManager = {
 
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
+  },
 };
 
 var gZenVerticalTabsManager = {
@@ -55,7 +54,7 @@ var gZenVerticalTabsManager = {
                 ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
                 data-lazy-l10n-id="zen-toolbar-context-tabs-right"/>
     `);
-    fragment.getElementById("zen-toolbar-context-tabs-right").addEventListener('click', () => {
+    fragment.getElementById('zen-toolbar-context-tabs-right').addEventListener('click', () => {
       let rightSide = Services.prefs.getBoolPref(kConfigKey);
       Services.prefs.setBoolPref(kConfigKey, !rightSide);
     });
@@ -156,21 +155,18 @@ var gZenCompactModeManager = {
     if (this._flashSidebarTimeout) {
       clearTimeout(this._flashSidebarTimeout);
     } else {
-      window.requestAnimationFrame(() =>
-          sidebar.setAttribute('flash-popup', '')
-      );
+      window.requestAnimationFrame(() => sidebar.setAttribute('flash-popup', ''));
     }
-    this._flashSidebarTimeout =
-        setTimeout(() => {
-          window.requestAnimationFrame(() => {
-            sidebar.removeAttribute('flash-popup')
-            this._flashSidebarTimeout = null;
-          });
-        }, this.flashSidebarDuration);
+    this._flashSidebarTimeout = setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        sidebar.removeAttribute('flash-popup');
+        this._flashSidebarTimeout = null;
+      });
+    }, this.flashSidebarDuration);
   },
 
   toggleToolbar() {
     let toolbar = document.getElementById('zen-appcontent-navbar-container');
     toolbar.toggleAttribute('zen-user-show');
-  }
+  },
 };

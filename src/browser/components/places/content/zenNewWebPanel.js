@@ -3,11 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 var gZenNewWebPanel = {
-  init: function() {
-    document.addEventListener("dialogaccept", this.handleDialogAccept.bind(this));
+  init: function () {
+    document.addEventListener('dialogaccept', this.handleDialogAccept.bind(this));
   },
 
-  handleURLChange: async function(aURL) {
+  handleURLChange: async function (aURL) {
     try {
       let url = new URL(aURL.value);
     } catch (_) {
@@ -31,10 +31,10 @@ var gZenNewWebPanel = {
     return url;
   },
 
-  handleDialogAccept: async function(aEvent) {
+  handleDialogAccept: async function (aEvent) {
     document.commandDispatcher.focusedElement?.blur();
-    let url = document.getElementById("zenNWP_url");
-    let ua = document.getElementById("zenNWP_userAgent");
+    let url = document.getElementById('zenNWP_url');
+    let ua = document.getElementById('zenNWP_userAgent');
     if (!url || !ua) {
       return;
     }
@@ -51,11 +51,11 @@ var gZenNewWebPanel = {
       url: urlValue,
       ua: ua.value,
     };
-    let currentData = JSON.parse(Services.prefs.getStringPref("zen.sidebar.data"));
-    let newName = "p" + new Date().getTime();
+    let currentData = JSON.parse(Services.prefs.getStringPref('zen.sidebar.data'));
+    let newName = 'p' + new Date().getTime();
     currentData.index.push(newName);
     currentData.data[newName] = newSite;
-    Services.prefs.setStringPref("zen.sidebar.data", JSON.stringify(currentData));
+    Services.prefs.setStringPref('zen.sidebar.data', JSON.stringify(currentData));
   },
 };
 

@@ -36,7 +36,7 @@
 
     &::before {
       width: 70%;
-      height: 1.2px;
+      height: 1px;
       background: var(--zen-colors-border);
       content: '';
       position: absolute;

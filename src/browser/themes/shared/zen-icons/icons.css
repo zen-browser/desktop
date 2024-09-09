@@ -292,7 +292,7 @@
 
 /* identity icons */
 #identity-icon {
-  list-style-image: url('info.svg') !important;
+  list-style-image: url('info.svg');
 }
 
 #identity-box[pageproxystate='valid'].chromeUI #identity-icon {

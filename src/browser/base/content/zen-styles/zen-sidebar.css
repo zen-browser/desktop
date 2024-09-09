@@ -192,7 +192,7 @@
   align-items: center;
   justify-content: end;
   min-height: fit-content;
-  --zen-sidebar-action-content-separator: calc(10px + var(--zen-tabbrowser-padding));
+  --zen-sidebar-action-content-separator: calc(5px + var(--zen-tabbrowser-padding));
   padding-top: var(--zen-sidebar-action-content-separator);
   margin-top: var(--zen-sidebar-action-content-separator);
   color-scheme: inherit !important;

@@ -5,3 +5,16 @@
 :root[inDOMFullscreen='true'] #zen-appcontent-navbar-container {
   display: none;
 }
+
+/* Fix broken Lightweight Themes: https://addons.mozilla.org/en-US/firefox/themes/ */
+:root[lwtheme] & {
+  background-image: var(--lwt-additional-images);
+  background-repeat: var(--lwt-background-tiling);
+  background-position: var(--lwt-background-alignment);
+  background-color: var(--lwt-accent-color);
+  color: inherit;
+
+  &:-moz-window-inactive {
+    background-color: var(--lwt-accent-color-inactive, var(--lwt-accent-color));
+  }
+}

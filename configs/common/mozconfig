@@ -90,12 +90,11 @@ ac_add_options --enable-jxl
 ac_add_options --enable-av1
 ac_add_options --enable-eme=widevine
 
-ac_add_options --allow-addon-sideload
 ac_add_options --with-unsigned-addon-scopes=app,system
 
-mk_add_options MOZ_DATA_REPORTING=0
-mk_add_options MOZ_SERVICES_HEALTHREPORT=0
-mk_add_options MOZ_TELEMETRY_REPORTING=0
+mk_add_options MOZ_DATA_REPORTING=
+mk_add_options MOZ_SERVICES_HEALTHREPORT=
+mk_add_options MOZ_TELEMETRY_REPORTING=
 
 # Allow loading unsigned extensions
 export MOZ_REQUIRE_SIGNING=

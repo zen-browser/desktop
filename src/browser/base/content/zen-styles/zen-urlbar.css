@@ -38,8 +38,7 @@
   outline-color: none !important;
 }
 
-#urlbar #tracking-protection-icon-container,
-#urlbar:not([breakout-extend='true']) #identity-box:is(:not(.chromeUI), [pageproxystate='invalid']) #identity-icon-box {
+#urlbar #tracking-protection-icon-container {
   border-radius: var(--toolbarbutton-border-radius);
 }
 
@@ -60,7 +59,7 @@
 
 #identity-icon-box,
 #identity-permission-box {
-  background: color-mix(in srgb, var(--zen-colors-secondary) 40%, transparent 60%) !important;
+  background: color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent 50%) !important;
   margin: 0 8px 0 0 !important;
 }
 

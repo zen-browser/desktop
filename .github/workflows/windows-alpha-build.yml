@@ -211,30 +211,14 @@ jobs:
           name: ${{ matrix.generic == true && 'generic' || 'specific' }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
 
-      - name: Upload mar
-        uses: actions/upload-artifact@v4
+      - name: Upload dist folder to github
         if: ${{ !inputs.generate-gpo }}
-        with:
-          name: windows${{ matrix.generic == true && '-generic' || '' }}.mar
-          path: ./windows${{ matrix.generic == true && '-generic' || '' }}.mar
-
-      - name: Upload installer
-        uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo }}
-        with:
-          name: zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
-          path: ./zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
-
-      - name: Upload installer stub
-        uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo && false }}
-        with:
-          name: zen.installer.pretty.exe
-          path: ./dist/zen.installer.pretty.exe
-
-      - name: Upload update manifests
-        uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo }}
-        with:
-          name: windows_update_manifest_${{ matrix.generic == true && 'generic' || 'specific' }}
-          path: ./dist/update
+        run: |
+          set -x
+          git pull
+          mkdir -p .github/objects
+          rm -rf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz || true
+          tar -czf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz .tar.gz engine/obj-x86_64-pc-windows-msvc
+          git add .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz
+          git commit -m "Add windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz"
+          git push

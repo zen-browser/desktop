@@ -17,27 +17,39 @@
 
       <html:div id="zen-theme-builder-wrapper"></html:div>
 
-      <checkbox id="zenLooksAndFeelUseThemedToolbar"
+      <box class="indent">
+            <checkbox id="zenLooksAndFeelUseThemedToolbar"
             data-l10n-id="zen-look-and-feel-themed-toolbar"
             preference="zen.theme.toolbar-themed"/>
+      </box>
 
-      <label><html:h2 data-l10n-id="zen-look-and-feel-compact-view-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-compact-view-description" />
-
-      <checkbox id="zenLooksAndFeelShowCompactView"
-            data-l10n-id="zen-look-and-feel-compact-view-enabled"
-            preference="zen.view.compact"/>
-      <vbox class="indent">
-            <checkbox id="zenLooksAndFeelShowCompactViewToolbar"
-                  data-l10n-id="zen-look-and-feel-compact-view-top-toolbar"
-                  preference="zen.view.compact.hide-toolbar"/>
-            <checkbox id="zenLooksAndFeelEnableToolbarFlashPopup"
-                      data-l10n-id="zen-look-and-feel-compact-toolbar-flash-popup"
-                      preference="zen.view.compact.toolbar-flash-popup"/>
-      </vbox>
-      <checkbox id="zenLooksAndFeelShowLegacyToolbar"
-            data-l10n-id="zen-look-and-feel-legacy-toolbar"
-            preference="zen.themes.tabs.legacy-location"/>
+      <html:div id="ZenDarkThemeStyles">
+            <html:h2 data-l10n-id="zen-dark-theme-styles-header"/>
+            <description class="description-deemphasized" data-l10n-id="zen-dark-theme-styles-description" />
+            <form xmlns="http://www.w3.org/1999/xhtml" autocomplete="off" id="zen-dark-theme-styles-form">
+                  <label class="web-appearance-choice">
+                        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
+                        <div class="web-appearance-choice-footer">
+                        <input type="radio" name="web-appearance" value="amoled" data-l10n-id="preferences-web-appearance-choice-input-auto"
+                        /><span data-l10n-id="zen-dark-theme-styles-amoled" />
+                  </div>
+                  </label>
+                        <label class="web-appearance-choice">
+                        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
+                        <div class="web-appearance-choice-footer">
+                        <input type="radio" name="web-appearance" value="default" data-l10n-id="preferences-web-appearance-choice-input-light"
+                        /><span data-l10n-id="zen-dark-theme-styles-default" />
+                  </div>
+                  </label>
+                        <label class="web-appearance-choice">
+                        <div class="web-appearance-choice-image-container"><img role="presentation" alt="" width="54" height="42" /></div>
+                        <div class="web-appearance-choice-footer">
+                        <input type="radio" name="web-appearance" value="colorful" data-l10n-id="preferences-web-appearance-choice-input-dark"
+                        /><span data-l10n-id="zen-dark-theme-styles-colorful" />
+                  </div>
+                  </label>
+            </form>
+      </html:div>
 </groupbox>
 
 <hbox id="zenThemeCategory"
@@ -57,6 +69,24 @@
 
       <label><html:h2 data-l10n-id="zen-look-and-feel-urlbar-header"/></label>
       <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-urlbar-description" />
+
+      <label><html:h2 data-l10n-id="zen-look-and-feel-compact-view-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-compact-view-description" />
+
+      <checkbox id="zenLooksAndFeelShowCompactView"
+            data-l10n-id="zen-look-and-feel-compact-view-enabled"
+            preference="zen.view.compact"/>
+      <vbox class="indent">
+            <checkbox id="zenLooksAndFeelShowCompactViewToolbar"
+                  data-l10n-id="zen-look-and-feel-compact-view-top-toolbar"
+                  preference="zen.view.compact.hide-toolbar"/>
+            <checkbox id="zenLooksAndFeelEnableToolbarFlashPopup"
+                      data-l10n-id="zen-look-and-feel-compact-toolbar-flash-popup"
+                      preference="zen.view.compact.toolbar-flash-popup"/>
+      </vbox>
+      <checkbox id="zenLooksAndFeelShowLegacyToolbar"
+            data-l10n-id="zen-look-and-feel-legacy-toolbar"
+            preference="zen.themes.tabs.legacy-location"/>
 </groupbox>
 
 <hbox id="zenSidePanelsCategory"

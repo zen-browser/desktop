@@ -1,12 +1,12 @@
 /* URL and tool bars */
 
 #urlbar {
-  --toolbarbutton-border-radius: 6px;
+  --toolbarbutton-border-radius: 10px;
   --urlbarView-separator-color: var(--zen-colors-border);
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border: 1px solid var(--zen-colors-border);
-  border-radius: 999px;
+  border-radius: var(--toolbarbutton-border-radius);
   overflow: hidden;
   padding: 1px;
 }
@@ -38,10 +38,12 @@
   outline-color: none !important;
 }
 
-#urlbar .urlbar-page-action,
-#urlbar #tracking-protection-icon-container,
-#urlbar:not([breakout-extend='true']) #identity-box:is(:not(.chromeUI), [pageproxystate='invalid']) #identity-icon-box {
-  border-radius: 999px;
+#urlbar #tracking-protection-icon-container {
+  border-radius: var(--toolbarbutton-border-radius);
+}
+
+#urlbar .urlbar-page-action {
+  border-radius: calc(var(--toolbarbutton-border-radius) / 1.5);
 }
 
 #urlbar[breakout-extend='true'] .urlbar-page-action,
@@ -57,7 +59,7 @@
 
 #identity-icon-box,
 #identity-permission-box {
-  background: var(--zen-colors-secondary) !important;
+  background: color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent 50%) !important;
   margin: 0 8px 0 0 !important;
 }
 
@@ -76,10 +78,6 @@
 
 #identity-box.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
   margin-right: 0 !important;
-}
-
-#urlbar:not([breakout-extend='true']) #identity-box.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
-  border-radius: 20px 10px 10px 20px !important;
 }
 
 #urlbar:not([extend='true']) #identity-box #identity-icon-box {
@@ -219,6 +217,56 @@ button.popup-notification-dropmarker {
 
     #urlbar-zoom-button {
       display: none;
+    }
+  }
+}
+
+/* Thanks to https://github.com/JLBlk!
+ * Checkout https://github.com/JLBlk/Zen-Themes/blob/main/SuperUrlBar/SuperUrlBar.css
+ */
+
+#notification-popup-box {
+  border-radius: 6px !important;
+}
+      
+/* Border radius on hover */
+#urlbar .urlbar-page-action, #urlbar #tracking-protection-icon-container, #urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
+  border-radius: 6px !important;;
+}
+      
+/* Border radius of boxes on the left */
+#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])):not([pageproxystate="invalid"]) #identity-icon-box {
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Extensions or similar */
+#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
+  border-radius: 6px 6px 6px 6px !important;
+}
+
+
+/* Notification Stack */
+
+.notificationbox-stack {
+
+  &[notificationside="top"] {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: fit-content;
+    max-width: 30rem !important;
+
+    & notification-message {
+      background: var(--zen-colors-tertiary);
+      border-left: 1px solid var(--arrowpanel-border-color);
+      border-top-left-radius: var(--zen-border-radius);
+
+      &::before {
+        display: none;
+      }
     }
   }
 }

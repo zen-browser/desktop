@@ -132,6 +132,36 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  @media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
+    :root {
+      --zen-dark-color-mix-base: lch(2.467% 0 272 / 1);
+      --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 4%, rgb(0, 0, 0) 96%);
+    }
+  }
+
+  @media (-moz-bool-pref: 'zen.theme.color-prefs.colorful') {
+    :root {
+      --zen-in-content-dialog-background: rgb(28, 28, 32);
+
+      --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
+      --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, black 60%);
+      --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 15%, black 85%);
+    
+      --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, black 10%);
+      --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
+    
+      --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, black 80%);
+      --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 80%, black 20%);
+    
+      --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
+      --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, rgb(15, 15, 15) 92%);
+  
+      --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, black 70%);
+    }
+  }
+}
+
 @media not (-moz-bool-pref: 'zen.theme.toolbar-themed') {
   :root {
     --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;

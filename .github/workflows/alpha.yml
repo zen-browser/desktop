@@ -326,6 +326,11 @@ jobs:
       - name: List
         run: find .
 
+      - name: Unpack windows build
+        run: |
+          tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C windows-x64-signed-generic
+          tar -xvf .github/workflows/object/windows-x64-signed-specific.tar.gz -C windows-x64-signed-specific
+
       - name: Clone updates repo
         uses: actions/checkout@v4
         with:
@@ -340,8 +345,8 @@ jobs:
           cp -a ../linux_update_manifest_generic/.  updates/
           cp -a ../linux_update_manifest_specific/.  updates/
 
-          cp -a ../windows_update_manifest_generic/.  updates/
-          cp -a ../windows_update_manifest_specific/.  updates/
+          cp -a ../windows-x64-signed-generic/update_manifest/.  updates/
+          cp -a ../windows-x64-signed-specific/update_manifest/.  updates/
 
           cp -a ../macos_update_manifest_aarch64/.  updates/
           cp -a ../macos_update_manifest_x64/.  updates/
@@ -372,8 +377,8 @@ jobs:
             zen.win-specific.zip
             linux.mar
             linux-generic.mar
-            windows.mar
-            windows-generic.mar
+            windows-x64-signed-generic/windows-generic.mar
+            windows-x64-signed-specific/windows.mar
             macos-x64.mar
             macos-aarch64.mar
             zen.installer.exe

@@ -216,6 +216,8 @@ var gZenMarketplaceManager = {
 
 var gZenLooksAndFeel = {
   init() {
+    if (this.__hasInitialized) return;
+    this.__hasInitialized = true;
     this._initializeColorPicker(this._getInitialAccentColor());
     window.zenPageAccentColorChanged = this._handleAccentColorChange.bind(this);
     this._initializeTabbarExpandForm();
@@ -223,9 +225,64 @@ var gZenLooksAndFeel = {
     gZenMarketplaceManager.init();
     var onLegacyToolbarChange = this.onLegacyToolbarChange.bind(this);
     Services.prefs.addObserver('zen.themes.tabs.legacy-location', onLegacyToolbarChange);
+    var onPreferColorSchemeChange = this.onPreferColorSchemeChange.bind(this);
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(onPreferColorSchemeChange);
+    this.onPreferColorSchemeChange();
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.themes.tabs.legacy-location', onLegacyToolbarChange);
+      window.matchMedia('(prefers-color-scheme: dark)').removeListener(onPreferColorSchemeChange);
     });
+    setTimeout(() => {
+      const group = document.getElementById('zenLooksAndFeelGroup');
+      const webGroup = document.getElementById('webAppearanceGroup');
+      webGroup.style.display = 'none';
+      // Iterate reverse to prepend the elements in the correct order.
+      for (let child of [...webGroup.children].reverse()) {
+        group.prepend(child);
+      }
+    }, 500);
+    this.setDarkThemeListener();
+  },
+
+  onPreferColorSchemeChange(event) {
+    const darkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let elem = document.getElementById("ZenDarkThemeStyles");
+    if (darkTheme) {
+      elem.removeAttribute('hidden');
+    } else {
+      elem.setAttribute('hidden', 'true');
+    }
+  },
+
+  setDarkThemeListener() {
+    this.chooser = document.getElementById("zen-dark-theme-styles-form");
+    this.radios = [...this.chooser.querySelectorAll("input")];
+    for (let radio of this.radios) {
+      if (radio.value === "amoled" && Services.prefs.getBoolPref("zen.theme.color-prefs.amoled")) {
+        radio.checked = true;
+      } else if (radio.value === "colorful" && Services.prefs.getBoolPref("zen.theme.color-prefs.colorful")) {
+        radio.checked = true;
+      } else if (radio.value === "default" && !Services.prefs.getBoolPref("zen.theme.color-prefs.amoled") && !Services.prefs.getBoolPref("zen.theme.color-prefs.colorful")) {
+        radio.checked = true;
+      }
+      radio.addEventListener("change", e => {
+        let value = e.target.value;
+        switch (value) {
+          case "amoled":
+            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", true);
+            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", false);
+            break;
+          case "colorful":
+            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", false);
+            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", true);
+            break;
+          default:
+            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", false);
+            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", false);
+            break;
+        }
+      });
+    }
   },
 
   async onLegacyToolbarChange(event) {

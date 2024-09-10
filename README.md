@@ -51,12 +51,7 @@ You can also install Zen using Homebrew:
 brew install --cask zen-browser
 ```
 
-To upgrade the browser to a newer version, you can either use the embedded update functionality in `About Zen` or use the following commands:
-
-```
-brew update
-brew upgrade --greedy zen-browser
-```
+To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
 
 # Core Components
 

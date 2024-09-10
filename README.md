@@ -9,9 +9,9 @@ Zen Browser
 
 Experience tranquillity while browsing the web without people tracking you!
 
-- [Website](https://www.zen-browser.app)
-- [Download](https://www.zen-browser.app/download)
-- [Release Notes](https://www.zen-browser.app/release-notes/latest)
+- [Website](https://zen-browser.app)
+- [Download](https://zen-browser.app/download)
+- [Release Notes](https://zen-browser.app/release-notes/latest)
 
 [![Downloads](https://img.shields.io/github/downloads/zen-browser/desktop/total.svg)](https://github.com/zen-browser/desktop/releases)
 [![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
@@ -26,7 +26,7 @@ Experience tranquillity while browsing the web without people tracking you!
 
 Zen is currently built using firefox version `130.0`!
 
-- Check out the latest [release notes](https://www.zen-browser.app/release-notes)!
+- Check out the latest [release notes](https://zen-browser.app/release-notes)!
 
 # Performance
 
@@ -36,14 +36,18 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 
 # Installation
 
-## MacOS
+## Supported Operating Systems
 
-### Homebrew (recommended)
+Zen is available for Linux, macOS, and Windows. You can download the latest version from the official website at [zen-browser.app](https://zen-browser.app/download), or from the [GitHub Releases](https://github.com/zen-browser/desktop/releases) page.
 
-You can install the Zen Browser using Homebrew:
+### macOS
+
+- Requires macOS 10.15 or later
+- Available for ARM and Intel architectures
+
+You can also install Zen using Homebrew:
 
 ```
-brew tap zen-browser/browser https://github.com/zen-browser/desktop.git
 brew install --cask zen-browser
 ```
 
@@ -53,10 +57,6 @@ To upgrade the browser to a newer version, you can either use the embedded updat
 brew update
 brew upgrade --greedy zen-browser
 ```
-
-### Manual installation
-
-As there are issues with the signing process of the `.app` file, we recommend following this [guide](https://github.com/zen-browser/desktop/issues/53).
 
 # Core Components
 

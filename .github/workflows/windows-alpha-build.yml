@@ -212,6 +212,7 @@ jobs:
           path: ./zen.win64-pgo-stage-1.zip
 
       - name: Upload dist folder to github
+        if: ${{ !inputs.generate-gpo }}
         run: |
           set -x
           git pull

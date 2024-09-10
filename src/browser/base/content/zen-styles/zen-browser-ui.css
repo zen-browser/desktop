@@ -37,26 +37,3 @@
   display: flex;
   flex-direction: row;
 }
-
-/* Notification Stack */
-
-.notificationbox-stack {
-
-  &[notificationside="top"] {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: fit-content;
-    max-width: 30rem !important;
-
-    & notification-message {
-      background: var(--zen-colors-tertiary);
-      border-left: 1px solid var(--arrowpanel-border-color);
-      border-top-left-radius: var(--zen-border-radius);
-
-      &::before {
-        display: none;
-      }
-    }
-  }
-}

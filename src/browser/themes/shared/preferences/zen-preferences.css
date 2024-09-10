@@ -5,7 +5,7 @@
  */
 
 :root {
-  --zen-settings-secondary-background: light-dark(#f2f4f4, #171717);
+  --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%));
 }
 
 .main-content {
@@ -139,6 +139,18 @@ groupbox h2 {
 }
 
 /* Look and feel */
+
+#webAppearanceSettings,
+#zen-theme-builder-wrapper + box {
+  margin-bottom: 15px;
+}
+
+#zen-dark-theme-styles-form {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-large);
+  margin-top: 5px;
+}
 
 #zen-expand-tabbar-strat {
   display: flex;

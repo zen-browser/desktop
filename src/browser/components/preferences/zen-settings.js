@@ -704,7 +704,19 @@ var gZenCKSSettings = {
 
     input.value = modifiers.toUserString() + shortcut;
 
-    if (!shortcut || shortcut === '') {
+    if (!['Control', 'Alt', 'Meta', 'Shift'].includes(event.key)) {
+      shortcut.key = event.key;
+    }
+
+    event.preventDefault();
+    gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
+
+    input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
+    input.classList.remove('zenCKSOption-input-not-set');
+
+    if (gZenKeyboardShortcuts.isValidShortcut(shortcut)) {
+      input.classList.remove('zenCKSOption-input-invalid');
+    } else {
       input.classList.add('zenCKSOption-input-invalid');
       return;
     }

@@ -334,11 +334,29 @@ groupbox h2 {
 }
 
 .zenThemeMarketplaceItem {
-  width: 100%;
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 5px;
+  padding: var(--space-medium);
+  position: relative;
+  overflow-x: hidden;
+}
 
-  &:not(:first-of-type),
-  .zenThemeMarketplaceItemPreferences {
-    margin-top: 15px;
+.zenThemeMarketplaceItemConfigureButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-image: url('chrome://global/skin/icons/settings.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 
@@ -352,6 +370,31 @@ groupbox h2 {
 
 .zenThemeMarketplaceItemPreferenceData > * {
   margin: 0;
+}
+
+.zenThemeMarketplaceItemContent {
+  max-width: 100%;
+}
+
+.zenThemeMarketplaceItemTitle,
+.zenThemeMarketplaceItemDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemActions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-small);
+  justify-content: space-between;
+}
+
+#zenThemeMarketplaceList {
+  display: grid;
+  gap: var(--space-medium);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 #zenThemeMarketplaceList:has(> *) {

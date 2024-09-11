@@ -157,13 +157,16 @@ var gZenMarketplaceManager = {
     this.themesList.innerHTML = '';
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
-        <hbox class="zenThemeMarketplaceItem" align="center">
+        <vbox class="zenThemeMarketplaceItem" align="center">
           <vbox class="zenThemeMarketplaceItemContent" flex="1">
             <label><h3 class="zenThemeMarketplaceItemTitle"></h3></label>
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
-          <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
-        </hbox>
+          <hbox class="zenThemeMarketplaceItemActions">
+            <button class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>
+            <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
+          </hbox>
+        </vbox>
       `);
       fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = `${theme.name} (v${theme.version || '1.0.0'})`;
       fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = theme.description;
@@ -175,12 +178,26 @@ var gZenMarketplaceManager = {
         const themeId = target.getAttribute('zen-theme-id');
         await this.removeTheme(themeId);
       });
-      this.themesList.appendChild(fragment);
+      if (theme.preferences) {
+        fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
+      }
+      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', async (event) => {
+        const target = event.target;
+        // Unhide the preferences for this theme.
+        const preferencesWrapper = target.closest('.zenThemeMarketplaceItem').querySelector('.zenThemeMarketplaceItemPreferences');
+        if (preferencesWrapper.hasAttribute('hidden')) {
+          preferencesWrapper.removeAttribute('hidden');
+        } else {
+          preferencesWrapper.setAttribute('hidden', 'true');
+        }
+      });
+
       const preferences = await this._getThemePreferences(theme);
       if (Object.keys(preferences).length > 0) {
         let preferencesWrapper = document.createXULElement('vbox');
         preferencesWrapper.classList.add('indent');
         preferencesWrapper.classList.add('zenThemeMarketplaceItemPreferences');
+        preferencesWrapper.setAttribute('hidden', 'true');
         for (let [key, value] of Object.entries(preferences)) {
           const fragment = window.MozXULElement.parseXULToFragment(`
             <hbox class="zenThemeMarketplaceItemPreference">
@@ -208,8 +225,9 @@ var gZenMarketplaceManager = {
           });
           preferencesWrapper.appendChild(fragment);
         }
-        this.themesList.appendChild(preferencesWrapper);
+        fragment.querySelector('.zenThemeMarketplaceItemContent').appendChild(preferencesWrapper);
       }
+      this.themesList.appendChild(fragment);
     }
   },
 };

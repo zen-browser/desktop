@@ -218,7 +218,7 @@ jobs:
           git pull
           mkdir -p .github/objects
           rm -rf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz || true
-          tar -czf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz .tar.gz engine/obj-x86_64-pc-windows-msvc
+          tar -czf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz engine/obj-x86_64-pc-windows-msvc
           git add .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz
           git commit -m "Add windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz"
           git push

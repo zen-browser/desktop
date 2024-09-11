@@ -141,7 +141,7 @@
 #PanelUI-zen-workspaces-list toolbarbutton,
 #PanelUI-zen-workspaces-current-info toolbarbutton {
   padding: 5px;
-  border-radius: 7px;
+  border-radius: var(--zen-button-border-radius);
 
   margin-left: 0 !important;
   margin-right: 0 !important;
@@ -156,7 +156,7 @@
   & .zen-workspace-icon {
     width: 30px;
     height: 30px;
-    border-radius: 7px;
+    border-radius: var(--zen-button-border-radius);
     margin-right: 10px;
     border: 1px solid var(--zen-colors-border);
     display: flex;
@@ -166,11 +166,21 @@
     flex-shrink: 0;
   }
 
+  &[data-usercontextid] .zen-workspace-icon {
+    border-color: color-mix(in srgb, var(--identity-tab-color) 40%, transparent 60%);
+  }
+
   & .zen-workspace-name {
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  & .zen-workspace-container {
+    font-size: 12px;
+    opacity: 0.5;
+    font-weight: normal;
   }
 
   & .zen-workspace-actions {
@@ -190,7 +200,7 @@
   margin-top: 5px;
 }
 
-#PanelUI-zen-workspaces-view vbox:nth-child(2) {
+#PanelUI-zen-workspaces-view > vbox:nth-child(2) {
   margin-top: 10px;
 }
 

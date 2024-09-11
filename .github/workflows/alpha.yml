@@ -515,3 +515,28 @@ jobs:
           base: master
           git-token: ${{ secrets.DEPLOY_KEY }}
           delete-branch: true
+
+  release-homebrew:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Homebrew release
+    needs: [release, mac, build-data]
+    runs-on: macos-latest
+
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          cask: true
+          test-bot: false
+
+      - name: Setup git
+        uses: Homebrew/actions/git-user-config@master
+        with:
+          username: zen-browser-bot
+
+      - name: Bump zen-browser
+        uses: Homebrew/actions/bump-packages@master
+        with:
+          token: ${{ secrets.DEPLOY_KEY }}
+          casks: zen-browser

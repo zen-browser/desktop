@@ -48,6 +48,8 @@ pref('pdfjs.enableHighlightEditor', true);
 pref('pdfjs.enableHighlightFloatingButton', true);
 
 pref("alerts.showFavicons", true);
+
+pref("browser.tabs.loadBookmarksInTabs", true);
 pref('browser.toolbars.bookmarks.visibility', 'never');
 
 // Enable Do Not Track and GPC by default.
@@ -105,6 +107,7 @@ pref('zen.splitView.working', false);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
+pref('zen.workspaces.icons', '["🌐", "📁", "📎", "📝", "📅", "📊"]');
 
 // Zen Watermark
 pref('zen.watermark.enabled', true, sticky);

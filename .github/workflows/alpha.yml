@@ -513,7 +513,7 @@ jobs:
           commit-message: 🚀 Update to version ${{ needs.build-data.outputs.version }}
           title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
           body: |
-            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. 
+            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
 
             @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}
@@ -526,41 +526,22 @@ jobs:
     permissions: write-all
     name: Homebrew release
     needs: [release, mac, build-data]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
-      - name: Clone repo
-        uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
+          cask: true
+          test-bot: false
 
       - name: Setup git
-        run: |
-          git pull
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Download macOS ARM build
-        uses: actions/download-artifact@v4
+        uses: Homebrew/actions/git-user-config@master
         with:
-          name: zen.macos-aarch64.dmg
+          username: zen-browser-bot
 
-      - name: Download macOS x64 build
-        uses: actions/download-artifact@v4
+      - name: Bump zen-browser
+        uses: Homebrew/actions/bump-packages@master
         with:
-          name: zen.macos-x64.dmg
-
-      - name: Update zen-browser Cask
-        run: sh .github/workflows/src/update-homebrew.sh ${{ needs.build-data.outputs.version }}
-
-      - name: Clean up
-        run: |
-          rm -rf zen.macos-x64.dmg
-          rm -rf zen.macos-aarch64.dmg
-
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ github.event.inputs.update_version == 'true' }}
-        with:
-          commit_message: 🔖 Update version to ${{ steps.data.outputs.version }} for homebrew!
-          commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-bot@users.noreply.github.com
+          token: ${{ secrets.DEPLOY_KEY }}
+          casks: zen-browser

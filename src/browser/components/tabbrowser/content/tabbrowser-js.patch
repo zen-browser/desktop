@@ -1,8 +1,19 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c502278e2b188d 100644
+index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..24cf982dced9abdb412fac4abbf1428b983d16ff 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -3214,6 +3214,11 @@
+@@ -2704,6 +2704,10 @@
+         );
+       }
+ 
++      if (typeof ZenWorkspaces !== "undefined") {
++        userContextId = ZenWorkspaces.getContextIdIfNeeded(userContextId);
++      }
++
+       if (!UserInteraction.running("browser.tabs.opening", window)) {
+         UserInteraction.start("browser.tabs.opening", "initting", window);
+       }
+@@ -3248,6 +3252,11 @@
          ) {
            tabWasReused = true;
            tab = this.selectedTab;
@@ -14,7 +25,7 @@ index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c50227
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3263,6 +3268,10 @@
+@@ -3297,6 +3306,10 @@
              preferredRemoteType,
            });
  
@@ -25,7 +36,7 @@ index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c50227
            if (select) {
              tabToSelect = tab;
            }
-@@ -4150,6 +4159,7 @@
+@@ -4184,6 +4197,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||

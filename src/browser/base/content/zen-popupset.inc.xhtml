@@ -136,5 +136,15 @@
   <menuseparator/>
   <menuitem id="context_zenSetAsDefaultWorkspace" oncommand="ZenWorkspaces.setDefaultWorkspace();" data-l10n-id="zen-workspaces-panel-context-set-default"/>
   <menuitem id="context_zenEditWorkspace" oncommand="ZenWorkspaces.contextEdit(event);" data-l10n-id="zen-workspaces-panel-context-edit"/>
+  <menu id="context_zenWorkspacesOpenInContainerTab"
+    data-l10n-id="zen-workspaces-panel-context-open-in-container-tab"
+    selection-type="single"
+    node-type="link"
+    hide-if-private-browsing="true"
+    hide-if-usercontext-disabled="true">
+    <menupopup oncommand="ZenWorkspaces.contextChangeContainerTab(event);"
+          onpopupshowing="return PlacesUIUtils.createContainerTabMenu(event);" />
+  </menu>
+  <menuseparator/>
   <menuitem id="context_zenDeleteWorkspace" oncommand="ZenWorkspaces.contextDelete(event);" data-l10n-id="zen-workspaces-panel-context-delete"/>
 </menupopup>

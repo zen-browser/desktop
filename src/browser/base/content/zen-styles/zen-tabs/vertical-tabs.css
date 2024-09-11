@@ -199,7 +199,7 @@
     display: none;
   }
 
-  .tabbrowser-tab::after {
+  .tabbrowser-tab::before {
     /* Containers */
     background: var(--identity-tab-color, transparent);
     border-radius: 2px;
@@ -211,6 +211,12 @@
     left: -2px;
     content: '';
     pointer-events: none;
+  }
+
+  @media (-moz-bool-pref: 'zen.workspaces.hide-default-container-indicator') {
+    .tabbrowser-tab[zenDefaultUserContextId='true']::before {
+      display: none;
+    }
   }
 
   .tabbrowser-tab {

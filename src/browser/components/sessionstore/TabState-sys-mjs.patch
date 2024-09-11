@@ -1,12 +1,13 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 26f5671c849d9b0a126d79b07bc7d3d7870826ec..decc4c975507c9111df78dbc43434fa46d5f5e82 100644
+index 26f5671c849d9b0a126d79b07bc7d3d7870826ec..26f80d69a28f1196096e67a0e628a69b5b367727 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -98,6 +98,8 @@ var TabStateInternal = {
+@@ -98,6 +98,9 @@ var TabStateInternal = {
        tabData.muteReason = tab.muteReason;
      }
  
 +    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");
++    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
  

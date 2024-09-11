@@ -604,4 +604,9 @@ Preferences.addAll([
     type: 'bool',
     default: false,
   },
+  {
+    id: 'zen.workspaces.hide-default-container-indicator',
+    type: 'bool',
+    default: true,
+  },
 ]);

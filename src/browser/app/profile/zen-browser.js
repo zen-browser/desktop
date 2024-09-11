@@ -143,6 +143,12 @@ pref("gfx.font_rendering.cleartype_params.force_gdi_classic_for_families", "");
 #endif
 #endif
 
+// Enable private suggestions
+pref('browser.search.suggest.enabled', true);
+pref('browser.search.suggest.enabled.private', true);
+
+pref("extensions.enabledScopes", 5); // [HIDDEN PREF]
+
 // Enable GPU by default
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);

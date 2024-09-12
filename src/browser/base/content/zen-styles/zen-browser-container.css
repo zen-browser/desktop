@@ -1,13 +1,35 @@
 :root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     width: -moz-available;
-    box-shadow: 0 0 0 1px var(--zen-colors-border);
-    clip-path: inset(-5px -5px -5px round var(--zen-webview-border-radius, var(--zen-border-radius)));
     border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
     transform: translate3d(0, 0, 0);
-    overflow: hidden;
+    position: relative;
 
     /* This fixes an issue with the left border */
     margin-left: 2px;
+    --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
+
+    --uc-tweak-rounded-corners-shadow:
+      0 -.8px 0 0 var(--uc-tweak-rounded-corners-shadow-color),
+      0 0.5px 1px 1px var(--uc-tweak-rounded-corners-shadow-color),
+      0 1px 1px var(--uc-tweak-rounded-corners-shadow-color);
+
+    box-shadow: var(--uc-tweak-rounded-corners-shadow) !important;
+
+    /* Use pseudo element overlay to simulate rounded corners, similar to the
+     * tab corners, fixes bug with backdrop-filter. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      /* Draw toolbar background on the negative corner space, then draw the
+       * same shadow from the browser window on top. */
+      box-shadow:
+        var(--uc-tweak-rounded-corners-shadow, 0 0 transparent),
+        0 0 0 16px var(--zen-themed-toolbar-bg) !important;
+      clip-path: inset(0);
+      pointer-events: none;
+    }
   }
 }

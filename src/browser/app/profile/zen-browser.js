@@ -198,3 +198,6 @@ pref("widget.non-native-theme.use-theme-accent", true);
 // Expose Letterboxing https://github.com/zen-browser/desktop/issues/475
 pref("privacy.resistFingerprinting.letterboxing", false);
 pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
+
+pref("media.hardware-video-decoding.enabled", true);
+pref("gfx.canvas.accelerated", true);

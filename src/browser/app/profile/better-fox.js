@@ -24,17 +24,20 @@
 pref("content.notify.interval", 100000); // (.10s); alt=500000 (.50s)
 
 /** GFX ***/
-pref("gfx.canvas.accelerated.cache-items", 4096);
-pref("gfx.canvas.accelerated.cache-size", 512);
-pref("gfx.content.skia-font-cache-size", 20);
+pref("gfx.canvas.accelerated.cache-items", 32768);
+pref("gfx.canvas.accelerated.cache-size", 4096);
+pref("gfx.content.skia-font-cache-size", 80);
 
 /** DISK CACHE ***/
 pref("browser.cache.jsbc_compression_level", 3);
 
 /** MEDIA CACHE ***/
-pref("media.memory_cache_max_size", 65536);
-pref("media.cache_readahead_limit", 7200);
+pref("media.memory_cache_max_size", 1048576);
+pref("media.cache_readahead_limit", 9000);
 pref("media.cache_resume_threshold", 3600);
+pref("media.memory_caches_combined_limit_kb", 2560000);
+
+pref("browser.cache.memory.max_entry_size", 0); 
 
 /** IMAGE CACHE ***/
 pref("image.mem.decode_bytes_at_a_time", 32768);
@@ -47,7 +50,7 @@ pref("network.http.pacing.requests.enabled", false);
 pref("network.dnsCacheExpiration", 3600);
 pref("network.http.max-persistent-connections-per-proxy", 48); // default=32
 pref("network.websocket.max-connections", 400); // default=200
-pref("network.ssl_tokens_cache_capacity", 10240);
+pref("network.ssl_tokens_cache_capacity", 32768);
 
 /** MIXED CONTENT + CROSS-SITE ***/
 pref("pdfjs.enableScripting", false);

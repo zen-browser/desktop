@@ -211,14 +211,9 @@ jobs:
           name: ${{ matrix.generic == true && 'generic' || 'specific' }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
 
-      - name: Upload dist folder to github
+      - name: Upload dist object
         if: ${{ !inputs.generate-gpo }}
-        run: |
-          set -x
-          git pull
-          mkdir -p .github/objects
-          rm -rf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz || true
-          tar -czf .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz engine/obj-x86_64-pc-windows-msvc/dist
-          git add .github/objects/windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz
-          git commit -m "Add windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}.tar.gz"
-          git push
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}
+          path: engine/obj-x86_64-pc-windows-msvc/dist

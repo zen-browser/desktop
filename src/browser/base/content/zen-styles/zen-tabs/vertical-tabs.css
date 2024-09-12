@@ -30,30 +30,10 @@
       --zen-sidebar-action-button-width: 30px;
     }
 
-    & #vertical-tabs-newtab-button {
-      background: color-mix(in srgb, var(--button-hover-bgcolor) 40%, transparent 60%);
-    }
-
-    &::before {
-      width: 70%;
-      height: 1px;
-      background: var(--zen-colors-border);
-      content: '';
-      position: absolute;
-      top: -1px;
-      left: 50%;
-      display: none;
-      transform: translateX(-50%);
-    }
-
     &[showborder] {
       margin-top: var(--space-small);
       border-top: 0px solid transparent !important;
       padding-top: var(--space-small) !important;
-
-      &::before {
-        display: block;
-      }
     }
   }
 
@@ -256,8 +236,8 @@
   }
 
   #nav-bar > *:not(.titlebar-buttonbox-container) {
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
   }
 
   #TabsToolbar-customization-target {
@@ -335,17 +315,16 @@
       #newtab-button-container {
         margin: calc(var(--zen-tabbrowser-padding) - 2px);
         margin-bottom: 0;
-        margin-bottom: var(--space-small);
 
-        &[showborder] {
-          margin-top: 0;
-          padding-top: calc(var(--space-small) / 2) !important;
-        }
-
-        &::before {
-          width: 100%;
-          top: calc(100% + var(--space-small) / 2);
-          display: block;
+        & #vertical-tabs-newtab-button {
+          padding: 0 !important;
+        
+          & label {
+            display: flex;
+            text-align: start;
+            align-items: center;
+            padding: 0;
+          }
         }
       }
 
@@ -570,7 +549,7 @@
           --toolbarbutton-active-background: transparent;
         }
 
-        & label {
+        & label:not(.toolbarbutton-badge) {
           --toolbarbutton-hover-background: transparent;
           display: block !important;
           text-align: start;

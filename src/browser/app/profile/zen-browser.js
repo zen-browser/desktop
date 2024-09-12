@@ -80,6 +80,7 @@ pref('zen.view.compact.hide-toolbar', false);
 pref('zen.view.compact.toolbar-flash-popup', true);
 pref('zen.view.compact.toolbar-flash-popup.duration', 800);
 
+pref('zen.view.sidebar-height-throttle', 500); // in ms
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.on-hover', false);
 pref('zen.view.sidebar-expanded.show-button', true);

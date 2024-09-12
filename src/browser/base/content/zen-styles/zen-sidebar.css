@@ -194,8 +194,13 @@
   min-height: fit-content;
   --zen-sidebar-action-content-separator: calc(5px + var(--zen-tabbrowser-padding));
   padding-top: var(--zen-sidebar-action-content-separator);
-  margin-top: var(--zen-sidebar-action-content-separator);
   color-scheme: inherit !important;
+}
+
+#alltabs-button {
+  &:hover .toolbarbutton-badge-stack {
+    background: transparent !important;
+  }
 }
 
 #zen-sidebar-icons-wrapper::before {

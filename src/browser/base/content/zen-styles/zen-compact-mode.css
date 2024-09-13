@@ -198,10 +198,6 @@
       transform: translateX(calc(100% - (var(--zen-compact-toolbox-margin-single) / 2))) !important;
     }
 
-    & > vbox {
-      float: right;
-    }
-
     &:hover,
     &:focus-within,
     &[zen-user-show],

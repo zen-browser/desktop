@@ -115,6 +115,9 @@
       justify-content: space-between;
 
       padding-top: calc(var(--zen-toolbox-padding) * 2);
+
+      width: calc(100% - var(--zen-toolbox-padding));
+      position: relative;
     }
 
     /* Mark: Fix separator paddings */
@@ -265,7 +268,7 @@
         position: absolute;
         padding: var(--zen-toolbox-padding);
         transition: 0 !important;
-        animation: zen-sidebar-panel-animation-2 0.2s ease-in-out;
+        animation: zen-vtabs-animation 0.2s ease-in-out;
       }
 
       &[zen-right-side='true'] #TabsToolbar {

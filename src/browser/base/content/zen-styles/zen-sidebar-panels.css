@@ -146,13 +146,13 @@
 #zen-sidebar-web-panel[pinned='true'] {
   position: absolute;
   z-index: 1;
-  animation: zen-sidebar-panel-animation-2 0.2s ease-in-out forwards;
+  animation: zen-sidebar-panel-animation-2 0.15s ease-in-out forwards;
 }
 
 #zen-sidebar-web-panel[hidden='true'][pinned='true'] {
   display: flex;
   pointer-events: none;
-  animation: zen-sidebar-panel-animation-reverse 0.2s ease-in-out forwards;
+  animation: zen-sidebar-panel-animation-reverse 0.15s ease-in-out forwards;
 }
 
 #zen-sidebar-web-header,

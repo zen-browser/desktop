@@ -82,6 +82,18 @@
 @keyframes zen-sidebar-panel-animation-2 {
   0% {
     opacity: 0;
+    transform: translateX(-50px) scale3d(0.95, 0.95, 0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zen-vtabs-animation {
+  0% {
+    opacity: 0;
     transform: translateX(-5px);
   }
 
@@ -112,12 +124,12 @@
 @keyframes zen-sidebar-panel-animation-reverse {
   0% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale3d(1, 1, 1);
   }
 
   99% {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-50px) scale3d(0.95, 0.95, 0.95);
   }
 
   100% {

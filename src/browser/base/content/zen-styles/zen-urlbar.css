@@ -251,6 +251,7 @@ button.popup-notification-dropmarker {
 /* Notification Stack */
 
 .notificationbox-stack {
+  background: transparent;
 
   &[notificationside="top"] {
     position: absolute;

@@ -11,11 +11,10 @@ on:
       update_version:
         description: 'Update the version number'
         required: false
-        default: true
+        default: false
         type: 'boolean'
 
 jobs:
-
   build-data:
     permissions:
       contents: write
@@ -34,7 +33,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
-          
+
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -97,7 +96,7 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
-        
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -115,7 +114,7 @@ jobs:
         run: |
           echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
           pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
-  
+
       - name: Check version
         run: |
           echo "$(pwd)"
@@ -128,9 +127,7 @@ jobs:
             exit 1
           fi
 
-
   source:
-    if: false
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -186,28 +183,28 @@ jobs:
           name: zen.source.tar.gz
           path: ./zen.source.tar.gz
 
-  #windows-step-1:
-  #  name: Windows build step 1 (PGO build)
-  #  uses: ./.github/workflows/windows-alpha-build.yml
-  #  needs: [build-data]
-  #  permissions:
-  #    contents: write
-  #  secrets: inherit
-  #  with:
-  #    build-version: ${{ needs.build-data.outputs.version }}
-  #    generate-gpo: true
-  #    profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
+  windows-step-1:
+    name: Windows build step 1 (PGO build)
+    uses: ./.github/workflows/windows-alpha-build.yml
+    needs: [build-data]
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: true
+      profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
 
-  #windows-step-2:
-  #  name: Windows build step 2 (Generate profile data)
-  #  uses: ./.github/workflows/windows-profile-build.yml
-  #  permissions:
-  #    contents: write
-  #  secrets: inherit
-  #  needs: [windows-step-1, build-data]
-  #  with:
-  #    build-version: ${{ needs.build-data.outputs.version }}
-  #    profile-data-path-archive: zen.win64-pgo-stage-1.zip
+  windows-step-2:
+    name: Windows build step 2 (Generate profile data)
+    uses: ./.github/workflows/windows-profile-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [windows-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      profile-data-path-archive: zen.win64-pgo-stage-1.zip
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)
@@ -215,7 +212,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data]
+    needs: [build-data, windows-step-2]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false
@@ -226,7 +223,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data] 
+    needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
 
@@ -310,8 +307,10 @@ jobs:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
-    needs: [build-data, linux, windows-step-3, check-release, mac, appimage]
+    needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]
     runs-on: ubuntu-latest
+    environment:
+      name: Deploy-Release
 
     steps:
       - uses: actions/checkout@v4
@@ -327,6 +326,11 @@ jobs:
       - name: List
         run: find .
 
+      - name: Unpack windows build
+        run: |
+          tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C windows-x64-signed-generic
+          tar -xvf .github/workflows/object/windows-x64-signed-specific.tar.gz -C windows-x64-signed-specific
+
       - name: Clone updates repo
         uses: actions/checkout@v4
         with:
@@ -341,9 +345,9 @@ jobs:
           cp -a ../linux_update_manifest_generic/.  updates/
           cp -a ../linux_update_manifest_specific/.  updates/
 
-          cp -a ../windows_update_manifest_generic/.  updates/
-          cp -a ../windows_update_manifest_specific/.  updates/
-          
+          cp -a ../windows-x64-signed-generic/update_manifest/.  updates/
+          cp -a ../windows-x64-signed-specific/update_manifest/.  updates/
+
           cp -a ../macos_update_manifest_aarch64/.  updates/
           cp -a ../macos_update_manifest_x64/.  updates/
 
@@ -373,8 +377,8 @@ jobs:
             zen.win-specific.zip
             linux.mar
             linux-generic.mar
-            windows.mar
-            windows-generic.mar
+            windows-x64-signed-generic/windows-generic.mar
+            windows-x64-signed-specific/windows.mar
             macos-x64.mar
             macos-aarch64.mar
             zen.installer.exe
@@ -407,11 +411,68 @@ jobs:
           installers-regex: 'zen.installer\.exe$'
           token: ${{ secrets.DEPLOY_KEY }}
 
+  prepare-flatpak:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Prepare Flatpak
+    needs: [release, linux, build-data]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/release-utils
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Install dependencies
+        run: |
+          git pull
+          sudo apt-get update
+          npm install
+
+      - name: Generate new flatpak release
+        run: |
+          npm run build-flatpak -- \
+            --version ${{ needs.build-data.outputs.version }}
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Update releases for flatpak
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+
+      - name: Clone flatpak repo
+        uses: actions/checkout@v4
+        with:
+          repository: zen-browser/flatpak
+          token: ${{ secrets.DEPLOY_KEY }}
+          path: flatpak
+
+      - name: Move releases.xml
+        run: |
+          pwd
+          ls .
+          ls ..
+          mv releases.xml ./flatpak/io.github.zen_browser.zen.metainfo.xml
+          # output the version to the file
+          echo -n ${{ needs.build-data.outputs.version }} > ./flatpak/version
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[release]: Update flatpak manifest'
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com
+          repository: ./flatpak
+
+      - name: Wait 4 minutes for the flatpak repo to update
+        run: sleep 240
+
   release-flatpak:
     if: ${{ github.event.inputs.create_release == 'true' }}
     permissions: write-all
     name: Release Flatpak
-    needs: [release, linux, build-data]
+    needs: [prepare-flatpak, build-data]
     runs-on: ubuntu-latest
 
     steps:
@@ -477,12 +538,35 @@ jobs:
           commit-message: 🚀 Update to version ${{ needs.build-data.outputs.version }}
           title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
           body: |
-            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}. 
-            
-            @mauro-balades
+            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
+
+            @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
           git-token: ${{ secrets.DEPLOY_KEY }}
           delete-branch: true
-          
 
+  release-homebrew:
+    if: ${{ github.event.inputs.create_release == 'true' }}
+    permissions: write-all
+    name: Homebrew release
+    needs: [release, mac, build-data]
+    runs-on: macos-latest
+
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          cask: true
+          test-bot: false
+
+      - name: Setup git
+        uses: Homebrew/actions/git-user-config@master
+        with:
+          username: zen-browser-bot
+
+      - name: Bump zen-browser
+        uses: Homebrew/actions/bump-packages@master
+        with:
+          token: ${{ secrets.DEPLOY_KEY }}
+          casks: zen-browser

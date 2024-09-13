@@ -4,14 +4,12 @@ The `zen.sidepanels.data` configuration will be a JSON string that follows the f
 
 ```json
 {
-  data: {
+  "data": {
     "p1": {
       "url": "https://google.com",
-      "ua": false, // "ua" may not be declared! (default: false)
+      "ua": false // "ua" may not be declared! (default: false)
     }
   },
-  "index": [
-    "p1"
-  ]
+  "index": ["p1"]
 }
 ```

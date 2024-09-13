@@ -1,4 +1,3 @@
-
 # Custom Keyboard Shortcuts
 
 ```json

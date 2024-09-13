@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/ActorManagerParent.sys.mjs b/toolkit/modules/ActorManagerParent.sys.mjs
-index 71409e58271802fc506999712519df63eff3b1a6..a136eb21a8abf1697b820ae4ab85224c56b725ec 100644
+index 71409e58271802fc506999712519df63eff3b1a6..684c9da0139db1dc0962fbb50304ca4f013950ca 100644
 --- a/toolkit/modules/ActorManagerParent.sys.mjs
 +++ b/toolkit/modules/ActorManagerParent.sys.mjs
 @@ -666,6 +666,20 @@ if (!Services.prefs.getBoolPref("browser.pagedata.enabled", false)) {
@@ -16,7 +16,7 @@ index 71409e58271802fc506999712519df63eff3b1a6..a136eb21a8abf1697b820ae4ab85224c
 +      DOMContentLoaded: {},
 +    },
 +  },
-+  matches: ["https://*.zen-browser.app/*"],
++  matches: ["https://*.zen-browser.app/*", "about:preferences"],
 +  allFrames: true,
 +};
 +

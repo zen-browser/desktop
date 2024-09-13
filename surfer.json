@@ -5,29 +5,20 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "129.0.2"
+    "version": "130.0"
   },
   "buildOptions": {
     "generateBranding": true
   },
   "addons": {},
   "brands": {
-    "beta": {
-      "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
-      "brandShortName": "Zen Browser",
-      "brandFullName": "Zen Browser",
-      "release": {
-        "displayVersion": "1.0.0"
-      }
-    },
     "alpha": {
       "backgroundColor": "#282A33",
       "brandShorterName": "Zen",
       "brandShortName": "Zen Browser",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.0.0-a.29",
+        "displayVersion": "1.0.0-a.39",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -48,5 +39,5 @@
     ],
     "licenseType": "MPL-2.0"
   },
-  "updateHostname": "zen-updates.vercel.app"
+  "updateHostname": "updates.zen-browser.app"
 }

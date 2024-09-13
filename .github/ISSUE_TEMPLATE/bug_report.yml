@@ -5,6 +5,20 @@ body:
     attributes:
       value: |
         Thank you for filing a bug report.
+
+        ## Important
+        - Please search existing issues to avoid creating duplicates.
+        - For enhancement requests, please use GitHub Discussions.
+        - Please fill out the template below to the best of your ability.
+  - type: checkboxes
+    id: captchas
+    attributes:
+      label: Captchas
+      description: Just making sure you did actually read the instructions.
+      options:
+        - label: I have read the instructions.
+        - label: I have searched existing issues and avoided creating duplicates.
+        - label: I am not filing an enhancement request.
   - type: textarea
     id: what-happened
     attributes:
@@ -28,21 +42,6 @@ body:
       placeholder: 1.0.0
     validations:
       required: true
-  - type: dropdown
-    id: severity
-    attributes:
-      label: Severity impact
-      description: See label descriptions for more information.
-      options:
-        - Low
-        - Medium
-        - High
-        - Critical
-        - Enhancement
-      multiple: true
-    validations:
-      required: true
-
   - type: dropdown
     id: platform
     attributes:

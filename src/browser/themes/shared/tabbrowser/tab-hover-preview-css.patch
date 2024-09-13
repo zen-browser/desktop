@@ -1,10 +1,10 @@
 diff --git a/browser/themes/shared/tabbrowser/tab-hover-preview.css b/browser/themes/shared/tabbrowser/tab-hover-preview.css
-index 5df2561b9f0e5497a596e4e261ceaac30778e754..cbea9912e7ae15f7a277ecbdcd681cc4e7a4da72 100644
+index 90680fb5870bd7387656d3066c39b6d6f80916bd..636c2f4c7cfda0280b24e40cf7613321bf1d3905 100644
 --- a/browser/themes/shared/tabbrowser/tab-hover-preview.css
 +++ b/browser/themes/shared/tabbrowser/tab-hover-preview.css
-@@ -44,3 +44,24 @@
-     display: block;
-   }
+@@ -52,3 +52,24 @@
+   from { opacity: 0; }
+   to { opacity: 100; }
  }
 +
 +/**
@@ -27,3 +27,4 @@ index 5df2561b9f0e5497a596e4e261ceaac30778e754..cbea9912e7ae15f7a277ecbdcd681cc4
 +.tab-preview-thumbnail-container canvas {
 +  border-top: 1px solid var(--zen-border-color);
 +}
+\ No newline at end of file

@@ -50,7 +50,7 @@
 
 .PanelUI-zen-profiles-item::after {
   content: '';
-  background-image: url("chrome://global/skin/icons/arrow-right.svg");
+  background-image: url('chrome://global/skin/icons/arrow-right.svg');
   background-size: 1em;
   background-repeat: no-repeat;
   background-position: center;
@@ -97,7 +97,6 @@
   margin: 0 auto;
 }
 
-
 #PanelUI-zen-profiles toolbarbutton::after {
   display: none;
 }
@@ -106,7 +105,6 @@
   padding-left: 16px;
   padding-right: 16px;
 }
-
 
 #PanelUI-zen-profiles toolbarbutton:last-child {
   margin-bottom: 5px !important;
@@ -120,7 +118,6 @@
   font-weight: 600;
 }
 
-
 #PanelUI-zen-profiles-actions {
   color-scheme: dark;
   position: absolute;
@@ -128,7 +125,7 @@
   right: 10px;
   border-radius: 10px !important;
   padding: 1px 10px !important;
-  transition: .1s;
+  transition: 0.1s;
   color: light-dark(white, black);
   background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
 }

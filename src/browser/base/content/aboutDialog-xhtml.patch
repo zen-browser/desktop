@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index 55de24241514d11f6a174dd97ca37c8a4a99b8af..1459c91ff11429788e103d385f1598b6275592c8 100644
+index 1e5c0f1c59175ec4a39938974c4a7a5c6355439f..ac9fe4b792c12a1aecba1fbbc941da9be6a53ce4 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
 @@ -36,6 +36,7 @@
@@ -10,7 +10,7 @@ index 55de24241514d11f6a174dd97ca37c8a4a99b8af..1459c91ff11429788e103d385f1598b6
    </linkset>
  
    <html:div id="aboutDialogContainer">
-@@ -134,13 +135,15 @@
+@@ -130,13 +131,15 @@
              </description>
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
@@ -27,3 +27,12 @@ index 55de24241514d11f6a174dd97ca37c8a4a99b8af..1459c91ff11429788e103d385f1598b6
          </vbox>
        </vbox>
      </hbox>
+@@ -144,7 +147,7 @@
+       <hbox pack="center">
+         <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:license" data-l10n-id="bottomLinks-license"/>
+         <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:rights" data-l10n-id="bottomLinks-rights"/>
+-        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/privacy/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-id="bottomLinks-privacy"/>
++        <label is="text-link" class="bottom-link" href="https://www.zen-browser.app/privacy-policy/" data-l10n-id="bottomLinks-privacy"/>
+       </hbox>
+       <description id="trademark" data-l10n-id="trademarkInfo"></description>
+     </vbox>

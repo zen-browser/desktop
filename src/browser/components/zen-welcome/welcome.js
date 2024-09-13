@@ -1,86 +1,76 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-const { XPCOMUtils } = ChromeUtils.import(
-  'resource://gre/modules/XPCOMUtils.jsm'
-)
+const { XPCOMUtils } = ChromeUtils.import('resource://gre/modules/XPCOMUtils.jsm');
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   AddonManager: 'resource://gre/modules/AddonManager.jsm',
   MigrationUtils: 'resource:///modules/MigrationUtils.jsm',
-})
+});
 
-ChromeUtils.defineModuleGetter(
-  this,
-  'ExtensionSettingsStore',
-  'resource://gre/modules/ExtensionSettingsStore.jsm'
-);
+ChromeUtils.defineModuleGetter(this, 'ExtensionSettingsStore', 'resource://gre/modules/ExtensionSettingsStore.jsm');
 
-Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
+Services.scriptloader.loadSubScript('chrome://browser/content/ZenUIManager.mjs');
 
-const kWelcomeSeenPref = 'zen.welcomeScreen.seen'
+const kWelcomeSeenPref = 'zen.welcomeScreen.seen';
 
 // =============================================================================
 // Util stuff copied from browser/components/preferences/search.js
 
 class EngineStore {
   constructor() {
-    this._engines = []
+    this._engines = [];
   }
 
   async init() {
-    const visibleEngines = await Services.search.getVisibleEngines()
-    this.initSpecificEngine(visibleEngines)
+    const visibleEngines = await Services.search.getVisibleEngines();
+    this.initSpecificEngine(visibleEngines);
   }
 
   getEngine() {
-    return this._engines
+    return this._engines;
   }
 
   initSpecificEngine(engines) {
     for (const engine of engines) {
       try {
-        this._engines.push(this._cloneEngine(engine))
+        this._engines.push(this._cloneEngine(engine));
       } catch (e) {
         // Ignore engines that throw an exception when cloning.
-        console.error(e)
+        console.error(e);
       }
     }
   }
 
   getEngineByName(name) {
-    return this._engines.find((engine) => engine.name == name)
+    return this._engines.find((engine) => engine.name == name);
   }
 
   _cloneEngine(aEngine) {
-    const clonedObj = {}
+    const clonedObj = {};
 
     for (const i of ['name', 'alias', '_iconURI', 'hidden']) {
-      clonedObj[i] = aEngine[i]
+      clonedObj[i] = aEngine[i];
     }
 
-    clonedObj.originalEngine = aEngine
+    clonedObj.originalEngine = aEngine;
 
-    return clonedObj
+    return clonedObj;
   }
 
   async getDefaultEngine() {
-    let engineName = await Services.search.getDefault()
-    return this.getEngineByName(engineName._name)
+    let engineName = await Services.search.getDefault();
+    return this.getEngineByName(engineName._name);
   }
 
   async setDefaultEngine(engine) {
-    await Services.search.setDefault(
-      engine.originalEngine,
-      Ci.nsISearchService.CHANGE_REASON_USER
-    )
+    await Services.search.setDefault(engine.originalEngine, Ci.nsISearchService.CHANGE_REASON_USER);
   }
 }
 
 // =============================================================================
 
-const sleep = (duration) =>
-  new Promise((resolve) => setTimeout(resolve, duration))
+const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
 
 class Page {
   /**
@@ -88,7 +78,7 @@ class Page {
    * @param {string} id The id of the element that represents this page.
    */
   constructor(id) {
-    this.element = document.getElementById(id)
+    this.element = document.getElementById(id);
   }
 
   /**
@@ -96,78 +86,81 @@ class Page {
    * @param {Pages} pages The pages wrapper
    */
   setPages(pages) {
-    this.pages = pages
+    this.pages = pages;
   }
 
   hide() {
-    this.element.setAttribute('hidden', 'true')
+    this.element.setAttribute('hidden', 'true');
   }
 
   show() {
-    this.element.removeAttribute('hidden')
+    this.element.removeAttribute('hidden');
   }
 }
 
 class Themes extends Page {
   constructor(id) {
-    super(id)
-  
-    this.loadThemes()
+    super(id);
+
+    this.loadThemes();
   }
 
   async loadThemes() {
     window.addEventListener('DOMContentLoaded', this.setColorBar);
-    await sleep(1000)
+    await sleep(1000);
 
-    const themes = (await AddonManager.getAddonsByTypes(['theme'])).filter(
-      (theme) => theme.id !== "default-theme@mozilla.org"
-    )
+    const themes = (await AddonManager.getAddonsByTypes(['theme'])).filter((theme) => theme.id !== 'default-theme@mozilla.org');
     const themeList = document.getElementById('themeList');
 
-    const themeElements = ["firefox-compact-light@mozilla.org", "firefox-compact-dark@mozilla.org"];
+    const themeElements = ['firefox-compact-light@mozilla.org', 'firefox-compact-dark@mozilla.org'];
 
     themeElements.forEach((theme, i) => {
       let container = themeList.children[i];
-      container.addEventListener('click', (() => {
-        if (container.hasAttribute('disabled')) {
-          return
-        }
-        for (const el of themeList.children) {
-          el.classList.remove('selected')
-        }
-        container.classList.add('selected')
-        themes.find((t) => t.id === theme).enable()
-      }).bind(this, i, container, theme));
+      container.addEventListener(
+        'click',
+        (() => {
+          if (container.hasAttribute('disabled')) {
+            return;
+          }
+          for (const el of themeList.children) {
+            el.classList.remove('selected');
+          }
+          container.classList.add('selected');
+          themes.find((t) => t.id === theme).enable();
+        }).bind(this, i, container, theme)
+      );
       if (themes.find((t) => t.id === theme).isActive) {
-        container.classList.add('selected')
+        container.classList.add('selected');
       }
-    })
+    });
   }
 
   setColorBar() {
     const colorList = document.getElementById('colorListWrapper');
-    const colors = ['#aac7ff', '#74d7cb', '#a0d490', '#dec663', '#ffb787', 
-        '#ffb1c0', '#ddbfc3', '#f6b0ea', '#d4bbff']
+    const colors = ['#aac7ff', '#74d7cb', '#a0d490', '#dec663', '#ffb787', '#ffb1c0', '#ddbfc3', '#f6b0ea', '#d4bbff'];
 
     colors.forEach((color) => {
-      const container = document.createElement('div')
-      container.classList.add('color')
-      container.style.backgroundColor = color
-      container.setAttribute('data-color', color)
-      container.addEventListener('click', (() => {
-        Services.prefs.setStringPref('zen.theme.accent-color', color);
-        colorList.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'))
-        container.classList.add('selected')
-      }).bind(this, color, container))
+      const container = document.createElement('div');
+      container.classList.add('color');
+      container.style.backgroundColor = color;
+      container.setAttribute('data-color', color);
+      container.addEventListener(
+        'click',
+        (() => {
+          Services.prefs.setStringPref('zen.theme.accent-color', color);
+          colorList.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+          container.classList.add('selected');
+        }).bind(this, color, container)
+      );
 
-      colorList.appendChild(container)
+      colorList.appendChild(container);
     });
   }
 }
 
 class Thanks extends Page {
   constructor(id) {
-    super(id)
+    super(id);
 
     // Thanks :)
   }
@@ -175,28 +168,28 @@ class Thanks extends Page {
 
 class Search extends Page {
   constructor(id) {
-    super(id)
+    super(id);
 
-    this.store = new EngineStore()
-    this.searchList = []
+    this.store = new EngineStore();
+    this.searchList = [];
 
-    this.loadSearch()
+    this.loadSearch();
   }
 
   async loadSearch() {
-    await sleep(1100)
-    await this.store.init()
+    await sleep(1100);
+    await this.store.init();
 
-    const defaultEngine = await Services.search.getDefault()
+    const defaultEngine = await Services.search.getDefault();
 
-    const searchElements = document.getElementById('searchList')
+    const searchElements = document.getElementById('searchList');
 
     this.store.getEngine().forEach(async (search) => {
-      const container = await this.loadSpecificSearch(search, defaultEngine)
+      const container = await this.loadSpecificSearch(search, defaultEngine);
 
-      searchElements.appendChild(container)
-      this.searchList.push(container)
-    })
+      searchElements.appendChild(container);
+      this.searchList.push(container);
+    });
   }
 
   /**
@@ -204,42 +197,42 @@ class Search extends Page {
    */
   async loadSpecificSearch(search, defaultSearch) {
     const container = document.createElement('div');
-    container.classList.add('card')
-    container.classList.add('card-no-hover')
+    container.classList.add('card');
+    container.classList.add('card-no-hover');
 
     if (search.name == defaultSearch._name) {
-      container.classList.add('selected')
+      container.classList.add('selected');
     }
 
     container.addEventListener('click', () => {
-      this.searchList.forEach((el) => el.classList.remove('selected'))
-      container.classList.add('selected')
-      this.store.setDefaultEngine(search)
-    })
+      this.searchList.forEach((el) => el.classList.remove('selected'));
+      container.classList.add('selected');
+      this.store.setDefaultEngine(search);
+    });
 
     const img = document.createElement('img');
     img.src = await search.originalEngine.getIconURL();
 
-    const name = document.createElement('h3')
-    name.textContent = search.name
+    const name = document.createElement('h3');
+    name.textContent = search.name;
 
-    container.appendChild(img)
-    container.appendChild(name)
+    container.appendChild(img);
+    container.appendChild(name);
 
-    return container
+    return container;
   }
 }
 
 class Import extends Page {
   constructor(id) {
-    super(id)
+    super(id);
 
-    const importButton = document.getElementById('importBrowser')
+    const importButton = document.getElementById('importBrowser');
     importButton.addEventListener('click', async () => {
       MigrationUtils.showMigrationWizard(window, {
         zenBlocking: true,
       });
-    })
+    });
   }
 }
 
@@ -249,62 +242,62 @@ class Pages {
    * @param {Page[]} pages The pages
    */
   constructor(pages) {
-    console.info("Initializing welcome pages...");
-    this.pages = pages
+    console.info('Initializing welcome pages...');
+    this.pages = pages;
     this.currentPage = 0;
 
-    window.maximize();  
+    window.maximize();
 
-    this.pages.forEach((page) => page.setPages(this))
+    this.pages.forEach((page) => page.setPages(this));
 
     this._displayCurrentPage();
-    console.info("Welcome pages initialized.")
+    console.info('Welcome pages initialized.');
 
-    this.nextEl = document.getElementById(`next`)
-    this.prevEl = document.getElementById(`back`)
+    this.nextEl = document.getElementById(`next`);
+    this.prevEl = document.getElementById(`back`);
 
     this.nextEl.addEventListener('click', () => {
-      this.next()
-      this.prevEl.removeAttribute('disabled')
-    })
+      this.next();
+      this.prevEl.removeAttribute('disabled');
+    });
 
     this.prevEl.addEventListener('click', () => {
-      this.currentPage--
-      this._displayCurrentPage()
+      this.currentPage--;
+      this._displayCurrentPage();
       if (this.pages.currentPage === 1) {
-        this.prevEl.setAttribute('disabled', 'true')
+        this.prevEl.setAttribute('disabled', 'true');
       }
     });
   }
 
   next() {
-    this.currentPage++
+    this.currentPage++;
 
     if (this.currentPage >= this.pages.length) {
       // We can use internal js apis to close the window. We also want to set
       // the settings api for welcome seen to false to stop it showing again
 
-      Services.prefs.setBoolPref(kWelcomeSeenPref, true)
+      Services.prefs.setBoolPref(kWelcomeSeenPref, true);
 
       close();
-      return
+      return;
     }
 
-    this._displayCurrentPage()
+    this._displayCurrentPage();
   }
 
   _displayCurrentPage() {
     let progress = document.getElementById('circular-progress');
     progress.style.setProperty('--progress', ((this.currentPage + 1) / this.pages.length) * 100);
     for (const page of this.pages) {
-      page.hide()
+      page.hide();
     }
     if (this.currentPage >= 1) {
-      document.body.classList.remove('gradient-background')
+      document.body.classList.remove('gradient-background');
     } else {
-      document.body.classList.add('gradient-background')
+      document.body.classList.add('gradient-background');
     }
-    this.pages[this.currentPage].show()
+    this.pages[this.currentPage].show();
   }
 }
 
@@ -314,4 +307,4 @@ const pages = new Pages([
   new Import('import'),
   new Search('search'),
   new Thanks('thanks'),
-])
+]);

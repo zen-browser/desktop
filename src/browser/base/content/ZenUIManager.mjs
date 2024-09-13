@@ -1,4 +1,3 @@
-
 var gZenUIManager = {
   openAndChangeToTab(url, options) {
     if (window.ownerGlobal.parent) {
@@ -12,11 +11,11 @@ var gZenUIManager = {
   },
 
   generateUuidv4() {
-    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-      (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
+      (+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
     );
   },
-  
+
   toogleBookmarksSidebar() {
     const button = document.getElementById('zen-bookmark-button');
     SidebarController.toggle('viewBookmarksSidebar', button);
@@ -24,12 +23,11 @@ var gZenUIManager = {
 
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
+  },
 };
 
 var gZenVerticalTabsManager = {
   init() {
-    //Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
@@ -56,7 +54,7 @@ var gZenVerticalTabsManager = {
                 ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
                 data-lazy-l10n-id="zen-toolbar-context-tabs-right"/>
     `);
-    fragment.getElementById("zen-toolbar-context-tabs-right").addEventListener('click', () => {
+    fragment.getElementById('zen-toolbar-context-tabs-right').addEventListener('click', () => {
       let rightSide = Services.prefs.getBoolPref(kConfigKey);
       Services.prefs.setBoolPref(kConfigKey, !rightSide);
     });
@@ -110,8 +108,11 @@ var gZenVerticalTabsManager = {
 };
 
 var gZenCompactModeManager = {
+  _flashSidebarTimeout: null,
+
   init() {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
+    Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
   },
 
   get prefefence() {
@@ -130,13 +131,42 @@ var gZenCompactModeManager = {
     this.preference = !this.prefefence;
   },
 
+  _updatedSidebarFlashDuration() {
+    this._flashSidebarDuration = Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
+  },
+
   toggleSidebar() {
     let sidebar = document.getElementById('navigator-toolbox');
     sidebar.toggleAttribute('zen-user-show');
   },
 
+  get flashSidebarDuration() {
+    if (this._flashSidebarDuration) {
+      return this._flashSidebarDuration;
+    }
+    return Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
+  },
+
+  flashSidebar() {
+    let sidebar = document.getElementById('navigator-toolbox');
+    if (sidebar.matches(':hover')) {
+      return;
+    }
+    if (this._flashSidebarTimeout) {
+      clearTimeout(this._flashSidebarTimeout);
+    } else {
+      window.requestAnimationFrame(() => sidebar.setAttribute('flash-popup', ''));
+    }
+    this._flashSidebarTimeout = setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        sidebar.removeAttribute('flash-popup');
+        this._flashSidebarTimeout = null;
+      });
+    }, this.flashSidebarDuration);
+  },
+
   toggleToolbar() {
     let toolbar = document.getElementById('zen-appcontent-navbar-container');
     toolbar.toggleAttribute('zen-user-show');
-  }
+  },
 };

@@ -1,8 +1,7 @@
-
-@import url("chrome://browser/content/zen-styles/zen-panels/bookmarks.css");
-@import url("chrome://browser/content/zen-styles/zen-panels/extensions.css");
-@import url("chrome://browser/content/zen-styles/zen-panels/print.css");
-@import url("chrome://browser/content/zen-styles/zen-panels/welcome.css");
+@import url('chrome://browser/content/zen-styles/zen-panels/bookmarks.css');
+@import url('chrome://browser/content/zen-styles/zen-panels/extensions.css');
+@import url('chrome://browser/content/zen-styles/zen-panels/print.css');
+@import url('chrome://browser/content/zen-styles/zen-panels/welcome.css');
 
 :root {
   --panel-subview-body-padding: 2px 0;
@@ -46,7 +45,8 @@
   --zen-panel-separator-width: 1px;
 }
 
-menupopup, panel {
+menupopup,
+panel {
   --panel-background: var(--arrowpanel-background);
   --panel-border-radius: var(--zen-panel-radius);
 }
@@ -65,26 +65,26 @@ menupopup, panel {
   margin-block: 0;
 }
 
-.widget-overflow-list .toolbarbutton-1:not(.toolbarbutton-combined)>.toolbarbutton-text,
-.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton)>.toolbarbutton-icon+.toolbarbutton-text,
-#appMenu-fxa-label2>vbox {
+.widget-overflow-list .toolbarbutton-1:not(.toolbarbutton-combined) > .toolbarbutton-text,
+.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton) > .toolbarbutton-icon + .toolbarbutton-text,
+#appMenu-fxa-label2 > vbox {
   padding-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
 }
 
 /* special case menuitems with no icons */
-#appMenu-zoom-controls>.toolbarbutton-text,
-#fxa-manage-account-button>vbox,
-#PanelUI-fxa-menu-syncnow-button>hbox {
+#appMenu-zoom-controls > .toolbarbutton-text,
+#fxa-manage-account-button > vbox,
+#PanelUI-fxa-menu-syncnow-button > hbox {
   padding-inline-start: calc(16px + var(--uc-arrowpanel-menuicon-margin-inline));
 }
 
-.subviewbutton>.toolbarbutton-icon {
+.subviewbutton > .toolbarbutton-icon {
   width: 15px;
 }
 
 /* firefox profile avatar in appmenu */
 #appMenu-fxa-label2::before {
-  content: "";
+  content: '';
   display: -moz-box;
   height: 16px;
   width: 16px;
@@ -102,40 +102,46 @@ menupopup, panel {
   padding-block: 0;
 }
 
-#appMenu-fxa-status2:not([fxastatus])>#appMenu-fxa-label2 {
+#appMenu-fxa-status2:not([fxastatus]) > #appMenu-fxa-label2 {
   margin-inline-end: calc(var(--arrowpanel-menuitem-padding-inline) * -1);
 }
 
 /* zoom controls */
 #appMenu-zoom-controls {
   border-top: 1px solid var(--panel-separator-color);
-  padding-inline: calc(var(--arrowpanel-menuitem-padding-inline) + var(--uc-arrowpanel-menuitem-margin-inline)) var(--uc-arrowpanel-menuitem-margin-inline);
+  padding-inline: calc(var(--arrowpanel-menuitem-padding-inline) + var(--uc-arrowpanel-menuitem-margin-inline))
+    var(--uc-arrowpanel-menuitem-margin-inline);
   padding-block: var(--uc-panel-zoom-padding-block);
   margin: var(--panel-separator-margin-vertical) 0 calc(var(--panel-separator-margin-vertical) * -1);
 }
 
-#appMenu-zoom-controls>.subviewbutton {
+#appMenu-zoom-controls > .subviewbutton {
   padding: var(--uc-panel-zoom-button-padding) var(--uc-panel-zoom-button-inline-padding);
   margin: 0;
 }
 
-#appMenu-zoom-controls>#appMenu-zoomReset-button2 {
+#appMenu-zoom-controls > #appMenu-zoomReset-button2 {
   padding: var(--uc-panel-zoom-button-padding) calc(var(--uc-panel-zoom-button-padding) / 2);
 }
 
 /* #appMenu-zoomReduce-button2, */
-#appMenu-zoom-controls>#appMenu-fullscreen-button2 {
+#appMenu-zoom-controls > #appMenu-fullscreen-button2 {
   margin-left: calc((var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px);
 }
 
-#appMenu-zoom-controls>#appMenu-fullscreen-button2::before {
-  content: "";
+#appMenu-zoom-controls > #appMenu-fullscreen-button2::before {
+  content: '';
   border-inline-start: 1px solid var(--panel-separator-color);
   display: block;
   position: relative;
   height: 32px;
   margin-block: calc(var(--uc-panel-zoom-button-padding) * -1);
-  transform: translateX(calc(var(--uc-panel-zoom-button-inline-padding) * -1 - (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) - 1px));
+  transform: translateX(
+    calc(
+      var(--uc-panel-zoom-button-inline-padding) * -1 -
+        (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) - 1px
+    )
+  );
 }
 
 #appMenu-zoomReset-button2 {
@@ -157,8 +163,8 @@ menupopup, panel {
   background-color: var(--panel-item-active-bgcolor);
 }
 
-#appMenu-zoomReset-button2>.toolbarbutton-text,
-#appMenu-fullscreen-button2>.toolbarbutton-icon {
+#appMenu-zoomReset-button2 > .toolbarbutton-text,
+#appMenu-fullscreen-button2 > .toolbarbutton-icon {
   background-color: transparent;
   padding: 0;
 }
@@ -171,11 +177,11 @@ menupopup, panel {
   padding-bottom: 0;
 }
 
-.PanelUI-subView>.panel-header+toolbarseparator {
+.PanelUI-subView > .panel-header + toolbarseparator {
   margin-bottom: 0;
 }
 
-.PanelUI-subView>.panel-header+toolbarseparator+.panel-subview-body {
+.PanelUI-subView > .panel-header + toolbarseparator + .panel-subview-body {
   padding-top: var(--panel-separator-margin-vertical);
 }
 
@@ -192,7 +198,7 @@ menupopup, panel {
 
 /* URL bar popup */
 
-.identity-popup-security-connection>hbox>description {
+.identity-popup-security-connection > hbox > description {
   margin-inline-start: 0;
 }
 
@@ -226,8 +232,8 @@ menupopup, panel {
   margin-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
 }
 
-#editBookmarkPanel>#editBookmarkHeaderSeparator,
-#editBookmarkPanel>.panel-subview-body>#editBookmarkSeparator {
+#editBookmarkPanel > #editBookmarkHeaderSeparator,
+#editBookmarkPanel > .panel-subview-body > #editBookmarkSeparator {
   margin-inline: 0;
 }
 
@@ -237,13 +243,12 @@ menupopup, panel {
   opacity: 0;
 }
 
-
 menupopup::part(content),
 panel::part(content) {
   border: var(--zen-appcontent-border);
 }
 
-menupopup, 
+menupopup,
 panel {
   box-shadow: none;
 }
@@ -254,7 +259,7 @@ panel {
 }
 
 #identity-popup-clear-sitedata-footer {
-  margin: 0; 
+  margin: 0;
   padding: 0;
 }
 
@@ -263,7 +268,8 @@ panel {
   --arrowpanel-menuitem-padding-inline: 15px;
 }
 
-toolbarseparator, menuseparator {
+toolbarseparator,
+menuseparator {
   border-width: var(--zen-panel-separator-width);
 }
 
@@ -277,8 +283,9 @@ toolbarseparator, menuseparator {
 }
 
 /* Context menu */
-menu, menuitem {
-  &:where([_moz-menuactive]:not([disabled="true"])) {
+menu,
+menuitem {
+  &:where([_moz-menuactive]:not([disabled='true'])) {
     background-color: var(--button-hover-bgcolor);
     color: var(--button-hover-color);
   }

@@ -1,17 +1,17 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.h b/toolkit/profile/nsToolkitProfileService.h
-index 9de18b8ae349853f4f78b92d1a0b485add4e716e..b8a051cb5fd4c7a26af5377c1398d9a270985920 100644
+index d48fd954a14a8dcb4654e10cd3c792c95d38647d..be4dcf3962b77572c8cfe04d6043551f55650f9a 100644
 --- a/toolkit/profile/nsToolkitProfileService.h
 +++ b/toolkit/profile/nsToolkitProfileService.h
 @@ -30,7 +30,7 @@ class nsToolkitProfile final
    ~nsToolkitProfile() = default;
  
    nsToolkitProfile(const nsACString& aName, nsIFile* aRootDir,
--                   nsIFile* aLocalDir, bool aFromDB);
-+                   nsIFile* aLocalDir, bool aFromDB, const nsACString& aZenAvatarPath);
+-                   nsIFile* aLocalDir, bool aFromDB, const nsACString& aStoreID,
++                   nsIFile* aLocalDir, bool aFromDB, const nsACString& aZenAvatarPath, const nsACString& aStoreID,
+                    bool aShowProfileSelector);
  
    nsresult RemoveInternal(bool aRemoveFiles, bool aInBackground);
- 
-@@ -42,6 +42,7 @@ class nsToolkitProfile final
+@@ -45,6 +45,7 @@ class nsToolkitProfile final
    nsIProfileLock* mLock;
    uint32_t mIndex;
    nsCString mSection;

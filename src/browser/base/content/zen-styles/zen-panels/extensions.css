@@ -33,7 +33,7 @@ panelview .unified-extensions-item-action-button {
     }
 
     > .unified-extensions-item-menu-button {
-      list-style-image: url("chrome://global/skin/icons/more.svg");
+      list-style-image: url('chrome://global/skin/icons/more.svg');
       padding: 0;
 
       > .toolbarbutton-icon {
@@ -43,7 +43,6 @@ panelview .unified-extensions-item-action-button {
       }
 
       &:hover {
-
         > .toolbarbutton-icon {
           background-color: initial;
         }

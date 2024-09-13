@@ -1,4 +1,4 @@
-
+name: macOS Alpha Build
 on:
   workflow_call:
     inputs:
@@ -11,7 +11,7 @@ jobs:
     name: Build macOS - ${{ matrix.arch }}
     environment: production
     runs-on: ${{ matrix.os }}
-    strategy: 
+    strategy:
       fail-fast: false
       matrix:
         include:
@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11' 
+          python-version: '3.11'
 
       - uses: actions/checkout@v4
         with:
@@ -101,10 +101,10 @@ jobs:
 
       - name: Import
         env:
-          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}  
+          SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
         run: |
-          pnpm surfer import
-        
+          pnpm surfer import --verbose
+
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 
@@ -121,15 +121,35 @@ jobs:
         if: failure()
         run: sh .github/workflows/src/alpha-build.sh
 
+      - name: import APPLE DEVELOPER ID CERTIFICATE for .app
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
+          p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
+
       - name: Package
         env:
           SURFER_COMPAT: ${{ matrix.arch == 'x64' }}
-        run: pnpm package
+        run: |
+          export MACOS_APPLE_DEVELOPER_ID="${{ secrets.macOS_AppleDeveloperId }}"
+          pnpm package
 
       - name: Rename artifacts
         run: |
-          mv ./dist/*.dmg "zen.macos-${{ matrix.arch }}.dmg"
           mv ./dist/output.mar macos-${{ matrix.arch }}.mar
+
+      - name: Sign to .dmg
+        run: |
+          set -ex
+          hdiutil convert ./dist/*.dmg -format UDZO -imagekey zlib-level=9 -o zen.macos-${{ matrix.arch }}.dmg
+          xattr -cr zen.macos-${{ matrix.arch }}.dmg
+          codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-${{ matrix.arch }}.dmg
+          xcrun notarytool submit "zen.macos-${{ matrix.arch }}.dmg" \
+            --apple-id "${{ secrets.macOS_AppleAccountId }}" \
+            --team-id "${{ secrets.macOS_AppleDeveloperIdTeamId }}" \
+            --password "${{ secrets.macOS_AppleDeveloperIdPassword }}" \
+            --wait
+          xcrun stapler staple "zen.macos-${{ matrix.arch }}.dmg"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

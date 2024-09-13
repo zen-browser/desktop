@@ -1,8 +1,30 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c502278e2b188d 100644
+index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..a9e4da68d8de456a757158a311296792a7781e8f 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -3214,6 +3214,11 @@
+@@ -2704,6 +2704,11 @@
+         );
+       }
+ 
++      let hasZenDefaultUserContextId = false;
++      if (typeof ZenWorkspaces !== "undefined") {
++        [userContextId, hasZenDefaultUserContextId] = ZenWorkspaces.getContextIdIfNeeded(userContextId);
++      }
++
+       if (!UserInteraction.running("browser.tabs.opening", window)) {
+         UserInteraction.start("browser.tabs.opening", "initting", window);
+       }
+@@ -2771,6 +2776,9 @@
+           noInitialLabel,
+           skipBackgroundNotify,
+         });
++        if (hasZenDefaultUserContextId) {
++          t.setAttribute("zenDefaultUserContextId", "true");
++        }
+         if (insertTab) {
+           // insert the tab into the tab container in the correct position
+           this._insertTabAtIndex(t, {
+@@ -3248,6 +3256,14 @@
          ) {
            tabWasReused = true;
            tab = this.selectedTab;
@@ -10,22 +32,28 @@ index 6e7a8ca21a20626a0607d860c56e39991b4aa2b8..d998059907f2467b0648c94c54c50227
 +          if (tabData.zenWorkspace) {
 +            tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
 +          }
++          if (tabData.zenDefaultUserContextId) {
++            tab.setAttribute("zenDefaultUserContextId", "true");
++          }
 +
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3263,6 +3268,10 @@
+@@ -3297,6 +3313,13 @@
              preferredRemoteType,
            });
  
 +          if (tabData.zenWorkspace) {
 +            tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
 +          }
++          if (tabData.zenDefaultUserContextId) {
++            tab.setAttribute("zenDefaultUserContextId", "true");
++          }
 +
            if (select) {
              tabToSelect = tab;
            }
-@@ -4150,6 +4159,7 @@
+@@ -4184,6 +4207,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||

@@ -5,7 +5,7 @@
  */
 
 :root {
-  --zen-settings-secondary-background: light-dark(#F2F4F4, color-mix(in srgb, var(--zen-primary-color) 10%, black 90%));
+  --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%));
 }
 
 .main-content {
@@ -22,33 +22,55 @@ description {
 }
 
 groupbox {
-  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
+  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 2%, #1b1b1b 98%));
   padding-inline: unset !important;
   padding: 20px 30px !important;
   margin-bottom: 0 !important;
   position: relative;
+
+  /* add shadow just to the sides */
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+@media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
+  groupbox {
+    background: #141414;
+  }
+}
+
+@media (-moz-bool-pref: 'zen.theme.color-prefs.colorful') {
+  groupbox {
+    background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
+  }
+
+  :root {
+    --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 70%, #0f0f0f 30%));
+  }
 }
 
 .subcategory + groupbox,
 #noFxaAccount,
 #hasFxaAccount {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   margin-top: 5px;
 }
 
 groupbox:has(+ script),
 groupbox:last-of-type,
+groupbox#pane-experimental-featureGates,
 groupbox:has(+ .subcategory) {
-  border-bottom-left-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
+  border-bottom-left-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+  /* add shadow just to bottom */
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-.sticky-inner-container{
+.sticky-inner-container {
   display: none !important;
 }
 
-.subcategory  {
+.subcategory {
   border-top: none !important;
 }
 
@@ -59,7 +81,6 @@ groupbox:has(+ .subcategory) {
 
 groupbox button {
   border-radius: 5px !important;
-  padding: 5px 10px !important;
 }
 
 groupbox button,
@@ -69,7 +90,7 @@ groupbox menulist {
 }
 
 groupbox h2 {
-  opacity: .7;
+  opacity: 0.7;
   font-size: 15px;
 }
 
@@ -82,11 +103,10 @@ groupbox h2 {
   min-height: 40px !important;
   position: relative;
   padding-inline: 20px !important;
-
 }
 
 #categories > .category[selected]::before {
-  content: "";
+  content: '';
   display: block;
   height: 70%;
   width: 5px;
@@ -97,7 +117,7 @@ groupbox h2 {
 }
 
 #languagesGroup::before {
-  content: "";
+  content: '';
   display: block;
   height: 1px;
   background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -136,6 +156,18 @@ groupbox h2 {
 
 /* Look and feel */
 
+#webAppearanceSettings,
+#zen-theme-builder-wrapper + box {
+  margin-bottom: 15px;
+}
+
+#zen-dark-theme-styles-form {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-large);
+  margin-top: 5px;
+}
+
 #zen-expand-tabbar-strat {
   display: flex;
   flex-direction: column;
@@ -146,7 +178,7 @@ groupbox h2 {
 }
 
 #category-zen-looks > .category-icon {
-  list-style-image: url("chrome://browser/skin/customize.svg");
+  list-style-image: url('chrome://browser/skin/customize.svg');
 }
 
 #zenLooksAndFeelColorOptions {
@@ -170,7 +202,7 @@ groupbox h2 {
   border: 2px solid transparent;
 }
 
-.zenLooksAndFeelColorOptionParen[selected="true"] {
+.zenLooksAndFeelColorOptionParen[selected='true'] {
   border-color: var(--zen-primary-color);
 }
 
@@ -184,7 +216,7 @@ groupbox h2 {
 }
 
 .zenLooksAndFeelColorOption::before {
-  content: "";
+  content: '';
   display: block;
   width: 50%;
   height: 50%;
@@ -195,7 +227,7 @@ groupbox h2 {
 }
 
 .zenLooksAndFeelColorOption::after {
-  content: "";
+  content: '';
   display: block;
   width: 50%;
   height: 50%;
@@ -208,13 +240,13 @@ groupbox h2 {
 /* Workspace */
 
 #category-zen-workspaces > .category-icon {
-  list-style-image: url("chrome://browser/skin/window.svg");
+  list-style-image: url('chrome://browser/skin/window.svg');
 }
 
 /* CKS */
 
 #category-zen-CKS > .category-icon {
-  list-style-image: url("chrome://browser/skin/quickactions.svg");
+  list-style-image: url('chrome://browser/skin/quickactions.svg');
 }
 
 .zenCKSOption-input {
@@ -311,14 +343,36 @@ groupbox h2 {
   transform: translate(-50%, -50%);
 }
 
-
 /* THemes marketplace */
 
-.zenThemeMarketplaceItem {
-  width: 100%;
+#category-zen-marketplace > .category-icon {
+  list-style-image: url('chrome://mozapps/skin/extensions/category-themes.svg');
+}
 
-  &:not(:first-of-type), .zenThemeMarketplaceItemPreferences {
-    margin-top: 15px;
+.zenThemeMarketplaceItem {
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 5px;
+  padding: var(--space-medium);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.zenThemeMarketplaceItemConfigureButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-image: url('chrome://global/skin/icons/settings.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 
@@ -334,11 +388,40 @@ groupbox h2 {
   margin: 0;
 }
 
+.zenThemeMarketplaceItemContent {
+  max-width: 100%;
+}
+
+.zenThemeMarketplaceItemTitle,
+.zenThemeMarketplaceItemDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemActions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-small);
+  justify-content: space-between;
+}
+
+#zenThemeMarketplaceList {
+  display: grid;
+  gap: var(--space-medium);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
 #zenThemeMarketplaceList:has(> *) {
   margin: 15px 0;
 }
 
 .zenThemeMarketplaceItemUninstallButton {
+  margin-left: auto;
+}
+
+#zenThemeMarketplaceCheckForUpdates {
   margin-left: auto;
 }
 

@@ -64,6 +64,16 @@
 
     &[showborder] {
       padding-top: 4px !important;
+
+      &::before {
+        content: '';
+        display: block;
+        height: 1px;
+        background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+        margin: 0 auto;
+        margin-block-end: 4px;
+        width: 80%;
+      }
     }
   }
 
@@ -111,16 +121,25 @@
       padding-right: 0 !important;
     }
 
-    & #vertical-tabs-newtab-button {
-      & label {
-        display: flex;
-        text-align: start;
-        align-items: center;
-        padding: 0;
+    & #newtab-button-container {
+      &::before {
+        width: 100%;
+        margin-block-end: calc(var(--zen-toolbox-padding) + 2px);
       }
 
-      &:hover * {
-        background: transparent !important;
+      & #vertical-tabs-newtab-button {
+        padding: 0 !important;
+
+        & label {
+          display: flex;
+          text-align: start;
+          align-items: center;
+          padding: 0;
+        }
+  
+        &:hover * {
+          background: transparent !important;
+        }
       }
     }
 
@@ -218,7 +237,6 @@
       height: 100%;
 
       border-top-right-radius: var(--zen-border-radius);
-      transform: translateY(-1px);
     }
 
     #navigator-toolbox:hover,
@@ -227,7 +245,10 @@
     #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-navigation-toolbar-min-width: 3.3rem !important;
+      --zen-navigation-toolbar-min-width: 3.4rem !important;
+
+      max-width: var(--zen-navigation-toolbar-min-width) !important;
+      min-width: var(--zen-navigation-toolbar-min-width) !important;
       padding: 0 !important;
 
       & #TabsToolbar {
@@ -238,6 +259,18 @@
         border-right-color: var(--zen-colors-border);
         position: absolute;
         padding: var(--zen-toolbox-padding);
+        transition: 0 !important;
+        animation: zen-sidebar-panel-animation-2 0.2s ease-in-out;
+      }
+
+      &[zen-right-side='true'] #TabsToolbar {
+        animation: zen-sidebar-panel-animation-right 0.2s ease-in-out;
+
+        right: 0;
+        border-right: 0;
+        border-left: 1px solid var(--zen-colors-border);
+        border-top-left-radius: var(--zen-border-radius);
+        border-top-right-radius: 0;
       }
 
       #navigator-toolbox:not(&)
@@ -274,6 +307,17 @@
           text-align: start;
         }
       }
+    }
+  }
+
+  /* Mark: Move sidebar to the right */
+  #browser:has(#navigator-toolbox[zen-right-side='true']) {
+    & #navigator-toolbox {
+      order: 3;
+    }
+
+    & #zen-sidebar-splitter {
+      order: 2;
     }
   }
 }

@@ -380,6 +380,10 @@ groupbox h2 {
   margin-right: 10px;
 }
 
+.zenThemeMarketplaceItemPreference:first-of-type {
+  margin-top: 10px;
+}
+
 .zenThemeMarketplaceItemPreference:not(:last-of-type) {
   margin-bottom: 10px;
 }

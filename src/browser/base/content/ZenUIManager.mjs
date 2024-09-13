@@ -71,7 +71,6 @@ var gZenVerticalTabsManager = {
   },
 
   _updateEvent() {
-    console.log('ZenThemeModifier: update event');
     this._updateMaxWidth();
     if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
       this.navigatorToolbox.setAttribute('zen-expanded', 'true');

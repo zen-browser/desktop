@@ -55,6 +55,10 @@
 
   #zen-sidebar-icons-wrapper {
     background: transparent;
+
+    & toolbarbutton {
+      width: fit-content;
+    }
   }
 
   #newtab-button-container {
@@ -106,8 +110,9 @@
     & #zen-sidebar-icons-wrapper {
       display: grid;
       /* Make sure the icons take most of the space, smartly */
-      grid-template-columns: repeat(auto-fit, minmax(var(--collapsed-tab-width), auto));
+      grid-template-columns: repeat(auto-fit, minmax(34px, auto));
       gap: 4px;
+      justify-content: space-between;
 
       padding-top: calc(var(--zen-toolbox-padding) * 2);
     }

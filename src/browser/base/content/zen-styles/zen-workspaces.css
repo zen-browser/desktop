@@ -1,18 +1,11 @@
 #zen-workspaces-button {
-  --zen-workspaces-button-vmargin: 0.4rem;
   border: 1px solid var(--zen-colors-border);
   border-radius: var(--zen-button-border-radius);
-  width: calc(var(--zen-sidebar-action-button-width) - 5px) !important;
-  height: calc(var(--zen-sidebar-action-button-width) - 5px) !important;
-  margin-bottom: var(--zen-workspaces-button-vmargin) !important;
+  min-height: 33px;
   justify-content: center;
   align-items: center;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
-
-  :root[zen-sidebar-legacy='true'] & {
-    margin-top: 0 !important;
-  }
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {

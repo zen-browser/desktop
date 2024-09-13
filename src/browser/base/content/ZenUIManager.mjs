@@ -28,17 +28,26 @@ var gZenUIManager = {
 
 var gZenVerticalTabsManager = {
   init() {
-    Services.prefs.addObserver('zen.view.sidebar-expanded', this._updateEvent.bind(this));
-    Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', this._updateEvent.bind(this));
-    Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', this._updateOnHoverVerticalTabs.bind(this));
-    this._updateMaxWidth();
+    var updateEvent = this._updateEvent.bind(this);
+    Services.prefs.addObserver('zen.view.sidebar-expanded', updateEvent);
+    Services.prefs.addObserver('zen.tabs.vertical.right-side', updateEvent);
+    Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', updateEvent);
+    Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', updateEvent);
+    this._updateEvent();
     this.initRightSideOrderContextMenu();
-    this._updateOnHoverVerticalTabs();
+  },
+
+  get navigatorToolbox() {
+    if (this._navigatorToolbox) {
+      return this._navigatorToolbox;
+    }
+    this._navigatorToolbox = document.getElementById('navigator-toolbox');
+    return this._navigatorToolbox;
   },
 
   _updateOnHoverVerticalTabs() {
     let onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
-    let sidebar = document.getElementById('navigator-toolbox');
+    let sidebar = this.navigatorToolbox;
     if (onHover) {
       sidebar.setAttribute('zen-user-hover', 'true');
     } else {
@@ -62,7 +71,19 @@ var gZenVerticalTabsManager = {
   },
 
   _updateEvent() {
+    console.log('ZenThemeModifier: update event');
     this._updateMaxWidth();
+    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
+      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
+    } else {
+      this.navigatorToolbox.removeAttribute('zen-expanded');
+    }
+    if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
+      this.navigatorToolbox.setAttribute('zen-right-side', 'true');
+    } else {
+      this.navigatorToolbox.removeAttribute('zen-right-side');
+    }
+    this._updateOnHoverVerticalTabs();
   },
 
   _updateMaxWidth() {

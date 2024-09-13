@@ -224,7 +224,7 @@
 
 :root:not([inDOMFullscreen='true']) #zen-sidebar-splitter {
   display: block;
-  width: 1px;
+  width: var(--zen-tabbrowser-padding);
   opacity: 0;
 }
 

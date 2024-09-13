@@ -38,7 +38,6 @@
   }
 
   #navigator-toolbox {
-    --zen-tabbrowser-padding: 5px;
     margin-top: 0; /* Issue #156 */
     order: 0 !important;
   }
@@ -436,12 +435,6 @@
     }
   }
 
-  @media not (-moz-bool-pref: 'zen.view.sidebar-expanded') {
-    #navigator-toolbox {
-      width: fit-content !important;
-    }
-  }
-
   #navigator-toolbox[zen-user-hover='true'] {
     width: fit-content !important;
   }
@@ -459,10 +452,6 @@
       padding-right: 0 !important;
     }
 
-    :root:not([zen-sidebar-legacy='true']) {
-      padding: calc(var(--zen-tabbrowser-padding) * 1.5);
-    }
-
     #zen-sidebar-splitter {
       order: 7 !important;
     }
@@ -470,6 +459,20 @@
     #tabbrowser-tabpanels .browserSidebarContainer {
       margin-left: 0 !important;
       margin-right: 2px !important;
+    }
+
+    #tabbrowser-tabs {
+      padding-right: var(--zen-tabbrowser-padding);
+    }
+  }
+
+  @media not (-moz-bool-pref: 'zen.view.sidebar-expanded') {
+    #navigator-toolbox {
+      width: fit-content !important;
+    }
+
+    #tabbrowser-tabs {
+      padding-right: 0 !important;
     }
   }
 

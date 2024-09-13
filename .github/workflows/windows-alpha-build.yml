@@ -216,4 +216,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}
-          path: engine/obj-x86_64-pc-windows-msvc/dist
+          path: engine/obj-x86_64-pc-windows-msvc/

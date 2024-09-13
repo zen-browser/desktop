@@ -609,4 +609,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.workspaces.individual-pinned-tabs',
+    type: 'bool',
+    default: true,
+  }
 ]);

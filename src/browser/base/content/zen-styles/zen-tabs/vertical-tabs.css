@@ -73,7 +73,7 @@
         content: '';
         display: block;
         height: 1px;
-        background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+        background: color-mix(in srgb, var(--zen-colors-border) 70%, transparent 30%);
         margin: 0 auto;
         margin-block-end: 4px;
         width: 80%;
@@ -200,7 +200,8 @@
             display: none;
           }
 
-          & .tab-icon-image {
+          & .tab-icon-image,
+          & .tab-icon-pending {
             margin-inline-end: 0 !important;
           }
         }

@@ -140,25 +140,11 @@ pref('xpinstall.signatures.required', false);
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
 
-// Font rendering, not for MacOSX and Linux
-#ifndef XP_UNIX
-#ifndef XP_MACOSX
-pref("gfx.font_rendering.directwrite.bold_simulation", 2);
-pref("gfx.font_rendering.cleartype_params.enhanced_contrast", 25);
-pref("gfx.font_rendering.cleartype_params.force_gdi_classic_for_families", "");
-#endif
-#endif
-
 // Enable private suggestions
 pref('browser.search.suggest.enabled', true);
 pref('browser.search.suggest.enabled.private', true);
 
 pref("extensions.enabledScopes", 5); // [HIDDEN PREF]
-
-// Enable GPU by default
-pref('gfx.webrender.all', true);
-pref('layers.acceleration.force-enabled', true);
-pref('media.ffmpeg.vaapi.enabled', true);
 
 // Enable JXL support
 pref('image.jxl.enabled', true);
@@ -200,6 +186,11 @@ pref("widget.non-native-theme.use-theme-accent", true);
 // Expose Letterboxing https://github.com/zen-browser/desktop/issues/475
 pref("privacy.resistFingerprinting.letterboxing", false);
 pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
+
+// Enable GPU by default
+pref('gfx.webrender.all', true);
+pref('layers.acceleration.force-enabled', true);
+pref('media.ffmpeg.vaapi.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);

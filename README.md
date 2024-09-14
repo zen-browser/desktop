@@ -51,6 +51,18 @@ You can also install Zen using Homebrew:
 brew install --cask zen-browser
 ```
 
+### Linux
+
+#### AppImage
+```
+curl -sL https://github.com/Muko-Tabi/desktop/raw/main/appimageinstall.sh -o /tmp/appimageinstall.sh && bash /tmp/appimageinstall.sh && rm /tmp/appimageinstall.sh
+```
+
+#### Flatpak
+```
+flatpak install flathub io.github.zen_browser.zen
+```
+
 To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
 
 # Core Components

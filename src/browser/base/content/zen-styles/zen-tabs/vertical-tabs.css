@@ -230,12 +230,6 @@
       z-index: 1;
     }
 
-    #navigator-toolbox,
-    #titlebar,
-    #TabsToolbar {
-      transition: 0s !important;
-    }
-
     #TabsToolbar {
       --hovered-verticaltab-width: 20em;
 
@@ -274,11 +268,11 @@
         position: absolute;
         padding: var(--zen-toolbox-padding);
         transition: 0 !important;
-        animation: zen-vtabs-animation 0.2s ease-in-out;
+        animation: zen-vtabs-animation 0.3s ease-in-out;
       }
 
       &[zen-right-side='true'] #TabsToolbar {
-        animation: zen-sidebar-panel-animation-right 0.2s ease-in-out;
+        animation: zen-sidebar-panel-animation-right 0.3s ease-in-out;
 
         right: 0;
         border-right: 0;
@@ -320,6 +314,12 @@
           display: block !important;
           text-align: start;
         }
+      }
+
+      #navigator-toolbox,
+      #titlebar,
+      #TabsToolbar {
+        transition: .1s !important;
       }
     }
   }

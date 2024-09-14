@@ -373,7 +373,7 @@ groupbox h2 {
   position: relative;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -388,6 +388,10 @@ groupbox h2 {
 
 .zenThemeMarketplaceItemPreferenceCheckbox {
   margin-right: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:first-of-type {
+  margin-top: 10px;
 }
 
 .zenThemeMarketplaceItemPreference:not(:last-of-type) {
@@ -433,6 +437,24 @@ groupbox h2 {
 
 #zenThemeMarketplaceCheckForUpdates {
   margin-left: auto;
+}
+
+.zenThemeMarketplaceItemPreferenceDialog {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-width: 650px;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogTopBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogContent {
+  display: flex;
+  flex-direction: row;
 }
 
 /* Disable mozilla's settings */

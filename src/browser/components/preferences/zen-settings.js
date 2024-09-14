@@ -115,7 +115,8 @@ var gZenMarketplaceManager = {
   },
 
   _getValidPreferences(preferences) {
-    for (let key in preferences) {
+    for (let entry of preferences) {
+      const key = entry.property;
       // [!][os:]key
       let restOfPreferences = key;
       let isNegation = false;
@@ -145,16 +146,47 @@ var gZenMarketplaceManager = {
   async _getThemePreferences(theme) {
     const themePath = PathUtils.join(this.themesRootPath, theme.id, 'preferences.json');
     if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
-      return {};
+      return [];
     }
-    return this._getValidPreferences(await IOUtils.readJSON(themePath));
+
+    let themePreferences = await IOUtils.readJSON(themePath);
+
+    // compat mode for old preferences, all of them can only be checkboxes
+    if (typeof themePreferences === 'object' && !Array.isArray(themePreferences)) {
+      console.warn(
+        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: `
+      );
+      themePreferences = Object.entries(themePreferences).map(([property, label]) => {
+        return {
+          property,
+          label,
+          type: 'checkbox',
+        };
+      });
+    }
+
+    return this._getValidPreferences(themePreferences);
+  },
+
+  _getBrowser() {
+    if (!this.__browser) {
+      this.__browser = Services.wm.getMostRecentWindow('navigator:browser');
+    }
+
+    return this.__browser;
   },
 
   async _buildThemesList() {
     if (!this.themesList) return;
+
     console.log('ZenThemeMarketplaceParent(settings): Building themes list');
+
     let themes = await this._getThemes();
+
     this.themesList.innerHTML = '';
+
+    const browser = this._getBrowser();
+
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem" align="center">
@@ -168,7 +200,40 @@ var gZenMarketplaceManager = {
           </hbox>
         </vbox>
       `);
-      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = `${theme.name} (v${theme.version || '1.0.0'})`;
+
+      const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
+
+      const base = fragment.querySelector('.zenThemeMarketplaceItem');
+
+      const dialog = document.createElement('dialog');
+      const mainDialogDiv = document.createElement('div');
+      const headerDiv = document.createElement('div');
+      const headerTitle = document.createElement('h3');
+      const closeButton = document.createElement('button');
+      const contentDiv = document.createElement('div');
+
+      mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
+      headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
+      headerTitle.textContent = themeName;
+      headerTitle.className = 'zenThemeMarketplaceItemTitle';
+      closeButton.id = `${theme.name}-modal-close`;
+      closeButton.textContent = 'Close';
+      contentDiv.id = `${theme.name}-preferences-content`;
+      contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
+
+      headerDiv.appendChild(headerTitle);
+      headerDiv.appendChild(closeButton);
+
+      mainDialogDiv.appendChild(headerDiv);
+      mainDialogDiv.appendChild(contentDiv);
+      dialog.appendChild(mainDialogDiv);
+      base.appendChild(dialog);
+
+      closeButton.addEventListener('click', () => {
+        dialog.close();
+      });
+
+      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;
       fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = theme.description;
       fragment.querySelector('.zenThemeMarketplaceItemUninstallButton').addEventListener('click', async (event) => {
         if (!confirm('Are you sure you want to remove this theme?')) {
@@ -178,54 +243,144 @@ var gZenMarketplaceManager = {
         const themeId = target.getAttribute('zen-theme-id');
         await this.removeTheme(themeId);
       });
+      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
+        dialog.showModal();
+      });
+
       if (theme.preferences) {
         fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
       }
-      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', async (event) => {
-        const target = event.target;
-        // Unhide the preferences for this theme.
-        const preferencesWrapper = target.closest('.zenThemeMarketplaceItem').querySelector('.zenThemeMarketplaceItemPreferences');
-        if (preferencesWrapper.hasAttribute('hidden')) {
-          preferencesWrapper.removeAttribute('hidden');
-        } else {
-          preferencesWrapper.setAttribute('hidden', 'true');
-        }
-      });
 
       const preferences = await this._getThemePreferences(theme);
-      if (Object.keys(preferences).length > 0) {
-        let preferencesWrapper = document.createXULElement('vbox');
-        preferencesWrapper.classList.add('indent');
+
+      if (preferences.length > 0) {
+        const preferencesWrapper = document.createXULElement('vbox');
+
         preferencesWrapper.classList.add('zenThemeMarketplaceItemPreferences');
-        preferencesWrapper.setAttribute('hidden', 'true');
-        for (let [key, value] of Object.entries(preferences)) {
-          const fragment = window.MozXULElement.parseXULToFragment(`
-            <hbox class="zenThemeMarketplaceItemPreference">
-              <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" zen-pref="${key}"></checkbox>
-              <vbox class="zenThemeMarketplaceItemPreferenceData">
-                <label class="zenThemeMarketplaceItemPreferenceLabel">${key}</label>
-                <description class="description-deemphasized zenThemeMarketplaceItemPreferenceValue">${value}</description>
-              </vbox>
-            </hbox>
-          `);
-          // Checkbox only works with "true" and "false" values, it's not like HTML checkboxes.
-          if (Services.prefs.getBoolPref(key, false)) {
-            fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').setAttribute('checked', 'true');
-          }
-          fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
-            let target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
-            let key = target.getAttribute('zen-pref');
-            let checked = target.hasAttribute('checked');
-            if (!checked) {
-              target.removeAttribute('checked');
-            } else {
-              target.setAttribute('checked', 'true');
+
+        for (let entry of preferences) {
+          const { property, label, type } = entry;
+
+          switch (type) {
+            case 'dropdown': {
+              const { options } = entry;
+
+              const container = document.createXULElement('hbox');
+              container.classList.add('zenThemeMarketplaceItemPreference');
+              container.setAttribute('align', 'center');
+              container.setAttribute('role', 'group');
+
+              const menulist = document.createXULElement('menulist');
+              const menupopup = document.createXULElement('menupopup');
+
+              menulist.setAttribute('sizetopopup', 'none');
+              menulist.setAttribute('id', property + '-popup-menulist');
+
+              const savedValue = Services.prefs.getStringPref(property, 'none');
+
+              menulist.setAttribute('value', savedValue);
+              menulist.setAttribute('tooltiptext', property);
+
+              const defaultItem = document.createXULElement('menuitem');
+
+              defaultItem.setAttribute('value', 'none');
+              defaultItem.setAttribute('label', '-');
+
+              menupopup.appendChild(defaultItem);
+
+              for (let option of options) {
+                const { label, value } = option;
+
+                const valueType = typeof value;
+
+                if (!['string', 'number'].includes(valueType)) {
+                  console.log(
+                    `ZenThemeMarketplaceParent(settings): Warning, invalid data type received (${valueType}), skipping.`
+                  );
+                  continue;
+                }
+
+                const menuitem = document.createXULElement('menuitem');
+
+                menuitem.setAttribute('value', value.toString());
+                menuitem.setAttribute('label', label);
+
+                menupopup.appendChild(menuitem);
+              }
+
+              menulist.appendChild(menupopup);
+
+              menulist.addEventListener('command', () => {
+                const value = menulist.selectedItem.value;
+
+                let element = browser.document.getElementById(theme.name);
+
+                if (!element) {
+                  element = browser.document.createElement('div');
+
+                  element.style.display = 'none';
+                  element.setAttribute('id', theme.name);
+
+                  browser.document.body.appendChild(element);
+                }
+
+                element.setAttribute(property, value);
+
+                Services.prefs.setStringPref(property, value === 'none' ? '' : value);
+              });
+
+              const nameLabel = document.createXULElement('label');
+              nameLabel.setAttribute('flex', '1');
+              nameLabel.setAttribute('class', 'zenThemeMarketplaceItemPreferenceLabel');
+              nameLabel.setAttribute('value', label);
+              nameLabel.setAttribute('tooltiptext', property);
+
+              container.appendChild(nameLabel);
+              container.appendChild(menulist);
+              container.setAttribute('aria-labelledby', label);
+
+              preferencesWrapper.appendChild(container);
+              break;
             }
-            Services.prefs.setBoolPref(key, !checked);
-          });
-          preferencesWrapper.appendChild(fragment);
+
+            case 'checkbox': {
+              const fragment = window.MozXULElement.parseXULToFragment(`
+                <hbox class="zenThemeMarketplaceItemPreference">
+                  <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" label="${label}" tooltiptext="${property}" zen-pref="${property}"></checkbox>
+                </hbox>
+              `);
+
+              // Checkbox only works with "true" and "false" values, it's not like HTML checkboxes.
+              if (Services.prefs.getBoolPref(property, false)) {
+                fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').setAttribute('checked', 'true');
+              }
+
+              fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
+                let target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
+                let key = target.getAttribute('zen-pref');
+                let checked = target.hasAttribute('checked');
+
+                if (!checked) {
+                  target.removeAttribute('checked');
+                } else {
+                  target.setAttribute('checked', 'true');
+                }
+
+                Services.prefs.setBoolPref(key, !checked);
+              });
+
+              preferencesWrapper.appendChild(fragment);
+              break;
+            }
+
+            default:
+              console.log(
+                `ZenThemeMarketplaceParent(settings): Warning, unknown preference type received (${type}), skipping.`
+              );
+              continue;
+          }
         }
-        fragment.querySelector('.zenThemeMarketplaceItemContent').appendChild(preferencesWrapper);
+        contentDiv.appendChild(preferencesWrapper);
       }
       this.themesList.appendChild(fragment);
     }
@@ -264,7 +419,7 @@ var gZenLooksAndFeel = {
 
   onPreferColorSchemeChange(event) {
     const darkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let elem = document.getElementById("ZenDarkThemeStyles");
+    let elem = document.getElementById('ZenDarkThemeStyles');
     if (darkTheme) {
       elem.removeAttribute('hidden');
     } else {
@@ -273,30 +428,34 @@ var gZenLooksAndFeel = {
   },
 
   setDarkThemeListener() {
-    this.chooser = document.getElementById("zen-dark-theme-styles-form");
-    this.radios = [...this.chooser.querySelectorAll("input")];
+    this.chooser = document.getElementById('zen-dark-theme-styles-form');
+    this.radios = [...this.chooser.querySelectorAll('input')];
     for (let radio of this.radios) {
-      if (radio.value === "amoled" && Services.prefs.getBoolPref("zen.theme.color-prefs.amoled")) {
+      if (radio.value === 'amoled' && Services.prefs.getBoolPref('zen.theme.color-prefs.amoled')) {
         radio.checked = true;
-      } else if (radio.value === "colorful" && Services.prefs.getBoolPref("zen.theme.color-prefs.colorful")) {
+      } else if (radio.value === 'colorful' && Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')) {
         radio.checked = true;
-      } else if (radio.value === "default" && !Services.prefs.getBoolPref("zen.theme.color-prefs.amoled") && !Services.prefs.getBoolPref("zen.theme.color-prefs.colorful")) {
+      } else if (
+        radio.value === 'default' &&
+        !Services.prefs.getBoolPref('zen.theme.color-prefs.amoled') &&
+        !Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')
+      ) {
         radio.checked = true;
       }
-      radio.addEventListener("change", e => {
+      radio.addEventListener('change', (e) => {
         let value = e.target.value;
         switch (value) {
-          case "amoled":
-            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", true);
-            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", false);
+          case 'amoled':
+            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', true);
+            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
             break;
-          case "colorful":
-            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", false);
-            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", true);
+          case 'colorful':
+            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
+            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', true);
             break;
           default:
-            Services.prefs.setBoolPref("zen.theme.color-prefs.amoled", false);
-            Services.prefs.setBoolPref("zen.theme.color-prefs.colorful", false);
+            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
+            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
             break;
         }
       });
@@ -613,5 +772,5 @@ Preferences.addAll([
     id: 'zen.workspaces.individual-pinned-tabs',
     type: 'bool',
     default: true,
-  }
+  },
 ]);

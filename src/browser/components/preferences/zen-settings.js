@@ -211,7 +211,7 @@ var gZenMarketplaceManager = {
 
     const browser = this._getBrowser();
 
-    const themeList = document.createElement("div");
+    const themeList = document.createElement('div');
 
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
@@ -230,6 +230,7 @@ var gZenMarketplaceManager = {
       `);
 
       const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
+      const sanitizedName = theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '');
 
       const base = fragment.querySelector('.zenThemeMarketplaceItem');
       const baseHeader = fragment.querySelector('#zenThemeMarketplaceItemContentHeader');
@@ -245,15 +246,16 @@ var gZenMarketplaceManager = {
       mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
       headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
       headerTitle.textContent = themeName;
+      headerTitle.title = `CSS Selector: ${sanitizedName}`;
       headerTitle.className = 'zenThemeMarketplaceItemTitle';
-      closeButton.id = `${theme.name}-modal-close`;
+      closeButton.id = `${sanitizedName}-modal-close`;
       closeButton.textContent = 'Close';
-      contentDiv.id = `${theme.name}-preferences-content`;
+      contentDiv.id = `${sanitizedName}-preferences-content`;
       contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
       mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle';
 
       mozToggle.pressed = theme.enabled;
-      mozToggle.title = theme.enabled ? 'Disable theme': 'Enable theme';
+      mozToggle.title = theme.enabled ? 'Disable theme' : 'Enable theme';
 
       baseHeader.appendChild(mozToggle);
 
@@ -270,7 +272,8 @@ var gZenMarketplaceManager = {
       });
 
       mozToggle.addEventListener('toggle', async (event) => {
-        const themeId = event.target.closest('.zenThemeMarketplaceItem')
+        const themeId = event.target
+          .closest('.zenThemeMarketplaceItem')
           .querySelector('.zenThemeMarketplaceItemUninstallButton')
           .getAttribute('zen-theme-id');
 
@@ -361,18 +364,18 @@ var gZenMarketplaceManager = {
               menulist.addEventListener('command', () => {
                 const value = menulist.selectedItem.value;
 
-                let element = browser.document.getElementById(theme.name);
+                let element = browser.document.getElementById(sanitizedName);
 
                 if (!element) {
                   element = browser.document.createElement('div');
 
                   element.style.display = 'none';
-                  element.setAttribute('id', theme.name);
+                  element.setAttribute('id', sanitizedName);
 
                   browser.document.body.appendChild(element);
                 }
 
-                element.setAttribute(property, value);
+                element.setAttribute(property?.replaceAll(/\./g, '-'), value);
 
                 Services.prefs.setStringPref(property, value === 'none' ? '' : value);
               });

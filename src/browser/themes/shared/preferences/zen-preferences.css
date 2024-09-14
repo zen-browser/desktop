@@ -426,6 +426,7 @@ groupbox h2 {
 
 .zenThemeMarketplaceItemContent {
   max-width: 100%;
+  width: 100%;
 }
 
 .zenThemeMarketplaceItemTitle,
@@ -483,6 +484,11 @@ groupbox h2 {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+
+  & moz-toggle {
+    margin-left: 10px;
+  }
 }
 
 /* Disable mozilla's settings */

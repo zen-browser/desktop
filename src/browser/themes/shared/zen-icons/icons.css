@@ -138,6 +138,7 @@
 #appMenu-history-button,
 #appMenu-library-history-button,
 #sidebar-switcher-history,
+#zen-history-button,
 #sidebar-box[sidebarcommand='viewHistorySidebar'] > #sidebar-header > #sidebar-switcher-target > #sidebar-icon {
   list-style-image: url('history.svg') !important;
 }
@@ -219,6 +220,7 @@
 }
 
 #preferences-button,
+#zen-preferences-button,
 .search-setting-button > .button-box > .button-icon,
 #appMenu-settings-button,
 #PanelUI-zen-profiles-managePrfs,
@@ -405,7 +407,8 @@
 }
 
 #pageAction-panel-bookmark,
-#star-button {
+#star-button,
+#zen-bookmark-button {
   list-style-image: url('bookmark-hollow.svg') !important;
 }
 

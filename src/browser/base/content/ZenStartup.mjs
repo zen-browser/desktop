@@ -71,7 +71,7 @@
         totalHeight -= tab.getBoundingClientRect().height;
       }
       tabs.style.maxHeight = totalHeight + 'px';
-      console.info('ZenThemeModifier: set tabs max-height to', totalHeight + 'px');
+      //console.info('ZenThemeModifier: set tabs max-height to', totalHeight + 'px');
 
       const allTabs = document.getElementById('alltabs-button');
       allTabs.removeAttribute('hidden');

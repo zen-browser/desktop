@@ -5,3 +5,9 @@
 #zen-tabbox-wrapper {
   position: relative;
 }
+
+@media (-moz-bool-pref: 'zen.workspaces.hide-default-container-indicator') {
+  .tabbrowser-tab[zenDefaultUserContextId='true'] .tab-context-line {
+    display: none !important;
+  }
+}

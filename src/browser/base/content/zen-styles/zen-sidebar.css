@@ -1,117 +1,6 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 
-:root {
-  --sidebar-background-color: var(--toolbar-bgcolor) !important;
-  --zen-sidebar-box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-#sidebar-box {
-  --zen-sidebar-box-border-radius: var(--zen-panel-radius);
-  margin: var(--zen-element-separation);
-  border-radius: var(--zen-sidebar-box-border-radius);
-  overflow: hidden;
-  transition: 0.2s;
-  margin-left: 0;
-  border: var(--zen-appcontent-border);
-  box-shadow: none;
-  margin-top: 0;
-}
-
-#sidebar-box[hidden='true'] {
-  width: 0;
-  opacity: 0;
-}
-
-#sidebar-box:not([positionend='true']) {
-  margin-right: 0;
-}
-
-#zen-main-app-wrapper:has(#sidebar-box:not([hidden='true'], [positionend='true'])) #TabsToolbar {
-  margin-right: 0 !important;
-  box-shadow: none !important;
-}
-
-#sidebar-splitter {
-  /* we can still use the splitter but we can't see it */
-  background: transparent !important;
-  border-color: transparent !important;
-  width: 1px !important;
-  margin-right: 5px;
-}
-
-#sidebar-box[positionend] {
-  margin-left: 0;
-}
-
-.zen-sidebar-action-button {
-  --toolbarbutton-active-background: var(--zen-colors-secondary);
-  width: var(--zen-sidebar-action-button-width);
-  height: var(--zen-sidebar-action-button-width);
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#TabsToolbar .toolbarbutton-1 {
-  width: var(--zen-sidebar-action-button-width);
-  height: var(--zen-sidebar-action-button-width);
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-#TabsToolbar .toolbarbutton-1:not(.zen-sidebar-panel-button) > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack),
-.zen-sidebar-action-button {
-  border-radius: 8px !important;
-}
-
-:root[customizing] #navigator-toolbox {
-  display: none;
-}
-
-.zen-sidebar-action-button:hover {
-  background: var(--toolbarbutton-hover-background) !important;
-}
-
-.zen-sidebar-action-button:hover image {
-  background: transparent !important;
-}
-
-#sidebar-box[hidden='true'] .zen-sidebar-action-button,
-.zen-sidebar-panel-button[animate] {
-  opacity: 0;
-  transform: translateX(-110%);
-  animation: zen-sidebar-button-fadeIn 0.4s forwards;
-}
-
-@keyframes zen-sidebar-button-fadeIn {
-  0% {
-    transform: translateX(-110%);
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Icons */
-
-#zen-preferences-button {
-  list-style-image: url('chrome://global/skin/icons/settings.svg');
-}
-
-#zen-history-button {
-  list-style-image: url('chrome://browser/skin/history.svg');
-}
-
-#zen-bookmark-button {
-  list-style-image: url(chrome://browser/skin/bookmark-hollow.svg);
+toolbar {
+  min-height: 46px;
 }
 
 #zen-profile-button {
@@ -119,136 +8,49 @@
   justify-content: center;
   position: relative;
   align-items: center;
-}
-
-#zen-profile-button::before {
-  background-image: var(--avatar-image-url);
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--zen-colors-border);
-  content: '';
-  top: 50%;
-  left: var(--toolbar-start-end-padding);
-  transform: translateY(-50%);
-  position: absolute;
-}
-
-/* Ugly code */
-
-#TabsToolbar .zen-sidebar-action-button:nth-child(1),
-.zen-sidebar-panel-button:nth-child(1) {
-  animation-delay: 0.1s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(2),
-.zen-sidebar-panel-button:nth-child(2) {
-  animation-delay: 0.2s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(3),
-.zen-sidebar-panel-button:nth-child(3) {
-  animation-delay: 0.3s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(4),
-.zen-sidebar-panel-button:nth-child(4) {
-  animation-delay: 0.4s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(5),
-.zen-sidebar-panel-button:nth-child(5) {
-  animation-delay: 0.5s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(6),
-.zen-sidebar-panel-button:nth-child(6) {
-  animation-delay: 0.6s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(7),
-.zen-sidebar-panel-button:nth-child(7) {
-  animation-delay: 0.7s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(8),
-.zen-sidebar-panel-button:nth-child(8) {
-  animation-delay: 0.8s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(9),
-.zen-sidebar-panel-button:nth-child(9) {
-  animation-delay: 0.9s;
-}
-#TabsToolbar .zen-sidebar-action-button:nth-child(10),
-.zen-sidebar-panel-button:nth-child(10) {
-  animation-delay: 1s;
-}
-
-#zen-sidebar-icons-wrapper toolbarbutton {
+  list-style-image: var(--avatar-image-url);
   position: relative;
-}
 
-#zen-sidebar-icons-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin: 0 var(--zen-tabbrowser-padding);
-  position: relative;
-  background: transparent !important;
-  align-items: center;
-  justify-content: end;
-  min-height: fit-content;
-  --zen-sidebar-action-content-separator: calc(5px + var(--zen-tabbrowser-padding));
-  padding-top: var(--zen-sidebar-action-content-separator);
-  color-scheme: inherit !important;
-}
-
-#alltabs-button {
-  &:hover .toolbarbutton-badge-stack {
-    background: transparent !important;
-  }
-}
-
-#zen-sidebar-icons-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 1px;
-  background: var(--zen-colors-border);
-}
-
-#zen-sidepanel-button[hidden='true'] {
-  display: none;
-}
-
-#zen-expand-sidebar-button {
-  display: none;
-}
-
-:root:not([inDOMFullscreen='true']) #zen-sidebar-splitter {
-  display: block;
-  width: var(--zen-tabbrowser-padding);
-  opacity: 0;
-}
-
-:root[inDOMFullscreen='true'] #zen-sidebar-splitter {
-  display: none;
-}
-
-@media not (-moz-bool-pref: 'zen.view.sidebar-expanded') {
-  #navigator-toolbox {
-    width: 0;
-    padding-right: 2px;
-  }
-
-  #zen-sidebar-splitter {
-    display: none !important;
-  }
-}
-
-@media (-moz-bool-pref: 'zen.view.sidebar-expanded.show-button') {
-  #zen-expand-sidebar-button {
+  & image {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
   }
 }
 
-:root:is([chromehidden~='location'], [chromehidden~='toolbar']) #navigator-toolbox {
-  display: none !important;
+/*#zen-profile-button::before {
+  background: transparent;
+  border-radius: 50%;
+  border: 3px solid var(--zen-colors-border);
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(2 * var(--toolbarbutton-inner-padding) + 16px - 8px - var(--toolbarbutton-inner-padding));
+  height: calc(2 * var(--toolbarbutton-inner-padding) + 16px - 8px - var(--toolbarbutton-inner-padding));
+}*/
+
+/* Bookmarks sidebar */
+#zen-tabbox-wrapper {
+  & #sidebar-splitter {
+    opacity: 0;
+  }
+
+  & #sidebar-box {
+    border-radius: var(--zen-border-radius);
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--zen-element-separation) !important;
+    overflow: hidden;
+    border: 1px solid var(--zen-colors-border);
+
+    :root:has(#navigator-toolbox:not([zen-right-side='true'])) &[positionend="true"] {
+      margin-right: var(--zen-element-separation);
+    }
+    
+    :root:has(#navigator-toolbox[zen-right-side='true']) & {
+      margin-left: var(--zen-element-separation);
+    }
+  }
 }

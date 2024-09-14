@@ -109,6 +109,7 @@ pref('zen.splitView.working', false);
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
 pref('zen.workspaces.hide-default-container-indicator', true);
+pref('zen.workspaces.individual-pinned-tabs', true);
 pref('zen.workspaces.icons', '["🌐", "📁", "📎", "📝", "📅", "📊"]');
 
 // Zen Watermark

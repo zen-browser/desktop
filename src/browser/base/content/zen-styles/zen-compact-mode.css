@@ -30,7 +30,7 @@
       border: 1px solid var(--zen-colors-border);
       transition-delay: 200ms;
       background: var(--zen-colors-tertiary) !important;
-      padding: 0 5px;
+      padding: var(--zen-toolbox-padding);
       border-radius: var(--zen-panel-radius);
     }
 
@@ -40,13 +40,14 @@
 
     &,
     & #titlebar {
-      min-width: calc(var(--zen-navigation-toolbar-min-width) + var(--zen-compact-toolbox-margin-single) * 4) !important;
+      min-width: var(--zen-toolbox-min-width) !important;
     }
   }
 
   @media not (-moz-bool-pref: 'zen.view.sidebar-expanded') {
     #navigator-toolbox {
       width: fit-content !important;
+      --zen-toolbox-max-width: calc(50px + var(--zen-compact-toolbox-margin-single) * 2) !important;
     }
   }
 
@@ -186,33 +187,25 @@
       padding-top: var(--zen-element-separation) !important;
     }
 
-    #titlebar {
-      padding-top: 5px !important;
-    }
-
     #zen-sidebar-web-panel-wrapper {
       margin-top: 10px !important;
     }
   }
 
-  @media (-moz-bool-pref: 'zen.tabs.vertical.right-side') {
-    #navigator-toolbox {
+  #navigator-toolbox[zen-right-side='true'] {
+    & {
       right: 0 !important;
       transform: translateX(calc(100% - (var(--zen-compact-toolbox-margin-single) / 2))) !important;
     }
 
-    #navigator-toolbox > vbox {
-      float: right;
-    }
-
-    #navigator-toolbox:hover,
-    #navigator-toolbox:focus-within,
-    #navigator-toolbox[zen-user-show],
-    #navigator-toolbox[flash-popup],
-    #navigator-toolbox[movingtab],
-    #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
-    #navigator-toolbox:has(.tabbrowser-tab:active),
-    #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
+    &:hover,
+    &:focus-within,
+    &[zen-user-show],
+    &[flash-popup],
+    &[movingtab],
+    & #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+    &:has(.tabbrowser-tab:active),
+    &:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
       transform: none !important;
       opacity: 1;
 

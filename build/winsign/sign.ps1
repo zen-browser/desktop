@@ -1,18 +1,20 @@
 param(
-    [string]$RunID,
-    [string]$SignIdentity
+    [string][Parameter(Mandatory=$true)]$SignIdentity,
+    [string][Parameter(Mandatory=$true)]$RunID
 )
 
 $ErrorActionPreference = "Stop"
 
 echo "Preparing environment"
+rmdir engine\obj-x86_64-pc-windows-msvc\ -Recurse -ErrorAction SilentlyContinue
 mkdir windsign-temp -ErrorAction SilentlyContinue
 mkdir engine\obj-x86_64-pc-windows-msvc\ -ErrorAction SilentlyContinue
 
 pnpm surfer ci --brand alpha
 
 echo "Downloading from runner with ID $RunID"
-gh run download $RunID --pattern "windows-x64-obj-*" --dir windsign-temp
+gh run download $RunID --name "windows-x64-obj-specific" --dir windsign-temp
+gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp
 
 function SignAndPackage($name) {
     echo "Executing on $name"

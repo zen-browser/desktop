@@ -148,22 +148,45 @@ var gZenMarketplaceManager = {
     if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
       return [];
     }
-    return this._getValidPreferences(await IOUtils.readJSON(themePath));
+
+    let themePreferences = await IOUtils.readJSON(themePath);
+
+    // compat mode for old preferences, all of them can only be checkboxes
+    if (typeof themePreferences === 'object' && !Array.isArray(themePreferences)) {
+      console.warn(
+        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: `
+      );
+      themePreferences = Object.entries(themePreferences).map(([property, label]) => {
+        return {
+          property,
+          label,
+          type: 'checkbox',
+        };
+      });
+    }
+
+    return this._getValidPreferences(themePreferences);
   },
 
   _getBrowser() {
     if (!this.__browser) {
-      this.__browser = Services.wm.getMostRecentWindow("navigator:browser")
+      this.__browser = Services.wm.getMostRecentWindow('navigator:browser');
     }
 
-    return this.__browser
+    return this.__browser;
   },
 
   async _buildThemesList() {
     if (!this.themesList) return;
+
     console.log('ZenThemeMarketplaceParent(settings): Building themes list');
+
     let themes = await this._getThemes();
+
     this.themesList.innerHTML = '';
+
+    const browser = this._getBrowser();
+
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem" align="center">
@@ -177,7 +200,40 @@ var gZenMarketplaceManager = {
           </hbox>
         </vbox>
       `);
-      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = `${theme.name} (v${theme.version || '1.0.0'})`;
+
+      const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
+
+      const base = fragment.querySelector('.zenThemeMarketplaceItem');
+
+      const dialog = document.createElement('dialog');
+      const mainDialogDiv = document.createElement('div');
+      const headerDiv = document.createElement('div');
+      const headerTitle = document.createElement('h3');
+      const closeButton = document.createElement('button');
+      const contentDiv = document.createElement('div');
+
+      mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
+      headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
+      headerTitle.textContent = themeName;
+      headerTitle.className = 'zenThemeMarketplaceItemTitle';
+      closeButton.id = `${theme.name}-modal-close`;
+      closeButton.textContent = 'Close';
+      contentDiv.id = `${theme.name}-preferences-content`;
+      contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
+
+      headerDiv.appendChild(headerTitle);
+      headerDiv.appendChild(closeButton);
+
+      mainDialogDiv.appendChild(headerDiv);
+      mainDialogDiv.appendChild(contentDiv);
+      dialog.appendChild(mainDialogDiv);
+      base.appendChild(dialog);
+
+      closeButton.addEventListener('click', () => {
+        dialog.close();
+      });
+
+      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;
       fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = theme.description;
       fragment.querySelector('.zenThemeMarketplaceItemUninstallButton').addEventListener('click', async (event) => {
         if (!confirm('Are you sure you want to remove this theme?')) {
@@ -187,27 +243,20 @@ var gZenMarketplaceManager = {
         const themeId = target.getAttribute('zen-theme-id');
         await this.removeTheme(themeId);
       });
+      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
+        dialog.showModal();
+      });
+
       if (theme.preferences) {
         fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
       }
-      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', async (event) => {
-        const target = event.target;
-        // Unhide the preferences for this theme.
-        const preferencesWrapper = target.closest('.zenThemeMarketplaceItem').querySelector('.zenThemeMarketplaceItemPreferences');
-        if (preferencesWrapper.hasAttribute('hidden')) {
-          preferencesWrapper.removeAttribute('hidden');
-        } else {
-          preferencesWrapper.setAttribute('hidden', 'true');
-        }
-      });
 
       const preferences = await this._getThemePreferences(theme);
 
       if (preferences.length > 0) {
-        let preferencesWrapper = document.createXULElement('vbox');
-        preferencesWrapper.classList.add('indent');
+        const preferencesWrapper = document.createXULElement('vbox');
+
         preferencesWrapper.classList.add('zenThemeMarketplaceItemPreferences');
-        preferencesWrapper.setAttribute('hidden', 'true');
 
         for (let entry of preferences) {
           const { property, label, type } = entry;
@@ -227,14 +276,15 @@ var gZenMarketplaceManager = {
               menulist.setAttribute('sizetopopup', 'none');
               menulist.setAttribute('id', property + '-popup-menulist');
 
-              const savedValue = Services.prefs.getStringPref(property, "none");
+              const savedValue = Services.prefs.getStringPref(property, 'none');
 
               menulist.setAttribute('value', savedValue);
+              menulist.setAttribute('tooltiptext', property);
 
               const defaultItem = document.createXULElement('menuitem');
 
-              defaultItem.setAttribute('value', "none");
-              defaultItem.setAttribute('label', "none");
+              defaultItem.setAttribute('value', 'none');
+              defaultItem.setAttribute('label', '-');
 
               menupopup.appendChild(defaultItem);
 
@@ -250,7 +300,6 @@ var gZenMarketplaceManager = {
                   continue;
                 }
 
-
                 const menuitem = document.createXULElement('menuitem');
 
                 menuitem.setAttribute('value', value.toString());
@@ -264,27 +313,27 @@ var gZenMarketplaceManager = {
               menulist.addEventListener('command', () => {
                 const value = menulist.selectedItem.value;
 
-                const browser = this._getBrowser()
-                let element = browser.document.getElementById(theme.name)
+                let element = browser.document.getElementById(theme.name);
 
                 if (!element) {
-                  element = browser.document.createElement("div")
+                  element = browser.document.createElement('div');
 
-                  element.style.display = "none"
-                  element.setAttribute("id", theme.name)
+                  element.style.display = 'none';
+                  element.setAttribute('id', theme.name);
 
-                  browser.document.body.appendChild(element)
+                  browser.document.body.appendChild(element);
                 }
 
-                element.setAttribute(property, value)
+                element.setAttribute(property, value);
 
-                Services.prefs.setStringPref(property, value === "none" ? "" : value)
+                Services.prefs.setStringPref(property, value === 'none' ? '' : value);
               });
 
               const nameLabel = document.createXULElement('label');
               nameLabel.setAttribute('flex', '1');
               nameLabel.setAttribute('class', 'zenThemeMarketplaceItemPreferenceLabel');
               nameLabel.setAttribute('value', label);
+              nameLabel.setAttribute('tooltiptext', property);
 
               container.appendChild(nameLabel);
               container.appendChild(menulist);
@@ -297,11 +346,7 @@ var gZenMarketplaceManager = {
             case 'checkbox': {
               const fragment = window.MozXULElement.parseXULToFragment(`
                 <hbox class="zenThemeMarketplaceItemPreference">
-                  <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" zen-pref="${property}"></checkbox>
-                  <vbox class="zenThemeMarketplaceItemPreferenceData">
-                    <label class="zenThemeMarketplaceItemPreferenceLabel">${property}</label>
-                    <description class="description-deemphasized zenThemeMarketplaceItemPreferenceValue">${label}</description>
-                  </vbox>
+                  <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" label="${label}" tooltiptext="${property}" zen-pref="${property}"></checkbox>
                 </hbox>
               `);
 
@@ -335,7 +380,7 @@ var gZenMarketplaceManager = {
               continue;
           }
         }
-        fragment.querySelector('.zenThemeMarketplaceItemContent').appendChild(preferencesWrapper);
+        contentDiv.appendChild(preferencesWrapper);
       }
       this.themesList.appendChild(fragment);
     }
@@ -727,5 +772,5 @@ Preferences.addAll([
     id: 'zen.workspaces.individual-pinned-tabs',
     type: 'bool',
     default: true,
-  }
+  },
 ]);

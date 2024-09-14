@@ -211,6 +211,12 @@ jobs:
           name: ${{ matrix.generic == true && 'generic' || 'specific' }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
 
+      - name: Remove symlinks from obj folder
+        if: ${{ !inputs.generate-gpo }}
+        run: |
+          set -x
+          find engine/obj-x86_64-pc-windows-msvc/ -type l -delete
+
       - name: Upload dist object
         if: ${{ !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4

@@ -50,6 +50,12 @@
           width: 3px !important;
         }
       }
+
+      @media (-moz-bool-pref: 'zen.tabs.dim-pending') { 
+        &[pending='true'] .tab-icon-image {
+          opacity: 0.5;
+        }
+      }
     }
   }
 

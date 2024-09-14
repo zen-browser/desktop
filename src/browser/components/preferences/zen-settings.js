@@ -99,6 +99,22 @@ var gZenMarketplaceManager = {
     this.triggerThemeUpdate();
   },
 
+  async disableTheme(themeId) {
+    let themes = await this._getThemes();
+    let theme = themes[themeId];
+    theme.disabled = true;
+    await IOUtils.writeJSON(this.themesDataFile, themes);
+    this.triggerThemeUpdate();
+  },
+
+  async enableTheme(themeId) {
+    let themes = await this._getThemes();
+    let theme = themes[themeId];
+    theme.disabled = false;
+    await IOUtils.writeJSON(this.themesDataFile, themes);
+    this.triggerThemeUpdate();
+  },
+
   async _getThemes() {
     if (!this._themes) {
       if (!(await IOUtils.exists(this.themesDataFile))) {

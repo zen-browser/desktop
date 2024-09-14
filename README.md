@@ -54,6 +54,9 @@ brew install --cask zen-browser
 ### Linux
 
 #### AppImage
+
+- `zsync` is required for the Update feature of the script below
+
 ```
 curl -sL https://github.com/zen-browser/desktop/raw/main/appimageinstall.sh -o /tmp/appimageinstall.sh && bash /tmp/appimageinstall.sh && rm /tmp/appimageinstall.sh
 ```

@@ -102,6 +102,8 @@
   #navigator-toolbox:is(
     #navigator-toolbox[zen-user-hover='true']:hover,
     #navigator-toolbox[zen-user-hover='true']:focus-within,
+    #navigator-toolbox[zen-user-hover='true'][movingtab],
+    #navigator-toolbox[zen-user-hover='true'][flash-popup],
     #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])) {
@@ -162,6 +164,8 @@
   #navigator-toolbox:not(#navigator-toolbox:is(
     #navigator-toolbox[zen-user-hover='true']:hover,
     #navigator-toolbox[zen-user-hover='true']:focus-within,
+    #navigator-toolbox[zen-user-hover='true'][movingtab],
+    #navigator-toolbox[zen-user-hover='true'][flash-popup],
     #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
@@ -251,6 +255,7 @@
     #navigator-toolbox:hover,
     #navigator-toolbox:focus-within,
     #navigator-toolbox[movingtab],
+    #navigator-toolbox[flash-popup],
     #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {

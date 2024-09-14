@@ -28,6 +28,11 @@ function SignAndPackage($name) {
     echo "Packaging $name"
     $env:SURFER_SIGNING_MODE="sign"
     pnpm surfer package
+
+    echo "Taring $name"
+    tar -czf windows-x64-signed-$name.tar.gz dist\
+
+    Move-Item windows-x64-signed-$name.tar.gz .github\workflows\object\windows-x64-signed-$name.tar.gz
 }
 
 SignAndPackage specific

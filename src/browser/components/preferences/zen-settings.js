@@ -106,7 +106,7 @@ var gZenMarketplaceManager = {
     theme.enabled = false;
 
     await IOUtils.writeJSON(this.themesDataFile, themes);
-
+    this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
   },
 
@@ -117,7 +117,7 @@ var gZenMarketplaceManager = {
     theme.enabled = true;
 
     await IOUtils.writeJSON(this.themesDataFile, themes);
-
+    this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
   },
 
@@ -200,6 +200,10 @@ var gZenMarketplaceManager = {
 
   async _buildThemesList() {
     if (!this.themesList) return;
+    if (this._doNotRebuildThemesList) {
+      this._doNotRebuildThemesList = false;
+      return;
+    }
 
     console.log('ZenThemeMarketplaceParent(settings): Building themes list');
 
@@ -265,13 +269,15 @@ var gZenMarketplaceManager = {
         dialog.close();
       });
 
-      mozToggle.addEventListener('toggle', (event) => {
-        const themeId = theme.id;
+      mozToggle.addEventListener('toggle', async (event) => {
+        const themeId = event.target.closest('.zenThemeMarketplaceItem')
+          .querySelector('.zenThemeMarketplaceItemUninstallButton')
+          .getAttribute('zen-theme-id');
 
-        if (event.explicitOriginalTarget.getAttribute('aria-pressed') === "false") {
-          this.disableTheme(themeId);
+        if (!event.target.hasAttribute('pressed')) {
+          await this.disableTheme(themeId);
         } else {
-          this.enableTheme(themeId);
+          await this.enableTheme(themeId);
         }
       });
 

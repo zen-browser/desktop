@@ -42,3 +42,26 @@
   display: flex;
   flex-direction: row;
 }
+
+#tabbrowser-tabpanels[zen-split-view] {
+
+  .zen-split-view-splitter[orient='vertical'] {
+    display: inherit !important;
+    width: 7px;
+    cursor: col-resize;
+  }
+}
+
+.zen-split-view-splitter {
+  display: none;
+  visibility: inherit;
+  -moz-subtree-hidden-only-visually: 0;
+}
+#tabbrowser-tabpanels[zen-split-view] {
+
+  .zen-split-view-splitter[orient='vertical'] {
+    display: inherit !important;
+    width: 7px;
+    cursor: col-resize;
+  }
+}

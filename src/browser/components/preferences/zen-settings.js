@@ -230,7 +230,7 @@ var gZenMarketplaceManager = {
       `);
 
       const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
-      const sanitizedName = theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '');
+      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
 
       const base = fragment.querySelector('.zenThemeMarketplaceItem');
       const baseHeader = fragment.querySelector('#zenThemeMarketplaceItemContentHeader');

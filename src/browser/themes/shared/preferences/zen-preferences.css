@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@namespace html "http://www.w3.org/1999/xhtml";
+@namespace html 'http://www.w3.org/1999/xhtml';
 
 :root {
   --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%));
@@ -383,6 +383,10 @@ groupbox h2 {
   padding: var(--space-medium);
   position: relative;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .zenThemeMarketplaceItemConfigureButton {
@@ -473,6 +477,12 @@ groupbox h2 {
 .zenThemeMarketplaceItemPreferenceDialogContent {
   display: flex;
   flex-direction: row;
+}
+
+#zenThemeMarketplaceItemContentHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 /* Disable mozilla's settings */

@@ -100,18 +100,24 @@ var gZenMarketplaceManager = {
   },
 
   async disableTheme(themeId) {
-    let themes = await this._getThemes();
-    let theme = themes[themeId];
-    theme.disabled = true;
+    const themes = await this._getThemes();
+    const theme = themes[themeId];
+
+    theme.enabled = false;
+
     await IOUtils.writeJSON(this.themesDataFile, themes);
+
     this.triggerThemeUpdate();
   },
 
   async enableTheme(themeId) {
-    let themes = await this._getThemes();
-    let theme = themes[themeId];
-    theme.disabled = false;
+    const themes = await this._getThemes();
+    const theme = themes[themeId];
+
+    theme.enabled = true;
+
     await IOUtils.writeJSON(this.themesDataFile, themes);
+
     this.triggerThemeUpdate();
   },
 
@@ -199,15 +205,17 @@ var gZenMarketplaceManager = {
 
     let themes = await this._getThemes();
 
-    this.themesList.innerHTML = '';
-
     const browser = this._getBrowser();
+
+    const themeList = document.createElement("div");
 
     for (let theme of Object.values(themes)) {
       const fragment = window.MozXULElement.parseXULToFragment(`
-        <vbox class="zenThemeMarketplaceItem" align="center">
-          <vbox class="zenThemeMarketplaceItemContent" flex="1">
-            <label><h3 class="zenThemeMarketplaceItemTitle"></h3></label>
+        <vbox class="zenThemeMarketplaceItem">
+          <vbox class="zenThemeMarketplaceItemContent">
+            <hbox flex="1" id="zenThemeMarketplaceItemContentHeader">
+              <label><h3 class="zenThemeMarketplaceItemTitle"></h3></label>
+            </hbox>
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
           <hbox class="zenThemeMarketplaceItemActions">
@@ -220,6 +228,7 @@ var gZenMarketplaceManager = {
       const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
 
       const base = fragment.querySelector('.zenThemeMarketplaceItem');
+      const baseHeader = fragment.querySelector('#zenThemeMarketplaceItemContentHeader');
 
       const dialog = document.createElement('dialog');
       const mainDialogDiv = document.createElement('div');
@@ -227,6 +236,7 @@ var gZenMarketplaceManager = {
       const headerTitle = document.createElement('h3');
       const closeButton = document.createElement('button');
       const contentDiv = document.createElement('div');
+      const mozToggle = document.createElement('moz-toggle');
 
       mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
       headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
@@ -236,6 +246,12 @@ var gZenMarketplaceManager = {
       closeButton.textContent = 'Close';
       contentDiv.id = `${theme.name}-preferences-content`;
       contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
+      mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle';
+
+      mozToggle.pressed = theme.enabled;
+      mozToggle.title = theme.enabled ? 'Disable theme': 'Enable theme';
+
+      baseHeader.appendChild(mozToggle);
 
       headerDiv.appendChild(headerTitle);
       headerDiv.appendChild(closeButton);
@@ -247,6 +263,16 @@ var gZenMarketplaceManager = {
 
       closeButton.addEventListener('click', () => {
         dialog.close();
+      });
+
+      mozToggle.addEventListener('toggle', (event) => {
+        const themeId = theme.id;
+
+        if (event.explicitOriginalTarget.getAttribute('aria-pressed') === "false") {
+          this.disableTheme(themeId);
+        } else {
+          this.enableTheme(themeId);
+        }
       });
 
       fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;
@@ -263,7 +289,7 @@ var gZenMarketplaceManager = {
         dialog.showModal();
       });
 
-      if (theme.preferences) {
+      if (theme.enabled && theme.preferences) {
         fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
       }
 
@@ -398,8 +424,11 @@ var gZenMarketplaceManager = {
         }
         contentDiv.appendChild(preferencesWrapper);
       }
-      this.themesList.appendChild(fragment);
+      themeList.appendChild(fragment);
     }
+
+    this.themesList.replaceChildren(...themeList.children);
+    themeList.remove();
   },
 };
 

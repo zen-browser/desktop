@@ -4,6 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+@namespace html "http://www.w3.org/1999/xhtml";
+
 :root {
   --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%));
 }
@@ -19,6 +21,22 @@
 
 description {
   margin-top: 0 !important;
+}
+
+@keyframes dialogPopin {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+html|dialog {
+  animation: dialogPopin 0.2s ease-out;
 }
 
 groupbox {

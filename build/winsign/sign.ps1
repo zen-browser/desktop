@@ -14,7 +14,7 @@ pnpm surfer ci --brand alpha
 
 echo "Downloading from runner with ID $RunID"
 gh run download $RunID --name "windows-x64-obj-specific" --dir windsign-temp\windows-x64-obj-specific
-#gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
+gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
 
 function SignAndPackage($name) {
     echo "Executing on $name"

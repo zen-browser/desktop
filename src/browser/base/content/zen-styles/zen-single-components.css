@@ -30,7 +30,6 @@
 
 #zen-watermark[hidden='true'] {
   transition: 0.6s;
-  transition-delay: 0.5s;
   opacity: 0;
   pointer-events: none;
 }

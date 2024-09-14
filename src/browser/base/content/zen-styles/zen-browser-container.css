@@ -6,7 +6,14 @@
     position: relative;
 
     /* This fixes an issue with the left border */
-    margin-left: 2px;
+    --zen-webview-correction-margin: 2px;
+    margin-left: var(--zen-webview-correction-margin);
+    
+    #browser:has(#navigator-toolbox[zen-right-side="true"]) & {
+      margin-left: 0;
+      margin-right: var(--zen-webview-correction-margin);
+    }
+
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 
     --uc-tweak-rounded-corners-shadow:

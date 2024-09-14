@@ -55,7 +55,7 @@ brew install --cask zen-browser
 
 #### AppImage
 ```
-curl -sL https://github.com/Muko-Tabi/desktop/raw/main/appimageinstall.sh -o /tmp/appimageinstall.sh && bash /tmp/appimageinstall.sh && rm /tmp/appimageinstall.sh
+curl -sL https://github.com/zen-browser/desktop/raw/main/appimageinstall.sh -o /tmp/appimageinstall.sh && bash /tmp/appimageinstall.sh && rm /tmp/appimageinstall.sh
 ```
 
 #### Flatpak

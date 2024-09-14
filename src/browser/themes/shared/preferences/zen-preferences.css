@@ -166,6 +166,16 @@ groupbox h2 {
   justify-content: space-between;
   gap: var(--space-large);
   margin-top: 5px;
+
+  & .web-appearance-choice-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px 0;
+
+    background: color-mix(in srgb, var(--zen-colors-tertiary) 50%, transparent 50%);
+  }
 }
 
 #zen-expand-tabbar-strat {

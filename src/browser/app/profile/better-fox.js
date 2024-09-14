@@ -85,7 +85,6 @@ pref("security.tls.enable_0rtt_data", false);
 
 /** DISK AVOIDANCE ***/
 pref("browser.privatebrowsing.forceMediaMemoryCache", true);
-pref("browser.sessionstore.interval", 60000);
 
 /** SHUTDOWN & SANITIZING ***/
 pref("privacy.history.custom", true);

@@ -9,9 +9,10 @@
   );
   var ZenStartup = {
     init() {
-      this._changeSidebarLocation();
-      this._zenInitBrowserLayout();
+      this.openWatermark();
       window.SessionStore.promiseInitialized.then(async () => {
+        this._changeSidebarLocation();
+        this._zenInitBrowserLayout();
         this._focusSearchBar();
       });
     },
@@ -19,40 +20,42 @@
     _zenInitBrowserLayout() {
       if (this.__hasInitBrowserLayout) return;
       this.__hasInitBrowserLayout = true;
-      this.openWatermark();
-      console.info('ZenThemeModifier: init browser layout');
-      const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
-      const kNewContainerId = 'zen-appcontent-navbar-container';
-      let newContainer = document.getElementById(kNewContainerId);
-      for (let id of kNavbarItems) {
-        const node = document.getElementById(id);
-        console.assert(node, 'Could not find node with id: ' + id);
-        if (!node) continue;
-        newContainer.appendChild(node);
+      try {
+        console.info('ZenThemeModifier: init browser layout');
+        const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
+        const kNewContainerId = 'zen-appcontent-navbar-container';
+        let newContainer = document.getElementById(kNewContainerId);
+        for (let id of kNavbarItems) {
+          const node = document.getElementById(id);
+          console.assert(node, 'Could not find node with id: ' + id);
+          if (!node) continue;
+          newContainer.appendChild(node);
+        }
+
+        // Fix notification deck
+        document
+          .getElementById('zen-appcontent-navbar-container')
+          .appendChild(document.getElementById('tab-notification-deck-template'));
+
+        // Disable smooth scroll
+        gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
+
+        gZenVerticalTabsManager.init();
+        gZenCompactModeManager.init();
+        gZenKeyboardShortcuts.init();
+
+        function throttle(f, delay) {
+          let timer = 0;
+          return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => f.apply(this, args), delay);
+          };
+        }
+
+        new ResizeObserver(throttle(this._updateTabsToolbar.bind(this), lazy.sidebarHeightThrottle)).observe(document.getElementById('tabbrowser-tabs'));
+      } catch (e) {
+        console.error('ZenThemeModifier: Error initializing browser layout', e);
       }
-
-      // Fix notification deck
-      document
-        .getElementById('zen-appcontent-navbar-container')
-        .appendChild(document.getElementById('tab-notification-deck-template'));
-
-      // Disable smooth scroll
-      gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
-
-      gZenVerticalTabsManager.init();
-      gZenCompactModeManager.init();
-      gZenKeyboardShortcuts.init();
-
-      function throttle(f, delay) {
-        let timer = 0;
-        return function (...args) {
-          clearTimeout(timer);
-          timer = setTimeout(() => f.apply(this, args), delay);
-        };
-      }
-
-      new ResizeObserver(throttle(this._updateTabsToolbar.bind(this), lazy.sidebarHeightThrottle)).observe(document.getElementById('tabbrowser-tabs'));
-
       this.closeWatermark();
     },
 

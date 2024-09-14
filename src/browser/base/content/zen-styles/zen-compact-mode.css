@@ -203,8 +203,8 @@
     &[zen-user-show],
     &[flash-popup],
     &[movingtab],
-    & #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     &:has(.tabbrowser-tab:active),
+    & #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     &:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
       transform: none !important;
       opacity: 1;

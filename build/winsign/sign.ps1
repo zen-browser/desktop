@@ -1,6 +1,6 @@
 param(
-    [string]$RunID,
-    [string]$SignIdentity
+    [string][Parameter(Mandatory=$true)]$SignIdentity,
+    [string][Parameter(Mandatory=$true)]$RunID
 )
 
 $ErrorActionPreference = "Stop"

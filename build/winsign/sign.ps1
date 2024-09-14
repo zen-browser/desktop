@@ -14,7 +14,7 @@ pnpm surfer ci --brand alpha
 
 echo "Downloading from runner with ID $RunID"
 gh run download $RunID --name "windows-x64-obj-specific" --dir windsign-temp\windows-x64-obj-specific
-gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
+#gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
 
 function SignAndPackage($name) {
     echo "Executing on $name"
@@ -27,6 +27,7 @@ function SignAndPackage($name) {
     signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
     echo "Packaging $name"
     $env:SURFER_SIGNING_MODE="sign"
+    $env:MAR="$PWD\build\winsign\mar.exe"
     pnpm surfer package
 
     echo "Taring $name"

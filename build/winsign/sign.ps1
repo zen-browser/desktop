@@ -6,6 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 echo "Preparing environment"
+rmdir engine\obj-x86_64-pc-windows-msvc\ -Recurse -ErrorAction SilentlyContinue
 mkdir windsign-temp -ErrorAction SilentlyContinue
 mkdir engine\obj-x86_64-pc-windows-msvc\ -ErrorAction SilentlyContinue
 

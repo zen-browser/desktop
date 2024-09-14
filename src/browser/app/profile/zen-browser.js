@@ -19,6 +19,9 @@ pref("devtools.debugger.prompt-connection", true);
 // Dont download the multilingual dictionary
 pref("intl.multilingual.downloadEnabled", false);
 
+// Restore session on startup
+pref("browser.startup.page", 3);
+
 // Theme
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
 pref('browser.compactmode.show', true);

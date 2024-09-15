@@ -18,7 +18,6 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split='true'] {
   flex: 1;
-  margin-right: 5px;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split-anim='true'] {

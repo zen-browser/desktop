@@ -51,6 +51,21 @@ You can also install Zen using Homebrew:
 brew install --cask zen-browser
 ```
 
+### Linux
+
+#### AppImage
+
+- `zsync` is required for the Update feature of the script below
+
+```
+bash <(curl https://updates.zen-browser.app/appimage.sh)
+```
+
+#### Flatpak
+```
+flatpak install flathub io.github.zen_browser.zen
+```
+
 To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
 
 # Core Components

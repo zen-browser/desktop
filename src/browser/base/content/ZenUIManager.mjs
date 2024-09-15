@@ -169,7 +169,8 @@ var gZenCompactModeManager = {
 
   flashSidebar() {
     let sidebar = document.getElementById('navigator-toolbox');
-    if (sidebar.matches(':hover')) {
+    let tabPanels = document.getElementById('tabbrowser-tabpanels');
+    if (sidebar.matches(':hover') || tabPanels.matches("[zen-split-view='true']")) {
       return;
     }
     if (this._flashSidebarTimeout) {

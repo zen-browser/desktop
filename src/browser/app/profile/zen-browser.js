@@ -80,6 +80,9 @@ pref('zen.theme.pill-button', false);
 pref('zen.view.compact', false);
 pref('zen.view.compact.hide-toolbar', false);
 
+pref('zen.theme.color-prefs.amoled', false);
+pref('zen.theme.color-prefs.colorful', false);
+
 pref('zen.view.compact.toolbar-flash-popup', true);
 pref('zen.view.compact.toolbar-flash-popup.duration', 800);
 

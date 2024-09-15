@@ -14,7 +14,7 @@ pnpm surfer ci --brand alpha
 
 echo "Downloading from runner with ID $RunID"
 gh run download $RunID --name "windows-x64-obj-specific" --dir windsign-temp\windows-x64-obj-specific
-#gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
+gh run download $RunID --name "windows-x64-obj-generic" --dir windsign-temp\windows-x64-obj-generic
 
 function SignAndPackage($name) {
     echo "Executing on $name"
@@ -26,11 +26,12 @@ function SignAndPackage($name) {
     $files += Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.dll
     signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
     echo "Packaging $name"
+    $env:SURFER_SIGNING_MODE="sign"
     pnpm surfer package
 }
 
 SignAndPackage specific
-#SignAndPackage generic
+SignAndPackage generic
 
 # Cleaning up
 

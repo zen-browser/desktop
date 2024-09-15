@@ -58,7 +58,7 @@ brew install --cask zen-browser
 - `zsync` is required for the Update feature of the script below
 
 ```
-curl -sL https://updates.zen-browser.app/appimage.sh | bash
+bash <(curl https://updates.zen-browser.app/appimage.sh)
 ```
 
 #### Flatpak

@@ -53,7 +53,7 @@ jobs:
       - name: Bump version
         if: ${{ github.event.inputs.update_version == 'true' }}
         run: |
-          pnpm surfer ci --brand alpha --bump prerelease
+          pnpm surfer ci --brand alpha --bump prepatch
 
       - name: Bump version without new version
         if: ${{ github.event.inputs.update_version == 'false' }}

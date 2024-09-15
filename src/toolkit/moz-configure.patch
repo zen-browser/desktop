@@ -1,8 +1,22 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index dfef4ee7bd74a232f8f9eaa158303e59a2a32e62..77864261c8dbf2947738b97733553da67608c060 100644
+index 1f85d2831f2f71ebe4c7216bd604926d71e5189e..fb0d07554a592339f5a794151d953cb9269afd75 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
-@@ -905,9 +905,9 @@ set_define("MOZ_AV1", av1)
+@@ -81,6 +81,13 @@ option(
+ )
+ set_config("MOZ_INCLUDE_SOURCE_INFO", True, when="MOZ_INCLUDE_SOURCE_INFO")
+ 
++option(
++    env="ZEN_FIREFOX_VERSION",
++    default="130.0",
++    help="Set the version of the browser",
++)
++set_config("ZEN_FIREFOX_VERSION", "130.0", when="ZEN_FIREFOX_VERSION")
++
+ option(
+     "--with-distribution-id",
+     nargs=1,
+@@ -905,9 +912,9 @@ set_define("MOZ_AV1", av1)
  option("--disable-jxl", help="Disable jxl image support")
  
  

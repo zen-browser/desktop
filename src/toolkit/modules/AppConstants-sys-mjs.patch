@@ -1,0 +1,13 @@
+diff --git a/toolkit/modules/AppConstants.sys.mjs b/toolkit/modules/AppConstants.sys.mjs
+index a20e45c6135d24e42594700fe57184a560facd0f..7650dd88dc67d774c3af05704f2539ff92e21be2 100644
+--- a/toolkit/modules/AppConstants.sys.mjs
++++ b/toolkit/modules/AppConstants.sys.mjs
+@@ -338,6 +338,8 @@ export var AppConstants = Object.freeze({
+   MOZ_UPDATE_CHANNEL: "@MOZ_UPDATE_CHANNEL@",
+   MOZ_WIDGET_TOOLKIT: "@MOZ_WIDGET_TOOLKIT@",
+ 
++  ZEN_FIREFOX_VERSION: "@ZEN_FIREFOX_VERSION@",
++
+   DEBUG_JS_MODULES: "@DEBUG_JS_MODULES@",
+ 
+   MOZ_BING_API_CLIENTID: "@MOZ_BING_API_CLIENTID@",

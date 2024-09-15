@@ -17,6 +17,14 @@
     "string": "cpp",
     "string_view": "cpp",
     "span": "cpp",
-    "vector": "cpp"
+    "vector": "cpp",
+    "charconv": "cpp",
+    "chrono": "cpp",
+    "optional": "cpp",
+    "format": "cpp",
+    "ratio": "cpp",
+    "system_error": "cpp",
+    "regex": "cpp",
+    "type_traits": "cpp"
   }
 }

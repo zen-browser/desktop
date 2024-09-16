@@ -111,6 +111,7 @@ pref('zen.sidebar.close-on-blur', true);
 
 // Zen Split View
 pref('zen.splitView.working', false);
+pref('zen.splitView.min-resize-width', 7);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);

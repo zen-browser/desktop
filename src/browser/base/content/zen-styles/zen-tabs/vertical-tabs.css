@@ -162,7 +162,7 @@
 
     & #tabbrowser-tabs {
       & .tabbrowser-tab {
-        &:not([pinned]) .tab-close-button {
+        &:not([pinned]):is(:hover, [visuallyselected]) .tab-close-button {
           display: block !important;
         }
       }

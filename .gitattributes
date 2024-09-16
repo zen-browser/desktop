@@ -1,2 +1,1 @@
 *.patch linguist-language=C++
-.github/workflows/object/*.tar.gz filter=lfs diff=lfs merge=lfs -text

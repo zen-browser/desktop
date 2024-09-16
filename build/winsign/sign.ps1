@@ -34,8 +34,11 @@ function SignAndPackage($name) {
     $env:MAR="$PWD\\build\\winsign\\mar.exe"
     if ($name -eq "generic") {
         $env:SURFER_COMPAT="true"
+    } else {
+        rm env:SURFER_COMPAT -ErrorAction SilentlyContinue
     }
 
+    echo "Compat Mode? $env:SURFER_COMPAT"
     pnpm surfer package --verbose
 
     # In the release script, we do the following:
@@ -67,14 +70,22 @@ function SignAndPackage($name) {
     # Move the zip
     mv (Get-Item .\dist\*.en-US.win64.zip) windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
 
+    # Extract the zip, sign everything inside, and repackage it
+    Expand-Archive -Path windsign-temp\windows-x64-signed-$name\zen.win-$name.zip -DestinationPath windsign-temp\windows-x64-signed-$name\zen.win-$name
+    rm windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
+    $files = Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.exe
+    $files += Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.dll
+    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
+    Compress-Archive -Path windsign-temp\windows-x64-signed-$name\zen.win-$name -DestinationPath windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
+    rmdir windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -ErrorAction SilentlyContinue
+
     # Move the manifest
-    foreach ($file in Get-ChildItem .\dist\update\) {
-        mv ".\\dist\\update\\$file" windsign-temp\windows-x64-signed-$name\update_manifest
-    }
+    mv .\dist\update\. windsign-temp\windows-x64-signed-$name\update_manifest
 
     echo "Invoking tar for $name"
     # note: We need to sign it into a parent folder, called windows-x64-signed-$name
-    tar -czvf .\.github\workflows\object\windows-x64-signed-$name.tar.gz -C .\windsign-temp\ windows-x64-signed-$name
+    rmdir .\.github\workflows\object\windows-x64-signed-$name -Recurse -ErrorAction SilentlyContinue
+    mv .\windsign-temp\windows-x64-signed-$name .\.github\workflows\object\windows-x64-signed-$name -Force
 
     echo "Finished $name"
 }

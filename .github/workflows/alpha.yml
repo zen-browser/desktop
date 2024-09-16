@@ -329,10 +329,10 @@ jobs:
       - name: List
         run: find .
 
-      - name: Unpack windows build
+      - name: Unpack windows build (.tar.gz)
         run: |
-          tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C windows-x64-signed-generic
-          tar -xvf .github/workflows/object/windows-x64-signed-specific.tar.gz -C windows-x64-signed-specific
+          tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C .
+          tar -xvf .github/workflows/object/windows-x64-signed-specific.tar.gz -C .
 
       - name: Clone updates repo
         uses: actions/checkout@v4

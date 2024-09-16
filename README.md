@@ -40,6 +40,24 @@ Zen is built with performance in mind, and we have optimized the browser to be a
 
 Zen is available for Linux, macOS, and Windows. You can download the latest version from the official website at [zen-browser.app](https://zen-browser.app/download), or from the [GitHub Releases](https://github.com/zen-browser/desktop/releases) page.
 
+### Windows
+
+#### Winget
+
+- Generic
+
+```
+winget install --id Zen-Team.Zen-Browser
+```
+
+- Optimized
+
+```
+winget install --id Zen-Team.Zen-Browser.Optimized
+```
+
+#### 
+
 ### macOS
 
 - Requires macOS 10.15 or later

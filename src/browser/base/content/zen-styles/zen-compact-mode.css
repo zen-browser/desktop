@@ -12,6 +12,10 @@
     margin-top: 0 !important;
   }
 
+  #nav-bar {
+    padding-left: 5px !important;
+  }
+
   #navigator-toolbox {
     --zen-compact-toolbox-margin-single: calc(var(--zen-element-separation) * 2);
     --zen-compact-toolbox-margin: var(--zen-compact-toolbox-margin-single);

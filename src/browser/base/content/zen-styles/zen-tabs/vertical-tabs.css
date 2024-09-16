@@ -64,6 +64,7 @@
 
     & toolbarbutton {
       width: fit-content;
+      padding: 0 !important;
     }
   }
 

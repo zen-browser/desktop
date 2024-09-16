@@ -317,9 +317,12 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
+          lfs: true
 
       - name: Git Pull
-        run: git pull
+        run: |
+          git pull
+          git lfs pull
 
       - uses: actions/download-artifact@v4
 

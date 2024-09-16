@@ -13,24 +13,30 @@ echo "  - $pwd\windsign-temp\windows-x64-obj-specific"
 echo "  - $pwd\windsign-temp\windows-x64-obj-generic"
 Read-Host "Press Enter to continue when ready"
 mkdir engine\obj-x86_64-pc-windows-msvc\ -ErrorAction SilentlyContinue
+mkdir .\.github\workflows\object\ -ErrorAction SilentlyContinue
 
 pnpm surfer ci --brand alpha
 
 function SignAndPackage($name) {
     echo "Executing on $name"
+    rmdir .\dist -Recurse -ErrorAction SilentlyContinue
     rmdir engine\obj-x86_64-pc-windows-msvc\ -Recurse -ErrorAction SilentlyContinue
     cp windsign-temp\windows-x64-obj-$name engine\obj-x86_64-pc-windows-msvc\ -Recurse
     echo "Signing $name"
+
     # Collect all .exe and .dll files into a list
     $files = Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.exe
     $files += Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.dll
+
     signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
     echo "Packaging $name"
     $env:SURFER_SIGNING_MODE="sign"
     $env:MAR="$PWD\\build\\winsign\\mar.exe"
+    if ($name -eq "generic") {
+        $env:SURFER_COMPAT="true"
+    }
 
-    rm .\dist -Recurse -ErrorAction SilentlyContinue
-    pnpm surfer package
+    pnpm surfer package --verbose
 
     # In the release script, we do the following:
     #  tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C windows-x64-signed-generic
@@ -59,11 +65,17 @@ function SignAndPackage($name) {
     }
 
     # Move the zip
-    mv .\dist\zen.win64.zip windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
+    mv (Get-Item .\dist\*.en-US.win64.zip) windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
 
     # Move the manifest
-    mv .\dist\update\* windsign-temp\windows-x64-signed-$name\
+    foreach ($file in Get-ChildItem .\dist\update\) {
+        mv ".\\dist\\update\\$file" windsign-temp\windows-x64-signed-$name\update_manifest
+    }
+
+    echo "Invoking tar for $name"
     tar -cvf .\.github\workflows\object\windows-x64-signed-$name.tar -C .\windsign-temp\windows-x64-signed-$name .
+
+    echo "Finished $name"
 }
 
 SignAndPackage specific

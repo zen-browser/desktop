@@ -199,6 +199,7 @@ pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);
 pref('media.ffmpeg.vaapi.enabled', true);
+pref('media.ffmpeg.encoder.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);

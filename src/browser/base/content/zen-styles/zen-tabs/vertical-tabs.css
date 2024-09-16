@@ -80,6 +80,7 @@
     margin-inline-end: 0 !important;
     padding-top: 0 !important;
     border-top: solid transparent 0px !important;
+    margin: 0 2px !important;
 
     &[showborder] {
       padding-top: 4px !important;

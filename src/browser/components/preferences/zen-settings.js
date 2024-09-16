@@ -198,6 +198,19 @@ var gZenMarketplaceManager = {
     return this.__browser;
   },
 
+  __throttle(mainFunction, delay) {
+    let timerFlag = null;
+
+    return (...args) => {
+      if (timerFlag === null) {
+        mainFunction(...args);
+        timerFlag = setTimeout(() => {
+          timerFlag = null;
+        }, delay);
+      }
+    };
+  },
+
   async _buildThemesList() {
     if (!this.themesList) return;
     if (this._doNotRebuildThemesList) {
@@ -214,6 +227,8 @@ var gZenMarketplaceManager = {
     const themeList = document.createElement('div');
 
     for (let theme of Object.values(themes)) {
+      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
+
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem">
           <vbox class="zenThemeMarketplaceItemContent">
@@ -223,14 +238,13 @@ var gZenMarketplaceManager = {
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
           <hbox class="zenThemeMarketplaceItemActions">
-            <button class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>
+            <button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>
             <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
           </hbox>
         </vbox>
       `);
 
       const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
-      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
 
       const base = fragment.querySelector('.zenThemeMarketplaceItem');
       const baseHeader = fragment.querySelector('#zenThemeMarketplaceItemContentHeader');
@@ -279,8 +293,10 @@ var gZenMarketplaceManager = {
 
         if (!event.target.hasAttribute('pressed')) {
           await this.disableTheme(themeId);
+          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).setAttribute('hidden', true);
         } else {
           await this.enableTheme(themeId);
+          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
         }
       });
 
@@ -307,7 +323,7 @@ var gZenMarketplaceManager = {
       if (preferences.length > 0) {
         const preferencesWrapper = document.createXULElement('vbox');
 
-        preferencesWrapper.classList.add('zenThemeMarketplaceItemPreferences');
+        preferencesWrapper.setAttribute('flex', '1');
 
         for (let entry of preferences) {
           const { property, label, type } = entry;
@@ -395,7 +411,7 @@ var gZenMarketplaceManager = {
             }
 
             case 'checkbox': {
-              const fragment = window.MozXULElement.parseXULToFragment(`
+              const checkbox = window.MozXULElement.parseXULToFragment(`
                 <hbox class="zenThemeMarketplaceItemPreference">
                   <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" label="${label}" tooltiptext="${property}" zen-pref="${property}"></checkbox>
                 </hbox>
@@ -403,10 +419,10 @@ var gZenMarketplaceManager = {
 
               // Checkbox only works with "true" and "false" values, it's not like HTML checkboxes.
               if (Services.prefs.getBoolPref(property, false)) {
-                fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').setAttribute('checked', 'true');
+                checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').setAttribute('checked', 'true');
               }
 
-              fragment.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
+              checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
                 let target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
                 let key = target.getAttribute('zen-pref');
                 let checked = target.hasAttribute('checked');
@@ -420,7 +436,51 @@ var gZenMarketplaceManager = {
                 Services.prefs.setBoolPref(key, !checked);
               });
 
-              preferencesWrapper.appendChild(fragment);
+              preferencesWrapper.appendChild(checkbox);
+              break;
+            }
+
+            case 'string': {
+              const container = document.createXULElement('hbox');
+              container.classList.add('zenThemeMarketplaceItemPreference');
+              container.setAttribute('align', 'center');
+              container.setAttribute('role', 'group');
+
+              const savedValue = Services.prefs.getStringPref(property, '');
+              const sanitizedProperty = property?.replaceAll(/\./g, '-');
+
+              const input = document.createElement('input');
+              input.setAttribute('flex', '1');
+              input.setAttribute('type', 'text');
+              input.id = `${sanitizedProperty}-input`;
+              input.value = savedValue;
+
+              input.addEventListener(
+                'input',
+                this.__throttle((event) => {
+                  const value = event.target.value;
+
+                  Services.prefs.setStringPref(property, value);
+
+                  if (value === '') {
+                    browser.document.querySelector(':root').style.removeProperty(`--${sanitizedProperty}`);
+                  } else {
+                    browser.document.querySelector(':root').style.setProperty(`--${sanitizedProperty}`, value);
+                  }
+                }, 500)
+              );
+
+              const nameLabel = document.createXULElement('label');
+              nameLabel.setAttribute('flex', '1');
+              nameLabel.setAttribute('class', 'zenThemeMarketplaceItemPreferenceLabel');
+              nameLabel.setAttribute('value', label);
+              nameLabel.setAttribute('tooltiptext', property);
+
+              container.appendChild(nameLabel);
+              container.appendChild(input);
+              container.setAttribute('aria-labelledby', label);
+
+              preferencesWrapper.appendChild(container);
               break;
             }
 

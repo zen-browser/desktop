@@ -35,7 +35,7 @@ function SignAndPackage($name) {
     if ($name -eq "generic") {
         $env:SURFER_COMPAT="true"
     } else {
-        Clear-Variable -Name SURFER_COMPAT -ErrorAction SilentlyContinue
+        rm env:SURFER_COMPAT -ErrorAction SilentlyContinue
     }
 
     echo "Compat Mode? $env:SURFER_COMPAT"

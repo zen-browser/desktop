@@ -30,8 +30,28 @@
 
 #tabbrowser-tabpanels:has(> [zen-split='true']) {
   display: grid;
-  row-gap: var(--zen-element-separation);
-  column-gap: calc(var(--zen-element-separation) / 2);
+  row-gap: 0;
+  column-gap: 0;
+  --zen-split-grid-gap: calc(var(--zen-element-separation) + 2px);
+  --zen-split-row-gap: var(--zen-split-grid-gap);
+  --zen-split-column-gap: var(--zen-split-grid-gap);
+}
+
+#tabbrowser-tabpanels[zen-split-view] {
+  .zen-split-view-splitter {
+    display: inherit;
+  }
+}
+
+.zen-split-view-splitter {
+  display: none;
+  visibility: inherit;
+  cursor: ew-resize;
+  -moz-subtree-hidden-only-visually: 0;
+}
+
+.zen-split-view-splitter[orient='horizontal'] {
+  cursor: n-resize;
 }
 
 #zen-split-views-box:not([hidden='true']) {

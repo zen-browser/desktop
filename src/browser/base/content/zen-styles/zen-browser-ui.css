@@ -42,23 +42,3 @@
   display: flex;
   flex-direction: row;
 }
-
-#tabbrowser-tabpanels[zen-split-view] {
-  .zen-split-view-splitter {
-    display: inherit !important;
-  }
-  .zen-split-view-splitter[orient='vertical'] {
-    width: 7px;
-  }
-  .zen-split-view-splitter[orient='horizontal'] {
-    height: 7px;
-    cursor: n-resize;
-  }
-}
-
-.zen-split-view-splitter {
-  display: none;
-  visibility: inherit;
-  cursor: ew-resize;
-  -moz-subtree-hidden-only-visually: 0;
-}

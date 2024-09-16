@@ -73,7 +73,8 @@ function SignAndPackage($name) {
     }
 
     echo "Invoking tar for $name"
-    tar -czvf .\.github\workflows\object\windows-x64-signed-$name.tar.gz -C .\windsign-temp\windows-x64-signed-$name .
+    # note: We need to sign it into a parent folder, called windows-x64-signed-$name
+    tar -czvf .\.github\workflows\object\windows-x64-signed-$name.tar.gz -C .\windsign-temp\ windows-x64-signed-$name
 
     echo "Finished $name"
 }

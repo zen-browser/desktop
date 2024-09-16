@@ -54,3 +54,8 @@ toolbar {
     }
   }
 }
+
+/* Menubar */
+#toolbar-menubar {
+  display: none !important;
+}

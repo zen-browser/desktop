@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df236fcefae7 100644
+index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..c776348e776c1f9efc9b9f2ca479b1050f0a750b 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -453,10 +453,13 @@
+@@ -453,10 +453,12 @@
      },
  
      get _numPinnedTabs() {
@@ -13,12 +13,11 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
 +        if (!tab.pinned) {
            break;
          }
-+        if (tab.hidden) continue;
 +        i++;
        }
        return i;
      },
-@@ -2704,6 +2707,11 @@
+@@ -2704,6 +2706,11 @@
          );
        }
  
@@ -30,7 +29,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
        if (!UserInteraction.running("browser.tabs.opening", window)) {
          UserInteraction.start("browser.tabs.opening", "initting", window);
        }
-@@ -2771,6 +2779,9 @@
+@@ -2771,6 +2778,9 @@
            noInitialLabel,
            skipBackgroundNotify,
          });
@@ -40,7 +39,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
          if (insertTab) {
            // insert the tab into the tab container in the correct position
            this._insertTabAtIndex(t, {
-@@ -3248,6 +3259,14 @@
+@@ -3248,6 +3258,14 @@
          ) {
            tabWasReused = true;
            tab = this.selectedTab;
@@ -55,7 +54,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3297,6 +3316,13 @@
+@@ -3297,6 +3315,13 @@
              preferredRemoteType,
            });
  
@@ -69,7 +68,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
            if (select) {
              tabToSelect = tab;
            }
-@@ -4184,6 +4210,7 @@
+@@ -4184,6 +4209,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||
@@ -77,7 +76,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7774dbf9f963529570b08465d107df23
          this._removingTabs.size >
            3 /* don't want lots of concurrent animations */ ||
          !aTab.hasAttribute(
-@@ -5117,10 +5144,10 @@
+@@ -5117,10 +5143,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      },
  

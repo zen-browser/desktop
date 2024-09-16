@@ -32,7 +32,7 @@
        * same shadow from the browser window on top. */
       box-shadow:
         var(--uc-tweak-rounded-corners-shadow, 0 0 transparent),
-        0 0 0 16px var(--zen-themed-toolbar-bg) !important;
+        0 0 0 16px var(--zen-main-browser-background) !important;
       clip-path: inset(0);
       pointer-events: none;
     }

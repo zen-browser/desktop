@@ -44,14 +44,15 @@
       max-width: unset !important;
       padding: 0 !important;
 
-      overflow: hidden;
       position: relative;
+
+      height: var(--tab-min-height) !important;
+      min-height: var(--tab-min-height) !important;
 
       border-radius: var(--border-radius-medium);
 
       & .tab-background {
         overflow: hidden;
-        margin: 2px 2px;
 
         & .tab-context-line {
           margin: 0 0px !important;
@@ -94,6 +95,12 @@
         margin-block-end: 4px;
         width: 80%;
       }
+    }
+  }
+
+  #tabbrowser-arrowscrollbox {
+    &::part(scrollbox) {
+      gap: 2px !important;
     }
   }
 

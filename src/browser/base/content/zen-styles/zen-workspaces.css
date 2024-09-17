@@ -16,6 +16,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 12px;
+  pointer-events: none;
 }
 
 @media (-moz-bool-pref: 'zen.view.sidebar-expanded') {

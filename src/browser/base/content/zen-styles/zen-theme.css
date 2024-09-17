@@ -71,7 +71,7 @@
   --in-content-page-background: var(--zen-colors-tertiary) !important;
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
 
-  --zen-button-border-radius: 7px;
+  --zen-button-border-radius: var(--zen-border-radius);
   --zen-button-padding: 0.6rem 1.2rem;
 
   /* Other colors */

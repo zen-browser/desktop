@@ -195,6 +195,9 @@ pref("widget.non-native-theme.use-theme-accent", true);
 pref("privacy.resistFingerprinting.letterboxing", false);
 pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
 
+// Remove Inspect Accessibity Properties menu
+pref("devtools.accessibility.enabled", false);
+
 // Enable GPU by default
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);

@@ -88,11 +88,12 @@ var gZenMarketplaceManager = {
   },
 
   async removeTheme(themeId) {
+    console.info('[ZenThemeMarketplaceParent:settings]: Removing theme ', themePath);
+
     const themePath = PathUtils.join(this.themesRootPath, themeId);
-    console.info('ZenThemeMarketplaceParent(settings): Removing theme ', themePath);
     await IOUtils.remove(themePath, { recursive: true, ignoreAbsent: true });
 
-    let themes = await this._getThemes();
+    const themes = await this._getThemes();
     delete themes[themeId];
     await IOUtils.writeJSON(this.themesDataFile, themes);
 
@@ -136,58 +137,44 @@ var gZenMarketplaceManager = {
     return kZenOSToSmallName[os];
   },
 
-  _getValidPreferences(preferences) {
-    for (let entry of preferences) {
-      const key = entry.property;
-      // [!][os:]key
-      let restOfPreferences = key;
-      let isNegation = false;
-      if (key.startsWith('!')) {
-        isNegation = true;
-        restOfPreferences = key.slice(1);
-      }
-      let os = '';
-      if (restOfPreferences.includes(':')) {
-        [os, restOfPreferences] = restOfPreferences.split(':');
-      }
-      if (isNegation && os === this.currentOperatingSystem) {
-        delete preferences[key];
-      } else if (os && os !== this.currentOperatingSystem && !isNegation) {
-        delete preferences[key];
-      } else {
-        // Change the key to contain only the rest of the preferences.
-        preferences[restOfPreferences] = preferences[key];
-        if (key !== restOfPreferences) {
-          delete preferences[key];
-        }
-      }
-    }
-    return preferences;
-  },
-
   async _getThemePreferences(theme) {
     const themePath = PathUtils.join(this.themesRootPath, theme.id, 'preferences.json');
     if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
       return [];
     }
 
-    let themePreferences = await IOUtils.readJSON(themePath);
+    const preferences = await IOUtils.readJSON(themePath);
 
     // compat mode for old preferences, all of them can only be checkboxes
-    if (typeof themePreferences === 'object' && !Array.isArray(themePreferences)) {
+    if (typeof preferences === 'object' && !Array.isArray(preferences)) {
       console.warn(
-        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: `
+        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: https://docs.zen-browser.app/themes-store/themes-marketplace-preferences`
       );
-      themePreferences = Object.entries(themePreferences).map(([property, label]) => {
-        return {
+      const newThemePreferences = [];
+
+      for (let [entry, label] of Object.entries(preferences)) {
+        const [_, negation = '', os = '', property] = /(!?)(?:(macos|windows|linux):)?([A-z0-9-_.]+)/g.exec(entry);
+        const isNegation = negation === '!';
+
+        if (
+          (isNegation && os === this.currentOperatingSystem) ||
+          (os !== '' && os !== this.currentOperatingSystem && !isNegation)
+        ) {
+          continue;
+        }
+
+        newThemePreferences.push({
           property,
           label,
           type: 'checkbox',
-        };
-      });
+          disabledOn: os !== '' ? [os] : [],
+        });
+      }
+
+      return newThemePreferences;
     }
 
-    return this._getValidPreferences(themePreferences);
+    return preferences.filter(({ disabledOn = [] }) => !disabledOn.includes(this.currentOperatingSystem));
   },
 
   _getBrowser() {
@@ -306,9 +293,8 @@ var gZenMarketplaceManager = {
         if (!confirm('Are you sure you want to remove this theme?')) {
           return;
         }
-        const target = event.target;
-        const themeId = target.getAttribute('zen-theme-id');
-        await this.removeTheme(themeId);
+
+        await this.removeTheme(event.target.getAttribute('zen-theme-id'));
       });
       fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
         dialog.showModal();
@@ -362,7 +348,7 @@ var gZenMarketplaceManager = {
 
                 if (!['string', 'number'].includes(valueType)) {
                   console.log(
-                    `ZenThemeMarketplaceParent(settings): Warning, invalid data type received (${valueType}), skipping.`
+                    `[ZenThemeMarketplaceParent:settings]: Warning, invalid data type received (${valueType}), skipping.`
                   );
                   continue;
                 }
@@ -486,7 +472,7 @@ var gZenMarketplaceManager = {
 
             default:
               console.log(
-                `ZenThemeMarketplaceParent(settings): Warning, unknown preference type received (${type}), skipping.`
+                `[ZenThemeMarketplaceParent:settings]: Warning, unknown preference type received (${type}), skipping.`
               );
               continue;
           }

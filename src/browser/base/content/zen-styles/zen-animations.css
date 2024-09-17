@@ -35,7 +35,7 @@
 
 @keyframes zen-slide-in {
   from {
-    transform: translateX(-10px);
+    transform: translateX(-30px);
     opacity: 0;
   }
   to {

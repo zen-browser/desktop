@@ -25,6 +25,8 @@
     --tab-border-radius: var(--border-radius-medium);
     --zen-toolbox-min-width: 1px;
 
+    --tab-hover-background-color: var(--toolbarbutton-hover-background) !important;
+
     min-width: var(--zen-toolbox-min-width);
 
     padding: var(--zen-toolbox-padding);
@@ -63,6 +65,8 @@
     grid-gap: 0 !important;
 
     & .tabbrowser-tab {
+      animation: zen-slide-in 0.2s;
+
       max-width: unset !important;
       padding: 0 !important;
 
@@ -83,18 +87,6 @@
           width: 3px !important;
         }
       }
-      
-      .tab-throbber,
-      .tab-icon-pending,
-      .tab-icon-image,
-      .tab-sharing-icon-overlay,
-      .tab-icon-overlay {
-        &:not([pinned]) {
-          margin-inline-end: var(--toolbarbutton-inner-padding) !important;
-          margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;    
-        }
-      }
-
 
       @media (-moz-bool-pref: 'zen.tabs.dim-pending') { 
         &[pending='true'] .tab-icon-image {
@@ -177,7 +169,7 @@
 
       padding-top: calc(var(--zen-toolbox-padding) * 2);
 
-      width: calc(100% - var(--zen-toolbox-padding));
+      width: 100%;
       position: relative;
 
       --toolbarbutton-inner-padding: 9px !important;
@@ -233,6 +225,17 @@
 
         &:not([pinned]):is(:hover, [visuallyselected]) .tab-close-button {
           display: block !important;
+        }
+
+        .tab-throbber,
+        .tab-icon-pending,
+        .tab-icon-image,
+        .tab-sharing-icon-overlay,
+        .tab-icon-overlay {
+          &:not([pinned]) {
+            margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+            margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;    
+          }
         }
       }
     }

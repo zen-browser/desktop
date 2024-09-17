@@ -297,6 +297,6 @@ button.popup-notification-dropmarker {
 }
 
 
-#PersonalToolbar {
+#PersonalToolbar:not([collapsed="true"]) {
   padding-bottom: 6px;
 }

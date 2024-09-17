@@ -1,0 +1,13 @@
+diff --git a/toolkit/modules/UpdateUtils.sys.mjs b/toolkit/modules/UpdateUtils.sys.mjs
+index be9ce9d5402c30bf4a9712f1ce9026503c191a53..230882363b3e1bbe7f0977567db61f72494a19ea 100644
+--- a/toolkit/modules/UpdateUtils.sys.mjs
++++ b/toolkit/modules/UpdateUtils.sys.mjs
+@@ -81,7 +81,7 @@ export var UpdateUtils = {
+           replacement = Services.appinfo.name;
+           break;
+         case "VERSION":
+-          replacement = Services.appinfo.version;
++          replacement = AppConstants.ZEN_FIREFOX_VERSION;
+           break;
+         case "BUILD_ID":
+           replacement = Services.appinfo.appBuildID;

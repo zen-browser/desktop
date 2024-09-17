@@ -22,6 +22,8 @@
 
     padding: var(--zen-toolbox-padding);
     padding-top: var(--zen-toolbox-top-align);
+
+    margin-top: 0 !important;
   }
 
 
@@ -42,8 +44,14 @@
       max-width: unset !important;
       padding: 0 !important;
 
+      overflow: hidden;
+      position: relative;
+
+      border-radius: var(--border-radius-medium);
+
       & .tab-background {
         overflow: hidden;
+        margin: 2px 2px;
 
         & .tab-context-line {
           margin: 0 0px !important;
@@ -72,6 +80,7 @@
     margin-inline-end: 0 !important;
     padding-top: 0 !important;
     border-top: solid transparent 0px !important;
+    margin: 0 2px !important;
 
     &[showborder] {
       padding-top: 4px !important;
@@ -196,6 +205,7 @@
       display: flex;
       flex-direction: column;
       padding-top: calc(var(--zen-toolbox-padding) * 2);
+      align-items: center;
     }
 
     :root:has(&) #zen-sidebar-splitter {
@@ -347,6 +357,15 @@
 
     & #zen-sidebar-splitter {
       order: 2;
+    }
+  }
+
+  /* Mark: Override the default tab close button */
+  #tabbrowser-tabs {
+    & .tabbrowser-tab {
+      &[pinned] .tab-close-button {
+        display: none !important;
+      }
     }
   }
 }

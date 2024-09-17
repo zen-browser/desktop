@@ -167,6 +167,10 @@
 
       width: calc(100% - var(--zen-toolbox-padding));
       position: relative;
+
+      --toolbarbutton-inner-padding: 9px !important;
+
+      justify-content: space-between;
     }
 
     /* Mark: Fix separator paddings */
@@ -230,6 +234,10 @@
     & #zen-profile-button {
       width: 100% !important;
       padding: var(--toolbarbutton-inner-padding) !important;
+
+      & label {
+        padding-left: calc(var(--toolbarbutton-inner-padding) * 1.5);
+      }
     }
   }
 

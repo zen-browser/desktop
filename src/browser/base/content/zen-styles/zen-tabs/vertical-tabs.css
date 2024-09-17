@@ -83,6 +83,18 @@
           width: 3px !important;
         }
       }
+      
+      .tab-throbber,
+      .tab-icon-pending,
+      .tab-icon-image,
+      .tab-sharing-icon-overlay,
+      .tab-icon-overlay {
+        &:not([pinned]) {
+          margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+          margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;    
+        }
+      }
+
 
       @media (-moz-bool-pref: 'zen.tabs.dim-pending') { 
         &[pending='true'] .tab-icon-image {
@@ -229,14 +241,14 @@
       :root:not([zen-sidebar-legacy='true']) #navigator-toolbox:is([zen-user-hover='true']:hover, :not([zen-user-hover='true'])) {
         padding-right: 47px !important;
       }
-    }
-
-    & #zen-profile-button {
-      width: 100% !important;
-      padding: var(--toolbarbutton-inner-padding) !important;
-
-      & label {
-        padding-left: calc(var(--toolbarbutton-inner-padding) * 1.5);
+      
+      & #zen-profile-button {
+        width: 100% !important;
+        padding: var(--toolbarbutton-inner-padding) !important;
+  
+        & label {
+          padding-left: calc(var(--toolbarbutton-inner-padding) * 1.5);
+        }
       }
     }
   }

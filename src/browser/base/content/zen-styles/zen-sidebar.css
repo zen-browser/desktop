@@ -12,8 +12,8 @@ toolbar {
   position: relative;
   border-radius: var(--tab-border-radius);
 
-  width: calc(2 * var(--toolbarbutton-inner-padding) + 6px) !important;
-  height: calc(2 * var(--toolbarbutton-inner-padding) + 6px) !important;
+  width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+  height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
 
   & image {
     border-radius: 999px;

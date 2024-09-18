@@ -72,10 +72,18 @@ var gZenVerticalTabsManager = {
 
   _updateEvent() {
     this._updateMaxWidth();
+    const topButtons = document.getElementById('zen-sidebar-top-buttons');
+    const customizationTarget = document.getElementById('nav-bar-customization-target');
+    const tabboxWrapper = document.getElementById('zen-tabbox-wrapper');
+    const browser = document.getElementById('browser');
     if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
       this.navigatorToolbox.setAttribute('zen-expanded', 'true');
+      this.navigatorToolbox.prepend(topButtons);
+      browser.prepend(this.navigatorToolbox);
     } else {
       this.navigatorToolbox.removeAttribute('zen-expanded');
+      customizationTarget.prepend(topButtons);
+      tabboxWrapper.prepend(this.navigatorToolbox);
     }
     if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
       this.navigatorToolbox.setAttribute('zen-right-side', 'true');

@@ -76,14 +76,6 @@
       }
       tabs.style.maxHeight = totalHeight + 'px';
       //console.info('ZenThemeModifier: set tabs max-height to', totalHeight + 'px');
-
-      const allTabs = document.getElementById('alltabs-button');
-      allTabs.removeAttribute('hidden');
-      allTabs.removeAttribute('badged');
-      allTabs.setAttribute('class', 'toolbarbutton-1 zen-sidebar-action-button');
-      document.getElementById('zen-sidebar-icons-wrapper').prepend(
-        allTabs
-      );
     },
 
     openWatermark() {
@@ -108,10 +100,6 @@
     _changeSidebarLocation() {
       const legacyLocation = Services.prefs.getBoolPref('zen.themes.tabs.legacy-location', false);
       const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
-      if (legacyLocation) {
-        kElementsToAppend.push('navigator-toolbox');
-        window.document.documentElement.setAttribute('zen-sidebar-legacy', 'true');
-      }
       const wrapper = document.getElementById('zen-tabbox-wrapper');
       const appWrapepr = document.getElementById('zen-sidebar-box-container');
       for (let id of kElementsToAppend) {
@@ -124,9 +112,7 @@
 
       const browser = document.getElementById('browser');
       const toolbox = document.getElementById('navigator-toolbox');
-      if (!legacyLocation) {
-        browser.prepend(toolbox);
-      }
+      browser.prepend(toolbox);
 
       // remove all styles except for the width, since we are xulstoring the complet style list
       const width = toolbox.style.width;
@@ -140,6 +126,34 @@
       splitter.setAttribute('resizebefore', 'sibling');
       splitter.setAttribute('resizeafter', 'none');
       toolbox.insertAdjacentElement('afterend', splitter);
+
+      this._moveWindowButtons();
+      this._addSidebarButtons();
+    },
+
+    _moveWindowButtons() {
+      const windowControls = document.getElementById('titlebar-buttonbox-container');
+      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons');
+      if (AppConstants.platform == "macosx") {
+        toolboxIcons.prepend(windowControls);
+      }
+    },
+
+    _addSidebarButtons() {
+      const sidebarBox = window.MozXULElement.parseXULToFragment(`
+        <toolbar id="zen-sidebar-top-buttons" fullscreentoolbar="true" brighttext="true">
+          <toolbarbutton class="toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
+          <toolbarbutton class="toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" removable="true" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>
+        </toolbar>
+      `);
+      document.getElementById('navigator-toolbox').prepend(sidebarBox);
+      const sideBarTopButtons = document.getElementById('zen-sidebar-top-buttons');
+
+      const panelMenu = document.getElementById('PanelUI-menu-button');
+      panelMenu.classList.add('zen-sidebar-action-button');
+      panelMenu.setAttribute('cui-areatype', 'toolbar');
+
+      sideBarTopButtons.prepend(panelMenu);
     },
 
     _focusSearchBar() {

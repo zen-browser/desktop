@@ -74,6 +74,10 @@
   --zen-button-border-radius: 7px;
   --zen-button-padding: 0.6rem 1.2rem;
 
+  /* Toolbar */
+  --zen-toolbar-height: 39px;
+  --zen-toolbar-button-inner-padding: 6px;
+
   /* Other colors */
   --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
   --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;

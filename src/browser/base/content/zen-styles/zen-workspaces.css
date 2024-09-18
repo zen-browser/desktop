@@ -1,12 +1,9 @@
 #zen-workspaces-button {
-  border: 1px solid var(--zen-colors-border);
-  border-radius: var(--zen-button-border-radius);
-  min-height: 33px;
   justify-content: center;
   align-items: center;
   display: flex;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
-  -moz-window-dragging: no-drag;
+  margin: 0 30px;
+  opacity: .6;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -15,7 +12,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 12px;
+  font-size: 13px;
   pointer-events: none;
 }
 
@@ -32,7 +29,6 @@
     & #zen-workspaces-button {
       width: calc(var(--zen-sidebar-action-button-width) - 1px) !important;
       margin-top: .2rem;
-      height: calc(var(--zen-sidebar-action-button-width) - 10px) !important;
     }
     
     & #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -52,7 +48,6 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       display: flex;
-      padding: 2px 10px;
       width: calc(100% - var(--zen-tabbrowser-padding) * 6) !important;
       gap: 0.5ch;
     }

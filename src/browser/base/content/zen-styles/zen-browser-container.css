@@ -1,4 +1,12 @@
 :root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
+  #tabbrowser-tabbox {
+    --zen-webview-correction-margin: 2px;
+
+    & > *:not(#tabbrowser-tabpanels) {
+      margin-top: var(--zen-webview-correction-margin);
+    }
+  }
+
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     width: -moz-available;
     border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
@@ -6,7 +14,6 @@
     position: relative;
 
     /* This fixes an issue with the left border */
-    --zen-webview-correction-margin: 2px;
     margin-left: var(--zen-webview-correction-margin);
     margin-top: var(--zen-webview-correction-margin);
     

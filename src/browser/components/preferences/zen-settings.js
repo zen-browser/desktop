@@ -510,13 +510,10 @@ var gZenLooksAndFeel = {
     this._initializeTabbarExpandForm();
     gZenThemeBuilder.init();
     gZenMarketplaceManager.init();
-    var onLegacyToolbarChange = this.onLegacyToolbarChange.bind(this);
-    Services.prefs.addObserver('zen.themes.tabs.legacy-location', onLegacyToolbarChange);
     var onPreferColorSchemeChange = this.onPreferColorSchemeChange.bind(this);
     window.matchMedia('(prefers-color-scheme: dark)').addListener(onPreferColorSchemeChange);
     this.onPreferColorSchemeChange();
     window.addEventListener('unload', () => {
-      Services.prefs.removeObserver('zen.themes.tabs.legacy-location', onLegacyToolbarChange);
       window.matchMedia('(prefers-color-scheme: dark)').removeListener(onPreferColorSchemeChange);
     });
     setTimeout(() => {
@@ -573,14 +570,6 @@ var gZenLooksAndFeel = {
             break;
         }
       });
-    }
-  },
-
-  async onLegacyToolbarChange(event) {
-    let buttonIndex = await confirmRestartPrompt(true, 1, true, false);
-    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
-      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-      return;
     }
   },
 
@@ -869,11 +858,6 @@ Preferences.addAll([
   },
   {
     id: 'zen.keyboard.shortcuts.disable-firefox',
-    type: 'bool',
-    default: false,
-  },
-  {
-    id: 'zen.themes.tabs.legacy-location',
     type: 'bool',
     default: false,
   },

@@ -103,6 +103,8 @@
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
   --toolbar-bgcolor: transparent;
 
+  --toolbarbutton-active-background: var(--zen-colors-border) !important;
+
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg: var(--zen-colors-tertiary);

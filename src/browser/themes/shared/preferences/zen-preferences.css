@@ -480,6 +480,10 @@ groupbox h2 {
   flex-direction: row;
 }
 
+.zenThemeMarketplaceItemPreferenceToggle {
+  align-self: start;
+}
+
 #zenThemeMarketplaceItemContentHeader {
   display: flex;
   flex-direction: row;

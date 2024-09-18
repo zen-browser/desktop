@@ -213,8 +213,9 @@ var gZenMarketplaceManager = {
 
     const themeList = document.createElement('div');
 
-    for (let theme of Object.values(themes)) {
+    for (const theme of Object.values(themes)) {
       const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
+      const isThemeEnabled = theme.enabled === undefined || theme.enabled;
 
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem">
@@ -225,7 +226,7 @@ var gZenMarketplaceManager = {
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
           <hbox class="zenThemeMarketplaceItemActions">
-            <button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>
+            ${theme.preferences ? `<button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>` : ''}
             <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
           </hbox>
         </vbox>
@@ -255,8 +256,8 @@ var gZenMarketplaceManager = {
       contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
       mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle';
 
-      mozToggle.pressed = theme.enabled;
-      mozToggle.title = theme.enabled ? 'Disable theme' : 'Enable theme';
+      mozToggle.pressed = isThemeEnabled;
+      mozToggle.title = isThemeEnabled ? 'Disable theme' : 'Enable theme';
 
       baseHeader.appendChild(mozToggle);
 
@@ -280,10 +281,20 @@ var gZenMarketplaceManager = {
 
         if (!event.target.hasAttribute('pressed')) {
           await this.disableTheme(themeId);
-          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).setAttribute('hidden', true);
+
+          mozToggle.title = 'Enable theme';
+
+          if (theme.preferences) {
+            document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).setAttribute('hidden', true);
+          }
         } else {
           await this.enableTheme(themeId);
-          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
+
+          mozToggle.title = 'Disable theme';
+
+          if (theme.preferences) {
+            document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
+          }
         }
       });
 
@@ -296,12 +307,15 @@ var gZenMarketplaceManager = {
 
         await this.removeTheme(event.target.getAttribute('zen-theme-id'));
       });
-      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
-        dialog.showModal();
-      });
 
-      if (theme.enabled && theme.preferences) {
-        fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
+      if (theme.preferences) {
+        fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
+          dialog.showModal();
+        });
+
+        if (isThemeEnabled) {
+          fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
+        }
       }
 
       const preferences = await this._getThemePreferences(theme);
@@ -311,7 +325,7 @@ var gZenMarketplaceManager = {
 
         preferencesWrapper.setAttribute('flex', '1');
 
-        for (let entry of preferences) {
+        for (const entry of preferences) {
           const { property, label, type } = entry;
 
           switch (type) {
@@ -341,7 +355,7 @@ var gZenMarketplaceManager = {
 
               menupopup.appendChild(defaultItem);
 
-              for (let option of options) {
+              for (const option of options) {
                 const { label, value } = option;
 
                 const valueType = typeof value;
@@ -409,9 +423,9 @@ var gZenMarketplaceManager = {
               }
 
               checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
-                let target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
-                let key = target.getAttribute('zen-pref');
-                let checked = target.hasAttribute('checked');
+                const target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
+                const key = target.getAttribute('zen-pref');
+                const checked = target.hasAttribute('checked');
 
                 if (!checked) {
                   target.removeAttribute('checked');

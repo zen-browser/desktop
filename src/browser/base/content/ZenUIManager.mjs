@@ -210,12 +210,15 @@ var gZenCompactModeManager = {
         addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
       }
     }
-    const removeHasPopupOnPopupHidden = () => {
-      removeEventListener('click', waitForMouseMoveOnPopupSelect);
-      this.__removeHasPopupAttribute();
+    const removeHasPopupOnPopupHidden = (event) => {
+      if (['toolbar-context-menu', 'tabContextMenu'].includes(event.target.id)) {
+        removeEventListener('click', waitForMouseMoveOnPopupSelect);
+        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
+        this.__removeHasPopupAttribute();
+      }
     }
     addEventListener('click', waitForMouseMoveOnPopupSelect);
-    addEventListener('popuphidden', removeHasPopupOnPopupHidden, {once: true});
+    addEventListener('popuphidden', removeHasPopupOnPopupHidden);
   },
 
   toggleToolbar() {

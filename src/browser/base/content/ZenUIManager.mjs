@@ -204,7 +204,7 @@ var gZenCompactModeManager = {
     removeEventListener('mousemove', this.__removeHasPopupAttribute);
 
     const waitForMouseMoveOnPopupSelect = (event) => {
-      if (event.target.tagName === 'menuitem' || this.sidebar.contains(event.target)) {
+      if (event.target.tagName === 'menuitem') {
         removeEventListener('click', waitForMouseMoveOnPopupSelect);
         removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
         addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});

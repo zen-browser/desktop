@@ -23,6 +23,7 @@
   /** Keep these selectors in sync with the ones in vertical-tabs.css */
   #navigator-toolbox:is(
       #navigator-toolbox[zen-user-hover='true']:hover,
+      #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
       #navigator-toolbox[zen-user-hover='true']:focus-within,
       #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
       #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),

@@ -46,6 +46,7 @@
     &,
     & #titlebar {
       min-width: var(--zen-toolbox-min-width) !important;
+      -moz-window-dragging: no-drag;
     }
   }
 

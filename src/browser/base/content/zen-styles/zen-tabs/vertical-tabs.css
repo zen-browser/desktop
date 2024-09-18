@@ -155,6 +155,7 @@
     #navigator-toolbox[zen-user-hover='true']:focus-within,
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],
+    #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
     #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])) {
@@ -262,6 +263,7 @@
     #navigator-toolbox[zen-user-hover='true']:focus-within,
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],
+    #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
     #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
@@ -372,6 +374,7 @@
     #navigator-toolbox:focus-within,
     #navigator-toolbox[movingtab],
     #navigator-toolbox[flash-popup],
+    #navigator-toolbox[has-popup-menu],
     #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
@@ -391,6 +394,7 @@
         padding: var(--zen-toolbox-padding);
         transition: 0 !important;
         animation: zen-vtabs-animation 0.3s ease-in-out;
+        -moz-window-dragging: no-drag;
       }
 
       &[zen-right-side='true'] #TabsToolbar {

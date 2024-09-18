@@ -14,8 +14,8 @@
 
   #navigator-toolbox {
     --zen-compact-toolbox-margin-single: calc(var(--zen-element-separation) * 2);
-    --zen-compact-toolbox-margin:
-      calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single)
+    --zen-compact-toolbox-margin: 
+      calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single) 
       calc(var(--zen-compact-toolbox-margin-single) + var(--zen-element-separation)) var(--zen-compact-toolbox-margin-single);
     position: absolute !important;
     display: block;
@@ -86,24 +86,11 @@
   @media not (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
     #navigator-toolbox {
       /* Remove the top margin */
-      /* The toolbox isn't relative to the webview anymore, meaning we can't just add a static value and call it a day... 
-       * The top margin is calculated by taking the following factors into account:
-       *  1. Element separation
-       *  2. Extra margin to separate from the webview
-       *  3. Add element separation variable, to avoid overlaping with the toolbar
-       *  4. Calculate toolbar height, taken from zen-urlbar.css
-       */
-      --zen-compact-toolbox-margin: calc(
-        var(--zen-element-separation) + 0.8rem +
-        (18px + (var(--toolbarbutton-inner-padding) * 2))
-      ) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
+      --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 2)
+        var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single)
+        var(--zen-compact-toolbox-margin-single);
 
       margin-top: 0 !important;
-      :root[zen-sidebar-legacy='true'] & {
-        --zen-compact-toolbox-margin: calc(var(--zen-compact-toolbox-margin-single) / 2)
-          var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single)
-          var(--zen-compact-toolbox-margin-single);
-      }
     }
 
     #zen-sidebar-web-panel-wrapper,

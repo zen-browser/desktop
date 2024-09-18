@@ -100,12 +100,6 @@ pref('zen.keyboard.shortcuts.disable-firefox', false);
 pref('zen.tabs.dim-pending', true);
 pref('zen.themes.updated-value-observer', false);
 
-#ifdef XP_MACOSX
-pref('zen.themes.tabs.legacy-location', true);
-#else
-pref('zen.themes.tabs.legacy-location', false);
-#endif
-
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 

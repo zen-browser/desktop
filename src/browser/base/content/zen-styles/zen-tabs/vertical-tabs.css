@@ -14,10 +14,6 @@
 
   #browser {
     --zen-toolbox-padding: 5px;
-
-    :root:not([zen-sidebar-legacy='true']) & {
-      --zen-toolbox-top-align: var(--zen-toolbox-padding);
-    }
   }
 
   #navigator-toolbox {
@@ -70,8 +66,6 @@
       max-width: unset !important;
       padding: 0 !important;
 
-      font-size: var(--urlbarView-small-font-size);
-
       position: relative;
 
       height: calc(var(--tab-min-height) + var(--tab-block-margin) * 2) !important;
@@ -99,7 +93,7 @@
   #zen-sidebar-icons-wrapper {
     background: transparent;
 
-    & toolbarbutton {
+    & toolbarbutton:not(#zen-workspaces-button) {
       width: fit-content;
       padding: 0 !important;
     }
@@ -109,7 +103,6 @@
     margin-inline-end: 0 !important;
     padding-top: 0 !important;
     border-top: solid transparent 0px !important;
-    margin: 0 2px !important;
 
     &[showborder] {
       padding-top: 4px !important;
@@ -162,10 +155,9 @@
     --zen-toolbox-min-width: 150px;
 
     & #zen-sidebar-icons-wrapper {
-      display: grid;
+      display: flex;
       /* Make sure the icons take most of the space, smartly */
-      grid-template-columns: repeat(auto-fit, minmax(34px, auto));
-      gap: 4px;
+      flex-direction: row;
       justify-content: space-between;
 
       padding-top: calc(var(--zen-toolbox-padding) * 2);
@@ -173,7 +165,7 @@
       width: 100%;
       position: relative;
 
-      --toolbarbutton-inner-padding: 9px !important;
+      --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
 
       justify-content: space-between;
     }
@@ -242,10 +234,6 @@
     }
 
     @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') {
-      :root:not([zen-sidebar-legacy='true']) #navigator-toolbox:is([zen-user-hover='true']:hover, :not([zen-user-hover='true'])) {
-        padding-right: 47px !important;
-      }
-      
       & #zen-profile-button {
         width: 100% !important;
         padding: var(--toolbarbutton-inner-padding) !important;
@@ -475,5 +463,20 @@
     margin-right: var(--zen-element-separation);
     padding: 0 !important;
     opacity: 0;
+    display: none;
+  }
+
+  /* Mark: Sidebar top buttons */
+  #zen-sidebar-top-buttons {
+    --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
+    
+    gap: 5px;
+    & .zen-sidebar-action-button {
+      padding: 0 !important;
+
+      & label {
+        display: none !important;
+      }
+    }
   }
 }

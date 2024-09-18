@@ -32,7 +32,6 @@
     & #zen-workspaces-button {
       width: calc(var(--zen-sidebar-action-button-width) - 1px) !important;
       margin-top: .2rem;
-      height: calc(var(--zen-sidebar-action-button-width) - 10px) !important;
     }
     
     & #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -52,7 +51,7 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       display: flex;
-      padding: 2px 10px;
+      padding: 0 10px;
       width: calc(100% - var(--zen-tabbrowser-padding) * 6) !important;
       gap: 0.5ch;
     }

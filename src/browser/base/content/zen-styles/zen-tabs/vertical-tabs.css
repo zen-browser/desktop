@@ -70,8 +70,6 @@
       max-width: unset !important;
       padding: 0 !important;
 
-      font-size: var(--urlbarView-small-font-size);
-
       position: relative;
 
       height: calc(var(--tab-min-height) + var(--tab-block-margin) * 2) !important;
@@ -109,7 +107,6 @@
     margin-inline-end: 0 !important;
     padding-top: 0 !important;
     border-top: solid transparent 0px !important;
-    margin: 0 2px !important;
 
     &[showborder] {
       padding-top: 4px !important;
@@ -471,5 +468,6 @@
     margin-right: var(--zen-element-separation);
     padding: 0 !important;
     opacity: 0;
+    display: none;
   }
 }

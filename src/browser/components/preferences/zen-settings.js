@@ -2,25 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const kZenColors = [
-  '#aac7ff',
-  '#74d7cb',
-  '#a0d490',
-  '#dec663',
-  '#ffb787',
-  '#dec1b1',
-  '#ffb1c0',
-  '#ddbfc3',
-  '#f6b0ea',
-  '#d4bbff',
-];
-
-const kZenOSToSmallName = {
-  WINNT: 'windows',
-  Darwin: 'macos',
-  Linux: 'linux',
-};
-
 var gZenMarketplaceManager = {
   init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
@@ -79,123 +60,40 @@ var gZenMarketplaceManager = {
     return document.getElementById('zenThemeMarketplaceList');
   },
 
-  get themesDataFile() {
-    return PathUtils.join(PathUtils.profileDir, 'zen-themes.json');
-  },
-
-  get themesRootPath() {
-    return PathUtils.join(PathUtils.profileDir, 'chrome', 'zen-themes');
-  },
-
   async removeTheme(themeId) {
-    console.info('[ZenThemeMarketplaceParent:settings]: Removing theme ', themePath);
+    const themePath = ZenThemesCommon.getThemeFolder(themeId);
 
-    const themePath = PathUtils.join(this.themesRootPath, themeId);
+    console.info(`[ZenThemeMarketplaceParent:settings]: Removing theme ${themePath}`);
+
     await IOUtils.remove(themePath, { recursive: true, ignoreAbsent: true });
 
-    const themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     delete themes[themeId];
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
 
     this.triggerThemeUpdate();
   },
 
   async disableTheme(themeId) {
-    const themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
 
     theme.enabled = false;
 
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
     this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
   },
 
   async enableTheme(themeId) {
-    const themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
 
     theme.enabled = true;
 
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
     this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
-  },
-
-  async _getThemes() {
-    if (!this._themes) {
-      if (!(await IOUtils.exists(this.themesDataFile))) {
-        await IOUtils.writeJSON(this.themesDataFile, {});
-      }
-      this._themes = await IOUtils.readJSON(this.themesDataFile);
-    }
-    return this._themes;
-  },
-
-  get currentOperatingSystem() {
-    let os = Services.appinfo.OS;
-    return kZenOSToSmallName[os];
-  },
-
-  async _getThemePreferences(theme) {
-    const themePath = PathUtils.join(this.themesRootPath, theme.id, 'preferences.json');
-    if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
-      return [];
-    }
-
-    const preferences = await IOUtils.readJSON(themePath);
-
-    // compat mode for old preferences, all of them can only be checkboxes
-    if (typeof preferences === 'object' && !Array.isArray(preferences)) {
-      console.warn(
-        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: https://docs.zen-browser.app/themes-store/themes-marketplace-preferences`
-      );
-      const newThemePreferences = [];
-
-      for (let [entry, label] of Object.entries(preferences)) {
-        const [_, negation = '', os = '', property] = /(!?)(?:(macos|windows|linux):)?([A-z0-9-_.]+)/g.exec(entry);
-        const isNegation = negation === '!';
-
-        if (
-          (isNegation && os === this.currentOperatingSystem) ||
-          (os !== '' && os !== this.currentOperatingSystem && !isNegation)
-        ) {
-          continue;
-        }
-
-        newThemePreferences.push({
-          property,
-          label,
-          type: 'checkbox',
-          disabledOn: os !== '' ? [os] : [],
-        });
-      }
-
-      return newThemePreferences;
-    }
-
-    return preferences.filter(({ disabledOn = [] }) => !disabledOn.includes(this.currentOperatingSystem));
-  },
-
-  _getBrowser() {
-    if (!this.__browser) {
-      this.__browser = Services.wm.getMostRecentWindow('navigator:browser');
-    }
-
-    return this.__browser;
-  },
-
-  __throttle(mainFunction, delay) {
-    let timerFlag = null;
-
-    return (...args) => {
-      if (timerFlag === null) {
-        mainFunction(...args);
-        timerFlag = setTimeout(() => {
-          timerFlag = null;
-        }, delay);
-      }
-    };
   },
 
   async _buildThemesList() {
@@ -205,11 +103,11 @@ var gZenMarketplaceManager = {
       return;
     }
 
-    console.log('ZenThemeMarketplaceParent(settings): Building themes list');
+    console.log('[ZenThemeMarketplaceParent:settings]: Building themes list');
 
-    let themes = await this._getThemes();
+    let themes = await ZenThemesCommon.getThemes();
 
-    const browser = this._getBrowser();
+    const browser = ZenThemesCommon.getBrowser();
 
     const themeList = document.createElement('div');
 
@@ -318,7 +216,7 @@ var gZenMarketplaceManager = {
         }
       }
 
-      const preferences = await this._getThemePreferences(theme);
+      const preferences = await ZenThemesCommon.getThemePreferences(theme);
 
       if (preferences.length > 0) {
         const preferencesWrapper = document.createXULElement('vbox');
@@ -457,7 +355,7 @@ var gZenMarketplaceManager = {
 
               input.addEventListener(
                 'input',
-                this.__throttle((event) => {
+                ZenThemesCommon.throttle((event) => {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
@@ -608,7 +506,7 @@ var gZenLooksAndFeel = {
   _initializeColorPicker(accentColor) {
     let elem = document.getElementById('zenLooksAndFeelColorOptions');
     elem.innerHTML = '';
-    for (let color of kZenColors) {
+    for (let color of ZenThemesCommon.kZenColors) {
       let colorElemParen = document.createElement('div');
       let colorElem = document.createElement('div');
       colorElemParen.classList.add('zenLooksAndFeelColorOptionParen');
@@ -631,7 +529,7 @@ var gZenLooksAndFeel = {
   },
 
   _getInitialAccentColor() {
-    return Services.prefs.getStringPref('zen.theme.accent-color', kZenColors[0]);
+    return Services.prefs.getStringPref('zen.theme.accent-color', ZenThemesCommon.kZenColors[0]);
   },
 };
 

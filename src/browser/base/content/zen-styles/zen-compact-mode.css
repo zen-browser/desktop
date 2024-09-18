@@ -14,8 +14,8 @@
 
   #navigator-toolbox {
     --zen-compact-toolbox-margin-single: calc(var(--zen-element-separation) * 2);
-    --zen-compact-toolbox-margin: 
-      calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single) 
+    --zen-compact-toolbox-margin:
+      calc(var(--zen-compact-toolbox-margin-single) / 2) var(--zen-compact-toolbox-margin-single)
       calc(var(--zen-compact-toolbox-margin-single) + var(--zen-element-separation)) var(--zen-compact-toolbox-margin-single);
     position: absolute !important;
     display: block;
@@ -92,9 +92,9 @@
        *  3. Add element separation variable, to avoid overlaping with the toolbar
        *  4. Calculate toolbar height, taken from zen-urlbar.css
        */
-      --zen-compact-toolbox-margin: calc( 
-        var(--zen-element-separation) + 0.8rem + 
-        (18px + (var(--toolbarbutton-inner-padding) * 2)) 
+      --zen-compact-toolbox-margin: calc(
+        var(--zen-element-separation) + 0.8rem +
+        (18px + (var(--toolbarbutton-inner-padding) * 2))
       ) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single) var(--zen-compact-toolbox-margin-single);
 
       margin-top: 0 !important;
@@ -120,6 +120,7 @@
   #navigator-toolbox:focus-within,
   #navigator-toolbox[zen-user-show],
   #navigator-toolbox[flash-popup],
+  #navigator-toolbox[has-popup-menu],
   #navigator-toolbox[movingtab],
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(.tabbrowser-tab:active),

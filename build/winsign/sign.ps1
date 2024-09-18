@@ -75,7 +75,7 @@ function SignAndPackage($name) {
     rm windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
     $files = Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.exe
     $files += Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.dll
-    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
+    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
     Compress-Archive -Path windsign-temp\windows-x64-signed-$name\zen.win-$name -DestinationPath windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
     rmdir windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -ErrorAction SilentlyContinue
 

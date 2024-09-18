@@ -19,6 +19,42 @@
   pointer-events: none;
 }
 
+.zen-workspaces-button-minimalist {
+  border:none !important;
+  border-radius: 0;
+  max-height:1rem;
+  box-shadow:none;
+}
+
+#zen-workspace-quick-switch-container {
+  max-height:5rem;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem ;
+  margin: 0 auto;
+  flex-wrap: wrap;
+
+  .zen-workspace-button {
+    height: 20px;
+    width: 20px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    -moz-window-dragging: no-drag;
+    opacity: 80%;
+    filter: brightness(50%);
+
+    &.zen-workspace-button-active {
+      opacity: 100%;
+      filter: brightness(100%);
+    }
+  }
+
+}
+
 @media (-moz-bool-pref: 'zen.view.sidebar-expanded') {
   /** Keep these selectors in sync with the ones in vertical-tabs.css */
   #navigator-toolbox:is(
@@ -55,6 +91,10 @@
       padding: 2px 10px;
       width: calc(100% - var(--zen-tabbrowser-padding) * 6) !important;
       gap: 0.5ch;
+    }
+
+    & #zen-workspace-quick-switch-container {
+      display:flex;
     }
   }
 }

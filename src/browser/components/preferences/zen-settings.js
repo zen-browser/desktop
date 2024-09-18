@@ -887,4 +887,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.workspaces.quick-switch',
+    type: 'bool',
+    default: false,
+  },
 ]);

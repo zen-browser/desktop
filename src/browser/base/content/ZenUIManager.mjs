@@ -196,26 +196,26 @@ var gZenCompactModeManager = {
   keepSidebarVisibleOnContextMenu() {
     this.sidebar.setAttribute('has-popup-menu', '');
     /* If the cursor is on the popup when it hides, the :hover effect will not be reapplied to the sidebar until the cursor moves,
-     to mitigate this: Check if the mouse is on the sidebar when popup removed, wait until mousemove to remove the has-popup-menu attribute.
+     to mitigate this: Wait for mousemove when popup item selected
      */
     if (!this.__removeHasPopupAttribute) {
       this.__removeHasPopupAttribute = () => this.sidebar.removeAttribute('has-popup-menu');
     }
     removeEventListener('mousemove', this.__removeHasPopupAttribute);
 
-    let lastMouseEvent;
-    const trackMouse = (event) => lastMouseEvent = event;
-    addEventListener('mousemove', trackMouse);
-    addEventListener('popuphidden', () => {
-      removeEventListener('mousemove', trackMouse);
-      const rect = this.sidebar.getBoundingClientRect();
-      if (rect.left < lastMouseEvent.screenX && lastMouseEvent.screenX < rect.right
-        && rect.top < lastMouseEvent.screenY && lastMouseEvent.screenY < rect.bottom) {
+    const waitForMouseMoveOnPopupSelect = (event) => {
+      if (event.target.tagName === 'menuitem' || this.sidebar.contains(event.target)) {
+        removeEventListener('click', waitForMouseMoveOnPopupSelect);
+        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
         addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
-      } else {
-        this.__removeHasPopupAttribute();
       }
-    }, {once: true});
+    }
+    const removeHasPopupOnPopupHidden = () => {
+      removeEventListener('click', waitForMouseMoveOnPopupSelect);
+      this.__removeHasPopupAttribute();
+    }
+    addEventListener('click', waitForMouseMoveOnPopupSelect);
+    addEventListener('popuphidden', removeHasPopupOnPopupHidden, {once: true});
   },
 
   toggleToolbar() {

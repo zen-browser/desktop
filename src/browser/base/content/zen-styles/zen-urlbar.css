@@ -254,6 +254,10 @@ button.popup-notification-dropmarker {
   align-items: center;
 }
 
+#browser:not(:has([zen-expanded="true"])) #nav-bar {
+  padding-left: calc(var(--zen-toolbox-padding) * 2 + 1px);
+}
+
 /* Other small tweaks */
 #nav-bar-customization-target {
   /* Don't grow if potentially-user-sized elements (like the searchbar or the

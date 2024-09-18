@@ -28,7 +28,7 @@ function SignAndPackage($name) {
     $files = Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.exe
     $files += Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.dll
 
-    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha1 /v $files
+    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
     echo "Packaging $name"
     $env:SURFER_SIGNING_MODE="sign"
     $env:MAR="$PWD\\build\\winsign\\mar.exe"

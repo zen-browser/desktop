@@ -457,14 +457,14 @@
   }
 
   /* Customization mode */
-  :root[customizing] #navigator-toolbox {
+  /*:root[customizing] #navigator-toolbox {
     overflow: hidden;
     max-width: 0 !important;
     margin-right: var(--zen-element-separation);
     padding: 0 !important;
     opacity: 0;
     display: none;
-  }
+  }*/
 
   /* Mark: Sidebar top buttons */
   #zen-sidebar-top-buttons {

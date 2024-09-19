@@ -141,13 +141,26 @@
 
     _addSidebarButtons() {
       const sidebarBox = window.MozXULElement.parseXULToFragment(`
-        <toolbar id="zen-sidebar-top-buttons" fullscreentoolbar="true" brighttext="true">
-          <toolbarbutton class="toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
-          <toolbarbutton class="toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" removable="true" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>
+        <toolbar id="zen-sidebar-top-buttons"
+          fullscreentoolbar="true" 
+          class="browser-toolbar titlebar-color"
+          brighttext="true"
+          data-l10n-id="tabs-toolbar"
+          customizable="true"
+          context="toolbar-context-menu"
+          flex="1"
+          customizationtarget="zen-sidebar-top-buttons-customization-target"
+          mode="icons">
+          <toolbartabstop/>
+          <hbox id="zen-sidebar-top-buttons-customization-target" flex="1">
+            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" cui-areatype="toolbar" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
+            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>
+          </hbox>
         </toolbar>
       `);
       document.getElementById('navigator-toolbox').prepend(sidebarBox);
-      const sideBarTopButtons = document.getElementById('zen-sidebar-top-buttons');
+      const sideBarTopButtons = document.getElementById('zen-sidebar-top-buttons')
+        .querySelector('#zen-sidebar-top-buttons-customization-target');
 
       const panelMenu = document.getElementById('PanelUI-menu-button');
       panelMenu.classList.add('zen-sidebar-action-button');

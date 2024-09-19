@@ -187,7 +187,10 @@
           "zen-sidebar-top-buttons",
           {
             type: CustomizableUI.TYPE_TOOLBAR,
-            defaultPlacements: ["zen-expand-sidebar-button", "zen-profile-button"],
+            defaultPlacements: [
+              "PanelUI-menu-button", "zen-expand-sidebar-button", "zen-profile-button"
+            ],
+            defaultCollapsed: null,
           }
         );
         CustomizableUI.registerToolbarNode(

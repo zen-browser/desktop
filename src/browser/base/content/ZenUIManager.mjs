@@ -141,6 +141,8 @@ var gZenCompactModeManager = {
   init() {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
+
+    this.sidebar.addEventListener('contextmenu', this.keepSidebarVisibleOnContextMenu.bind(this));
   },
 
   get prefefence() {
@@ -149,6 +151,13 @@ var gZenCompactModeManager = {
 
   set preference(value) {
     Services.prefs.setBoolPref('zen.view.compact', value);
+  },
+
+  get sidebar() {
+    if (!this._sidebar) {
+      this._sidebar= document.getElementById('navigator-toolbox');
+    }
+    return this._sidebar;
   },
 
   _updateEvent() {
@@ -164,8 +173,7 @@ var gZenCompactModeManager = {
   },
 
   toggleSidebar() {
-    let sidebar = document.getElementById('navigator-toolbox');
-    sidebar.toggleAttribute('zen-user-show');
+    this.sidebar.toggleAttribute('zen-user-show');
   },
 
   get flashSidebarDuration() {
@@ -176,22 +184,49 @@ var gZenCompactModeManager = {
   },
 
   flashSidebar() {
-    let sidebar = document.getElementById('navigator-toolbox');
     let tabPanels = document.getElementById('tabbrowser-tabpanels');
-    if (sidebar.matches(':hover') || tabPanels.matches("[zen-split-view='true']")) {
+    if (this.sidebar.matches(':hover') || tabPanels.matches("[zen-split-view='true']")) {
       return;
     }
     if (this._flashSidebarTimeout) {
       clearTimeout(this._flashSidebarTimeout);
     } else {
-      window.requestAnimationFrame(() => sidebar.setAttribute('flash-popup', ''));
+      window.requestAnimationFrame(() => this.sidebar.setAttribute('flash-popup', ''));
     }
     this._flashSidebarTimeout = setTimeout(() => {
       window.requestAnimationFrame(() => {
-        sidebar.removeAttribute('flash-popup');
+        this.sidebar.removeAttribute('flash-popup');
         this._flashSidebarTimeout = null;
       });
     }, this.flashSidebarDuration);
+  },
+
+  keepSidebarVisibleOnContextMenu() {
+    this.sidebar.setAttribute('has-popup-menu', '');
+    /* If the cursor is on the popup when it hides, the :hover effect will not be reapplied to the sidebar until the cursor moves,
+     to mitigate this: Wait for mousemove when popup item selected
+     */
+    if (!this.__removeHasPopupAttribute) {
+      this.__removeHasPopupAttribute = () => this.sidebar.removeAttribute('has-popup-menu');
+    }
+    removeEventListener('mousemove', this.__removeHasPopupAttribute);
+
+    const waitForMouseMoveOnPopupSelect = (event) => {
+      if (event.target.tagName === 'menuitem') {
+        removeEventListener('click', waitForMouseMoveOnPopupSelect);
+        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
+        addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
+      }
+    }
+    const removeHasPopupOnPopupHidden = (event) => {
+      if (['toolbar-context-menu', 'tabContextMenu'].includes(event.target.id)) {
+        removeEventListener('click', waitForMouseMoveOnPopupSelect);
+        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
+        this.__removeHasPopupAttribute();
+      }
+    }
+    addEventListener('click', waitForMouseMoveOnPopupSelect);
+    addEventListener('popuphidden', removeHasPopupOnPopupHidden);
   },
 
   toggleToolbar() {

@@ -46,6 +46,7 @@
     &,
     & #titlebar {
       min-width: var(--zen-toolbox-min-width) !important;
+      -moz-window-dragging: no-drag;
     }
   }
 
@@ -107,6 +108,7 @@
   #navigator-toolbox:focus-within,
   #navigator-toolbox[zen-user-show],
   #navigator-toolbox[flash-popup],
+  #navigator-toolbox[has-popup-menu],
   #navigator-toolbox[movingtab],
   #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
   #navigator-toolbox:has(.tabbrowser-tab:active),

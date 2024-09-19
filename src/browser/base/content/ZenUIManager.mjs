@@ -76,20 +76,29 @@ var gZenVerticalTabsManager = {
     const customizationTarget = document.getElementById('nav-bar-customization-target');
     const tabboxWrapper = document.getElementById('zen-tabbox-wrapper');
     const browser = document.getElementById('browser');
-    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
-      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
-      this.navigatorToolbox.prepend(topButtons);
-      browser.prepend(this.navigatorToolbox);
-    } else {
-      this.navigatorToolbox.removeAttribute('zen-expanded');
-      customizationTarget.prepend(topButtons);
-      tabboxWrapper.prepend(this.navigatorToolbox);
-    }
     if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
       this.navigatorToolbox.setAttribute('zen-right-side', 'true');
     } else {
       this.navigatorToolbox.removeAttribute('zen-right-side');
     }
+    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
+      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
+    } else {
+      this.navigatorToolbox.removeAttribute('zen-expanded');
+    }
+
+    if (this.navigatorToolbox.hasAttribute('zen-expanded') && !this.navigatorToolbox.hasAttribute('zen-right-side')
+      && !Services.prefs.getBoolPref('zen.view.compact') && !Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+      this.navigatorToolbox.prepend(topButtons);
+      browser.prepend(this.navigatorToolbox);
+    } else {
+      customizationTarget.prepend(topButtons);
+      tabboxWrapper.prepend(this.navigatorToolbox);
+    }
+
+    // Always move the splitter next to the sidebar
+    this.navigatorToolbox.after(document.getElementById('zen-sidebar-splitter'));
+
     this._updateOnHoverVerticalTabs();
   },
 

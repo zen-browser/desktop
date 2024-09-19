@@ -414,7 +414,7 @@
         display: block !important;
       }
 
-      & .zen-sidebar-action-button {
+      & #titlebar .zen-sidebar-action-button {
         width: 100%;
         border-radius: var(--zen-button-border-radius);
 

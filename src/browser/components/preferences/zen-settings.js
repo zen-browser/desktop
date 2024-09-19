@@ -2,25 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const kZenColors = [
-  '#aac7ff',
-  '#74d7cb',
-  '#a0d490',
-  '#dec663',
-  '#ffb787',
-  '#dec1b1',
-  '#ffb1c0',
-  '#ddbfc3',
-  '#f6b0ea',
-  '#d4bbff',
-];
-
-const kZenOSToSmallName = {
-  WINNT: 'windows',
-  Darwin: 'macos',
-  Linux: 'linux',
-};
-
 var gZenMarketplaceManager = {
   init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
@@ -79,136 +60,40 @@ var gZenMarketplaceManager = {
     return document.getElementById('zenThemeMarketplaceList');
   },
 
-  get themesDataFile() {
-    return PathUtils.join(PathUtils.profileDir, 'zen-themes.json');
-  },
-
-  get themesRootPath() {
-    return PathUtils.join(PathUtils.profileDir, 'chrome', 'zen-themes');
-  },
-
   async removeTheme(themeId) {
-    const themePath = PathUtils.join(this.themesRootPath, themeId);
-    console.info('ZenThemeMarketplaceParent(settings): Removing theme ', themePath);
+    const themePath = ZenThemesCommon.getThemeFolder(themeId);
+
+    console.info(`[ZenThemeMarketplaceParent:settings]: Removing theme ${themePath}`);
+
     await IOUtils.remove(themePath, { recursive: true, ignoreAbsent: true });
 
-    let themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     delete themes[themeId];
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
 
     this.triggerThemeUpdate();
   },
 
   async disableTheme(themeId) {
-    const themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
 
     theme.enabled = false;
 
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
     this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
   },
 
   async enableTheme(themeId) {
-    const themes = await this._getThemes();
+    const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
 
     theme.enabled = true;
 
-    await IOUtils.writeJSON(this.themesDataFile, themes);
+    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
     this._doNotRebuildThemesList = true;
     this.triggerThemeUpdate();
-  },
-
-  async _getThemes() {
-    if (!this._themes) {
-      if (!(await IOUtils.exists(this.themesDataFile))) {
-        await IOUtils.writeJSON(this.themesDataFile, {});
-      }
-      this._themes = await IOUtils.readJSON(this.themesDataFile);
-    }
-    return this._themes;
-  },
-
-  get currentOperatingSystem() {
-    let os = Services.appinfo.OS;
-    return kZenOSToSmallName[os];
-  },
-
-  _getValidPreferences(preferences) {
-    for (let entry of preferences) {
-      const key = entry.property;
-      // [!][os:]key
-      let restOfPreferences = key;
-      let isNegation = false;
-      if (key.startsWith('!')) {
-        isNegation = true;
-        restOfPreferences = key.slice(1);
-      }
-      let os = '';
-      if (restOfPreferences.includes(':')) {
-        [os, restOfPreferences] = restOfPreferences.split(':');
-      }
-      if (isNegation && os === this.currentOperatingSystem) {
-        delete preferences[key];
-      } else if (os && os !== this.currentOperatingSystem && !isNegation) {
-        delete preferences[key];
-      } else {
-        // Change the key to contain only the rest of the preferences.
-        preferences[restOfPreferences] = preferences[key];
-        if (key !== restOfPreferences) {
-          delete preferences[key];
-        }
-      }
-    }
-    return preferences;
-  },
-
-  async _getThemePreferences(theme) {
-    const themePath = PathUtils.join(this.themesRootPath, theme.id, 'preferences.json');
-    if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
-      return [];
-    }
-
-    let themePreferences = await IOUtils.readJSON(themePath);
-
-    // compat mode for old preferences, all of them can only be checkboxes
-    if (typeof themePreferences === 'object' && !Array.isArray(themePreferences)) {
-      console.warn(
-        `[ZenThemeMarketplaceManager]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: `
-      );
-      themePreferences = Object.entries(themePreferences).map(([property, label]) => {
-        return {
-          property,
-          label,
-          type: 'checkbox',
-        };
-      });
-    }
-
-    return this._getValidPreferences(themePreferences);
-  },
-
-  _getBrowser() {
-    if (!this.__browser) {
-      this.__browser = Services.wm.getMostRecentWindow('navigator:browser');
-    }
-
-    return this.__browser;
-  },
-
-  __throttle(mainFunction, delay) {
-    let timerFlag = null;
-
-    return (...args) => {
-      if (timerFlag === null) {
-        mainFunction(...args);
-        timerFlag = setTimeout(() => {
-          timerFlag = null;
-        }, delay);
-      }
-    };
   },
 
   async _buildThemesList() {
@@ -218,16 +103,17 @@ var gZenMarketplaceManager = {
       return;
     }
 
-    console.log('ZenThemeMarketplaceParent(settings): Building themes list');
+    console.log('[ZenThemeMarketplaceParent:settings]: Building themes list');
 
-    let themes = await this._getThemes();
+    let themes = await ZenThemesCommon.getThemes();
 
-    const browser = this._getBrowser();
+    const browser = ZenThemesCommon.getBrowser();
 
     const themeList = document.createElement('div');
 
-    for (let theme of Object.values(themes)) {
+    for (const theme of Object.values(themes)) {
       const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
+      const isThemeEnabled = theme.enabled === undefined || theme.enabled;
 
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem">
@@ -238,7 +124,7 @@ var gZenMarketplaceManager = {
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
           <hbox class="zenThemeMarketplaceItemActions">
-            <button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>
+            ${theme.preferences ? `<button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>` : ''}
             <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
           </hbox>
         </vbox>
@@ -260,16 +146,21 @@ var gZenMarketplaceManager = {
       mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
       headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
       headerTitle.textContent = themeName;
-      headerTitle.title = `CSS Selector: ${sanitizedName}`;
+      browser.document.l10n.setAttributes(headerTitle, 'zen-theme-marketplace-theme-header-title', {
+        name: sanitizedName,
+      });
       headerTitle.className = 'zenThemeMarketplaceItemTitle';
       closeButton.id = `${sanitizedName}-modal-close`;
-      closeButton.textContent = 'Close';
+      browser.document.l10n.setAttributes(closeButton, 'zen-theme-marketplace-close-modal');
       contentDiv.id = `${sanitizedName}-preferences-content`;
       contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
       mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle';
 
-      mozToggle.pressed = theme.enabled;
-      mozToggle.title = theme.enabled ? 'Disable theme' : 'Enable theme';
+      mozToggle.pressed = isThemeEnabled;
+      browser.document.l10n.setAttributes(
+        mozToggle,
+        `zen-theme-marketplace-toggle-${isThemeEnabled ? 'enabled' : 'disabled'}-button`
+      );
 
       baseHeader.appendChild(mozToggle);
 
@@ -293,39 +184,53 @@ var gZenMarketplaceManager = {
 
         if (!event.target.hasAttribute('pressed')) {
           await this.disableTheme(themeId);
-          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).setAttribute('hidden', true);
+
+          browser.document.l10n.setAttributes(mozToggle, 'zen-theme-marketplace-toggle-disabled-button');
+
+          if (theme.preferences) {
+            document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).setAttribute('hidden', true);
+          }
         } else {
           await this.enableTheme(themeId);
-          document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
+
+          browser.document.l10n.setAttributes(mozToggle, 'zen-theme-marketplace-toggle-enabled-button');
+
+          if (theme.preferences) {
+            document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
+          }
         }
       });
 
       fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;
       fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = theme.description;
       fragment.querySelector('.zenThemeMarketplaceItemUninstallButton').addEventListener('click', async (event) => {
-        if (!confirm('Are you sure you want to remove this theme?')) {
+        const [msg] = await document.l10n.formatValues([{ id: 'zen-theme-marketplace-remove-confirmation' }]);
+
+        if (!confirm(msg)) {
           return;
         }
-        const target = event.target;
-        const themeId = target.getAttribute('zen-theme-id');
-        await this.removeTheme(themeId);
-      });
-      fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
-        dialog.showModal();
+
+        await this.removeTheme(event.target.getAttribute('zen-theme-id'));
       });
 
-      if (theme.enabled && theme.preferences) {
-        fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
+      if (theme.preferences) {
+        fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').addEventListener('click', () => {
+          dialog.showModal();
+        });
+
+        if (isThemeEnabled) {
+          fragment.querySelector('.zenThemeMarketplaceItemConfigureButton').removeAttribute('hidden');
+        }
       }
 
-      const preferences = await this._getThemePreferences(theme);
+      const preferences = await ZenThemesCommon.getThemePreferences(theme);
 
       if (preferences.length > 0) {
         const preferencesWrapper = document.createXULElement('vbox');
 
         preferencesWrapper.setAttribute('flex', '1');
 
-        for (let entry of preferences) {
+        for (const entry of preferences) {
           const { property, label, type } = entry;
 
           switch (type) {
@@ -355,14 +260,14 @@ var gZenMarketplaceManager = {
 
               menupopup.appendChild(defaultItem);
 
-              for (let option of options) {
+              for (const option of options) {
                 const { label, value } = option;
 
                 const valueType = typeof value;
 
                 if (!['string', 'number'].includes(valueType)) {
                   console.log(
-                    `ZenThemeMarketplaceParent(settings): Warning, invalid data type received (${valueType}), skipping.`
+                    `[ZenThemeMarketplaceParent:settings]: Warning, invalid data type received (${valueType}), skipping.`
                   );
                   continue;
                 }
@@ -423,9 +328,9 @@ var gZenMarketplaceManager = {
               }
 
               checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
-                let target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
-                let key = target.getAttribute('zen-pref');
-                let checked = target.hasAttribute('checked');
+                const target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
+                const key = target.getAttribute('zen-pref');
+                const checked = target.hasAttribute('checked');
 
                 if (!checked) {
                   target.removeAttribute('checked');
@@ -457,7 +362,7 @@ var gZenMarketplaceManager = {
 
               input.addEventListener(
                 'input',
-                this.__throttle((event) => {
+                ZenThemesCommon.throttle((event) => {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
@@ -486,7 +391,7 @@ var gZenMarketplaceManager = {
 
             default:
               console.log(
-                `ZenThemeMarketplaceParent(settings): Warning, unknown preference type received (${type}), skipping.`
+                `[ZenThemeMarketplaceParent:settings]: Warning, unknown preference type received (${type}), skipping.`
               );
               continue;
           }
@@ -608,7 +513,7 @@ var gZenLooksAndFeel = {
   _initializeColorPicker(accentColor) {
     let elem = document.getElementById('zenLooksAndFeelColorOptions');
     elem.innerHTML = '';
-    for (let color of kZenColors) {
+    for (let color of ZenThemesCommon.kZenColors) {
       let colorElemParen = document.createElement('div');
       let colorElem = document.createElement('div');
       colorElemParen.classList.add('zenLooksAndFeelColorOptionParen');
@@ -631,7 +536,7 @@ var gZenLooksAndFeel = {
   },
 
   _getInitialAccentColor() {
-    return Services.prefs.getStringPref('zen.theme.accent-color', kZenColors[0]);
+    return Services.prefs.getStringPref('zen.theme.accent-color', ZenThemesCommon.kZenColors[0]);
   },
 };
 

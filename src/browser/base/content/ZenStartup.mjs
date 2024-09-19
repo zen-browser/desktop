@@ -129,6 +129,7 @@
 
       this._moveWindowButtons();
       this._addSidebarButtons();
+      this._hideToolbarButtons();
     },
 
     _moveWindowButtons() {
@@ -139,22 +140,34 @@
       }
     },
 
+    _hideToolbarButtons() {
+      const elementsToHide = [
+        'alltabs-button',
+      ];
+      for (let id of elementsToHide) {
+        const elem = document.getElementById(id);
+        if (elem) {
+          elem.setAttribute('hidden', 'true');
+        }
+      }
+    },
+
     _addSidebarButtons() {
       const sidebarBox = window.MozXULElement.parseXULToFragment(`
         <toolbar id="zen-sidebar-top-buttons"
           fullscreentoolbar="true" 
-          class="browser-toolbar titlebar-color"
+          class="browser-toolbar customization-target"
           brighttext="true"
           data-l10n-id="tabs-toolbar"
           customizable="true"
+          toolbarname="Zen Sidebar Top Buttons"
           context="toolbar-context-menu"
           flex="1"
           customizationtarget="zen-sidebar-top-buttons-customization-target"
           mode="icons">
-          <toolbartabstop/>
-          <hbox id="zen-sidebar-top-buttons-customization-target" flex="1">
+          <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
             <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" cui-areatype="toolbar" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
-            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>
+            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>  
           </hbox>
         </toolbar>
       `);
@@ -162,11 +175,31 @@
       const sideBarTopButtons = document.getElementById('zen-sidebar-top-buttons')
         .querySelector('#zen-sidebar-top-buttons-customization-target');
 
-      const panelMenu = document.getElementById('PanelUI-menu-button');
-      panelMenu.classList.add('zen-sidebar-action-button');
-      panelMenu.setAttribute('cui-areatype', 'toolbar');
+      const newTab = document.getElementById('vertical-tabs-newtab-button');
+      newTab.classList.add('zen-sidebar-action-button');
+      newTab.setAttribute('cui-areatype', 'toolbar');
 
-      sideBarTopButtons.prepend(panelMenu);
+      const iconsWrapper = document.getElementById('zen-sidebar-icons-wrapper');
+      iconsWrapper.appendChild(newTab);
+
+      setTimeout(async () => {
+        CustomizableUI.registerArea(
+          "zen-sidebar-top-buttons",
+          {
+            type: CustomizableUI.TYPE_TOOLBAR,
+            defaultPlacements: ["zen-expand-sidebar-button", "zen-profile-button"],
+          }
+        );
+        CustomizableUI.registerToolbarNode(
+          document.getElementById('zen-sidebar-top-buttons')
+        );
+
+        const panelMenu = document.getElementById('PanelUI-menu-button');
+        panelMenu.classList.add('zen-sidebar-action-button');
+        panelMenu.setAttribute('cui-areatype', 'toolbar');
+
+        sideBarTopButtons.prepend(panelMenu);
+      }, 100);
     },
 
     _focusSearchBar() {

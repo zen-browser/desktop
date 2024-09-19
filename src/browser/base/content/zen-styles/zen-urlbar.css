@@ -255,7 +255,7 @@ button.popup-notification-dropmarker {
 }
 
 #browser:not(:has([zen-expanded="true"])) #nav-bar {
-  padding-left: calc(var(--zen-toolbox-padding) * 2 + 1px);
+  padding-left: calc(var(--zen-toolbox-padding) 4px);
 }
 
 /* Other small tweaks */

@@ -136,3 +136,33 @@
     display: none !important;
   }
 }
+
+@keyframes zen-workspaces-button-active {
+  from {
+    bottom: -20px;
+  } 
+
+  to {
+    bottom: -2px;
+  }
+}
+
+@keyframes zen-workspaces-button-active-collapsed-left {
+  from {
+    left: -20px;
+  } 
+
+  to {
+    left: -2px;
+  }
+}
+
+@keyframes zen-workspaces-button-active-collapsed-right {
+  from {
+    right: -20px;
+  } 
+
+  to {
+    right: -2px;
+  }
+}

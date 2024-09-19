@@ -2,8 +2,71 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  margin: 0 30px;
-  opacity: .6;
+  margin: 0 5px;
+
+  position: relative;
+
+  &:not([as-button='true']) {
+    border-radius: var(--zen-button-border-radius);
+    background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    padding: 7px;
+    gap: 3px;
+
+    & toolbarbutton {
+      margin: 0 !important;
+      width: 25px;
+      display: flex;
+      justify-content: center;
+      padding: 0 !important;
+      align-items: center;
+      position: relative;
+
+      & > * {
+        opacity: .6;
+      }
+
+      &[active='true']::after {
+        content: '';
+        position: absolute;
+        width: 4px;
+        border-radius: 99px;
+        height: 4px;
+        background: var(--zen-primary-color);
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: zen-workspaces-button-active 0.1s ease-in-out;
+      }
+    }
+  }
+
+  &[as-button='true'] {
+    border-radius: var(--tab-border-radius);
+
+    &:hover {
+      background: var(--toolbarbutton-hover-background);
+    }
+  }
+
+  :root:has(#navigator-toolbox:not([zen-expanded='true'])) &[as-button='true'] {
+    margin: 0 !important;
+    padding: var(--toolbarbutton-inner-padding) !important;
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    border-radius: var(--tab-border-radius) !important;
+
+    &:hover {
+      background: var(--toolbarbutton-hover-background) !important;
+    }
+  }
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-wrapper {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -27,17 +90,21 @@
       :not([zen-user-hover='true'])
     ) {
 
-    & #zen-workspaces-button {
-      width: calc(var(--zen-sidebar-action-button-width) - 1px) !important;
-      margin-top: .2rem;
+    & #zen-workspaces-button[as-button='true'] {
+      width: 100% !important;
+      margin: 0 10px;
     }
     
     & #zen-workspaces-button .zen-workspace-sidebar-name {
       display: block;
     }
 
-    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] {
-      display: none;
+    & #zen-workspaces-button .zen-workspace-sidebar-icon {
+      margin-inline-end: 5px;
+      
+      & [no-icon='true'] {
+        display: none;
+      }
     }
 
     & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] + .zen-workspace-sidebar-name {

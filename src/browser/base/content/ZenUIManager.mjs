@@ -151,7 +151,7 @@ var gZenCompactModeManager = {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
 
-    this.sidebar.addEventListener('contextmenu', this.keepSidebarVisibleOnContextMenu.bind(this));
+    addEventListener('popupshowing', this.keepSidebarVisibleOnContextMenu.bind(this));
   },
 
   get prefefence() {
@@ -210,7 +210,10 @@ var gZenCompactModeManager = {
     }, this.flashSidebarDuration);
   },
 
-  keepSidebarVisibleOnContextMenu() {
+  keepSidebarVisibleOnContextMenu(event) {
+    if (!this.sidebar.contains(event.explicitOriginalTarget)) {
+      return;
+    }
     this.sidebar.setAttribute('has-popup-menu', '');
     /* If the cursor is on the popup when it hides, the :hover effect will not be reapplied to the sidebar until the cursor moves,
      to mitigate this: Wait for mousemove when popup item selected
@@ -227,8 +230,8 @@ var gZenCompactModeManager = {
         addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
       }
     }
-    const removeHasPopupOnPopupHidden = (event) => {
-      if (['toolbar-context-menu', 'tabContextMenu'].includes(event.target.id)) {
+    const removeHasPopupOnPopupHidden = (hiddenEvent) => {
+      if (event.target === hiddenEvent.target) {
         removeEventListener('click', waitForMouseMoveOnPopupSelect);
         removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
         this.__removeHasPopupAttribute();

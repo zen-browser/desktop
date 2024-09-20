@@ -980,6 +980,11 @@ menuitem[id='placesContext_new:separator'] {
   --menu-image: url('close-all.svg');
 }
 
+#vertical-tabs-newtab-button[data-l10n-id="tabs-toolbar-new-tab-clear-all"] {
+  list-style-image: url(close-all.svg);
+  background: rgba(253, 50, 50, 0.48) !important;
+}
+
 .customize-context-reportExtension,
 .unified-extensions-context-menu-report-extension {
   --menu-image: url('report.svg');

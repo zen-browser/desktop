@@ -84,6 +84,59 @@ var gZenVerticalTabsManager = {
     gZenCompactModeManager.addEventListener(updateEvent);
     this._updateEvent();
     this.initRightSideOrderContextMenu();
+
+    // Add clear all tabs handler to the new tab button
+    let newTabButton = document.getElementById('vertical-tabs-newtab-button');
+
+    if (newTabButton) {
+      newTabButton.addEventListener('mousedown', (event) => {
+        if (event.button === 1) {
+          event.stopPropagation();
+          event.preventDefault();
+          event.target.setAttribute("data-l10n-id", "tabs-toolbar-new-tab-clear-all");
+        }
+      });
+
+      newTabButton.addEventListener('mouseup', (event) => {
+        if (event.button === 1) {
+          event.stopPropagation();
+          event.preventDefault();
+          event.target.setAttribute("data-l10n-id", "tabs-toolbar-new-tab");
+
+          // Get the current workspace ID
+          let currentWorkspaceId = gBrowser.selectedTab.getAttribute("zen-workspace-id");
+
+          // Create a new tab in the current workspace or window
+          let newTab = gBrowser.addTrustedTab("about:newtab", {
+            userContextId: gBrowser.selectedTab.userContextId,
+          });
+
+          // If in a workspace, set the workspace ID for the new tab
+          if (currentWorkspaceId) {
+            newTab.setAttribute("zen-workspace-id", currentWorkspaceId);
+          }
+
+          // Get all tabs to close
+          let tabsToClose = Array.from(gBrowser.tabs).filter(tab =>
+            tab !== newTab &&
+            !tab.pinned &&
+            (!currentWorkspaceId || tab.getAttribute("zen-workspace-id") === currentWorkspaceId)
+          );
+
+          // Select the new tab
+          gBrowser.selectedTab = newTab;
+
+          // Close all unpinned tabs in the current workspace or window
+          gBrowser.removeTabs(tabsToClose);
+        }
+      });
+
+      newTabButton.addEventListener('mouseleave', (event) => {
+        if (event.target.getAttribute("data-l10n-id") === "tabs-toolbar-new-tab-clear-all") {
+          event.target.setAttribute("data-l10n-id", "tabs-toolbar-new-tab");
+        }
+      });
+    }
   },
 
   get navigatorToolbox() {

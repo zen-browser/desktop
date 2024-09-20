@@ -154,7 +154,7 @@ var gZenCompactModeManager = {
     Services.prefs.addObserver('zen.tabs.vertical.right-side', this._updateSidebarIsOnRight.bind(this));
 
     this.sidebar.addEventListener('contextmenu', this.keepSidebarVisibleOnContextMenu.bind(this));
-    document.body.addEventListener('mouseleave', this.keepVisibleOnMousePass.bind(this));
+    this.sidebar.addEventListener('mouseleave', this.keepVisibleOnMousePass.bind(this));
   },
 
   get prefefence() {

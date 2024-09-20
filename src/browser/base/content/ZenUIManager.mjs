@@ -87,8 +87,16 @@ var gZenVerticalTabsManager = {
 
     // Add clear all tabs handler to the new tab button
     let newTabButton = document.getElementById('vertical-tabs-newtab-button');
-
+    
     if (newTabButton) {
+
+      newTabButton.addEventListener('click', (event) => {
+        if (event.button === 1) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      });
+      
       newTabButton.addEventListener('mousedown', (event) => {
         if (event.button === 1) {
           event.stopPropagation();
@@ -106,26 +114,13 @@ var gZenVerticalTabsManager = {
           // Get the current workspace ID
           let currentWorkspaceId = gBrowser.selectedTab.getAttribute("zen-workspace-id");
 
-          // Create a new tab in the current workspace or window
-          let newTab = gBrowser.addTrustedTab("about:newtab", {
-            userContextId: gBrowser.selectedTab.userContextId,
-          });
-
-          // If in a workspace, set the workspace ID for the new tab
-          if (currentWorkspaceId) {
-            newTab.setAttribute("zen-workspace-id", currentWorkspaceId);
-          }
-
+          
           // Get all tabs to close
           let tabsToClose = Array.from(gBrowser.tabs).filter(tab =>
-            tab !== newTab &&
             !tab.pinned &&
             (!currentWorkspaceId || tab.getAttribute("zen-workspace-id") === currentWorkspaceId)
           );
-
-          // Select the new tab
-          gBrowser.selectedTab = newTab;
-
+          
           // Close all unpinned tabs in the current workspace or window
           gBrowser.removeTabs(tabsToClose);
         }

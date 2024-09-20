@@ -35,6 +35,7 @@
 
 :not([inDOMFullscreen='true']) #appcontent {
   overflow: hidden;
+  padding: 1px;
 }
 
 :not([inDOMFullscreen='true']) #appcontent,

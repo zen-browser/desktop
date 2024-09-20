@@ -202,11 +202,11 @@
         const defaultSidebarIcons = [
           'zen-sidepanel-button',
           'zen-workspaces-button',
-          'vertical-tabs-newtab-button'
+          'new-tab-button'
         ];
         for (let id of defaultSidebarIcons) {
-          if (id === 'zen-workspaces-button') continue;
           const elem = document.getElementById(id);
+          if (id === 'zen-workspaces-button' || !elem) continue;
           elem.setAttribute('removable', 'true');
         }
         CustomizableUI.registerArea(

@@ -34,7 +34,6 @@
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
 
-    margin-top: -4px !important;
     display: flex;
   }
 
@@ -530,12 +529,15 @@
     display: none;
   }*/
 
-  :root[customizing] #TabsToolbar > * {
+  :root[customizing] #TabsToolbar > *,
+  :root[customizing] #TabsToolbar-customization-target {
     min-width: unset !important;
   }
 
   /* Mark: Sidebar top buttons */
   #zen-sidebar-top-buttons {
+    order: -1;
+
     min-width: unset !important;
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
     
@@ -544,7 +546,11 @@
       align-items: center;
 
       #nav-bar:has(&) & {
-        padding-inline-start: calc(var(--zen-toolbox-padding) + var(--toolbarbutton-outer-padding)) !important;
+        padding-inline-start: calc(var(--zen-toolbox-padding) + 2px);
+      }
+
+      #browser:has(#navigator-toolbox[zen-right-side='true']) & {
+        padding-inline-start: calc(var(--zen-toolbox-padding) - var(--toolbarbutton-outer-padding)) !important;
       }
 
       & toolbarbutton {

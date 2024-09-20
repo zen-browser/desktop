@@ -231,7 +231,7 @@ var gZenMarketplaceManager = {
         preferencesWrapper.setAttribute('flex', '1');
 
         for (const entry of preferences) {
-          const { property, label, type } = entry;
+          const { property, label, type, placeholder } = entry;
 
           switch (type) {
             case 'dropdown': {
@@ -256,7 +256,12 @@ var gZenMarketplaceManager = {
               const defaultItem = document.createXULElement('menuitem');
 
               defaultItem.setAttribute('value', 'none');
-              defaultItem.setAttribute('label', '-');
+
+              if (placeholder) {
+                defaultItem.setAttribute('label', placeholder || '-');
+              } else {
+                browser.document.l10n.setAttributes(defaultItem, 'zen-theme-marketplace-dropdown-default-label');
+              }
 
               menupopup.appendChild(defaultItem);
 
@@ -359,6 +364,12 @@ var gZenMarketplaceManager = {
               input.setAttribute('type', 'text');
               input.id = `${sanitizedProperty}-input`;
               input.value = savedValue;
+
+              if (placeholder) {
+                input.setAttribute('placeholder', placeholder || '-');
+              } else {
+                browser.document.l10n.setAttributes(input, 'zen-theme-marketplace-input-default-placeholder');
+              }
 
               input.addEventListener(
                 'input',

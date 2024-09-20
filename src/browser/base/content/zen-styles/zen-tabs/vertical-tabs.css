@@ -31,6 +31,8 @@
     min-width: var(--zen-toolbox-min-width);
 
     padding: var(--zen-toolbox-padding);
+    /* We do this to fix the padding of webview, the shadow overlaps one pixel */
+    padding-left: calc(var(--zen-toolbox-padding) - 1px);
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
 
@@ -179,11 +181,11 @@
 
     /* Mark: Fix separator paddings */
     &[zen-right-side='true'] {
-      padding-left: 0 !important;
+      padding-left: 0;
     }
 
     &:not([zen-right-side='true']) {
-      padding-right: 0 !important;
+      padding-right: 0;
     }
 
     & #TabsToolbar-customization-target {
@@ -275,8 +277,9 @@
     #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
-    --zen-toolbox-max-width: 50px;
+    --zen-toolbox-max-width: 51px;
     max-width: var(--zen-toolbox-max-width) !important;
+    min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
 
     & #vertical-tabs-newtab-button {
       padding: 0 !important;

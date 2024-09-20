@@ -270,7 +270,7 @@ var gZenCompactModeManager = {
 
     if (mousePassedSidebarSide) {
       this.sidebar.setAttribute('mouse-passed', '');
-      addEventListener('mouse-passed', () => {
+      addEventListener('mousemove', () => {
         this.sidebar.removeAttribute('mouse-passed');
         clearTimeout(this._visibleOnMousePassTimeout)
       }, {once: true});

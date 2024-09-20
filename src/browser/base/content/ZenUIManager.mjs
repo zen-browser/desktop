@@ -150,8 +150,11 @@ var gZenCompactModeManager = {
   init() {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
+    Services.prefs.addObserver('zen.view.compact.visible-on-mouse-pass-duration', this._updateVisibleOnMousePassDuration.bind(this));
+    Services.prefs.addObserver('zen.tabs.vertical.right-side', this._updateSidebarIsOnRight.bind(this));
 
     this.sidebar.addEventListener('contextmenu', this.keepSidebarVisibleOnContextMenu.bind(this));
+    document.body.addEventListener('mouseleave', this.keepVisibleOnMousePass.bind(this));
   },
 
   get prefefence() {
@@ -169,6 +172,13 @@ var gZenCompactModeManager = {
     return this._sidebar;
   },
 
+  get sidebarIsOnRight() {
+    if (this._sidebarIsOnRight) {
+      return this._sidebarIsOnRight;
+    }
+    return Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+  },
+
   _updateEvent() {
     Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
   },
@@ -181,6 +191,14 @@ var gZenCompactModeManager = {
     this._flashSidebarDuration = Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
   },
 
+  _updateSidebarIsOnRight() {
+    this._sidebarIsOnRight = Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+  },
+
+  _updateVisibleOnMousePassDuration() {
+    this._visibleOnMousePassDuration = Services.prefs.getIntPref('zen.view.compact.visible-on-mouse-pass-duration');
+  },
+
   toggleSidebar() {
     this.sidebar.toggleAttribute('zen-user-show');
   },
@@ -190,6 +208,13 @@ var gZenCompactModeManager = {
       return this._flashSidebarDuration;
     }
     return Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
+  },
+
+  get visibleOnMousePassDuration() {
+    if (this._visibleOnMousePassDuration) {
+      return this._visibleOnMousePassDuration;
+    }
+    return this._visibleOnMousePassDuration = Services.prefs.getIntPref('zen.view.compact.visible-on-mouse-pass-duration');
   },
 
   flashSidebar() {
@@ -236,6 +261,23 @@ var gZenCompactModeManager = {
     }
     addEventListener('click', waitForMouseMoveOnPopupSelect);
     addEventListener('popuphidden', removeHasPopupOnPopupHidden);
+  },
+
+  keepVisibleOnMousePass(event) {
+    const errorMargin = 21;
+    const mousePassedSidebarSide =
+      this.sidebarIsOnRight ? (event.pageX >= document.body.getBoundingClientRect().right - errorMargin) : (event.pageX <= errorMargin);
+
+    if (mousePassedSidebarSide) {
+      this.sidebar.setAttribute('mouse-passed', '');
+      addEventListener('mouse-passed', () => {
+        this.sidebar.removeAttribute('mouse-passed');
+        clearTimeout(this._visibleOnMousePassTimeout)
+      }, {once: true});
+      this._visibleOnMousePassTimeout = setTimeout(
+        () => this.sidebar.removeAttribute('mouse-passed')
+      , this.visibleOnMousePassDuration);
+    }
   },
 
   toggleToolbar() {

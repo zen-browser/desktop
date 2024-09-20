@@ -8,6 +8,11 @@
     height: 100%;
   }
 
+  #TabsToolbar > * {
+    justify-content: center;
+
+  }
+
   #private-browsing-indicator-with-label {
     display: none !important;
   }
@@ -29,14 +34,14 @@
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
 
-    margin-top: 0 !important;
+    margin-top: -4px !important;
     display: flex;
   }
 
 
   #TabsToolbar-customization-target {
     position: relative;
-    gap: var(--zen-toolbox-padding);
+    gap: 0;
     &::after {
       content: '';
       display: block;
@@ -48,6 +53,10 @@
       transform: translateX(-50%);
       position: absolute;
       bottom: calc(-1 * var(--zen-toolbox-padding));
+    }
+
+    & > * {
+      border-top-width: 0 !important;
     }
   }
 
@@ -101,6 +110,7 @@
     background: transparent;
     padding: 0;
     gap: 5px;
+    align-items: center;
 
     & > toolbarbutton:not(#zen-workspaces-button) {
       padding: 0 !important;
@@ -181,6 +191,41 @@
       &::after {
         width: 100%;
         bottom: calc(-0.5 * var(--zen-toolbox-padding));
+      }
+
+      & > *:not(tabs):not(#search-container) {
+        width: 100%;
+        border-radius: var(--tab-border-radius);
+
+        padding-left: var(--toolbarbutton-inner-padding);
+        padding-right: var(--toolbarbutton-inner-padding);
+
+        & label {
+          display: flex;
+          width: 0;
+        }
+
+        & image {
+          height: 16px;
+          width: 16px;
+          padding: 0 !important;
+        }
+
+        &:is([open], [checked]) {
+          background: var(--toolbarbutton-active-background) !important;
+
+          & image, label {
+            background: transparent !important;
+          }
+        }
+
+        &:hover {
+          background: var(--toolbarbutton-hover-background) !important;
+
+          & image, label {
+            background: transparent !important;
+          }
+        }
       }
     }
 
@@ -285,8 +330,12 @@
       border-bottom-right-radius: 0;
     }
 
-    & #TabsToolbar-customization-target::after {
-      bottom: 0 !important;
+    & #TabsToolbar-customization-target {
+      padding-bottom: var(--zen-toolbox-padding);
+
+      &::after {
+        bottom: -1px !important;
+      }
     }
 
     & #tabbrowser-tabs {
@@ -348,12 +397,6 @@
           &[active='true']::after {
             bottom: 50% !important;
             transform: translateY(50%) !important;
-
-            :root:has(#navigator-toolbox[zen-right-side='true']) & {
-              left: unset !important;
-              right: -2px !important;
-              animation: zen-workspaces-button-active-collapsed-right 0.1s ease-in-out !important;
-            }
           }
         
           :root:has(#navigator-toolbox:not([zen-right-side='true'])) &[active='true']::after {
@@ -363,7 +406,7 @@
 
           :root:has(#navigator-toolbox[zen-right-side='true']) &[active='true']::after {
             left: unset !important;
-            right: -2px !important;
+            right: -2px;
             animation: zen-workspaces-button-active-collapsed-right 0.1s ease-in-out !important;
           }
         }
@@ -478,13 +521,17 @@
   }
 
   /* Customization mode */
-  :root[customizing] #TabsToolbar > *:not(#zen-sidebar-icons-wrapper) {
+  /*:root[customizing] #TabsToolbar > *:not(#zen-sidebar-icons-wrapper) {
     overflow: hidden;
     max-width: 0 !important;
     margin-right: var(--zen-element-separation);
     padding: 0 !important;
     opacity: 0;
     display: none;
+  }*/
+
+  :root[customizing] #TabsToolbar > * {
+    min-width: unset !important;
   }
 
   /* Mark: Sidebar top buttons */
@@ -497,7 +544,7 @@
       align-items: center;
 
       #nav-bar:has(&) & {
-        padding-inline-start: calc(var(--zen-toolbox-padding) * 1.5) !important;
+        padding-inline-start: calc(var(--zen-toolbox-padding) + var(--toolbarbutton-outer-padding)) !important;
       }
 
       & toolbarbutton {
@@ -513,10 +560,5 @@
         display: none !important;
       }
     }
-  }
-
-  /** Add transition delays */
-  #navigator-toolbox, #navigator-toolbox > * {
-    transition-delay: 2s !important;
   }
 }

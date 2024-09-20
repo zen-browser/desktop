@@ -177,10 +177,6 @@
 
       const newTab = document.getElementById('vertical-tabs-newtab-button');
       newTab.classList.add('zen-sidebar-action-button');
-      newTab.setAttribute('cui-areatype', 'toolbar');
-
-      const iconsWrapper = document.getElementById('zen-sidebar-icons-wrapper');
-      iconsWrapper.appendChild(newTab);
 
       setTimeout(() => {
         CustomizableUI.registerArea(

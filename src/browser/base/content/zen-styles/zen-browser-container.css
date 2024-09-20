@@ -1,26 +1,9 @@
 :root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
-  #tabbrowser-tabbox {
-    --zen-webview-correction-margin: 2px;
-
-    & > *:not(#tabbrowser-tabpanels) {
-      margin-top: var(--zen-webview-correction-margin);
-    }
-  }
-
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
     width: -moz-available;
     border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
     transform: translate3d(0, 0, 0);
     position: relative;
-
-    /* This fixes an issue with the left border */
-    margin-left: var(--zen-webview-correction-margin);
-    margin-top: var(--zen-webview-correction-margin);
-    
-    #browser:has(#navigator-toolbox[zen-right-side="true"]) & {
-      margin-left: 0;
-      margin-right: var(--zen-webview-correction-margin);
-    }
 
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 

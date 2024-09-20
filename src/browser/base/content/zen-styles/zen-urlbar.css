@@ -1,5 +1,10 @@
 /* URL and tool bars */
 
+#urlbar-container {
+  padding-block: 0 !important;
+  padding-bottom: 2px !important;
+}
+
 #urlbar {
   --toolbarbutton-border-radius: 10px;
   --urlbarView-separator-color: var(--zen-colors-border);

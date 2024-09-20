@@ -776,4 +776,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.workspaces.show-icon-strip',
+    type: 'bool',
+    default: true,
+  }
 ]);

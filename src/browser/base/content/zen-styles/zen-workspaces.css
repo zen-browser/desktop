@@ -2,7 +2,6 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  margin: 0 5px;
 
   position: relative;
 
@@ -67,6 +66,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -76,7 +76,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 13px;
-  pointer-events: none;
 }
 
 @media (-moz-bool-pref: 'zen.view.sidebar-expanded') {
@@ -92,7 +91,13 @@
 
     & #zen-workspaces-button[as-button='true'] {
       width: 100% !important;
-      margin: 0 10px;
+      margin: 2px;
+      min-width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
+
+      & .zen-workspace-sidebar-wrapper {
+        left: calc(var(--toolbarbutton-outer-padding) + 5px);
+        width: calc(100% - (var(--toolbarbutton-outer-padding) * 3  ));
+      }
     }
     
     & #zen-workspaces-button .zen-workspace-sidebar-name {

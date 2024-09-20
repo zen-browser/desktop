@@ -156,7 +156,7 @@
       const sidebarBox = window.MozXULElement.parseXULToFragment(`
         <toolbar id="zen-sidebar-top-buttons"
           fullscreentoolbar="true" 
-          class="browser-toolbar customization-target"
+          class="browser-toolbar customization-target zen-dont-hide-on-fullscreen"
           brighttext="true"
           data-l10n-id="tabs-toolbar"
           customizable="true"
@@ -182,7 +182,7 @@
       const iconsWrapper = document.getElementById('zen-sidebar-icons-wrapper');
       iconsWrapper.appendChild(newTab);
 
-      setTimeout(async () => {
+      setTimeout(() => {
         CustomizableUI.registerArea(
           "zen-sidebar-top-buttons",
           {
@@ -202,6 +202,28 @@
         panelMenu.setAttribute('cui-areatype', 'toolbar');
 
         sideBarTopButtons.prepend(panelMenu);
+
+        const defaultSidebarIcons = [
+          'zen-sidepanel-button',
+          'zen-workspaces-button',
+          'vertical-tabs-newtab-button'
+        ];
+        for (let id of defaultSidebarIcons) {
+          if (id === 'zen-workspaces-button') continue;
+          const elem = document.getElementById(id);
+          elem.setAttribute('removable', 'true');
+        }
+        CustomizableUI.registerArea(
+          "zen-sidebar-icons-wrapper",
+          {
+            type: CustomizableUI.TYPE_TOOLBAR,
+            defaultPlacements: defaultSidebarIcons,
+            defaultCollapsed: null,
+          }
+        );
+        CustomizableUI.registerToolbarNode(
+          document.getElementById('zen-sidebar-icons-wrapper')
+        );
       }, 100);
     },
 

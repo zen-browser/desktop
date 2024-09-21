@@ -98,7 +98,7 @@ var gZenMarketplaceManager = {
 
   _triggerBuildUpdateWithoutRebuild() {
     this._doNotRebuildThemesList = true;
-    this._buildThemesList();
+    this.triggerThemeUpdate();
   },
 
   async _buildThemesList() {

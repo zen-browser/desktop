@@ -81,6 +81,7 @@ var gZenVerticalTabsManager = {
     Services.prefs.addObserver('zen.tabs.vertical.right-side', updateEvent);
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', updateEvent);
     Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', updateEvent);
+    gZenCompactModeManager.addEventListener(updateEvent);
     this._updateEvent();
     this.initRightSideOrderContextMenu();
   },

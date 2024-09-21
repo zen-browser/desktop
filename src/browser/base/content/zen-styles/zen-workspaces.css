@@ -8,7 +8,7 @@
   &:not([as-button='true']) {
     border-radius: var(--zen-button-border-radius);
     background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
-    padding: 6px;
+    padding: 5px;
     height: fit-content;
     gap: 3px;
 

@@ -31,8 +31,6 @@
     min-width: var(--zen-toolbox-min-width);
 
     padding: var(--zen-toolbox-padding);
-    /* We do this to fix the padding of webview, the shadow overlaps one pixel */
-    padding-left: calc(var(--zen-toolbox-padding) - 1px);
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
 
@@ -152,7 +150,6 @@
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],
     #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
-    #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])) {
     --zen-toolbox-min-width: fit-content;
@@ -161,8 +158,13 @@
       min-width: 150px;
     }
 
-    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] {
-      display: none;
+    & #zen-workspaces-button {
+      margin-left: 2px;
+      margin-right: 2px;
+
+      & .zen-workspace-sidebar-icon[no-icon='true'] {
+        display: none;
+      }
     }
 
     & #zen-sidebar-icons-wrapper {
@@ -274,7 +276,6 @@
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],
     #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
-    #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
     --zen-toolbox-max-width: 51px;
@@ -434,8 +435,6 @@
     }
 
     #TabsToolbar {
-      --hovered-verticaltab-width: 20em;
-
       z-index: 1;
       background-repeat: no-repeat !important;
       background-position: center center !important;
@@ -449,15 +448,14 @@
       border-top-right-radius: var(--zen-border-radius);
     }
 
-    #navigator-toolbox:hover,
+    #navigator-toolbox[zen-has-hover],
     #navigator-toolbox:focus-within,
     #navigator-toolbox[movingtab],
     #navigator-toolbox[flash-popup],
     #navigator-toolbox[has-popup-menu],
-    #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-navigation-toolbar-min-width: 50px !important;
+      --zen-navigation-toolbar-min-width: 55.5px !important; /* + the width of the splitter */
 
       max-width: var(--zen-navigation-toolbar-min-width) !important;
       min-width: var(--zen-navigation-toolbar-min-width) !important;

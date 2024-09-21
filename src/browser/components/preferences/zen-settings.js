@@ -96,6 +96,11 @@ var gZenMarketplaceManager = {
     this.triggerThemeUpdate();
   },
 
+  _triggerBuildUpdateWithoutRebuild() {
+    this._doNotRebuildThemesList = true;
+    this._buildThemesList();
+  },
+
   async _buildThemesList() {
     if (!this.themesList) return;
     if (this._doNotRebuildThemesList) {
@@ -304,6 +309,7 @@ var gZenMarketplaceManager = {
                 element.setAttribute(property?.replaceAll(/\./g, '-'), value);
 
                 Services.prefs.setStringPref(property, value === 'none' ? '' : value);
+                this._triggerBuildUpdateWithoutRebuild();
               });
 
               const nameLabel = document.createXULElement('label');
@@ -377,6 +383,7 @@ var gZenMarketplaceManager = {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
+                  this._triggerBuildUpdateWithoutRebuild();
 
                   if (value === '') {
                     browser.document.querySelector(':root').style.removeProperty(`--${sanitizedProperty}`);

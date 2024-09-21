@@ -315,7 +315,7 @@ groupbox h2 {
   border-color: red;
 }
 
-#zenCKSOptions-wrapper > [data-group]:not(:first-of-type) {
+#zenCKSOption-wrapper > [data-group]:not(:first-of-type) {
   border-top: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   padding-top: 10px;
 }

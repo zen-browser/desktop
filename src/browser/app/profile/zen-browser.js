@@ -96,7 +96,6 @@ pref('zen.view.sidebar-collapsed.hide-mute-button', true);
 
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
-pref('zen.keyboard.shortcuts.disable-firefox', false);
 pref('zen.tabs.dim-pending', true);
 pref('zen.themes.updated-value-observer', false);
 

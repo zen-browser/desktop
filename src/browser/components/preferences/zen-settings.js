@@ -1,7 +1,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 var gZenMarketplaceManager = {
   init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
@@ -574,150 +573,146 @@ var gZenWorkspacesSettings = {
   },
 };
 
+const ZEN_CKS_CLASS_BASE = 'zenCKSOption';
+const ZEN_CKS_INPUT_FIELD_CLASS = `${ZEN_CKS_CLASS_BASE}-input`;
+const ZEN_CKS_LABEL_CLASS = `${ZEN_CKS_CLASS_BASE}-label`;
+const ZEN_CKS_WRAPPER_ID = `${ZEN_CKS_CLASS_BASE}-wrapper`;
+const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
+const KEYBIND_ATTRIBUTE_KEY = 'key';
+
 var gZenCKSSettings = {
   init() {
     this._currentAction = null;
     this._initializeEvents();
     this._initializeCKS();
-    this._addPrefObservers();
-    window.addEventListener('unload', () => {
-      Services.prefs.removeObserver('zen.keyboard.shortcuts.disable-firefox', this);
-    });
-  },
-
-  _addPrefObservers() {
-    Services.prefs.addObserver('zen.keyboard.shortcuts.disable-firefox', this);
-  },
-
-  observe(subject, topic, data) {
-    this.onDisableFirefoxShortcutsChange();
-  },
-
-  async onDisableFirefoxShortcutsChange(event) {
-    let checked = Services.prefs.getBoolPref('zen.keyboard.shortcuts.disable-firefox');
-    if (checked) return;
-    let buttonIndex = await confirmRestartPrompt(true, 1, true, false);
-    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
-      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-      return;
-    }
-  },
-
-  _initializeCKS() {
-    let wrapepr = document.getElementById('zenCKSOptions-wrapper');
-
-    // Create the groups first.
-    for (let key in kZKSActions) {
-      const data = kZKSActions[key];
-      const group = data[2];
-      if (!wrapepr.querySelector(`[data-group="${group}"]`)) {
-        let groupElem = document.createElement('h2');
-        groupElem.setAttribute('data-group', group);
-        document.l10n.setAttributes(groupElem, `zen-cks-group-${group}`);
-        wrapepr.appendChild(groupElem);
-      }
-    }
-
-    const keys = Object.keys(kZKSActions);
-    for (let i = keys.length - 1; i >= 0; i--) {
-      const key = keys[i];
-      const data = kZKSActions[key];
-      const l10nId = data[1];
-      const group = data[2];
-      let fragment = window.MozXULElement.parseXULToFragment(`
-        <hbox class="zenCKSOption">
-          <label class="zenCKSOption-label" for="zenCKSOption-${key}"></label>
-          <html:input readonly="1" class="zenCKSOption-input" id="zenCKSOption-${key}" />
-        </hbox>
-      `);
-      document.l10n.setAttributes(fragment.querySelector('.zenCKSOption-label'), l10nId);
-
-      let input = fragment.querySelector('.zenCKSOption-input');
-      let shortcut = gZenKeyboardShortcuts.getShortcut(key);
-      if (shortcut) {
-        input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
-      } else {
-        this._resetCKS(input, key);
-      }
-
-      input.setAttribute('data-key', key);
-      input.addEventListener('focus', (event) => {
-        const key = event.target.getAttribute('data-key');
-        this._currentAction = key;
-        event.target.classList.add('zenCKSOption-input-editing');
-      });
-
-      input.addEventListener('blur', (event) => {
-        this._currentAction = null;
-        event.target.classList.remove('zenCKSOption-input-editing');
-      });
-
-      const groupElem = wrapepr.querySelector(`[data-group="${group}"]`);
-      groupElem.after(fragment);
-    }
-  },
-
-  _resetCKS(input, key) {
-    input.value = 'Not set';
-    input.classList.add('zenCKSOption-input-not-set');
-    input.classList.remove('zenCKSOption-input-invalid');
-    gZenKeyboardShortcuts.setShortcut(key, null);
   },
 
   _initializeEvents() {
     window.addEventListener('keydown', this._handleKeyDown.bind(this));
   },
 
+  _initializeCKS() {
+    let wrapper = document.getElementById(ZEN_CKS_WRAPPER_ID);
+
+    let shortcuts = gZenKeyboardShortcutsManager.getModifiableShortcuts();
+
+    if (!shortcuts) {
+      throw Error('No shortcuts defined!');
+    }
+
+    // Generate section per each group
+    for (let group of VALID_SHORTCUT_GROUPS) {
+      let groupClass = `${ZEN_CKS_GROUP_PREFIX}-${group}`;
+      if (!wrapper.querySelector(`[data-group="${groupClass}"]`)) {
+        let groupElem = document.createElement('h2');
+        groupElem.setAttribute('data-group', groupClass);
+        document.l10n.setAttributes(groupElem, `groupClass`);
+        wrapper.appendChild(groupElem);
+      }
+    }
+
+    for (let shortcut of shortcuts) {
+      const keyInString = shortcut.toUserString();
+      const keyID = shortcut.getID();
+      const action = shortcut.getAction();
+      const l10nID = shortcut.getL10NID();
+      const group = shortcut.getGroup();
+
+      const labelValue = l10nID == null ? keyID : l10nID;
+
+      let fragment = window.MozXULElement.parseXULToFragment(`
+        <hbox class="${ZEN_CKS_CLASS_BASE}">
+          <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${action}">${labelValue}</label>
+          <html:input readonly="1" class="${ZEN_CKS_INPUT_FIELD_CLASS}" id="${ZEN_CKS_INPUT_FIELD_CLASS}-${action}" />
+        </hbox>
+      `);
+
+      document.l10n.setAttributes(fragment.querySelector(`.${ZEN_CKS_LABEL_CLASS}`), labelValue);
+
+      let input = fragment.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}`);
+      if (keyInString) {
+        input.value = keyInString;
+      } else {
+        this._resetShortcut(input);
+      }
+
+      input.setAttribute(KEYBIND_ATTRIBUTE_KEY, action);
+
+      input.addEventListener('focus', (event) => {
+        const value = event.target.getAttribute(KEYBIND_ATTRIBUTE_KEY);
+        this._currentAction = value;
+        event.target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+      });
+
+      input.addEventListener('editDone', (event) => {
+        const target = event.target;
+        target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+        this._editDone(target);
+      });
+
+      const groupElem = wrapper.querySelector(`[data-group="${ZEN_CKS_GROUP_PREFIX}-${group}"]`);
+      groupElem.after(fragment);
+    }
+  },
+
+  _resetShortcut(input) {
+    input.value = 'Not set';
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+    input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
+
+    if (this._currentAction) {
+      gZenKeyboardShortcutsManager.setShortcut(this._currentAction, null, null);
+    }
+  },
+
+  _editDone(input) {
+    if (input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
+      this._resetShortcut(input);
+      return;
+    }
+
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+    this._currentAction = null;
+  },
+
+  //TODO Check for duplicates
   _handleKeyDown(event) {
+    event.preventDefault();
+
     if (!this._currentAction) {
       return;
     }
 
-    let input = document.querySelector(`.zenCKSOption-input[data-key="${this._currentAction}"]`);
-    let shortcut = {
-      ctrl: event.ctrlKey,
-      alt: event.altKey,
-      shift: event.shiftKey,
-      meta: event.metaKey,
-    };
+    let input = document.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentAction}"]`);
+    const modifiers = new KeyShortcutModifiers(event.ctrlKey, event.altKey, event.shiftKey, event.metaKey);
+    const modifiersActive = modifiers.areAnyActive();
 
-    const shortcutWithoutModifiers = !shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta;
+    let shortcut = event.key;
 
-    if (event.key === 'Tab' && shortcutWithoutModifiers) {
+    shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
+
+    if (shortcut == 'Tab' && !modifiersActive) {
       return;
-    } else if (event.key === 'Escape' && shortcutWithoutModifiers) {
-      this._currentAction = null;
-      input.blur();
+    } else if (shortcut == 'Escape' && !modifiersActive) {
+      this._editDone(input);
       return;
-    } else if (event.key === 'Backspace' && shortcutWithoutModifiers) {
-      this._resetCKS(input, this._currentAction);
+    } else if (shortcut == 'Backspace' && !modifiersActive) {
+      this._resetShortcut(input);
       return;
     }
 
-    if (!shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta) {
-      this._resetCKS(input, this._currentAction);
-      return; // No modifiers, ignore.
-    }
+    input.value = modifiers.toUserString() + shortcut;
 
-    if (!['Control', 'Alt', 'Meta', 'Shift'].includes(event.key)) {
-      if (event.keycode) {
-        shortcut.keycode = event.keycode;
-      } else {
-        shortcut.key = event.key;
-      }
-    }
-
-    event.preventDefault();
-    gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
-
-    input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
-    input.classList.remove('zenCKSOption-input-not-set');
-
-    if (gZenKeyboardShortcuts.isValidShortcut(shortcut)) {
-      input.classList.remove('zenCKSOption-input-invalid');
-    } else {
+    if (!shortcut || shortcut === '') {
       input.classList.add('zenCKSOption-input-invalid');
+      return;
     }
+
+    input.classList.remove('zenCKSOption-input-not-set');
+    input.classList.remove('zenCKSOption-input-invalid');
+
+    gZenKeyboardShortcutsManager.setShortcut(this._currentAction, shortcut, modifiers);
   },
 };
 
@@ -771,11 +766,6 @@ Preferences.addAll([
     id: 'zen.theme.pill-button',
     type: 'bool',
     default: true,
-  },
-  {
-    id: 'zen.keyboard.shortcuts.disable-firefox',
-    type: 'bool',
-    default: false,
   },
   {
     id: 'zen.workspaces.hide-default-container-indicator',

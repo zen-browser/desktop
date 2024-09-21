@@ -41,6 +41,7 @@
         gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
 
         ZenWorkspaces.init();
+        gZenUIManager.init();
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
         gZenKeyboardShortcuts.init();

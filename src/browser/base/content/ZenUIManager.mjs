@@ -3,9 +3,8 @@ var gZenUIManager = {
 
   init () {
 
-    addEventListener('popupshowing', this.onPopupShowing.bind(this));
-    addEventListener('popuphidden', this.onPopupHidden.bind(this));
-    addEventListener('click', this.onClick.bind(this));
+    document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
+    document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
   },
 
   openAndChangeToTab(url, options) {
@@ -38,8 +37,12 @@ var gZenUIManager = {
    * Adds the 'has-popup-menu' attribute to the element when popup is opened on it.
    * @param element element to track
    */
-  addPopupTracking(element) {
+  addPopupTrackingAttribute(element) {
     this._popupTrackingElements.push(element);
+  },
+
+  removePopupTrackingAttribute(element) {
+    this._popupTrackingElements.remove(element);
   },
 
   onPopupShowing(showEvent) {
@@ -47,10 +50,8 @@ var gZenUIManager = {
       if (!el.contains(event.explicitOriginalTarget)) {
         continue;
       }
-      removeEventListener('mousemove', this.__removeHasPopupAttribute);
+      document.removeEventListener('mousemove', this.__removeHasPopupAttribute);
       el.setAttribute('has-popup-menu', '');
-
-      this.__lastElementClicked = null;
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
       break;
@@ -62,21 +63,14 @@ var gZenUIManager = {
       return;
     }
     const element = this.__currentPopupTrackElement;
-    /* If item is selected on popup, the :hover effect will not be reapplied until the cursor moves,
-     to mitigate this: Wait for mousemove when popup item selected
-     */
-    if (this.__lastElementClicked?.tagName === 'menuitem') {
-      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
-      addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
-    } else {
+    if (document.getElementById('main-window').matches(':hover')) {
       element.removeAttribute('has-popup-menu');
+    } else {
+      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
+      document.addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
     }
     this.__currentPopup = null;
     this.__currentPopupTrackElement = null;
-  },
-
-  onClick(event) {
-    this.__lastElementClicked = event.target;
   },
 };
 
@@ -205,8 +199,8 @@ var gZenCompactModeManager = {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
 
-    gZenUIManager.addPopupTracking(this.sidebar);
-    gZenUIManager.addPopupTracking(document.getElementById('zen-appcontent-navbar-container'));
+    gZenUIManager.addPopupTrackingAttribute(this.sidebar);
+    gZenUIManager.addPopupTrackingAttribute(document.getElementById('zen-appcontent-navbar-container'));
   },
 
   get prefefence() {

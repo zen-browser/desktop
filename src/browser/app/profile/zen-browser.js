@@ -85,6 +85,7 @@ pref('zen.theme.color-prefs.colorful', false);
 
 pref('zen.view.compact.toolbar-flash-popup', true);
 pref('zen.view.compact.toolbar-flash-popup.duration', 800);
+pref('zen.view.compact.toolbar-hide-after-hover.duration', 2000);
 
 pref('zen.view.sidebar-height-throttle', 200); // in ms
 pref('zen.view.sidebar-expanded', false);

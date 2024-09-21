@@ -38,9 +38,6 @@
     top: 50%;
     opacity: 0;
 
-    transition-delay: 0.8s;
-    backface-visibility: hidden;
-
     transform: translate3d(0, calc(-50% - 2px), 0);
 
     #browser:has(#navigator-toolbox[zen-right-side='true']) & {
@@ -68,7 +65,6 @@
   #navigator-toolbox:has(.tabbrowser-tab:active),
   #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
     opacity: 1;
-    transition-delay: 0s !important;
     
     transform: translate3d(calc(100% - var(--zen-element-separation) - 1px), calc(-50% - 2px), 0);
     #browser:has(#navigator-toolbox[zen-right-side='true']) & {

@@ -28,12 +28,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Theme importer always needs to be loaded first
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenThemesCommon.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenThemesImporter.mjs");
+  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenCompactMode.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenUIManager.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSidebarManager.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspaces.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenViewSplitter.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenProfileDialogUI.mjs");
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenCompactMode.mjs");
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs");
 }, { once: true });
 </script>

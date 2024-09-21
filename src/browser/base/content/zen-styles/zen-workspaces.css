@@ -94,6 +94,7 @@
       width: 100% !important;
       margin: 2px;
       min-width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
+      height: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
 
       & .zen-workspace-sidebar-wrapper {
         left: calc(var(--toolbarbutton-outer-padding) + 5px);

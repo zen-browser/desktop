@@ -147,7 +147,7 @@
 
   /* Mark: toolbox as expanded */
   #navigator-toolbox:is(
-    #navigator-toolbox[zen-user-hover='true']:hover,
+    #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
     #navigator-toolbox[zen-user-hover='true']:focus-within,
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],
@@ -269,7 +269,7 @@
 
   /* Mark: toolbox as collapsed */
   #navigator-toolbox:not(#navigator-toolbox:is(
-    #navigator-toolbox[zen-user-hover='true']:hover,
+    #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
     #navigator-toolbox[zen-user-hover='true']:focus-within,
     #navigator-toolbox[zen-user-hover='true'][movingtab],
     #navigator-toolbox[zen-user-hover='true'][flash-popup],

@@ -128,15 +128,14 @@
       splitter.setAttribute('resizeafter', 'none');
       toolbox.insertAdjacentElement('afterend', splitter);
 
-      this._moveWindowButtons();
       this._addSidebarButtons();
       this._hideToolbarButtons();
     },
 
     _moveWindowButtons() {
-      const windowControls = document.getElementById('titlebar-buttonbox-container');
-      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons');
-      if (AppConstants.platform == "macosx") {
+      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container')[0];
+      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons-customization-target');
+      if (AppConstants.platform === "macosx") {
         toolboxIcons.prepend(windowControls);
       }
     },
@@ -221,6 +220,8 @@
         CustomizableUI.registerToolbarNode(
           document.getElementById('zen-sidebar-icons-wrapper')
         );
+
+        this._moveWindowButtons();
       }, 100);
     },
 

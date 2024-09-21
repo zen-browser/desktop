@@ -442,6 +442,7 @@ var gZenLooksAndFeel = {
       }
     }, 500);
     this.setDarkThemeListener();
+    this.setCompactModeStyle();
   },
 
   onPreferColorSchemeChange(event) {
@@ -455,9 +456,9 @@ var gZenLooksAndFeel = {
   },
 
   setDarkThemeListener() {
-    this.chooser = document.getElementById('zen-dark-theme-styles-form');
-    this.radios = [...this.chooser.querySelectorAll('input')];
-    for (let radio of this.radios) {
+    const chooser = document.getElementById('zen-dark-theme-styles-form');
+    const radios = [...chooser.querySelectorAll('input')];
+    for (let radio of radios) {
       if (radio.value === 'amoled' && Services.prefs.getBoolPref('zen.theme.color-prefs.amoled')) {
         radio.checked = true;
       } else if (radio.value === 'colorful' && Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')) {
@@ -483,6 +484,41 @@ var gZenLooksAndFeel = {
           default:
             Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
             Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
+            break;
+        }
+      });
+    }
+  },
+
+  setCompactModeStyle() {
+    const chooser = document.getElementById('zen-compact-mode-styles-form');
+    const radios = [...chooser.querySelectorAll('input')];
+    for (let radio of radios) {
+      if (radio.value === 'left' && Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')) {
+        radio.checked = true;
+      } else if (radio.value === 'top' && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
+        radio.checked = true;
+      } else if (
+        radio.value === 'both' &&
+        !Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') &&
+        !Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')
+      ) {
+        radio.checked = true;
+      }
+      radio.addEventListener('change', (e) => {
+        let value = e.target.value;
+        switch (value) {
+          case 'left':
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+            break;
+          case 'top':
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
+            break;
+          default:
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
         }
       });

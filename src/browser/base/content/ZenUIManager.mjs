@@ -1,4 +1,13 @@
 var gZenUIManager = {
+  _popupTrackingElements: [],
+
+  init () {
+
+    addEventListener('popupshowing', this.onPopupShowing.bind(this));
+    addEventListener('popuphidden', this.onPopupHidden.bind(this));
+    addEventListener('click', this.onClick.bind(this));
+  },
+
   openAndChangeToTab(url, options) {
     if (window.ownerGlobal.parent) {
       let tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(url, options);
@@ -23,6 +32,51 @@ var gZenUIManager = {
 
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  },
+
+  /**
+   * Adds the 'has-popup-menu' attribute to the element when popup is opened on it.
+   * @param element element to track
+   */
+  addPopupTracking(element) {
+    this._popupTrackingElements.push(element);
+  },
+
+  onPopupShowing(showEvent) {
+    for (const el of this._popupTrackingElements) {
+      if (!el.contains(event.explicitOriginalTarget)) {
+        continue;
+      }
+      removeEventListener('mousemove', this.__removeHasPopupAttribute);
+      el.setAttribute('has-popup-menu', '');
+
+      this.__lastElementClicked = null;
+      this.__currentPopup = showEvent.target;
+      this.__currentPopupTrackElement = el;
+      break;
+    }
+  },
+
+  onPopupHidden(hideEvent) {
+    if (!this.__currentPopup || this.__currentPopup !== hideEvent.target) {
+      return;
+    }
+    const element = this.__currentPopupTrackElement;
+    /* If item is selected on popup, the :hover effect will not be reapplied until the cursor moves,
+     to mitigate this: Wait for mousemove when popup item selected
+     */
+    if (this.__lastElementClicked?.tagName === 'menuitem') {
+      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
+      addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
+    } else {
+      element.removeAttribute('has-popup-menu');
+    }
+    this.__currentPopup = null;
+    this.__currentPopupTrackElement = null;
+  },
+
+  onClick(event) {
+    this.__lastElementClicked = event.target;
   },
 };
 
@@ -151,7 +205,8 @@ var gZenCompactModeManager = {
     Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
     Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
 
-    addEventListener('popupshowing', this.keepSidebarVisibleOnContextMenu.bind(this));
+    gZenUIManager.addPopupTracking(this.sidebar);
+    gZenUIManager.addPopupTracking(document.getElementById('zen-appcontent-navbar-container'));
   },
 
   get prefefence() {
@@ -208,37 +263,6 @@ var gZenCompactModeManager = {
         this._flashSidebarTimeout = null;
       });
     }, this.flashSidebarDuration);
-  },
-
-  keepSidebarVisibleOnContextMenu(event) {
-    if (!this.sidebar.contains(event.explicitOriginalTarget)) {
-      return;
-    }
-    this.sidebar.setAttribute('has-popup-menu', '');
-    /* If the cursor is on the popup when it hides, the :hover effect will not be reapplied to the sidebar until the cursor moves,
-     to mitigate this: Wait for mousemove when popup item selected
-     */
-    if (!this.__removeHasPopupAttribute) {
-      this.__removeHasPopupAttribute = () => this.sidebar.removeAttribute('has-popup-menu');
-    }
-    removeEventListener('mousemove', this.__removeHasPopupAttribute);
-
-    const waitForMouseMoveOnPopupSelect = (event) => {
-      if (event.target.tagName === 'menuitem') {
-        removeEventListener('click', waitForMouseMoveOnPopupSelect);
-        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
-        addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
-      }
-    }
-    const removeHasPopupOnPopupHidden = (hiddenEvent) => {
-      if (event.target === hiddenEvent.target) {
-        removeEventListener('click', waitForMouseMoveOnPopupSelect);
-        removeEventListener('popuphidden', removeHasPopupOnPopupHidden);
-        this.__removeHasPopupAttribute();
-      }
-    }
-    addEventListener('click', waitForMouseMoveOnPopupSelect);
-    addEventListener('popuphidden', removeHasPopupOnPopupHidden);
   },
 
   toggleToolbar() {

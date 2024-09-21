@@ -105,9 +105,9 @@ var gZenMarketplaceManager = {
 
     console.log('[ZenThemeMarketplaceParent:settings]: Building themes list');
 
-    let themes = await ZenThemesCommon.getThemes();
+    const themes = await ZenThemesCommon.getThemes();
 
-    const browser = ZenThemesCommon.getBrowser();
+    const browser = ZenThemesCommon.currentBrowser;
 
     const themeList = document.createElement('div');
 
@@ -791,5 +791,5 @@ Preferences.addAll([
     id: 'zen.workspaces.show-icon-strip',
     type: 'bool',
     default: true,
-  }
+  },
 ]);

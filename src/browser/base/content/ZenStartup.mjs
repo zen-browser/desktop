@@ -40,6 +40,8 @@
         // Disable smooth scroll
         gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
 
+        ZenWorkspaces.init();
+        gZenUIManager.init();
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
         gZenKeyboardShortcuts.init();
@@ -66,7 +68,7 @@
       tabs.style.maxHeight = '0px'; // reset to 0
       const toolbarRect = toolbarItems.getBoundingClientRect();
       // -5 for the controls padding
-      let totalHeight = toolbarRect.height - 15;
+      let totalHeight = toolbarRect.height - 5;
       // remove the height from other elements that aren't hidden
       const otherElements = document.querySelectorAll('#tabbrowser-tabs > *:not([hidden="true"])');
       for (let tab of otherElements) {
@@ -75,14 +77,6 @@
       }
       tabs.style.maxHeight = totalHeight + 'px';
       //console.info('ZenThemeModifier: set tabs max-height to', totalHeight + 'px');
-
-      const allTabs = document.getElementById('alltabs-button');
-      allTabs.removeAttribute('hidden');
-      allTabs.removeAttribute('badged');
-      allTabs.setAttribute('class', 'toolbarbutton-1 zen-sidebar-action-button');
-      document.getElementById('zen-sidebar-icons-wrapper').prepend(
-        allTabs
-      );
     },
 
     openWatermark() {
@@ -107,10 +101,6 @@
     _changeSidebarLocation() {
       const legacyLocation = Services.prefs.getBoolPref('zen.themes.tabs.legacy-location', false);
       const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
-      if (legacyLocation) {
-        kElementsToAppend.push('navigator-toolbox');
-        window.document.documentElement.setAttribute('zen-sidebar-legacy', 'true');
-      }
       const wrapper = document.getElementById('zen-tabbox-wrapper');
       const appWrapepr = document.getElementById('zen-sidebar-box-container');
       for (let id of kElementsToAppend) {
@@ -123,9 +113,7 @@
 
       const browser = document.getElementById('browser');
       const toolbox = document.getElementById('navigator-toolbox');
-      if (!legacyLocation) {
-        browser.prepend(toolbox);
-      }
+      browser.prepend(toolbox);
 
       // remove all styles except for the width, since we are xulstoring the complet style list
       const width = toolbox.style.width;
@@ -139,6 +127,102 @@
       splitter.setAttribute('resizebefore', 'sibling');
       splitter.setAttribute('resizeafter', 'none');
       toolbox.insertAdjacentElement('afterend', splitter);
+
+      this._addSidebarButtons();
+      this._hideToolbarButtons();
+    },
+
+    _moveWindowButtons() {
+      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container')[0];
+      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons-customization-target');
+      if (AppConstants.platform === "macosx") {
+        toolboxIcons.prepend(windowControls);
+      }
+    },
+
+    _hideToolbarButtons() {
+      const elementsToHide = [
+        'alltabs-button',
+      ];
+      for (let id of elementsToHide) {
+        const elem = document.getElementById(id);
+        if (elem) {
+          elem.setAttribute('hidden', 'true');
+        }
+      }
+    },
+
+    _addSidebarButtons() {
+      const sidebarBox = window.MozXULElement.parseXULToFragment(`
+        <toolbar id="zen-sidebar-top-buttons"
+          fullscreentoolbar="true" 
+          class="browser-toolbar customization-target zen-dont-hide-on-fullscreen"
+          brighttext="true"
+          data-l10n-id="tabs-toolbar"
+          customizable="true"
+          toolbarname="Zen Sidebar Top Buttons"
+          context="toolbar-context-menu"
+          flex="1"
+          customizationtarget="zen-sidebar-top-buttons-customization-target"
+          mode="icons">
+          <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
+            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" cui-areatype="toolbar" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
+            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>  
+          </hbox>
+        </toolbar>
+      `);
+      document.getElementById('navigator-toolbox').prepend(sidebarBox);
+      const sideBarTopButtons = document.getElementById('zen-sidebar-top-buttons')
+        .querySelector('#zen-sidebar-top-buttons-customization-target');
+
+      const newTab = document.getElementById('vertical-tabs-newtab-button');
+      newTab.classList.add('zen-sidebar-action-button');
+
+      setTimeout(() => {
+        CustomizableUI.registerArea(
+          "zen-sidebar-top-buttons",
+          {
+            type: CustomizableUI.TYPE_TOOLBAR,
+            defaultPlacements: [
+              "PanelUI-menu-button", "zen-expand-sidebar-button", "zen-profile-button"
+            ],
+            defaultCollapsed: null,
+          }
+        );
+        CustomizableUI.registerToolbarNode(
+          document.getElementById('zen-sidebar-top-buttons')
+        );
+
+        const panelMenu = document.getElementById('PanelUI-menu-button');
+        panelMenu.classList.add('zen-sidebar-action-button');
+        panelMenu.setAttribute('cui-areatype', 'toolbar');
+
+        sideBarTopButtons.prepend(panelMenu);
+
+        const defaultSidebarIcons = [
+          'zen-sidepanel-button',
+          'zen-workspaces-button',
+          'new-tab-button'
+        ];
+        for (let id of defaultSidebarIcons) {
+          const elem = document.getElementById(id);
+          if (id === 'zen-workspaces-button' || !elem) continue;
+          elem.setAttribute('removable', 'true');
+        }
+        CustomizableUI.registerArea(
+          "zen-sidebar-icons-wrapper",
+          {
+            type: CustomizableUI.TYPE_TOOLBAR,
+            defaultPlacements: defaultSidebarIcons,
+            defaultCollapsed: null,
+          }
+        );
+        CustomizableUI.registerToolbarNode(
+          document.getElementById('zen-sidebar-icons-wrapper')
+        );
+
+        this._moveWindowButtons();
+      }, 100);
     },
 
     _focusSearchBar() {

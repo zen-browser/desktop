@@ -53,7 +53,7 @@ jobs:
       - name: Bump version
         if: ${{ github.event.inputs.update_version == 'true' }}
         run: |
-          pnpm surfer ci --brand alpha --bump prepatch
+          pnpm surfer ci --brand alpha --bump prerelease
 
       - name: Bump version without new version
         if: ${{ github.event.inputs.update_version == 'false' }}
@@ -317,22 +317,15 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
-          lfs: true
 
       - name: Git Pull
         run: |
           git pull
-          git lfs pull
 
       - uses: actions/download-artifact@v4
 
       - name: List
         run: find .
-
-      - name: Unpack windows build (.tar.gz)
-        run: |
-          tar -xvf .github/workflows/object/windows-x64-signed-generic.tar.gz -C .
-          tar -xvf .github/workflows/object/windows-x64-signed-specific.tar.gz -C .
 
       - name: Clone updates repo
         uses: actions/checkout@v4
@@ -348,8 +341,8 @@ jobs:
           cp -a ../linux_update_manifest_generic/.  updates/
           cp -a ../linux_update_manifest_specific/.  updates/
 
-          cp -a ../windows-x64-signed-generic/update_manifest/.  updates/
-          cp -a ../windows-x64-signed-specific/update_manifest/.  updates/
+          cp -a ../.github/workflows/object/windows-x64-signed-generic/update_manifest/.  updates/
+          cp -a ../.github/workflows/object/windows-x64-signed-specific/update_manifest/.  updates/
 
           cp -a ../macos_update_manifest_aarch64/.  updates/
           cp -a ../macos_update_manifest_x64/.  updates/
@@ -376,16 +369,16 @@ jobs:
             zen-generic.AppImage.zsync
             zen-specific.AppImage
             zen-specific.AppImage.zsync
-            windows-x64-signed-generic/zen.win-generic.zip
-            windows-x64-signed-specific/zen.win-specific.zip
+            .github/workflows/object/windows-x64-signed-generic/zen.win-generic.zip
+            .github/workflows/object/windows-x64-signed-specific/zen.win-specific.zip
             linux.mar
             linux-generic.mar
-            windows-x64-signed-generic/windows-generic.mar
-            windows-x64-signed-specific/windows.mar
+            .github/workflows/object/windows-x64-signed-generic/windows-generic.mar
+            .github/workflows/object/windows-x64-signed-specific/windows.mar
             macos-x64.mar
             macos-aarch64.mar
-            windows-x64-signed-specific/zen.installer.exe
-            windows-x64-signed-generic/zen.installer-generic.exe
+            .github/workflows/object/windows-x64-signed-specific/zen.installer.exe
+            .github/workflows/object/windows-x64-signed-generic/zen.installer-generic.exe
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
 

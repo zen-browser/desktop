@@ -10,12 +10,35 @@ toolbar {
   align-items: center;
   list-style-image: var(--avatar-image-url);
   position: relative;
+  border-radius: var(--tab-border-radius);
+
+  width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+  height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
 
   & image {
+    border-radius: 999px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px;
+    height: calc(var(--toolbarbutton-inner-padding) + 10px);
+    width: calc(var(--toolbarbutton-inner-padding) + 10px);
+    padding: 0;
+
+    margin: 0 var(--toolbarbutton-inner-padding) !important;
+  }
+
+  &:hover {
+    background-color: var(--toolbarbutton-hover-background);
+
+    & image {
+      background: transparent !important;
+    }
+  }
+}
+
+@media not (-moz-bool-pref: 'zen.view.sidebar-expanded.show-button') {
+  #zen-expand-sidebar-button {
+    display: none !important;
   }
 }
 
@@ -53,4 +76,9 @@ toolbar {
       margin-left: var(--zen-element-separation);
     }
   }
+}
+
+/* Menubar */
+#toolbar-menubar {
+  display: none !important;
 }

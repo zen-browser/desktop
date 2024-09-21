@@ -1,4 +1,12 @@
 var gZenUIManager = {
+  _popupTrackingElements: [],
+
+  init () {
+
+    document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
+    document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
+  },
+
   openAndChangeToTab(url, options) {
     if (window.ownerGlobal.parent) {
       let tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(url, options);
@@ -24,6 +32,46 @@ var gZenUIManager = {
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   },
+
+  /**
+   * Adds the 'has-popup-menu' attribute to the element when popup is opened on it.
+   * @param element element to track
+   */
+  addPopupTrackingAttribute(element) {
+    this._popupTrackingElements.push(element);
+  },
+
+  removePopupTrackingAttribute(element) {
+    this._popupTrackingElements.remove(element);
+  },
+
+  onPopupShowing(showEvent) {
+    for (const el of this._popupTrackingElements) {
+      if (!el.contains(event.explicitOriginalTarget)) {
+        continue;
+      }
+      document.removeEventListener('mousemove', this.__removeHasPopupAttribute);
+      el.setAttribute('has-popup-menu', '');
+      this.__currentPopup = showEvent.target;
+      this.__currentPopupTrackElement = el;
+      break;
+    }
+  },
+
+  onPopupHidden(hideEvent) {
+    if (!this.__currentPopup || this.__currentPopup !== hideEvent.target) {
+      return;
+    }
+    const element = this.__currentPopupTrackElement;
+    if (document.getElementById('main-window').matches(':hover')) {
+      element.removeAttribute('has-popup-menu');
+    } else {
+      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
+      document.addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
+    }
+    this.__currentPopup = null;
+    this.__currentPopupTrackElement = null;
+  },
 };
 
 var gZenVerticalTabsManager = {
@@ -33,6 +81,7 @@ var gZenVerticalTabsManager = {
     Services.prefs.addObserver('zen.tabs.vertical.right-side', updateEvent);
     Services.prefs.addObserver('zen.view.sidebar-expanded.max-width', updateEvent);
     Services.prefs.addObserver('zen.view.sidebar-expanded.on-hover', updateEvent);
+    gZenCompactModeManager.addEventListener(updateEvent);
     this._updateEvent();
     this.initRightSideOrderContextMenu();
   },
@@ -72,16 +121,33 @@ var gZenVerticalTabsManager = {
 
   _updateEvent() {
     this._updateMaxWidth();
-    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
-      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
-    } else {
-      this.navigatorToolbox.removeAttribute('zen-expanded');
-    }
+    const topButtons = document.getElementById('zen-sidebar-top-buttons');
+    const customizationTarget = document.getElementById('nav-bar-customization-target');
+    const tabboxWrapper = document.getElementById('zen-tabbox-wrapper');
+    const browser = document.getElementById('browser');
     if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
       this.navigatorToolbox.setAttribute('zen-right-side', 'true');
     } else {
       this.navigatorToolbox.removeAttribute('zen-right-side');
     }
+    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
+      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
+    } else {
+      this.navigatorToolbox.removeAttribute('zen-expanded');
+    }
+
+    if (this.navigatorToolbox.hasAttribute('zen-expanded') && !this.navigatorToolbox.hasAttribute('zen-right-side')
+      && !Services.prefs.getBoolPref('zen.view.compact') && !Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+      this.navigatorToolbox.prepend(topButtons);
+      browser.prepend(this.navigatorToolbox);
+    } else {
+      customizationTarget.prepend(topButtons);
+      tabboxWrapper.prepend(this.navigatorToolbox);
+    }
+
+    // Always move the splitter next to the sidebar
+    this.navigatorToolbox.after(document.getElementById('zen-sidebar-splitter'));
+
     this._updateOnHoverVerticalTabs();
   },
 
@@ -124,70 +190,5 @@ var gZenVerticalTabsManager = {
     let expanded = !this.expanded;
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
     Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
-  },
-};
-
-var gZenCompactModeManager = {
-  _flashSidebarTimeout: null,
-
-  init() {
-    Services.prefs.addObserver('zen.view.compact', this._updateEvent.bind(this));
-    Services.prefs.addObserver('zen.view.compact.toolbar-flash-popup.duration', this._updatedSidebarFlashDuration.bind(this));
-  },
-
-  get prefefence() {
-    return Services.prefs.getBoolPref('zen.view.compact');
-  },
-
-  set preference(value) {
-    Services.prefs.setBoolPref('zen.view.compact', value);
-  },
-
-  _updateEvent() {
-    Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
-  },
-
-  toggle() {
-    this.preference = !this.prefefence;
-  },
-
-  _updatedSidebarFlashDuration() {
-    this._flashSidebarDuration = Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
-  },
-
-  toggleSidebar() {
-    let sidebar = document.getElementById('navigator-toolbox');
-    sidebar.toggleAttribute('zen-user-show');
-  },
-
-  get flashSidebarDuration() {
-    if (this._flashSidebarDuration) {
-      return this._flashSidebarDuration;
-    }
-    return Services.prefs.getIntPref('zen.view.compact.toolbar-flash-popup.duration');
-  },
-
-  flashSidebar() {
-    let sidebar = document.getElementById('navigator-toolbox');
-    let tabPanels = document.getElementById('tabbrowser-tabpanels');
-    if (sidebar.matches(':hover') || tabPanels.matches("[zen-split-view='true']")) {
-      return;
-    }
-    if (this._flashSidebarTimeout) {
-      clearTimeout(this._flashSidebarTimeout);
-    } else {
-      window.requestAnimationFrame(() => sidebar.setAttribute('flash-popup', ''));
-    }
-    this._flashSidebarTimeout = setTimeout(() => {
-      window.requestAnimationFrame(() => {
-        sidebar.removeAttribute('flash-popup');
-        this._flashSidebarTimeout = null;
-      });
-    }, this.flashSidebarDuration);
-  },
-
-  toggleToolbar() {
-    let toolbar = document.getElementById('zen-appcontent-navbar-container');
-    toolbar.toggleAttribute('zen-user-show');
   },
 };

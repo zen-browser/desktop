@@ -52,7 +52,7 @@ pref('pdfjs.enableHighlightFloatingButton', true);
 
 pref("alerts.showFavicons", true);
 
-pref("browser.tabs.loadBookmarksInTabs", true);
+pref("browser.tabs.loadBookmarksInTabs", false);
 pref('browser.toolbars.bookmarks.visibility', 'never');
 
 // Enable Do Not Track and GPC by default.
@@ -73,20 +73,22 @@ pref('zen.welcomeScreen.seen', false);
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.theme.accent-color', "#aac7ff");
-pref('zen.theme.border-radius', 10); // In pixels
-pref('zen.theme.content-element-separation', 4); // In pixels
+pref('zen.theme.border-radius', 5); // In pixels
+pref('zen.theme.content-element-separation', 8); // In pixels
 pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);
 pref('zen.view.compact', false);
-pref('zen.view.compact.hide-toolbar', false);
 
 pref('zen.theme.color-prefs.amoled', false);
 pref('zen.theme.color-prefs.colorful', false);
 
+pref('zen.view.compact.hide-tabbar', true);
+pref('zen.view.compact.hide-toolbar', false);
 pref('zen.view.compact.toolbar-flash-popup', true);
 pref('zen.view.compact.toolbar-flash-popup.duration', 800);
+pref('zen.view.compact.toolbar-hide-after-hover.duration', 1000);
 
-pref('zen.view.sidebar-height-throttle', 500); // in ms
+pref('zen.view.sidebar-height-throttle', 200); // in ms
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.on-hover', false);
 pref('zen.view.sidebar-expanded.show-button', true);
@@ -99,7 +101,6 @@ pref('zen.keyboard.shortcuts', ""); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-firefox', false);
 pref('zen.tabs.dim-pending', true);
 pref('zen.themes.updated-value-observer', false);
-pref('zen.themes.tabs.legacy-location', false);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
@@ -117,6 +118,7 @@ pref('zen.splitView.min-resize-width', 7);
 pref('zen.workspaces.enabled', true);
 pref('zen.workspaces.hide-default-container-indicator', true);
 pref('zen.workspaces.individual-pinned-tabs', true);
+pref('zen.workspaces.show-icon-strip', true);
 pref('zen.workspaces.icons', '["🌐", "📁", "📎", "📝", "📅", "📊"]');
 
 // Zen Watermark
@@ -196,10 +198,14 @@ pref("widget.non-native-theme.use-theme-accent", true);
 pref("privacy.resistFingerprinting.letterboxing", false);
 pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
 
+// Remove Inspect Accessibity Properties menu
+pref("devtools.accessibility.enabled", false);
+
 // Enable GPU by default
 pref('gfx.webrender.all', true);
 pref('layers.acceleration.force-enabled', true);
 pref('media.ffmpeg.vaapi.enabled', true);
+pref('media.ffmpeg.encoder.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);

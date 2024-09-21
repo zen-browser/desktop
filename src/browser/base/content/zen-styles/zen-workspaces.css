@@ -1,12 +1,73 @@
 #zen-workspaces-button {
-  border: 1px solid var(--zen-colors-border);
-  border-radius: var(--zen-button-border-radius);
-  min-height: 33px;
   justify-content: center;
   align-items: center;
   display: flex;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
-  -moz-window-dragging: no-drag;
+
+  position: relative;
+
+  &:not([as-button='true']) {
+    border-radius: var(--zen-button-border-radius);
+    background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    padding: 5px;
+    height: fit-content;
+    gap: 3px;
+
+    & toolbarbutton {
+      margin: 0 !important;
+      width: 25px;
+      display: flex;
+      justify-content: center;
+      padding: 0 !important;
+      align-items: center;
+      position: relative;
+
+      & > * {
+        opacity: .6;
+      }
+
+      &[active='true']::after {
+        content: '';
+        position: absolute;
+        width: 4px;
+        border-radius: 99px;
+        height: 4px;
+        background: var(--zen-primary-color);
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: zen-workspaces-button-active 0.1s ease-in-out;
+      }
+    }
+  }
+
+  &[as-button='true'] {
+    border-radius: var(--tab-border-radius);
+
+    &:hover {
+      background: var(--toolbarbutton-hover-background);
+    }
+  }
+
+  :root:has(#navigator-toolbox:not([zen-expanded='true'])) &[as-button='true'] {
+    margin: 0 !important;
+    padding: var(--toolbarbutton-inner-padding) !important;
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    border-radius: var(--tab-border-radius) !important;
+
+    &:hover {
+      background: var(--toolbarbutton-hover-background) !important;
+    }
+  }
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-wrapper {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -15,31 +76,41 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 @media (-moz-bool-pref: 'zen.view.sidebar-expanded') {
   /** Keep these selectors in sync with the ones in vertical-tabs.css */
   #navigator-toolbox:is(
-      #navigator-toolbox[zen-user-hover='true']:hover,
+      #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
+      #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
       #navigator-toolbox[zen-user-hover='true']:focus-within,
       #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
       #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
       :not([zen-user-hover='true'])
     ) {
 
-    & #zen-workspaces-button {
-      width: calc(var(--zen-sidebar-action-button-width) - 1px) !important;
-      margin-top: .2rem;
-      height: calc(var(--zen-sidebar-action-button-width) - 10px) !important;
+    & #zen-workspaces-button[as-button='true'] {
+      width: 100% !important;
+      margin: 2px;
+      min-width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
+
+      & .zen-workspace-sidebar-wrapper {
+        left: calc(var(--toolbarbutton-outer-padding) + 5px);
+        width: calc(100% - (var(--toolbarbutton-outer-padding) * 3  ));
+      }
     }
     
     & #zen-workspaces-button .zen-workspace-sidebar-name {
       display: block;
     }
 
-    & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] {
-      display: none;
+    & #zen-workspaces-button .zen-workspace-sidebar-icon {
+      margin-inline-end: 5px;
+      
+      & [no-icon='true'] {
+        display: none;
+      }
     }
 
     & #zen-workspaces-button .zen-workspace-sidebar-icon[no-icon='true'] + .zen-workspace-sidebar-name {
@@ -51,7 +122,6 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       display: flex;
-      padding: 2px 10px;
       width: calc(100% - var(--zen-tabbrowser-padding) * 6) !important;
       gap: 0.5ch;
     }

@@ -35,7 +35,7 @@
 
 @keyframes zen-slide-in {
   from {
-    transform: translateX(-10px);
+    transform: translateX(-30px);
     opacity: 0;
   }
   to {
@@ -94,7 +94,7 @@
 @keyframes zen-vtabs-animation {
   0% {
     opacity: 0;
-    transform: translateX(-5px);
+    transform: translateX(-10px);
   }
 
   20% {
@@ -109,7 +109,7 @@
 @keyframes zen-sidebar-panel-animation-right {
   0% {
     opacity: 0;
-    transform: translateX(5px);
+    transform: translateX(10px);
   }
   
   20% {
@@ -134,5 +134,35 @@
 
   100% {
     display: none !important;
+  }
+}
+
+@keyframes zen-workspaces-button-active {
+  from {
+    bottom: -20px;
+  } 
+
+  to {
+    bottom: -2px;
+  }
+}
+
+@keyframes zen-workspaces-button-active-collapsed-left {
+  from {
+    left: -20px;
+  } 
+
+  to {
+    left: -2px;
+  }
+}
+
+@keyframes zen-workspaces-button-active-collapsed-right {
+  from {
+    right: -20px;
+  } 
+
+  to {
+    right: -2px;
   }
 }

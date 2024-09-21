@@ -74,6 +74,11 @@
   --zen-button-border-radius: 7px;
   --zen-button-padding: 0.6rem 1.2rem;
 
+  /* Toolbar */
+  --zen-toolbar-height: 39px;
+  --zen-toolbar-button-inner-padding: 6px;
+  --toolbarbutton-outer-padding: 4px;
+
   /* Other colors */
   --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
   --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
@@ -102,6 +107,8 @@
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
   --toolbar-bgcolor: transparent;
+
+  --toolbarbutton-active-background: var(--zen-colors-border) !important;
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;

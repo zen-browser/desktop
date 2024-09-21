@@ -5,19 +5,10 @@
     transform: translate3d(0, 0, 0);
     position: relative;
 
-    /* This fixes an issue with the left border */
-    --zen-webview-correction-margin: 2px;
-    margin-left: var(--zen-webview-correction-margin);
-    
-    #browser:has(#navigator-toolbox[zen-right-side="true"]) & {
-      margin-left: 0;
-      margin-right: var(--zen-webview-correction-margin);
-    }
-
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 
     --uc-tweak-rounded-corners-shadow:
-      0 0 1px 1px var(--uc-tweak-rounded-corners-shadow-color);
+      0 0 0 1px var(--uc-tweak-rounded-corners-shadow-color);
 
     box-shadow: var(--uc-tweak-rounded-corners-shadow) !important;
 
@@ -32,7 +23,7 @@
        * same shadow from the browser window on top. */
       box-shadow:
         var(--uc-tweak-rounded-corners-shadow, 0 0 transparent),
-        0 0 0 16px var(--zen-themed-toolbar-bg) !important;
+        0 0 0 16px var(--zen-main-browser-background) !important;
       clip-path: inset(0);
       pointer-events: none;
     }

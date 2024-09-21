@@ -547,7 +547,7 @@
       align-items: center;
 
       #nav-bar:has(&) & {
-        padding-inline-start: calc(var(--zen-toolbox-padding) + 2px);
+        padding-inline-start: calc(var(--zen-toolbox-padding) + var(--toolbarbutton-outer-padding));
       }
 
       #browser:has(#navigator-toolbox[zen-right-side='true']) & {

@@ -55,9 +55,9 @@ pref("pdfjs.enableScripting", false);
 pref("extensions.postDownloadThirdPartyPrompt", false);
 
 /** EXPERIMENTAL ***/
-//pref("layout.css.grid-template-masonry-value.enabled", true);
-//pref("dom.enable_web_task_scheduling", true);
-//pref("dom.security.sanitizer.enabled", true);
+pref("layout.css.grid-template-masonry-value.enabled", true);
+pref("dom.enable_web_task_scheduling", true);
+pref("dom.security.sanitizer.enabled", true);
 
 /****************************************************************************
  * SECTION: SECUREFOX                                                       *

@@ -133,10 +133,16 @@
     },
 
     _moveWindowButtons() {
-      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container')[0];
+      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container');
       const toolboxIcons = document.getElementById('zen-sidebar-top-buttons-customization-target');
       if (AppConstants.platform === "macosx") {
-        toolboxIcons.prepend(windowControls);
+        for (let i = 0; i < windowControls.length; i++) {
+          if (i === 0) {
+            toolboxIcons.prepend(windowControls[i]);
+            continue;
+          }
+          windowControls[i].remove();
+        }
       }
     },
 

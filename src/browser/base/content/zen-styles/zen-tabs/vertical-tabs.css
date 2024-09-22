@@ -93,6 +93,12 @@
       & .tab-background {
         overflow: hidden;
 
+        &:is([selected], [multiselected]) {
+          @media not (prefers-color-scheme: dark) {
+            border: 1px solid color-mix(in srgb, var(--zen-colors-primary) 60%, transparent 40%) !important;
+          }
+        }
+
         & .tab-context-line {
           margin: 0 0px !important;
           width: 3px !important;
@@ -350,6 +356,12 @@
         margin: 0 auto;
         width: var(--tab-min-width) !important;
         height: var(--tab-min-width) !important;
+
+        & .tab-background:is([selected], [multiselected]) {
+          @media not (prefers-color-scheme: dark) {
+            box-shadow: 0 0 1px 1px rgba(0,0,0,.05) !important;
+          }
+        }
 
         & .tab-content {
           display: flex;

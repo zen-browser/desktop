@@ -714,18 +714,18 @@ var gZenCKSSettings = {
     }
   },
 
-  _resetCKS(input, key) {
+  async _resetCKS(input, key) {
     input.value = 'Not set';
     input.classList.add('zenCKSOption-input-not-set');
     input.classList.remove('zenCKSOption-input-invalid');
-    gZenKeyboardShortcuts.setShortcut(key, null);
+    await gZenKeyboardShortcuts.setShortcut(key, null);
   },
 
   _initializeEvents() {
     window.addEventListener('keydown', this._handleKeyDown.bind(this));
   },
 
-  _handleKeyDown(event) {
+  async _handleKeyDown(event) {
     if (!this._currentAction) {
       return;
     }
@@ -747,12 +747,12 @@ var gZenCKSSettings = {
       input.blur();
       return;
     } else if (event.key === 'Backspace' && shortcutWithoutModifiers) {
-      this._resetCKS(input, this._currentAction);
+      await this._resetCKS(input, this._currentAction);
       return;
     }
 
     if (!shortcut.ctrl && !shortcut.alt && !shortcut.shift && !shortcut.meta) {
-      this._resetCKS(input, this._currentAction);
+      await this._resetCKS(input, this._currentAction);
       return; // No modifiers, ignore.
     }
 
@@ -765,7 +765,7 @@ var gZenCKSSettings = {
     }
 
     event.preventDefault();
-    gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
+    await gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
 
     input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
     input.classList.remove('zenCKSOption-input-not-set');

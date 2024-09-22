@@ -20,11 +20,11 @@
       /* Set the extra paddings */
       #tabbrowser-tabpanels {
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-          padding-right: var(--zen-element-separation);
+          padding-right: var(--zen-element-separation) !important;
         }
 
         #browser:has(#navigator-toolbox:not([zen-right-side='true'])) & {
-          padding-left: var(--zen-element-separation);
+          padding-left: var(--zen-element-separation) !important;
         }
       }
 

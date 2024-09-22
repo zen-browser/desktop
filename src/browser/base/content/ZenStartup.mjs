@@ -9,6 +9,7 @@
   );
   var ZenStartup = {
     init() {
+      this.logHeader();
       this.openWatermark();
       window.SessionStore.promiseInitialized.then(async () => {
         this._changeSidebarLocation();
@@ -173,7 +174,21 @@
           mode="icons">
           <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
             <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" cui-areatype="toolbar" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
-            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>  
+            <toolbarbutton id="zen-profile-button" 
+              class="zen-sidebar-action-button toolbarbutton-1 chromeclass-toolbar-additional subviewbutton-nav"
+              badged="true"
+              delegatesanchor="true"
+              onmousedown="ZenProfileDialogUI.showSubView(this, event)"
+              onkeypress="ZenProfileDialogUI.showSubView(this, event)"
+              consumeanchor="zen-profile-button"
+              closemenu="none"
+              data-l10n-id="toolbar-button-account"
+              cui-areatype="toolbar"
+              removable="true">
+              <vbox>
+                <image id="zen-profile-button-icon" />
+              </vbox>
+            </toolbarbutton>
           </hbox>
         </toolbar>
       `);
@@ -234,6 +249,21 @@
     _focusSearchBar() {
       gURLBar.focus();
     },
+
+    logHeader() {
+      console.info(`
+
+    Welcome to Zen Browser!
+
+  If you are seeing this message, it means that you have successfully opened Zen's developer console.
+  Here you can see all the logs and errors that Zen is generating.
+
+  If you have any questions or need help, please contact us in any media in https://zen-browser.app/
+
+  Note: This developer console is not the same as the browser console, it has access to Zen's internal functions and variables,
+  including your passwords and other sensitive information. Please do not paste any code here unless you know what you are doing.
+`);
+    }
   };
 
   ZenStartup.init();

@@ -612,13 +612,15 @@ var gZenCKSSettings = {
     }
 
     for (let shortcut of shortcuts) {
-      const keyInString = shortcut.toUserString();
       const keyID = shortcut.getID();
       const action = shortcut.getAction();
       const l10nID = shortcut.getL10NID();
       const group = shortcut.getGroup();
+      const keyInString = shortcut.toUserString();
+      console.debug(keyInString);
 
-      const labelValue = l10nID == null ? keyID : l10nID;
+      // const labelValue = l10nID == null ? keyID : l10nID;
+      const labelValue = keyID;
 
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="${ZEN_CKS_CLASS_BASE}">
@@ -662,17 +664,13 @@ var gZenCKSSettings = {
     input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
     if (this._currentAction) {
+      this._editDone();
       gZenKeyboardShortcutsManager.setShortcut(this._currentAction, null, null);
     }
   },
 
-  _editDone(input) {
-    if (input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
-      this._resetShortcut(input);
-      return;
-    }
-
-    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+  _editDone(shortcut, modifiers) {
+    gZenKeyboardShortcutsManager.setShortcut(this._currentAction, shortcut, modifiers);
     this._currentAction = null;
   },
 
@@ -693,38 +691,30 @@ var gZenCKSSettings = {
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
 
     if (shortcut == 'Tab' && !modifiersActive) {
+      input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+      this._latestValidKey = null;
       return;
     } else if (shortcut == 'Escape' && !modifiersActive) {
-      this._editDone(input);
+      input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+
+      if (!this._latestValidKey) {
+        if (!input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
+          input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
+        }
+      } else {
+        this._editDone(input, this._latestValidKey, modifiers);
+        this._latestValidKey = null;
+      }
       return;
     } else if (shortcut == 'Backspace' && !modifiersActive) {
       this._resetShortcut(input);
+      this._latestValidKey = null;
       return;
     }
 
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.value = modifiers.toUserString() + shortcut;
-
-    if (!['Control', 'Alt', 'Meta', 'Shift'].includes(event.key)) {
-      shortcut.key = event.key;
-    }
-
-    event.preventDefault();
-    gZenKeyboardShortcuts.setShortcut(this._currentAction, shortcut);
-
-    input.value = gZenKeyboardShortcuts.shortCutToString(shortcut);
-    input.classList.remove('zenCKSOption-input-not-set');
-
-    if (gZenKeyboardShortcuts.isValidShortcut(shortcut)) {
-      input.classList.remove('zenCKSOption-input-invalid');
-    } else {
-      input.classList.add('zenCKSOption-input-invalid');
-      return;
-    }
-
-    input.classList.remove('zenCKSOption-input-not-set');
-    input.classList.remove('zenCKSOption-input-invalid');
-
-    gZenKeyboardShortcutsManager.setShortcut(this._currentAction, shortcut, modifiers);
+    this._latestValidKey = shortcut;
   },
 };
 

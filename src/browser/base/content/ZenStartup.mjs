@@ -100,7 +100,6 @@
     },
 
     _changeSidebarLocation() {
-      const legacyLocation = Services.prefs.getBoolPref('zen.themes.tabs.legacy-location', false);
       const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
       const wrapper = document.getElementById('zen-tabbox-wrapper');
       const appWrapepr = document.getElementById('zen-sidebar-box-container');

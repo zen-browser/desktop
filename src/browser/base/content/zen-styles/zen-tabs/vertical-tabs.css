@@ -29,6 +29,7 @@
     --tab-hover-background-color: var(--toolbarbutton-hover-background) !important;
 
     min-width: var(--zen-toolbox-min-width);
+    margin-top: 0 !important; /* Fix full screen mode */
 
     padding: var(--zen-toolbox-padding);
     padding-top: var(--zen-toolbox-top-align);
@@ -254,17 +255,6 @@
             margin-inline-end: var(--toolbarbutton-inner-padding) !important;
             margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;    
           }
-        }
-      }
-    }
-
-    @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') {
-      & #zen-profile-button {
-        width: 100% !important;
-        padding: var(--toolbarbutton-inner-padding) !important;
-  
-        & label {
-          padding-left: calc(var(--toolbarbutton-inner-padding) * 1.5);
         }
       }
     }

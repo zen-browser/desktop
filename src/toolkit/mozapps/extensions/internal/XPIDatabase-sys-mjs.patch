@@ -1,8 +1,8 @@
 diff --git a/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs b/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
-index 0e02963b7e2f44e7669a34ded9f0f0636e36e66c..03e203b4eb0c9436ff9767756bfe8e64dd49096e 100644
+index 17219a88b42b0954f7bd7f7ea7ae8dcad55cc77c..e59373c2cac68fb3075e32143bb8940749c20a8a 100644
 --- a/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
 +++ b/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs
-@@ -137,7 +137,7 @@ const KEY_APP_GLOBAL = "app-global";
+@@ -138,7 +138,7 @@ const KEY_APP_GLOBAL = "app-global";
  const KEY_APP_PROFILE = "app-profile";
  const KEY_APP_TEMPORARY = "app-temporary";
  
@@ -11,12 +11,3 @@ index 0e02963b7e2f44e7669a34ded9f0f0636e36e66c..03e203b4eb0c9436ff9767756bfe8e64
  
  // Properties to cache and reload when an addon installation is pending
  const PENDING_INSTALL_METADATA = [
-@@ -214,7 +214,7 @@ const SIGNED_TYPES = new Set(["extension", "locale", "theme"]);
- // Time to wait before async save of XPI JSON database, in milliseconds
- const ASYNC_SAVE_DELAY_MS = 20;
- 
--const l10n = new Localization(["browser/appExtensionFields.ftl"], true);
-+const l10n = new Localization(["browser/appExtensionFields.ftl", "browser/zenAppExtensionFields.ftl"], true);
- 
- /**
-  * Schedules an idle task, and returns a promise which resolves to an

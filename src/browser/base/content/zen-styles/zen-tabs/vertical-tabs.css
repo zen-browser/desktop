@@ -29,6 +29,7 @@
     --tab-hover-background-color: var(--toolbarbutton-hover-background) !important;
 
     min-width: var(--zen-toolbox-min-width);
+    margin-top: 0 !important; /* Fix full screen mode */
 
     padding: var(--zen-toolbox-padding);
     padding-top: var(--zen-toolbox-top-align);
@@ -91,6 +92,12 @@
 
       & .tab-background {
         overflow: hidden;
+
+        &:is([selected], [multiselected]) {
+          @media not (prefers-color-scheme: dark) {
+            border: 1px solid color-mix(in srgb, var(--zen-colors-primary) 60%, transparent 40%) !important;
+          }
+        }
 
         & .tab-context-line {
           margin: 0 0px !important;
@@ -257,17 +264,6 @@
         }
       }
     }
-
-    @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') {
-      & #zen-profile-button {
-        width: 100% !important;
-        padding: var(--toolbarbutton-inner-padding) !important;
-  
-        & label {
-          padding-left: calc(var(--toolbarbutton-inner-padding) * 1.5);
-        }
-      }
-    }
   }
 
   /* Mark: toolbox as collapsed */
@@ -303,10 +299,21 @@
       display: none !important;
     }
 
-    &:has(#newtab-button-container tab:not([hidden])) #vertical-pinned-tabs-container {
-      padding-bottom: 5px !important;
-      margin-bottom: 5px !important;
-      border-bottom: 1px solid var(--zen-colors-border) !important;
+    & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
+      margin-bottom: 8px;
+      position: relative;
+
+      &::after {
+        bottom: -4px;
+        content: '';
+        display: block;
+        height: 1px;
+        background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+        width: 70%;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+      }
     }
 
     & #zen-workspaces-button[as-button='true']::after {
@@ -349,6 +356,12 @@
         margin: 0 auto;
         width: var(--tab-min-width) !important;
         height: var(--tab-min-width) !important;
+
+        & .tab-background:is([selected], [multiselected]) {
+          @media not (prefers-color-scheme: dark) {
+            box-shadow: 0 0 1px 1px rgba(0,0,0,.05) !important;
+          }
+        }
 
         & .tab-content {
           display: flex;

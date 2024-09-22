@@ -499,22 +499,26 @@ var gZenLooksAndFeel = {
   setCompactModeStyle() {
     const chooser = document.getElementById('zen-compact-mode-styles-form');
     const radios = [...chooser.querySelectorAll('input')];
-    for (let radio of radios) {
-      if (radio.value === 'left' && Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')) {
-        radio.checked = true;
-      } else if (radio.value === 'top' && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
-        radio.checked = true;
-      } else if (
-        radio.value === 'both' &&
-        !Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') &&
-        !Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')
-      ) {
-        radio.checked = true;
+
+    let value = '';
+    if (Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')
+          && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
+      value = 'both';
+    } else {
+      value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
+    }
+    chooser.querySelector(`[value='${value}']`).checked = true;
+    const disableExpandTabsOnHover = () => {
+      if (Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+        document.querySelector(`#zen-expand-tabbar-strat input[value='expand']`).click();
       }
+    }
+    for (let radio of radios) {
       radio.addEventListener('change', (e) => {
         let value = e.target.value;
         switch (value) {
           case 'left':
+            disableExpandTabsOnHover();
             Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
             break;
@@ -523,6 +527,7 @@ var gZenLooksAndFeel = {
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
           default:
+            disableExpandTabsOnHover();
             Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
@@ -543,6 +548,14 @@ var gZenLooksAndFeel = {
     } else {
       form.querySelector('input[value="none"]').checked = true;
     }
+    const disableCompactTabbar = () => {
+      const toolbarEnable = Services.prefs.getBoolPref('zen.view.compact.hide-toolbar');
+      if (toolbarEnable) {
+        document.querySelector(`#ZenCompactModeStyle input[value='top']`).click();
+      } else if (Services.prefs.getBoolPref('zen.view.compact')) {
+        document.getElementById('zenLooksAndFeelShowCompactView').click();
+      }
+    }
     for (let radio of radios) {
       radio.addEventListener('change', (e) => {
         switch (e.target.value) {
@@ -555,6 +568,7 @@ var gZenLooksAndFeel = {
             Services.prefs.setBoolPref(defaultExpandPref, false);
             break;
           case 'hover':
+            disableCompactTabbar();
             Services.prefs.setBoolPref(onHoverPref, true);
             Services.prefs.setBoolPref(defaultExpandPref, true);
             break;
@@ -700,7 +714,7 @@ var gZenCKSSettings = {
     }
   },
 
-  _resetShortcut(input) {
+  async _resetShortcut(input) {
     input.value = 'Not set';
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
@@ -708,7 +722,7 @@ var gZenCKSSettings = {
 
     if (this._currentAction) {
       this._editDone();
-      gZenKeyboardShortcutsManager.setShortcut(this._currentAction, null, null);
+      await gZenKeyboardShortcutsManager.setShortcut(this._currentAction, null, null);
     }
   },
 
@@ -718,7 +732,7 @@ var gZenCKSSettings = {
   },
 
   //TODO Check for duplicates
-  _handleKeyDown(event) {
+  async _handleKeyDown(event) {
     event.preventDefault();
 
     if (!this._currentAction) {

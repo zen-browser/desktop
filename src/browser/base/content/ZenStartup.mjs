@@ -3,6 +3,7 @@
   XPCOMUtils.defineLazyPreferenceGetter(lazy, 'sidebarHeightThrottle', 'zen.view.sidebar-height-throttle', 500);
   var ZenStartup = {
     init() {
+      this.logHeader();
       this.openWatermark();
       window.SessionStore.promiseInitialized.then(async () => {
         this._changeSidebarLocation();
@@ -95,7 +96,6 @@
     },
 
     _changeSidebarLocation() {
-      const legacyLocation = Services.prefs.getBoolPref('zen.themes.tabs.legacy-location', false);
       const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
       const wrapper = document.getElementById('zen-tabbox-wrapper');
       const appWrapepr = document.getElementById('zen-sidebar-box-container');
@@ -123,104 +123,26 @@
       splitter.setAttribute('resizebefore', 'sibling');
       splitter.setAttribute('resizeafter', 'none');
       toolbox.insertAdjacentElement('afterend', splitter);
-
-      this._addSidebarButtons();
-      this._hideToolbarButtons();
-    },
-
-    _moveWindowButtons() {
-
-      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container');
-      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons-customization-target');
-      if (AppConstants.platform === "macosx") {
-        for (let i = 0; i < windowControls.length; i++) {
-          if (i === 0) {
-            toolboxIcons.prepend(windowControls[i]);
-            continue;
-          }
-          windowControls[i].remove();
-        }
-
-      }
-    },
-
-    _hideToolbarButtons() {
-      const elementsToHide = ['alltabs-button'];
-      for (let id of elementsToHide) {
-        const elem = document.getElementById(id);
-        if (elem) {
-          elem.setAttribute('hidden', 'true');
-        }
-      }
-    },
-
-    _addSidebarButtons() {
-      const sidebarBox = window.MozXULElement.parseXULToFragment(`
-        <toolbar id="zen-sidebar-top-buttons"
-          fullscreentoolbar="true" 
-          class="browser-toolbar customization-target zen-dont-hide-on-fullscreen"
-          brighttext="true"
-          data-l10n-id="tabs-toolbar"
-          customizable="true"
-          toolbarname="Zen Sidebar Top Buttons"
-          context="toolbar-context-menu"
-          flex="1"
-          customizationtarget="zen-sidebar-top-buttons-customization-target"
-          mode="icons">
-          <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
-            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" data-l10n-id="sidebar-zen-expand" cui-areatype="toolbar" oncommand="gZenVerticalTabsManager.toggleExpand();"></toolbarbutton>
-            <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button chromeclass-toolbar-additional subviewbutton-nav" badge="true" closemenu="none" delegatesanchor="true" cui-areatype="toolbar" id="zen-profile-button" data-l10n-id="toolbar-button-account" onclick="ZenProfileDialogUI.showSubView(this, event)"></toolbarbutton>  
-          </hbox>
-        </toolbar>
-      `);
-      document.getElementById('navigator-toolbox').prepend(sidebarBox);
-      const sideBarTopButtons = document
-        .getElementById('zen-sidebar-top-buttons')
-        .querySelector('#zen-sidebar-top-buttons-customization-target');
-
-      const newTab = document.getElementById('vertical-tabs-newtab-button');
-      newTab.classList.add('zen-sidebar-action-button');
-
-      setTimeout(() => {
-        CustomizableUI.registerArea('zen-sidebar-top-buttons', {
-          type: CustomizableUI.TYPE_TOOLBAR,
-          defaultPlacements: ['PanelUI-menu-button', 'zen-expand-sidebar-button', 'zen-profile-button'],
-          defaultCollapsed: null,
-        });
-        CustomizableUI.registerToolbarNode(document.getElementById('zen-sidebar-top-buttons'));
-
-        const panelMenu = document.getElementById('PanelUI-menu-button');
-        panelMenu.classList.add('zen-sidebar-action-button');
-        panelMenu.setAttribute('cui-areatype', 'toolbar');
-
-        sideBarTopButtons.prepend(panelMenu);
-
-        const defaultSidebarIcons = ['zen-sidepanel-button', 'zen-workspaces-button', 'new-tab-button'];
-        for (let id of defaultSidebarIcons) {
-          const elem = document.getElementById(id);
-          if (id === 'zen-workspaces-button' || !elem) continue;
-          elem.setAttribute('removable', 'true');
-        }
-
-        CustomizableUI.registerArea(
-          "zen-sidebar-icons-wrapper",
-          {
-            type: CustomizableUI.TYPE_TOOLBAR,
-            defaultPlacements: defaultSidebarIcons,
-            defaultCollapsed: null,
-          }
-        );
-        CustomizableUI.registerToolbarNode(
-          document.getElementById('zen-sidebar-icons-wrapper')
-        );
-
-        this._moveWindowButtons();
-      }, 100);
     },
 
     _focusSearchBar() {
       gURLBar.focus();
     },
+
+    logHeader() {
+      console.info(`
+
+    Welcome to Zen Browser!
+
+  If you are seeing this message, it means that you have successfully opened Zen's developer console.
+  Here you can see all the logs and errors that Zen is generating.
+
+  If you have any questions or need help, please contact us in any media in https://zen-browser.app/
+
+  Note: This developer console is not the same as the browser console, it has access to Zen's internal functions and variables, including your passwords and other sensitive information. Please do not paste any code here unless you know what you are doing.
+
+  `);
+    }
   };
 
   ZenStartup.init();

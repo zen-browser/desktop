@@ -1,8 +1,8 @@
 diff --git a/browser/themes/BuiltInThemeConfig.sys.mjs b/browser/themes/BuiltInThemeConfig.sys.mjs
-index 7cfea4b705a1338b1eb5c4f255808aeac4bdb819..9a2d2e096db483f5b93fd39886bee5dda38ce9c4 100644
+index 7cfea4b705a1338b1eb5c4f255808aeac4bdb819..cf7dc720a3bd2b14535d57262ad2297f9478eddc 100644
 --- a/browser/themes/BuiltInThemeConfig.sys.mjs
 +++ b/browser/themes/BuiltInThemeConfig.sys.mjs
-@@ -22,22 +22,29 @@ export const BuiltInThemeConfig = new Map([
+@@ -22,24 +22,17 @@ export const BuiltInThemeConfig = new Map([
    [
      "firefox-compact-light@mozilla.org",
      {
@@ -19,21 +19,13 @@ index 7cfea4b705a1338b1eb5c4f255808aeac4bdb819..9a2d2e096db483f5b93fd39886bee5dd
        path: "resource://builtin-themes/dark/",
      },
    ],
-   [
+-  [
 -    "firefox-alpenglow@mozilla.org",
-+    "firefox-compact-galaxy@mozilla.org",
-     {
+-    {
 -      version: "1.4",
 -      path: "resource://builtin-themes/alpenglow/",
-+      version: "1.3",
-+      path: "resource://builtin-themes/galaxy/",
-+    },
-+  ],
-+  [
-+    "firefox-compact-dream@mozilla.org",
-+    {
-+      version: "1.3",
-+      path: "resource://builtin-themes/dream/",
-     },
-   ],
+-    },
+-  ],
    [
+     "2022red-colorway@mozilla.org",
+     {

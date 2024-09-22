@@ -276,9 +276,10 @@ button.popup-notification-dropmarker {
   }
 }
 
-.titlebar-button:last-child {
+/* TODO: Fix this for windows and macos */
+/*.titlebar-button:last-child {
   padding-right: var(--zen-element-separation) !important;
-}
+}*/
 
 #PersonalToolbar:not([collapsed="true"]) {
   padding-bottom: 6px;

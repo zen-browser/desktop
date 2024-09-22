@@ -5,6 +5,8 @@
     transform: translate3d(0, 0, 0);
     position: relative;
 
+    overflow: hidden;
+
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 
     --uc-tweak-rounded-corners-shadow:

@@ -4,35 +4,24 @@ toolbar {
 }
 
 #zen-profile-button {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  align-items: center;
-  list-style-image: var(--avatar-image-url);
-  position: relative;
-  border-radius: var(--tab-border-radius);
 
-  width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
-  height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
-
-  & image {
-    border-radius: 999px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(var(--toolbarbutton-inner-padding) + 10px);
-    width: calc(var(--toolbarbutton-inner-padding) + 10px);
+  & stack {
     padding: 0;
-
-    margin: 0 var(--toolbarbutton-inner-padding) !important;
   }
 
-  &:hover {
-    background-color: var(--toolbarbutton-hover-background);
+  & .toolbarbutton-badge {
+    display: none !important;
+  }
 
-    & image {
-      background: transparent !important;
-    }
+  & #zen-profile-button-icon {
+    width: 16px;
+    height: 16px;
+    list-style-image: var(--avatar-image-url);
+    border-radius: 50%;
+    pointer-events: none;
+    list-style-image: var(--avatar-image-url);
+    -moz-context-properties: fill;
+    fill: currentColor;
   }
 }
 

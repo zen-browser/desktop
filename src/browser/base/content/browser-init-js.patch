@@ -1,8 +1,16 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index f8d49ac2a3a62f389ea44b07a26fcb102abc0b24..c29415e10c776ebc435f33e55f8afb71f0dcf22a 100644
+index bee5309c04775adff8652bfe6c54b2d466e821ac..e9741628dcc9eda3500f69441bae293548179e71 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -237,6 +237,10 @@ var gBrowserInit = {
+@@ -143,6 +143,7 @@ var gBrowserInit = {
+     gNavToolbox.palette = document.getElementById(
+       "BrowserToolbarPalette"
+     ).content;
++    ZenCustomizableUI.init(window);
+     for (let area of CustomizableUI.areas) {
+       let type = CustomizableUI.getAreaType(area);
+       if (type == CustomizableUI.TYPE_TOOLBAR) {
+@@ -239,6 +240,10 @@ var gBrowserInit = {
      gPrivateBrowsingUI.init();
      BrowserSearch.init();
      BrowserPageActions.init();

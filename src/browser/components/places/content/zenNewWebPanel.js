@@ -34,7 +34,7 @@ var gZenNewWebPanel = {
   handleDialogAccept: async function (aEvent) {
     document.commandDispatcher.focusedElement?.blur();
     let url = document.getElementById('zenNWP_url');
-    let ua = document.getElementById('zenNWP_userAgent');
+    let ua = document.getElementById('zenNWP_userAgent'); // checbkox
     if (!url || !ua) {
       return;
     }
@@ -44,12 +44,12 @@ var gZenNewWebPanel = {
     } catch (_) {
       urlValue = this.addHttpIfMissing(url.value);
     }
-    if (!url.value || !ua.value) {
+    if (!url.value) {
       return;
     }
     let newSite = {
       url: urlValue,
-      ua: ua.value,
+      ua: ua.checked,
     };
     let currentData = JSON.parse(Services.prefs.getStringPref('zen.sidebar.data'));
     let newName = 'p' + new Date().getTime();

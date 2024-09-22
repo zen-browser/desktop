@@ -4,6 +4,15 @@ toolbar {
 }
 
 #zen-profile-button {
+
+  & stack {
+    padding: 0;
+  }
+
+  & .toolbarbutton-badge {
+    display: none !important;
+  }
+
   & #zen-profile-button-icon {
     width: 16px;
     height: 16px;

@@ -1,8 +1,1 @@
 
-  content/builtin-themes/galaxy                      (galaxy/*.svg)
-  content/builtin-themes/galaxy                      (galaxy/*.css)
-  content/builtin-themes/galaxy/manifest.json        (galaxy/manifest.json)
-
-  content/builtin-themes/dream                      (dream/*.svg)
-  content/builtin-themes/dream                      (dream/*.css)
-  content/builtin-themes/dream/manifest.json        (dream/manifest.json)

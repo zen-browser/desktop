@@ -1,8 +1,16 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..07ecece92643203d376378818facfc55774c63e9 100644
+index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..aa7d86770cce41a720e92f63392a763b16381f55 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
-@@ -25,7 +25,7 @@ ChromeUtils.defineLazyGetter(lazy, "gWidgetsBundle", function () {
+@@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   AddonManagerPrivate: "resource://gre/modules/AddonManager.sys.mjs",
+   BrowserUsageTelemetry: "resource:///modules/BrowserUsageTelemetry.sys.mjs",
+   CustomizableWidgets: "resource:///modules/CustomizableWidgets.sys.mjs",
++  ZenCustomizableUI: "chrome://browser/content/ZenCustomizableUI.sys.mjs",
+   HomePage: "resource:///modules/HomePage.sys.mjs",
+   PanelMultiView: "resource:///modules/PanelMultiView.sys.mjs",
+   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+@@ -25,7 +26,7 @@ ChromeUtils.defineLazyGetter(lazy, "gWidgetsBundle", function () {
    return Services.strings.createBundle(kUrl);
  });
  
@@ -11,7 +19,16 @@ index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..07ecece92643203d376378818facfc55
  
  const kSpecialWidgetPfx = "customizableui-special-";
  
-@@ -253,10 +253,9 @@ var CustomizableUIInternal = {
+@@ -222,6 +223,8 @@ var CustomizableUIInternal = {
+     this._updateForNewProtonVersion();
+     this._markObsoleteBuiltinButtonsSeen();
+ 
++    lazy.ZenCustomizableUI.startup(this);
++
+     this.registerArea(
+       CustomizableUI.AREA_FIXED_OVERFLOW_PANEL,
+       {
+@@ -253,10 +256,9 @@ var CustomizableUIInternal = {
        "spring",
        "urlbar-container",
        "spring",
@@ -23,7 +40,7 @@ index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..07ecece92643203d376378818facfc55
        lazy.resetPBMToolbarButtonEnabled ? "reset-pbm-toolbar-button" : null,
      ].filter(name => name);
  
-@@ -288,10 +287,10 @@ var CustomizableUIInternal = {
+@@ -288,10 +290,10 @@ var CustomizableUIInternal = {
        {
          type: CustomizableUI.TYPE_TOOLBAR,
          defaultPlacements: [
@@ -37,7 +54,7 @@ index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..07ecece92643203d376378818facfc55
          ],
          defaultCollapsed: null,
        },
-@@ -331,6 +330,7 @@ var CustomizableUIInternal = {
+@@ -331,6 +333,7 @@ var CustomizableUIInternal = {
        CustomizableUI.AREA_NAVBAR,
        CustomizableUI.AREA_BOOKMARKS,
        CustomizableUI.AREA_TABSTRIP,
@@ -45,3 +62,13 @@ index 289c3df7dcd6fa6b35681ce61c1e920b6a2651d7..07ecece92643203d376378818facfc55
      ]);
      if (AppConstants.platform != "macosx") {
        toolbars.add(CustomizableUI.AREA_MENUBAR);
+@@ -3289,6 +3292,9 @@ var CustomizableUIInternal = {
+         gSeenWidgets.add(widgetId);
+       }
+     }
++
++    
++
+     if (gSeenWidgets.size || gNewElementCount) {
+       gDirty = true;
+       this.saveState();

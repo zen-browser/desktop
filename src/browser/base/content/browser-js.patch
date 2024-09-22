@@ -1,8 +1,16 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index b18f371a47fec53882c3dfb68e34d1a474eaf446..2c183d7e7fc65e00403f5e40e7859b915a3ea700 100644
+index a29d7a84e84651ea0bdc9be8e4ac650bde2e048a..e1d1cf3bb925b8efb1411d1dc77a56f086858b5a 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -630,6 +630,15 @@ XPCOMUtils.defineLazyPreferenceGetter(
+@@ -32,6 +32,7 @@ ChromeUtils.defineESModuleGetters(this, {
+   ContextualIdentityService:
+     "resource://gre/modules/ContextualIdentityService.sys.mjs",
+   CustomizableUI: "resource:///modules/CustomizableUI.sys.mjs",
++  ZenCustomizableUI: "chrome://browser/content/ZenCustomizableUI.sys.mjs",
+   DevToolsSocketStatus:
+     "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
+   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
+@@ -629,6 +630,15 @@ XPCOMUtils.defineLazyPreferenceGetter(
    false
  );
  
@@ -18,7 +26,7 @@ index b18f371a47fec53882c3dfb68e34d1a474eaf446..2c183d7e7fc65e00403f5e40e7859b91
  customElements.setElementCreationCallback("screenshots-buttons", () => {
    Services.scriptloader.loadSubScript(
      "chrome://browser/content/screenshots/screenshots-buttons.js",
-@@ -3679,6 +3688,9 @@ var XULBrowserWindow = {
+@@ -3435,6 +3445,9 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -28,7 +36,7 @@ index b18f371a47fec53882c3dfb68e34d1a474eaf446..2c183d7e7fc65e00403f5e40e7859b91
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -5001,7 +5013,7 @@ function setToolbarVisibility(
+@@ -4769,7 +4782,7 @@ function setToolbarVisibility(
        );
      }
  
@@ -37,7 +45,7 @@ index b18f371a47fec53882c3dfb68e34d1a474eaf446..2c183d7e7fc65e00403f5e40e7859b91
      switch (isVisible) {
        case true:
        case "always":
-@@ -7832,6 +7844,12 @@ var gDialogBox = {
+@@ -7609,6 +7622,12 @@ var gDialogBox = {
      parentElement.showModal();
      this._didOpenHTMLDialog = true;
  

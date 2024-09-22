@@ -21,7 +21,7 @@
  * SECTION: FASTFOX                                                         *
 ****************************************************************************/
 /** GENERAL ***/
-pref("content.notify.interval", 100000); // (.10s); alt=500000 (.50s)
+//pref("content.notify.interval", 100000); // (.10s); alt=500000 (.50s)
 
 /** GFX ***/
 pref("gfx.canvas.accelerated.cache-items", 32768);
@@ -36,8 +36,6 @@ pref("media.memory_cache_max_size", 1048576);
 pref("media.cache_readahead_limit", 9000);
 pref("media.cache_resume_threshold", 3600);
 pref("media.memory_caches_combined_limit_kb", 2560000);
-
-pref("browser.cache.memory.max_entry_size", 0); 
 
 /** IMAGE CACHE ***/
 pref("image.mem.decode_bytes_at_a_time", 32768);
@@ -57,9 +55,9 @@ pref("pdfjs.enableScripting", false);
 pref("extensions.postDownloadThirdPartyPrompt", false);
 
 /** EXPERIMENTAL ***/
-pref("layout.css.grid-template-masonry-value.enabled", true);
-pref("dom.enable_web_task_scheduling", true);
-pref("dom.security.sanitizer.enabled", true);
+//pref("layout.css.grid-template-masonry-value.enabled", true);
+//pref("dom.enable_web_task_scheduling", true);
+//pref("dom.security.sanitizer.enabled", true);
 
 /****************************************************************************
  * SECTION: SECUREFOX                                                       *

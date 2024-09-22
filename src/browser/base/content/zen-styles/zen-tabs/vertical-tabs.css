@@ -293,10 +293,21 @@
       display: none !important;
     }
 
-    &:has(#newtab-button-container tab:not([hidden])) #vertical-pinned-tabs-container {
-      padding-bottom: 5px !important;
-      margin-bottom: 5px !important;
-      border-bottom: 1px solid var(--zen-colors-border) !important;
+    & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
+      margin-bottom: 8px;
+      position: relative;
+
+      &::after {
+        bottom: -4px;
+        content: '';
+        display: block;
+        height: 1px;
+        background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+        width: 70%;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+      }
     }
 
     & #zen-workspaces-button[as-button='true']::after {

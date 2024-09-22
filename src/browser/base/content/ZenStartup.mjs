@@ -35,6 +35,7 @@
         gBrowser.tabContainer.arrowScrollbox.smoothScroll = false;
 
         ZenWorkspaces.init();
+        gZenUIManager.init();
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
         gZenKeyboardShortcutsManager.init();
@@ -123,16 +124,23 @@
       splitter.setAttribute('resizeafter', 'none');
       toolbox.insertAdjacentElement('afterend', splitter);
 
-      this._moveWindowButtons();
       this._addSidebarButtons();
       this._hideToolbarButtons();
     },
 
     _moveWindowButtons() {
-      const windowControls = document.getElementById('titlebar-buttonbox-container');
-      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons');
-      if (AppConstants.platform == 'macosx') {
-        toolboxIcons.prepend(windowControls);
+
+      const windowControls = document.getElementsByClassName('titlebar-buttonbox-container');
+      const toolboxIcons = document.getElementById('zen-sidebar-top-buttons-customization-target');
+      if (AppConstants.platform === "macosx") {
+        for (let i = 0; i < windowControls.length; i++) {
+          if (i === 0) {
+            toolboxIcons.prepend(windowControls[i]);
+            continue;
+          }
+          windowControls[i].remove();
+        }
+
       }
     },
 
@@ -193,12 +201,20 @@
           if (id === 'zen-workspaces-button' || !elem) continue;
           elem.setAttribute('removable', 'true');
         }
-        CustomizableUI.registerArea('zen-sidebar-icons-wrapper', {
-          type: CustomizableUI.TYPE_TOOLBAR,
-          defaultPlacements: defaultSidebarIcons,
-          defaultCollapsed: null,
-        });
-        CustomizableUI.registerToolbarNode(document.getElementById('zen-sidebar-icons-wrapper'));
+
+        CustomizableUI.registerArea(
+          "zen-sidebar-icons-wrapper",
+          {
+            type: CustomizableUI.TYPE_TOOLBAR,
+            defaultPlacements: defaultSidebarIcons,
+            defaultCollapsed: null,
+          }
+        );
+        CustomizableUI.registerToolbarNode(
+          document.getElementById('zen-sidebar-icons-wrapper')
+        );
+
+        this._moveWindowButtons();
       }, 100);
     },
 

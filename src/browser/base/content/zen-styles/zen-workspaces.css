@@ -8,7 +8,7 @@
   &:not([as-button='true']) {
     border-radius: var(--zen-button-border-radius);
     background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
-    padding: 6px;
+    padding: 5px;
     height: fit-content;
     gap: 3px;
 
@@ -82,7 +82,7 @@
 @media (-moz-bool-pref: 'zen.view.sidebar-expanded') {
   /** Keep these selectors in sync with the ones in vertical-tabs.css */
   #navigator-toolbox:is(
-      #navigator-toolbox[zen-user-hover='true']:hover,
+      #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
       #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
       #navigator-toolbox[zen-user-hover='true']:focus-within,
       #mainPopupSet[zen-user-hover='true']:has(> #appMenu-popup:hover) ~ toolbox,
@@ -94,6 +94,7 @@
       width: 100% !important;
       margin: 2px;
       min-width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
+      height: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
 
       & .zen-workspace-sidebar-wrapper {
         left: calc(var(--toolbarbutton-outer-padding) + 5px);

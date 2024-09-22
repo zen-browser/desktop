@@ -95,6 +95,11 @@ var gZenMarketplaceManager = {
     this.triggerThemeUpdate();
   },
 
+  _triggerBuildUpdateWithoutRebuild() {
+    this._doNotRebuildThemesList = true;
+    this.triggerThemeUpdate();
+  },
+
   async _buildThemesList() {
     if (!this.themesList) return;
     if (this._doNotRebuildThemesList) {
@@ -303,6 +308,7 @@ var gZenMarketplaceManager = {
                 element.setAttribute(property?.replaceAll(/\./g, '-'), value);
 
                 Services.prefs.setStringPref(property, value === 'none' ? '' : value);
+                this._triggerBuildUpdateWithoutRebuild();
               });
 
               const nameLabel = document.createXULElement('label');
@@ -376,6 +382,7 @@ var gZenMarketplaceManager = {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
+                  this._triggerBuildUpdateWithoutRebuild();
 
                   if (value === '') {
                     browser.document.querySelector(':root').style.removeProperty(`--${sanitizedProperty}`);
@@ -441,6 +448,7 @@ var gZenLooksAndFeel = {
       }
     }, 500);
     this.setDarkThemeListener();
+    this.setCompactModeStyle();
   },
 
   onPreferColorSchemeChange(event) {
@@ -454,9 +462,9 @@ var gZenLooksAndFeel = {
   },
 
   setDarkThemeListener() {
-    this.chooser = document.getElementById('zen-dark-theme-styles-form');
-    this.radios = [...this.chooser.querySelectorAll('input')];
-    for (let radio of this.radios) {
+    const chooser = document.getElementById('zen-dark-theme-styles-form');
+    const radios = [...chooser.querySelectorAll('input')];
+    for (let radio of radios) {
       if (radio.value === 'amoled' && Services.prefs.getBoolPref('zen.theme.color-prefs.amoled')) {
         radio.checked = true;
       } else if (radio.value === 'colorful' && Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')) {
@@ -482,6 +490,41 @@ var gZenLooksAndFeel = {
           default:
             Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
             Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
+            break;
+        }
+      });
+    }
+  },
+
+  setCompactModeStyle() {
+    const chooser = document.getElementById('zen-compact-mode-styles-form');
+    const radios = [...chooser.querySelectorAll('input')];
+    for (let radio of radios) {
+      if (radio.value === 'left' && Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')) {
+        radio.checked = true;
+      } else if (radio.value === 'top' && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
+        radio.checked = true;
+      } else if (
+        radio.value === 'both' &&
+        !Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') &&
+        !Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')
+      ) {
+        radio.checked = true;
+      }
+      radio.addEventListener('change', (e) => {
+        let value = e.target.value;
+        switch (value) {
+          case 'left':
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+            break;
+          case 'top':
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
+            break;
+          default:
+            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
+            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
         }
       });

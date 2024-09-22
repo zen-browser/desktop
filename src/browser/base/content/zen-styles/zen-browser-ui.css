@@ -35,7 +35,6 @@
 
 :root:not([inDOMFullscreen='true']) #appcontent {
   overflow: hidden;
-  padding: 1px;
 }
 
 :root:not([inDOMFullscreen='true']) #appcontent,
@@ -51,4 +50,5 @@
 #tabbrowser-tabbox {
   display: flex;
   flex-direction: row;
+  padding: 1px; /* To allow the web view's shadow to be visible */
 }

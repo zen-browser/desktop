@@ -23,6 +23,8 @@ toolbar {
     height: calc(var(--toolbarbutton-inner-padding) + 10px);
     width: calc(var(--toolbarbutton-inner-padding) + 10px);
     padding: 0;
+
+    margin: 0 var(--toolbarbutton-inner-padding) !important;
   }
 
   &:hover {

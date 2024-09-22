@@ -7,72 +7,121 @@
 }
 
 @media (-moz-bool-pref: 'zen.view.compact') {
-  /* Set the extra paddings */
-  #tabbrowser-tabpanels {
-    #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-      padding-right: var(--zen-element-separation);
+  :root:not([customizing]) {
+    @media (-moz-bool-pref: 'zen.view.compact.hide-tabbar') {
+      #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
+        margin-left: calc(var(--zen-sidebar-web-panel-spacing) * 2) !important;
+      }
+
+      #zen-sidebar-top-buttons-customization-target {
+        padding-inline-start: calc(var(--zen-toolbox-padding) - var(--toolbarbutton-outer-padding)) !important;
+      }
+
+      /* Set the extra paddings */
+      #tabbrowser-tabpanels {
+        #browser:has(#navigator-toolbox[zen-right-side='true']) & {
+          padding-right: var(--zen-element-separation);
+        }
+
+        #browser:has(#navigator-toolbox:not([zen-right-side='true'])) & {
+          padding-left: var(--zen-element-separation);
+        }
+      }
+
+      #zen-sidebar-splitter {
+        display: none !important;
+      }
+
+      #navigator-toolbox {
+        position: absolute;
+        height: 98%;
+        z-index: 9;
+        background: var(--zen-themed-toolbar-bg) !important;
+        box-shadow: 0 0 2px 2px rgba(0,0,0,.1);
+        border-top-right-radius: var(--zen-border-radius);
+        border-bottom-right-radius: var(--zen-border-radius);
+        border: 1px solid var(--zen-colors-border);
+        border-left-width: 0;
+        padding: var(--zen-toolbox-padding) !important;
+        transition: all 0.2s ease-in-out;
+        right: calc(100% - var(--zen-element-separation) + 1px);
+        top: 50%;
+        opacity: 0;
+
+        transform: translate3d(0, -50%, 0);
+
+        #browser:has(#navigator-toolbox[zen-right-side='true']) & {
+          border-left-width: 1px;
+          border-right-width: 0;
+
+          left: calc(100% - var(--zen-element-separation) - 1px);
+          right: unset;
+
+          border-top-left-radius: var(--zen-border-radius);
+          border-bottom-left-radius: var(--zen-border-radius);
+
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      }
+      
+      #navigator-toolbox:hover,
+      #navigator-toolbox[zen-has-hover],
+      #navigator-toolbox:focus-within,
+      #navigator-toolbox[zen-user-show],
+      #navigator-toolbox[flash-popup],
+      #navigator-toolbox[has-popup-menu],
+      #navigator-toolbox[movingtab],
+      #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
+      #navigator-toolbox:has(.tabbrowser-tab:active),
+      #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
+        opacity: 1;
+        
+        transform: translate3d(calc(100% - var(--zen-element-separation)), -50%, 0);
+        #browser:has(#navigator-toolbox[zen-right-side='true']) & {
+          transform: translate3d(calc(-100% + var(--zen-element-separation)), -50%, 0);
+        }
+      }
     }
 
-    #browser:has(#navigator-toolbox:not([zen-right-side='true'])) & {
-      padding-left: var(--zen-element-separation);
-    }
-  }
+    @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
 
-  #zen-sidebar-splitter {
-    display: none !important;
-  }
+      #navigator-toolbox {
+        --zen-toolbox-top-align: var(--zen-element-separation);
+      }
 
-  #navigator-toolbox {
-    position: absolute;
-    height: 98%;
-    z-index: 9;
-    background: var(--zen-themed-toolbar-bg) !important;
-    box-shadow: 0 0 2px 2px rgba(0,0,0,.1);
-    border-top-right-radius: var(--zen-border-radius);
-    border-bottom-right-radius: var(--zen-border-radius);
-    border: 1px solid var(--zen-colors-border);
-    border-left-width: 0;
-    padding: var(--zen-toolbox-padding) !important;
-    transition: all 0.1s ease-in-out;
-    right: calc(100% - var(--zen-element-separation));
-    top: 50%;
-    opacity: 0;
+      #tabbrowser-tabpanels {
+        padding-top: var(--zen-element-separation) !important;
+      }
 
-    transition-delay: 0.8s;
-    backface-visibility: hidden;
+      #zen-appcontent-navbar-container {
+        position: absolute;
+        top: 0;
+        transform: translateY(calc(-100% + var(--zen-element-separation) + 1px));
+        left: 0;
+        z-index: 10;
+        background: var(--zen-themed-toolbar-bg);
+        box-shadow: 0 0 2px 2px rgba(0,0,0,.1) !important;
+        border-bottom-left-radius: var(--zen-border-radius);
+        border-bottom-right-radius: var(--zen-border-radius);
+        border: 1px solid var(--zen-colors-border);
+        border-top-width: 0px;
+        transition: all 0.2s ease-in-out;
+        width: 100%;
+        opacity: 0;
+      }
 
-    transform: translate3d(0, calc(-50% - 2px), 0);
+      #zen-appcontent-navbar-container:hover,
+      #zen-appcontent-navbar-container[zen-has-hover],
+      #zen-appcontent-navbar-container:focus-within,
+      #zen-appcontent-navbar-container[zen-user-show],
+      #zen-appcontent-navbar-container[has-popup-menu],
+      #zen-appcontent-navbar-container:has(*[open='true']) {
+        opacity: 1;
+        border-top-width: 1px;
 
-    #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-      border-left-width: 1px;
-      border-right-width: 0;
-
-      left: calc(100% - var(--zen-element-separation));
-      right: unset;
-
-      border-top-left-radius: var(--zen-border-radius);
-      border-bottom-left-radius: var(--zen-border-radius);
-
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-  }
-  
-  #navigator-toolbox:hover,
-  #navigator-toolbox:focus-within,
-  #navigator-toolbox[zen-user-show],
-  #navigator-toolbox[flash-popup],
-  #navigator-toolbox[has-popup-menu],
-  #navigator-toolbox[movingtab],
-  #mainPopupSet:has(> #appMenu-popup:hover) ~ toolbox,
-  #navigator-toolbox:has(.tabbrowser-tab:active),
-  #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-    opacity: 1;
-    transition-delay: 0s !important;
-    
-    transform: translate3d(calc(100% - var(--zen-element-separation) - 1px), calc(-50% - 2px), 0);
-    #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-      transform: translate3d(calc(-100% + var(--zen-element-separation) + 1px), calc(-50% - 2px), 0);
+        transform: translateY(-1px);
+      }
     }
   }
 }

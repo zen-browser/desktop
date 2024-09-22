@@ -78,13 +78,15 @@ pref('zen.theme.content-element-separation', 8); // In pixels
 pref('zen.theme.toolbar-themed', true);
 pref('zen.theme.pill-button', false);
 pref('zen.view.compact', false);
-pref('zen.view.compact.hide-toolbar', false);
 
 pref('zen.theme.color-prefs.amoled', false);
 pref('zen.theme.color-prefs.colorful', false);
 
+pref('zen.view.compact.hide-tabbar', true);
+pref('zen.view.compact.hide-toolbar', false);
 pref('zen.view.compact.toolbar-flash-popup', true);
 pref('zen.view.compact.toolbar-flash-popup.duration', 800);
+pref('zen.view.compact.toolbar-hide-after-hover.duration', 1000);
 
 pref('zen.view.sidebar-height-throttle', 200); // in ms
 pref('zen.view.sidebar-expanded', false);
@@ -109,6 +111,7 @@ pref('zen.sidebar.close-on-blur', true);
 
 // Zen Split View
 pref('zen.splitView.working', false);
+pref('zen.splitView.min-resize-width', 7);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
@@ -144,6 +147,7 @@ pref('xpinstall.signatures.required', false);
 // Experimental Zen Features
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
+pref("dom.text_fragments.enabled", true);
 
 // Enable private suggestions
 pref('browser.search.suggest.enabled', true);

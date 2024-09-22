@@ -4,6 +4,7 @@
     border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
     transform: translate3d(0, 0, 0);
     position: relative;
+    overflow: hidden;
 
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 

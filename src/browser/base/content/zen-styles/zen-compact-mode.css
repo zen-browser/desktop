@@ -90,7 +90,7 @@
         --zen-toolbox-top-align: var(--zen-element-separation);
       }
 
-      :root:not([inDOMFullscreen='true']) #tabbrowser-tabpanels {
+      &:not([inDOMFullscreen='true']) #tabbrowser-tabpanels {
         padding-top: var(--zen-element-separation) !important;
       }
 

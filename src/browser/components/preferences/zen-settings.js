@@ -638,20 +638,20 @@ const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
 var gZenCKSSettings = {
-  init() {
+  async init() {
     this._currentAction = null;
     this._initializeEvents();
-    this._initializeCKS();
+    await this._initializeCKS();
   },
 
   _initializeEvents() {
     window.addEventListener('keydown', this._handleKeyDown.bind(this));
   },
 
-  _initializeCKS() {
+  async _initializeCKS() {
     let wrapper = document.getElementById(ZEN_CKS_WRAPPER_ID);
 
-    let shortcuts = gZenKeyboardShortcutsManager.getModifiableShortcuts();
+    let shortcuts = await gZenKeyboardShortcutsManager.getModifiableShortcuts();
 
     if (!shortcuts) {
       throw Error('No shortcuts defined!');

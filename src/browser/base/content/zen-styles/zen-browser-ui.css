@@ -50,5 +50,8 @@
 #tabbrowser-tabbox {
   display: flex;
   flex-direction: row;
+}
+
+:root:not([inDOMFullscreen='true']) #tabbrowser-tabbox {
   padding: 1px; /* To allow the web view's shadow to be visible */
 }

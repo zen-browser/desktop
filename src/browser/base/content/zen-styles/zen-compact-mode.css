@@ -9,7 +9,7 @@
 @media (-moz-bool-pref: 'zen.view.compact') {
   :root:not([customizing]) {
     @media (-moz-bool-pref: 'zen.view.compact.hide-tabbar') {
-      #zen-sidebar-web-panel-wrapper {
+      #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
         margin-left: calc(var(--zen-sidebar-web-panel-spacing) * 2) !important;
       }
 
@@ -85,6 +85,11 @@
     }
 
     @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
+
+      #navigator-toolbox {
+        --zen-toolbox-top-align: var(--zen-element-separation);
+      }
+
       #tabbrowser-tabpanels {
         padding-top: var(--zen-element-separation) !important;
       }

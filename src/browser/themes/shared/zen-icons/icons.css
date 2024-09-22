@@ -580,9 +580,6 @@
 }
 
 /* Context Menu Icons */
-menupopup > menuitem:is([checked='true'], [selected='true']) .menu-iconic-icon {
-  list-style-image: url('checkmark.svg') !important;
-}
 
 #context-video-pictureinpicture:not([checked='true']) .menu-iconic-icon {
   list-style-image: url('media-pip.svg') !important;
@@ -892,6 +889,10 @@ menuitem[contexttype='fullscreen'][label*='Exit'] {
   --menu-image: url('duplicate-tab.svg');
 }
 
+#zen-context-menu-compact-mode {
+  --menu-image: url('sidebars.svg');
+}
+
 #context_bookmarkTab,
 #context_bookmarkSelectedTabs,
 #toggle_PersonalToolbar,
@@ -1062,4 +1063,11 @@ menuitem[id='placesContext_new:separator'] {
   padding-inline-start: calc(
     var(--fp-contextmenu-menuitem-padding-inline) + 16px + var(--fp-contextmenu-menuicon-margin-inline)
   ) !important;
+}
+
+menupopup > menuitem:is([type='checkbox']) .menu-iconic-left {
+  --menu-image: none !important;
+  margin-inline-start: 4px;
+  margin-inline-end: 0;
+  padding-inline-end: 0;
 }

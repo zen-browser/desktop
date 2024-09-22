@@ -1,6 +1,12 @@
+
 {
   const lazy = {};
-  XPCOMUtils.defineLazyPreferenceGetter(lazy, 'sidebarHeightThrottle', 'zen.view.sidebar-height-throttle', 500);
+  XPCOMUtils.defineLazyPreferenceGetter(
+    lazy,
+    "sidebarHeightThrottle",
+    "zen.view.sidebar-height-throttle",
+    500
+  );
   var ZenStartup = {
     init() {
       this.logHeader();
@@ -39,7 +45,7 @@
         gZenUIManager.init();
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
-        gZenKeyboardShortcutsManager.init();
+        gZenKeyboardShortcuts.init();
 
         function throttle(f, delay) {
           let timer = 0;
@@ -49,9 +55,7 @@
           };
         }
 
-        new ResizeObserver(throttle(this._updateTabsToolbar.bind(this), lazy.sidebarHeightThrottle)).observe(
-          document.getElementById('tabbrowser-tabs')
-        );
+        new ResizeObserver(throttle(this._updateTabsToolbar.bind(this), lazy.sidebarHeightThrottle)).observe(document.getElementById('tabbrowser-tabs'));
       } catch (e) {
         console.error('ZenThemeModifier: Error initializing browser layout', e);
       }

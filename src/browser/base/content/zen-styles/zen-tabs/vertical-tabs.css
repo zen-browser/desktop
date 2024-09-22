@@ -73,6 +73,7 @@
     border-bottom: 0px solid transparent !important;
 
     --tab-block-margin: 2px;
+    --tab-selected-bgcolor: var(--zen-colors-primary);
     grid-gap: 0 !important;
 
     & .tabbrowser-tab {

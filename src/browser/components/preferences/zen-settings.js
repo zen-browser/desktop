@@ -512,10 +512,16 @@ var gZenLooksAndFeel = {
       ) {
         radio.checked = true;
       }
+      const disableExpandTabsOnHover = () => {
+        if (Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+          document.querySelector(`#zen-expand-tabbar-strat [value='expand']`).click();
+        }
+      }
       radio.addEventListener('change', (e) => {
         let value = e.target.value;
         switch (value) {
           case 'left':
+            disableExpandTabsOnHover();
             Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
             break;
@@ -524,6 +530,7 @@ var gZenLooksAndFeel = {
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
           default:
+            disableExpandTabsOnHover();
             Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
             Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
             break;
@@ -544,6 +551,14 @@ var gZenLooksAndFeel = {
     } else {
       form.querySelector('input[value="none"]').checked = true;
     }
+    const disableCompactTabbar = () => {
+      const toolbarEnable = Services.prefs.getBoolPref('zen.view.compact.hide-toolbar');
+      if (toolbarEnable) {
+        document.querySelector(`#ZenCompactModeStyle input[value='top']`).click();
+      } else if (Services.prefs.getBoolPref('zen.view.compact')) {
+        document.getElementById('zenLooksAndFeelShowCompactView').click();
+      }
+    }
     for (let radio of radios) {
       radio.addEventListener('change', (e) => {
         switch (e.target.value) {
@@ -556,6 +571,7 @@ var gZenLooksAndFeel = {
             Services.prefs.setBoolPref(defaultExpandPref, false);
             break;
           case 'hover':
+            disableCompactTabbar();
             Services.prefs.setBoolPref(onHoverPref, true);
             Services.prefs.setBoolPref(defaultExpandPref, true);
             break;

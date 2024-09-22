@@ -500,23 +500,21 @@ var gZenLooksAndFeel = {
   setCompactModeStyle() {
     const chooser = document.getElementById('zen-compact-mode-styles-form');
     const radios = [...chooser.querySelectorAll('input')];
+
+    let value = '';
+    if (Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')
+          && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
+      value = 'both';
+    } else {
+      value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
+    }
+    chooser.querySelector(`[value='${value}']`).checked = true;
+    const disableExpandTabsOnHover = () => {
+      if (Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+        document.querySelector(`#zen-expand-tabbar-strat input[value='expand']`).click();
+      }
+    }
     for (let radio of radios) {
-      if (radio.value === 'left' && Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')) {
-        radio.checked = true;
-      } else if (radio.value === 'top' && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
-        radio.checked = true;
-      } else if (
-        radio.value === 'both' &&
-        !Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') &&
-        !Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')
-      ) {
-        radio.checked = true;
-      }
-      const disableExpandTabsOnHover = () => {
-        if (Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
-          document.querySelector(`#zen-expand-tabbar-strat [value='expand']`).click();
-        }
-      }
       radio.addEventListener('change', (e) => {
         let value = e.target.value;
         switch (value) {

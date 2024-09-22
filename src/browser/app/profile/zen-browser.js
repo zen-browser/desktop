@@ -148,6 +148,7 @@ pref('xpinstall.signatures.required', false);
 // Experimental Zen Features
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
+pref("dom.text_fragments.enabled", true);
 
 // Enable private suggestions
 pref('browser.search.suggest.enabled', true);

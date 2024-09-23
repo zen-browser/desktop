@@ -327,17 +327,29 @@ groupbox h2 {
   user-select: none;
   cursor: text;
   background: transparent;
+  transition: border-color 0.1s;
 }
 
 .zenCKSOption {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
+
+  & > vbox {
+    width: fit-content;
+    justify-content: end;
+    min-width: 70%;
+
+    & > label {
+      margin-left: auto;
+    }
+  }
 }
 
 .zenCKSOption > label {
   font-size: 14px;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+  width: 100%;
 }
 
 .zenCKSOption-input.zenCKSOption-input-not-set {
@@ -349,13 +361,25 @@ groupbox h2 {
   box-shadow: 0 0 0 2px var(--zen-primary-color);
 }
 
+.zenCKSOption-conflict {
+  color: red;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
 .zenCKSOption-input.zenCKSOption-input-invalid {
   border-color: red;
 }
 
-#zenCKSOption-wrapper > [data-group]:not(:first-of-type) {
-  border-top: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  padding-top: 10px;
+.zenCKSOption-input.zenCKSOption-input-valid {
+  border-color: green;
+}
+
+#zenCKSOption-wrapper > [data-group] {
+  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  padding-top: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 /* Theme builder */

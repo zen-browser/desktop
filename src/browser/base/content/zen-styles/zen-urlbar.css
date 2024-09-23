@@ -2,7 +2,6 @@
 
 #urlbar-container {
   padding-block: 0 !important;
-  padding-bottom: 2px !important;
 }
 
 #urlbar {
@@ -299,4 +298,5 @@ button.popup-notification-dropmarker {
 
 #PersonalToolbar:not([collapsed="true"]) {
   padding-bottom: 6px;
+  padding-left: 0 !important;
 }

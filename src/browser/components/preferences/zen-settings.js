@@ -637,9 +637,24 @@ const ZEN_CKS_WRAPPER_ID = `${ZEN_CKS_CLASS_BASE}-wrapper`;
 const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
+var zenMissingKeyboardShortcutL10n = {
+  key_quickRestart: "zen-key-quick-restart",
+  key_delete: "zen-key-delete",
+  goBackKb: "zen-key-go-back",
+  goForwardKb: "zen-key-go-forward",
+  key_enterFullScreen: "zen-key-enter-full-screen",
+  key_exitFullScreen: "zen-key-exit-full-screen",
+  key_aboutProcesses: "zen-key-about-processes",
+  key_stop: "zen-key-stop",
+  key_sanitize: "zen-key-sanitize",
+  key_wrCaptureCmd: "zen-key-wr-capture-cmd", 
+  key_wrToggleCaptureSequenceCmd: "zen-key-wr-toggle-capture-sequence-cmd",
+}  
+
 var gZenCKSSettings = {
   async init() {
     this._currentAction = null;
+    this._currentActionID = null;
     this._initializeEvents();
     await this._initializeCKS();
   },
@@ -663,7 +678,7 @@ var gZenCKSSettings = {
       if (!wrapper.querySelector(`[data-group="${groupClass}"]`)) {
         let groupElem = document.createElement('h2');
         groupElem.setAttribute('data-group', groupClass);
-        document.l10n.setAttributes(groupElem, `groupClass`);
+        document.l10n.setAttributes(groupElem, groupClass);
         wrapper.appendChild(groupElem);
       }
     }
@@ -674,38 +689,55 @@ var gZenCKSSettings = {
       const l10nID = shortcut.getL10NID();
       const group = shortcut.getGroup();
       const keyInString = shortcut.toUserString();
-      console.debug(keyInString);
 
-      // const labelValue = l10nID == null ? keyID : l10nID;
-      const labelValue = keyID;
-
+      const hasLabel = !l10nID;
+      const labelValue = !hasLabel 
+        ? l10nID 
+        : zenMissingKeyboardShortcutL10n[keyID];
+      
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="${ZEN_CKS_CLASS_BASE}">
-          <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${action}">${labelValue}</label>
-          <html:input readonly="1" class="${ZEN_CKS_INPUT_FIELD_CLASS}" id="${ZEN_CKS_INPUT_FIELD_CLASS}-${action}" />
+          <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${action}"></label>
+          <vbox flex="1">
+            <html:input readonly="1" class="${ZEN_CKS_INPUT_FIELD_CLASS}" id="${ZEN_CKS_INPUT_FIELD_CLASS}-${action}" />
+          </vbox>
         </hbox>
       `);
 
-      document.l10n.setAttributes(fragment.querySelector(`.${ZEN_CKS_LABEL_CLASS}`), labelValue);
+      const label = fragment.querySelector(`.${ZEN_CKS_LABEL_CLASS}`);
+      if (!labelValue) {
+        label.textContent = action; // Just in case
+      } else {
+        document.l10n.setAttributes(label, labelValue);
+      }
 
       let input = fragment.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}`);
-      if (keyInString) {
+      if (keyInString && !shortcut.isEmpty()) {
         input.value = keyInString;
       } else {
         this._resetShortcut(input);
       }
 
       input.setAttribute(KEYBIND_ATTRIBUTE_KEY, action);
+      input.setAttribute('data-group', group);
+      input.setAttribute('data-id', keyID);
 
       input.addEventListener('focus', (event) => {
         const value = event.target.getAttribute(KEYBIND_ATTRIBUTE_KEY);
         this._currentAction = value;
+        this._currentActionID = event.target.getAttribute('data-id');
         event.target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
       });
 
       input.addEventListener('editDone', (event) => {
         const target = event.target;
         target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+        this._editDone(target);
+      });
+
+      input.addEventListener('blur', (event) => {
+        const target = event.target;
+        target.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
         this._editDone(target);
       });
 
@@ -727,17 +759,22 @@ var gZenCKSSettings = {
   },
 
   _editDone(shortcut, modifiers) {
+    // Check if we have a valid key
+    if (!shortcut || !modifiers) {
+      return;
+    }
     gZenKeyboardShortcutsManager.setShortcut(this._currentAction, shortcut, modifiers);
     this._currentAction = null;
+    this._currentActionID = null;
   },
 
   //TODO Check for duplicates
   async _handleKeyDown(event) {
-    event.preventDefault();
-
     if (!this._currentAction) {
       return;
     }
+
+    event.preventDefault();
 
     let input = document.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentAction}"]`);
     const modifiers = new KeyShortcutModifiers(event.ctrlKey, event.altKey, event.shiftKey, event.metaKey);
@@ -752,24 +789,51 @@ var gZenCKSSettings = {
       this._latestValidKey = null;
       return;
     } else if (shortcut == 'Escape' && !modifiersActive) {
-      input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+      const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
+        this._latestValidKey ? this._latestValidKey : shortcut,
+        this._latestModifier ? this._latestModifier : modifiers, this._currentActionID, this._currentAction);
 
-      if (!this._latestValidKey) {
+      if (!this._latestValidKey && !this._latestModifier) {
+      } else if (!this._latestValidKey || hasConflicts) {
         if (!input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
+        if (hasConflicts && !input.nextElementSibling) {
+          input.after(window.MozXULElement.parseXULToFragment(`
+            <label class="${ZEN_CKS_CLASS_BASE}-conflict">Conflict with another shortcut</label>
+          `));
+        }
       } else {
-        this._editDone(input, this._latestValidKey, modifiers);
+        input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+        input.blur();
+
+        this._editDone(this._latestValidKey, this._latestModifier);
         this._latestValidKey = null;
+        this._latestModifier = null;
+        input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
+        input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-valid`);
+        setTimeout(() => {
+          input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-valid`);
+        }, 1000);
+        const sibling = input.nextElementSibling;
+        if (sibling && sibling.classList.contains(`${ZEN_CKS_CLASS_BASE}-conflict`)) {
+          sibling.remove();
+        }
       }
+      input.blur();
+      this._currentAction = null;
+      this._currentActionID = null;
       return;
     } else if (shortcut == 'Backspace' && !modifiersActive) {
       this._resetShortcut(input);
       this._latestValidKey = null;
+      this._latestModifier = null;
       return;
     }
 
+    this._latestModifier = modifiers;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
     input.value = modifiers.toUserString() + shortcut;
     this._latestValidKey = shortcut;
   },

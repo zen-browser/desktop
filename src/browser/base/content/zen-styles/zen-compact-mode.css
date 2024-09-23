@@ -109,6 +109,9 @@
         transition: all 0.2s ease-in-out;
         width: 100%;
         opacity: 0;
+
+        border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+        border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
       }
 
       #zen-appcontent-navbar-container:hover,

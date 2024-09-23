@@ -52,7 +52,7 @@
   flex-direction: row;
 }
 
-#titlebar-buttonbox-container {
+.titlebar-buttonbox-container {
   height: 100%;
 }
 

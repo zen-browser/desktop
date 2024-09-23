@@ -87,6 +87,7 @@ export var ZenCustomizableUI = new class {
     const panelMenu = window.document.getElementById('PanelUI-menu-button');
     panelMenu.classList.add('zen-sidebar-action-button');
     panelMenu.setAttribute('cui-areatype', 'toolbar');
+    panelMenu.setAttribute('removable', 'true');
 
     sideBarTopButtons.prepend(panelMenu);
 

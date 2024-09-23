@@ -101,3 +101,6 @@ Read-Host "Press Enter to continue"
 
 echo "Cleaning up" 
 rmdir windsign-temp -Recurse -ErrorAction SilentlyContinue
+
+echo "Opening visual studio code"
+code .

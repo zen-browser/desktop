@@ -793,7 +793,8 @@ var gZenCKSSettings = {
         this._latestValidKey ? this._latestValidKey : shortcut,
         this._latestModifier ? this._latestModifier : modifiers, this._currentActionID, this._currentAction);
 
-      if (!this._latestValidKey || hasConflicts) {
+      if (!this._latestValidKey && !this._latestModifier) {
+      } else if (!this._latestValidKey || hasConflicts) {
         if (!input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
@@ -826,6 +827,7 @@ var gZenCKSSettings = {
     } else if (shortcut == 'Backspace' && !modifiersActive) {
       this._resetShortcut(input);
       this._latestValidKey = null;
+      this._latestModifier = null;
       return;
     }
 

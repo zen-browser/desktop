@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 282e7f31fe158d929130c17628f7e30f690fd666..7225cb6bae5af213718a4e2df41f855631d6ce4e 100644
+index 282e7f31fe158d929130c17628f7e30f690fd666..213e6f1ea1cd454b4d0f3679a5acb414b0ef9242 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -1387,10 +1387,12 @@
@@ -18,3 +18,12 @@ index 282e7f31fe158d929130c17628f7e30f690fd666..7225cb6bae5af213718a4e2df41f8556
        selectedTab._notselectedsinceload = false;
      }
  
+@@ -1629,7 +1631,7 @@
+       }
+ 
+       let pinned = draggedTab.pinned;
+-      let numPinned = gBrowser._numPinnedTabs;
++      let numPinned = gBrowser._numVisiblePinTabs;
+       let tabs = this._getVisibleTabs().slice(
+         pinned ? 0 : numPinned,
+         pinned ? numPinned : undefined

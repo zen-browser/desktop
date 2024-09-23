@@ -6,9 +6,12 @@
   position: relative;
 
   &:not([as-button='true']) {
-    border-radius: var(--zen-button-border-radius);
-    background: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    --zen-workspaces-strip-background-color: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    --toolbarbutton-hover-background: var(--toolbarbutton-hover-background) !important;
+    border-radius: var(--zen-button-border-radius) !important;
+    background: var(--zen-workspaces-strip-background-color) !important;
     padding: 5px;
+    appearance: unset !important;
     height: fit-content;
     gap: 3px;
 

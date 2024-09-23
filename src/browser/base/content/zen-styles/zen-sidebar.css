@@ -13,6 +13,18 @@ toolbar {
     display: none !important;
   }
 
+  & stack {
+    width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    & > image {
+      width: 0;
+    }
+  }
+
   & #zen-profile-button-icon {
     width: 16px;
     height: 16px;

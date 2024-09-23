@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..33837e5f56e4fbefa2a2d2ee68ee51750357db59 100644
+index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..12eef770f5ae48b83cadd10a4ed21b8fab508bfe 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -17,7 +17,7 @@
@@ -53,3 +53,11 @@ index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..33837e5f56e4fbefa2a2d2ee68ee5175
    padding-inline-start: calc(var(--tab-overflow-pinned-tabs-width) + 2px);
    margin-inline-start: 2px;
  }
+@@ -962,7 +961,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+   list-style-image: url(chrome://global/skin/icons/plus.svg);
+ }
+ 
+-#tabbrowser-tabs[hasadjacentnewtabbutton]:not([overflow]) ~ #new-tab-button,
+ #tabbrowser-tabs[orient="vertical"] > #tabbrowser-arrowscrollbox > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button,
+ #tabbrowser-tabs[overflow] > #tabbrowser-arrowscrollbox > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button,
+ #tabbrowser-tabs:not([hasadjacentnewtabbutton]) > #tabbrowser-arrowscrollbox > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button,

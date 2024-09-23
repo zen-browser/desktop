@@ -52,6 +52,10 @@
   flex-direction: row;
 }
 
+#titlebar-buttonbox-container {
+  height: 100%;
+}
+
 :root:not([inDOMFullscreen='true']) #tabbrowser-tabbox {
   padding: 1px; /* To allow the web view's shadow to be visible */
 }

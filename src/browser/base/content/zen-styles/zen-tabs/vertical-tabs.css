@@ -416,7 +416,7 @@
   }
 
   /* Mark: Expand on hover */
-  @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not (-moz-bool-pref: 'zen.view.compact')) {
+  @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
     #zen-sidebar-splitter {
       display: none !important;
     }

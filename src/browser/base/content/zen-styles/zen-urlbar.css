@@ -6,14 +6,15 @@
 }
 
 #urlbar {
+  --border-radius: 7px;
   --toolbarbutton-border-radius: 10px;
   --urlbarView-separator-color: var(--zen-colors-border);
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border: 1px solid var(--zen-colors-border);
-  border-radius: var(--toolbarbutton-border-radius);
+  border-radius: var(--border-radius);
   overflow: hidden;
-  padding: 1px;
+  padding: 2px;
 }
 
 #urlbar[focused='true'][breakout-extend='true'] {
@@ -45,6 +46,7 @@
 
 #urlbar #tracking-protection-icon-container {
   border-radius: var(--toolbarbutton-border-radius);
+  margin: auto !important;
 }
 
 #urlbar .urlbar-page-action {

@@ -81,7 +81,7 @@
 }
 
 #identity-permission-box {
-  background: var(--zen-colors-border) !important;
+  margin-left: 8px !important;
 }
 
 #urlbar:is([focused], [open]) > #urlbar-background,

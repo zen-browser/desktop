@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   -->
+<svg width="14" height="13.999999" id="svg4428" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<defs id="defs4430"/>
+	<metadata id="metadata4433">
+		<rdf:RDF>
+			<cc:Work rdf:about="">
+				<dc:format>image/svg+xml</dc:format>
+				<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+				<dc:title/>
+			</cc:Work>
+		</rdf:RDF>
+	</metadata>
+	<g id="layer1" transform="translate(-5.0605998,-1103.6812)">
+		<g transform="translate(-308.9394,1319.319)" style="display:inline" id="hover-center">
+			<rect style="opacity:0;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.474321;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" id="rect1579-4" width="16" height="16" x="313" y="-216.63782" ry="1.6930764e-05"/>
+			<g transform="translate(-5.22207,8.7802826)" id="titlebutton-restore-hover-1-7">
+				<path style="fill:#20a932;fill-opacity:1;fill-rule:evenodd;stroke:none" d="m 326.22213,-210.4181 c 3.86593,0 6.99994,-3.134 6.99994,-7 0,-3.866 -3.13401,-7 -6.99994,-7 -3.86604,0 -7.00006,3.134 -7.00006,7 0,3.866 3.13402,7 7.00006,7" id="path1005-4"/>
+				<path style="opacity:1;fill:#28d33f;fill-opacity:1;fill-rule:evenodd;stroke:none" d="m 326.22214,-210.918 c 3.58978,0 6.49993,-2.9103 6.49993,-6.5001 0,-3.5899 -2.91015,-6.5 -6.49993,-6.5 -3.58992,0 -6.50007,2.9101 -6.50007,6.5 0,3.5898 2.91015,6.5001 6.50007,6.5001" id="path1007"/>
+				<g id="g1846-43" transform="translate(0.00779,0.077375)">
+					<path style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 326.21372,-222.08576 v 3.5859 c 0,0.4155 0.5845,1 1,1 h 3.58594 z" id="path1031-0"/>
+					<path id="path1838-7" d="m 326.21484,-212.90509 v -3.5859 c 0,-0.4155 -0.5845,-1 -1,-1 h -3.58594 z" style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

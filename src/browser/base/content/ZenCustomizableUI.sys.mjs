@@ -1,33 +1,20 @@
-
-export var ZenCustomizableUI = new class {
+export var ZenCustomizableUI = class {
   constructor() {}
 
   TYPE_TOOLBAR = 'toolbar';
-  defaultSidebarIcons = [
-    'zen-sidepanel-button',
-    'zen-workspaces-button',
-    'new-tab-button'
-  ];
+  defaultSidebarIcons = ['zen-sidepanel-button', 'zen-workspaces-button', 'new-tab-button'];
 
   startup(CustomizableUIInternal) {
-    CustomizableUIInternal.registerArea(
-      "zen-sidebar-top-buttons",
-      {
-        type: this.TYPE_TOOLBAR,
-        defaultPlacements: [
-          "PanelUI-menu-button", "zen-expand-sidebar-button", "zen-profile-button"
-        ],
-        defaultCollapsed: null,
-      }
-    );
-    CustomizableUIInternal.registerArea(
-      "zen-sidebar-icons-wrapper",
-      {
-        type: this.TYPE_TOOLBAR,
-        defaultPlacements: this.defaultSidebarIcons,
-        defaultCollapsed: null,
-      }
-    );
+    CustomizableUIInternal.registerArea('zen-sidebar-top-buttons', {
+      type: this.TYPE_TOOLBAR,
+      defaultPlacements: ['PanelUI-menu-button', 'zen-expand-sidebar-button', 'zen-profile-button'],
+      defaultCollapsed: null,
+    });
+    CustomizableUIInternal.registerArea('zen-sidebar-icons-wrapper', {
+      type: this.TYPE_TOOLBAR,
+      defaultPlacements: this.defaultSidebarIcons,
+      defaultCollapsed: null,
+    });
   }
 
   // We do not have access to the window object here
@@ -71,7 +58,8 @@ export var ZenCustomizableUI = new class {
       </toolbar>
     `);
     window.document.getElementById('navigator-toolbox').prepend(sidebarBox);
-    const sideBarTopButtons = window.document.getElementById('zen-sidebar-top-buttons')
+    const sideBarTopButtons = window.document
+      .getElementById('zen-sidebar-top-buttons')
       .querySelector('#zen-sidebar-top-buttons-customization-target');
 
     const newTab = window.document.getElementById('vertical-tabs-newtab-button');
@@ -94,27 +82,31 @@ export var ZenCustomizableUI = new class {
       elem.setAttribute('removable', 'true');
     }
 
-    this._moveWindowButtons(window);
+    if (window.AppConstants.platform === 'macosx') {
+      this._moveWindowButtons(window);
+      this._rearrangeButtonsForMac(window);
+    }
   }
 
   _moveWindowButtons(window) {
     const windowControls = window.document.getElementsByClassName('titlebar-buttonbox-container');
     const toolboxIcons = window.document.getElementById('zen-sidebar-top-buttons-customization-target');
-    if (window.AppConstants.platform === "macosx") {
-      for (let i = 0; i < windowControls.length; i++) {
-        if (i === 0) {
-          toolboxIcons.prepend(windowControls[i]);
-          continue;
-        }
-        windowControls[i].remove();
+    for (let i = 0; i < windowControls.length; i++) {
+      if (i === 0) {
+        toolboxIcons.prepend(windowControls[i]);
+        continue;
       }
+      windowControls[i].remove();
     }
   }
 
+  _rearrangeButtonsForMac(window) {
+    const titlebarButtons = window.document.getElementsByClassName('titlebar-buttonbox')[0].children;
+    titlebarButtons[3].parentNode.insertBefore(titlebarButtons[3], titlebarButtons[0]);
+  }
+
   _hideToolbarButtons(window) {
-    const elementsToHide = [
-      'alltabs-button',
-    ];
+    const elementsToHide = ['alltabs-button'];
     for (let id of elementsToHide) {
       const elem = window.document.getElementById(id);
       if (elem) {
@@ -124,11 +116,7 @@ export var ZenCustomizableUI = new class {
   }
 
   registerToolbarNodes(window) {
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-top-buttons')
-    );
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-icons-wrapper')
-    );
+    window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-top-buttons'));
+    window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-icons-wrapper'));
   }
 };

@@ -650,6 +650,8 @@ var zenMissingKeyboardShortcutL10n = {
   key_wrCaptureCmd: "zen-key-wr-capture-cmd", 
   key_wrToggleCaptureSequenceCmd: "zen-key-wr-toggle-capture-sequence-cmd",
 
+  key_undoCloseWindow: "zen-key-undo-close-window",
+
   key_selectTab1: "zen-key-select-tab-1",
   key_selectTab2: "zen-key-select-tab-2",
   key_selectTab3: "zen-key-select-tab-3",
@@ -723,10 +725,7 @@ var gZenCKSSettings = {
       const group = shortcut.getGroup();
       const keyInString = shortcut.toUserString();
 
-      const hasLabel = !l10nID;
-      const labelValue = !hasLabel 
-        ? l10nID 
-        : zenMissingKeyboardShortcutL10n[keyID];
+      const labelValue = zenMissingKeyboardShortcutL10n[keyID] ?? l10nID;
       
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="${ZEN_CKS_CLASS_BASE}">

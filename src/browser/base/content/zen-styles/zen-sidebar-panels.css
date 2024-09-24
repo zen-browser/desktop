@@ -70,7 +70,7 @@
 #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
   position: absolute;
   z-index: 1;
-  width: -moz-available;
+  width: calc(100% - var(--zen-sidebar-web-panel-spacing) * 3);
   margin: var(--zen-sidebar-web-panel-spacing);
   /* Why times 3? 
    *  + 1 for the top margin, making the element overflow the view.

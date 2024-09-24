@@ -649,6 +649,21 @@ var zenMissingKeyboardShortcutL10n = {
   key_sanitize: "zen-key-sanitize",
   key_wrCaptureCmd: "zen-key-wr-capture-cmd", 
   key_wrToggleCaptureSequenceCmd: "zen-key-wr-toggle-capture-sequence-cmd",
+
+  key_selectTab1: "zen-key-select-tab-1",
+  key_selectTab2: "zen-key-select-tab-2",
+  key_selectTab3: "zen-key-select-tab-3",
+  key_selectTab4: "zen-key-select-tab-4",
+  key_selectTab5: "zen-key-select-tab-5",
+  key_selectTab6: "zen-key-select-tab-6",
+  key_selectTab7: "zen-key-select-tab-7",
+  key_selectTab8: "zen-key-select-tab-8",
+  key_selectLastTab: "zen-key-select-tab-last",
+
+  key_showAllTabs: "zen-key-show-all-tabs",
+  key_gotoHistory: "zen-key-goto-history",
+
+  goHome: "zen-key-go-home",
 }  
 
 var gZenCKSSettings = {

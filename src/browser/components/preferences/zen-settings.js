@@ -671,7 +671,6 @@ var gZenCKSSettings = {
   async init() {
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
-    this._currentAction = null;
     this._currentActionID = null;
     this._initializeEvents();
     await this._initializeCKS();
@@ -749,13 +748,12 @@ var gZenCKSSettings = {
         this._resetShortcut(input);
       }
 
-      input.setAttribute(KEYBIND_ATTRIBUTE_KEY, action);
+      input.setAttribute(KEYBIND_ATTRIBUTE_KEY, keyID);
       input.setAttribute('data-group', group);
       input.setAttribute('data-id', keyID);
 
       input.addEventListener('focus', (event) => {
         const value = event.target.getAttribute(KEYBIND_ATTRIBUTE_KEY);
-        this._currentAction = value;
         this._currentActionID = event.target.getAttribute('data-id');
         event.target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
       });
@@ -783,9 +781,9 @@ var gZenCKSSettings = {
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
     input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
-    if (this._currentAction) {
+    if (this._currentActionID) {
       this._editDone();
-      await gZenKeyboardShortcutsManager.setShortcut(this._currentAction, null, null);
+      await gZenKeyboardShortcutsManager.setShortcut(this._currentActionID, null, null);
     }
   },
 
@@ -794,20 +792,19 @@ var gZenCKSSettings = {
     if (!shortcut || !modifiers) {
       return;
     }
-    gZenKeyboardShortcutsManager.setShortcut(this._currentAction, shortcut, modifiers);
-    this._currentAction = null;
+    gZenKeyboardShortcutsManager.setShortcut(this._currentActionID, shortcut, modifiers);
     this._currentActionID = null;
   },
 
   //TODO Check for duplicates
   async _handleKeyDown(event) {
-    if (!this._currentAction) {
+    if (!this._currentActionID) {
       return;
     }
 
     event.preventDefault();
 
-    let input = document.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentAction}"]`);
+    let input = document.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentActionID}"]`);
     let accelKey = false;
     let controlKey = false;
     if (AppConstants.platform === 'macosx') {
@@ -829,7 +826,7 @@ var gZenCKSSettings = {
     } else if (shortcut == 'Escape' && !modifiersActive) {
       const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
         this._latestValidKey ? this._latestValidKey : shortcut,
-        this._latestModifier ? this._latestModifier : modifiers, this._currentActionID, this._currentAction);
+        this._latestModifier ? this._latestModifier : modifiers, this._currentActionID);
 
       if (!this._latestValidKey && !this._latestModifier) {
       } else if (!this._latestValidKey || hasConflicts) {
@@ -859,7 +856,6 @@ var gZenCKSSettings = {
         }
       }
       input.blur();
-      this._currentAction = null;
       this._currentActionID = null;
       return;
     } else if (shortcut == 'Backspace' && !modifiersActive) {

@@ -101,10 +101,10 @@
   height: unset !important;
 }
 
-#zen-sidebar-web-panel-splitter {
+.zen-sidebar-web-panel-splitter {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   height: 100%;
   width: 4px;
   background: transparent;
@@ -112,15 +112,20 @@
   cursor: ew-resize;
 }
 
-#zen-sidebar-web-panel-hsplitter {
-  position: absolute;
-  bottom: -2px;
-  left: 0;
+.zen-sidebar-web-panel-splitter[side='right'] {
+  left: initial;
+  right: 0;
+}
+
+.zen-sidebar-web-panel-splitter[orient='horizontal'] {
   width: 100%;
   height: 7px;
-  background: transparent;
-  border: none;
   cursor: ns-resize;
+}
+
+.zen-sidebar-web-panel-splitter[side='bottom'] {
+  top: initial;
+  bottom: -2px;
 }
 
 #zen-sidebar-web-panel[hidden='true'] #zen-sidebar-web-panel-hsplitter,

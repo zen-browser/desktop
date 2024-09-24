@@ -811,8 +811,7 @@ var gZenCKSSettings = {
     let accelKey = false;
     let controlKey = false;
     if (AppConstants.platform === 'macosx') {
-      accelKey = event.metaKey;
-      controlKey = event.ctrlKey;
+      accelKey = event.ctrlKey;
     } else {
       accelKey = event.ctrlKey;
     }

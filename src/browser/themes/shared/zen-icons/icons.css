@@ -1071,3 +1071,49 @@ menupopup > menuitem:is([type='checkbox']) .menu-iconic-left {
   margin-inline-end: 0;
   padding-inline-end: 0;
 }
+
+@media (-moz-platform: macos) {
+  .titlebar-close {
+    > .toolbarbutton-icon {
+      list-style-image: url(mac-close.svg);
+    }
+  }
+
+  .titlebar-close:hover > .toolbarbutton-icon {
+    list-style-image: url(mac-close-hover.svg);
+  }
+
+  .titlebar-min {
+    > .toolbarbutton-icon {
+      list-style-image: url(mac-minimize.svg);
+    }
+  }
+
+  .titlebar-min:hover > .toolbarbutton-icon {
+    list-style-image: url(mac-minimize-hover.svg);
+  }
+
+  .titlebar-restore {
+    > .toolbarbutton-icon {
+      list-style-image: url(mac-restore.svg);
+    }
+  }
+
+  .titlebar-restore:hover > .toolbarbutton-icon {
+    list-style-image: url(mac-restore-hover.svg);
+  }
+
+  .titlebar-max {
+    > .toolbarbutton-icon {
+      list-style-image: url(mac-maximize.svg);
+    }
+  }
+
+  .titlebar-max:hover > .toolbarbutton-icon {
+    list-style-image: url(mac-maximize-hover.svg);
+  }
+
+  .toolbarbutton {
+    margin: 5px;
+  }
+}

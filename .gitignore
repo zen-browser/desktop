@@ -9,3 +9,6 @@ __pycache__/
 dist/
 
 windsign-temp/
+
+# MacOS specific
+.DS_Store

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   -->
+<svg width="14.000001" height="14.000001" id="svg4428" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<defs id="defs4430"/>
+	<metadata id="metadata4433">
+		<rdf:RDF>
+			<cc:Work rdf:about="">
+				<dc:format>image/svg+xml</dc:format>
+				<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+				<dc:title/>
+			</cc:Work>
+		</rdf:RDF>
+	</metadata>
+	<g id="layer1" transform="translate(-5.2840695,-1103.9516)">
+		<g transform="translate(-248.71593,1319.5894)" style="display:inline" id="hover-center">
+			<g transform="translate(254,-215.63782)" id="titlebutton-minimize-hover-1-7" style="enable-background:new">
+				<g transform="translate(-4.9999997,-1033.3622)" id="g8-9-45">
+					<path style="fill:#caa124;fill-opacity:1;fill-rule:evenodd;stroke:none" d="m 12.000061,1047.3622 c 3.865929,0 6.999939,-3.134 6.999939,-7 0,-3.866 -3.13401,-7 -6.999939,-7 -3.8660427,0 -7.0000616,3.134 -7.0000616,7 0,3.866 3.1340189,7 7.0000616,7" id="path2-31-2"/>
+					<path style="opacity:1;fill:#fdc92d;fill-opacity:1;fill-rule:evenodd;stroke:none" d="m 12.000067,1046.8623 c 3.589781,0 6.499933,-2.9103 6.499933,-6.5001 0,-3.5899 -2.910152,-6.5 -6.499933,-6.5 -3.5899136,0 -6.5000676,2.9101 -6.5000676,6.5 0,3.5898 2.910154,6.5001 6.5000676,6.5001" id="path4-94"/>
+					<rect style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" width="8" height="2" x="8" y="1039.36" ry="1" id="rect6-5"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

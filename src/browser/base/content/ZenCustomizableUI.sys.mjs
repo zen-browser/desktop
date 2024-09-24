@@ -15,7 +15,7 @@ export var ZenCustomizableUI = new class {
       {
         type: this.TYPE_TOOLBAR,
         defaultPlacements: [
-          "PanelUI-menu-button", "zen-expand-sidebar-button", "zen-profile-button"
+          "preferences-button", "zen-expand-sidebar-button", "zen-profile-button"
         ],
         defaultCollapsed: null,
       }
@@ -71,8 +71,6 @@ export var ZenCustomizableUI = new class {
       </toolbar>
     `);
     window.document.getElementById('navigator-toolbox').prepend(sidebarBox);
-    const sideBarTopButtons = window.document.getElementById('zen-sidebar-top-buttons')
-      .querySelector('#zen-sidebar-top-buttons-customization-target');
 
     const newTab = window.document.getElementById('vertical-tabs-newtab-button');
     newTab.classList.add('zen-sidebar-action-button');
@@ -80,13 +78,6 @@ export var ZenCustomizableUI = new class {
     const wrapper = window.document.createXULElement('toolbarbutton');
     wrapper.id = 'zen-workspaces-button';
     window.document.getElementById('zen-sidebar-icons-wrapper').prepend(wrapper);
-
-    const panelMenu = window.document.getElementById('PanelUI-menu-button');
-    panelMenu.classList.add('zen-sidebar-action-button');
-    panelMenu.setAttribute('cui-areatype', 'toolbar');
-    panelMenu.setAttribute('removable', 'true');
-
-    sideBarTopButtons.prepend(panelMenu);
 
     for (let id of this.defaultSidebarIcons) {
       const elem = window.document.getElementById(id);

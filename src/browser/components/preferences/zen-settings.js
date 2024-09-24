@@ -653,6 +653,8 @@ var zenMissingKeyboardShortcutL10n = {
 
 var gZenCKSSettings = {
   async init() {
+    if (this.__hasInitialized) return;
+    this.__hasInitialized = true;
     this._currentAction = null;
     this._currentActionID = null;
     this._initializeEvents();
@@ -660,7 +662,23 @@ var gZenCKSSettings = {
   },
 
   _initializeEvents() {
-    window.addEventListener('keydown', this._handleKeyDown.bind(this));
+    const resetAllListener = this.resetAllShortcuts.bind(this);
+    const handleKeyDown = this._handleKeyDown.bind(this);
+    window.addEventListener('keydown', handleKeyDown);
+    const button = document.getElementById('zenCKSResetButton');
+    button.addEventListener('click', resetAllListener);
+    window.addEventListener('unload', () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      button.removeEventListener('click', resetAllListener);
+    });
+  },
+
+  async resetAllShortcuts() {
+    let buttonIndex = await confirmRestartPrompt(true, 1, true, false);
+    if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+      await gZenKeyboardShortcutsManager.resetAllShortcuts();
+      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+    }
   },
 
   async _initializeCKS() {

@@ -47,6 +47,7 @@ export var ZenCustomizableUI = new class {
         toolbarname="Zen Sidebar Top Buttons"
         context="toolbar-context-menu"
         flex="1"
+        skipintoolbarset="true"
         customizationtarget="zen-sidebar-top-buttons-customization-target"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
@@ -80,10 +81,6 @@ export var ZenCustomizableUI = new class {
     wrapper.id = 'zen-workspaces-button';
     window.document.getElementById('zen-sidebar-icons-wrapper').prepend(wrapper);
 
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-top-buttons')
-    );
-
     const panelMenu = window.document.getElementById('PanelUI-menu-button');
     panelMenu.classList.add('zen-sidebar-action-button');
     panelMenu.setAttribute('cui-areatype', 'toolbar');
@@ -96,10 +93,6 @@ export var ZenCustomizableUI = new class {
       if (!elem) continue;
       elem.setAttribute('removable', 'true');
     }
-
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-icons-wrapper')
-    );
 
     this._moveWindowButtons(window);
   }
@@ -128,5 +121,14 @@ export var ZenCustomizableUI = new class {
         elem.setAttribute('hidden', 'true');
       }
     }
+  }
+
+  registerToolbarNodes(window) {
+    window.CustomizableUI.registerToolbarNode(
+      window.document.getElementById('zen-sidebar-top-buttons')
+    );
+    window.CustomizableUI.registerToolbarNode(
+      window.document.getElementById('zen-sidebar-icons-wrapper')
+    );
   }
 };

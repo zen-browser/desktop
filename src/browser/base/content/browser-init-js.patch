@@ -1,16 +1,25 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index bee5309c04775adff8652bfe6c54b2d466e821ac..e9741628dcc9eda3500f69441bae293548179e71 100644
+index bee5309c04775adff8652bfe6c54b2d466e821ac..cfeaf7cf2e98c35e76bdd5451f90b004a04d4474 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -143,6 +143,7 @@ var gBrowserInit = {
+@@ -143,13 +143,15 @@ var gBrowserInit = {
      gNavToolbox.palette = document.getElementById(
        "BrowserToolbarPalette"
      ).content;
 +    ZenCustomizableUI.init(window);
      for (let area of CustomizableUI.areas) {
        let type = CustomizableUI.getAreaType(area);
-       if (type == CustomizableUI.TYPE_TOOLBAR) {
-@@ -239,6 +240,10 @@ var gBrowserInit = {
+-      if (type == CustomizableUI.TYPE_TOOLBAR) {
++      if (type == CustomizableUI.TYPE_TOOLBAR && !area.startsWith("zen-")) {
+         let node = document.getElementById(area);
+         CustomizableUI.registerToolbarNode(node);
+       }
+     }
++    ZenCustomizableUI.registerToolbarNodes(window);
+     BrowserSearch.initPlaceHolder();
+ 
+     // Hack to ensure that the various initial pages favicon is loaded
+@@ -239,6 +241,10 @@ var gBrowserInit = {
      gPrivateBrowsingUI.init();
      BrowserSearch.init();
      BrowserPageActions.init();

@@ -1,0 +1,22 @@
+diff --git a/browser/themes/osx/browser.css b/browser/themes/osx/browser.css
+index 0e131e7c76..db0326843e 100644
+--- a/browser/themes/osx/browser.css
++++ b/browser/themes/osx/browser.css
+@@ -61,8 +61,16 @@
+   justify-content: center;
+ }
+ 
++.titlebar-buttonbox{
++	-moz-default-appearance: none !important;
++}
++
+ .titlebar-button {
+-  display: none;
++	appearance: auto;	
++}
++
++.toolbarbutton {
++	-moz-default-appearance: none !important;
+ }
+ 
+ .titlebar-buttonbox-container {

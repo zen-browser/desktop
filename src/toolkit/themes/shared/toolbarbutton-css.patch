@@ -1,0 +1,12 @@
+diff --git a/toolkit/themes/shared/toolbarbutton.css b/toolkit/themes/shared/toolbarbutton.css
+index 5bcb9ecb7d..ec6804f8ae 100644
+--- a/toolkit/themes/shared/toolbarbutton.css
++++ b/toolkit/themes/shared/toolbarbutton.css
+@@ -10,6 +10,7 @@ toolbarbutton {
+   padding: 3px;
+ 
+   @media (-moz-platform: macos) {
++   -moz-default-appearance: none;
+     appearance: none;
+     margin-inline: 2px;
+     padding-inline: 2px;

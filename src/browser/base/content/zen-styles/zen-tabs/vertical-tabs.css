@@ -275,7 +275,7 @@
     #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
-    --zen-toolbox-max-width: 51px;
+    --zen-toolbox-max-width: 45px;
     max-width: var(--zen-toolbox-max-width) !important;
     min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
 

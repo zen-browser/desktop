@@ -110,8 +110,12 @@
         width: 100%;
         opacity: 0;
 
-        border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
-        border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+        :root[tabsintitlebar][sizemode="normal"]:not([gtktiledwindow="true"]) & {
+          border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+          border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+          border-left-width: 0;
+          border-right-width: 0;
+        }
       }
 
       #zen-appcontent-navbar-container:hover,

@@ -8,7 +8,6 @@
       window.SessionStore.promiseInitialized.then(async () => {
         this._changeSidebarLocation();
         this._zenInitBrowserLayout();
-        this._focusSearchBar();
       });
     },
 

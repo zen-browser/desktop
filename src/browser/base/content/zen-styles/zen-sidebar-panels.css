@@ -84,7 +84,8 @@
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
   transition: all 0.02s;
-  box-shadow: 0 0 1px 1px var(--zen-colors-border);
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--zen-colors-border);
   background: var(--zen-colors-tertiary);
   opacity: 0;
   animation-delay: 0.1s;

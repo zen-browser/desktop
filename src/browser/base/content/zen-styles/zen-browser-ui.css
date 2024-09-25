@@ -33,10 +33,6 @@
   width: 100%;
 }
 
-:root:not([inDOMFullscreen='true']) #appcontent {
-  overflow: hidden;
-}
-
 :root:not([inDOMFullscreen='true']) #appcontent,
 #sidebar-box {
   /** Sidebar is already hidden in full screen mode */

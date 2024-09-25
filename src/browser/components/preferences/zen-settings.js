@@ -669,11 +669,12 @@ var zenMissingKeyboardShortcutL10n = {
 
 var gZenCKSSettings = {
   async init() {
+    document.getElementById(ZEN_CKS_WRAPPER_ID).innerHTML = '';
+    await this._initializeCKS();
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
     this._currentActionID = null;
     this._initializeEvents();
-    await this._initializeCKS();
   },
 
   _initializeEvents() {

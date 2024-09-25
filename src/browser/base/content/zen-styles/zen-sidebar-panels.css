@@ -128,10 +128,10 @@
   bottom: -2px;
 }
 
-#zen-sidebar-web-panel[hidden='true'] #zen-sidebar-web-panel-hsplitter,
-#zen-sidebar-web-panel-wrapper[hidden='true'] + #zen-sidebar-web-panel-splitter,
-#zen-sidebar-web-panel-wrapper[hidden='true'] + #zen-sidebar-web-panel-hsplitter,
-#zen-sidebar-web-panel:not([pinned='true']) #zen-sidebar-web-panel-hsplitter {
+#zen-sidebar-web-panel[hidden='true'] .zen-sidebar-web-panel-splitter,
+#zen-sidebar-web-panel-wrapper[hidden='true'] + .zen-sidebar-web-panel-splitter,
+#zen-sidebar-web-panel:not([pinned='true']) .zen-sidebar-web-panel-splitter[orient='horizontal'],
+#zen-sidebar-web-panel:not([pinned='true']) .zen-sidebar-web-panel-splitter[side='left'] {
   display: none;
   margin: 0;
 }

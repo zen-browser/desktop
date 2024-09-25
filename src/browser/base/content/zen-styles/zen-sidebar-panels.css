@@ -83,7 +83,8 @@
 #zen-sidebar-web-panel {
   border-radius: var(--zen-panel-radius);
   overflow: hidden;
-  box-shadow: 0 0 0 1px var(--zen-colors-border);
+  transition: all 0.02s;
+  box-shadow: 0 0 1px 1px var(--zen-colors-border);
   background: var(--zen-colors-tertiary);
   opacity: 0;
   animation-delay: 0.1s;

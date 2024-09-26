@@ -209,3 +209,6 @@ pref('media.ffmpeg.encoder.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);
+
+// Add Ctrl+Tab to cycle between recent tabs
+pref("browser.ctrlTab.sortByRecentlyUsed", true);

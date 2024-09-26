@@ -8,7 +8,7 @@
       window.SessionStore.promiseInitialized.then(async () => {
         this._changeSidebarLocation();
         this._zenInitBrowserLayout();
-        this._focusSearchBar();
+        this._initSearchBar();
       });
     },
 
@@ -125,8 +125,13 @@
       toolbox.insertAdjacentElement('afterend', splitter);
     },
 
-    _focusSearchBar() {
+    _initSearchBar() {
+      // Only focus the url bar 
       gURLBar.focus();
+
+      gURLBar._initCopyCutController();
+      gURLBar._initPasteAndGo();
+      gURLBar._initStripOnShare();
     },
 
     logHeader() {

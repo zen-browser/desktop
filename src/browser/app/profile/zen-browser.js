@@ -30,6 +30,9 @@ pref('browser.newtabpage.activity-stream.newtabWallpapers.enabled', true);
 pref('browser.newtabpage.activity-stream.newtabWallpapers.v2.enabled', true);
 pref('browser.translations.newSettingsUI.enable', true);
 
+pref('privacy.userContext.enabled', true);
+pref('privacy.userContext.ui.enabled', true);
+
 pref("browser.urlbar.trimHttps", true);
 pref("browser.urlbar.untrimOnUserInteraction.featureGate", true);
 

@@ -101,6 +101,10 @@ pref('zen.keyboard.shortcuts.version', 0); // Empty string means default shortcu
 pref('zen.tabs.dim-pending', true);
 pref('zen.themes.updated-value-observer', false);
 
+pref('zen.tab-unloader.enabled', true);
+pref('zen.tab-unloader.timeout-minutes', 5);
+pref('zen.tab-unloader.excluded-urls', "example.com,example.org");
+
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 

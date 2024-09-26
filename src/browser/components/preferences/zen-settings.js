@@ -669,7 +669,6 @@ var zenMissingKeyboardShortcutL10n = {
 
 var gZenCKSSettings = {
   async init() {
-    document.getElementById(ZEN_CKS_WRAPPER_ID).innerHTML = '';
     await this._initializeCKS();
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
@@ -699,6 +698,7 @@ var gZenCKSSettings = {
 
   async _initializeCKS() {
     let wrapper = document.getElementById(ZEN_CKS_WRAPPER_ID);
+    wrapper.innerHTML = '';
 
     let shortcuts = await gZenKeyboardShortcutsManager.getModifiableShortcuts();
 

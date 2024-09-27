@@ -122,11 +122,6 @@
     & > toolbarbutton:not(#zen-workspaces-button) {
       padding: 0 !important;
     }
-
-    @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-      align-items: unset;
-    }
-
   }
 
   #newtab-button-container {
@@ -156,13 +151,6 @@
     }
   }
 
-  /**
-   * Match pinned tabs with other tabs spacing
-   */
-  #navigator-toolbox[zen-has-hover='true'] #vertical-pinned-tabs-container .tab-icon-image {
-    padding-right: 10px;
-  }
-
   /* Mark: toolbox as expanded */
   #navigator-toolbox:is(
     #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
@@ -182,15 +170,6 @@
       margin-left: 2px;
       margin-right: 2px;
 
-      /**
-       * Do not change workspace button to row direction when expand on hover
-       * is on because it makes elements to jump to new positions. keep it with
-       * the same layout as when its collapsed
-       */
-      @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-        flex-direction: column;
-      }
-
       & .zen-workspace-sidebar-icon[no-icon='true'] {
         display: none;
       }
@@ -208,16 +187,6 @@
       position: relative;
 
       --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
-
-      /**
-       * Keep colum layout when expand on hover is on
-       */
-      @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-        flex-direction: column;
-        justify-content: unset;
-      }
-
-
     }
 
     /* Mark: Fix separator paddings */
@@ -271,48 +240,8 @@
       }
     }
 
-    /**
-      When expand on hover, do not change pinned tabs layout.
-      keep it stacked like the other tabs and show its label
-    */
-    @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-      & #vertical-pinned-tabs-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0 !important;
-  
-        & .tab-label-container {
-          display: unset !important;
-          align-content: center;
-        }
-  
-      }
-  
-      /* Show same separator as when colapsed */
-      & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
-        margin-bottom: 8px!important;
-        position: relative;
-  
-        &::after {
-          bottom: -4px;
-          content: '';
-          display: block;
-          height: 1px;
-          background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
-          width: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          position: absolute;
-        }
-      }
-    }
-
     & #tabbrowser-tabs {
       & .tabbrowser-tab {
-        @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-          /* Match alignment when toolbar is colapsed */
-          margin-left: 2.5px;
-        }
         & .tab-background {
           @media not (prefers-color-scheme: dark) {
             box-shadow: none !important;
@@ -331,9 +260,6 @@
           &:not([pinned]) {
             margin-inline-end: var(--toolbarbutton-inner-padding) !important;
             margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;    
-            @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-              margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 6) !important;    
-            }
           }
         }
       }
@@ -427,13 +353,9 @@
       --tab-min-width: 36px !important;
 
       & .tabbrowser-tab {
-        margin-left: 2.5px;
+        margin: 0 auto;
         width: var(--tab-min-width) !important;
         height: var(--tab-min-width) !important;
-
-        @media not (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-          margin: 0 auto;
-        }
 
         & .tab-background:is([selected], [multiselected]) {
           @media not (prefers-color-scheme: dark) {
@@ -444,13 +366,7 @@
         & .tab-content {
           display: flex;
           align-content: center;
-          /**
-           * Centers content when expand on hover is off.
-           * When its on, alignment is done with margins
-           */
-          @media not (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-            justify-content: center;
-          }
+          justify-content: center;
 
           & .tab-label-container {
             display: none;
@@ -461,20 +377,6 @@
             margin-inline-end: 0 !important;
           }
         }
-
-        @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-          /* Fix icon alingment on colapsed */
-          .tab-throbber,
-          .tab-icon-pending,
-          .tab-icon-image,
-          .tab-sharing-icon-overlay,
-          .tab-icon-overlay {
-            &:not([pinned]) {
-              margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 6) !important;    
-            }
-          }
-        }
-
       }
 
       #vertical-pinned-tabs-container {
@@ -506,28 +408,23 @@
     & #zen-workspaces-button {
       flex-direction: column;
 
-      /*
-        Do not animate active workspace indicator on hover, since it changes position 
-       */
-      @media not (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-        &:not([as-button='true']) {
-          
-          & toolbarbutton {
-            &[active='true']::after {
-              bottom: 50% !important;
-              transform: translateY(50%) !important;
-            }
-          
-            :root:has(#navigator-toolbox:not([zen-right-side='true'])) &[active='true']::after {
-              left: -2px;
-              animation: zen-workspaces-button-active-collapsed-left 0.1s ease-in-out !important;
-            }
+      &:not([as-button='true']) {
+        
+        & toolbarbutton {
+          &[active='true']::after {
+            bottom: 50% !important;
+            transform: translateY(50%) !important;
+          }
+        
+          :root:has(#navigator-toolbox:not([zen-right-side='true'])) &[active='true']::after {
+            left: -2px;
+            animation: zen-workspaces-button-active-collapsed-left 0.1s ease-in-out !important;
+          }
 
-            :root:has(#navigator-toolbox[zen-right-side='true']) &[active='true']::after {
-              left: unset !important;
-              right: -2px;
-              animation: zen-workspaces-button-active-collapsed-right 0.1s ease-in-out !important;
-            }
+          :root:has(#navigator-toolbox[zen-right-side='true']) &[active='true']::after {
+            left: unset !important;
+            right: -2px;
+            animation: zen-workspaces-button-active-collapsed-right 0.1s ease-in-out !important;
           }
         }
       }
@@ -588,11 +485,6 @@
         transition: 0 !important;
         animation: zen-vtabs-animation 0.3s ease-in-out;
         -moz-window-dragging: no-drag;
-        @media (-moz-bool-pref: 'zen.view.sidebar-expanded.on-hover') and (not ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-tabbar'))) {
-          /* This fix tabs shifting up on hover */
-          padding-top: calc(var(--zen-toolbox-padding) + 2px);
-          animation: unset;
-        }
       }
 
       &[zen-right-side='true'] #TabsToolbar {

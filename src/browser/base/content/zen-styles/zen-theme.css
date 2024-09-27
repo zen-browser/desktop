@@ -112,7 +112,7 @@
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: var(--zen-colors-tertiary);
+  --zen-themed-toolbar-bg: light-dark(#eeeded, var(--zen-colors-tertiary)) !important;
 
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;
@@ -172,7 +172,7 @@
 
 @media not (-moz-bool-pref: 'zen.theme.toolbar-themed') {
   :root {
-    --toolbar-bgcolor: light-dark(white, #1b1b1b) !important;
+    --toolbar-bgcolor: light-dark(#E6E6E6, #1b1b1b) !important;
     --zen-themed-toolbar-bg: var(--toolbar-bgcolor);
   }
 }

@@ -31,7 +31,6 @@
     min-width: var(--zen-toolbox-min-width);
     margin-top: 0 !important; /* Fix full screen mode */
 
-    padding: var(--zen-toolbox-padding);
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
 
@@ -164,6 +163,10 @@
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])) {
     --zen-toolbox-min-width: fit-content;
 
+    & {
+      padding: var(--zen-toolbox-padding);
+    }
+
     & #titlebar {
       min-width: 150px;
     }
@@ -278,8 +281,8 @@
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
     --zen-toolbox-max-width: 45px;
+    --zen-toolbox-padding: 8px;
     max-width: var(--zen-toolbox-max-width) !important;
-    min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
 
     & #vertical-tabs-newtab-button {
       padding: 0 !important;
@@ -476,7 +479,7 @@
     #navigator-toolbox[has-popup-menu],
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-toolbox-max-width: 45px;
+      --zen-toolbox-max-width: 41px;
       max-width: var(--zen-toolbox-max-width) !important;
       min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
       padding: 0 !important;

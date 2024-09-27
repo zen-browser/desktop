@@ -76,7 +76,7 @@
    *  + 1 for the top margin, making the element overflow the view.
    *  + 1 for the margin we want to add at the bottom
    *  + 1 so that the panel can be correctly spaced from the border of the webview
-   */ 
+   */
   height: calc(100% - var(--zen-sidebar-web-panel-spacing) * 3);
 }
 
@@ -130,7 +130,7 @@
 }
 
 #zen-sidebar-web-panel[hidden='true'] .zen-sidebar-web-panel-splitter,
-#zen-sidebar-web-panel-wrapper[hidden='true'] + .zen-sidebar-web-panel-splitter,
+#zen-sidebar-web-panel-wrapper[hidden='true']+.zen-sidebar-web-panel-splitter,
 #zen-sidebar-web-panel:not([pinned='true']) .zen-sidebar-web-panel-splitter[orient='horizontal'],
 #zen-sidebar-web-panel:not([pinned='true']) .zen-sidebar-web-panel-splitter[side='left'] {
   display: none;
@@ -152,6 +152,21 @@
 #zen-sidebar-web-panel-wrapper {
   margin: 0 var(--zen-element-separation) var(--zen-element-separation) 1px;
 }
+
+@media (-moz-bool-pref: 'zen.view.compact') {
+  @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
+    #zen-sidebar-web-panel-wrapper {
+      margin: var(--zen-element-separation) var(--zen-element-separation) var(--zen-element-separation) 1px;
+    }
+  }
+}
+
+@media not (-moz-bool-pref: 'zen.view.compact') {
+  #zen-sidebar-web-panel-wrapper {
+    margin: 0 var(--zen-element-separation) var(--zen-element-separation) 1px;
+  }
+}
+
 
 #zen-sidebar-web-panel[pinned='true'] {
   position: absolute;

@@ -975,6 +975,11 @@ menuitem[id='placesContext_new:separator'] {
   --menu-image: url('close-all.svg');
 }
 
+#context_zenUnloadTab,
+#context_zenTabActions {
+  --menu-image: url('close-all.svg');
+}
+
 .customize-context-reportExtension,
 .unified-extensions-context-menu-report-extension {
   --menu-image: url('report.svg');

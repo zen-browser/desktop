@@ -460,6 +460,11 @@
       height: 100%;
 
       border-top-right-radius: var(--zen-border-radius);
+      width: var(--zen-toolbox-max-width);
+
+      & .tabbrowser-tab {
+        transition: 0s !important;
+      }
     }
 
     #navigator-toolbox[zen-has-hover],
@@ -483,8 +488,69 @@
         position: absolute;
         padding: var(--zen-toolbox-padding);
         transition: 0 !important;
-        animation: zen-vtabs-animation 0.3s ease-in-out;
+        /*animation: zen-vtabs-animation 0.3s ease-in-out;*/
         -moz-window-dragging: no-drag;
+        overflow: hidden;
+        transition: width .2s !important;
+
+        & .tab-throbber,
+        & .tab-icon-pending,
+        & .tab-icon-image,
+        & .tab-sharing-icon-overlay,
+        & .tab-icon-overlay {
+          transition: 0.1s !important;
+        }
+
+      }
+
+      /* Make pinned tabs stay in a single line */
+      #vertical-pinned-tabs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0 !important;
+
+        margin-bottom: 8px;
+        position: relative;
+  
+        &::after {
+          bottom: -4px;
+          content: '';
+          display: block;
+          height: 1px;
+          background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+          width: 99%;
+          left: 50%;
+          transform: translateX(-50%);
+          position: absolute;
+        }
+
+        & .tabbrowser-tab {
+          & .tab-label-container {
+            display: flex;
+          }
+
+          & .tab-throbber,
+          & .tab-icon-pending,
+          & .tab-icon-image,
+          & .tab-sharing-icon-overlay,
+          & .tab-icon-overlay {
+            margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+          }
+
+          &:hover .tab-close-button {
+            display: block !important;
+          }
+
+          & .tab-background {
+            box-shadow: none;
+
+            background: transparent !important;
+          }
+
+          &:hover .tab-background {
+            background-color: var(--tab-hover-background-color) !important;
+          }
+        }
       }
 
       &[zen-right-side='true'] #TabsToolbar {

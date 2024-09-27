@@ -68,6 +68,8 @@
   --button-primary-active-bgcolor: var(--in-content-primary-button-background-active) !important;
   --button-primary-color: var(--in-content-primary-button-text-color) !important;
 
+  --color-accent-primary-hover: var(--zen-primary-color) !important;
+
   --in-content-page-background: var(--zen-colors-tertiary) !important;
   --zen-in-content-dialog-background: var(--zen-colors-tertiary);
 

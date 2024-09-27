@@ -125,7 +125,7 @@ pref('zen.workspaces.enabled', true);
 pref('zen.workspaces.hide-default-container-indicator', true);
 pref('zen.workspaces.individual-pinned-tabs', true);
 pref('zen.workspaces.show-icon-strip', true);
-pref('zen.workspaces.icons', '["🌐", "📁", "📎", "📝", "📅", "📊"]');
+pref('zen.workspaces.icons', '["🌐", "📁", "💼", "📝", "📅", "📊","🧠"]');
 
 // Zen Watermark
 pref('zen.watermark.enabled', true, sticky);

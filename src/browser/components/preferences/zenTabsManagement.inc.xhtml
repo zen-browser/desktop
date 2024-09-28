@@ -1,19 +1,19 @@
-<html:template id="template-paneZenWorkspaces">
+<html:template id="template-paneZenTabManagement">
 <hbox id="ZenWorkspacesCategory"
       class="subcategory"
       hidden="true"
-      data-category="paneZenWorkspaces">
+      data-category="paneZenTabManagement">
 <html:h1 data-l10n-id="pane-workspaces-title"/>
 </hbox>
 
 <hbox id="zenSidePanelsCategory"
       class="subcategory"
       hidden="true"
-      data-category="paneZenWorkspaces">
+      data-category="paneZenTabManagement">
 <html:h1 data-l10n-id="pane-settings-workspaces-title"/>
 </hbox>
 
-<groupbox id="zenSidePanelsGroup" data-category="paneZenWorkspaces" hidden="true" class="highlighting-group">
+<groupbox id="zenWorkspacesGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
       <label><html:h2 data-l10n-id="zen-settings-workspaces-header"/></label>
       <description class="description-deemphasized" data-l10n-id="zen-settings-workspaces-description" />
 
@@ -33,4 +33,26 @@
       </vbox>
 </groupbox>
 
+<hbox id="zenTabsUnloadCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+<html:h1 data-l10n-id="pane-zen-tabs-unloader-title"/>
+</hbox>
+
+<groupbox id="zenTabsUnloadGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-tabs-unloader-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-description" />
+
+      <checkbox id="zenTabsUnloadActivate"
+            data-l10n-id="zen-tabs-unloader-enabled"
+            preference="zen.tab-unloader.enabled"/>
+
+      <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
+      <!-- TODO: Input type should be number -->
+</groupbox>
+
 </html:template>
+
+

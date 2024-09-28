@@ -31,9 +31,10 @@
     min-width: var(--zen-toolbox-min-width);
     margin-top: 0 !important; /* Fix full screen mode */
 
-    padding: var(--zen-toolbox-padding);
     padding-top: var(--zen-toolbox-top-align);
     padding-bottom: var(--zen-element-separation);
+
+    order: 0 !important;
 
     display: flex;
   }
@@ -162,6 +163,10 @@
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])) {
     --zen-toolbox-min-width: fit-content;
 
+    & {
+      padding: var(--zen-toolbox-padding);
+    }
+
     & #titlebar {
       min-width: 150px;
     }
@@ -276,8 +281,8 @@
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
     --zen-toolbox-max-width: 45px;
+    --zen-toolbox-padding: 8px;
     max-width: var(--zen-toolbox-max-width) !important;
-    min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
 
     & #vertical-tabs-newtab-button {
       padding: 0 !important;
@@ -460,6 +465,11 @@
       height: 100%;
 
       border-top-right-radius: var(--zen-border-radius);
+      width: var(--zen-toolbox-max-width);
+
+      & .tabbrowser-tab {
+        transition: 0s !important;
+      }
     }
 
     #navigator-toolbox[zen-has-hover],
@@ -469,7 +479,7 @@
     #navigator-toolbox[has-popup-menu],
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-toolbox-max-width: 45px;
+      --zen-toolbox-max-width: 41px;
       max-width: var(--zen-toolbox-max-width) !important;
       min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
       padding: 0 !important;
@@ -483,8 +493,69 @@
         position: absolute;
         padding: var(--zen-toolbox-padding);
         transition: 0 !important;
-        animation: zen-vtabs-animation 0.3s ease-in-out;
+        /*animation: zen-vtabs-animation 0.3s ease-in-out;*/
         -moz-window-dragging: no-drag;
+        overflow: hidden;
+        transition: width .2s !important;
+
+        & .tab-throbber,
+        & .tab-icon-pending,
+        & .tab-icon-image,
+        & .tab-sharing-icon-overlay,
+        & .tab-icon-overlay {
+          transition: 0.1s !important;
+        }
+
+      }
+
+      /* Make pinned tabs stay in a single line */
+      #vertical-pinned-tabs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0 !important;
+
+        margin-bottom: 8px;
+        position: relative;
+  
+        &::after {
+          bottom: -4px;
+          content: '';
+          display: block;
+          height: 1px;
+          background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+          width: 99%;
+          left: 50%;
+          transform: translateX(-50%);
+          position: absolute;
+        }
+
+        & .tabbrowser-tab {
+          & .tab-label-container {
+            display: flex;
+          }
+
+          & .tab-throbber,
+          & .tab-icon-pending,
+          & .tab-icon-image,
+          & .tab-sharing-icon-overlay,
+          & .tab-icon-overlay {
+            margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+          }
+
+          &:hover .tab-close-button {
+            display: block !important;
+          }
+
+          & .tab-background {
+            box-shadow: none;
+
+            background: transparent !important;
+          }
+
+          &:hover .tab-background {
+            background-color: var(--tab-hover-background-color) !important;
+          }
+        }
       }
 
       &[zen-right-side='true'] #TabsToolbar {
@@ -512,11 +583,11 @@
   /* Mark: Move sidebar to the right */
   #browser:has(#navigator-toolbox[zen-right-side='true']) {
     & #navigator-toolbox {
-      order: 3;
+      order: 3 !important;
     }
 
     & #zen-sidebar-splitter {
-      order: 2;
+      order: 2 !important;
     }
   }
 
@@ -560,7 +631,7 @@
       align-items: center;
 
       #nav-bar:has(&) & {
-        padding-inline-start: calc(var(--zen-toolbox-padding) + var(--toolbarbutton-outer-padding));
+        padding-inline-start: var(--toolbarbutton-outer-padding);
       }
 
       #browser:has(#navigator-toolbox[zen-right-side='true']) & {

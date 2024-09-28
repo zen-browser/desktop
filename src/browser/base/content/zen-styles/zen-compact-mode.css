@@ -33,8 +33,9 @@
       }
 
       #navigator-toolbox {
+        --zen-toolbox-max-width: 54px !important;
         position: absolute;
-        height: 98%;
+        height: calc(98% - var(--zen-element-separation));
         z-index: 9;
         background: var(--zen-themed-toolbar-bg) !important;
         box-shadow: 0 0 2px 2px rgba(0,0,0,.1);
@@ -45,10 +46,8 @@
         padding: var(--zen-toolbox-padding) !important;
         transition: all 0.2s ease-in-out;
         right: calc(100% - var(--zen-element-separation) + 1px);
-        top: 50%;
+        top: 1%;
         opacity: 0;
-
-        transform: translate3d(0, -50%, 0);
 
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
           border-left-width: 1px;
@@ -77,9 +76,9 @@
       #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
         opacity: 1;
         
-        transform: translate3d(calc(100% - var(--zen-element-separation)), -50%, 0);
+        transform: translateX(calc(100% - var(--zen-element-separation)));
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-          transform: translate3d(calc(-100% + var(--zen-element-separation)), -50%, 0);
+          transform: translateX(calc(-100% + var(--zen-element-separation)));
         }
       }
     }

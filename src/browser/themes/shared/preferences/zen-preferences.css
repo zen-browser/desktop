@@ -305,7 +305,7 @@ groupbox h2 {
 
 /* Workspace */
 
-#category-zen-workspaces > .category-icon {
+#category-zen-tabs-management > .category-icon {
   list-style-image: url('chrome://browser/skin/window.svg');
 }
 

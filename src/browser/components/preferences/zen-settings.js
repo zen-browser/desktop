@@ -940,4 +940,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.tab-unloader.enabled',
+    type: 'bool',
+    default: true,
+  },
 ]);

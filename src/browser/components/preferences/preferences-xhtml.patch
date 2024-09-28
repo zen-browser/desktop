@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 3affb19d1a243da4a5782c9a4a5588d165b4119f..837f078ff1f3a65a40877c1380c6d050a8415bab 100644
+index 53bdc9c912a6cd0c787dbcf41f2a82b7169d5aa7..e47c4b36b6e469b0cc8b95bde0508dc6cb0b49ae 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -43,6 +43,8 @@
@@ -39,15 +39,15 @@ index 3affb19d1a243da4a5782c9a4a5588d165b4119f..837f078ff1f3a65a40877c1380c6d050
 +          <label class="category-name" flex="1" data-l10n-id="pane-zen-looks-title"></label>
 +        </richlistitem>
 +
-+        <richlistitem id="category-zen-workspaces"
++        <richlistitem id="category-zen-tabs-management"
 +                      class="category"
-+                      value="paneZenWorkspaces"
++                      value="paneZenTabManagement"
 +                      helpTopic="prefs-main"
 +                      data-l10n-id="category-zen-workspaces"
 +                      data-l10n-attrs="tooltiptext"
 +                      align="center">
 +          <image class="category-icon"/>
-+          <label class="category-name" flex="1" data-l10n-id="pane-zen-workspaces-title"></label>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-tabs-title"></label>
 +        </richlistitem>
 +
 +        <richlistitem id="category-zen-CKS"
@@ -95,7 +95,7 @@ index 3affb19d1a243da4a5782c9a4a5588d165b4119f..837f078ff1f3a65a40877c1380c6d050
  #include moreFromMozilla.inc.xhtml
 +#include zenLooksAndFeel.inc.xhtml
 +#include zenKeyboardShortcuts.inc.xhtml
-+#include zenWorkspaces.inc.xhtml
++#include zenTabsManagement.inc.xhtml
 +#include zenMarketplace.inc.xhtml
          </vbox>
        </vbox>

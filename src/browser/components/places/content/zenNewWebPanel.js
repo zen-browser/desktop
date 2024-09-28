@@ -26,7 +26,7 @@ var gZenNewWebPanel = {
       }
     }
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      return 'https://' + url;
+      return 'http://' + url;
     }
     return url;
   },

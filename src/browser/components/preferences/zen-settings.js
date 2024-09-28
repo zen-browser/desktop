@@ -799,7 +799,7 @@ var gZenCKSSettings = {
 
   //TODO Check for duplicates
   async _handleKeyDown(event) {
-    if (!this._currentActionID) {
+    if (!this._currentActionID || document.hidden) {
       return;
     }
 

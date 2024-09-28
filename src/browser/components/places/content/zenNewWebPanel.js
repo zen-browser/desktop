@@ -47,15 +47,7 @@ var gZenNewWebPanel = {
     if (!url.value) {
       return;
     }
-    let newSite = {
-      url: urlValue,
-      ua: ua.checked,
-    };
-    let currentData = JSON.parse(Services.prefs.getStringPref('zen.sidebar.data'));
-    let newName = 'p' + new Date().getTime();
-    currentData.index.push(newName);
-    currentData.data[newName] = newSite;
-    Services.prefs.setStringPref('zen.sidebar.data', JSON.stringify(currentData));
+    window.parent.gZenBrowserManagerSidebar.addSite({url: urlValue, ua});
   },
 };
 

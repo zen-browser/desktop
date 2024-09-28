@@ -18,7 +18,8 @@ export var ZenCustomizableUI = new class {
           "preferences-button", "zen-expand-sidebar-button", "zen-profile-button"
         ],
         defaultCollapsed: null,
-      }
+      },
+      true
     );
     CustomizableUIInternal.registerArea(
       "zen-sidebar-icons-wrapper",
@@ -26,7 +27,8 @@ export var ZenCustomizableUI = new class {
         type: this.TYPE_TOOLBAR,
         defaultPlacements: this.defaultSidebarIcons,
         defaultCollapsed: null,
-      }
+      },
+      true
     );
   }
 
@@ -44,7 +46,6 @@ export var ZenCustomizableUI = new class {
         brighttext="true"
         data-l10n-id="tabs-toolbar"
         customizable="true"
-        toolbarname="Zen Sidebar Top Buttons"
         context="toolbar-context-menu"
         flex="1"
         skipintoolbarset="true"

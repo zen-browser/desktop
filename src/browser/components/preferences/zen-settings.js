@@ -806,14 +806,7 @@ var gZenCKSSettings = {
     event.preventDefault();
 
     let input = document.querySelector(`.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentActionID}"]`);
-    let accelKey = false;
-    let controlKey = false;
-    if (AppConstants.platform === 'macosx') {
-      accelKey = event.ctrlKey;
-    } else {
-      accelKey = event.ctrlKey;
-    }
-    const modifiers = new KeyShortcutModifiers(controlKey, event.altKey, event.shiftKey, event.metaKey, accelKey);
+    const modifiers = new KeyShortcutModifiers(event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, false);
     const modifiersActive = modifiers.areAnyActive();
 
     let shortcut = event.key;

@@ -49,8 +49,14 @@
             preference="zen.tab-unloader.enabled"/>
 
       <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
-      <!-- TODO: Input type should be number -->
+      <hbox id="zenTabsUnloadDelayContainer">
+            <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
+            <html:input id="zenTabsUnloadDelay"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  preference="zen.tab-unloader.timeout-minutes"/>
+      </hbox>
 </groupbox>
 
 </html:template>

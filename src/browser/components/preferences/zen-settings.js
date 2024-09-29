@@ -954,4 +954,14 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.view.split-view.change-on-hover',
+    type: 'bool',
+    default: true,
+  },
+  {
+    id: 'zen.tab-unloader.timeout-minutes',
+    type: 'int',
+    default: 10,
+  }
 ]);

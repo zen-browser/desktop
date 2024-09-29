@@ -309,6 +309,15 @@ groupbox h2 {
   list-style-image: url('chrome://browser/skin/window.svg');
 }
 
+#zenTabsUnloadDelayContainer {
+  display: flex;
+  align-items: center;
+
+  & #zenTabsUnloadDelay {
+    margin-left: auto;
+  }
+}
+
 /* CKS */
 
 #category-zen-CKS > .category-icon {

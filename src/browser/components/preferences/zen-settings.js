@@ -665,6 +665,7 @@ var zenMissingKeyboardShortcutL10n = {
   key_gotoHistory: "zen-key-goto-history",
 
   goHome: "zen-key-go-home",
+  key_redo: "zen-key-redo",
 }  
 
 var gZenCKSSettings = {
@@ -728,9 +729,9 @@ var gZenCKSSettings = {
       
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="${ZEN_CKS_CLASS_BASE}">
-          <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${action}"></label>
+          <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${keyID}"></label>
           <vbox flex="1">
-            <html:input readonly="1" class="${ZEN_CKS_INPUT_FIELD_CLASS}" id="${ZEN_CKS_INPUT_FIELD_CLASS}-${action}" />
+            <html:input readonly="1" class="${ZEN_CKS_INPUT_FIELD_CLASS}" id="${ZEN_CKS_INPUT_FIELD_CLASS}-${keyID}" />
           </vbox>
         </hbox>
       `);
@@ -841,6 +842,7 @@ var gZenCKSSettings = {
         if (!input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
+        input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
         if (hasConflicts && !input.nextElementSibling) {
           input.after(window.MozXULElement.parseXULToFragment(`
             <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>

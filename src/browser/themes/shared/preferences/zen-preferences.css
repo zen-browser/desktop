@@ -367,8 +367,18 @@ groupbox h2 {
   margin-top: 5px;
 }
 
+.zenCKSOption-unsafed {
+  color: yellow;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
 .zenCKSOption-input.zenCKSOption-input-invalid {
   border-color: red;
+}
+
+.zenCKSOption-input.zenCKSOption-input-unsafed {
+  border-color: yellow;
 }
 
 .zenCKSOption-input.zenCKSOption-input-valid {

@@ -757,18 +757,32 @@ var gZenCKSSettings = {
         const value = event.target.getAttribute(KEYBIND_ATTRIBUTE_KEY);
         this._currentActionID = event.target.getAttribute('data-id');
         event.target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
+        this._hasSafed = true;
       });
 
       input.addEventListener('editDone', (event) => {
         const target = event.target;
         target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
-        this._editDone(target);
       });
 
       input.addEventListener('blur', (event) => {
         const target = event.target;
         target.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
-        this._editDone(target);
+        if (!this._hasSafed) {
+          target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
+          if (!target.nextElementSibling) {
+            target.after(window.MozXULElement.parseXULToFragment(`
+              <label class="${ZEN_CKS_CLASS_BASE}-unsafed" data-l10n-id="zen-key-unsafed"></label>
+            `));
+            target.value = 'Not set';
+          }
+        } else {
+          target.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
+          const sibling = target.nextElementSibling;
+          if (sibling && sibling.classList.contains(`${ZEN_CKS_CLASS_BASE}-unsafed`)) {
+            sibling.remove();
+          }
+        }
       });
 
       const groupElem = wrapper.querySelector(`[data-group="${ZEN_CKS_GROUP_PREFIX}-${group}"]`);
@@ -829,16 +843,16 @@ var gZenCKSSettings = {
         }
         if (hasConflicts && !input.nextElementSibling) {
           input.after(window.MozXULElement.parseXULToFragment(`
-            <label class="${ZEN_CKS_CLASS_BASE}-conflict">Conflict with another shortcut</label>
+            <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
           `));
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
-        input.blur();
 
         this._editDone(this._latestValidKey, this._latestModifier);
         this._latestValidKey = null;
         this._latestModifier = null;
+        this._hasSafed = true;
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-valid`);
         setTimeout(() => {
@@ -856,10 +870,12 @@ var gZenCKSSettings = {
       this._resetShortcut(input);
       this._latestValidKey = null;
       this._latestModifier = null;
+      this._hasSafed = true;
       return;
     }
 
     this._latestModifier = modifiers;
+    this._hasSafed = false;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
     input.value = modifiers.toUserString() + shortcut;

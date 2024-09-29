@@ -185,6 +185,7 @@ var gZenMarketplaceManager = {
           .closest('.zenThemeMarketplaceItem')
           .querySelector('.zenThemeMarketplaceItemUninstallButton')
           .getAttribute('zen-theme-id');
+        event.target.setAttribute('disabled', true);
 
         if (!event.target.hasAttribute('pressed')) {
           await this.disableTheme(themeId);
@@ -203,6 +204,10 @@ var gZenMarketplaceManager = {
             document.getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`).removeAttribute('hidden');
           }
         }
+        setTimeout(() => {
+          // We use a timeout to make sure the theme list has been updated before re-enabling the button.
+          event.target.removeAttribute('disabled');
+        }, 400);
       });
 
       fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;

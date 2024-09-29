@@ -56,7 +56,7 @@ winget install --id Zen-Team.Zen-Browser
 winget install --id Zen-Team.Zen-Browser.Optimized
 ```
 
-#### 
+####
 
 ### macOS
 
@@ -109,6 +109,11 @@ Download and bootstrap the browser
 
 ```
 npm run init
+```
+
+Copy a language pack
+```
+sh scripts/update-en-US-packs.sh
 ```
 
 Start building the browser

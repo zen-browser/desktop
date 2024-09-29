@@ -1,0 +1,13 @@
+diff --git a/toolkit/mozapps/extensions/internal/AddonUpdateChecker.sys.mjs b/toolkit/mozapps/extensions/internal/AddonUpdateChecker.sys.mjs
+index 5b7b10a7641c57e1f5206fb57030c8c2afb60971..a1161428e6ae4141b3d6767042edf90935694121 100644
+--- a/toolkit/mozapps/extensions/internal/AddonUpdateChecker.sys.mjs
++++ b/toolkit/mozapps/extensions/internal/AddonUpdateChecker.sys.mjs
+@@ -558,7 +558,7 @@ export var AddonUpdateChecker = {
+     aIgnoreStrictCompat
+   ) {
+     if (!aAppVersion) {
+-      aAppVersion = Services.appinfo.version;
++      aAppVersion = Services.appinfo.platformVersion;
+     }
+     if (!aPlatformVersion) {
+       aPlatformVersion = Services.appinfo.platformVersion;

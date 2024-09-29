@@ -854,7 +854,6 @@ var gZenCKSSettings = {
         this._editDone(this._latestValidKey, this._latestModifier);
         this._latestValidKey = null;
         this._latestModifier = null;
-        this._hasSafed = true;
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-valid`);
         setTimeout(() => {
@@ -865,6 +864,7 @@ var gZenCKSSettings = {
           sibling.remove();
         }
       }
+      this._hasSafed = true;
       input.blur();
       this._currentActionID = null;
       return;

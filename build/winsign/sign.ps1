@@ -5,6 +5,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 echo "Preparing environment"
+git pull --recurse-submodules
 mkdir windsign-temp -ErrorAction SilentlyContinue
 
 echo "Please UNZIP the generic and specific artifacts into windsign-temp"
@@ -92,6 +93,12 @@ function SignAndPackage($name) {
 
 SignAndPackage specific
 SignAndPackage generic
+
+echo "All artifacts signed and packaged, ready for release!"
+echo "Commiting the changes to the repository"
+git add .\.github\workflows\object
+git commit -m "Sign and package windows artifacts"
+git push
 
 # Cleaning up
 

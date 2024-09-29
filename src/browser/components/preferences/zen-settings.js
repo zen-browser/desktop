@@ -829,6 +829,8 @@ var gZenCKSSettings = {
     const modifiers = new KeyShortcutModifiers(event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, false);
     const modifiersActive = modifiers.areAnyActive();
 
+    input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
+
     let shortcut = event.key;
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers

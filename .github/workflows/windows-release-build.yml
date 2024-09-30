@@ -1,4 +1,4 @@
-name: Windows Alpha Build
+name: Windows Release Build
 on:
   workflow_call:
     inputs:
@@ -12,6 +12,10 @@ on:
         type: string
       profile-data-path-archive:
         description: 'The path to the zip archive containing the profile data'
+        type: string
+      release-branch:
+        description: 'The branch to build'
+        required: true
         type: string
 
 jobs:
@@ -54,7 +58,7 @@ jobs:
           pnpm i
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ inputs.build-version }}
+        run: pnpm surfer ci --brand ${{ github.event.inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download
         run: pnpm surfer download
@@ -166,7 +170,7 @@ jobs:
           if test ${{ inputs.generate-gpo }} = true; then
             export ZEN_GA_GENERATE_PROFILE=1
           fi
-          sh .github/workflows/src/alpha-build.sh
+          sh .github/workflows/src/release-build.sh
 
       - name: Package
         env:

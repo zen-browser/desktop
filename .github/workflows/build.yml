@@ -193,7 +193,7 @@ jobs:
 
   windows-step-1:
     name: Windows build step 1 (PGO build)
-    uses: ./.github/workflows/windows-alpha-build.yml
+    uses: ./.github/workflows/windows-release-build.yml
     needs: [build-data]
     permissions:
       contents: write
@@ -202,6 +202,7 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: true
       profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
+      release-branch: ${{ github.event.inputs.update_branch }}
 
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
@@ -213,10 +214,11 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
+      release-branch: ${{ github.event.inputs.update_branch }}
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)
-    uses: ./.github/workflows/windows-alpha-build.yml
+    uses: ./.github/workflows/windows-release-build.yml
     permissions:
       contents: write
     secrets: inherit
@@ -224,26 +226,29 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false
+      release-branch: ${{ github.event.inputs.update_branch }}
 
   linux:
     name: Linux build
-    uses: ./.github/workflows/linux-alpha-build.yml
+    uses: ./.github/workflows/linux-release-build.yml
     permissions:
       contents: write
     secrets: inherit
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ github.event.inputs.update_branch }}
 
   mac:
     name: macOS build
-    uses: ./.github/workflows/macos-alpha-build.yml
+    uses: ./.github/workflows/macos-release-build.yml
     permissions:
       contents: write
     secrets: inherit
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ github.event.inputs.update_branch }}
 
   appimage:
     name: AppImage build - Linux ${{ matrix.generic == true && 'generic' || 'specific' }}

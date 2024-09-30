@@ -20,7 +20,7 @@ on:
         type: 'choice'
         options:
           - 'alpha'
-          - 'twilight' # updated each day basically
+          - 'twilight'
 
 jobs:
   build-data:
@@ -59,12 +59,12 @@ jobs:
           npm i -g @zen-browser/surfer
 
       - name: Bump version
-        if: ${{ github.event.inputs.update_version == 'true' }}
+        if: ${{ github.event.inputs.update_version == 'true' && github.event.inputs.update_branch == 'alpha' }}
         run: |
           pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --bump prerelease
 
       - name: Bump version without new version
-        if: ${{ github.event.inputs.update_version == 'false' }}
+        if: ${{ github.event.inputs.update_version == 'false' || github.event.inputs.update_branch == 'twilight' }}
         run: |
           pnpm surfer ci --brand ${{ github.event.inputs.update_branch }}
 
@@ -356,8 +356,13 @@ jobs:
           cp -a ../linux_update_manifest_generic/.  updates/
           cp -a ../linux_update_manifest_specific/.  updates/
 
-          cp -a ../.github/workflows/object/windows-x64-signed-generic/update_manifest/.  updates/
-          cp -a ../.github/workflows/object/windows-x64-signed-specific/update_manifest/.  updates/
+          if [[ $RELEASE_BRANCH == 'alpha' ]]; then
+            cp -a ../.github/workflows/object/windows-x64-signed-generic/update_manifest/.  updates/
+            cp -a ../.github/workflows/object/windows-x64-signed-specific/update_manifest/.  updates/
+          else
+            cp -a ../windows_update_manifest_generic/.  updates/
+            cp -a ../windows_update_manifest_specific/.  updates/
+          fi
 
           cp -a ../macos_update_manifest_aarch64/.  updates/
           cp -a ../macos_update_manifest_x64/.  updates/
@@ -368,6 +373,45 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-bot@users.noreply.github.com
           repository: ./updates-server
+
+        # If we are on twilight, we want to just update the twilight tag's release
+      - name: Update twilight tag
+        if: ${{ github.event.inputs.update_branch == 'twilight' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            zen.source.tar.gz
+            zen.linux-generic.tar.bz2
+            zen.linux-specific.tar.bz2
+            zen-generic.AppImage
+            zen-generic.AppImage.zsync
+            zen-specific.AppImage
+            zen-specific.AppImage.zsync
+            zen.win-generic.zip
+            zen.win-specific.zip
+            linux.mar
+            linux-generic.mar
+            windows-generic.mar
+            windows.mar
+            macos-x64.mar
+            macos-aarch64.mar
+            zen.installer.exe
+            zen.installer-generic.exe
+            zen.macos-x64.dmg
+            zen.macos-aarch64.dmg
+          tag_name: "twilight"
+          name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})"
+          body: |
+            # Zen Twilight Build
+
+            This is the latest build from the twilight branch. It is updated more recently than the alpha branch.
+
+            * This build is not recommended for daily use, it may contain bugs, issues, and other problems.
+          draft: false
+          prerelease: true
+          token: ${{ github.token }}
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: release-github
         uses: 'marvinpinto/action-automatic-releases@latest'

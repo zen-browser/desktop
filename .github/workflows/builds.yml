@@ -1,4 +1,4 @@
-name: Zen Alpha builds
+name: Zen Release builds
 
 on:
   workflow_dispatch:
@@ -13,6 +13,14 @@ on:
         required: false
         default: false
         type: 'boolean'
+      update_branch:
+        description: 'Update branch with new version'
+        required: true
+        default: 'alpha'
+        type: 'choice'
+        options:
+          - 'alpha'
+          - 'twilight' # updated each day basically
 
 jobs:
   build-data:
@@ -53,12 +61,12 @@ jobs:
       - name: Bump version
         if: ${{ github.event.inputs.update_version == 'true' }}
         run: |
-          pnpm surfer ci --brand alpha --bump prerelease
+          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --bump prerelease
 
       - name: Bump version without new version
         if: ${{ github.event.inputs.update_version == 'false' }}
         run: |
-          pnpm surfer ci --brand alpha
+          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }}
 
       - name: Debug
         run: |
@@ -113,7 +121,7 @@ jobs:
       - name: Activate surfer CLI
         run: |
           echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
-          pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Check version
         run: |
@@ -162,7 +170,7 @@ jobs:
         run: pnpm install
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ needs.build-data.outputs.version }}
+        run: pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download firefox source and dependancies
         run: pnpm surfer download --verbose
@@ -272,8 +280,8 @@ jobs:
         run: |
           set -eux
           rm AppDir/.DirIcon || true
-          cp configs/branding/alpha/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
-          cp configs/branding/alpha/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
+          cp configs/branding/${{ github.event.inputs.update_branch }}/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+          cp configs/branding/${{ github.event.inputs.update_branch }}/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
@@ -356,6 +364,7 @@ jobs:
 
       - name: release-github
         uses: 'marvinpinto/action-automatic-releases@latest'
+        if: ${{ github.event.inputs.update_branch == 'alpha' }}
         with:
           repo_token: '${{ secrets.DEPLOY_KEY }}'
           automatic_release_tag: ${{ needs.build-data.outputs.version }}
@@ -383,7 +392,7 @@ jobs:
             zen.macos-aarch64.dmg
 
   prepare-flatpak:
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
@@ -518,7 +527,7 @@ jobs:
           delete-branch: true
 
   release-homebrew:
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Homebrew release
     needs: [release, mac, build-data]

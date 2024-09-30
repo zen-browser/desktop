@@ -1,9 +1,13 @@
-name: Linux Alpha Build
+name: Linux Release Build
 on:
   workflow_call:
     inputs:
       build-version:
         description: 'The version to build'
+        required: true
+        type: string
+      release-branch:
+        description: 'The branch to build'
         required: true
         type: string
 
@@ -87,7 +91,7 @@ jobs:
         run: pnpm install
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand alpha --display-version ${{ inputs.build-version }}
+        run: pnpm surfer ci --brand ${{ github.event.inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download firefox source and dependencies
         run: pnpm surfer download
@@ -110,13 +114,13 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.generic == true }}
         continue-on-error: true
-        run: sh .github/workflows/src/alpha-build.sh
+        run: sh .github/workflows/src/release-build.sh
 
       - name: Build again if it failed
         if: failure()
         env:
           SURFER_COMPAT: ${{ matrix.generic == true }}
-        run: sh .github/workflows/src/alpha-build.sh
+        run: sh .github/workflows/src/release-build.sh
 
       - name: Package
         env:

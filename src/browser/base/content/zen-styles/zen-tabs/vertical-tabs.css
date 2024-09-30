@@ -518,7 +518,7 @@
         margin-bottom: 8px;
         position: relative;
   
-        &::after {
+        &:has(tab:not([hidden]))::after {
           bottom: -4px;
           content: '';
           display: block;

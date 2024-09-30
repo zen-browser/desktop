@@ -343,6 +343,8 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Copy update manifests
+        env:
+          RELEASE_BRANCH: ${{ github.event.inputs.update_branch }}
         run: |
           cd updates-server
           mkdir -p updates

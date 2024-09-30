@@ -283,6 +283,7 @@
     --zen-toolbox-max-width: 45px;
     --zen-toolbox-padding: 8px;
     max-width: var(--zen-toolbox-max-width) !important;
+    min-width: var(--zen-toolbox-max-width) !important;
 
     & #vertical-tabs-newtab-button {
       padding: 0 !important;
@@ -481,7 +482,7 @@
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
       --zen-toolbox-max-width: 41px;
       max-width: var(--zen-toolbox-max-width) !important;
-      min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 3px) !important;
+      min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
       padding: 0 !important;
 
       & #TabsToolbar {

@@ -323,7 +323,7 @@ jobs:
     needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]
     runs-on: ubuntu-latest
     environment:
-      name: Deploy-Release
+      name: ${{ github.event.inputs.update_branch == 'alpha' && 'Deploy-Release' || 'Deploy-Twilight' }}
 
     steps:
       - uses: actions/checkout@v4

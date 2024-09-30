@@ -58,7 +58,7 @@ jobs:
           pnpm i
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand ${{ github.event.inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download
         run: pnpm surfer download
@@ -222,28 +222,28 @@ jobs:
           path: engine/obj-x86_64-pc-windows-msvc/
           
       - name: Upload zip file if twilight branch
-        if: ${{ github.event.inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
         with:
           name: zen.win-${{ matrix.generic == true && 'generic' || 'specific' }}.zip
           path: ./zen.win-${{ matrix.generic == true && 'generic' || 'specific' }}.zip
 
       - name: Upload installer if twilight branch
-        if: ${{ github.event.inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
         with:
           name: zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
           path: ./zen.installer${{ matrix.generic == true && '-generic' || '' }}.exe
 
       - name: Upload mar if twilight branch
-        if: ${{ github.event.inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
         with:
           name: windows${{ matrix.generic == true && '-generic' || '' }}.mar
           path: ./windows${{ matrix.generic == true && '-generic' || '' }}.mar
         
       - name: Upload update manifests if twilight branch
-        if: ${{ github.event.inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
         with:
           name: windows_update_manifest_${{ matrix.generic == true && 'generic' || 'specific' }}

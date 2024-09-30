@@ -500,7 +500,7 @@ jobs:
         run: sleep 240
 
   release-flatpak:
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]

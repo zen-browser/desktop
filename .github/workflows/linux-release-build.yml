@@ -91,7 +91,7 @@ jobs:
         run: pnpm install
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand ${{ github.event.inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download firefox source and dependencies
         run: pnpm surfer download

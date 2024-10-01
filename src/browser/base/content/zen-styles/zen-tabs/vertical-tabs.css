@@ -39,6 +39,10 @@
     display: flex;
   }
 
+  .titlebar-spacer[type="pre-tabs"],
+  .titlebar-spacer[type="post-tabs"] {
+    display: none;
+  }
 
   #TabsToolbar-customization-target {
     position: relative;

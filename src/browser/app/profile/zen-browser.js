@@ -59,7 +59,7 @@ pref("browser.tabs.loadBookmarksInTabs", false);
 pref('browser.toolbars.bookmarks.visibility', 'never');
 
 // Enable Do Not Track and GPC by default.
-pref("privacy.donottrackheader.enabled", true);
+pref("privacy.donottrackheader.enabled", false);
 pref("privacy.globalprivacycontrol.enabled", true);
 // Disable more telemetry
 pref("toolkit.telemetry.enabled", false);

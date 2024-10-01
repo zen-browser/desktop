@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..12eef770f5ae48b83cadd10a4ed21b8fab508bfe 100644
+index 9f7331f2f00a8b0de6ce28a7029358a86eeb8873..2dc56a8455df9009bd1f524b377b8fdf09e124ca 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
-@@ -17,7 +17,7 @@
+@@ -15,7 +15,7 @@
    --tab-border-radius: 4px;
    --tab-shadow-max-size: 6px;
    --tab-block-margin: 4px;
@@ -11,40 +11,17 @@ index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..12eef770f5ae48b83cadd10a4ed21b8f
    --tab-hover-background-color: color-mix(in srgb, currentColor 11%, transparent);
    --tab-selected-textcolor: var(--toolbar-color);
    --tab-selected-bgcolor: var(--toolbar-bgcolor);
-@@ -133,12 +133,12 @@
-     visibility: hidden;
+@@ -132,8 +132,7 @@
    }
  
--  &[pinned] {
-+  & {
-     flex-shrink: 0;
- 
-     #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > & {
--      position: absolute !important;
--      display: block;
-+      /*position: absolute !important;
-+      display: block;*/
-     }
+   #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > &[pinned] {
+-    position: absolute !important;
+-    display: block;
++
    }
  
-@@ -368,8 +368,6 @@
-     animation-delay: -1.5s;
-   }
- 
--  &[selected]:not([src], [pinned], [crashed], [pictureinpicture]),
--  &:not([src], [pinned], [crashed], [sharing], [pictureinpicture]),
-   &[busy] {
-     display: none;
-   }
-@@ -912,6 +910,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] >
- .titlebar-spacer[type="pre-tabs"],
- .titlebar-spacer[type="post-tabs"] {
-   width: 40px;
-+  display: none !important;
- }
- 
- @media (max-width: 500px) {
-@@ -927,7 +926,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] >
+   #tabbrowser-tabs[movingtab] > #tabbrowser-arrowscrollbox > &:is([selected], [multiselected]) {
+@@ -952,7 +951,7 @@ sidebar-main[expanded] > #vertical-tabs > #tabbrowser-tabs[orient="vertical"] >
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)
  ) + #tabbrowser-tabs {
@@ -53,7 +30,7 @@ index 1ef4874d6e7f3b43f4c82db6a679883cf34ab493..12eef770f5ae48b83cadd10a4ed21b8f
    padding-inline-start: calc(var(--tab-overflow-pinned-tabs-width) + 2px);
    margin-inline-start: 2px;
  }
-@@ -962,7 +961,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -987,7 +986,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

@@ -1,18 +1,19 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index ed230860215c734e6fb903b3660d0c679043e3f3..1e54e023c930db04a532b2b125f44e73912f63ad 100644
+index a86b2e0e04769e25acbc6f7d2294dae895e3392e..dce7e1a2bdf52e616c987a04c0d5c1c1ede42676 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
-@@ -30,8 +30,6 @@ panel {
+@@ -30,8 +30,7 @@ panel {
    --background-color-canvas: var(--panel-background);
  
    @media (-moz-platform: linux) {
 -    --panel-border-radius: 8px;
 -    --panel-padding-block: 3px;
++
  
      @media (prefers-contrast) {
        --panel-border-color: color-mix(in srgb, currentColor 60%, transparent);
-@@ -43,18 +41,7 @@ panel {
-     --panel-shadow-margin: 4px;
+@@ -49,18 +48,7 @@ panel {
+     --panel-border-radius: 0px !important;
    }
  
 -  @media (-moz-platform: macos) {
@@ -31,11 +32,10 @@ index ed230860215c734e6fb903b3660d0c679043e3f3..1e54e023c930db04a532b2b125f44e73
  
    &::part(content) {
      display: flex;
-@@ -193,6 +180,6 @@ panel[type="arrow"] {
+@@ -199,6 +187,5 @@ panel[type="arrow"] {
    }
  
    &[animating] {
 -    pointer-events: none;
-+    /*pointer-events: none;*/
    }
  }

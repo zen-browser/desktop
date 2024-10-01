@@ -284,7 +284,8 @@
     #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
     #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
     #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
-    --zen-toolbox-max-width: 45px;
+    /* Important: When changin this value, make sure expand on hover doesn't break! */
+    --zen-toolbox-max-width: 49px; /* 1px more because the browser view has one pixel of padding to avoid the border being cut off */
     --zen-toolbox-padding: 8px;
     max-width: var(--zen-toolbox-max-width) !important;
     min-width: var(--zen-toolbox-max-width) !important;
@@ -484,7 +485,7 @@
     #navigator-toolbox[has-popup-menu],
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-toolbox-max-width: 41px;
+      --zen-toolbox-max-width: 45px;
       max-width: var(--zen-toolbox-max-width) !important;
       min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
       padding: 0 !important;
@@ -497,6 +498,7 @@
         border-right-color: var(--zen-colors-border);
         position: absolute;
         padding: var(--zen-toolbox-padding);
+        padding-top: 0;
         transition: 0 !important;
         /*animation: zen-vtabs-animation 0.3s ease-in-out;*/
         -moz-window-dragging: no-drag;

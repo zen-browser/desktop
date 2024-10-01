@@ -21,7 +21,24 @@ on:
         options:
           - 'alpha'
           - 'twilight'
-
+  workflow_call:
+    inputs:
+      create_release:
+        description: 'Create a new release for this build'
+        required: false
+        default: false
+        type: 'boolean'
+      update_version:
+        description: 'Update the version number'
+        required: false
+        default: false
+        type: 'boolean'
+      update_branch:
+        description: 'Update branch with new version'
+        required: true
+        default: 'alpha'
+        type: 'string'
+        
 jobs:
   build-data:
     permissions:

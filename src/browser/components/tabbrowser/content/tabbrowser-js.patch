@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36d7470155 100644
+index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..7ffa8f7d64f2ed13018e3f32f94e7b6835bdacdb 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -452,11 +452,26 @@
@@ -68,7 +68,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3297,6 +3328,13 @@
+@@ -3297,6 +3328,12 @@
              preferredRemoteType,
            });
  
@@ -78,11 +78,24 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
 +          if (tabData.zenDefaultUserContextId) {
 +            tab.setAttribute("zenDefaultUserContextId", "true");
 +          }
-+
            if (select) {
              tabToSelect = tab;
            }
-@@ -4184,6 +4222,7 @@
+@@ -3331,7 +3368,13 @@
+             this.tabContainer._invalidateCachedTabs();
+           }
+         }
++        if (tabData.zenPinnedUrl) {
++          tab.setAttribute("zen-pinned-url", tabData.zenPinnedUrl);
++        }
+ 
++        if (tabData.zenPinnedTitle) {
++          tab.setAttribute("zen-pinned-title", tabData.zenPinnedTitle);
++        }
+         tab.initialize();
+       }
+ 
+@@ -4184,6 +4227,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||
@@ -90,7 +103,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
          this._removingTabs.size >
            3 /* don't want lots of concurrent animations */ ||
          !aTab.hasAttribute(
-@@ -5117,10 +5156,10 @@
+@@ -5117,10 +5161,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      },
  
@@ -103,3 +116,15 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
+@@ -7822,7 +7866,10 @@ var TabContextMenu = {
+     );
+     contextUnpinSelectedTabs.hidden =
+       !this.contextTab.pinned || !multiselectionContext;
+-
++    let contextResetPinnedTab = document.getElementById("context_zen-reset-pinned-tab");
++    if(contextResetPinnedTab) {
++      contextResetPinnedTab.hidden = !this.contextTab.pinned || !this.contextTab.getAttribute("zen-pinned-url") || multiselectionContext;
++    }
+     // Move Tab items
+     let contextMoveTabOptions = document.getElementById(
+       "context_moveTabOptions"

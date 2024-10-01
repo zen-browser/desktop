@@ -769,7 +769,8 @@ menuitem[id='placesContext_deleteHost'],
 #context_reloadTab,
 #context_reloadSelectedTabs,
 #toolbar-context-reloadSelectedTab,
-#toolbar-context-reloadSelectedTabs {
+#toolbar-context-reloadSelectedTabs,
+#context_zen-reset-pinned-tab {
   --menu-image: url('reload.svg');
 }
 

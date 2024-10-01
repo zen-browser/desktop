@@ -111,7 +111,7 @@ var gZenMarketplaceManager = {
 
     const themes = await ZenThemesCommon.getThemes();
 
-    const browser = ZenThemesCommon.currentBrowser;
+    const browser = ZenMultiWindowFeature.currentBrowser;
 
     const themeList = document.createElement('div');
 

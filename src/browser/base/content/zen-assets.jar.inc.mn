@@ -14,6 +14,7 @@
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
         content/browser/zen-components/ZenThemesImporter.mjs    (content/zen-components/src/ZenThemesImporter.mjs)
         content/browser/zen-components/ZenTabUnloader.mjs       (content/zen-components/src/ZenTabUnloader.mjs)
+        content/browser/zen-components/ZenCommonUtils.mjs       (content/zen-components/src/ZenCommonUtils.mjs)
 
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)

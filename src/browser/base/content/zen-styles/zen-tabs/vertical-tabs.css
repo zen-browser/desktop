@@ -497,10 +497,16 @@
 
     #navigator-toolbox {
       z-index: 1;
+      /*
+        This value is to be the result of: calc(calc(var(--zen-toolbox-max-width) - 1px - var(--tab-min-width)) / 2);
+        where --zen-toolbox-max-width is 49px and --tab-min-width is 36px but these values changes elsewhere, making
+        tabs flicker when expanding or collapsing
+      */
       --tabs-toolbar-padding: 6px;
       --tabs-expanding-time: .2s;
       --tabs-expanding-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
       --tabs-colapsing-time: .1s;
+      --tabs-colapsing-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
       --tabs-fading-color-time: .22s;
       --tabs-appearing-color-time: .05s;
     }

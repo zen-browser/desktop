@@ -648,6 +648,10 @@
         & .tab-icon-overlay {
           transition: var(--tabs-expanding-time) !important;
         }
+        @media ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-toolbar')) {
+          margin-top: calc(var(--zen-toolbox-padding) + 7px);
+          padding-bottom: calc(var(--zen-toolbox-padding) + 7px);
+        }
       }
 
       /* Make pinned tabs stay in a single line */

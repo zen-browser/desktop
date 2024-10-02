@@ -177,6 +177,9 @@
     --zen-toolbox-min-width: fit-content;
     padding: var(--zen-toolbox-padding);
     padding-top: 0;
+    @media ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-toolbar')) {
+      padding-top: var(--zen-toolbox-padding);
+    }
 
     & #titlebar {
       min-width: 150px;

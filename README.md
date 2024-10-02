@@ -133,7 +133,7 @@ pnpm start
 
 To view changes you've made, run
 ```bash
-pnpm build:i && pnpm start
+pnpm build:ui && pnpm start
 ```
 
 ## Special Thanks

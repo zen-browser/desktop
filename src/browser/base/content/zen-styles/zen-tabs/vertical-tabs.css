@@ -497,6 +497,7 @@
 
     #navigator-toolbox {
       z-index: 1;
+      --tabs-toolbar-padding: 6px;
       --tabs-expanding-time: .2s;
       --tabs-expanding-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
       --tabs-colapsing-time: .1s;
@@ -526,6 +527,32 @@
       & .tabbrowser-tab {
         transition: 0s !important;
       }
+    }
+
+    /* Colapsed */
+    #navigator-toolbox:not(#navigator-toolbox:is(
+    #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
+    #navigator-toolbox[zen-user-hover='true']:focus-within,
+    #navigator-toolbox[zen-user-hover='true'][movingtab],
+    #navigator-toolbox[zen-user-hover='true'][flash-popup],
+    #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
+    #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
+    #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
+      & #tabbrowser-tabs {
+        & .tabbrowser-tab {
+          width: unset !important;
+        }
+      }
+    }
+
+
+    .tabbrowser-tab {
+      margin: 0 !important;
+    }
+
+    #TabsToolbar {
+      padding-left: var(--tabs-toolbar-padding) !important;
+      padding-right: var(--tabs-toolbar-padding);
     }
 
     #navigator-toolbox[zen-has-hover],

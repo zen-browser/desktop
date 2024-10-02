@@ -76,14 +76,14 @@ jobs:
           npm i -g @zen-browser/surfer
 
       - name: Bump version
-        if: ${{ github.event.inputs.update_version == 'true' && github.event.inputs.update_branch == 'alpha' }}
+        if: ${{ inputs.update_version == 'true' && inputs.update_branch == 'alpha' }}
         run: |
-          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --bump prerelease
+          pnpm surfer ci --brand ${{ inputs.update_branch }} --bump prerelease
 
       - name: Bump version without new version
-        if: ${{ github.event.inputs.update_version == 'false' || github.event.inputs.update_branch == 'twilight' }}
+        if: ${{ inputs.update_version == 'false' || inputs.update_branch == 'twilight' }}
         run: |
-          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }}
+          pnpm surfer ci --brand ${{ inputs.update_branch }}
 
       - name: Debug
         run: |
@@ -99,7 +99,7 @@ jobs:
           echo "version=$(surfer get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ github.event.inputs.update_version == 'true' }}
+        if: ${{ inputs.update_version == 'true' }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
@@ -138,7 +138,7 @@ jobs:
       - name: Activate surfer CLI
         run: |
           echo "There's a bug in the surfer CLI, we run this so that surfer sets everything up correctly"
-          pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
+          pnpm surfer ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Check version
         run: |
@@ -187,7 +187,7 @@ jobs:
         run: pnpm install
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand ${{ github.event.inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
+        run: pnpm surfer ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download firefox source and dependancies
         run: pnpm surfer download --verbose
@@ -219,7 +219,7 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: true
       profile-data-path-archive: zen-windows-x86_64-profile-data-and-jarlog.zip
-      release-branch: ${{ github.event.inputs.update_branch }}
+      release-branch: ${{ inputs.update_branch }}
 
   windows-step-2:
     name: Windows build step 2 (Generate profile data)
@@ -231,7 +231,7 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
-      release-branch: ${{ github.event.inputs.update_branch }}
+      release-branch: ${{ inputs.update_branch }}
 
   windows-step-3:
     name: Windows build step 3 (build with profile data)
@@ -243,7 +243,7 @@ jobs:
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: false
-      release-branch: ${{ github.event.inputs.update_branch }}
+      release-branch: ${{ inputs.update_branch }}
 
   linux:
     name: Linux build
@@ -254,7 +254,7 @@ jobs:
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      release-branch: ${{ github.event.inputs.update_branch }}
+      release-branch: ${{ inputs.update_branch }}
 
   mac:
     name: macOS build
@@ -265,7 +265,7 @@ jobs:
     needs: [build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      release-branch: ${{ github.event.inputs.update_branch }}
+      release-branch: ${{ inputs.update_branch }}
 
   appimage:
     name: AppImage build - Linux ${{ matrix.generic == true && 'generic' || 'specific' }}
@@ -302,8 +302,8 @@ jobs:
         run: |
           set -eux
           rm AppDir/.DirIcon || true
-          cp configs/branding/${{ github.event.inputs.update_branch }}/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
-          cp configs/branding/${{ github.event.inputs.update_branch }}/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
+          cp configs/branding/${{ inputs.update_branch }}/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
+          cp configs/branding/${{ inputs.update_branch }}/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
@@ -334,13 +334,13 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
 
   release:
-    if: ${{ github.event.inputs.create_release == 'true' }}
+    if: ${{ inputs.create_release == 'true' }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.inputs.update_branch == 'alpha' && 'Deploy-Release' || 'Deploy-Twilight' }}
+      name: ${{ inputs.update_branch == 'alpha' && 'Deploy-Release' || 'Deploy-Twilight' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -366,7 +366,7 @@ jobs:
 
       - name: Copy update manifests
         env:
-          RELEASE_BRANCH: ${{ github.event.inputs.update_branch }}
+          RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: |
           cd updates-server
           mkdir -p updates
@@ -393,7 +393,7 @@ jobs:
 
         # If we are on twilight, we want to just update the twilight tag's release
       - name: Update twilight tag
-        if: ${{ github.event.inputs.update_branch == 'twilight' }}
+        if: ${{ inputs.update_branch == 'twilight' }}
         uses: softprops/action-gh-release@v2
         with:
           files: |
@@ -432,7 +432,7 @@ jobs:
 
       - name: release-github
         uses: 'marvinpinto/action-automatic-releases@latest'
-        if: ${{ github.event.inputs.update_branch == 'alpha' }}
+        if: ${{ inputs.update_branch == 'alpha' }}
         with:
           repo_token: '${{ secrets.DEPLOY_KEY }}'
           automatic_release_tag: ${{ needs.build-data.outputs.version }}
@@ -460,7 +460,7 @@ jobs:
             zen.macos-aarch64.dmg
 
   prepare-flatpak:
-    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
@@ -517,7 +517,7 @@ jobs:
         run: sleep 240
 
   release-flatpak:
-    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]
@@ -595,7 +595,7 @@ jobs:
           delete-branch: true
 
   release-homebrew:
-    if: ${{ github.event.inputs.create_release == 'true' && github.event.inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Homebrew release
     needs: [release, mac, build-data]

@@ -16,6 +16,8 @@ jobs:
   post-build:
     name: Post Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: twilight-release-schedule
     steps:
       - name: Checkout

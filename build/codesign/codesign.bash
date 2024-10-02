@@ -50,11 +50,11 @@ if [ ! -x ${SWVERS} ]; then
 fi
 
 # Require macOS 10.14 or newer.
-OSVERSION=`${SWVERS} -productVersion|sed -En 's/[0-9]+\.([0-9]+)\.[0-9]+/\1/p'`;
-if [ ${OSVERSION} \< 14 ]; then
-    echo "ERROR: macOS 10.14 or later is required"
-    exit -1
-fi
+#OSVERSION=`${SWVERS} -productVersion|sed -En 's/[0-9]+\.([0-9]+)\.[0-9]+/\1/p'`;
+#if [ ${OSVERSION} \< 14 ]; then
+#    echo "ERROR: macOS 10.14 or later is required"
+#    exit -1
+#fi
 
 while getopts "a:i:b:o:p:" opt; do
   case ${opt} in

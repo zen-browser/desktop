@@ -7,6 +7,8 @@ on:
 jobs:
   twilight-release-schedule:
     name: Twilight Release Schedule
+    permissions:
+      contents: write
     uses: ./.github/workflows/build.yml
     with:
       create_release: true
@@ -16,8 +18,6 @@ jobs:
   post-build:
     name: Post Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     needs: twilight-release-schedule
     steps:
       - name: Checkout

@@ -129,6 +129,13 @@ Finally, run the browser!
 pnpm start
 ```
 
+### Development
+
+To view changes you've made, run
+```bash
+pnpm build:i && pnpm start
+```
+
 ## Special Thanks
 
 - [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)

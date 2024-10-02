@@ -33,6 +33,13 @@
     padding-bottom: var(--zen-element-separation);
 
     order: 0 !important;
+    /*
+    tabbrowser-tabbox has 2px padding, witch makes spacing inside #navigator-toolbox
+    look uneven. This margin fixes it
+    */
+    margin-right: -2px;
+    /* Fixes TabsToolbar overflowing 1px to nav-bar area */
+    border-top: 1px solid transparent;
 
     display: flex;
   }

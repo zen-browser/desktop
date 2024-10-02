@@ -30,29 +30,56 @@
   --uc-tweak-rounded-corners-shadow-color: var(--zen-primary-color) !important;
 }
 
-#tabbrowser-tabpanels:has(> [zen-split='true']) {
+#tabbrowser-tabbox {
   --zen-split-row-gap: calc(var(--zen-element-separation) + 2px);
   --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
-  margin-right: calc(var(--zen-element-separation) - var(--zen-split-row-gap)/2);
-  margin-bottom: calc(var(--zen-element-separation) - var(--zen-split-column-gap)/2);
-  margin-top: calc(-var(--zen-split-row-gap)/2);
-  margin-left: calc(-var(--zen-split-row-gap)/2);
 }
 
+#tabbrowser-tabpanels:has(> [zen-split='true']) {
+  margin-right: calc(var(--zen-element-separation) - var(--zen-split-row-gap)/2);
+  margin-bottom: calc(var(--zen-element-separation) - var(--zen-split-column-gap)/2);
+  margin-top: calc(var(--zen-split-row-gap)/-2);
+  margin-left: calc(var(--zen-split-row-gap)/-2);
+}
+
+margin-top: calc(-var(--zen-split-row-gap)/2);
+margin-left: calc(-var(--zen-split-row-gap)/2);
 #tabbrowser-tabpanels[zen-split-view] {
   .zen-split-view-splitter {
     display: inherit;
   }
 }
 
+#zen-splitview-overlay {
+  position: absolute;
+  width: calc(100% - var(--zen-element-separation));
+  height: calc(100% - var(--zen-element-separation));
+  pointer-events: none;
+}
+
+#zen-splitview-splitterbox {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
 .zen-split-view-splitter {
-  display: none;
   visibility: inherit;
   cursor: ew-resize;
   -moz-subtree-hidden-only-visually: 0;
+  position: absolute;
+  pointer-events: all;
+}
+
+.zen-split-view-splitter[orient='vertical'] {
+  width: var(--zen-split-column-gap);
+  margin-left: calc(var(--zen-split-row-gap) * -1);
 }
 
 .zen-split-view-splitter[orient='horizontal'] {
+  height: var(--zen-split-column-gap);
+  margin-top: calc(var(--zen-split-column-gap) * -1);
   cursor: n-resize;
 }
 

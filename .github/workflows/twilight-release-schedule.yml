@@ -8,6 +8,7 @@ jobs:
   twilight-release-schedule:
     name: Twilight Release Schedule
     permissions: write-all
+    secrets: inherit
     uses: ./.github/workflows/build.yml
     with:
       create_release: true

@@ -497,6 +497,10 @@
 
     #navigator-toolbox {
       z-index: 1;
+      --tabs-expanding-time: .2s;
+      --tabs-expanding-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
+      --tabs-colapsing-time: .1s;
+      --tabs-colapsing-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
     }
 
     #TabsToolbar {
@@ -511,6 +515,13 @@
 
       border-top-right-radius: var(--zen-border-radius);
       width: var(--zen-toolbox-max-width);
+      /* Closing transition */
+      transition: 
+        width var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        border-top-color var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        border-right-color var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        /* Hide background-color slower, otherwise, background content can be seen */
+        background-color var(--tabs-colapsing-time) cubic-bezier( 0.99, 0, 0.83, 0.99 ) !important;
 
       & .tabbrowser-tab {
         transition: 0s !important;
@@ -541,7 +552,13 @@
         /*animation: zen-vtabs-animation 0.3s ease-in-out;*/
         -moz-window-dragging: no-drag;
         overflow: hidden;
-        transition: width 0.2s !important;
+        /* Opening transition */
+        transition: 
+          width var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          border-top-color var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          border-right-color var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          /* Show background-color faster, otherwise, background content can be seen */
+          background-color  var(--tabs-expanding-time) cubic-bezier( 0, 0.99, 0, 1 ) !important;
         border-right: 1px solid var(--zen-colors-border);
 
         & .tab-throbber,
@@ -549,7 +566,7 @@
         & .tab-icon-image,
         & .tab-sharing-icon-overlay,
         & .tab-icon-overlay {
-          transition: 0.1s !important;
+          transition: var(--tabs-expanding-time) !important;
         }
       }
 

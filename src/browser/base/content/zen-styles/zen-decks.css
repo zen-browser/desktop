@@ -18,6 +18,8 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split='true'] {
   flex: 1;
+  margin: calc(var(--zen-split-column-gap) / 2) calc(var(--zen-split-row-gap) / 2);
+  position: absolute !important;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split-anim='true'] {
@@ -29,11 +31,12 @@
 }
 
 #tabbrowser-tabpanels:has(> [zen-split='true']) {
-  display: grid;
-  row-gap: 0;
-  column-gap: 0;
   --zen-split-row-gap: calc(var(--zen-element-separation) + 2px);
   --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
+  margin-right: calc(var(--zen-element-separation) - var(--zen-split-row-gap)/2);
+  margin-bottom: calc(var(--zen-element-separation) - var(--zen-split-column-gap)/2);
+  margin-top: calc(-var(--zen-split-row-gap)/2);
+  margin-left: calc(-var(--zen-split-row-gap)/2);
 }
 
 #tabbrowser-tabpanels[zen-split-view] {

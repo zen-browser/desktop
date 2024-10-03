@@ -84,6 +84,20 @@ var gZenVerticalTabsManager = {
     gZenCompactModeManager.addEventListener(updateEvent);
     this._updateEvent();
     this.initRightSideOrderContextMenu();
+
+    let tabs = document.getElementById("tabbrowser-tabs");
+
+    if (tabs) {
+      tabs.addEventListener("mouseup", this.openNewTabOnTabsMiddleClick.bind(this));
+    }
+  },
+
+  openNewTabOnTabsMiddleClick(event) {
+    if (event.button === 1 && event.target.id === "tabbrowser-tabs") {
+      BrowserCommands.openTab({ event });
+      event.stopPropagation();
+      event.preventDefault();
+    }
   },
 
   get navigatorToolbox() {

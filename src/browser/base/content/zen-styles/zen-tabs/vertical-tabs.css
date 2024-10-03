@@ -299,6 +299,10 @@
       min-width: unset !important;
     }
 
+    #vertical-tabs-newtab-button[data-l10n-id="tabs-toolbar-new-tab-clear-all"] {
+      background: rgba(253, 50, 50, 0.48) !important;
+    }
+
     & #zen-sidebar-icons-wrapper {
       display: flex;
       flex-direction: column;

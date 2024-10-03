@@ -102,30 +102,38 @@ cd desktop
 Install dependencies
 
 ```bash
-npm i
+pnpm install
 ```
 
 Download and bootstrap the browser
 
-```
-npm run init
+```bash
+pnpm run init
 ```
 
 Copy a language pack
-```
+
+```bash
 sh scripts/update-en-US-packs.sh
 ```
 
 Start building the browser
 
-```
-npm run build
+```bash
+pnpm run build
 ```
 
 Finally, run the browser!
 
+```bash
+pnpm start
 ```
-npm start
+
+### Development
+
+To view changes you've made, run
+```bash
+pnpm build:ui && pnpm start
 ```
 
 ## Special Thanks

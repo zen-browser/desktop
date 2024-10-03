@@ -83,7 +83,7 @@
     grid-gap: 0 !important;
 
     & .tabbrowser-tab {
-      animation: zen-slide-in 0.2s;
+      animation: zen-slide-in 0.2s ease-in-out;
 
       max-width: unset !important;
       padding: 0 !important;

@@ -21,7 +21,7 @@
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split-anim='true'] {
-  animation: zen-deck-fadeIn 0.2s forwards;
+  animation: zen-deck-fadeIn 0.2s forwards ease-in-out;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer[zen-split-active='true'] {

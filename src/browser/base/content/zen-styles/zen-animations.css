@@ -44,17 +44,6 @@
   }
 }
 
-@keyframes zen-zoom-in {
-  from {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 @keyframes zen-deck-fadeIn {
   0% {
     transform: scale(0.9);
@@ -81,13 +70,12 @@
 
 @keyframes zen-sidebar-panel-animation-2 {
   0% {
-    opacity: 0;
-    transform: translateX(-50px) scale3d(0.95, 0.95, 0.95);
+    opacity: 1;
+    transform: translateX(-50px);
   }
 
   100% {
-    opacity: 1;
-    transform: translateX(0) scale3d(1, 1, 1);
+    transform: translateX(0);
   }
 }
 

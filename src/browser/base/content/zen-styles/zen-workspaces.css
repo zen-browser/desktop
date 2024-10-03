@@ -185,7 +185,12 @@
 #PanelUI-zen-workspaces-edit-icons-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  grid-auto-flow: dense;
   gap: 8px;
+  overflow-x: hidden;
+  justify-items: center;
+  max-height: calc(2 * (42px + 8px));
+  overflow-y: auto;
 }
 
 #PanelUI-zen-workspaces-create-icons-container toolbarbutton.toolbarbutton-1,

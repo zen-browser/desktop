@@ -991,4 +991,9 @@ Preferences.addAll([
     type: 'int',
     default: 10,
   },
+  {
+    id: 'zen.view.show-bottom-border',
+    type: 'bool',
+    default: false,
+  }
 ]);

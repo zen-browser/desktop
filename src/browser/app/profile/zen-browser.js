@@ -97,6 +97,7 @@ pref('zen.view.sidebar-expanded.on-hover', false);
 pref('zen.view.sidebar-expanded.show-button', true);
 pref('zen.view.sidebar-expanded.max-width', 400);
 
+pref('zen.view.show-bottom-border', false);
 pref('zen.view.sidebar-collapsed.hide-mute-button', true);
 
 pref('zen.tabs.dim-pending', true);

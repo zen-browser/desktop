@@ -38,7 +38,7 @@ on:
         required: true
         default: 'alpha'
         type: 'string'
-        
+
 jobs:
   build-data:
     permissions:
@@ -416,8 +416,8 @@ jobs:
             zen.installer-generic.exe
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
-          tag_name: "twilight"
-          name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})"
+          tag_name: 'twilight'
+          name: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
           body: |
             # Zen Twilight Build
 

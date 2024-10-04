@@ -506,8 +506,10 @@ var gZenLooksAndFeel = {
     const radios = [...chooser.querySelectorAll('input')];
 
     let value = '';
-    if (Services.prefs.getBoolPref('zen.view.compact.hide-tabbar')
-          && Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')) {
+    if (
+      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') &&
+      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar')
+    ) {
       value = 'both';
     } else {
       value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
@@ -517,7 +519,7 @@ var gZenLooksAndFeel = {
       if (Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
         document.querySelector(`#zen-expand-tabbar-strat input[value='expand']`).click();
       }
-    }
+    };
     for (let radio of radios) {
       radio.addEventListener('change', (e) => {
         let value = e.target.value;
@@ -560,7 +562,7 @@ var gZenLooksAndFeel = {
       } else if (Services.prefs.getBoolPref('zen.view.compact')) {
         document.getElementById('zenLooksAndFeelShowCompactView').click();
       }
-    }
+    };
     for (let radio of radios) {
       radio.addEventListener('change', (e) => {
         switch (e.target.value) {
@@ -643,35 +645,35 @@ const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
 var zenMissingKeyboardShortcutL10n = {
-  key_quickRestart: "zen-key-quick-restart",
-  key_delete: "zen-key-delete",
-  goBackKb: "zen-key-go-back",
-  goForwardKb: "zen-key-go-forward",
-  key_enterFullScreen: "zen-key-enter-full-screen",
-  key_exitFullScreen: "zen-key-exit-full-screen",
-  key_aboutProcesses: "zen-key-about-processes",
-  key_stop: "zen-key-stop",
-  key_sanitize: "zen-key-sanitize",
-  key_wrCaptureCmd: "zen-key-wr-capture-cmd", 
-  key_wrToggleCaptureSequenceCmd: "zen-key-wr-toggle-capture-sequence-cmd",
-  key_undoCloseWindow: "zen-key-undo-close-window",
+  key_quickRestart: 'zen-key-quick-restart',
+  key_delete: 'zen-key-delete',
+  goBackKb: 'zen-key-go-back',
+  goForwardKb: 'zen-key-go-forward',
+  key_enterFullScreen: 'zen-key-enter-full-screen',
+  key_exitFullScreen: 'zen-key-exit-full-screen',
+  key_aboutProcesses: 'zen-key-about-processes',
+  key_stop: 'zen-key-stop',
+  key_sanitize: 'zen-key-sanitize',
+  key_wrCaptureCmd: 'zen-key-wr-capture-cmd',
+  key_wrToggleCaptureSequenceCmd: 'zen-key-wr-toggle-capture-sequence-cmd',
+  key_undoCloseWindow: 'zen-key-undo-close-window',
 
-  key_selectTab1: "zen-key-select-tab-1",
-  key_selectTab2: "zen-key-select-tab-2",
-  key_selectTab3: "zen-key-select-tab-3",
-  key_selectTab4: "zen-key-select-tab-4",
-  key_selectTab5: "zen-key-select-tab-5",
-  key_selectTab6: "zen-key-select-tab-6",
-  key_selectTab7: "zen-key-select-tab-7",
-  key_selectTab8: "zen-key-select-tab-8",
-  key_selectLastTab: "zen-key-select-tab-last",
+  key_selectTab1: 'zen-key-select-tab-1',
+  key_selectTab2: 'zen-key-select-tab-2',
+  key_selectTab3: 'zen-key-select-tab-3',
+  key_selectTab4: 'zen-key-select-tab-4',
+  key_selectTab5: 'zen-key-select-tab-5',
+  key_selectTab6: 'zen-key-select-tab-6',
+  key_selectTab7: 'zen-key-select-tab-7',
+  key_selectTab8: 'zen-key-select-tab-8',
+  key_selectLastTab: 'zen-key-select-tab-last',
 
-  key_showAllTabs: "zen-key-show-all-tabs",
-  key_gotoHistory: "zen-key-goto-history",
+  key_showAllTabs: 'zen-key-show-all-tabs',
+  key_gotoHistory: 'zen-key-goto-history',
 
-  goHome: "zen-key-go-home",
-  key_redo: "zen-key-redo",
-}  
+  goHome: 'zen-key-go-home',
+  key_redo: 'zen-key-redo',
+};
 
 var gZenCKSSettings = {
   async init() {
@@ -731,7 +733,7 @@ var gZenCKSSettings = {
       const keyInString = shortcut.toUserString();
 
       const labelValue = zenMissingKeyboardShortcutL10n[keyID] ?? l10nID;
-      
+
       let fragment = window.MozXULElement.parseXULToFragment(`
         <hbox class="${ZEN_CKS_CLASS_BASE}">
           <label class="${ZEN_CKS_LABEL_CLASS}" for="${ZEN_CKS_CLASS_BASE}-${keyID}"></label>
@@ -777,9 +779,11 @@ var gZenCKSSettings = {
         if (!this._hasSafed) {
           target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
           if (!target.nextElementSibling) {
-            target.after(window.MozXULElement.parseXULToFragment(`
+            target.after(
+              window.MozXULElement.parseXULToFragment(`
               <label class="${ZEN_CKS_CLASS_BASE}-unsafed" data-l10n-id="zen-key-unsafed"></label>
-            `));
+            `)
+            );
             target.value = 'Not set';
           }
         } else {
@@ -842,7 +846,9 @@ var gZenCKSSettings = {
     } else if (shortcut == 'Escape' && !modifiersActive) {
       const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
         this._latestValidKey ? this._latestValidKey : shortcut,
-        this._latestModifier ? this._latestModifier : modifiers, this._currentActionID);
+        this._latestModifier ? this._latestModifier : modifiers,
+        this._currentActionID
+      );
 
       if (!this._latestValidKey && !this._latestModifier) {
       } else if (!this._latestValidKey || hasConflicts) {
@@ -851,9 +857,11 @@ var gZenCKSSettings = {
         }
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
         if (hasConflicts && !input.nextElementSibling) {
-          input.after(window.MozXULElement.parseXULToFragment(`
+          input.after(
+            window.MozXULElement.parseXULToFragment(`
             <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
-          `));
+          `)
+          );
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
@@ -972,5 +980,5 @@ Preferences.addAll([
     id: 'zen.tab-unloader.timeout-minutes',
     type: 'int',
     default: 10,
-  }
+  },
 ]);

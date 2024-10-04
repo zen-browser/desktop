@@ -126,7 +126,7 @@
     },
 
     _initSearchBar() {
-      // Only focus the url bar 
+      // Only focus the url bar
       gURLBar.focus();
 
       gURLBar._initCopyCutController();
@@ -147,7 +147,7 @@
   Note: This developer console is not the same as the browser console, it has access to Zen's internal functions and variables, including your passwords and other sensitive information. Please do not paste any code here unless you know what you are doing.
 
   `);
-    }
+    },
   };
 
   ZenStartup.init();

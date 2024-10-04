@@ -76,7 +76,7 @@
    *  + 1 for the top margin, making the element overflow the view.
    *  + 1 for the margin we want to add at the bottom
    *  + 1 so that the panel can be correctly spaced from the border of the webview
-   */ 
+   */
   height: calc(100% - var(--zen-sidebar-web-panel-spacing) * 3);
 }
 

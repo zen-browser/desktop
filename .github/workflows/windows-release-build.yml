@@ -220,7 +220,7 @@ jobs:
         with:
           name: windows-x64-obj-${{ matrix.generic == true && 'generic' || 'specific' }}
           path: engine/obj-x86_64-pc-windows-msvc/
-          
+
       - name: Upload zip file if twilight branch
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
@@ -241,7 +241,7 @@ jobs:
         with:
           name: windows${{ matrix.generic == true && '-generic' || '' }}.mar
           path: ./windows${{ matrix.generic == true && '-generic' || '' }}.mar
-        
+
       - name: Upload update manifests if twilight branch
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4

@@ -1,28 +1,21 @@
-
-export var ZenCustomizableUI = new class {
+export var ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = 'toolbar';
-  defaultSidebarIcons = [
-    'zen-sidepanel-button',
-    'zen-workspaces-button',
-    'new-tab-button'
-  ];
+  defaultSidebarIcons = ['zen-sidepanel-button', 'zen-workspaces-button', 'new-tab-button'];
 
   startup(CustomizableUIInternal) {
     CustomizableUIInternal.registerArea(
-      "zen-sidebar-top-buttons",
+      'zen-sidebar-top-buttons',
       {
         type: this.TYPE_TOOLBAR,
-        defaultPlacements: [
-          "preferences-button", "zen-expand-sidebar-button", "zen-profile-button"
-        ],
+        defaultPlacements: ['preferences-button', 'zen-expand-sidebar-button', 'zen-profile-button'],
         defaultCollapsed: null,
       },
       true
     );
     CustomizableUIInternal.registerArea(
-      "zen-sidebar-icons-wrapper",
+      'zen-sidebar-icons-wrapper',
       {
         type: this.TYPE_TOOLBAR,
         defaultPlacements: this.defaultSidebarIcons,
@@ -92,7 +85,7 @@ export var ZenCustomizableUI = new class {
   _moveWindowButtons(window) {
     const windowControls = window.document.getElementsByClassName('titlebar-buttonbox-container');
     const toolboxIcons = window.document.getElementById('zen-sidebar-top-buttons-customization-target');
-    if (window.AppConstants.platform === "macosx") {
+    if (window.AppConstants.platform === 'macosx') {
       for (let i = 0; i < windowControls.length; i++) {
         if (i === 0) {
           toolboxIcons.prepend(windowControls[i]);
@@ -104,9 +97,7 @@ export var ZenCustomizableUI = new class {
   }
 
   _hideToolbarButtons(window) {
-    const elementsToHide = [
-      'alltabs-button',
-    ];
+    const elementsToHide = ['alltabs-button'];
     for (let id of elementsToHide) {
       const elem = window.document.getElementById(id);
       if (elem) {
@@ -116,11 +107,7 @@ export var ZenCustomizableUI = new class {
   }
 
   registerToolbarNodes(window) {
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-top-buttons')
-    );
-    window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-icons-wrapper')
-    );
+    window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-top-buttons'));
+    window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-icons-wrapper'));
   }
-};
+})();

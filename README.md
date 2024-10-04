@@ -80,6 +80,7 @@ bash <(curl https://updates.zen-browser.app/appimage.sh)
 ```
 
 #### Flatpak
+
 ```
 flatpak install flathub io.github.zen_browser.zen
 ```
@@ -132,6 +133,7 @@ pnpm start
 ### Development
 
 To view changes you've made, run
+
 ```bash
 pnpm build:ui && pnpm start
 ```

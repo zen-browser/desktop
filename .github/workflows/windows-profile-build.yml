@@ -14,7 +14,7 @@ on:
         description: 'The branch to build'
         required: true
         type: string
-        
+
 jobs:
   windows-profile-build:
     name: Windows Profile Build - ${{ matrix.generic == true && 'generic' || 'specific' }}

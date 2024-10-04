@@ -7,15 +7,14 @@
 
     --uc-tweak-rounded-corners-shadow-color: var(--zen-colors-border);
 
-    --uc-tweak-rounded-corners-shadow:
-      0 0 0 1px var(--uc-tweak-rounded-corners-shadow-color);
+    --uc-tweak-rounded-corners-shadow: 0 0 0 1px var(--uc-tweak-rounded-corners-shadow-color);
 
     box-shadow: var(--uc-tweak-rounded-corners-shadow) !important;
 
     /* Use pseudo element overlay to simulate rounded corners, similar to the
      * tab corners, fixes bug with backdrop-filter. */
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;

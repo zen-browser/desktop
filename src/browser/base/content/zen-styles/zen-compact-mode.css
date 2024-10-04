@@ -38,7 +38,7 @@
         height: calc(98% - var(--zen-element-separation));
         z-index: 9;
         background: var(--zen-themed-toolbar-bg) !important;
-        box-shadow: 0 0 2px 2px rgba(0,0,0,.1);
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
         border-top-right-radius: var(--zen-border-radius);
         border-bottom-right-radius: var(--zen-border-radius);
         border: 1px solid var(--zen-colors-border);
@@ -63,7 +63,7 @@
           border-bottom-right-radius: 0;
         }
       }
-      
+
       #navigator-toolbox:hover,
       #navigator-toolbox[zen-has-hover],
       #navigator-toolbox:focus-within,
@@ -75,7 +75,7 @@
       #navigator-toolbox:has(.tabbrowser-tab:active),
       #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
         opacity: 1;
-        
+
         transform: translateX(calc(100% - var(--zen-element-separation)));
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
           transform: translateX(calc(-100% + var(--zen-element-separation)));
@@ -84,7 +84,6 @@
     }
 
     @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
-
       #navigator-toolbox {
         --zen-toolbox-top-align: var(--zen-element-separation);
       }
@@ -100,7 +99,7 @@
         left: 0;
         z-index: 10;
         background: var(--zen-themed-toolbar-bg);
-        box-shadow: 0 0 2px 2px rgba(0,0,0,.1) !important;
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1) !important;
         border-bottom-left-radius: var(--zen-border-radius);
         border-bottom-right-radius: var(--zen-border-radius);
         border: 1px solid var(--zen-colors-border);
@@ -109,7 +108,7 @@
         width: 100%;
         opacity: 0;
 
-        :root[tabsintitlebar][sizemode="normal"]:not([gtktiledwindow="true"]) & {
+        :root[tabsintitlebar][sizemode='normal']:not([gtktiledwindow='true']) & {
           border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
           border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
           border-left-width: 0;

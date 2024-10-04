@@ -1,8 +1,7 @@
 var gZenUIManager = {
   _popupTrackingElements: [],
 
-  init () {
-
+  init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
     document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
   },
@@ -67,7 +66,7 @@ var gZenUIManager = {
       element.removeAttribute('has-popup-menu');
     } else {
       this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
-      document.addEventListener('mousemove', this.__removeHasPopupAttribute, {once: true});
+      document.addEventListener('mousemove', this.__removeHasPopupAttribute, { once: true });
     }
     this.__currentPopup = null;
     this.__currentPopupTrackElement = null;
@@ -85,23 +84,18 @@ var gZenVerticalTabsManager = {
     this._updateEvent();
     this.initRightSideOrderContextMenu();
 
-    let tabs = document.getElementById("tabbrowser-tabs");
+    let tabs = document.getElementById('tabbrowser-tabs');
 
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      "canOpenTabOnMiddleClick",
-      "zen.tabs.newtab-on-middle-click",
-      true
-    );
+    XPCOMUtils.defineLazyPreferenceGetter(this, 'canOpenTabOnMiddleClick', 'zen.tabs.newtab-on-middle-click', true);
 
     if (tabs) {
-      tabs.addEventListener("mouseup", this.openNewTabOnTabsMiddleClick.bind(this));
+      tabs.addEventListener('mouseup', this.openNewTabOnTabsMiddleClick.bind(this));
     }
   },
 
   openNewTabOnTabsMiddleClick(event) {
-    if (event.button === 1 && event.target.id === "tabbrowser-tabs" && this.canOpenTabOnMiddleClick) {
-      document.getElementById("cmd_newNavigatorTabNoEvent").doCommand();
+    if (event.button === 1 && event.target.id === 'tabbrowser-tabs' && this.canOpenTabOnMiddleClick) {
+      document.getElementById('cmd_newNavigatorTabNoEvent').doCommand();
       event.stopPropagation();
       event.preventDefault();
     }
@@ -157,8 +151,12 @@ var gZenVerticalTabsManager = {
       this.navigatorToolbox.removeAttribute('zen-expanded');
     }
 
-    if (this.navigatorToolbox.hasAttribute('zen-expanded') && !this.navigatorToolbox.hasAttribute('zen-right-side')
-      && !Services.prefs.getBoolPref('zen.view.compact') && !Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')) {
+    if (
+      this.navigatorToolbox.hasAttribute('zen-expanded') &&
+      !this.navigatorToolbox.hasAttribute('zen-right-side') &&
+      !Services.prefs.getBoolPref('zen.view.compact') &&
+      !Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')
+    ) {
       this.navigatorToolbox.prepend(topButtons);
       browser.prepend(this.navigatorToolbox);
     } else {

@@ -205,14 +205,17 @@ button.popup-notification-dropmarker {
 #notification-popup-box {
   border-radius: 6px !important;
 }
-      
+
 /* Border radius on hover */
-#urlbar .urlbar-page-action, #urlbar #tracking-protection-icon-container, #urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
-  border-radius: 6px !important;;
+#urlbar .urlbar-page-action,
+#urlbar #tracking-protection-icon-container,
+#urlbar:not([breakout-extend='true']) #identity-box:is(:not(.chromeUI), [pageproxystate='invalid']) #identity-icon-box {
+  border-radius: 6px !important;
 }
-      
+
 /* Border radius of boxes on the left */
-#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])):not([pageproxystate="invalid"]) #identity-icon-box {
+#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])):not([pageproxystate='invalid'])
+  #identity-icon-box {
   border-top-left-radius: 6px !important;
   border-bottom-left-radius: 6px !important;
   border-top-right-radius: 0 !important;
@@ -220,17 +223,16 @@ button.popup-notification-dropmarker {
 }
 
 /* Extensions or similar */
-#urlbar:not([breakout-extend="true"]) #identity-box.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
+#urlbar:not([breakout-extend='true']) #identity-box.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
   border-radius: 6px 6px 6px 6px !important;
 }
-
 
 /* Notification Stack */
 
 .notificationbox-stack {
   background: transparent;
 
-  &[notificationside="top"] {
+  &[notificationside='top'] {
     position: absolute;
     bottom: calc(var(--zen-element-separation) * 1.5);
     right: calc(var(--zen-element-separation) * 1.5);
@@ -258,7 +260,6 @@ button.popup-notification-dropmarker {
   align-items: center;
 }
 
-
 /* Other small tweaks */
 #nav-bar-customization-target {
   /* Don't grow if potentially-user-sized elements (like the searchbar or the
@@ -280,7 +281,7 @@ button.popup-notification-dropmarker {
   padding-right: var(--zen-element-separation) !important;
 }*/
 
-#PersonalToolbar:not([collapsed="true"]) {
+#PersonalToolbar:not([collapsed='true']) {
   padding-bottom: 6px;
   padding-left: 0 !important;
 }

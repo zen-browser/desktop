@@ -300,3 +300,28 @@
 #PanelUI-zen-workspaces-edit-footer button[default='true'] {
   width: 100%;
 }
+
+.zen-color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: auto 0;
+  padding-left: 3px;
+  margin-top: 8px;
+}
+
+.zen-color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.zen-color-option[selected] {
+  border-color: var(--zen-colors-primary);
+}
+
+.zen-color-option[data-color="null"] {
+  background: repeating-conic-gradient(#ccc 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+}

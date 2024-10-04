@@ -1,0 +1,12 @@
+diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.js b/browser/components/preferences/dialogs/syncChooseWhatToSync.js
+index 2cc965b4e1b20e1ae422bfb5c90a237dcd31fcf6..cfed9dfa67c7c34cd812885a72d66dd37ba414fc 100644
+--- a/browser/components/preferences/dialogs/syncChooseWhatToSync.js
++++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.js
+@@ -13,6 +13,7 @@ Preferences.addAll([
+   { id: "services.sync.engine.passwords", type: "bool" },
+   { id: "services.sync.engine.addresses", type: "bool" },
+   { id: "services.sync.engine.creditcards", type: "bool" },
++  { id: "services.sync.engine.workspaces", type: "bool" },
+ ]);
+ 
+ let gSyncChooseWhatToSync = {

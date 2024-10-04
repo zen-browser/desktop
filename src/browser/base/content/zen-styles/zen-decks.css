@@ -26,7 +26,7 @@
   animation: zen-deck-fadeIn 0.2s forwards ease-in-out;
 }
 
-#tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer[zen-split-active='true'] {
+#tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   --uc-tweak-rounded-corners-shadow-color: var(--zen-primary-color) !important;
 }
 

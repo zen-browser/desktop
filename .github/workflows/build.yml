@@ -334,7 +334,7 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
 
   release:
-    if: ${{ inputs.create_release == 'true' }}
+    if: ${{ inputs.create_release == 'true' || inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]

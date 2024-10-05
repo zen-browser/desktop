@@ -40,6 +40,16 @@ on:
         type: 'string'
 
 jobs:
+  debug-inputs:
+    name: Debug inputs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        run: |
+          echo "create_release: ${{ inputs.create_release }}"
+          echo "update_version: ${{ inputs.update_version }}"
+          echo "update_branch: ${{ inputs.update_branch }}"
+
   build-data:
     permissions:
       contents: write

@@ -616,9 +616,19 @@ var gZenLooksAndFeel = {
 
 var gZenWorkspacesSettings = {
   init() {
+    var tabsUnloaderPrefListener = {
+      async observe(subject, topic, data) {
+        let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
+        if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
+          Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+        } 
+      }
+    }
     Services.prefs.addObserver('zen.workspaces.enabled', this);
+    Services.prefs.addObserver('zen.tab-unloader.enabled', tabsUnloaderPrefListener);
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.workspaces.enabled', this);
+      Services.prefs.removeObserver('zen.tab-unloader.enabled', tabsUnloaderPrefListener);
     });
   },
 
@@ -981,4 +991,9 @@ Preferences.addAll([
     type: 'int',
     default: 10,
   },
+  {
+    id: 'zen.view.show-bottom-border',
+    type: 'bool',
+    default: false,
+  }
 ]);

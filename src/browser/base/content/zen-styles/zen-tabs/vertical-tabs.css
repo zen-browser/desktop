@@ -16,7 +16,7 @@
   }
 
   #browser {
-    --zen-toolbox-padding: 4px;
+    --zen-toolbox-padding: 5px;
   }
 
   #navigator-toolbox {
@@ -49,13 +49,20 @@
       content: '';
       display: block;
       height: 1px;
-      background: color-mix(in srgb, var(--zen-colors-border) 70%, transparent 30%);
+      
       margin: 0 auto;
       width: 80%;
       left: 50%;
       transform: translateX(-50%);
       position: absolute;
       bottom: calc(-1 * var(--zen-toolbox-padding));
+    }
+
+
+    @media (-moz-bool-pref: 'zen.view.show-bottom-border') {
+      &::after {
+        background: color-mix(in srgb, var(--zen-colors-border) 70%, transparent 30%);
+      }
     }
 
     & > * {
@@ -140,12 +147,14 @@
 
   #vertical-pinned-tabs-container {
     padding-inline-end: 0 !important;
-    gap: 3px !important;
+    column-gap: 5px !important;
+    row-gap: 3px !important;
     max-height: unset !important;
     overflow: visible !important;
 
     & .tab-background:not(:hover):not([selected]):not([multiselected]) {
-      background: color-mix(in srgb, var(--zen-colors-secondary) 20%, transparent 80%) !important;
+      background: color-mix(in srgb, var(--zen-colors-secondary) 10%, transparent 90%) !important;
+      backdrop-filter: blur(5px);
     }
 
     & .tabbrowser-tab .tab-content {
@@ -179,6 +188,23 @@
 
       & .zen-workspace-sidebar-icon[no-icon='true'] {
         display: none;
+      }
+    }
+
+    & #vertical-pinned-tabs-container {
+      margin-bottom: 12px;
+      position: relative;
+
+      &:has(tab:not([hidden]))::after {
+        bottom: -6px;
+        content: '';
+        display: block;
+        height: 1px;
+        background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+        width: 99%;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
       }
     }
 
@@ -314,11 +340,11 @@
     }
 
     & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       position: relative;
 
       &::after {
-        bottom: -4px;
+        bottom: -6px;
         content: '';
         display: block;
         height: 1px;
@@ -477,7 +503,6 @@
       background-size: cover !important;
 
       border-top: 1px solid transparent;
-      border-right: 1px solid transparent;
 
       height: 100%;
 
@@ -506,7 +531,6 @@
         width: 250px !important;
         background-color: var(--zen-dialog-background);
         border-top-color: var(--zen-colors-border);
-        border-right-color: var(--zen-colors-border);
         position: absolute;
         padding: var(--zen-toolbox-padding);
         padding-top: 0;
@@ -515,6 +539,7 @@
         -moz-window-dragging: no-drag;
         overflow: hidden;
         transition: width 0.2s !important;
+        border-right: 1px solid var(--zen-colors-border);
 
         & .tab-throbber,
         & .tab-icon-pending,
@@ -531,20 +556,7 @@
         flex-direction: column;
         gap: 0 !important;
 
-        margin-bottom: 8px;
         position: relative;
-
-        &:has(tab:not([hidden]))::after {
-          bottom: -4px;
-          content: '';
-          display: block;
-          height: 1px;
-          background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
-          width: 99%;
-          left: 50%;
-          transform: translateX(-50%);
-          position: absolute;
-        }
 
         & .tabbrowser-tab {
           & .tab-label-container {
@@ -559,18 +571,10 @@
             margin-inline-end: var(--toolbarbutton-inner-padding) !important;
           }
 
-          &:hover .tab-close-button {
-            display: block !important;
-          }
-
-          & .tab-background {
+          &:not(:hover):not([selected]):not([multiselected]) .tab-background {
             box-shadow: none;
 
             background: transparent !important;
-          }
-
-          &:hover .tab-background {
-            background-color: var(--tab-hover-background-color) !important;
           }
         }
       }

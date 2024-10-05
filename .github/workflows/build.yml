@@ -49,7 +49,7 @@ jobs:
           echo "create_release: ${{ inputs.create_release }}"
           echo "update_version: ${{ inputs.update_version }}"
           echo "update_branch: ${{ inputs.update_branch }}"
-          echo "inputs.update_version == 'false': ${{ inputs.update_version == 'false' }}"
+          echo "inputs.update_version == false: ${{ inputs.update_version == 'false' }}"
           echo "GITHUB_REPOSITORY: ${{ github.repository }}"
           echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
           echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
@@ -60,6 +60,7 @@ jobs:
       contents: write
     name: Generate build data
     runs-on: ubuntu-latest
+    needs: debug-inputs
     outputs:
       build_date: ${{ steps.data.outputs.builddate }}
       version: ${{ steps.data.outputs.version }}

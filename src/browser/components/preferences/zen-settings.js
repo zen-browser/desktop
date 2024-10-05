@@ -996,9 +996,4 @@ Preferences.addAll([
     type: 'bool',
     default: false,
   },
-  {
-    id: 'services.sync.engine.workspaces',
-    type: 'bool',
-    default: true,
-  }
 ]);

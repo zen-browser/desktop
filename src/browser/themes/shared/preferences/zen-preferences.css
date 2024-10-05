@@ -584,3 +584,8 @@ groupbox h2 {
 #websiteAdvertisingGroup {
   display: none !important;
 }
+
+.sync-engine-workspaces .checkbox-icon,
+.sync-engine-workspaces.sync-engine-image {
+  list-style-image: url("chrome://devtools/skin/images/tool-storage.svg");
+}

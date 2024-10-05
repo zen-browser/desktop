@@ -1,0 +1,17 @@
+diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
+index 83bd09c0c3f8fd5febf1721e6b462ca90e54327b..71c9e8e4056edaeb354cf7844494bd83c2089561 100644
+--- a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
++++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
+@@ -82,6 +82,12 @@
+           preference="services.sync.engine.prefs"
+         />
+       </html:div>
++      <html:div class="sync-engine-workspaces">
++        <checkbox
++                data-l10n-id="sync-engine-workspaces"
++                preference="services.sync.engine.workspaces"
++        />
++      </html:div>
+     </html:div>
+   </dialog>
+ </window>

@@ -995,5 +995,10 @@ Preferences.addAll([
     id: 'zen.view.show-bottom-border',
     type: 'bool',
     default: false,
+  },
+  {
+    id: 'services.sync.engine.workspaces',
+    type: 'bool',
+    default: true,
   }
 ]);

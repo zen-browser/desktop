@@ -1,17 +1,17 @@
 diff --git a/browser/components/sidebar/browser-sidebar.js b/browser/components/sidebar/browser-sidebar.js
-index 8b4f22ebc13fd013b82e9544dabcbe53d4429c13..22d21bcb825d35648213945bd4275d37b5c10a11 100644
+index c68a32794996348d95f3b1ee363be2eec587065e..3a163c75ac10a204754648dfd1332c79895799c7 100644
 --- a/browser/components/sidebar/browser-sidebar.js
 +++ b/browser/components/sidebar/browser-sidebar.js
-@@ -473,7 +473,7 @@ var SidebarController = {
+@@ -521,7 +521,7 @@ var SidebarController = {
     */
    setPosition() {
      // First reset all ordinals to match DOM ordering.
 -    let browser = document.getElementById("browser");
-+    let browser = document.getElementById("zen-tabbox-wrapper");
++    let browser = document.getElementById("tabbrowser-tabbox");
      [...browser.children].forEach((node, i) => {
        node.style.order = i + 1;
      });
-@@ -487,9 +487,11 @@ var SidebarController = {
+@@ -535,9 +535,11 @@ var SidebarController = {
        let boxOrdinal = this._box.style.order;
        this._box.style.order = appcontent.style.order;
  
@@ -25,11 +25,12 @@ index 8b4f22ebc13fd013b82e9544dabcbe53d4429c13..22d21bcb825d35648213945bd4275d37
        // Indicate we've switched ordering to the box
        this._box.setAttribute("positionend", true);
        sidebarMain.setAttribute("positionend", true);
-@@ -498,6 +500,8 @@ var SidebarController = {
+@@ -546,6 +548,9 @@ var SidebarController = {
        this._box.removeAttribute("positionend");
        sidebarMain.removeAttribute("positionend");
        sidebarContainer.removeAttribute("positionend");
 +      this._box.style.order = 1;
++      this._splitter.style.order = 2;
 +      this._splitter.style.removeProperty("margin-right");
      }
  

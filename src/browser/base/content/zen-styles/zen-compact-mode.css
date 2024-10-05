@@ -1,11 +1,5 @@
 /* All overrides for compact mode go here */
 
-@media not (-moz-bool-pref: 'zen.view.compact') {
-  #sidebar-box {
-    margin-top: 0 !important;
-  }
-}
-
 @media (-moz-bool-pref: 'zen.view.compact') {
   :root:not([customizing]) {
     @media (-moz-bool-pref: 'zen.view.compact.hide-tabbar') {
@@ -90,6 +84,11 @@
 
       &:not([inDOMFullscreen='true']) #tabbrowser-tabpanels {
         padding-top: var(--zen-element-separation) !important;
+      }
+
+      #sidebar-box,
+      #zen-sidebar-web-panel-wrapper {
+        margin-top: var(--zen-element-separation) !important;
       }
 
       #zen-appcontent-navbar-container {

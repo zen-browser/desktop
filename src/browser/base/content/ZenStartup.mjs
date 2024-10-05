@@ -97,19 +97,20 @@
 
     _changeSidebarLocation() {
       const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
-      const wrapper = document.getElementById('zen-tabbox-wrapper');
       const appWrapepr = document.getElementById('zen-sidebar-box-container');
-      for (let id of kElementsToAppend) {
-        const elem = document.getElementById(id);
-        if (elem) {
-          wrapper.prepend(elem);
-        }
-      }
       appWrapepr.setAttribute('hidden', 'true');
 
       const browser = document.getElementById('browser');
       const toolbox = document.getElementById('navigator-toolbox');
       browser.prepend(toolbox);
+
+      const sidebarPanelWrapper = document.getElementById('tabbrowser-tabbox');
+      for (let id of kElementsToAppend) {
+        const elem = document.getElementById(id);
+        if (elem) {
+          sidebarPanelWrapper.prepend(elem);
+        }
+      }
 
       // remove all styles except for the width, since we are xulstoring the complet style list
       const width = toolbox.style.width;

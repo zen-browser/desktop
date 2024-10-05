@@ -49,7 +49,6 @@ jobs:
           echo "create_release: ${{ inputs.create_release }}"
           echo "update_version: ${{ inputs.update_version }}"
           echo "update_branch: ${{ inputs.update_branch }}"
-          echo "inputs.update_version == false: ${{ inputs.update_version == 'false' }}"
           echo "GITHUB_REPOSITORY: ${{ github.repository }}"
           echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
           echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
@@ -92,12 +91,12 @@ jobs:
           npm i -g @zen-browser/surfer
 
       - name: Bump version
-        if: ${{ inputs.update_version == 'true' && inputs.update_branch == 'alpha' }}
+        if: ${{ inputs.update_version && inputs.update_branch == 'alpha' }}
         run: |
           pnpm surfer ci --brand ${{ inputs.update_branch }} --bump prerelease
 
       - name: Bump version without new version
-        if: ${{ inputs.update_version == 'false' || inputs.update_branch == 'twilight' }}
+        if: ${{ !inputs.update_version || inputs.update_branch == 'twilight' }}
         run: |
           pnpm surfer ci --brand ${{ inputs.update_branch }}
 
@@ -115,7 +114,7 @@ jobs:
           echo "version=$(surfer get version | xargs)" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ inputs.update_version == 'true' }}
+        if: ${{ inputs.update_version }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
@@ -350,7 +349,7 @@ jobs:
           path: ./dist/zen-${{ matrix.generic == true && 'generic' || 'specific' }}.AppImage.zsync
 
   release:
-    if: ${{ inputs.create_release == 'true' || inputs.update_branch == 'twilight' }}
+    if: ${{ inputs.create_release || inputs.update_branch == 'twilight' }}
     permissions: write-all
     name: Release
     needs: [build-data, linux, windows-step-3, check-release, mac, appimage, source]
@@ -476,7 +475,7 @@ jobs:
             zen.macos-aarch64.dmg
 
   prepare-flatpak:
-    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
@@ -533,7 +532,7 @@ jobs:
         run: sleep 240
 
   release-flatpak:
-    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]
@@ -611,7 +610,7 @@ jobs:
           delete-branch: true
 
   release-homebrew:
-    if: ${{ inputs.create_release == 'true' && inputs.update_branch == 'alpha' }}
+    if: ${{ inputs.create_release && inputs.update_branch == 'alpha' }}
     permissions: write-all
     name: Homebrew release
     needs: [release, mac, build-data]

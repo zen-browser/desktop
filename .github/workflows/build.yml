@@ -49,6 +49,11 @@ jobs:
           echo "create_release: ${{ inputs.create_release }}"
           echo "update_version: ${{ inputs.update_version }}"
           echo "update_branch: ${{ inputs.update_branch }}"
+          echo "inputs.update_version == 'false': ${{ inputs.update_version == 'false' }}"
+          echo "GITHUB_REPOSITORY: ${{ github.repository }}"
+          echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
+          echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
+          echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
 
   build-data:
     permissions:

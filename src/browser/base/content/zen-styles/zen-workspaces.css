@@ -325,3 +325,132 @@
 .zen-color-option[data-color="null"] {
   background: repeating-conic-gradient(#ccc 0% 25%, transparent 0% 50%) 50% / 10px 10px;
 }
+
+/* Only apply gradient styles when the zen-gradient-theme attribute is present */
+:root[zen-gradient-theme="true"] {
+  /* Set the gradient starting point based on tab side preference */
+  @media (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+    --gradient-start: circle at 95% top;
+  }
+  @media not (-moz-bool-pref: "zen.tabs.vertical.right-side") {
+    --gradient-start: circle at 5% top;
+  }
+
+  /* Default saturation and lightness values */
+  --saturation: 80%;
+  --lightness: 80%;
+  --accent-color-lightness: 58%;
+
+  /* Adjust lightness based on the color scheme */
+  @media (prefers-color-scheme: dark) {
+    --lightness: 12%;
+    --accent-color-lightness: 40%;
+  }
+
+  /* Apply the gradient background using the generated colors */
+  --zen-main-browser-background: radial-gradient(
+          var(--gradient-start),
+          var(--gradient-color1) 20%,
+          var(--gradient-color2) 40%,
+          var(--gradient-color3) 60%,
+          var(--gradient-color4) 80%
+  ) !important;
+
+  /* Apply custom accent colors to interface elements */
+  --toolbarbutton-hover-background: color-mix(
+          in srgb,
+          var(--custom-accent-color) 60%,
+          transparent
+  ) !important;
+  --toolbarbutton-active-background: color-mix(
+          in srgb,
+          var(--custom-accent-color) 80%,
+          transparent
+  ) !important;
+  --panel-item-hover-bgcolor: color-mix(
+          in srgb,
+          var(--custom-accent-color) 60%,
+          transparent
+  ) !important;
+  --zen-workspaces-strip-background-color: var(--custom-accent-color) !important;
+}
+
+/* Apply the gradient to the main browser area when the attribute is present */
+:root[zen-gradient-theme="true"] #browser {
+  background: var(--zen-main-browser-background) !important;
+}
+
+/* Makes the gradient work in compact mode */
+@media (-moz-bool-pref: "zen.view.compact.hide-toolbar") and (-moz-bool-pref: "zen.view.compact") {
+  :root[zen-gradient-theme="true"] #nav-bar::before,
+  :root[zen-gradient-theme="true"] #nav-bar,
+  :root[zen-gradient-theme="true"] #PersonalToolbar[data-l10n-id="bookmarks-toolbar"] {
+    background: var(--zen-main-browser-background) !important;
+  }
+}
+
+@media (-moz-bool-pref: "zen.view.compact.hide-tabbar") and (-moz-bool-pref: "zen.view.compact") {
+  :root[zen-gradient-theme="true"] #navigator-toolbox {
+    --zen-themed-toolbar-bg: var(--zen-main-browser-background) !important;
+  }
+}
+
+/* Make gradient work when "Expand on hover" is enabled */
+@media (-moz-bool-pref: "zen.view.sidebar-expanded") and (-moz-bool-pref: "zen.view.sidebar-expanded.on-hover") {
+  #navigator-toolbox[zen-has-hover],
+  #navigator-toolbox:focus-within,
+  #navigator-toolbox[movingtab],
+  #navigator-toolbox[flash-popup],
+  #navigator-toolbox[has-popup-menu],
+  #navigator-toolbox:has(.tabbrowser-tab:active),
+  #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
+    :root[zen-gradient-theme="true"] #TabsToolbar {
+      background: var(--zen-main-browser-background) !important;
+    }
+  }
+}
+
+/* Apply background to the workspaces icon strip */
+@media (-moz-bool-pref: "zen.workspaces.show-icon-strip") {
+  :root[zen-gradient-theme="true"] #zen-workspaces-button {
+    background: color-mix(
+            in srgb,
+            var(--custom-accent-color) 25%,
+            transparent
+    ) !important;
+  }
+}
+
+/* Styling for pinned tabs */
+:root[zen-gradient-theme="true"] .tabbrowser-tab[pinned] .tab-stack .tab-background {
+  background-color: color-mix(
+          in srgb,
+          var(--custom-accent-color) 35%,
+          transparent 75%
+  ) !important;
+}
+
+/* Background color when hovering over tabs */
+:root[zen-gradient-theme="true"] .tabbrowser-tab:hover .tab-stack .tab-background {
+  background-color: color-mix(
+          in srgb,
+          var(--custom-accent-color) 50%,
+          transparent 75%
+  ) !important;
+}
+
+/* Background color for selected tabs */
+:root[zen-gradient-theme="true"] .tabbrowser-tab[selected="true"] .tab-stack .tab-background,
+:root[zen-gradient-theme="true"] .tabbrowser-tab[multiselected="true"] .tab-stack .tab-background {
+  background-color: var(--custom-accent-color) !important;
+}
+
+/* Background color when hovering over selected tabs */
+:root[zen-gradient-theme="true"] .tabbrowser-tab[selected="true"]:hover .tab-stack .tab-background,
+:root[zen-gradient-theme="true"] .tabbrowser-tab[multiselected="true"]:hover .tab-stack .tab-background {
+  background-color: color-mix(
+          in srgb,
+          var(--custom-accent-color) 90%,
+          transparent
+  ) !important;
+}

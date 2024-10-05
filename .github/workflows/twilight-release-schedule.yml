@@ -13,7 +13,7 @@ jobs:
     with:
       create_release: true
       update_branch: twilight
-      update_version: true
+      update_version: false
 
   post-build:
     name: Post Build

@@ -21,7 +21,7 @@
   position: absolute;
   margin: calc(var(--zen-split-column-gap) / 2) calc(var(--zen-split-row-gap) / 2);
   border-radius: var(--zen-webview-border-radius, var(--zen-border-radius));
-  transition: all ease-out .1s;
+  transition: inset ease-out .08s;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split='true'] {
@@ -32,6 +32,10 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split-anim='true'] {
   animation: zen-deck-fadeIn 0.2s forwards ease-in-out;
+}
+
+#tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split-anim='true'] {
+  transition: inset 0.08s ease-out;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {

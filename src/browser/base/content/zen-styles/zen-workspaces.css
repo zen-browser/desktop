@@ -6,7 +6,7 @@
   position: relative;
 
   &:not([as-button='true']) {
-    --zen-workspaces-strip-background-color: color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    --zen-workspaces-strip-background-color: color-mix(in srgb, var(--zen-colors-border) 20%, transparent 80%);
     --toolbarbutton-hover-background: var(--toolbarbutton-hover-background) !important;
     border-radius: var(--zen-button-border-radius) !important;
     background: var(--zen-workspaces-strip-background-color) !important;
@@ -125,7 +125,6 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       display: flex;
-      width: calc(100% - var(--zen-tabbrowser-padding) * 6) !important;
       gap: 0.5ch;
     }
   }

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/preferences/preferences.css b/browser/themes/shared/preferences/preferences.css
-index ddb6ea0e9ec0099f7c9513fe45f8151978137ac5..7dbb4ce25a681a1dca6c23c290a1ccebf9b8fff4 100644
+index 8f2652f030b9990de83bbffb891f2a52731f478b..322d7e43a516f80de5964b0e25a455c8806fef1a 100644
 --- a/browser/themes/shared/preferences/preferences.css
 +++ b/browser/themes/shared/preferences/preferences.css
 @@ -33,7 +33,7 @@
@@ -11,15 +11,3 @@ index ddb6ea0e9ec0099f7c9513fe45f8151978137ac5..7dbb4ce25a681a1dca6c23c290a1cceb
  }
  
  /*
-@@ -911,6 +911,11 @@ dialog > .sync-engines-list + hbox {
-   list-style-image: url("chrome://formautofill/content/icon-credit-card-generic.svg");
- }
- 
-+.sync-engine-workspaces .checkbox-icon,
-+.sync-engine-workspaces.sync-engine-image {
-+  list-style-image: url("chrome://devtools/skin/images/tool-storage.svg");
-+}
-+
- .fxaMobilePromo {
-   margin-top: 2px !important;
- }

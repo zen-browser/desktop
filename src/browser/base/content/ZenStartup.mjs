@@ -39,7 +39,6 @@
         gZenUIManager.init();
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
-        gZenKeyboardShortcutsManager.init();
 
         function throttle(f, delay) {
           let timer = 0;

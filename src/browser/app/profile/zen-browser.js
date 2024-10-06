@@ -217,7 +217,6 @@ pref("devtools.accessibility.enabled", false);
 
 // Enable GPU by default
 pref('gfx.webrender.all', true);
-pref('layers.acceleration.force-enabled', true);
 pref('media.ffmpeg.vaapi.enabled', true);
 pref('media.ffmpeg.encoder.enabled', true);
 

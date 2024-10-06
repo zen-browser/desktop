@@ -19,6 +19,10 @@
   list-style-image: url('back.svg') !important;
 }
 
+#zenSplitViewModifierActivateReallocation > image {
+  list-style-image: url('move-tab.svg') !important;
+}
+
 #forward-button,
 #zen-sidebar-web-panel-forward {
   list-style-image: url('forward.svg') !important;

@@ -15,6 +15,7 @@
   orient="vertical"
   role="alertdialog"
   type="arrow"
+  onpopupshowing="gZenViewSplitter.disableTabRearrangeView();"
   aria-labelledby="zen-split-view-modifier-header"
   tabspecific="true">
   <panelmultiview id="zenSplitViewModifierMultiview"
@@ -24,34 +25,48 @@
       role="document"
       mainview-with-header="true"
       has-custom-header="true">
-      <vbox>
-        <box class="zen-split-view-modifier-preview grid">
-          <box></box>
-          <box></box>
-          <box></box>
-        </box>
-        <p>Grid Layout</p>
-      </vbox>
-      <vbox>
-        <box class="zen-split-view-modifier-preview hsep">
-          <box></box>
-          <box></box>
-        </box>
-        <p>Horizontal</p>
-      </vbox>
-      <vbox>
-        <box class="zen-split-view-modifier-preview vsep">
-          <box></box>
-          <box></box>
-        </box>
-        <p>Vertical</p>
-      </vbox>
-      <vbox>
-        <box class="zen-split-view-modifier-preview unsplit">
-          <box></box>
-        </box>
-        <p>Unsplit</p>
-      </vbox>
+      <box id="zenSplitViewModifierHeader"        
+        class="panel-header panel-header-with-additional-element panel-header-with-info-button">
+        <html:h1>
+          <html:span data-l10n-id="zen-split-view-modifier-header"></html:span>
+        </html:h1>
+        <toolbarbutton id="zenSplitViewModifierActivateReallocation"
+                        class="panel-info-button"
+                        oncommand="gZenViewSplitter.enableTabRearrangeView();"
+                        data-l10n-id="zen-split-view-modifier-activate-reallocation">
+          <image/>
+        </toolbarbutton>
+      </box>
+      <hbox id="zenSplitViewModifierContent">
+        <vbox>
+          <box class="zen-split-view-modifier-preview grid">
+            <box></box>
+            <box></box>
+            <box></box>
+          </box>
+          <p>Grid Layout</p>
+        </vbox>
+        <vbox>
+          <box class="zen-split-view-modifier-preview vsep">
+            <box></box>
+            <box></box>
+          </box>
+          <p>Vertical</p>
+        </vbox>
+        <vbox>
+          <box class="zen-split-view-modifier-preview hsep">
+            <box></box>
+            <box></box>
+          </box>
+          <p>Horizontal</p>
+        </vbox>
+        <vbox>
+          <box class="zen-split-view-modifier-preview unsplit">
+            <box></box>
+          </box>
+          <p>Unsplit</p>
+        </vbox>
+      </hbox>
     </panelview>
   </panelmultiview>
 </panel>

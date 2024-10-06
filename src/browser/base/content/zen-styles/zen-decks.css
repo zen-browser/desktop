@@ -59,8 +59,6 @@
   margin-left: calc(var(--zen-split-row-gap)/-2);
 }
 
-margin-top: calc(-var(--zen-split-row-gap)/2);
-margin-left: calc(-var(--zen-split-row-gap)/2);
 #tabbrowser-tabpanels[zen-split-view] {
   .zen-split-view-splitter {
     display: inherit;
@@ -111,22 +109,26 @@ margin-left: calc(-var(--zen-split-row-gap)/2);
   min-width: 180px;
   min-height: 180px;
 
+  padding: 15px;
+  padding-top: 12px;
+}
+
+#zenSplitViewModifierContent {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
 
-  gap: 10px;
-  padding: 15px;
+  gap: 15px;
 }
 
-#zenSplitViewModifierViewDefault > vbox {
+#zenSplitViewModifierContent > vbox {
   display: flex;
   align-items: center;
   flex-direction: column;
   cursor: pointer;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview {
   border-radius: 5px;
   border: 1px solid var(--zen-colors-border);
   width: 100px;
@@ -137,51 +139,73 @@ margin-left: calc(-var(--zen-split-row-gap)/2);
   font-weight: 500;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.active {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.active {
   box-shadow: 0 0 0 2px var(--zen-primary-color);
   border-width: 0px;
 }
 
-#zenSplitViewModifierViewDefault p {
+#zenSplitViewModifierContent p {
   margin-top: 5px;
   margin-bottom: 0;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview box {
-  background-color: var(--zen-colors-secondary);
-  border-radius: 3px;
-  width: 100%;
-  height: 100%;
+#zenSplitViewModifierContent .zen-split-view-modifier-preview {
+  & box {
+    background-color: var(--zen-colors-secondary);
+    border-radius: 3px;
+    width: 100%;
+    height: 100%;
+    transition: .1s;
+  }
+
+  &:hover box {
+    background-color: var(--zen-primary-color);
+  }
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.hsep {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.hsep {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.hsep box:last-child {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.hsep box:last-child {
   margin-top: 5px;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.vsep box:last-child {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.vsep box:last-child {
   margin-left: 5px;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.grid {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.grid {
   display: grid;
   grid-template-areas: 'a b' 'c b';
   gap: 5px;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.grid box:nth-child(1) {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.grid box:nth-child(1) {
   grid-area: a;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.grid box:nth-child(2) {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.grid box:nth-child(2) {
   grid-area: b;
 }
 
-#zenSplitViewModifierViewDefault .zen-split-view-modifier-preview.grid box:nth-child(3) {
+#zenSplitViewModifierContent .zen-split-view-modifier-preview.grid box:nth-child(3) {
   grid-area: c;
+}
+
+#zenSplitViewModifierHeader {
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 12px;
+}
+
+#zenSplitViewModifierEnabledToast {
+  display: none;
+}
+
+#zenSplitViewModifier:not([has-enabled-realloc])[toast] #zenSplitViewModifierEnabledToast {
+  display: revert;
 }

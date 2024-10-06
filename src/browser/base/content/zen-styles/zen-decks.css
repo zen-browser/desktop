@@ -37,6 +37,9 @@
 
 #tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split-anim='true'] {
   transition: inset 0.08s ease-out;
+  & browser {
+    transition: opacity 0.2s ease-out;
+  }
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {

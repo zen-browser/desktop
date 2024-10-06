@@ -63,6 +63,7 @@ jobs:
     outputs:
       build_date: ${{ steps.data.outputs.builddate }}
       version: ${{ steps.data.outputs.version }}
+      build_time: ${{ steps.data.outputs.buildtime }}
     steps:
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -112,6 +113,7 @@ jobs:
         run: |
           echo "builddate=$(date +"%Y-%m-%d")" >> $GITHUB_OUTPUT
           echo "version=$(surfer get version | xargs)" >> $GITHUB_OUTPUT
+          echo "buildtime=$(date +"%H:%M:%S")" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ inputs.update_version }}
@@ -432,7 +434,7 @@ jobs:
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
           automatic_release_tag: 'twilight'
-          title: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
+          title: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})'
           draft: false
           prerelease: true
           repo_token: ${{ github.token }}

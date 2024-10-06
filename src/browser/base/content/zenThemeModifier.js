@@ -113,7 +113,7 @@ var ZenThemeModifier = {
   },
 
   _getThemedAvatar(avatarPath) {
-    if (!avatarPath.startsWith('chrome://browser/content/zen-avatars/avatar-') || !avatarPath.endsWith('.svg')) {
+    if (!avatarPath || !avatarPath.startsWith('chrome://browser/content/zen-avatars/avatar-') || !avatarPath.endsWith('.svg')) {
       return avatarPath;
     }
     let withoutExtension = avatarPath.slice(0, -4);

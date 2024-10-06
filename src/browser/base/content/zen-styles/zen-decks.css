@@ -29,6 +29,7 @@
   flex: 1;
   margin: calc(var(--zen-split-column-gap) / 2) calc(var(--zen-split-row-gap) / 2);
   position: absolute !important;
+  overflow: hidden;
 }
 
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split-anim='true'] {

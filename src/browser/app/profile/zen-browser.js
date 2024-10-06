@@ -222,3 +222,6 @@ pref('media.ffmpeg.encoder.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);
+
+// Fix buffering issues: Youtube, Archive bugzilla.mozilla.org/show_bug.cgi?id=1854077
+pref("network.fetchpriority.enabled", true);

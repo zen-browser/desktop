@@ -46,6 +46,7 @@
 #tabbrowser-tabbox {
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 .titlebar-buttonbox-container {

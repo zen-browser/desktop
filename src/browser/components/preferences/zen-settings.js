@@ -2,19 +2,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var gZenMarketplaceManager = {
-  init() {
+  async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
     if (!checkForUpdates) return; // We havent entered the settings page yet.
     if (this.__hasInitializedEvents) return;
-    this._buildThemesList();
     this.__hasInitializedEvents = true;
+    await this._buildThemesList();
     Services.prefs.addObserver(this.updatePref, this);
-    checkForUpdates.addEventListener('click', (event) => {
+    var checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
         event.preventDefault();
         this._checkForThemeUpdates(event);
       }
-    });
+    };
+    checkForUpdates.addEventListener('click', checkForUpdateClick);
     document.addEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', (event) => {
       checkForUpdates.disabled = false;
       const updates = event.detail.updates;
@@ -28,15 +29,19 @@ var gZenMarketplaceManager = {
         error.hidden = false;
       }
     });
-    window.addEventListener('unload', this.uninit.bind(this));
-  },
-
-  uninit() {
-    Services.prefs.removeObserver(this.updatePref, this);
+    window.addEventListener('unload', () => {
+      Services.prefs.removeObserver(this.updatePref, this);
+      this.__hasInitializedEvents = false;
+      document.removeEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', this);
+      document.removeEventListener('ZenCheckForThemeUpdates', this);
+      checkForUpdates.removeEventListener('click', checkForUpdateClick);
+      this.themesList.innerHTML = '';
+      this._doNotRebuildThemesList = false;
+    });
   },
 
   async observe() {
-    this._themes = null;
+    ZenThemesCommon.resetThemesCache();
     await this._buildThemesList();
   },
 
@@ -56,7 +61,10 @@ var gZenMarketplaceManager = {
   },
 
   get themesList() {
-    return document.getElementById('zenThemeMarketplaceList');
+    if (!this._themesList) {
+      this._themesList = document.getElementById('zenThemeMarketplaceList');
+    }
+    return this._themesList;
   },
 
   async removeTheme(themeId) {
@@ -107,12 +115,8 @@ var gZenMarketplaceManager = {
       return;
     }
 
-    console.log('[ZenThemeMarketplaceParent:settings]: Building themes list');
-
     const themes = await ZenThemesCommon.getThemes();
-
     const browser = ZenMultiWindowFeature.currentBrowser;
-
     const themeList = document.createElement('div');
 
     for (const theme of Object.values(themes)) {
@@ -692,6 +696,10 @@ var gZenCKSSettings = {
     this.__hasInitialized = true;
     this._currentActionID = null;
     this._initializeEvents();
+    window.addEventListener('unload', () => {
+      this.__hasInitialized = false;
+      document.getElementById(ZEN_CKS_WRAPPER_ID).innerHTML = '';
+    });
   },
 
   _initializeEvents() {

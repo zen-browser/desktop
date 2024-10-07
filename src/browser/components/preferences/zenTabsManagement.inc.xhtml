@@ -48,9 +48,6 @@
             data-l10n-id="zen-tabs-unloader-enabled"
             preference="zen.tab-unloader.enabled"/>
 
-      <checkbox id="zenPinnedTabResetOnCloseShortcutEnable"
-                data-l10n-id="zen-tabs-pinned-reset-close-shortcut-enabled"
-                preference="zen.tab-unloader.reset-pinned-tab-on-close-shortcut"/>
 
       <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
       <hbox id="zenTabsUnloadDelayContainer">
@@ -61,6 +58,22 @@
                   max="1000"
                   preference="zen.tab-unloader.timeout-minutes"/>
       </hbox>
+</groupbox>
+
+<hbox id="zenPinnedTabsManagerCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-pinned-tab-manager-title"/>
+</hbox>
+
+<groupbox id="zenPinnedTabsManagerGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-pinned-tab-manager-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-pinned-tab-manager-description" />
+
+      <checkbox id="zenPinnedTabResetOnCloseShortcutEnable"
+                data-l10n-id="zen-pinned-tab-manager-reset-close-shortcut-enabled"
+                preference="zen.pinned-tab-manager.reset-pinned-tab-on-close-shortcut"/>
 </groupbox>
 
 </html:template>

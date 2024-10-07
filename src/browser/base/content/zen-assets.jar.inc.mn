@@ -16,6 +16,7 @@
         content/browser/zen-components/ZenThemeBuilder.mjs      (content/zen-components/src/ZenThemeBuilder.mjs)
         content/browser/zen-components/ZenThemesImporter.mjs    (content/zen-components/src/ZenThemesImporter.mjs)
         content/browser/zen-components/ZenTabUnloader.mjs       (content/zen-components/src/ZenTabUnloader.mjs)
+        content/browser/zen-components/ZenPinnedTabManager.mjs  (content/zen-components/src/ZenPinnedTabManager.mjs)
         content/browser/zen-components/ZenCommonUtils.mjs       (content/zen-components/src/ZenCommonUtils.mjs)
         content/browser/zen-components/ZenGradientGenerator.mjs (content/zen-components/src/ZenGradientGenerator.mjs)
 

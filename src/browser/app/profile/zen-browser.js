@@ -111,7 +111,8 @@ pref('zen.themes.updated-value-observer', false);
 pref('zen.tab-unloader.enabled', true);
 pref('zen.tab-unloader.timeout-minutes', 20);
 pref('zen.tab-unloader.excluded-urls', "example.com,example.org");
-pref('zen.tab-unloader.reset-pinned-tab-on-close-shortcut', true);
+
+pref('zen.pinned-tab-manager.reset-pinned-tab-on-close-shortcut', true);
 
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);

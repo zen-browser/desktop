@@ -1021,7 +1021,7 @@ Preferences.addAll([
     default: false,
   },
   {
-    id: 'zen.tab-unloader.reset-pinned-tab-on-close-shortcut',
+    id: 'zen.pinned-tab-manager.reset-pinned-tab-on-close-shortcut',
     type: 'bool',
     default: true,
   },

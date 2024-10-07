@@ -17,6 +17,7 @@
         content/browser/zen-components/ZenThemesImporter.mjs    (content/zen-components/src/ZenThemesImporter.mjs)
         content/browser/zen-components/ZenTabUnloader.mjs       (content/zen-components/src/ZenTabUnloader.mjs)
         content/browser/zen-components/ZenCommonUtils.mjs       (content/zen-components/src/ZenCommonUtils.mjs)
+        content/browser/zen-components/ZenGradientGenerator.mjs (content/zen-components/src/ZenGradientGenerator.mjs)
 
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
@@ -36,6 +37,7 @@
         content/browser/zen-styles/zen-urlbar.css               (content/zen-styles/zen-urlbar.css)
         content/browser/zen-styles/zen-popup.css                (content/zen-styles/zen-popup.css)
         content/browser/zen-styles/zen-sidebar-panels.css       (content/zen-styles/zen-sidebar-panels.css)
+        content/browser/zen-styles/zen-gradient-generator.css   (content/zen-styles/zen-gradient-generator.css)
         
         content/browser/zen-styles/zen-panels/bookmarks.css     (content/zen-styles/zen-panels/bookmarks.css)
         content/browser/zen-styles/zen-panels/extensions.css    (content/zen-styles/zen-panels/extensions.css)

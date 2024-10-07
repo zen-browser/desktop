@@ -1025,4 +1025,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',
+    type: 'bool',
+    default: true,
+  },
 ]);

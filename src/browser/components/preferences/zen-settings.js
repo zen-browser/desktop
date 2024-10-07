@@ -689,6 +689,19 @@ var zenMissingKeyboardShortcutL10n = {
   key_redo: 'zen-key-redo',
 };
 
+var zenKeycodeFixes = {
+  'Digit0': '0',
+  'Digit1': '1',
+  'Digit2': '2',
+  'Digit3': '3',
+  'Digit4': '4',
+  'Digit5': '5',
+  'Digit6': '6',
+  'Digit7': '7',
+  'Digit8': '8',
+  'Digit9': '9',
+}
+
 var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
@@ -853,7 +866,9 @@ var gZenCKSSettings = {
 
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
-    let shortcut = event.key;
+    // This is because on some OSs (windows/macos mostly) the key is not the same as the keycode
+    // e.g. CTRL+ALT+3 may be displayed as the euro sign
+    let shortcut = zenKeycodeFixes[event.code] ?? event.key;
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
 

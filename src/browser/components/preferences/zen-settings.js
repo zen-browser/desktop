@@ -1021,13 +1021,13 @@ Preferences.addAll([
     default: false,
   },
   {
-    id: 'zen.pinned-tab-manager.reset-pinned-tab-on-close-shortcut',
+    id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',
     type: 'bool',
     default: true,
   },
   {
-    id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',
-    type: 'bool',
-    default: true,
+    id: 'zen.pinned-tab-manager.close-shortcut-behavior',
+    type: 'string',
+    default: 'switch',
   },
 ]);

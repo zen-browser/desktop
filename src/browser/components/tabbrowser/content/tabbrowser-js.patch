@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index c89ae2cbb978d6218bd56a059c5ca1e371231607..6608e0d7df1092a7398979abb166895e0b4fb66b 100644
+index c89ae2cbb978d6218bd56a059c5ca1e371231607..ab88ba4024bf5d069ef4ca613024f422ad513405 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -456,11 +456,26 @@
@@ -68,21 +68,17 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..6608e0d7df1092a7398979abb166895e
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3283,6 +3314,13 @@
-             url = tabData.entries[activeIndex].url;
-           }
+@@ -3275,6 +3306,9 @@
+             restoreTabsLazily && !select && !tabData.pinned;
  
-+          if(Services.prefs.getBoolPref("zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url", false) && tabData.pinned && tabData.zenPinnedUrl) {
-+            tabData.entries = [{url: tabData.zenPinnedUrl, title: tabData.zenPinnedTitle}];
-+            tabData.image = tabData.zenPinnedIcon;
-+            tabData.index = 0;
-+            url = tabData.zenPinnedUrl;
-+          }
+           let url = "about:blank";
 +
-           let preferredRemoteType = E10SUtils.getRemoteTypeForURI(
-             url,
-             gMultiProcessBrowser,
-@@ -3311,6 +3349,12 @@
++          gZenPinnedTabManager.resetPinnedTabData(tabData);
++
+           if (tabData.entries?.length) {
+             let activeIndex = (tabData.index || tabData.entries.length) - 1;
+             // Ensure the index is in bounds.
+@@ -3311,6 +3345,12 @@
              preferredRemoteType,
            });
  
@@ -95,25 +91,16 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..6608e0d7df1092a7398979abb166895e
            if (select) {
              tabToSelect = tab;
            }
-@@ -3345,7 +3389,17 @@
+@@ -3345,7 +3385,7 @@
              this.tabContainer._invalidateCachedTabs();
            }
          }
-+        if (tabData.zenPinnedUrl) {
-+          tab.setAttribute("zen-pinned-url", tabData.zenPinnedUrl);
-+        }
- 
-+        if (tabData.zenPinnedTitle) {
-+          tab.setAttribute("zen-pinned-title", tabData.zenPinnedTitle);
-+        }
-+
-+        if(tabData.zenPinnedIcon) {
-+          tab.setAttribute("zen-pinned-icon", tabData.zenPinnedIcon);
-+        }
+-
++        gZenPinnedTabManager.updatePinnedTabForSessionRestore(tabData, tab);
          tab.initialize();
        }
  
-@@ -4198,6 +4252,7 @@
+@@ -4198,6 +4238,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||
@@ -121,7 +108,7 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..6608e0d7df1092a7398979abb166895e
          this._removingTabs.size >
            3 /* don't want lots of concurrent animations */ ||
          !aTab.hasAttribute(
-@@ -5131,10 +5186,10 @@
+@@ -5131,10 +5172,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      },
  
@@ -134,19 +121,12 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..6608e0d7df1092a7398979abb166895e
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -7870,7 +7925,14 @@ var TabContextMenu = {
+@@ -7870,7 +7911,7 @@ var TabContextMenu = {
      );
      contextUnpinSelectedTabs.hidden =
        !this.contextTab.pinned || !multiselectionContext;
 -
-+    let contextResetPinnedTab = document.getElementById("context_zen-reset-pinned-tab");
-+    if(contextResetPinnedTab) {
-+      contextResetPinnedTab.hidden = !this.contextTab.pinned || !this.contextTab.getAttribute("zen-pinned-url") || multiselectionContext;
-+    }
-+    let contextReplacePinnedUrlWithCurrent = document.getElementById("context_zen-replace-pinned-url-with-current");
-+    if(contextReplacePinnedUrlWithCurrent) {
-+      contextReplacePinnedUrlWithCurrent.hidden = !this.contextTab.pinned || !this.contextTab.getAttribute("zen-pinned-url") || multiselectionContext;
-+    }
++    gZenPinnedTabManager.updatePinnedTabContextMenu(this.contextTab);
      // Move Tab items
      let contextMoveTabOptions = document.getElementById(
        "context_moveTabOptions"

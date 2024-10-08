@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36d7470155 100644
+index c89ae2cbb978d6218bd56a059c5ca1e371231607..ab88ba4024bf5d069ef4ca613024f422ad513405 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -452,11 +452,26 @@
+@@ -456,11 +456,26 @@
        return duplicateTabs;
      },
  
@@ -31,7 +31,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
        }
        return i;
      },
-@@ -2704,6 +2719,11 @@
+@@ -2705,6 +2720,11 @@
          );
        }
  
@@ -43,7 +43,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
        if (!UserInteraction.running("browser.tabs.opening", window)) {
          UserInteraction.start("browser.tabs.opening", "initting", window);
        }
-@@ -2771,6 +2791,9 @@
+@@ -2773,6 +2793,9 @@
            noInitialLabel,
            skipBackgroundNotify,
          });
@@ -53,7 +53,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
          if (insertTab) {
            // insert the tab into the tab container in the correct position
            this._insertTabAtIndex(t, {
-@@ -3248,6 +3271,14 @@
+@@ -3262,6 +3285,14 @@
          ) {
            tabWasReused = true;
            tab = this.selectedTab;
@@ -68,7 +68,17 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
            if (!tabData.pinned) {
              this.unpinTab(tab);
            } else {
-@@ -3297,6 +3328,13 @@
+@@ -3275,6 +3306,9 @@
+             restoreTabsLazily && !select && !tabData.pinned;
+ 
+           let url = "about:blank";
++
++          gZenPinnedTabManager.resetPinnedTabData(tabData);
++
+           if (tabData.entries?.length) {
+             let activeIndex = (tabData.index || tabData.entries.length) - 1;
+             // Ensure the index is in bounds.
+@@ -3311,6 +3345,12 @@
              preferredRemoteType,
            });
  
@@ -78,11 +88,19 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
 +          if (tabData.zenDefaultUserContextId) {
 +            tab.setAttribute("zenDefaultUserContextId", "true");
 +          }
-+
            if (select) {
              tabToSelect = tab;
            }
-@@ -4184,6 +4222,7 @@
+@@ -3345,7 +3385,7 @@
+             this.tabContainer._invalidateCachedTabs();
+           }
+         }
+-
++        gZenPinnedTabManager.updatePinnedTabForSessionRestore(tabData, tab);
+         tab.initialize();
+       }
+ 
+@@ -4198,6 +4238,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||
@@ -90,7 +108,7 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
          this._removingTabs.size >
            3 /* don't want lots of concurrent animations */ ||
          !aTab.hasAttribute(
-@@ -5117,10 +5156,10 @@
+@@ -5131,10 +5172,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      },
  
@@ -103,3 +121,12 @@ index ef857bd81f2cd7c163ecc74ac1cf81a0b63ce838..807eb0c493f15643412b05d8dad81d36
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
+@@ -7870,7 +7911,7 @@ var TabContextMenu = {
+     );
+     contextUnpinSelectedTabs.hidden =
+       !this.contextTab.pinned || !multiselectionContext;
+-
++    gZenPinnedTabManager.updatePinnedTabContextMenu(this.contextTab);
+     // Move Tab items
+     let contextMoveTabOptions = document.getElementById(
+       "context_moveTabOptions"

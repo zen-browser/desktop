@@ -1020,4 +1020,14 @@ Preferences.addAll([
     type: 'bool',
     default: false,
   },
+  {
+    id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',
+    type: 'bool',
+    default: true,
+  },
+  {
+    id: 'zen.pinned-tab-manager.close-shortcut-behavior',
+    type: 'string',
+    default: 'switch',
+  },
 ]);

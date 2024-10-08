@@ -773,7 +773,8 @@ menuitem[id='placesContext_deleteHost'],
 #context_reloadTab,
 #context_reloadSelectedTabs,
 #toolbar-context-reloadSelectedTab,
-#toolbar-context-reloadSelectedTabs {
+#toolbar-context-reloadSelectedTabs,
+#context_zen-reset-pinned-tab {
   --menu-image: url('reload.svg');
 }
 
@@ -872,7 +873,8 @@ menuitem[contexttype='fullscreen'][label*='Exit'] {
 #context_unpinTab,
 #context_pinSelectedTabs,
 #context_unpinSelectedTabs,
-.customize-context-moveToPanel {
+.customize-context-moveToPanel,
+#context_zen-replace-pinned-url-with-current {
   --menu-image: url('pin.svg');
 }
 

@@ -55,8 +55,25 @@
 #tabbrowser-tabpanels:has(> [zen-split='true']), #zen-splitview-overlay {
   margin-right: calc(var(--zen-element-separation) - var(--zen-split-row-gap)/2);
   margin-bottom: calc(var(--zen-element-separation) - var(--zen-split-column-gap)/2);
-  margin-top: calc(var(--zen-split-row-gap)/-2);
+
   margin-left: calc(var(--zen-split-row-gap)/-2);
+  margin-top: calc(var(--zen-split-column-gap)/-2);
+
+  @media (-moz-bool-pref: 'zen.view.compact') {
+    :root:not([customizing]) & {
+      @media (-moz-bool-pref: 'zen.view.compact.hide-tabbar') {
+        & {
+          margin-left: 0;
+        }
+      }
+
+      @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
+        & {
+          margin-top: 0;
+        }
+      }
+    }
+  }
 }
 
 #tabbrowser-tabpanels[zen-split-view] {

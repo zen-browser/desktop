@@ -72,7 +72,7 @@
 
         transform: translateX(calc(100% - var(--zen-element-separation)));
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-          transform: translateX(calc(-100% + var(--zen-element-separation)));
+          transform: translateX(calc(-100% + var(--zen-element-separation) + 1px));
         }
       }
     }

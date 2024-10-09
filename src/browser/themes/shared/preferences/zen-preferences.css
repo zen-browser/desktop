@@ -8,6 +8,7 @@
 
 :root {
   --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%));
+  --in-content-box-background: var(--zen-colors-tertiary) !important;
 }
 
 .main-content {

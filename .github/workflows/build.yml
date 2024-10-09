@@ -63,6 +63,7 @@ jobs:
     outputs:
       build_date: ${{ steps.data.outputs.builddate }}
       version: ${{ steps.data.outputs.version }}
+      build_time: ${{ steps.data.outputs.buildtime }}
     steps:
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -112,6 +113,7 @@ jobs:
         run: |
           echo "builddate=$(date +"%Y-%m-%d")" >> $GITHUB_OUTPUT
           echo "version=$(surfer get version | xargs)" >> $GITHUB_OUTPUT
+          echo "buildtime=$(date +"%H:%M:%S")" >> $GITHUB_OUTPUT
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ inputs.update_version }}
@@ -409,7 +411,7 @@ jobs:
         # If we are on twilight, we want to just update the twilight tag's release
       - name: Update twilight tag
         if: ${{ inputs.update_branch == 'twilight' }}
-        uses: softprops/action-gh-release@v2
+        uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           files: |
             zen.source.tar.gz
@@ -431,17 +433,11 @@ jobs:
             zen.installer-generic.exe
             zen.macos-x64.dmg
             zen.macos-aarch64.dmg
-          tag_name: 'twilight'
-          name: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
-          body: |
-            # Zen Twilight Build
-
-            This is the latest build from the twilight branch. It is updated more recently than the alpha branch.
-
-            * This build is not recommended for daily use, it may contain bugs, issues, and other problems.
+          automatic_release_tag: 'twilight'
+          title: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})'
           draft: false
           prerelease: true
-          token: ${{ github.token }}
+          repo_token: ${{ github.token }}
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 

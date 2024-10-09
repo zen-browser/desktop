@@ -112,6 +112,9 @@ pref('zen.tab-unloader.enabled', true);
 pref('zen.tab-unloader.timeout-minutes', 20);
 pref('zen.tab-unloader.excluded-urls', "example.com,example.org");
 
+pref('zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url', false);
+pref('zen.pinned-tab-manager.close-shortcut-behavior', 'switch');
+
 // Pref to enable the new profiles (TODO: Check this out!)
 //pref("browser.profiles.enabled", true);
 
@@ -124,6 +127,7 @@ pref('zen.sidebar.close-on-blur', true);
 pref('zen.splitView.working', false);
 pref('zen.splitView.min-resize-width', 7);
 pref('zen.splitView.change-on-hover', false);
+pref('zen.splitView.rearrange-hover-size', 24);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
@@ -131,6 +135,7 @@ pref('zen.workspaces.hide-default-container-indicator', true);
 pref('zen.workspaces.individual-pinned-tabs', true);
 pref('zen.workspaces.show-icon-strip', true);
 pref('zen.workspaces.icons', '["🌐", "📁", "💼", "📝", "📅", "📊", "🧠", "🚀", "🎯", "🔒", "💡", "🎨", "🛠️", "🧩", "💻", "📱", "🎓", "📚", "⚙️", "🎉", "🕹️", "🛒", "🔍","🧪","🔧","🗝️","🎧","🎮"]');
+pref('services.sync.prefs.sync.zen.workspaces.icons', true);
 pref('services.sync.engine.workspaces', false);
 
 // Zen Watermark
@@ -216,9 +221,11 @@ pref("devtools.accessibility.enabled", false);
 
 // Enable GPU by default
 pref('gfx.webrender.all', true);
-pref('layers.acceleration.force-enabled', true);
 pref('media.ffmpeg.vaapi.enabled', true);
 pref('media.ffmpeg.encoder.enabled', true);
 
 pref("media.hardware-video-decoding.enabled", true);
 pref("gfx.canvas.accelerated", true);
+
+// Fix buffering issues: Youtube, Archive bugzilla.mozilla.org/show_bug.cgi?id=1854077
+pref("network.fetchpriority.enabled", true);

@@ -48,6 +48,7 @@
             data-l10n-id="zen-tabs-unloader-enabled"
             preference="zen.tab-unloader.enabled"/>
 
+
       <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
       <hbox id="zenTabsUnloadDelayContainer">
             <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
@@ -56,6 +57,36 @@
                   min="1"
                   max="1000"
                   preference="zen.tab-unloader.timeout-minutes"/>
+      </hbox>
+</groupbox>
+
+<hbox id="zenPinnedTabsManagerCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-pinned-tab-manager-title"/>
+</hbox>
+
+<groupbox id="zenPinnedTabsManagerGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-pinned-tab-manager-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-pinned-tab-manager-description" />
+
+      <checkbox id="zenPinnedTabRestorePinnedTabsToPinnedUrl"
+                data-l10n-id="zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url"
+                preference="zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url"/>
+
+      <hbox align="center">
+            <label id="zenPinnedTabCloseShortcutBehaviorLabel" data-l10n-id="zen-pinned-tab-manager-close-shortcut-behavior-label"/>
+            <menulist id="zenPinnedTabCloseShortcutBehavior" preference="zen.pinned-tab-manager.close-shortcut-behavior">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-unload-switch-close-shortcut-option" value="reset-unload-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-unload-switch-close-shortcut-option" value="unload-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-switch-close-shortcut-option" value="reset-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-switch-close-shortcut-option" value="switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-close-shortcut-option" value="reset"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-close-close-shortcut-option" value="close"/>
+                  </menupopup>
+            </menulist>
       </hbox>
 </groupbox>
 

@@ -2,19 +2,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var gZenMarketplaceManager = {
-  init() {
+  async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
     if (!checkForUpdates) return; // We havent entered the settings page yet.
     if (this.__hasInitializedEvents) return;
-    this._buildThemesList();
     this.__hasInitializedEvents = true;
+    await this._buildThemesList();
     Services.prefs.addObserver(this.updatePref, this);
-    checkForUpdates.addEventListener('click', (event) => {
+    var checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
         event.preventDefault();
         this._checkForThemeUpdates(event);
       }
-    });
+    };
+    checkForUpdates.addEventListener('click', checkForUpdateClick);
     document.addEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', (event) => {
       checkForUpdates.disabled = false;
       const updates = event.detail.updates;
@@ -28,15 +29,19 @@ var gZenMarketplaceManager = {
         error.hidden = false;
       }
     });
-    window.addEventListener('unload', this.uninit.bind(this));
-  },
-
-  uninit() {
-    Services.prefs.removeObserver(this.updatePref, this);
+    window.addEventListener('unload', () => {
+      Services.prefs.removeObserver(this.updatePref, this);
+      this.__hasInitializedEvents = false;
+      document.removeEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', this);
+      document.removeEventListener('ZenCheckForThemeUpdates', this);
+      checkForUpdates.removeEventListener('click', checkForUpdateClick);
+      this.themesList.innerHTML = '';
+      this._doNotRebuildThemesList = false;
+    });
   },
 
   async observe() {
-    this._themes = null;
+    ZenThemesCommon.resetThemesCache();
     await this._buildThemesList();
   },
 
@@ -56,7 +61,10 @@ var gZenMarketplaceManager = {
   },
 
   get themesList() {
-    return document.getElementById('zenThemeMarketplaceList');
+    if (!this._themesList) {
+      this._themesList = document.getElementById('zenThemeMarketplaceList');
+    }
+    return this._themesList;
   },
 
   async removeTheme(themeId) {
@@ -107,12 +115,8 @@ var gZenMarketplaceManager = {
       return;
     }
 
-    console.log('[ZenThemeMarketplaceParent:settings]: Building themes list');
-
     const themes = await ZenThemesCommon.getThemes();
-
     const browser = ZenMultiWindowFeature.currentBrowser;
-
     const themeList = document.createElement('div');
 
     for (const theme of Object.values(themes)) {
@@ -440,6 +444,7 @@ var gZenLooksAndFeel = {
     var onPreferColorSchemeChange = this.onPreferColorSchemeChange.bind(this);
     window.matchMedia('(prefers-color-scheme: dark)').addListener(onPreferColorSchemeChange);
     this.onPreferColorSchemeChange();
+    this.themePicker = new ZenThemePicker(document.getElementById('zenLooksAndFeelGradientPickerParent'));
     window.addEventListener('unload', () => {
       window.matchMedia('(prefers-color-scheme: dark)').removeListener(onPreferColorSchemeChange);
     });
@@ -685,6 +690,19 @@ var zenMissingKeyboardShortcutL10n = {
   key_redo: 'zen-key-redo',
 };
 
+var zenKeycodeFixes = {
+  'Digit0': '0',
+  'Digit1': '1',
+  'Digit2': '2',
+  'Digit3': '3',
+  'Digit4': '4',
+  'Digit5': '5',
+  'Digit6': '6',
+  'Digit7': '7',
+  'Digit8': '8',
+  'Digit9': '9',
+}
+
 var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
@@ -692,6 +710,10 @@ var gZenCKSSettings = {
     this.__hasInitialized = true;
     this._currentActionID = null;
     this._initializeEvents();
+    window.addEventListener('unload', () => {
+      this.__hasInitialized = false;
+      document.getElementById(ZEN_CKS_WRAPPER_ID).innerHTML = '';
+    });
   },
 
   _initializeEvents() {
@@ -845,7 +867,9 @@ var gZenCKSSettings = {
 
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
-    let shortcut = event.key;
+    // This is because on some OSs (windows/macos mostly) the key is not the same as the keycode
+    // e.g. CTRL+ALT+3 may be displayed as the euro sign
+    let shortcut = zenKeycodeFixes[event.code] ?? event.key;
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
 
@@ -995,5 +1019,15 @@ Preferences.addAll([
     id: 'zen.view.show-bottom-border',
     type: 'bool',
     default: false,
+  },
+  {
+    id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',
+    type: 'bool',
+    default: true,
+  },
+  {
+    id: 'zen.pinned-tab-manager.close-shortcut-behavior',
+    type: 'string',
+    default: 'switch',
   },
 ]);

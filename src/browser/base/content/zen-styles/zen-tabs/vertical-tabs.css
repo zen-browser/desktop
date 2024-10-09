@@ -191,11 +191,11 @@
       }
     }
 
-    & #vertical-pinned-tabs-container {
+    & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
       margin-bottom: 12px;
       position: relative;
 
-      &:has(tab:not([hidden]))::after {
+      &::after {
         bottom: -6px;
         content: '';
         display: block;

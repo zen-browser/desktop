@@ -57,17 +57,7 @@
         position: relative;
       }
       /* Mark: toolbox as collapsed */
-      #navigator-toolbox:not(
-      #navigator-toolbox:is(
-          #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
-          #navigator-toolbox[zen-user-hover='true']:focus-within,
-          #navigator-toolbox[zen-user-hover='true'][movingtab],
-          #navigator-toolbox[zen-user-hover='true'][flash-popup],
-          #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
-          #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
-          #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true'])
-        )
-    ) {
+      #navigator-toolbox:not(#navigator-toolbox:is(#navigator-toolbox[zen-expanded='true'])) {
         max-width: calc(var(--zen-toolbox-max-width) + var(--zen-element-separation) + 2px) !important;
         min-width: calc(var(--zen-toolbox-max-width) + var(--zen-element-separation) + 2px) !important;
       }

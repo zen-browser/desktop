@@ -5,7 +5,7 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "131.0"
+    "version": "131.0.2"
   },
   "buildOptions": {
     "generateBranding": true
@@ -54,7 +54,9 @@
     }
   },
   "license": {
-    "ignoredFiles": [".*\\.json"],
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
     "licenseType": "MPL-2.0"
   },
   "updateHostname": "updates.zen-browser.app"

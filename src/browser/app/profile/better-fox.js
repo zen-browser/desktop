@@ -63,7 +63,6 @@ pref("dom.security.sanitizer.enabled", true);
  * SECTION: SECUREFOX                                                       *
 ****************************************************************************/
 /** TRACKING PROTECTION ***/
-pref("browser.contentblocking.category", "strict");
 pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com");
 pref("urlclassifier.features.socialtracking.skipURLs", "*.instagram.com, *.twitter.com, *.twimg.com");
 pref("network.cookie.sameSite.noneRequiresSecure", true);

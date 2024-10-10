@@ -33,6 +33,13 @@
     padding-bottom: var(--zen-element-separation);
 
     order: 0 !important;
+    /*
+    tabbrowser-tabbox has 2px padding, witch makes spacing inside #navigator-toolbox
+    look uneven. This margin fixes it
+    */
+    margin-right: -2px;
+    /* Fixes TabsToolbar overflowing 1px to nav-bar area */
+    border-top: 1px solid transparent;
 
     display: flex;
   }
@@ -177,6 +184,9 @@
     --zen-toolbox-min-width: fit-content;
     padding: var(--zen-toolbox-padding);
     padding-top: 0;
+    @media ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-toolbar')) {
+      padding-top: var(--zen-toolbox-padding);
+    }
 
     & #titlebar {
       min-width: 150px;
@@ -294,7 +304,7 @@
         .tab-icon-overlay {
           &:not([pinned]) {
             margin-inline-end: var(--toolbarbutton-inner-padding) !important;
-            margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;
+            margin-inline-start: calc(calc(var(--toolbarbutton-inner-padding) / 4) - 1px) !important;
           }
         }
       }
@@ -494,6 +504,18 @@
 
     #navigator-toolbox {
       z-index: 1;
+      /*
+        This value is to be the result of: calc(calc(var(--zen-toolbox-max-width) - 1px - var(--tab-min-width)) / 2);
+        where --zen-toolbox-max-width is 49px and --tab-min-width is 36px but these values changes elsewhere, making
+        tabs flicker when expanding or collapsing
+      */
+      --tabs-toolbar-padding: 6px;
+      --tabs-expanding-time: .2s;
+      --tabs-expanding-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
+      --tabs-colapsing-time: .1s;
+      --tabs-colapsing-timing: cubic-bezier(0.56, 0.85, 0.45, 1);
+      --tabs-fading-color-time: .22s;
+      --tabs-appearing-color-time: .05s;
     }
 
     #TabsToolbar {
@@ -508,10 +530,58 @@
 
       border-top-right-radius: var(--zen-border-radius);
       width: var(--zen-toolbox-max-width);
+      /* Closing transition */
+      transition: 
+        width var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        border-top-color var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        border-right-color var(--tabs-colapsing-time) var(--tabs-colapsing-timing),
+        /* Hide background-color slower, otherwise, background content can be seen */
+        background-color var(--tabs-fading-color-time) cubic-bezier( 0.99, 0, 0.83, 0.99 ) !important;
 
       & .tabbrowser-tab {
         transition: 0s !important;
       }
+    }
+
+    /* Colapsed */
+    #navigator-toolbox:not(#navigator-toolbox:is(
+    #navigator-toolbox[zen-user-hover='true'][zen-has-hover],
+    #navigator-toolbox[zen-user-hover='true']:focus-within,
+    #navigator-toolbox[zen-user-hover='true'][movingtab],
+    #navigator-toolbox[zen-user-hover='true'][flash-popup],
+    #navigator-toolbox[zen-user-hover='true'][has-popup-menu],
+    #navigator-toolbox[zen-user-hover='true']:has(*[open='true']:not(tab):not(#zen-sidepanel-button)),
+    #navigator-toolbox[zen-expanded='true']:not([zen-user-hover='true']))) {
+      & #tabbrowser-tabs {
+        & .tabbrowser-tab {
+          width: unset !important;
+        }
+      }
+    }
+
+
+    .tabbrowser-tab {
+      margin: 0 !important;
+
+      & .tab-label-container {
+        display: flex !important;
+        justify-content: flex-start;
+      }
+
+      .tab-throbber,
+      .tab-icon-pending,
+      .tab-icon-image,
+      .tab-sharing-icon-overlay,
+      .tab-icon-overlay {
+        margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+        margin-inline-start: calc(calc(var(--toolbarbutton-inner-padding) / 4) - 1px) !important;
+        transition: var(--tabs-colapsing-time);
+      }
+    }
+
+    #TabsToolbar {
+      padding-left: var(--tabs-toolbar-padding) !important;
+      padding-right: var(--tabs-toolbar-padding);
     }
 
     #navigator-toolbox[zen-has-hover],
@@ -538,7 +608,13 @@
         /*animation: zen-vtabs-animation 0.3s ease-in-out;*/
         -moz-window-dragging: no-drag;
         overflow: hidden;
-        transition: width 0.2s !important;
+        /* Opening transition */
+        transition: 
+          width var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          border-top-color var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          border-right-color var(--tabs-expanding-time) var(--tabs-expanding-timing),
+          /* Show background-color faster, otherwise, background content can be seen */
+          background-color var(--tabs-appearing-color-time) cubic-bezier( 0, 0.99, 0, 1 ) !important;
         border-right: 1px solid var(--zen-colors-border);
 
         & .tab-throbber,
@@ -546,7 +622,11 @@
         & .tab-icon-image,
         & .tab-sharing-icon-overlay,
         & .tab-icon-overlay {
-          transition: 0.1s !important;
+          transition: var(--tabs-expanding-time) !important;
+        }
+        @media ((-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-toolbar')) {
+          margin-top: calc(var(--zen-toolbox-padding) + 7px);
+          padding-bottom: calc(var(--zen-toolbox-padding) + 7px);
         }
       }
 

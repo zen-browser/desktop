@@ -322,6 +322,10 @@ jobs:
           cp configs/branding/${{ inputs.update_branch }}/logo128.png AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
           cp configs/branding/${{ inputs.update_branch }}/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
+          if [ "${{ inputs.update_branch }}" = "twilight" ]; then
+            sed -i -e 's/Name=Zen Browser/name=Zen Twilight/g' AppDir/zen.desktop
+          fi
+
           APPDIR=AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv zen/* $APPDIR/

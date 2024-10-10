@@ -87,18 +87,41 @@ var gZenVerticalTabsManager = {
     let tabs = document.getElementById('tabbrowser-tabs');
 
     XPCOMUtils.defineLazyPreferenceGetter(this, 'canOpenTabOnMiddleClick', 'zen.tabs.newtab-on-middle-click', true);
+    XPCOMUtils.defineLazyPreferenceGetter(this, 'canChangeWorkspaceOnSideButtonAndRightClick', 'zen.tabs.change-workspace-on-side-button-and-right-click', true);
 
     if (tabs) {
-      tabs.addEventListener('mouseup', this.openNewTabOnTabsMiddleClick.bind(this));
+      tabs.addEventListener('mouseup', this.tabsMouseUpHandler.bind(this));
     }
   },
 
-  openNewTabOnTabsMiddleClick(event) {
-    if (event.button === 1 && event.target.id === 'tabbrowser-tabs' && this.canOpenTabOnMiddleClick) {
-      document.getElementById('cmd_newNavigatorTabNoEvent').doCommand();
-      event.stopPropagation();
-      event.preventDefault();
-    }
+  tabsMouseUpHandler(event) {
+    const { buttons, button, target } = event;
+    const isTargetTabbrowserTabs = target.id === 'tabbrowser-tabs';
+
+    const handleEvent = (condition, action) => {
+      if (condition && isTargetTabbrowserTabs) {
+        action();
+        event.stopPropagation();
+        event.preventDefault();
+        return true;
+      }
+      return false;
+    };
+
+    if (handleEvent(
+        buttons === 8 && this.canChangeWorkspaceOnSideButtonAndRightClick,
+        () => ZenWorkspaces.changeWorkspaceShortcut(-1)
+    )) return;
+
+    if (handleEvent(
+        buttons === 16 && this.canChangeWorkspaceOnSideButtonAndRightClick,
+        () => ZenWorkspaces.changeWorkspaceShortcut()
+    )) return;
+
+    handleEvent(
+        button === 1 && this.canOpenTabOnMiddleClick,
+        () => document.getElementById('cmd_newNavigatorTabNoEvent').doCommand()
+    );
   },
 
   get navigatorToolbox() {

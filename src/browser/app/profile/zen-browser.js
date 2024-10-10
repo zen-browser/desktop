@@ -102,6 +102,7 @@ pref('zen.view.sidebar-collapsed.hide-mute-button', true);
 
 pref('zen.tabs.dim-pending', true);
 pref('zen.tabs.newtab-on-middle-click', true);
+pref('zen.tabs.change-workspace-on-side-button-and-right-click', true);
 
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts.version', 0); // Empty string means default shortcuts

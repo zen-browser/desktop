@@ -28,24 +28,38 @@
 
       #navigator-toolbox {
         --zen-toolbox-max-width: 54px !important;
+        --zen-compact-float: calc(var(--zen-element-separation) + 1px);
         position: absolute;
-        height: calc(100% - var(--zen-element-separation) * 2);
         z-index: 9;
+        transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+        right: calc(100% - var(--zen-element-separation));
+        top: var(--zen-element-separation);
+        bottom: var(--zen-element-separation);
+        opacity: 0;
+        padding-left: var(--zen-compact-float) !important;
+        padding-bottom: 0 !important;
+        padding-top: 0 !important;
+
+        #browser:has(#navigator-toolbox[zen-right-side='true']) & {
+          padding-left: unset !important;
+          padding-right: var(--zen-compact-float) !important;
+          left: calc(100% - var(--zen-element-separation));
+          right: unset;
+        }
+      }
+
+      #titlebar {
         background: var(--zen-themed-toolbar-bg) !important;
         box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
         border-radius: calc(var(--zen-border-radius) + 2px);
         border: 1px solid var(--zen-colors-border);
-        border-left-width: 0;
         padding: var(--zen-toolbox-padding) !important;
-        transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
-        right: calc(100% - var(--zen-element-separation) - 2px);
-        top: var(--zen-element-separation);
-        opacity: 0;
-
-        #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-          left: calc(100% - var(--zen-element-separation) + 2px);
-          right: unset;
-        }
+        position: relative;
+      }
+      /* Mark: toolbox as collapsed */
+      #navigator-toolbox:not(#navigator-toolbox:is(#navigator-toolbox[zen-expanded='true'])) {
+        max-width: calc(var(--zen-toolbox-max-width) + var(--zen-compact-float)) !important;
+        min-width: calc(var(--zen-toolbox-max-width) + var(--zen-compact-float)) !important;
       }
 
       #navigator-toolbox:hover,
@@ -60,9 +74,9 @@
       #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
         opacity: 1;
 
-        transform: translateX(100%);
+        transform: translateX(calc(100% - var(--zen-element-separation)));
         #browser:has(#navigator-toolbox[zen-right-side='true']) & {
-          transform: translateX(-100%);
+          transform: translateX(calc(-100% + var(--zen-element-separation)));
         }
       }
     }

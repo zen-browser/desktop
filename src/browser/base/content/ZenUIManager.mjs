@@ -96,10 +96,9 @@ var gZenVerticalTabsManager = {
 
   tabsMouseUpHandler(event) {
     const { buttons, button, target } = event;
-    const isTargetTabbrowserTabs = target.id === 'tabbrowser-tabs';
 
     const handleEvent = (condition, action) => {
-      if (condition && isTargetTabbrowserTabs) {
+      if (condition) {
         action();
         event.stopPropagation();
         event.preventDefault();
@@ -119,7 +118,7 @@ var gZenVerticalTabsManager = {
     )) return;
 
     handleEvent(
-        button === 1 && this.canOpenTabOnMiddleClick,
+        button === 1 && this.canOpenTabOnMiddleClick && target.id === 'tabbrowser-tabs',
         () => document.getElementById('cmd_newNavigatorTabNoEvent').doCommand()
     );
   },

@@ -10,9 +10,20 @@
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border: 1px solid var(--zen-colors-border);
-  border-radius: var(--toolbarbutton-border-radius);
+  border-radius: calc(var(--toolbarbutton-border-radius) * 1.25) !important;
   overflow: hidden;
-  padding: 1px;
+  padding: 2px;
+}
+
+#urlbar .identity-box-button {
+	padding-inline: var(--urlbar-icon-padding) !important;
+	border-radius: var(--toolbarbutton-border-radius) !important;
+}
+
+#urlbar .urlbar-page-action,
+#urlbar #tracking-protection-icon-container {
+	margin: auto !important;
+  border-radius: var(--toolbarbutton-border-radius) !important;
 }
 
 #urlbar[focused='true'][breakout-extend='true'] {
@@ -44,6 +55,7 @@
 
 #urlbar #tracking-protection-icon-container {
   border-radius: var(--toolbarbutton-border-radius);
+  margin: auto !important;
 }
 
 #urlbar .urlbar-page-action {
@@ -68,7 +80,7 @@
 }
 
 #identity-permission-box {
-  background: var(--zen-colors-border) !important;
+  margin-left: 8px !important;
 }
 
 #urlbar:is([focused], [open]) > #urlbar-background,
@@ -136,8 +148,8 @@
 
 #notification-popup-box {
   border-radius: 999px;
-  margin: 0 4px 0 0 !important;
-  padding: 0 4px;
+  	margin: 0 4px 0 0 !important;
+	padding: 0 4px;
   min-width: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
   height: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
   justify-content: center;
@@ -203,7 +215,11 @@ button.popup-notification-dropmarker {
  */
 
 #notification-popup-box {
-  border-radius: 6px !important;
+  border-radius: var(--toolbarbutton-border-radius) !important;
+  background-color: color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent 50%) !important;
+	margin-block: auto !important;
+	margin-inline: 0px 8px !important;
+	padding-inline: var(--urlbar-icon-padding) !important;
 }
 
 /* Border radius on hover */

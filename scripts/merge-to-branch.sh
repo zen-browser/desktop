@@ -4,7 +4,7 @@ branch=zen-"$1"
 default_branch="central"
 
 if [ $branch = "zen-stable" ]; then
-  $(dirname $0)/merge-to-branch.sh twilight
+  default_branch="zen-twilight"
 fi
 
 git checkout "$branch"

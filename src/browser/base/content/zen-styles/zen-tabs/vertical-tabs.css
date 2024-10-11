@@ -30,7 +30,7 @@
     margin-top: 0 !important; /* Fix full screen mode */
 
     padding-top: var(--zen-toolbox-top-align);
-    padding-bottom: var(--zen-element-separation);
+    padding-bottom: var(--zen-element-separation) !important;
 
     order: 0 !important;
 

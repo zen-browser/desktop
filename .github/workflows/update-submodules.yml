@@ -27,7 +27,8 @@ jobs:
           # Only update the "components" submodule, we want to ignore l10n
           git submodule update --init --recursive components
           current_path=$(pwd)
-          submodule_path=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | grep components --color=never)
+          submodule_path="$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | grep zen-components --color=never)"
+          echo "Submodule path: $submodule_path"
           cd $submodule_path
           git checkout master
           git pull

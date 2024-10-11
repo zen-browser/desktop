@@ -10,5 +10,5 @@ fi
 
 set -ex
 
-$(dirname $0)/merge-to-branch.sh twilight
-$(dirname $0)/merge-to-branch.sh stable
+sh $(dirname $0)/merge-to-branch.sh twilight
+sh $(dirname $0)/merge-to-branch.sh stable

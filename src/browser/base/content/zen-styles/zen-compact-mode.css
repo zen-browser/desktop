@@ -33,7 +33,7 @@
         z-index: 9;
         transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
         right: calc(100% - var(--zen-element-separation));
-        top: var(--zen-element-separation);
+        top: 0;
         bottom: var(--zen-element-separation);
         opacity: 0;
         padding-left: var(--zen-compact-float) !important;
@@ -57,9 +57,15 @@
         position: relative;
       }
       /* Mark: toolbox as collapsed */
-      #navigator-toolbox:not(#navigator-toolbox:is(#navigator-toolbox[zen-expanded='true'])) {
+      #zen-tabbox-wrapper > #navigator-toolbox:not(#navigator-toolbox:is(#navigator-toolbox[zen-expanded='true'])) {
         max-width: calc(var(--zen-toolbox-max-width) + var(--zen-compact-float)) !important;
         min-width: calc(var(--zen-toolbox-max-width) + var(--zen-compact-float)) !important;
+      }
+
+      @media (-moz-bool-pref: 'zen.view.compact.hide-toolbar') {
+        #navigator-toolbox {
+          top: var(--zen-element-separation);
+        }
       }
 
       #navigator-toolbox:hover,

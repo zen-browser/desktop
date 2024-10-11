@@ -28,6 +28,12 @@ Zen is currently built using firefox version `131.0.2`!
 
 - Check out the latest [release notes](https://zen-browser.app/release-notes)!
 
+# Contribution
+
+Zen is an open-source project, and we welcome contributions from the community!
+
+- Check out the [contribution guidelines](./docs/contribute.md)!
+
 # Performance
 
 Zen is built with performance in mind, and we have optimized the browser to be as fast as possible!

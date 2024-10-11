@@ -1,6 +1,6 @@
 set -ex
 
-branch="$1"
+branch=zen-"$1"
 default_branch="central"
 
 git checkout "$branch"

@@ -14,27 +14,25 @@ on:
 jobs:
   update-submodules:
     runs-on: ubuntu-latest
-
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Update submodules
         run: |
           # Only update the "components" submodule, we want to ignore l10n
-          current_path=$(pwd)
           submodule_path="$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | grep zen-components --color=never)"
           echo "Submodule path: $submodule_path"
           cd $submodule_path
           git checkout main
           git pull
-          cd $current_path
-        
-          git add .
-          git commit -m "[skip ci] 📦 Update Submodules!"
-          git push
 
-
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "[skip ci] 📦 Update Submodules!"
+          commit_user_name: Zen Browser Robot
+          commit_user_email: zen-browser-bot@users.noreply.github.com

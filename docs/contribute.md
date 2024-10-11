@@ -4,15 +4,17 @@
 The repository is structured as follows:
 
 ```
-main (default branch) 
+central (main branch)
   |
-  ├── twilight (beta testing branch)
+  |--- twiligth (feature branch)
+  |   |
+  |-> \-- stable (release branch)
+  | |
+  | \--- Hotfix (hotfixes directly from stable)
   |
-  ├── alpha (stable branch)
-  |
-  └── ... (other branches)
+  \--- (features branches)
 ```
 
-You, as a contributor, should create a pull request to the `main` branch. The pull request will be reviewed and merged into the `twilight` branch. After the beta testing phase, the `twilight` branch will be merged into the `stable` branch.
+The `central` branch is the main branch of the repository, and it is the default branch for the repository. The `twilight` branch is the feature branch, and it is branched off from the `central` branch. The `stable` branch is the release branch, and it is branched off from the `central` branch. 
 
-This way, we can push changes to the `stable` branch with quick fixes without having new features that are not tested yet, in case an emergency fix is needed.
+The `stable` branch may have hotfixes directly from the `stable` branch, and the `twilight` branch may have feature branches branched off from the `twilight` branch. This is done so that we can apply hotfixes like security patches directly to the `stable` branch without having to merge the changes from the `twilight` branch.

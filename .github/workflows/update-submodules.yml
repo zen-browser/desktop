@@ -29,7 +29,7 @@ jobs:
           submodule_path="$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | grep zen-components --color=never)"
           echo "Submodule path: $submodule_path"
           cd $submodule_path
-          git checkout master
+          git checkout main
           git pull
           cd $current_path
         

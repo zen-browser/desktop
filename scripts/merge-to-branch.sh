@@ -1,5 +1,7 @@
 set -ex
 
+actual_default_branch="central"
+
 branch=zen-"$1"
 default_branch="central"
 
@@ -11,4 +13,4 @@ git checkout "$branch"
 git merge "$default_branch"
 git push origin "$branch"
 
-git checkout "$default_branch"
+git checkout "$actual_default_branch"

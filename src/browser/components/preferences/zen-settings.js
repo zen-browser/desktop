@@ -1006,7 +1006,7 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: 'zen.view.split-view.change-on-hover',
+    id: 'zen.splitView.change-on-hover',
     type: 'bool',
     default: true,
   },

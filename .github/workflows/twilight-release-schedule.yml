@@ -2,7 +2,7 @@ name: Zen Twilight Scheduled Releases
 on:
   push:
     branches:
-      - twilight
+      - dev
   workflow_dispatch:
 
 jobs:

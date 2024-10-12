@@ -4,10 +4,10 @@ name: Update Components Submodules
 on:
   push:
     branches:
-      - central
+      - dev
   pull_request:
     branches:
-      - central
+      - dev
   workflow_dispatch:
   workflow_call: # This is a custom event that we will trigger manually
 

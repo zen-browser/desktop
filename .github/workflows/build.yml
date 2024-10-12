@@ -74,9 +74,11 @@ jobs:
           git branch
           git status
           git branch --show-current
-          branch="zen-${{ inputs.update_branch }}"
-          if [[ $branch == "zen-alpha" ]]; then
-            branch="zen-stable"
+          branch="${{ inputs.update_branch }}"
+          if [[ $branch == "alpha" ]]; then
+            branch="stable"
+          elif [[ $branch == "twilight" ]]; then
+            branch="dev"
           fi
           if [[ $(git branch --show-current) != $branch ]]; then
             echo ">>> Branch mismatch"

@@ -34,7 +34,7 @@
           width: 4px;
           border-radius: 99px;
           height: 4px;
-          background: color-mix(in srgb, var(--zen-primary-color) 10%, light-dark(#000, #fff) 90%);
+          background: color-mix(in srgb, var(--zen-primary-color) 10%, light-dark(rgba(0,0,0,.4), rgba(255,255,255,.4)) 90%);
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);

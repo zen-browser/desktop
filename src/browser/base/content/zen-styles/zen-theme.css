@@ -16,12 +16,12 @@
 
   /** Zen colors are generated automatically from the primary color */
   --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
-  --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, white 60%);
+  --zen-colors-secondary: color-mix(in srgb, var(--zen-colors-primary) 20%, white 80%);
   --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 7%, white 93%);
 
   --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, white 10%);
   --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, black 20%);
-  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 90%, black 10%);
+  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 98%, black 2%);
 
   --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, white 80%);
 
@@ -114,7 +114,7 @@
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: light-dark(#eeeded, var(--zen-colors-tertiary)) !important;
+  --zen-themed-toolbar-bg: light-dark(#fdfdfd, var(--zen-colors-tertiary)) !important;
 
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;

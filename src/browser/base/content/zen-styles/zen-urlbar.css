@@ -76,8 +76,12 @@
   background: var(--urlbar-box-bgcolor);
 }
 
-#identity-icon-label {
+#identity-box:not(.chromeUI) #identity-icon-label {
   padding-inline-start: 8px !important;
+}
+
+#identity-box.chromeUI #identity-icon {
+  display: none;
 }
 
 #identity-box.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {

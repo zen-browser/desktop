@@ -153,7 +153,11 @@
     overflow: visible !important;
 
     & .tab-background:not(:hover):not([selected]):not([multiselected]) {
-      background: color-mix(in srgb, var(--zen-colors-secondary) 10%, transparent 90%) !important;
+      --zen-pinned-tabs-bgcolor: color-mix(in srgb, var(--zen-colors-secondary) 10%, transparent 90%);
+      @media not (prefers-color-scheme: dark) {
+        --zen-pinned-tabs-bgcolor: color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent 50%);
+      }
+      background: var(--zen-pinned-tabs-bgcolor) !important;
       backdrop-filter: blur(5px);
     }
 
@@ -620,6 +624,7 @@
       }
 
       &[selected] .tab-background {
+        border-color: transparent;
         background: var(--zen-colors-secondary) !important;
       }
     }

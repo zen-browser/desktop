@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 26f5671c849d9b0a126d79b07bc7d3d7870826ec..5e356a35639c802fcf6d95d42993d5bd5cda514a 100644
+index 26f5671c849d9b0a126d79b07bc7d3d7870826ec..d5cc8494a7eb7d6326f764490d7d959a7dbbcafd 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -98,6 +98,12 @@ var TabStateInternal = {
+@@ -98,6 +98,13 @@ var TabStateInternal = {
        tabData.muteReason = tab.muteReason;
      }
  
@@ -11,6 +11,7 @@ index 26f5671c849d9b0a126d79b07bc7d3d7870826ec..5e356a35639c802fcf6d95d42993d5bd
 +    tabData.zenPinnedUrl = tab.getAttribute("zen-pinned-url");
 +    tabData.zenPinnedTitle = tab.getAttribute("zen-pinned-title");
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
++    tabData.zenPinnedTriggeringPrincipal = tab.getAttribute("zen-pinned-triggering-principal");
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
  

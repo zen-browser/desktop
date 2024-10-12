@@ -525,7 +525,7 @@
     #navigator-toolbox[has-popup-menu],
     #navigator-toolbox:has(.tabbrowser-tab:active),
     #navigator-toolbox:has(*[open='true']:not(tab):not(#zen-sidepanel-button)) {
-      --zen-toolbox-max-width: 45px;
+      --zen-toolbox-max-width: 44px;
       max-width: var(--zen-toolbox-max-width) !important;
       min-width: calc(var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2 + 2px) !important;
       padding: 0 !important;

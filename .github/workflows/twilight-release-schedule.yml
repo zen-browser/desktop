@@ -1,7 +1,8 @@
 name: Zen Twilight Scheduled Releases
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  push:
+    branches:
+      - twilight
   workflow_dispatch:
 
 jobs:

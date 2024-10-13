@@ -204,6 +204,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     needs: [build-data, check-release]
+    
     steps:
       - name: Install Node.js
         uses: actions/setup-node@v3

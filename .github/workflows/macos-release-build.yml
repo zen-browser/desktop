@@ -14,7 +14,7 @@ on:
 jobs:
   mac-build:
     name: Build macOS - ${{ matrix.arch }}
-    environment: production
+    
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

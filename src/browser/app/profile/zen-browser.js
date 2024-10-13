@@ -158,7 +158,6 @@ pref('browser.migrate.opera-gx.enabled', true);
 pref('browser.migrate.opera.enabled', true);
 
 // DNS
-// pref('network.proxy.type', 0);
 // pref('network.trr.mode', 5);
 
 pref('xpinstall.signatures.required', false);
@@ -233,3 +232,6 @@ pref('media.ffmpeg.encoder.enabled', true);
 
 // Fix buffering issues: Youtube, Archive bugzilla.mozilla.org/show_bug.cgi?id=1854077
 pref("network.fetchpriority.enabled", true);
+
+// No Proxy should be default, Use system proxy allows antivirus, virus or system proxy to MITM or slowing down Zen
+pref("network.proxy.type", 0);

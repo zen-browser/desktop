@@ -105,6 +105,7 @@ pref('zen.tabs.newtab-on-middle-click', true);
 
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts.version', 0); // Empty string means default shortcuts
+pref('zen.keyboard.shortcuts.disable-mainkeyset-clear', false); // for debugging
 
 pref('zen.themes.updated-value-observer', false);
 

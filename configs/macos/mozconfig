@@ -9,8 +9,8 @@ export MOZ_MACBUNDLE_ID=${appId}
 export MOZ_MACBUNDLE_NAME="Zen Browser.app"
 
 if test "$SURFER_COMPAT" = "true"; then
-    #export MOZ_PGO=1
-    #ac_add_options MOZ_PGO=1
+    export MOZ_PGO=1
+    ac_add_options MOZ_PGO=1
     ac_add_options --target=x86_64-apple-darwin
 
     ac_add_options --enable-wasm-avx

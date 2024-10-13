@@ -4,15 +4,14 @@
 The repository is structured as follows:
 
 ```
-central (main branch)
-  |
-  |--- twilight (feature branch)
-  |   |
-  |-> \-- stable (release branch)
-  | |
-  | \--- Hotfix (hotfixes directly from stable)
-  |
-  \--- (features branches)
+dev (main branch)
+ | |
+ | \--->-- stable (release branch)
+ |   ^ 
+ ^   |
+ |   \-<- Hotfix (hotfixes directly from stable)
+ |
+ \-<- (features branches)
 ```
 
 The `central` branch is the main branch of the repository, and it is the default branch for the repository. The `twilight` branch is the feature branch, and it is branched off from the `central` branch. The `stable` branch is the release branch, and it is branched off from the `central` branch. 

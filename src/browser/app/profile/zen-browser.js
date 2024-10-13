@@ -233,3 +233,6 @@ pref('media.ffmpeg.encoder.enabled', true);
 
 // Fix buffering issues: Youtube, Archive bugzilla.mozilla.org/show_bug.cgi?id=1854077
 pref("network.fetchpriority.enabled", true);
+
+// Disable upcoming annoying Search Terms feature, read: https://reddit.com/r/firefox/comments/1fwljdc/
+pref("browser.urlbar.showSearchTerms.enabled", false);

@@ -221,11 +221,14 @@ pref("devtools.accessibility.enabled", false);
 
 // Enable GPU by default
 pref('gfx.webrender.all', true);
+pref("gfx.canvas.accelerated", true);
+pref("media.hardware-video-decoding.enabled", true);
+
+// VAAPI/FFMPEG is Linux only
+#ifdef XP_UNIX
 pref('media.ffmpeg.vaapi.enabled', true);
 pref('media.ffmpeg.encoder.enabled', true);
-
-pref("media.hardware-video-decoding.enabled", true);
-pref("gfx.canvas.accelerated", true);
+#endif
 
 // Fix buffering issues: Youtube, Archive bugzilla.mozilla.org/show_bug.cgi?id=1854077
 pref("network.fetchpriority.enabled", true);

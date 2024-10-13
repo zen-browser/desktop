@@ -204,7 +204,7 @@
         content: '';
         display: block;
         height: 1px;
-        background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+        background: var(--zen-colors-border);
         width: 99%;
         left: 50%;
         transform: translateX(-50%);
@@ -303,6 +303,12 @@
         }
       }
     }
+
+    @media (-moz-bool-pref: 'zen.view.compact') and (-moz-bool-pref: 'zen.view.compact.hide-toolbar') and (not (-moz-bool-pref: 'zen.view.compact.hide-tabbar')) {
+      & {
+        margin-top: var(--zen-element-separation) !important;
+      }
+    }
   }
 
   /* Mark: toolbox as collapsed */
@@ -352,7 +358,7 @@
         content: '';
         display: block;
         height: 1px;
-        background: color-mix(in srgb, var(--zen-colors-border) 80%, transparent 20%);
+        background: var(--zen-colors-border);
         width: 70%;
         left: 50%;
         transform: translateX(-50%);

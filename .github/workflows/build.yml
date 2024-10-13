@@ -58,15 +58,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [debug-inputs]
     steps:
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
 
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
+          fetch-depth: 0
 
       - name: Check if correct branch
         run: |
@@ -85,19 +82,6 @@ jobs:
             exit 1
           else
             echo ">>> Branch matches"
-          fi
-
-      - name: Check if branch is up to date
-        run: |
-          echo "Checking if branch is up to date"
-          git fetch
-          git pull
-          git status
-          if [[ $(git status) == *"Your branch is up to date with"* ]]; then
-            echo ">>> Branch is up to date"
-          else
-            echo ">>> Branch is not up to date"
-            exit 1
           fi
 
   build-data:

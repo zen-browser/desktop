@@ -338,7 +338,7 @@ jobs:
         run: |
           npm install -g pnpm
           sudo apt-get update
-          sudo apt-get -y install libfuse2 desktop-file-utils
+          sudo apt-get -y install libfuse2 desktop-file-utils appstream 
 
       - name: Download linux build
         uses: actions/download-artifact@v4
@@ -353,7 +353,7 @@ jobs:
           cp configs/branding/${{ inputs.update_branch }}/logo128.png AppDir/zen.png && ln -s zen.png AppDir/.DirIcon
 
           if [ "${{ inputs.update_branch }}" = "twilight" ]; then
-            sed -i -e 's/Name=Zen Browser/name=Zen Twilight/g' AppDir/zen.desktop
+            sed -i -e 's/Name=Zen Browser/Name=Zen Twilight/g' AppDir/zen.desktop
           fi
 
           APPDIR=AppDir

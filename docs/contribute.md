@@ -6,7 +6,7 @@ The repository is structured as follows:
 ```
 central (main branch)
   |
-  |--- twiligth (feature branch)
+  |--- twilight (feature branch)
   |   |
   |-> \-- stable (release branch)
   | |

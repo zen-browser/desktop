@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index c89ae2cbb978d6218bd56a059c5ca1e371231607..12062be9d9574234b8005d90d035d5b1b492bb91 100644
+index c89ae2cbb978d6218bd56a059c5ca1e371231607..a812f3ec86d9967582f99b0eb0c3f1367c39fc8f 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -456,11 +456,26 @@
@@ -37,7 +37,7 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..12062be9d9574234b8005d90d035d5b1
  
 +      let hasZenDefaultUserContextId = false;
 +      if (typeof ZenWorkspaces !== "undefined") {
-+        [userContextId, hasZenDefaultUserContextId] = ZenWorkspaces.getContextIdIfNeeded(userContextId, fromExternal);
++        [userContextId, hasZenDefaultUserContextId] = ZenWorkspaces.getContextIdIfNeeded(userContextId, fromExternal, allowInheritPrincipal);
 +      }
 +
        if (!UserInteraction.running("browser.tabs.opening", window)) {

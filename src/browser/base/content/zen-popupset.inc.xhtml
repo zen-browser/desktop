@@ -101,6 +101,10 @@
   </vbox>
 </panelview>
 
+<panel type="arrow" id="PanelUI-zen-workspaces-icon-picker" position="bottomright topright" side="left">
+
+</panel>
+
 <panel flip="slide" type="arrow" orient="vertical" id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
   <panelmultiview id="PanelUI-zen-workspaces-multiview" mainViewId="PanelUI-zen-workspaces-view">
     <panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
@@ -124,10 +128,11 @@
       </vbox>
     </panelview>
     <panelview id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox>
+      <vbox class="PanelUI-zen-workspaces-user-create">
         <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
-        <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceCreationNameChange(this);" />
-        <hbox id="PanelUI-zen-workspaces-create-icons-container">
+        <hbox class="PanelUI-zen-workspaces-creation-wraper">
+          <hbox class="PanelUI-zen-workspaces-icons-container create" onclick="ZenWorkspaces.onWorkspaceIconContainerClick(event);"></hbox>
+          <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceCreationNameChange(this);" />
         </hbox>
       </vbox>
       <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
@@ -138,10 +143,11 @@
       </html:moz-button-group>
     </panelview>
     <panelview id="PanelUI-zen-workspaces-edit" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox>
+      <vbox class="PanelUI-zen-workspaces-user-create">
         <h1 data-l10n-id="zen-panel-ui-workspaces-edit-text"></h1>
-        <html:input autofocus="true" id="PanelUI-zen-workspaces-edit-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceEditChange();" />
-        <hbox id="PanelUI-zen-workspaces-edit-icons-container">
+        <hbox class="PanelUI-zen-workspaces-creation-wraper">
+          <hbox class="PanelUI-zen-workspaces-icons-container edit" onclick="ZenWorkspaces.onWorkspaceIconContainerClick(event);"></hbox>
+          <html:input autofocus="true" id="PanelUI-zen-workspaces-edit-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceEditChange();" />
         </hbox>
       </vbox>
       <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-edit-footer">
@@ -156,7 +162,7 @@
 
 <menupopup id="zenWorkspaceActionsMenu"
             onpopupshowing="ZenWorkspaces.updateContextMenu(this);"
-            onpopuphidden="ZenWorkspaces.onContextMenuClose();">
+            onpopuphidden="if (event.target == this) ZenWorkspaces.onContextMenuClose();">
   <menuitem id="context_zenOpenWorkspace" oncommand="ZenWorkspaces.openWorkspace();" data-l10n-id="zen-workspaces-panel-context-open"/>
   <menuseparator/>
   <menuitem id="context_zenSetAsDefaultWorkspace" oncommand="ZenWorkspaces.setDefaultWorkspace();" data-l10n-id="zen-workspaces-panel-context-set-default"/>

@@ -3,8 +3,18 @@
             onpopuphidden="if (event.target == this) gZenBrowserManagerSidebar.contextTab = null;">
   <menuitem id="context_zenUnloadWebPanel" oncommand="gZenBrowserManagerSidebar.contextUnload();" data-l10n-id="zen-web-side-panel-context-unload"/>
   <menuitem id="context_zenToggleMuteWebPanel" oncommand="gZenBrowserManagerSidebar.contextToggleMuteAudio();"/>
-  <menuitem id="context_zenToogleUAWebPanel" oncommand="gZenBrowserManagerSidebar.contextToggleUserAgent();"/>
   <menuitem id="context_zenOpenNewTabWebPanel" oncommand="gZenBrowserManagerSidebar.contextOpenNewTab();" data-l10n-id="zen-web-side-panel-open-in-new-tab"/>
+  <menuseparator/>
+  <menu id="context_zenWebPanelContextInContainer"
+    data-l10n-id="zen-web-side-panel-context-open-in-container-tab"
+    selection-type="single"
+    node-type="link"
+    hide-if-private-browsing="true"
+    hide-if-usercontext-disabled="true">
+    <menupopup oncommand="gZenBrowserManagerSidebar.contextChangeContainerTab(event);"
+          onpopupshowing="return gZenBrowserManagerSidebar.createContainerTabMenu(event);" />
+  </menu>
+  <menuitem id="context_zenToogleUAWebPanel" oncommand="gZenBrowserManagerSidebar.contextToggleUserAgent();"/>
   <menuseparator/>
   <menuitem id="context_zenDeleteWebPanel" oncommand="gZenBrowserManagerSidebar.contextDelete();" data-l10n-id="zen-web-side-panel-context-delete"/>
 </menupopup>

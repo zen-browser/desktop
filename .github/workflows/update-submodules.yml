@@ -24,12 +24,7 @@ jobs:
 
       - name: Update submodules
         run: |
-          # Only update the "components" submodule, we want to ignore l10n
-          submodule_path="$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | grep zen-components --color=never)"
-          echo "Submodule path: $submodule_path"
-          cd $submodule_path
-          git checkout main
-          git pull
+          git submodule update --remote --merge
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

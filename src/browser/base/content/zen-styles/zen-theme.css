@@ -146,7 +146,7 @@
 @media (prefers-color-scheme: dark) {
   @media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
     :root {
-      --zen-dark-color-mix-base: lch(2.467% 0 272 / 1);
+      --zen-dark-color-mix-base: hsl(5 5 5);
       --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 4%, rgb(0, 0, 0) 96%);
     }
   }

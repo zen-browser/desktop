@@ -787,6 +787,7 @@ menuitem[id='placesContext_deleteHost'],
 #context-openlinkintab,
 #context-openlinkincontainertab,
 #context_zenWorkspacesOpenInContainerTab,
+#context_zenWebPanelContextInContainer,
 menuitem[id='placesContext_open:newtab'],
 menuitem[id='placesContext_openLinks:tabs'],
 menuitem[id='placesContext_openBookmarkLinks:tabs'],
@@ -982,6 +983,7 @@ menuitem[id='placesContext_new:separator'] {
 }
 
 #context_zenUnloadTab,
+#context_zenUnloadWebPanel,
 #context_zenTabActions {
   --menu-image: url('close-all.svg');
 }

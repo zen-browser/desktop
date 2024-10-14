@@ -157,10 +157,7 @@ pnpm build:ui && pnpm start
 
 ## Special Thanks
 
-- [IAmJafeth](https://github.com/IAmJafeth) (For sponsoring the domain)
-- [Donno 🐒](https://www.onnno.nl/) (For making the logo)
-- [ptr1337](https://github.com/ptr1337) (AUR Packages and optimization flags)
-- [nitro](https://github.com/n7itro) (For the amazing work on the browser)
+Special thanks to... EVERYONE 🎉! Checkout the team and contributors page [here](https://zen-browser.app/about)
 
 ## Third Party Code
 

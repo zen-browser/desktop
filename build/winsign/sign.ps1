@@ -1,5 +1,6 @@
 param(
-    [string][Parameter(Mandatory=$true)]$SignIdentity
+    [string][Parameter(Mandatory=$true)]$SignIdentity,
+    [string][Parameter(Mandatory=$true)]$GithubRunId
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,11 +9,10 @@ echo "Preparing environment"
 git pull --recurse-submodules
 mkdir windsign-temp -ErrorAction SilentlyContinue
 
-echo "Please UNZIP the generic and specific artifacts into windsign-temp"
-echo "With the following filenames:"
-echo "  - $pwd\windsign-temp\windows-x64-obj-specific"
-echo "  - $pwd\windsign-temp\windows-x64-obj-generic"
-Read-Host "Press Enter to continue when ready"
+# Download in parallel
+gh run download $GithubRunId --name windows-x64-obj-specific -p windsign-temp\windows-x64-obj-specific
+gh run download $GithubRunId --name windows-x64-obj-generic -p windsign-temp\windows-x64-obj-generic
+
 mkdir engine\obj-x86_64-pc-windows-msvc\ -ErrorAction SilentlyContinue
 mkdir .\.github\workflows\object\ -ErrorAction SilentlyContinue
 
@@ -29,7 +29,7 @@ function SignAndPackage($name) {
     $files = Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.exe
     $files += Get-ChildItem engine\obj-x86_64-pc-windows-msvc\ -Recurse -Include *.dll
 
-    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
+    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files /ph
     echo "Packaging $name"
     $env:SURFER_SIGNING_MODE="sign"
     $env:MAR="$PWD\\build\\winsign\\mar.exe"
@@ -76,7 +76,7 @@ function SignAndPackage($name) {
     rm windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
     $files = Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.exe
     $files += Get-ChildItem windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -Include *.dll
-    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
+    signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files /ph
     Compress-Archive -Path windsign-temp\windows-x64-signed-$name\zen.win-$name -DestinationPath windsign-temp\windows-x64-signed-$name\zen.win-$name.zip
     rmdir windsign-temp\windows-x64-signed-$name\zen.win-$name -Recurse -ErrorAction SilentlyContinue
 

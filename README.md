@@ -106,54 +106,11 @@ To upgrade the browser to a newer version, use the embedded update functionality
 
 # Core Components
 
-Some components used by @zen-browser as an attempt to make firefox forks a better place. You can find them [here](https://github.com/zen-browser/components).
+Some components used by @zen-browser as an attempt to make firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/components).
 
 ## 🚀 Run Locally
 
-Clone the project
-
-```bash
-git clone https://github.com/zen-browser/desktop.git --recurse-submodules
-cd desktop
-```
-
-Install dependencies
-
-```bash
-pnpm install
-```
-
-Download and bootstrap the browser
-
-```bash
-pnpm run init
-```
-
-Copy a language pack
-
-```bash
-sh scripts/update-en-US-packs.sh
-```
-
-Start building the browser
-
-```bash
-pnpm run build
-```
-
-Finally, run the browser!
-
-```bash
-pnpm start
-```
-
-### Development
-
-To view changes you've made, run
-
-```bash
-pnpm build:ui && pnpm start
-```
+In order to download and run zen locally, please follow [these instructions](https://docs.zen-browser.app/contribute/desktop).
 
 ## Special Thanks
 

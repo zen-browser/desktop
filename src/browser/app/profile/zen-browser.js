@@ -135,6 +135,7 @@ pref('zen.workspaces.enabled', true);
 pref('zen.workspaces.hide-default-container-indicator', true);
 pref('zen.workspaces.individual-pinned-tabs', true);
 pref('zen.workspaces.show-icon-strip', true);
+pref('zen.workspaces.force-container-workspace', true);
 pref('zen.workspaces.icons', '["🌐", "📁", "💼", "📝", "📅", "📊","🧠"]');
 pref('services.sync.prefs.sync.zen.workspaces.icons', true);
 pref('services.sync.engine.workspaces', false);

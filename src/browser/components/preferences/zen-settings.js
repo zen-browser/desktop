@@ -1030,4 +1030,9 @@ Preferences.addAll([
     type: 'string',
     default: 'switch',
   },
+  {
+    id: 'zen.workspaces.force-container-workspace',
+    type: 'bool',
+    default: true,
+  },
 ]);

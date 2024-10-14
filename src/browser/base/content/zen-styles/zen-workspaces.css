@@ -1,3 +1,5 @@
+@namespace html 'http://www.w3.org/1999/xhtml';
+
 #zen-workspaces-button {
   justify-content: center;
   align-items: center;
@@ -154,13 +156,7 @@
   min-height: 150px;
 }
 
-#PanelUI-zen-workspaces-create-input,
-#PanelUI-zen-workspaces-edit-input {
-  margin-top: 10px;
-}
-
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton,
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton {
+#PanelUI-zen-workspaces-icon-picker toolbarbutton {
   width: 30px;
   height: 30px;
   display: flex;
@@ -170,31 +166,33 @@
   border-radius: 7px;
 }
 
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton[selected='true'],
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton[selected='true'] {
+#PanelUI-zen-workspaces-icon-picker toolbarbutton[selected='true'] {
   border-color: var(--zen-colors-secondary);
 }
 
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-icon,
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton .toolbarbutton-icon {
+#PanelUI-zen-workspaces-icon-picker toolbarbutton .toolbarbutton-icon {
   display: none;
 }
 
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton .toolbarbutton-text,
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton .toolbarbutton-text {
+#PanelUI-zen-workspaces-icon-picker toolbarbutton .toolbarbutton-text {
   min-width: unset;
 }
 
-#PanelUI-zen-workspaces-create-icons-container,
-#PanelUI-zen-workspaces-edit-icons-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
-  gap: 8px;
-}
+#PanelUI-zen-workspaces-icon-picker {
+  overflow-x: hidden;
+  justify-items: center;
+  overflow-y: auto;
 
-#PanelUI-zen-workspaces-create-icons-container toolbarbutton.toolbarbutton-1,
-#PanelUI-zen-workspaces-edit-icons-container toolbarbutton.toolbarbutton-1 {
-  margin-top: 10px;
+  max-width: 290px;
+  max-height: 290px;
+
+  &::part(content) {
+    padding: 5px;
+    display: flex;
+    gap: 10px;
+  
+    flex-wrap: wrap;
+  }
 }
 
 #PanelUI-zen-workspaces-list {
@@ -209,6 +207,33 @@
   width: 100%;
   text-align: start;
   opacity: 0.5;
+}
+
+.PanelUI-zen-workspaces-user-create {
+  height: 100%;
+
+  .PanelUI-zen-workspaces-creation-wraper {
+    border-radius: 5px;
+    border: 1px solid var(--zen-colors-border);
+
+    margin-top: 10px;
+
+    & .PanelUI-zen-workspaces-icons-container {
+      padding: 10px 0;
+      min-width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--zen-colors-border);
+      margin-right: 2px;
+    }
+    
+    & html|input {
+      border: none;
+      outline: none !important;
+      width: 100%;
+    }
+  }
 }
 
 #PanelUI-zen-workspaces-current-info toolbarbutton:last-child {

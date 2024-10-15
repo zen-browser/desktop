@@ -359,11 +359,11 @@
   list-style-image: url('new-tab-image.svg') !important;
 }
 
-.findbar-find-previous {
+.findbar-find-previous, #zen-workspace-actions-order-up-icon {
   list-style-image: url('arrow-up.svg') !important;
 }
 
-.findbar-find-next {
+.findbar-find-next, #zen-workspace-actions-order-down-icon {
   list-style-image: url('arrow-down.svg') !important;
 }
 

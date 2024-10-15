@@ -102,24 +102,25 @@
 </panelview>
 
 <panel flip="slide" type="arrow" orient="vertical" id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left">
-<panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true" closemenu="none">
-  <vbox>
-    <hbox>
-      <h3 data-l10n-id="zen-panel-ui-workspaces-text"></h3>
-      <hbox class="translations-panel-beta" role="image" aria-label="Beta">
-        <image class="translations-panel-beta-icon"></image>
-      </hbox>
-      <toolbarbutton id="PanelUI-zen-workspaces-reorder-mode" oncommand="ZenWorkspaces.toggleReorderMode();" class="subviewbutton">
-        <image></image>
-      </toolbarbutton>
-      <toolbarbutton id="PanelUI-zen-workspaces-new" oncommand="ZenWorkspaces.openSaveDialog();" class="subviewbutton">
-        <image></image>
-      </toolbarbutton>
-    </hbox>
-  </vbox>
-  <html:div id="PanelUI-zen-workspaces-list">
-  </html:div>
-</panelview>
+  <panelmultiview id="PanelUI-zen-workspaces-multiview" mainViewId="PanelUI-zen-workspaces-view">
+    <panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true" closemenu="none">
+      <vbox>
+        <hbox>
+          <h3 data-l10n-id="zen-panel-ui-workspaces-text"></h3>
+          <hbox class="translations-panel-beta" role="image" aria-label="Beta">
+            <image class="translations-panel-beta-icon"></image>
+          </hbox>
+          <toolbarbutton id="PanelUI-zen-workspaces-reorder-mode" oncommand="ZenWorkspaces.toggleReorderMode();" class="subviewbutton">
+            <image></image>
+          </toolbarbutton>
+          <toolbarbutton id="PanelUI-zen-workspaces-new" oncommand="ZenWorkspaces.openSaveDialog();" class="subviewbutton">
+            <image></image>
+          </toolbarbutton>
+        </hbox>
+      </vbox>
+      <html:div id="PanelUI-zen-workspaces-list">
+      </html:div>
+    </panelview>
     <panelview id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
       <vbox class="PanelUI-zen-workspaces-user-create">
         <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>

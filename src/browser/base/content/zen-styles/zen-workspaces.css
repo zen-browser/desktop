@@ -29,21 +29,38 @@
         opacity: 0.6;
       }
 
-      &:not([active='true']) {
-        &::after {
+      @media (-moz-bool-pref: 'zen.workspaces.hide-deactivated-workspaces') {
+        &:not([active='true']) {
+          &::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            border-radius: 99px;
+            height: 4px;
+            background: color-mix(in srgb, var(--zen-primary-color) 10%, light-dark(rgba(0,0,0,.4), rgba(255,255,255,.4)) 90%);
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
+
+          & .zen-workspace-icon {
+            display: none;
+          }
+        }
+      }
+
+      @media not (-moz-bool-pref: 'zen.workspaces.hide-deactivated-workspaces') {
+        &[active='true']::after {
           content: '';
           position: absolute;
           width: 4px;
           border-radius: 99px;
           height: 4px;
-          background: color-mix(in srgb, var(--zen-primary-color) 10%, light-dark(rgba(0,0,0,.4), rgba(255,255,255,.4)) 90%);
+          background: var(--zen-primary-color);
+          bottom: -2px;
           left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-        }
-
-        & .zen-workspace-icon {
-          display: none;
+          transform: translateX(-50%);
+          animation: zen-workspaces-button-active 0.1s ease-in-out;
         }
       }
     }

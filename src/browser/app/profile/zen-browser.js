@@ -132,6 +132,7 @@ pref('zen.splitView.rearrange-hover-size', 24);
 
 // Zen Workspaces
 pref('zen.workspaces.enabled', true);
+pref('zen.workspaces.hide-deactivated-workspaces', true);
 pref('zen.workspaces.hide-default-container-indicator', true);
 pref('zen.workspaces.individual-pinned-tabs', true);
 pref('zen.workspaces.show-icon-strip', true);

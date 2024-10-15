@@ -8,9 +8,23 @@
 
 Experience tranquillity while browsing the web without people tracking you! Zen is a privacy-focused browser that blocks trackers, ads, and other unwanted content while offering the best browsing experience!
 
-- [Website](https://zen-browser.app)
-- [Download](https://zen-browser.app/download)
-- [Release Notes](https://zen-browser.app/release-notes/latest)
+<div flex="true">
+  <a href="https://zen-browser.app/download">
+    Download
+  </a>
+  •
+  <a href="https://zen-browser.app">
+    Website
+  </a>
+  •
+  <a href="https://docs.zen-browser.app">
+    Documentation
+  </a>
+  • 
+  <a href="https//zen-browser.app/release-notes/latest">
+    Release Notes
+  </a>
+</div>
 
 # Compatibility
 

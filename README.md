@@ -129,7 +129,7 @@ As you can see, chromium based browsers are the most popular browsers, help us c
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date&theme=dark" />
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=chromium/chromium,zen-browser/desktop,brave/brave-browser&type=Date" />
  </picture>
 </a>
 

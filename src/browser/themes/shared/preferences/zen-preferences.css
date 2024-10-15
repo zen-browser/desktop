@@ -51,19 +51,21 @@ groupbox {
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-@media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
-  groupbox {
-    background: #141414;
-  }
-}
-
-@media (-moz-bool-pref: 'zen.theme.color-prefs.colorful') {
-  groupbox {
-    background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
+@media (prefers-color-scheme: dark) {
+  @media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
+    groupbox {
+      background: #141414;
+    }
   }
 
-  :root {
-    --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 70%, #0f0f0f 30%));
+  @media (-moz-bool-pref: 'zen.theme.color-prefs.colorful') {
+    groupbox {
+      background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 10%, #1b1b1b 90%));
+    }
+
+    :root {
+      --zen-settings-secondary-background: light-dark(#f2f4f4, color-mix(in srgb, var(--zen-colors-tertiary) 70%, #0f0f0f 30%));
+    }
   }
 }
 

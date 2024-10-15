@@ -1,0 +1,22 @@
+diff --git a/browser/base/content/aboutDialog.js b/browser/base/content/aboutDialog.js
+index 8c5c7768e0e716c196063b4c986dea2631185972..d31f57a176fffc9725b1c31b165fb5cdc55e186e 100644
+--- a/browser/base/content/aboutDialog.js
++++ b/browser/base/content/aboutDialog.js
+@@ -51,7 +51,7 @@ function init() {
+   ]);
+   let versionIdKey = "base";
+   let versionAttributes = {
+-    version: AppConstants.MOZ_APP_VERSION_DISPLAY,
++    version: `${AppConstants.MOZ_APP_VERSION_DISPLAY} (Firefox ${AppConstants.ZEN_FIREFOX_VERSION})`,
+   };
+ 
+   let arch = Services.sysinfo.get("arch");
+@@ -63,7 +63,7 @@ function init() {
+   }
+ 
+   let version = Services.appinfo.version;
+-  if (/a\d+$/.test(version)) {
++  if (version.includes("t")) {
+     versionIdKey += "-nightly";
+     let buildID = Services.appinfo.appBuildID;
+     let year = buildID.slice(0, 4);

@@ -11,10 +11,6 @@
 
     box-shadow: var(--uc-tweak-rounded-corners-shadow) !important;
 
-    & browser {
-      background-color: white;
-    }
-
     /* Use pseudo element overlay to simulate rounded corners, similar to the
      * tab corners, fixes bug with backdrop-filter. */
     &::after {

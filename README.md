@@ -91,15 +91,18 @@ bash <(curl https://updates.zen-browser.app/appimage.sh)
 flatpak install flathub io.github.zen_browser.zen
 ```
 
-#### CachyOS
+#### Arch-based distributions
+
 ##### Generic
+
 ```
-sudo pacman -S zen-browser-bin
+yay -S zen-browser-bin
 ```
 
 ##### Optimized 
+
 ```
-sudo pacman -S zen-browser-avx2-bin
+yay -S zen-browser-avx2-bin
 ```
 
 To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.

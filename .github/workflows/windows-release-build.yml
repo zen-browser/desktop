@@ -212,7 +212,8 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         run: |
           set -x
-          find engine/obj-x86_64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type d -not -name 'dist' -exec rm -rf {} +
+          find engine/obj-x86_64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type d -not -name 'dist' -exec rm -rf {} \;
+          find engine/obj-x86_64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type f -not -name 'dist' -exec rm -f {} \;
           
       - name: Upload dist object
         if: ${{ !inputs.generate-gpo }}

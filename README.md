@@ -1,7 +1,5 @@
 <img src="./docs/assets/zen-black.svg" width="100px" align="left">
 
-<br/>
-
 ### `Zen Browser`
 
 [![Downloads](https://img.shields.io/github/downloads/zen-browser/desktop/total.svg)](https://github.com/zen-browser/desktop/releases)

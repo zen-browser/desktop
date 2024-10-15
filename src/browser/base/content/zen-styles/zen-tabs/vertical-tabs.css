@@ -218,8 +218,6 @@
       flex-direction: row;
       justify-content: space-between;
 
-      padding-top: var(--zen-element-separation);
-
       width: 100%;
       position: relative;
 

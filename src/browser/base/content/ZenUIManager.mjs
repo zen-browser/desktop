@@ -126,12 +126,10 @@ var gZenVerticalTabsManager = {
       <menuitem id="zen-toolbar-context-tabs-right"
                 type="checkbox"
                 ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
-                data-lazy-l10n-id="zen-toolbar-context-tabs-right"/>
+                data-lazy-l10n-id="zen-toolbar-context-tabs-right"
+				oncommand="gZenVerticalTabsManager.toggleTabsOnRight();"
+		/>
     `);
-    fragment.getElementById('zen-toolbar-context-tabs-right').addEventListener('click', () => {
-      let rightSide = Services.prefs.getBoolPref(kConfigKey);
-      Services.prefs.setBoolPref(kConfigKey, !rightSide);
-    });
     document.getElementById('viewToolbarsMenuSeparator').before(fragment);
   },
 
@@ -210,5 +208,10 @@ var gZenVerticalTabsManager = {
     let expanded = !this.expanded;
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
     Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+  },
+
+  toggleTabsOnRight() {
+    const newVal = !Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+    Services.prefs.setBoolPref('zen.tabs.vertical.right-side', newVal);
   },
 };

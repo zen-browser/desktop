@@ -30,15 +30,11 @@ Zen is currently built using firefox version `131.0.3`!
 
 # Contribution
 
-Zen is an open-source project, and we welcome contributions from the community!
-
-- Check out the [contribution guidelines](./docs/contribute.md)!
+Zen is an open-source project, and we welcome contributions from the community! Please take a looka at the [contribution guidelines](./docs/contribute.md) before getting started!
 
 # Performance
 
-Zen is built with performance in mind, and we have optimized the browser to be as fast as possible!
-
-- Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
+Zen is built with performance in mind, and we have optimized the browser to be as fast as possible! Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
 
 # Installation
 
@@ -111,30 +107,32 @@ To upgrade the browser to a newer version, use the embedded update functionality
 
 Some components used by @zen-browser as an attempt to make firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/components).
 
-## 🚀 Run Locally
+### 🚀 Run Locally
 
 In order to download and run zen locally, please follow [these instructions](https://docs.zen-browser.app/contribute/desktop).
 
-## Special Thanks
+### Special Thanks
 
 Special thanks to... EVERYONE 🎉! Checkout the team and contributors page [here](https://zen-browser.app/about)
 
-## Third Party Code
+### Third Party Code
 
 Zen couldn't be in its current state without the help of these amazing projects!
 
 - Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
 
-## License
+### Comparison with other browsers
 
-[MPL LICENSE](./LICENSE)
-
-## Star History
+As you can see, chromium based browsers are the most popular browsers, help us change that by starring the project and spreading the word!
 
 <a href="https://star-history.com/#zen-browser/desktop&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=zen-browser/desktop&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=zen-browser/desktop,chromium/chromium,brave/brave-browser&type=Date" />
  </picture>
 </a>
+
+## License
+
+Zen browser is under the [MPL LICENSE](./LICENSE).

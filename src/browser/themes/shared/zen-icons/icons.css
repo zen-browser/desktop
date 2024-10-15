@@ -185,6 +185,11 @@
   list-style-image: url('plus.svg') !important;
 }
 
+#PanelUI-zen-workspaces-reorder-mode image {
+  list-style-image: url('move-tab.svg') !important;
+  rotate: 90deg;
+}
+
 #cut-button {
   list-style-image: url('edit-cut.svg') !important;
 }

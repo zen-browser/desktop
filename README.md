@@ -90,15 +90,15 @@ To upgrade the browser to a newer version, use the embedded update functionality
 
 Some components used by @zen-browser as an attempt to make firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/components).
 
-#### `🏃‍♂️ Run Locally`
+#### `Run Locally`
 
 In order to download and run zen locally, please follow [these instructions](https://docs.zen-browser.app/contribute/desktop).
 
-#### `🎉 Special Thanks`
+#### `Special Thanks`
 
 Special thanks to... EVERYONE 🎉! Checkout the team and contributors page [here](https://zen-browser.app/about)
 
-#### `🧑‍💻 Third Party Code`
+#### `Third Party Code`
 
 Zen couldn't be in its current state without the help of these amazing projects! 🙏
 

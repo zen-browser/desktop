@@ -12,15 +12,12 @@ Experience tranquillity while browsing the web without people tracking you! Zen 
 - [Download](https://zen-browser.app/download)
 - [Release Notes](https://zen-browser.app/release-notes/latest)
 
-[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/zen_browser)
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/zen_browser)
-
 # Compatibility
 
 Zen is currently built using firefox version `131.0.3`!
 
 - Check out the latest [release notes](https://zen-browser.app/release-notes)!
+- Part of our mission is to keep Zen up-to-date with the latest version of Firefox, so you can enjoy the latest features and security updates!
 
 # Contribution
 

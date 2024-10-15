@@ -158,7 +158,6 @@ pref("browser.shell.checkDefaultBrowser", false);
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
 pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 pref("browser.preferences.moreFromMozilla", false);
-pref("browser.tabs.tabmanager.enabled", false);
 pref("browser.aboutConfig.showWarning", false);
 pref("browser.aboutwelcome.enabled", false);
 

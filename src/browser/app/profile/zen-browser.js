@@ -236,3 +236,8 @@ pref("network.fetchpriority.enabled", true);
 
 // No Proxy should be default, Use system proxy allows antivirus, virus or system proxy to MITM or slowing down Zen
 pref("network.proxy.type", 0);
+
+// ZEN EXPERIMENTAL:
+
+pref("security.tls.enable_kyber", true);
+pref("network.http.http3.enable_kyber", true);

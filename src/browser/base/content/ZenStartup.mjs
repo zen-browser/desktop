@@ -40,6 +40,13 @@
         gZenVerticalTabsManager.init();
         gZenCompactModeManager.init();
 
+        XPCOMUtils.defineLazyPreferenceGetter(
+          this,
+          'contentElementSeparation',
+          'zen.theme.content-element-separation',
+          0
+        );
+
         function throttle(f, delay) {
           let timer = 0;
           return function (...args) {
@@ -64,7 +71,7 @@
       tabs.style.maxHeight = '0px'; // reset to 0
       const toolbarRect = toolbarItems.getBoundingClientRect();
       // -5 for the controls padding
-      let totalHeight = toolbarRect.height - 5;
+      let totalHeight = toolbarRect.height - this.contentElementSeparation;
       // remove the height from other elements that aren't hidden
       const otherElements = document.querySelectorAll('#tabbrowser-tabs > *:not([hidden="true"])');
       for (let tab of otherElements) {

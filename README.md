@@ -41,31 +41,27 @@ Zen is an open-source project, and we welcome contributions from the community! 
 
 Zen is built with performance in mind, and we have optimized the browser to be as fast as possible! Checkout the latest [performance benchmarks](https://docs.zen-browser.app/benchmarks)!
 
-# Installation
+## Installation
 
-## Supported Operating Systems
+### Supported Operating Systems
 
 Zen is available for Linux, macOS, and Windows. You can download the latest version from the official website at [zen-browser.app](https://zen-browser.app/download), or from the [GitHub Releases](https://github.com/zen-browser/desktop/releases) page.
 
-### Windows
+If you dont see your OS listed below, that's because we already have it in our [downloads page](https://zen-browser.app/download)! Make sure to check it out!
 
-#### Winget
+#### Windows
 
-- Generic
+##### Winget
 
-```
+```ps
+# Generic version
 winget install --id Zen-Team.Zen-Browser
-```
 
-- Optimized
-
-```
+# Optimized version
 winget install --id Zen-Team.Zen-Browser.Optimized
 ```
 
-####
-
-### macOS
+#### macOS
 
 - Requires macOS 10.15 or later
 - Available for ARM and Intel architectures
@@ -76,37 +72,19 @@ You can also install Zen using Homebrew:
 brew install --cask zen-browser
 ```
 
-### Linux
+##### Arch-based distributions
 
-#### AppImage
-
-- `zsync` is required for the Update feature of the script below
-
-```
-bash <(curl https://updates.zen-browser.app/appimage.sh)
-```
-
-#### Flatpak
-
-```
-flatpak install flathub io.github.zen_browser.zen
-```
-
-#### Arch-based distributions
-
-##### Generic
-
-```
+```sh
+# For generic version
 yay -S zen-browser-bin
-```
 
-##### Optimized 
-
-```
+# For optimized version
 yay -S zen-browser-avx2-bin
 ```
 
 To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
+
+* Again, if you don't see your OS listed above, that's because we already have it in our [downloads page](https://zen-browser.app/download)!
 
 # Core Components
 

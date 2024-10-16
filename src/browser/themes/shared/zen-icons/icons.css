@@ -359,12 +359,16 @@
   list-style-image: url('new-tab-image.svg') !important;
 }
 
-.findbar-find-previous, #zen-workspace-actions-order-up-icon {
+.findbar-find-previous {
   list-style-image: url('arrow-up.svg') !important;
 }
 
-.findbar-find-next, #zen-workspace-actions-order-down-icon {
+.findbar-find-next {
   list-style-image: url('arrow-down.svg') !important;
+}
+
+.zen-workspace-actions-reorder-icon {
+  list-style-image: url('drag-indicator.svg') !important;
 }
 
 #protections-popup-mainView .subviewbutton-nav:not(.notFound)::after,

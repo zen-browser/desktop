@@ -262,6 +262,7 @@
 
   display: flex;
   align-items: center;
+  position: relative;
 
   &:first-child {
     margin-top: 10px;
@@ -297,23 +298,12 @@
     font-weight: normal;
   }
 
-  & .zen-workspace-actions, .zen-workspace-reorder-button  {
+  & .zen-workspace-actions, .zen-workspace-actions-reorder-icon {
     display: none;
     margin: 0;
     margin-left: auto !important;
   }
 
-  &:first-child {
-    & .zen-workspace-order-up {
-      display: none !important;
-    }
-  }
-
-  &:last-child {
-    & .zen-workspace-order-down {
-      display: none !important;
-    }
-  }
 
   &.zen-workspace-button[active='true'] {
     position: relative;
@@ -331,6 +321,20 @@
   }
 }
 
+.zen-workspace-button.dragging {
+  opacity: 0.5;
+}
+
+.zen-workspace-button.dragover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: var(--toolbarbutton-icon-fill-attention);
+  border-radius: 5px;
+}
 
 #PanelUI-zen-workspaces-reorder-mode[active='true'] {
   color: var(--toolbarbutton-icon-fill-attention) !important;
@@ -344,7 +348,7 @@
 }
 
 #PanelUI-zen-workspaces-list[reorder-mode="true"] toolbarbutton {
-  .zen-workspace-reorder-button {
+  .zen-workspace-actions-reorder-icon {
     display: flex;
   }
 }

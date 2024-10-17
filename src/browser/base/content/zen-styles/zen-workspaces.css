@@ -161,7 +161,7 @@
 /* Workspaces Panel UI */
 
 #PanelUI-zen-workspaces {
-  --subpanel-width: 320px;
+  --panel-width: 320px;
   --panel-padding: 0;
 }
 
@@ -171,10 +171,10 @@
   overflow-y: auto;
 }
 
-#PanelUI-zen-workspaces panelmultiview panelview:not(#PanelUI-zen-workspaces-icon-picker) {
+#PanelUI-zen-workspaces panelmultiview panelview {
   position: relative;
   padding: 15px;
-  width: var(--subpanel-width);
+  width: var(--panel-width);
 }
 
 #PanelUI-zen-workspaces-icon-picker toolbarbutton {
@@ -200,28 +200,17 @@
 }
 
 #PanelUI-zen-workspaces-icon-picker {
-  display: grid;
-  grid-template-columns: auto auto auto;
-
   overflow-x: hidden;
   justify-items: center;
   overflow-y: auto;
 
-  max-width: 150px !important;
-  min-width: 150px !important;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
 
-  max-height: 200px;
-  min-height: 200px;
+  flex-direction: row;
 
-  padding: 0px !important;
-
-  &::part(content) {
-    padding: 5px;
-    display: flex;
-    gap: 5px;
-
-    flex-wrap: wrap;
-  }
+  flex-wrap: wrap;
 }
 
 #PanelUI-zen-workspaces-list {

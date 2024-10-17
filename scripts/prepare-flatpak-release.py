@@ -1,13 +1,11 @@
-
-import os
-import sys
-
 import hashlib
 import argparse
+import sys
 
 FLATID = "io.github.zen_browser.zen"
 
 def get_sha256sum(filename):  
+    """Calculate the SHA256 checksum of a file."""
     sha256 = hashlib.sha256()
     with open(filename, "rb") as f:
         for byte_block in iter(lambda: f.read(4096), b""):
@@ -25,10 +23,12 @@ def build_template(template, linux_sha256, flatpak_sha256, version):
 def get_template(template_root):
     file = f"{template_root}/{FLATID}.yml.template"
     print(f"Reading template {file}")
-    with open(file, "r") as f:
-        return f.read()
-    print(f"Template {template_root}/flatpak.yml not found")
-    sys.exit(1)
+    try:
+        with open(file, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"Template {file} not found")
+        sys.exit(1)
 
 def main():
     parser = argparse.ArgumentParser(description='Prepare flatpak release')
@@ -39,20 +39,14 @@ def main():
     parser.add_argument('--template-root', help='Template root', default="flatpak")
     args = parser.parse_args()
 
-    version = args.version
-    linux_archive = args.linux_archive
-    flatpak_archive = args.flatpak_archive
-    output = args.output
-    template_root = args.template_root
+    linux_sha256 = get_sha256sum(args.linux_archive)
+    flatpak_sha256 = get_sha256sum(args.flatpak_archive)
+    template = build_template(get_template(args.template_root), linux_sha256, flatpak_sha256, args.version)
 
-    linux_sha256 = get_sha256sum(linux_archive)
-    flatpak_sha256 = get_sha256sum(flatpak_archive)
-
-    template = build_template(get_template(template_root), linux_sha256, flatpak_sha256, version)
-
-    print(f"Writing output to {output}")
-    with open(output, "w") as f:
+    print(f"Writing output to {args.output}")
+    with open(args.output, "w") as f:
         f.write(template)
 
 if __name__ == "__main__":
     main()
+

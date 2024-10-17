@@ -171,7 +171,6 @@
   position: relative;
   padding: 15px;
   width: var(--panel-width);
-  min-height: 150px;
 }
 
 #PanelUI-zen-workspaces-icon-picker toolbarbutton {
@@ -208,7 +207,7 @@
     padding: 5px;
     display: flex;
     gap: 10px;
-  
+
     flex-wrap: wrap;
   }
 }
@@ -245,7 +244,7 @@
       border-right: 1px solid var(--zen-colors-border);
       margin-right: 2px;
     }
-    
+
     & html|input {
       border: none;
       outline: none !important;
@@ -254,12 +253,7 @@
   }
 }
 
-#PanelUI-zen-workspaces-current-info toolbarbutton:last-child {
-  margin-bottom: 0 !important;
-}
-
-#PanelUI-zen-workspaces-list toolbarbutton,
-#PanelUI-zen-workspaces-current-info toolbarbutton {
+#PanelUI-zen-workspaces-list toolbarbutton{
   padding: 5px;
   border-radius: var(--zen-button-border-radius);
 
@@ -268,6 +262,7 @@
 
   display: flex;
   align-items: center;
+  position: relative;
 
   &:first-child {
     margin-top: 10px;
@@ -303,28 +298,66 @@
     font-weight: normal;
   }
 
-  & .zen-workspace-actions {
+  & .zen-workspace-actions, .zen-workspace-actions-reorder-icon {
     display: none;
     margin: 0;
     margin-left: auto !important;
   }
 
+
+  &.zen-workspace-button[active='true'] {
+    position: relative;
+  }
+
+  &.zen-workspace-button[active='true']::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -6px;
+    width: 4px;
+    height: 100%;
+    background-color: var(--toolbarbutton-icon-fill-attention);
+    border-radius: 5px;
+  }
+}
+
+.zen-workspace-button.dragging {
+  opacity: 0.5;
+}
+
+.zen-workspace-button.dragover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: var(--toolbarbutton-icon-fill-attention);
+  border-radius: 5px;
+}
+
+#PanelUI-zen-workspaces-reorder-mode[active='true'] {
+  color: var(--toolbarbutton-icon-fill-attention) !important;
+}
+
+#PanelUI-zen-workspaces-list:not([reorder-mode="true"]) toolbarbutton {
   &:hover .zen-workspace-actions,
   & .zen-workspace-actions[active='true'] {
     display: flex;
   }
 }
 
-#PanelUI-zen-workspaces-current-info toolbarbutton:first-child {
-  margin-bottom: 10px;
-  margin-top: 5px;
+#PanelUI-zen-workspaces-list[reorder-mode="true"] toolbarbutton {
+  .zen-workspace-actions-reorder-icon {
+    display: flex;
+  }
 }
 
 #PanelUI-zen-workspaces-view > vbox:nth-child(2) {
   margin-top: 10px;
 }
 
-#PanelUI-zen-workspaces-new {
+#PanelUI-zen-workspaces-new, #PanelUI-zen-workspaces-reorder-mode {
   margin-left: auto;
   min-height: 1px !important;
   padding: 3px;

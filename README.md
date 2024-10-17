@@ -103,6 +103,7 @@ Special thanks to... EVERYONE 🎉! Checkout the team and contributors page [her
 Zen couldn't be in its current state without the help of these amazing projects! 🙏
 
 - Zen's default preferences are based on [BetterFox](https://github.com/yokoffing/Betterfox)
+- Icon Pack provided by [Microsoft's FluentUI System Icons](https://github.com/microsoft/fluentui-system-icons)
 
 ### 🖥️ Comparison with other browsers
 

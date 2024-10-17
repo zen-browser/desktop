@@ -327,7 +327,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: -3px;
+    left: -2px;
     width: 3px;
     height: 16px;
     background-color: var(--toolbarbutton-icon-fill-attention);

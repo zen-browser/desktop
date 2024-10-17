@@ -141,7 +141,7 @@
 
   #vertical-pinned-tabs-container {
     padding-inline-end: 0 !important;
-    column-gap: 5px !important;
+    column-gap: 2px !important;
     row-gap: 3px !important;
     max-height: unset !important;
     overflow: visible !important;

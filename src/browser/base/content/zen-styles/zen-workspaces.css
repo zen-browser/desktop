@@ -269,6 +269,7 @@
   }
 
   & .zen-workspace-icon {
+    position: relative;
     width: 30px;
     height: 30px;
     border-radius: var(--zen-button-border-radius);
@@ -309,13 +310,14 @@
     position: relative;
   }
 
-  &.zen-workspace-button[active='true']::before {
+  &.zen-workspace-button[active='true'] .zen-workspace-icon::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -6px;
-    width: 4px;
-    height: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -2px;
+    width: 3px;
+    height: 16px;
     background-color: var(--toolbarbutton-icon-fill-attention);
     border-radius: 5px;
   }

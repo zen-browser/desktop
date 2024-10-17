@@ -62,7 +62,7 @@
 }
 
 #context-zenSplitLink {
-  --menu-image: url('link.svg') !important;
+  --menu-image: url('split.svg') !important;
 }
 
 #sidebar-button:-moz-locale-dir(ltr):not([positionend]),
@@ -404,7 +404,7 @@
 }
 
 #zen-split-views-button {
-  list-style-image: url('link.svg') !important;
+  list-style-image: url('split.svg') !important;
   fill: var(--toolbarbutton-icon-fill-attention);
   fill-opacity: 1;
 }

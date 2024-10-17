@@ -238,6 +238,10 @@ groupbox h2 {
   border-color: var(--zen-primary-color);
 }
 
+#zenLooksAndFeelGroup > html|div:last-of-type {
+  margin-top: 15px;
+}
+
 .zen-compact-mode-styles-browser-wrapper {
   width: 55%;
   height: 60px;
@@ -246,7 +250,13 @@ groupbox h2 {
   border: 1px solid var(--zen-colors-border);
   background: var(--zen-colors-tertiary);
   position: relative;
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+  --zen-compact-mode-styles-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+
+  @media not (prefers-color-scheme: dark) {
+    --zen-compact-mode-styles-shadow: 0 0 .5px .5px rgba(0, 0, 0, 0.1);
+  }
+
+  box-shadow: var(--zen-compact-mode-styles-shadow);
 
   padding: 7px;
 
@@ -255,7 +265,7 @@ groupbox h2 {
     background: var(--zen-primary-color);
     border-radius: 5px;
     height: 18px;
-    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--zen-compact-mode-styles-shadow);
   }
 
   &[top] div {
@@ -263,7 +273,7 @@ groupbox h2 {
     background: var(--zen-primary-color);
     border-radius: 5px;
     height: 100%;
-    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--zen-compact-mode-styles-shadow);
   }
 
   &[both] div {
@@ -271,7 +281,7 @@ groupbox h2 {
     height: 100%;
     background: var(--zen-colors-secondary);
     border-radius: 5px;
-    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--zen-compact-mode-styles-shadow);
   }
 }
 

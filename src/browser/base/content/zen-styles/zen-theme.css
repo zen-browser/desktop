@@ -21,7 +21,7 @@
 
   --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, white 10%);
   --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, black 20%);
-  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 98%, black 2%);
+  --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 97%, black 3%);
 
   --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-colors-tertiary) 99%);
 
@@ -95,6 +95,7 @@
   --zen-panel-radius: var(--zen-border-radius);
 
   --toolbarbutton-border-radius: 6px;
+  --urlbar-margin-inline: 1px !important;
 
   --fp-contextmenu-border-radius: 8px;
   --fp-contextmenu-padding: calc(4px - var(--fp-contextmenu-menuitem-border-width)) 0;
@@ -115,7 +116,7 @@
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: light-dark(#fdfdfd, var(--zen-colors-tertiary)) !important;
+  --zen-themed-toolbar-bg: light-dark(#f7f7f7, var(--zen-colors-tertiary)) !important;
 
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;

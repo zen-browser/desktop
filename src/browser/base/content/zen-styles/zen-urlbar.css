@@ -27,6 +27,10 @@
   box-shadow: var(--panel-shadow) !important;
 }
 
+#urlbar-background {
+  background: transparent;
+}
+
 #urlbar[focused='true'] > #urlbar-background {
   background: var(--zen-dialog-background) !important;
 }

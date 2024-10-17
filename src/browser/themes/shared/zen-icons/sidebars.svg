@@ -1,8 +1,3 @@
-<!--
-   - This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
-   -->
-<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="context-fill" fill-opacity="context-fill-opacity">
-  <path d="M14 1c1.099 0 2 .901 2 2v10c0 1.099-.901 2-2 2H2c-1.099 0-2-.901-2-2V3c0-1.099.901-2 2-2zm0 1H7v12h7c.558 0 1-.442 1-1V3c0-.558-.442-1-1-1zM6 2H2c-.558 0-1 .442-1 1v10c0 .558.442 1 1 1h4zM4.5 4a.5.5 0 0 1 .5.5.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5zm0 3a.5.5 0 0 1 .5.5.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5zm0 3a.5.5 0 0 1 .5.5.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5z"/>
+<svg width="15" height="13" viewBox="0 0 15 11" fill="context-fill" fill-opacity="context-fill-opacity" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.13525 1.5824H12.7046C13.2569 1.5824 13.7046 2.03011 13.7046 2.5824V8.5824C13.7046 9.13468 13.2569 9.5824 12.7046 9.5824H6.13525V1.5824ZM5.13525 0.582397H6.13525H12.7046C13.8092 0.582397 14.7046 1.47783 14.7046 2.5824V8.5824C14.7046 9.68697 13.8092 10.5824 12.7046 10.5824L6.13525 10.5824H5.13525L2.70459 10.5824C1.60002 10.5824 0.70459 9.68697 0.70459 8.5824V2.5824C0.70459 1.47783 1.60002 0.582397 2.70459 0.582397H5.13525ZM5.13525 9.5824H2.70459C2.15231 9.5824 1.70459 9.13468 1.70459 8.5824V2.5824C1.70459 2.03011 2.15231 1.5824 2.70459 1.5824H5.13525V9.5824Z"/>
 </svg>

@@ -85,7 +85,7 @@
     border-bottom: 0px solid transparent !important;
 
     --tab-block-margin: 2px;
-    --tab-selected-bgcolor: var(--zen-colors-primary);
+    --tab-selected-bgcolor: light-dark(color-mix(in srgb, var(--zen-colors-primary) 1%, white 99%), var(--zen-colors-secondary));
     grid-gap: 0 !important;
 
     & .tabbrowser-tab {
@@ -103,12 +103,6 @@
 
       & .tab-background {
         overflow: hidden;
-
-        &:is([selected], [multiselected]) {
-          @media not (prefers-color-scheme: dark) {
-            border: 1px solid color-mix(in srgb, var(--zen-colors-primary) 60%, transparent 40%) !important;
-          }
-        }
 
         & .tab-context-line {
           margin: 0 0px !important;
@@ -155,7 +149,7 @@
     & .tab-background:not(:hover):not([selected]):not([multiselected]) {
       --zen-pinned-tabs-bgcolor: color-mix(in srgb, var(--zen-colors-secondary) 10%, transparent 90%);
       @media not (prefers-color-scheme: dark) {
-        --zen-pinned-tabs-bgcolor: color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent 50%);
+        --zen-pinned-tabs-bgcolor: color-mix(in srgb, var(--zen-colors-primary) 10%, transparent 90%);
       }
       background: var(--zen-pinned-tabs-bgcolor) !important;
       backdrop-filter: blur(5px);
@@ -281,8 +275,12 @@
       & .tabbrowser-tab {
         & .tab-background {
           @media not (prefers-color-scheme: dark) {
-            box-shadow: none !important;
+            &:is([selected], [multiselected]) {
+              box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1) !important;
+            }
           }
+          margin-inline: var(--tab-block-margin);
+          --border-radius-medium: 10px; /* Terrible, I know */
         }
 
         &:not([pinned]):is(:hover, [visuallyselected]) .tab-close-button {
@@ -407,7 +405,7 @@
 
         & .tab-background:is([selected], [multiselected]) {
           @media not (prefers-color-scheme: dark) {
-            box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.12) !important;
           }
         }
 
@@ -631,7 +629,6 @@
 
       &[selected] .tab-background {
         border-color: transparent;
-        background: var(--zen-colors-secondary) !important;
       }
     }
   }

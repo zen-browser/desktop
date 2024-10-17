@@ -30,7 +30,7 @@
       }
 
       @media (-moz-bool-pref: 'zen.workspaces.hide-deactivated-workspaces') {
-        &:not([active='true']) {
+        &:not([active='true']):not(:hover) {
           &::after {
             content: '';
             position: absolute;
@@ -40,6 +40,7 @@
             background: color-mix(in srgb, var(--zen-primary-color) 10%, light-dark(rgba(0,0,0,.4), rgba(255,255,255,.4)) 90%);
             left: 50%;
             top: 50%;
+            filter: saturate(140%) brightness(110%) !important;
             transform: translate(-50%, -50%);
           }
 

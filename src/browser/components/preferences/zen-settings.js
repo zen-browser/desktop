@@ -448,15 +448,6 @@ var gZenLooksAndFeel = {
     window.addEventListener('unload', () => {
       window.matchMedia('(prefers-color-scheme: dark)').removeListener(onPreferColorSchemeChange);
     });
-    setTimeout(() => {
-      const group = document.getElementById('zenLooksAndFeelGroup');
-      const webGroup = document.getElementById('webAppearanceGroup');
-      webGroup.style.display = 'none';
-      // Iterate reverse to prepend the elements in the correct order.
-      for (let child of [...webGroup.children].reverse()) {
-        group.prepend(child);
-      }
-    }, 500);
     this.setDarkThemeListener();
     this.setCompactModeStyle();
   },

@@ -102,6 +102,10 @@
   list-style-image: url('chevron.svg') !important;
 }
 
+#PanelUI-menu-button > * {
+  padding: var(--zen-toolbar-button-inner-padding);
+}
+
 #PanelUI-menu-button,
 #appMenu-more-button2,
 #zen-workspace-actions-menu-icon {

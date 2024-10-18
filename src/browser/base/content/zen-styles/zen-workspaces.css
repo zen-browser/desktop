@@ -17,7 +17,7 @@
     gap: 3px;
 
     & toolbarbutton {
-      margin: 0 !important;
+      margin: auto;
       width: 25px;
       display: flex;
       justify-content: center;
@@ -80,7 +80,7 @@
   }
 
   :root:has(#navigator-toolbox:not([zen-expanded='true'])) &[as-button='true'] {
-    margin: 0 !important;
+    margin: auto;
     padding: var(--toolbarbutton-inner-padding) !important;
     width: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
     height: calc(2 * var(--toolbarbutton-inner-padding) + 16px) !important;
@@ -121,15 +121,10 @@
       :not([zen-user-hover='true'])
     ) {
     & #zen-workspaces-button[as-button='true'] {
-      width: 100% !important;
+      width: calc(100% - var(--toolbarbutton-outer-padding));
       margin: 2px;
       min-width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
       height: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
-
-      & .zen-workspace-sidebar-wrapper {
-        left: calc(var(--toolbarbutton-outer-padding) + 5px);
-        width: calc(100% - (var(--toolbarbutton-outer-padding) * 3));
-      }
     }
 
     & #zen-workspaces-button .zen-workspace-sidebar-name {

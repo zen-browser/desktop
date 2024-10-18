@@ -173,11 +173,14 @@
     ) {
     --zen-toolbox-min-width: fit-content;
     padding: var(--zen-toolbox-padding);
-    padding-left: 0 !important;
+    padding-left: 0;
     padding-top: 0;
 
     & #titlebar {
       min-width: 150px;
+    }
+
+    & #zen-sidebar-top-buttons {
       padding-left: var(--zen-toolbox-padding);
     }
 
@@ -226,6 +229,9 @@
 
     &:not([zen-right-side='true']) {
       padding-right: 0;
+      & #titlebar {
+        padding-left: var(--zen-toolbox-padding);
+      }
     }
 
     & #TabsToolbar-customization-target {

@@ -892,6 +892,14 @@ var gZenCKSSettings = {
     this._currentActionID = null;
   },
 
+  getShortcutFromEvent(event) {
+    const code = event.code;
+    if (code.startsWith('Key')) {
+      return code.replace('Key', '');
+    }
+    return event.key;
+  },
+
   //TODO Check for duplicates
   async _handleKeyDown(event) {
     if (!this._currentActionID || document.hidden) {
@@ -908,7 +916,7 @@ var gZenCKSSettings = {
 
     // This is because on some OSs (windows/macos mostly) the key is not the same as the keycode
     // e.g. CTRL+ALT+3 may be displayed as the euro sign
-    let shortcut = zenKeycodeFixes[event.code] ?? event.key;
+    let shortcut = zenKeycodeFixes[event.code] ?? this.getShortcutFromEvent(event);
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
 

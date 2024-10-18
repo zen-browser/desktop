@@ -200,17 +200,22 @@
 }
 
 #PanelUI-zen-workspaces-icon-picker {
+  padding: 5px !important;
+}
+
+#PanelUI-zen-workspaces-icon-picker-wrapper {
   overflow-x: hidden;
   justify-items: center;
   overflow-y: auto;
 
-  padding: 5px;
   display: flex;
-  gap: 5px;
 
   flex-direction: row;
-
   flex-wrap: wrap;
+
+  justify-content: space-between;
+  align-content: space-between;
+  max-height: 350px;
 }
 
 #PanelUI-zen-workspaces-list {

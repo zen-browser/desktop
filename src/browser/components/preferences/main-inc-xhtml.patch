@@ -1,16 +1,7 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 4c2637db10b7ad5d253d9588be3610c1ec5ad330..b7861f7888b0d3f9abd5249f8356e6b9b5c3005f 100644
+index 4c2637db10b7ad5d253d9588be3610c1ec5ad330..b8445b808cf9dcb54d380ae78172db4bf8250cd4 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
-@@ -163,7 +163,7 @@
- </hbox>
- 
- <!-- Website appearance -->
--<groupbox id="webAppearanceGroup" data-category="paneGeneral" hidden="true">
-+<groupbox id="webAppearanceGroup" data-category="paneZenLooks" hidden="true">
-   <html:h2 data-l10n-id="preferences-web-appearance-header"/>
-   <html:div id="webAppearanceSettings">
-     <description class="description-deemphasized" data-l10n-id="preferences-web-appearance-description"/>
 @@ -369,6 +369,7 @@
                languages-customize-add.label,
              " />

@@ -574,8 +574,29 @@ groupbox h2 {
   flex-direction: row;
 }
 
+#zenMarketplaceHeader {
+  display: flex;
+  justify-content: space-between;
+
+  & h2 {
+    margin: 0;
+  }
+}
+
 .zenThemeMarketplaceItemPreferenceToggle {
   align-self: start;
+
+  &::part(button) {
+    background-color: var(--zen-primary-color);
+  }
+
+  &::part(button)::before {
+    background-color: var(--zen-colors-secondary);
+  }
+}
+
+.zenThemeMarketplaceDisableAllToggle {
+  align-self: center;
 }
 
 #zenThemeMarketplaceItemContentHeader {

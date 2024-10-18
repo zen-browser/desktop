@@ -4,18 +4,33 @@
 var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
-    if (!checkForUpdates) return; // We havent entered the settings page yet.
-    if (this.__hasInitializedEvents) return;
+    const header = document.getElementById('zenMarketplaceHeader');
+
+    if (!checkForUpdates || !header) {
+      return; // We haven't entered the settings page yet.
+    }
+
+    if (this.__hasInitializedEvents) {
+      return;
+    }
+
+    header.appendChild(this._initDisableAll());
+
     this.__hasInitializedEvents = true;
+
     await this._buildThemesList();
+
     Services.prefs.addObserver(this.updatePref, this);
-    var checkForUpdateClick = (event) => {
+
+    const checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
         event.preventDefault();
         this._checkForThemeUpdates(event);
       }
     };
+
     checkForUpdates.addEventListener('click', checkForUpdateClick);
+
     document.addEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', (event) => {
       checkForUpdates.disabled = false;
       const updates = event.detail.updates;
@@ -29,6 +44,7 @@ var gZenMarketplaceManager = {
         error.hidden = false;
       }
     });
+
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver(this.updatePref, this);
       this.__hasInitializedEvents = false;
@@ -38,6 +54,31 @@ var gZenMarketplaceManager = {
       this.themesList.innerHTML = '';
       this._doNotRebuildThemesList = false;
     });
+  },
+
+  _initDisableAll() {
+    const areThemesDisabled = Services.prefs.getBoolPref('zen.themes.disable-all', false);
+    const browser = ZenThemesCommon.currentBrowser;
+    const mozToggle = document.createElement('moz-toggle');
+
+    mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle zenThemeMarketplaceDisableAllToggle';
+    mozToggle.pressed = !areThemesDisabled;
+
+    browser.document.l10n.setAttributes(mozToggle, `zen-theme-disable-all-${!areThemesDisabled ? 'enabled' : 'disabled'}`);
+
+    mozToggle.addEventListener('toggle', async (event) => {
+      const { pressed = false } = event.target || {};
+
+      this.themesList.style.display = pressed ? '' : 'none';
+      Services.prefs.setBoolPref('zen.themes.disable-all', !pressed);
+      browser.document.l10n.setAttributes(mozToggle, `zen-theme-disable-all-${pressed ? 'enabled' : 'disabled'}`);
+    });
+
+    if (areThemesDisabled) {
+      this.themesList.style.display = 'none';
+    }
+
+    return mozToggle;
   },
 
   async observe() {
@@ -85,6 +126,8 @@ var gZenMarketplaceManager = {
     const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
 
+    console.log(`[ZenThemeMarketplaceParent:settings]: Disabling theme ${theme.name}`);
+
     theme.enabled = false;
 
     await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
@@ -95,6 +138,8 @@ var gZenMarketplaceManager = {
   async enableTheme(themeId) {
     const themes = await ZenThemesCommon.getThemes();
     const theme = themes[themeId];
+
+    console.log(`[ZenThemeMarketplaceParent:settings]: Enabling theme ${theme.name}`);
 
     theme.enabled = true;
 
@@ -109,7 +154,10 @@ var gZenMarketplaceManager = {
   },
 
   async _buildThemesList() {
-    if (!this.themesList) return;
+    if (!this.themesList) {
+      return;
+    }
+
     if (this._doNotRebuildThemesList) {
       this._doNotRebuildThemesList = false;
       return;
@@ -617,9 +665,9 @@ var gZenWorkspacesSettings = {
         let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
         if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
           Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-        } 
-      }
-    }
+        }
+      },
+    };
     Services.prefs.addObserver('zen.workspaces.enabled', this);
     Services.prefs.addObserver('zen.tab-unloader.enabled', tabsUnloaderPrefListener);
     window.addEventListener('unload', () => {
@@ -682,17 +730,17 @@ var zenMissingKeyboardShortcutL10n = {
 };
 
 var zenKeycodeFixes = {
-  'Digit0': '0',
-  'Digit1': '1',
-  'Digit2': '2',
-  'Digit3': '3',
-  'Digit4': '4',
-  'Digit5': '5',
-  'Digit6': '6',
-  'Digit7': '7',
-  'Digit8': '8',
-  'Digit9': '9',
-}
+  Digit0: '0',
+  Digit1: '1',
+  Digit2: '2',
+  Digit3: '3',
+  Digit4: '4',
+  Digit5: '5',
+  Digit6: '6',
+  Digit7: '7',
+  Digit8: '8',
+  Digit9: '9',
+};
 
 var gZenCKSSettings = {
   async init() {

@@ -416,6 +416,10 @@ jobs:
           path: updates-server
           token: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Download object files
+        run: |
+          git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object
+
       - name: Copy update manifests
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}

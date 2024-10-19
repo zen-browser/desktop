@@ -11,9 +11,13 @@ mkdir windsign-temp -ErrorAction SilentlyContinue
 
 # Download in parallel
 
+#show output too
 Start-Job -Name "DownloadGitObjectsRepo" -ScriptBlock {
-    git clone https://github.com/zen-browser/windows-binaries.git windsign-temp\windows-binaries
-}
+    param($PWD)
+    echo "Downloading git objects repo to $PWD\windsign-temp\windows-binaries"
+    git clone https://github.com/zen-browser/windows-binaries.git $PWD\windsign-temp\windows-binaries
+    echo "Downloaded git objects repo to"
+} -Verbose -ArgumentList $PWD -Debug
 
 gh run download $GithubRunId --name windows-x64-obj-specific -D windsign-temp\windows-x64-obj-specific
 echo "Downloaded specific artifacts"
@@ -108,6 +112,7 @@ cd windsign-temp\windows-binaries
 git add .
 git commit -m "Sign and package windows artifacts"
 git push
+cd ..\..
 
 # Cleaning up
 

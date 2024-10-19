@@ -1,8 +1,26 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 282e7f31fe158d929130c17628f7e30f690fd666..c139830f6bbd84428310692cfb840bc390c5c6f3 100644
+index 137f1a3854f10aca0d0e3233a82c1c18fbdc2823..419e0ad674b76454e6e3e1ed4ae1a85488137940 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
-@@ -1387,10 +1387,12 @@
+@@ -840,7 +840,7 @@
+ 
+               gBrowser.syncThrobberAnimations(tab);
+             };
+-            if (gReduceMotion) {
++            if (gReduceMotion || true) {
+               postTransitionCleanup();
+             } else {
+               let onTransitionEnd = transitionendEvent => {
+@@ -1411,7 +1411,7 @@
+           let rect = ele => {
+             return window.windowUtils.getBoundsWithoutFlushing(ele);
+           };
+-          let tab = this._getVisibleTabs()[gBrowser._numPinnedTabs];
++          let tab = this._getVisibleTabs()[gBrowser._numVisiblePinTabs];
+           if (tab && rect(tab).width <= this._tabClipWidth) {
+             this.setAttribute("closebuttons", "activetab");
+           } else {
+@@ -1430,10 +1430,12 @@
  
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -18,7 +36,16 @@ index 282e7f31fe158d929130c17628f7e30f690fd666..c139830f6bbd84428310692cfb840bc3
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1449,7 +1451,7 @@
+@@ -1477,7 +1479,7 @@
+         if (isEndTab && !this._hasTabTempMaxWidth) {
+           return;
+         }
+-        let numPinned = gBrowser._numPinnedTabs;
++        let numPinned = gBrowser._numVisiblePinTabs;
+         // Force tabs to stay the same width, unless we're closing the last tab,
+         // which case we need to let them expand just enough so that the overall
+         // tabbar width is the same.
+@@ -1492,7 +1494,7 @@
          let tabsToReset = [];
          for (let i = numPinned; i < tabs.length; i++) {
            let tab = tabs[i];
@@ -27,7 +54,37 @@ index 282e7f31fe158d929130c17628f7e30f690fd666..c139830f6bbd84428310692cfb840bc3
            if (!isEndTab) {
              // keep tabs the same width
              tab.style.transition = "none";
-@@ -1629,7 +1631,7 @@
+@@ -1558,9 +1560,9 @@
+         "vertical-pinned-tabs-container"
+       );
+       let newTabButton = document.getElementById("newtab-button-container");
+-      let numPinned = gBrowser._numPinnedTabs;
++      let numPinned = gBrowser._numVisiblePinTabs;
+ 
+-      if (gBrowser._numPinnedTabs !== verticalTabsContainer.children.length) {
++      if (gBrowser._numVisiblePinTabs !== verticalTabsContainer.children.length) {
+         let tabs = this._getVisibleTabs();
+         for (let i = 0; i < numPinned; i++) {
+           tabs[i].style.marginInlineStart = "";
+@@ -1568,7 +1570,7 @@
+         }
+       }
+ 
+-      newTabButton.toggleAttribute("showborder", gBrowser._numPinnedTabs !== 0);
++      newTabButton.toggleAttribute("showborder", gBrowser._numVisiblePinTabs !== 0);
+       this.style.removeProperty("--tab-overflow-pinned-tabs-width");
+     }
+ 
+@@ -1589,7 +1591,7 @@
+ 
+     _positionPinnedTabs() {
+       let tabs = this._getVisibleTabs();
+-      let numPinned = gBrowser._numPinnedTabs;
++      let numPinned = gBrowser._numVisiblePinTabs;
+       let absPositionHorizontalTabs =
+         this.hasAttribute("overflow") &&
+         tabs.length > numPinned &&
+@@ -1672,7 +1674,7 @@
        }
  
        let pinned = draggedTab.pinned;
@@ -36,3 +93,15 @@ index 282e7f31fe158d929130c17628f7e30f690fd666..c139830f6bbd84428310692cfb840bc3
        let tabs = this._getVisibleTabs().slice(
          pinned ? 0 : numPinned,
          pinned ? numPinned : undefined
+@@ -1949,9 +1951,9 @@
+       function newIndex(aTab, index) {
+         // Don't allow mixing pinned and unpinned tabs.
+         if (aTab.pinned) {
+-          return Math.min(index, gBrowser._numPinnedTabs - 1);
++          return Math.min(index, gBrowser._numVisiblePinTabs - 1);
+         }
+-        return Math.max(index, gBrowser._numPinnedTabs);
++        return Math.max(index, gBrowser._numVisiblePinTabs);
+       }
+     }
+ 

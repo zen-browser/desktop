@@ -104,7 +104,8 @@ SignAndPackage generic
 
 echo "All artifacts signed and packaged, ready for release!"
 echo "Commiting the changes to the repository"
-git add .\.github\workflows\object
+cd windsign-temp\windows-binaries
+git add .
 git commit -m "Sign and package windows artifacts"
 git push
 

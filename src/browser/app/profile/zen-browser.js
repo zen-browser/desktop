@@ -222,9 +222,10 @@ pref("privacy.resistFingerprinting.letterboxing.dimensions", "");
 pref("devtools.accessibility.enabled", false);
 
 // Enable GPU by default
-pref('gfx.webrender.all', true);
+//pref('gfx.webrender.all', true);
 pref("gfx.canvas.accelerated", true);
 pref("media.hardware-video-decoding.enabled", true);
+pref("layers.gpu-process.enabled", true);
 
 // VAAPI/FFMPEG is Linux only
 #ifdef XP_UNIX

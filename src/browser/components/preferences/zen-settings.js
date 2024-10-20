@@ -596,6 +596,7 @@ var gZenLooksAndFeel = {
     const form = document.getElementById('zen-expand-tabbar-strat');
     const radios = form.querySelectorAll('input[type=radio]');
     const onHoverPref = 'zen.view.sidebar-expanded.on-hover';
+    const pausedForExpandPref = 'zen.view.sidebar-expanded.on-hover.paused-for-expand';
     const defaultExpandPref = 'zen.view.sidebar-expanded';
     if (Services.prefs.getBoolPref(onHoverPref)) {
       form.querySelector('input[value="hover"]').checked = true;
@@ -617,6 +618,7 @@ var gZenLooksAndFeel = {
         switch (e.target.value) {
           case 'expand':
             Services.prefs.setBoolPref(onHoverPref, false);
+            Services.prefs.setBoolPref(pausedForExpandPref, false);
             Services.prefs.setBoolPref(defaultExpandPref, true);
             break;
           case 'none':
@@ -626,7 +628,7 @@ var gZenLooksAndFeel = {
           case 'hover':
             disableCompactTabbar();
             Services.prefs.setBoolPref(onHoverPref, true);
-            Services.prefs.setBoolPref(defaultExpandPref, true);
+            Services.prefs.setBoolPref(defaultExpandPref, false);
             break;
         }
       });

@@ -112,8 +112,13 @@ var gZenVerticalTabsManager = {
 
   _updateOnHoverVerticalTabs() {
     let onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    let expanded = this.expanded;
     let sidebar = this.navigatorToolbox;
-    if (onHover) {
+  
+    if (expanded) {
+      sidebar.setAttribute('zen-expanded', 'true');
+      sidebar.removeAttribute('zen-user-hover');
+    } else if (onHover) {
       sidebar.setAttribute('zen-user-hover', 'true');
     } else {
       sidebar.removeAttribute('zen-user-hover');
@@ -127,8 +132,8 @@ var gZenVerticalTabsManager = {
                 type="checkbox"
                 ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
                 data-lazy-l10n-id="zen-toolbar-context-tabs-right"
-				oncommand="gZenVerticalTabsManager.toggleTabsOnRight();"
-		/>
+                oncommand="gZenVerticalTabsManager.toggleTabsOnRight();"
+        />
     `);
     document.getElementById('viewToolbarsMenuSeparator').before(fragment);
   },
@@ -139,17 +144,21 @@ var gZenVerticalTabsManager = {
     const customizationTarget = document.getElementById('nav-bar-customization-target');
     const tabboxWrapper = document.getElementById('zen-tabbox-wrapper');
     const browser = document.getElementById('browser');
+
     if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
       this.navigatorToolbox.setAttribute('zen-right-side', 'true');
     } else {
       this.navigatorToolbox.removeAttribute('zen-right-side');
     }
+
+    // Check if the sidebar is expanded
     if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
-      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
+      this.openSidebar(this.navigatorToolbox);
     } else {
-      this.navigatorToolbox.removeAttribute('zen-expanded');
+      this.closeSidebar(this.navigatorToolbox);
     }
 
+    // Check if the sidebar is in hover mode
     if (
       this.navigatorToolbox.hasAttribute('zen-expanded') &&
       !this.navigatorToolbox.hasAttribute('zen-right-side') &&
@@ -193,21 +202,35 @@ var gZenVerticalTabsManager = {
     return this._expandButton;
   },
 
-  //_updateExpandButton() {
-  //  let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
-  //  let button = this.expandButton;
-  //  let expanded = this.expanded;
-  //  if (expanded && !isCompactMode) {
-  //    button.setAttribute('open', 'true');
-  //  } else {
-  //    button.removeAttribute('open');
-  //  }
-  //},
-
   toggleExpand() {
-    let expanded = !this.expanded;
-    Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
-    Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+    const pausedForExpand = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover.paused-for-expand');
+    const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    let expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+  
+    if (onHover && !expanded) {
+      // Expand sidebar and disable hover detection
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover.paused-for-expand', true);
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', true);
+    } else if (pausedForExpand && expanded) {
+      // Re-enable hover detection when closing
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', false);
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', true); // Re-enable hover detection when closing
+    }
+    else if(expanded || !expanded) {
+      // Toggle sidebar
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', !expanded);
+    }
+  },
+
+  closeSidebar(navigatorToolbox) {
+    navigatorToolbox.removeAttribute('zen-expanded');
+    navigatorToolbox.removeAttribute('zen-user-hover');
+    navigatorToolbox.removeAttribute('zen-has-hover');
+  },
+
+  openSidebar(navigatorToolbox) {
+    navigatorToolbox.setAttribute('zen-expanded', 'true');
   },
 
   toggleTabsOnRight() {

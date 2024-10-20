@@ -1071,4 +1071,9 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed',
+    type: 'bool',
+    default: true,
+  },
 ]);

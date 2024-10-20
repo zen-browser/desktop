@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index c89ae2cbb978d6218bd56a059c5ca1e371231607..a812f3ec86d9967582f99b0eb0c3f1367c39fc8f 100644
+index c89ae2cbb978d6218bd56a059c5ca1e371231607..f86d0e4e32988ce0b498ace83a9fcd9b5a2c7afd 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -456,11 +456,26 @@
@@ -100,7 +100,21 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..a812f3ec86d9967582f99b0eb0c3f136
          tab.initialize();
        }
  
-@@ -4198,6 +4238,7 @@
+@@ -4152,6 +4192,13 @@
+         TelemetryStopwatch.start("FX_TAB_CLOSE_TIME_NO_ANIM_MS", aTab);
+       }
+ 
++      if (ZenWorkspaces.workspaceEnabled) {
++        let newTab = ZenWorkspaces.handleTabBeforeClose(aTab);
++        if (newTab) {
++          this.selectedTab = newTab;
++        }
++      }
++
+       // Handle requests for synchronously removing an already
+       // asynchronously closing tab.
+       if (!animate && aTab.closing) {
+@@ -4198,6 +4245,7 @@
          isLastTab ||
          aTab.pinned ||
          aTab.hidden ||
@@ -108,7 +122,7 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..a812f3ec86d9967582f99b0eb0c3f136
          this._removingTabs.size >
            3 /* don't want lots of concurrent animations */ ||
          !aTab.hasAttribute(
-@@ -5131,10 +5172,10 @@
+@@ -5131,10 +5179,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      },
  
@@ -121,7 +135,7 @@ index c89ae2cbb978d6218bd56a059c5ca1e371231607..a812f3ec86d9967582f99b0eb0c3f136
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -7870,7 +7911,7 @@ var TabContextMenu = {
+@@ -7870,7 +7918,7 @@ var TabContextMenu = {
      );
      contextUnpinSelectedTabs.hidden =
        !this.contextTab.pinned || !multiselectionContext;

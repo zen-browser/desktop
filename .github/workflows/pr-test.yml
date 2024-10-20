@@ -1,0 +1,37 @@
+
+name: Pull request test
+
+on:
+  pull_request:
+    branches:
+      - dev
+    
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Install Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Surfer
+        run: |
+          npm i -g @zen-browser/surfer
+
+      - name: Download firefox
+        run: |
+          surfer download
+
+      - name: Import patches
+        run: |
+          surfer i

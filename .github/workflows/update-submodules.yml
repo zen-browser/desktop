@@ -5,9 +5,6 @@ on:
   push:
     branches:
       - dev
-  pull_request:
-    branches:
-      - dev
   workflow_dispatch:
   workflow_call: # This is a custom event that we will trigger manually
 

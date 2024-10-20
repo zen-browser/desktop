@@ -385,16 +385,21 @@ var gZenMarketplaceManager = {
             case 'checkbox': {
               const checkbox = window.MozXULElement.parseXULToFragment(`
                 <hbox class="zenThemeMarketplaceItemPreference">
-                  <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox" label="${label}" tooltiptext="${property}" zen-pref="${property}"></checkbox>
+                  <checkbox class="zenThemeMarketplaceItemPreferenceCheckbox"></checkbox>
                 </hbox>
               `);
 
+              const checkboxElement = checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox');
+              checkboxElement.setAttribute('label', label);
+              checkboxElement.setAttribute('tooltiptext', property);
+              checkboxElement.setAttribute('zen-pref', property);
+
               // Checkbox only works with "true" and "false" values, it's not like HTML checkboxes.
               if (Services.prefs.getBoolPref(property, false)) {
-                checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').setAttribute('checked', 'true');
+                checkboxElement.setAttribute('checked', 'true');
               }
 
-              checkbox.querySelector('.zenThemeMarketplaceItemPreferenceCheckbox').addEventListener('click', (event) => {
+              checkboxElement.addEventListener('click', (event) => {
                 const target = event.target.closest('.zenThemeMarketplaceItemPreferenceCheckbox');
                 const key = target.getAttribute('zen-pref');
                 const checked = target.hasAttribute('checked');

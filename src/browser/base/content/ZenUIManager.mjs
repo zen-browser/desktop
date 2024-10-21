@@ -111,9 +111,9 @@ var gZenVerticalTabsManager = {
   },
 
   _updateOnHoverVerticalTabs() {
-    let onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
-    let expanded = this.expanded;
-    let sidebar = this.navigatorToolbox;
+    const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    const expanded = this.expanded;
+    const sidebar = this.navigatorToolbox;
   
     if (expanded) {
       sidebar.setAttribute('zen-expanded', 'true');
@@ -179,10 +179,10 @@ var gZenVerticalTabsManager = {
   },
 
   _updateMaxWidth() {
-    let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
-    let expanded = this.expanded;
-    let maxWidth = Services.prefs.getIntPref('zen.view.sidebar-expanded.max-width');
-    let toolbox = document.getElementById('navigator-toolbox');
+    const isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
+    const expanded = this.expanded;
+    const maxWidth = Services.prefs.getIntPref('zen.view.sidebar-expanded.max-width');
+    const toolbox = document.getElementById('navigator-toolbox');
     if (expanded && !isCompactMode) {
       toolbox.style.maxWidth = `${maxWidth}px`;
     } else {
@@ -205,7 +205,7 @@ var gZenVerticalTabsManager = {
   toggleExpand() {
     const pausedForExpand = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover.paused-for-expand');
     const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
-    let expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+    const expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
   
     if (onHover && !expanded) {
       // Expand sidebar and disable hover detection
@@ -217,7 +217,7 @@ var gZenVerticalTabsManager = {
       Services.prefs.setBoolPref('zen.view.sidebar-expanded', false);
       Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', true); // Re-enable hover detection when closing
     }
-    else if(expanded || !expanded) {
+    else {
       // Toggle sidebar
       Services.prefs.setBoolPref('zen.view.sidebar-expanded', !expanded);
     }

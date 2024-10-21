@@ -94,7 +94,6 @@ pref('zen.view.compact.toolbar-hide-after-hover.duration', 1000);
 pref('zen.view.sidebar-height-throttle', 200); // in ms
 pref('zen.view.sidebar-expanded', false);
 pref('zen.view.sidebar-expanded.on-hover', false);
-pref('zen.view.sidebar-expanded.on-hover.paused-for-expand', false);
 pref('zen.view.sidebar-expanded.show-button', true);
 pref('zen.view.sidebar-expanded.max-width', 400);
 

@@ -1,5 +1,6 @@
 var gZenUIManager = {
   _popupTrackingElements: [],
+  _hoverPausedForExpand: false,
 
   init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
@@ -203,14 +204,14 @@ var gZenVerticalTabsManager = {
   },
 
   toggleExpand() {
-    const pausedForExpand = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover.paused-for-expand');
+    const pausedForExpand = this._hoverPausedForExpand;
     const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
     const expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
   
     if (onHover && !expanded) {
       // Expand sidebar and disable hover detection
       Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
-      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover.paused-for-expand', true);
+      this._hoverPausedForExpand = true;
       Services.prefs.setBoolPref('zen.view.sidebar-expanded', true);
     } else if (pausedForExpand && expanded) {
       // Re-enable hover detection when closing

@@ -1,5 +1,6 @@
 var gZenUIManager = {
   _popupTrackingElements: [],
+  _hoverPausedForExpand: false,
 
   init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
@@ -8,11 +9,11 @@ var gZenUIManager = {
 
   openAndChangeToTab(url, options) {
     if (window.ownerGlobal.parent) {
-      let tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(url, options);
+      const tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(url, options);
       window.ownerGlobal.parent.gBrowser.selectedTab = tab;
       return tab;
     }
-    let tab = window.gBrowser.addTrustedTab(url, options);
+    const tab = window.gBrowser.addTrustedTab(url, options);
     window.gBrowser.selectedTab = tab;
     return tab;
   },
@@ -85,7 +86,7 @@ var gZenVerticalTabsManager = {
     this._updateEvent();
     this.initRightSideOrderContextMenu();
 
-    let tabs = document.getElementById('tabbrowser-tabs');
+    const tabs = document.getElementById('tabbrowser-tabs');
 
     XPCOMUtils.defineLazyPreferenceGetter(this, 'canOpenTabOnMiddleClick', 'zen.tabs.newtab-on-middle-click', true);
 
@@ -111,12 +112,28 @@ var gZenVerticalTabsManager = {
   },
 
   _updateOnHoverVerticalTabs() {
-    let onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
-    let sidebar = this.navigatorToolbox;
+    const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    const expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+    const sidebar = this.navigatorToolbox;
+  
+
     if (onHover) {
+      // if the sidebar is not expanded, and hover detection is enabled, show the sidebar
+      sidebar.setAttribute('zen-expanded', 'false');
       sidebar.setAttribute('zen-user-hover', 'true');
+
+      sidebar.removeAttribute('zen-has-hover');
+    } 
+    else if (expanded) {
+      // if the sidebar is expanded, close, and remove hover detection
+      sidebar.setAttribute('zen-expanded', 'true');
+      sidebar.setAttribute('zen-user-hover', 'false');
+      sidebar.setAttribute('zen-has-hover','false');
     } else {
-      sidebar.removeAttribute('zen-user-hover');
+      // if the sidebar is not expanded, and hover detection is disabled, hide the sidebar
+      sidebar.setAttribute('zen-expanded','false');
+      sidebar.setAttribute('zen-user-show','false');
+      sidebar.setAttribute('zen-user-hover','false');
     }
   },
 
@@ -127,8 +144,8 @@ var gZenVerticalTabsManager = {
                 type="checkbox"
                 ${Services.prefs.getBoolPref(kConfigKey) ? 'checked="true"' : ''}
                 data-lazy-l10n-id="zen-toolbar-context-tabs-right"
-				oncommand="gZenVerticalTabsManager.toggleTabsOnRight();"
-		/>
+                oncommand="gZenVerticalTabsManager.toggleTabsOnRight();"
+        />
     `);
     document.getElementById('viewToolbarsMenuSeparator').before(fragment);
   },
@@ -139,19 +156,17 @@ var gZenVerticalTabsManager = {
     const customizationTarget = document.getElementById('nav-bar-customization-target');
     const tabboxWrapper = document.getElementById('zen-tabbox-wrapper');
     const browser = document.getElementById('browser');
+    const sidebarExpanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+
     if (Services.prefs.getBoolPref('zen.tabs.vertical.right-side')) {
       this.navigatorToolbox.setAttribute('zen-right-side', 'true');
     } else {
       this.navigatorToolbox.removeAttribute('zen-right-side');
     }
-    if (Services.prefs.getBoolPref('zen.view.sidebar-expanded')) {
-      this.navigatorToolbox.setAttribute('zen-expanded', 'true');
-    } else {
-      this.navigatorToolbox.removeAttribute('zen-expanded');
-    }
 
+    // Check if the sidebar is in hover mode
     if (
-      this.navigatorToolbox.hasAttribute('zen-expanded') &&
+      sidebarExpanded &&
       !this.navigatorToolbox.hasAttribute('zen-right-side') &&
       !Services.prefs.getBoolPref('zen.view.compact') &&
       !Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover')
@@ -170,10 +185,10 @@ var gZenVerticalTabsManager = {
   },
 
   _updateMaxWidth() {
-    let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
-    let expanded = this.expanded;
-    let maxWidth = Services.prefs.getIntPref('zen.view.sidebar-expanded.max-width');
-    let toolbox = document.getElementById('navigator-toolbox');
+    const isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
+    const expanded = this.expanded;
+    const maxWidth = Services.prefs.getIntPref('zen.view.sidebar-expanded.max-width');
+    const toolbox = document.getElementById('navigator-toolbox');
     if (expanded && !isCompactMode) {
       toolbox.style.maxWidth = `${maxWidth}px`;
     } else {
@@ -193,21 +208,28 @@ var gZenVerticalTabsManager = {
     return this._expandButton;
   },
 
-  //_updateExpandButton() {
-  //  let isCompactMode = Services.prefs.getBoolPref('zen.view.compact');
-  //  let button = this.expandButton;
-  //  let expanded = this.expanded;
-  //  if (expanded && !isCompactMode) {
-  //    button.setAttribute('open', 'true');
-  //  } else {
-  //    button.removeAttribute('open');
-  //  }
-  //},
-
   toggleExpand() {
-    let expanded = !this.expanded;
-    Services.prefs.setBoolPref('zen.view.sidebar-expanded', expanded);
-    Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+    const pausedForExpand = this._hoverPausedForExpand;
+    const onHover = Services.prefs.getBoolPref('zen.view.sidebar-expanded.on-hover');
+    const expanded = Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+
+  
+    if (onHover && !expanded) {
+      // Expand sidebar and disable hover detection
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+      this._hoverPausedForExpand = true;
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', true);
+    } else if (pausedForExpand && expanded) {
+      // Re-enable hover detection when closing
+      this._hoverPausedForExpand = false;
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', false);
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', true); // Re-enable hover detection when closing
+    }
+    else {
+      // Toggle sidebar
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded.on-hover', false);
+      Services.prefs.setBoolPref('zen.view.sidebar-expanded', !expanded);
+    }
   },
 
   toggleTabsOnRight() {

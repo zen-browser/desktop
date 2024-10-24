@@ -345,6 +345,11 @@
   border-radius: 5px;
 }
 
+.zen-workspace-last-place-drop-target.dragover {
+  background-color: var(--toolbarbutton-icon-fill-attention);
+}
+
+
 #PanelUI-zen-workspaces-reorder-mode[active='true'] {
   color: var(--toolbarbutton-icon-fill-attention) !important;
 }
@@ -360,6 +365,17 @@
   .zen-workspace-actions-reorder-icon {
     display: flex;
   }
+}
+
+#PanelUI-zen-workspaces-list[reorder-mode='true'] .zen-workspace-last-place-drop-target {
+  display: block;
+}
+
+.zen-workspace-last-place-drop-target {
+  display: none;
+  height: 4px;
+  width: 100%;
+  border-radius: 5px;
 }
 
 #PanelUI-zen-workspaces-view > vbox:nth-child(2) {

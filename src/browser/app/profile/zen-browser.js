@@ -240,3 +240,5 @@ pref("network.fetchpriority.enabled", true);
 // No Proxy should be default, Use system proxy allows antivirus, virus or system proxy to MITM or slowing down Zen
 pref("network.proxy.type", 0);
 
+// Disable Color Management like Chrome to maximize performance and having similar color display as Chrome. Read: https://reddit.com/r/firefox/comments/1g988kf/
+pref("gfx.color_management.mode", 0);

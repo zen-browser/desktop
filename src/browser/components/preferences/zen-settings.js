@@ -497,7 +497,6 @@ var gZenLooksAndFeel = {
     var onPreferColorSchemeChange = this.onPreferColorSchemeChange.bind(this);
     window.matchMedia('(prefers-color-scheme: dark)').addListener(onPreferColorSchemeChange);
     this.onPreferColorSchemeChange();
-    this.themePicker = new ZenThemePicker(document.getElementById('zenLooksAndFeelGradientPickerParent'));
     window.addEventListener('unload', () => {
       window.matchMedia('(prefers-color-scheme: dark)').removeListener(onPreferColorSchemeChange);
     });

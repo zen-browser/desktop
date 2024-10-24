@@ -101,6 +101,18 @@
   </vbox>
 </panelview>
 
+<panel flip="side" type="arrow" orient="vertical" id="PanelUI-zen-gradient-generator" position="bottomright topright" mainview="true" side="left">
+  <panelmultiview id="PanelUI-zen-gradient-generator-multiview" mainViewId="PanelUI-zen-gradient-generator-view">
+    <panelview id="PanelUI-zen-gradient-generator-view" class="PanelUI-subView zen-theme-picker" role="document" mainview-with-header="true" has-custom-header="true">
+      <hbox class="zen-theme-picker-gradient">
+        <hbox class="zen-theme-picker-gradient-container">
+        </hbox>
+        <html:canvas class="zen-theme-picker-gradient-canvas" width="180" height="180"></html:canvas>
+      </hbox>
+    </panelview>
+  </panelmultiview>
+</panel>
+
 <panel flip="slide" type="arrow" orient="vertical" id="PanelUI-zen-workspaces" position="bottomright topright" mainview="true" side="left" onpopuphidden="ZenWorkspaces.handlePanelHidden();">
   <panelmultiview id="PanelUI-zen-workspaces-multiview" mainViewId="PanelUI-zen-workspaces-view">
     <panelview id="PanelUI-zen-workspaces-view" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true" closemenu="none">

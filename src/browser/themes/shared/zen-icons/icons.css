@@ -164,7 +164,8 @@
   --menu-image: url('bookmark-hollow.svg') !important;
 }
 
-#context_zenEditWorkspace {
+#context_zenEditWorkspace,
+#zenToolbarThemePicker {
   --menu-image: url('edit.svg') !important;
 }
 

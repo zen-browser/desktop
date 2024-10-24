@@ -20,7 +20,7 @@
   <a href="https://docs.zen-browser.app">
     Documentation
   </a>
-  • 
+  •
   <a href="https//zen-browser.app/release-notes/latest">
     Release Notes
   </a>
@@ -72,6 +72,8 @@ You can also install Zen using Homebrew:
 brew install --cask zen-browser
 ```
 
+#### Linux
+
 ##### Arch-based distributions
 
 ```sh
@@ -82,10 +84,18 @@ yay -S zen-browser-bin
 yay -S zen-browser-avx2-bin
 ```
 
-To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
+##### Other Linux distributions (AppImage with automated system integration)
+
+- `zsync` is required for the Update feature of the script below
+
+```sh
+bash <(curl https://updates.zen-browser.app/appimage.sh)
+```
 
 * Again, if you don't see your OS listed above, that's because we already have it in our [downloads page](https://zen-browser.app/download)! 🔄
- 
+
+To upgrade the browser to a newer version, use the embedded update functionality in `About Zen`.
+
 ## 👨‍💻 Development and Contributing
 
 Some components used by @zen-browser as an attempt to make firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/components).

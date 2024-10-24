@@ -13,6 +13,18 @@
   }
 }
 
+@keyframes zen-theme-picker-dot-animation {
+  from {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
 @keyframes zen-jello-out-animation {
   0% {
     transform: scale3d(1, 1, 1);

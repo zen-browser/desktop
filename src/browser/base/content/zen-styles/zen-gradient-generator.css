@@ -1,54 +1,32 @@
 
+#PanelUI-zen-gradient-generator {
+  --panel-width: 300px;
+  min-width: var(--panel-width);
+}
+
 .zen-theme-picker-gradient {
-  border-radius: 10px;
   position: relative;
-  overflow: hidden;
-  background: white;
+  border-radius: var(--zen-border-radius);
+  border: 1px solid var(--zen-colors-border);
+  background: var(--zen-themed-toolbar-bg);
 
-  & .zen-theme-picker-gradient-container {
-    --zen-gradient-picker-padding: 10px;
+  min-height: calc(var(--panel-width) - var(--panel-padding) * 2);
+  min-width: calc(var(--panel-width) - var(--panel-padding) * 2);
+
+  & .zen-theme-picker-dot {
     position: absolute;
-    top: var(--zen-gradient-picker-padding);
-    left: var(--zen-gradient-picker-padding);
-    height: calc(100% - 2 * var(--zen-gradient-picker-padding));
-    width: calc(100% - 2 * var(--zen-gradient-picker-padding));
-    display: flex;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--zen-theme-picker-dot-color);
+    box-shadow: 0 0 0 2px var(--zen-themed-toolbar-bg);
+    cursor: pointer;
+    border: 3px solid var(--zen-colors-border);
+    animation: zen-theme-picker-dot-animation .5s;
+    transition: transform .2s;
 
-    background: color-mix(in srgb, var(--zen-colors-primary) 70%, transparent 30%);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
-    backdrop-filter: blur(20px);
-
-    border: 1px solid var(--zen-colors-border);
-
-    & .zen-theme-picker-gradient-color {
-      &[primary='true'] {
-        width: 30px;
-        height: 30px;
-        border-width: 6px;
-      }
-
-      &:not([primary='true']) {
-        width: 20px;
-        height: 20px;
-        border-width: 4px;
-      }
-
-      border-radius: 50%;
-      border-style: solid;
-      border-color: white;
-      background: var(--zen-chosen-color, black);
-
-      transform: translate(-50%, -50%);
-
-      cursor: move;
-      position: absolute;
-
-      transition: transform 0.2s;
-      &[dragging='true'] {
-        transform: scale(1.2) translate(-50%, -50%);
-      }
+    &[dragging='true'] {
+      transform: scale(1.2);
     }
   }
 }

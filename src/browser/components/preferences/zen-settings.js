@@ -626,7 +626,7 @@ var gZenLooksAndFeel = {
           case 'hover':
             disableCompactTabbar();
             Services.prefs.setBoolPref(onHoverPref, true);
-            Services.prefs.setBoolPref(defaultExpandPref, true);
+            Services.prefs.setBoolPref(defaultExpandPref, false);
             break;
         }
       });

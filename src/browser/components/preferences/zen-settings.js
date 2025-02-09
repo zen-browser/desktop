@@ -507,7 +507,6 @@ var gZenLooksAndFeel = {
         Services.prefs.removeObserver(pref, this);
       }
     });
-    this.setDarkThemeListener();
     this.setCompactModeStyle();
 
     this.applySidebarLayout();
@@ -557,41 +556,6 @@ var gZenLooksAndFeel = {
       elem.removeAttribute('hidden');
     } else {
       elem.setAttribute('hidden', 'true');
-    }
-  },
-
-  setDarkThemeListener() {
-    const chooser = document.getElementById('zen-dark-theme-styles-form');
-    const radios = [...chooser.querySelectorAll('input')];
-    for (let radio of radios) {
-      if (radio.value === 'amoled' && Services.prefs.getBoolPref('zen.theme.color-prefs.amoled')) {
-        radio.checked = true;
-      } else if (radio.value === 'colorful' && Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')) {
-        radio.checked = true;
-      } else if (
-        radio.value === 'default' &&
-        !Services.prefs.getBoolPref('zen.theme.color-prefs.amoled') &&
-        !Services.prefs.getBoolPref('zen.theme.color-prefs.colorful')
-      ) {
-        radio.checked = true;
-      }
-      radio.addEventListener('change', (e) => {
-        let value = e.target.value;
-        switch (value) {
-          case 'amoled':
-            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', true);
-            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
-            break;
-          case 'colorful':
-            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
-            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', true);
-            break;
-          default:
-            Services.prefs.setBoolPref('zen.theme.color-prefs.amoled', false);
-            Services.prefs.setBoolPref('zen.theme.color-prefs.colorful', false);
-            break;
-        }
-      });
     }
   },
 
@@ -718,6 +682,8 @@ var zenMissingKeyboardShortcutL10n = {
 
   goHome: 'zen-key-go-home',
   key_redo: 'zen-key-redo',
+
+  key_inspectorMac: 'zen-key-inspector-mac',
 
   // Devtools
   key_toggleToolbox: 'zen-devtools-toggle-shortcut',

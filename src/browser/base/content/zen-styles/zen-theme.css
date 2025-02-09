@@ -104,7 +104,7 @@
   --zen-button-border-radius: 5px;
   --zen-button-padding: 0.6rem 1.2rem;
 
-  --zen-toolbar-element-bg: light-dark(rgba(0, 0, 0, 0.11), rgba(255, 255, 255, 0.11));
+  --zen-toolbar-element-bg: light-dark(rgba(0, 0, 0, 0.07), rgba(255, 255, 255, 0.11));
 
   /* Toolbar */
   --zen-toolbar-height: 38px;
@@ -131,6 +131,8 @@
   --toolbarbutton-border-radius: 6px;
   --urlbar-margin-inline: 1px !important;
 
+  --tab-icon-overlay-stroke: light-dark(white, black) !important;
+
   --fp-contextmenu-border-radius: 8px;
   --fp-contextmenu-padding: calc(4px - var(--fp-contextmenu-menuitem-border-width)) 0;
   --fp-contextmenu-menuitem-border-radius: calc(4px + var(--fp-contextmenu-menuitem-border-width));
@@ -145,6 +147,8 @@
   --fp-contextmenu-separator-horizontal: 0;
   --fp-contextmenu-bgcolor: light-dark(Menu, rgb(43 42 51 / 0.95));
   --toolbar-bgcolor: transparent;
+
+  --tab-close-button-padding: 5px !important;
 
   --toolbarbutton-active-background: var(--zen-toolbar-element-bg);
 
@@ -179,7 +183,7 @@
       * 1. If the native radius - the separation is less than 4px, use 4px.
       * 2. Otherwise, use the the calculated value (inner radius = outer radius - separation).
     */
-      max(5px, calc(var(--zen-native-content-radius) - var(--zen-element-separation)))
+      max(5px, calc(var(--zen-native-content-radius) - var(--zen-element-separation) / 2))
   );
 
   /** Other theme-related styles */
@@ -216,35 +220,5 @@
     --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%);
 
     --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, var(--zen-dark-color-mix-base) 70%);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  @media (-moz-bool-pref: 'zen.theme.color-prefs.amoled') {
-    :root {
-      --zen-dark-color-mix-base: hsl(5 5 5);
-      --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 4%, rgb(0, 0, 0) 96%);
-    }
-  }
-
-  @media (-moz-bool-pref: 'zen.theme.color-prefs.colorful') {
-    :root {
-      --zen-in-content-dialog-background: rgb(28, 28, 32);
-
-      --zen-colors-primary: color-mix(in srgb, var(--zen-primary-color) 50%, black 50%);
-      --zen-colors-secondary: color-mix(in srgb, var(--zen-primary-color) 40%, black 60%);
-      --zen-colors-tertiary: color-mix(in srgb, var(--zen-primary-color) 15%, black 85%);
-
-      --zen-colors-hover-bg: color-mix(in srgb, var(--zen-primary-color) 90%, black 10%);
-      --zen-colors-primary-foreground: color-mix(in srgb, var(--zen-primary-color) 80%, white 20%);
-
-      --zen-colors-input-bg: color-mix(in srgb, var(--zen-primary-color) 10%, black 80%);
-      --zen-colors-border: color-mix(in srgb, var(--zen-colors-secondary) 80%, black 20%);
-
-      --zen-dialog-background: color-mix(in srgb, var(--zen-primary-color) 10%, black 90%);
-      --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 8%, rgb(15, 15, 15) 92%);
-
-      --zen-browser-gradient-base: color-mix(in srgb, var(--zen-primary-color) 30%, black 70%);
-    }
   }
 }

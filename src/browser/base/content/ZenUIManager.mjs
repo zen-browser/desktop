@@ -1,6 +1,7 @@
 var gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
+  _hasLoadedDOM: false,
 
   init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
@@ -13,7 +14,7 @@ var gZenUIManager = {
     });
 
     new ResizeObserver(gZenCommonActions.throttle(this.updateTabsToolbar.bind(this), this.sidebarHeightThrottle)).observe(
-      document.getElementById('tabbrowser-tabs')
+      document.getElementById('TabsToolbar')
     );
 
     new ResizeObserver(
@@ -22,25 +23,59 @@ var gZenUIManager = {
         this.sidebarHeightThrottle
       )
     ).observe(document.getElementById('navigator-toolbox'));
+
+    SessionStore.promiseAllWindowsRestored.then(() => {
+      this._hasLoadedDOM = true;
+    });
+
+    window.addEventListener('TabClose', this.onTabClose.bind(this));
+    this.tabsWrapper.addEventListener('scroll', this.saveScrollbarState.bind(this));
   },
 
   updateTabsToolbar() {
     // Set tabs max-height to the "toolbar-items" height
-    const toolbarItems = document.getElementById('tabbrowser-tabs');
-    const tabs = document.getElementById('tabbrowser-arrowscrollbox');
-    tabs.style.maxHeight = '0px'; // reset to 0
-    const toolbarRect = toolbarItems.getBoundingClientRect();
-    let height = toolbarRect.height;
-    // -5 for the controls padding
-    let totalHeight = toolbarRect.height - this.contentElementSeparation * 2 - 5;
-    // remove the height from other elements that aren't hidden
-    const otherElements = document.querySelectorAll('#tabbrowser-tabs > *:not([hidden="true"])');
-    for (let tab of otherElements) {
-      if (tabs === tab) continue;
-      totalHeight -= tab.getBoundingClientRect().height;
+    const tabs = document.getElementById('zen-browser-tabs-wrapper');
+    // Remove tabs so we can accurately calculate the height
+    // without them affecting the height of the toolbar
+    for (const tab of gBrowser.tabs) {
+      if (tab.hasAttribute('zen-essential')) {
+        continue;
+      }
+      tab.style.maxHeight = '0px';
     }
-    tabs.style.maxHeight = totalHeight + 'px';
-    //console.info('ZenThemeModifier: set tabs max-height to', totalHeight + 'px');
+    tabs.style.flex = '1';
+    tabs.style.removeProperty('max-height');
+    const toolbarRect = tabs.getBoundingClientRect();
+    let height = toolbarRect.height;
+    for (const tab of gBrowser.tabs) {
+      if (tab.hasAttribute('zen-essential')) {
+        continue;
+      }
+      tab.style.removeProperty('max-height');
+    }
+    tabs.style.removeProperty('flex');
+    tabs.style.maxHeight = height + 'px';
+  },
+
+  get tabsWrapper() {
+    if (this._tabsWrapper) {
+      return this._tabsWrapper;
+    }
+    this._tabsWrapper = document.getElementById('zen-browser-tabs-wrapper');
+    return this._tabsWrapper;
+  },
+
+  saveScrollbarState() {
+    this._scrollbarState = this.tabsWrapper.scrollTop;
+  },
+
+  restoreScrollbarState() {
+    this.tabsWrapper.scrollTop = this._scrollbarState;
+  },
+
+  onTabClose(event) {
+    this.updateTabsToolbar();
+    this.restoreScrollbarState();
   },
 
   openAndChangeToTab(url, options) {
@@ -55,9 +90,7 @@ var gZenUIManager = {
   },
 
   generateUuidv4() {
-    return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
-      (+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
-    );
+    return Services.uuid.generateUUID().toString();
   },
 
   toogleBookmarksSidebar() {
@@ -113,6 +146,43 @@ var gZenUIManager = {
     this.__currentPopup = null;
     this.__currentPopupTrackElement = null;
   },
+
+  _prevUrlbarLabel: null,
+  _lastSearch: '',
+
+  handleNewTab(werePassedURL, searchClipboard, where) {
+    const shouldOpenURLBar =
+      Services.prefs.getBoolPref('zen.urlbar.replace-newtab') && !werePassedURL && !searchClipboard && where === 'tab';
+    if (shouldOpenURLBar) {
+      this._prevUrlbarLabel = gURLBar._untrimmedValue;
+      gURLBar._zenHandleUrlbarClose = this.handleUrlbarClose.bind(this);
+      gURLBar.setAttribute('zen-newtab', true);
+      document.getElementById('Browser:OpenLocation').doCommand();
+      gURLBar.search(this._lastSearch);
+      return true;
+    }
+    return false;
+  },
+
+  handleUrlbarClose(onSwitch) {
+    gURLBar._zenHandleUrlbarClose = null;
+    gURLBar.removeAttribute('zen-newtab');
+    if (onSwitch) {
+      this._prevUrlbarLabel = null;
+      this._lastSearch = '';
+    } else {
+      this._lastSearch = gURLBar._untrimmedValue;
+    }
+    gURLBar.setURI(this._prevUrlbarLabel, false, false, false, true);
+    gURLBar.handleRevert();
+    if (gURLBar.focused) {
+      gURLBar.view.close({ elementPicked: onSwitch });
+      gURLBar.updateTextOverflow();
+      if (gBrowser.selectedTab.linkedBrowser && onSwitch) {
+        gURLBar.getBrowserState(gBrowser.selectedTab.linkedBrowser).urlbarFocused = false;
+      }
+    }
+  },
 };
 
 var gZenVerticalTabsManager = {
@@ -151,22 +221,8 @@ var gZenVerticalTabsManager = {
 
     const tabs = document.getElementById('tabbrowser-tabs');
 
-    XPCOMUtils.defineLazyPreferenceGetter(this, 'canOpenTabOnMiddleClick', 'zen.tabs.newtab-on-middle-click', true);
-
     if (!this.isWindowsStyledButtons) {
       document.documentElement.setAttribute('zen-window-buttons-reversed', true);
-    }
-
-    if (tabs) {
-      tabs.addEventListener('mouseup', this.openNewTabOnTabsMiddleClick.bind(this));
-    }
-  },
-
-  openNewTabOnTabsMiddleClick(event) {
-    if (event.button === 1 && event.target.id === 'tabbrowser-tabs' && this.canOpenTabOnMiddleClick) {
-      document.getElementById('cmd_newNavigatorTabNoEvent').doCommand();
-      event.stopPropagation();
-      event.preventDefault();
     }
   },
 
@@ -202,6 +258,45 @@ var gZenVerticalTabsManager = {
     }
     this.__topButtonsSeparatorElement = document.getElementById('zen-sidebar-top-buttons-separator');
     return this.__topButtonsSeparatorElement;
+  },
+
+  animateTab(aTab) {
+    if (!gZenUIManager.motion || !aTab || !gZenUIManager._hasLoadedDOM) {
+      return;
+    }
+    // get next visible tab
+    const isLastTab = () => {
+      const visibleTabs = gBrowser.visibleTabs;
+      return visibleTabs[visibleTabs.length - 1] === aTab;
+    };
+
+    const tabSize = aTab.getBoundingClientRect().height;
+    const transform = `-${tabSize}px`;
+    gZenUIManager.motion
+      .animate(
+        aTab,
+        {
+          opacity: [0, 1],
+          transform: ['scale(0.95)', 'scale(1)'],
+          marginBottom: isLastTab() ? [] : [transform, '0px'],
+        },
+        {
+          duration: 0.2,
+          easing: 'ease-out',
+        }
+      )
+      .then(() => {
+        aTab.style.removeProperty('margin-bottom');
+        aTab.style.removeProperty('transform');
+        aTab.style.removeProperty('opacity');
+      });
+    gZenUIManager.motion
+      .animate(aTab.querySelector('.tab-content'), {
+        filter: ['blur(1px)', 'blur(0px)'],
+      })
+      .then(() => {
+        aTab.querySelector('.tab-stack').style.removeProperty('filter');
+      });
   },
 
   get actualWindowButtons() {

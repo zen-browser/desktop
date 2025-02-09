@@ -4,7 +4,7 @@ export var ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = 'toolbar';
-  defaultSidebarIcons = ['zen-profile-button', 'zen-workspaces-button', 'downloads-button'];
+  defaultSidebarIcons = ['preferences-button', 'zen-workspaces-button', 'downloads-button'];
 
   startup(CustomizableUIInternal) {
     CustomizableUIInternal.registerArea(
@@ -126,7 +126,7 @@ export var ZenCustomizableUI = new (class {
     window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-top-buttons'));
     window.CustomizableUI.registerToolbarNode(window.document.getElementById('zen-sidebar-icons-wrapper'));
     window.addEventListener(
-      'MozAfterPaint',
+      'DOMContentLoaded',
       () => {
         this._dispatchResizeEvent(window);
       },

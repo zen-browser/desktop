@@ -31,11 +31,7 @@
           document.getElementById('zen-appcontent-navbar-container').appendChild(deckTemplate);
         }
 
-        // Disable smooth scroll
-        gBrowser.tabContainer.arrowScrollbox.smoothScroll = Services.prefs.getBoolPref(
-          'zen.startup.smooth-scroll-in-tabs',
-          false
-        );
+        this._initSidebarScrolling();
 
         gZenCompactModeManager.init();
         ZenWorkspaces.init();
@@ -84,6 +80,36 @@
           sidebarPanelWrapper.prepend(elem);
         }
       }
+    },
+
+    _initSidebarScrolling() {
+      // Disable smooth scroll
+      const canSmoothScroll = Services.prefs.getBoolPref('zen.startup.smooth-scroll-in-tabs', false);
+      const workspaceIndicator = document.getElementById('zen-current-workspace-indicator');
+      const tabsWrapper = document.getElementById('zen-browser-tabs-wrapper');
+      gBrowser.tabContainer.addEventListener('wheel', (event) => {
+        if (canSmoothScroll) return;
+        event.preventDefault(); // Prevent the smooth scroll behavior
+        gBrowser.tabContainer.scrollTop += event.deltaY * 20; // Apply immediate scroll
+      });
+      // Detect overflow and underflow
+      const observer = new ResizeObserver((_) => {
+        const tabContainer = gBrowser.tabContainer;
+        const isVertical = tabContainer.getAttribute('orient') === 'vertical';
+        let contentSize = tabsWrapper.getBoundingClientRect()[isVertical ? 'height' : 'width'];
+        // NOTE: This should be contentSize > scrollClientSize, but due
+        // to how Gecko internally rounds in those cases, we allow for some
+        // minor differences (the internal Gecko layout size is 1/60th of a
+        // pixel, so 0.02 should cover it).
+        //let overflowing = contentSize - tabContainer.arrowScrollbox.scrollClientSize > 0.02;
+        let overflowing = true; // cheatign the system, because we want to always show make the element overflowing
+
+        window.requestAnimationFrame(() => {
+          tabContainer.arrowScrollbox.toggleAttribute('overflowing', overflowing);
+          tabContainer.arrowScrollbox.dispatchEvent(new CustomEvent(overflowing ? 'overflow' : 'underflow'));
+        });
+      });
+      observer.observe(tabsWrapper);
     },
 
     _initSearchBar() {

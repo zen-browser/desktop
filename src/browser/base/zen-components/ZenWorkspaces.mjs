@@ -8,7 +8,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   _swipeState = {
     isGestureActive: true,
-    cumulativeDelta: 0,
+    lastDelta: 0,
     direction: null,
   };
   _lastScrollTime = 0;
@@ -207,7 +207,10 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     element.addEventListener('MozSwipeGestureMayStart', this._handleSwipeMayStart.bind(this), true);
     element.addEventListener('MozSwipeGestureStart', this._handleSwipeStart.bind(this), true);
     element.addEventListener('MozSwipeGestureUpdate', this._handleSwipeUpdate.bind(this), true);
-    element.addEventListener('MozSwipeGestureEnd', this._handleSwipeEnd.bind(this), true);
+
+    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
+    // while MozSwipeGesture is fired immediately after swipe ends.
+    element.addEventListener('MozSwipeGesture', this._handleSwipeEnd.bind(this), true);
   }
 
   _handleSwipeMayStart(event) {
@@ -231,7 +234,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
     this._swipeState = {
       isGestureActive: true,
-      cumulativeDelta: 0,
+      lastDelta: 0,
       direction: null,
     };
   }
@@ -242,12 +245,19 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     event.preventDefault();
     event.stopPropagation();
 
-    // Update cumulative delta
-    this._swipeState.cumulativeDelta += event.delta;
+    const delta = event.delta * 500;
+    this._swipeState.lastDelta = delta;
 
-    // Determine swipe direction based on cumulative delta
-    if (Math.abs(this._swipeState.cumulativeDelta) > 0.25) {
-      this._swipeState.direction = this._swipeState.cumulativeDelta > 0 ? 'left' : 'right';
+    if (Math.abs(delta) > 1) {
+      this._swipeState.direction = delta > 0 ? 'left' : 'right';
+    }
+
+    // Apply a translateX to the tab strip to give the user feedback on the swipe
+    const stripWidth = document.getElementById('tabbrowser-tabs').scrollWidth;
+    const translateX = Math.max(-stripWidth, Math.min(delta, stripWidth));
+
+    for (const element of this._animateTabsElements) {
+      element.style.transform = `translateX(${translateX}px)`;
     }
   }
 
@@ -262,12 +272,14 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (this._swipeState.direction) {
       let direction = this.naturalScroll ? -1 : 1;
       this.changeWorkspaceShortcut(rawDirection * direction);
+    } else {
+      this._cancelSwipeAnimation();
     }
 
     // Reset swipe state
     this._swipeState = {
       isGestureActive: false,
-      cumulativeDelta: 0,
+      lastDelta: 0,
       direction: null,
     };
   }
@@ -1273,10 +1285,30 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
-  async _performWorkspaceChange(window, { onInit = false, explicitAnimationDirection = undefined } = {}) {
-    const previousWorkspace = await this.getActiveWorkspace();
+  _cancelSwipeAnimation() {
+    const existingTransform = this._animateTabsElements[0].style.transform;
+    const newTransform = 'translateX(0)';
+    for (const element of this._animateTabsElements) {
+      gZenUIManager.motion.animate(
+        element,
+        {
+          transform: existingTransform ? [existingTransform, newTransform] : newTransform,
+        },
+        {
+          type: 'spring',
+          bounce: 0,
+          duration: 0.12,
+        }
+      );
+    }
+  }
 
-    if (previousWorkspace && previousWorkspace.uuid === window.uuid && !onInit) {
+  async _performWorkspaceChange(window, { onInit = false, alwaysChange = false, explicitAnimationDirection = undefined } = {}) {
+    const previousWorkspace = await this.getActiveWorkspace();
+    alwaysChange = alwaysChange || onInit;
+
+    if (previousWorkspace && previousWorkspace.uuid === window.uuid && !alwaysChange) {
+      this._cancelSwipeAnimation();
       return;
     }
 
@@ -1306,7 +1338,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     const visibleTabs = this._processTabVisibility(window.uuid, containerId, workspaces);
 
     // Second pass: Handle tab selection
-    await this._handleTabSelection(window, onInit, visibleTabs, containerId, workspaces);
+    await this._handleTabSelection(window, onInit, visibleTabs, containerId, workspaces, previousWorkspace.uuid);
 
     // Update UI and state
     await this._updateWorkspaceState(window, onInit);
@@ -1316,43 +1348,41 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
+  get _animateTabsElements() {
+    const selector = `#zen-browser-tabs-wrapper`;
+    const extraSelector = `#zen-current-workspace-indicator`;
+    return [...this.tabContainer.querySelectorAll(selector), ...this.tabContainer.querySelectorAll(extraSelector)];
+  }
+
   async _animateTabs(direction, out = false) {
-    const selector = `#tabbrowser-tabs *:is(#zen-current-workspace-indicator, #vertical-pinned-tabs-container-separator, .tabbrowser-tab:not([zen-essential], [hidden]))`;
-    const extraSelector = `#tabbrowser-arrowscrollbox-periphery > toolbarbutton`;
     this.tabContainer.removeAttribute('dont-animate-tabs');
+    const tabsWidth = this.tabContainer.getBoundingClientRect().width;
     // order by actual position in the children list to animate
-    const elements = Array.from([
-      ...this.tabContainer.querySelectorAll(selector),
-      ...this.tabContainer.querySelectorAll(extraSelector),
-    ])
-      .sort((a, b) => a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
-      .reverse();
+    const elements = this._animateTabsElements;
     if (out) {
+      const existingTransform = elements[0].style.transform;
+      const newTransform = `translateX(${direction === 'left' ? '-' : ''}${tabsWidth}px)`;
       return gZenUIManager.motion.animate(
         elements,
         {
-          transform: `translateX(${direction === 'left' ? '-' : ''}100%)`,
-          opacity: 0,
+          transform: existingTransform ? [existingTransform, newTransform] : newTransform,
         },
         {
           type: 'spring',
           bounce: 0,
           duration: 0.12,
-          // delay: gZenUIManager.motion.stagger(0.01),
         }
       );
     }
     return gZenUIManager.motion.animate(
       elements,
       {
-        transform: [`translateX(${direction === 'left' ? '-' : ''}100%)`, 'translateX(0%)'],
-        opacity: 1,
+        transform: [`translateX(${direction === 'left' ? '-' : ''}${tabsWidth}px)`, 'translateX(0px)'],
       },
       {
         duration: 0.15,
         type: 'spring',
         bounce: 0,
-        // delay: gZenUIManager.motion.stagger(0.02),
       }
     );
   }
@@ -1424,9 +1454,9 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     return tabWorkspaceId === workspaceUuid;
   }
 
-  async _handleTabSelection(window, onInit, visibleTabs, containerId, workspaces) {
+  async _handleTabSelection(window, onInit, visibleTabs, containerId, workspaces, previousWorkspaceId) {
     const currentSelectedTab = gBrowser.selectedTab;
-    const oldWorkspaceId = currentSelectedTab.getAttribute('zen-workspace-id');
+    const oldWorkspaceId = previousWorkspaceId;
     const lastSelectedTab = this._lastSelectedWorkspaceTabs[window.uuid];
 
     // Save current tab as last selected for old workspace if it shouldn't be visible in new workspace
@@ -1782,7 +1812,13 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       if (matchingWorkspaces.length === 1) {
         const workspace = matchingWorkspaces[0];
         if (workspace.uuid !== this.getActiveWorkspaceFromCache().uuid) {
-          this.changeWorkspace(workspace);
+          window.addEventListener(
+            'TabSelected',
+            (event) => {
+              this.changeWorkspace(workspace, { alwaysChange: true });
+            },
+            { once: true }
+          );
           return [userContextId, true, workspace.uuid];
         }
       }

@@ -18,8 +18,8 @@ def update_rc(last_version: str):
     with open("surfer.json", "w") as f:
       data["version"]["candidate"] = rc_version
       json.dump(data, f, indent=2)
-    print("Download the new engine by running 'pnpm download'.")
-    os.system("pnpm download")
+    print("Download the new engine by running 'npm run download'.")
+    os.system("npm run download")
   else:
     print("No new Firefox RC version available.")
 
@@ -28,7 +28,7 @@ def update_ff(is_rc: bool = False, last_version: str = ""):
   """Runs the npm command to update the 'ff' component."""
   if is_rc:
     return update_rc(last_version)
-  result = os.system("pnpm update-ff:raw")
+  result = os.system("npm run update-ff:raw")
   if result != 0:
     raise RuntimeError("Failed to update 'ff' component.")
 
@@ -57,21 +57,38 @@ def update_readme(last_version, new_version, is_rc=False):
     raise RuntimeError(f"README.md file not found: {e}")
 
 
+def update_l10n_last_commit_hash():
+  L10N_REPO = "https://github.com/mozilla-l10n/firefox-l10n"
+  try:
+    os.system(f"git clone {L10N_REPO} l10n-temp")
+    if not os.path.exists("firefox-cache"):
+      os.mkdir("firefox-cache")
+    os.system("cat l10n-temp/.git/refs/heads/main > firefox-cache/l10n-last-commit-hash")
+  except KeyboardInterrupt:
+    print("Exiting...")
+  shutil.rmtree("l10n-temp")
+
+
 def main():
   """Main function to update versions and README."""
 
   arg_parser = argparse.ArgumentParser()
   arg_parser.add_argument(
       "--rc", help="Indicates that this is a release candidate.", default=False, action="store_true")
+  arg_parser.add_argument(
+      "--just-l10n", help="Only update the l10n last commit hash.", default=False, action="store_true")
   args = arg_parser.parse_args()
 
   try:
-    last_version = get_version_from_file("surfer.json", args.rc)
-    update_ff(args.rc, last_version)
-    new_version = get_version_from_file("surfer.json", args.rc)
-    update_readme(last_version, new_version, args.rc)
-    print(
-        f"Updated version from {last_version} to {new_version} in README.md.")
+    if not args.just_l10n:
+      last_version = get_version_from_file("surfer.json", args.rc)
+      update_ff(args.rc, last_version)
+      new_version = get_version_from_file("surfer.json", args.rc)
+      update_readme(last_version, new_version, args.rc)
+      print(
+          f"Updated version from {last_version} to {new_version} in README.md.")
+    print("Updating l10n last commit hash.")
+    update_l10n_last_commit_hash()
   except Exception as e:
     print(f"An error occurred: {e}")
 

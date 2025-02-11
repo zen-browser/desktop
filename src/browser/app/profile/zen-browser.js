@@ -45,6 +45,7 @@ pref('browser.urlbar.weather.featureGate', true);
 pref('browser.urlbar.quickactions.enabled', true);
 pref('browser.urlbar.clipboard.featureGate', true);
 pref('browser.urlbar.suggest.calculator', true);
+pref('browser.urlbar.keepPanelOpenDuringImeComposition', true);
 
 // new tab page
 pref('browser.newtabpage.activity-stream.feeds.topsites', false);

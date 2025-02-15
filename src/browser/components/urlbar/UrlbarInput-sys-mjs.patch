@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade6605b14c92 100644
+index 50968dc04b527438acf30151f0c2e92f8b45097c..54078937fb54bd821cd2aee40fe3bbe96c203743 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -67,6 +67,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -89,7 +89,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade66
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -3305,7 +3337,7 @@ export class UrlbarInput {
+@@ -3305,10 +3337,13 @@ export class UrlbarInput {
      } else {
        where = lazy.BrowserUtils.whereToOpenLink(event, false, false);
      }
@@ -97,8 +97,15 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade66
 +    if (lazy.UrlbarPrefs.get("openintab") || this.hasAttribute("zen-newtab")) {
        if (where == "current") {
          where = "tab";
-       } else if (where == "tab") {
-@@ -3859,6 +3891,11 @@ export class UrlbarInput {
+-      } else if (where == "tab") {
++      } else if (
++        where == "tab" &&
++        !(event.metaKey || event.altKey || event.getModifierState("AltGraph"))
++      ) {
+         where = "current";
+       }
+       reuseEmpty = true;
+@@ -3859,6 +3894,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -110,7 +117,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade66
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer ||
-@@ -3930,7 +3967,7 @@ export class UrlbarInput {
+@@ -3930,7 +3970,7 @@ export class UrlbarInput {
        }
      }
  
@@ -119,7 +126,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade66
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -3970,9 +4007,12 @@ export class UrlbarInput {
+@@ -3970,9 +4010,12 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -133,7 +140,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..f8587b68ac057bb0f829fc21f08ade66
  
          if (
            event.target != this.inputField &&
-@@ -3982,8 +4022,8 @@ export class UrlbarInput {
+@@ -3982,8 +4025,8 @@ export class UrlbarInput {
            break;
          }
  

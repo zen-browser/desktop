@@ -428,7 +428,7 @@
 
     :root[zen-single-toolbar='true'] & {
       & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
-        padding-left: 4px;
+        padding-left: 8px;
         padding-right: 4px;
       }
     }
@@ -955,7 +955,8 @@
   padding: 0;
 }
 
-#zen-essentials-container > .tabbrowser-tab {
+#zen-essentials-container > .tabbrowser-tab,
+#zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
   --toolbarbutton-inner-padding: 0;
   max-width: unset;
   width: 100% !important;
@@ -1010,11 +1011,12 @@
       background: transparent;
       overflow: hidden;
       position: relative;
+      --zen-essential-bg-margin: 2px;
 
       &::before {
         background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
-        margin: 2px;
-        border-radius: calc(var(--border-radius-medium) - 2px);
+        margin: var(--zen-essential-bg-margin);
+        border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;
         inset: 0;
         z-index: 0;
@@ -1137,6 +1139,20 @@
 
 #zen-essentials-container .tabbrowser-tab.drag-over-after {
   box-shadow: -3px 0 6px -2px var(--toolbarbutton-active-background, rgba(0, 255, 0, 0.2));
+}
+
+/* Renaming tabs */
+.tab-label-container-editing {
+  display: none !important;
+}
+
+#tab-label-input {
+  white-space: nowrap;
+  overflow-x: scroll;
+  margin: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 /* Section: tab workspaces stylings */

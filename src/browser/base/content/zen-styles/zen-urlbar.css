@@ -71,10 +71,6 @@
   padding-inline-start: 8px !important;
 }
 
-#identity-box.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
-  margin-right: 0 !important;
-}
-
 #urlbar:not([extend='true']) #identity-box #identity-icon-box {
   position: relative;
 }
@@ -133,7 +129,11 @@
 :root[zen-single-toolbar='true'] {
   .urlbar-page-action:not([open]),
   #tracking-protection-icon-container {
-    margin-inline-end: calc(-14px - 2 * var(--urlbar-icon-padding)) !important;
+    display: none;
+  }
+
+  #identity-icon-box:not([open]) {
+    margin-inline-end: calc(-8px - 2 * var(--urlbar-icon-padding)) !important;
     opacity: 0;
     transition: all 0.1s ease;
   }
@@ -142,29 +142,28 @@
     visibility: collapse;
   }
 
-  #urlbar[open] :is(#tracking-protection-icon-container, .urlbar-page-action),
-  #urlbar:hover :is(#tracking-protection-icon-container, .urlbar-page-action),
-  .urlbar-page-action[open],
-  #tracking-protection-icon-container[open] {
+  #urlbar[open] :is(#tracking-protection-icon-container, .urlbar-page-action, .identity-box-button):not([hidden='true']),
+  #urlbar:hover #identity-icon-box {
     opacity: 1;
+    margin-inline-end: 0 !important;
+    display: flex;
+    transition: 0;
+  }
+
+  #urlbar:not([open]):hover #identity-box {
     margin-inline-end: 0 !important;
   }
 
-  #identity-permission-box:not([open]),
+  #urlbar:not([open]) {
+    #identity-box {
+      order: 9;
+    }
+  }
+
   #notification-popup-box:not([open]) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
     transition: all 0.2s;
-  }
-
-  #urlbar[open] #identity-permission-box,
-  #urlbar[open] #notification-popup-box,
-  #urlbar:hover #identity-permission-box,
-  #urlbar:hover #notification-popup-box,
-  #identity-permission-box[open],
-  #notification-popup-box[open] {
-    opacity: 1;
-    margin-inline-start: 0 !important;
   }
 
   #notification-popup-box {

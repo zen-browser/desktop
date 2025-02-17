@@ -73,6 +73,10 @@
           filter: grayscale(0);
           opacity: 1;
         }
+
+        &:hover {
+          background-color: var(--zen-toolbar-element-bg);
+        }
       }
     }
   }
@@ -451,12 +455,12 @@
 }
 
 .zen-current-workspace-indicator {
-  padding: 15px calc(4px + var(--tab-inline-padding));
+  padding: 15px calc(6px + var(--tab-inline-padding));
   font-weight: 600;
   position: absolute;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: 12px;
+  gap: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

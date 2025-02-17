@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index b888a753a7f23a9800fe04da51a4e6b898314ff2..35eea774e1ea4b1807ec65ebc767f423d81602bd 100644
+index b888a753a7f23a9800fe04da51a4e6b898314ff2..a6a01cf035253b05ea7b20b434cf2002ff115d96 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -121,6 +121,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -18,28 +18,3 @@ index b888a753a7f23a9800fe04da51a4e6b898314ff2..35eea774e1ea4b1807ec65ebc767f423
      // A channel for "remote troubleshooting" code...
      let channel = new lazy.WebChannel(
        "remote-troubleshooting",
-@@ -4761,6 +4763,7 @@ BrowserGlue.prototype = {
-   },
- 
-   async _maybeShowDefaultBrowserPrompt() {
-+    this._ZenMaybeShowWelcomeScreen();
-     // Highest priority is about:welcome window modal experiment
-     // Second highest priority is the upgrade dialog, which can include a "primary
-     // browser" request and is limited in various ways, e.g., major upgrades.
-@@ -5302,6 +5305,16 @@ BrowserGlue.prototype = {
-     "nsIObserver",
-     "nsISupportsWeakReference",
-   ]),
-+
-+  _ZenMaybeShowWelcomeScreen() {
-+    const welcomeEnabled = Services.prefs.getBoolPref("zen.welcome-screen.enabled", true)
-+    const welcomeSeen = Services.prefs.getBoolPref("zen.welcome-screen.seen", false)
-+    if (welcomeEnabled && !welcomeSeen) {
-+      lazy.BrowserWindowTracker.getTopWindow().gDialogBox.open(
-+        "chrome://browser/content/zen-welcome/welcome.html"
-+      );
-+    }
-+  },
- };
- 
- var ContentBlockingCategoriesPrefs = {

@@ -75,11 +75,11 @@ pref("app.update.checkInstallTime.days", 6);
 
 // CUSTOM ZEN PREFS
 
-pref('zen.welcome-screen.enabled', true, sticky);
-pref('zen.welcome-screen.seen', false);
+pref('zen.welcome-screen.seen', false, sticky);
 
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
+pref('zen.tabs.rename-tabs', true);
 pref('zen.theme.accent-color', "#ffb787");
 pref('zen.theme.content-element-separation', 6); // In pixels
 pref('zen.theme.pill-button', false);
@@ -142,6 +142,7 @@ pref('zen.view.sidebar-expanded.max-width', 500);
 
 #ifdef XP_MACOSX
 pref('zen.view.mac.show-three-dot-menu', false);
+pref('zen.widget.mac.mono-window-controls', true);
 #endif
 pref('zen.view.show-bottom-border', false);
 pref('zen.view.use-single-toolbar', true);

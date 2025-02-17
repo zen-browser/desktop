@@ -24,6 +24,7 @@
         content/browser/zen-components/ZenActorsManager.mjs     (zen-components/ZenActorsManager.mjs)
         content/browser/zen-components/ZenRices.mjs             (zen-components/ZenRices.mjs)
         content/browser/zen-components/ZenEmojies.mjs           (zen-components/ZenEmojies.mjs)
+        content/browser/zen-components/ZenWelcome.mjs           (zen-components/ZenWelcome.mjs)
 
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css              (content/zen-styles/zen-buttons.css)
@@ -47,11 +48,12 @@
         content/browser/zen-styles/zen-gradient-generator.css   (content/zen-styles/zen-gradient-generator.css)
         content/browser/zen-styles/zen-rices.css                (content/zen-styles/zen-rices.css)
         content/browser/zen-styles/zen-branding.css             (content/zen-styles/zen-branding.css)
+        content/browser/zen-styles/zen-welcome.css              (content/zen-styles/zen-welcome.css)
 
         content/browser/zen-styles/zen-panels/bookmarks.css     (content/zen-styles/zen-panels/bookmarks.css)
         content/browser/zen-styles/zen-panels/extensions.css    (content/zen-styles/zen-panels/extensions.css)
         content/browser/zen-styles/zen-panels/print.css         (content/zen-styles/zen-panels/print.css)
-        content/browser/zen-styles/zen-panels/welcome.css       (content/zen-styles/zen-panels/welcome.css)
+        content/browser/zen-styles/zen-panels/dialog.css        (content/zen-styles/zen-panels/dialog.css)
 
 *       content/browser/zen-styles/zen-compact-mode.css         (content/zen-styles/zen-compact-mode.css)
 
@@ -62,6 +64,7 @@
         content/browser/zen-images/layouts/collapsed.png        (content/zen-images/layouts/collapsed.png)
         content/browser/zen-images/layouts/multiple-toolbar.png (content/zen-images/layouts/multiple-toolbar.png)
         content/browser/zen-images/layouts/single-toolbar.png   (content/zen-images/layouts/single-toolbar.png)
+        content/browser/zen-images/grain-bg.png                 (content/zen-images/grain-bg.png)
 
         # Actors
         content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (zen-components/actors/ZenThemeMarketplaceParent.sys.mjs)

@@ -120,6 +120,20 @@
           opacity: 1;
         }
       }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url(chrome://browser/content/zen-images/grain-bg.png);
+        pointer-events: none;
+        z-index: 0;
+        opacity: var(--zen-grainy-background-opacity, 0);
+        mix-blend-mode: overlay;
+      }
     }
 
     #navigator-toolbox:hover,

@@ -192,14 +192,13 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
 
   afterRearangeAction() {
     document.getElementById('zenSplitViewModifier').hidePopup();
-    ConfirmationHint.show(document.getElementById('zen-split-views-box'), 'zen-split-view-modifier-enabled-toast', {
+    gZenUIManager.showToast('zen-split-view-modifier-enabled-toast', {
       descriptionId: 'zen-split-view-modifier-enabled-toast-description',
-      showDescription: true,
     });
   }
 
   afterRearangeRemove() {
-    ConfirmationHint.show(document.getElementById('zen-split-views-box'), 'zen-split-view-modifier-disabled-toast');
+    gZenUIManager.showToast('zen-split-view-modifier-disabled-toast');
   }
 
   toggleWrapperDisplay(value) {

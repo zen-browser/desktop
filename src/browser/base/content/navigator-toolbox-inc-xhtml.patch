@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae402a465de 100644
+index a0a382643a2f74b6d789f3641ef300eed202d5e9..a962e155f1452362a2a35df89c8f56e1c0d9968c 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -11,16 +11,20 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
    <script src="chrome://browser/content/navigator-toolbox.js" />
  
    <!-- Menu -->
-@@ -19,7 +19,7 @@
+@@ -17,9 +17,11 @@
+ #include browser-menubar.inc
+     </toolbaritem>
      <spacer flex="1" skipintoolbarset="true" style="order: 1000;"/>
++#if 0
  #include titlebar-items.inc.xhtml
++#endif
    </toolbar>
 -
 +<hbox id="titlebar">
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -32,7 +32,7 @@
+@@ -32,7 +34,7 @@
  
      <hbox class="titlebar-spacer" type="pre-tabs"/>
  
@@ -29,7 +33,7 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
        <toolbartabstop/>
        <hbox id="TabsToolbar-customization-target" flex="1">
          <toolbarbutton id="firefox-view-button"
-@@ -40,9 +40,9 @@
+@@ -40,9 +42,9 @@
                         data-l10n-id="toolbar-button-firefox-view-2"
                         role="button"
                         aria-pressed="false"
@@ -40,7 +44,7 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
          <tabs id="tabbrowser-tabs"
                is="tabbrowser-tabs"
                aria-multiselectable="true"
-@@ -50,6 +50,10 @@
+@@ -50,6 +52,10 @@
                tooltip="tabbrowser-tab-tooltip"
                orient="horizontal"
                stopwatchid="FX_TAB_CLICK_MS">
@@ -51,7 +55,7 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
            <hbox class="tab-drop-indicator" hidden="true"/>
  # If the name (tabbrowser-arrowscrollbox) or structure of this changes
  # significantly, there is an optimization in
-@@ -57,7 +61,7 @@
+@@ -57,7 +63,7 @@
  # the current structure that we may want to revisit.
            <html:div id="vertical-pinned-tabs-container" tabindex="-1"></html:div>
            <html:div id="vertical-pinned-tabs-container-separator"></html:div>
@@ -60,7 +64,7 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
              <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
              <hbox id="tabbrowser-arrowscrollbox-periphery">
                <toolbartabstop/>
-@@ -75,6 +79,8 @@
+@@ -75,6 +81,8 @@
                                tooltip="dynamic-shortcut-tooltip"
                                data-l10n-id="tabs-toolbar-new-tab"/>
            <html:span id="tabbrowser-tab-a11y-desc" hidden="true"/>
@@ -69,12 +73,12 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
          </tabs>
  
          <toolbarbutton id="new-tab-button"
-@@ -100,11 +106,12 @@
+@@ -100,11 +108,12 @@
  #include private-browsing-indicator.inc.xhtml
      <toolbarbutton id="content-analysis-indicator"
                     class="toolbarbutton-1 content-analysis-indicator-icon"/>
 -
-+                   #if 0
++#if 0
  #include titlebar-items.inc.xhtml
 -
 +#endif
@@ -85,7 +89,7 @@ index a0a382643a2f74b6d789f3641ef300eed202d5e9..7a2be5fe6cdecb771ce3326008085ae4
    <toolbar id="nav-bar"
             class="browser-toolbar chromeclass-location"
             data-l10n-id="navbar-accessible"
-@@ -490,10 +497,12 @@
+@@ -490,10 +499,12 @@
                       consumeanchor="PanelUI-button"
                       data-l10n-id="appmenu-menu-button-closed2"/>
      </toolbaritem>

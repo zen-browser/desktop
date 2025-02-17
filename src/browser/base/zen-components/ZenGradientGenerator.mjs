@@ -613,7 +613,7 @@
                 // Reactivate the transition after the animation
                 appWrapper.removeAttribute('post-animating');
               }, 100);
-            }, 200);
+            }, 300);
           });
         }
 
@@ -725,7 +725,7 @@
       if (!skipSave) {
         await ZenWorkspacesStorage.saveWorkspaceTheme(currentWorkspace.uuid, gradient);
         await ZenWorkspaces._propagateWorkspaceData();
-        ConfirmationHint.show(document.getElementById('PanelUI-menu-button'), 'zen-panel-ui-gradient-generator-saved-message');
+        gZenUIManager.showToast('zen-panel-ui-gradient-generator-saved-message');
         currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
       }
 

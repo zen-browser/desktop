@@ -154,7 +154,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   get tabboxChildren() {
-    return this.activeWorkspaceStrip.children;
+    return this.activeWorkspaceStrip?.children || [];
   }
 
   get pinnedTabsContainer() {
@@ -393,17 +393,23 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     event.preventDefault();
     event.stopPropagation();
 
-    const delta = event.delta * 300;
-    this._swipeState.lastDelta = delta;
+    const delta = event.delta * 300 + 1;
+    const stripWidth = document.getElementById('tabbrowser-tabs').scrollWidth;
+    let translateX = this._swipeState.lastDelta + delta;
+    // Add a force multiplier as we are translating the strip depending on how close to the edge we are
+    let forceMultiplier = Math.min(1, 1 - Math.abs(translateX) / (stripWidth * 1.5));
+    if (forceMultiplier > 0.5) {
+      translateX *= forceMultiplier;
+      this._swipeState.lastDelta = delta;
+    } else {
+      translateX = this._swipeState.lastDelta;
+    }
 
     if (Math.abs(delta) > 1) {
       this._swipeState.direction = delta > 0 ? 'left' : 'right';
     }
 
     // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const stripWidth = document.getElementById('tabbrowser-tabs').scrollWidth;
-    const translateX = Math.max(-stripWidth, Math.min(delta, stripWidth));
-
     const currentWorkspace = this.activeWorkspace;
     this._organizeWorkspaceStripLocations({ uuid: currentWorkspace }, true, translateX);
   }
@@ -1337,10 +1343,18 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       return;
     }
     tab.setAttribute('zen-workspace-id', workspaceID);
-    const parent = tab.pinned ? '#zen-browser-tabs-pinned ' : '#zen-browser-tabs ';
-    const container = document.querySelector(parent + '.zen-workspace-tabs-section');
+    if (tab.hasAttribute('zen-essential')) {
+      return;
+    }
+    const parent = tab.pinned ? '#vertical-pinned-tabs-container ' : '#tabbrowser-arrowscrollbox ';
+    const container = document.querySelector(parent + `.zen-workspace-tabs-section[zen-workspace-id="${workspaceID}"]`);
     if (container) {
-      container.insertBefore(tab, container.firstChild);
+      container.insertBefore(tab, container.lastChild);
+    }
+    // also change glance tab if it's the same tab
+    const glanceTab = tab.querySelector('.tabbrowser-tab[zen-glance-tab]');
+    if (glanceTab) {
+      glanceTab.setAttribute('zen-workspace-id', workspaceID);
     }
   }
 
@@ -1493,7 +1507,6 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       const newTransform = -(workspaceIndex - workspaces.workspaces.indexOf(otherWorkspace)) * 100;
       for (const container of document.querySelectorAll(selector)) {
         container.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
-        container.style.opacity = offsetPixels ? 1 : !newTransform;
         if (!offsetPixels && !container.hasAttribute('active')) {
           container.setAttribute('hidden', 'true');
         } else {
@@ -1542,16 +1555,11 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       const isCurrent = offset === 0;
       if (shouldAnimate) {
         element.removeAttribute('hidden');
-        if (isCurrent) {
-          element.style.opacity = 1;
-        }
         animations.push(
           gZenUIManager.motion.animate(
             element,
             {
               transform: existingTransform ? [existingTransform, newTransform] : newTransform,
-              // -0 to convert to number
-              opacity: !isCurrent ? [!!offset - 0, !offset - 0] : [1, 1],
             },
             {
               type: 'spring',
@@ -2009,6 +2017,8 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
         delete this._lastSelectedWorkspaceTabs[previousWorkspaceID];
       }
     }
+    // Make sure we select the last tab in the new workspace
+    this._lastSelectedWorkspaceTabs[workspaceID] = tabs[tabs.length - 1];
     const workspaces = await this._workspaces();
     await this.changeWorkspace(workspaces.workspaces.find((workspace) => workspace.uuid === workspaceID));
   }

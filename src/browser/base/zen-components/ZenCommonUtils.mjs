@@ -69,7 +69,7 @@ var gZenCommonActions = {
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
-      ConfirmationHint.show(document.getElementById('PanelUI-menu-button'), 'zen-copy-current-url-confirmation');
+      gZenUIManager.showToast('zen-copy-current-url-confirmation');
     }
   },
   copyCurrentURLAsMarkdownToClipboard() {
@@ -84,7 +84,7 @@ var gZenCommonActions = {
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
-      ConfirmationHint.show(document.getElementById('PanelUI-menu-button'), 'zen-copy-current-url-confirmation');
+      gZenUIManager.showToast('zen-copy-current-url-confirmation');
     }
   },
 

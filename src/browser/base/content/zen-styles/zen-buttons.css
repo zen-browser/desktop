@@ -31,6 +31,13 @@ xul|button:is(.expander-down) {
   border-radius: 6px !important;
 }
 
+.footer-button {
+  transition: scale 0.2s;
+  &:active {
+    scale: 0.98;
+  }
+}
+
 @media (-moz-bool-pref: 'zen.theme.pill-button') {
   :host(:is(.anonymous-content-host, notification-message)),
   :root {

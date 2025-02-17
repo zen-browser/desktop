@@ -70,7 +70,7 @@
       }
 
       if (onInit) {
-        await this._refreshPinnedTabs(newWorkspace, { init: onInit });
+        await this._refreshPinnedTabs({ init: onInit });
       }
     }
 
@@ -98,9 +98,9 @@
       return this._enabled;
     }
 
-    async _refreshPinnedTabs(currentWorkspace, { init = false } = {}) {
+    async _refreshPinnedTabs({ init = false } = {}) {
       await this._initializePinsCache();
-      await this._initializePinnedTabs(init, currentWorkspace);
+      await this._initializePinnedTabs(init);
     }
 
     async _initializePinsCache() {
@@ -141,7 +141,7 @@
       return this._pinsCache;
     }
 
-    async _initializePinnedTabs(init = false, currentWorkspace) {
+    async _initializePinnedTabs(init = false) {
       const pins = this._pinsCache;
       if (!pins?.length) {
         return;
@@ -211,6 +211,10 @@
 
         if (pin.isEssential) {
           newTab.setAttribute('zen-essential', 'true');
+        }
+
+        if (pin.editedTitle) {
+          newTab.setAttribute('zen-has-static-label', 'true');
         }
 
         // Initialize browser state if needed
@@ -290,6 +294,9 @@
       for (let otherTab of gBrowser.tabs) {
         if (otherTab.pinned && otherTab._tPos > tab.position) {
           const actualPin = this._pinsCache.find((pin) => pin.uuid === otherTab.getAttribute('zen-pin-id'));
+          if (!actualPin) {
+            continue;
+          }
           actualPin.position = otherTab._tPos;
           await ZenPinnedTabsStorage.savePin(actualPin, false);
         }
@@ -346,7 +353,7 @@
 
       await ZenPinnedTabsStorage.savePin(pin);
       const currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
-      await this._refreshPinnedTabs(currentWorkspace);
+      await this._refreshPinnedTabs();
     }
 
     async _setPinnedAttributes(tab) {
@@ -383,7 +390,7 @@
         return;
       }
       const currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
-      await this._refreshPinnedTabs(currentWorkspace);
+      await this._refreshPinnedTabs();
     }
 
     async _removePinnedAttributes(tab, isClosing = false) {
@@ -408,7 +415,7 @@
         }
       }
       const currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
-      await this._refreshPinnedTabs(currentWorkspace);
+      await this._refreshPinnedTabs();
     }
 
     _initClosePinnedTabShortcut() {
@@ -702,6 +709,33 @@
 
     get expandedSidebarMode() {
       return document.documentElement.getAttribute('zen-sidebar-expanded') === 'true';
+    }
+
+    async updatePinTitle(tab, newTitle, isEdited = true, notifyObservers = true) {
+      const uuid = tab.getAttribute('zen-pin-id');
+      await ZenPinnedTabsStorage.updatePinTitle(uuid, newTitle, isEdited, notifyObservers);
+
+      await this._refreshPinnedTabs();
+
+      const browsers = Services.wm.getEnumerator('navigator:browser');
+
+      // update the label for the same pin across all windows
+      for (const browser of browsers) {
+        const tabs = browser.gBrowser.tabs;
+        for (let i = 0; i < tabs.length; i++) {
+          const tabToEdit = tabs[i];
+          if (tabToEdit.getAttribute('zen-pin-id') === uuid && tabToEdit !== tab) {
+            tabToEdit.removeAttribute('zen-has-static-label');
+            if (isEdited) {
+              gBrowser._setTabLabel(tabToEdit, newTitle);
+              tabToEdit.setAttribute('zen-has-static-label', 'true');
+            } else {
+              gBrowser.setTabTitle(tabToEdit);
+            }
+            break;
+          }
+        }
+      }
     }
 
     applyDragoverClass(event, draggedTab) {

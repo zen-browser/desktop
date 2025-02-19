@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2dbf0d43a51 100644
+index 50968dc04b527438acf30151f0c2e92f8b45097c..4561c5d89d6c14645b49a5d40db18024b58a5f21 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -67,6 +67,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -89,16 +89,17 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2db
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2946,7 +2978,7 @@ export class UrlbarInput {
+@@ -3284,6 +3316,9 @@ export class UrlbarInput {
+    * @returns {"current" | "tabshifted" | "tab" | "save" | "window"}
     */
-   _trimValue(val) {
-     let trimmedValue = lazy.UrlbarPrefs.get("trimURLs")
--      ? lazy.BrowserUIUtils.trimURL(val)
-+      ? this._zenTrimURL(val)
-       : val;
-     // Only trim value if the directionality doesn't change to RTL and we're not
-     // showing a strikeout https protocol.
-@@ -3305,7 +3337,7 @@ export class UrlbarInput {
+   _whereToOpen(event) {
++    // Helper to check for meta/alt/altgraph modifiers, useful for determining if we
++    // should reuse the current tab
++    const altMetaModifier = event.metaKey || event.altKey || event.getModifierState("AltGraph");
+     let isKeyboardEvent = KeyboardEvent.isInstance(event);
+     let reuseEmpty = isKeyboardEvent;
+     let where = undefined;
+@@ -3305,18 +3340,25 @@ export class UrlbarInput {
      } else {
        where = lazy.BrowserUtils.whereToOpenLink(event, false, false);
      }
@@ -106,8 +107,29 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2db
 +    if (lazy.UrlbarPrefs.get("openintab") || this.hasAttribute("zen-newtab")) {
        if (where == "current") {
          where = "tab";
-       } else if (where == "tab") {
-@@ -3859,6 +3891,11 @@ export class UrlbarInput {
+-      } else if (where == "tab") {
++      } else if (
++        where == "tab" &&
++        !altMetaModifier
++      ) {
+         where = "current";
+       }
+-      reuseEmpty = true;
++      if (!altMetaModifier) {
++        reuseEmpty = true;
++      }
+     }
++
+     if (
+       where == "tab" &&
+       reuseEmpty &&
+-      this.window.gBrowser.selectedTab.isEmpty
++      this.window.gBrowser.selectedTab.isEmpty &&
++      !altMetaModifier
+     ) {
+       where = "current";
+     }
+@@ -3859,6 +3901,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -119,7 +141,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2db
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer ||
-@@ -3930,7 +3967,7 @@ export class UrlbarInput {
+@@ -3930,7 +3977,7 @@ export class UrlbarInput {
        }
      }
  
@@ -128,7 +150,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2db
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -3970,9 +4007,12 @@ export class UrlbarInput {
+@@ -3970,9 +4017,12 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -142,7 +164,7 @@ index 50968dc04b527438acf30151f0c2e92f8b45097c..ff77a2407b8ca628bcad06a9822ba2db
  
          if (
            event.target != this.inputField &&
-@@ -3982,8 +4022,8 @@ export class UrlbarInput {
+@@ -3982,8 +4032,8 @@ export class UrlbarInput {
            break;
          }
  

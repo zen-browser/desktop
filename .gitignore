@@ -3,6 +3,7 @@ engine/
 firefox-*/
 node_modules/
 .surfer/
+.DS_Store
 
 __pycache__/
 dist/

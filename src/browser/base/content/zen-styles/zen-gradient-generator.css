@@ -60,6 +60,8 @@
     font-weight: 600;
   }
 
+  align-items: end;
+
   gap: 10px;
 }
 
@@ -156,6 +158,10 @@
     border-radius: 999px;
     height: 6px;
   }
+}
+
+#PanelUI-zen-gradient-generator-texture {
+  width: 100%;
 }
 
 .zen-theme-picker-gradient {

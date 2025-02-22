@@ -376,6 +376,7 @@ pref('widget.macos.titlebar-blend-mode.behind-window', true);
 pref("browser.urlbar.maxRichResults", 6);
 pref("browser.urlbar.trimHttps", true);
 pref("browser.search.separatePrivateDefault.ui.enabled", true);
+pref("browser.search.separatePrivateDefault", false);
 pref("browser.urlbar.update2.engineAliasRefresh", true);
 pref("browser.search.suggest.enabled", false);
 pref("browser.urlbar.quicksuggest.enabled", false);

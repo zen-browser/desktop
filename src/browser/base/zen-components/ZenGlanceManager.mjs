@@ -11,6 +11,36 @@
       window.addEventListener('TabClose', this.onTabClose.bind(this));
       window.addEventListener('TabSelect', this.onLocationChange.bind(this));
 
+      const sidebarPanel = document.getElementById('zen-sidebar-web-panel');
+      if (sidebarPanel) {
+        // Only install observers if the panel is not pinned.
+        if (!sidebarPanel.hasAttribute('pinned')) {
+          const mo = new MutationObserver((mutationsList) => {
+            for (let mutation of mutationsList) {
+              if (mutation.type === 'attributes' && mutation.attributeName === 'hidden') {
+                this.updateGlanceLeftMargin();
+              }
+            }
+          });
+          mo.observe(sidebarPanel, { attributes: true, attributeFilter: ['hidden'] });
+          if (typeof ResizeObserver !== 'undefined') {
+            const ro = new ResizeObserver(() => {
+              this.updateGlanceLeftMargin();
+            });
+            ro.observe(sidebarPanel);
+          }
+        } else {
+          // If it's pinned, set the default margin.
+          const glanceContainer = document.getElementById('zen-glance-sidebar-container');
+          if (glanceContainer) {
+            glanceContainer.style.left = '2%';
+          }
+        }
+      }
+
+      window.addEventListener('resize', this.updateGlanceLeftMargin.bind(this));
+      this.updateGlanceLeftMargin();
+
       XPCOMUtils.defineLazyPreferenceGetter(
         this._lazyPref,
         'SHOULD_OPEN_EXTERNAL_TABS_IN_GLANCE',
@@ -117,6 +147,23 @@
 
     hideSidebarButtons() {
       this.sidebarButtons.setAttribute('hidden', true);
+    }
+
+    updateGlanceLeftMargin(e) {
+      const sidebarPanel = document.getElementById('zen-sidebar-web-panel');
+      const glanceContainer = document.getElementById('zen-glance-sidebar-container');
+      if (!sidebarPanel || !glanceContainer) {
+        return;
+      }
+      // If the panel is pinned, use the default left margin and exit.
+      if (sidebarPanel.hasAttribute('pinned')) {
+        glanceContainer.style.left = '2%';
+        return;
+      }
+      // Otherwise, update based on the sidebar's current width.
+      const sidebarRect = sidebarPanel.getBoundingClientRect();
+      const newLeftMargin = sidebarRect.width;
+      glanceContainer.style.left = newLeftMargin + 'px';
     }
 
     openGlance(data, existingTab = null, ownerTab = null) {

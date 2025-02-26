@@ -1544,6 +1544,16 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
+  _makeSureEmptyTabIsLast() {
+    const emptyTab = this._emptyTab;
+    if (emptyTab) {
+      const container = this.activeWorkspaceStrip;
+      if (container) {
+        container.insertBefore(emptyTab, container.lastChild);
+      }
+    }
+  }
+
   _updateMarginTopPinnedTabs(arrowscrollbox, pinnedContainer) {
     if (arrowscrollbox) {
       arrowscrollbox.style.marginTop = pinnedContainer.getBoundingClientRect().height + 'px';

@@ -95,6 +95,7 @@
       position: relative;
       background: var(--zen-dialog-background);
       border: 1px solid var(--zen-colors-border-contrast);
+      width: calc(100% - var(--zen-toolbox-padding));
 
       :root[zen-single-toolbar='true'] {
         padding-top: 0 !important;
@@ -311,6 +312,10 @@
           position: relative !important;
         }
 
+        & #urlbar {
+          opacity: 0;
+        }
+
         @media (-moz-bool-pref: 'zen.view.compact.color-toolbar') {
           background-attachment: fixed;
           background: var(--zen-main-browser-background-toolbar);
@@ -343,6 +348,15 @@
           z-index: 0;
           opacity: var(--zen-grainy-background-opacity, 0);
           mix-blend-mode: overlay;
+        }
+
+        & #urlbar {
+          opacity: 1;
+        }
+
+        & #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
+          top: 2px !important;
+          opacity: 1;
         }
       }
     }

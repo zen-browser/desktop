@@ -68,6 +68,9 @@
     }
 
     onKeyDown(event) {
+      if (event.defaultPrevented) {
+        return;
+      }
       if (event.key === 'Escape' && this.#currentGlanceID) {
         event.preventDefault();
         event.stopPropagation();

@@ -693,6 +693,7 @@ jobs:
           rm -rf zen-browser
           rm -rf archive.tar
           rm -rf zen.linux-x86_64.tar.xz
+          rm -rf zen.linux-aarch64.tar.xz
 
       - name: Upload Flatpak manifest
         uses: actions/upload-artifact@v4

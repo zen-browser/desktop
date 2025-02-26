@@ -126,6 +126,8 @@
 }
 
 :root[zen-single-toolbar='true'] {
+  --urlbar-icon-border-radius: 10px !important;
+
   .urlbar-page-action:not([open]):not(#identity-permission-box),
   #tracking-protection-icon-container {
     display: none;
@@ -301,7 +303,7 @@ button.popup-notification-dropmarker {
 #urlbar .urlbar-page-action,
 #urlbar #tracking-protection-icon-container,
 #urlbar:not([breakout-extend='true']) #identity-box:is(:not(.chromeUI), [pageproxystate='invalid']) #identity-icon-box {
-  border-radius: 8px !important;
+  border-radius: var(--urlbar-icon-border-radius) !important;
 }
 
 /* Extensions or similar */

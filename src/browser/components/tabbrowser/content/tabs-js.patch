@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2b437ce20 100644
+index 8aeb244ffca9f48661805f5b7d860b5896055562..53ac909f773efab33e0d69e53dd557b76c00fa13 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -94,7 +94,7 @@
@@ -33,7 +33,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
          // In expanded vertical mode, the max number of pinned tabs per row is dynamic
          // Set this before adjusting dragged tab's position
 -        let pinnedTabs = this.visibleTabs.slice(0, gBrowser.pinnedTabCount);
-+        let pinnedTabs = this.visibleTabs.slice(0, gBrowser._numVisiblePinTabs);
++        let pinnedTabs = this.visibleTabs.filter(tab => !tab.hasAttribute("zen-glance-tab")).slice(0, gBrowser._numZenVisibleEssentials);
          let tabsPerRow = 0;
          let position = 0;
          for (let pinnedTab of pinnedTabs) {
@@ -325,24 +325,27 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
        }
  
 -      let tabs = this.visibleTabs.slice(0, gBrowser.pinnedTabCount);
-+      let tabs = this.visibleTabs.filter(tab => !tab.hasAttribute("zen-glance-tab")).slice(0, gBrowser._numVisiblePinTabs);
++      let tabs = this.visibleTabs.filter(tab => !tab.hasAttribute("zen-glance-tab")).slice(0, gBrowser._numZenVisibleEssentials);
  
        let directionX = screenX > dragData.animLastScreenX;
        let directionY = screenY > dragData.animLastScreenY;
-@@ -2257,9 +2285,9 @@
+@@ -2257,10 +2285,11 @@
        }
  
        let pinned = draggedTab.pinned;
 -      let numPinned = gBrowser.pinnedTabCount;
 -      let tabs = this.visibleTabs.slice(
 -        pinned ? 0 : numPinned,
+-        pinned ? numPinned : undefined
 +      let numPinned = gBrowser._numVisiblePinTabs;
++      let essential = draggedTab.hasAttribute("zen-essential");
 +      let tabs = this.visibleTabs.filter(tab => !tab.hasAttribute("zen-glance-tab")).slice(
-+        pinned ? gBrowser._numZenEssentials : numPinned,
-         pinned ? numPinned : undefined
++        pinned ? (essential ? 0 : gBrowser._numZenEssentials) : numPinned,
++        pinned ? (essential ? gBrowser._numZenEssentials : (numPinned-gBrowser._numZenEssentials)) : undefined
        );
  
-@@ -2502,8 +2530,9 @@
+       if (this.#rtlMode) {
+@@ -2502,8 +2531,9 @@
        );
      }
  
@@ -354,7 +357,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
          return;
        }
  
-@@ -2668,9 +2697,9 @@
+@@ -2668,9 +2698,9 @@
        function newIndex(aTab, index) {
          // Don't allow mixing pinned and unpinned tabs.
          if (aTab.pinned) {
@@ -366,7 +369,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
        }
      }
  
-@@ -2754,7 +2783,7 @@
+@@ -2754,7 +2784,7 @@
      }
  
      _notifyBackgroundTab(aTab) {
@@ -375,7 +378,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
          return;
        }
  
-@@ -2772,12 +2801,14 @@
+@@ -2772,12 +2802,14 @@
                selectedTab = {
                  left: selectedTab.left,
                  right: selectedTab.right,
@@ -391,7 +394,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
                selectedTab,
              ];
            })
-@@ -2794,8 +2825,11 @@
+@@ -2794,8 +2826,11 @@
              delete this._lastTabToScrollIntoView;
              // Is the new tab already completely visible?
              if (
@@ -405,7 +408,7 @@ index 8aeb244ffca9f48661805f5b7d860b5896055562..2b988219f279f7b6e1178518e436a7f2
              ) {
                return;
              }
-@@ -2803,21 +2837,29 @@
+@@ -2803,21 +2838,29 @@
              if (this.arrowScrollbox.smoothScroll) {
                // Can we make both the new tab and the selected tab completely visible?
                if (

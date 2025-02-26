@@ -847,8 +847,8 @@
   position: relative;
   height: calc(100% - var(--tab-block-margin) * 2);
   margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-block-margin));
-  margin-right: 4px;
-  padding: 0 calc(var(--toolbarbutton-inner-padding)) 0 calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px);
+  margin-right: 8px;
+  padding: 0 calc(var(--toolbarbutton-inner-padding) - 2px) 0 calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px);
   border-radius: 0;
   border-top-left-radius: var(--border-radius-medium);
   width: unset;
@@ -872,10 +872,10 @@
     height: 16px;
     background: light-dark(rgba(88, 79, 79, 0.02), rgba(255, 255, 255, 0.3));
     position: absolute;
-    right: calc(var(--tab-inline-padding) / 2 - 1px);
+    right: 0;
     top: 50%;
     border-radius: 2px;
-    transform: rotate(10deg) translateY(-50%);
+    transform: rotate(15deg) translateY(-50%);
   }
 
   &:hover::after {

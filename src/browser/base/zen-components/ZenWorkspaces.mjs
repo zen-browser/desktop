@@ -145,6 +145,12 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   _initializeEmptyTab() {
     this._emptyTab = gBrowser.addTrustedTab('about:blank', { inBackground: true, userContextId: 0, _forZenEmptyTab: true });
+
+    gBrowser.tabContainer.addEventListener("TabSelect", () => {
+      if (this._emptyTab && gBrowser.selectedTab !== this._emptyTab) {
+        gBrowser.hideTab(this._emptyTab);
+      }
+    });
   }
 
   registerPinnedResizeObserver() {

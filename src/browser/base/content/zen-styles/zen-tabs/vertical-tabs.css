@@ -94,9 +94,8 @@
     padding: 6px !important;
   }
 
-  & #urlbar-container,
-  & #urlbar {
-    --urlbar-container-height: 40px;
+  & #urlbar-container[breakout='true']:has([zen-floating-urlbar='true']) {
+    --urlbar-container-height: 36px !important;
     --urlbar-height: 38px !important;
   }
 

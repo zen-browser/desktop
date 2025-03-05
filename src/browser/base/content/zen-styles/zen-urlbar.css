@@ -98,8 +98,6 @@
 
 .urlbar-page-action,
 #tracking-protection-icon-container {
-  width: calc(var(--urlbar-min-height) - 6 * var(--urlbar-container-padding)) !important;
-  height: calc(var(--urlbar-min-height) - 6 * var(--urlbar-container-padding)) !important;
   margin-top: auto !important;
   margin-bottom: auto !important;
 }

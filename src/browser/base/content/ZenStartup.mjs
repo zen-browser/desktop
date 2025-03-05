@@ -125,8 +125,9 @@
     },
 
     _initSearchBar() {
-      // Only focus the url bar
-      gURLBar.focus();
+      if (!Services.prefs.getBoolPref('zen.urlbar.disable-initial-focus', false)) {
+        gURLBar.focus();
+      }
 
       gURLBar._initCopyCutController();
       gURLBar._initPasteAndGo();

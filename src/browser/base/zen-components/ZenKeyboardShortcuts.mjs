@@ -756,7 +756,7 @@ class ZenKeyboardShortcutsLoader {
 }
 
 class ZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 8;
+  static LATEST_KBS_VERSION = 9;
 
   constructor() {}
 
@@ -937,6 +937,21 @@ class ZenKeyboardShortcutsVersioner {
         )
       );
     }
+if (version < 9) {
+  // Migrate from 8 to 9
+  // In this new version, we add the "Duplicate Tab" shortcut
+  data.push(
+    new KeyShortcut(
+      'zen-duplicate-tab',
+      '',
+      '',
+      ZEN_OTHER_SHORTCUTS_GROUP,
+      KeyShortcutModifiers.fromObject({}),
+      'code:gBrowser.duplicateTab(gBrowser.selectedTab)',
+      'zen-duplicate-tab-shortcut'
+    )
+  );
+}
     return data;
   }
 }

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4782c0cdc 100644
+index b3940467bc6b9170cbc75f0a1dfd161a896cc8bd..7f5105b8524c15f50d18028e04564fc9fe8b6deb 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -32,6 +32,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -3440,6 +3441,11 @@ var XULBrowserWindow = {
+@@ -3444,6 +3445,11 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -22,7 +22,7 @@ index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -4435,7 +4441,7 @@ nsBrowserAccess.prototype = {
+@@ -4439,7 +4445,7 @@ nsBrowserAccess.prototype = {
      // Passing a null-URI to only create the content window,
      // and pass true for aSkipLoad to prevent loading of
      // about:blank
@@ -31,7 +31,7 @@ index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4
        null,
        aParams,
        aWhere,
-@@ -4443,6 +4449,10 @@ nsBrowserAccess.prototype = {
+@@ -4447,6 +4453,10 @@ nsBrowserAccess.prototype = {
        aName,
        true
      );
@@ -42,7 +42,25 @@ index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4
    },
  
    openURIInFrame: function browser_openURIInFrame(
-@@ -6351,7 +6361,7 @@ function switchToTabHavingURI(
+@@ -5850,7 +5860,7 @@ function warnAboutClosingWindow() {
+ 
+   if (!isPBWindow && !toolbar.visible) {
+     return gBrowser.warnAboutClosingTabs(
+-      gBrowser.openTabs.length,
++      gBrowser.visibleTabs.length - gBrowser.pinnedTabCount,
+       gBrowser.closingTabsEnum.ALL
+     );
+   }
+@@ -5890,7 +5900,7 @@ function warnAboutClosingWindow() {
+     return (
+       isPBWindow ||
+       gBrowser.warnAboutClosingTabs(
+-        gBrowser.openTabs.length,
++        gBrowser.visibleTabs.length - gBrowser.pinnedTabCount,
+         gBrowser.closingTabsEnum.ALL
+       )
+     );
+@@ -6375,7 +6385,7 @@ function switchToTabHavingURI(
        ignoreQueryString || replaceQueryString,
        ignoreFragmentWhenComparing
      );
@@ -51,7 +69,7 @@ index 019b168c1aeae7e1c97a3ae58c99a48a27f54134..22dcf304591290d7a1b60f01998b6cf4
      for (let i = 0; i < browsers.length; i++) {
        let browser = browsers[i];
        let browserCompare = cleanURL(
-@@ -6392,7 +6402,7 @@ function switchToTabHavingURI(
+@@ -6416,7 +6426,7 @@ function switchToTabHavingURI(
          }
  
          if (!doAdopt) {

@@ -1020,6 +1020,16 @@ Preferences.addAll([
     default: 'float',
   },
   {
+    id: 'zen.urlbar.show-sponsored',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'zen.urlbar.show-pinned',
+    type: 'bool',
+    default: false,
+  },
+  {
     id: 'zen.view.compact.color-sidebar',
     type: 'bool',
     default: true,

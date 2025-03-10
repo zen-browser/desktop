@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index fa96568d366fd3608f9bd583fa793150bd815c8b..24071f1bc0d9cb2a4fe66e5e4657a64ab66f29cf 100644
+index fa96568d366fd3608f9bd583fa793150bd815c8b..a13d501f2f0f190b9dc8fe0ce4f1d7af66b0495e 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -94,7 +94,7 @@
@@ -60,7 +60,7 @@ index fa96568d366fd3608f9bd583fa793150bd815c8b..24071f1bc0d9cb2a4fe66e5e4657a64a
  
        this._tabDropIndicator.hidden = true;
        event.stopPropagation();
-+      if (draggedTab.hasAttribute("zen-has-splitted")) {
++      if (draggedTab?.hasAttribute("zen-has-splitted")) {
 +        draggedTab.removeAttribute("zen-has-splitted");
 +        draggedTab._visuallySelected = false;
 +      }

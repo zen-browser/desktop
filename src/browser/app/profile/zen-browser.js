@@ -80,6 +80,7 @@ pref('zen.welcome-screen.seen', false, sticky);
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.tabs.rename-tabs', true);
+perf('zen.tabs.cycle-active-only', false);
 pref('zen.theme.accent-color', "#ffb787");
 pref('zen.theme.content-element-separation', 8); // In pixels
 pref('zen.theme.gradient', true);

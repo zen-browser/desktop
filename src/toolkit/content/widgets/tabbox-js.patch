@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 033582a3badb65d50f58a11f8a259e28eaa04ef3..ef634d76549f0fa4d5789e2bbfb9409f44767683 100644
+index 717f0583f224be2d09a7966ee5627ebab83cc07f..64119f459bf79533bd745ae4b6726fd19015b5d9 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
-@@ -210,7 +210,7 @@
+@@ -213,7 +213,7 @@
      ) {
        this._inAsyncOperation = false;
        if (oldPanel != this._selectedPanel) {
@@ -11,7 +11,7 @@ index 033582a3badb65d50f58a11f8a259e28eaa04ef3..ef634d76549f0fa4d5789e2bbfb9409f
          this._selectedPanel?.classList.add("deck-selected");
        }
        this.setAttribute("selectedIndex", val);
-@@ -537,7 +537,7 @@
+@@ -609,7 +609,7 @@
        if (!tab) {
          return;
        }
@@ -20,16 +20,16 @@ index 033582a3badb65d50f58a11f8a259e28eaa04ef3..ef634d76549f0fa4d5789e2bbfb9409f
          if (otherTab != tab && otherTab.selected) {
            otherTab._selected = false;
          }
-@@ -820,7 +820,7 @@
+@@ -822,7 +822,7 @@
          if (tab == startTab) {
            return null;
          }
 -        if (filter(tab)) {
-+        if (filter(tab) && !tab.hasAttribute("zen-glance-tab") && !tab.hasAttribute("zen-empty-tab")) {
++        if (filter(tab) && !tab.hasAttribute("zen-glance-tab") && !tab.hasAttribute("zen-empty-tab") && (!Services.prefs.getBoolPref('zen.tabs.cycle-active-only', false) || !tab.hasAttribute('pending')) ) {
            return tab;
          }
        }
-@@ -883,7 +883,7 @@
+@@ -887,7 +887,7 @@
        let { ariaFocusedItem } = this;
        let startTab = ariaFocusedItem;
        if (!ariaFocusedItem || !this.allTabs.includes(ariaFocusedItem)) {

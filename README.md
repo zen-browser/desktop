@@ -44,7 +44,7 @@ We keep track of how many issues are closed at the end of the month in [docs/iss
 
 ### Versioning
 
-Zen uses [Semantic Versioning](https://semver.org/), meaning versions are displayed as `a.b.cd` where:
+Zen uses [Semantic Versioning](https://semver.org/), meaning versions are displayed as `a`, `b`, `c` and `d` where:
 
 - `a` is the major version
 - `b` is the minor version

@@ -63,8 +63,11 @@
     }
 
     .show-on-hover {
+      &:not(#zen-media-progress-hbox) {
+        margin: 2px 6px;
+      }
+
       max-height: 50px;
-      margin: 2px 6px;
       margin-bottom: 0;
       opacity: 1;
       transform: translateY(0);
@@ -108,9 +111,12 @@
   .show-on-hover {
     max-height: 0;
     opacity: 0;
-    overflow: hidden;
     transform: translateY(5px);
-    margin: 0 6px;
+
+    &:not(#zen-media-progress-hbox) {
+      margin: 0 6px;
+    }
+
     transition:
       max-height 0.1s ease-in-out,
       opacity 0.1s ease-in-out,
@@ -120,7 +126,7 @@
 
   #zen-media-current-time,
   #zen-media-duration {
-    margin: 0 0 0 1px;
+    margin: 0;
     font-size: x-small;
     opacity: 0.7;
     font-weight: 500;
@@ -225,6 +231,9 @@
   flex-grow: 1;
   height: 1.1rem;
   align-items: center;
+  padding-inline: 6px;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 #zen-media-controls-hbox {

@@ -1512,7 +1512,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       if (groupIndex >= 0) {
         const group = this._data[groupIndex];
         if (group.tabs.length < this.MAX_TABS) {
-          const newTab = this.openAndSwitchToTab("about:blank");
+          const newTab = this.openAndSwitchToTab("about:newtab");
           group.tabs.push(newTab);
           
           // Get the root node of the layout tree
@@ -1543,7 +1543,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
             // Activate the updated layout
             this.activateSplitView(group, true);
             
-            // Select the new tab and focus the URL bar
             window.gBrowser.selectedTab = newTab;
             window.gURLBar.select();
             document.getElementById('Browser:OpenLocation').doCommand();
@@ -1558,10 +1557,9 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     }
     
     // First time pressing shortcut - create initial split
-    const newTab = this.openAndSwitchToTab("about:blank");
+    const newTab = this.openAndSwitchToTab("about:newtab");
     this.splitTabs([currentTab, newTab], 'vsep');
     
-    // Ensure the new tab is selected
     window.gBrowser.selectedTab = newTab;
     
     // Focus the URL bar

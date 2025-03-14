@@ -9,6 +9,7 @@
 #endif
 
 pref("browser.tabs.hoverPreview.enabled", false);
+pref("browser.ctrlTab.sortByRecentlyUsed", true);
 
 #ifdef MOZ_UPDATE_CHANNEL
 pref("devtools.debugger.prompt-connection", true);

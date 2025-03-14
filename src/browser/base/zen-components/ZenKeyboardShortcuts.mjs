@@ -725,7 +725,7 @@ class ZenKeyboardShortcutsLoader {
         'zen-split-view-shortcut-unsplit'
       )
     );
-
+    
     return newShortcutList;
   }
 
@@ -756,7 +756,7 @@ class ZenKeyboardShortcutsLoader {
 }
 
 class ZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 8;
+  static LATEST_KBS_VERSION = 9;
 
   constructor() {}
 
@@ -934,6 +934,21 @@ class ZenKeyboardShortcutsVersioner {
           KeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
           'code:gZenCommonActions.copyCurrentURLAsMarkdownToClipboard()',
           'zen-text-action-copy-url-markdown-shortcut'
+        )
+      );
+    }
+    if (version < 9) {
+      // Migrate from 8 to 9
+      // In this new version, we add the "Add a Split New Tab to the Right" shortcut
+      data.push(
+        new KeyShortcut(
+          'zen-split-view-new-tab-to-right',
+          '+',
+          '',
+          ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
+          KeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'code:gZenViewSplitter.createSplitNewTabToRight()',
+          'zen-split-view-shortcut-add-new-tab-to-right'
         )
       );
     }

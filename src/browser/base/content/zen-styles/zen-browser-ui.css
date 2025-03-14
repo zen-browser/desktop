@@ -86,6 +86,17 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  @keyframes zen-main-app-wrapper-animation {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
 #sidebar-box {
   /** Sidebar is already hidden in full screen mode */
   border: none;

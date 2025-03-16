@@ -50,5 +50,10 @@
     "prettier-plugin-sh": "^0.14.0"
   },
   "packageManager": "pnpm@10.6.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "core-js-pure",
+      "sharp"
+    ]
   }
 }

@@ -29,7 +29,7 @@ echo "Downloaded x86_64 artifacts"
 
 mkdir engine\obj-x86_64-pc-windows-msvc\ -ErrorAction SilentlyContinue
 
-npm run surfer -- ci --brand release
+pnpm run surfer -- ci --brand release
 
 function SignAndPackage($name) {
     echo "Executing on $name"
@@ -53,7 +53,7 @@ function SignAndPackage($name) {
     }
 
     echo "Compat Mode? $env:SURFER_COMPAT"
-    npm run package -- --verbose
+    pnpm run package -- --verbose
 
     # In the release script, we do the following:
     #  tar -xvf .github/workflows/object/windows-x64-signed-x86_64.tar.gz -C windows-x64-signed-x86_64

@@ -27,10 +27,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -70,13 +68,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
 
       - name: Load surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: pnpm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox source and dependencies
-        run: npm run download
+        run: pnpm run download
 
       - name: Bootstrap
         run: |
@@ -87,13 +85,13 @@ jobs:
           cd ..
 
       - name: Import
-        run: npm run import
+        run: pnpm run import
 
       - name: Populate mozconfig
         env:
           SURFER_MOZCONFIG_ONLY: true
         run: |
-          npm run build
+          pnpm run build
           cd engine
           ./mach configure
 
@@ -243,7 +241,7 @@ jobs:
           export MAR=$(pwd)/zen-macos-host-mar
           chmod +x $MAR
           echo "MAR=$MAR"
-          npm run package -- --verbose
+          pnpm run package -- --verbose
           mv ./dist/output.mar ./macos.mar
 
       - name: Upload build artifact (.mar)

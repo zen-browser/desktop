@@ -31,10 +31,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Git
         run: |
@@ -42,10 +40,10 @@ jobs:
           git config --global user.name "mauro-balades"
 
       - name: Install Surfer
-        run: npm i -g @zen-browser/surfer
+        run: pnpm i -g @zen-browser/surfer
 
       - name: Load Surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download artifact
         if: ${{ matrix.arch == 'x86_64' }}
@@ -71,13 +69,13 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           git config --global core.safecrlf false
-          npm run download
+          pnpm run download
 
       - name: Import patches
         if: ${{ matrix.arch == 'x86_64' }}
         env:
           SURFER_NO_BRANDING_PATCH: true
-        run: npm run import
+        run: pnpm run import
 
       - name: Generate
         if: ${{ matrix.arch == 'x86_64' }}

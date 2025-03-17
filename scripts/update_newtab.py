@@ -1,6 +1,5 @@
-import os
-import subprocess
 import logging
+import subprocess
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

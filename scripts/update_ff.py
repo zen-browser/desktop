@@ -19,7 +19,7 @@ def update_rc(last_version: str):
       data["version"]["candidate"] = rc_version
       json.dump(data, f, indent=2)
     print("Download the new engine by running 'npm run download'.")
-    os.system("npm run download")
+    os.system("pnpm run download")
   else:
     print("No new Firefox RC version available.")
 
@@ -28,7 +28,7 @@ def update_ff(is_rc: bool = False, last_version: str = ""):
   """Runs the npm command to update the 'ff' component."""
   if is_rc:
     return update_rc(last_version)
-  result = os.system("npm run update-ff:raw")
+  result = os.system("pnpm run update-ff:raw")
   if result != 0:
     raise RuntimeError("Failed to update 'ff' component.")
 

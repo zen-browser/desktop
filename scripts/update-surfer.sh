@@ -6,5 +6,5 @@ if [ ! -f "package.json" ]; then
   exit 1
 fi
 
-npm update @zen-browser/surfer
-npm i @zen-browser/surfer@latest
+pnpm update @zen-browser/surfer
+pnpm i @zen-browser/surfer@latest

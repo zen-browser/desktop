@@ -14,16 +14,14 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install Surfer
-        run: npm i -g @zen-browser/surfer
+        run: pnpm i -g @zen-browser/surfer
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Download Firefox and dependencies
         run: surfer download

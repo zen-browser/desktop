@@ -137,28 +137,26 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
 
       - name: Setup Surfer
         run: |
-          npm i -g @zen-browser/surfer
+          pnpm i -g @zen-browser/surfer
 
       - name: Bump version
         if: ${{ inputs.update_version && inputs.update_branch == 'release' }}
         run: |
-          npm run surfer -- ci --brand ${{ inputs.update_branch }} --bump prerelease
+          surfer -- ci --brand ${{ inputs.update_branch }} --bump prerelease
 
       - name: Bump version without new version
         if: ${{ !inputs.update_version || inputs.update_branch == 'twilight' }}
         run: |
-          npm run surfer -- ci --brand ${{ inputs.update_branch }}
+          surfer -- ci --brand ${{ inputs.update_branch }}
 
       - name: Debug
         run: |
@@ -197,29 +195,27 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
 
       - name: Setup Surfer
         run: |
-          npm i -g @zen-browser/surfer
+          pnpm i -g @zen-browser/surfer
 
       - name: Activate Surfer CLI
         run: |
-          npm run surfer -- ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
+          surfer -- ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Check version
         run: |
           echo "$(pwd)"
-          echo $(npm run --silent surfer -- get version | xargs)
-          echo "version=$(npm run --silent surfer -- get version | xargs)" >> $GITHUB_OUTPUT
-          if [[ $(npm run --silent surfer -- get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
+          echo $(pnpm run --silent surfer -- get version | xargs)
+          echo "version=$(pnpm run --silent surfer -- get version | xargs)" >> $GITHUB_OUTPUT
+          if [[ $(pnpm run --silent surfer -- get version | xargs) == ${{ needs.build-data.outputs.version }} ]]; then
             echo ">>> Version matches"
           else
             echo ">>> Version mismatch"
@@ -239,10 +235,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Git
         run: |
@@ -251,16 +245,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
 
       - name: Load Surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
+        run: pnpm run surfer -- ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
 
       - name: Download Firefox source and dependencies
-        run: npm run download --verbose
+        run: pnpm run download --verbose
 
       - name: Import
-        run: npm run import -- --verbose
+        run: pnpm run import -- --verbose
 
       - name: Compress
         run: |
@@ -365,14 +359,12 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
           sudo apt-get update
           sudo apt-get -y install libfuse2 desktop-file-utils appstream
 
@@ -601,11 +593,11 @@ jobs:
         run: |
           git pull
           sudo apt-get update
-          npm install
+          pnpm install
 
       - name: Generate new Flatpak release
         run: |
-          npm run build-flatpak -- \
+          pnpm run build-flatpak -- \
             --version ${{ needs.build-data.outputs.version }}
 
       - name: Commit

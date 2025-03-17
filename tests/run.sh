@@ -8,8 +8,8 @@ fi
 
 rm -rf engine/browser/base/zen-components/tests/
 
-npm run import
-npm run build:ui
+pnpm run import
+pnpm run build:ui
 cd ./engine
 ./mach mochitest browser/base/zen-components/tests
 cd ..

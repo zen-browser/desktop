@@ -49,10 +49,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
@@ -80,13 +78,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
 
       - name: Load Surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: pnpm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox source and dependencies
-        run: npm run download
+        run: pnpm run download
 
       - name: Fix Rust version
         run: |
@@ -103,7 +101,7 @@ jobs:
       - name: Import
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
-        run: npm run import
+        run: pnpm run import
 
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
@@ -134,7 +132,7 @@ jobs:
         run: |
           export SURFER_PLATFORM="linux"
           export ZEN_RELEASE=1
-          npm run package
+          pnpm run package
 
       - name: Rename artifacts
         run: |

@@ -1182,3 +1182,11 @@ menupopup > menuitem:is([type='checkbox']) .menu-iconic-left {
 #zen-media-focus-button:hover {
   list-style-image: url('screen.svg') !important;
 }
+
+#zen-media-close-button {
+  list-style-image: url('close.svg') !important;
+}
+
+#zen-media-pip-button {
+  list-style-image: url('chrome://global/skin/media/picture-in-picture-open.svg') !important;
+}

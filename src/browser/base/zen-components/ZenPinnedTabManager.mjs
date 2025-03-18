@@ -510,6 +510,10 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
+          let { permitUnload } = selectedTab.linkedBrowser?.permitUnload();
+          if (!permitUnload) {
+            return;
+          }
           this._handleTabSwitch(selectedTab);
           if (behavior.includes('reset')) {
             this._resetTabToStoredState(selectedTab);
@@ -520,8 +524,7 @@
             }
             // Do not unload about:* pages
             if (!selectedTab.linkedBrowser?.currentURI.spec.startsWith('about:')) {
-              gBrowser.explicitUnloadTabs([selectedTab]);
-              selectedTab.removeAttribute('linkedpanel');
+              gZenTabUnloader.explicitUnloadTabs([selectedTab], { permitUnload });
             }
           }
           break;

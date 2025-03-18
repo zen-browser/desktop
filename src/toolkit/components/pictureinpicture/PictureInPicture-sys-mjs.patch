@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
-index 5da0404b2672ba8cce7bcf808bf2373474776654..c3d58941b66c54f9d506698d015e294f8c8a5ceb 100644
+index 5da0404b2672ba8cce7bcf808bf2373474776654..44b62bd752294c2af96dd5b5d08c90ddf3dc513f 100644
 --- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 +++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 @@ -488,13 +488,13 @@ export var PictureInPicture = {
@@ -19,7 +19,15 @@ index 5da0404b2672ba8cce7bcf808bf2373474776654..c3d58941b66c54f9d506698d015e294f
      await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
    },
  
-@@ -877,7 +877,7 @@ export var PictureInPicture = {
+@@ -623,6 +623,7 @@ export var PictureInPicture = {
+       pipToggle.hidden = true;
+     }
+ 
++    win.gZenMediaController.updatePipEligibility(browser, !pipToggle.hidden);
+     let browserHasPip = !!this.browserWeakMap.get(browser);
+     if (browserHasPip) {
+       this.setUrlbarPipIconActive(browser.ownerGlobal);
+@@ -877,7 +878,7 @@ export var PictureInPicture = {
      win.setIsMutedState(videoData.isMuted);
  
      // set attribute which shows pip icon in tab

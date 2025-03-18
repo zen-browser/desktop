@@ -40,6 +40,14 @@ var gZenCompactModeManager = {
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
     window.addEventListener('sizemodechange', () => this._clearAllHoverStates());
+
+    if (AppConstants.platform == 'macosx') {
+      window.addEventListener('mouseover', (event) => {
+        const buttons = gZenVerticalTabsManager.actualWindowButtons;
+        if (event.target.closest('.titlebar-buttonbox-container') === buttons) return;
+        buttons.removeAttribute('zen-has-hover');
+      });
+    }
   },
 
   get preference() {
@@ -72,7 +80,7 @@ var gZenCompactModeManager = {
   },
 
   get sidebarIsOnRight() {
-    if (this._sidebarIsOnRight) {
+    if (typeof this._sidebarIsOnRight !== 'undefined') {
       return this._sidebarIsOnRight;
     }
     this._sidebarIsOnRight = Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
@@ -337,9 +345,9 @@ var gZenCompactModeManager = {
   },
 
   flashElement(element, duration, id, attrName = 'flash-popup') {
-    if (element.matches(':hover')) {
-      return;
-    }
+    //if (element.matches(':hover')) {
+    //  return;
+    //}
     if (this._flashTimeouts[id]) {
       clearTimeout(this._flashTimeouts[id]);
     } else {
@@ -363,6 +371,8 @@ var gZenCompactModeManager = {
       let target = this.hoverableElements[i].element;
       const onEnter = (event) => {
         if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
+        // Dont register the hover if the urlbar is floating and we are hovering over it
+        if (event.target.querySelector('#urlbar[zen-floating-urlbar]')) return;
         this.clearFlashTimeout('has-hover' + target.id);
         window.requestAnimationFrame(() => target.setAttribute('zen-has-hover', 'true'));
       };

@@ -1,13 +1,13 @@
 <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
   <rect width="100%" height="100%" fill="none"/>
-  
+
     <style type="text/css"><![CDATA[
     .note {
-      fill: white;
+      fill: currentColor;
       transform-box: fill-box;
       transform-origin: center;
     }
-    
+
     @keyframes flyUpLeft {
       from {
         opacity: 1;
@@ -41,7 +41,7 @@
     }*/
   ]]></style>
 
-  
+
   <g class="note-group">
     <g class="note" style="animation: flyUpLeft 3s ease-in-out infinite; animation-delay: 0s;">
       <path transform="translate(15,40) scale(0.0078)" d="M448.231,166.755C352.139,64.989,240.998,2.38,240.998,2.38
@@ -51,7 +51,7 @@
         c15.828,3.313,34.391,10.531,54.391,25.219c67.703,49.625,100.905,81.484,58.218,166.859
         C475.403,321.974,514.2,236.599,448.231,166.755z"/>
     </g>
-    
+
     <g class="note" style="animation: flyUpRight 3s ease-in-out infinite; animation-delay: 0.5s;">
       <path transform="translate(15,40) scale(0.0078)" d="M133.703,45.86v86.43v240.66c-16.8-6.173-36.654-8.012-57.11-4.054
         c-49.141,9.454-82.977,48.227-75.577,86.559c7.389,38.353,53.195,61.757,102.326,52.292
@@ -60,7 +60,7 @@
         c7.389,38.342,53.185,61.746,102.327,52.271c43.612-8.389,75.115-39.892,76.449-73.706
         H512V90.785V2.152L133.703,45.86z"/>
     </g>
-    
+
     <g class="note" style="animation: flyUpCenter 3s ease-in-out infinite; animation-delay: 1s;">
       <path transform="translate(15,40) scale(0.0078)" d="M448.231,166.755C352.139,64.989,240.998,2.38,240.998,2.38
         c-3.297-2.625-7.813-3.125-11.609-1.281c-3.813,1.844-6.219,5.688-6.219,9.906v329
@@ -78,7 +78,7 @@
         c7.389,38.342,53.185,61.746,102.327,52.271c43.612-8.389,75.115-39.892,76.449-73.706
         H512V90.785V2.152L133.703,45.86z"/>
     </g>
-    
+
     <g class="note" style="animation: flyUpRight 3s ease-in-out infinite; animation-delay: 2s;">
       <path transform="translate(15,40) scale(0.0078)" d="M448.231,166.755C352.139,64.989,240.998,2.38,240.998,2.38
         c-3.297-2.625-7.813-3.125-11.609-1.281c-3.813,1.844-6.219,5.688-6.219,9.906v329
@@ -87,7 +87,7 @@
         c15.828,3.313,34.391,10.531,54.391,25.219c67.703,49.625,100.905,81.484,58.218,166.859
         C475.403,321.974,514.2,236.599,448.231,166.755z"/>
     </g>
-    
+
     <g class="note" style="animation: flyUpCenter 3s ease-in-out infinite; animation-delay: 2.5s;">
       <path transform="translate(15,40) scale(0.0078)" d="M133.703,45.86v86.43v240.66c-16.8-6.173-36.654-8.012-57.11-4.054
         c-49.141,9.454-82.977,48.227-75.577,86.559c7.389,38.353,53.195,61.757,102.326,52.292

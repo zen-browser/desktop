@@ -49,6 +49,10 @@
 
     & label {
       display: none;
+
+      &::before {
+        text-overflow: unset;
+      }
     }
 
     & image {
@@ -73,7 +77,7 @@
       color: white;
       fill: white;
       & label {
-        max-width: 100px;
+        max-width: 4rem;
         margin-left: 8px;
       }
 

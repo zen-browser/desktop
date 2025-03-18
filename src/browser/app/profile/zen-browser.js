@@ -201,7 +201,6 @@ pref('zen.startup.smooth-scroll-in-tabs', true);
 pref('zen.workspaces.disabled_for_testing', false);
 pref('zen.workspaces.hide-deactivated-workspaces', false);
 pref('zen.workspaces.hide-default-container-indicator', true);
-pref('zen.workspaces.show-icon-strip', true);
 pref('zen.workspaces.force-container-workspace', false);
 pref('zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed', false);
 pref('zen.workspaces.show-workspace-indicator', true);

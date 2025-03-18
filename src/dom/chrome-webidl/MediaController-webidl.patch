@@ -1,5 +1,5 @@
 diff --git a/dom/chrome-webidl/MediaController.webidl b/dom/chrome-webidl/MediaController.webidl
-index 20f416d1c3b41798e0f90bbac5db40ed2a4ab000..06cb4c847fcfba964eeb93089613e293dc10bd87 100644
+index 20f416d1c3b41798e0f90bbac5db40ed2a4ab000..1c5d893f9166a3aa7bc7802bb0d1207d169033ee 100644
 --- a/dom/chrome-webidl/MediaController.webidl
 +++ b/dom/chrome-webidl/MediaController.webidl
 @@ -20,6 +20,12 @@ enum MediaControlKey {
@@ -15,7 +15,12 @@ index 20f416d1c3b41798e0f90bbac5db40ed2a4ab000..06cb4c847fcfba964eeb93089613e293
  /**
   * MediaController is used to control media playback for a tab, and each tab
   * would only have one media controller, which can be accessed from the
-@@ -36,6 +42,9 @@ interface MediaController : EventTarget {
+@@ -32,10 +38,14 @@ interface MediaController : EventTarget {
+   readonly attribute boolean isAudible;
+   readonly attribute boolean isPlaying;
+   readonly attribute MediaSessionPlaybackState playbackState;
++  readonly attribute boolean isBeingUsedInPIPModeOrFullscreen;
+ 
    [Throws]
    MediaMetadataInit getMetadata();
  

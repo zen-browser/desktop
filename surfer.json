@@ -5,8 +5,8 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "136.0.1",
-    "candidate": "136.0.1"
+    "version": "136.0.2",
+    "candidate": "136.0.2"
   },
   "buildOptions": {
     "generateBranding": true

@@ -278,6 +278,10 @@
 
   &[side='right'] {
     right: 0;
+
+    &[has-split-view='true'] {
+      right: var(--zen-element-separation);
+    }
   }
 
   &::after {

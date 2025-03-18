@@ -235,9 +235,9 @@
       this.explicitUnloadTabs(tabs);
     }
 
-    explicitUnloadTabs(tabs) {
+    explicitUnloadTabs(tabs, extraArgs = {}) {
       for (let i = 0; i < tabs.length; i++) {
-        if (this.canUnloadTab(tabs[i], Date.now(), this.intervalUnloader.excludedUrls, true)) {
+        if (this.canUnloadTab(tabs[i], Date.now(), this.intervalUnloader.excludedUrls, true, extraArgs)) {
           this.unload(tabs[i]);
         }
       }
@@ -259,7 +259,7 @@
       }
     }
 
-    canUnloadTab(tab, currentTimestamp, excludedUrls, ignoreTimestamp = false) {
+    canUnloadTab(tab, currentTimestamp, excludedUrls, ignoreTimestamp = false, extraArgs = {}) {
       if (
         (tab.pinned && !ignoreTimestamp) ||
         tab.selected ||
@@ -271,6 +271,9 @@
         tab.attention ||
         tab.hasAttribute('glance-id') ||
         tab.linkedBrowser?.zenModeActive ||
+        (typeof extraArgs.permitUnload === 'undefined'
+          ? !tab.linkedBrowser?.permitUnload()?.permitUnload
+          : !extraArgs.permitUnload) ||
         (tab.pictureinpicture && !ignoreTimestamp) ||
         (tab.soundPlaying && !ignoreTimestamp) ||
         (tab.zenIgnoreUnload && !ignoreTimestamp) ||

@@ -1,5 +1,5 @@
 diff --git a/dom/media/mediacontrol/MediaController.cpp b/dom/media/mediacontrol/MediaController.cpp
-index 3f08d24d4ed56bb72ed513ed602b2c8fa48afe7b..690d9abdb0ab8efc019dd606743b82504834faa0 100644
+index 3f08d24d4ed56bb72ed513ed602b2c8fa48afe7b..98dfe4df48f5daebd2b619f0d4d4eb3ac873a66f 100644
 --- a/dom/media/mediacontrol/MediaController.cpp
 +++ b/dom/media/mediacontrol/MediaController.cpp
 @@ -51,6 +51,25 @@ void MediaController::GetSupportedKeys(
@@ -28,3 +28,11 @@ index 3f08d24d4ed56bb72ed513ed602b2c8fa48afe7b..690d9abdb0ab8efc019dd606743b8250
  void MediaController::GetMetadata(MediaMetadataInit& aMetadata,
                                    ErrorResult& aRv) {
    if (!IsActive() || mShutdown) {
+@@ -412,6 +431,7 @@ void MediaController::SetIsInPictureInPictureMode(
+   ForceToBecomeMainControllerIfNeeded();
+   UpdateDeactivationTimerIfNeeded();
+   mPictureInPictureModeChangedEvent.Notify(mIsInPictureInPictureMode);
++  DispatchAsyncEvent(u"pictureinpicturemodechange"_ns);
+ }
+ 
+ void MediaController::NotifyMediaFullScreenState(uint64_t aBrowsingContextId,

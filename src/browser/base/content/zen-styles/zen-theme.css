@@ -155,8 +155,8 @@
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: light-dark(rgb(240, 240, 244), #161616);
-  --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #161616);
+  --zen-themed-toolbar-bg: light-dark(rgb(240, 240, 244), #171717);
+  --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
   --zen-workspace-indicator-height: 45px;
 

@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 1805bad6c58e060533f634ed9e511c05cad3ded1..f153761e406535270343fa1f430dea4f740cb2fc 100644
+index 7583473ee73538b2fa54337bfd844f03f261be49..559b593a6874296bd5894c5985f8eeb680cd3886 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
-@@ -496,8 +496,7 @@ const PanelUI = {
+@@ -515,8 +515,7 @@ const PanelUI = {
          tempPanel.setAttribute("animate", "false");
        }
        tempPanel.setAttribute("context", "");
@@ -12,13 +12,12 @@ index 1805bad6c58e060533f634ed9e511c05cad3ded1..f153761e406535270343fa1f430dea4f
          .appendChild(tempPanel);
  
        let multiView = document.createXULElement("panelmultiview");
-@@ -544,8 +543,8 @@ const PanelUI = {
-       }
+@@ -960,7 +959,7 @@ const PanelUI = {
+         el.removeAttribute("data-lazy-l10n-id");
+       });
  
-       if (viewShown) {
--        CustomizableUI.addPanelCloseListeners(tempPanel);
-         tempPanel.addEventListener("popuphidden", panelRemover);
-+        CustomizableUI.addPanelCloseListeners(tempPanel);
-       } else {
-         panelRemover();
-       }
+-    this.notificationPanel.openPopup(anchor, "bottomright topright");
++    this.notificationPanel.openPopup(anchor, gZenUIManager.panelUIPosition);
+   },
+ 
+   _clearNotificationPanel() {

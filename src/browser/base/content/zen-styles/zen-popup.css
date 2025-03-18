@@ -360,9 +360,14 @@ menuitem {
   & .zen-toast {
     padding: 0.9rem 0.8rem;
     border-radius: 12px;
-    background-color: var(--button-primary-bgcolor);
+    background: linear-gradient(
+      170deg,
+      var(--zen-primary-color) -40%,
+      color-mix(in srgb, var(--zen-primary-color) 85%, #0f0f0f 15%)
+    );
     color: var(--button-primary-color);
-    box-shadow: var(--zen-big-shadow);
+    box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     font-weight: 500;
     gap: 5px;

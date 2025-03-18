@@ -28,7 +28,7 @@
 
 ## 🖥️ Compatibility
 
-Zen is currently built using Firefox version `136.0.1`! 🚀
+Zen is currently built using Firefox version `136.0.2`! 🚀
 
 - [`Zen Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 136.0`!
 - Check out the latest [release notes](https://zen-browser.app/release-notes)!
@@ -101,7 +101,7 @@ yay -S zen-browser-bin
 - `Tarball` install:
 
 ```sh
-bash <(curl -s https://updates.zen-browser.app/install.sh)`
+bash <(curl -s https://updates.zen-browser.app/install.sh)
 ```
 
 - `AppImage` install:

@@ -65,6 +65,7 @@ var gZenUIManager = {
     tabs.style.removeProperty('flex');
     tabs.style.maxHeight = height + 'px';
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
+    gURLBar.updateLayoutBreakout();
   },
 
   get tabsWrapper() {
@@ -249,7 +250,7 @@ var gZenUIManager = {
     const toast = this._createToastElement(messageId, options);
     this._toastContainer.removeAttribute('hidden');
     this._toastContainer.appendChild(toast);
-    await this.motion.animate(toast, { opacity: [0, 1], scale: [0.8, 1] }, { type: 'spring', bounce: 0.5, duration: 0.5 });
+    await this.motion.animate(toast, { opacity: [0, 1], scale: [0.8, 1] }, { type: 'spring', bounce: 0.5, duration: 0.7 });
     await new Promise((resolve) => setTimeout(resolve, 3000));
     await this.motion.animate(toast, { opacity: [1, 0], scale: [1, 0.9] }, { duration: 0.2, bounce: 0 });
     const toastHeight = toast.getBoundingClientRect().height;
@@ -259,6 +260,10 @@ var gZenUIManager = {
     if (!this._toastContainer.hasChildNodes()) {
       this._toastContainer.setAttribute('hidden', 'true');
     }
+  },
+
+  get panelUIPosition() {
+    return gZenVerticalTabsManager._hasSetSingleToolbar ? 'bottomleft topleft' : 'bottomright topright';
   },
 };
 
@@ -361,7 +366,7 @@ var gZenVerticalTabsManager = {
             marginBottom: isLastTab() ? [] : [transform, '0px'],
           },
           {
-            duration: 0.2,
+            duration: 0.12,
             easing: 'ease-out',
           }
         )
@@ -371,9 +376,16 @@ var gZenVerticalTabsManager = {
           aTab.style.removeProperty('opacity');
         });
       gZenUIManager.motion
-        .animate(aTab.querySelector('.tab-content'), {
-          filter: ['blur(1px)', 'blur(0px)'],
-        })
+        .animate(
+          aTab.querySelector('.tab-content'),
+          {
+            filter: ['blur(1px)', 'blur(0px)'],
+          },
+          {
+            duration: 0.12,
+            easing: 'ease-out',
+          }
+        )
         .then(() => {
           aTab.querySelector('.tab-stack').style.removeProperty('filter');
         });

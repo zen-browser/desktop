@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 7f71abe7d80e4c09dd088517ec9ef106c7cb8654..7e764f08346a048fd352d7f7c06ea434f9b19903 100644
+index 7d7e8697f02f90d4f336c9ab0a73a89848e0c21c..2fd19f3b43db4bdd99e65fecd1481f80d4541a7a 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -22,7 +22,14 @@
+@@ -23,7 +23,14 @@
      <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>

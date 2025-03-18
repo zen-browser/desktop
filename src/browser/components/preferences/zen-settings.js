@@ -945,11 +945,6 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: 'zen.workspaces.show-icon-strip',
-    type: 'bool',
-    default: true,
-  },
-  {
     id: 'zen.tab-unloader.enabled',
     type: 'bool',
     default: true,

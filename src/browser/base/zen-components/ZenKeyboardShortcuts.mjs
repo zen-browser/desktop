@@ -725,7 +725,7 @@ class ZenKeyboardShortcutsLoader {
         'zen-split-view-shortcut-unsplit'
       )
     );
-    
+
     return newShortcutList;
   }
 

@@ -1506,43 +1506,43 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
    */
   createSplitNewTabToRight() {
     const currentTab = window.gBrowser.selectedTab;
- 
+
     if (currentTab.splitView) {
-      const groupIndex = this._data.findIndex(group => group.tabs.includes(currentTab));
+      const groupIndex = this._data.findIndex((group) => group.tabs.includes(currentTab));
       if (groupIndex >= 0) {
         const group = this._data[groupIndex];
         if (group.tabs.length < this.MAX_TABS) {
-          const newTab = this.openAndSwitchToTab("about:newtab");
+          const newTab = this.openAndSwitchToTab('about:newtab');
           group.tabs.push(newTab);
-          
+
           // Get the root node of the layout tree
           const rootNode = group.layoutTree;
-          
+
           // For 'vsep' layout, add the new tab to the right end of the row
           if (group.gridType === 'vsep' || rootNode.direction === 'row') {
             // Calculate new sizes for all tabs
             const newSize = 100 / (rootNode.children.length + 1);
             const resizeFactor = newSize / (100 / rootNode.children.length);
-            
+
             // Resize existing tabs
-            rootNode.children.forEach(child => {
+            rootNode.children.forEach((child) => {
               child.sizeInParent *= resizeFactor;
             });
-            
+
             // Add new tab at the end (not using addChild which puts it at the beginning)
             const newNode = new SplitLeafNode(newTab, newSize);
             newNode.parent = rootNode;
             rootNode.children.push(newNode);
-            
+
             // Move tab to the group if needed
             let splitGroup = this._getSplitViewGroup(group.tabs);
             if (splitGroup) {
               gBrowser.moveTabToGroup(newTab, splitGroup);
             }
-            
+
             // Activate the updated layout
             this.activateSplitView(group, true);
-            
+
             window.gBrowser.selectedTab = newTab;
             window.gURLBar.select();
             document.getElementById('Browser:OpenLocation').doCommand();
@@ -1550,18 +1550,18 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
           }
         }
       }
-      
+
       // If we reached the maximum or layout isn't compatible, notify user
       // (or silently do nothing)
       return;
     }
-    
+
     // First time pressing shortcut - create initial split
-    const newTab = this.openAndSwitchToTab("about:newtab");
+    const newTab = this.openAndSwitchToTab('about:newtab');
     this.splitTabs([currentTab, newTab], 'vsep');
-    
+
     window.gBrowser.selectedTab = newTab;
-    
+
     // Focus the URL bar
     window.gURLBar.select();
     document.getElementById('Browser:OpenLocation').doCommand();

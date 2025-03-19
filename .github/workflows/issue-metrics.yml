@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.DEPLOY_KEY || github.token }}
 
       - name: Get dates for last month
         shell: bash
@@ -41,7 +41,7 @@ jobs:
       - name: Run issue-metrics tool
         uses: github/issue-metrics@v2
         env:
-          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY || github.token }}
           HIDE_AUTHOR: true
           HIDE_TIME_TO_ANSWER: true
           SEARCH_QUERY: 'repo:zen-browser/desktop is:issue created:${{ env.last_month }}'

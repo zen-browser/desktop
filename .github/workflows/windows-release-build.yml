@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.DEPLOY_KEY || github.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

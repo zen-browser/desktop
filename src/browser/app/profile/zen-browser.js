@@ -318,7 +318,7 @@ pref("mousewheel.default.delta_multiplier_y", 200);
   pref("dom.ipc.processPriorityManager.backgroundUsesEcoQoS", false);
 #endif
 
-pref('browser.sessionstore.restore_pinned_tabs_on_demand', true);
+pref('browser.sessionstore.restore_pinned_tabs_on_demand', false);
 pref('browser.newtabpage.activity-stream.system.showWeather', true);
 
 // Enable experimental settings page (Used for Zen Labs)

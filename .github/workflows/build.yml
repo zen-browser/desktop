@@ -650,6 +650,7 @@ jobs:
           identifier: Zen-Team.Zen-Browser
           version: ${{ needs.build-data.outputs.version }}
           release-tag: ${{ needs.build-data.outputs.version }}
+          release-notes-url: https://zen-browser.app/release-notes/#${{ needs.build-data.outputs.version }}
           token: ${{ secrets.DEPLOY_KEY }}
       - name: Publish Twilight build
         if: ${{ inputs.update_branch == 'twilight' }}

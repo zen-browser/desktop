@@ -653,6 +653,8 @@ jobs:
           release-notes-url: https://zen-browser.app/release-notes/#${{ needs.build-data.outputs.version }}
           token: ${{ secrets.DEPLOY_KEY }}
       - name: Publish Twilight build
+        env:
+          SKIP_PR_CHECK: true
         if: ${{ inputs.update_branch == 'twilight' }}
         uses: vedantmgoyal9/winget-releaser@main
         with:

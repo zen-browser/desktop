@@ -1,0 +1,37 @@
+diff --git a/toolkit/components/pictureinpicture/content/player.xhtml b/toolkit/components/pictureinpicture/content/player.xhtml
+index 440ce51e8e67e4d3a7bdcb78f38f2fb6684c9848..38912579310314a13d516328ec770db6b589d243 100644
+--- a/toolkit/components/pictureinpicture/content/player.xhtml
++++ b/toolkit/components/pictureinpicture/content/player.xhtml
+@@ -17,6 +17,7 @@
+     <link rel="localization" href="browser/browserSets.ftl"/>
+     <script src="chrome://global/content/pictureinpicture/player.js"></script>
+     <title data-l10n-id="pictureinpicture-player-title"></title>
++    <link rel="localization" href="browser/zen-general.ftl"/>
+   </head>
+ 
+   <body>
+@@ -52,13 +53,22 @@
+       tabindex="10"
+ #endif
+       />
+-      <button id="unpip"
+-      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
++      <button id="minimize"
++      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-minimize-btn" data-l10n-attrs="tooltip"
+ #ifdef XP_MACOSX
+       mac="true"
+       tabindex="10"
+ #else
+       tabindex="9"
++#endif
++      />
++      <button id="unpip"
++      class="control-item control-button tooltip-under-controls" data-l10n-id="pictureinpicture-unpip-btn" data-l10n-attrs="tooltip"
++#ifdef XP_MACOSX
++      mac="true"
++      tabindex="11"
++#else
++      tabindex="10"
+ #endif
+       />
+     <div id="controls-bottom-gradient" class="control-item"></div>

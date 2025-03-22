@@ -28,7 +28,7 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
   - --env=GTK_PATH=/app/lib/gtkmodules
-  - --env=MESA_SHADER_CACHE_DIR=$XDG_RUNTIME_DIR/app/$FLATPAK_ID/cache/mesa_shader_cache_db
+  - --env=MESA_SHADER_CACHE_DIR=/var/cache/mesa_shader_cache_db
 modules:
   - name: zen_browser
     buildsystem: simple

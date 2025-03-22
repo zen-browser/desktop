@@ -1,0 +1,16 @@
+diff --git a/toolkit/components/pictureinpicture/content/player.js b/toolkit/components/pictureinpicture/content/player.js
+index 9a4971d5d24dba6e543be8ea321c6be8c43ad859..b0788967e51736b1ec95daf96a1504bfd7c1dea7 100644
+--- a/toolkit/components/pictureinpicture/content/player.js
++++ b/toolkit/components/pictureinpicture/content/player.js
+@@ -722,6 +722,11 @@ let Player = {
+         document.getElementById("large").click();
+         break;
+       }
++
++      case "minimize": {
++        this.closePipWindow({ reason: "CloseButton" });
++        break;
++      }
+     }
+     // If the click came from a element that is not inside the subtitles settings panel
+     // then we want to hide the panel

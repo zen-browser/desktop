@@ -111,7 +111,7 @@
   background: transparent;
   border: none;
   cursor: ew-resize;
-  z-index: 2;
+  z-index: 3;
 
   &:is(.zen-split-view-splitter[orient='vertical']) {
     /* Bit of a hacky solution, but it works */

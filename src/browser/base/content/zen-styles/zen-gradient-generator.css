@@ -5,7 +5,7 @@
  */
 
 #PanelUI-zen-gradient-generator {
-  --panel-width: 300px;
+  --panel-width: 320px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
 }

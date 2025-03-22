@@ -1,5 +1,5 @@
 #zen-media-controls-toolbar {
-  --progress-height: 5px;
+  --progress-height: 4px;
   --button-spacing: 2px;
 
   display: flex;
@@ -11,6 +11,23 @@
   .toolbarbutton-1 {
     border-radius: 5px;
     color: white;
+  }
+
+  #zen-media-buttons-hbox {
+    align-items: start;
+    margin-top: -4px;
+    --toolbarbutton-outer-padding: 2px;
+  }
+
+  &:not([can-pip]) {
+    #zen-media-info-vbox {
+      width: calc(100% - 26px);
+      flex-shrink: 0;
+    }
+
+    #zen-media-pip-button {
+      display: none;
+    }
   }
 
   #zen-media-prev-button,
@@ -50,25 +67,49 @@
     &::-moz-range-thumb {
       background: var(--zen-primary-color);
       border: none;
-      width: 14px;
-      height: 14px;
+      width: calc(var(--progress-height) * 2);
+      height: calc(var(--progress-height) * 2);
       border-radius: 50%;
       cursor: pointer;
+      transform: scale(0);
+      transition: transform 0.15s ease-out;
+    }
+
+    &:hover::-moz-range-thumb {
+      transform: scale(1);
     }
   }
 
   &:hover {
-    & #zen-media-main-vbox {
-      gap: 6px;
-    }
-
     .show-on-hover {
       max-height: 50px;
-      margin: 2px 6px;
+      padding: 5px;
       margin-bottom: 0;
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) !important;
+      pointer-events: auto;
     }
+  }
+
+  & #zen-media-focus-button::after {
+    content: '';
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    background-repeat: no-repeat;
+    opacity: 1;
+    background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+    top: -70%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+    opacity: 1;
+  }
+
+  &:is(:not(.playing:not([muted])), :hover) #zen-media-focus-button::after {
+    opacity: 0;
   }
 
   #zen-media-focus-button {
@@ -76,46 +117,44 @@
     transition:
       opacity 0.2s ease,
       transform 0.2s ease;
+    position: relative;
 
-    @container (max-width: 185px) {
-      width: 0;
-      height: 0;
-      opacity: 0;
-      padding: 0;
-      transform: translateX(-20px);
-    }
-
-    @container (min-width: 185px) {
-      opacity: 1;
-      transform: translateX(0);
+    & image {
+      &:-moz-broken {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
+        background: color-mix(in srgb, var(--zen-primary-color) 70%, transparent 30%);
+      }
     }
   }
 
-  toolbaritem {
+  & > toolbaritem {
+    --zen-media-control-bg: light-dark(rgba(255, 255, 255, 0.87), rgba(0, 0, 0, 0.87));
     flex-grow: 1;
     padding: 0;
     transition: padding 0.3s ease-out;
     position: absolute;
     left: 0;
     bottom: 0;
-    padding: 4px;
+    padding: 4px 6px;
     border-radius: var(--border-radius-medium);
-    background: light-dark(rgb(255, 255, 255), rgb(11, 11, 11)) !important;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: var(--zen-media-control-bg);
+    backdrop-filter: saturate(3) contrast(2) blur(10px);
     width: 100%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    will-change: transform;
   }
 
   .show-on-hover {
     max-height: 0;
     opacity: 0;
-    overflow: hidden;
-    transform: translateY(5px);
-    margin: 0 6px;
+    transform: translateY(1rem);
+    padding: 0 6px;
+    pointer-events: none;
     transition:
-      max-height 0.1s ease-in-out,
-      opacity 0.1s ease-in-out,
-      transform 0.05s ease-in-out,
-      margin 0.15s ease-in-out;
+      max-height 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      padding 0.2s ease;
   }
 
   #zen-media-current-time,
@@ -124,17 +163,7 @@
     font-size: x-small;
     opacity: 0.7;
     font-weight: 500;
-  }
-}
-
-@keyframes zen-media-controls-show {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -144,34 +173,11 @@
   transition: none;
 
   &:not([hidden]) {
-    animation: zen-media-controls-show 0.2s ease-out;
     display: flex;
     height: 2.5rem;
     overflow: visible;
     position: relative;
     z-index: 2;
-  }
-}
-
-#zen-media-service-title,
-#zen-media-title,
-#zen-media-artist {
-  white-space: nowrap;
-  width: 0;
-  margin-left: 0;
-}
-
-#zen-media-service-title {
-  align-self: center;
-  font-size: 13px;
-  margin-left: 6px;
-
-  & label {
-    margin: 0;
-  }
-
-  & .tld {
-    opacity: 0.5;
   }
 }
 
@@ -182,66 +188,93 @@
 
 #zen-media-artist {
   opacity: 0.7;
-  font-weight: 500;
   font-size: smaller;
+
+  &:empty {
+    display: none;
+  }
 }
 
 #zen-media-title {
   height: 16px;
   font-size: math;
-  font-weight: bold;
 }
 
 #zen-media-main-vbox,
-#zen-media-service-hbox,
 #zen-media-info-vbox,
 #zen-media-progress-hbox {
   width: 100%;
 }
 
-#zen-media-service-hbox {
-  margin-top: 6px;
-}
-
 #zen-media-info-vbox {
+  #zen-media-controls-toolbar:not([media-position-hidden='true']) & {
+    transition-delay: 0.01s !important;
+  }
+  overflow-x: hidden;
+  overflow-x: visible;
+  white-space: nowrap;
+  /* Overflow inner box shadow from the left to simulate overflow */
+  mask-image: linear-gradient(to left, transparent, var(--zen-media-control-bg) 0.6em);
+  min-width: 1px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 0.6em;
+    background: linear-gradient(to right, var(--zen-media-control-bg) 0%, transparent 100%);
+    pointer-events: none;
+    top: 6px;
+    left: 0;
+    height: calc(100% - 6px);
+    z-index: 1;
+  }
+
   & label {
-    width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    min-height: 16px;
+    margin-left: 0;
+    font-weight: 500;
+    position: relative; /* For the animation */
+
+    &[overflow] {
+      animation: zen-back-and-forth-text 10s infinite ease-in-out;
+    }
   }
 }
 
 #zen-media-main-vbox {
   height: 100%;
   justify-content: space-between;
-  overflow: hidden;
-  transition: gap 0.1s ease-out;
-  transition-delay: 0.1s;
-  gap: 0px;
 }
 
 #zen-media-progress-hbox {
   flex-grow: 1;
   height: 1.1rem;
   align-items: center;
+  padding-top: 0px !important;
+
+  #zen-media-controls-toolbar[media-position-hidden='true'] & {
+    display: none;
+  }
 }
 
 #zen-media-controls-hbox {
   align-items: flex-end;
   justify-content: space-between;
   max-width: 100%;
-  overflow: hidden;
   --toolbarbutton-outer-padding: 0;
 }
 
-#zen-media-service-button {
-  align-items: center;
+#zen-media-info-container {
+  padding-right: 0 !important;
+}
 
-  & image {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
+#zen-media-controls-toolbar[can-pip] {
+  #zen-media-info-vbox {
+    flex-shrink: 1;
+  }
+
+  #zen-media-pip-button {
+    display: flex;
   }
 }
 

@@ -280,8 +280,10 @@ class ZenBrowserManagerSidebar extends ZenDOMOperatedFeature {
     this.close();
   }
 
-  open() {
+  open(id = null) {
     let sidebar = document.getElementById('zen-sidebar-web-panel');
+    if (id) this._currentPanel = id;
+
     sidebar.removeAttribute('hidden');
     this.update();
   }

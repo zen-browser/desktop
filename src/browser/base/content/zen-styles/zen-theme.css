@@ -155,16 +155,16 @@
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: light-dark(rgb(240, 240, 244), #161616);
-  --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #161616);
+  --zen-themed-toolbar-bg: light-dark(rgb(240, 240, 244), #171717);
+  --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
-  --zen-workspace-indicator-height: 45px;
+  --zen-workspace-indicator-height: 48px;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
     @media (-moz-bool-pref: 'zen.widget.windows.acrylic') {
-      --zen-themed-toolbar-bg-transparent: color-mix(in srgb, var(--zen-themed-toolbar-bg) 75%, transparent 25%);
+      --zen-themed-toolbar-bg-transparent: color-mix(in srgb, var(--zen-themed-toolbar-bg) 35%, transparent 65%);
     }
   }
 

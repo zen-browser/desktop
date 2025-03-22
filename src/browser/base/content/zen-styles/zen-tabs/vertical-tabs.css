@@ -108,7 +108,7 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-element-separation) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
   }
 
   & #PanelUI-menu-button {
@@ -152,8 +152,6 @@
 
   min-width: var(--zen-toolbox-min-width);
   margin-top: 0 !important; /* Fix full screen mode */
-
-  padding-bottom: var(--zen-element-separation) !important;
 
   border: none;
   order: 0 !important;
@@ -257,14 +255,29 @@
   }
 
   & .tabbrowser-tab {
-    transition: scale 0.07s ease;
+    &,
+    & .tab-content > image {
+      transition: scale 0.07s ease;
+    }
 
     &[zen-empty-tab] {
       display: none;
     }
 
-    #tabbrowser-tabs:not([movingtab]) &:active {
+    #tabbrowser-tabs:not([movingtab]) &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
+    }
+
+    #tabbrowser-tabs:not([movingtab]) & .tab-content > image:active {
+      scale: 0.92;
+    }
+
+    & .tab-icon-image {
+      &:not([src]),
+      &:-moz-broken {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
+        background: color-mix(in srgb, var(--zen-primary-color) 30%, transparent 70%);
+      }
     }
 
     max-width: unset;
@@ -456,18 +469,11 @@
     margin-top: 0;
   }
 
-  & #zen-workspaces-button[as-button='true'] {
-    width: calc(100% - 10px) !important;
-  }
-
   & .zen-current-workspace-indicator-icon[no-icon='true'] {
     display: none;
   }
 
   & #zen-workspaces-button {
-    margin-left: 2px;
-    margin-right: 2px;
-
     & .zen-workspace-sidebar-icon[no-icon='true'] {
       display: none;
     }
@@ -756,14 +762,6 @@
   }
   & #zen-workspaces-button {
     flex-direction: column;
-    &:not([as-button='true']) {
-      & toolbarbutton {
-        &[active='true']::after {
-          bottom: 50% !important;
-          transform: translateY(50%) !important;
-        }
-      }
-    }
   }
 }
 
@@ -1049,14 +1047,14 @@
 #zen-essentials-container {
   padding-bottom: var(--zen-toolbox-padding);
   overflow: hidden;
-  gap: 3px;
+  gap: calc(var(--zen-toolbox-padding) - 2px);
 }
 
 #zen-essentials-container {
   overflow: hidden;
   transition: max-height 0.3s ease-out;
   opacity: 1;
-  grid-template-columns: repeat(auto-fit, minmax(48px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(49px, auto));
   overflow: hidden;
   scrollbar-width: thin;
   display: grid;
@@ -1174,7 +1172,7 @@
     }
 
     & .titlebar-buttonbox-container {
-      margin-left: calc(-1 * var(--zen-toolbox-max-width)) !important;
+      margin-left: calc(-1 * var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2) !important;
     }
 
     & #zen-appcontent-wrapper {

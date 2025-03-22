@@ -66,6 +66,7 @@
         content/browser/zen-images/layouts/multiple-toolbar.png (content/zen-images/layouts/multiple-toolbar.png)
         content/browser/zen-images/layouts/single-toolbar.png   (content/zen-images/layouts/single-toolbar.png)
         content/browser/zen-images/grain-bg.png                 (content/zen-images/grain-bg.png)
+        content/browser/zen-images/note-indicator.svg           (content/zen-images/note-indicator.svg)
 
         # Actors
         content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (zen-components/actors/ZenThemeMarketplaceParent.sys.mjs)

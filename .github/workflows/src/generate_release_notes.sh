@@ -67,33 +67,38 @@ cat << EOF >> "release_notes.md"
 EOF
 
 generate_checksum() {
-  local file=$1
-  if [ -f "$file" ]; then
-    echo "Generating checksum for $file"
-    sha256sum "$file" | awk '{print $1 "  " $2}' >> "release_notes.md"
-  else
-    echo "Warning: $file not found, skipping checksum"
+  local pattern=$1
+  echo "Generating checksum for $pattern"
+  sha256sum $pattern 2> /dev/null | awk '{sub(".*/", "", $2); print $1 "  " $2}' >> "release_notes.md"
+  if [ ${PIPESTATUS[0]} -ne 0 ]; then
+    echo "Warning: No files found matching $pattern, skipping checksum."
   fi
 }
 
 files=(
-  "./zen.source.tar.zst"
-  "./zen.linux-x86_64.tar.xz"
-  "./zen.linux-aarch64.tar.xz"
-  "./zen-x86_64.AppImage"
-  "./zen-x86_64.AppImage.zsync"
-  "./zen-aarch64.AppImage"
-  "./zen-aarch64.AppImage.zsync"
+  "./zen.source.tar.zst/*"
+  "./zen.linux-x86_64.tar.xz/*"
+  "./zen.linux-aarch64.tar.xz/*"
+  "./zen-x86_64.AppImage/*"
+  "./zen-x86_64.AppImage.zsync/*"
+  "./zen-aarch64.AppImage/*"
+  "./zen-aarch64.AppImage.zsync/*"
   "./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip"
+  "./zen.win-x86_64.zip/*"
   "./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip"
-  "./linux.mar"
-  "./linux-aarch64.mar"
+  "./zen.win-arm64.zip/*"
+  "./linux.mar/*"
+  "./linux-aarch64.mar/*"
   "./.github/workflows/object/windows-x64-signed-x86_64/windows.mar"
+  "./windows.mar/*"
   "./.github/workflows/object/windows-x64-signed-arm64/windows-arm64.mar"
-  "./macos.mar"
+  "./windows-arm64.mar/*"
+  "./macos.mar/*"
   "./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe"
+  "./zen.installer.exe/*"
   "./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe"
-  "./zen.macos-universal.dmg"
+  "./zen.installer-arm64.exe/*"
+  "./zen.macos-universal.dmg/*"
 )
 
 for file in "${files[@]}"; do

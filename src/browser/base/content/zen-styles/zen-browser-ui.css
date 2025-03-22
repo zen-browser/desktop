@@ -109,7 +109,7 @@
 }
 
 #zen-main-app-wrapper {
-  background: transparent;
+  background: var(--zen-themed-toolbar-bg-transparent);
   overflow: hidden;
 
   & > * {

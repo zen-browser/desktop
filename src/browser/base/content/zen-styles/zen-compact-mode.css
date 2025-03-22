@@ -16,10 +16,12 @@
     #zen-tabbox-wrapper {
       /* Remove extra 1px of margine we have to add to the tabbox */
       margin-left: 0 !important;
+      margin-right: 0 !important;
     }
 
     #zen-appcontent-wrapper {
       margin-left: var(--zen-element-separation) !important;
+      margin-right: var(--zen-element-separation) !important;
 
       & #tabbrowser-tabbox {
         margin-left: 0 !important;
@@ -92,7 +94,7 @@
 
       & .browserSidebarContainer {
         margin-left: 0 !important;
-        margin-right: var(--zen-element-separation) !important;
+        margin-right: 0 !important;
       }
     }
 

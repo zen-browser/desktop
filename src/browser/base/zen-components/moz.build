@@ -2,3 +2,10 @@
 BROWSER_CHROME_MANIFESTS += [
     "tests/browser.toml",
 ]
+
+FINAL_TARGET_FILES.actors += [
+    "actors/ZenGlanceChild.sys.mjs",
+    "actors/ZenGlanceParent.sys.mjs",
+    "actors/ZenThemeMarketplaceChild.sys.mjs",
+    "actors/ZenThemeMarketplaceParent.sys.mjs",
+]

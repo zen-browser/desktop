@@ -517,6 +517,8 @@ jobs:
           repository: ./updates-server
 
       - name: Generate Release Notes
+        env:
+          RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: bash .github/workflows/src/generate_release_notes.sh
 
         # If we are on Twilight, we want to just update the Twilight tag's release

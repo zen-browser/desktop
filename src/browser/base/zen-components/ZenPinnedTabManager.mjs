@@ -510,6 +510,10 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
+          let { permitUnload } = selectedTab.linkedBrowser?.permitUnload();
+          if (!permitUnload) {
+            return;
+          }
           this._handleTabSwitch(selectedTab);
           if (behavior.includes('reset')) {
             this._resetTabToStoredState(selectedTab);
@@ -520,8 +524,7 @@
             }
             // Do not unload about:* pages
             if (!selectedTab.linkedBrowser?.currentURI.spec.startsWith('about:')) {
-              gBrowser.explicitUnloadTabs([selectedTab]);
-              selectedTab.removeAttribute('linkedpanel');
+              gZenTabUnloader.explicitUnloadTabs([selectedTab], { permitUnload });
             }
           }
           break;
@@ -831,7 +834,7 @@
     removeTabContainersDragoverClass() {
       this.dragIndicator.remove();
       this._dragIndicator = null;
-      ZenWorkspaces.activeWorkspaceIndicator.removeAttribute('open');
+      ZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
     }
 
     get dragIndicator() {
@@ -891,9 +894,9 @@
       targetTab = targetTab?.group || targetTab;
       if (event.target.closest('.zen-current-workspace-indicator')) {
         this.removeTabContainersDragoverClass();
-        ZenWorkspaces.activeWorkspaceIndicator.setAttribute('open', true);
+        ZenWorkspaces.activeWorkspaceIndicator?.setAttribute('open', true);
       } else {
-        ZenWorkspaces.activeWorkspaceIndicator.removeAttribute('open');
+        ZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
       }
 
       // If there's no valid target tab, nothing to do

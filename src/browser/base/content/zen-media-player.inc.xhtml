@@ -5,30 +5,30 @@
   hidden="true">
   <toolbaritem>
     <vbox id="zen-media-main-vbox">
-      <hbox id="zen-media-service-hbox" class="show-on-hover">
-        <hbox id="zen-media-service-button">
-          <image/>
+      <vbox>
+        <hbox id="zen-media-info-container" class="show-on-hover">
+          <vbox id="zen-media-info-vbox">
+            <label id="zen-media-title" fadein="true"/>
+            <label id="zen-media-artist" fadein="true"/>
+          </vbox>
+          <hbox id="zen-media-buttons-hbox">
+            <toolbarbutton id="zen-media-pip-button"
+              class="toolbarbutton-1"
+              oncommand="gZenMediaController.onMediaPip();" />
+            <toolbarbutton id="zen-media-close-button"
+              class="toolbarbutton-1"
+              oncommand="gZenMediaController.onControllerClose();" />
+          </hbox>
         </hbox>
-        <hbox id="zen-media-service-title" fadein="true">
-          <label class="service" />
-          <label class="tld" />
+        <hbox id="zen-media-progress-hbox"  class="show-on-hover">
+          <label id="zen-media-current-time">0:00</label>
+          <html:input type="range" id="zen-media-progress-bar"
+            value="0" min="0" max="100" step="0.1"
+            oninput="gZenMediaController.onMediaSeekDrag(event);"
+            onchange="gZenMediaController.onMediaSeekComplete(event);"/>
+          <label id="zen-media-duration">0:00</label>
         </hbox>
-      </hbox>
-      
-      <vbox id="zen-media-info-vbox" class="show-on-hover">
-        <label id="zen-media-title" fadein="true"/>
-        <label id="zen-media-artist" fadein="true"/>
       </vbox>
-
-      <hbox id="zen-media-progress-hbox"  class="show-on-hover">
-        <label id="zen-media-current-time">0:00</label>
-        <html:input type="range" id="zen-media-progress-bar" 
-          value="0" min="0" max="100" step="0.1"
-          oninput="gZenMediaController.onMediaSeekDrag(event);"
-          onchange="gZenMediaController.onMediaSeekComplete(event);"/>
-        <label id="zen-media-duration">0:00</label>
-      </hbox>
-      
       <hbox id="zen-media-controls-hbox">
         <toolbarbutton id="zen-media-focus-button"
           class="toolbarbutton-1"

@@ -49,9 +49,13 @@ class SplitNode extends SplitLeafNode {
     return this._children;
   }
 
-  addChild(child) {
+  addChild(child, prepend = true) {
     child.parent = this;
-    this._children.unshift(child);
+    if (prepend) {
+      this._children.unshift(child);
+    } else {
+      this._children.push(child);
+    }
   }
 }
 
@@ -226,11 +230,13 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       const halfWidth = panelsWidth / 2;
       const side = event.clientX > halfWidth ? 'right' : 'left';
       this.fakeBrowser = document.createXULElement('vbox');
-      this.fakeBrowser.addEventListener('dragleave', this.onBrowserDragEndToSplit);
       window.addEventListener('dragend', this.onBrowserDragEndToSplit, { once: true });
       const padding = Services.prefs.getIntPref('zen.theme.content-element-separation', 0);
       this.fakeBrowser.setAttribute('flex', '1');
       this.fakeBrowser.id = 'zen-split-view-fake-browser';
+      if (oldTab.splitView) {
+        this.fakeBrowser.setAttribute('has-split-view', 'true');
+      }
       gBrowser.tabbox.appendChild(this.fakeBrowser);
       this.fakeBrowser.style.setProperty('--zen-split-view-fake-icon', `url(${draggedTab.getAttribute('image')})`);
       draggedTab._visuallySelected = true;
@@ -270,6 +276,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       ]);
       if (this._finishAllAnimatingPromise) {
         this._finishAllAnimatingPromise.then(() => {
+          this.fakeBrowser.addEventListener('dragleave', this.onBrowserDragEndToSplit);
           this._canDrop = true;
           draggedTab._visuallySelected = true;
         });
@@ -988,10 +995,10 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     this.activateSplitView(splitData);
   }
 
-  addTabToSplit(tab, splitNode) {
+  addTabToSplit(tab, splitNode, prepend = true) {
     const reduce = splitNode.children.length / (splitNode.children.length + 1);
     splitNode.children.forEach((c) => (c.sizeInParent *= reduce));
-    splitNode.addChild(new SplitLeafNode(tab, (1 - reduce) * 100));
+    splitNode.addChild(new SplitLeafNode(tab, (1 - reduce) * 100), prepend);
   }
 
   /**
@@ -1667,7 +1674,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
             if (parentNode.direction !== splitDirection) {
               this.splitIntoNode(droppedOnSplitNode, new SplitLeafNode(draggedTab, 50), hoverSide, 0.5);
             } else {
-              this.addTabToSplit(draggedTab, parentNode);
+              this.addTabToSplit(draggedTab, parentNode, /* prepend = */ hoverSide === 'left' || hoverSide === 'top');
             }
           } else {
             this.addTabToSplit(draggedTab, group.layoutTree);

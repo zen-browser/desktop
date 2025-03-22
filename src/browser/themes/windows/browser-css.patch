@@ -1,8 +1,15 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index f49604e53780763b9aa19897458c45f0be6cbc9b..aa9da99641ba4a3b7f67a27acbbf6c75c1346ced 100644
+index f49604e53780763b9aa19897458c45f0be6cbc9b..5ea9098a9b689470ef4ddfea91069cd23391d020 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
-@@ -47,7 +47,7 @@
+@@ -40,14 +40,13 @@
+          * override these on the tabs toolbar because the accent color is
+          * arbitrary, so the hardcoded colors from browser-custom-colors might
+          * not provide sufficient contrast. */
+-        --toolbarbutton-icon-fill: currentColor;
+         --toolbarbutton-hover-background: color-mix(in srgb, currentColor 17%, transparent);
+         --toolbarbutton-active-background: color-mix(in srgb, currentColor 30%, transparent);
+       }
      }
  
      &[sizemode="normal"] #navigator-toolbox {

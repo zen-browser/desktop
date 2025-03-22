@@ -945,11 +945,6 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: 'zen.workspaces.show-icon-strip',
-    type: 'bool',
-    default: true,
-  },
-  {
     id: 'zen.tab-unloader.enabled',
     type: 'bool',
     default: true,
@@ -963,11 +958,6 @@ Preferences.addAll([
     id: 'zen.tab-unloader.timeout-minutes',
     type: 'int',
     default: 10,
-  },
-  {
-    id: 'zen.workspaces.hide-deactivated-workspaces',
-    type: 'bool',
-    default: true,
   },
   {
     id: 'zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url',

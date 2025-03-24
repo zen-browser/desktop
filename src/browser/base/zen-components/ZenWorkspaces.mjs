@@ -2409,6 +2409,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
     this._creatingNewWorkspace = true;
     gNavToolbox.style.zIndex = -1;
+    document.getElementById('zen-sidebar-splitter').style.setProperty('min-width', 'var(--zen-element-separation)', 'important');
     await Promise.all([
       gZenUIManager.motion.animate(elementsToAnimate, {
         transform: ['scale(1)', 'scale(0.8)'],
@@ -2425,7 +2426,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       ),
       this.createAndSaveWorkspace()
     ]);
-    const form = window.MozXULElement.parseXULToFragment(`
+    this._createWorkspcaeForm = window.MozXULElement.parseXULToFragment(`
       <hbox id="zen-workspace-create-form-wrapper">
         <vbox id="zen-workspace-create-form">
           <vbox>
@@ -2441,5 +2442,6 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
         </vbox>
       </hbox>
     `);
+    gBrowser.tabpanels.appendChild(form);
   }
 })();

@@ -489,3 +489,14 @@
 #zen-current-workspace-indicator-container[hidden='true'] {
   display: none !important;
 }
+
+#zen-workspace-create-form-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

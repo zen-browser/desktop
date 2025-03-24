@@ -1913,7 +1913,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     return window;
   }
 
-  async createAndSaveWorkspace(name = 'New Workspace', isDefault = false, icon = undefined, dontChange = false) {
+  async createAndSaveWorkspace(name = 'Space', isDefault = false, icon = undefined, dontChange = false) {
     if (!this.workspaceEnabled) {
       return;
     }
@@ -2394,5 +2394,52 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
       parent.style.setProperty('--zen-overflowed-workspace-button-width', `${maxWidth}%`);
       this._processingResize = false;
     });
+  }
+
+  async openCreateForm() {
+    window.docShell.treeOwner
+          .QueryInterface(Ci.nsIInterfaceRequestor)
+          .getInterface(Ci.nsIAppWindow)
+          .rollupAllPopups();
+    this.selectEmptyTab();
+    const sidebarWidth = gNavToolbox.style.getPropertyValue('--actual-zen-sidebar-width');
+    let elementsToAnimate = [gNavToolbox];
+    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
+      elementsToAnimate.push(gURLBar.textbox);
+    }
+    this._creatingNewWorkspace = true;
+    gNavToolbox.style.zIndex = -1;
+    await Promise.all([
+      gZenUIManager.motion.animate(elementsToAnimate, {
+        transform: ['scale(1)', 'scale(0.8)'],
+        opacity: [1, 0],
+      }),
+      gZenUIManager.motion.animate(
+        gBrowser.tabpanels,
+        {
+          marginLeft: ['0px', '-' + sidebarWidth],
+        },
+        {
+          delay: 0.2,
+        }
+      ),
+      this.createAndSaveWorkspace()
+    ]);
+    const form = window.MozXULElement.parseXULToFragment(`
+      <hbox id="zen-workspace-create-form-wrapper">
+        <vbox id="zen-workspace-create-form">
+          <vbox>
+            <label id="zen-workspace-create-form-title" data-l10n-id="zen-workspace-create-form-title" />
+            <description data-l10n-id="zen-workspace-create-form-description" />
+          </vbox>
+          <vbox>
+            <hbox class="PanelUI-zen-workspaces-creation-wraper">
+              <hbox class="PanelUI-zen-workspaces-icons-container create" onclick="ZenWorkspaces.onWorkspaceIconContainerClick(event);"></hbox>
+              <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" oninput="ZenWorkspaces.onWorkspaceCreationNameChange(this);" />
+            </hbox>
+          </vbox>
+        </vbox>
+      </hbox>
+    `);
   }
 })();

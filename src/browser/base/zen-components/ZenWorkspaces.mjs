@@ -2397,10 +2397,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async openCreateForm() {
-    window.docShell.treeOwner
-          .QueryInterface(Ci.nsIInterfaceRequestor)
-          .getInterface(Ci.nsIAppWindow)
-          .rollupAllPopups();
+    window.docShell.treeOwner.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIAppWindow).rollupAllPopups();
     this.selectEmptyTab();
     const sidebarWidth = gNavToolbox.style.getPropertyValue('--actual-zen-sidebar-width');
     let elementsToAnimate = [gNavToolbox];
@@ -2409,7 +2406,9 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
     this._creatingNewWorkspace = true;
     gNavToolbox.style.zIndex = -1;
-    document.getElementById('zen-sidebar-splitter').style.setProperty('min-width', 'var(--zen-element-separation)', 'important');
+    document
+      .getElementById('zen-sidebar-splitter')
+      .style.setProperty('min-width', 'var(--zen-element-separation)', 'important');
     await Promise.all([
       gZenUIManager.motion.animate(elementsToAnimate, {
         transform: ['scale(1)', 'scale(0.8)'],
@@ -2424,7 +2423,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
           delay: 0.2,
         }
       ),
-      this.createAndSaveWorkspace()
+      this.createAndSaveWorkspace(),
     ]);
     this._createWorkspcaeForm = window.MozXULElement.parseXULToFragment(`
       <hbox id="zen-workspace-create-form-wrapper">
@@ -2442,6 +2441,6 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
         </vbox>
       </hbox>
     `);
-    gBrowser.tabpanels.appendChild(form);
+    gBrowser.tabpanels.appendChild(this._createWorkspcaeForm);
   }
 })();

@@ -499,4 +499,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  & .PanelUI-zen-workspaces-creation-wraper {
+    border-radius: 5px;
+    border: 1px solid var(--zen-colors-border);
+
+    margin-top: 10px;
+    background: var(--input-bgcolor, Field);
+
+    & .PanelUI-zen-workspaces-icons-container {
+      padding: 10px 0;
+      min-width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--zen-colors-border);
+      margin-right: 2px;
+    }
+
+    & html|input {
+      border: none;
+      outline: none !important;
+      width: 100%;
+    }
+  }
 }

@@ -1,0 +1,41 @@
+diff --git a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
+index bb02701730daf2306a6d4ca0086650bc3185bce2..f1c7355f2832dfde4b1288186c402cf25d617a64 100644
+--- a/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderTopSites.sys.mjs
+@@ -168,6 +168,10 @@ class ProviderTopSites extends UrlbarProvider {
+       );
+     }
+ 
++    // Store options to avoid repeatedly calling getBoolPref.
++    const showPinnedResults = Services.prefs.getBoolPref("zen.urlbar.show-pinned");
++    const showSponsoredResults = Services.prefs.getBoolPref("zen.urlbar.show-sponsored");
++
+     // We usually respect maxRichResults, though we never show a number of Top
+     // Sites greater than what is visible in the New Tab Page, because the
+     // additional ones couldn't be managed from the page.
+@@ -175,7 +179,24 @@ class ProviderTopSites extends UrlbarProvider {
+       lazy.UrlbarPrefs.get("maxRichResults"),
+       lazy.TOP_SITES_MAX_SITES_PER_ROW * this.topSitesRows
+     );
+-    sites = sites.slice(0, numTopSites);
++
++    sites = sites
++      // First we filter out pinned and sponsored results
++      .filter(link => {
++        const isPinned = !!link.isPinned;
++        const isSponsored = !!link.sponsored_position;
++        // Check if we should show pinned results.
++        if (isPinned && !showPinnedResults) {
++          return false;
++        }
++        // Check if we should show sponsored results.
++        if (isSponsored && !showSponsoredResults) {
++          return false;
++        }
++        return true;
++      })
++      // Then we slice the result to the max limit
++      .slice(0, numTopSites);
+ 
+     let index = 1;
+     sites = sites.map(link => {

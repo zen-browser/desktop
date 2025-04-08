@@ -155,6 +155,9 @@
   flex-direction: row;
   position: relative;
   gap: var(--zen-element-separation);
+  :root[inDOMFullscreen] & {
+    gap: 0;
+  }
 }
 
 @media not (-moz-platform: macos) {

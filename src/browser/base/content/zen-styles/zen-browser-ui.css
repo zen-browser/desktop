@@ -150,7 +150,7 @@
   }
 }
 
-#tabbrowser-tabbox {
+:root:not([inDOMFullscreen='true']) #tabbrowser-tabbox {
   display: flex;
   flex-direction: row;
   position: relative;

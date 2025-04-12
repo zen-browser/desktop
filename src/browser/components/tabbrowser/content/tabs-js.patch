@@ -52,8 +52,8 @@ index 0fbdbf3aefc467880e6b0bae2615cb145735cb0f..0d3919b288afefb05e3ec54ddfa90f00
  
        this._tabDropIndicator.hidden = true;
        event.stopPropagation();
-+      if (draggedTab?.hasAttribute("zen-has-splitted")) {
-+        draggedTab.removeAttribute("zen-has-splitted");
++      if (draggedTab?.hasAttribute("zen-has-split")) {
++        draggedTab.removeAttribute("zen-has-split");
 +        draggedTab._visuallySelected = false;
 +      }
 +      if (draggedTab && dropEffect == "move") {

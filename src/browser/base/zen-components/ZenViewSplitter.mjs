@@ -323,7 +323,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     }
     this.fakeBrowser.classList.add('fade-out');
     const side = this.fakeBrowser.getAttribute('side');
-    if (this._draggingTab) this._draggingTab.setAttribute('zen-has-splitted', 'true');
+    if (this._draggingTab) this._draggingTab.setAttribute('zen-has-split', 'true');
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
     try {
@@ -449,10 +449,10 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     if (this.rearrangeViewEnabled) return;
     this.rearrangeViewEnabled = true;
     this.rearrangeViewView = this.currentView;
-    if (!this._thumnailCanvas) {
-      this._thumnailCanvas = document.createElement('canvas');
-      this._thumnailCanvas.width = 280 * devicePixelRatio;
-      this._thumnailCanvas.height = 140 * devicePixelRatio;
+    if (!this._thumbnailCanvas) {
+      this._thumbnailCanvas = document.createElement('canvas');
+      this._thumbnailCanvas.width = 280 * devicePixelRatio;
+      this._thumbnailCanvas.height = 140 * devicePixelRatio;
     }
 
     const browsers = this._data[this.currentView].tabs.map((t) => t.linkedBrowser);

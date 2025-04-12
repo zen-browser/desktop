@@ -772,7 +772,7 @@ class ZenKeyboardShortcutsVersioner {
 
   migrateIfNeeded(data) {
     if (!data) {
-      // Rebuid the shortcuts, just in case
+      // Rebuild the shortcuts, just in case
       this.version = 0;
     }
 
@@ -815,7 +815,7 @@ class ZenKeyboardShortcutsVersioner {
   migrate(data, version) {
     if (version < 1) {
       // Migrate from 0 to 1
-      // Here, we do a complet reset of the shortcuts,
+      // Here, we do a complete reset of the shortcuts,
       // since nothing seems to work properly.
       data = ZenKeyboardShortcutsLoader.zenGetDefaultShortcuts();
     }
@@ -1112,7 +1112,7 @@ var gZenKeyboardShortcutsManager = {
       const keyset = this.getZenKeyset(browser);
       keyset.innerHTML = '';
 
-      // We dont check this anymore since we are skiping internal keys
+      // We dont check this anymore since we are skipping internal keys
       //if (mainKeyset.children.length > 0) {
       //  throw new Error('Child list not empty');
       //}

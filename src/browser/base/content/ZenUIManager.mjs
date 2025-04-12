@@ -108,7 +108,7 @@ var gZenUIManager = {
     return Services.uuid.generateUUID().toString();
   },
 
-  toogleBookmarksSidebar() {
+  toggleBookmarksSidebar() {
     const button = document.getElementById('zen-bookmark-button');
     SidebarController.toggle('viewBookmarksSidebar', button);
   },
@@ -514,7 +514,7 @@ var gZenVerticalTabsManager = {
         gBrowser.tabContainer.removeAttribute('expanded');
       }
 
-      const appContentNavbarContaienr = document.getElementById('zen-appcontent-navbar-container');
+      const appContentNavbarContainer = document.getElementById('zen-appcontent-navbar-container');
       let shouldHide = false;
       if (
         ((!isRightSide && this.isWindowsStyledButtons) ||
@@ -522,10 +522,10 @@ var gZenVerticalTabsManager = {
           (isCompactMode && isSingleToolbar && this.isWindowsStyledButtons)) &&
         isSingleToolbar
       ) {
-        appContentNavbarContaienr.setAttribute('should-hide', 'true');
+        appContentNavbarContainer.setAttribute('should-hide', 'true');
         shouldHide = true;
       } else {
-        appContentNavbarContaienr.removeAttribute('should-hide');
+        appContentNavbarContainer.removeAttribute('should-hide');
       }
 
       // Check if the sidebar is in hover mode
@@ -556,7 +556,7 @@ var gZenVerticalTabsManager = {
         panelUIButton.setAttribute('overflows', 'false');
         buttonsTarget.parentElement.append(document.getElementById('nav-bar-overflow-button'));
         if (this.isWindowsStyledButtons && !doNotChangeWindowButtons) {
-          appContentNavbarContaienr.append(windowButtons);
+          appContentNavbarContainer.append(windowButtons);
         }
         if (isCompactMode) {
           titlebar.prepend(navBar);
@@ -617,7 +617,7 @@ var gZenVerticalTabsManager = {
       } else if (!isSingleToolbar && !isCompactMode) {
         if (this.isWindowsStyledButtons) {
           if (isRightSide) {
-            appContentNavbarContaienr.append(windowButtons);
+            appContentNavbarContainer.append(windowButtons);
           } else {
             navBar.append(windowButtons);
           }
@@ -638,7 +638,7 @@ var gZenVerticalTabsManager = {
       }
 
       if (shouldHide) {
-        appContentNavbarContaienr.append(windowButtons);
+        appContentNavbarContainer.append(windowButtons);
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);

@@ -114,7 +114,7 @@ SignAndPackage arm64
 SignAndPackage x86_64
 
 echo "All artifacts signed and packaged, ready for release!"
-echo "Commiting the changes to the repository"
+echo "Committing the changes to the repository"
 cd windsign-temp\windows-binaries
 git add .
 git commit -m "Sign and package windows artifacts"

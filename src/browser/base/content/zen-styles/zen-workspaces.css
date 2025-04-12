@@ -221,7 +221,7 @@
 .PanelUI-zen-workspaces-user-create {
   height: 100%;
 
-  .PanelUI-zen-workspaces-creation-wraper {
+  .PanelUI-zen-workspaces-creation-wrapper {
     border-radius: 5px;
     border: 1px solid var(--zen-colors-border);
 

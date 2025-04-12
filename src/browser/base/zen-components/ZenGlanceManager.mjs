@@ -275,7 +275,7 @@
         index: this.getTabPosition(this.#currentParentTab),
       });
 
-      let quikcCloseZen = false;
+      let quickCloseZen = false;
       if (onTabClose) {
         // Create new tab if no more ex
         if (gBrowser.tabs.length === 1) {
@@ -324,7 +324,7 @@
             return;
           }
 
-          if (!onTabClose || quikcCloseZen) {
+          if (!onTabClose || quickCloseZen) {
             this.quickCloseGlance({ clearID: false });
           }
           this.overlay.removeAttribute('fade-out');
@@ -489,7 +489,7 @@
           return false;
         }
         this.closeGlance({ onTabClose: true, setNewID: isDifferent ? oldGlanceID : null, isDifferent });
-        // only keep continueing tab close if we are not on the currently selected tab
+        // only keep continuing tab close if we are not on the currently selected tab
         return !isDifferent;
       }
       return false;
@@ -603,7 +603,7 @@
         return;
       } else if (activationMethod === 'meta' && !event.metaKey) {
         return;
-      } else if (activationMethod === 'mantain' || typeof activationMethod === 'undefined') {
+      } else if (activationMethod === 'maintain' || typeof activationMethod === 'undefined') {
         return;
       }
 

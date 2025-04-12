@@ -20,10 +20,10 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
-+    this.document.getElementById("navigator-toolbox").setAttribute("supress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
++    this.document.getElementById("navigator-toolbox").setAttribute("suppress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
      this.inputField.select();
 +    this.document.ownerGlobal.setTimeout(() => {
-+      this.document.getElementById("navigator-toolbox").removeAttribute("supress-primary-adjustment");
++      this.document.getElementById("navigator-toolbox").removeAttribute("suppress-primary-adjustment");
 +    }, 100);
      this._suppressPrimaryAdjustment = false;
    }
@@ -44,10 +44,10 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
        }
      }
 -
-+    this.document.getElementById("navigator-toolbox").setAttribute("supress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
++    this.document.getElementById("navigator-toolbox").setAttribute("suppress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
      this.handleNavigation({ event });
 +    this.document.ownerGlobal.setTimeout(() => {
-+      this.document.getElementById("navigator-toolbox").removeAttribute("supress-primary-adjustment");
++      this.document.getElementById("navigator-toolbox").removeAttribute("suppress-primary-adjustment");
 +    }, 200);
    }
  

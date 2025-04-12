@@ -278,7 +278,7 @@
             right 0.25s var(--zen-compact-mode-func);
           opacity: 1;
 
-          &:not([supress-primary-adjustment='true']) {
+          &:not([suppress-primary-adjustment='true']) {
             left: calc(var(--zen-element-separation) / -2);
             :root[zen-right-side='true'] & {
               right: calc(var(--zen-element-separation) / -2);

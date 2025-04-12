@@ -41,7 +41,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
   async initiateGlance() {
     this.mouseIsDown = false;
     const activationMethod = await this.getActivationMethod();
-    if (activationMethod === 'mantain') {
+    if (activationMethod === 'maintain') {
       this.contentWindow.addEventListener('mousedown', this.mouseDownListener);
       this.contentWindow.addEventListener('mouseup', this.mouseUpListener);
 
@@ -111,7 +111,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
-    } else if (activationMethod === 'mantain' || typeof activationMethod === 'undefined') {
+    } else if (activationMethod === 'maintain' || typeof activationMethod === 'undefined') {
       return;
     }
     // get closest A element

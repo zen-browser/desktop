@@ -189,7 +189,7 @@
               </vbox>
               <vbox id="zen-rice-share-success" hidden="true">
                 <h1 data-l10n-id="zen-rice-share-success" />
-                <p data-l10n-id="zen-rice-share-succes-details" />
+                <p data-l10n-id="zen-rice-share-success-details" />
                 <label data-l10n-id="zen-rice-share-success-link" />
                 <html:input type="text" readonly="true" id="zen-rice-share-success-link" onclick="this.select()" />
                 <html:moz-button-group class="panel-footer">

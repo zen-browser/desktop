@@ -355,7 +355,7 @@
         this.dots.push({
           ID: id,
           element: dot,
-          position: { x: null, y: null }, // at some point possition should instead be stored as percentege just so that the size of the color picker does not matter.
+          position: { x: null, y: null }, // at some point position should instead be stored as percentege just so that the size of the color picker does not matter.
         });
       }
       if (!fromWorkspace) {
@@ -807,7 +807,7 @@
         event.preventDefault();
         const rect = this.panel.querySelector('.zen-theme-picker-gradient').getBoundingClientRect();
         const padding = 20; // each side
-        // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
+        // do NOT let the ball be dragged outside of an imaginary circle. You can drag it anywhere inside the circle
         // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
         // should be placed on the edge of the circle. If it's inside the circle, then the ball just follows the mouse
 
@@ -1070,7 +1070,7 @@
         const textureWrapperWidth = textureSelectWrapper.getBoundingClientRect().width;
         // Dont show when hidden
         if (textureWrapperWidth) {
-          // rotate and trasnform relative to the wrapper width depending on the texture value
+          // rotate and transform relative to the wrapper width depending on the texture value
           const textureValue = this.currentTexture;
           const textureHandler = browser.gZenThemePicker._textureHandler;
           const rotation = textureValue * 360 - 90;

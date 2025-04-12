@@ -10,7 +10,7 @@ index 352de44dda36e3f6672eb353f42978ede0cd2681..0fde717eaf755526ec65b676c43bd34c
 +      return;
 +    }
 +
-     // A notification intended to be useful for modular peformance tracking
+     // A notification intended to be useful for modular performance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
 @@ -400,6 +404,10 @@ var BrowserCommands = {

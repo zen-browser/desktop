@@ -6,13 +6,13 @@ export class ZenThemeMarketplaceChild extends JSWindowActorChild {
   handleEvent(event) {
     switch (event.type) {
       case 'DOMContentLoaded':
-        this.initalizeZenAPI(event);
+        this.initializeZenAPI(event);
         break;
       default:
     }
   }
 
-  initalizeZenAPI(event) {
+  initializeZenAPI(event) {
     const verifier = this.contentWindow.document.querySelector('meta[name="zen-content-verified"]');
 
     if (verifier) {

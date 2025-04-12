@@ -227,7 +227,7 @@ index 5f406ea5d09273c9b70b84eee24c6267f88692f8..cdffd1cb1b7744aecc56a8ce57b115e2
 +      }
 +
        if (!UserInteraction.running("browser.tabs.opening", window)) {
-         UserInteraction.start("browser.tabs.opening", "initting", window);
+         UserInteraction.start("browser.tabs.opening", "initing", window);
        }
 @@ -2728,6 +2807,16 @@
            noInitialLabel,

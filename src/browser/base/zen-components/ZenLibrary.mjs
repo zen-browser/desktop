@@ -1,4 +1,3 @@
-
 {
   class ZenLibrary {
     constructor() {
@@ -26,8 +25,28 @@
       this.isOpen = false;
     }
 
-    animateLibrary() {
+    toggle() {
+      this.isOpen = !this.isOpen;
+    }
+
+    async animateLibrary() {
       window.docShell.treeOwner.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIAppWindow).rollupAllPopups();
+
+      let elementsToAnimate = [gNavToolbox];
+      if (gZenVerticalTabsManager._hasSetSingleToolbar) {
+        elementsToAnimate.push(gURLBar.textbox);
+      }
+      if (this.isOpen) {
+        await gZenUIManager.motion.animate(elementsToAnimate, {
+          transform: ['scale(1)', 'scale(0.8)'],
+          opacity: [1, 0],
+        });
+      } else {
+        await gZenUIManager.motion.animate(elementsToAnimate, {
+          transform: ['scale(0.8)', 'scale(1)'],
+          opacity: [0, 1],
+        });
+      }
     }
   }
 

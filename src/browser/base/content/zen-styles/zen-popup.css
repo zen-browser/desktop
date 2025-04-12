@@ -74,7 +74,7 @@ panel {
   padding-inline-start: calc(16px + var(--uc-arrowpanel-menuicon-margin-inline));
 }
 
-/* firefox profile avatar in appmenu */
+/* Firefox profile avatar in appmenu */
 #appMenu-fxa-label2::before {
   content: '';
   display: -moz-box;

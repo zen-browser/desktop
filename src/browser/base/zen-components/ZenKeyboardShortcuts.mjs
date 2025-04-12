@@ -394,7 +394,7 @@ class KeyShortcut {
     }
     key.setAttribute('group', this.#group);
 
-    // note to "mr. macos": We add the `zen-` prefix because firefox hasnt been built with the
+    // note to "mr. macos": We add the `zen-` prefix because Firefox hasnt been built with the
     // shortcuts in mind, it will simply just override the shortcuts with whatever the default is.
     //  note that this l10n id is not used for actually translating the key's label, but rather to
     //  identify the default keybinds.

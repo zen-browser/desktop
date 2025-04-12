@@ -118,7 +118,7 @@ To upgrade the browser to a newer version, use the embedded update functionality
 
 ## 👨‍💻 Development and Contributing
 
-Some components used by @zen-browser as an attempt to make firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/desktop/tree/dev/src/browser/base/zen-components).
+Some components used by @zen-browser as an attempt to make Firefox forks a better place, and for other to enjoy the beauty of OSS. You can find them [here](https://github.com/zen-browser/desktop/tree/dev/src/browser/base/zen-components).
 
 #### `Run Locally`
 

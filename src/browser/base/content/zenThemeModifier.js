@@ -19,7 +19,7 @@ const kZenMaxElementSeparation = 12;
  * because we need a way to apply the accent color without having to worry about
  * shadow roots not inheriting the accent color.
  *
- * note: It must be a firefox builtin page with access to the browser's configuration
+ * note: It must be a Firefox builtin page with access to the browser's configuration
  *  and services.
  */
 var ZenThemeModifier = {

@@ -104,7 +104,7 @@
 }
 
 #nav-bar {
-  /* For some reason, firefox adds a really small border to the top of the nav-bar */
+  /* For some reason, Firefox adds a really small border to the top of the nav-bar */
   border-top: none !important;
 }
 

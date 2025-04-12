@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 0d0a559a6473149b50f4bf18d059e86907c4acd3..25ad798eb26f04262d069fdaf1f3fb00adec9807 100644
+index 0d0a559a6473149b50f4bf18d059e86907c4acd3..7f271dacadaabc569cedd437ee4b3dc52900100b 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -26,6 +26,7 @@
@@ -27,18 +27,16 @@ index 0d0a559a6473149b50f4bf18d059e86907c4acd3..25ad798eb26f04262d069fdaf1f3fb00
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -169,9 +173,11 @@
+@@ -169,9 +173,12 @@
      </vbox>
    </html:template>
  
--#include navigator-toolbox.inc.xhtml
--
--#include browser-box.inc.xhtml
 +  <hbox id="zen-main-app-wrapper" flex="1" persist="zen-compact-mode">
-+    <vbox id="zen-toast-container"></vbox>
-+    #include navigator-toolbox.inc.xhtml
-+    #include browser-box.inc.xhtml
-+  </hbox>
++#include zen-app-wrapper-content.inc.xhtml
+ #include navigator-toolbox.inc.xhtml
+ 
+ #include browser-box.inc.xhtml
++  </hbox> <!-- zen-main-app-wrapper -->
  
    <html:template id="customizationPanel">
      <box id="customization-container" flex="1" hidden="true"><![CDATA[

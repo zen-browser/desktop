@@ -110,10 +110,6 @@
   list-style-image: url('chevron.svg') !important;
 }
 
-#zen-rice-share-options .options-header {
-  list-style-image: url('arrow-right.svg');
-}
-
 #PanelUI-menu-button,
 #appMenu-more-button2,
 #zen-workspace-actions-menu-icon {

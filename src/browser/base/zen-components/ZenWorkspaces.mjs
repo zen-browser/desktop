@@ -1926,7 +1926,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     return window;
   }
 
-  async createAndSaveWorkspace(name = 'New Workspace', isDefault = false, icon = undefined, dontChange = false) {
+  async createAndSaveWorkspace(name = 'Space', isDefault = false, icon = undefined, dontChange = false) {
     if (!this.workspaceEnabled) {
       return;
     }

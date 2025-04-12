@@ -22,9 +22,9 @@
         content/browser/zen-components/ZenGlanceManager.mjs     (zen-components/ZenGlanceManager.mjs)
         content/browser/zen-components/ZenFolders.mjs           (zen-components/ZenFolders.mjs)
         content/browser/zen-components/ZenActorsManager.mjs     (zen-components/ZenActorsManager.mjs)
-        content/browser/zen-components/ZenRices.mjs             (zen-components/ZenRices.mjs)
         content/browser/zen-components/ZenEmojies.mjs           (zen-components/ZenEmojies.mjs)
         content/browser/zen-components/ZenWelcome.mjs           (zen-components/ZenWelcome.mjs)
+        content/browser/zen-components/ZenLibrary.mjs           (zen-components/ZenLibrary.mjs)
         content/browser/zen-components/ZenMediaController.mjs   (zen-components/ZenMediaController.mjs)
 
         content/browser/zen-styles/zen-theme.css                (content/zen-styles/zen-theme.css)
@@ -46,7 +46,6 @@
         content/browser/zen-styles/zen-urlbar.css               (content/zen-styles/zen-urlbar.css)
         content/browser/zen-styles/zen-popup.css                (content/zen-styles/zen-popup.css)
         content/browser/zen-styles/zen-gradient-generator.css   (content/zen-styles/zen-gradient-generator.css)
-        content/browser/zen-styles/zen-rices.css                (content/zen-styles/zen-rices.css)
         content/browser/zen-styles/zen-branding.css             (content/zen-styles/zen-branding.css)
         content/browser/zen-styles/zen-welcome.css              (content/zen-styles/zen-welcome.css)
         content/browser/zen-styles/zen-media-controls.css       (content/zen-styles/zen-media-controls.css)

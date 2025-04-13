@@ -74,33 +74,3 @@ modules:
         sha256: {flatpak_sha256}
         strip-components: 0
         dest: metadata
-
-
-  - name: libnotify
-    buildsystem: meson
-    config-opts:
-      - -Dtests=false
-      - -Dintrospection=disabled
-      - -Dman=false
-      - -Dgtk_doc=false
-      - -Ddocbook_docs=disabled
-    sources:
-      - type: archive
-        url: https://download.gnome.org/sources/libnotify/0.8/libnotify-0.8.3.tar.xz
-        sha256: ee8f3ef946156ad3406fdf45feedbdcd932dbd211ab4f16f75eba4f36fb2f6c0
-        
-  - name: libspeechd
-    config-opts:
-      - --disable-python
-      - --with-systemdsystemunitdir=''
-      - --disable-rpath
-      - --disable-static
-      - --with-kali=no
-      - --with-baratinoo=no
-      - --with-ibmtts=no
-      - --with-voxin=no
-      - --without-oss
-    sources:
-      - type: archive
-        url: https://github.com/brailcom/speechd/releases/download/0.11.5/speech-dispatcher-0.11.5.tar.gz
-        sha256: 1ce4759ffabbaf1aeb433a5ec0739be0676e9bdfbae9444a7b3be1b2af3ec12b

@@ -1,5 +1,9 @@
 set -ex
 
+if ! [ -z "$ZEN_L10N_CURR_DIR" ]; then
+  cd $ZEN_L10N_CURR_DIR
+fi
+
 CURRENT_DIR=$(pwd)
 
 git config --global init.defaultBranch main

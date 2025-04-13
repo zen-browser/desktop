@@ -64,6 +64,10 @@ var gZenCompactModeManager = {
 
   set preference(value) {
     if (this.preference === value || document.documentElement.hasAttribute('zen-compact-animating')) {
+      if (typeof this._wasInCompactMode !== 'undefined') {
+        // We wont do anything with it anyway, so we remove it
+        delete this._wasInCompactMode;
+      }
       // We dont want the user to be able to spam the button
       return value;
     }
@@ -91,6 +95,11 @@ var gZenCompactModeManager = {
   },
 
   flashSidebarIfNecessary(aInstant = false) {
+    // This function is called after exiting DOM fullscreen mode,
+    // so we do a bit of a hack to re-calculate the URL height
+    if (aInstant) {
+      gZenVerticalTabsManager.recalculateURLBarHeight();
+    }
     if (!aInstant && this.preference && lazyCompactMode.COMPACT_MODE_FLASH_ENABLED && !gZenGlanceManager._animating) {
       this.flashSidebar();
     }
@@ -207,6 +216,10 @@ var gZenCompactModeManager = {
         if (!canAnimate) {
           this.sidebar.removeAttribute('animate');
           document.documentElement.removeAttribute('zen-compact-animating');
+
+          this.getAndApplySidebarWidth({});
+          this._ignoreNextResize = true;
+
           resolve();
           return;
         }
@@ -416,13 +429,6 @@ var gZenCompactModeManager = {
             return;
           }
         }
-
-        // When moving the cursor between the url bar and bookmarks, or in-between bookmarks in the bookmark bar, the
-        // mouseLeave event is triggered without a relatedTarget.
-        // TODO: Experiment with this for some time, see if people still have issues with the hover state
-        //if (event.relatedTarget == null) {
-        //  return;
-        //}
 
         // If it's a child element but not the target, ignore the event
         if (target.contains(event.explicitOriginalTarget) && event.explicitOriginalTarget !== target) {

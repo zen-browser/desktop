@@ -464,8 +464,12 @@
       this.#currentGlanceID = tab.getAttribute('glance-id');
       if (gBrowser.selectedTab === this.#currentParentTab && this.#currentBrowser) {
         const curTab = this.#currentTab;
+        const prevTab = event.detail.previousTab;
         setTimeout(() => {
           gBrowser.selectedTab = curTab;
+          if (prevTab?.linkedBrowser) {
+            prevTab.linkedBrowser.closest('.browserSidebarContainer').classList.remove('deck-selected');
+          }
         }, 0);
       } else if (gBrowser.selectedTab === this.#currentTab) {
         setTimeout(this.onLocationChangeOpenGlance.bind(this), 0);

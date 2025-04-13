@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e1db08a7c 100644
+index 6de4c2ac873b1424abee118a143ac377f26beb80..423e3aab4fd4fff9960caf8b8375d7bfcb90c733 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -67,6 +67,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -52,18 +52,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
    }
  
    /**
-@@ -937,6 +955,10 @@ export class UrlbarInput {
-     // Nullify search mode before setURI so it won't try to restore it.
-     this.searchMode = null;
-     this.setURI(null, true, false, true);
-+    if (this.hasAttribute("zen-floating-urlbar")) {
-+      this.window.gBrowser.selectedBrowser.focus();
-+      return;
-+    }
-     if (this.value && this.focused) {
-       this.select();
-     }
-@@ -1092,7 +1114,11 @@ export class UrlbarInput {
+@@ -1092,7 +1110,11 @@ export class UrlbarInput {
      }
  
      if (!this.#providesSearchMode(result)) {
@@ -76,7 +65,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
      }
  
      this.controller.recordSelectedResult(event, result);
-@@ -2124,6 +2150,10 @@ export class UrlbarInput {
+@@ -2124,6 +2146,10 @@ export class UrlbarInput {
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -87,7 +76,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -2146,6 +2176,11 @@ export class UrlbarInput {
+@@ -2146,6 +2172,11 @@ export class UrlbarInput {
  
      this.setAttribute("breakout-extend", "true");
  
@@ -99,19 +88,27 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -2165,6 +2200,11 @@ export class UrlbarInput {
+@@ -2165,6 +2196,19 @@ export class UrlbarInput {
        return;
      }
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
 +    }
++    
++    // Arc like URLbar: Blur the input on exit
++    this.document.getElementById("navigator-toolbox").setAttribute("supress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
++    this.window.gBrowser.selectedBrowser.focus();
++    this.window.setTimeout(() => {
++      this.document.getElementById("navigator-toolbox").removeAttribute("supress-primary-adjustment");
++    }, 100);
++    
 +    this.removeAttribute("zen-floating-urlbar");
 +
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2997,7 +3037,7 @@ export class UrlbarInput {
+@@ -2997,7 +3041,7 @@ export class UrlbarInput {
     */
    _trimValue(val) {
      let trimmedValue = lazy.UrlbarPrefs.get("trimURLs")
@@ -120,16 +117,18 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -3359,7 +3399,7 @@ export class UrlbarInput {
-     } else {
-       where = lazy.BrowserUtils.whereToOpenLink(event, false, false);
+@@ -3367,6 +3411,10 @@ export class UrlbarInput {
+       }
+       reuseEmpty = true;
      }
--    if (lazy.UrlbarPrefs.get("openintab")) {
-+    if (lazy.UrlbarPrefs.get("openintab") || this.hasAttribute("zen-newtab")) {
-       if (where == "current") {
-         where = "tab";
-       } else if (where == "tab") {
-@@ -3374,6 +3414,9 @@ export class UrlbarInput {
++    if (this.hasAttribute("zen-newtab")) {
++      where = "tab";
++      reuseEmpty = true;
++    }
+     if (
+       where == "tab" &&
+       reuseEmpty &&
+@@ -3374,6 +3422,9 @@ export class UrlbarInput {
      ) {
        where = "current";
      }
@@ -139,7 +138,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
      return where;
    }
  
-@@ -4048,6 +4091,11 @@ export class UrlbarInput {
+@@ -4048,6 +4099,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -151,7 +150,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer ||
-@@ -4119,7 +4167,7 @@ export class UrlbarInput {
+@@ -4119,7 +4175,7 @@ export class UrlbarInput {
        }
      }
  
@@ -160,7 +159,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -4159,9 +4207,12 @@ export class UrlbarInput {
+@@ -4159,9 +4215,12 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -174,7 +173,7 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..3b41d52c8e00860ce9913a334f15f70e
  
          if (
            event.target != this.inputField &&
-@@ -4171,8 +4222,8 @@ export class UrlbarInput {
+@@ -4171,8 +4230,8 @@ export class UrlbarInput {
            break;
          }
  

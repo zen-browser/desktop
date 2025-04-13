@@ -1,0 +1,19 @@
+diff --git a/toolkit/modules/ShortcutUtils.sys.mjs b/toolkit/modules/ShortcutUtils.sys.mjs
+index 360a7dbeeae3899af01945e35d5fe3aa0cb3c562..895d39fe5887ffae9cdbce9576df8b00d4cc8442 100644
+--- a/toolkit/modules/ShortcutUtils.sys.mjs
++++ b/toolkit/modules/ShortcutUtils.sys.mjs
+@@ -382,12 +382,12 @@ export var ShortcutUtils = {
+           return ShortcutUtils.MOVE_TAB_FORWARD;
+         }
+         break;
+-      case event.DOM_VK_LEFT:
++      case event.DOM_VK_UP: // For macOS, make sure if this patch needs to be updated
+         if (accelMetaKey && event.altKey && !event.shiftKey && !event.ctrlKey) {
+           return ShortcutUtils.PREVIOUS_TAB;
+         }
+         break;
+-      case event.DOM_VK_RIGHT:
++      case event.DOM_VK_DOWN: // For macOS, make sure if this patch needs to be updated
+         if (accelMetaKey && event.altKey && !event.shiftKey && !event.ctrlKey) {
+           return ShortcutUtils.NEXT_TAB;
+         }

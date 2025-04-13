@@ -189,7 +189,8 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       !this._lastOpenedTab ||
       (this._lastOpenedTab &&
         this._lastOpenedTab.getAttribute('zen-workspace-id') !== draggedTab.getAttribute('zen-workspace-id') &&
-        !this._lastOpenedTab.hasAttribute('zen-essential'))
+        !this._lastOpenedTab.hasAttribute('zen-essential')) ||
+      draggedTab === this._lastOpenedTab
     ) {
       return;
     }

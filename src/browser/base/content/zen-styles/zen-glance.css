@@ -4,11 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-.browserSidebarContainer:has([zen-glance-selected]),
-.browserSidebarContainer.zen-glance-overlay {
-  visibility: inherit;
-}
-
 #zen-glance-sidebar-container {
   position: absolute;
   display: flex;
@@ -88,18 +83,32 @@
   }
 }
 
+:root[zen-no-padding='true'] .browserSidebarContainer.zen-glance-background {
+  --zen-native-inner-radius: 6px;
+  --zen-element-separation: 6px;
+}
+
+.browserSidebarContainer.zen-glance-background,
+.browserSidebarContainer.zen-glance-overlay .browserContainer {
+  border-radius: var(--zen-native-inner-radius);
+  box-shadow: var(--zen-big-shadow);
+}
+
 .browserSidebarContainer.zen-glance-overlay {
   box-shadow: none !important;
+  visibility: inherit;
+
+  :root[zen-no-padding='true'] & {
+    --zen-native-inner-radius: 0px;
+  }
 
   & .browserContainer {
     background: var(--zen-dialog-background);
     position: fixed;
-    border-radius: var(--zen-native-inner-radius);
     opacity: 0;
     top: 0;
     left: 0;
     flex: unset !important;
-    box-shadow: var(--zen-big-shadow);
 
     &[has-finished-animation='true'] {
       position: relative !important;

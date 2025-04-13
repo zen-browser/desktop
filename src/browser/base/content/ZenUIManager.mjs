@@ -464,6 +464,19 @@ var gZenVerticalTabsManager = {
     }
   },
 
+  recalculateURLBarHeight() {
+    document.getElementById('urlbar').removeAttribute('--urlbar-height');
+    if (!this._hasSetSingleToolbar) {
+      document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
+    } else {
+      try {
+        gURLBar.zenUpdateLayoutBreakout();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  },
+
   _updateEvent({ forCustomizableMode = false, dontRebuildAreas = false } = {}) {
     if (this._isUpdating) {
       return;
@@ -642,16 +655,7 @@ var gZenVerticalTabsManager = {
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);
-      document.getElementById('urlbar').removeAttribute('--urlbar-height');
-      if (!isSingleToolbar) {
-        document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
-      } else {
-        try {
-          gURLBar.zenUpdateLayoutBreakout();
-        } catch (e) {
-          console.error(e);
-        }
-      }
+      this.recalculateURLBarHeight();
 
       // Always move the splitter next to the sidebar
       this.navigatorToolbox.after(document.getElementById('zen-sidebar-splitter'));

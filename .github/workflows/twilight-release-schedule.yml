@@ -14,7 +14,7 @@ on:
         description: 'Use sccache'
         required: false
         type: boolean
-        default: true
+        default: false
 
 jobs:
   twilight-release-schedule:

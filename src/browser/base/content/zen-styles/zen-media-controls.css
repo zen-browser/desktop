@@ -19,6 +19,24 @@
     --toolbarbutton-outer-padding: 2px;
   }
 
+  &:not([media-sharing]) {
+    #media-device-buttons {
+      display: none;
+    }
+  }
+
+  #media-device-buttons {
+    gap: 2px;
+  }
+
+  &[media-sharing] #zen-media-controls-hbox > toolbarbutton:not(:first-child) {
+    display: none;
+
+    #media-device-buttons {
+      display: flex;
+    }
+  }
+
   &:not([can-pip]) {
     #zen-media-info-vbox {
       width: calc(100% - 26px);
@@ -206,7 +224,7 @@
 }
 
 #zen-media-info-vbox {
-  #zen-media-controls-toolbar:not([media-position-hidden='true']) & {
+  #zen-media-controls-toolbar:not([media-position-hidden]) & {
     transition-delay: 0.01s !important;
   }
   overflow-x: hidden;
@@ -251,7 +269,7 @@
   align-items: center;
   padding-top: 0px !important;
 
-  #zen-media-controls-toolbar[media-position-hidden='true'] & {
+  #zen-media-controls-toolbar[media-position-hidden] & {
     display: none;
   }
 }

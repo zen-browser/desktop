@@ -137,10 +137,6 @@
         & #urlbar[open][zen-floating-urlbar='true'] {
           transition: left 0.05s ease;
           visibility: visible;
-
-          #navigator-toolbox:has(&) {
-            opacity: 1;
-          }
         }
 
         &::before {
@@ -276,9 +272,9 @@
           transition:
             left 0.25s var(--zen-compact-mode-func),
             right 0.25s var(--zen-compact-mode-func);
-          opacity: 1;
 
           &:not([suppress-primary-adjustment='true']) {
+            opacity: 1;
             left: calc(var(--zen-element-separation) / -2);
             :root[zen-right-side='true'] & {
               right: calc(var(--zen-element-separation) / -2);

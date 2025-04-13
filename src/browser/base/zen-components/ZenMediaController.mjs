@@ -27,6 +27,8 @@
     _tabTimeout = null;
     _controllerSwitchTimeout = null;
 
+    #isSeeking = false;
+
     init() {
       if (!Services.prefs.getBoolPref('zen.mediacontrols.enabled', true)) return;
 
@@ -50,6 +52,11 @@
     }
 
     #initEventListeners() {
+      this.mediaControlBar.addEventListener('mousedown', (event) => {
+        if (event.target.closest(':is(toolbarbutton,#zen-media-progress-hbox)')) return;
+        else this.onMediaFocus();
+      });
+
       this.mediaControlBar.addEventListener('command', (event) => {
         const button = event.target.closest('toolbarbutton');
         if (!button) return;
@@ -75,6 +82,12 @@
           case 'zen-media-playpause-button':
             this.onMediaToggle();
             break;
+          case 'zen-media-mute-mic-button':
+            this.onMicrophoneMuteToggle();
+            break;
+          case 'zen-media-mute-camera-button':
+            this.onCameraMuteToggle();
+            break;
         }
       });
 
@@ -82,6 +95,8 @@
       this.mediaProgressBar.addEventListener('change', this.onMediaSeekComplete.bind(this));
 
       window.addEventListener('TabSelect', (event) => {
+        if (this.isSharing) return;
+
         const linkedBrowser = event.target.linkedBrowser;
         this.switchController();
 
@@ -103,7 +118,9 @@
       });
 
       const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
+
       window.addEventListener('TabClose', onTabDiscardedOrClosed);
+      window.addEventListener('TabBrowserDiscarded', onTabDiscardedOrClosed);
 
       window.addEventListener('DOMAudioPlaybackStarted', (event) => {
         setTimeout(() => {
@@ -126,22 +143,21 @@
     }
 
     onTabDiscardedOrClosed(event) {
-      const linkedBrowser = event.target.linkedBrowser;
-      if (!linkedBrowser?.browsingContext?.mediaController) return;
-      this.deinitMediaController(
-        linkedBrowser.browsingContext.mediaController,
-        true,
-        linkedBrowser.browserId === this._currentBrowser?.browserId,
-        true
-      );
+      const { linkedBrowser } = event.target;
+      const isCurrentBrowser = linkedBrowser?.browserId === this._currentBrowser?.browserId;
+
+      if (isCurrentBrowser) {
+        this.isSharing = false;
+        this.hideMediaControls();
+      }
+
+      if (linkedBrowser?.browsingContext.mediaController) {
+        this.deinitMediaController(linkedBrowser.browsingContext.mediaController, true, isCurrentBrowser, true);
+      }
     }
 
     async deinitMediaController(mediaController, shouldForget = true, shouldOverride = true, shouldHide = true) {
-      if (!mediaController) return;
-
-      const retrievedMediaController = this.mediaControllersMap.get(mediaController.id);
-
-      if (shouldForget) {
+      if (shouldForget && mediaController) {
         mediaController.removeEventListener('pictureinpicturemodechange', this.onPipModeChange);
         mediaController.removeEventListener('positionstatechange', this.onPositionstateChange);
         mediaController.removeEventListener('playbackstatechange', this.onPlaybackstateChange);
@@ -167,6 +183,26 @@
       }
     }
 
+    get isSharing() {
+      return this.mediaControlBar.hasAttribute('media-sharing');
+    }
+
+    set isSharing(value) {
+      if (this._currentBrowser?.browsingContext && !value) {
+        const webRTC = this._currentBrowser.browsingContext.currentWindowGlobal.getActor('WebRTC');
+        webRTC.sendAsyncMessage('webrtc:UnmuteMicrophone');
+        webRTC.sendAsyncMessage('webrtc:UnmuteCamera');
+      }
+
+      if (!value) {
+        this.mediaControlBar.removeAttribute('mic-muted');
+        this.mediaControlBar.removeAttribute('camera-muted');
+      } else {
+        this.mediaControlBar.setAttribute('media-position-hidden', '');
+        this.mediaControlBar.setAttribute('media-sharing', '');
+      }
+    }
+
     hideMediaControls() {
       if (this.mediaControlBar.hasAttribute('hidden')) return;
 
@@ -183,18 +219,22 @@
         )
         .then(() => {
           this.mediaControlBar.setAttribute('hidden', 'true');
+          this.mediaControlBar.removeAttribute('media-sharing');
           gZenUIManager.updateTabsToolbar();
           gZenUIManager.restoreScrollbarState();
         });
     }
 
     showMediaControls() {
-      if (!this._currentMediaController) return;
-
-      if (this._currentMediaController.isBeingUsedInPIPModeOrFullscreen) return this.hideMediaControls();
       if (!this.mediaControlBar.hasAttribute('hidden')) return;
 
-      this.updatePipButton();
+      if (!this.isSharing) {
+        if (!this._currentMediaController) return;
+        if (this._currentMediaController.isBeingUsedInPIPModeOrFullscreen) return this.hideMediaControls();
+
+        this.updatePipButton();
+      }
+
       const mediaInfoElements = [this.mediaTitle, this.mediaArtist];
       for (const element of mediaInfoElements) {
         element.removeAttribute('overflow'); // So we can properly recalculate the overflow
@@ -282,7 +322,7 @@
         lastUpdated: Date.now(),
       });
 
-      if (!this._currentBrowser) {
+      if (!this._currentBrowser && !this.isSharing) {
         this.setupMediaController(mediaController, browser);
         this.setupMediaControlUI(metadata, positionState);
       }
@@ -293,6 +333,54 @@
       mediaController.addEventListener('supportedkeyschange', this.onSupportedKeysChange);
       mediaController.addEventListener('metadatachange', this.onMetadataChange);
       mediaController.addEventListener('deactivated', this.onDeactivated);
+    }
+
+    activateMediaDeviceControls(browser) {
+      if (browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()) {
+        this.mediaControlBar.removeAttribute('can-pip');
+        this._currentBrowser = browser;
+
+        const tab = window.gBrowser.getTabForBrowser(browser);
+        const iconURL = browser.mIconURL || `page-icon:${browser.currentURI.spec}`;
+
+        this.isSharing = true;
+
+        this.mediaFocusButton.style.listStyleImage = `url(${iconURL})`;
+        this.mediaTitle.textContent = tab.label;
+        this.mediaArtist.textContent = '';
+
+        this.showMediaControls();
+      }
+    }
+
+    updateMediaSharing(data) {
+      const { windowId, showCameraIndicator, showMicrophoneIndicator } = data;
+
+      for (const browser of window.gBrowser.browsers) {
+        const isMatch = browser.innerWindowID === windowId;
+        const isCurrentBrowser = this._currentBrowser?.browserId === browser.browserId;
+
+        if (!isMatch) continue;
+        if (!isCurrentBrowser && (showCameraIndicator || showMicrophoneIndicator)) {
+          const webRTC = browser.browsingContext.currentWindowGlobal.getActor('WebRTC');
+          webRTC.sendAsyncMessage('webrtc:UnmuteMicrophone');
+          webRTC.sendAsyncMessage('webrtc:UnmuteCamera');
+
+          if (this._currentBrowser) this.isSharing = false;
+          if (this._currentMediaController) {
+            this._currentMediaController.pause();
+            this.deinitMediaController(this._currentMediaController, true, true).then(() =>
+              this.activateMediaDeviceControls(browser)
+            );
+          } else this.activateMediaDeviceControls(browser);
+        } else if (isCurrentBrowser && this.isSharing && !(showCameraIndicator || showMicrophoneIndicator)) {
+          this.isSharing = false;
+          this._currentBrowser = null;
+          this.hideMediaControls();
+        }
+
+        break;
+      }
     }
 
     _onDeactivated(event) {
@@ -338,6 +426,9 @@
 
     switchController(force = false) {
       let timeout = 3000;
+
+      if (this.isSharing) return;
+      if (this.#isSeeking) return;
 
       if (this._controllerSwitchTimeout) {
         clearTimeout(this._controllerSwitchTimeout);
@@ -466,6 +557,8 @@
     }
 
     onMediaSeekDrag(event) {
+      this.#isSeeking = true;
+
       this._currentMediaController?.pause();
       const newTime = (event.target.value / 100) * this._currentDuration;
       this.mediaCurrentTime.textContent = this.formatSecondsToTime(newTime);
@@ -477,11 +570,18 @@
         this._currentMediaController.seekTo(newPosition);
         this._currentMediaController.play();
       }
+
+      this.#isSeeking = false;
     }
 
     onMediaFocus() {
       if (!this._currentBrowser) return;
-      this._currentMediaController?.focus();
+
+      if (this._currentMediaController) this._currentMediaController.focus();
+      else if (this._currentBrowser) {
+        const tab = window.gBrowser.getTabForBrowser(this._currentBrowser);
+        if (tab) window.ZenWorkspaces.switchTabIfNeeded(tab);
+      }
     }
 
     onMediaMute() {
@@ -503,9 +603,13 @@
     }
 
     onControllerClose() {
-      this._currentMediaController?.pause();
+      if (this._currentMediaController) {
+        this._currentMediaController.pause();
+        this.deinitMediaController(this._currentMediaController);
+      } else if (this.isSharing) this.isSharing = false;
+
+      this.hideMediaControls();
       this.switchController(true);
-      this.deinitMediaController(this._currentMediaController);
     }
 
     onMediaPip() {
@@ -514,22 +618,37 @@
         .sendAsyncMessage('PictureInPicture:KeyToggle');
     }
 
+    onMicrophoneMuteToggle() {
+      if (this._currentBrowser) {
+        const shouldMute = this.mediaControlBar.hasAttribute('mic-muted') ? 'webrtc:UnmuteMicrophone' : 'webrtc:MuteMicrophone';
+
+        this._currentBrowser.browsingContext.currentWindowGlobal.getActor('WebRTC').sendAsyncMessage(shouldMute);
+        this.mediaControlBar.toggleAttribute('mic-muted');
+      }
+    }
+
+    onCameraMuteToggle() {
+      if (this._currentBrowser) {
+        const shouldMute = this.mediaControlBar.hasAttribute('camera-muted') ? 'webrtc:UnmuteCamera' : 'webrtc:MuteCamera';
+
+        this._currentBrowser.browsingContext.currentWindowGlobal.getActor('WebRTC').sendAsyncMessage(shouldMute);
+        this.mediaControlBar.toggleAttribute('camera-muted');
+      }
+    }
+
     updateMuteState() {
       if (!this._currentBrowser) return;
-      if (this._currentBrowser._audioMuted) {
-        this.mediaControlBar.setAttribute('muted', '');
-      } else {
-        this.mediaControlBar.removeAttribute('muted');
-      }
+      this.mediaControlBar.toggleAttribute('muted', this._currentBrowser._audioMuted);
     }
 
     updatePipButton() {
       if (!this._currentBrowser) return;
-      const { totalPipCount, totalPipDisabled } = PictureInPicture.getEligiblePipVideoCount(this._currentBrowser);
+      if (this.isSharing) return;
 
-      if (totalPipCount === 1 || (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED))
-        this.mediaControlBar.setAttribute('can-pip', '');
-      else this.mediaControlBar.removeAttribute('can-pip');
+      const { totalPipCount, totalPipDisabled } = PictureInPicture.getEligiblePipVideoCount(this._currentBrowser);
+      const canPip = totalPipCount === 1 || (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED);
+
+      this.mediaControlBar.toggleAttribute('can-pip', canPip);
     }
   }
 

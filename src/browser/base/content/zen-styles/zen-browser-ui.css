@@ -207,6 +207,7 @@
   &:is(.zen-split-view-splitter[orient='vertical']) {
     /* Bit of a hacky solution, but it works */
     width: var(--zen-split-row-gap);
+    min-width: 1px;
     margin-left: calc(var(--zen-element-separation) * -1 - 1px);
     height: unset;
     cursor: ew-resize;

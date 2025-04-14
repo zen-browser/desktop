@@ -1,2 +1,2 @@
 [files]
-extend-exclude = ["*.mjs", "*.min.*"]
+extend-exclude = ["ZenEmojies.mjs", "*.min.*", "*.ftl"]

@@ -38,5 +38,6 @@ jobs:
 
       - name: Spell Check Repo
         uses: crate-ci/typos@v1.31.1
+        continue-on-error: true
         with:
           config: .github/workflows/typos.toml

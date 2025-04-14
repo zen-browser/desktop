@@ -97,10 +97,10 @@ index 6de4c2ac873b1424abee118a143ac377f26beb80..423e3aab4fd4fff9960caf8b8375d7bf
 +    }
 +    
 +    // Arc like URLbar: Blur the input on exit
-+    this.document.getElementById("navigator-toolbox").setAttribute("supress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
++    this.document.getElementById("navigator-toolbox").setAttribute("suppress-primary-adjustment", !this.document.getElementById("navigator-toolbox").hasAttribute("zen-has-hover"));
 +    this.window.gBrowser.selectedBrowser.focus();
 +    this.window.setTimeout(() => {
-+      this.document.getElementById("navigator-toolbox").removeAttribute("supress-primary-adjustment");
++      this.document.getElementById("navigator-toolbox").removeAttribute("suppress-primary-adjustment");
 +    }, 100);
 +    
 +    this.removeAttribute("zen-floating-urlbar");

@@ -23,10 +23,15 @@ var gZenMarketplaceManager = {
 
     Services.prefs.addObserver(this.updatePref, this);
 
-    const removeAllModsClick = (event) => {
+    const removeAllModsClick = async (event) => {
       if (event.target === removeAllModsButton) {
         event.preventDefault();
-        this._removeAllMods(event);
+        const [msg] = await document.l10n.formatValues([{ id: 'zen-theme-marketplace-remove-all-confirmation' }]);
+
+        if (!confirm(msg)) {
+          return;
+        }
+        await this._removeAllMods();
       }
     };
 
@@ -97,15 +102,25 @@ var gZenMarketplaceManager = {
     await this._buildThemesList();
   },
 
-  async _removeAllMods(event) {
-    const themes = await ZenThemesCommon.getThemes();
-    const themeIds = Object.keys(themes);
+  async _removeAllMods() {
+    const error = document.getElementById('zenThemeMarketplaceRemoveAllModsFailure');
+    const success = document.getElementById('zenThemeMarketplaceRemoveAllModsSuccess');
+    try {
+      error.hidden = true;
+      success.hidden = true;
+      const themes = await ZenThemesCommon.getThemes();
+      const themeIds = Object.keys(themes);
+      for (const themeId of themeIds) {
+        await this.removeTheme(themeId, false);
+      }
 
-    for (const themeId of themeIds) {
-      await this.removeTheme(themeId, false);
+      success.hidden = false;
+      this.triggerThemeUpdate();
+    } catch (e) {
+      success.hidden = true;
+      error.hidden = false;
+      console.error(`[ZenThemeMarketplaceParent:settings]: Error while removing all themes: ${e}`);
     }
-
-    this.triggerThemeUpdate();
   },
 
   _checkForThemeUpdates(event) {

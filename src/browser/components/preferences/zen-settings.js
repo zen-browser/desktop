@@ -5,8 +5,9 @@ var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
     const header = document.getElementById('zenMarketplaceHeader');
+    const removeAllModsButton = document.getElementById('zenThemeMarketplaceRemoveAllMods');
 
-    if (!checkForUpdates || !header) {
+    if (!checkForUpdates || !header || !removeAllModsButton) {
       return; // We haven't entered the settings page yet.
     }
 
@@ -21,6 +22,15 @@ var gZenMarketplaceManager = {
     await this._buildThemesList();
 
     Services.prefs.addObserver(this.updatePref, this);
+
+    const removeAllModsClick = (event) => {
+      if (event.target === removeAllModsButton) {
+        event.preventDefault();
+        this._removeAllMods(event);
+      }
+    };
+
+    removeAllModsButton.addEventListener('click', removeAllModsClick);
 
     const checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
@@ -51,6 +61,7 @@ var gZenMarketplaceManager = {
       document.removeEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', this);
       document.removeEventListener('ZenCheckForThemeUpdates', this);
       checkForUpdates.removeEventListener('click', checkForUpdateClick);
+      removeAllModsButton.removeEventListener('click', removeAllModsClick);
       this.themesList.innerHTML = '';
       this._doNotRebuildThemesList = false;
     });
@@ -86,6 +97,17 @@ var gZenMarketplaceManager = {
     await this._buildThemesList();
   },
 
+  async _removeAllMods(event) {
+    const themes = await ZenThemesCommon.getThemes();
+    const themeIds = Object.keys(themes);
+
+    for (const themeId of themeIds) {
+      await this.removeTheme(themeId, false);
+    }
+
+    this.triggerThemeUpdate();
+  },
+
   _checkForThemeUpdates(event) {
     // Send a message to the child to check for theme updates.
     event.target.disabled = true;
@@ -108,7 +130,7 @@ var gZenMarketplaceManager = {
     return this._themesList;
   },
 
-  async removeTheme(themeId) {
+  async removeTheme(themeId, autoTriggerUpdate = true) {
     const themePath = ZenThemesCommon.getThemeFolder(themeId);
 
     console.info(`[ZenThemeMarketplaceParent:settings]: Removing theme ${themePath}`);
@@ -119,7 +141,9 @@ var gZenMarketplaceManager = {
     delete themes[themeId];
     await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
 
-    this.triggerThemeUpdate();
+    if (autoTriggerUpdate) {
+      this.triggerThemeUpdate();
+    }
   },
 
   async disableTheme(themeId) {

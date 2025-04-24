@@ -562,8 +562,14 @@ groupbox h2 {
   margin-left: auto;
 }
 
-#zenThemeMarketplaceCheckForUpdates {
+#zenThemeMarketplaceRemoveAllMods {
   margin-left: auto;
+  cursor: pointer;
+}
+
+#zenThemeMarketplaceCheckForUpdates {
+  margin-left: 5px;
+  cursor: pointer;
 }
 
 .zenThemeMarketplaceItemPreferenceDialog {

@@ -107,6 +107,8 @@
       &[zen-right-side='true'] {
         & #navigator-toolbox:not([animate='true']) {
           right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-compact-mode-offset));
+          /* Fix for https://github.com/zen-browser/desktop/issues/7973 */
+          padding-left: max(var(--zen-compact-float), var(--zen-compact-mode-offset)) !important;
         }
 
         & .browserSidebarContainer {

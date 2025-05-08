@@ -347,6 +347,7 @@ menuitem {
 
   :root[zen-right-side='true'] & {
     left: calc(var(--zen-element-separation) * 2);
+    align-items: start!important;
   }
 
   & .zen-toast {

@@ -34,6 +34,15 @@
         const list = await Downloads.getList(Downloads.ALL);
         list.addView({
           onDownloadAdded: this.#handleNewDownload.bind(this),
+          onDownloadChanged: download => {
+            if (download.succeeded) {
+              this.#handleDownloadComplete(download);
+            } else if (download.canceled) {
+              this.#handleDownloadCanceled(download);
+            } else if (download.error) {
+              this.#handleDownloadFailed(download);
+            }
+          },
         });
       } catch (error) {
         console.error(
@@ -55,6 +64,45 @@
       }
 
       this.#animateDownload(this.#lastClickPosition);
+    }
+
+    async #handleDownloadComplete(download) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+        return;
+      }
+      const title = await document.l10n.formatValue('zen-download-complete') ?? 'Download Complete';
+      const body = await document.l10n.formatValue('zen-download-complete-body', { filename: download.target.path }) ?? 
+        `File "${download.target.path}" has finished downloading.`;
+      const notification = new Notification(title, {
+        body: body,
+        icon: 'chrome://browser/skin/downloads/download.svg',
+      });
+    }
+
+    async #handleDownloadCanceled(download) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+        return;
+      }
+      const title = await document.l10n.formatValue('zen-download-canceled') ?? 'Download Canceled';
+      const body = await document.l10n.formatValue('zen-download-canceled-body', { filename: download.target.path }) ?? 
+        `File "${download.target.path}" download was canceled.`;
+      const notification = new Notification(title, {
+        body: body,
+        icon: 'chrome://browser/skin/downloads/download.svg',
+      });
+    }
+
+    async #handleDownloadFailed(download) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+        return;
+      }
+      const title = await document.l10n.formatValue('zen-download-failed') ?? 'Download Failed';
+      const body = await document.l10n.formatValue('zen-download-failed-body', { filename: download.target.path }) ?? 
+        `Failed to download file "${download.target.path}".`;
+      const notification = new Notification(title, {
+        body: body,
+        icon: 'chrome://browser/skin/downloads/download.svg',
+      });
     }
 
     #animateDownload(startPosition) {

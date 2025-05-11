@@ -67,7 +67,7 @@
     }
 
     async #handleDownloadComplete(download) {
-      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-notifications')) {
         return;
       }
       const title = await document.l10n.formatValue('zen-download-complete') ?? 'Download Complete';
@@ -80,7 +80,7 @@
     }
 
     async #handleDownloadCanceled(download) {
-      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-notifications')) {
         return;
       }
       const title = await document.l10n.formatValue('zen-download-canceled') ?? 'Download Canceled';
@@ -93,7 +93,7 @@
     }
 
     async #handleDownloadFailed(download) {
-      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+      if (!Services.prefs.getBoolPref('zen.downloads.download-notifications')) {
         return;
       }
       const title = await document.l10n.formatValue('zen-download-failed') ?? 'Download Failed';

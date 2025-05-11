@@ -140,3 +140,6 @@ pref('zen.splitView.rearrange-hover-size', 24);
 // Zen Download Animations
 pref('zen.downloads.download-animation', true);
 pref('zen.downloads.download-animation-duration', 1000); // ms
+
+// Zen Download Notifications
+pref('zen.downloads.download-notifications', true);

@@ -98,7 +98,7 @@ document.addEventListener(
             gZenTabUnloader.ignoreUnloadTab();
             break;
           case 'cmd_zenSearchTabs':
-            gURLBar.search("%");
+            gURLBar.search("% ");
             break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

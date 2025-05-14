@@ -734,15 +734,24 @@ class ZenKeyboardShortcutsLoader {
         'zen-split-view-shortcut-unsplit'
       )
     );
+
+    //tabs search
+    {
+      const index = newShortcutList.findIndex(item => item.getID() === 'key_search2');
+      if (index !== -1) {
+        newShortcutList.splice(index, 1);
+      }
+    }
+
     newShortcutList.push(
       new KeyShortcut(
         'zen-search-tabs',
         'J',
         '',
-        ZEN_WORKSPACE_SHORTCUTS_GROUP,
-        KeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+        'searchAndFind',
+        KeyShortcutModifiers.fromObject({ accel: true, alt: false }),
         'cmd_zenSearchTabs',
-        'zen-search-shortcut-tabs'
+        'zen-search-focus-shortcut-alt'
       )
     );
 

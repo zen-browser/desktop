@@ -99,6 +99,14 @@ document.addEventListener(
             break;
           case 'cmd_zenSearchTabs':
             gURLBar.search("% ");
+            document.activeElement.dispatchEvent(
+              new KeyboardEvent('keydown', {
+                keyCode: 40,      // keycode for ArrowDown
+                bubbles: true,
+                cancelable: true
+              })
+            );
+            setTimeout(() => document.activeElement.select(), 100);
             break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

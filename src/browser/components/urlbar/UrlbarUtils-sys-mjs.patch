@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 0968dfa8855..a584de03086 100644
+index 0968dfa8855..87974b95053 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -1775,6 +1775,9 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
@@ -10,5 +10,15 @@ index 0968dfa8855..a584de03086 100644
 +        type: "number",
 +      },
        title: {
+         type: "string",
+       },
+@@ -1908,6 +1911,9 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
+       lastVisit: {
+         type: "number",
+       },
++      lastOpened: {
++        type: "number",
++      },
+       originalUrl: {
          type: "string",
        },

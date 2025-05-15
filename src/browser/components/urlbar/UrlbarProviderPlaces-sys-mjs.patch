@@ -1,23 +1,24 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index b1481a11ef..925f0dc34b 100644
+index b1481a11ef3..1697ec38b45 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-@@ -35,6 +35,8 @@ const QUERYINDEX_SWITCHTAB = 9;
+@@ -35,6 +35,9 @@ const QUERYINDEX_SWITCHTAB = 9;
  const QUERYINDEX_FRECENCY = 10;
  const QUERYINDEX_USERCONTEXTID = 11;
  const QUERYINDEX_LASTVIST = 12;
 +const QUERYINDEX_PINNEDTITLE = 13;
 +const QUERYINDEX_PINNEDURL = 14;
++const QUERYINDEX_LASTOPENED = 15;
  
  // Constants to support an alternative frecency algorithm.
  const PAGES_USE_ALT_FRECENCY = Services.prefs.getBoolPref(
-@@ -65,11 +67,14 @@ const SQL_BOOKMARK_TAGS_FRAGMENT = `EXISTS(SELECT 1 FROM moz_bookmarks WHERE fk
+@@ -65,11 +68,14 @@ const SQL_BOOKMARK_TAGS_FRAGMENT = `EXISTS(SELECT 1 FROM moz_bookmarks WHERE fk
  // condition once, and avoid evaluating "btitle" and "tags" when it is false.
  function defaultQuery(conditions = "") {
    let query = `SELECT :query_type, h.url, h.title, ${SQL_BOOKMARK_TAGS_FRAGMENT},
 -            h.visit_count, h.typed, h.id, t.open_count, ${PAGES_FRECENCY_FIELD}, t.userContextId, h.last_visit_date
 +            h.visit_count, h.typed, h.id, t.open_count, ${PAGES_FRECENCY_FIELD}, t.userContextId, h.last_visit_date,
-+            zp.title AS pinned_title, zp.url AS pinned_url
++            zp.title AS pinned_title, zp.url AS pinned_url, t.last_opened
       FROM moz_places h
       LEFT JOIN moz_openpages_temp t
              ON t.url = h.url
@@ -27,7 +28,7 @@ index b1481a11ef..925f0dc34b 100644
       WHERE (
          (:switchTabsEnabled AND t.open_count > 0) OR
          ${PAGES_FRECENCY_FIELD} <> 0
-@@ -83,7 +88,7 @@ function defaultQuery(conditions = "") {
+@@ -83,7 +89,7 @@ function defaultQuery(conditions = "") {
                                :matchBehavior, :searchBehavior, NULL)
           ELSE
             AUTOCOMPLETE_MATCH(:searchString, h.url,
@@ -36,14 +37,38 @@ index b1481a11ef..925f0dc34b 100644
                                h.visit_count, h.typed,
                                0, t.open_count,
                                :matchBehavior, :searchBehavior, NULL)
-@@ -1132,11 +1137,14 @@ Search.prototype = {
+@@ -293,6 +299,7 @@ function convertLegacyMatches(context, matches, urls) {
+       firstToken: context.tokens[0],
+       userContextId: match.userContextId,
+       lastVisit: match.lastVisit,
++      lastOpened: match.lastOpened,
+     });
+     // Should not happen, but better safe than sorry.
+     if (!result) {
+@@ -342,6 +349,7 @@ function makeUrlbarResult(tokens, info) {
+           icon: info.icon,
+           userContextId: info.userContextId,
+           lastVisit: info.lastVisit,
++          lastOpened: info.lastOpened
+         });
+         if (lazy.UrlbarPrefs.get("secondaryActions.switchToTab")) {
+           payload[0].action = UrlbarUtils.createTabSwitchSecondaryAction(
+@@ -414,6 +422,7 @@ function makeUrlbarResult(tokens, info) {
+       blockL10n,
+       helpUrl,
+       lastVisit: info.lastVisit,
++      lastOpened: info.lastOpened,
+     })
+   );
+ }
+@@ -1132,15 +1141,19 @@ Search.prototype = {
      let lastVisit = lastVisitPRTime
        ? lazy.PlacesUtils.toDate(lastVisitPRTime).getTime()
        : undefined;
 -
 +    let pinnedTitle = row.getResultByIndex(QUERYINDEX_PINNEDTITLE);
 +    let pinnedUrl = row.getResultByIndex(QUERYINDEX_PINNEDURL);
-+    
++    let lastOpened = row.getResultByIndex(QUERYINDEX_LASTOPENED);    
 +    
      let match = {
        placeId,
@@ -54,3 +79,8 @@ index b1481a11ef..925f0dc34b 100644
        icon: UrlbarUtils.getIconForUrl(url),
        frecency: frecency || FRECENCY_DEFAULT,
        userContextId,
+       lastVisit,
++      lastOpened: lastOpened || 0
+     };
+     if (openPageCount > 0 && this.hasBehavior("openpage")) {
+       if (

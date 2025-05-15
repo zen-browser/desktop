@@ -3205,7 +3205,7 @@ var ZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (!this._hasInitializedTabsStrip) {
       return gBrowser.browsers;
     }
-    const browsers = Array.from(gBrowser.tabpanels.querySelectorAll('browser'));
+    const browsers = Array.from(this.allStoredTabs).map(tab => tab.linkedBrowser);
     // Sort browsers by making the current workspace first
     const currentWorkspace = this.activeWorkspace;
     const sortedBrowsers = browsers.sort((a, b) => {

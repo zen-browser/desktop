@@ -1,0 +1,12 @@
+diff --git a/browser/themes/shared/zen-icons/icons.css b/browser/themes/shared/zen-icons/icons.css
+index abcdefabcdef1234567890abcdefabcdef123456..fedcbafedcba9876543210fedcbafedcba987654 100644
+--- a/browser/themes/shared/zen-icons/icons.css
++++ b/browser/themes/shared/zen-icons/icons.css
+@@ -804,6 +804,7 @@
+ #context-copyimage,
+ #context-copyvideourl,
+ #context-copylink,
++#context-copylinktotextfragment,
+ #context-stripOnShareLink,
+ #context_zenOpenNewTabWebPanel,
+ #context-pdfjs-copy {

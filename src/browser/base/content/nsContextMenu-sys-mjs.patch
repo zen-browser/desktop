@@ -1,13 +1,105 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index 3bd0ee8af8b696161d18fd2a978f9e25972ed3ad..9e602a942271bd54231dc66363f8db51aea9e78a 100644
+index 3bd0ee8af8b696161d18fd2a978f9e25972ed3ad..9e602a942271bd54231cd67363f8db51aea9e78a 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
-@@ -1111,6 +1111,8 @@ export class nsContextMenu {
+@@ -1111,6 +1111,9 @@ export class nsContextMenu {
          !this.isSecureAboutPage()
      );
- 
+
 +    this.showItem("context-zenSplitLink", this.onLink && !this.onMailtoLink && !this.onTelLink);
++    this.showItem("context-copylinktotextfragment", this.isTextSelected);
 +
      let canNotStrip =
        lazy.STRIP_ON_SHARE_CAN_DISABLE && !this.#canStripParams();
- 
+
+@@ -2037,6 +2040,54 @@ export class nsContextMenu {
+   openLinkInPrivate() {
+     PrivateBrowsingUtils.openLinkInNewPrivateWindow(this.linkURL);
+   }
++  
++  /**
++   * Creates and copies a URL with a text fragment for the selected text.
++   * This allows linking directly to the selected text on the page.
++   */
++  copyLinkToTextFragment() {
++    // Get the selected text from the current page
++    let selectedText = this.browser.contentWindow.getSelection().toString().trim();
++    
++    if (!selectedText) {
++      return;
++    }
++    
++    // Encode the selected text for use in a URL fragment
++    // We must follow the Text Fragments spec rules:
++    // - Escape special characters
++    // - Truncate if too long (max ~120 chars recommended)
++    const MAX_FRAGMENT_LENGTH = 120;
++    if (selectedText.length > MAX_FRAGMENT_LENGTH) {
++      selectedText = selectedText.substring(0, MAX_FRAGMENT_LENGTH);
++    }
++    
++    // Encode the text for URL use
++    const encodedText = encodeURIComponent(selectedText);
++    
++    // Get the current URL and add the text fragment
++    let currentUrl = this.browser.currentURI.spec;
++    
++    // Remove any existing text fragment
++    if (currentUrl.includes("#:~:")) {
++      currentUrl = currentUrl.split("#:~:")[0];
++    }
++    
++    // Remove any existing fragment
++    if (currentUrl.includes("#")) {
++      currentUrl = currentUrl.split("#")[0];
++    }
++    
++    // Create the new URL with text fragment
++    const urlWithFragment = `${currentUrl}#:~:text=${encodedText}`;
++    
++    // Copy the URL to clipboard
++    Cc["@mozilla.org/widget/clipboardhelper;1"]
++      .getService(Ci.nsIClipboardHelper)
++      .copyString(urlWithFragment);
++    
++    // Show a notification
++    this.showNotificationInParent("linkToTextFragmentCopied");
++  }
+
+   /**
+    * Handles the "Open Selected Links in Tabs" menu item.
+@@ -2347,6 +2398,15 @@ export class nsContextMenu {
+         };
+         break;
+
++      case "context-copylinktotextfragment":
++        this.copyLinkToTextFragment();
++        if (AppConstants.platform == "android") {
++          Services.obs.notifyObservers(
++            null,
++            "LinkToTextFragment:Copy",
++          );
++        }
++        break;
+       case "context-openframe":
+         this.openFrame();
+         break;
+@@ -2817,6 +2877,18 @@ export class nsContextMenu {
+       case "bookmarkTab-notification":
+         nBox.options.message = gNavigatorBundle.getString("alertBookmarkNotification");
+         break;
++      case "linkToTextFragmentCopied":
++        nBox.options.message = gNavigatorBundle.getString("linkToTextFragmentCopiedNotification");
++        if (AppConstants.platform === "macosx") {
++          nBox.messageImage = "chrome://browser/skin/notification-icons/copy-macos.svg";
++        } else if (AppConstants.platform === "linux") {
++          nBox.messageImage = "chrome://browser/skin/notification-icons/copy-linux.svg";
++        } else {
++          nBox.messageImage = "chrome://browser/skin/notification-icons/copy.svg";
++        }
++        nBox.options.relatedTab = this.browser.ownerGlobal.gBrowser.selectedTab;
++        nBox.options.persistent = false;
++        break;
+       default:
+         nBox.messageImage = "chrome://browser/skin/notification-icons/geo.svg";
+         break;

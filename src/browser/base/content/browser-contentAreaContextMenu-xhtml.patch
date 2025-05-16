@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-contentAreaContextMenu.xhtml b/browser/base/content/browser-contentAreaContextMenu.xhtml
-index abcdefabcdef1234567890abcdefabcdef123456..fedcbafedcba9876543210fedcbafedcba987654 100644
+index a3d1e0c2f4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9..1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1 100644
 --- a/browser/base/content/browser-contentAreaContextMenu.xhtml
 +++ b/browser/base/content/browser-contentAreaContextMenu.xhtml
 @@ -123,6 +123,7 @@

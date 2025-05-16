@@ -98,17 +98,17 @@ document.addEventListener(
             gZenTabUnloader.ignoreUnloadTab();
             break;
           case 'cmd_zenSearchTabs':
-            if (!gURLBar.view.isOpen) {
-              gURLBar.search("% ");
-            } else {
+            if (gURLBar.view.isOpen && gURLBar.searchMode && gURLBar.searchMode.source ===  4 /* URLBarUtils.RESULT_SOURCE.TABS */) {
               gURLBar.view.selectBy(1);
+            } else {
+              gURLBar.search("% ");
             }
             break;          
           case 'cmd_zenBackwardSearchTabs':
-            if (!gURLBar.view.isOpen) {
-              gURLBar.search("% ");
-            } else {
+            if (gURLBar.view.isOpen && gURLBar.searchMode && gURLBar.searchMode?.source === 4 /* URLBarUtils.RESULT_SOURCE.TABS */) {
               gURLBar.view.selectBy(1, {reverse: true});
+            } else {
+              gURLBar.search("% ");
             }
             break;
           default:

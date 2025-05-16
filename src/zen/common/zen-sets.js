@@ -104,7 +104,7 @@ document.addEventListener(
               gURLBar.view.selectBy(1);
             }
             break;          
-          case 'cmd_zenBackSearchTabs':
+          case 'cmd_zenBackwardSearchTabs':
             if (!gURLBar.view.isOpen) {
               gURLBar.search("% ");
             } else {

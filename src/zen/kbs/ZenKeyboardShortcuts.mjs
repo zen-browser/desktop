@@ -750,13 +750,13 @@ class ZenKeyboardShortcutsLoader {
 
     newShortcutList.push(
       new KeyShortcut(
-        'zen-back-search-tabs',
+        'zen-backward-search-tabs',
         'Q',
         '',
         'searchAndFind',
         KeyShortcutModifiers.fromObject({ accel: false, alt: true, shift: true }),
-        'cmd_zenBackSearchTabs',
-        'zen-back-search-shortcut-tabs'
+        'cmd_zenBackwardSearchTabs',
+        'zen-backward-search-shortcut-tabs'
       )
     );
 

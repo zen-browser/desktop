@@ -748,6 +748,18 @@ class ZenKeyboardShortcutsLoader {
       )
     );
 
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-back-search-tabs',
+        'Q',
+        '',
+        'searchAndFind',
+        KeyShortcutModifiers.fromObject({ accel: false, alt: true, shift: true }),
+        'cmd_zenBackSearchTabs',
+        'zen-back-search-shortcut-tabs'
+      )
+    );
+
     return newShortcutList;
   }
 

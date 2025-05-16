@@ -98,15 +98,18 @@ document.addEventListener(
             gZenTabUnloader.ignoreUnloadTab();
             break;
           case 'cmd_zenSearchTabs':
-            gURLBar.search("% ");
-            document.activeElement.dispatchEvent(
-              new KeyboardEvent('keydown', {
-                keyCode: 40,      // keycode for ArrowDown
-                bubbles: true,
-                cancelable: true
-              })
-            );
-            setTimeout(() => document.activeElement.select(), 100);
+            if (!gURLBar.view.isOpen) {
+              gURLBar.search("% ");
+            } else {
+              gURLBar.view.selectBy(1);
+            }
+            break;          
+          case 'cmd_zenBackSearchTabs':
+            if (!gURLBar.view.isOpen) {
+              gURLBar.search("% ");
+            } else {
+              gURLBar.view.selectBy(1, {reverse: true});
+            }
             break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

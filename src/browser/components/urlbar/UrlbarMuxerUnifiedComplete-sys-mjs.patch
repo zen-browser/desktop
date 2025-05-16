@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs b/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
-index dcf1af43d62..e31b06580cf 100644
+index dcf1af43d62..17dbaaa66aa 100644
 --- a/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
-@@ -117,6 +117,19 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -117,6 +117,21 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        // When you add state, update _copyState() as necessary.
      };
  
@@ -17,6 +17,8 @@ index dcf1af43d62..e31b06580cf 100644
 +        const lastOpenedB = b.payload?.lastOpened|| 0;
 +        return lastOpenedB - lastOpenedA; // Descending order
 +      });
++      unsortedResults[0].heuristic = true
++      unsortedResults[0].providerName = "HeuristicFallback"
 +    }  
 +
      // Do the first pass over all results to build some state.

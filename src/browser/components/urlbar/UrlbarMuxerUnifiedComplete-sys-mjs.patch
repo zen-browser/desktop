@@ -1,12 +1,22 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs b/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
-index dcf1af43d62979d3226d7f704c51a2f0bb935cc0..8879d657b99cb20cd657c2e4841738ffaa09c658 100644
+index dcf1af43d62..116865b068a 100644
 --- a/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerUnifiedComplete.sys.mjs
-@@ -794,6 +794,7 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
-     }
+@@ -117,6 +117,17 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       // When you add state, update _copyState() as necessary.
+     };
  
-     if (result.providerName == lazy.UrlbarProviderTabToSearch.name) {
-+      return false;
-       // Discard the result if a tab-to-search result was added already.
-       if (!state.canAddTabToSearch) {
-         return false;
++    let window = Services.wm.getMostRecentWindow("navigator:browser");
++    if (window && window.gURLBar && window.gURLBar.searchMode && window.gURLBar.searchMode.source === 4) {
++      unsortedResults.sort((a, b) => {
++        const lastOpenedA = a.payload?.lastOpened || 0;
++        const lastOpenedB = b.payload?.lastOpened|| 0;
++        return lastOpenedB - lastOpenedA; // Descending order
++      });
++      unsortedResults[0].heuristic = true
++      unsortedResults[0].providerName = "HeuristicFallback"
++    }  
++
+     // Do the first pass over all results to build some state.
+     for (let result of unsortedResults) {
+       // Add each result to the appropriate `resultsByGroup` map.

@@ -77,6 +77,7 @@ const defaultKeyboardGroups = {
   ],
   searchAndFind: [
     'zen-search-focus-shortcut',
+    'zen-search-tabs-shortcut',
     'zen-search-focus-shortcut-alt',
     'zen-find-shortcut',
     'zen-search-find-again-shortcut-2',
@@ -731,6 +732,31 @@ class ZenKeyboardShortcutsLoader {
         KeyShortcutModifiers.fromObject({ accel: true, alt: true }),
         'cmd_zenSplitViewUnsplit',
         'zen-split-view-shortcut-unsplit'
+      )
+    );
+
+    //tabs search
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-search-tabs',
+        'Q',
+        '',
+        'searchAndFind',
+        KeyShortcutModifiers.fromObject({ accel: false, alt: true }),
+        'cmd_zenSearchTabs',
+        'zen-search-shortcut-tabs'
+      )
+    );
+
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-backward-search-tabs',
+        'Q',
+        '',
+        'searchAndFind',
+        KeyShortcutModifiers.fromObject({ accel: false, alt: true, shift: true }),
+        'cmd_zenBackwardSearchTabs',
+        'zen-backward-search-shortcut-tabs'
       )
     );
 

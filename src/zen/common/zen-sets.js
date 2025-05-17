@@ -97,6 +97,20 @@ document.addEventListener(
           case 'cmd_zenIgnoreUnloadTab':
             gZenTabUnloader.ignoreUnloadTab();
             break;
+          case 'cmd_zenSearchTabs':
+            if (gURLBar.view.isOpen && gURLBar.searchMode && gURLBar.searchMode.source ===  4 /* URLBarUtils.RESULT_SOURCE.TABS */) {
+              gURLBar.view.selectBy(1);
+            } else {
+              gURLBar.search("% ");
+            }
+            break;          
+          case 'cmd_zenBackwardSearchTabs':
+            if (gURLBar.view.isOpen && gURLBar.searchMode && gURLBar.searchMode?.source === 4 /* URLBarUtils.RESULT_SOURCE.TABS */) {
+              gURLBar.view.selectBy(1, {reverse: true});
+            } else {
+              gURLBar.search("% ");
+            }
+            break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;

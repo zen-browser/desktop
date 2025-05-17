@@ -111,7 +111,7 @@
           gBrowser.unpinTab(otherTab);
         }
         this._piningFolder = false;
-        ZenWorkspaces.activeWorkspaceStrip.prepend(group);
+        gZenWorkspaces.activeWorkspaceStrip.prepend(group);
         gBrowser.tabContainer._invalidateCachedTabs();
         return true;
       }

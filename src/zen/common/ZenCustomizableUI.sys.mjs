@@ -122,7 +122,7 @@ export var ZenCustomizableUI = new (class {
 
   _hideToolbarButtons(window) {
     const wrapper = window.document.getElementById('zen-sidebar-bottom-buttons');
-    const elementsToHide = ['alltabs-button', 'new-tab-button'];
+    const elementsToHide = ['new-tab-button'];
     for (let id of elementsToHide) {
       const elem = window.document.getElementById(id);
       if (elem) {

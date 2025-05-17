@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e6a478202 100644
+index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a1744d79b26 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
-@@ -2081,7 +2081,6 @@ var SessionStoreInternal = {
+@@ -2088,7 +2088,6 @@ var SessionStoreInternal = {
        if (closedWindowState) {
          let newWindowState;
          if (
@@ -10,7 +10,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
            !lazy.SessionStartup.willRestore()
          ) {
            // We want to split the window up into pinned tabs and unpinned tabs.
-@@ -2296,11 +2295,9 @@ var SessionStoreInternal = {
+@@ -2303,11 +2302,9 @@ var SessionStoreInternal = {
            tabbrowser.selectedTab.label;
        }
  
@@ -22,7 +22,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
  
        // Store the window's close date to figure out when each individual tab
        // was closed. This timestamp should allow re-arranging data based on how
-@@ -3202,7 +3199,7 @@ var SessionStoreInternal = {
+@@ -3209,7 +3206,7 @@ var SessionStoreInternal = {
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
@@ -31,7 +31,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
        return;
      }
  
-@@ -3911,6 +3908,9 @@ var SessionStoreInternal = {
+@@ -3918,6 +3915,9 @@ var SessionStoreInternal = {
          Math.min(tabState.index, tabState.entries.length)
        );
        tabState.pinned = false;
@@ -41,7 +41,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -5225,7 +5225,7 @@ var SessionStoreInternal = {
+@@ -5232,7 +5232,7 @@ var SessionStoreInternal = {
      }
  
      let workspaceID = aWindow.getWorkspaceID();
@@ -50,12 +50,12 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
        winData.workspaceID = workspaceID;
      }
    },
-@@ -5416,14 +5416,15 @@ var SessionStoreInternal = {
+@@ -5423,14 +5423,15 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
 -    let tabs = tabbrowser.tabs;
-+    let tabs = aWindow.ZenWorkspaces.allStoredTabs;
++    let tabs = aWindow.gZenWorkspaces.allStoredTabs;
      /** @type {WindowStateData} */
      let winData = this._windows[aWindow.__SSi];
      let tabsData = (winData.tabs = []);
@@ -68,7 +68,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
          continue;
        }
        let tabData = lazy.TabState.collect(tab, TAB_CUSTOM_VALUES.get(tab));
-@@ -5442,7 +5443,7 @@ var SessionStoreInternal = {
+@@ -5449,7 +5450,7 @@ var SessionStoreInternal = {
      // We don't store the Firefox View tab in Session Store, so if it was the last selected "tab" when
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
@@ -77,7 +77,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
        selectedIndex = 1;
        winData.title = tabbrowser.tabs[0].label;
      }
-@@ -5599,6 +5600,7 @@ var SessionStoreInternal = {
+@@ -5606,6 +5607,7 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
@@ -85,7 +85,7 @@ index 5633e5032f5d50c70512187d27e045b579978927..6b9e56cb62a4812925ff812763ea9b0e
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6148,8 +6150,23 @@ var SessionStoreInternal = {
+@@ -6155,8 +6157,23 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.

@@ -5,3 +5,4 @@ support-files = [
 
 ["browser_glance_basic.js"]
 ["browser_glance_expand.js"]
+["browser_glance_close.js"]

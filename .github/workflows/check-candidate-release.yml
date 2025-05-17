@@ -5,6 +5,9 @@ on:
     - cron: '59 4 * * 2'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check_candidates:
     runs-on: ubuntu-latest

@@ -30,10 +30,10 @@ document.addEventListener(
             gZenCompactModeManager.toggleToolbar();
             break;
           case 'cmd_zenWorkspaceForward':
-            ZenWorkspaces.changeWorkspaceShortcut();
+            gZenWorkspaces.changeWorkspaceShortcut();
             break;
           case 'cmd_zenWorkspaceBackward':
-            ZenWorkspaces.changeWorkspaceShortcut(-1);
+            gZenWorkspaces.changeWorkspaceShortcut(-1);
             break;
           case 'cmd_zenSplitViewGrid':
             gZenViewSplitter.toggleShortcut('grid');
@@ -69,7 +69,7 @@ document.addEventListener(
             gZenThemePicker.openThemePicker(event);
             break;
           case 'cmd_zenChangeWorkspaceTab':
-            ZenWorkspaces.changeTabWorkspace(
+            gZenWorkspaces.changeTabWorkspace(
               event.sourceEvent.target.getAttribute('zen-workspace-id')
             );
             break;
@@ -114,7 +114,7 @@ document.addEventListener(
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;
-              ZenWorkspaces.shortcutSwitchTo(index);
+              gZenWorkspaces.shortcutSwitchTo(index);
             }
             break;
         }

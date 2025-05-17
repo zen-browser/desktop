@@ -8,7 +8,7 @@
 #zen-tabbox-wrapper {
   & #sidebar-splitter {
     opacity: 0;
-    margin: 0 calc(-1 * var(--zen-element-separation));
+    margin: 0 calc(-1 * var(--zen-element-separation) + 2px);
   }
 
   & #sidebar-box {
@@ -27,11 +27,11 @@
 
   & #tabbrowser-tabbox[sidebar-positionend] {
     & #sidebar-box {
-      order: 7 !important;
+      order: 8 !important;
     }
 
     & #sidebar-splitter {
-      order: 6 !important;
+      order: 7 !important;
     }
   }
 }

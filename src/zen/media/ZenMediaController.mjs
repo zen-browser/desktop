@@ -604,7 +604,7 @@
       if (this._currentMediaController) this._currentMediaController.focus();
       else if (this._currentBrowser) {
         const tab = window.gBrowser.getTabForBrowser(this._currentBrowser);
-        if (tab) window.ZenWorkspaces.switchTabIfNeeded(tab);
+        if (tab) window.gZenWorkspaces.switchTabIfNeeded(tab);
       }
     }
 

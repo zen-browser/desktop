@@ -30,6 +30,9 @@
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 5px;
+  :root[zen-single-toolbar='true'] {
+    --urlbar-container-padding: 4px;
+  }
 }
 
 :root:not([zen-single-toolbar='true']) #urlbar:not([zen-floating-urlbar='true']) {
@@ -98,6 +101,10 @@
   position: relative;
 }
 
+#identity-icon-box {
+  outline: none !important;
+}
+
 :root[zen-single-toolbar='true'] #urlbar:not([breakout-extend='true']) {
   & #urlbar-input {
     cursor: default;
@@ -135,20 +142,6 @@
   margin-bottom: auto !important;
 }
 
-#identity-box:has(#notification-popup-box:not([hidden='true'])) #identity-icon-box,
-#identity-box:has(#notification-popup-box:not([hidden='true'])) #identity-permission-box {
-  margin-right: 0px !important;
-}
-
-#identity-box:has(#identity-permission-box:is([hasPermissions], [hasSharingIcon])):not(
-    [pageproxystate='invalid']
-  )
-  #identity-icon-box {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  margin-right: 0 !important;
-}
-
 #tracking-protection-icon-container,
 #page-action-buttons {
   order: 2 !important;
@@ -161,7 +154,7 @@
 #urlbar[breakout-extend='true'] {
   z-index: 2;
 
-  .urlbar-input-container {
+  :root:not([zen-single-toolbar='true']) & .urlbar-input-container {
     --urlbar-container-padding: 0px;
   }
 
@@ -185,7 +178,9 @@
       --zen-urlbar-background-transparent,
       var(--zen-urlbar-background-base)
     ) !important;
-    box-shadow: 0px 0px 10rem -2px rgba(0, 0, 0, 0.9) !important;
+    box-shadow:
+      0 20px 25px -5px rgb(0 0 0 / 0.1),
+      0 8px 10px -6px rgb(0 0 0 / 0.1);
     backdrop-filter: none !important;
     border-radius: 12px !important;
     outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
@@ -246,7 +241,7 @@
 
   #urlbar:not([open]) {
     #identity-box:not([pageproxystate='invalid']) {
-      order: 9;
+      order: 2;
     }
   }
 
@@ -267,6 +262,7 @@
       margin-bottom: auto;
       height: 24px; /* double 12px */
       width: 24px;
+      padding: 4px !important;
 
       &:hover {
         background: var(--toolbarbutton-hover-background);
@@ -279,20 +275,15 @@
 
 :root:not([zen-single-toolbar='true']) {
   #notification-popup-box {
-    border-radius: 999px;
     margin: 0 4px 0 0 !important;
-    padding: 0 4px;
-    min-width: calc(
-      var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)
-    ) !important;
-    height: calc(var(--urlbar-min-height) - 4px - 4 * var(--urlbar-container-padding)) !important;
     justify-content: center;
     gap: 8px;
+    background: transparent;
 
     & > image {
-      padding: 0;
       margin-top: auto;
       margin-bottom: auto;
+      padding: 0;
     }
   }
 }
@@ -387,6 +378,7 @@ button.popup-notification-dropmarker {
   #identity-box:is(:not(.chromeUI), [pageproxystate='invalid'])
   #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
+  min-width: 30px;
 }
 
 /* Notification Stack */

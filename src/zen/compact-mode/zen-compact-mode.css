@@ -7,6 +7,11 @@
 
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
+
+  & #urlbar {
+    visibility: visible;
+  }
+
   @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
     &:not([zen-compact-animating]) {
       & #zen-sidebar-splitter {
@@ -48,10 +53,6 @@
 
         /* Initial padding for when we are animating */
         padding: 0 0 0 var(--zen-toolbox-padding) !important;
-
-        & #urlbar {
-          visibility: visible;
-        }
 
         &:not([animate='true']) {
           position: fixed;
@@ -298,9 +299,9 @@
               visibility: visible;
             }
 
-            left: calc(var(--zen-element-separation) / -2);
+            left: calc(var(--zen-element-separation) / -2 - 1px);
             :root[zen-right-side='true'] & {
-              right: calc(var(--zen-element-separation) / -2);
+              right: calc(var(--zen-element-separation) / -2 - 1px);
               left: auto;
             }          
           }
@@ -356,7 +357,7 @@
           position: relative !important;
         }
 
-        & #urlbar {
+        & #urlbar:not([breakout-extend='true']) {
           opacity: 0 !important;
         }
 
@@ -368,12 +369,12 @@
         }
       }
 
-      & #zen-appcontent-navbar-container[zen-has-hover],
-      & #zen-appcontent-navbar-container:hover,
-      & #zen-appcontent-navbar-container:focus-within,
+      & #zen-appcontent-navbar-container[zen-has-hover]:not(:has(#urlbar[zen-floating-urlbar='true']:hover)),
       & #zen-appcontent-navbar-container[zen-user-show],
       & #zen-appcontent-navbar-container[has-popup-menu],
-      & #zen-appcontent-navbar-container:has(*:is([panelopen='true'], [open='true']):not(.zen-compact-mode-ignore)) {
+      & #zen-appcontent-navbar-container:has(
+          *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(.zen-compact-mode-ignore)
+        ) {
         opacity: 1;
         border-top-width: 1px;
 

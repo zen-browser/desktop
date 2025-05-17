@@ -95,7 +95,7 @@
     }
     /* Pull window buttons container rightwards over the collapsed sidebar */
     & .titlebar-buttonbox-container {
-      margin-left: calc(-1 * var(--zen-toolbox-max-width) + var(--zen-toolbox-padding) / 2) !important;
+      margin-left: calc(-1 * var(--zen-toolbox-max-width) + var(--zen-toolbox-padding)) !important;
     }
     /* Allow overflow for the button box */
     & #zen-appcontent-wrapper {

@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 6775a7635c6cdbb276b3a912d0bba07840acb28f..fc5d3b1fab286c657c27b98d56bb616dfab3caef 100644
+index 6775a7635c6cdbb276b3a912d0bba07840acb28f..4ef3eb6a7dbd741cf432668c2ff6e832f5bb97e7 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -213,7 +213,7 @@
@@ -16,7 +16,7 @@ index 6775a7635c6cdbb276b3a912d0bba07840acb28f..fc5d3b1fab286c657c27b98d56bb616d
          return;
        }
 -      for (let otherTab of this.allTabs) {
-+      for (let otherTab of window.ZenWorkspaces?.allStoredTabs ?? this.allTabs) {
++      for (let otherTab of window.gZenWorkspaces?.allStoredTabs ?? this.allTabs) {
          if (otherTab != tab && otherTab.selected) {
            otherTab._selected = false;
          }

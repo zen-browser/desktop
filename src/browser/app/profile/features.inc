@@ -19,6 +19,9 @@ pref('zen.view.show-newtab-button-top', true);
 
 pref('zen.mediacontrols.enabled', true);
 
+// Exposure:
+pref('zen.haptic-feedback.enabled', true);
+
 #ifdef MOZILLA_OFFICIAL
 pref('zen.rice.api.url', 'https://share.zen-browser.app', locked);
 pref('zen.injections.match-urls', 'https://zen-browser.app/*,https://share.zen-browser.app/*', locked);

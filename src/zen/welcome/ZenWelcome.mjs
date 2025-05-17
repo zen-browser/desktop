@@ -257,7 +257,7 @@
 
     async finish() {
       _iconToData = undefined; // Unload icon data
-      ZenWorkspaces.reorganizeTabsAfterWelcome();
+      gZenWorkspaces.reorganizeTabsAfterWelcome();
       await animate('#zen-welcome-page-content', { x: [0, '100%'] }, { bounce: 0 });
       document.getElementById('zen-welcome-page-content').remove();
       await this.animHeart();

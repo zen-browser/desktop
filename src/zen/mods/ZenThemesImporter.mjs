@@ -149,12 +149,10 @@ var gZenThemesImporter = new (class {
 
   async removeStylesheet() {
     await this.sss.unregisterSheet(this.styleSheetURI, this.sss.AGENT_SHEET);
+    const rv = this.sss.sheetRegistered(this.styleSheetURI, this.sss.AGENT_SHEET);
     await IOUtils.remove(this.styleSheetPath, { ignoreAbsent: true });
 
-    if (
-      !this.sss.sheetRegistered(this.styleSheetURI, this.sss.AGENT_SHEET) &&
-      !(await IOUtils.exists(this.styleSheetPath))
-    ) {
+    if (!rv && !(await IOUtils.exists(this.styleSheetPath))) {
       console.debug('[ZenThemesImporter]: Sheet successfully unregistered');
     }
   }
@@ -251,7 +249,7 @@ var gZenThemesImporter = new (class {
   writeToDom(themesWithPreferences) {
     for (const browser of ZenMultiWindowFeature.browsers) {
       for (const { enabled, preferences, name } of themesWithPreferences) {
-        const sanitizedName = `theme-${name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
+        const sanitizedName = `theme-${name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-Za-z_-]+/g, '')}`;
 
         if (enabled !== undefined && !enabled) {
           const element = browser.document.getElementById(sanitizedName);

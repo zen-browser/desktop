@@ -1,4 +1,7 @@
 name: Monthly issue metrics
+permissions:
+  contents: write
+  issues: read
 on:
   workflow_dispatch:
   schedule:

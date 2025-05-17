@@ -1,4 +1,6 @@
 name: macOS Release Build
+permissions:
+  contents: read
 
 on:
   workflow_call:

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa16cb76ffb 100644
+index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..97e2a505892a82084ade7d2b1c5b690444f65254 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -83,7 +83,7 @@
@@ -132,7 +132,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
  
      get newTabButton() {
 -      return this.querySelector("#tabs-newtab-button");
-+      return ZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
++      return gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
      }
  
      get verticalMode() {
@@ -141,7 +141,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
          return this.#allTabs;
        }
 -      let children = Array.from(this.arrowScrollbox.children);
-+      let children = ZenWorkspaces.tabboxChildren;
++      let children = gZenWorkspaces.tabboxChildren;
        // remove arrowScrollbox periphery element
        children.pop();
  
@@ -156,7 +156,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
  
        this.#allTabs = [
 -        ...this.verticalPinnedTabsContainer.children,
-+        ...ZenWorkspaces.getCurrentEssentialsContainer().children, ...this.verticalPinnedTabsContainer.children,
++        ...gZenWorkspaces.getCurrentEssentialsContainer().children, ...this.verticalPinnedTabsContainer.children,
          ...children,
        ];
 +      const lastPinnedTabIdx = gBrowser.pinnedTabCount;
@@ -182,7 +182,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
      get allGroups() {
        let children = Array.from(this.arrowScrollbox.children);
 -      return children.filter(node => node.tagName == "tab-group");
-+      return ZenWorkspaces.allTabGroups;
++      return gZenWorkspaces.allTabGroups;
      }
  
      /**
@@ -207,11 +207,11 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
 -      }
 -      let children = Array.from(this.arrowScrollbox.children);
 +      let verticalPinnedTabsContainer = this.verticalPinnedTabsContainer
-+      let children = ZenWorkspaces.tabboxChildrenWithoutEmpty;
++      let children = gZenWorkspaces.tabboxChildrenWithoutEmpty;
  
        let focusableItems = [];
 -      for (let child of children) {
-+      for (let child of [...ZenWorkspaces.getCurrentEssentialsContainer().children, ...verticalPinnedTabsContainer.children, ...children]) {
++      for (let child of [...gZenWorkspaces.getCurrentEssentialsContainer().children, ...verticalPinnedTabsContainer.children, ...children]) {
          if (isTab(child) && child.visible) {
            child.elementIndex = elementIndex++;
            focusableItems.push(child);
@@ -246,7 +246,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
-+      ZenWorkspaces._allStoredTabs = null;
++      gZenWorkspaces._allStoredTabs = null;
      }
  
      _invalidateCachedVisibleTabs() {
@@ -266,7 +266,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
 -        node = this.arrowScrollbox.lastChild;
-+        node = ZenWorkspaces.activeWorkspaceStrip.lastChild;
++        node = gZenWorkspaces.activeWorkspaceStrip.lastChild;
        }
  
        node.before(tab);
@@ -275,7 +275,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
 -          const newTab = document.getElementById("new-tab-button");
-+          const newTab = ZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
++          const newTab = gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
@@ -304,14 +304,14 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..3001dd54fccfcac3b96288dd769fbaa1
 -
 -      if (gBrowser.pinnedTabCount !== verticalTabsContainer.children.length) {
 -        let tabs = this.visibleTabs;
-+      if (!ZenWorkspaces._hasInitializedTabsStrip) return;
-+      let count = ZenWorkspaces.makeSurePinTabIsInCorrectPosition();
-+      if (gBrowser.pinnedTabCount !== (verticalTabsContainer.children.length - count - 1 + ZenWorkspaces.getCurrentEssentialsContainer().children.length)) {
++      if (!gZenWorkspaces._hasInitializedTabsStrip) return;
++      let count = gZenWorkspaces.makeSurePinTabIsInCorrectPosition();
++      if (gBrowser.pinnedTabCount !== (verticalTabsContainer.children.length - count - 1 + gZenWorkspaces.getCurrentEssentialsContainer().children.length)) {
 +        let tabs = this.allTabs.filter(tab => !tab.hasAttribute("zen-glance-tab"));
          for (let i = 0; i < numPinned; i++) {
            tabs[i].style.marginInlineStart = "";
 -          verticalTabsContainer.appendChild(tabs[i]);
-+          tabs[i].hasAttribute("zen-essential") ? ZenWorkspaces.getCurrentEssentialsContainer().appendChild(tabs[i].group?.hasAttribute("split-view-group") ? tabs[i].group : tabs[i]) : verticalTabsContainer.insertBefore(tabs[i].group?.hasAttribute("split-view-group") ? tabs[i].group : tabs[i], verticalTabsContainer.lastChild);
++          tabs[i].hasAttribute("zen-essential") ? gZenWorkspaces.getCurrentEssentialsContainer().appendChild(tabs[i].group?.hasAttribute("split-view-group") ? tabs[i].group : tabs[i]) : verticalTabsContainer.insertBefore(tabs[i].group?.hasAttribute("split-view-group") ? tabs[i].group : tabs[i], verticalTabsContainer.lastChild);
          }
        }
  

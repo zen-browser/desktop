@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index b1481a11ef3..1697ec38b45 100644
+index b1481a11ef38037bec13939928f72f9772e335a9..925f0dc34bf84bb9e0f143f5c1973a87e7b4f8ac 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 @@ -35,6 +35,9 @@ const QUERYINDEX_SWITCHTAB = 9;

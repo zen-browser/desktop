@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/PlacesUIUtils.sys.mjs b/browser/components/places/PlacesUIUtils.sys.mjs
-index 1f5e163bae58f3f1cac750ca32846cc8a80bd2ca..16034842b4ca5295aa3c9237db55035ecc4016d2 100644
+index 1f5e163bae58f3f1cac750ca32846cc8a80bd2ca..028b899b7a5da7ba398965861ff044e596c27666 100644
 --- a/browser/components/places/PlacesUIUtils.sys.mjs
 +++ b/browser/components/places/PlacesUIUtils.sys.mjs
 @@ -59,6 +59,7 @@ class BookmarkState {
@@ -157,20 +157,12 @@ index 1f5e163bae58f3f1cac750ca32846cc8a80bd2ca..16034842b4ca5295aa3c9237db55035e
    /**
     * Append transactions to update tags by given information.
     *
-@@ -903,8 +1012,15 @@ export var PlacesUIUtils = {
+@@ -903,7 +1012,7 @@ export var PlacesUIUtils = {
      aNode,
      aWhere,
      aWindow,
 -    { aPrivate = false, userContextId = 0 } = {}
 +    { aPrivate = false, userContextId = undefined } = {}
    ) {
-+    if (typeof userContextId == "undefined") {
-+      try {
-+        let browserWindow = getBrowserWindow(aWindow);
-+        userContextId = browserWindow.ZenWorkspaces.getDefaultContainer();
-+      } catch {}
-+    }
-+
      if (
        aNode &&
-       lazy.PlacesUtils.nodeIsURI(aNode) &&

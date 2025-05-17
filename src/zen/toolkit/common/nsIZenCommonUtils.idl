@@ -28,5 +28,9 @@ interface nsIZenCommonUtils : nsISupports {
    * @returns True if the current context can share data, false otherwise.
    */
   boolean canShare();
+  /*
+   * @brief Play a single haptic feedback note if supported.
+   */
+  void playHapticFeedback();
 };
 

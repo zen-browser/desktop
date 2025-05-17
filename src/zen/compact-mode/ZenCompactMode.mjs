@@ -447,9 +447,6 @@ var gZenCompactModeManager = {
 
   addMouseActions() {
     gURLBar.textbox.addEventListener('mouseenter', (event) => {
-      if (!gZenVerticalTabsManager._hasSetSingleToolbar) {
-        return;
-      }
       if (event.target.closest('#urlbar[zen-floating-urlbar]')) {
         // Ignore sidebar mouse enter if the urlbar is floating
         this.clearFlashTimeout('has-hover' + gZenVerticalTabsManager._hasSetSingleToolbar);
@@ -507,7 +504,8 @@ var gZenCompactModeManager = {
 
         if (
           event.explicitOriginalTarget.closest('#urlbar[zen-floating-urlbar]') ||
-          document.documentElement.getAttribute('supress-primary-adjustment') === 'true' ||
+          (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
+            gZenVerticalTabsManager._hasSetSingleToolbar) ||
           this._hasHoveredUrlbar
         ) {
           return;
@@ -617,10 +615,12 @@ var gZenCompactModeManager = {
       this.preference &&
       !this.isSidebarPotentiallyOpen() &&
       this._canShowBackgroundTabToast &&
-      !gZenGlanceManager._animating
+      !gZenGlanceManager._animating &&
+      !this._nextTimeWillBeActive
     ) {
       gZenUIManager.showToast('zen-background-tab-opened-toast');
     }
+    delete this._nextTimeWillBeActive;
   },
 };
 

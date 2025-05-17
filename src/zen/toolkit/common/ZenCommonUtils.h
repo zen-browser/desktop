@@ -32,17 +32,28 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
    */
   static auto IsSharingSupported() -> bool;
   /**
-    * @brief Helper function to share data via the native dialogs.
-    * @param aWindow The window to use for the share dialog.
-    * @param url The URL to share.
-    * @param title The title of the share.
-    * @param text The text to share.
-    * @returns A promise that resolves when the share is complete.
-    */
+   * @brief Helper function to share data via the native dialogs.
+   * @param aWindow The window to use for the share dialog.
+   * @param url The URL to share.
+   * @param title The title of the share.
+   * @param text The text to share.
+   * @returns A promise that resolves when the share is complete.
+   */
   static auto ShareInternal(nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* url,
       const nsACString& title, const nsACString& text, uint32_t aX, uint32_t aY,
       uint32_t aWidth, uint32_t aHeight)
     -> nsresult;
+  /**
+   * @brief Helper function to play haptic feedback.
+   */
+#if !defined(XP_MACOSX)
+  static auto PlayHapticFeedbackInternal() -> nsresult {
+    // No-op on non-macOS platforms
+    return NS_OK;
+  }
+#else
+  static auto PlayHapticFeedbackInternal() -> nsresult;
+#endif
 };
 
 } // namespace zen

@@ -1,5 +1,8 @@
 name: Windows PGO Builds
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:

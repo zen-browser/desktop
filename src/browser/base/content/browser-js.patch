@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..bd95ef5d6b99399c859af1cf71d9d62477f4ac2b 100644
+index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..08568d90f888cc262a23ffaa72e985e7c3463b93 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -15,7 +15,7 @@ index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..bd95ef5d6b99399c859af1cf71d9d624
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
 +    gZenViewSplitter.onLocationChange(gBrowser.selectedBrowser);
-+    ZenWorkspaces.onLocationChange(gBrowser.selectedBrowser);
++    gZenWorkspaces.onLocationChange(gBrowser.selectedBrowser);
 +    gZenTabUnloader.onLocationChange(gBrowser.selectedBrowser);
 +    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser);
 +
@@ -27,7 +27,7 @@ index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..bd95ef5d6b99399c859af1cf71d9d624
        ignoreFragmentWhenComparing
      );
 -    let browsers = aWindow.gBrowser.browsers;
-+    let browsers = aWindow.ZenWorkspaces.allUsedBrowsers;
++    let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
      for (let i = 0; i < browsers.length; i++) {
        let browser = browsers[i];
        let browserCompare = cleanURL(
@@ -36,7 +36,7 @@ index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..bd95ef5d6b99399c859af1cf71d9d624
  
          if (!doAdopt) {
 -          aWindow.gBrowser.tabContainer.selectedIndex = i;
-+          aWindow.ZenWorkspaces.switchIfNeeded(browser, i);
++          aWindow.gZenWorkspaces.switchIfNeeded(browser, i);
          }
  
          return true;

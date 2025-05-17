@@ -27,5 +27,6 @@
     "regex": "cpp",
     "type_traits": "cpp"
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "cmake.sourceDirectory": "/Users/maurob/work/desktop/tools/virustotal-checker"
 }

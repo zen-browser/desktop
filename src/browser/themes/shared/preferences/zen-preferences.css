@@ -380,7 +380,7 @@ groupbox h2 {
 }
 
 .zenCKSOption-unsafed {
-  color: yellow;
+  color: light-dark(orange, yellow);
   margin-left: 10px;
   margin-top: 5px;
 }
@@ -390,7 +390,7 @@ groupbox h2 {
 }
 
 .zenCKSOption-input.zenCKSOption-input-unsafed {
-  border-color: yellow;
+  border-color: light-dark(orange, yellow);
 }
 
 .zenCKSOption-input.zenCKSOption-input-valid {

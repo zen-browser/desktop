@@ -18,7 +18,7 @@
       super();
       if (
         !Services.prefs.getBoolPref('zen.theme.gradient', true) ||
-        !ZenWorkspaces.shouldHaveWorkspaces
+        !gZenWorkspaces.shouldHaveWorkspaces
       ) {
         return;
       }
@@ -66,7 +66,7 @@
     }
 
     async onDarkModeChange(event, skipUpdate = false) {
-      const currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
+      const currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
       this.onWorkspaceChange(currentWorkspace, skipUpdate);
     }
 
@@ -267,6 +267,7 @@
       }
       if (previousTexture !== this.currentTexture) {
         this.updateCurrentWorkspace();
+        Services.zen.playHapticFeedback();
       }
     }
 
@@ -1104,7 +1105,7 @@
           return;
         }
         // Do not rebuild if the workspace is not the same as the current one
-        const windowWorkspace = await browser.ZenWorkspaces.getActiveWorkspace();
+        const windowWorkspace = await browser.gZenWorkspaces.getActiveWorkspace();
         if (windowWorkspace.uuid !== uuid && theme !== null) {
           return;
         }
@@ -1306,18 +1307,6 @@
       return theme;
     }
 
-    get riceManager() {
-      if (!this._riceManager) {
-        this._riceManager = new window.ZenRiceManager();
-      }
-      return this._riceManager;
-    }
-
-    shareTheme() {
-      const manager = this.riceManager;
-      manager.openShareDialog();
-    }
-
     getNativeAccentColor() {
       return Services.prefs.getStringPref('zen.theme.accent-color');
     }
@@ -1385,13 +1374,13 @@
         this.currentRotation,
         this.currentTexture
       );
-      let currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
+      let currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
 
       if (!skipSave) {
         await ZenWorkspacesStorage.saveWorkspaceTheme(currentWorkspace.uuid, gradient);
-        await ZenWorkspaces._propagateWorkspaceData();
+        await gZenWorkspaces._propagateWorkspaceData();
         gZenUIManager.showToast('zen-panel-ui-gradient-generator-saved-message');
-        currentWorkspace = await ZenWorkspaces.getActiveWorkspace();
+        currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
       }
 
       await this.onWorkspaceChange(currentWorkspace, true, skipSave ? gradient : null);

@@ -74,5 +74,6 @@ auto nsZenNativeShareInternal::ShowNativeDialog(nsCOMPtr<mozIDOMWindowProxy>& aW
   [sharingPicker showRelativeToRect:rect
                              ofView:cocoaMru.contentView
                       preferredEdge:NSMaxYEdge];
+  [sharingPicker release];
   return NS_OK;
 }

@@ -4,5 +4,6 @@
 ["browser_pinned_removed.js"]
 ["browser_pinned_reorder_changed_label.js"]
 ["browser_pinned_reordered.js"]
+["browser_pinned_to_essential.js"]
 
 ["browser_issue_7654.js"]

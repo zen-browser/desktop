@@ -62,10 +62,10 @@
       this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
       this._zenClickEventListener = this._onTabClick.bind(this);
-      ZenWorkspaces.addChangeListeners(this.onWorkspaceChange.bind(this));
+      gZenWorkspaces.addChangeListeners(this.onWorkspaceChange.bind(this));
 
       await ZenPinnedTabsStorage.promiseInitialized;
-      ZenWorkspaces._resolvePinnedInitialized();
+      gZenWorkspaces._resolvePinnedInitialized();
     }
 
     async onWorkspaceChange(newWorkspace, onInit) {
@@ -90,14 +90,18 @@
       if (!iconUrl) {
         try {
           setTimeout(() => {
-            PlacesUtils.favicons.getFaviconURLForPage(
-              tab.linkedBrowser.currentURI,
-              (url) => {
-                if (url) gBrowser.setIcon(tab, url.spec);
-              },
+            try {
+              PlacesUtils.favicons.getFaviconURLForPage(
+                tab.linkedBrowser?.currentURI,
+                (url) => {
+                  if (url) gBrowser.setIcon(tab, url.spec);
+                },
 
-              0
-            );
+                0
+              );
+            } catch (error) {
+              console.warn('Error getting favicon URL:', error);
+            }
           });
         } catch {}
       } else {
@@ -151,7 +155,7 @@
     }
 
     async _refreshPinnedTabs({ init = false } = {}) {
-      await ZenWorkspaces.promiseSectionsInitialized;
+      await gZenWorkspaces.promiseSectionsInitialized;
       await this._initializePinsCache();
       await this._initializePinnedTabs(init);
     }
@@ -204,7 +208,7 @@
       const pinsToCreate = new Set(pins.map((p) => p.uuid));
 
       // First pass: identify existing tabs and remove those without pins
-      for (let tab of ZenWorkspaces.allStoredTabs) {
+      for (let tab of gZenWorkspaces.allStoredTabs) {
         const pinId = tab.getAttribute('zen-pin-id');
         if (!pinId) {
           continue;
@@ -304,14 +308,14 @@
           this.log(`Created new pinned tab for pin ${pin.uuid} (isEssential: ${pin.isEssential})`);
           gBrowser.pinTab(newTab);
           if (!pin.isEssential) {
-            const container = document.querySelector(
-              `#vertical-pinned-tabs-container .zen-workspace-tabs-section[zen-workspace-id="${pin.workspaceUuid}"]`
-            );
+            const container = gZenWorkspaces.workspaceElement(
+              pin.workspaceUuid
+            )?.pinnedTabsContainer;
             if (container) {
               container.insertBefore(newTab, container.lastChild);
             }
           } else {
-            ZenWorkspaces.getEssentialsSection(pin.containerTabId).appendChild(newTab);
+            gZenWorkspaces.getEssentialsSection(pin.containerTabId).appendChild(newTab);
           }
           gBrowser.tabContainer._invalidateCachedTabs();
           newTab.initialize();
@@ -501,8 +505,8 @@
         tab.removeAttribute('zen-pin-id');
         tab.removeAttribute('zen-essential'); // Just in case
 
-        if (!tab.hasAttribute('zen-workspace-id') && ZenWorkspaces.workspaceEnabled) {
-          const workspace = await ZenWorkspaces.getActiveWorkspace();
+        if (!tab.hasAttribute('zen-workspace-id') && gZenWorkspaces.workspaceEnabled) {
+          const workspace = await gZenWorkspaces.getActiveWorkspace();
           tab.setAttribute('zen-workspace-id', workspace.uuid);
         }
       }
@@ -591,7 +595,7 @@
       let nextTab = findNextTab(1) || findNextTab(-1);
 
       if (!nextTab) {
-        ZenWorkspaces.selectEmptyTab();
+        gZenWorkspaces.selectEmptyTab();
         return;
       }
 
@@ -669,7 +673,7 @@
           : [TabContextMenu.contextTab];
       for (let i = 0; i < tabs.length; i++) {
         let tab = tabs[i];
-        const section = ZenWorkspaces.getEssentialsSection(tab);
+        const section = gZenWorkspaces.getEssentialsSection(tab);
         if (section.children.length >= this.MAX_ESSENTIALS_TABS) {
           continue;
         }
@@ -700,7 +704,7 @@
         }
         tab.setAttribute('zenDefaultUserContextId', true);
         if (tab.selected) {
-          ZenWorkspaces.switchTabIfNeeded(tab);
+          gZenWorkspaces.switchTabIfNeeded(tab);
         }
         this._onTabMove(tab);
         this.onTabIconChanged(tab);
@@ -723,13 +727,13 @@
       for (let i = 0; i < tabs.length; i++) {
         const tab = tabs[i];
         tab.removeAttribute('zen-essential');
-        if (ZenWorkspaces.workspaceEnabled && ZenWorkspaces.getActiveWorkspaceFromCache().uuid) {
-          tab.setAttribute('zen-workspace-id', ZenWorkspaces.getActiveWorkspaceFromCache().uuid);
+        if (gZenWorkspaces.workspaceEnabled && gZenWorkspaces.getActiveWorkspaceFromCache().uuid) {
+          tab.setAttribute('zen-workspace-id', gZenWorkspaces.getActiveWorkspaceFromCache().uuid);
         }
         if (unpin) {
           gBrowser.unpinTab(tab);
         } else {
-          const pinContainer = ZenWorkspaces.pinnedTabsContainer;
+          const pinContainer = gZenWorkspaces.pinnedTabsContainer;
           pinContainer.prepend(tab);
           gBrowser.tabContainer._invalidateCachedTabs();
           this._onTabMove(tab);
@@ -809,7 +813,7 @@
     moveToAnotherTabContainerIfNecessary(event, movingTabs) {
       try {
         const pinnedTabsTarget =
-          event.target.closest('#vertical-pinned-tabs-container') ||
+          event.target.closest('.zen-workspace-pinned-tabs-section') ||
           event.target.closest('.zen-current-workspace-indicator');
         const essentialTabsTarget = event.target.closest('.zen-essentials-container');
         const tabsTarget = event.target.closest('#tabbrowser-arrowscrollbox');
@@ -942,9 +946,12 @@
     }
 
     removeTabContainersDragoverClass() {
+      if (this._dragIndicator) {
+        Services.zen.playHapticFeedback();
+      }
       this.dragIndicator.remove();
       this._dragIndicator = null;
-      ZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
+      gZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
     }
 
     get dragIndicator() {
@@ -1007,9 +1014,9 @@
         : draggedTab;
       if (event.target.closest('.zen-current-workspace-indicator')) {
         this.removeTabContainersDragoverClass();
-        ZenWorkspaces.activeWorkspaceIndicator?.setAttribute('open', true);
+        gZenWorkspaces.activeWorkspaceIndicator?.setAttribute('open', true);
       } else {
-        ZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
+        gZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
       }
 
       // If there's no valid target tab, nothing to do
@@ -1043,16 +1050,19 @@
 
       // Calculate middle to decide 'before' or 'after'
       const rect = targetTab.getBoundingClientRect();
-
+      let shouldPlayHapticFeedback = false;
       if (isVertical) {
         const separation = 8;
         const middleY = targetTab.screenY + rect.height / 2;
         const indicator = this.dragIndicator;
         let top = 0;
         if (event.screenY > middleY) {
-          top = rect.top + rect.height + 'px';
+          top = Math.round(rect.top + rect.height) + 'px';
         } else {
-          top = rect.top + 'px';
+          top = Math.round(rect.top) + 'px';
+        }
+        if (indicator.style.top !== top) {
+          shouldPlayHapticFeedback = true;
         }
         indicator.setAttribute('orientation', 'horizontal');
         indicator.style.setProperty('--indicator-left', rect.left + separation / 2 + 'px');
@@ -1065,15 +1075,21 @@
         const indicator = this.dragIndicator;
         let left = 0;
         if (event.screenX > middleX) {
-          left = rect.left + rect.width + 1 + 'px';
+          left = Math.round(rect.left + rect.width + 1) + 'px';
         } else {
-          left = rect.left - 2 + 'px';
+          left = Math.round(rect.left - 2) + 'px';
+        }
+        if (indicator.style.left !== left) {
+          shouldPlayHapticFeedback = true;
         }
         indicator.setAttribute('orientation', 'vertical');
         indicator.style.setProperty('--indicator-top', rect.top + separation / 2 + 'px');
         indicator.style.setProperty('--indicator-height', rect.height - separation + 'px');
         indicator.style.left = left;
         indicator.style.removeProperty('top');
+      }
+      if (shouldPlayHapticFeedback) {
+        Services.zen.playHapticFeedback();
       }
     }
 

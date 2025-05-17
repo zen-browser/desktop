@@ -31,7 +31,7 @@
         this._initSidebarScrolling();
         this._hideUnusedElements();
 
-        ZenWorkspaces.init();
+        gZenWorkspaces.init();
         gZenVerticalTabsManager.init();
         gZenUIManager.init();
 
@@ -61,7 +61,7 @@
     },
 
     delayedStartupFinished() {
-      ZenWorkspaces.promiseInitialized.then(async () => {
+      gZenWorkspaces.promiseInitialized.then(async () => {
         await delayedStartupPromise;
         await SessionStore.promiseAllWindowsRestored;
         setTimeout(() => {

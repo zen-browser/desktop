@@ -426,7 +426,6 @@
   list-style-image: url('customize.svg') !important;
 }
 
-#appmenu-zen-share-rice,
 #zen-copy-current-url-button {
   list-style-image: url('share.svg');
 }

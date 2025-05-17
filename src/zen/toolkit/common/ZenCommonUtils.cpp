@@ -11,6 +11,8 @@
 #include "nsServiceManagerUtils.h"
 #include "nsISharePicker.h"
 
+#include "mozilla/StaticPrefs_zen.h"
+
 #if defined(XP_WIN)
 #  include "mozilla/WindowsVersion.h"
 #endif
@@ -57,11 +59,16 @@ using mozilla::dom::WindowGlobalChild;
   *canShare = false; \
   return NS_OK;
 
-/*
-  * @brief Check if the current context can share data.
-  * @param data The data to share.
-  * @returns True if the current context can share data, false otherwise.
-  */
+NS_IMETHODIMP
+ZenCommonUtils::PlayHapticFeedback() {
+  // We don't have any haptic feedback on non-macOS platforms
+  // so we can just return.
+  if (!mozilla::StaticPrefs::zen_haptic_feedback_enabled()) {
+    return NS_OK;
+  }
+  return PlayHapticFeedbackInternal();
+}
+
 NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
@@ -103,7 +110,7 @@ nsresult ZenCommonUtils::ShareInternal(nsCOMPtr<mozIDOMWindowProxy>& aWindow, ns
 auto ZenCommonUtils::IsSharingSupported() -> bool {
 #if defined(XP_WIN) && !defined(__MINGW32__)
   // The first public build that supports ShareCanceled API
-  return IsWindows10BuildOrLater(18956);
+  return mozilla::IsWindows10BuildOrLater(18956);
 #elif defined(NS_ZEN_CAN_SHARE_NATIVE)
   return NS_ZEN_CAN_SHARE_NATIVE;
 #else

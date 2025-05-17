@@ -73,7 +73,10 @@ var gZenCommonActions = {
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
       let button;
-      if (Services.zen.canShare()) {
+      if (
+        Services.zen.canShare() &&
+        (currentUrl.startsWith('http://') || currentUrl.startsWith('https://'))
+      ) {
         button = {
           id: 'zen-copy-current-url-button',
           command: (event) => {

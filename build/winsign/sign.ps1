@@ -30,8 +30,8 @@ Start-Job -Name "DownloadGitl10n" -ScriptBlock {
 Start-Job -Name "SurferInit" -ScriptBlock {
     param($PWD)
     cd $PWD
-    surfer -- ci --brand release
     npm run import -- --verbose
+    npm run surfer -- ci --brand release
 } -Verbose -ArgumentList $PWD -Debug
 
 echo "Downloading artifacts info"

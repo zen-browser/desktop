@@ -15,7 +15,7 @@ index 3d5173315812589c0b79beec5f0419fc37cb8868..c4216db9e414fbbaead6ecd89b40366b
      TelemetryTimestamps.add("delayedStartupStarted");
  
      this._cancelDelayedStartup();
-+    ZenWorkspaces.afterLoadInit();
++    gZenWorkspaces.afterLoadInit();
  
      gBrowser.addEventListener(
        "PermissionStateChange",

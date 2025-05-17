@@ -275,7 +275,7 @@ var gZenMarketplaceManager = {
     const themeList = document.createElement('div');
 
     for (const theme of Object.values(themes).sort((a, b) => a.name.localeCompare(b.name))) {
-      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-z_-]+/g, '')}`;
+      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-Za-z_-]+/g, '')}`;
       const isThemeEnabled = theme.enabled === undefined || theme.enabled;
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem">

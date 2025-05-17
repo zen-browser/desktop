@@ -1,4 +1,6 @@
 name: Pull request test
+permissions:
+  contents: read
 
 on:
   pull_request:

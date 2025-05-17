@@ -71,10 +71,10 @@ var gZenUIManager = {
     );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
-    setTimeout(gURLBar.formatValue.bind(gURLBar), 0);
+    setTimeout(gURLBar.formatValue.bind(gURLBar), 350);
     if (!this._preventToolbarRebuild) {
       setTimeout(() => {
-        ZenWorkspaces.updateTabsContainers();
+        gZenWorkspaces.updateTabsContainers();
       }, 0);
     }
     delete this._preventToolbarRebuild;
@@ -416,9 +416,28 @@ var gZenUIManager = {
 
   // Section: Notification messages
   _createToastElement(messageId, options) {
+    const createButton = () => {
+      const button = document.createXULElement('button');
+      button.id = options.button.id;
+      button.classList.add('footer-button');
+      button.classList.add('primary');
+      button.addEventListener('command', options.button.command);
+      return button;
+    };
+
     // Check if this message ID already exists
     for (const child of this._toastContainer.children) {
       if (child._messageId === messageId) {
+        child.removeAttribute('button');
+        if (options.button) {
+          const button = createButton();
+          const existingButton = child.querySelector('button');
+          if (existingButton) {
+            existingButton.remove();
+          }
+          child.appendChild(button);
+          child.setAttribute('button', true);
+        }
         return [child, true];
       }
     }
@@ -435,12 +454,9 @@ var gZenUIManager = {
     }
     wrapper.appendChild(element);
     if (options.button) {
-      const button = document.createXULElement('button');
-      button.id = options.button.id;
-      button.classList.add('footer-button');
-      button.classList.add('primary');
-      button.addEventListener('command', options.button.command);
+      const button = createButton();
       wrapper.appendChild(button);
+      wrapper.setAttribute('button', true);
     }
     wrapper.classList.add('zen-toast');
     wrapper._messageId = messageId;
@@ -763,7 +779,7 @@ var gZenVerticalTabsManager = {
       // on purpose, we set the orient to horizontal, because the arrowScrollbox is vertical
       gBrowser.tabContainer.arrowScrollbox.scrollbox.setAttribute(
         'orient',
-        isVerticalTabs && ZenWorkspaces.workspaceEnabled ? 'horizontal' : 'vertical'
+        isVerticalTabs && gZenWorkspaces.workspaceEnabled ? 'horizontal' : 'vertical'
       );
 
       const buttonsTarget = document.getElementById('zen-sidebar-top-buttons-customization-target');

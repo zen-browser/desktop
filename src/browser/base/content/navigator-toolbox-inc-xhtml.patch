@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 00c8976d3e258c0875d7da2f3ec823d8907a84c9..b5735712aaa7c2ae2baa4b858e735413b130ca94 100644
+index 00c8976d3e258c0875d7da2f3ec823d8907a84c9..cc61d5a845b5ce22a61f5a1aab8b280b2bcdf101 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -22,27 +22,24 @@ index 00c8976d3e258c0875d7da2f3ec823d8907a84c9..b5735712aaa7c2ae2baa4b858e735413
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -50,6 +50,10 @@
+@@ -50,6 +50,8 @@
                tooltip="tabbrowser-tab-tooltip"
                orient="horizontal"
                stopwatchid="tabClick">
-+<html:div id="zen-essentials-wrapper" skipintoolbarset="true"></html:div>
-+<hbox id="zen-current-workspace-indicator-container"></hbox>
++<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">
-+<html:div id="zen-browser-tabs-container">
            <hbox class="tab-drop-indicator" hidden="true"/>
            <html:span id="tab-drag-empty-feedback" role="presentation"/>
  # If the name (tabbrowser-arrowscrollbox) or structure of this changes
-@@ -76,6 +80,8 @@
+@@ -76,6 +78,7 @@
                                tooltip="dynamic-shortcut-tooltip"
                                data-l10n-id="tabs-toolbar-new-tab"/>
            <html:span id="tabbrowser-tab-a11y-desc" hidden="true"/>
 +</html:div>
-+</html:div>
          </tabs>
  
          <toolbarbutton id="new-tab-button"
-@@ -101,9 +107,10 @@
+@@ -101,9 +104,10 @@
  #include private-browsing-indicator.inc.xhtml
      <toolbarbutton class="content-analysis-indicator toolbarbutton-1 content-analysis-indicator-icon"/>
  

@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index 619bb2af5a3a0995fc93fa040696dd2854848ab5..bbc6bad906e9ccaf668ca99f4a0411f564ef1e56 100644
+index 619bb2af5a3a0995fc93fa040696dd2854848ab5..14ad5f6122971a0a0dc20d22acdc073f84965dad 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
 @@ -500,7 +500,7 @@ export class CustomizeMode {
@@ -20,7 +20,15 @@ index 619bb2af5a3a0995fc93fa040696dd2854848ab5..bbc6bad906e9ccaf668ca99f4a0411f5
      customizer.hidden = true;
      browser.hidden = false;
  
-@@ -3125,6 +3125,20 @@ export class CustomizeMode {
+@@ -1173,6 +1173,7 @@ export class CustomizeMode {
+     return (
+       aNode.localName == "toolbarbutton" ||
+       aNode.localName == "toolbaritem" ||
++      aNode.localName == "zen-workspace-icons" ||
+       aNode.localName == "toolbarseparator" ||
+       aNode.localName == "toolbarspring" ||
+       aNode.localName == "toolbarspacer"
+@@ -3125,6 +3126,20 @@ export class CustomizeMode {
          if (makeSpaceImmediately) {
            aDraggedOverItem.setAttribute("notransition", "true");
          }

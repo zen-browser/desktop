@@ -11,7 +11,7 @@ var ZenWorkspacesStorage = {
       Weave: 'resource://services-sync/main.sys.mjs',
     });
 
-    if (!window.ZenWorkspaces) return;
+    if (!window.gZenWorkspaces) return;
     await this._ensureTable();
     await ZenWorkspaceBookmarksStorage.init();
   },
@@ -77,7 +77,7 @@ var ZenWorkspacesStorage = {
           await ZenWorkspacesStorage.migrateWorkspacesFromJSON();
         }
 
-        ZenWorkspaces._resolveDBInitialized();
+        gZenWorkspaces._resolveDBInitialized();
       }
     );
   },

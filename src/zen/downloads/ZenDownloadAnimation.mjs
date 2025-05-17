@@ -43,7 +43,10 @@
     }
 
     #handleNewDownload() {
-      if (!Services.prefs.getBoolPref('zen.downloads.download-animation')) {
+      if (
+        !Services.prefs.getBoolPref('zen.downloads.download-animation') ||
+        !ZenMultiWindowFeature.isActiveWindow
+      ) {
         return;
       }
 

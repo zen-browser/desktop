@@ -38,7 +38,7 @@ def get_rc_response() -> Optional[str]:
     for tag_dict in data["tags"]:
       tag = tag_dict["tag"]
       if (tag.startswith("FIREFOX") and tag.endswith("_BUILD1")
-              and "ESR" not in tag and "b" not in tag):
+              and "ESR" not in tag and "b" not in tag and "ANDROID" not in tag):
         return (tag.replace("FIREFOX_", "").replace("_BUILD1",
                                                     "").replace("_", "."))
   except (FileNotFoundError, json.JSONDecodeError) as e:

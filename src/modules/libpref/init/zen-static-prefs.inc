@@ -11,3 +11,8 @@
   value: 1
   mirror: always
 #endif
+
+- name: zen.haptic-feedback.enabled
+  type: bool
+  value: true
+  mirror: always

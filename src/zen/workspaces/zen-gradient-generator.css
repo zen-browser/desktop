@@ -180,7 +180,7 @@
   }
 
   &::-moz-range-track {
-    background: var(--zen-colors-border);
+    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
     border-radius: 999px;
     height: 6px;
   }
@@ -225,9 +225,9 @@
     transform: translate(-50%, -50%);
 
     &:first-of-type {
-      width: 30px;
-      height: 30px;
-      border-width: 3px;
+      width: 36px;
+      height: 36px;
+      border-width: 4px;
       z-index: 2;
       transition: transform 0.1s;
       &:hover {
@@ -264,7 +264,7 @@
   transform: translateX(-50%);
   & .separator,
   & #PanelUI-zen-gradient-generator-color-toggle-algo {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.5));
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.15));
   }
 
   & button {
@@ -356,13 +356,13 @@
     height: 4px;
     width: 4px;
     border-radius: 50%;
-    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.2));
+    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
     position: absolute;
     transition: opacity 0.2s;
     transform: translate(-50%, -50%);
     pointer-events: none;
     &:not(.active) {
-      opacity: 0.2;
+      opacity: 0.4;
     }
   }
 

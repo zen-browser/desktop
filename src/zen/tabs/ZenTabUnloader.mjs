@@ -94,7 +94,7 @@
         return;
       }
       const currentTimestamp = Date.now();
-      const tabs = ZenWorkspaces.allStoredTabs;
+      const tabs = gZenWorkspaces.allStoredTabs;
       for (let i = 0; i < tabs.length; i++) {
         const tab = tabs[i];
         if (this.unloader.canUnloadTab(tab, currentTimestamp)) {

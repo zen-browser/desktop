@@ -93,6 +93,10 @@
 /* ==========================================================================
    Toolbox Padding & Variables
    ========================================================================== */
+#tabbrowser-arrowscrollbox {
+  height: 100%;
+}
+
 #browser {
   /* Define base padding with platform-specific overrides */
   --zen-min-toolbox-padding: 0.4rem;
@@ -169,7 +173,7 @@
     max-height 0.2s ease-in-out;
 
   /* Hide separator when specified by parent container attribute */
-  #vertical-pinned-tabs-container .zen-workspace-tabs-section[hide-separator] & {
+  .zen-workspace-pinned-tabs-section[hide-separator] & {
     max-height: 0;
     margin: 0 auto; /* Collapse margins */
   }
@@ -211,7 +215,7 @@
    Tabs Toolbar Customization Target
    ========================================================================== */
 #TabsToolbar-customization-target {
-  position: relative; /* For pseudo-element positioning */
+  position: relative;
   max-width: 100%;
   gap: 0; /* Remove default gap */
 
@@ -452,40 +456,11 @@
   }
 }
 
-/* Container for browser tabs within the sidebar */
-#zen-browser-tabs-container {
-  overflow-x: clip !important; /* Force horizontal clipping */
-  position: relative; /* Positioning context */
-}
-
 /* ==========================================================================
    Pinned Tabs Container Specific Styles
    ========================================================================== */
-#vertical-pinned-tabs-container {
-  padding-inline-end: 0 !important; /* Remove end padding */
-  display: flex !important; /* Use flex layout */
-  flex-direction: column; /* Stack pinned tabs vertically */
-  min-height: fit-content !important;
-  overflow-x: clip; /* Clip horizontal overflow */
-  overflow-y: visible; /* Allow vertical overflow (for menus etc.) */
-  max-height: unset !important; /* Allow it to grow */
-
-  /* Make non-selected, non-hovered pinned tab backgrounds transparent */
-  & .tabbrowser-tab:not(:hover) .tab-background:not([selected]):not([multiselected]) {
-    background: transparent;
-  }
-
-  /* Center content within pinned tabs */
-  & .tabbrowser-tab .tab-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Ensure glance tabs within pinned container fit their content */
-  .tabbrowser-tab[zen-glance-tab='true'] {
-    width: fit-content !important;
-  }
+:root[zen-workspace-id] #vertical-pinned-tabs-container {
+  display: none;
 }
 
 /* Styling for the label shown when hovering the reset-pin button */
@@ -523,6 +498,7 @@
   & .tab-audio-button {
     margin-inline-start: -4px;
     margin-inline-end: 2px;
+    margin-top: -1px;
   }
 
   & #titlebar {
@@ -566,16 +542,6 @@
     }
   }
 
-  /* Style pinned tabs container when it has visible tabs */
-  & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
-    position: relative;
-
-    /* Make pinned tabs take full width */
-    & .tabbrowser-tab {
-      width: 100%;
-    }
-  }
-
   /* Style bottom buttons area when expanded */
   & #zen-sidebar-bottom-buttons {
     display: flex;
@@ -586,7 +552,7 @@
   }
 
   /* Set min height for tabs in the essentials wrapper */
-  & #zen-essentials-wrapper {
+  & #zen-essentials {
     --tab-min-height: 44px;
   }
 
@@ -770,7 +736,7 @@
     min-width: unset !important;
   }
 
-  & #zen-essentials-wrapper {
+  & #zen-essentials {
     margin-left: unset !important;
   }
 
@@ -828,15 +794,6 @@
   & #EssentialsToolbar,
   & #essentials-accordion-header {
     display: none !important;
-  }
-
-  /* Style pinned tabs container */
-  & #vertical-pinned-tabs-container:has(tab:not([hidden])) {
-    position: relative;
-    /* Constrain pinned tab width */
-    & .tabbrowser-tab {
-      max-width: var(--tab-min-width);
-    }
   }
 
   /* Adjust customization target padding and separator */
@@ -1268,10 +1225,14 @@
    Mark: Essentials Toolbar / Section Styles
    ========================================================================== */
 
-#zen-essentials-wrapper,
+#zen-essentials,
 #zen-current-workspace-indicator-container {
   margin-left: calc(-1 * var(--zen-toolbox-padding));
   min-width: calc(100% + var(--zen-toolbox-padding) * 2);
+}
+
+#zen-essentials {
+  z-index: 1;
 }
 
 /* Container for essential items (often pinned/favorite tabs) */
@@ -1304,12 +1265,23 @@
   padding: 0 var(--zen-toolbox-padding);
   display: grid;
 
+  position: absolute;
+
   &[hidden='true'] {
     --hidden-essentials-width: var(--zen-sidebar-width);
     max-width: var(
       --hidden-essentials-width
     ) !important; /* To still allow essentials to grid the tabs */
     min-width: var(--hidden-essentials-width) !important;
+
+    /* Hide section visually and disable interaction when hidden attribute is present */
+    visibility: hidden;
+    pointer-events: none;
+    position: fixed; /* Fix position to prevent scrolling */
+  }
+
+  &[cloned] {
+    pointer-events: none;
   }
 }
 
@@ -1485,9 +1457,6 @@
    ========================================================================== */
 
 .zen-workspace-tabs-section {
-  position: absolute;
-  transform: translateX(-100%);
-
   &:not(.zen-essentials-container) {
     display: flex;
     min-width: calc(100% - var(--zen-toolbox-padding) * 2); /* Set width based on padding */
@@ -1496,13 +1465,6 @@
   &:not(.zen-current-workspace-indicator):not(.zen-essentials-container) {
     padding: 0 var(--zen-toolbox-padding);
     width: 100%;
-  }
-
-  /* Hide section visually and disable interaction when hidden attribute is present */
-  &[hidden='true'] {
-    visibility: hidden;
-    pointer-events: none;
-    position: fixed; /* Fix position to prevent scrolling */
   }
 }
 

@@ -1,4 +1,5 @@
 [DEFAULT]
 prefs = ["zen.workspaces.container-specific-essentials-enabled=true"]
 
+["browser_container_auto_switch.js"]
 ["browser_container_specific_essentials.js"]

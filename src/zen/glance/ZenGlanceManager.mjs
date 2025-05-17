@@ -127,7 +127,7 @@
         if (gZenVerticalTabsManager._prefsRightSide) {
           this.sidebarButtons.setAttribute('right', true);
         } else {
-          this.sidebarButtons.removeAttribute('right');
+          this.sidebarButtons.setAttribute('right', false);
         }
         for (const button of this.sidebarButtons.querySelectorAll('toolbarbutton')) {
           button.style.opacity = 0;
@@ -256,7 +256,12 @@
       hasFocused = false,
       skipPermitUnload = false,
     } = {}) {
-      if (this._animating || !this.#currentBrowser || this.animatingOpen || this._duringOpening) {
+      if (
+        (this._animating && !onTabClose) ||
+        !this.#currentBrowser ||
+        (this.animatingOpen && !onTabClose) ||
+        this._duringOpening
+      ) {
         return;
       }
 
@@ -604,7 +609,7 @@
     }
 
     finishOpeningGlance() {
-      ZenWorkspaces.updateTabsContainers();
+      gZenWorkspaces.updateTabsContainers();
       this.browserWrapper.removeAttribute('animate-full');
       this.overlay.classList.remove('zen-glance-overlay');
       this._clearContainerStyles(this.browserWrapper);

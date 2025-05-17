@@ -35,7 +35,7 @@ index 849b62c9976a7bc5fee35e074e54c8f556ed9c38..a9742c7ff30d417a18f41f9c12025919
    }
  }
  
-@@ -78,6 +95,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
+@@ -78,6 +95,7 @@ static NSVisualEffectBlendingMode VisualEffectBlendingModeForVibrancyType(
  
  - (void)prefChanged {
    self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);

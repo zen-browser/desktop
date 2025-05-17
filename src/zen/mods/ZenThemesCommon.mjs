@@ -76,7 +76,7 @@ var ZenThemesCommon = {
 
       for (let [entry, label] of Object.entries(preferences)) {
         const [_, negation = '', os = '', property] =
-          /(!?)(?:(macos|windows|linux):)?([A-z0-9-_.]+)/g.exec(entry);
+          /(!?)(?:(macos|windows|linux):)?([A-Za-z0-9-_.]+)/g.exec(entry);
         const isNegation = negation === '!';
 
         if (

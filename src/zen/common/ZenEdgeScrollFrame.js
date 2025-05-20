@@ -1,54 +1,90 @@
-// (Ensure this path is correctly mapped in your chrome.manifest and accessible)
 /* eslint-env mozilla/frame-script */
 
-
-function log(message) {
-  //dump("ZenEdgeScrollFrame: " + message + "\n"); // Use dump for debugging frame scripts
-  // Or send a message back to parent for logging if preferred for easier viewing
-  // sendAsyncMessage("ZenEdgeScroll:Log", { message });
+function logFrame(message) {
+  dump("ZenEdgeScrollFrame: " + message + "\n");
 }
 
-console.log("Frame script loaded for: " + (content && content.document ? content.document.location.href : "unknown content location"));
+logFrame("Frame script loaded for: " + (content && content.document ? content.document.location.href : "unknown content location"));
 
-addMessageListener("ZenEdgeScroll:ScrollToPercentage", function(message) {
-  const doc = content.document;
-  const scrollableElement = doc.scrollingElement || doc.documentElement || doc.body;
-
-  if (scrollableElement && scrollableElement.scrollHeight > scrollableElement.clientHeight) {
-    const percentage = message.data.percentage;
-    const targetScrollTop = percentage * (scrollableElement.scrollHeight - scrollableElement.clientHeight);
-    scrollableElement.scrollTop = Math.max(0, Math.min(targetScrollTop, scrollableElement.scrollHeight - scrollableElement.clientHeight));
-  } else {
-    console.log("ScrollToPercentage: Content not scrollable or no scrollable element.");
+addMessageListener("ZenEdgeScroll:SynthesizeMouseEvent", function(message) {
+  const data = message.data;
+  if (!data || !data.type) {
+    logFrame("SynthesizeMouseEvent: Invalid data received.");
+    return;
   }
-});
 
-addMessageListener("ZenEdgeScroll:DispatchWheel", function(message) {
-  console.log("hello2");
-  const doc = content.document;
-  // Dispatch to documentElement, as it's a common target and will bubble.
-  // Or, could try to find the focused element or element under mouse if more precision is needed.
-  const targetElement = doc.documentElement; // Or doc.body, or content.document.scrollingElement
+  // clientX, clientY are relative to the content viewport
+  const targetElement = content.document.elementFromPoint(data.clientX, data.clientY) || content.document.documentElement;
 
   if (targetElement) {
-    const eventData = message.data.wheelData;
     try {
-      const clonedWheelEvent = new content.WheelEvent("wheel", { // Use content.WheelEvent
-        deltaX: eventData.deltaX,
-        deltaY: eventData.deltaY,
-        deltaZ: eventData.deltaZ,
-        deltaMode: eventData.deltaMode,
+      const syntheticEvent = new content.MouseEvent(data.type, {
         bubbles: true,
-        cancelable: true,
-        composed: true, // Important for events crossing shadow DOM boundaries
-        view: content,    // 'content' is the window in a frame script
+        cancelable: (data.type !== 'mousemove'), // mousemove is often not cancelable by default
+        composed: true,
+        view: content,
+        detail: (data.type === 'mousedown' || data.type === 'mouseup' || data.type === 'click') ? 1 : 0, // click count
+        screenX: data.screenX,
+        screenY: data.screenY,
+        clientX: data.clientX,
+        clientY: data.clientY,
+        ctrlKey: data.ctrlKey,
+        altKey: data.altKey,
+        shiftKey: data.shiftKey,
+        metaKey: data.metaKey,
+        button: data.button,
+        buttons: data.buttons,
       });
-      targetElement.dispatchEvent(clonedWheelEvent);
-      console.log(`Dispatched wheel event: dY=${eventData.deltaY}`);
+      targetElement.dispatchEvent(syntheticEvent);
+      // logFrame(`Dispatched synthetic ${data.type} at (${data.clientX}, ${data.clientY}) on ${targetElement.tagName}`);
     } catch (e) {
-      console.log(`Error dispatching wheel event: ${e} - ${e.stack}`);
+      logFrame(`Error dispatching synthetic ${data.type}: ${e} - ${e.stack}`);
     }
   } else {
-    console.log("DispatchWheel: No targetElement found.");
+    logFrame(`SynthesizeMouseEvent: No target element found at (${data.clientX}, ${data.clientY})`);
   }
 });
+
+addMessageListener("ZenEdgeScroll:SynthesizeWheelEvent", function(message) {
+  const data = message.data;
+   if (!data) {
+    logFrame("SynthesizeWheelEvent: Invalid data received.");
+    return;
+  }
+
+  const targetElement = content.document.elementFromPoint(data.clientX, data.clientY) || content.document.documentElement;
+
+  if (targetElement) {
+    try {
+      const syntheticEvent = new content.WheelEvent('wheel', { // type is always 'wheel'
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: content,
+        screenX: data.screenX,
+        screenY: data.screenY,
+        clientX: data.clientX,
+        clientY: data.clientY,
+        ctrlKey: data.ctrlKey,
+        altKey: data.altKey,
+        shiftKey: data.shiftKey,
+        metaKey: data.metaKey,
+        button: data.button, // Usually 0 for wheel
+        buttons: data.buttons,
+        deltaX: data.deltaX,
+        deltaY: data.deltaY,
+        deltaZ: data.deltaZ,
+        deltaMode: data.deltaMode,
+      });
+      targetElement.dispatchEvent(syntheticEvent);
+      // logFrame(`Dispatched synthetic wheel at (${data.clientX}, ${data.clientY}) on ${targetElement.tagName}`);
+    } catch (e) {
+      logFrame(`Error dispatching synthetic wheel event: ${e} - ${e.stack}`);
+    }
+  } else {
+     logFrame(`SynthesizeWheelEvent: No target element found at (${data.clientX}, ${data.clientY})`);
+  }
+});
+
+// Remove the old ScrollToPercentage listener if it's no longer needed
+// addMessageListener("ZenEdgeScroll:ScrollToPercentage", function(message) { /* ... */ });

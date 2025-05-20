@@ -1,65 +1,49 @@
-// Suggested filepath: /home/stnav/Projects/others/zen-desktop/src/zen/ui/EdgeScrollHandler.js
-// (Or any other suitable path within your project for browser chrome scripts)
-
 (function() {
-    console.log("hahahahah");
   if (window.gEdgeScrollHandlerInitialized) {
-    console.log("EdgeScrollHandler: Already initialized.");
     return;
   }
   window.gEdgeScrollHandlerInitialized = true;
 
-  const FRAME_SCRIPT_URL = "chrome://browser/content/ZenEdgeScrollFrame.js"; // Ensure this matches your frame script's packaged URI
+  const FRAME_SCRIPT_URL = "chrome://browser/content/ZenEdgeScrollFrame.js";
   const MESSAGE_PREFIX = "ZenEdgeScroll:";
 
-  // --- START: Configuration for edge interaction ---
-  const EDGE_INTERACTION_WIDTH_PX = 20; // How wide the clickable zone at the far right edge of the window is.
-  const RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX = 25; // Increased slightly for more tolerance with window borders/shadows
-  const SYNTHETIC_EVENT_OFFSET_FROM_EDGE = 3; // How many pixels inside the content edge to target (e.g., for scrollbar thumb)
-  // --- END: Configuration for edge interaction ---
+  const EDGE_INTERACTION_WIDTH_PX = 20;
+  const RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX = 25;
+  // How many pixels from the right edge of the content viewport to target the synthetic click
+  const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 8; // Aim for the scrollbar track
 
-  const mainBrowserWindow = window; // 'window' in this context is the main browser window
-  let isSynthesizingDrag = false;
+  const mainBrowserWindow = window;
+  let isSynthesizingDrag = false; // Changed from isDraggingEdgeScroll
   let dragInitialModel = {
     targetBrowserDuringDrag: null,
-    // No scroll-specific properties needed here anymore
+    // No scroll-percentage specific model needed here, but we store the target browser
   };
 
   function logParent(message) {
     // console.log("EdgeScrollHandler (Parent): " + message);
-    // dump("EdgeScrollHandler (Parent): " + message + "\n"); // For terminal output
+    dump("EdgeScrollHandler (Parent): " + message + "\n");
   }
 
-  // Function to load the frame script into a browser's message manager
   function loadFrameScriptForBrowser(browser) {
     if (browser && browser.messageManager && !browser.frameScriptLoadedForEdgeScroll) {
       try {
-        logParent(`Attempting to load frame script: ${FRAME_SCRIPT_URL} for browser: ${browser.currentURI?.spec}`);
-        browser.messageManager.loadFrameScript(FRAME_SCRIPT_URL, false); // false = don't delay
-        browser.frameScriptLoadedForEdgeScroll = true; // Custom property to track loading
-        logParent(`Frame script loading initiated for ${browser.currentURI?.spec || 'browser'}.`);
+        browser.messageManager.loadFrameScript(FRAME_SCRIPT_URL, false);
+        browser.frameScriptLoadedForEdgeScroll = true;
       } catch (e) {
-        console.error("EdgeScrollHandler (Parent): CRITICAL ERROR loading frame script:", FRAME_SCRIPT_URL, e, "for URL:", browser.currentURI?.spec);
+        console.error("EdgeScrollHandler (Parent): CRITICAL ERROR loading frame script:", FRAME_SCRIPT_URL, e);
         dump(`EdgeScrollHandler (Parent): CRITICAL ERROR loading frame script: ${FRAME_SCRIPT_URL} - ${e} - ${e.stack}\n`);
       }
-    } else if (browser && browser.frameScriptLoadedForEdgeScroll) {
-      // logParent(`Frame script already marked as loaded for ${browser.currentURI?.spec}`);
-    } else if (!browser) {
-      logParent("loadFrameScriptForBrowser: browser is null");
-    } else if (!browser.messageManager) {
-      logParent(`loadFrameScriptForBrowser: browser.messageManager is null for ${browser.currentURI?.spec}`);
     }
   }
+
   function initFrameScripts() {
     if (!gBrowser || typeof gBrowser.tabs === 'undefined' || !gBrowser.tabs.length) {
-        logParent("gBrowser not ready or no tabs for initFrameScripts.");
         if (!window.gEdgeScrollInitRetryCount || window.gEdgeScrollInitRetryCount < 5) {
             window.gEdgeScrollInitRetryCount = (window.gEdgeScrollInitRetryCount || 0) + 1;
             setTimeout(initFrameScripts, 500 * window.gEdgeScrollInitRetryCount);
         }
         return;
     }
-    logParent("Initializing frame scripts for tabs...");
     for (const tab of gBrowser.tabs) {
       if (tab.linkedBrowser) loadFrameScriptForBrowser(tab.linkedBrowser);
     }
@@ -72,211 +56,162 @@
     if (gBrowser.selectedBrowser) loadFrameScriptForBrowser(gBrowser.selectedBrowser);
   }
 
-  /**
-   * Identifies if the mouse event is in the "gap" and which browser pane is adjacent.
-   */
   function getGapZoneInfo(event) {
     const windowWidth = mainBrowserWindow.innerWidth;
     const eventClientX = event.clientX;
     const eventClientY = event.clientY;
+    const isInFarRightWindowEdgeGap = eventClientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) && eventClientX < windowWidth;
+    if (!isInFarRightWindowEdgeGap) return { isInGap: false, targetBrowser: null, browserRect: null };
 
-    const isInFarRightWindowEdgeGap = eventClientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) &&
-                                   eventClientX < windowWidth;
-
-    if (!isInFarRightWindowEdgeGap) {
-      return { isInGap: false, targetBrowser: null, browserRect: null };
-    }
-
-    // Find the browser pane adjacent to this gap click
     let potentialTargetBrowser = null;
     let potentialTargetBrowserRect = null;
-
     if (gBrowser && gBrowser.browsers) {
         for (const browser of gBrowser.browsers) {
-            // Ensure browser is visible and has a content window
             if (browser.hidden) continue;
-            
             const browserRect = browser.getBoundingClientRect();
-            if (browserRect.width === 0 || browserRect.height === 0) continue; // Skip non-rendered browsers
-
-            // Check if this browser is at the far right edge of the window
-            const isBrowserAtRightEdge = (windowWidth - browserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX &&
-                                         browserRect.right > (windowWidth - EDGE_INTERACTION_WIDTH_PX - RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX);
-
+            if (browserRect.width === 0 || browserRect.height === 0) continue;
+            const isBrowserAtRightEdge = (windowWidth - browserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX && browserRect.right > (windowWidth - EDGE_INTERACTION_WIDTH_PX - RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX);
             const isEventYWithinBrowser = eventClientY >= browserRect.top && eventClientY <= browserRect.bottom;
-
             if (isBrowserAtRightEdge && isEventYWithinBrowser) {
                 potentialTargetBrowser = browser;
                 potentialTargetBrowserRect = browserRect;
-                // logParent(`GapZoneInfo: Potential adjacent browser: ${browser.currentURI?.spec} at right edge. Rect: R=${browserRect.right}, T=${browserRect.top}, B=${browserRect.bottom}`);
-                break; 
+                break;
             }
         }
     }
-
     if (potentialTargetBrowser) {
-      // logParent(`GapZoneInfo: Found adjacent browser: ${potentialTargetBrowser.currentURI?.spec}`);
-      return {
-        isInGap: true,
-        targetBrowser: potentialTargetBrowser,
-        browserRect: potentialTargetBrowserRect,
-      };
+      return { isInGap: true, targetBrowser: potentialTargetBrowser, browserRect: potentialTargetBrowserRect };
     }
-
-    // logParent("GapZoneInfo: Mouse in gap, but no adjacent browser found at that Y position.");
-    // Return isInGap true because the click was in the edge zone, even if no specific browser was pinpointed.
-    // The mousedown handler will then decide if it can proceed without a targetBrowser.
     return { isInGap: true, targetBrowser: null, browserRect: null };
+  }
+
+  // Helper to create common event data for IPC
+  function createSyntheticEventData(originalEvent, targetBrowserRect, eventType) {
+    // Coordinates relative to the target browser's viewport
+    // Horizontal position: fixed, near the right edge (scrollbar)
+    const clientXInContent = Math.max(0, Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE));
+    // Vertical position: mirrors the original event's Y relative to the browser's top
+    const clientYInContent = Math.max(0, Math.min(Math.floor(originalEvent.clientY - targetBrowserRect.top), Math.floor(targetBrowserRect.height - 1)));
+
+    // Screen coordinates (approximate, good enough for synthetic events)
+    const screenX = Math.floor(mainBrowserWindow.screenX + targetBrowserRect.left + clientXInContent);
+    const screenY = Math.floor(mainBrowserWindow.screenY + targetBrowserRect.top + clientYInContent);
+
+    return {
+      type: eventType,
+      clientX: clientXInContent,
+      clientY: clientYInContent,
+      screenX: screenX,
+      screenY: screenY,
+      button: originalEvent.button, // Typically 0 for primary
+      buttons: (eventType === 'mousemove' || eventType === 'mousedown') ? 1 : 0, // Primary button pressed for down/move
+      ctrlKey: originalEvent.ctrlKey,
+      altKey: originalEvent.altKey,
+      shiftKey: originalEvent.shiftKey,
+      metaKey: originalEvent.metaKey,
+    };
   }
 
   mainBrowserWindow.addEventListener('mousedown', (event) => {
     if (event.button !== 0) return;
-
     const gapInfo = getGapZoneInfo(event);
-
     if (!gapInfo.isInGap || !gapInfo.targetBrowser) {
-        if (gapInfo.isInGap) {
-            logParent("Mousedown: In gap, but no specific adjacent browser identified by getGapZoneInfo.");
-        }
+        if (gapInfo.isInGap) logParent("Mousedown: In gap, but no specific adjacent browser.");
         return;
     }
-
-    let targetBrowser = gapInfo.targetBrowser; // This is the browser physically adjacent to the gap
-
-    // Focus/select the target browser if it's not already the selected one
+    let targetBrowser = gapInfo.targetBrowser;
     if (targetBrowser !== gBrowser.selectedBrowser) {
-        logParent(`Mousedown: Adjacent browser ${targetBrowser.currentURI?.spec} is not selected. Attempting to select.`);
-        // Ensure we are interacting with the gBrowser instance of the main window
-        const mainGBrowser = mainBrowserWindow.gBrowser; 
+        const mainGBrowser = mainBrowserWindow.gBrowser;
         if (mainGBrowser && targetBrowser.ownerGlobal && targetBrowser.ownerGlobal.gBrowser === mainGBrowser) {
             const tabToSelect = mainGBrowser.getTabForBrowser(targetBrowser);
             if (tabToSelect && mainGBrowser.selectedTab !== tabToSelect) {
                 mainGBrowser.selectedTab = tabToSelect;
-                logParent(`Mousedown: Switched selectedTab to the one for ${targetBrowser.currentURI?.spec}.`);
-                // After tab switch, gBrowser.selectedBrowser should update.
-                // Re-assign targetBrowser to be sure it's the currently selected one.
-                targetBrowser = mainGBrowser.selectedBrowser; 
-                // Update browserRect as it might change after selection (e.g., if UI elements shift)
-                // This is important for accurate gapZoneHeight calculation.
-                if (targetBrowser) { // Check if targetBrowser is still valid after selection
-                    gapInfo.browserRect = targetBrowser.getBoundingClientRect();
-                } else {
-                    logParent("Mousedown: Target browser became null after attempting selection. Aborting.");
-                    return;
-                }
-            } else if (tabToSelect && mainGBrowser.selectedTab === tabToSelect) {
-                logParent(`Mousedown: Adjacent browser ${targetBrowser.currentURI?.spec} was already selected.`);
-            } else {
-                logParent(`Mousedown: Could not find tab for adjacent browser ${targetBrowser.currentURI?.spec}.`);
+                targetBrowser = mainGBrowser.selectedBrowser;
+                if (targetBrowser) gapInfo.browserRect = targetBrowser.getBoundingClientRect();
+                else { logParent("Mousedown: Target browser null after selection."); return; }
             }
-        } else {
-            logParent(`Mousedown: Cannot determine tab for adjacent browser ${targetBrowser.currentURI?.spec}.`);
         }
     }
-
     if (!targetBrowser || !targetBrowser.messageManager) {
-      logParent("Mousedown: No messageManager for target browser (either original or after selection).");
-      return;
+      logParent("Mousedown: No messageManager for target browser."); return;
     }
     loadFrameScriptForBrowser(targetBrowser);
-
     event.preventDefault();
-    isDraggingEdgeScroll = true;
-
+    isSynthesizingDrag = true;
     dragInitialModel.targetBrowserDuringDrag = targetBrowser;
-    dragInitialModel.gapZoneHeight = gapInfo.browserRect.height;
-    dragInitialModel.mouseY = event.clientY;
 
-    const clickYInGap = event.clientY - gapInfo.browserRect.top;
-    const scrollPercentage = dragInitialModel.gapZoneHeight > 0 ? Math.max(0, Math.min(1, clickYInGap / dragInitialModel.gapZoneHeight)) : 0;
-    dragInitialModel.initialScrollPercentageOnDragStart = scrollPercentage;
+    const eventData = createSyntheticEventData(event, gapInfo.browserRect, 'mousedown');
+    logParent(`Mousedown: Sending SynthesizeMouseEvent (mousedown) to ${targetBrowser.currentURI?.spec} at X:${eventData.clientX}, Y:${eventData.clientY}`);
+    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
 
-    logParent(`Mousedown on ${targetBrowser.currentURI?.spec}: gapHeight=${dragInitialModel.gapZoneHeight.toFixed(2)}, clickYInGap=${clickYInGap.toFixed(2)}, initialMouseY=${dragInitialModel.mouseY.toFixed(2)}, initialScrollPerc=${scrollPercentage.toFixed(4)}`);
-
-    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "ScrollToPercentage", { percentage: scrollPercentage });
-
-    mainBrowserWindow.addEventListener('mousemove', handleEdgeScrollDrag, true);
-    mainBrowserWindow.addEventListener('mouseup', handleEdgeScrollEnd, true);
+    mainBrowserWindow.addEventListener('mousemove', handleSyntheticDrag, true);
+    mainBrowserWindow.addEventListener('mouseup', handleSyntheticDragEnd, true);
   }, true);
 
-  function handleEdgeScrollDrag(event) {
-    if (!isDraggingEdgeScroll || !dragInitialModel.targetBrowserDuringDrag) return;
-
+  function handleSyntheticDrag(event) {
+    if (!isSynthesizingDrag || !dragInitialModel.targetBrowserDuringDrag) return;
     const targetBrowser = dragInitialModel.targetBrowserDuringDrag;
-    // Ensure the browser being dragged is still the selected one, and it's valid
     if (gBrowser.selectedBrowser !== targetBrowser || !targetBrowser.messageManager) {
-      logParent("Drag: Target browser changed, lost messageManager, or no contentWindow. Ending drag.");
-      handleEdgeScrollEnd(event); // Pass event for proper cleanup if needed
-      return;
+      logParent("Drag: Target browser changed or lost messageManager. Ending drag.");
+      handleSyntheticDragEnd(event); return;
     }
-    event.preventDefault();
-    event.stopPropagation();
-
-    const deltaYFromInitialMouseY = event.clientY - dragInitialModel.mouseY;
-    let newScrollPercentage;
-
-    if (dragInitialModel.gapZoneHeight > 0) {
-      const percentageDelta = deltaYFromInitialMouseY / dragInitialModel.gapZoneHeight;
-      newScrollPercentage = dragInitialModel.initialScrollPercentageOnDragStart + percentageDelta;
-      newScrollPercentage = Math.max(0, Math.min(1, newScrollPercentage));
-      // logParent(`Drag: clientY=${event.clientY.toFixed(2)}, deltaMouseY=${deltaYFromInitialMouseY.toFixed(2)}, percDelta=${percentageDelta.toFixed(4)}, newScrollPerc=${newScrollPercentage.toFixed(4)}`);
-    } else {
-      logParent("Drag: Error - gapZoneHeight is 0 or invalid. Cannot calculate scroll percentage.");
-      handleEdgeScrollEnd(event); // End drag if calculation is impossible
-      return;
+    event.preventDefault(); event.stopPropagation();
+    // Important: browserRect might change if window resizes or other UI shifts. Re-get it.
+    const currentTargetBrowserRect = targetBrowser.getBoundingClientRect();
+    if (currentTargetBrowserRect.width === 0 || currentTargetBrowserRect.height === 0) {
+        logParent("Drag: Target browser rect is zero. Ending drag.");
+        handleSyntheticDragEnd(event); return;
     }
-    
-    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "ScrollToPercentage", { percentage: newScrollPercentage });
+    const eventData = createSyntheticEventData(event, currentTargetBrowserRect, 'mousemove');
+    // logParent(`Drag: Sending SynthesizeMouseEvent (mousemove) to ${targetBrowser.currentURI?.spec} at X:${eventData.clientX}, Y:${eventData.clientY}`);
+    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
   }
 
-  function handleEdgeScrollEnd(event) {
-    if (isDraggingEdgeScroll && dragInitialModel.targetBrowserDuringDrag) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
+  function handleSyntheticDragEnd(event) {
+    if (isSynthesizingDrag && dragInitialModel.targetBrowserDuringDrag) {
+        const targetBrowser = dragInitialModel.targetBrowserDuringDrag;
+        if (targetBrowser.messageManager) {
+            if (event) { // If called by an event
+                event.preventDefault(); event.stopPropagation();
+                const currentTargetBrowserRect = targetBrowser.getBoundingClientRect();
+                 if (currentTargetBrowserRect.width > 0 && currentTargetBrowserRect.height > 0) {
+                    const eventData = createSyntheticEventData(event, currentTargetBrowserRect, 'mouseup');
+                    logParent(`DragEnd: Sending SynthesizeMouseEvent (mouseup) to ${targetBrowser.currentURI?.spec} at X:${eventData.clientX}, Y:${eventData.clientY}`);
+                    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
+                } else {
+                    logParent("DragEnd: Target browser rect is zero, cannot send mouseup.");
+                }
+            } else {
+                 logParent("DragEnd: Called without event, mouseup not synthesized.");
+            }
         }
-        // logParent("DragEnd: Releasing drag.");
     }
-    
-    isDraggingEdgeScroll = false;
+    isSynthesizingDrag = false;
     dragInitialModel.targetBrowserDuringDrag = null;
-
-    mainBrowserWindow.removeEventListener('mousemove', handleEdgeScrollDrag, true);
-    mainBrowserWindow.removeEventListener('mouseup', handleEdgeScrollEnd, true);
+    mainBrowserWindow.removeEventListener('mousemove', handleSyntheticDrag, true);
+    mainBrowserWindow.removeEventListener('mouseup', handleSyntheticDragEnd, true);
   }
 
   mainBrowserWindow.addEventListener('wheel', (event) => {
-    // For wheel events, we can use a similar logic to find the target browser
-    // or decide if wheel events in the gap should always target the *currently selected* rightmost browser.
-    // For now, let's keep the wheel targeting logic simpler: it targets the *selected* browser if it's rightmost.
-    // If you want wheel to also switch focus, getGapZoneInfo would need to be called here too,
-    // and focus switching logic similar to mousedown would be needed.
-
     const activeBrowser = gBrowser.selectedBrowser;
     if (!activeBrowser) return;
-
     const windowWidth = mainBrowserWindow.innerWidth;
     const activeBrowserRect = activeBrowser.getBoundingClientRect();
     const isActiveBrowserRightmost = (windowWidth - activeBrowserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX;
     const isInFarRightWindowEdgeGap = event.clientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) && event.clientX < windowWidth;
-
     if (!isActiveBrowserRightmost || !isInFarRightWindowEdgeGap) return;
-    
-    const targetBrowser = activeBrowser; // Wheel targets the active browser if it's rightmost and mouse is in gap
-
-    if (!targetBrowser.messageManager) {
-      logParent("Wheel: No messageManager for target browser.");
-      return;
-    }
+    const targetBrowser = activeBrowser;
+    if (!targetBrowser.messageManager) { logParent("Wheel: No messageManager."); return; }
     loadFrameScriptForBrowser(targetBrowser);
-
-    event.preventDefault();
-    event.stopPropagation();
-
+    event.preventDefault(); event.stopPropagation();
     const wheelData = {
       deltaX: event.deltaX, deltaY: event.deltaY, deltaZ: event.deltaZ, deltaMode: event.deltaMode,
       ctrlKey: event.ctrlKey, altKey: event.altKey, shiftKey: event.shiftKey, metaKey: event.metaKey,
+      // For wheel, we also need clientX/Y for the frame script to target the event
+      clientX: Math.max(0, Math.floor(activeBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE)),
+      clientY: Math.max(0, Math.min(Math.floor(event.clientY - activeBrowserRect.top), Math.floor(activeBrowserRect.height - 1)))
     };
+    logParent(`Wheel: Sending DispatchWheel to ${targetBrowser.currentURI?.spec} with deltaX:${wheelData.deltaX}, deltaY:${wheelData.deltaY}, clientX:${wheelData.clientX}, clientY:${wheelData.clientY}`);
     targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "DispatchWheel", { wheelData });
   }, { capture: true, passive: false });
 
@@ -285,6 +220,5 @@
   } else {
     mainBrowserWindow.addEventListener("load", initFrameScripts, { once: true });
   }
-
-  logParent("Edge Scroll Handler Initialized (IPC for Synthetic Events)");
+  logParent("Edge Scroll Handler Initialized (Synthesizing Mouse Events for Drag)");
 })();

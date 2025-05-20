@@ -49,7 +49,7 @@
   }
 
   class ZenPinnedTabManager extends ZenDOMOperatedFeature {
-    MAX_ESSENTIALS_TABS = 12;
+    MAX_ESSENTIALS_TABS = Services.prefs.getIntPref('zen.tabs.essentials.max', 12);
 
     async init() {
       if (!this.enabled) {

@@ -4,6 +4,7 @@ pref('zen.welcome-screen.seen', false, sticky);
 pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.tabs.rename-tabs', true);
+pref('zen.tabs.essentials.max', 12);
 pref('zen.tabs.show-newtab-vertical', true);
 
 pref('zen.ctrlTab.show-pending-tabs', false);
@@ -68,7 +69,7 @@ pref('zen.urlbar.enable-overrides', false);
 // IMPORTANT: Remove once firefox 139 is released
 #ifdef XP_MACOSX
 pref('zen.view.experimental-rounded-view', false);
-#else 
+#else
 pref('zen.view.experimental-rounded-view', true);
 #endif
 

@@ -3,6 +3,7 @@
         content/browser/zenThemeModifier.js                                     (../../zen/common/zenThemeModifier.js)
         content/browser/ZenStartup.mjs                                          (../../zen/common/ZenStartup.mjs)
         content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
+        content/browser/ZenEdgeScrollFrame.js                                   (../../zen/common/ZenEdgeScrollFrame.js)
         content/browser/ZenUIManager.mjs                                        (../../zen/common/ZenUIManager.mjs)
         content/browser/zen-components/ZenActorsManager.mjs                     (../../zen/common/ZenActorsManager.mjs)
         content/browser/zen-components/ZenEmojies.mjs                           (../../zen/common/ZenEmojies.mjs)

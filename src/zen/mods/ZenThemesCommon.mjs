@@ -47,9 +47,10 @@ var ZenThemesCommon = {
       if (themes === null || typeof themes !== 'object') {
         throw new Error('Themes data file is null');
       }
-    } catch (e) {
+    } catch {
       // If we have a corrupted file, reset it
       await IOUtils.writeJSON(this.themesDataFile, {});
+
       Services.wm
         .getMostRecentWindow('navigator:browser')
         .gZenUIManager.showToast('zen-themes-corrupted', {
@@ -61,46 +62,54 @@ var ZenThemesCommon = {
 
   async getThemePreferences(theme) {
     const themePath = PathUtils.join(this.themesRootPath, theme.id, 'preferences.json');
+
     if (!(await IOUtils.exists(themePath)) || !theme.preferences) {
       return [];
     }
 
-    const preferences = await IOUtils.readJSON(themePath);
+    try {
+      const preferences = await IOUtils.readJSON(themePath);
 
-    // compat mode for old preferences, all of them can only be checkboxes
-    if (typeof preferences === 'object' && !Array.isArray(preferences)) {
-      console.warn(
-        `[ZenThemes]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: https://docs.zen-browser.app/themes-store/themes-marketplace-preferences`
-      );
-      const newThemePreferences = [];
+      // compat mode for old preferences, all of them can only be checkboxes
+      if (typeof preferences === 'object' && !Array.isArray(preferences)) {
+        console.warn(
+          `[ZenThemes]: Warning, ${theme.name} uses legacy preferences, please migrate them to the new preferences style, as legacy preferences might be removed at a future release. More information at: https://docs.zen-browser.app/themes-store/themes-marketplace-preferences`
+        );
+        const newThemePreferences = [];
 
-      for (let [entry, label] of Object.entries(preferences)) {
-        const [_, negation = '', os = '', property] =
-          /(!?)(?:(macos|windows|linux):)?([A-Za-z0-9-_.]+)/g.exec(entry);
-        const isNegation = negation === '!';
+        for (let [entry, label] of Object.entries(preferences)) {
+          const [, negation = '', os = '', property] =
+            /(!?)(?:(macos|windows|linux):)?([A-Za-z0-9-_.]+)/g.exec(entry);
+          const isNegation = negation === '!';
 
-        if (
-          (isNegation && os === gZenOperatingSystemCommonUtils.currentOperatingSystem) ||
-          (os !== '' && os !== gZenOperatingSystemCommonUtils.currentOperatingSystem && !isNegation)
-        ) {
-          continue;
+          if (
+            (isNegation && os === gZenOperatingSystemCommonUtils.currentOperatingSystem) ||
+            (os !== '' &&
+              os !== gZenOperatingSystemCommonUtils.currentOperatingSystem &&
+              !isNegation)
+          ) {
+            continue;
+          }
+
+          newThemePreferences.push({
+            property,
+            label,
+            type: 'checkbox',
+            disabledOn: os !== '' ? [os] : [],
+          });
         }
 
-        newThemePreferences.push({
-          property,
-          label,
-          type: 'checkbox',
-          disabledOn: os !== '' ? [os] : [],
-        });
+        return newThemePreferences;
       }
 
-      return newThemePreferences;
+      return preferences.filter(
+        ({ disabledOn = [] }) =>
+          !disabledOn.includes(gZenOperatingSystemCommonUtils.currentOperatingSystem)
+      );
+    } catch (e) {
+      console.error(`[ZenThemes]: Error reading preferences for ${theme.name}:`, e);
+      return [];
     }
-
-    return preferences.filter(
-      ({ disabledOn = [] }) =>
-        !disabledOn.includes(gZenOperatingSystemCommonUtils.currentOperatingSystem)
-    );
   },
 
   throttle(mainFunction, delay) {

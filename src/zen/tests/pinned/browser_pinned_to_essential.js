@@ -22,7 +22,7 @@ add_task(async function test_Pinned_To_Essential() {
 
       gZenPinnedTabManager.addToEssentials(newTab);
       ok(
-        newTab.hasAttribute('zen-essential') && newTab.parentNode.getAttribute('container') == '1',
+        newTab.hasAttribute('zen-essential') && newTab.parentNode.getAttribute('container') == '0',
         'New tab should be marked as essential.'
       );
 

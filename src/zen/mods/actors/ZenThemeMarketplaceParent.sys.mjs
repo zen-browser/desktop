@@ -28,7 +28,8 @@ export class ZenThemeMarketplaceParent extends JSWindowActorParent {
       case 'ZenThemeMarketplace:IsThemeInstalled': {
         const themeId = message.data.themeId;
         const themes = await this.getThemes();
-        return themes[themeId] ? true : false;
+
+        return Boolean(themes?.[themeId]);
       }
       case 'ZenThemeMarketplace:CheckForUpdates': {
         this.checkForThemeUpdates();
@@ -46,14 +47,17 @@ export class ZenThemeMarketplaceParent extends JSWindowActorParent {
   }
 
   compareVersions(version1, version2) {
-    var result = false;
+    let result = false;
+
     if (typeof version1 !== 'object') {
       version1 = version1.toString().split('.');
     }
+
     if (typeof version2 !== 'object') {
       version2 = version2.toString().split('.');
     }
-    for (var i = 0; i < Math.max(version1.length, version2.length); i++) {
+
+    for (let i = 0; i < Math.max(version1.length, version2.length); i++) {
       if (version1[i] == undefined) {
         version1[i] = 0;
       }
@@ -76,7 +80,7 @@ export class ZenThemeMarketplaceParent extends JSWindowActorParent {
 
     let updates = [];
     const themes = await this.getThemes();
-    for (const theme of Object.values(await this.getThemes())) {
+    for (const theme of Object.values(themes)) {
       try {
         const themeInfo = await this.sendQuery('ZenThemeMarketplace:GetThemeInfo', {
           themeId: theme.id,
@@ -141,29 +145,58 @@ export class ZenThemeMarketplaceParent extends JSWindowActorParent {
     return stylesheet;
   }
 
-  async downloadUrlToFile(url, path, isStyleSheet = false) {
-    try {
-      const response = await fetch(url);
-      const data = await response.text();
-      const content = isStyleSheet ? this.getStyleSheetFullContent(data) : data;
-      // convert the data into a Uint8Array
-      let buffer = new TextEncoder().encode(content);
-      await IOUtils.write(path, buffer);
-    } catch (e) {
-      console.error('ZenThemeMarketplaceParent: Error downloading file', url, e);
+  async downloadUrlToFile(url, path, isStyleSheet = false, maxRetries = 3, retryDelayMs = 500) {
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(
+            `ZenThemeMarketplaceParent: HTTP error! status: ${response.status} for url: ${url}`
+          );
+        }
+
+        const data = await response.text();
+        const content = isStyleSheet ? this.getStyleSheetFullContent(data) : data;
+        // convert the data into a Uint8Array
+        const buffer = new TextEncoder().encode(content);
+        await IOUtils.write(path, buffer);
+
+        return;
+      } catch (e) {
+        attempt++;
+        if (attempt >= maxRetries) {
+          console.error('ZenThemeMarketplaceParent: Error downloading file after retries', url, e);
+        } else {
+          console.warn(
+            `ZenThemeMarketplaceParent: Download failed (attempt ${attempt} of ${maxRetries}), retrying in ${retryDelayMs}ms...`,
+            url,
+            e
+          );
+          await new Promise((res) => setTimeout(res, retryDelayMs));
+        }
+      }
     }
   }
 
   async downloadThemeFileContents(theme) {
-    const themePath = PathUtils.join(this.themesRootPath, theme.id);
-    await IOUtils.makeDirectory(themePath, { ignoreExisting: true });
-    await this.downloadUrlToFile(theme.style, PathUtils.join(themePath, 'chrome.css'), true);
-    await this.downloadUrlToFile(theme.readme, PathUtils.join(themePath, 'readme.md'));
-    if (theme.preferences) {
-      await this.downloadUrlToFile(
-        theme.preferences,
-        PathUtils.join(themePath, 'preferences.json')
-      );
+    try {
+      const themePath = PathUtils.join(this.themesRootPath, theme.id);
+      await IOUtils.makeDirectory(themePath, { ignoreExisting: true });
+
+      await this.downloadUrlToFile(theme.style, PathUtils.join(themePath, 'chrome.css'), true);
+      await this.downloadUrlToFile(theme.readme, PathUtils.join(themePath, 'readme.md'));
+
+      if (theme.preferences) {
+        await this.downloadUrlToFile(
+          theme.preferences,
+          PathUtils.join(themePath, 'preferences.json')
+        );
+      }
+    } catch (e) {
+      console.log('ZenThemeMarketplaceParent: Error downloading theme file contents', theme.id, e);
     }
   }
 
@@ -181,7 +214,11 @@ export class ZenThemeMarketplaceParent extends JSWindowActorParent {
   }
 
   async installTheme(theme) {
-    await this.downloadThemeFileContents(theme);
+    try {
+      await this.downloadThemeFileContents(theme);
+    } catch (e) {
+      console.error('ZenThemeMarketplaceParent: Error installing theme', theme.id, e);
+    }
   }
 
   async checkForThemeChanges() {

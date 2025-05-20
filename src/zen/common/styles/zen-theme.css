@@ -19,6 +19,8 @@
   --zen-border-radius: 7px;
   --zen-primary-color: #ffb787;
 
+  --zen-background-opacity: 1;
+
   /* Branding */
   --zen-branding-dark: #1d1d1d;
   --zen-branding-coral: #f76f53;

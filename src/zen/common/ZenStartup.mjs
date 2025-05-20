@@ -2,9 +2,19 @@
   var ZenStartup = {
     init() {
       this.openWatermark();
+      this._initBrowserBackground();
       this._changeSidebarLocation();
       this._zenInitBrowserLayout();
       this._initSearchBar();
+    },
+
+    _initBrowserBackground() {
+      const background = document.createXULElement('box');
+      background.id = 'zen-browser-background';
+      const grain = document.createXULElement('box');
+      grain.id = 'zen-browser-grain';
+      background.appendChild(grain);
+      document.getElementById('browser').prepend(background);
     },
 
     _zenInitBrowserLayout() {
@@ -28,7 +38,6 @@
           document.getElementById('zen-appcontent-navbar-container').appendChild(deckTemplate);
         }
 
-        this._initSidebarScrolling();
         this._hideUnusedElements();
 
         gZenWorkspaces.init();
@@ -155,40 +164,6 @@
           elem.setAttribute('hidden', 'true');
         }
       }
-    },
-
-    _initSidebarScrolling() {
-      // Disable smooth scroll
-      const canSmoothScroll = Services.prefs.getBoolPref(
-        'zen.startup.smooth-scroll-in-tabs',
-        false
-      );
-      const tabsWrapper = document.getElementById('zen-tabs-wrapper');
-      gBrowser.tabContainer.addEventListener('wheel', (event) => {
-        if (canSmoothScroll) return;
-        event.preventDefault(); // Prevent the smooth scroll behavior
-        gBrowser.tabContainer.scrollTop += event.deltaY * 20; // Apply immediate scroll
-      });
-      // Detect overflow and underflow
-      const observer = new ResizeObserver((_) => {
-        const tabContainer = gBrowser.tabContainer;
-        // const isVertical = tabContainer.getAttribute('orient') === 'vertical';
-        // let contentSize = tabsWrapper.getBoundingClientRect()[isVertical ? 'height' : 'width'];
-        // NOTE: This should be contentSize > scrollClientSize, but due
-        // to how Gecko internally rounds in those cases, we allow for some
-        // minor differences (the internal Gecko layout size is 1/60th of a
-        // pixel, so 0.02 should cover it).
-        //let overflowing = contentSize - tabContainer.arrowScrollbox.scrollClientSize > 0.02;
-        let overflowing = true; // cheatign the system, because we want to always show make the element overflowing
-
-        window.requestAnimationFrame(() => {
-          tabContainer.arrowScrollbox.toggleAttribute('overflowing', overflowing);
-          tabContainer.arrowScrollbox.dispatchEvent(
-            new CustomEvent(overflowing ? 'overflow' : 'underflow')
-          );
-        });
-      });
-      observer.observe(tabsWrapper);
     },
 
     _initSearchBar() {

@@ -102,8 +102,8 @@ add_task(async function test_workspace_bookmark() {
   return;
 
   await withBookmarksShowing(async () => {
-    await ZenWorkspaces.createAndSaveWorkspace('Test Workspace 2');
-    const workspaces = await ZenWorkspaces._workspaces();
+    await gZenWorkspaces.createAndSaveWorkspace('Test Workspace 2');
+    const workspaces = await gZenWorkspaces._workspaces();
     ok(workspaces.workspaces.length === 2, 'Two workspaces should exist.');
     const firstWorkspace = workspaces.workspaces[0];
     const secondWorkspace = workspaces.workspaces[1];
@@ -130,13 +130,13 @@ add_task(async function test_workspace_bookmark() {
 
     await changeWorkspaceForBookmark(bookmark2, secondWorkspace);
 
-    await ZenWorkspaces.changeWorkspace(secondWorkspace);
+    await gZenWorkspaces.changeWorkspace(secondWorkspace);
     const toolbarNode1 = getToolbarNodeForItemGuid(bookmark1.guid);
     const toolbarNode2 = getToolbarNodeForItemGuid(bookmark2.guid);
     ok(toolbarNode1, 'Bookmark1 should be in the toolbar');
     ok(!toolbarNode2, 'Bookmark2 should be in the toolbar');
 
-    await ZenWorkspaces.changeWorkspace(firstWorkspace);
+    await gZenWorkspaces.changeWorkspace(firstWorkspace);
 
     const toolbarNode3 = getToolbarNodeForItemGuid(bookmark1.guid);
     const toolbarNode4 = getToolbarNodeForItemGuid(bookmark2.guid);
@@ -146,6 +146,6 @@ add_task(async function test_workspace_bookmark() {
     await PlacesUtils.bookmarks.remove(bookmark1);
     await PlacesUtils.bookmarks.remove(bookmark2);
 
-    await ZenWorkspaces.removeWorkspace(secondWorkspace.uuid);
+    await gZenWorkspaces.removeWorkspace(secondWorkspace.uuid);
   });
 });

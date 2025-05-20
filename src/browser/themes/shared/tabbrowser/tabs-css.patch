@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 6ca85d9d4d593271fe49138ea736bd96651c05f5..192acb662eaeaeb67df890de4c9681952b078526 100644
+index 6ca85d9d4d593271fe49138ea736bd96651c05f5..bcae5b6829190d6e36a32b36d20c1c73ed810ba5 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -32,7 +32,7 @@
@@ -108,7 +108,15 @@ index 6ca85d9d4d593271fe49138ea736bd96651c05f5..192acb662eaeaeb67df890de4c968195
      /* stylelint-disable-next-line media-query-no-invalid */
      @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
        /* We need these rules to apply at all times when the sidebar.visibility
-@@ -1717,7 +1715,7 @@ tab-group {
+@@ -1586,7 +1584,6 @@ tab-group {
+ 
+   &:not([expanded]) {
+     .tabbrowser-tab[pinned] {
+-      width: var(--tab-collapsed-width);
+     }
+ 
+     .tab-background {
+@@ -1717,7 +1714,7 @@ tab-group {
    toolbarbutton:not(#firefox-view-button),
    toolbarpaletteitem:not(#wrapper-firefox-view-button)
  ) ~ #tabbrowser-tabs {
@@ -117,7 +125,7 @@ index 6ca85d9d4d593271fe49138ea736bd96651c05f5..192acb662eaeaeb67df890de4c968195
    padding-inline-start: calc(var(--tab-overflow-pinned-tabs-width) + 2px);
    margin-inline-start: 2px;
  }
-@@ -1751,7 +1749,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -1751,7 +1748,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

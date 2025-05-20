@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/arrowscrollbox.js b/toolkit/content/widgets/arrowscrollbox.js
-index f9191af09f1b7a1654aff62807e7dad573afc172..f94a8b3dc5871fba5d0dbed5d487d6e32a1ff29a 100644
+index f9191af09f1b7a1654aff62807e7dad573afc172..f49ad7cb08f5d2be4a03046c191361f8c8a004bc 100644
 --- a/toolkit/content/widgets/arrowscrollbox.js
 +++ b/toolkit/content/widgets/arrowscrollbox.js
 @@ -98,6 +98,7 @@
@@ -15,7 +15,7 @@ index f9191af09f1b7a1654aff62807e7dad573afc172..f94a8b3dc5871fba5d0dbed5d487d6e3
      on_wheel(event) {
        // Don't consume the event if we can't scroll.
 -      if (!this.overflowing) {
-+      if (!this.overflowing || this.id === 'tabbrowser-arrowscrollbox') { // we handle this on ZenStartup
++      if (!this.overflowing || this.id === 'tabbrowser-arrowscrollbox' || ((event.deltaY == 0 || gZenWorkspaces._swipeState?.isGestureActive) && this.classList.contains('workspace-arrowscrollbox'))) {
          return;
        }
  

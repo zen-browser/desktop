@@ -32,14 +32,25 @@
 }
 
 #browser {
+  background: transparent !important;
   width: 100%;
-  background: var(--zen-main-browser-background) !important;
+}
+
+#zen-browser-background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
 
   will-change: background-color;
 
-  &::after {
+  &::after,
+  &::before {
     content: '';
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -48,36 +59,38 @@
     pointer-events: none;
   }
 
-  &:not([post-animating='true'])::after {
-    transition: background-color var(--inactive-window-transition);
+  @media -moz-pref('zen.theme.gradient') {
+    &::after {
+      background: var(--zen-main-browser-background-old);
+      transition: 0s;
+      opacity: calc(1 - var(--zen-background-opacity));
+    }
+
+    &::before {
+      background: var(--zen-main-browser-background);
+      transition: 0s;
+      opacity: var(--zen-background-opacity);
+    }
   }
 
-  @media -moz-pref('zen.theme.gradient') {
-    &[animating='true']::after {
-      background: var(--zen-main-browser-background-old);
-      backdrop-filter: blur(5px);
-      animation: zen-main-app-wrapper-animation 0.4s ease forwards;
-      transition: 0s;
-    }
+  &:not([post-animating='true'])::before {
+    transition: background-color var(--inactive-window-transition);
   }
 
   @media (not (-moz-windows-mica)) and -moz-pref('zen.view.grey-out-inactive-windows') {
     transition: color var(--inactive-window-transition);
     :root:not([zen-welcome-stage]) &:-moz-window-inactive {
       color: var(--toolbox-textcolor-inactive);
-      &::after {
+      &::before {
         background-color: var(--toolbox-bgcolor-inactive);
       }
     }
   }
 
-  &::before {
+  #zen-browser-grain {
     content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
     z-index: 0;
@@ -258,4 +271,14 @@
 
 :root:not([customizing]) #TabsToolbar-customization-target > #alltabs-button {
   display: none;
+}
+
+:root[customizing] #TabsToolbar-customization-target {
+  visibility: collapse;
+}
+
+:root[customizing] #zen-sidebar-top-buttons-customization-target {
+  border: 1px dashed;
+  border-radius: 2px;
+  margin: 10px 2px 0 0;
 }

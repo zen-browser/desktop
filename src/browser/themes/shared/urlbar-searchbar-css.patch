@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index e237ee9edea85c1d2ef22f988df6b22755e343e6..b06fc06686a7a969e924ad0df662dec937b3c70d 100644
+index e237ee9edea85c1d2ef22f988df6b22755e343e6..abee0dc035833c4334e55bd8cd7483bbcc71f97f 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -5,7 +5,7 @@
@@ -11,14 +11,18 @@ index e237ee9edea85c1d2ef22f988df6b22755e343e6..b06fc06686a7a969e924ad0df662dec9
    --urlbar-margin-inline: 5px;
    --urlbar-padding-block: 4px;
  }
-@@ -292,7 +292,9 @@
+@@ -292,10 +292,14 @@
  }
  
  #urlbar[breakout][breakout-extend] {
--  margin-left: calc(-1 * var(--urlbar-margin-inline));
 +  :root:not([zen-single-toolbar='true']) {
-+    margin-left: calc(-1 * var(--urlbar-margin-inline));
+   margin-left: calc(-1 * var(--urlbar-margin-inline));
 +  }
++  align-items: center;
    width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
  
    > .urlbar-input-container {
++    align-items: center;
+     height: var(--urlbar-container-height);
+     padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2 + var(--urlbar-container-padding));
+     padding-inline: calc(var(--urlbar-margin-inline) + var(--urlbar-container-padding));

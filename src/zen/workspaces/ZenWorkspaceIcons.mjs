@@ -5,10 +5,11 @@
     }
 
     connectedCallback() {
-      if (this.delayConnectedCallback()) {
+      if (this.delayConnectedCallback() || this._hasConnected) {
         return;
       }
 
+      this._hasConnected = true;
       window.addEventListener('ZenWorkspacesUIUpdate', this, true);
     }
 
@@ -51,28 +52,39 @@
       }
     }
 
-    on_ZenWorkspacesUIUpdate(event) {
-      this.#updateIcons();
+    async on_ZenWorkspacesUIUpdate(event) {
+      await this.#updateIcons();
       this.activeIndex = event.detail.activeIndex;
     }
 
     set activeIndex(uuid) {
       const buttons = this.querySelectorAll('toolbarbutton');
+      if (!buttons.length) {
+        return;
+      }
+      let i = 0;
+      let selected = -1;
       for (const button of buttons) {
         if (button.getAttribute('zen-workspace-id') == uuid) {
-          button.setAttribute('active', 'true');
+          selected = i;
         } else {
           button.removeAttribute('active');
         }
+        i++;
       }
+      buttons[selected].setAttribute('active', true);
+      this.setAttribute('selected', selected);
     }
 
     get activeIndex() {
+      const selected = this.getAttribute('selected');
       const buttons = this.querySelectorAll('toolbarbutton');
+      let i = 0;
       for (const button of buttons) {
-        if (button.hasAttribute('active')) {
+        if (i == selected) {
           return button.getAttribute('zen-workspace-id');
         }
+        i++;
       }
       return null;
     }

@@ -51,7 +51,7 @@ var gZenCompactModeManager = {
 
     gZenUIManager.addPopupTrackingAttribute(this.sidebar);
     gZenUIManager.addPopupTrackingAttribute(
-      document.getElementById('zen-appcontent-navbar-container')
+      document.getElementById('zen-appcontent-navbar-wrapper')
     );
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
@@ -76,7 +76,14 @@ var gZenCompactModeManager = {
     return lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
   },
 
+  get shouldBeCompact() {
+    return !document.documentElement.getAttribute('chromehidden').includes('toolbar');
+  },
+
   set preference(value) {
+    if (!this.shouldBeCompact) {
+      value = false;
+    }
     if (
       this.preference === value ||
       document.documentElement.hasAttribute('zen-compact-animating')
@@ -201,16 +208,31 @@ var gZenCompactModeManager = {
     }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
     if (sidebarWidth > 1) {
-      gZenUIManager.restoreScrollbarState();
+      if (this.preference && gZenVerticalTabsManager._prefsSidebarExpanded) {
+        sidebarWidth = Math.max(sidebarWidth, 150);
+      }
       // Second variable to get the genuine width of the sidebar
       this.sidebar.style.setProperty('--actual-zen-sidebar-width', `${sidebarWidth}px`);
       window.dispatchEvent(new window.Event('resize')); // To recalculate the layout
-      if (event && this.preference) {
+      if (
+        event &&
+        this.preference &&
+        gZenVerticalTabsManager._prefsSidebarExpanded &&
+        !gZenVerticalTabsManager._hadSidebarCollapse
+      ) {
         return;
       }
+      delete gZenVerticalTabsManager._hadSidebarCollapse;
       this.sidebar.style.setProperty('--zen-sidebar-width', `${sidebarWidth}px`);
     }
     return sidebarWidth;
+  },
+
+  get canHideSidebar() {
+    return (
+      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ||
+      gZenVerticalTabsManager._hasSetSingleToolbar
+    );
   },
 
   animateCompactMode() {
@@ -222,9 +244,7 @@ var gZenCompactModeManager = {
         .getElementById('zen-sidebar-splitter')
         .getBoundingClientRect().width;
       const isCompactMode = this.preference;
-      const canHideSidebar =
-        Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ||
-        gZenVerticalTabsManager._hasSetSingleToolbar;
+      const canHideSidebar = this.canHideSidebar;
       let canAnimate =
         lazyCompactMode.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && !this.isSidebarPotentiallyOpen();
       if (typeof this._wasInCompactMode !== 'undefined') {
@@ -258,6 +278,8 @@ var gZenCompactModeManager = {
               // Subtract from the splitter width to end up with the correct element separation
               sidebarWidth += 1.5 * splitterWidth - elementSeparation;
             }
+          } else {
+            sidebarWidth -= elementSeparation;
           }
           gZenUIManager.motion
             .animate(
@@ -406,7 +428,7 @@ var gZenCompactModeManager = {
               keepHoverDuration: 100,
             },
             {
-              element: document.getElementById('zen-appcontent-navbar-container'),
+              element: document.getElementById('zen-appcontent-navbar-wrapper'),
               screenEdge: 'top',
             },
           ]),
@@ -586,7 +608,7 @@ var gZenCompactModeManager = {
   },
 
   toggleToolbar() {
-    let toolbar = document.getElementById('zen-appcontent-navbar-container');
+    let toolbar = document.getElementById('zen-appcontent-navbar-wrapper');
     toolbar.toggleAttribute('zen-user-show');
   },
 
@@ -616,7 +638,8 @@ var gZenCompactModeManager = {
       !this.isSidebarPotentiallyOpen() &&
       this._canShowBackgroundTabToast &&
       !gZenGlanceManager._animating &&
-      !this._nextTimeWillBeActive
+      !this._nextTimeWillBeActive &&
+      this.canHideSidebar
     ) {
       gZenUIManager.showToast('zen-background-tab-opened-toast');
     }

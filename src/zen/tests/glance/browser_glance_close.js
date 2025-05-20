@@ -14,7 +14,7 @@ add_task(async function test_Glance_Basic_Close() {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, 500);
+      }, 1000);
     });
     ok(
       !currentTab.hasAttribute('glance-id'),

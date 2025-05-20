@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index dc92771ebc65095dfebbddc238ee6d4fffd897bf..ae9120f7cc8989cf625ac101d053d82582e32009 100644
+index dc92771ebc65095dfebbddc238ee6d4fffd897bf..fa35f6835498f8e51f060479addb25237d3fe7ff 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -57,7 +57,18 @@ index dc92771ebc65095dfebbddc238ee6d4fffd897bf..ae9120f7cc8989cf625ac101d053d825
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -554,6 +559,7 @@
+@@ -508,6 +513,10 @@
+       this.style.MozUserFocus = "";
+     }
+ 
++    get glanceTab() {
++      return this.querySelector("tab[zen-glance-tab]");
++    }
++
+     on_click(event) {
+       if (event.button != 0) {
+         return;
+@@ -554,6 +563,7 @@
              telemetrySource: lazy.TabMetrics.METRIC_SOURCE.TAB_STRIP,
            });
          } else {
@@ -65,7 +76,7 @@ index dc92771ebc65095dfebbddc238ee6d4fffd897bf..ae9120f7cc8989cf625ac101d053d825
            gBrowser.removeTab(this, {
              animate: true,
              triggeringEvent: event,
-@@ -564,6 +570,14 @@
+@@ -564,6 +574,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -80,7 +91,7 @@ index dc92771ebc65095dfebbddc238ee6d4fffd897bf..ae9120f7cc8989cf625ac101d053d825
      }
  
      on_dblclick(event) {
-@@ -587,6 +601,8 @@
+@@ -587,6 +605,8 @@
            animate: true,
            triggeringEvent: event,
          });

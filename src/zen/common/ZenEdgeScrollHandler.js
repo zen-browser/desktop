@@ -2,6 +2,7 @@
 // (Or any other suitable path within your project for browser chrome scripts)
 
 (function() {
+    console.log("hahahahah");
   if (window.gEdgeScrollHandlerInitialized) {
     console.log("EdgeScrollHandler: Already initialized.");
     return;
@@ -49,101 +50,43 @@
       logParent(`loadFrameScriptForBrowser: browser.messageManager is null for ${browser.currentURI?.spec}`);
     }
   }
-
-  // Initialize frame scripts for existing and new tabs
   function initFrameScripts() {
     if (!gBrowser || typeof gBrowser.tabs === 'undefined' || !gBrowser.tabs.length) {
         logParent("gBrowser not ready or no tabs for initFrameScripts.");
-        if (!window.gEdgeScrollInitRetryCount || window.gEdgeScrollInitRetryCount < 5) { // Limit retries
+        if (!window.gEdgeScrollInitRetryCount || window.gEdgeScrollInitRetryCount < 5) {
             window.gEdgeScrollInitRetryCount = (window.gEdgeScrollInitRetryCount || 0) + 1;
             setTimeout(initFrameScripts, 500 * window.gEdgeScrollInitRetryCount);
         }
         return;
     }
-
     logParent("Initializing frame scripts for tabs...");
     for (const tab of gBrowser.tabs) {
-      if (tab.linkedBrowser) {
-        loadFrameScriptForBrowser(tab.linkedBrowser);
-      }
+      if (tab.linkedBrowser) loadFrameScriptForBrowser(tab.linkedBrowser);
     }
-
     gBrowser.tabContainer.addEventListener("TabOpen", event => {
-      const browser = event.target.linkedBrowser;
-      if (browser) {
-        // Frame scripts are often loaded on demand or when the browser is ready
-        // Listening for 'load' or 'DOMContentLoaded' on the browser might be more robust
-        // For now, direct load on TabOpen
-        loadFrameScriptForBrowser(browser);
-      }
+      if (event.target.linkedBrowser) loadFrameScriptForBrowser(event.target.linkedBrowser);
     });
-
     gBrowser.tabContainer.addEventListener("TabSelect", event => {
-      const browser = event.target.linkedBrowser;
-      if (browser) {
-        loadFrameScriptForBrowser(browser);
-      }
+      if (event.target.linkedBrowser) loadFrameScriptForBrowser(event.target.linkedBrowser);
     });
-    
-    if (gBrowser.selectedBrowser) {
-        loadFrameScriptForBrowser(gBrowser.selectedBrowser);
-    }
+    if (gBrowser.selectedBrowser) loadFrameScriptForBrowser(gBrowser.selectedBrowser);
   }
-
 
   function getGapZoneInfo(event) {
     const activeBrowser = gBrowser.selectedBrowser;
-    if (!activeBrowser) {
-      return { isInGap: false, targetBrowser: null, browserRect: null };
-    }
+    if (!activeBrowser) return { isInGap: false, targetBrowser: null, browserRect: null };
 
     const activeBrowserRect = activeBrowser.getBoundingClientRect();
     const windowWidth = mainBrowserWindow.innerWidth;
 
-    const isActiveBrowserRightmost =
-      (windowWidth - activeBrowserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX;
+    const isActiveBrowserRightmost = (windowWidth - activeBrowserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX;
+    if (!isActiveBrowserRightmost) return { isInGap: false, targetBrowser: null, browserRect: null };
 
-    if (!isActiveBrowserRightmost) {
-      return { isInGap: false, targetBrowser: null, browserRect: null };
-    }
-
-    const isInFarRightWindowEdgeGap = event.clientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) &&
-                                   event.clientX < windowWidth;
-
+    const isInFarRightWindowEdgeGap = event.clientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) && event.clientX < windowWidth;
     if (isInFarRightWindowEdgeGap) {
-      return {
-        isInGap: true,
-        targetBrowser: activeBrowser,
-        browserRect: activeBrowserRect,
-      };
+      return { isInGap: true, targetBrowser: activeBrowser, browserRect: activeBrowserRect };
     }
     return { isInGap: false, targetBrowser: null, browserRect: null };
-  }
-
-  function createSyntheticEventData(originalEvent, targetBrowserRect, eventType) {
-    const clientXInContent = Math.max(0, Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_OFFSET_FROM_EDGE));
-    const clientYInContent = Math.max(0, Math.min(Math.floor(originalEvent.clientY - targetBrowserRect.top), Math.floor(targetBrowserRect.height - 1)));
-
-    const screenX = Math.floor(mainBrowserWindow.screenX + targetBrowserRect.left + clientXInContent);
-    const screenY = Math.floor(mainBrowserWindow.screenY + targetBrowserRect.top + clientYInContent);
-
-    return {
-      type: eventType,
-      clientX: clientXInContent,
-      clientY: clientYInContent,
-      screenX: screenX,
-      screenY: screenY,
-      button: originalEvent.button,
-      buttons: originalEvent.buttons,
-      ctrlKey: originalEvent.ctrlKey,
-      altKey: originalEvent.altKey,
-      shiftKey: originalEvent.shiftKey,
-      metaKey: originalEvent.metaKey,
-      deltaX: originalEvent.deltaX || 0, // Ensure these exist for wheel
-      deltaY: originalEvent.deltaY || 0,
-      deltaZ: originalEvent.deltaZ || 0,
-      deltaMode: originalEvent.deltaMode || 0,
-    };
   }
 
   mainBrowserWindow.addEventListener('mousedown', (event) => {
@@ -160,58 +103,68 @@
     loadFrameScriptForBrowser(targetBrowser);
 
     event.preventDefault();
-    isSynthesizingDrag = true;
+    isDraggingEdgeScroll = true; // Changed back
+
     dragInitialModel.targetBrowserDuringDrag = targetBrowser;
+    dragInitialModel.gapZoneHeight = gapInfo.browserRect.height; // Height of the content area
+    dragInitialModel.mouseY = event.clientY; // Initial mouse Y for drag calculation
 
-    const eventData = createSyntheticEventData(event, gapInfo.browserRect, 'mousedown');
-    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
+    // Calculate scroll percentage based on click position within the "virtual scrollbar" (gap area)
+    const clickYInGap = event.clientY - gapInfo.browserRect.top;
+    const scrollPercentage = dragInitialModel.gapZoneHeight > 0 ? Math.max(0, Math.min(1, clickYInGap / dragInitialModel.gapZoneHeight)) : 0;
+    dragInitialModel.initialScrollPercentageOnDragStart = scrollPercentage;
 
-    mainBrowserWindow.addEventListener('mousemove', handleSyntheticDrag, true); // Use capture for mousemove
-    mainBrowserWindow.addEventListener('mouseup', handleSyntheticDragEnd, true);   // Use capture for mouseup
-  }, true); // Use capture for mousedown
+    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "ScrollToPercentage", { percentage: scrollPercentage });
 
-  function handleSyntheticDrag(event) {
-    if (!isSynthesizingDrag || !dragInitialModel.targetBrowserDuringDrag) return;
+    mainBrowserWindow.addEventListener('mousemove', handleEdgeScrollDrag, true);
+    mainBrowserWindow.addEventListener('mouseup', handleEdgeScrollEnd, true);
+  }, true);
+
+  function handleEdgeScrollDrag(event) { // Renamed back
+    if (!isDraggingEdgeScroll || !dragInitialModel.targetBrowserDuringDrag) return;
 
     const targetBrowser = dragInitialModel.targetBrowserDuringDrag;
-    if (gBrowser.selectedBrowser !== targetBrowser || !targetBrowser.messageManager || !targetBrowser.contentWindow) {
+    if (gBrowser.selectedBrowser !== targetBrowser || !targetBrowser.messageManager) {
       logParent("Drag: Target browser changed, lost messageManager, or no contentWindow. Ending drag.");
-      handleSyntheticDragEnd(event);
+      handleEdgeScrollEnd(event);
       return;
     }
     event.preventDefault();
-    event.stopPropagation(); // Stop event from bubbling further in parent
+    event.stopPropagation();
 
-    const targetBrowserRect = targetBrowser.getBoundingClientRect();
-    const eventData = createSyntheticEventData(event, targetBrowserRect, 'mousemove');
-    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
+    const deltaYFromInitialMouseY = event.clientY - dragInitialModel.mouseY;
+    let newScrollPercentage;
+
+    if (dragInitialModel.gapZoneHeight > 0) {
+      // Calculate how much the mouse has moved as a percentage of the gap height
+      const percentageDelta = deltaYFromInitialMouseY / dragInitialModel.gapZoneHeight;
+      // Add this delta to the scroll percentage we had when the drag started
+      newScrollPercentage = dragInitialModel.initialScrollPercentageOnDragStart + percentageDelta;
+      newScrollPercentage = Math.max(0, Math.min(1, newScrollPercentage)); // Clamp between 0 and 1
+    } else {
+      // Fallback or error - should not happen if drag started correctly
+      return;
+    }
+    
+    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "ScrollToPercentage", { percentage: newScrollPercentage });
   }
 
-  function handleSyntheticDragEnd(event) {
-    if (isSynthesizingDrag && dragInitialModel.targetBrowserDuringDrag) {
-        const targetBrowser = dragInitialModel.targetBrowserDuringDrag;
-        if (targetBrowser.messageManager) {
-            // Ensure event is not null if called without one (e.g. from a cleanup path)
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                const targetBrowserRect = targetBrowser.getBoundingClientRect();
-                const eventData = createSyntheticEventData(event, targetBrowserRect, 'mouseup');
-                targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeMouseEvent", eventData);
-            } else {
-                // If event is null, we might not have coordinates for mouseup.
-                // Depending on desired behavior, could send a generic mouseup or skip.
-                // For now, we only send if we have an event.
-                logParent("DragEnd: Called without an event, mouseup not synthesized to content.");
-            }
+  function handleEdgeScrollEnd(event) { // Renamed back
+    if (isDraggingEdgeScroll && dragInitialModel.targetBrowserDuringDrag) {
+        if (event) { // If called by an event
+            event.preventDefault();
+            event.stopPropagation();
+            // Optionally, could send a final ScrollToPercentage if needed, but current logic updates on mousemove
         }
     }
     
-    isSynthesizingDrag = false;
+    isDraggingEdgeScroll = false;
+    // Reset parts of dragInitialModel if they are large or sensitive
     dragInitialModel.targetBrowserDuringDrag = null;
-    mainBrowserWindow.removeEventListener('mousemove', handleSyntheticDrag, true);
-    mainBrowserWindow.removeEventListener('mouseup', handleSyntheticDragEnd, true);
-    // logParent("DragEnd: Event listeners removed.");
+    // dragInitialModel.mouseY = 0; // etc.
+
+    mainBrowserWindow.removeEventListener('mousemove', handleEdgeScrollDrag, true);
+    mainBrowserWindow.removeEventListener('mouseup', handleEdgeScrollEnd, true);
   }
 
   mainBrowserWindow.addEventListener('wheel', (event) => {
@@ -228,12 +181,20 @@
     event.preventDefault();
     event.stopPropagation();
 
-    const eventData = createSyntheticEventData(event, gapInfo.browserRect, 'wheel'); // type 'wheel' is just for our data
-    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "SynthesizeWheelEvent", eventData);
+    const wheelData = {
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      deltaZ: event.deltaZ,
+      deltaMode: event.deltaMode,
+      // Pass necessary modifier keys if the frame script needs them for dispatching
+      ctrlKey: event.ctrlKey,
+      altKey: event.altKey,
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+    };
+    targetBrowser.messageManager.sendAsyncMessage(MESSAGE_PREFIX + "DispatchWheel", { wheelData });
   }, { capture: true, passive: false });
 
-  // Initialize frame script loading logic
-  // Ensure gBrowser is available before initializing
   if (document.readyState === "complete" || document.readyState === "interactive") {
     initFrameScripts();
   } else {

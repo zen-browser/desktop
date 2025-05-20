@@ -1,0 +1,64 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/* Toolbar hover behavior in compact mode */
+:root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
+  /* Hover detection zone */
+  #zen-top-hover-zone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    z-index: 10000;
+    background: transparent;
+  }
+
+  /* Navbar wrapper styles */
+  #zen-appcontent-navbar-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    z-index: 9999;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.15s ease;
+    background: var(--zen-dialog-background);
+
+    &[zen-has-hover],
+    &:hover,
+    &[zen-user-show],
+    &[has-popup-menu],
+    &:has(*:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])) {
+      transform: translateY(0);
+      opacity: 1;
+
+      #zen-appcontent-navbar-container {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+
+    #zen-appcontent-navbar-container {
+      position: relative;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.15s ease;
+      background: var(--zen-dialog-background);
+      box-shadow: var(--zen-big-shadow);
+    }
+  }
+
+  /* Reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    #zen-appcontent-navbar-wrapper,
+    #zen-appcontent-navbar-container {
+      transition: none;
+    }
+  }
+}

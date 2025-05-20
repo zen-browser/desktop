@@ -42,11 +42,21 @@ var gZenCompactModeManager = {
   },
 
   init() {
+    this._createHoverStyle();
     this.addMouseActions();
 
     Services.prefs.addObserver(
       'zen.tabs.vertical.right-side',
       this._updateSidebarIsOnRight.bind(this)
+    );
+    
+    Services.prefs.addObserver(
+      'zen.view.compact.hide-tabbar',
+      this._setupTopEdgeHover.bind(this)
+    );
+    Services.prefs.addObserver(
+      'zen.view.compact.hide-toolbar', 
+      this._setupTopEdgeHover.bind(this)
     );
 
     gZenUIManager.addPopupTrackingAttribute(this.sidebar);
@@ -468,6 +478,9 @@ var gZenCompactModeManager = {
   },
 
   addMouseActions() {
+    // Create a top edge hover zone for compact mode when both bars are hidden
+    this._setupTopEdgeHover();
+
     gURLBar.textbox.addEventListener('mouseenter', (event) => {
       if (event.target.closest('#urlbar[zen-floating-urlbar]')) {
         // Ignore sidebar mouse enter if the urlbar is floating
@@ -589,7 +602,72 @@ var gZenCompactModeManager = {
         delete this._hasHoveredUrlbar;
       }, 0);
     });
+
+    // Add a hover zone at the top edge in compact mode when both tabbar and toolbar are hidden
+    (function addCompactModeTopHoverZone() {
+      try {
+        if (
+          document.documentElement.getAttribute('zen-compact-mode') === 'true' &&
+          Services.prefs.getBoolPref('zen.view.compact.hide-tabbar', false) &&
+          Services.prefs.getBoolPref('zen.view.compact.hide-toolbar', false)
+        ) {
+          let hoverZone = document.createElement('div');
+          hoverZone.style.position = 'fixed';
+          hoverZone.style.top = '0';
+          hoverZone.style.left = '0';
+          hoverZone.style.right = '0';
+          hoverZone.style.height = '3px';
+          hoverZone.style.zIndex = '10000';
+          hoverZone.style.pointerEvents = 'auto';
+          hoverZone.style.background = 'transparent';
+          hoverZone.addEventListener('mouseenter', () => {
+            document.getElementById('zen-appcontent-navbar-wrapper')?.setAttribute('zen-has-hover', 'true');
+          });
+          hoverZone.addEventListener('mouseleave', () => {
+            document.getElementById('zen-appcontent-navbar-wrapper')?.removeAttribute('zen-has-hover');
+          });
+          document.body.appendChild(hoverZone);
+        }
+      } catch (e) {
+        // fail silently
+      }
+    })();
+
+    this._createHoverStyle();
   },
+
+  _createHoverStyle() {
+    const hoverZone = document.createElement('div');
+    hoverZone.id = 'zen-top-hover-zone';
+    document.documentElement.appendChild(hoverZone);
+  },
+
+  _setupTopEdgeHover() {
+    const navbar = document.getElementById('zen-appcontent-navbar-wrapper');
+    const hoverZone = document.getElementById('zen-top-hover-zone');
+    const shouldEnableHover = Services.prefs.getBoolPref('zen.view.compact.show-sidebar-and-toolbar-on-hover', true);
+
+    if (!shouldEnableHover || !hoverZone) {
+      return;
+    }
+
+    const handleHover = (e) => {
+      if (e.type === 'mouseenter') {
+        navbar.setAttribute('zen-has-hover', 'true');
+      } else if (e.type === 'mouseleave' && !navbar.contains(e.relatedTarget)) {
+        navbar.removeAttribute('zen-has-hover');
+      }
+    };
+
+    hoverZone.addEventListener('mouseenter', handleHover);
+    navbar.addEventListener('mouseleave', handleHover);
+    this._evenListeners.push(() => {
+      hoverZone.removeEventListener('mouseenter', handleHover);
+      navbar.removeEventListener('mouseleave', handleHover);
+    });
+  },
+
+  // ...existing code...
 
   _getCrossedEdge(posX, posY, element = document.documentElement, maxDistance = 10) {
     const targetBox = element.getBoundingClientRect();

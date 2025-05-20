@@ -10,7 +10,7 @@
   const EDGE_INTERACTION_WIDTH_PX = 20;
   const RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX = 25;
   // How many pixels from the right edge of the content viewport to target the synthetic click
-  const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 8; // Aim for the scrollbar track
+  const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 2; // Aim for the scrollbar track
 
   const mainBrowserWindow = window;
   let isSynthesizingDrag = false; // Changed from isDraggingEdgeScroll
@@ -67,7 +67,7 @@
     let potentialTargetBrowserRect = null;
     if (gBrowser && gBrowser.browsers) {
         for (const browser of gBrowser.browsers) {
-            if (browser.hidden) continue;
+            if (browser.hidden || browser.getAttribute("transparent") || !browser.getAttribute("primary") ) continue;
             const browserRect = browser.getBoundingClientRect();
             if (browserRect.width === 0 || browserRect.height === 0) continue;
             const isBrowserAtRightEdge = (windowWidth - browserRect.right) < RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX && browserRect.right > (windowWidth - EDGE_INTERACTION_WIDTH_PX - RIGHTMOST_BROWSER_PROXIMITY_THRESHOLD_PX);

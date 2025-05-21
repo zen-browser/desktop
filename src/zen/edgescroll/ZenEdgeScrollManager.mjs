@@ -8,10 +8,8 @@
     dump("ZenEdgeScrollManager: " + message + "\n");
   }
 
-  class ZenEdgeScrollManager {
-    constructor(windowGlobal) {
-      this.window = windowGlobal;
-      this.gBrowser = this.window.gBrowser;
+  class ZenEdgeScrollManager extends ZenDOMOperatedFeature {
+    init() {
       this.isSynthesizingDrag = false;
       this.dragInitialModel = {
         targetBrowserDuringDrag: null,
@@ -24,23 +22,14 @@
       this._boundHandleSyntheticDragEnd = this.handleSyntheticDragEnd.bind(this);
       this._boundHandleWheel = this.handleWheel.bind(this);
 
-      // logManager("Constructor created");
-    }
-
-    init() {
-      if (this.window.gZenEdgeScrollManagerInitialized) {
-        // logManager("Already initialized for this window.");
+      if (window.gZenEdgeScrollManagerInitialized) {
+        logManager("Already initialized for this window.");
         return;
       }
-      this.window.gZenEdgeScrollManagerInitialized = true;
-      this.gBrowser = this.window.gBrowser;
-      if (!this.gBrowser) {
-        logManager("No gBrowser found. Cannot initialize.");
-        return;
-      }
+      window.gZenEdgeScrollManagerInitialized = true;
 
       // Create and append the edge scroll trigger div
-      this.edgeScrollTriggerDiv = this.window.document.createElement("div");
+      this.edgeScrollTriggerDiv = window.document.createElement("div");
       this.edgeScrollTriggerDiv.id = "zen-edge-scroll-trigger";
       Object.assign(this.edgeScrollTriggerDiv.style, {
         position: "fixed",
@@ -52,7 +41,7 @@
         userSelect: "none",
         // backgroundColor: "rgba(255,0,0,0.1)", // For debugging visibility
       });
-      this.window.document.documentElement.appendChild(this.edgeScrollTriggerDiv);
+      window.document.documentElement.appendChild(this.edgeScrollTriggerDiv);
 
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
       this.edgeScrollTriggerDiv.addEventListener('wheel', this._boundHandleWheel, { capture: true, passive: false });
@@ -69,23 +58,19 @@
         }
         this.edgeScrollTriggerDiv = null;
       }
-      // Listeners for drag are on the window, keep them if drag is active, but they are added/removed dynamically
       this.edgeScrollTriggerDiv.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
       this.edgeScrollTriggerDiv.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
-      this.window.gZenEdgeScrollManagerInitialized = false;
-      logManager("Destroyed, listeners removed, edgeScrollTriggerDiv removed.");
+      window.gZenEdgeScrollManagerInitialized = false;
     }
 
     _getParentActor() {
-      if (!this.gBrowser.selectedBrowser.browsingContext.currentWindowGlobal) {
-        logManager("_getParentActor: No windowGlobalChild on this.window. Returning null.");
+      if (!gBrowser.selectedBrowser.browsingContext.currentWindowGlobal) {
+        logManager("_getParentActor: No windowGlobalChild on window. Returning null.");
         return null;
       }
       try {
-        const actor = this.gBrowser.selectedBrowser.browsingContext.currentWindowGlobal.getActor(ACTOR_NAME);
-        logManager(`_getParentActor: getActor('${ACTOR_NAME}') returned: ${actor}`); // Original log
-        if (actor) {
-        }
+        const actor = gBrowser.selectedBrowser.browsingContext.currentWindowGlobal.getActor(ACTOR_NAME);
+        // logManager(`_getParentActor: getActor('${ACTOR_NAME}') returned: ${actor}`); // Original log
         return actor;
       } catch (e) {
         logManager(`_getParentActor: Error in getActor('${ACTOR_NAME}'): ${e}`);
@@ -94,35 +79,26 @@
     }
 
     getGapZoneInfo(event) {
-      const windowWidth = this.window.innerWidth;
-      // const eventClientX = event.clientX; // event.clientX is on the trigger div
+      const windowWidth = window.innerWidth;
       const eventClientY = event.clientY;
-      // const isInFarRightWindowEdgeGap = eventClientX > (windowWidth - EDGE_INTERACTION_WIDTH_PX) && event.clientX < windowWidth;
-      // If event is from edgeScrollTriggerDiv, it's always in the "gap".
-      // We just need to find the browser adjacent to this event.
 
       let potentialTargetBrowser = null;
       let potentialTargetBrowserRect = null;
-      if (this.gBrowser && this.gBrowser.browsers) {
-        for (const browser of this.gBrowser.browsers) {
-          if (browser.hidden || browser.getAttribute("transparent") === "true" || !browser.getAttribute("primary")) {
-            continue;
-          }
 
-          const browserRect = browser.getBoundingClientRect();
-          if (browserRect.width === 0 || browserRect.height === 0) continue;
-
+      const selectedBrowser = gBrowser.selectedBrowser;
+      if (selectedBrowser && selectedBrowser.getAttribute("primary") === "true") {
+        const selectedBrowserRect = selectedBrowser.getBoundingClientRect();
+        if (selectedBrowserRect.width > 0 && selectedBrowserRect.height > 0) {
           // Check if the browser's right edge is very close to the window's right edge
-          const isBrowserAtRightEdge = (windowWidth - browserRect.right) <= EDGE_INTERACTION_WIDTH_PX + 1;
-          const isEventYWithinBrowser = eventClientY >= browserRect.top && eventClientY <= browserRect.bottom;
-
+          const isBrowserAtRightEdge = (windowWidth - selectedBrowserRect.right) <= EDGE_INTERACTION_WIDTH_PX + 1;
+          const isEventYWithinBrowser = eventClientY >= selectedBrowserRect.top && eventClientY <= selectedBrowserRect.bottom;
           if (isBrowserAtRightEdge && isEventYWithinBrowser) {
-            potentialTargetBrowser = browser;
-            potentialTargetBrowserRect = browserRect;
-            break; // Found the target browser
+            potentialTargetBrowser = selectedBrowser;
+            potentialTargetBrowserRect = selectedBrowserRect;
           }
         }
       }
+
       // The event is on the trigger div, so it is "in gap". We return the browser found.
       return { isInGap: true, targetBrowser: potentialTargetBrowser, browserRect: potentialTargetBrowserRect };
     }
@@ -130,8 +106,8 @@
     createSyntheticEventData(originalEvent, targetBrowserRect, eventType) {
       const clientXInContent = Math.max(0, Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE));
       const clientYInContent = Math.max(0, Math.min(Math.floor(originalEvent.clientY - targetBrowserRect.top), Math.floor(targetBrowserRect.height - 1)));
-      const screenX = Math.floor(this.window.screenX + targetBrowserRect.left + clientXInContent);
-      const screenY = Math.floor(this.window.screenY + targetBrowserRect.top + clientYInContent);
+      const screenX = Math.floor(window.screenX + targetBrowserRect.left + clientXInContent);
+      const screenY = Math.floor(window.screenY + targetBrowserRect.top + clientYInContent);
 
       return {
         type: eventType, clientX: clientXInContent, clientY: clientYInContent,
@@ -153,42 +129,32 @@
       let targetBrowser = gapInfo.targetBrowser;
       let targetBrowserRect = gapInfo.browserRect;
 
-      // Logic to switch tab if a non-selected browser is targeted
-      if (targetBrowser !== this.gBrowser.selectedBrowser) {
-        const tabToSelect = this.gBrowser.getTabForBrowser(targetBrowser);
-        if (tabToSelect && this.gBrowser.selectedTab !== tabToSelect) {
-          this.gBrowser.selectedTab = tabToSelect;
-          // After tab switch, gBrowser.selectedBrowser might take a moment to update,
-          // or might not be the one we expect if the switch fails or is async.
-          // It's safer to re-get the selectedBrowser and its rect.
-          targetBrowser = this.gBrowser.selectedBrowser;
-          if (targetBrowser) {
-            targetBrowserRect = targetBrowser.getBoundingClientRect();
-          } else {
-            logManager("Mousedown: Target browser null after tab selection attempt."); return;
-          }
-        }
-      }
-      // Ensure targetBrowser and its rect are valid after potential tab switch
-      if (!targetBrowser || !targetBrowserRect || targetBrowserRect.width === 0 || targetBrowserRect.height === 0) {
-        logManager("Mousedown: Invalid targetBrowser or rect after potential tab switch. Bailing out.");
-        return;
-      }
-
+      // // Logic to switch tab if a non-selected browser is targeted
+      // if (targetBrowser !== gBrowser.selectedBrowser) {
+      //   const tabToSelect = gBrowser.getTabForBrowser(targetBrowser);
+      //   if (tabToSelect && gBrowser.selectedTab !== tabToSelect) {
+      //     gBrowser.selectedTab = tabToSelect;
+      //     // After tab switch, gBrowser.selectedBrowser might take a moment to update,
+      //     // or might not be the one we expect if the switch fails or is async.
+      //     // It's safer to re-get the selectedBrowser and its rect.
+      //     targetBrowser = gBrowser.selectedBrowser;
+      //     if (targetBrowser) {
+      //       targetBrowserRect = targetBrowser.getBoundingClientRect();
+      //     } else {
+      //       logManager("Mousedown: Target browser null after tab selection attempt."); return;
+      //     }
+      //   }
+      // }
+      // // Ensure targetBrowser and its rect are valid after potential tab switch
+      // if (!targetBrowser || !targetBrowserRect || targetBrowserRect.width === 0 || targetBrowserRect.height === 0) {
+      //   logManager("Mousedown: Invalid targetBrowser or rect after potential tab switch. Bailing out.");
+      //   return;
+      // }
 
       const parentActor = this._getParentActor();
-
-      // Add a check before calling the method
-      if (!parentActor) {
-        logManager("Mousedown: parentActor is null. Bailing out.");
+      if (!parentActor || !targetBrowser.browsingContext) {
+        logManager("Mousedown: No parentActor or browsingContext for target browser: " + targetBrowser.currentURI?.spec);
         return;
-      }
-      if (typeof parentActor.sendEventToChild !== 'function') {
-        logManager(`Mousedown: parentActor.sendEventToChild is NOT a function. Actual type: ${typeof parentActor.sendEventToChild}. Actor constructor: ${parentActor?.constructor?.name}. Bailing out.`);
-        return;
-      }
-      if (!targetBrowser?.browsingContext) {
-        logManager("Mousedown: No targetBrowser.browsingContext. Bailing out. Target: " + targetBrowser?.currentURI?.spec); return;
       }
 
       event.preventDefault();
@@ -210,7 +176,7 @@
       const targetBrowser = this.dragInitialModel.targetBrowserDuringDrag;
       const targetBrowsingContext = this.dragInitialModel.targetBrowsingContextDuringDrag;
 
-      if (this.gBrowser.selectedBrowser !== targetBrowser) {
+      if (gBrowser.selectedBrowser !== targetBrowser) {
         // logManager("Drag: Target browser changed. Ending drag.");
         this.handleSyntheticDragEnd(event); return;
       }
@@ -269,25 +235,7 @@
 
       const targetBrowser = gapInfo.targetBrowser;
       const targetBrowserRect = gapInfo.browserRect;
-
-      // Optional: If we only want to scroll the active browser when it's the one at the edge.
-      // However, with the trigger div, it's more intuitive to scroll the browser that is visually there.
-      // if (targetBrowser !== this.gBrowser.selectedBrowser) {
-      //     logManager("Wheel: Adjacent browser is not the active one. Ignoring wheel for now.");
-      //     return;
-      // }
-
       const parentActor = this._getParentActor();
-
-      if (!parentActor || !targetBrowser.browsingContext) {
-        logManager("Wheel: No parentActor or browsingContext for target browser: " + targetBrowser.currentURI?.spec);
-        return;
-      }
-      if (!targetBrowserRect || targetBrowserRect.width === 0 || targetBrowserRect.height === 0) {
-        logManager("Wheel: Invalid targetBrowserRect for wheel event. Bailing out.");
-        return;
-      }
-
 
       event.preventDefault(); event.stopPropagation();
       const wheelData = {
@@ -311,34 +259,28 @@
   // Actor Registration (must happen before manager instantiation if manager relies on actors being ready)
   // This is modeled after ZenGlanceManager's registerWindowActors
   function registerEdgeScrollActors() {
-    const actorConfig = {
-      parent: {
-        esModuleURI: 'chrome://browser/content/zen-components/actors/ZenEdgeScrollParent.sys.mjs',
-      },
-      child: {
-        esModuleURI: 'chrome://browser/content/zen-components/actors/ZenEdgeScrollChild.sys.mjs',
-      },
-      allFrames: true, // Child actor should be available in all frames
-      matches: [
-        '*://*/*', // For general content pages
-        'chrome://*/*' // Explicitly allow all chrome URIs
-      ],
-      includeChrome: true,  // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
-    };
+    if (Services.prefs.getBoolPref('zen.edgescroll.enabled', true)) {
+      window.gZenEdgeScrollManagerInstance = new ZenEdgeScrollManager();
 
-    if (window.gZenActorsManager && typeof window.gZenActorsManager.addJSWindowActor === 'function') {
-      window.gZenActorsManager.addJSWindowActor(ACTOR_NAME, actorConfig);
-      logManager(`${ACTOR_NAME} actors registered via gZenActorsManager.`);
-    } else {
-      try {
-        ChromeUtils.registerWindowActor(ACTOR_NAME, { // Name must match ACTOR_NAME
-          parent: { moduleURI: actorConfig.parent.esModuleURI },
-          child: { moduleURI: actorConfig.child.esModuleURI },
-          matches: actorConfig.matches,
-          allFrames: actorConfig.allFrames,
-        });
-        logManager(`${ACTOR_NAME} actors registered via ChromeUtils.registerWindowActor.`);
-      } catch (e) {
+      const actorConfig = {
+        parent: {
+          esModuleURI: 'chrome://browser/content/zen-components/actors/ZenEdgeScrollParent.sys.mjs',
+        },
+        child: {
+          esModuleURI: 'chrome://browser/content/zen-components/actors/ZenEdgeScrollChild.sys.mjs',
+        },
+        allFrames: true, // Child actor should be available in all frames
+        matches: [
+          '*://*/*', // For general content pages
+          'chrome://*/*' // Explicitly allow all chrome URIs
+        ],
+        includeChrome: true,  // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
+      };
+
+      if (window.gZenActorsManager && typeof window.gZenActorsManager.addJSWindowActor === 'function') {
+        window.gZenActorsManager.addJSWindowActor(ACTOR_NAME, actorConfig);
+        logManager(`${ACTOR_NAME} actors registered via gZenActorsManager.`);
+      } else {
         console.error(`Failed to register ${ACTOR_NAME} actors:`, e);
         logManager(`Failed to register ${ACTOR_NAME} actors: ${e}`);
       }
@@ -347,10 +289,4 @@
 
   registerEdgeScrollActors();
 
-  window.gZenEdgeScrollManagerInstance = new ZenEdgeScrollManager(window);
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    window.gZenEdgeScrollManagerInstance.init();
-  } else {
-    window.addEventListener("load", () => window.gZenEdgeScrollManagerInstance.init(), { once: true });
-  }
 }

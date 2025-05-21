@@ -1170,6 +1170,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: 'zen.edgescroll.enabled',
+    type: 'bool',
+    default: true,
+  },
+  {
     id: 'zen.theme.color-prefs.use-workspace-colors',
     type: 'bool',
     default: false,

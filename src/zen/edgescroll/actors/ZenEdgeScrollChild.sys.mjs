@@ -3,17 +3,12 @@
 
 const { utils: Cu, interfaces: Ci } = Components;
 
-function logChild(message) {
-  // dump("ZenEdgeScrollChild: " + message + "\n");
-}
-
 export class ZenEdgeScrollChild extends JSWindowActorChild {
   constructor() {
     super();
   }
 
   receiveMessage(message) {
-    logChild(`Received message in child: ${message.name} for URL: ${this.contentWindow?.document?.location?.href || "unknown"}`);
     switch (message.name) {
       case "ZenEdgeScroll:SynthesizeMouseEvent":
         this.handleSynthesizeMouseEvent(message.data);
@@ -22,19 +17,16 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
         this.handleDispatchWheel(message.data);
         break;
       default:
-        logChild(`Unknown message received: ${message.name}`);
     }
   }
 
   handleSynthesizeMouseEvent(data) {
     if (!data || !data.type) {
-      logChild("SynthesizeMouseEvent: Invalid data received.");
       return;
     }
 
     const contentWin = this.contentWindow;
     if (!contentWin || !contentWin.windowUtils) {
-      logChild("SynthesizeMouseEvent: content.windowUtils is not available. URL: " + (contentWin?.document?.location?.href || "unknown"));
       return;
     }
 
@@ -54,25 +46,22 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
     }
 
     try {
-      // logChild(`SynthesizeMouseEvent: Dispatching ${data.type} to ${contentWin.document.location.href} at X:${data.clientX}, Y:${data.clientY}`);
       contentWin.windowUtils.sendMouseEvent(
         data.type, data.clientX, data.clientY, data.button,
         clickCount, modifiers, false, 0.5,
         Ci.nsIDOMWindowUtils.INPUT_SOURCE_MOUSE, false
       );
     } catch (e) {
-      logChild(`Error dispatching trusted synthetic ${data.type} event: ${e} - ${e.stack}. URL: ` + (contentWin?.document?.location?.href || "unknown"));
+      console.error("Error dispatching mouse event:", e);
     }
   }
 
   handleDispatchWheel({ wheelData }) {
     if (!wheelData) {
-      logChild("DispatchWheel: No wheelData received.");
       return;
     }
     const contentWin = this.contentWindow;
     if (!contentWin || !contentWin.windowUtils) {
-      logChild("DispatchWheel: content.windowUtils is not available. URL: " + (contentWin?.document?.location?.href || "unknown"));
       return;
     }
     const doc = contentWin.document;
@@ -88,18 +77,16 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
     if (wheelData.shiftKey) modifiers |= Ci.nsIDOMWindowUtils.MODIFIER_SHIFT;
 
     try {
-      // logChild(`DispatchWheel: Dispatching to ${contentWin.document.location.href} at X:${clientX}, Y:${clientY}`);
       contentWin.windowUtils.sendWheelEvent(
         clientX, clientY, wheelData.deltaX, wheelData.deltaY, wheelData.deltaZ,
         wheelData.deltaMode, modifiers, 0, 0, true, false, false, false, false
       );
     } catch (e) {
-      logChild(`Error dispatching trusted wheel event: ${e} - ${e.stack}. URL: ` + (contentWin?.document?.location?.href || "unknown"));
+      console.error("Error dispatching wheel event:", e);
     }
   }
 
   destroy() {
-    // logChild("Destroying ZenEdgeScrollChild for " + (this.contentWindow?.document?.location?.href || "unknown"));
     super.destroy();
   }
 }

@@ -3,10 +3,6 @@
   const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 2;
   const ACTOR_NAME = "ZenEdgeScroll"; // Name used for actor registration
 
-  function logManager(message) {
-    dump("ZenEdgeScrollManager: " + message + "\n");
-  }
-
   class ZenEdgeScrollManager extends ZenDOMOperatedFeature {
     init() {
       this.isSynthesizingDrag = false;
@@ -23,7 +19,6 @@
       this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
 
       if (window.gZenEdgeScrollManagerInitialized) {
-        logManager("Already initialized for this window.");
         return;
       }
       window.gZenEdgeScrollManagerInitialized = true;
@@ -48,8 +43,6 @@
 
       this._updateTriggerDivDisplay(); // Added: Set initial display state
       Services.prefs.addObserver("zen.tabs.vertical.right-side", this._boundUpdateTriggerDivDisplay); // Added: Observe preference
-
-      logManager("Initialized, edgeScrollTriggerDiv created, and event listeners added.");
     }
 
     destroy() {
@@ -81,15 +74,13 @@
 
     _getParentActor() {
       if (!gBrowser.selectedBrowser.browsingContext.currentWindowGlobal) {
-        logManager("_getParentActor: No windowGlobalChild on window. Returning null.");
         return null;
       }
       try {
         const actor = gBrowser.selectedBrowser.browsingContext.currentWindowGlobal.getActor(ACTOR_NAME);
-        // logManager(`_getParentActor: getActor('${ACTOR_NAME}') returned: ${actor}`); // Original log
         return actor;
       } catch (e) {
-        logManager(`_getParentActor: Error in getActor('${ACTOR_NAME}'): ${e}`);
+        console.error(`Error getting actor ${ACTOR_NAME}:`, e);
         return null;
       }
     }
@@ -139,7 +130,6 @@
       const gapInfo = this.getGapZoneInfo(event); // event is from edgeScrollTriggerDiv
 
       if (!gapInfo.targetBrowser) {
-        // logManager("Mousedown: Event on trigger div, but no specific adjacent browser.");
         return;
       }
       let targetBrowser = gapInfo.targetBrowser;
@@ -147,7 +137,6 @@
 
       const parentActor = this._getParentActor();
       if (!parentActor || !targetBrowser.browsingContext) {
-        logManager("Mousedown: No parentActor or browsingContext for target browser: " + targetBrowser.currentURI?.spec);
         return;
       }
 
@@ -157,7 +146,6 @@
       this.dragInitialModel.targetBrowsingContextDuringDrag = targetBrowser.browsingContext;
 
       const eventData = this.createSyntheticEventData(event, targetBrowserRect, 'mousedown');
-      // logManager(`Mousedown: Sending SynthesizeMouseEvent to ${targetBrowser.currentURI?.spec}`);
       parentActor.sendEventToChild(targetBrowser.browsingContext, "ZenEdgeScroll:SynthesizeMouseEvent", eventData);
 
       window.addEventListener('mousemove', this._boundHandleSyntheticDrag, true);
@@ -171,20 +159,17 @@
       const targetBrowsingContext = this.dragInitialModel.targetBrowsingContextDuringDrag;
 
       if (gBrowser.selectedBrowser !== targetBrowser) {
-        // logManager("Drag: Target browser changed. Ending drag.");
         this.handleSyntheticDragEnd(event); return;
       }
 
       const parentActor = this._getParentActor();
       if (!parentActor) {
-        logManager("Drag: No parentActor. Ending drag.");
         this.handleSyntheticDragEnd(event); return;
       }
 
       event.preventDefault(); event.stopPropagation();
       const currentTargetBrowserRect = targetBrowser.getBoundingClientRect();
       if (currentTargetBrowserRect.width === 0 || currentTargetBrowserRect.height === 0) {
-        // logManager("Drag: Target browser rect is zero. Ending drag.");
         this.handleSyntheticDragEnd(event); return;
       }
       const eventData = this.createSyntheticEventData(event, currentTargetBrowserRect, 'mousemove');
@@ -202,13 +187,10 @@
           const currentTargetBrowserRect = targetBrowser.getBoundingClientRect();
           if (currentTargetBrowserRect.width > 0 && currentTargetBrowserRect.height > 0) {
             const eventData = this.createSyntheticEventData(event, currentTargetBrowserRect, 'mouseup');
-            // logManager(`DragEnd: Sending SynthesizeMouseEvent to ${targetBrowser?.currentURI?.spec}`);
             parentActor.sendEventToChild(targetBrowsingContext, "ZenEdgeScroll:SynthesizeMouseEvent", eventData);
           } else {
-            // logManager("DragEnd: Target browser rect is zero, cannot send mouseup.");
           }
         } else if (parentActor && !event) { // Called without event (e.g. drag cancelled)
-          // logManager("DragEnd: Called without event, mouseup not synthesized via event data.");
           // Optionally send a generic mouseup if needed, or just clean up.
         }
       }
@@ -223,7 +205,6 @@
       const gapInfo = this.getGapZoneInfo(event); // event is from edgeScrollTriggerDiv
 
       if (!gapInfo.targetBrowser) {
-        // logManager("Wheel: Event on trigger div, but no specific adjacent browser.");
         return;
       }
 
@@ -238,7 +219,6 @@
         clientX: Math.max(0, Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE)),
         clientY: Math.max(0, Math.min(Math.floor(event.clientY - targetBrowserRect.top), Math.floor(targetBrowserRect.height - 1)))
       };
-      // logManager(`Wheel: Sending DispatchWheel to ${targetBrowser.currentURI?.spec}`);
       parentActor.sendEventToChild(targetBrowser.browsingContext, "ZenEdgeScroll:DispatchWheel", { wheelData });
     }
   }
@@ -266,10 +246,8 @@
 
       if (window.gZenActorsManager && typeof window.gZenActorsManager.addJSWindowActor === 'function') {
         window.gZenActorsManager.addJSWindowActor(ACTOR_NAME, actorConfig);
-        logManager(`${ACTOR_NAME} actors registered via gZenActorsManager.`);
       } else {
         console.error(`Failed to register ${ACTOR_NAME} actors:`, e);
-        logManager(`Failed to register ${ACTOR_NAME} actors: ${e}`);
       }
     }
   }

@@ -1,4 +1,3 @@
-/* global window, document, gBrowser, Services, ChromeUtils */ // Assuming gBrowser etc. are available
 {
   const EDGE_INTERACTION_WIDTH_PX = Services.prefs.getIntPref("zen.theme.border-radius", 8);
   const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 1;
@@ -240,9 +239,10 @@
         child: {
           esModuleURI: 'chrome://browser/content/zen-components/actors/ZenEdgeScrollChild.sys.mjs',
         },
-        allFrames: true, // Child actor should be available in all frames
+        allFrames: true,
         matches: [
-          '*://*/*', // For general content pages
+          '*://*/*',
+          'about:*',         // For about: pages
         ],
         includeChrome: true,  // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
       };

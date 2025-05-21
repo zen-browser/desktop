@@ -20,6 +20,7 @@
       this._boundHandleSyntheticDrag = this.handleSyntheticDrag.bind(this);
       this._boundHandleSyntheticDragEnd = this.handleSyntheticDragEnd.bind(this);
       this._boundHandleWheel = this.handleWheel.bind(this);
+      this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
 
       if (window.gZenEdgeScrollManagerInitialized) {
         logManager("Already initialized for this window.");
@@ -45,6 +46,9 @@
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
       this.edgeScrollTriggerDiv.addEventListener('wheel', this._boundHandleWheel, { capture: true, passive: false });
 
+      this._updateTriggerDivDisplay(); // Added: Set initial display state
+      Services.prefs.addObserver("zen.tabs.vertical.right-side", this._boundUpdateTriggerDivDisplay); // Added: Observe preference
+
       logManager("Initialized, edgeScrollTriggerDiv created, and event listeners added.");
     }
 
@@ -53,13 +57,26 @@
         this.edgeScrollTriggerDiv.removeEventListener('mousedown', this._boundHandleMouseDown, true);
         this.edgeScrollTriggerDiv.removeEventListener('wheel', this._boundHandleWheel, true);
         if (this.edgeScrollTriggerDiv.parentNode) {
-          this.edgeScrollTriggerDiv.parentNode.removeChild(this.edgeScrollTriggerDiv);
+          this.edgeScrollTriggerDiv.parentNode.removeChild(this.edgeScrollTriggerDiv); // Corrected removeChild call
         }
         this.edgeScrollTriggerDiv = null;
       }
-      this.edgeScrollTriggerDiv.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
-      this.edgeScrollTriggerDiv.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
+      // These listeners are added to window, not edgeScrollTriggerDiv in handleMouseDown
+      window.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
+      window.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
+      Services.prefs.removeObserver("zen.tabs.vertical.right-side", this._boundUpdateTriggerDivDisplay); // Added: Remove observer
       window.gZenEdgeScrollManagerInitialized = false;
+    }
+
+    _updateTriggerDivDisplay() { // Added method
+      if (!this.edgeScrollTriggerDiv) {
+        return;
+      }
+      if (window.gZenCompactModeManager && gZenCompactModeManager.sidebarIsOnRight) {
+        this.edgeScrollTriggerDiv.style.display = "none";
+      } else {
+        this.edgeScrollTriggerDiv.style.display = "block";
+      }
     }
 
     _getParentActor() {

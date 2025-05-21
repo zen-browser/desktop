@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..045864f229327e46812eaa77925988608125fa70 100644
+index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..c86124ea4ca79ac7cc4c033576bc91ddb605905e 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -83,7 +83,7 @@
@@ -381,6 +381,15 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..045864f229327e46812eaa7792598860
        let shiftSizeX = tabWidth * movingTabs.length;
        let shiftSizeY = tabHeight;
        dragData.tabWidth = tabWidth;
+@@ -2262,7 +2320,7 @@
+       // * We're doing a binary search in order to reduce the amount of
+       //   tabs we need to check.
+ 
+-      tabs = tabs.filter(t => !movingTabs.includes(t) || t == draggedTab);
++      tabs = tabs.filter(t => !movingTabs.includes(t) || t == draggedTab && !t.hasAttribute("zen-glance-tab"));
+       let firstTabCenterX = firstMovingTabScreenX + translateX + tabWidth / 2;
+       let lastTabCenterX = lastMovingTabScreenX + translateX + tabWidth / 2;
+       let tabCenterX = directionX ? lastTabCenterX : firstTabCenterX;
 @@ -2374,12 +2432,16 @@
  
        this.#clearDragOverCreateGroupTimer();
@@ -435,7 +444,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..045864f229327e46812eaa7792598860
          translate +=
            this.arrowScrollbox.scrollbox[scrollDirection] - dragData.scrollPos;
        } else if (isPinned && this.verticalMode) {
-@@ -2431,6 +2502,9 @@
+@@ -2431,12 +2502,15 @@
            // Shift the `.tab-group-label-container` to shift the label element.
            item = item.parentElement;
          }
@@ -445,6 +454,13 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..045864f229327e46812eaa7792598860
          item.style.transform = `${translateAxis}(${translate}px)`;
        }
  
+       dragData.translatePos = translate;
+ 
+-      tabs = tabs.filter(t => !movingTabs.includes(t) || t == draggedTab);
++      tabs = tabs.filter(t => !movingTabs.includes(t) || t == draggedTab && !t.hasAttribute("zen-glance-tab"));
+ 
+       /**
+        * When the `draggedTab` is just starting to move, the `draggedTab` is in
 @@ -2568,6 +2642,9 @@
              break;
            }
@@ -455,17 +471,19 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..045864f229327e46812eaa7792598860
            let elementForSize = isTabGroupLabel(element)
              ? element.parentElement
              : element;
-@@ -2590,6 +2667,10 @@
+@@ -2588,7 +2665,11 @@
+ 
+       let dropElement = getOverlappedElement();
        if (!dropElement) {
-         dropElement = this.ariaFocusableItems[oldDropElementIndex];
-       }
+-        dropElement = this.ariaFocusableItems[oldDropElementIndex];
++        dropElement = this.ariaFocusableItems.filter(tab => !tab.hasAttribute("zen-glance-tab"))[oldDropElementIndex];
++      }
 +      if (dropElement?.group?.hasAttribute("split-view-group")) {
 +        // We focus the group label element, not the group itself.
 +        dropElement = dropElement.group.labelElement;
-+      }
+       }
        let newDropElementIndex = dropElement
          ? dropElement.elementIndex
-         : oldDropElementIndex;
 @@ -2598,7 +2679,7 @@
        let shouldCreateGroupOnDrop;
        let dropBefore;

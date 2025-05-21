@@ -260,6 +260,7 @@ var gZenCompactModeManager = {
       this.sidebar.style.removeProperty('transform');
       window.requestAnimationFrame(() => {
         let sidebarWidth = this.getAndApplySidebarWidth();
+        const elementSeparation = ZenThemeModifier.elementSeparation;
         if (!canAnimate) {
           this.sidebar.removeAttribute('animate');
           document.documentElement.removeAttribute('zen-compact-animating');
@@ -267,11 +268,44 @@ var gZenCompactModeManager = {
           this.getAndApplySidebarWidth({});
           this._ignoreNextResize = true;
 
+          // TODO: Work on this a bit more, needs polishing
+          if (lazyCompactMode.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && false) {
+            gZenUIManager.motion
+              .animate(
+                [
+                  this.sidebar,
+                  ...(gZenVerticalTabsManager._hasSetSingleToolbar &&
+                  !gURLBar.hasAttribute('zen-floating-urlbar')
+                    ? [gURLBar.textbox]
+                    : []),
+                ],
+                {
+                  transform: [
+                    `translateY(${((isCompactMode ? -1 : 1) * elementSeparation) / 2}px) translateX(${
+                      isCompactMode
+                        ? (this.sidebarIsOnRight ? elementSeparation : -elementSeparation) / 2
+                        : (this.sidebarIsOnRight ? -elementSeparation : elementSeparation) / 2
+                    }px)`,
+                    `translateY(0px) translateX(0px)`,
+                  ],
+                },
+                {
+                  ease: 'easeIn',
+                  type: 'spring',
+                  bounce: 0,
+                  duration: 0.2,
+                }
+              )
+              .then(() => {
+                this.sidebar.style.transform = '';
+                gURLBar.textbox.style.transform = '';
+              });
+          }
+
           resolve();
           return;
         }
         if (canHideSidebar && isCompactMode) {
-          const elementSeparation = ZenThemeModifier.elementSeparation;
           if (document.documentElement.hasAttribute('zen-sidebar-expanded')) {
             sidebarWidth -= 0.5 * splitterWidth;
             if (elementSeparation < splitterWidth) {

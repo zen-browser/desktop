@@ -172,6 +172,7 @@
           z-index: 0;
           opacity: var(--zen-grainy-background-opacity, 0);
           mix-blend-mode: overlay;
+          transition: opacity 0.3s ease-in-out;
         }
       }
 
@@ -402,6 +403,7 @@
             z-index: 0;
             opacity: var(--zen-grainy-background-opacity, 0);
             mix-blend-mode: overlay;
+            transition: opacity 0.3s ease-in-out;
           }
         }
         border-top-width: 1px;

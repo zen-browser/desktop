@@ -1,6 +1,10 @@
 height: var(--zen-toolbar-height);
 z-index: 1;
 
+#zen-appcontent-navbar-container {
+  display: flex;
+}
+
 @media -moz-pref('zen.view.hide-window-controls') {
   & {
     transition:

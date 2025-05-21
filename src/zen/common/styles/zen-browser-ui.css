@@ -45,35 +45,36 @@
   z-index: 0;
   pointer-events: none;
 
-  will-change: background-color;
+  isolation: isolate;
 
   &::after,
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     z-index: 0;
     pointer-events: none;
   }
 
   @media -moz-pref('zen.theme.gradient') {
     &::after {
-      background: var(--zen-main-browser-background-old);
+      background: var(--zen-main-browser-background);
+      opacity: var(--zen-background-opacity);
       transition: 0s;
-      opacity: calc(1 - var(--zen-background-opacity));
     }
 
     &::before {
-      background: var(--zen-main-browser-background);
+      background: var(--zen-main-browser-background-old);
+      opacity: calc(1 - var(--zen-background-opacity));
       transition: 0s;
-      opacity: var(--zen-background-opacity);
+    }
+
+    :root[animating-background='true'] &::after {
+      mix-blend-mode: normal;
     }
   }
 
-  &:not([post-animating='true'])::before {
+  :root:not([animating-background='true']) &::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -96,6 +97,7 @@
     z-index: 0;
     opacity: var(--zen-grainy-background-opacity, 0);
     mix-blend-mode: overlay;
+    transition: opacity 0.3s ease-in-out;
   }
 }
 

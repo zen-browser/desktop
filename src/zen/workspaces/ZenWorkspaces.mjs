@@ -2097,6 +2097,37 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         essentialsContainer.parentNode.appendChild(essentialsClone);
       }
     }
+    document.documentElement.setAttribute('animating-background', 'true');
+    if (shouldAnimate) {
+      let previousBackgroundOpacity = document.documentElement.style.getPropertyValue(
+        '--zen-background-opacity'
+      );
+      try {
+        // Prevent NaN from being set
+        if (previousBackgroundOpacity) {
+          previousBackgroundOpacity = parseFloat(previousBackgroundOpacity);
+        }
+      } catch (e) {
+        previousBackgroundOpacity = 1;
+      }
+      if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
+        previousBackgroundOpacity = 0;
+      }
+      gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
+      animations.push(
+        gZenUIManager.motion.animate(
+          document.documentElement,
+          {
+            '--zen-background-opacity': [previousBackgroundOpacity, 1],
+          },
+          {
+            type: 'spring',
+            bounce: 0,
+            duration: kGlobalAnimationDuration,
+          }
+        )
+      );
+    }
     for (const element of document.querySelectorAll('zen-workspace')) {
       if (element.classList.contains('zen-essentials-container')) {
         continue;
@@ -2273,27 +2304,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (shouldAnimate) {
       gZenUIManager._preventToolbarRebuild = true;
       gZenUIManager.updateTabsToolbar();
-      let previousBackgroundOpacity = document.documentElement.style.getPropertyValue(
-        '--zen-background-opacity'
-      );
-      if (previousBackgroundOpacity === '1') {
-        previousBackgroundOpacity = '0';
-      }
-      animations.push(
-        gZenUIManager.motion.animate(
-          document.documentElement,
-          {
-            '--zen-background-opacity': [previousBackgroundOpacity, '1'],
-          },
-          {
-            type: 'spring',
-            bounce: 0,
-            duration: kGlobalAnimationDuration,
-          }
-        )
-      );
     }
     await Promise.all(animations);
+    document.documentElement.removeAttribute('animating-background');
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
         cloned.container.remove();

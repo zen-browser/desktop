@@ -129,28 +129,6 @@
       let targetBrowser = gapInfo.targetBrowser;
       let targetBrowserRect = gapInfo.browserRect;
 
-      // // Logic to switch tab if a non-selected browser is targeted
-      // if (targetBrowser !== gBrowser.selectedBrowser) {
-      //   const tabToSelect = gBrowser.getTabForBrowser(targetBrowser);
-      //   if (tabToSelect && gBrowser.selectedTab !== tabToSelect) {
-      //     gBrowser.selectedTab = tabToSelect;
-      //     // After tab switch, gBrowser.selectedBrowser might take a moment to update,
-      //     // or might not be the one we expect if the switch fails or is async.
-      //     // It's safer to re-get the selectedBrowser and its rect.
-      //     targetBrowser = gBrowser.selectedBrowser;
-      //     if (targetBrowser) {
-      //       targetBrowserRect = targetBrowser.getBoundingClientRect();
-      //     } else {
-      //       logManager("Mousedown: Target browser null after tab selection attempt."); return;
-      //     }
-      //   }
-      // }
-      // // Ensure targetBrowser and its rect are valid after potential tab switch
-      // if (!targetBrowser || !targetBrowserRect || targetBrowserRect.width === 0 || targetBrowserRect.height === 0) {
-      //   logManager("Mousedown: Invalid targetBrowser or rect after potential tab switch. Bailing out.");
-      //   return;
-      // }
-
       const parentActor = this._getParentActor();
       if (!parentActor || !targetBrowser.browsingContext) {
         logManager("Mousedown: No parentActor or browsingContext for target browser: " + targetBrowser.currentURI?.spec);
@@ -166,8 +144,8 @@
       // logManager(`Mousedown: Sending SynthesizeMouseEvent to ${targetBrowser.currentURI?.spec}`);
       parentActor.sendEventToChild(targetBrowser.browsingContext, "ZenEdgeScroll:SynthesizeMouseEvent", eventData);
 
-      this.edgeScrollTriggerDiv.addEventListener('mousemove', this._boundHandleSyntheticDrag, true);
-      this.edgeScrollTriggerDiv.addEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
+      window.addEventListener('mousemove', this._boundHandleSyntheticDrag, true);
+      window.addEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
     }
 
     handleSyntheticDrag(event) {
@@ -221,8 +199,8 @@
       this.isSynthesizingDrag = false;
       this.dragInitialModel.targetBrowserDuringDrag = null;
       this.dragInitialModel.targetBrowsingContextDuringDrag = null;
-      this.edgeScrollTriggerDiv.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
-      this.edgeScrollTriggerDiv.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
+      window.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
+      window.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
     }
 
     handleWheel(event) {
@@ -249,13 +227,6 @@
     }
   }
 
-  // Initialization and Actor Registration
-  // This should be called once per window, typically during browser startup.
-  // Adapt this to how Zen Desktop initializes its managers and registers actors.
-  // if (window.gZenEdgeScrollManagerInstance) {
-  //   return;
-  // }
-
   // Actor Registration (must happen before manager instantiation if manager relies on actors being ready)
   // This is modeled after ZenGlanceManager's registerWindowActors
   function registerEdgeScrollActors() {
@@ -272,7 +243,6 @@
         allFrames: true, // Child actor should be available in all frames
         matches: [
           '*://*/*', // For general content pages
-          'chrome://*/*' // Explicitly allow all chrome URIs
         ],
         includeChrome: true,  // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
       };

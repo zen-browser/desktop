@@ -44,19 +44,6 @@
         gZenVerticalTabsManager.init();
         gZenUIManager.init();
 
-        // --- Load EdgeScrollHandler.js ---
-        try {
-          // Assuming EdgeScrollHandler.js is packaged to be accessible via this URI
-          // and your chrome.manifest maps chrome://zen/content/ui/... correctly.
-          const edgeScrollHandlerURL = "chrome://browser/content/ZenEdgeScrollHandler.js";
-          Services.scriptloader.loadSubScript(edgeScrollHandlerURL, window, "UTF-8");
-          console.log("ZenStartup: EdgeScrollHandler.js loaded successfully.");
-        } catch (e) {
-          console.error("ZenStartup: Failed to load EdgeScrollHandler.js:", e);
-          dump("ZenStartup: Failed to load EdgeScrollHandler.js: " + e + "\n" + (e.stack || "") + "\n");
-        }
-        // --- End Load EdgeScrollHandler.js ---
-
         this._checkForWelcomePage();
 
         document.l10n.setAttributes(

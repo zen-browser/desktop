@@ -1,6 +1,6 @@
 {
   const EDGE_INTERACTION_WIDTH_PX = Services.prefs.getIntPref("zen.theme.border-radius", 8);
-  const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 1;
+  const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 2;
   const ACTOR_NAME = "ZenEdgeScroll"; // Name used for actor registration
 
   function logManager(message) {

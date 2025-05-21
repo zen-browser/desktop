@@ -4,14 +4,12 @@
 const { utils: Cu, interfaces: Ci } = Components;
 
 function logChild(message) {
-  dump("ZenEdgeScrollChild: " + message + "\n");
-  // console.log("ZenEdgeScrollChild: " + message + "\n"); // Optional: for browser console
+  // dump("ZenEdgeScrollChild: " + message + "\n");
 }
 
 export class ZenEdgeScrollChild extends JSWindowActorChild {
   constructor() {
     super();
-    // logChild("Constructor. Initial content URL: " + (this.contentWindow?.document?.location?.href || "unknown"));
   }
 
   receiveMessage(message) {
@@ -73,7 +71,7 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
       return;
     }
     const contentWin = this.contentWindow;
-     if (!contentWin || !contentWin.windowUtils) {
+    if (!contentWin || !contentWin.windowUtils) {
       logChild("DispatchWheel: content.windowUtils is not available. URL: " + (contentWin?.document?.location?.href || "unknown"));
       return;
     }

@@ -3,7 +3,7 @@
 console.log("ZenEdgeScrollParent: " + "alive" + "\n");
 
 function logParentActor(message) {
-  dump("ZenEdgeScrollParentActor: " + message + "\n");
+  // dump("ZenEdgeScrollParentActor: " + message + "\n");
 }
 
 export class ZenEdgeScrollParent extends JSWindowActorParent {
@@ -22,8 +22,8 @@ export class ZenEdgeScrollParent extends JSWindowActorParent {
   // Called by ZenEdgeScrollManager to send a message to a specific child actor
   sendEventToChild(browsingContext, messageName, eventData) {
     if (!browsingContext) {
-        logParentActor(`sendEventToChild: No browsingContext provided for ${messageName}.`);
-        return;
+      logParentActor(`sendEventToChild: No browsingContext provided for ${messageName}.`);
+      return;
     }
     logParentActor(`Parent sending ${messageName} to child in context: ${browsingContext.currentWindowGlobal?.documentURI?.spec}`);
     this.sendAsyncMessage(messageName, eventData);

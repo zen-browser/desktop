@@ -1,30 +1,64 @@
 {
   class ZenTabSearch extends ZenDOMOperatedFeature {
     init() {
-      this._triggerCounter = 0;
-      this.shouldInjectHeuristic = true;
+      this._heuristic = false;
       this._updateAutoSelectResult = this._updateAutoSelectResult.bind(this);
       this._handleKeyUp = this._handleKeyUp.bind(this);
-      this.autoSelectResult = Services.prefs.getBoolPref('zen.tabsearch.auto-select-result', false);
-
-      window.addEventListener('keyup', this._handleKeyUp, true);
-
       Services.prefs.addObserver(
         'zen.tabsearch.auto-select-result',
         this._updateAutoSelectResult,
         false
       );
       this._updateAutoSelectResult();
+      window.setTimeout(() => {
+        this._setupListener();
+      }, 500);
     }
 
     _updateAutoSelectResult() {
       this.autoSelectResult = Services.prefs.getBoolPref('zen.tabsearch.auto-select-result', false);
     }
 
+    _setupListener() {
+      // Ensure gURLBar, its panel, and inputField are available
+      if (typeof gURLBar !== 'undefined') {
+        console.log('gURLBar or its components are not yet initialized');
+        // Bind the handlers to this instance for correct 'this' and removal
+        const self = this; // Capture the correct 'this' context
+        gURLBar.controller.addQueryListener({
+          onViewOpen() {
+            window.addEventListener('keyup', self._handleKeyUp, true);
+            self._heuristic = false;
+          },
+          onViewClose() {
+            window.removeEventListener('keyup', self._handleKeyUp, true);
+            self._heuristic = false;
+          },
+          onQueryStarted() {
+            window.removeEventListener('keyup', self._handleKeyUp, true);
+          },
+          onQueryFinished() {
+            self._heuristic = true;  
+          },
+          
+        });
+      } else {
+        // Retry if gURLBar or its components are not yet initialized
+        window.setTimeout(() => {
+          // 'this' here will refer to the ZenTabSearch instance because
+          // setTimeout is called on 'window', and the callback is an arrow function,
+          // which lexically captures 'this' from the surrounding scope (the catch block).
+          // In the catch block, 'this' is the ZenTabSearch instance.
+          this._setupListener();
+        }, 500);
+      }
+    }
+
     _handleKeyUp(event) {
       if (event.key === 'Alt' || event.key === 'Control') {
         if (
-          this._triggerCounter > 0 &&
+          this._heuristic &&
+          this.autoSelectResult &&
           gURLBar.view.isOpen &&
           gURLBar.searchMode?.source === 4 /* URLBarUtils.RESULT_SOURCE.TABS */
         ) {
@@ -39,14 +73,19 @@
               cancelable: true,
             });
             gURLBar.handleCommand(enterEvent);
-            this.shouldInjectHeuristic = false;
+            event.preventDefault();
+            event.stopImmediatePropagation();
           }
-          this._triggerCounter = 0;
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          return;
+        } else {
+          // window.removeEventListener('keyup', this._handleKeyUp, true);
         }
       }
+    }
+
+    shouldInjectHeuristic() {
+      if (!this.autoSelectResult) return true;
+      if (this._heuristic) return true;
+      return false;
     }
 
     async searchTabsShortcut(offset = 1) {
@@ -56,23 +95,23 @@
         gURLBar.searchMode &&
         gURLBar.searchMode.source === 4 /* URLBarUtils.RESULT_SOURCE.TABS */
       ) {
-        this._triggerCounter += 1;
         if (gURLBar.view.visibleRowCount > 0) {
           if (offset > 0) {
             gURLBar.view.selectBy(offset);
           } else if (offset < 0) {
             gURLBar.view.selectBy(-offset, { reverse: true });
           }
+          window.addEventListener('keyup', this._handleKeyUp, true);
+          this._heuristic = true;
         }
       } else {
-        this._triggerCounter = 0;
-        if (this.autoSelectResult) {
-          this.shouldInjectHeuristic = false;
-        }
         gURLBar.search('% ');
+        this._heuristic = false;
       }
     }
   }
 
-  window.gZenTabSearch = new ZenTabSearch();
+  if (Services.prefs.getBoolPref('zen.tabsearch.enabled', true)) {
+    window.gZenTabSearch = new ZenTabSearch();
+  }
 }

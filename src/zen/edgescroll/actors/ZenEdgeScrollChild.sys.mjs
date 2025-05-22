@@ -48,8 +48,8 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
     try {
       contentWin.windowUtils.sendMouseEvent(
         data.type,
-        data.clientX,
-        data.clientY,
+        data.clientX / contentWin.devicePixelRatio,
+        data.clientY / contentWin.devicePixelRatio,
         data.button,
         clickCount,
         modifiers,

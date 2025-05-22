@@ -7,7 +7,7 @@ index dcf1af43d62979d3226d7f704c51a2f0bb935cc0..a8271ac083c54947756e6ef35a3b4eac
      };
  
 +    let window = Services.wm.getMostRecentWindow("navigator:browser");
-+    if (window && window.gURLBar && window.gURLBar.searchMode && window.gURLBar.searchMode === 4) {
++    if (window && window.gURLBar && window.gURLBar.searchMode && window.gURLBar.searchMode.source === 4) {
 +      unsortedResults.sort((a, b) => {
 +        const lastOpenedA = a.payload?.lastOpened || 0;
 +        const lastOpenedB = b.payload?.lastOpened|| 0;

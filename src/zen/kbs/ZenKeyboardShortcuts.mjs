@@ -738,18 +738,6 @@ class ZenKeyboardShortcutsLoader {
     //tabs search
     newShortcutList.push(
       new KeyShortcut(
-        'zen-search-tabs',
-        'Q',
-        '',
-        'searchAndFind',
-        KeyShortcutModifiers.fromObject({ accel: false, alt: true }),
-        'cmd_zenSearchTabs',
-        'zen-search-shortcut-tabs'
-      )
-    );
-
-    newShortcutList.push(
-      new KeyShortcut(
         'zen-backward-search-tabs',
         'Q',
         '',
@@ -757,6 +745,18 @@ class ZenKeyboardShortcutsLoader {
         KeyShortcutModifiers.fromObject({ accel: false, alt: true, shift: true }),
         'cmd_zenBackwardSearchTabs',
         'zen-backward-search-shortcut-tabs'
+      )
+    );
+    
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-search-tabs',
+        'Q',
+        '',
+        'searchAndFind',
+        KeyShortcutModifiers.fromObject({ accel: false, alt: true }),
+        'cmd_zenSearchTabs',
+        'zen-search-shortcut-tabs'
       )
     );
 

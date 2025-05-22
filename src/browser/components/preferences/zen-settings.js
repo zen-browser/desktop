@@ -1170,6 +1170,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: 'zen.tabsearch.auto-select-result',
+    type: 'bool',
+    default: false,
+  },
+  {
     id: 'zen.theme.color-prefs.use-workspace-colors',
     type: 'bool',
     default: false,

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
-index 8e76ad53dbc..a4a2663793a 100644
+index 8e76ad53dbc9af7a748b6eecf6ccf7984c61b0b6..a4a2663793a4dcd38fa88fa88c2f30993ba4e49f 100644
 --- a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
 @@ -241,6 +241,53 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {

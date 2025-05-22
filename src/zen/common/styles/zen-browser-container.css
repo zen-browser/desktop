@@ -10,13 +10,15 @@
     position: relative;
     overflow: hidden;
 
-    :root:not([zen-no-padding='true']) & {
-      border-radius: var(--zen-native-inner-radius);
-      box-shadow: var(--zen-big-shadow);
-    }
+    &.browserSidebarContainer {
+      :root:not([zen-no-padding='true']) & {
+        border-radius: var(--zen-native-inner-radius);
+        box-shadow: var(--zen-big-shadow);
+      }
 
-    & browser[transparent='true'] {
-      background: rgba(255, 255, 255, 0.1);
+      & browser[transparent='true'] {
+        background: rgba(255, 255, 255, 0.1);
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 6775a7635c6cdbb276b3a912d0bba07840acb28f..4ef3eb6a7dbd741cf432668c2ff6e832f5bb97e7 100644
+index 6775a7635c6cdbb276b3a912d0bba07840acb28f..861640d12c6118e11acb3f51723a79098dbbba10 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -213,7 +213,7 @@
@@ -7,7 +7,7 @@ index 6775a7635c6cdbb276b3a912d0bba07840acb28f..4ef3eb6a7dbd741cf432668c2ff6e832
        this._inAsyncOperation = false;
        if (oldPanel != this._selectedPanel) {
 -        oldPanel?.classList.remove("deck-selected");
-+        if (!oldPanel?.classList.contains("zen-glance-background")) oldPanel?.classList.remove("deck-selected");
++        if (!(window.gZenGlanceManager && gZenGlanceManager.shouldShowDeckSelected(this._selectedPanel, oldPanel))) oldPanel?.classList.remove("deck-selected");
          this._selectedPanel?.classList.add("deck-selected");
        }
        this.setAttribute("selectedIndex", val);

@@ -1,3 +1,4 @@
+<!-- TODO: Get a job ->
 <img src="./docs/assets/zen-dark.svg" width="100px" align="left">
 
 ### `Zen Browser`

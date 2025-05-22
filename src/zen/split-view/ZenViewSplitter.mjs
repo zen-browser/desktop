@@ -335,6 +335,10 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       ]);
       if (this._finishAllAnimatingPromise) {
         this._finishAllAnimatingPromise.then(() => {
+          draggedTab.linkedBrowser.docShellIsActive = false;
+          draggedTab.linkedBrowser
+            .closest('.browserSidebarContainer')
+            .classList.remove('deck-selected');
           this.fakeBrowser.addEventListener('dragleave', this.onBrowserDragEndToSplit);
           this._canDrop = true;
           draggedTab._visuallySelected = true;
@@ -1630,7 +1634,9 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
         : containerRect.left - padding - 5,
       event.clientY
     );
-    const browser = dropTarget?.closest('browser');
+    const browser =
+      dropTarget?.closest('browser') ??
+      dropTarget?.closest('.browserSidebarContainer')?.querySelector('browser');
 
     if (!browser) {
       this._maybeRemoveFakeBrowser(false);
@@ -1644,7 +1650,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       browserContainer.style.opacity = '0';
     }
 
-    const droppedOnTab = gBrowser.getTabForBrowser(browser);
+    const droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
     if (droppedOnTab && droppedOnTab !== draggedTab) {
       // Calculate which side of the target browser the drop occurred
       // const browserRect = browser.getBoundingClientRect();

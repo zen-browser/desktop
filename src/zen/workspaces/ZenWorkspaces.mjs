@@ -423,6 +423,15 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       essentialsContainer.setAttribute('flex', '1');
       essentialsContainer.setAttribute('container', container);
       document.getElementById('zen-essentials').appendChild(essentialsContainer);
+
+      // Set an initial hidden state if the essentials section is not supposed
+      // to be shown on the current workspace
+      if (
+        this.containerSpecificEssentials &&
+        this.getActiveWorkspaceFromCache()?.containerTabId != container
+      ) {
+        essentialsContainer.setAttribute('hidden', 'true');
+      }
     }
     return essentialsContainer;
   }
@@ -2098,7 +2107,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       }
     }
     document.documentElement.setAttribute('animating-background', 'true');
-    if (shouldAnimate) {
+    if (shouldAnimate && previousWorkspace) {
       let previousBackgroundOpacity = document.documentElement.style.getPropertyValue(
         '--zen-background-opacity'
       );
@@ -2114,19 +2123,24 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         previousBackgroundOpacity = 0;
       }
       gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
-      animations.push(
-        gZenUIManager.motion.animate(
-          document.documentElement,
-          {
-            '--zen-background-opacity': [previousBackgroundOpacity, 1],
-          },
-          {
-            type: 'spring',
-            bounce: 0,
-            duration: kGlobalAnimationDuration,
-          }
-        )
-      );
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          animations.push(
+            gZenUIManager.motion.animate(
+              document.documentElement,
+              {
+                '--zen-background-opacity': [previousBackgroundOpacity, 1],
+              },
+              {
+                type: 'spring',
+                bounce: 0,
+                duration: kGlobalAnimationDuration,
+              }
+            )
+          );
+          resolve();
+        });
+      });
     }
     for (const element of document.querySelectorAll('zen-workspace')) {
       if (element.classList.contains('zen-essentials-container')) {

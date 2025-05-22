@@ -720,6 +720,27 @@
       }
       return tab;
     }
+
+    shouldShowDeckSelected(currentPanel, oldPanel) {
+      // Dont remove if it's a glance background and current panel corresponds to a glance
+      const currentBrowser = currentPanel?.querySelector('browser');
+      const oldBrowser = oldPanel?.querySelector('browser');
+      if (!currentBrowser || !oldBrowser) {
+        return false;
+      }
+      const currentTab = gBrowser.getTabForBrowser(currentBrowser);
+      const oldTab = gBrowser.getTabForBrowser(oldBrowser);
+      if (currentTab && oldTab) {
+        const currentGlanceID = currentTab.getAttribute('glance-id');
+        const oldGlanceID = oldTab.getAttribute('glance-id');
+        if (currentGlanceID && oldGlanceID) {
+          return (
+            currentGlanceID === oldGlanceID && oldPanel.classList.contains('zen-glance-background')
+          );
+        }
+      }
+      return false;
+    }
   }
 
   window.gZenGlanceManager = new ZenGlanceManager();

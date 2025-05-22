@@ -987,6 +987,7 @@ var gZenVerticalTabsManager = {
   },
 
   async renameTabKeydown(event) {
+    event.stopPropagation();
     if (event.key === 'Enter') {
       let label = this._tabEdited.querySelector('.tab-label-container-editing');
       let input = this._tabEdited.querySelector('#tab-label-input');

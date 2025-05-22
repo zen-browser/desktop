@@ -434,7 +434,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   async _createWorkspaceTabsSection(workspace, tabs) {
     const workspaceWrapper = document.createXULElement('zen-workspace');
-    const container = gBrowser.tabContainer.arrowScrollbox;
+    const container = document.getElementById('tabbrowser-arrowscrollbox');
     workspaceWrapper.id = workspace.uuid;
     if (this.activeWorkspace === workspace.uuid) {
       workspaceWrapper.setAttribute('active', 'true');
@@ -2542,8 +2542,8 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
-  _createWorkspaceData(name, icon, tabs, moveTabs = true, containerTabId = 0) {
-    let window = {
+  async _createWorkspaceData(name, icon, tabs, moveTabs = true, containerTabId = 0) {
+    let workspace = {
       uuid: gZenUIManager.generateUuidv4(),
       icon: icon,
       name: name,
@@ -2551,10 +2551,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       containerTabId,
     };
     if (moveTabs) {
-      this._prepareNewWorkspace(window);
-      this._createWorkspaceTabsSection(window, tabs);
+      this._prepareNewWorkspace(workspace);
+      await this._createWorkspaceTabsSection(workspace, tabs);
+      await this._organizeWorkspaceStripLocations(workspace);
     }
-    return window;
+    return workspace;
   }
 
   async createAndSaveWorkspace(
@@ -2574,7 +2575,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         !child.hasAttribute('zen-empty-tab') &&
         !child.hasAttribute('zen-essential')
     );
-    let workspaceData = this._createWorkspaceData(
+    let workspaceData = await this._createWorkspaceData(
       name,
       icon,
       extraTabs,

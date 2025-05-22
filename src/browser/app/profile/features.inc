@@ -78,6 +78,7 @@ pref('zen.glance.hold-duration', 300); // in ms
 pref('zen.glance.open-essential-external-links', true);
 pref('zen.glance.activation-method', 'alt'); // ctrl, alt, shift, none, hold
 
+pref('zen.tabsearch.enabled', true);
 pref('zen.tabsearch.auto-select-result', false);
 
 pref('zen.view.sidebar-height-throttle', 200); // in ms

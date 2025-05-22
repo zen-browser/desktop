@@ -14,7 +14,7 @@ index dcf1af43d62979d3226d7f704c51a2f0bb935cc0..a8271ac083c54947756e6ef35a3b4eac
 +        return lastOpenedB - lastOpenedA; // Descending order
 +      });
 +      unsortedResults[0].heuristic = true
-+      unsortedResults[0].providerName = UrlbarUtils.RESULT_GROUP.HEURISTIC_FALLBACK
++      unsortedResults[0].providerName = "HeuristicFallback"
 +    }  
 +
      // Do the first pass over all results to build some state.

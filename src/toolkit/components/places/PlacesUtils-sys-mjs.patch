@@ -1,0 +1,12 @@
+diff --git a/toolkit/components/places/PlacesUtils.sys.mjs b/toolkit/components/places/PlacesUtils.sys.mjs
+index 572d8678994b338e62f46869a2840948a74a6b1c..618878321bc605fb01d8caba466ff81ccc39fcb8 100644
+--- a/toolkit/components/places/PlacesUtils.sys.mjs
++++ b/toolkit/components/places/PlacesUtils.sys.mjs
+@@ -2248,6 +2248,7 @@ ChromeUtils.defineLazyGetter(lazy, "gAsyncDBLargeCacheConnPromised", () =>
+           url TEXT,
+           userContextId INTEGER,
+           open_count INTEGER,
++          last_opened INTEGER,
+           PRIMARY KEY (url, userContextId)
+         )`);
+       await conn.execute(`

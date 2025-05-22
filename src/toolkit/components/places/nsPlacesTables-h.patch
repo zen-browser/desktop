@@ -1,0 +1,12 @@
+diff --git a/toolkit/components/places/nsPlacesTables.h b/toolkit/components/places/nsPlacesTables.h
+index bfcc0c24aca4fcd951d66bd96c13ebe1a7df32eb..0ad78a3e1cd68b6efc3ea0adbb2553085fec1ef1 100644
+--- a/toolkit/components/places/nsPlacesTables.h
++++ b/toolkit/components/places/nsPlacesTables.h
+@@ -196,6 +196,7 @@
+       "  url TEXT"                             \
+       ", userContextId INTEGER"                \
+       ", open_count INTEGER"                   \
++      ", last_opened INTEGER"                   \
+       ", PRIMARY KEY (url, userContextId)"     \
+       ")")
+ 

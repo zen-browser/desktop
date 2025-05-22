@@ -97,6 +97,11 @@ document.addEventListener(
           case 'cmd_zenIgnoreUnloadTab':
             gZenTabUnloader.ignoreUnloadTab();
             break;
+          case 'cmd_zenSearchTabs':
+            gZenTabSearch.searchTabsShortcut();
+            break;          
+          case 'cmd_zenBackwardSearchTabs':
+            gZenTabSearch.searchTabsShortcut(-1);
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;

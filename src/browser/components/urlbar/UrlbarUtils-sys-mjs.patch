@@ -1,0 +1,24 @@
+diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
+index 0968dfa885512096f1e58ec898eda139d9aea217..87974b95053bbb2b359bdcf6cf645104314abdca 100644
+--- a/browser/components/urlbar/UrlbarUtils.sys.mjs
++++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
+@@ -1775,6 +1775,9 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
+       lastVisit: {
+         type: "number",
+       },
++      lastOpened: {
++        type: "number",
++      },
+       title: {
+         type: "string",
+       },
+@@ -1908,6 +1911,9 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
+       lastVisit: {
+         type: "number",
+       },
++      lastOpened: {
++        type: "number",
++      },
+       originalUrl: {
+         type: "string",
+       },

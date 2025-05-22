@@ -1,0 +1,120 @@
+diff --git a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
+index 8e76ad53dbc9af7a748b6eecf6ccf7984c61b0b6..a4a2663793a4dcd38fa88fa88c2f30993ba4e49f 100644
+--- a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
+@@ -241,6 +241,53 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {
+     await addToMemoryTable(url, userContextId).catch(console.error);
+   }
+ 
++  /**
++   * Updates the last_opened timestamp for an open tab and ensures it is registered.
++   *
++   * @param {string} url Address of the tab
++   * @param {integer|string} userContextId Containers user context id
++   * @param {boolean} isInPrivateWindow In private browsing window or not
++   * @returns {Promise} resolved after the update.
++   */
++  static async updateOpenTab(url, userContextId, isInPrivateWindow) {
++    // Ensure userContextId is consistently treated as an integer.
++    userContextId = parseInt(userContextId);
++    if (!Number.isInteger(userContextId)) {
++      lazy.logger.error("Invalid userContextId while updating openTab: ", {
++        url,
++        userContextId,
++        isInPrivateWindow,
++      });
++      return;
++    }
++
++    lazy.logger.info("Updating openTab: ", {
++      url,
++      userContextId,
++      isInPrivateWindow,
++    });
++
++    // Adjust userContextId for private windows.
++    userContextId = UrlbarProviderOpenTabs.getUserContextIdForOpenPagesTable(
++      userContextId,
++      isInPrivateWindow
++    );
++
++    // Ensure the tab is registered in the memory table.
++    let entries = gOpenTabUrls.get(userContextId);
++    if (!entries) {
++      entries = new Map();
++      gOpenTabUrls.set(userContextId, entries);
++    }
++    if (!entries.has(url)) {
++      entries.set(url, 1); // Register the tab if not already present.
++      await addToMemoryTable(url, userContextId).catch(console.error);
++    }
++
++    // Update the last_opened timestamp for the tab.
++    await updateLastOpened(url, userContextId).catch(console.error);
++  }
++
+   /**
+    * Unregisters a previously registered open tab.
+    *
+@@ -300,8 +347,9 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {
+     await UrlbarProviderOpenTabs.promiseDBPopulated;
+     await conn.executeCached(
+       `
+-      SELECT url, userContextId
++      SELECT url, userContextId, last_opened
+       FROM moz_openpages_temp
++      ORDER BY last_opened DESC
+     `,
+       {},
+       (row, cancel) => {
+@@ -341,7 +389,7 @@ async function addToMemoryTable(url, userContextId, count = 1) {
+     let conn = await lazy.PlacesUtils.promiseLargeCacheDBConnection();
+     await conn.executeCached(
+       `
+-      INSERT OR REPLACE INTO moz_openpages_temp (url, userContextId, open_count)
++      INSERT OR REPLACE INTO moz_openpages_temp (url, userContextId, open_count, last_opened)
+       VALUES ( :url,
+                 :userContextId,
+                 IFNULL( ( SELECT open_count + 1
+@@ -349,7 +397,8 @@ async function addToMemoryTable(url, userContextId, count = 1) {
+                           WHERE url = :url
+                           AND userContextId = :userContextId ),
+                         :count
+-                      )
++                      ),
++                strftime('%s', 'now') -- Update the last_opened timestamp
+               )
+     `,
+       { url, userContextId, count }
+@@ -357,6 +406,31 @@ async function addToMemoryTable(url, userContextId, count = 1) {
+   });
+ }
+ 
++/**
++ * Updates the last_opened timestamp for a tab in the memory table.
++ *
++ * @param {string} url Address of the tab
++ * @param {number} userContextId Containers user context id
++ * @returns {Promise} resolved after the update.
++ */
++async function updateLastOpened(url, userContextId) {
++  if (!UrlbarProviderOpenTabs.memoryTableInitialized) {
++    return;
++  }
++  await lazy.UrlbarProvidersManager.runInCriticalSection(async () => {
++    let conn = await lazy.PlacesUtils.promiseLargeCacheDBConnection();
++    await conn.executeCached(
++      `
++      UPDATE moz_openpages_temp
++      SET last_opened = strftime('%s', 'now') -- Update to current timestamp
++      WHERE url = :url
++        AND userContextId = :userContextId
++      `,
++      { url, userContextId }
++    );
++  });
++}
++
+ /**
+  * Removes an open page from the memory table.
+  *

@@ -174,7 +174,7 @@ index ef9c0389ec926e6bc01c0dc3b883beceaf1f7d43..b413b4bc9d86726b0f8936a3422636ed
        ];
 +      const lastPinnedTabIdx = pinnedTabs.length - 1;
 +      let i = 0;
-+      for (const tab of allTabs) {
++      for (const tab of [...allTabs]) {
 +        // add glance tabs (tabs inside tabs) to the list
 +        const glanceTab = tab.glanceTab;
 +        if (glanceTab) {

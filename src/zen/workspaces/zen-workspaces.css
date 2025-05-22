@@ -466,10 +466,12 @@
     height: calc(100% - var(--zen-toolbox-padding) * 2);
   }
 
-  &:hover,
-  &[open='true'] {
-    &::before {
-      background: var(--tab-hover-background-color);
+  :root:not([zen-private-window]) & {
+    &:hover,
+    &[open='true'] {
+      &::before {
+        background: var(--tab-hover-background-color);
+      }
     }
   }
 

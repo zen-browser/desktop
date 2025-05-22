@@ -35,7 +35,7 @@
         // Fix notification deck
         const deckTemplate = document.getElementById('tab-notification-deck-template');
         if (deckTemplate) {
-          document.getElementById('zen-appcontent-navbar-container').appendChild(deckTemplate);
+          document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
         }
 
         this._hideUnusedElements();

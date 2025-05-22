@@ -57,9 +57,9 @@
         false
       );
 
-      this.scrollbox.addEventListener('wheel', gBrowser.tabContainer, true);
-      this.scrollbox.addEventListener('underflow', gBrowser.tabContainer);
-      this.scrollbox.addEventListener('overflow', gBrowser.tabContainer);
+      this.scrollbox.addEventListener('wheel', this, true);
+      this.scrollbox.addEventListener('underflow', this);
+      this.scrollbox.addEventListener('overflow', this);
 
       this.scrollbox._getScrollableElements = () => {
         const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
@@ -122,6 +122,8 @@
       this.tabsContainer.setAttribute('zen-workspace-id', this.id);
       this.pinnedTabsContainer.setAttribute('zen-workspace-id', this.id);
 
+      this.#updateOverflow();
+
       this.dispatchEvent(
         new CustomEvent('ZenWorkspaceAttached', {
           bubbles: true,
@@ -129,6 +131,42 @@
           detail: { workspace: this },
         })
       );
+    }
+
+    get active() {
+      return this.hasAttribute('active');
+    }
+
+    set active(value) {
+      if (value) {
+        this.setAttribute('active', 'true');
+      } else {
+        this.removeAttribute('active');
+      }
+      this.#updateOverflow();
+    }
+
+    #updateOverflow() {
+      if (!this.scrollbox) return;
+      if (this.overflows) {
+        this.#dispatchEventFromScrollbox('overflow');
+      } else {
+        this.#dispatchEventFromScrollbox('underflow');
+      }
+    }
+
+    #dispatchEventFromScrollbox(type) {
+      this.scrollbox.dispatchEvent(new CustomEvent(type, {}));
+    }
+
+    get overflows() {
+      return this.scrollbox.overflowing;
+    }
+
+    handleEvent(event) {
+      if (this.active) {
+        gBrowser.tabContainer.handleEvent(event);
+      }
     }
   }
 

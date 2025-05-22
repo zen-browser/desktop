@@ -1,7 +1,5 @@
 /* global Services */ // For linter
 
-console.log("ZenEdgeScrollParent: " + "alive" + "\n");
-
 export class ZenEdgeScrollParent extends JSWindowActorParent {
   constructor() {
     super();

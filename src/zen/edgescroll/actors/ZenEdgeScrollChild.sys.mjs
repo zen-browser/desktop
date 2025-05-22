@@ -10,10 +10,10 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
 
   receiveMessage(message) {
     switch (message.name) {
-      case "ZenEdgeScroll:SynthesizeMouseEvent":
+      case 'ZenEdgeScroll:SynthesizeMouseEvent':
         this.handleSynthesizeMouseEvent(message.data);
         break;
-      case "ZenEdgeScroll:DispatchWheel":
+      case 'ZenEdgeScroll:DispatchWheel':
         this.handleDispatchWheel(message.data);
         break;
       default:
@@ -36,23 +36,30 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
     if (data.metaKey) modifiers |= Ci.nsIDOMWindowUtils.MODIFIER_META;
     if (data.shiftKey) modifiers |= Ci.nsIDOMWindowUtils.MODIFIER_SHIFT;
 
-    if (data.type === "mousemove" && data.buttons === 1) {
+    if (data.type === 'mousemove' && data.buttons === 1) {
       modifiers |= Ci.nsIDOMWindowUtils.BUTTON_PRIMARY_ACTION;
     }
 
     let clickCount = 0;
-    if (data.type === "mousedown" || data.type === "mouseup") {
+    if (data.type === 'mousedown' || data.type === 'mouseup') {
       clickCount = 1;
     }
 
     try {
       contentWin.windowUtils.sendMouseEvent(
-        data.type, data.clientX, data.clientY, data.button,
-        clickCount, modifiers, false, 0.5,
-        Ci.nsIDOMWindowUtils.INPUT_SOURCE_MOUSE, false
+        data.type,
+        data.clientX,
+        data.clientY,
+        data.button,
+        clickCount,
+        modifiers,
+        false,
+        0.5,
+        Ci.nsIDOMWindowUtils.INPUT_SOURCE_MOUSE,
+        false
       );
     } catch (e) {
-      console.error("Error dispatching mouse event:", e);
+      console.error('Error dispatching mouse event:', e);
     }
   }
 
@@ -66,9 +73,14 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
     }
     const doc = contentWin.document;
 
-
-    const clientX = typeof wheelData.clientX === 'number' ? wheelData.clientX : (doc.documentElement.clientWidth / 2);
-    const clientY = typeof wheelData.clientY === 'number' ? wheelData.clientY : (doc.documentElement.clientHeight / 2);
+    const clientX =
+      typeof wheelData.clientX === 'number'
+        ? wheelData.clientX
+        : doc.documentElement.clientWidth / 2;
+    const clientY =
+      typeof wheelData.clientY === 'number'
+        ? wheelData.clientY
+        : doc.documentElement.clientHeight / 2;
 
     let modifiers = 0;
     if (wheelData.altKey) modifiers |= Ci.nsIDOMWindowUtils.MODIFIER_ALT;
@@ -78,11 +90,23 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
 
     try {
       contentWin.windowUtils.sendWheelEvent(
-        clientX, clientY, wheelData.deltaX, wheelData.deltaY, wheelData.deltaZ,
-        wheelData.deltaMode, modifiers, 0, 0, true, false, false, false, false
+        clientX,
+        clientY,
+        wheelData.deltaX,
+        wheelData.deltaY,
+        wheelData.deltaZ,
+        wheelData.deltaMode,
+        modifiers,
+        0,
+        0,
+        true,
+        false,
+        false,
+        false,
+        false
       );
     } catch (e) {
-      console.error("Error dispatching wheel event:", e);
+      console.error('Error dispatching wheel event:', e);
     }
   }
 

@@ -58,7 +58,6 @@ var gZenUIManager = {
     });
 
     window.addEventListener('TabClose', this.onTabClose.bind(this));
-    this.tabsWrapper.addEventListener('scroll', this.saveScrollbarState.bind(this));
 
     gZenMediaController.init();
   },
@@ -88,18 +87,9 @@ var gZenUIManager = {
     return this._tabsWrapper;
   },
 
-  saveScrollbarState() {
-    this._scrollbarState = this.tabsWrapper.scrollTop;
-  },
-
-  restoreScrollbarState() {
-    this.tabsWrapper.scrollTop = this._scrollbarState;
-  },
-
   onTabClose(event = undefined) {
     if (!event?.target?._closedInMultiselection) {
       this.updateTabsToolbar();
-      this.restoreScrollbarState();
     }
   },
 
@@ -407,7 +397,11 @@ var gZenUIManager = {
   },
 
   urlbarTrim(aURL) {
-    if (gZenVerticalTabsManager._hasSetSingleToolbar && this.urlbarShowDomainOnly) {
+    if (
+      gZenVerticalTabsManager._hasSetSingleToolbar &&
+      this.urlbarShowDomainOnly &&
+      !gURLBar.hasAttribute('breakout-extend')
+    ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
       return url.startsWith('https://') ? url.split('/')[2] : url;
     }
@@ -779,7 +773,7 @@ var gZenVerticalTabsManager = {
       // on purpose, we set the orient to horizontal, because the arrowScrollbox is vertical
       gBrowser.tabContainer.arrowScrollbox.scrollbox.setAttribute(
         'orient',
-        isVerticalTabs && gZenWorkspaces.workspaceEnabled ? 'horizontal' : 'vertical'
+        isVerticalTabs ? 'vertical' : 'horizontal'
       );
 
       const buttonsTarget = document.getElementById('zen-sidebar-top-buttons-customization-target');
@@ -791,7 +785,9 @@ var gZenVerticalTabsManager = {
         document.documentElement.removeAttribute('zen-right-side');
       }
 
+      delete this._hadSidebarCollapse;
       if (isSidebarExpanded) {
+        this._hadSidebarCollapse = !document.documentElement.hasAttribute('zen-sidebar-expanded');
         this.navigatorToolbox.setAttribute('zen-sidebar-expanded', 'true');
         document.documentElement.setAttribute('zen-sidebar-expanded', 'true');
         gBrowser.tabContainer.setAttribute('expanded', 'true');
@@ -802,6 +798,7 @@ var gZenVerticalTabsManager = {
       }
 
       const appContentNavbarContaienr = document.getElementById('zen-appcontent-navbar-container');
+      const appContentNavbarWrapper = document.getElementById('zen-appcontent-navbar-wrapper');
       let shouldHide = false;
       if (
         ((!isRightSide && this.isWindowsStyledButtons) ||
@@ -809,10 +806,10 @@ var gZenVerticalTabsManager = {
           (isCompactMode && isSingleToolbar && this.isWindowsStyledButtons)) &&
         isSingleToolbar
       ) {
-        appContentNavbarContaienr.setAttribute('should-hide', 'true');
+        appContentNavbarWrapper.setAttribute('should-hide', 'true');
         shouldHide = true;
       } else {
-        appContentNavbarContaienr.removeAttribute('should-hide');
+        appContentNavbarWrapper.removeAttribute('should-hide');
       }
 
       // Check if the sidebar is in hover mode
@@ -990,6 +987,7 @@ var gZenVerticalTabsManager = {
   },
 
   async renameTabKeydown(event) {
+    event.stopPropagation();
     if (event.key === 'Enter') {
       let label = this._tabEdited.querySelector('.tab-label-container-editing');
       let input = this._tabEdited.querySelector('#tab-label-input');

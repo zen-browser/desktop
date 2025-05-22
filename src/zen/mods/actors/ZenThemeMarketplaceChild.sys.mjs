@@ -162,9 +162,12 @@ export class ZenThemeMarketplaceChild extends JSWindowActorChild {
         const obj = await data.json();
         return obj;
       } catch (e) {
-        console.error('ZTM: Error parsing theme info: ', e);
+        console.error('ZenThemeMarketplace: Error parsing theme info: ', e);
       }
-    } else console.log(data.status);
+    } else {
+      console.error('ZenThemeMarketplace: Error fetching theme info: ', data.status);
+    }
+
     return null;
   }
 
@@ -185,11 +188,11 @@ export class ZenThemeMarketplaceChild extends JSWindowActorChild {
     } else {
       themeId = object.themeId;
     }
-    console.info('ZTM: Installing theme with id: ', themeId);
+    console.info('ZenThemeMarketplace: Installing theme with id: ', themeId);
 
     const theme = await this.getThemeInfo(themeId);
     if (!theme) {
-      console.error('ZTM: Error fetching theme info');
+      console.error('ZenThemeMarketplace: Error fetching theme info');
       return;
     }
     this.addTheme(theme);

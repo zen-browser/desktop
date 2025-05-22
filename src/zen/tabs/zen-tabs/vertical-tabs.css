@@ -17,12 +17,16 @@
   height: 100%; /* Make sure they take up full height */
 }
 
+#zen-appcontent-navbar-container {
+  width: 100%;
+}
+
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
   /* Define and apply a smaller toolbar height for single toolbar mode */
-  & #zen-appcontent-navbar-container,
+  & #zen-appcontent-navbar-wrapper,
   & #zen-sidebar-top-buttons {
     --zen-toolbar-height: 32px;
     height: var(--zen-toolbar-height);
@@ -447,7 +451,6 @@
   min-height: fit-content;
   overflow-y: auto; /* Allow vertical scrolling */
   height: 100%; /* Take full available height */
-  scrollbar-color: color-mix(in srgb, currentColor 26%, transparent) transparent; /* Custom scrollbar */
 
   /* Negative margin hack for workspace transitions (only if workspaces are enabled) */
   :root[zen-workspace-id][zen-sidebar-expanded='true'] & {
@@ -713,7 +716,7 @@
 
   /* Hide text labels */
   & .zen-current-workspace-indicator-name,
-  & .toolbarbutton-text {
+  & zen-workspace .toolbarbutton-text {
     display: none !important;
   }
 
@@ -734,6 +737,7 @@
     padding: 0 !important;
     max-width: var(--zen-sidebar-width) !important;
     min-width: unset !important;
+    width: 100% !important;
   }
 
   & #zen-essentials {
@@ -762,6 +766,7 @@
   & #titlebar {
     display: grid;
     grid-template-rows: auto 1fr; /* Allow content below button box */
+    overflow: hidden;
   }
 
   /* Style top buttons customization target */
@@ -1268,7 +1273,7 @@
   position: absolute;
 
   &[hidden='true'] {
-    --hidden-essentials-width: var(--zen-sidebar-width);
+    --hidden-essentials-width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
     max-width: var(
       --hidden-essentials-width
     ) !important; /* To still allow essentials to grid the tabs */
@@ -1459,7 +1464,14 @@
 .zen-workspace-tabs-section {
   &:not(.zen-essentials-container) {
     display: flex;
-    min-width: calc(100% - var(--zen-toolbox-padding) * 2); /* Set width based on padding */
+
+    :root[zen-sidebar-expanded='true'] & {
+      min-width: calc(100% - var(--zen-toolbox-padding) * 2); /* Set width based on padding */
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      max-width: var(--zen-sidebar-width);
+    }
   }
 
   &:not(.zen-current-workspace-indicator):not(.zen-essentials-container) {

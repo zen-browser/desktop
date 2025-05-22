@@ -231,7 +231,6 @@
           this.mediaControlBar.setAttribute('hidden', 'true');
           this.mediaControlBar.removeAttribute('media-sharing');
           gZenUIManager.updateTabsToolbar();
-          gZenUIManager.restoreScrollbarState();
         });
     }
 
@@ -257,7 +256,6 @@
           this.mediaControlBar.querySelector('toolbaritem').getBoundingClientRect().height + 'px';
         this.mediaControlBar.style.opacity = 0;
         gZenUIManager.updateTabsToolbar();
-        gZenUIManager.restoreScrollbarState();
         gZenUIManager.motion.animate(
           this.mediaControlBar,
           {
@@ -306,7 +304,6 @@
       this.mediaArtist.textContent = metadata.artist || '';
 
       gZenUIManager.updateTabsToolbar();
-      gZenUIManager.restoreScrollbarState();
 
       this._currentPosition = positionState.position;
       this._currentDuration = positionState.duration;

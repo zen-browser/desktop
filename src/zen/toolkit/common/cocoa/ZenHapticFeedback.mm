@@ -23,7 +23,7 @@ nsresult ZenCommonUtils::PlayHapticFeedbackInternal() {
   if (@available(macOS 10.14, *)) {
     id<NSHapticFeedbackPerformer> performer = [NSHapticFeedbackManager defaultPerformer];
     [performer performFeedbackPattern:NSHapticFeedbackPatternAlignment
-                performanceTime:NSHapticFeedbackPerformanceTimeDefault];
+                      performanceTime:NSHapticFeedbackPerformanceTimeDefault];
   } else {
     // Fallback on earlier versions
     // Note: This is a no-op on older versions of iOS/macOS

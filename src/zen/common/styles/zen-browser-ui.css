@@ -32,57 +32,72 @@
 }
 
 #browser {
+  background: transparent !important;
   width: 100%;
-  background: var(--zen-main-browser-background) !important;
+}
 
-  will-change: background-color;
+#zen-browser-background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
 
-  &::after {
+  isolation: isolate;
+
+  &::after,
+  &::before {
     content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: absolute;
+    inset: 0;
     z-index: 0;
     pointer-events: none;
   }
 
-  &:not([post-animating='true'])::after {
-    transition: background-color var(--inactive-window-transition);
-  }
-
   @media -moz-pref('zen.theme.gradient') {
-    &[animating='true']::after {
-      background: var(--zen-main-browser-background-old);
-      backdrop-filter: blur(5px);
-      animation: zen-main-app-wrapper-animation 0.4s ease forwards;
+    &::after {
+      background: var(--zen-main-browser-background);
+      opacity: var(--zen-background-opacity);
       transition: 0s;
     }
+
+    &::before {
+      background: var(--zen-main-browser-background-old);
+      opacity: calc(1 - var(--zen-background-opacity));
+      transition: 0s;
+    }
+
+    :root[animating-background='true'] &::after {
+      mix-blend-mode: normal;
+    }
+  }
+
+  :root:not([animating-background='true']) &::before {
+    transition: background-color var(--inactive-window-transition);
   }
 
   @media (not (-moz-windows-mica)) and -moz-pref('zen.view.grey-out-inactive-windows') {
     transition: color var(--inactive-window-transition);
     :root:not([zen-welcome-stage]) &:-moz-window-inactive {
       color: var(--toolbox-textcolor-inactive);
-      &::after {
+      &::before {
         background-color: var(--toolbox-bgcolor-inactive);
       }
     }
   }
 
-  &::before {
+  #zen-browser-grain {
     content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
     z-index: 0;
     opacity: var(--zen-grainy-background-opacity, 0);
     mix-blend-mode: overlay;
+    transition: opacity 0.3s ease-in-out;
   }
 }
 
@@ -258,4 +273,14 @@
 
 :root:not([customizing]) #TabsToolbar-customization-target > #alltabs-button {
   display: none;
+}
+
+:root[customizing] #TabsToolbar-customization-target {
+  visibility: collapse;
+}
+
+:root[customizing] #zen-sidebar-top-buttons-customization-target {
+  border: 1px dashed;
+  border-radius: 2px;
+  margin: 10px 2px 0 0;
 }

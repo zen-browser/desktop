@@ -4,8 +4,8 @@
 'use strict';
 
 add_task(async function test_Container_Essentials_Auto_Swithc() {
-  await ZenWorkspaces.createAndSaveWorkspace('Container Profile 1', undefined, false, 1);
-  const workspaces = await ZenWorkspaces._workspaces();
+  await gZenWorkspaces.createAndSaveWorkspace('Container Profile 1', undefined, false, 1);
+  const workspaces = await gZenWorkspaces._workspaces();
   ok(workspaces.workspaces.length === 2, 'Two workspaces should exist.');
 
   let newTab = BrowserTestUtils.addTab(gBrowser, 'about:blank', {
@@ -24,14 +24,14 @@ add_task(async function test_Container_Essentials_Auto_Swithc() {
     ),
     'New tab should be marked as essential.'
   );
-  const newWorkspaceUUID = ZenWorkspaces.activeWorkspace;
+  const newWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   Assert.equal(
-    ZenWorkspaces.activeWorkspace,
+    gZenWorkspaces.activeWorkspace,
     workspaces.workspaces[1].uuid,
     'The new workspace should be active.'
   );
 
   // Change to the original workspace, there should be no essential tabs
-  await ZenWorkspaces.changeWorkspace(workspaces.workspaces[0]);
-  await ZenWorkspaces.removeWorkspace(newWorkspaceUUID);
+  await gZenWorkspaces.changeWorkspace(workspaces.workspaces[0]);
+  await gZenWorkspaces.removeWorkspace(newWorkspaceUUID);
 });

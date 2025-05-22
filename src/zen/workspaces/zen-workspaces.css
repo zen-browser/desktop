@@ -11,6 +11,9 @@
   align-items: center;
   display: flex;
   font-size: x-small;
+  padding: 0 3px;
+  margin: 0;
+  appearance: auto;
 
   position: relative;
 
@@ -69,32 +72,14 @@
       margin: 0;
     }
 
-    & toolbarbutton:not([active='true']),
+    /* Inlcude separately since ther'es a bug in the 
+     * rendering of XUL in firefox */
+    & toolbarbutton:not([active='true']) {
+%include overflow-icons.inc.css
+    }
+
     &:has(toolbarbutton:hover) toolbarbutton[active='true'] {
-      &:not(:hover) {
-        width: min(var(--zen-overflowed-workspace-button-width), 25px);
-
-        &::after {
-          content: '';
-          position: absolute;
-          width: 4px;
-          border-radius: 99px;
-          height: 4px;
-          background: color-mix(
-            in srgb,
-            var(--zen-primary-color) 10%,
-            light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4)) 90%
-          );
-          left: 50%;
-          top: 50%;
-          filter: saturate(140%) brightness(110%) !important;
-          transform: translate(-50%, -50%);
-        }
-
-        & .zen-workspace-icon {
-          display: none;
-        }
-      }
+%include overflow-icons.inc.css 
     }
   }
 }
@@ -512,9 +497,14 @@ zen-workspace {
   height: 100%;
   overflow: hidden;
 
+  :root:not([zen-sidebar-expanded='true']) & {
+    width: 100%;
+  }
+
   & > arrowscrollbox {
     max-height: 100%;
     overflow: hidden;
+    position: relative;
 
     &::part(scrollbutton-up),
     &::part(scrollbutton-down) {
@@ -522,9 +512,55 @@ zen-workspace {
     }
 
     &::part(scrollbox) {
-      scrollbar-width: thin;
-      scrollbar-color: var(--vertical-tabs-scrollbar-color);
+      scrollbar-width: auto;
+      scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
+    }
+
+    :root[swipe-gesture] &::part(scrollbox) {
+      scrollbar-width: none;
+    }
+
+    &[overflowing] {
+      --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &:not([scrolledtostart])::before {
+        opacity: 1;
+      }
+
+      &:not([scrolledtoend])::after {
+        opacity: 1;
+      }
+    }
+
+    &,
+    & .zen-workspace-normal-tabs-section {
+      height: 100%;
     }
   }
 }

@@ -9,6 +9,8 @@ engine/
 
 **/*.svg
 
+**/*.inc.css
+
 surfer.json
 
 src/browser/app/profile/*.js
@@ -25,5 +27,7 @@ docs/issue-metrics/*.md
 src/zen/tabs/zen-tabs.css
 src/zen/compact-mode/zen-compact-mode.css
 src/zen/common/ZenEmojies.mjs
+
+src/zen/workspaces/zen-workspaces.css
 
 *.inc

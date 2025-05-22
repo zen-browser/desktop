@@ -45,7 +45,7 @@
         content/browser/zen-components/ZenWorkspacesStorage.mjs                 (../../zen/workspaces/ZenWorkspacesStorage.mjs)
         content/browser/zen-components/ZenWorkspacesSync.mjs                    (../../zen/workspaces/ZenWorkspacesSync.mjs)
         content/browser/zen-components/ZenGradientGenerator.mjs                 (../../zen/workspaces/ZenGradientGenerator.mjs)
-        content/browser/zen-styles/zen-workspaces.css                           (../../zen/workspaces/zen-workspaces.css)
+*       content/browser/zen-styles/zen-workspaces.css                           (../../zen/workspaces/zen-workspaces.css)
         content/browser/zen-styles/zen-gradient-generator.css                   (../../zen/workspaces/zen-gradient-generator.css)
 
         content/browser/zen-components/ZenKeyboardShortcuts.mjs                 (../../zen/kbs/ZenKeyboardShortcuts.mjs)

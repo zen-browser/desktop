@@ -15,8 +15,13 @@
   -moz-window-dragging: drag;
 }
 
-:root[zen-welcome-stage] #zen-sidebar-splitter {
-  display: none;
+:root[zen-welcome-stage] {
+  min-width: 875px;
+  min-height: 560px;
+
+  #zen-sidebar-splitter {
+    display: none;
+  }
 }
 
 #zen-welcome-start {
@@ -30,6 +35,7 @@
     list-style-image: url(chrome://browser/skin/zen-icons/forward.svg);
     position: absolute;
     bottom: 10%;
+    padding: 0.8em !important;
   }
 
   #zen-welcome-title {

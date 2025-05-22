@@ -31,7 +31,7 @@ add_task(async function test_Create_Pinned() {
         );
         Assert.equal(
           pinObject.workspaceUuid,
-          ZenWorkspaces.activeWorkspace,
+          gZenWorkspaces.activeWorkspace,
           'The pin object should have the correct workspace UUID'
         );
       } catch (error) {

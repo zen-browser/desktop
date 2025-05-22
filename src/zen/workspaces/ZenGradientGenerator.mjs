@@ -1121,29 +1121,20 @@
           }
         }
 
-        const appWrapper = browser.document.getElementById('browser');
-        if (!skipUpdate && !this._animatingBackground) {
-          this._animatingBackground = true;
-          appWrapper.removeAttribute('animating');
+        const appBackground = browser.document.getElementById('zen-browser-background');
+        if (!skipUpdate) {
           browser.document.documentElement.style.setProperty(
             '--zen-main-browser-background-old',
             browser.document.documentElement.style.getPropertyValue('--zen-main-browser-background')
           );
-          browser.window.requestAnimationFrame(() => {
-            appWrapper.setAttribute('animating', 'true');
-            setTimeout(() => {
-              this._animatingBackground = false;
-              appWrapper.removeAttribute('animating');
-              appWrapper.setAttribute('post-animating', 'true');
-              browser.document.documentElement.style.removeProperty(
-                '--zen-main-browser-background-old'
-              );
-              setTimeout(() => {
-                // Reactivate the transition after the animation
-                appWrapper.removeAttribute('post-animating');
-              }, 100);
-            }, 300);
-          });
+          browser.document.documentElement.style.setProperty(
+            '--zen-background-opacity',
+            browser.gZenThemePicker.previousBackgroundOpacity
+          );
+          if (browser.gZenThemePicker.previousBackgroundResolve) {
+            browser.gZenThemePicker.previousBackgroundResolve();
+          }
+          delete browser.gZenThemePicker.previousBackgroundOpacity;
         }
 
         const button = browser.document.getElementById(

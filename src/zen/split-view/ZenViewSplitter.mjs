@@ -147,7 +147,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     if (groupIndex < 0) {
       return;
     }
-    this.removeTabFromGroup(tab, groupIndex, event.forUnsplit);
+    this.removeTabFromGroup(tab, groupIndex, true);
   }
 
   /**
@@ -188,6 +188,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
         this.resetTabState(remainingTab, forUnsplit);
       }
       this.removeGroup(groupIndex);
+      gBrowser.selectedTab = remainingTabs[remainingTabs.length - 1];
     } else {
       const node = this.getSplitNodeFromTab(tab);
       const toUpdate = this.removeNode(node);
@@ -923,7 +924,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       window.gContextMenu.mediaURL ||
       window.gContextMenu.contentData.docLocation ||
       window.gContextMenu.target.ownerDocument.location.href;
-    const currentTab = window.gBrowser.selectedTab;
+    const currentTab = gZenGlanceManager.getTabOrGlanceParent(window.gBrowser.selectedTab);
     const newTab = this.openAndSwitchToTab(url);
     this.splitTabs([currentTab, newTab]);
   }
@@ -1364,7 +1365,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     }
     const container = event.currentTarget.closest('.browserSidebarContainer');
     const tab = window.gBrowser.tabs.find(
-      (t) => t.linkedBrowser.closest('.browserSidebarContainer') === container
+      (t) => t.linkedBrowser?.closest('.browserSidebarContainer') === container
     );
     if (tab) {
       window.gBrowser.selectedTab = tab;

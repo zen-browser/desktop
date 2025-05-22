@@ -34,8 +34,6 @@
   --uc-permission-itemcontainer-padding-block: 8px;
   --uc-permission-item-margin-block: 4px;
   --uc-permission-item-padding-inline: 16px;
-
-  --panel-separator-color: var(--zen-colors-border);
   --zen-panel-separator-width: 1px;
 }
 
@@ -283,15 +281,6 @@ menuseparator {
   display: none;
 }
 
-/* Context menu */
-menu,
-menuitem {
-  &:where([_moz-menuactive]:not([disabled='true'])) {
-    background-color: var(--button-hover-bgcolor);
-    color: var(--button-hover-color);
-  }
-}
-
 /*Bookmark workspace selector styles*/
 .workspace-dropdown {
   position: relative;
@@ -373,7 +362,7 @@ menuitem {
     gap: 10px;
     z-index: 1000;
     padding: var(--zen-toast-padding);
-    border-radius: calc(var(--zen-native-inner-radius) + 8px);
+    border-radius: calc(var(--zen-native-inner-radius) + 6px);
     background: linear-gradient(
       170deg,
       var(--zen-primary-color) -40%,
@@ -404,11 +393,12 @@ menuitem {
     }
 
     & button {
+      color-scheme: dark;
       width: min-content;
       padding: 0 12px !important;
       min-width: unset !important;
       margin: 0px !important;
-      border-radius: calc(var(--zen-native-inner-radius) + 4px) !important;
+      border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
 
       :root[zen-right-side='true'] & {
         order: -1;

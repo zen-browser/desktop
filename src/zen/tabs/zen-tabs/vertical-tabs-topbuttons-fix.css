@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-&
+&:not([zen-compact-animating])
   #zen-sidebar-top-buttons:not(
     :has(#zen-sidebar-top-buttons-customization-target > *:not(#zen-sidebar-top-buttons-separator))
   ) {

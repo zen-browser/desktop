@@ -8,6 +8,6 @@
   background: transparent;
 }
 
-:root[inDOMFullscreen='true'] #zen-appcontent-navbar-container {
+:root[inDOMFullscreen='true'] #zen-appcontent-navbar-wrapper {
   visibility: collapse;
 }

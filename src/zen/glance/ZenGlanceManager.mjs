@@ -367,6 +367,13 @@
               this.#currentParentTab._visuallySelected = false;
             }
 
+            if (
+              this.#currentParentTab.linkedBrowser &&
+              !this.#currentParentTab.hasAttribute('split-view')
+            ) {
+              this.#currentParentTab.linkedBrowser.zenModeActive = false;
+            }
+
             // reset everything
             this.browserWrapper = null;
             this.overlay = null;
@@ -445,7 +452,7 @@
           .classList.remove('zen-glance-background');
       }
       if (!justAnimateParent && this.overlay) {
-        if (parentHasBrowser) {
+        if (parentHasBrowser && !this.#currentParentTab.hasAttribute('split-view')) {
           if (closeParentTab) {
             this.#currentParentTab.linkedBrowser
               .closest('.browserSidebarContainer')
@@ -705,7 +712,7 @@
     }
 
     getTabOrGlanceParent(tab) {
-      if (tab.hasAttribute('glance-id')) {
+      if (tab?.hasAttribute('glance-id')) {
         const parentTab = this.#glances.get(tab.getAttribute('glance-id')).parentTab;
         if (parentTab) {
           return parentTab;

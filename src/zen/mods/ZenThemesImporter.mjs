@@ -211,35 +211,30 @@ var gZenThemesImporter = new (class {
           continue;
         }
 
-        switch (type) {
-          case 'checkbox': {
-            const value = Services.prefs.getBoolPref(property, false);
-            if (typeof defaultValue !== 'boolean') {
-              console.log(
-                `[ZenThemesImporter]: Warning, invalid data type received for expected type boolean, skipping.`
-              );
-              continue;
-            }
-
-            if (!value) {
-              Services.prefs.setBoolPref(property, defaultValue);
-            }
-            break;
+        if (type === 'checkbox') {
+          const value = Services.prefs.getBoolPref(property, false);
+          if (typeof defaultValue !== 'boolean') {
+            console.log(
+              `[ZenThemesImporter]: Warning, invalid data type received for expected type boolean, skipping.`
+            );
+            continue;
           }
 
-          default: {
-            const value = Services.prefs.getStringPref(property, 'zen-property-no-saved');
+          if (!value) {
+            Services.prefs.setBoolPref(property, defaultValue);
+          }
+        } else {
+          const value = Services.prefs.getStringPref(property, 'zen-property-no-saved');
 
-            if (typeof defaultValue !== 'string' && typeof defaultValue !== 'number') {
-              console.log(
-                `[ZenThemesImporter]: Warning, invalid data type received (${typeof defaultValue}), skipping.`
-              );
-              continue;
-            }
+          if (typeof defaultValue !== 'string' && typeof defaultValue !== 'number') {
+            console.log(
+              `[ZenThemesImporter]: Warning, invalid data type received (${typeof defaultValue}), skipping.`
+            );
+            continue;
+          }
 
-            if (value === 'zen-property-no-saved') {
-              Services.prefs.setStringPref(property, defaultValue.toString());
-            }
+          if (value === 'zen-property-no-saved') {
+            Services.prefs.setStringPref(property, defaultValue.toString());
           }
         }
       }

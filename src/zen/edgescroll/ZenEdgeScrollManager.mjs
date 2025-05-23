@@ -17,11 +17,13 @@
       this._boundHandleSyntheticDragEnd = this.handleSyntheticDragEnd.bind(this);
       this._boundHandleWheel = this.handleWheel.bind(this);
       this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
+      this._initialized = false;
 
-      if (window.gZenEdgeScrollManagerInitialized) {
+      if (window.gZenEdgeScrollManager._initialized === true) {
+        console.warn('ZenEdgeScrollManager is already initialized.');
         return;
       }
-      window.gZenEdgeScrollManagerInitialized = true;
+      window.gZenEdgeScrollManager._initialized = true;
 
       // Create and append the edge scroll trigger div
       this.edgeScrollTriggerDiv = window.document.createElement('div');
@@ -71,7 +73,7 @@
         'zen.tabs.vertical.right-side',
         this._boundUpdateTriggerDivDisplay
       ); // Added: Remove observer
-      window.gZenEdgeScrollManagerInitialized = false;
+      window.gZenEdgeScrollManager._initialized = false;
     }
 
     _updateTriggerDivDisplay() {
@@ -305,7 +307,7 @@
   // This is modeled after ZenGlanceManager's registerWindowActors
   function registerEdgeScrollActors() {
     if (Services.prefs.getBoolPref('zen.edgescroll.enabled', true)) {
-      window.gZenEdgeScrollManagerInstance = new ZenEdgeScrollManager();
+      window.gZenEdgeScrollManager = new ZenEdgeScrollManager();
 
       const actorConfig = {
         parent: {
@@ -318,7 +320,7 @@
         matches: [
           '*://*/*',
           'about:*', // For about: pages
-          'data:*',      // For testing purposes
+          'data:*', // For testing purposes
         ],
         includeChrome: true, // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
       };

@@ -478,6 +478,10 @@ jobs:
             --header uruntime                    \
             -i "$APPDIR" -o zen-"$ARCH".AppImage
 
+          # make zsync file
+          echo "Generating zsync file..."
+          zsyncmake ./zen-"$ARCH".AppImage -u ./zen-"$ARCH".AppImage
+
           mkdir dist
           mv zen*AppImage* dist/.
           unset ARCH

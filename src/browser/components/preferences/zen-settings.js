@@ -777,7 +777,6 @@ var gZenWorkspacesSettings = {
     };
     Services.prefs.addObserver('zen.tab-unloader.enabled', tabsUnloaderPrefListener);
     Services.prefs.addObserver('zen.glance.enabled', tabsUnloaderPrefListener); // We can use the same listener for both prefs
-    Services.prefs.addObserver('zen.edgescroll.enabled', tabsUnloaderPrefListener);
     Services.prefs.addObserver(
       'zen.workspaces.container-specific-essentials-enabled',
       tabsUnloaderPrefListener
@@ -786,7 +785,6 @@ var gZenWorkspacesSettings = {
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.tab-unloader.enabled', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.glance.enabled', tabsUnloaderPrefListener);
-      Services.prefs.removeObserver('zen.edgescroll.enabled', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
       Services.prefs.removeObserver(
         'zen.workspaces.container-specific-essentials-enabled',
@@ -1168,11 +1166,6 @@ Preferences.addAll([
   },
   {
     id: 'zen.glance.enabled',
-    type: 'bool',
-    default: true,
-  },
-  {
-    id: 'zen.edgescroll.enabled',
     type: 'bool',
     default: true,
   },

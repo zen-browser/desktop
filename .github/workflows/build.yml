@@ -419,40 +419,40 @@ jobs:
 
           # deploy deps so that the appimage can work on musl systems as well as super old distros: 
           SYSLIBS="/usr/lib/$ARCH-linux-gnu"
-          cd $APPDIR && (
-            wget "https://github.com/VHSgunzo/sharun/releases/latest/download/sharun-$ARCH-aio" -O ./sharun-aio
-            chmod +x ./sharun-aio
-            ./sharun-aio l -p -v -s -k            \
-              ./bin/zen*                          \
-              ./bin/glxtest                       \
-              ./bin/vaapitest                     \
-              ./bin/pingsender                    \
-              ./bin/lib*                          \
-              "$SYSLIBS"/lib*GL*                  \
-              "$SYSLIBS"/dri/*                    \
-              "$SYSLIBS"/libpci.so*               \
-              "$SYSLIBS"/libxcb-*                 \
-              "$SYSLIBS"/libXcursor.so*           \
-              "$SYSLIBS"/libXinerama*             \
-              "$SYSLIBS"/libwayland*              \
-              "$SYSLIBS"/libnss*                  \
-              "$SYSLIBS"/libsoftokn3.so           \
-              "$SYSLIBS"/libfreeblpriv3.so        \
-              "$SYSLIBS"/libgtk*                  \
-              "$SYSLIBS"/libgdk*                  \
-              "$SYSLIBS"/libcanberra*             \
-              "$SYSLIBS"/gdk-pixbuf-*/*/loaders/* \
-              "$SYSLIBS"/libcloudproviders*       \
-              "$SYSLIBS"/gconv/*                  \
-              "$SYSLIBS"/pkcs11/*                 \
-              "$SYSLIBS"/gvfs/*                   \
-              "$SYSLIBS"/libcanberra*/*           \
-              "$SYSLIBS"/gio/modules/*            \
-              "$SYSLIBS"/pulseaudio/*             \
-              "$SYSLIBS"/alsa-lib/*
-            rm -f ./sharun-aio
-            ./sharun -g
-          )
+          cd $APPDIR
+          wget "https://github.com/VHSgunzo/sharun/releases/latest/download/sharun-$ARCH-aio" -O ./sharun-aio
+          chmod +x ./sharun-aio
+          ./sharun-aio l -p -v -s -k            \
+            ./bin/zen*                          \
+            ./bin/glxtest                       \
+            ./bin/vaapitest                     \
+            ./bin/pingsender                    \
+            ./bin/lib*                          \
+            "$SYSLIBS"/lib*GL*                  \
+            "$SYSLIBS"/dri/*                    \
+            "$SYSLIBS"/libpci.so*               \
+            "$SYSLIBS"/libxcb-*                 \
+            "$SYSLIBS"/libXcursor.so*           \
+            "$SYSLIBS"/libXinerama*             \
+            "$SYSLIBS"/libwayland*              \
+            "$SYSLIBS"/libnss*                  \
+            "$SYSLIBS"/libsoftokn3.so           \
+            "$SYSLIBS"/libfreeblpriv3.so        \
+            "$SYSLIBS"/libgtk*                  \
+            "$SYSLIBS"/libgdk*                  \
+            "$SYSLIBS"/libcanberra*             \
+            "$SYSLIBS"/gdk-pixbuf-*/*/loaders/* \
+            "$SYSLIBS"/libcloudproviders*       \
+            "$SYSLIBS"/gconv/*                  \
+            "$SYSLIBS"/pkcs11/*                 \
+            "$SYSLIBS"/gvfs/*                   \
+            "$SYSLIBS"/libcanberra*/*           \
+            "$SYSLIBS"/gio/modules/*            \
+            "$SYSLIBS"/pulseaudio/*             \
+            "$SYSLIBS"/alsa-lib/*
+          rm -f ./sharun-aio
+          ./sharun -g
+          cd -
 
           wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-$ARCH" -O ./uruntime
 

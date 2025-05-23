@@ -199,6 +199,16 @@
     --zen-themed-toolbar-bg-transparent: transparent;
   }
 
+  &[zen-private-window='true'] {
+    --zen-main-browser-background: linear-gradient(
+      130deg,
+      light-dark(rgb(247, 217, 255), rgb(10, 6, 11)) 0%,
+      light-dark(rgb(242, 198, 255), rgb(19, 7, 22)) 100%
+    );
+    --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
+    --zen-primary-color: light-dark(rgb(93, 42, 107), rgb(110, 48, 125)) !important;
+  }
+
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;
 

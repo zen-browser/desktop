@@ -48,6 +48,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   `;
 
   async waitForPromises() {
+    if (this.privateWindowOrDisabled) {
+      return;
+    }
     await Promise.all([
       this.promiseDBInitialized,
       this.promisePinnedInitialized,
@@ -115,6 +118,10 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     );
     this._activeWorkspace = Services.prefs.getStringPref('zen.workspaces.active', '');
 
+    if (this.isPrivateWindow) {
+      document.documentElement.setAttribute('zen-private-window', 'true');
+    }
+
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.addPopupListeners();
   }
@@ -136,21 +143,24 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     await this.initializeWorkspaces();
     if (
       Services.prefs.getBoolPref('zen.workspaces.swipe-actions', false) &&
-      this.workspaceEnabled
+      this.workspaceEnabled &&
+      !this.isPrivateWindow
     ) {
       this.initializeGestureHandlers();
       this.initializeWorkspaceNavigation();
     }
 
-    Services.obs.addObserver(this, 'weave:engine:sync:finish');
-    Services.obs.addObserver(
-      async function observe(subject) {
-        this._workspaceBookmarksCache = null;
-        await this.workspaceBookmarks();
-        this._invalidateBookmarkContainers();
-      }.bind(this),
-      'workspace-bookmarks-updated'
-    );
+    if (!this.privateWindowOrDisabled) {
+      Services.obs.addObserver(this, 'weave:engine:sync:finish');
+      Services.obs.addObserver(
+        async function observe(subject) {
+          this._workspaceBookmarksCache = null;
+          await this.workspaceBookmarks();
+          this._invalidateBookmarkContainers();
+        }.bind(this),
+        'workspace-bookmarks-updated'
+      );
+    }
   }
 
   // Validate browser state before tab operations
@@ -548,7 +558,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     toolbox.addEventListener(
       'wheel',
       async (event) => {
-        if (!this.workspaceEnabled) return;
+        if (this.privateWindowOrDisabled) return;
 
         // Only process non-gesture scrolls
         if (event.deltaMode !== 1) return;
@@ -627,7 +637,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   _handleSwipeMayStart(event) {
-    if (!this.workspaceEnabled || this._inChangingWorkspace) return;
+    if (this.privateWindowOrDisabled || this._inChangingWorkspace) return;
     if (event.target.closest('#zen-sidebar-bottom-buttons')) return;
 
     // Only handle horizontal swipes
@@ -706,6 +716,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   set activeWorkspace(value) {
     this._activeWorkspace = value;
+    if (this.privateWindowOrDisabled) {
+      return;
+    }
     Services.prefs.setStringPref('zen.workspaces.active', value);
   }
 
@@ -734,13 +747,20 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (typeof this._shouldHaveWorkspaces === 'undefined') {
       let docElement = document.documentElement;
       this._shouldHaveWorkspaces = !(
-        PrivateBrowsingUtils.isWindowPrivate(window) ||
         docElement.getAttribute('chromehidden').includes('toolbar') ||
         docElement.getAttribute('chromehidden').includes('menubar')
       );
       return this._shouldHaveWorkspaces;
     }
     return this._shouldHaveWorkspaces;
+  }
+
+  get isPrivateWindow() {
+    return PrivateBrowsingUtils.isWindowPrivate(window);
+  }
+
+  get privateWindowOrDisabled() {
+    return this.isPrivateWindow || !this.shouldHaveWorkspaces;
   }
 
   get workspaceEnabled() {
@@ -766,6 +786,15 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   async _workspaces() {
     if (this._workspaceCache) {
+      return this._workspaceCache;
+    }
+
+    if (this.isPrivateWindow) {
+      this._workspaceCache = {
+        workspaces: this._privateWorkspace ? [this._privateWorkspace] : [],
+        lastChangeTimestamp: 0,
+      };
+      this._activeWorkspace = this._privateWorkspace?.uuid;
       return this._workspaceCache;
     }
 
@@ -1242,6 +1271,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async saveWorkspace(workspaceData, preventPropagation = false) {
+    if (this.privateWindowOrDisabled) {
+      return;
+    }
     await ZenWorkspacesStorage.saveWorkspace(workspaceData);
     if (!preventPropagation) {
       await this._propagateWorkspaceData();
@@ -1383,10 +1415,14 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async _propagateWorkspaceData({ ignoreStrip = false, clearCache = true } = {}) {
+    const currentWindowIsPrivate = this.isPrivateWindow;
     await this.foreachWindowAsActive(async (browser) => {
       // Do not update the window if workspaces are not enabled in it.
       // For example, when the window is in private browsing mode.
-      if (!browser.gZenWorkspaces.workspaceEnabled) {
+      if (
+        !browser.gZenWorkspaces.workspaceEnabled ||
+        browser.gZenWorkspaces.isPrivateWindow !== currentWindowIsPrivate
+      ) {
         return;
       }
 
@@ -1710,7 +1746,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async openWorkspacesDialog(event) {
-    if (!this.workspaceEnabled) {
+    if (!this.workspaceEnabled || this.isPrivateWindow) {
       return;
     }
     let target = event.target.closest('.zen-current-workspace-indicator');
@@ -2526,6 +2562,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async _updateWorkspacesChangeContextMenu() {
+    if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = await this._workspaces();
 
     const menuPopup = document.getElementById('context-zen-change-workspace-tab-menu-popup');
@@ -2575,6 +2612,10 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (!this.workspaceEnabled) {
       return;
     }
+    if (this.isPrivateWindow) {
+      name = 'Private ' + name;
+      icon = '🥸';
+    }
     // get extra tabs remaning (e.g. on new profiles) and just move them to the new workspace
     const extraTabs = Array.from(gBrowser.tabContainer.arrowScrollbox.children).filter(
       (child) =>
@@ -2590,7 +2631,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       !dontChange,
       containerTabId
     );
-    await this.saveWorkspace(workspaceData, dontChange);
+    if (this.isPrivateWindow) {
+      this._privateWorkspace = workspaceData;
+    } else {
+      await this.saveWorkspace(workspaceData, dontChange);
+    }
     if (!dontChange) {
       this.registerPinnedResizeObserver();
       let changed = extraTabs.length > 0;

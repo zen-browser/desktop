@@ -318,6 +318,7 @@
         matches: [
           '*://*/*',
           'about:*', // For about: pages
+          'data:*',      // For testing purposes
         ],
         includeChrome: true, // <--- ENSURE THIS LINE IS PRESENT AND SET TO TRUE
       };

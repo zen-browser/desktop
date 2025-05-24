@@ -452,6 +452,8 @@ jobs:
             "$SYSLIBS"/alsa-lib/*
           rm -f ./sharun-aio
           ./sharun -g
+          # It seems Zen has built in code to load shared libs that bypasses --library-path, this fixes it
+          ln -sr ./lib/lib* ./bin || true
           cd -
 
           wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-$ARCH" -O ./uruntime

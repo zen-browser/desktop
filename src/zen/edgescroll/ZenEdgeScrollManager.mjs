@@ -38,7 +38,7 @@
       //   userSelect: 'none',
       //   // backgroundColor: "rgba(255,0,0,0.1)", // For debugging visibility
       // });
-      window.document.documentElement.appendChild(this.edgeScrollTriggerDiv);
+      document.getElementById("zen-appcontent-wrapper").appendChild(this.edgeScrollTriggerDiv);
 
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
       this.edgeScrollTriggerDiv.addEventListener('wheel', this._boundHandleWheel, {

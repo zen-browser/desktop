@@ -1,0 +1,15 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-edgescroll-trigger {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  width:var(--zen-element-separation); 
+  height: 100%;
+  z-index:  2147483647;
+  user-select: none;
+}

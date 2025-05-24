@@ -24,7 +24,7 @@ add_task(async function test_ZenEdgeScroll_ClickScrollsContent() {
 
   // wait for trigger
   const trigger = await TestUtils.waitForCondition(
-    () => document.getElementById('zen-edge-scroll-trigger'),
+    () => document.getElementById('zen-edgescroll-trigger'),
     'Edge scroll trigger appears'
   );
 

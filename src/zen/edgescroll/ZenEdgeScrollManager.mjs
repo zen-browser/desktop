@@ -1,5 +1,8 @@
 {
-  const EDGE_INTERACTION_WIDTH_PX = Services.prefs.getIntPref('zen.theme.content-element-separation', 8);
+  const EDGE_INTERACTION_WIDTH_PX = Services.prefs.getIntPref(
+    'zen.theme.content-element-separation',
+    8
+  );
   const SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE = 2;
   const ACTOR_NAME = 'ZenEdgeScroll'; // Name used for actor registration
 
@@ -26,7 +29,7 @@
       // Create and append the edge scroll trigger div
       this.edgeScrollTriggerDiv = window.document.createElement('div');
       this.edgeScrollTriggerDiv.id = 'zen-edgescroll-trigger';
-      document.getElementById("zen-appcontent-wrapper").appendChild(this.edgeScrollTriggerDiv);
+      document.getElementById('zen-appcontent-wrapper').appendChild(this.edgeScrollTriggerDiv);
 
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
       this.edgeScrollTriggerDiv.addEventListener('wheel', this._boundHandleWheel, {

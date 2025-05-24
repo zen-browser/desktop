@@ -327,4 +327,22 @@
   }
 
   registerEdgeScrollActors();
+
+  // Observe changes to the enabled pref and register/destroy the manager
+  const edgeScrollPrefObserver = {
+    observe(subject, topic, data) {
+      if (topic === 'nsPref:changed' && data === 'zen.edgescroll.enabled') {
+        if (window.gZenEdgeScrollManager) {
+          window.gZenEdgeScrollManager.destroy();
+          window.gZenEdgeScrollManager = null;
+        }
+        if (Services.prefs.getBoolPref('zen.edgescroll.enabled', true)) {
+          registerEdgeScrollActors();
+          if (window.gZenEdgeScrollManager) window.gZenEdgeScrollManager.init();
+        }
+      }
+    },
+  };
+
+  Services.prefs.addObserver('zen.edgescroll.enabled', edgeScrollPrefObserver, false);
 }

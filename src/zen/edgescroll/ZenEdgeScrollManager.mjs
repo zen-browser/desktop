@@ -17,27 +17,15 @@
       this._boundHandleSyntheticDragEnd = this.handleSyntheticDragEnd.bind(this);
       this._boundHandleWheel = this.handleWheel.bind(this);
       this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
-      this._initialized = false;
 
-      if (window.gZenEdgeScrollManager._initialized === true) {
+      if (this.edgeScrollTriggerDiv !== null) {
         console.warn('ZenEdgeScrollManager is already initialized.');
         return;
       }
-      window.gZenEdgeScrollManager._initialized = true;
 
       // Create and append the edge scroll trigger div
       this.edgeScrollTriggerDiv = window.document.createElement('div');
       this.edgeScrollTriggerDiv.id = 'zen-edgescroll-trigger';
-      // Object.assign(this.edgeScrollTriggerDiv.style, {
-      //   position: 'fixed',
-      //   top: '0px',
-      //   right: '0px',
-      //   width: `${EDGE_INTERACTION_WIDTH_PX}px`,
-      //   height: '100%',
-      //   zIndex: '2147483647', // Max z-index
-      //   userSelect: 'none',
-      //   // backgroundColor: "rgba(255,0,0,0.1)", // For debugging visibility
-      // });
       document.getElementById("zen-appcontent-wrapper").appendChild(this.edgeScrollTriggerDiv);
 
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
@@ -73,7 +61,6 @@
         'zen.tabs.vertical.right-side',
         this._boundUpdateTriggerDivDisplay
       ); // Added: Remove observer
-      window.gZenEdgeScrollManager._initialized = false;
     }
 
     _updateTriggerDivDisplay() {

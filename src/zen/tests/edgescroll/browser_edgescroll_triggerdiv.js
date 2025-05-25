@@ -28,11 +28,11 @@ add_task(async function test_ZenEdgeScroll_TriggerExists() {
 
   // Wait for the trigger div to appear
   await TestUtils.waitForCondition(
-    () => !!document.getElementById('zen-edgescroll-trigger'),
+    () => !!document.getElementById('zen-edgescroll-trigger-vertical'),
     'Edge scroll trigger div should be created'
   );
-  const trigger = document.getElementById('zen-edgescroll-trigger');
-  ok(trigger, 'The zen-edgescroll-trigger div exists');
+  const trigger = document.getElementById('zen-edgescroll-trigger-vertical');
+  ok(trigger, 'The zen-edgescroll-trigger-vertical div exists');
 
   BrowserTestUtils.removeTab(window.gBrowser.selectedTab);
 });

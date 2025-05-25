@@ -28,7 +28,7 @@
 
       // Create and append the edge scroll trigger div
       this.edgeScrollTriggerDiv = window.document.createElement('div');
-      this.edgeScrollTriggerDiv.id = 'zen-edgescroll-trigger';
+      this.edgeScrollTriggerDiv.id = 'zen-edgescroll-trigger-vertical';
       document.getElementById('zen-appcontent-wrapper').appendChild(this.edgeScrollTriggerDiv);
 
       this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);

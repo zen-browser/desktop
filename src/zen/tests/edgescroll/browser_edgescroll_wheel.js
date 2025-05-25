@@ -27,7 +27,7 @@ add_task(async function test_ZenEdgeScroll_WheelScrollsContent() {
   await new Promise((r) => setTimeout(r, 100));
 
   const trigger = await TestUtils.waitForCondition(
-    () => document.getElementById('zen-edgescroll-trigger'),
+    () => document.getElementById('zen-edgescroll-trigger-vertical'),
     'Edge scroll trigger appears'
   );
 

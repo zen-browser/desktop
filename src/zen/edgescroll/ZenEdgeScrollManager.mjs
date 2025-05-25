@@ -126,7 +126,10 @@
     createSyntheticEventData(originalEvent, targetBrowserRect, eventType) {
       const clientXInContent = Math.max(
         0,
-        Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE)
+        Math.min(
+          Math.floor(originalEvent.clientX - targetBrowserRect.left),
+          Math.floor(targetBrowserRect.width - SYNTHETIC_EVENT_X_OFFSET_FROM_RIGHT_EDGE)
+        )
       );
       const clientYInContent = Math.max(
         0,

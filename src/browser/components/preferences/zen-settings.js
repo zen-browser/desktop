@@ -1219,4 +1219,9 @@ Preferences.addAll([
     type: 'bool',
     default: false,
   },
+  {
+    id: 'browser.tabs.unloadOnLowMemory',
+    type: 'bool',
+    default: true,
+  },
 ]);

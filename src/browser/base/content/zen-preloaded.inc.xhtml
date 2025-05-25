@@ -1,13 +1,11 @@
 # This needs to be here, before all the other scripts, because it's used before
 # the window is fully loaded.
 # Make sure they are loaded before the global-scripts.inc file.
-<script type="text/javascript">
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-sets.js", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenCommonUtils.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspaceIcons.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspace.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspaces.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspacesSync.mjs", this);
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenActorsManager.mjs", this);
-</script>
+<script type="text/javascript" src="chrome://browser/content/zen-sets.js"></script>                                  
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenCommonUtils.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspaceIcons.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspace.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspaces.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspacesSync.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenActorsManager.mjs"></script>

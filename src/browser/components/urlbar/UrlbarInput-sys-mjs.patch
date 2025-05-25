@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372cc11ed40 100644
+index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640dac8ab56 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -68,6 +68,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -16,7 +16,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
  const DEFAULT_FORM_HISTORY_NAME = "searchbar-history";
  const SEARCH_BUTTON_CLASS = "urlbar-search-button";
  
-@@ -349,7 +356,16 @@ export class UrlbarInput {
+@@ -355,7 +362,16 @@ export class UrlbarInput {
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -33,7 +33,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -425,6 +441,10 @@ export class UrlbarInput {
+@@ -431,6 +447,10 @@ export class UrlbarInput {
      hideSearchTerms = false,
      isSameDocument = false
    ) {
@@ -44,7 +44,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      // We only need to update the searchModeUI on tab switch conditionally
      // as we only persist searchMode with ScotchBonnet enabled.
      if (
-@@ -698,8 +718,16 @@ export class UrlbarInput {
+@@ -735,8 +755,16 @@ export class UrlbarInput {
          return;
        }
      }
@@ -62,7 +62,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
    }
  
    /**
-@@ -1093,7 +1121,11 @@ export class UrlbarInput {
+@@ -1142,7 +1170,11 @@ export class UrlbarInput {
      }
  
      if (!this.#providesSearchMode(result)) {
@@ -74,8 +74,8 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
 +      }
      }
  
-     this.controller.recordSelectedResult(event, result);
-@@ -2125,6 +2157,10 @@ export class UrlbarInput {
+     if (isCanonized) {
+@@ -2191,6 +2223,10 @@ export class UrlbarInput {
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -86,7 +86,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -2147,6 +2183,12 @@ export class UrlbarInput {
+@@ -2205,6 +2241,12 @@ export class UrlbarInput {
  
      this.setAttribute("breakout-extend", "true");
  
@@ -99,7 +99,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -2166,6 +2208,24 @@ export class UrlbarInput {
+@@ -2224,6 +2266,24 @@ export class UrlbarInput {
        return;
      }
  
@@ -124,7 +124,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2485,7 +2545,7 @@ export class UrlbarInput {
+@@ -2553,7 +2613,7 @@ export class UrlbarInput {
  
          this.textbox.parentNode.style.setProperty(
            "--urlbar-container-height",
@@ -133,7 +133,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
          );
          this.textbox.style.setProperty(
            "--urlbar-height",
-@@ -2900,6 +2960,7 @@ export class UrlbarInput {
+@@ -2968,6 +3028,7 @@ export class UrlbarInput {
    }
  
    _toggleActionOverride(event) {
@@ -141,7 +141,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -2998,7 +3059,7 @@ export class UrlbarInput {
+@@ -3069,7 +3130,7 @@ export class UrlbarInput {
     */
    _trimValue(val) {
      let trimmedValue = lazy.UrlbarPrefs.get("trimURLs")
@@ -150,7 +150,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -3368,6 +3429,10 @@ export class UrlbarInput {
+@@ -3439,6 +3500,10 @@ export class UrlbarInput {
        }
        reuseEmpty = true;
      }
@@ -161,7 +161,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      if (
        where == "tab" &&
        reuseEmpty &&
-@@ -3375,6 +3440,9 @@ export class UrlbarInput {
+@@ -3446,6 +3511,9 @@ export class UrlbarInput {
      ) {
        where = "current";
      }
@@ -171,7 +171,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      return where;
    }
  
-@@ -3632,6 +3700,7 @@ export class UrlbarInput {
+@@ -3703,6 +3771,7 @@ export class UrlbarInput {
        this.setResultForCurrentValue(null);
        this.handleCommand();
        this.controller.clearLastQueryContextCache();
@@ -179,7 +179,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
  
        this._suppressStartQuery = false;
      });
-@@ -3639,7 +3708,6 @@ export class UrlbarInput {
+@@ -3710,7 +3779,6 @@ export class UrlbarInput {
      contextMenu.addEventListener("popupshowing", () => {
        // Close the results pane when the input field contextual menu is open,
        // because paste and go doesn't want a result selection.
@@ -187,7 +187,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4053,6 +4121,11 @@ export class UrlbarInput {
+@@ -4136,6 +4204,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -199,7 +199,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer ||
-@@ -4124,7 +4197,7 @@ export class UrlbarInput {
+@@ -4207,7 +4280,7 @@ export class UrlbarInput {
        }
      }
  
@@ -208,7 +208,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -4164,9 +4237,16 @@ export class UrlbarInput {
+@@ -4247,9 +4320,16 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -226,7 +226,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
  
          if (
            event.target != this.inputField &&
-@@ -4178,6 +4258,10 @@ export class UrlbarInput {
+@@ -4261,6 +4341,10 @@ export class UrlbarInput {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -237,7 +237,7 @@ index 4b69136aa31bfef3a1d3b57ad0c75fe07fa26be0..66ef8de0d2a767376740ca57d75b5372
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -4218,7 +4302,7 @@ export class UrlbarInput {
+@@ -4301,7 +4385,7 @@ export class UrlbarInput {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.

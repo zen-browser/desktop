@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index aa339be9ba94ed776fa25f2d72f9e6b25dc86cd3..4c6c725942b3d6f2a42938d444ac7645526623cc 100644
+index 2116a8a3b5746b79280f2d73b5e29b01c7a15993..448269adeab747fd2da419509e6923eefbb87d8a 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
 @@ -389,7 +389,7 @@ function getBundleForLocales(newLocales) {

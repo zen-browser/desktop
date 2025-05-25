@@ -21,14 +21,4 @@
       }
     }
   }
-
-  @media -moz-pref('zen.view.experimental-rounded-view') {
-    #tabbrowser-tabpanels {
-      :root:not([zen-no-padding='true']) & {
-        mix-blend-mode: multiply;
-        -moz-osx-font-smoothing: grayscale;
-        isolation: isolate;
-      }
-    }
-  }
 }

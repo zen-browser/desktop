@@ -89,16 +89,14 @@
       const iconUrl = url ?? tab.iconImage.src;
       if (!iconUrl) {
         try {
-          setTimeout(() => {
+          setTimeout(async () => {
             try {
-              PlacesUtils.favicons.getFaviconURLForPage(
-                tab.linkedBrowser?.currentURI,
-                (url) => {
-                  if (url) gBrowser.setIcon(tab, url.spec);
-                },
-
-                0
+              let favicon = await PlacesUtils.favicons.getFaviconForPage(
+                Services.io.newURI(pin.url)
               );
+              if (favicon) {
+                gBrowser.setIcon(tab, favicon.dataURI);
+              }
             } catch (error) {
               console.warn('Error getting favicon URL:', error);
             }
@@ -169,7 +167,7 @@
         const enhancedPins = await Promise.all(
           pins.map(async (pin) => {
             try {
-              const image = await this.getFaviconAsBase64(Services.io.newURI(pin.url).spec);
+              const image = await this.getFaviconAsBase64(Services.io.newURI(pin.url));
               return {
                 ...pin,
                 iconUrl: image || null,
@@ -399,10 +397,10 @@
       );
     }
 
-    _onTabClick(e) {
+    async _onTabClick(e) {
       const tab = e.target?.closest('tab');
       if (e.button === 1 && tab) {
-        this._onCloseTabShortcut(e, tab);
+        await this._onCloseTabShortcut(e, tab);
       }
     }
 
@@ -535,7 +533,7 @@
       }
     }
 
-    _onCloseTabShortcut(
+    async _onCloseTabShortcut(
       event,
       selectedTab = gBrowser.selectedTab,
       behavior = lazy.zenPinnedTabCloseShortcutBehavior
@@ -556,22 +554,17 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
-          let { permitUnload } = selectedTab.linkedBrowser?.permitUnload();
-          if (!permitUnload) {
-            return;
-          }
-          this._handleTabSwitch(selectedTab);
-          if (behavior.includes('reset')) {
-            this._resetTabToStoredState(selectedTab);
-          }
           if (behavior.includes('unload')) {
             if (selectedTab.hasAttribute('glance-id')) {
               break;
             }
-            // Do not unload about:* pages
-            if (!selectedTab.linkedBrowser?.currentURI.spec.startsWith('about:')) {
-              gZenTabUnloader.explicitUnloadTabs([selectedTab], { permitUnload });
-            }
+            await gBrowser.explicitUnloadTabs([selectedTab]);
+          }
+          if (selectedTab.selected) {
+            this._handleTabSwitch(selectedTab);
+          }
+          if (behavior.includes('reset')) {
+            this._resetTabToStoredState(selectedTab);
           }
           break;
         case 'reset':
@@ -640,23 +633,14 @@
 
     async getFaviconAsBase64(pageUrl) {
       try {
-        // Get the favicon data
-        const faviconData = await PlacesUtils.promiseFaviconData(pageUrl);
-
-        // The data comes as an array buffer, we need to convert it to base64
-        // First create a byte array from the data
-        const array = new Uint8Array(faviconData.data);
-
-        // Convert to base64
-        const base64String = btoa(
-          Array.from(array)
-            .map((b) => String.fromCharCode(b))
-            .join('')
-        );
-
-        // Return as a proper data URL
-        return `data:${faviconData.mimeType};base64,${base64String}`;
+        const faviconData = await PlacesUtils.favicons.getFaviconForPage(pageUrl);
+        if (!faviconData) {
+          // empty favicon
+          return 'data:image/png;base64,';
+        }
+        return faviconData.dataURI;
       } catch (ex) {
+        console.error('Failed to get favicon:', ex);
         // console.error("Failed to get favicon:", ex);
         return `page-icon:${pageUrl}`; // Use this as a fallback
       }

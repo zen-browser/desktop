@@ -3,7 +3,7 @@
 
 'use strict';
 
-add_task(async function test_Create_Pinned() {
+add_task(async function test_Changed_Pinned() {
   let resolvePromise;
   const promise = new Promise((resolve) => {
     resolvePromise = resolve;

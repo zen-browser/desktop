@@ -81,6 +81,7 @@
       if (group.hasAttribute('split-view-group') && !this._piningFolder) {
         this._piningFolder = true;
         for (const otherTab of group.tabs) {
+          gZenPinnedTabManager.resetPinChangedUrl(otherTab);
           if (tab === otherTab) {
             continue;
           }

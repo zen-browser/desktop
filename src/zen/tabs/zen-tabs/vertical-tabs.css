@@ -337,13 +337,6 @@
       }
     }
 
-    /* Dim pending tabs if preference is enabled */
-    @media -moz-pref('zen.tabs.dim-pending') {
-      &[pending='true'] .tab-icon-image {
-        opacity: 0.5;
-      }
-    }
-
     /* --- Glance Tab Styles (Nested .tabbrowser-tab) --- */
     /* Styles for a tab nested within another tab (representing a "glance"?) */
     & .tabbrowser-tab {

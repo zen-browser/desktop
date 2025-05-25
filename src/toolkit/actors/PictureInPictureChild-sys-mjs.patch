@@ -1,5 +1,5 @@
 diff --git a/toolkit/actors/PictureInPictureChild.sys.mjs b/toolkit/actors/PictureInPictureChild.sys.mjs
-index 7ae1aa58bbaeab7a1835a3ea8328735d4f4ecfb1..9d0679dde3c031c2459c09ffbc157f32bc7d003a 100644
+index e4dea54a29e2a1575d76091061781a504da38465..d5248eebdd018feca7bb9d5ee3284d6f253a4b35 100644
 --- a/toolkit/actors/PictureInPictureChild.sys.mjs
 +++ b/toolkit/actors/PictureInPictureChild.sys.mjs
 @@ -291,6 +291,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {

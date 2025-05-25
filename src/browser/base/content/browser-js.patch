@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..08568d90f888cc262a23ffaa72e985e7c3463b93 100644
+index 6d664917a5a3bb1cea8a747e42e8bc0065ec999e..5059293ebfa29d646455b7a3505bd6eae408ba64 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,19 +10,18 @@ index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..08568d90f888cc262a23ffaa72e985e7
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2338,6 +2339,11 @@ var XULBrowserWindow = {
+@@ -2340,6 +2341,10 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
 +    gZenViewSplitter.onLocationChange(gBrowser.selectedBrowser);
 +    gZenWorkspaces.onLocationChange(gBrowser.selectedBrowser);
-+    gZenTabUnloader.onLocationChange(gBrowser.selectedBrowser);
 +    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser);
 +
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -4814,7 +4820,7 @@ function switchToTabHavingURI(
+@@ -4816,7 +4821,7 @@ function switchToTabHavingURI(
        ignoreQueryString || replaceQueryString,
        ignoreFragmentWhenComparing
      );
@@ -31,7 +30,7 @@ index ea79d296e7dd0f8fd812b0677a252af5cf7ad26e..08568d90f888cc262a23ffaa72e985e7
      for (let i = 0; i < browsers.length; i++) {
        let browser = browsers[i];
        let browserCompare = cleanURL(
-@@ -4857,7 +4863,7 @@ function switchToTabHavingURI(
+@@ -4859,7 +4864,7 @@ function switchToTabHavingURI(
          }
  
          if (!doAdopt) {

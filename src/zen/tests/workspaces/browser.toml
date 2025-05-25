@@ -6,3 +6,4 @@ support-files = [
 ["browser_basic_workspaces.js"]
 ["browser_workspace_bookmarks.js"]
 ["browser_double_click_newtab.js"]
+["browser_overflow_scrollbox.js"]

@@ -670,7 +670,7 @@
 #unified-extensions-context-menu menuitem {
   background-image: var(--menu-image) !important;
   background-size: 16px !important;
-  background-position: var(--fp-contextmenu-menuitem-padding-inline) center !important;
+  background-position: var(--zen-contextmenu-menuitem-padding-inline) center !important;
   background-repeat: no-repeat !important;
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
@@ -679,7 +679,7 @@
 @media not (-moz-platform: windows) {
   menu > .menu-iconic-text,
   menuitem > .menu-iconic-text {
-    padding-inline-start: var(--fp-contextmenu-menuicon-margin-inline) !important;
+    padding-inline-start: var(--zen-contextmenu-menuicon-margin-inline) !important;
   }
 }
 
@@ -1051,8 +1051,7 @@ menuitem[id='placesContext_new:separator'] {
   --menu-image: url('close-all.svg');
 }
 
-#context_zenUnloadTab,
-#context_zenUnloadWebPanel,
+#context_unloadTab,
 #context_zenTabActions {
   --menu-image: url('close-all.svg');
 }
@@ -1156,8 +1155,8 @@ menuitem[id='placesContext_new:separator'] {
   ),
 :not(:not(menubar) > menu, #ContentSelectDropdown) > menupopup > menucaption {
   padding-inline-start: calc(
-    var(--fp-contextmenu-menuitem-padding-inline) + 16px +
-      var(--fp-contextmenu-menuicon-margin-inline)
+    var(--zen-contextmenu-menuitem-padding-inline) + var(--zen-contextmenu-menuicon-margin-inline) /
+      2
   ) !important;
 }
 

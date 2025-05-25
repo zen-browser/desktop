@@ -2614,7 +2614,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
     if (this.isPrivateWindow) {
       name = 'Private ' + name;
-      icon = '🥸';
     }
     // get extra tabs remaning (e.g. on new profiles) and just move them to the new workspace
     const extraTabs = Array.from(gBrowser.tabContainer.arrowScrollbox.children).filter(
@@ -2809,41 +2808,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         await this.changeWorkspace(workspaceToChange);
       }
     }
-  }
-
-  makeSurePinTabIsInCorrectPosition() {
-    if (!this.pinnedTabsContainer) {
-      return 0; // until we initialize the pinned tabs container
-    }
-    const tabsInsidePinTab = Array.from(this.pinnedTabsContainer.parentElement.children).filter(
-      (child) => child.tagName === 'tab'
-    );
-    let changed = false;
-    for (const tab of tabsInsidePinTab) {
-      if (tab.getAttribute('zen-glance-tab') === 'true') {
-        continue;
-      }
-      if (tab.getAttribute('zen-essential') === 'true') {
-        const container = this.getCurrentEssentialsContainer();
-        container.appendChild(tab);
-        changed = true;
-        continue;
-      }
-      const workspaceId = tab.getAttribute('zen-workspace-id');
-      if (!workspaceId) {
-        continue;
-      }
-      const contaienr = this.workspaceElement(workspaceId).pinnedTabsContainer;
-      contaienr.insertBefore(tab, contaienr.lastChild);
-      changed = true;
-    }
-    if (changed) {
-      gBrowser.tabContainer._invalidateCachedTabs();
-    }
-    // Return the number of essentials INSIDE the pinned tabs container so we can correctly change their parent
-    return Array.from(this.pinnedTabsContainer.children).filter(
-      (child) => child.getAttribute('zen-essential') === 'true'
-    ).length;
   }
 
   // Context menu management

@@ -447,7 +447,7 @@
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: var(--tab-icon-end-margin);
+  gap: 10px;
   align-items: center;
   flex-direction: row !important;
   max-width: 100%;

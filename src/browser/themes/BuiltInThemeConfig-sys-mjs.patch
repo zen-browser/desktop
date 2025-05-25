@@ -1,8 +1,8 @@
 diff --git a/browser/themes/BuiltInThemeConfig.sys.mjs b/browser/themes/BuiltInThemeConfig.sys.mjs
-index 081187147736f56abfe5866a69e00ac13a8dd940..9a980fe858c1a77af7634037aebc332d237e9c11 100644
+index a5361f1f0ec57f575f8d76e118ff762dc7547501..db5c5eb2059b4ceef3911fd807bf985408859d1a 100644
 --- a/browser/themes/BuiltInThemeConfig.sys.mjs
 +++ b/browser/themes/BuiltInThemeConfig.sys.mjs
-@@ -33,13 +33,6 @@ export const BuiltInThemeConfig = new Map([
+@@ -33,11 +33,4 @@ export const BuiltInThemeConfig = new Map([
        path: "resource://builtin-themes/dark/",
      },
    ],
@@ -13,6 +13,4 @@ index 081187147736f56abfe5866a69e00ac13a8dd940..9a980fe858c1a77af7634037aebc332d
 -      path: "resource://builtin-themes/alpenglow/",
 -    },
 -  ],
-   [
-     "2022red-colorway@mozilla.org",
-     {
+ ]);

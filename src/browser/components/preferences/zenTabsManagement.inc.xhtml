@@ -37,18 +37,7 @@
 
       <checkbox id="zenTabsUnloadActivate"
             data-l10n-id="zen-tabs-unloader-enabled"
-            preference="zen.tab-unloader.enabled"/>
-
-
-      <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
-      <hbox id="zenTabsUnloadDelayContainer">
-            <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
-            <html:input id="zenTabsUnloadDelay"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  preference="zen.tab-unloader.timeout-minutes"/>
-      </hbox>
+            preference="browser.tabs.unloadOnLowMemory"/>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

@@ -50,7 +50,6 @@
 
         content/browser/zen-components/ZenKeyboardShortcuts.mjs                 (../../zen/kbs/ZenKeyboardShortcuts.mjs)
 
-        content/browser/zen-components/ZenTabUnloader.mjs                       (../../zen/tabs/ZenTabUnloader.mjs)
         content/browser/zen-components/ZenPinnedTabsStorage.mjs                 (../../zen/tabs/ZenPinnedTabsStorage.mjs)
         content/browser/zen-components/ZenPinnedTabManager.mjs                  (../../zen/tabs/ZenPinnedTabManager.mjs)
 *       content/browser/zen-styles/zen-tabs.css                                 (../../zen/tabs/zen-tabs.css)

@@ -279,10 +279,6 @@ declare namespace MockedExports {
 
   const PlaceUtilsSYSMJS: {
     PlacesUtils: {
-      promiseFaviconData: (
-        pageUrl: string | URL | nsIURI,
-        preferredWidth?: number
-      ) => Promise<FaviconData>;
       // TS-TODO: Add the rest.
     };
   };

@@ -83,17 +83,12 @@
       }
     }
 
-    getTabPosition(tab) {
-      return tab._tPos;
-    }
-
     createBrowserElement(url, currentTab, existingTab = null) {
       const newTabOptions = {
         userContextId: currentTab.getAttribute('usercontextid') || '',
         skipBackgroundNotify: true,
         insertTab: true,
         skipLoad: false,
-        index: this.getTabPosition(currentTab) + 1,
       };
       currentTab._selected = true;
       const newUUID = gZenUIManager.generateUuidv4();
@@ -294,9 +289,7 @@
       this.closingGlance = true;
       this._animating = true;
 
-      gBrowser.zenInsertTabAtIndex(this.#currentTab, {
-        index: this.getTabPosition(this.#currentParentTab),
-      });
+      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
       let quikcCloseZen = false;
       if (onTabClose) {
@@ -629,7 +622,7 @@
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 
-      gBrowser.zenInsertTabAtIndex(this.#currentTab, this.getTabPosition(this.#currentTab));
+      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
       this.#currentTab.removeAttribute('zen-glance-tab');
       this._clearContainerStyles(this.browserWrapper);

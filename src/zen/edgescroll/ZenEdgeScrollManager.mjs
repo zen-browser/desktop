@@ -13,13 +13,14 @@
         targetBrowserDuringDrag: null,
         targetBrowsingContextDuringDrag: null,
       };
-      this.triggerDivVertical = null; // Added for the trigger div
+
+      this.triggerDivVertical = null; 
 
       this._boundHandleMouseDown = this.handleMouseDown.bind(this);
       this._boundHandleSyntheticDrag = this.handleSyntheticDrag.bind(this);
       this._boundHandleSyntheticDragEnd = this.handleSyntheticDragEnd.bind(this);
       this._boundHandleWheel = this.handleWheel.bind(this);
-      this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
+      this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); 
 
       if (this.triggerDivVertical !== null) {
         console.warn('ZenEdgeScrollManager is already initialized.');
@@ -29,8 +30,6 @@
       // Create and append the edge scroll trigger div
       this.triggerDivVertical = window.document.createElement('div');
       this.triggerDivVertical.id = 'zen-edgescroll-trigger-vertical';
-      // add attribute vertical to the trigger div
-      this.triggerDivVertical.setAttribute('direction', 'vertical');
 
       document.getElementById('zen-appcontent-wrapper').appendChild(this.triggerDivVertical);
 

@@ -13,3 +13,13 @@
   z-index:  2147483647;
   user-select: none;
 }
+
+#zen-edgescroll-trigger-horizontal {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: var(--zen-element-separation);
+  z-index: 2147483647;
+  user-select: none;
+}

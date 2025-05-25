@@ -13,7 +13,7 @@
         targetBrowserDuringDrag: null,
         targetBrowsingContextDuringDrag: null,
       };
-      this.edgeScrollTriggerDiv = null; // Added for the trigger div
+      this.triggerDivVertical = null; // Added for the trigger div
 
       this._boundHandleMouseDown = this.handleMouseDown.bind(this);
       this._boundHandleSyntheticDrag = this.handleSyntheticDrag.bind(this);
@@ -21,18 +21,21 @@
       this._boundHandleWheel = this.handleWheel.bind(this);
       this._boundUpdateTriggerDivDisplay = this._updateTriggerDivDisplay.bind(this); // Added
 
-      if (this.edgeScrollTriggerDiv !== null) {
+      if (this.triggerDivVertical !== null) {
         console.warn('ZenEdgeScrollManager is already initialized.');
         return;
       }
 
       // Create and append the edge scroll trigger div
-      this.edgeScrollTriggerDiv = window.document.createElement('div');
-      this.edgeScrollTriggerDiv.id = 'zen-edgescroll-trigger-vertical';
-      document.getElementById('zen-appcontent-wrapper').appendChild(this.edgeScrollTriggerDiv);
+      this.triggerDivVertical = window.document.createElement('div');
+      this.triggerDivVertical.id = 'zen-edgescroll-trigger-vertical';
+      // add attribute vertical to the trigger div
+      this.triggerDivVertical.setAttribute('direction', 'vertical');
 
-      this.edgeScrollTriggerDiv.addEventListener('mousedown', this._boundHandleMouseDown, true);
-      this.edgeScrollTriggerDiv.addEventListener('wheel', this._boundHandleWheel, {
+      document.getElementById('zen-appcontent-wrapper').appendChild(this.triggerDivVertical);
+
+      this.triggerDivVertical.addEventListener('mousedown', this._boundHandleMouseDown, true);
+      this.triggerDivVertical.addEventListener('wheel', this._boundHandleWheel, {
         capture: true,
         passive: false,
       });
@@ -45,19 +48,19 @@
     }
 
     destroy() {
-      if (this.edgeScrollTriggerDiv) {
-        this.edgeScrollTriggerDiv.removeEventListener(
+      if (this.triggerDivVertical) {
+        this.triggerDivVertical.removeEventListener(
           'mousedown',
           this._boundHandleMouseDown,
           true
         );
-        this.edgeScrollTriggerDiv.removeEventListener('wheel', this._boundHandleWheel, true);
-        if (this.edgeScrollTriggerDiv.parentNode) {
-          this.edgeScrollTriggerDiv.parentNode.removeChild(this.edgeScrollTriggerDiv); // Corrected removeChild call
+        this.triggerDivVertical.removeEventListener('wheel', this._boundHandleWheel, true);
+        if (this.triggerDivVertical.parentNode) {
+          this.triggerDivVertical.parentNode.removeChild(this.triggerDivVertical); // Corrected removeChild call
         }
-        this.edgeScrollTriggerDiv = null;
+        this.triggerDivVertical = null;
       }
-      // These listeners are added to window, not edgeScrollTriggerDiv in handleMouseDown
+      // These listeners are added to window, not triggerDivVertical in handleMouseDown
       window.removeEventListener('mousemove', this._boundHandleSyntheticDrag, true);
       window.removeEventListener('mouseup', this._boundHandleSyntheticDragEnd, true);
       Services.prefs.removeObserver(
@@ -68,13 +71,13 @@
 
     _updateTriggerDivDisplay() {
       // Added method
-      if (!this.edgeScrollTriggerDiv) {
+      if (!this.triggerDivVertical) {
         return;
       }
       if (window.gZenCompactModeManager && gZenCompactModeManager.sidebarIsOnRight) {
-        this.edgeScrollTriggerDiv.style.display = 'none';
+        this.triggerDivVertical.style.display = 'none';
       } else {
-        this.edgeScrollTriggerDiv.style.display = 'block';
+        this.triggerDivVertical.style.display = 'block';
       }
     }
 
@@ -100,27 +103,30 @@
       let potentialTargetBrowserRect = null;
 
       const selectedBrowser = gBrowser.selectedBrowser;
-      if (selectedBrowser && selectedBrowser.getAttribute('primary') === 'true') {
-        const selectedBrowserRect = selectedBrowser.getBoundingClientRect();
-        if (selectedBrowserRect.width > 0 && selectedBrowserRect.height > 0) {
-          // Check if the browser's right edge is very close to the window's right edge
-          const isBrowserAtRightEdge =
-            windowWidth - selectedBrowserRect.right <= EDGE_INTERACTION_WIDTH_PX + 1;
-          const isEventYWithinBrowser =
-            eventClientY >= selectedBrowserRect.top && eventClientY <= selectedBrowserRect.bottom;
-          if (isBrowserAtRightEdge && isEventYWithinBrowser) {
-            potentialTargetBrowser = selectedBrowser;
-            potentialTargetBrowserRect = selectedBrowserRect;
+
+      if (event.target == this.triggerDivVertical) {
+        if (selectedBrowser && selectedBrowser.getAttribute('primary') === 'true') {
+          const selectedBrowserRect = selectedBrowser.getBoundingClientRect();
+          if (selectedBrowserRect.width > 0 && selectedBrowserRect.height > 0) {
+            // Check if the browser's right edge is very close to the window's right edge
+            const isBrowserAtRightEdge =
+              windowWidth - selectedBrowserRect.right <= EDGE_INTERACTION_WIDTH_PX + 1;
+            const isEventYWithinBrowser =
+              eventClientY >= selectedBrowserRect.top && eventClientY <= selectedBrowserRect.bottom;
+            if (isBrowserAtRightEdge && isEventYWithinBrowser) {
+              potentialTargetBrowser = selectedBrowser;
+              potentialTargetBrowserRect = selectedBrowserRect;
+            }
           }
         }
-      }
 
-      // The event is on the trigger div, so it is "in gap". We return the browser found.
-      return {
-        isInGap: true,
-        targetBrowser: potentialTargetBrowser,
-        browserRect: potentialTargetBrowserRect,
-      };
+        // The event is on the trigger div, so it is "in gap". We return the browser found.
+        return {
+          isInGap: true,
+          targetBrowser: potentialTargetBrowser,
+          browserRect: potentialTargetBrowserRect,
+        };
+      } 
     }
 
     createSyntheticEventData(originalEvent, targetBrowserRect, eventType) {
@@ -158,7 +164,7 @@
 
     handleMouseDown(event) {
       if (event.button !== 0) return;
-      const gapInfo = this.getGapZoneInfo(event); // event is from edgeScrollTriggerDiv
+      const gapInfo = this.getGapZoneInfo(event); // event is from triggerDivVertical
 
       if (!gapInfo.targetBrowser) {
         return;
@@ -257,7 +263,7 @@
     }
 
     handleWheel(event) {
-      const gapInfo = this.getGapZoneInfo(event); // event is from edgeScrollTriggerDiv
+      const gapInfo = this.getGapZoneInfo(event); // event is from triggerDivVertical
 
       if (!gapInfo.targetBrowser) {
         return;

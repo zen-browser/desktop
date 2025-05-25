@@ -5,7 +5,7 @@
  */
 
 #zen-edgescroll-trigger-vertical {
-  position: fixed;
+  position: absolute;
   top: 0px;
   right: 0px;
   width:var(--zen-element-separation); 
@@ -15,11 +15,11 @@
 }
 
 #zen-edgescroll-trigger-horizontal {
-  position: fixed;
+  position: absolute;
   bottom: 0px;
   left: 0px;
   width: 100%;
   height: var(--zen-element-separation);
-  z-index: 2147483647;
+  z-index: 2147483646;
   user-select: none;
 }

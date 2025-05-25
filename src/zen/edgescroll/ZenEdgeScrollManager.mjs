@@ -168,7 +168,7 @@
         0,
         Math.min(
           Math.floor(originalEvent.clientY - targetBrowserRect.top),
-          Math.floor(targetBrowserRect.height - 1)
+          Math.floor(targetBrowserRect.height - SYNTHETIC_EVENT_Y_OFFSET_FROM_BOTTOM_EDGE)
         )
       );
       const screenX = Math.floor(window.screenX + targetBrowserRect.left + clientXInContent);

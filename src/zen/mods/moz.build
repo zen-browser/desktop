@@ -5,6 +5,6 @@
 
 
 FINAL_TARGET_FILES.actors += [
-    "actors/ZenThemeMarketplaceChild.sys.mjs",
-    "actors/ZenThemeMarketplaceParent.sys.mjs",
+    "actors/ZenModsMarketplaceChild.sys.mjs",
+    "actors/ZenModsMarketplaceParent.sys.mjs",
 ]

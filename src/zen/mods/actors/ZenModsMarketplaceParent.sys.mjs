@@ -16,7 +16,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
 
         mod.enabled = true;
 
-        const mods = await this.getMods();
+        const mods = await gZenMods.getMods();
         mods[mod.id] = mod;
 
         await gZenMods.updateMods(mods);
@@ -28,7 +28,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         const modId = message.data.modId;
         console.log(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
 
-        const mods = await this.getMods();
+        const mods = await gZenMods.getMods();
 
         delete mods[modId];
 

@@ -430,6 +430,8 @@ class ZenMods extends ZenPreloadedFeature {
   async getMods() {
     if (!(await IOUtils.exists(this.modsDataFile))) {
       await IOUtils.writeJSON(this.modsDataFile, {});
+
+      return {};
     }
 
     let mods = {};

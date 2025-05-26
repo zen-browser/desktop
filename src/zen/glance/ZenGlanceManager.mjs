@@ -745,10 +745,10 @@
     if (Services.prefs.getBoolPref('zen.glance.enabled', true)) {
       gZenActorsManager.addJSWindowActor('ZenGlance', {
         parent: {
-          esModuleURI: 'chrome://browser/content/zen-components/actors/ZenGlanceParent.sys.mjs',
+          esModuleURI: 'resource:///actors/ZenGlanceParent.sys.mjs',
         },
         child: {
-          esModuleURI: 'chrome://browser/content/zen-components/actors/ZenGlanceChild.sys.mjs',
+          esModuleURI: 'resource:///actors/ZenGlanceChild.sys.mjs',
           events: {
             DOMContentLoaded: {},
             keydown: {

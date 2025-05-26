@@ -14,30 +14,37 @@ var gZenMarketplaceManager = {
       return;
     }
 
+    if (!window.gZenMods) {
+      window.gZenMods = ZenMultiWindowFeature.currentBrowser.gZenMods;
+    }
+
     header.appendChild(this._initDisableAll());
 
     this._initImportExport();
 
     this.__hasInitializedEvents = true;
 
-    await this._buildThemesList();
+    await this._buildModsList();
 
-    Services.prefs.addObserver(this.updatePref, this);
+    Services.prefs.addObserver(gZenMods.updatePref, this);
 
     const checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
         event.preventDefault();
+
         this._checkForThemeUpdates(event);
       }
     };
 
     checkForUpdates.addEventListener('click', checkForUpdateClick);
 
-    document.addEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', (event) => {
+    document.addEventListener('ZenModsMarketplace:CheckForUpdatesFinished', (event) => {
       checkForUpdates.disabled = false;
+
       const updates = event.detail.updates;
       const success = document.getElementById('zenThemeMarketplaceUpdatesSuccess');
       const error = document.getElementById('zenThemeMarketplaceUpdatesFailure');
+
       if (updates) {
         success.hidden = false;
         error.hidden = true;
@@ -48,13 +55,16 @@ var gZenMarketplaceManager = {
     });
 
     window.addEventListener('unload', () => {
-      Services.prefs.removeObserver(this.updatePref, this);
+      Services.prefs.removeObserver(gZenMods.updatePref, this);
       this.__hasInitializedEvents = false;
-      document.removeEventListener('ZenThemeMarketplace:CheckForUpdatesFinished', this);
-      document.removeEventListener('ZenCheckForThemeUpdates', this);
+
+      document.removeEventListener('ZenModsMarketplace:CheckForUpdatesFinished', this);
+      document.removeEventListener('ZenCheckForModUpdates', this);
+
       checkForUpdates.removeEventListener('click', checkForUpdateClick);
-      this.themesList.innerHTML = '';
-      this._doNotRebuildThemesList = false;
+
+      this.modsList.innerHTML = '';
+      this._doNotRebuildModsList = false;
     });
   },
 
@@ -63,36 +73,32 @@ var gZenMarketplaceManager = {
     const exportButton = document.getElementById('zenThemeMarketplaceExport');
 
     if (importButton) {
-      importButton.addEventListener('click', async () => {
-        await this._importThemes();
-      });
+      importButton.addEventListener('click', this._importThemes.bind(this));
     }
 
     if (exportButton) {
-      exportButton.addEventListener('click', async () => {
-        await this._exportThemes();
-      });
+      exportButton.addEventListener('click', this._exportThemes.bind(this));
     }
   },
 
   _initDisableAll() {
-    const areThemesDisabled = Services.prefs.getBoolPref('zen.themes.disable-all', false);
-    const browser = ZenThemesCommon.currentBrowser;
+    const areModsDisabled = Services.prefs.getBoolPref('zen.themes.disable-all', false);
+    const browser = ZenMultiWindowFeature.currentBrowser;
     const mozToggle = document.createElement('moz-toggle');
 
     mozToggle.className =
       'zenThemeMarketplaceItemPreferenceToggle zenThemeMarketplaceDisableAllToggle';
-    mozToggle.pressed = !areThemesDisabled;
+    mozToggle.pressed = !areModsDisabled;
 
     browser.document.l10n.setAttributes(
       mozToggle,
-      `zen-theme-disable-all-${!areThemesDisabled ? 'enabled' : 'disabled'}`
+      `zen-theme-disable-all-${!areModsDisabled ? 'enabled' : 'disabled'}`
     );
 
     mozToggle.addEventListener('toggle', async (event) => {
       const { pressed = false } = event.target || {};
 
-      this.themesList.style.display = pressed ? '' : 'none';
+      this.modsList.style.display = pressed ? '' : 'none';
       Services.prefs.setBoolPref('zen.themes.disable-all', !pressed);
       browser.document.l10n.setAttributes(
         mozToggle,
@@ -100,90 +106,65 @@ var gZenMarketplaceManager = {
       );
     });
 
-    if (areThemesDisabled) {
-      this.themesList.style.display = 'none';
+    if (areModsDisabled) {
+      this.modsList.style.display = 'none';
     }
 
     return mozToggle;
   },
 
   async observe() {
-    await this._buildThemesList();
+    await this._buildModsList();
   },
 
   _checkForThemeUpdates(event) {
     // Send a message to the child to check for theme updates.
     event.target.disabled = true;
     // send an event that will be listened by the child process.
-    document.dispatchEvent(new CustomEvent('ZenCheckForThemeUpdates'));
+    document.dispatchEvent(new CustomEvent('ZenCheckForModUpdates'));
   },
 
-  get updatePref() {
-    return 'zen.themes.updated-value-observer';
-  },
-
-  triggerThemeUpdate() {
-    Services.prefs.setBoolPref(this.updatePref, !Services.prefs.getBoolPref(this.updatePref));
-  },
-
-  get themesList() {
-    if (!this._themesList) {
-      this._themesList = document.getElementById('zenThemeMarketplaceList');
+  get modsList() {
+    if (!this._modsList) {
+      this._modsList = document.getElementById('zenThemeMarketplaceList');
     }
-    return this._themesList;
+    return this._modsList;
   },
 
-  async removeTheme(themeId) {
-    const themePath = ZenThemesCommon.getThemeFolder(themeId);
+  async removeMod(modId) {
+    await gZenMods.removeMod(modId);
 
-    console.info(`[ZenThemeMarketplaceParent:settings]: Removing theme ${themePath}`);
-
-    await IOUtils.remove(themePath, { recursive: true, ignoreAbsent: true });
-
-    const themes = await ZenThemesCommon.getThemes();
-    delete themes[themeId];
-    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
-
-    this.triggerThemeUpdate();
+    gZenMods.triggerModsUpdate();
   },
 
-  async disableTheme(themeId) {
-    const themes = await ZenThemesCommon.getThemes();
-    const theme = themes[themeId];
+  async disableMod(modId) {
+    await gZenMods.disableMod(modId);
 
-    console.log(`[ZenThemeMarketplaceParent:settings]: Disabling theme ${theme.name}`);
-
-    theme.enabled = false;
-
-    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
-    this._doNotRebuildThemesList = true;
-    this.triggerThemeUpdate();
+    this._doNotRebuildModsList = true;
+    gZenMods.triggerModsUpdate();
   },
 
-  async enableTheme(themeId) {
-    const themes = await ZenThemesCommon.getThemes();
-    const theme = themes[themeId];
+  async enableMod(modId) {
+    await gZenMods.enableMod(modId);
 
-    console.log(`[ZenThemeMarketplaceParent:settings]: Enabling theme ${theme.name}`);
-
-    theme.enabled = true;
-
-    await IOUtils.writeJSON(ZenThemesCommon.themesDataFile, themes);
-    this._doNotRebuildThemesList = true;
-    this.triggerThemeUpdate();
+    this._doNotRebuildModsList = true;
+    gZenMods.triggerModsUpdate();
   },
 
   _triggerBuildUpdateWithoutRebuild() {
     this._doNotRebuildThemesList = true;
-    this.triggerThemeUpdate();
+    gZenMods.triggerModsUpdate();
   },
 
   async _importThemes() {
     const errorBox = document.getElementById('zenThemeMarketplaceImportFailure');
     const successBox = document.getElementById('zenThemeMarketplaceImportSuccess');
+
     successBox.hidden = true;
     errorBox.hidden = true;
+
     const input = document.createElement('input');
+
     input.type = 'file';
     input.accept = '.json';
     input.style.display = 'none';
@@ -191,37 +172,52 @@ var gZenMarketplaceManager = {
     input.setAttribute('accept', '.json');
 
     let timeout;
+
     const filePromise = new Promise((resolve) => {
       input.addEventListener('change', (event) => {
-        if (timeout) clearTimeout(timeout);
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+
         const file = event.target.files[0];
         resolve(file);
       });
+
       timeout = setTimeout(() => {
-        console.warn('[ZenThemeMarketplaceParent:settings]: Import timeout reached, aborting.');
+        console.warn('[ZenSettings:ZenMods]: Import timeout reached, aborting.');
         resolve(null);
       }, 60000);
+    });
+
+    input.addEventListener('cancel', () => {
+      console.warn('[ZenSettings:ZenMods]: Import cancelled by user.');
+      clearTimeout(timeout);
     });
 
     input.click();
 
     try {
       const file = await filePromise;
+
       if (!file) {
         return;
       }
+
       const content = await file.text();
 
-      const themes = JSON.parse(content);
-      for (const theme of Object.values(themes)) {
-        theme.themeId = theme.id;
-        window.ZenInstallTheme(theme);
+      const mods = JSON.parse(content);
+
+      for (const mod of Object.values(mods)) {
+        mod.modId = mod.id;
+        window.ZenInstallMod(mod);
       }
     } catch (error) {
-      console.error('[ZenThemeMarketplaceParent:settings]: Error while importing themes:', error);
+      console.error('[ZenSettings:ZenMods]: Error while importing mods:', error);
       errorBox.hidden = false;
-    } finally {
-      if (input) input.remove();
+    }
+
+    if (input) {
+      input.remove();
     }
   },
 
@@ -232,51 +228,54 @@ var gZenMarketplaceManager = {
     successBox.hidden = true;
     errorBox.hidden = true;
 
-    let a, url;
+    let temporalAnchor, temporalUrl;
     try {
-      const themes = await ZenThemesCommon.getThemes();
-      const themesJson = JSON.stringify(themes, null, 2);
-      const blob = new Blob([themesJson], { type: 'application/json' });
-      url = URL.createObjectURL(blob);
-      // Creating a link to download the JSON file
-      a = document.createElement('a');
-      a.href = url;
-      a.download = 'zen-themes-export.json';
+      const mods = await gZenMods.getMods();
+      const modsJson = JSON.stringify(mods, null, 2);
+      const blob = new Blob([modsJson], { type: 'application/json' });
 
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      temporalUrl = URL.createObjectURL(blob);
+      // Creating a link to download the JSON file
+      temporalAnchor = document.createElement('a');
+      temporalAnchor.href = temporalUrl;
+      temporalAnchor.download = 'zen-mods-export.json';
+
+      document.body.appendChild(temporalAnchor);
+      temporalAnchor.click();
+      temporalAnchor.remove();
+
       successBox.hidden = false;
     } catch (error) {
-      console.error('[ZenThemeMarketplaceParent:settings]: Error while exporting themes:', error);
+      console.error('[ZenSettings:ZenMods]: Error while exporting mods:', error);
       errorBox.hidden = false;
-    } finally {
-      if (a) {
-        a.remove();
-      }
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
+    }
+
+    if (temporalAnchor) {
+      temporalAnchor.remove();
+    }
+
+    if (temporalUrl) {
+      URL.revokeObjectURL(temporalUrl);
     }
   },
 
-  async _buildThemesList() {
-    if (!this.themesList) {
+  async _buildModsList() {
+    if (!this.modsList) {
       return;
     }
 
-    if (this._doNotRebuildThemesList) {
-      this._doNotRebuildThemesList = false;
+    if (this._doNotRebuildModsList) {
+      this._doNotRebuildModsList = false;
       return;
     }
 
-    const themes = await ZenThemesCommon.getThemes();
+    const mods = await gZenMods.getMods();
     const browser = ZenMultiWindowFeature.currentBrowser;
-    const themeList = document.createElement('div');
+    const modList = document.createElement('div');
 
-    for (const theme of Object.values(themes).sort((a, b) => a.name.localeCompare(b.name))) {
-      const sanitizedName = `theme-${theme.name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-Za-z_-]+/g, '')}`;
-      const isThemeEnabled = theme.enabled === undefined || theme.enabled;
+    for (const mod of Object.values(mods).sort((a, b) => a.name.localeCompare(b.name))) {
+      const sanitizedName = gZenMods.sanitizeModName(mod.name);
+      const isModEnabled = mod.enabled === undefined || mod.enabled;
       const fragment = window.MozXULElement.parseXULToFragment(`
         <vbox class="zenThemeMarketplaceItem">
           <vbox class="zenThemeMarketplaceItemContent">
@@ -286,14 +285,14 @@ var gZenMarketplaceManager = {
             <description class="description-deemphasized zenThemeMarketplaceItemDescription"></description>
           </vbox>
           <hbox class="zenThemeMarketplaceItemActions">
-            ${theme.preferences ? `<button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>` : ''}
-            ${theme.homepage ? `<button id="zenThemeMarketplaceItemHomePageLink-${sanitizedName}" class="zenThemeMarketplaceItemHomepageButton" zen-theme-id="${theme.id}"></button>` : ''}
-            <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-theme-id="${theme.id}"></button>
+            ${mod.preferences ? `<button id="zenThemeMarketplaceItemConfigureButton-${sanitizedName}" class="zenThemeMarketplaceItemConfigureButton" hidden="true"></button>` : ''}
+            ${mod.homepage ? `<button id="zenThemeMarketplaceItemHomePageLink-${sanitizedName}" class="zenThemeMarketplaceItemHomepageButton" zen-mod-id="${mod.id}"></button>` : ''}
+            <button class="zenThemeMarketplaceItemUninstallButton" data-l10n-id="zen-theme-marketplace-remove-button" zen-mod-id="${mod.id}"></button>
           </hbox>
         </vbox>
       `);
 
-      const themeName = `${theme.name} (v${theme.version || '1.0.0'})`;
+      const modName = `${mod.name} (v${mod.version ?? '1.0.0'})`;
 
       const base = fragment.querySelector('.zenThemeMarketplaceItem');
       const baseHeader = fragment.querySelector('#zenThemeMarketplaceItemContentHeader');
@@ -308,7 +307,7 @@ var gZenMarketplaceManager = {
 
       mainDialogDiv.className = 'zenThemeMarketplaceItemPreferenceDialog';
       headerDiv.className = 'zenThemeMarketplaceItemPreferenceDialogTopBar';
-      headerTitle.textContent = themeName;
+      headerTitle.textContent = modName;
       browser.document.l10n.setAttributes(headerTitle, 'zen-theme-marketplace-theme-header-title', {
         name: sanitizedName,
       });
@@ -319,10 +318,10 @@ var gZenMarketplaceManager = {
       contentDiv.className = 'zenThemeMarketplaceItemPreferenceDialogContent';
       mozToggle.className = 'zenThemeMarketplaceItemPreferenceToggle';
 
-      mozToggle.pressed = isThemeEnabled;
+      mozToggle.pressed = isModEnabled;
       browser.document.l10n.setAttributes(
         mozToggle,
-        `zen-theme-marketplace-toggle-${isThemeEnabled ? 'enabled' : 'disabled'}-button`
+        `zen-theme-marketplace-toggle-${isModEnabled ? 'enabled' : 'disabled'}-button`
       );
 
       baseHeader.appendChild(mozToggle);
@@ -340,34 +339,34 @@ var gZenMarketplaceManager = {
       });
 
       mozToggle.addEventListener('toggle', async (event) => {
-        const themeId = event.target
+        const modId = event.target
           .closest('.zenThemeMarketplaceItem')
           .querySelector('.zenThemeMarketplaceItemUninstallButton')
-          .getAttribute('zen-theme-id');
+          .getAttribute('zen-mod-id');
         event.target.setAttribute('disabled', true);
 
         if (!event.target.hasAttribute('pressed')) {
-          await this.disableTheme(themeId);
+          await this.disableMod(modId);
 
           browser.document.l10n.setAttributes(
             mozToggle,
             'zen-theme-marketplace-toggle-disabled-button'
           );
 
-          if (theme.preferences) {
+          if (mod.preferences) {
             document
               .getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`)
               .setAttribute('hidden', true);
           }
         } else {
-          await this.enableTheme(themeId);
+          await this.enableMod(modId);
 
           browser.document.l10n.setAttributes(
             mozToggle,
             'zen-theme-marketplace-toggle-enabled-button'
           );
 
-          if (theme.preferences) {
+          if (mod.preferences) {
             document
               .getElementById(`zenThemeMarketplaceItemConfigureButton-${sanitizedName}`)
               .removeAttribute('hidden');
@@ -379,8 +378,8 @@ var gZenMarketplaceManager = {
         }, 400);
       });
 
-      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = themeName;
-      fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = theme.description;
+      fragment.querySelector('.zenThemeMarketplaceItemTitle').textContent = modName;
+      fragment.querySelector('.zenThemeMarketplaceItemDescription').textContent = mod.description;
       fragment
         .querySelector('.zenThemeMarketplaceItemUninstallButton')
         .addEventListener('click', async (event) => {
@@ -392,34 +391,34 @@ var gZenMarketplaceManager = {
             return;
           }
 
-          await this.removeTheme(event.target.getAttribute('zen-theme-id'));
+          await this.removeMod(event.target.getAttribute('zen-mod-id'));
         });
 
-      if (theme.homepage) {
+      if (mod.homepage) {
         const homepageButton = fragment.querySelector('.zenThemeMarketplaceItemHomepageButton');
         homepageButton.addEventListener('click', () => {
           // open the homepage url in a new tab
-          const url = theme.homepage;
+          const url = mod.homepage;
 
           window.open(url, '_blank');
         });
       }
 
-      if (theme.preferences) {
+      if (mod.preferences) {
         fragment
           .querySelector('.zenThemeMarketplaceItemConfigureButton')
           .addEventListener('click', () => {
             dialog.showModal();
           });
 
-        if (isThemeEnabled) {
+        if (isModEnabled) {
           fragment
             .querySelector('.zenThemeMarketplaceItemConfigureButton')
             .removeAttribute('hidden');
         }
       }
 
-      const preferences = await ZenThemesCommon.getThemePreferences(theme);
+      const preferences = await gZenMods.getModPreferences(mod);
 
       if (preferences.length > 0) {
         const preferencesWrapper = document.createXULElement('vbox');
@@ -471,7 +470,7 @@ var gZenMarketplaceManager = {
 
                 if (!['string', 'number'].includes(valueType)) {
                   console.log(
-                    `[ZenThemeMarketplaceParent:settings]: Warning, invalid data type received (${valueType}), skipping.`
+                    `[ZenSettings:ZenMods]: Warning, invalid data type received (${valueType}), skipping.`
                   );
                   continue;
                 }
@@ -583,7 +582,7 @@ var gZenMarketplaceManager = {
 
               input.addEventListener(
                 'change',
-                ZenThemesCommon.debounce((event) => {
+                gZenMods.debounce((event) => {
                   const value = event.target.value;
 
                   Services.prefs.setStringPref(property, value);
@@ -617,18 +616,18 @@ var gZenMarketplaceManager = {
 
             default:
               console.log(
-                `[ZenThemeMarketplaceParent:settings]: Warning, unknown preference type received (${type}), skipping.`
+                `[ZenSettings:ZenMods]: Warning, unknown preference type received (${type}), skipping.`
               );
               continue;
           }
         }
         contentDiv.appendChild(preferencesWrapper);
       }
-      themeList.appendChild(fragment);
+      modList.appendChild(fragment);
     }
 
-    this.themesList.replaceChildren(...themeList.children);
-    themeList.remove();
+    this.modsList.replaceChildren(...modList.children);
+    modList.remove();
   },
 };
 
@@ -737,7 +736,8 @@ var gZenLooksAndFeel = {
   _initializeColorPicker(accentColor) {
     let elem = document.getElementById('zenLooksAndFeelColorOptions');
     elem.innerHTML = '';
-    for (let color of ZenThemesCommon.kZenColors) {
+
+    for (let color of gZenMods.kZenColors) {
       let colorElemParen = document.createElement('div');
       let colorElem = document.createElement('div');
       colorElemParen.classList.add('zenLooksAndFeelColorOptionParen');
@@ -761,7 +761,7 @@ var gZenLooksAndFeel = {
   },
 
   _getInitialAccentColor() {
-    return Services.prefs.getStringPref('zen.theme.accent-color', ZenThemesCommon.kZenColors[0]);
+    return Services.prefs.getStringPref('zen.theme.accent-color', gZenMods.kZenColors[0]);
   },
 };
 

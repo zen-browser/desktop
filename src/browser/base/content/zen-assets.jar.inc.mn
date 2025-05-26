@@ -35,10 +35,7 @@
         content/browser/zen-components/ZenViewSplitter.mjs                      (../../zen/split-view/ZenViewSplitter.mjs)
         content/browser/zen-styles/zen-decks.css                                (../../zen/split-view/zen-decks.css)
 
-        content/browser/zen-components/ZenThemesCommon.mjs                      (../../zen/mods/ZenThemesCommon.mjs)
-        content/browser/zen-components/ZenThemesImporter.mjs                    (../../zen/mods/ZenThemesImporter.mjs)
-        content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (../../zen/mods/actors/ZenThemeMarketplaceParent.sys.mjs)
-        content/browser/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs  (../../zen/mods/actors/ZenThemeMarketplaceChild.sys.mjs)
+        content/browser/zen-components/ZenMods.mjs                      (../../zen/mods/ZenMods.mjs)
 
         content/browser/zen-components/ZenWorkspaceIcons.mjs                    (../../zen/workspaces/ZenWorkspaceIcons.mjs)
         content/browser/zen-components/ZenWorkspace.mjs                         (../../zen/workspaces/ZenWorkspace.mjs)
@@ -75,7 +72,7 @@
         content/browser/zen-styles/zen-download-box-animation.css               (../../zen/downloads/zen-download-box-animation.css)
 
 
-        # Images                
+        # Images
         content/browser/zen-images/gradient.png                                 (../../zen/images/gradient.png)
         content/browser/zen-images/brand-header.svg                             (../../zen/images/brand-header.svg)
         content/browser/zen-images/layouts/collapsed.png                        (../../zen/images/layouts/collapsed.png)
@@ -87,7 +84,7 @@
         content/browser/zen-images/downloads/download.svg                       (../../zen/images/downloads/download.svg)
         content/browser/zen-images/downloads/archive.svg                       (../../zen/images/downloads/archive.svg)
 
-        # Fonts         
+        # Fonts
         content/browser/zen-fonts/JunicodeVF-Italic.woff2                       (../../zen/fonts/JunicodeVF-Italic.woff2)
         content/browser/zen-fonts/JunicodeVF-Roman.woff2                        (../../zen/fonts/JunicodeVF-Roman.woff2)
 

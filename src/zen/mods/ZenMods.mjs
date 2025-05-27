@@ -77,12 +77,12 @@ class ZenMods extends ZenPreloadedFeature {
     }
 
     if (
-      this.#stylesheetService.sheetRegistered(
+      !this.#stylesheetService.sheetRegistered(
         this.#styleSheetUri,
         this.#stylesheetService.AGENT_SHEET
       )
     ) {
-      console.debug('[ZenMods]: Sheet successfully registered');
+      console.error(`[ZenMods]: Failed to register stylesheet at ${this.#styleSheetUri.spec}.`);
     }
   }
 
@@ -97,8 +97,8 @@ class ZenMods extends ZenPreloadedFeature {
     );
     await IOUtils.remove(this.#styleSheetPath, { ignoreAbsent: true });
 
-    if (!rv && !(await IOUtils.exists(this.#styleSheetPath))) {
-      console.debug('[ZenMods]: Sheet successfully unregistered');
+    if (rv || (await IOUtils.exists(this.#styleSheetPath))) {
+      console.error(`[ZenMods]: Failed to unregister stylesheet at ${this.#styleSheetUri.spec}.`);
     }
   }
 
@@ -395,21 +395,9 @@ class ZenMods extends ZenPreloadedFeature {
   }
 
   sanitizeModName(name) {
-    return `mod-${name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-Za-z_-]+/g, '')}`;
+    // Do not change to "mod-" for backwards compatibility
+    return `theme-${name?.replaceAll(/\s/g, '-')?.replaceAll(/[^A-Za-z_-]+/g, '')}`;
   }
-
-  kZenColors = [
-    '#aac7ff',
-    '#74d7cb',
-    '#a0d490',
-    '#dec663',
-    '#ffb787',
-    '#dec1b1',
-    '#ffb1c0',
-    '#ddbfc3',
-    '#f6b0ea',
-    '#d4bbff',
-  ];
 
   get updatePref() {
     return 'zen.themes.updated-value-observer';
@@ -506,20 +494,19 @@ class ZenMods extends ZenPreloadedFeature {
 
       await this.#insertStylesheet();
 
-      requestIdleCallback(
-        () => {
-          if (!window.closed) {
-            requestAnimationFrame(() => {
-              console.log('[ZenMods]: Running background updates');
-
-              this.checkForModsUpdates();
-            });
-          }
-        },
-        { timeout: 1000 }
-      );
-
-      console.log('[ZenMods]: Zen Mods loaded');
+      this.#setNewMilestoneIfNeeded();
+      if (this.#shouldAutoUpdate()) {
+        requestIdleCallback(
+          () => {
+            if (!window.closed) {
+              requestAnimationFrame(() => {
+                this.checkForModsUpdates();
+              });
+            }
+          },
+          { timeout: 1000 }
+        );
+      }
     } catch (e) {
       console.error('[ZenMods]: Error loading Zen Mods:', e);
     }
@@ -528,9 +515,28 @@ class ZenMods extends ZenPreloadedFeature {
     Services.prefs.addObserver('zen.themes.disable-all', this.#handleDisableMods.bind(this), false);
   }
 
-  async checkForModsUpdates() {
-    console.log('[ZenMods]: Checking for mods updates');
+  #setNewMilestoneIfNeeded() {
+    const previousMilestone = Services.prefs.getStringPref('zen.mods.milestone', '');
+    if (previousMilestone != Services.appinfo.version) {
+      Services.prefs.setStringPref('zen.mods.milestone', Services.appinfo.version);
+      Services.prefs.clearUserPref('zen.mods.last-update');
+    }
+  }
 
+  #shouldAutoUpdate() {
+    const daysBeforeUpdate = Services.prefs.getIntPref('zen.mods.auto-update-days');
+    const lastUpdatedSec = Services.prefs.getIntPref('zen.mods.last-update', -1);
+    const nowSec = Math.floor(Date.now() / 1000);
+    const daysSinceUpdate = (nowSec - lastUpdatedSec) / (60 * 60 * 24);
+
+    return (
+      (Services.prefs.getBoolPref('zen.mods.auto-update', true) &&
+        daysSinceUpdate >= daysBeforeUpdate) ||
+      lastUpdatedSec < 0
+    );
+  }
+
+  async checkForModsUpdates() {
     const mods = await this.getMods();
 
     const updates = await Promise.all(
@@ -569,7 +575,7 @@ class ZenMods extends ZenPreloadedFeature {
     );
 
     await this.updateMods(mods);
-
+    Services.prefs.setIntPref('zen.mods.last-update', Math.floor(Date.now() / 1000));
     return updates.filter((update) => {
       return update !== null;
     });

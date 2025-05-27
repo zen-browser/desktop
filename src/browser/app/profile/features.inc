@@ -22,13 +22,17 @@ pref('zen.mediacontrols.enabled', true);
 // Exposure:
 pref('zen.haptic-feedback.enabled', true);
 
+pref('zen.mods.auto-update-days', 12); // In days
 #ifdef MOZILLA_OFFICIAL
+pref('zen.mods.auto-update', true);
 pref('zen.rice.api.url', 'https://share.zen-browser.app', locked);
 pref('zen.injections.match-urls', 'https://zen-browser.app/*,https://share.zen-browser.app/*', locked);
 #else
+pref('zen.mods.auto-update', false);
 pref('zen.rice.api.url', "http://localhost", locked);
 pref('zen.injections.match-urls', 'http://localhost/*', locked);
 #endif
+
 pref('zen.rice.share.notice.accepted', false);
 
 #ifdef XP_MACOSX

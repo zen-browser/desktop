@@ -48,6 +48,10 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
     return this.contentWindow.document.getElementById('install-theme-uninstall');
   }
 
+  async isThemeInstalled(themeId) {
+    return await this.sendQuery('ZenModsMarketplace:IsModInstalled', { themeId });
+  }
+
   async receiveMessage(message) {
     switch (message.name) {
       case 'ZenModsMarketplace:ModChanged': {
@@ -59,7 +63,7 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
           actionButton.disabled = false;
           actionButtonInstalled.disabled = false;
 
-          if (await gZenMods.isModInstalled(modId)) {
+          if (await this.isThemeInstalled(modId)) {
             actionButton.classList.add('hidden');
             actionButtonInstalled.classList.remove('hidden');
           } else {
@@ -100,7 +104,7 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
     errorMessage.classList.add('hidden');
 
     const themeId = actionButton.getAttribute('zen-theme-id');
-    if (await gZenMods.isModInstalled(themeId)) {
+    if (await this.isThemeInstalled(themeId)) {
       actionButtonUninstall.classList.remove('hidden');
     } else {
       actionButton.classList.remove('hidden');
@@ -114,7 +118,7 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
     const button = event.target;
     button.disabled = true;
 
-    const modId = button.getAttribute('zen-mod-id');
+    const modId = button.getAttribute('zen-theme-id');
 
     this.sendAsyncMessage('ZenModsMarketplace:UninstallMod', { modId });
   }
@@ -132,15 +136,6 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
       modId = event.themeId;
     }
 
-    console.log(`[ZenModsMarketplaceChild]: Installing mod with id: ${modId}`);
-
-    const mod = await gZenMods.requestMod(modId);
-
-    if (!mod) {
-      console.error(`[ZenModsMarketplaceChild]: Error fetching mod ${modId} info`);
-      return;
-    }
-
-    this.sendAsyncMessage('ZenModsMarketplace:InstallMod', { mod });
+    this.sendAsyncMessage('ZenModsMarketplace:InstallMod', { modId });
   }
 }

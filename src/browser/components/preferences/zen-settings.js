@@ -152,7 +152,7 @@ var gZenMarketplaceManager = {
   },
 
   _triggerBuildUpdateWithoutRebuild() {
-    this._doNotRebuildThemesList = true;
+    this._doNotRebuildModsList = true;
     gZenMods.triggerModsUpdate();
   },
 
@@ -635,6 +635,19 @@ const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
 var gZenLooksAndFeel = {
+  kZenColors: [
+    '#aac7ff',
+    '#74d7cb',
+    '#a0d490',
+    '#dec663',
+    '#ffb787',
+    '#dec1b1',
+    '#ffb1c0',
+    '#ddbfc3',
+    '#f6b0ea',
+    '#d4bbff',
+  ],
+
   init() {
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
@@ -737,7 +750,7 @@ var gZenLooksAndFeel = {
     let elem = document.getElementById('zenLooksAndFeelColorOptions');
     elem.innerHTML = '';
 
-    for (let color of gZenMods.kZenColors) {
+    for (let color of this.kZenColors) {
       let colorElemParen = document.createElement('div');
       let colorElem = document.createElement('div');
       colorElemParen.classList.add('zenLooksAndFeelColorOptionParen');
@@ -761,7 +774,7 @@ var gZenLooksAndFeel = {
   },
 
   _getInitialAccentColor() {
-    return Services.prefs.getStringPref('zen.theme.accent-color', gZenMods.kZenColors[0]);
+    return Services.prefs.getStringPref('zen.theme.accent-color', this.kZenColors[0]);
   },
 };
 
@@ -1221,6 +1234,11 @@ Preferences.addAll([
   },
   {
     id: 'browser.tabs.unloadOnLowMemory',
+    type: 'bool',
+    default: true,
+  },
+  {
+    id: 'zen.mods.auto-update',
     type: 'bool',
     default: true,
   },

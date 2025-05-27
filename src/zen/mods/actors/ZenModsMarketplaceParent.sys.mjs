@@ -7,19 +7,24 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
     super();
   }
 
+  get modsManager() {
+    return this.browsingContext.topChromeWindow.gZenMods;
+  }
+
   async receiveMessage(message) {
     switch (message.name) {
       case 'ZenModsMarketplace:InstallMod': {
-        const mod = message.data.mod;
+        const modId = message.data.modId;
+        const mod = await this.modsManager.requestMod(modId);
 
         console.log(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
 
         mod.enabled = true;
 
-        const mods = await gZenMods.getMods();
+        const mods = await this.modsManager.getMods();
         mods[mod.id] = mod;
 
-        await gZenMods.updateMods(mods);
+        await this.modsManager.updateMods(mods);
         await this.updateChildProcesses(mod.id);
 
         break;
@@ -28,20 +33,28 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         const modId = message.data.modId;
         console.log(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
 
-        const mods = await gZenMods.getMods();
+        const mods = await this.modsManager.getMods();
 
         delete mods[modId];
 
-        await gZenMods.removeMod(modId);
-        await gZenMods.updateMods(mods);
+        await this.modsManager.removeMod(modId);
+        await this.modsManager.updateMods(mods);
 
         await this.updateChildProcesses(modId);
 
         break;
       }
       case 'ZenModsMarketplace:CheckForUpdates': {
-        gZenMods.checkForModUpdates();
+        const updates = await this.modsManager.checkForModsUpdates();
+        this.sendAsyncMessage('ZenModsMarketplace:CheckForUpdatesFinished', { updates });
         break;
+      }
+
+      case 'ZenModsMarketplace:IsModInstalled': {
+        const themeId = message.data.themeId;
+        const themes = await this.modsManager.getMods();
+
+        return Boolean(themes?.[themeId]);
       }
     }
   }

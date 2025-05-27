@@ -399,16 +399,16 @@ class ZenMods extends ZenPreloadedFeature {
   }
 
   kZenColors = [
-    'this.#aac7ff',
-    'this.#74d7cb',
-    'this.#a0d490',
-    'this.#dec663',
-    'this.#ffb787',
-    'this.#dec1b1',
-    'this.#ffb1c0',
-    'this.#ddbfc3',
-    'this.#f6b0ea',
-    'this.#d4bbff',
+    '#aac7ff',
+    '#74d7cb',
+    '#a0d490',
+    '#dec663',
+    '#ffb787',
+    '#dec1b1',
+    '#ffb1c0',
+    '#ddbfc3',
+    '#f6b0ea',
+    '#d4bbff',
   ];
 
   get updatePref() {

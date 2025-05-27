@@ -303,6 +303,10 @@
   list-style-image: url('home.svg') !important;
 }
 
+#toggle_toolbar-menubar {
+  display: none;
+}
+
 #library-button {
   list-style-image: url('library.svg') !important;
 }

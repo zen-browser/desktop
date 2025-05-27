@@ -16,6 +16,7 @@ pref('browser.toolbars.bookmarks.visibility', 'never');
 pref("browser.bookmarks.openInTabClosesMenu", false);
 pref("browser.menu.showViewImageInfo", true);
 pref("findbar.highlightAll", true);
+
 pref("layout.word_select.eat_space_to_next_word", false);
 
 // Better Windows theming

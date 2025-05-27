@@ -9,8 +9,8 @@ function openGlanceOnTab(callback, close = true) {
       gZenGlanceManager
         .openGlance({
           url: 'https://example.com',
-          x: 0,
-          y: 0,
+          clientX: 0,
+          clientY: 0,
           width: 0,
           height: 0,
         })

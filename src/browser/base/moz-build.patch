@@ -1,9 +1,9 @@
 diff --git a/browser/base/moz.build b/browser/base/moz.build
-index 636e0841786735a63ddea00e819c0b6f0b8a5d4d..62e4531bd19caf098fd76c69b213fa32d62546a6 100644
+index 9da444880c4dbf188443d43e8d0a71d98311a2b7..3a654be6f78931e92479b30de6f0a6e50da81908 100644
 --- a/browser/base/moz.build
 +++ b/browser/base/moz.build
-@@ -87,3 +87,5 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] in ("windows", "gtk"):
-     DEFINES["MENUBAR_CAN_AUTOHIDE"] = 1
+@@ -81,3 +81,5 @@ DEFINES["MOZ_APP_VERSION_DISPLAY"] = CONFIG["MOZ_APP_VERSION_DISPLAY"]
+ DEFINES["APP_LICENSE_BLOCK"] = "%s/content/overrides/app-license.html" % SRCDIR
  
  JAR_MANIFESTS += ["jar.mn"]
 +

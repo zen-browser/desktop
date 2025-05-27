@@ -41,6 +41,7 @@ menupopup,
 panel {
   --panel-background: var(--arrowpanel-background);
   --panel-border-radius: var(--zen-native-inner-radius);
+  --menuitem-padding: 6px 5px !important;
 }
 
 /* split-view popup */

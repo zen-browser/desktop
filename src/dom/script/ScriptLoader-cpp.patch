@@ -1,8 +1,8 @@
 diff --git a/dom/script/ScriptLoader.cpp b/dom/script/ScriptLoader.cpp
-index b3bec3821582d48c79cd88a4efe5c7bae1fd42e6..0bb81a8b0fa9478c894f80cfa81fd04c67fdd79f 100644
+index 51f63f998e47aa4b1dffc3cacdb0a698b33b4623..0387738ce1f29b5db4a5d03a3b2f5f3a91011125 100644
 --- a/dom/script/ScriptLoader.cpp
 +++ b/dom/script/ScriptLoader.cpp
-@@ -2670,6 +2670,36 @@ void ScriptLoader::CalculateBytecodeCacheFlag(ScriptLoadRequest* aRequest) {
+@@ -2679,6 +2679,36 @@ void ScriptLoader::CalculateBytecodeCacheFlag(ScriptLoadRequest* aRequest) {
        hasFetchCountMin = false;
        break;
      }

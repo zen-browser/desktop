@@ -1,5 +1,4 @@
 <script src="chrome://browser/content/zen-components/ZenCommonUtils.mjs" defer=""/>
-<script src="chrome://browser/content/zen-components/ZenThemesCommon.mjs" defer=""/>
 <html:template id="template-paneZenMarketplace">
 <hbox id="ZenMarketplaceCategory"
       class="subcategory"
@@ -20,6 +19,10 @@
             <button id="zenThemeMarketplaceExport" data-l10n-id="zen-theme-marketplace-export-button" />
             <button id="zenThemeMarketplaceCheckForUpdates" data-l10n-id="zen-theme-marketplace-check-for-updates-button" />
       </hbox>
+
+      <checkbox id="zenWorkspacesForceContainerTabsToWorkspace"
+            data-l10n-id="zen-themes-auto-update"
+            preference="zen.mods.auto-update"/>
 
       <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-updates-success" hidden="true" id="zenThemeMarketplaceUpdatesSuccess" />
       <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-updates-failure" hidden="true" id="zenThemeMarketplaceUpdatesFailure" />

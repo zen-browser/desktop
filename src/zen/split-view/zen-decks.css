@@ -112,10 +112,6 @@
   cursor: ns-resize;
 }
 
-#zen-split-views-box:not([hidden='true']) {
-  display: flex !important;
-}
-
 .zen-view-splitter-header-container {
   position: absolute;
   top: calc(var(--zen-split-column-gap) / -2);

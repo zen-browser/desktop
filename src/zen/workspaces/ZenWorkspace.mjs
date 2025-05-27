@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   class ZenWorkspace extends MozXULElement {
     static get markup() {
@@ -6,7 +9,7 @@
           <hbox class="zen-current-workspace-indicator-icon"></hbox>
           <hbox class="zen-current-workspace-indicator-name"></hbox>
         </vbox>
-        <arrowscrollbox orient="vertical" tabindex="-1" class="workspace-arrowscrollbox">
+        <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
             <html:div class="vertical-pinned-tabs-container-separator"></html:div>
           </vbox>

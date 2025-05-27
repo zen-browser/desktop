@@ -22,13 +22,17 @@ pref('zen.mediacontrols.enabled', true);
 // Exposure:
 pref('zen.haptic-feedback.enabled', true);
 
+pref('zen.mods.auto-update-days', 12); // In days
 #ifdef MOZILLA_OFFICIAL
+pref('zen.mods.auto-update', true);
 pref('zen.rice.api.url', 'https://share.zen-browser.app', locked);
 pref('zen.injections.match-urls', 'https://zen-browser.app/*,https://share.zen-browser.app/*', locked);
 #else
+pref('zen.mods.auto-update', false);
 pref('zen.rice.api.url', "http://localhost", locked);
 pref('zen.injections.match-urls', 'http://localhost/*', locked);
 #endif
+
 pref('zen.rice.share.notice.accepted', false);
 
 #ifdef XP_MACOSX
@@ -64,14 +68,6 @@ pref('zen.urlbar.show-domain-only-in-sidebar', true);
 pref('zen.urlbar.hide-one-offs', true);
 pref('zen.urlbar.enable-overrides', false);
 
-// Exoerimental: Apply a blend mode to the websites so they can render rounded corners
-// IMPORTANT: Remove once firefox 139 is released
-#ifdef XP_MACOSX
-pref('zen.view.experimental-rounded-view', false);
-#else 
-pref('zen.view.experimental-rounded-view', true);
-#endif
-
 // Glance
 pref('zen.glance.enabled', true);
 pref('zen.glance.hold-duration', 300); // in ms
@@ -99,17 +95,11 @@ pref('zen.view.grey-out-inactive-windows', true);
 pref('zen.view.hide-window-controls', true);
 pref('zen.view.experimental-no-window-controls', false);
 
-pref('zen.tabs.dim-pending', true);
-
 pref('zen.keyboard.shortcuts.enabled', true);
 pref('zen.keyboard.shortcuts.version', 0); // Empty string means default shortcuts
 pref('zen.keyboard.shortcuts.disable-mainkeyset-clear', false); // for debugging
 
 pref('zen.themes.updated-value-observer', false);
-
-pref('zen.tab-unloader.enabled', true);
-pref('zen.tab-unloader.timeout-minutes', 40);
-pref('zen.tab-unloader.excluded-urls', "example.com,example.org");
 
 pref('zen.pinned-tab-manager.debug', false);
 pref('zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url', false);

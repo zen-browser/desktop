@@ -1,5 +1,5 @@
 diff --git a/tools/signing/macos/mach_commands.py b/tools/signing/macos/mach_commands.py
-index a513ad723805459c194d27b42dac68e9babba468..3a08bb0987f9d6cf01c05f8ebb56efa91a5b9d0e 100644
+index 454a9bbc35802fbf811065e8e1ca592674016bb3..d6b0cf119664e0534a3898f72ffbcd3aade9c89d 100644
 --- a/tools/signing/macos/mach_commands.py
 +++ b/tools/signing/macos/mach_commands.py
 @@ -37,7 +37,6 @@ from mozbuild.base import MachCommandConditions as conditions

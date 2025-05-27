@@ -1,3 +1,10 @@
+
+["browser_pinned_unload_changed.js"]
+["browser_pinned_unload_noreset.js"]
+["browser_pinned_nounload_reset.js"]
+["browser_pinned_switch.js"]
+["browser_pinned_reset_noswitch.js"]
+["browser_pinned_close.js"]
 ["browser_pinned_changed.js"]
 ["browser_pinned_created.js"]
 ["browser_pinned_edit_label.js"]

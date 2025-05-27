@@ -1,4 +1,6 @@
-import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export var ZenCustomizableUI = new (class {
   constructor() {}
@@ -49,7 +51,7 @@ export var ZenCustomizableUI = new (class {
     const sidebarBox = window.MozXULElement.parseXULToFragment(`
       <toolbar id="zen-sidebar-top-buttons"
         fullscreentoolbar="true"
-        class="browser-toolbar customization-target zen-dont-hide-on-fullscreen"
+        class="browser-toolbar customization-target"
         brighttext="true"
         data-l10n-id="tabs-toolbar"
         customizable="true"

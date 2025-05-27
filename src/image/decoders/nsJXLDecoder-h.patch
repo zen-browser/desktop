@@ -1,8 +1,8 @@
 diff --git a/image/decoders/nsJXLDecoder.h b/image/decoders/nsJXLDecoder.h
-index 6cde7456ca03f79e74401c1d215b9d50453ebf41..2f593ca3b70100c600b86e753d7a458c83b4f15c 100644
+index 0b723878aefdc5a37c2cffb72a561f859ad79cdf..6d39326dbefa9a85cc02b426de5c9f9149fe612d 100644
 --- a/image/decoders/nsJXLDecoder.h
 +++ b/image/decoders/nsJXLDecoder.h
-@@ -48,6 +48,18 @@ class nsJXLDecoder final : public Decoder {
+@@ -46,6 +46,18 @@ class nsJXLDecoder final : public Decoder {
    Vector<uint8_t> mBuffer;
    Vector<uint8_t> mOutBuffer;
    JxlBasicInfo mInfo{};

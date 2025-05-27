@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/AppConstants.sys.mjs b/toolkit/modules/AppConstants.sys.mjs
-index bf7a0ec9570a8657d192fd28c9b4852aa8869225..59f5466582757320ab1f70ec26d76fc589e0a335 100644
+index a794e82288d30c979f2d2798bded49fb4dd3118b..cd1875dc048607447e25d30341052a6930d1c08f 100644
 --- a/toolkit/modules/AppConstants.sys.mjs
 +++ b/toolkit/modules/AppConstants.sys.mjs
-@@ -174,6 +174,8 @@ export var AppConstants = Object.freeze({
+@@ -172,6 +172,8 @@ export var AppConstants = Object.freeze({
    MOZ_UPDATE_CHANNEL: "@MOZ_UPDATE_CHANNEL@",
    MOZ_WIDGET_TOOLKIT: "@MOZ_WIDGET_TOOLKIT@",
  

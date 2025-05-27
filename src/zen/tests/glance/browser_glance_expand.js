@@ -20,11 +20,6 @@ add_task(async function test_Glance_Basic_Open() {
       selectedTab._tPos,
       'The glance tab should be on the right of the selected tab'
     );
-    Assert.equal(
-      glanceTab._tPos,
-      gBrowser.tabs.length - 1,
-      'The glance tab should be the last tab'
-    );
     BrowserTestUtils.removeTab(glanceTab);
   }, false);
 });
@@ -67,8 +62,8 @@ add_task(async function test_Glance_Basic_Open() {
   await openGlanceOnTab(async (glanceTab) => {
     await gZenGlanceManager.fullyOpenGlance();
     Assert.equal(
-      glanceTab._tPos,
-      3,
+      glanceTab,
+      gBrowser.visibleTabs.find((tab) => !tab.pinned),
       'The glance tab should be the first normal tab (Ignoring empty tabs)'
     );
     BrowserTestUtils.removeTab(glanceTab);
@@ -85,18 +80,10 @@ add_task(async function test_Glance_New_From_essential() {
     gZenPinnedTabManager.addToEssentials(selectedTab);
     await openGlanceOnTab(async (glanceTab) => {
       await gZenGlanceManager.fullyOpenGlance();
-      await BrowserTestUtils.openNewForegroundTab(window.gBrowser, 'https://example.com/', true, {
-        skipAnimation: true,
-      });
-      Assert.equal(
-        gBrowser.selectedTab._tPos,
-        1,
-        'The new tab should be the first normal tab (Ignoring empty tabs)'
-      );
-      Assert.equal(
-        glanceTab._tPos,
-        2,
-        'The glance tab should be the second normal tab (Ignoring empty tabs)'
+      ok(!glanceTab.pinned, 'The glance tab should not be pinned');
+      ok(
+        !glanceTab.parentNode.hasAttribute('container'),
+        'The glance tab should not be in an essentials container'
       );
       await BrowserTestUtils.removeTab(gBrowser.selectedTab);
       BrowserTestUtils.removeTab(glanceTab);

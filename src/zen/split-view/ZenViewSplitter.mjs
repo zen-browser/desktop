@@ -104,6 +104,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     );
 
     window.addEventListener('TabClose', this.handleTabClose.bind(this));
+    window.addEventListener('TabBrowserDiscarded', this.handleTabBrowserDiscarded.bind(this));
     window.addEventListener('TabSelect', this.onTabSelect.bind(this));
     this.initializeContextMenu();
     this.insertIntoContextMenu();
@@ -148,6 +149,22 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       return;
     }
     this.removeTabFromGroup(tab, groupIndex, true);
+  }
+
+  /**
+   * @param {Event} event - The event that triggered the tab browser discard.
+   * @description Handles the tab browser discard event.
+   */
+  async handleTabBrowserDiscarded(event) {
+    const tab = event.target;
+    if (tab.group?.hasAttribute('split-view-group')) {
+      gBrowser.explicitUnloadTabs(tab.group.tabs);
+      for (const t of tab.group.tabs) {
+        if (t.glanceTab) {
+          gBrowser.explicitUnloadTabs([t.glanceTab]);
+        }
+      }
+    }
   }
 
   /**
@@ -976,7 +993,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       tab = tab.parentNode.closest('.tabbrowser-tab');
       console.assert(tab, 'Tab not found for zen-glance-tab');
     }
-    this.updateSplitViewButton(!tab?.splitView);
     if (tab) {
       this.updateSplitView(tab);
       tab.linkedBrowser.docShellIsActive = true;
@@ -1110,7 +1126,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
 
     if (oldView === newView) return;
     if (newView < 0 && oldView >= 0) {
-      this.updateSplitViewButton(true);
       this.deactivateCurrentSplitView();
       return;
     }
@@ -1122,6 +1137,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
    * Deactivates the split view.
    */
   deactivateCurrentSplitView() {
+    if (this.currentView < 0) return;
     this.setTabsDocShellState(this._data[this.currentView].tabs, false);
     for (const tab of this._data[this.currentView].tabs) {
       const container = tab.linkedBrowser.closest('.browserSidebarContainer');
@@ -1129,7 +1145,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     }
     this.removeSplitters();
     this.tabBrowserPanel.removeAttribute('zen-split-view');
-    this.updateSplitViewButton(true);
     this.currentView = -1;
     this.toggleWrapperDisplay(false);
   }
@@ -1153,7 +1168,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
 
     this.tabBrowserPanel.setAttribute('zen-split-view', 'true');
 
-    this.updateSplitViewButton(false);
     this.applyGridToTabs(splitData.tabs);
     this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
@@ -1478,20 +1492,6 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   resetContainerStyle(container) {
     container.removeAttribute('zen-split');
     container.style.inset = '';
-  }
-
-  /**
-   * Updates the split view button visibility.
-   *
-   * @param {boolean} hidden - Indicates if the button should be hidden.
-   */
-  updateSplitViewButton(hidden) {
-    const button = document.getElementById('zen-split-views-box');
-    if (hidden) {
-      button?.setAttribute('hidden', 'true');
-    } else {
-      button?.removeAttribute('hidden');
-    }
   }
 
   /**

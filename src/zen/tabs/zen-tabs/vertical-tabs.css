@@ -337,13 +337,6 @@
       }
     }
 
-    /* Dim pending tabs if preference is enabled */
-    @media -moz-pref('zen.tabs.dim-pending') {
-      &[pending='true'] .tab-icon-image {
-        opacity: 0.5;
-      }
-    }
-
     /* --- Glance Tab Styles (Nested .tabbrowser-tab) --- */
     /* Styles for a tab nested within another tab (representing a "glance"?) */
     & .tabbrowser-tab {
@@ -363,6 +356,7 @@
         margin-block: 0 !important;
         margin-inline: 0 !important;
         box-shadow: none !important;
+        border-radius: calc(var(--border-radius-medium) - 2px);
       }
       /* Adjust padding for content */
       & .tab-content {
@@ -380,6 +374,27 @@
         --toolbarbutton-inner-padding: 0 !important;
         width: 14px;
         height: 14px;
+      }
+
+      & .tab-audio-button {
+        display: none !important;
+      }
+
+      &[soundplaying]:not([muted]) .tab-icon-stack::after {
+        content: '';
+        position: absolute;
+        width: 110%;
+        height: 110%;
+        background-repeat: no-repeat;
+        opacity: 1;
+        background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+        top: -70%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 0;
+        pointer-events: none;
+        transition: opacity 0.8s ease;
+        opacity: 1;
       }
     }
 
@@ -1246,7 +1261,7 @@
 
   padding-bottom: var(--zen-toolbox-padding);
   overflow: hidden;
-  gap: calc(var(--zen-toolbox-padding) - 2px);
+  gap: 4px;
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/osx/browser.css b/browser/themes/osx/browser.css
-index 7fc76bc82bd5d6311442b85a76d885dcfb6d753d..61b1b3ac8241c4f12e4ca8966a7ac1fae0eb41ee 100644
+index 9f795cd5b67b12ed4e6d0838d6e0b8e1048f6e50..e9d9326f174a25140113de40f4c57e8bc67677ff 100644
 --- a/browser/themes/osx/browser.css
 +++ b/browser/themes/osx/browser.css
 @@ -38,7 +38,7 @@

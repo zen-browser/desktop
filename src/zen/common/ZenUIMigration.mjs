@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -6,7 +9,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class ZenUIMigration {
   PREF_NAME = 'zen.migration.version';
-  MIGRATION_VERSION = 3;
+  MIGRATION_VERSION = 4;
 
   init(isNewProfile, win) {
     if (!isNewProfile) {
@@ -32,6 +35,9 @@ class ZenUIMigration {
     }
     if (this._migrationVersion < 3) {
       this._migrateV3(win);
+    }
+    if (this._migrationVersion < 4) {
+      this._migrateV4(win);
     }
   }
 
@@ -81,6 +87,13 @@ class ZenUIMigration {
       }
       win.CustomizableUI.removeWidgetFromArea(widgetId);
     }
+  }
+
+  _migrateV4(win) {
+    Services.prefs.setBoolPref(
+      'browser.tabs.unloadOnLowMemory',
+      Services.prefs.getBoolPref('zen.tab-unloader.enabled', true)
+    );
   }
 }
 

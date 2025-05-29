@@ -14,6 +14,7 @@ const kZenThemePrefsList = [
   'zen.theme.accent-color',
   'zen.theme.border-radius',
   'zen.theme.content-element-separation',
+  'zen.essentials.per-row', // Add essentials per-row preference
 ];
 const kZenMaxElementSeparation = 12;
 
@@ -65,6 +66,7 @@ var ZenThemeModifier = {
     this.updateAccentColor();
     this.updateBorderRadius();
     this.updateElementSeparation();
+    this.updateEssentialsPerRow();
   },
 
   updateBorderRadius() {
@@ -87,6 +89,11 @@ var ZenThemeModifier = {
       Services.prefs.getIntPref('zen.theme.content-element-separation'),
       kZenMaxElementSeparation
     );
+  },
+
+  updateEssentialsPerRow() {
+    const perRow = Services.prefs.getIntPref('zen.essentials.per-row', 0);
+    document.documentElement.style.setProperty('--zen-essentials-per-row', perRow);
   },
 
   /**

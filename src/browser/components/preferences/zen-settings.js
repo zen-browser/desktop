@@ -1223,6 +1223,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: 'zen.essentials.per-row',
+    type: 'int',
+    default: 0,
+  },
+  {
     id: 'media.videocontrols.picture-in-picture.enabled',
     type: 'bool',
     default: true,

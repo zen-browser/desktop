@@ -1,4 +1,3 @@
-
 pref('zen.welcome-screen.seen', false, sticky);
 
 pref('zen.tabs.vertical', true);
@@ -125,6 +124,7 @@ pref('zen.workspaces.natural-scroll', false);
 pref('zen.workspaces.scroll-modifier-key','ctrl'); // can be ctrl, alt, shift, or a meta key
 pref('services.sync.engine.workspaces', false);
 pref('zen.workspaces.container-specific-essentials-enabled', false);
+pref('zen.essentials.per-row', 0); // 0 = auto (responsive), n = fixed number per row
 
 #ifdef MOZILLA_OFFICIAL
 pref('zen.workspaces.debug', false);

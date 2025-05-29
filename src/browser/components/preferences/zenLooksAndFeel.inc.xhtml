@@ -39,6 +39,24 @@
                 data-l10n-id="zen-vertical-tabs-newtab-top-button-up"
                 preference="zen.view.show-newtab-button-top"/>
     </vbox>
+
+    <label><html:h3 data-l10n-id="zen-essentials-header"/></label>
+    <description class="description-deemphasized" data-l10n-id="zen-essentials-description" />
+    
+    <hbox align="center">
+        <label data-l10n-id="zen-essentials-per-row-label"/>
+        <menulist preference="zen.essentials.per-row">
+            <menupopup>
+                <menuitem data-l10n-id="zen-essentials-per-row-auto" value="0"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-1" value="1"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-2" value="2"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-3" value="3"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-4" value="4"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-5" value="5"/>
+                <menuitem data-l10n-id="zen-essentials-per-row-6" value="6"/>
+            </menupopup>
+        </menulist>
+    </hbox>
 </groupbox>
 
 <hbox id="zenLooksCategory"

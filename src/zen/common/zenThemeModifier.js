@@ -14,7 +14,7 @@ const kZenThemePrefsList = [
   'zen.theme.accent-color',
   'zen.theme.border-radius',
   'zen.theme.content-element-separation',
-  'zen.essentials.per-row', // Add essentials per-row preference
+  'zen.essentials.per-row',
 ];
 const kZenMaxElementSeparation = 12;
 

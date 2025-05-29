@@ -1266,35 +1266,35 @@
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
   opacity: 1;
-  
+
   /* Default auto-fit layout (preference = 0 or not set) */
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
-  
+
   /* Override grid layout when specific per-row values are set */
-  :root[style*="--zen-essentials-per-row: 1"] & {
+  :root[style*='--zen-essentials-per-row: 1'] & {
     grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)) !important;
   }
 
-  :root[style*="--zen-essentials-per-row: 2"] & {
+  :root[style*='--zen-essentials-per-row: 2'] & {
     grid-template-columns: repeat(auto-fit, minmax(calc(50% - 2px), 1fr)) !important;
   }
 
-  :root[style*="--zen-essentials-per-row: 3"] & {
+  :root[style*='--zen-essentials-per-row: 3'] & {
     grid-template-columns: repeat(auto-fit, minmax(calc(33.33% - 2.67px), 1fr)) !important;
   }
 
-  :root[style*="--zen-essentials-per-row: 4"] & {
+  :root[style*='--zen-essentials-per-row: 4'] & {
     grid-template-columns: repeat(auto-fit, minmax(calc(25% - 3px), 1fr)) !important;
   }
 
-  :root[style*="--zen-essentials-per-row: 5"] & {
+  :root[style*='--zen-essentials-per-row: 5'] & {
     grid-template-columns: repeat(auto-fit, minmax(calc(20% - 3.2px), 1fr)) !important;
   }
 
-  :root[style*="--zen-essentials-per-row: 6"] & {
+  :root[style*='--zen-essentials-per-row: 6'] & {
     grid-template-columns: repeat(auto-fit, minmax(calc(16.67% - 3.33px), 1fr)) !important;
   }
-  
+
   &[data-hack-type='1'] {
     grid-template-columns: repeat(auto-fit, minmax(max(30%, 48px), auto));
   }

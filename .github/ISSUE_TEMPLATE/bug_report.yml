@@ -7,11 +7,11 @@ body:
         <p align="center">
           <a href="https://zen-browser.app">
             <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="./blob/dev/docs/assets/zen-light.svg?raw=1">
-              <source media="(prefers-color-scheme: light)" srcset="./blob/dev/docs/assets/zen-dark.svg?raw=1">
-              <img src="./blob/dev/docs/assets/zen-light.svg?raw=1" alt="Zen Logo" width="64" height="64">
+              <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg">
+              <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-dark.svg">
+              <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg" alt="Zen Logo" width="64" height="64">
             </picture>
-            <img src="./blob/dev/docs/assets/zen-browser.svg?raw=1" alt="Zen Browser Text" width="156" height="64">
+            <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-browser.svg" alt="Zen Browser Text" width="156" height="64">
           </a>
         </p>
 

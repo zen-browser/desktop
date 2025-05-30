@@ -52,12 +52,18 @@
   }
 
   class ZenPinnedTabManager extends ZenDOMOperatedFeature {
-    MAX_ESSENTIALS_TABS = Services.prefs.getIntPref('zen.tabs.essentials.max', 12);
-
     async init() {
       if (!this.enabled) {
         return;
       }
+
+      XPCOMUtils.defineLazyPreferenceGetter(
+        lazy,
+        'zenTabsEssentialsMax',
+        'zen.tabs.essentials.max',
+        12
+      );
+
       this._canLog = Services.prefs.getBoolPref('zen.pinned-tab-manager.debug', false);
       this.observer = new ZenPinnedTabsObserver();
       this._initClosePinnedTabShortcut();
@@ -69,6 +75,10 @@
 
       await ZenPinnedTabsStorage.promiseInitialized;
       gZenWorkspaces._resolvePinnedInitialized();
+    }
+
+    get MAX_ESSENTIALS_TABS() {
+      return lazy.zenTabsEssentialsMax;
     }
 
     async onWorkspaceChange(newWorkspace, onInit) {

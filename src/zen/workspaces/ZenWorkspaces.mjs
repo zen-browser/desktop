@@ -429,6 +429,17 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       essentialsContainer.setAttribute('container', container);
       document.getElementById('zen-essentials').appendChild(essentialsContainer);
 
+      this._updateEssentialsOverflow(essentialsContainer);
+
+      essentialsContainer.addEventListener('scroll', () => {
+        this._updateEssentialsOverflow(essentialsContainer);
+      });
+
+      const resizeObserver = new ResizeObserver(() => {
+        this._updateEssentialsOverflow(essentialsContainer);
+      });
+      resizeObserver.observe(essentialsContainer);
+
       // Set an initial hidden state if the essentials section is not supposed
       // to be shown on the current workspace
       if (
@@ -439,6 +450,30 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       }
     }
     return essentialsContainer;
+  }
+
+  _updateEssentialsOverflow(container) {
+    const isOverflowing = container.scrollHeight > container.clientHeight;
+    const isAtStart = container.scrollTop === 0;
+    const isAtEnd = (container.scrollTop + container.clientHeight) >= (container.scrollHeight - 1);
+
+    if (isOverflowing) {
+      container.setAttribute('overflowing', 'true');
+    } else {
+      container.removeAttribute('overflowing');
+    }
+
+    if (isAtStart) {
+      container.setAttribute('scrolledtostart', 'true');
+    } else {
+      container.removeAttribute('scrolledtostart');
+    }
+
+    if (isAtEnd) {
+      container.setAttribute('scrolledtoend', 'true');
+    } else {
+      container.removeAttribute('scrolledtoend');
+    }
   }
 
   getCurrentEssentialsContainer() {

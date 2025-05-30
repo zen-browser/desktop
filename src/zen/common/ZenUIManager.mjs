@@ -33,6 +33,13 @@ var gZenUIManager = {
       'zen.urlbar.show-domain-only-in-sidebar',
       true
     );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      'essentialsHeight',
+      'zen.tabs.essentials.height',
+      0,
+      this._updateEssentialsHeight.bind(this)
+    );
 
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
 
@@ -62,11 +69,25 @@ var gZenUIManager = {
     SessionStore.promiseAllWindowsRestored.then(() => {
       this._hasLoadedDOM = true;
       this.updateTabsToolbar();
+      this._updateEssentialsHeight();
     });
 
     window.addEventListener('TabClose', this.onTabClose.bind(this));
 
     gZenMediaController.init();
+  },
+
+  _updateEssentialsHeight() {
+    const essentialsWrapper = document.getElementById('zen-essentials');
+    if (!essentialsWrapper) return;
+
+    essentialsWrapper.style.setProperty('--zen-essentials-height', `${this.essentialsHeight}vh`);
+
+    if (this.essentialsHeight === 0) {
+      essentialsWrapper.setAttribute('data-essentials-height', '0');
+    } else {
+      essentialsWrapper.removeAttribute('data-essentials-height');
+    }
   },
 
   handleMouseDown(event) {

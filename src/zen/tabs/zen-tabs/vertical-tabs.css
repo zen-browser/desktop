@@ -1253,6 +1253,11 @@
 
 #zen-essentials {
   z-index: 1;
+  overflow: hidden;
+
+  &:not([data-essentials-height="0"]) {
+    max-height: var(--zen-essentials-height);
+  }
 }
 
 /* Container for essential items (often pinned/favorite tabs) */
@@ -1260,12 +1265,19 @@
   will-change: transform;
 
   padding-bottom: var(--zen-toolbox-padding);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   gap: 4px;
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
   opacity: 1;
+
+  #zen-essentials:not([data-essentials-height="0"]) & {
+    height: 100%;
+    max-height: var(--zen-essentials-height);
+  }
+
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
   &[data-hack-type='1'] {
     grid-template-columns: repeat(auto-fit, minmax(max(30%, 48px), auto));
@@ -1302,6 +1314,48 @@
 
   &[cloned] {
     pointer-events: none;
+  }
+
+  &[overflowing] {
+    --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+
+    &::before {
+      content: '';
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+      background-color: var(--zen-scrollbar-overflow-background);
+      grid-column: 1 / -1;
+    }
+
+    &::after {
+      content: '';
+      position: sticky;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+      background-color: var(--zen-scrollbar-overflow-background);
+      grid-column: 1 / -1;
+    }
+  }
+
+  &[overflowing]:not([scrolledtostart])::before {
+    opacity: 1;
+  }
+
+  &[overflowing]:not([scrolledtoend])::after {
+    opacity: 1;
   }
 }
 

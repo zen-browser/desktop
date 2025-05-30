@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   const { Downloads } = ChromeUtils.importESModule('resource://gre/modules/Downloads.sys.mjs');
 
@@ -11,22 +14,8 @@
   });
 
   class ZenDownloadAnimation extends ZenDOMOperatedFeature {
-    #lastClickPosition = null;
-
     async init() {
-      this.#setupClickListener();
       await this.#setupDownloadListeners();
-    }
-
-    #setupClickListener() {
-      document.addEventListener('mousedown', this.#handleClick.bind(this), true);
-    }
-
-    #handleClick(event) {
-      this.#lastClickPosition = {
-        clientX: event.clientX,
-        clientY: event.clientY,
-      };
     }
 
     async #setupDownloadListeners() {
@@ -50,14 +39,14 @@
         return;
       }
 
-      if (!this.#lastClickPosition) {
+      if (!gZenUIManager._lastClickPosition) {
         console.warn(
           `[${ZenDownloadAnimation.name}] No recent click position available for animation`
         );
         return;
       }
 
-      this.#animateDownload(this.#lastClickPosition);
+      this.#animateDownload(gZenUIManager._lastClickPosition);
     }
 
     #animateDownload(startPosition) {

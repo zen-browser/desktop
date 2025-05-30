@@ -88,15 +88,6 @@ document.addEventListener(
           case 'cmd_zenRemoveFromEssentials':
             gZenPinnedTabManager.removeEssentials();
             break;
-          case 'cmd_zenUnloadTab':
-            gZenTabUnloader.unloadTab();
-            break;
-          case 'cmd_zenPreventUnloadTab':
-            gZenTabUnloader.preventUnloadTab();
-            break;
-          case 'cmd_zenIgnoreUnloadTab':
-            gZenTabUnloader.ignoreUnloadTab();
-            break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;

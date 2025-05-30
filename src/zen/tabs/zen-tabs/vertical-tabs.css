@@ -17,12 +17,16 @@
   height: 100%; /* Make sure they take up full height */
 }
 
+#zen-appcontent-navbar-container {
+  width: 100%;
+}
+
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
   /* Define and apply a smaller toolbar height for single toolbar mode */
-  & #zen-appcontent-navbar-container,
+  & #zen-appcontent-navbar-wrapper,
   & #zen-sidebar-top-buttons {
     --zen-toolbar-height: 32px;
     height: var(--zen-toolbar-height);
@@ -333,13 +337,6 @@
       }
     }
 
-    /* Dim pending tabs if preference is enabled */
-    @media -moz-pref('zen.tabs.dim-pending') {
-      &[pending='true'] .tab-icon-image {
-        opacity: 0.5;
-      }
-    }
-
     /* --- Glance Tab Styles (Nested .tabbrowser-tab) --- */
     /* Styles for a tab nested within another tab (representing a "glance"?) */
     & .tabbrowser-tab {
@@ -359,6 +356,7 @@
         margin-block: 0 !important;
         margin-inline: 0 !important;
         box-shadow: none !important;
+        border-radius: calc(var(--border-radius-medium) - 2px);
       }
       /* Adjust padding for content */
       & .tab-content {
@@ -376,6 +374,27 @@
         --toolbarbutton-inner-padding: 0 !important;
         width: 14px;
         height: 14px;
+      }
+
+      & .tab-audio-button {
+        display: none !important;
+      }
+
+      &[soundplaying]:not([muted]) .tab-icon-stack::after {
+        content: '';
+        position: absolute;
+        width: 110%;
+        height: 110%;
+        background-repeat: no-repeat;
+        opacity: 1;
+        background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+        top: -70%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 0;
+        pointer-events: none;
+        transition: opacity 0.8s ease;
+        opacity: 1;
       }
     }
 
@@ -1242,7 +1261,7 @@
 
   padding-bottom: var(--zen-toolbox-padding);
   overflow: hidden;
-  gap: calc(var(--zen-toolbox-padding) - 2px);
+  gap: 4px;
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
@@ -1474,13 +1493,4 @@
     padding: 0 var(--zen-toolbox-padding);
     width: 100%;
   }
-}
-
-/* ==========================================================================
-   Section: Workspaces disabled, due to private browsing mode
-    ========================================================================== */
-
-:root:not([zen-workspace-id]) #tabbrowser-arrowscrollbox {
-  width: 100%;
-  position: absolute;
 }

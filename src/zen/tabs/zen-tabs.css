@@ -21,7 +21,7 @@
    Single Toolbar Mode - Top Bar Handling (Includes External CSS)
    ========================================================================== */
 :root[zen-single-toolbar='true']:not([customizing]) {
-  #zen-appcontent-navbar-container {
+  #zen-appcontent-navbar-wrapper {
     display: flex;
     -moz-window-dragging: drag; /* Allow dragging the window via this bar */
     min-height: var(--zen-element-separation);

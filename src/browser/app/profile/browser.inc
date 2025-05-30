@@ -9,10 +9,14 @@ pref("browser.tabs.closeWindowWithLastTab", false);
 pref("browser.tabs.loadBookmarksInTabs", false);
 pref("browser.tabs.hoverPreview.enabled", false);
 pref("browser.tabs.dragdrop.moveOverThresholdPercent", 50);
+pref("browser.tabs.unloadTabInContextMenu", true);
+pref("browser.tabs.fadeOutExplicitlyUnloadedTabs", true);
+
 pref('browser.toolbars.bookmarks.visibility', 'never');
 pref("browser.bookmarks.openInTabClosesMenu", false);
 pref("browser.menu.showViewImageInfo", true);
 pref("findbar.highlightAll", true);
+
 pref("layout.word_select.eat_space_to_next_word", false);
 
 // Better Windows theming

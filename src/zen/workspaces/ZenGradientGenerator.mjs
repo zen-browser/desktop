@@ -18,7 +18,8 @@
       super();
       if (
         !Services.prefs.getBoolPref('zen.theme.gradient', true) ||
-        !gZenWorkspaces.shouldHaveWorkspaces
+        !gZenWorkspaces.shouldHaveWorkspaces ||
+        gZenWorkspaces.privateWindowOrDisabled
       ) {
         return;
       }
@@ -427,7 +428,7 @@
       dot.classList.add('zen-theme-picker-dot', 'hidden', 'custom');
       dot.style.opacity = 0;
       dot.style.setProperty('--zen-theme-picker-dot-color', color);
-      this.panel.querySelector('.zen-theme-picker-gradient').appendChild(dot);
+      this.panel.querySelector('#PanelUI-zen-gradient-generator-custom-list').prepend(dot);
       this.customColorInput.value = '';
       await this.updateCurrentWorkspace();
     }
@@ -1088,7 +1089,7 @@
         this.isDarkMode ? 0.2 : -0.5,
         `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
       );
-      const color = result?.match(/\d+/g).map(Number);
+      const color = result?.match(/\d+/g)?.map(Number);
       if (!color || color.length !== 3) {
         return this.getNativeAccentColor();
       }
@@ -1121,29 +1122,20 @@
           }
         }
 
-        const appWrapper = browser.document.getElementById('browser');
-        if (!skipUpdate && !this._animatingBackground) {
-          this._animatingBackground = true;
-          appWrapper.removeAttribute('animating');
+        const appBackground = browser.document.getElementById('zen-browser-background');
+        if (!skipUpdate) {
           browser.document.documentElement.style.setProperty(
             '--zen-main-browser-background-old',
             browser.document.documentElement.style.getPropertyValue('--zen-main-browser-background')
           );
-          browser.window.requestAnimationFrame(() => {
-            appWrapper.setAttribute('animating', 'true');
-            setTimeout(() => {
-              this._animatingBackground = false;
-              appWrapper.removeAttribute('animating');
-              appWrapper.setAttribute('post-animating', 'true');
-              browser.document.documentElement.style.removeProperty(
-                '--zen-main-browser-background-old'
-              );
-              setTimeout(() => {
-                // Reactivate the transition after the animation
-                appWrapper.removeAttribute('post-animating');
-              }, 100);
-            }, 300);
-          });
+          browser.document.documentElement.style.setProperty(
+            '--zen-background-opacity',
+            browser.gZenThemePicker.previousBackgroundOpacity
+          );
+          if (browser.gZenThemePicker.previousBackgroundResolve) {
+            browser.gZenThemePicker.previousBackgroundResolve();
+          }
+          delete browser.gZenThemePicker.previousBackgroundOpacity;
         }
 
         const button = browser.document.getElementById(
@@ -1264,6 +1256,7 @@
         );
         browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
 
+        browser.gZenThemePicker.customColorList.innerHTML = '';
         for (const dot of workspaceTheme.gradientColors) {
           if (dot.isCustom) {
             browser.gZenThemePicker.addColorToCustomList(dot.c);

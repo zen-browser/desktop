@@ -447,7 +447,7 @@
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: var(--tab-icon-end-margin);
+  gap: 10px;
   align-items: center;
   flex-direction: row !important;
   max-width: 100%;
@@ -466,10 +466,12 @@
     height: calc(100% - var(--zen-toolbox-padding) * 2);
   }
 
-  &:hover,
-  &[open='true'] {
-    &::before {
-      background: var(--tab-hover-background-color);
+  :root:not([zen-private-window]) & {
+    &:hover,
+    &[open='true'] {
+      &::before {
+        background: var(--tab-hover-background-color);
+      }
     }
   }
 
@@ -522,7 +524,7 @@ zen-workspace {
     }
 
     &[overflowing] {
-      --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+      --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
       &::before {
         content: '';
         position: absolute;

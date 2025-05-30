@@ -1,8 +1,35 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 992d07daaef1abc4554a43aa654888f66963c575..73e620b70b7ed14e9d140e875c2cd5f5ac31456b 100644
+index 73593191936cc345ee8e2c28cb251dc13f4c2fd4..e6c459c1ebc60a1f3930a55e212570f696bf07a0 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -2105,18 +2105,20 @@ var gUnifiedExtensions = {
+@@ -735,7 +735,7 @@ var gXPInstallObserver = {
+       persistent: true,
+       hideClose: true,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition,
+       },
+     };
+ 
+@@ -942,7 +942,7 @@ var gXPInstallObserver = {
+       hideClose: true,
+       timeout: Date.now() + 30000,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition,
+       },
+     };
+ 
+@@ -2125,7 +2125,7 @@ var gUnifiedExtensions = {
+ 
+         panel.hidden = false;
+         PanelMultiView.openPopup(panel, this._button, {
+-          position: "bottomright topright",
++          position: gZenUIManager.panelUIPosition,
+           triggerEvent: aEvent,
+         });
+       }
+@@ -2294,18 +2294,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

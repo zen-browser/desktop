@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var ZenPinnedTabsStorage = {
   async init() {
     await this._ensureTable();
@@ -106,8 +109,8 @@ var ZenPinnedTabsStorage = {
           `
           INSERT OR REPLACE INTO zen_pins (
             uuid, title, url, container_id, workspace_uuid, position,
-            is_essential, is_group, parent_uuid, created_at, updated_at,
-            edited_title
+            is_essential, is_group, parent_uuid, edited_title, created_at, 
+            updated_at
           ) VALUES (
             :uuid, :title, :url, :container_id, :workspace_uuid, :position,
             :is_essential, :is_group, :parent_uuid, :edited_title,

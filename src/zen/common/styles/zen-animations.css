@@ -62,15 +62,6 @@
   }
 }
 
-@keyframes zen-main-app-wrapper-animation {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
 @keyframes zen-jello-out-animation {
   0% {
     transform: scale3d(1, 1, 1);

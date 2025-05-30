@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/aboutSupport.xhtml b/toolkit/content/aboutSupport.xhtml
-index 296259cd0360a403e8659e22d0c08e968529a38a..bde1ee8d0a05e6ce2eb3ff8ff8a19ba28c20af98 100644
+index 7f57218f3573488445ea363e0c4532b292d53167..511f578b4ae38a496ca936adf2fef1f587249f47 100644
 --- a/toolkit/content/aboutSupport.xhtml
 +++ b/toolkit/content/aboutSupport.xhtml
 @@ -10,6 +10,7 @@

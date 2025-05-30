@@ -41,6 +41,7 @@ menupopup,
 panel {
   --panel-background: var(--arrowpanel-background);
   --panel-border-radius: var(--zen-native-inner-radius);
+  --menuitem-padding: 6px !important;
 }
 
 /* split-view popup */
@@ -242,11 +243,6 @@ panel {
   opacity: 0;
 }
 
-menupopup::part(content),
-panel::part(content) {
-  border: var(--zen-appcontent-border);
-}
-
 menupopup,
 panel {
   box-shadow: none;
@@ -265,6 +261,10 @@ panel {
 .panel-subview-footer-button {
   --arrowpanel-menuitem-padding-block: 20px;
   --arrowpanel-menuitem-padding-inline: 15px;
+}
+
+toolbarseparator {
+  padding-inline: 0 !important;
 }
 
 toolbarseparator,
@@ -334,17 +334,18 @@ menuseparator {
 
 #zen-toast-container {
   position: fixed;
-  top: calc(var(--zen-element-separation) * 2);
+  --zen-toast-spacing: max(4px, var(--zen-element-separation));
+  top: var(--zen-toast-spacing);
   z-index: 1000;
   display: flex;
   align-items: end;
 
   :root:not([zen-right-side='true']) & {
-    right: calc(var(--zen-element-separation) * 2);
+    right: var(--zen-toast-spacing);
   }
 
   :root[zen-right-side='true'] & {
-    left: calc(var(--zen-element-separation) * 2);
+    left: var(--zen-toast-spacing);
   }
 
   & .zen-toast {
@@ -395,7 +396,7 @@ menuseparator {
     & button {
       color-scheme: dark;
       width: min-content;
-      padding: 0 12px !important;
+      padding: 0 10px !important;
       min-width: unset !important;
       margin: 0px !important;
       border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;

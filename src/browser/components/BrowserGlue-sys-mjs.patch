@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index a6a7f9165aece774c3f1c15f7e352b11a4bf90f4..a4b6124b85f099c6f12d297fc26f2040370c337c 100644
+index cebca6d017a0c3fc8eff7a38f987726324789e69..73a24df91bec368f2f27c538b37d57595e18c599 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
@@ -10,7 +10,7 @@ index a6a7f9165aece774c3f1c15f7e352b11a4bf90f4..a4b6124b85f099c6f12d297fc26f2040
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
    AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
-@@ -1886,6 +1887,7 @@ BrowserGlue.prototype = {
+@@ -881,6 +882,7 @@ BrowserGlue.prototype = {
  
      lazy.ProcessHangMonitor.init();
  

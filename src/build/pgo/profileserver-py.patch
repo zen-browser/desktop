@@ -1,5 +1,5 @@
 diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
-index c59efbdc5382da897dcac31da7039cdc92e1d7dc..9b14add5b0c5afec5b7efc7f9df7d04d3169fc80 100755
+index 6017810c873f6be5a5d133dc9386f7cd8879e81b..6d399e0c8135d2c27157c81d75515de04c39f1d7 100755
 --- a/build/pgo/profileserver.py
 +++ b/build/pgo/profileserver.py
 @@ -18,7 +18,13 @@ from mozprofile import FirefoxProfile, Preferences

@@ -41,6 +41,10 @@
   }
 }
 
+#zen-splitview-dropzone {
+  margin-top: 0 !important;
+}
+
 #tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split='true'] {
   transition: inset 0.09s ease-out !important;
   & browser {
@@ -70,15 +74,8 @@
   margin-right: calc(-1 * var(--zen-split-column-gap));
 }
 
-#tabbrowser-tabpanels:has(> [zen-split='true']),
-#zen-splitview-overlay {
-  :root:not([zen-compact-mode='true']):not([customizing]) & {
-    @media -moz-pref('zen.view.compact.hide-toolbar') {
-      & {
-        margin-top: calc(var(--zen-split-column-gap) * -1);
-      }
-    }
-  }
+:root:not([customizing]) #zen-splitview-overlay {
+  margin-top: calc(var(--zen-split-column-gap) * -1);
 }
 
 #tabbrowser-tabpanels[zen-split-view] {
@@ -110,10 +107,6 @@
 .zen-split-view-splitter[orient='horizontal'] {
   height: var(--zen-split-column-gap);
   cursor: ns-resize;
-}
-
-#zen-split-views-box:not([hidden='true']) {
-  display: flex !important;
 }
 
 .zen-view-splitter-header-container {

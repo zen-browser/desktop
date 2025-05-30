@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   class ZenWorkspace extends MozXULElement {
     static get markup() {
@@ -6,7 +9,7 @@
           <hbox class="zen-current-workspace-indicator-icon"></hbox>
           <hbox class="zen-current-workspace-indicator-name"></hbox>
         </vbox>
-        <arrowscrollbox orient="vertical" tabindex="-1" class="workspace-arrowscrollbox">
+        <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
             <html:div class="vertical-pinned-tabs-container-separator"></html:div>
           </vbox>
@@ -37,10 +40,13 @@
     }
 
     connectedCallback() {
-      if (this.delayConnectedCallback()) {
+      if (this.delayConnectedCallback() || this._hasConnected) {
+        // If we are not ready yet, or if we have already connected, we
+        // don't need to do anything.
         return;
       }
 
+      this._hasConnected = true;
       this.appendChild(this.constructor.fragment);
 
       this.tabsContainer = this.querySelector('.zen-workspace-normal-tabs-section');
@@ -54,9 +60,9 @@
         false
       );
 
-      this.scrollbox.addEventListener('wheel', gBrowser.tabContainer, true);
-      this.scrollbox.addEventListener('underflow', gBrowser.tabContainer);
-      this.scrollbox.addEventListener('overflow', gBrowser.tabContainer);
+      this.scrollbox.addEventListener('wheel', this, true);
+      this.scrollbox.addEventListener('underflow', this);
+      this.scrollbox.addEventListener('overflow', this);
 
       this.scrollbox._getScrollableElements = () => {
         const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
@@ -119,6 +125,8 @@
       this.tabsContainer.setAttribute('zen-workspace-id', this.id);
       this.pinnedTabsContainer.setAttribute('zen-workspace-id', this.id);
 
+      this.#updateOverflow();
+
       this.dispatchEvent(
         new CustomEvent('ZenWorkspaceAttached', {
           bubbles: true,
@@ -126,6 +134,42 @@
           detail: { workspace: this },
         })
       );
+    }
+
+    get active() {
+      return this.hasAttribute('active');
+    }
+
+    set active(value) {
+      if (value) {
+        this.setAttribute('active', 'true');
+      } else {
+        this.removeAttribute('active');
+      }
+      this.#updateOverflow();
+    }
+
+    #updateOverflow() {
+      if (!this.scrollbox) return;
+      if (this.overflows) {
+        this.#dispatchEventFromScrollbox('overflow');
+      } else {
+        this.#dispatchEventFromScrollbox('underflow');
+      }
+    }
+
+    #dispatchEventFromScrollbox(type) {
+      this.scrollbox.dispatchEvent(new CustomEvent(type, {}));
+    }
+
+    get overflows() {
+      return this.scrollbox.overflowing;
+    }
+
+    handleEvent(event) {
+      if (this.active) {
+        gBrowser.tabContainer.handleEvent(event);
+      }
     }
   }
 

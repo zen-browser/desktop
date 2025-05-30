@@ -1,8 +1,13 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
   _hasLoadedDOM: false,
   testingEnabled: Services.prefs.getBoolPref('zen.testing.enabled', false),
+
+  _lastClickPosition: null,
 
   _toastTimeouts: [],
 
@@ -30,6 +35,8 @@ var gZenUIManager = {
     );
 
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
+
+    document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
     ChromeUtils.defineLazyGetter(this, 'motion', () => {
       return ChromeUtils.importESModule('chrome://browser/content/zen-vendor/motion.min.mjs', {
@@ -62,6 +69,13 @@ var gZenUIManager = {
     gZenMediaController.init();
   },
 
+  handleMouseDown(event) {
+    this._lastClickPosition = {
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
+  },
+
   updateTabsToolbar() {
     const kUrlbarHeight = 440;
     gURLBar.textbox.style.setProperty(
@@ -70,7 +84,6 @@ var gZenUIManager = {
     );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
-    setTimeout(gURLBar.formatValue.bind(gURLBar), 350);
     if (!this._preventToolbarRebuild) {
       setTimeout(() => {
         gZenWorkspaces.updateTabsContainers();
@@ -798,6 +811,7 @@ var gZenVerticalTabsManager = {
       }
 
       const appContentNavbarContaienr = document.getElementById('zen-appcontent-navbar-container');
+      const appContentNavbarWrapper = document.getElementById('zen-appcontent-navbar-wrapper');
       let shouldHide = false;
       if (
         ((!isRightSide && this.isWindowsStyledButtons) ||
@@ -805,10 +819,10 @@ var gZenVerticalTabsManager = {
           (isCompactMode && isSingleToolbar && this.isWindowsStyledButtons)) &&
         isSingleToolbar
       ) {
-        appContentNavbarContaienr.setAttribute('should-hide', 'true');
+        appContentNavbarWrapper.setAttribute('should-hide', 'true');
         shouldHide = true;
       } else {
-        appContentNavbarContaienr.removeAttribute('should-hide');
+        appContentNavbarWrapper.removeAttribute('should-hide');
       }
 
       // Check if the sidebar is in hover mode
@@ -986,44 +1000,56 @@ var gZenVerticalTabsManager = {
   },
 
   async renameTabKeydown(event) {
+    event.stopPropagation();
     if (event.key === 'Enter') {
-      let label = this._tabEdited.querySelector('.tab-label-container-editing');
-      let input = this._tabEdited.querySelector('#tab-label-input');
+      const isTab = !!event.target.closest('.tabbrowser-tab');
+      let label = isTab
+        ? this._tabEdited.querySelector('.tab-label-container-editing')
+        : this._tabEdited;
+      let input = document.getElementById('tab-label-input');
       let newName = input.value.trim();
 
-      // Check if name is blank, reset if so
-      // Always remove, so we can always rename and if it's empty,
-      // it will reset to the original name anyway
-      this._tabEdited.removeAttribute('zen-has-static-label');
-      if (newName) {
-        gBrowser._setTabLabel(this._tabEdited, newName);
-        this._tabEdited.setAttribute('zen-has-static-label', 'true');
-        gZenUIManager.showToast('zen-tabs-renamed');
+      document.documentElement.removeAttribute('zen-renaming-tab');
+      input.remove();
+      if (!isTab) {
+        await this._tabEdited.onRenameFinished(newName);
       } else {
-        gBrowser.setTabTitle(this._tabEdited);
-      }
-      if (this._tabEdited.getAttribute('zen-pin-id')) {
-        // Update pin title in storage
-        await gZenPinnedTabManager.updatePinTitle(
+        // Check if name is blank, reset if so
+        // Always remove, so we can always rename and if it's empty,
+        // it will reset to the original name anyway
+        this._tabEdited.removeAttribute('zen-has-static-label');
+        if (newName) {
+          gBrowser._setTabLabel(this._tabEdited, newName);
+          this._tabEdited.setAttribute('zen-has-static-label', 'true');
+          gZenUIManager.showToast('zen-tabs-renamed');
+        } else {
+          gBrowser.setTabTitle(this._tabEdited);
+        }
+        if (this._tabEdited.getAttribute('zen-pin-id')) {
+          // Update pin title in storage
+          await gZenPinnedTabManager.updatePinTitle(
+            this._tabEdited,
+            this._tabEdited.label,
+            !!newName
+          );
+        }
+
+        // Maybe add some confetti here?!?
+        gZenUIManager.motion.animate(
           this._tabEdited,
-          this._tabEdited.label,
-          !!newName
+          {
+            scale: [1, 0.98, 1],
+          },
+          {
+            duration: 0.25,
+          }
         );
       }
-      document.documentElement.removeAttribute('zen-renaming-tab');
 
-      // Maybe add some confetti here?!?
-      gZenUIManager.motion.animate(
-        this._tabEdited,
-        {
-          scale: [1, 0.98, 1],
-        },
-        {
-          duration: 0.25,
-        }
-      );
-
-      this._tabEdited.querySelector('.tab-editor-container').remove();
+      const editorContainer = this._tabEdited.querySelector('.tab-editor-container');
+      if (editorContainer) {
+        editorContainer.remove();
+      }
       label.classList.remove('tab-label-container-editing');
 
       this._tabEdited = null;
@@ -1033,34 +1059,40 @@ var gZenVerticalTabsManager = {
   },
 
   renameTabStart(event) {
+    const isTab = !!event.target.closest('.tabbrowser-tab');
     if (
       this._tabEdited ||
-      !Services.prefs.getBoolPref('zen.tabs.rename-tabs') ||
-      Services.prefs.getBoolPref('browser.tabs.closeTabByDblclick') ||
+      ((!Services.prefs.getBoolPref('zen.tabs.rename-tabs') ||
+        Services.prefs.getBoolPref('browser.tabs.closeTabByDblclick')) &&
+        isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
     )
       return;
     this._tabEdited = event.target.closest('.tabbrowser-tab');
     if (
       !this._tabEdited ||
-      !this._tabEdited.pinned ||
-      this._tabEdited.hasAttribute('zen-essential')
+      ((!this._tabEdited.pinned || this._tabEdited.hasAttribute('zen-essential')) && isTab)
     ) {
       this._tabEdited = null;
       return;
     }
+    event.stopPropagation();
     document.documentElement.setAttribute('zen-renaming-tab', 'true');
-    const label = this._tabEdited.querySelector('.tab-label-container');
+    const label = isTab ? this._tabEdited.querySelector('.tab-label-container') : this._tabEdited;
     label.classList.add('tab-label-container-editing');
 
-    const container = window.MozXULElement.parseXULToFragment(`
-      <vbox class="tab-label-container tab-editor-container" flex="1" align="start" pack="center"></vbox>
-    `);
-    label.after(container);
-    const containerHtml = this._tabEdited.querySelector('.tab-editor-container');
+    if (isTab) {
+      const container = window.MozXULElement.parseXULToFragment(`
+        <vbox class="tab-label-container tab-editor-container" flex="1" align="start" pack="center"></vbox>
+      `);
+      label.after(container);
+    }
+    const containerHtml = isTab
+      ? this._tabEdited.querySelector('.tab-editor-container')
+      : this._tabEdited.parentNode;
     const input = document.createElement('input');
     input.id = 'tab-label-input';
-    input.value = this._tabEdited.label;
+    input.value = isTab ? this._tabEdited.label : this._tabEdited.textContent;
     input.addEventListener('keydown', this.renameTabKeydown.bind(this));
 
     containerHtml.appendChild(input);
@@ -1075,8 +1107,16 @@ var gZenVerticalTabsManager = {
       return;
     }
     document.documentElement.removeAttribute('zen-renaming-tab');
-    this._tabEdited.querySelector('.tab-editor-container').remove();
-    const label = this._tabEdited.querySelector('.tab-label-container-editing');
+    const editorContainer = this._tabEdited.querySelector('.tab-editor-container');
+    let input = document.getElementById('tab-label-input');
+    input.remove();
+    if (editorContainer) {
+      editorContainer.remove();
+    }
+    const isTab = !!this._tabEdited.closest('.tabbrowser-tab');
+    const label = isTab
+      ? this._tabEdited.querySelector('.tab-label-container-editing')
+      : this._tabEdited;
     label.classList.remove('tab-label-container-editing');
 
     this._tabEdited = null;

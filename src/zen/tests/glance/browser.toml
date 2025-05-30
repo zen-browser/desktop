@@ -6,3 +6,6 @@ support-files = [
 ["browser_glance_basic.js"]
 ["browser_glance_expand.js"]
 ["browser_glance_close.js"]
+["browser_glance_next_tab.js"]
+["browser_glance_prev_tab.js"]
+["browser_glance_select_parent.js"]

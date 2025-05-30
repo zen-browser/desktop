@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a1744d79b26 100644
+index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d634dadd4d 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -2088,7 +2088,6 @@ var SessionStoreInternal = {
@@ -22,7 +22,7 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
  
        // Store the window's close date to figure out when each individual tab
        // was closed. This timestamp should allow re-arranging data based on how
-@@ -3209,7 +3206,7 @@ var SessionStoreInternal = {
+@@ -3216,7 +3213,7 @@ var SessionStoreInternal = {
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
@@ -31,17 +31,19 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
        return;
      }
  
-@@ -3918,6 +3915,9 @@ var SessionStoreInternal = {
+@@ -3925,6 +3922,11 @@ var SessionStoreInternal = {
          Math.min(tabState.index, tabState.entries.length)
        );
        tabState.pinned = false;
 +      tabState.zenEssential = false;
 +      tabState.zenPinnedId = null;
++      tabState.zenIsGlance = false;
++      tabState.zenGlanceId = null;
 +      tabState.zenHasStaticLabel = false;
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -5232,7 +5232,7 @@ var SessionStoreInternal = {
+@@ -5239,7 +5241,7 @@ var SessionStoreInternal = {
      }
  
      let workspaceID = aWindow.getWorkspaceID();
@@ -50,7 +52,7 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
        winData.workspaceID = workspaceID;
      }
    },
-@@ -5423,14 +5423,15 @@ var SessionStoreInternal = {
+@@ -5430,14 +5432,15 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -68,16 +70,29 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
          continue;
        }
        let tabData = lazy.TabState.collect(tab, TAB_CUSTOM_VALUES.get(tab));
-@@ -5449,7 +5450,7 @@ var SessionStoreInternal = {
+@@ -5456,8 +5459,8 @@ var SessionStoreInternal = {
      // We don't store the Firefox View tab in Session Store, so if it was the last selected "tab" when
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
 -    if (aWindow.FirefoxViewHandler.tab?.selected) {
+-      selectedIndex = 1;
 +    if (aWindow.FirefoxViewHandler.tab?.selected || tabbrowser.selectedTab.hasAttribute("zen-empty-tab")) {
-       selectedIndex = 1;
++      selectedIndex = 0;
        winData.title = tabbrowser.tabs[0].label;
      }
-@@ -5606,6 +5607,7 @@ var SessionStoreInternal = {
+     winData.selected = selectedIndex;
+@@ -5569,8 +5572,8 @@ var SessionStoreInternal = {
+     // selectTab represents.
+     let selectTab = 0;
+     if (overwriteTabs) {
+-      selectTab = parseInt(winData.selected || 1, 10);
+-      selectTab = Math.max(selectTab, 1);
++      selectTab = parseInt(winData.selected || 0, 10);
++      selectTab = Math.max(selectTab, 0);
+       selectTab = Math.min(selectTab, winData.tabs.length);
+     }
+ 
+@@ -5613,6 +5616,7 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
@@ -85,12 +100,13 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6155,8 +6157,23 @@ var SessionStoreInternal = {
+@@ -6162,6 +6166,22 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
 +    if (tabData.zenEssential) {
 +      tab.setAttribute("zen-essential", "true");
++      tabData.pinned = true; // Essential tabs are always pinned.
 +    }
 +    if (tabData.zenIsEmpty) {
 +      tab.setAttribute("zen-empty-tab", "true");
@@ -105,8 +121,5 @@ index 11794372f8ff13387b54dabdf4111dfdb89ea998..0e51251a579cee759f25272894c82a17
 +      tab.setAttribute("zenDefaultUserContextId", true);
 +    }
  
--    if (tabData.pinned) {
-+    if (tabData.pinned || tabData.zenEssential) {
+     if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-     } else {
-       tabbrowser.unpinTab(tab);

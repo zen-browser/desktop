@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const lazyCompactMode = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -51,7 +54,7 @@ var gZenCompactModeManager = {
 
     gZenUIManager.addPopupTrackingAttribute(this.sidebar);
     gZenUIManager.addPopupTrackingAttribute(
-      document.getElementById('zen-appcontent-navbar-container')
+      document.getElementById('zen-appcontent-navbar-wrapper')
     );
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
@@ -76,15 +79,18 @@ var gZenCompactModeManager = {
     return lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
   },
 
+  get shouldBeCompact() {
+    return !document.documentElement.getAttribute('chromehidden').includes('toolbar');
+  },
+
   set preference(value) {
+    if (!this.shouldBeCompact) {
+      value = false;
+    }
     if (
       this.preference === value ||
       document.documentElement.hasAttribute('zen-compact-animating')
     ) {
-      if (typeof this._wasInCompactMode !== 'undefined') {
-        // We wont do anything with it anyway, so we remove it
-        delete this._wasInCompactMode;
-      }
       // We dont want the user to be able to spam the button
       return value;
     }
@@ -253,6 +259,7 @@ var gZenCompactModeManager = {
       this.sidebar.style.removeProperty('transform');
       window.requestAnimationFrame(() => {
         let sidebarWidth = this.getAndApplySidebarWidth();
+        const elementSeparation = ZenThemeModifier.elementSeparation;
         if (!canAnimate) {
           this.sidebar.removeAttribute('animate');
           document.documentElement.removeAttribute('zen-compact-animating');
@@ -260,11 +267,44 @@ var gZenCompactModeManager = {
           this.getAndApplySidebarWidth({});
           this._ignoreNextResize = true;
 
+          // TODO: Work on this a bit more, needs polishing
+          if (lazyCompactMode.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && false) {
+            gZenUIManager.motion
+              .animate(
+                [
+                  this.sidebar,
+                  ...(gZenVerticalTabsManager._hasSetSingleToolbar &&
+                  !gURLBar.hasAttribute('zen-floating-urlbar')
+                    ? [gURLBar.textbox]
+                    : []),
+                ],
+                {
+                  transform: [
+                    `translateY(${((isCompactMode ? -1 : 1) * elementSeparation) / 2}px) translateX(${
+                      isCompactMode
+                        ? (this.sidebarIsOnRight ? elementSeparation : -elementSeparation) / 2
+                        : (this.sidebarIsOnRight ? -elementSeparation : elementSeparation) / 2
+                    }px)`,
+                    `translateY(0px) translateX(0px)`,
+                  ],
+                },
+                {
+                  ease: 'easeIn',
+                  type: 'spring',
+                  bounce: 0,
+                  duration: 0.2,
+                }
+              )
+              .then(() => {
+                this.sidebar.style.transform = '';
+                gURLBar.textbox.style.transform = '';
+              });
+          }
+
           resolve();
           return;
         }
         if (canHideSidebar && isCompactMode) {
-          const elementSeparation = ZenThemeModifier.elementSeparation;
           if (document.documentElement.hasAttribute('zen-sidebar-expanded')) {
             sidebarWidth -= 0.5 * splitterWidth;
             if (elementSeparation < splitterWidth) {
@@ -421,7 +461,7 @@ var gZenCompactModeManager = {
               keepHoverDuration: 100,
             },
             {
-              element: document.getElementById('zen-appcontent-navbar-container'),
+              element: document.getElementById('zen-appcontent-navbar-wrapper'),
               screenEdge: 'top',
             },
           ]),
@@ -601,7 +641,7 @@ var gZenCompactModeManager = {
   },
 
   toggleToolbar() {
-    let toolbar = document.getElementById('zen-appcontent-navbar-container');
+    let toolbar = document.getElementById('zen-appcontent-navbar-wrapper');
     toolbar.toggleAttribute('zen-user-show');
   },
 

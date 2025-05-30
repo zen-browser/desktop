@@ -1,8 +1,8 @@
 diff --git a/toolkit/mozapps/extensions/content/aboutaddons.html b/toolkit/mozapps/extensions/content/aboutaddons.html
-index 67808c799aca92a0c71731ab0c345bb478522368..5ddcbcecd43b2b04eb4c0e5b86eebd69b142a5a3 100644
+index 77702576f03cc8db7ec85bd871e6366fef935d54..edd5f27303802091c84572a7a2d3933c03cf09d9 100644
 --- a/toolkit/mozapps/extensions/content/aboutaddons.html
 +++ b/toolkit/mozapps/extensions/content/aboutaddons.html
-@@ -82,6 +82,7 @@
+@@ -86,6 +86,7 @@
        type="module"
        src="chrome://global/content/elements/moz-five-star.mjs"
      ></script>

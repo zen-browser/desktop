@@ -31,26 +31,6 @@
 <html:h1 data-l10n-id="pane-zen-tabs-unloader-title"/>
 </hbox>
 
-<groupbox id="zenTabsUnloadGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
-      <label><html:h2 data-l10n-id="zen-tabs-unloader-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-description" />
-
-      <checkbox id="zenTabsUnloadActivate"
-            data-l10n-id="zen-tabs-unloader-enabled"
-            preference="zen.tab-unloader.enabled"/>
-
-
-      <label><html:h2 data-l10n-id="zen-tabs-unloader-unload-delay"/></label>
-      <hbox id="zenTabsUnloadDelayContainer">
-            <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-unload-delay-description" />
-            <html:input id="zenTabsUnloadDelay"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  preference="zen.tab-unloader.timeout-minutes"/>
-      </hbox>
-</groupbox>
-
 <hbox id="zenPinnedTabsManagerCategory"
       class="subcategory"
       hidden="true"

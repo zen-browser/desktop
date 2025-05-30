@@ -1,10 +1,23 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   var ZenStartup = {
     init() {
       this.openWatermark();
+      this._initBrowserBackground();
       this._changeSidebarLocation();
       this._zenInitBrowserLayout();
       this._initSearchBar();
+    },
+
+    _initBrowserBackground() {
+      const background = document.createXULElement('box');
+      background.id = 'zen-browser-background';
+      const grain = document.createXULElement('box');
+      grain.id = 'zen-browser-grain';
+      background.appendChild(grain);
+      document.getElementById('browser').prepend(background);
     },
 
     _zenInitBrowserLayout() {
@@ -25,7 +38,7 @@
         // Fix notification deck
         const deckTemplate = document.getElementById('tab-notification-deck-template');
         if (deckTemplate) {
-          document.getElementById('zen-appcontent-navbar-container').appendChild(deckTemplate);
+          document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
         }
 
         this._hideUnusedElements();

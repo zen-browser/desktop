@@ -32,48 +32,48 @@ fi
   if [ "$RELEASE_TYPE" = "Stable" ]; then
     echo "${EXTRA_NOTES}"
 
-    if echo "$LATEST_RELEASE" | jq -e '.security != null and .security != ""' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '.security != null and .security != ""' > /dev/null; then
       echo
       echo "## Security"
       echo "[Various security fixes]($(echo "$LATEST_RELEASE" | jq -r '.security'))"
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.features // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.features // []) | length > 0' > /dev/null; then
       echo
       echo "## New Features"
       echo "$LATEST_RELEASE" | jq -r '.features[] | "- " + .'
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' > /dev/null; then
       echo
       echo "## Fixes"
       echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/zen-browser/desktop/issues/" + (.issue|tostring) + "))" else "- " + . end'
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' > /dev/null; then
       echo
       echo "## Breaking Changes"
       echo "$LATEST_RELEASE" | jq -r '.breakingChanges[] | if type=="string" then "- " + . else "- " + .description + " [Learn more](" + .link + ")" end'
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.themeChanges // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.themeChanges // []) | length > 0' > /dev/null; then
       echo
       echo "## Theme Changes"
       echo "$LATEST_RELEASE" | jq -r '.themeChanges[] | "- " + .'
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.changes // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.changes // []) | length > 0' > /dev/null; then
       echo
       echo "## Changes"
       echo "$LATEST_RELEASE" | jq -r '.changes[] | "- " + .'
     fi
 
-    if echo "$LATEST_RELEASE" | jq -e '(.knownIssues // []) | length > 0' >/dev/null; then
+    if echo "$LATEST_RELEASE" | jq -e '(.knownIssues // []) | length > 0' > /dev/null; then
       echo
       echo "## Known Issues"
       echo "$LATEST_RELEASE" | jq -r '.knownIssues[] | "- " + .'
     fi
   fi
-} >"release_notes.md"
+} > "release_notes.md"
 
 echo "Release notes generated: release_notes.md"

@@ -91,6 +91,10 @@ var gZenCompactModeManager = {
       this.preference === value ||
       document.documentElement.hasAttribute('zen-compact-animating')
     ) {
+      if (typeof this._wasInCompactMode !== 'undefined') {
+        // We wont do anything with it anyway, so we remove it
+        delete this._wasInCompactMode;
+      }
       // We dont want the user to be able to spam the button
       return value;
     }
@@ -99,6 +103,7 @@ var gZenCompactModeManager = {
     // main-window can't store attributes other than window sizes, so we use this instead
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
+    Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
     this._updateEvent();
     return value;
   },

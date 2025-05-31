@@ -6,8 +6,13 @@
   var _tabsToPin = [];
   var _tabsToPinEssentials = [];
 
+  const kZenElementsToIgnore = ['zen-browser-background'];
+
   function clearBrowserElements() {
     for (const element of document.getElementById('browser').children) {
+      if (kZenElementsToIgnore.includes(element.id)) {
+        continue;
+      }
       element.style.display = 'none';
     }
   }
@@ -266,11 +271,15 @@
       document.getElementById('zen-welcome').remove();
       document.documentElement.removeAttribute('zen-welcome-stage');
       for (const element of document.getElementById('browser').children) {
+        if (kZenElementsToIgnore.includes(element.id)) {
+          continue;
+        }
         element.style.opacity = 0;
         element.style.removeProperty('display');
       }
       gZenUIManager.updateTabsToolbar();
-      await animate('#browser > *', { opacity: [0, 1] });
+      let elementsToIgnore = kZenElementsToIgnore.map((id) => `#${id}`).join(', ');
+      await animate(`#browser > *:not(${elementsToIgnore})`, { opacity: [0, 1] });
       gZenUIManager.showToast('zen-welcome-finished');
     }
 

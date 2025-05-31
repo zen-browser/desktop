@@ -26,7 +26,7 @@
   }
 }
 
-:root[zen-before-loaded='true'] #browser > *,
+:root[zen-before-loaded='true'] #browser > *:not(#zen-browser-background),
 :root[zen-before-loaded='true'] #urlbar {
   opacity: 0 !important;
 }

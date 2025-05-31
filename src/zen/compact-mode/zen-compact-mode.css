@@ -152,6 +152,7 @@
           border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4);
           @media -moz-pref('zen.view.compact.color-sidebar') {
             background: var(--zen-main-browser-background-toolbar) !important;
+            background-attachment: fixed !important;
             background-size: 2000px !important;
             @media -moz-pref('zen.theme.acrylic-elements') {
               backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;

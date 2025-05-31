@@ -3,6 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   var ZenStartup = {
+    _watermarkIgnoreElements: ['zen-browser-background'],
+
     init() {
       this.openWatermark();
       this._initBrowserBackground();
@@ -107,9 +109,10 @@
     closeWatermark() {
       document.documentElement.removeAttribute('zen-before-loaded');
       if (Services.prefs.getBoolPref('zen.watermark.enabled', false)) {
+        let elementsToIgnore = this._watermarkIgnoreElements.map((id) => '#' + id).join(', ');
         gZenUIManager.motion
           .animate(
-            '#browser > *, #urlbar, #tabbrowser-tabbox > *',
+            '#browser > *:not(' + elementsToIgnore + '), #urlbar, #tabbrowser-tabbox > *',
             {
               opacity: [0, 1],
             },

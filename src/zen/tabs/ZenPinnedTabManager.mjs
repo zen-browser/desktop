@@ -103,19 +103,9 @@
       if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
         try {
           setTimeout(async () => {
-            try {
-              await this.promisePinnedCacheInitialized;
-              const pin = this._pinsCache?.find(
-                (pin) => pin.uuid === tab.getAttribute('zen-pin-id')
-              );
-              let favicon = await PlacesUtils.favicons.getFaviconForPage(
-                Services.io.newURI(pin.url)
-              );
-              if (favicon) {
-                gBrowser.setIcon(tab, favicon.dataURI);
-              }
-            } catch (error) {
-              console.warn('Error getting favicon URL:', error);
+            const favicon = await this.getFaviconAsBase64(tab.linkedBrowser.currentURI);
+            if (favicon) {
+              gBrowser.setIcon(tab, favicon);
             }
           });
         } catch {}
@@ -661,8 +651,7 @@
         return faviconData.dataURI;
       } catch (ex) {
         console.error('Failed to get favicon:', ex);
-        // console.error("Failed to get favicon:", ex);
-        return `page-icon:${pageUrl}`; // Use this as a fallback
+        return null;
       }
     }
 

@@ -207,8 +207,8 @@
     }
 
     #zen-welcome-initial-essentials-browser {
-      width: 70%;
-      height: 80%;
+      min-width: 70%;
+      min-height: 80%;
       display: flex;
       margin-left: auto;
       margin-top: auto;
@@ -282,7 +282,7 @@
             --border-radius-medium: 1rem;
 
             &[visuallyselected] {
-              transform: scale(1.04);
+              transform: scale(1.06);
             }
 
             & .tab-background::after {

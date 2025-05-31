@@ -1368,15 +1368,15 @@
 
   /* Style background */
   & .tab-background {
-    border-radius: var(--border-radius-medium) !important; /* Use medium radius */
-    transition: background 0.1s ease-in-out; /* Smooth background transition */
+    border-radius: var(--border-radius-medium) !important;
+    transition: background 0.1s ease-in-out;
   }
 
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
 
   &:not([visuallyselected], [multiselected='true']) .tab-background {
-    background: var(--zen-toolbar-element-bg); /* Use generic element background */
-    border: none; /* No border */
+    background: var(--zen-toolbar-element-bg);
+    border: none;
   }
 
   & .tab-content {

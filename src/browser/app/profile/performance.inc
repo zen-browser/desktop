@@ -36,6 +36,3 @@ pref("network.http.rcwn.enabled", false);
 // Strategy to use for bytecode cache (Thanks https://github.com/gunir)
 pref('dom.script_loader.bytecode_cache.strategy', 2);
 pref("layout.css.grid-template-masonry-value.enabled", true);
-
-// No Proxy should be default, Use system proxy allows antivirus, virus or system proxy to MITM or slowing down Zen
-pref("network.proxy.type", 0);

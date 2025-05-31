@@ -14,8 +14,6 @@ tab-group[split-view-group] {
   display: flex;
   flex-wrap: nowrap;
   border-radius: var(--border-radius-medium);
-  padding: 0 2px;
-  margin-inline: var(--tab-block-margin);
   margin-block: var(--tab-block-margin);
   min-height: var(--tab-min-height);
   outline: var(--tab-outline);

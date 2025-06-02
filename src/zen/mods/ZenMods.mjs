@@ -157,31 +157,33 @@
             continue;
           }
 
-          if (type === 'checkbox') {
-            const value = Services.prefs.getBoolPref(property, false);
-            if (typeof defaultValue !== 'boolean') {
-              console.warn(
-                '[ZenMods]: Warning, invalid data type received for expected type boolean, skipping.'
-              );
-              continue;
-            }
+          const getProperty =
+            type === 'checkbox' ? Services.prefs.getBoolPref : Services.prefs.getStringPref;
+          const setProperty =
+            type === 'checkbox' ? Services.prefs.setBoolPref : Services.prefs.setStringPref;
 
-            if (!value) {
-              Services.prefs.setBoolPref(property, defaultValue);
-            }
-          } else {
-            const value = Services.prefs.getStringPref(property, 'zen-property-no-saved');
+          try {
+            getProperty(property);
+          } catch {
+            console.debug(
+              `[ZenMods]: Setting default value for ${property} to ${defaultValue} (${typeof defaultValue})`
+            );
 
-            if (typeof defaultValue !== 'string' && typeof defaultValue !== 'number') {
+            if (
+              typeof defaultValue !== 'boolean' &&
+              typeof defaultValue !== 'string' &&
+              typeof defaultValue !== 'number'
+            ) {
               console.warn(
                 `[ZenMods]: Warning, invalid data type received (${typeof defaultValue}), skipping.`
               );
               continue;
             }
 
-            if (value === 'zen-property-no-saved') {
-              Services.prefs.setStringPref(property, defaultValue.toString());
-            }
+            setProperty(
+              property,
+              typeof defaultValue === 'boolean' ? defaultValue : defaultValue.toString()
+            );
           }
         }
       }

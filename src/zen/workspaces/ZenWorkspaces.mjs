@@ -2918,7 +2918,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
     const lazy = {};
     Services.scriptloader.loadSubScript(
-      'chrome://browser/content/zen-components/ZenEmojies.mjs',
+      'chrome://browser/content/zen-components/ZenEmojis.mjs',
       lazy
     );
     this._emojis = lazy.zenGlobalEmojis();

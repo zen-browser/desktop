@@ -131,6 +131,11 @@ var gZenMarketplaceManager = {
     return this._modsList;
   },
 
+  _triggerBuildUpdateWithoutRebuild() {
+    this._doNotRebuildModsList = true;
+    gZenMods.triggerModsUpdate();
+  },
+
   async removeMod(modId) {
     await gZenMods.removeMod(modId);
 
@@ -140,20 +145,13 @@ var gZenMarketplaceManager = {
   async disableMod(modId) {
     await gZenMods.disableMod(modId);
 
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
+    this._triggerBuildUpdateWithoutRebuild();
   },
 
   async enableMod(modId) {
     await gZenMods.enableMod(modId);
 
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
-  },
-
-  _triggerBuildUpdateWithoutRebuild() {
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
+    this._triggerBuildUpdateWithoutRebuild();
   },
 
   async _importThemes() {

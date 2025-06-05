@@ -747,6 +747,10 @@
     }
 
     onSearchSelectCommand(where) {
+      // Check if glance is enabled in user preferences
+      if (!Services.prefs.getBoolPref('zen.glance.enabled', false)) {
+        return;
+      }
       if (where !== 'tab') {
         return;
       }

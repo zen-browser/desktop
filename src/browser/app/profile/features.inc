@@ -25,7 +25,7 @@ pref('zen.haptic-feedback.enabled', true);
 #include features/glance.inc
 #include features/view.inc
 #include features/downloads.inc
-#include features/workspaes.inc
+#include features/workspaces.inc
 #include features/split-view.inc
 #include features/kbs.inc
 

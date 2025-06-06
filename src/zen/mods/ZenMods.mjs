@@ -405,7 +405,7 @@
     }
 
     get updatePref() {
-      return 'zen.themes.updated-value-observer';
+      return 'zen.mods.updated-value-observer';
     }
 
     get modsRootPath() {

@@ -2531,7 +2531,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
     gZenUIManager.tabsWrapper.scrollbarWidth = 'none';
     this.workspaceIcons.activeIndex = workspace.uuid;
-    this.initScrollEvent(this.workspaceIcons);
     await this._animateTabs(workspace, !onInit && !this._animatingChange, tabToSelect, {
       previousWorkspaceIndex,
       previousWorkspace,

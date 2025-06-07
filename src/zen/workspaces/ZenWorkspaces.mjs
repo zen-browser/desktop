@@ -465,6 +465,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
             tabs
           );
           this.initIndicatorContextMenu(workspaceWrapper.indicator);
+          this.initScrollEvent(workspaceWrapper.indicator);
           resolve();
         },
         { once: true }
@@ -544,6 +545,14 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
+  scrollInDirection(delta) {
+    // Determine scroll direction
+    let rawDirection = delta > 0 ? 1 : -1;
+
+    let direction = this.naturalScroll ? -1 : 1;
+    this.changeWorkspaceShortcut(rawDirection * direction);
+  }
+
   _setupSidebarHandlers() {
     const toolbox = gNavToolbox;
 
@@ -585,11 +594,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         const delta = isVerticalScroll ? event.deltaY : event.deltaX;
         if (Math.abs(delta) < scrollThreshold) return;
 
-        // Determine scroll direction
-        let rawDirection = delta > 0 ? 1 : -1;
-
-        let direction = this.naturalScroll ? -1 : 1;
-        this.changeWorkspaceShortcut(rawDirection * direction);
+        this.scrollInDirection(delta);
 
         this._lastScrollTime = currentTime;
       },
@@ -992,6 +997,10 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     };
     indicator.addEventListener('contextmenu', th);
     indicator.addEventListener('click', th);
+  }
+
+  initScrollEvent(element) {
+    element.addEventListener('wheel', (event) => this.scrollInDirection(event.deltaY));
   }
 
   shouldCloseWindow() {
@@ -2522,6 +2531,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
     gZenUIManager.tabsWrapper.scrollbarWidth = 'none';
     this.workspaceIcons.activeIndex = workspace.uuid;
+    this.initScrollEvent(this.workspaceIcons);
     await this._animateTabs(workspace, !onInit && !this._animatingChange, tabToSelect, {
       previousWorkspaceIndex,
       previousWorkspace,

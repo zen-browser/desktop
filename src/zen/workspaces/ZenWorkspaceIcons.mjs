@@ -30,7 +30,6 @@
       }
       button.appendChild(icon);
       button.addEventListener('command', this);
-      gZenWorkspaces.initScrollEvent(button);
       return button;
     }
 

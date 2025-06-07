@@ -859,7 +859,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     await this.workspaceBookmarks();
     await gZenPinnedTabManager.refreshPinnedTabs({ init: true });
     await this.changeWorkspace(activeWorkspace, { onInit: true });
-    await this.#selectStartPage();
     this._fixTabPositions();
     this._resolveInitialized();
     this._clearAnyZombieTabs(); // Dont call with await
@@ -876,10 +875,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     window.addEventListener('TabBrowserInserted', this.onTabBrowserInserted.bind(this));
   }
 
-  async #selectStartPage() {
-    if (gZenUIManager.testingEnabled) {
+  async selectStartPage() {
+    if (gZenUIManager.testingEnabled || !this.workspaceEnabled) {
       return;
     }
+    await this.promiseInitialized;
     let showed = false;
     let resolveSelectPromise;
     let selectPromise = new Promise((resolve) => {
@@ -931,6 +931,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
           this._removedByStartupPage = true;
           gBrowser.removeTab(this._tabToRemoveForEmpty, {
             skipSessionStore: true,
+            animate: false,
           });
           cleanup();
         }, 0);

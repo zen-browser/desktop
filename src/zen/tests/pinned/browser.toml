@@ -13,5 +13,8 @@
 ["browser_pinned_reordered.js"]
 ["browser_pinned_to_essential.js"]
 
+["browser_private_mode_no_essentials.js"]
+["browser_private_mode_no_ctx_menu.js"]
+
 ["browser_issue_7654.js"]
 ["browser_issue_8726.js"]

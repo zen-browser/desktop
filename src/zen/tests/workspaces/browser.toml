@@ -7,4 +7,6 @@ support-files = [
 ["browser_workspace_bookmarks.js"]
 ["browser_double_click_newtab.js"]
 ["browser_overflow_scrollbox.js"]
+
 ["browser_private_mode.js"]
+["browser_private_mode_startup.js"]

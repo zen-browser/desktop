@@ -12,7 +12,14 @@ add_task(async function test_Glance_Next_Tab() {
   gBrowser.selectedTab = selectedTab;
   await openGlanceOnTab(async (glanceTab) => {
     gBrowser.tabContainer.advanceSelectedTab(1);
-    Assert.equal(gBrowser.selectedTab, tabToCheck, 'Next glance tab should equal');
+    const nextTab = gBrowser.selectedTab;
+    gBrowser.selectedTab = glanceTab;
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        Assert.equal(nextTab, tabToCheck, 'Next glance tab should equal');
+        resolve();
+      });
+    });
   });
   await BrowserTestUtils.removeTab(gBrowser.selectedTab);
 });

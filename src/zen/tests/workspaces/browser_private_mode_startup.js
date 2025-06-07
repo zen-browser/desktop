@@ -3,19 +3,20 @@
 
 'use strict';
 
-add_task(async function test_Private_Mode() {
-  await SpecialPowers.pushPrefEnv({
-    set: [['privacy.userContext.enabled', true]],
-  });
-
+add_task(async function test_Private_Mode_Startup() {
   let privateWindow = await BrowserTestUtils.openNewBrowserWindow({
     private: true,
   });
   await privateWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    privateWindow.document.documentElement.hasAttribute('zen-workspace-id'),
-    'Private window should have a zen-workspace-id attribute'
-  );
-
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      Assert.equal(
+        privateWindow.gBrowser.tabs.length,
+        1,
+        'Private window should start with one tab'
+      );
+      resolve();
+    }, 1000);
+  });
   await BrowserTestUtils.closeWindow(privateWindow);
 });

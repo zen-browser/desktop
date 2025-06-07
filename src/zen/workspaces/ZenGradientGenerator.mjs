@@ -1106,9 +1106,14 @@
       let workspaceTheme = theme || workspace.theme;
 
       await this.foreachWindowAsActive(async (browser) => {
+        if (!browser.gZenThemePicker.promiseInitialized) {
+          return;
+        }
+
         if (browser.closing || (await browser.gZenThemePicker?.promiseInitialized)) {
           return;
         }
+
         // Do not rebuild if the workspace is not the same as the current one
         const windowWorkspace = await browser.gZenWorkspaces.getActiveWorkspace();
         if (windowWorkspace.uuid !== uuid && theme !== null) {

@@ -126,17 +126,13 @@
     }
 
     get enabled() {
-      if (typeof this._enabled === 'undefined') {
-        this._enabled = !(
-          PrivateBrowsingUtils.isWindowPrivate(window) ||
-          document.documentElement.getAttribute('chromehidden')?.includes('toolbar') ||
-          document.documentElement.getAttribute('chromehidden')?.includes('menubar')
-        );
-      }
-      return this._enabled && !gZenWorkspaces.privateWindowOrDisabled;
+      return !gZenWorkspaces.privateWindowOrDisabled;
     }
 
     async refreshPinnedTabs({ init = false } = {}) {
+      if (!this.enabled) {
+        return;
+      }
       await ZenPinnedTabsStorage.promiseInitialized;
       await gZenWorkspaces.promiseSectionsInitialized;
       await this._initializePinsCache();

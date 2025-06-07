@@ -465,7 +465,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
             tabs
           );
           this.initIndicatorContextMenu(workspaceWrapper.indicator);
-          this.initScrollEvent(workspaceWrapper.indicator);
+          workspaceWrapper.indicator.addEventListener('wheel', (event) => this.scrollInDirection(event.deltaY));
           resolve();
         },
         { once: true }
@@ -998,10 +998,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     };
     indicator.addEventListener('contextmenu', th);
     indicator.addEventListener('click', th);
-  }
-
-  initScrollEvent(element) {
-    element.addEventListener('wheel', (event) => this.scrollInDirection(event.deltaY));
   }
 
   shouldCloseWindow() {

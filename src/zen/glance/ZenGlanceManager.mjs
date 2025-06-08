@@ -122,17 +122,18 @@
 
     showSidebarButtons(animate = false) {
       if (this.sidebarButtons.hasAttribute('hidden') && animate) {
-        if (gZenVerticalTabsManager._prefsRightSide) {
-          this.sidebarButtons.setAttribute('right', true);
-        } else {
-          this.sidebarButtons.setAttribute('right', false);
-        }
+        const isRightSide = gZenVerticalTabsManager._prefsRightSide;
+        this.sidebarButtons.setAttribute('right', isRightSide);
+
         for (const button of this.sidebarButtons.querySelectorAll('toolbarbutton')) {
           button.style.opacity = 0;
         }
+
+        const startX = isRightSide ? -50 : 50;
+
         gZenUIManager.motion.animate(
           this.sidebarButtons.querySelectorAll('toolbarbutton'),
-          { x: [50, 0], opacity: [0, 1] },
+          { x: [startX, 0], opacity: [0, 1] },
           { delay: gZenUIManager.motion.stagger(0.1) }
         );
       }

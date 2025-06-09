@@ -39,14 +39,6 @@
         document.getElementById('PanelUI-zen-gradient-generator-custom-list')
       );
 
-      XPCOMUtils.defineLazyPreferenceGetter(
-        this,
-        'allowWorkspaceColors',
-        'zen.theme.color-prefs.use-workspace-colors',
-        true,
-        this.onDarkModeChange.bind(this)
-      );
-
       this.panel.addEventListener('popupshowing', this.handlePanelOpen.bind(this));
       this.panel.addEventListener('popuphidden', this.handlePanelClose.bind(this));
       this.panel.addEventListener('command', this.handlePanelCommand.bind(this));
@@ -977,9 +969,14 @@
         texture,
       };
     }
+
     //TODO: add a better noise system that adds noise not just changes transparency
     updateNoise(texture) {
       document.documentElement.style.setProperty('--zen-grainy-background-opacity', texture);
+      document.documentElement.setAttribute(
+        'zen-show-grainy-background',
+        texture > 0 ? 'true' : 'false'
+      );
     }
 
     hexToRgb(hex) {

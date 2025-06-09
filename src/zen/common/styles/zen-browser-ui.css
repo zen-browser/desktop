@@ -26,7 +26,7 @@
   }
 }
 
-:root[zen-before-loaded='true'] #browser > *:not(#zen-browser-background, #zen-toast-container),
+:root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),
 :root[zen-before-loaded='true'] #urlbar {
   opacity: 0 !important;
 }
@@ -78,13 +78,17 @@
     transition: background-color var(--inactive-window-transition);
   }
 
-  #zen-browser-grain {
-    content: '';
+  & #zen-browser-grain {
+    display: none;
+  }
+
+  :root[zen-show-grainy-background='true'] & #zen-browser-grain {
+    display: flex;
     width: 100%;
     height: 100%;
     background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     opacity: var(--zen-grainy-background-opacity, 0);
     mix-blend-mode: overlay;
     transition: opacity 0.3s ease-in-out;
@@ -115,7 +119,8 @@
 
 #zen-main-app-wrapper {
   background: var(--zen-themed-toolbar-bg-transparent);
-  overflow: hidden;
+  /* See bug #8814, don't an overflow here as it causes issues 
+   * with firefox's rendering of the tab bar */
 
   & > * {
     z-index: 1;

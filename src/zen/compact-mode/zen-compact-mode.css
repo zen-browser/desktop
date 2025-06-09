@@ -391,7 +391,7 @@
         ) {
         & #zen-appcontent-navbar-container {
           visibility: visible !important;
-          &::before {
+          :root[zen-show-grainy-background='true'] &::before {
             content: '';
             position: absolute;
             top: 0;

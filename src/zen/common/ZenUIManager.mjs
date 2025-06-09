@@ -59,7 +59,7 @@ var gZenUIManager = {
       )
     ).observe(gNavToolbox);
 
-    SessionStore.promiseAllWindowsRestored.then(() => {
+    gZenWorkspaces.promiseInitialized.finally(() => {
       this._hasLoadedDOM = true;
       this.updateTabsToolbar();
     });
@@ -157,7 +157,9 @@ var gZenUIManager = {
       if (
         !el.contains(showEvent.explicitOriginalTarget) ||
         (showEvent.explicitOriginalTarget instanceof Element &&
-          showEvent.explicitOriginalTarget?.closest('panel'))
+          showEvent.explicitOriginalTarget?.closest('panel')) ||
+        // See bug #7590: Ignore menupopup elements opening
+        showEvent.explicitOriginalTarget.tagName === 'menupopup'
       ) {
         continue;
       }
@@ -599,7 +601,7 @@ var gZenVerticalTabsManager = {
   },
 
   animateTab(aTab) {
-    if (!gZenUIManager.motion || !aTab || !gZenUIManager._hasLoadedDOM) {
+    if (!gZenUIManager.motion || !aTab || !gZenUIManager._hasLoadedDOM || !aTab.isConnected) {
       return;
     }
     // get next visible tab
@@ -624,7 +626,11 @@ var gZenVerticalTabsManager = {
             easing: 'ease-out',
           }
         )
-        .then(() => {
+        .then(() => {})
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
           aTab.style.removeProperty('margin-bottom');
           aTab.style.removeProperty('transform');
           aTab.style.removeProperty('opacity');
@@ -640,7 +646,11 @@ var gZenVerticalTabsManager = {
             easing: 'ease-out',
           }
         )
-        .then(() => {
+        .then(() => {})
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
           aTab.querySelector('.tab-stack').style.removeProperty('filter');
         });
     } catch (e) {
@@ -1074,7 +1084,9 @@ var gZenVerticalTabsManager = {
       !gZenVerticalTabsManager._prefsSidebarExpanded
     )
       return;
-    this._tabEdited = event.target.closest('.tabbrowser-tab');
+    this._tabEdited =
+      event.target.closest('.tabbrowser-tab') ||
+      event.target.closest('.zen-current-workspace-indicator-name');
     if (
       !this._tabEdited ||
       ((!this._tabEdited.pinned || this._tabEdited.hasAttribute('zen-essential')) && isTab)
@@ -1082,7 +1094,7 @@ var gZenVerticalTabsManager = {
       this._tabEdited = null;
       return;
     }
-    event.stopPropagation();
+    event.stopPropagation?.();
     document.documentElement.setAttribute('zen-renaming-tab', 'true');
     const label = isTab ? this._tabEdited.querySelector('.tab-label-container') : this._tabEdited;
     label.classList.add('tab-label-container-editing');
@@ -1093,15 +1105,17 @@ var gZenVerticalTabsManager = {
       `);
       label.after(container);
     }
-    const containerHtml = isTab
-      ? this._tabEdited.querySelector('.tab-editor-container')
-      : this._tabEdited.parentNode;
     const input = document.createElement('input');
     input.id = 'tab-label-input';
     input.value = isTab ? this._tabEdited.label : this._tabEdited.textContent;
     input.addEventListener('keydown', this.renameTabKeydown.bind(this));
 
-    containerHtml.appendChild(input);
+    if (isTab) {
+      const containerHtml = this._tabEdited.querySelector('.tab-editor-container');
+      containerHtml.appendChild(input);
+    } else {
+      this._tabEdited.after(input);
+    }
     input.focus();
     input.select();
 

@@ -8,11 +8,12 @@
         content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
         content/browser/ZenUIManager.mjs                                        (../../zen/common/ZenUIManager.mjs)
         content/browser/zen-components/ZenActorsManager.mjs                     (../../zen/common/ZenActorsManager.mjs)
-        content/browser/zen-components/ZenEmojis.mjs                            (../../zen/common/ZenEmojis.mjs)
         content/browser/ZenCustomizableUI.sys.mjs                               (../../zen/common/ZenCustomizableUI.sys.mjs)
         content/browser/zen-components/ZenUIMigration.mjs                       (../../zen/common/ZenUIMigration.mjs)
         content/browser/zen-components/ZenCommonUtils.mjs                       (../../zen/common/ZenCommonUtils.mjs)
         content/browser/zen-components/ZenSessionStore.mjs                      (../../zen/common/ZenSessionStore.mjs)
+        content/browser/zen-components/ZenEmojisData.min.mjs                        (../../zen/common/emojis/ZenEmojisData.min.mjs)
+        content/browser/zen-components/ZenEmojiPicker.mjs                       (../../zen/common/emojis/ZenEmojiPicker.mjs)
 
         content/browser/zen-styles/zen-theme.css                                (../../zen/common/styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css                              (../../zen/common/styles/zen-buttons.css)

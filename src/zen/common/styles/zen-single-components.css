@@ -35,3 +35,58 @@ body > #confetti {
 #PersonalToolbar:not([collapsed='true']) {
   min-height: 30px;
 }
+
+/* Emojis picker */
+
+#PanelUI-zen-emojis-picker {
+  --panel-width: 250px;
+  --panel-padding: 10px;
+
+  &::part(content) {
+    gap: 15px;
+  }
+
+  #PanelUI-zen-emojis-picker-header {
+    gap: 10px;
+    align-items: center;
+  }
+
+  #PanelUI-zen-emojis-picker-none label {
+    display: none;
+  }
+
+  #PanelUI-zen-emojis-picker-search {
+    padding: 4px;
+  }
+
+  #PanelUI-zen-emojis-picker-list {
+    flex-wrap: wrap;
+    max-height: 265px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+
+    .zen-emojis-picker-emoji {
+      appearance: none;
+      font-size: 14px;
+      & image {
+        display: none;
+      }
+    }
+  }
+
+  .zen-emojis-picker-emoji,
+  #PanelUI-zen-emojis-picker-none {
+    width: 22px;
+    height: 22px;
+
+    &:hover {
+      background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}

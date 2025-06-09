@@ -141,55 +141,6 @@
   width: var(--panel-width);
 }
 
-#PanelUI-zen-workspaces-icon-picker toolbarbutton {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid transparent;
-  border-radius: 7px;
-}
-
-#PanelUI-zen-workspaces-icon-picker toolbarbutton[selected='true'] {
-  border-color: var(--zen-colors-secondary);
-}
-
-#PanelUI-zen-workspaces-icon-picker toolbarbutton .toolbarbutton-icon {
-  display: none;
-}
-
-#PanelUI-zen-workspaces-icon-picker toolbarbutton .toolbarbutton-text {
-  min-width: unset;
-}
-
-#PanelUI-zen-workspaces-icon-picker {
-  padding: 5px !important;
-}
-
-#PanelUI-zen-workspaces-icon-picker-wrapper {
-  overflow-x: hidden;
-  justify-items: center;
-  overflow-y: auto;
-
-  display: flex;
-
-  flex-direction: row;
-  flex-wrap: wrap;
-
-  justify-content: space-between;
-  align-content: space-between;
-  max-height: 250px;
-
-  .workspace-icon-button {
-    min-width: 24px;
-    min-height: 24px;
-    font-size: 16px;
-    margin: 2px;
-    padding: 4px;
-  }
-}
-
 #PanelUI-zen-workspaces-list {
   display: flex;
   flex-direction: column;
@@ -229,36 +180,6 @@
       width: 100%;
     }
   }
-}
-
-/* Workspace icon picker styles */
-#PanelUI-zen-workspaces-icon-picker-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 5px;
-}
-
-#PanelUI-zen-workspaces-icon-search-bar {
-  display: flex;
-  position: sticky;
-  top: 0;
-  background-color: inherit;
-  z-index: 1000;
-  padding: 8px;
-  width: 100%;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-#PanelUI-zen-workspaces-icon-search-input {
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid var(--panel-separator-color, #ccc);
-  border-radius: 4px;
-  box-sizing: border-box;
-  margin: 0;
 }
 
 #PanelUI-zen-workspaces-list toolbarbutton {
@@ -313,7 +234,6 @@
     font-weight: normal;
   }
 
-  & .zen-workspace-actions,
   .zen-workspace-actions-reorder-icon {
     display: none;
     margin: 0;
@@ -383,13 +303,6 @@
   color: var(--toolbarbutton-icon-fill-attention) !important;
 }
 
-#PanelUI-zen-workspaces-list:not([reorder-mode='true']) toolbarbutton {
-  &:hover .zen-workspace-actions,
-  & .zen-workspace-actions[active='true'] {
-    display: flex;
-  }
-}
-
 #PanelUI-zen-workspaces-list[reorder-mode='true'] toolbarbutton {
   .zen-workspace-actions-reorder-icon {
     display: flex;
@@ -421,28 +334,13 @@
   height: 24px;
 }
 
-#PanelUI-zen-workspaces-create-footer,
-#PanelUI-zen-workspaces-edit-footer {
-  padding-bottom: 0 !important;
-  margin-top: 10px;
-  margin-left: 0;
-  margin-bottom: 0 !important;
-  width: 100%;
-}
-
-#PanelUI-zen-workspaces-create-footer button[default='true'],
-#PanelUI-zen-workspaces-edit-footer button[default='true'] {
-  width: 100%;
-}
-
 #PanelUI-zen-workspaces-header {
   margin-right: auto;
 }
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
-  padding: calc(15px + var(--zen-toolbox-padding))
-    calc(4px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 600;
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
@@ -452,6 +350,9 @@
   flex-direction: row !important;
   max-width: 100%;
   width: 100%;
+  font-size: small;
+  padding-right: 10px;
+  -moz-window-dragging: no-drag;
 
   &::before {
     border-radius: var(--border-radius-medium);
@@ -476,8 +377,23 @@
   }
 
   & .zen-current-workspace-indicator-icon {
-    font-size: 12px;
-    line-height: 1;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    justify-content: center;
+    align-items: center;
+
+    &[zen-emoji-open='true']::before {
+      border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
+      border-radius: 6px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      pointer-events: none;
+    }
   }
 
   .zen-current-workspace-indicator-name {
@@ -486,8 +402,27 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    pointer-events: none;
-    font-size: small;
+    cursor: text;
+  }
+
+  .zen-workspaces-actions {
+    --toolbarbutton-inner-padding: 4px;
+    margin-left: auto !important;
+    opacity: 0;
+    visibility: collapse;
+    transition: opacity 0.1s;
+    order: 5;
+
+    :root[zen-renaming-tab='true'] & {
+      display: none;
+    }
+  }
+
+  :root:not([zen-private-window]) &:hover .zen-workspaces-actions,
+  & .zen-workspaces-actions[open='true'] {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
   }
 }
 

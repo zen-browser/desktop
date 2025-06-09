@@ -8,5 +8,7 @@ support-files = [
 ["browser_double_click_newtab.js"]
 ["browser_overflow_scrollbox.js"]
 
+["browser_issue_8699.js"]
+
 ["browser_private_mode.js"]
 ["browser_private_mode_startup.js"]

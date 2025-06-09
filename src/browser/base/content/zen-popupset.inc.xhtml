@@ -74,50 +74,23 @@
       <html:div id="PanelUI-zen-workspaces-list">
       </html:div>
     </panelview>
-    <panelview id="PanelUI-zen-workspaces-create" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox class="PanelUI-zen-workspaces-user-create">
-        <h1 data-l10n-id="zen-panel-ui-workspaces-create-text"></h1>
-        <hbox class="PanelUI-zen-workspaces-creation-wraper">
-          <hbox class="PanelUI-zen-workspaces-icons-container create"></hbox>
-          <html:input autofocus="true" id="PanelUI-zen-workspaces-create-input" type="text" placeholder="Enter workspace name" />
-        </hbox>
-      </vbox>
-      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-create-footer">
-        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-create-save" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-save">
-        </button>
-        <button id="PanelUI-zen-workspaces-create-cancel" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-create-cancel">
-        </button>
-      </html:moz-button-group>
-    </panelview>
-    <panelview id="PanelUI-zen-workspaces-edit" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox class="PanelUI-zen-workspaces-user-create">
-        <h1 data-l10n-id="zen-panel-ui-workspaces-edit-text"></h1>
-        <hbox class="PanelUI-zen-workspaces-creation-wraper">
-          <hbox class="PanelUI-zen-workspaces-icons-container edit"></hbox>
-          <html:input autofocus="true" id="PanelUI-zen-workspaces-edit-input" type="text" placeholder="Enter workspace name" />
-        </hbox>
-      </vbox>
-      <html:moz-button-group class="panel-footer" id="PanelUI-zen-workspaces-edit-footer">
-        <button disabled="true" default="true" slot="primary" id="PanelUI-zen-workspaces-edit-save" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-edit-save">
-        </button>
-        <button id="PanelUI-zen-workspaces-edit-cancel" class="footer-button" data-l10n-id="zen-panel-ui-workspaces-edit-cancel">
-        </button>
-      </html:moz-button-group>
-    </panelview>
-    <panelview id="PanelUI-zen-workspaces-icon-picker" class="PanelUI-subView" role="document" mainview-with-header="true" has-custom-header="true">
-      <vbox id="PanelUI-zen-workspaces-icon-picker-wrapper">
-        <html:div id="PanelUI-zen-workspaces-icon-search-bar">
-          <html:input autofocus="true" type="text" id="PanelUI-zen-workspaces-icon-search-input"/>
-        </html:div>
-      </vbox>
-    </panelview>
   </panelmultiview>
 </panel>
 
-<menupopup id="zenWorkspaceActionsMenu">
-  <menuitem id="context_zenOpenWorkspace" data-l10n-id="zen-workspaces-panel-context-open"/>
-  <menuseparator/>
-  <menuitem id="context_zenEditWorkspace" data-l10n-id="zen-workspaces-panel-context-edit"/>
+<panel type="arrow" orient="vertical" id="PanelUI-zen-emojis-picker" position="bottomright topright" side="bottom">
+  <hbox id="PanelUI-zen-emojis-picker-header">
+    <html:input type="search" id="PanelUI-zen-emojis-picker-search" placeholder="Search emojis" />
+    <toolbarbutton id="PanelUI-zen-emojis-picker-none" class="toolbarbutton-1" />
+  </hbox>
+  <hbox id="PanelUI-zen-emojis-picker-list" />
+</panel>
+
+<menupopup id="zenWorkspaceMoreActions">
+  <menuitem id="context_zenEditWorkspace" data-l10n-id="zen-workspaces-panel-change-name" command="cmd_zenChangeWorkspaceName"/>
+  <menuitem id="context_zenEditWorkspaceIcon" data-l10n-id="zen-workspaces-panel-change-icon" command="cmd_zenChangeWorkspaceIcon"/>
+  <menuitem class="zenToolbarThemePicker"
+          data-l10n-id="zen-workspaces-change-gradient"
+          command="cmd_zenOpenZenThemePicker"/>
   <menu id="context_zenWorkspacesOpenInContainerTab"
     data-l10n-id="zen-workspaces-panel-context-open-in-container-tab"
     selection-type="single"
@@ -127,5 +100,7 @@
     <menupopup />
   </menu>
   <menuseparator/>
-  <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete"/>
+  <menuitem id="context_zenOpenWorkspacePanel" data-l10n-id="zen-workspaces-panel-context-manage" command="cmd_zenOpenWorkspacePanel"/>
+  <menuseparator/>
+  <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>
 </menupopup>

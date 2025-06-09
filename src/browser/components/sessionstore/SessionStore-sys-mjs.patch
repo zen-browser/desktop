@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 8c6047e1ada5a22e57e1e665965237c9e22641d7..16b171c56081759e81d3efa6c0c7840fbd7902ff 100644
+index 8c6047e1ada5a22e57e1e665965237c9e22641d7..d3472a36fc99c488f0fd0fa8cb9c6927c24bdc6d 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -2088,7 +2088,6 @@ var SessionStoreInternal = {
@@ -51,6 +51,15 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..16b171c56081759e81d3efa6c0c7840f
        userContextId: state.userContextId,
        skipLoad: true,
        preferredRemoteType,
+@@ -5179,7 +5182,7 @@ var SessionStoreInternal = {
+ 
+     for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
+       let tab = tabbrowser.tabs[i];
+-      if (homePages.includes(tab.linkedBrowser.currentURI.spec)) {
++      if (homePages.includes(tab.linkedBrowser.currentURI.spec) && !tab.hasAttribute("zen-empty-tab")) {
+         removableTabs.push(tab);
+       }
+     }
 @@ -5239,7 +5242,7 @@ var SessionStoreInternal = {
      }
  

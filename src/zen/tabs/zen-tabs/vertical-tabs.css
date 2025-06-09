@@ -1355,7 +1355,7 @@
         position: absolute;
         background-size: contain;
         background-clip: padding-box;
-        background-image: var(--zen-tab-icon); /* Use tab icon variable */
+        background-image: var(--zen-essential-tab-icon); /* Use tab icon variable */
         z-index: -1; /* Place behind content */
         background-position: center;
       }

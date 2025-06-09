@@ -162,8 +162,7 @@ groupbox h2 {
 
 /* Look and feel */
 
-#webAppearanceSettings,
-#zen-theme-builder-wrapper + box {
+#webAppearanceSettings {
   margin-bottom: 15px;
 }
 
@@ -201,31 +200,6 @@ groupbox h2 {
 
 #category-zen-looks > .category-icon {
   list-style-image: url('chrome://browser/skin/customize.svg');
-}
-
-#zenLooksAndFeelColorOptions {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 108px);
-  gap: 5px;
-  margin: 10px 0 15px 0;
-}
-
-.zenLooksAndFeelColorOptionParen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: var(--in-content-box-info-background);
-  width: fit-content;
-  margin-top: 10px;
-  border: 2px solid transparent;
-}
-
-.zenLooksAndFeelColorOptionParen[selected='true'] {
-  border-color: var(--zen-primary-color);
 }
 
 #zenLooksAndFeelGroup > html|div:last-of-type {

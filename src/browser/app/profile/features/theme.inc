@@ -20,4 +20,3 @@ pref('zen.theme.acrylic-elements', false);
 pref('zen.theme.acrylic-elements', false);
 #endif
 
-pref('zen.theme.color-prefs.use-workspace-colors', true);

@@ -10,7 +10,6 @@
 }
 
 :root[zen-single-toolbar='true'] {
-  --urlbar-container-padding: 4px;
   & #urlbar:not([breakout-extend='true']) {
     padding: 1px;
     --toolbarbutton-border-radius: 6px;
@@ -26,7 +25,7 @@
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 5px;
-  :root[zen-single-toolbar='true'] {
+  :root[zen-single-toolbar='true'] & {
     --urlbar-container-padding: 4px;
   }
 }

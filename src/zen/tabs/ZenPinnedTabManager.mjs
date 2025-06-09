@@ -88,9 +88,7 @@
         } catch {}
       } else {
         if (tab.hasAttribute('zen-essential')) {
-          tab
-            .querySelector('.tab-background')
-            .style.setProperty('--zen-tab-icon', `url(${iconUrl})`);
+          tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
         }
       }
       // TODO: work on this

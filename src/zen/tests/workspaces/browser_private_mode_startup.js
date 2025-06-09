@@ -12,7 +12,7 @@ add_task(async function test_Private_Mode_Startup() {
     setTimeout(() => {
       Assert.equal(
         privateWindow.gBrowser.tabs.length,
-        1,
+        2,
         'Private window should start with one tab'
       );
       resolve();

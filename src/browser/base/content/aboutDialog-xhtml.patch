@@ -1,16 +1,8 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index c64980810570fcea84e33fdc2d66ac42a79f4e46..6ef9bf4b88f0a0539d833f662c4dd890fd1fde93 100644
+index c64980810570fcea84e33fdc2d66ac42a79f4e46..11fe00e84dbac781b3da90abb1251c70bd3b094a 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
-@@ -35,6 +35,7 @@
- 
-     <html:link rel="localization" href="branding/brand.ftl"/>
-     <html:link rel="localization" href="browser/aboutDialog.ftl"/>
-+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
-   </linkset>
- 
-   <html:div id="aboutDialogContainer">
-@@ -102,10 +103,6 @@
+@@ -102,10 +102,6 @@
                  <label id="version" class="update"/>
                  <label id="releasenotes" is="text-link" hidden="true" data-l10n-id="releaseNotes-link"/>
                </hbox>
@@ -21,7 +13,7 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..6ef9bf4b88f0a0539d833f662c4dd890
              </vbox>
  #endif
            </hbox>
-@@ -125,21 +122,17 @@
+@@ -125,21 +121,17 @@
              </description>
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">

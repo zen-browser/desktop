@@ -79,10 +79,6 @@
     & #zen-sidebar-top-buttons-customization-target {
       padding-top: 0;
     }
-    /* Add padding to the left of the nav container */
-    & #zen-appcontent-navbar-container {
-      padding-left: var(--zen-element-separation);
-    }
     /* Include common fixes for this top-button scenario */
 %include zen-tabs/vertical-tabs-topbuttons-fix.css
   }

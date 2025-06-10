@@ -748,8 +748,11 @@
     }
 
     onSearchSelectCommand(where) {
-      // Check if glance is enabled in user preferences
-      if (!Services.prefs.getBoolPref('zen.glance.enable-contextmenu-search', true)) {
+      // Check if Glance is globally enabled and specifically enabled for contextmenu/search
+      if (
+        !Services.prefs.getBoolPref('zen.glance.enabled', false) ||
+        !Services.prefs.getBoolPref('zen.glance.enable-contextmenu-search', true)
+      ) {
         return;
       }
       if (where !== 'tab') {

@@ -548,7 +548,7 @@ jobs:
         # If we are on Twilight, we want to just update the Twilight tag's release
       - name: Update Twilight tag
         if: ${{ inputs.update_branch == 'twilight' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.0
         with:
           body_path: release_notes.md
           files: |
@@ -580,7 +580,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.0
         if: ${{ inputs.update_branch == 'release' }}
         with:
           token: ${{ secrets.DEPLOY_KEY }}

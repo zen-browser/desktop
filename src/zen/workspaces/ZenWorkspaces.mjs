@@ -563,9 +563,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   scrollInDirection(delta) {
     // Determine scroll direction
-    let rawDirection = delta > 0 ? 1 : -1;
+    const rawDirection = delta > 0 ? 1 : -1;
 
-    let direction = this.naturalScroll ? -1 : 1;
+    const direction = this.naturalScroll ? -1 : 1;
     this.changeWorkspaceShortcut(rawDirection * direction);
   }
 

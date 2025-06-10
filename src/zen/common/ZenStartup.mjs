@@ -3,14 +3,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   var ZenStartup = {
-    _watermarkIgnoreElements: ['zen-browser-background'],
+    _watermarkIgnoreElements: ['zen-browser-background', 'zen-toast-container'],
 
-    init() {
+    async init() {
       this.openWatermark();
-      this._initBrowserBackground();
+      await this._initBrowserBackground();
       this._changeSidebarLocation();
       this._zenInitBrowserLayout();
-      this._initSearchBar();
     },
 
     _initBrowserBackground() {
@@ -22,11 +21,10 @@
       document.getElementById('browser').prepend(background);
     },
 
-    _zenInitBrowserLayout() {
+    async _zenInitBrowserLayout() {
       if (this.__hasInitBrowserLayout) return;
       this.__hasInitBrowserLayout = true;
       try {
-        console.info('ZenThemeModifier: init browser layout');
         const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
         const kNewContainerId = 'zen-appcontent-navbar-container';
         let newContainer = document.getElementById(kNewContainerId);
@@ -46,7 +44,6 @@
         this._hideUnusedElements();
 
         gZenWorkspaces.init();
-        gZenVerticalTabsManager.init();
         gZenUIManager.init();
 
         this._checkForWelcomePage();
@@ -78,6 +75,8 @@
       gZenWorkspaces.promiseInitialized.then(async () => {
         await delayedStartupPromise;
         await SessionStore.promiseAllWindowsRestored;
+        delete gZenUIManager.promiseInitialized;
+        this._initSearchBar();
         setTimeout(() => {
           gZenCompactModeManager.init();
           setTimeout(() => {
@@ -162,10 +161,6 @@
     _initSearchBar() {
       // Only focus the url bar
       gURLBar.focus();
-
-      gURLBar._initCopyCutController();
-      gURLBar._initPasteAndGo();
-      gURLBar._initStripOnShare();
     },
 
     _checkForWelcomePage() {
@@ -179,5 +174,11 @@
     },
   };
 
-  ZenStartup.init();
+  window.addEventListener(
+    'MozBeforeInitialXULLayout',
+    () => {
+      ZenStartup.init();
+    },
+    { once: true }
+  );
 }

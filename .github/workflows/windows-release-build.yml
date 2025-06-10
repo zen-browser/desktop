@@ -226,6 +226,11 @@ jobs:
           chmod +x ~/artifact/en-US.log
           chmod +x ~/artifact/merged.profdata
 
+      - name: Insert API Keys
+        run: |
+          mkdir -p ~/.zen-keys
+          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+
       - name: Build
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         env:
@@ -258,6 +263,10 @@ jobs:
           mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
           ls ./dist
           ls .
+
+      - name: Remove API Keys
+        run: |
+          rm -rf ~/.zen-keys
 
       - name: Move package for PGO upload
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}

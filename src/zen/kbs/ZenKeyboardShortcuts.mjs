@@ -1019,8 +1019,6 @@ var gZenKeyboardShortcutsManager = {
       this._applyShortcuts();
 
       await this._saveShortcuts();
-
-      console.info('Zen CKS: Initialized');
     }
   },
 

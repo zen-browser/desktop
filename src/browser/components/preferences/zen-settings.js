@@ -131,6 +131,11 @@ var gZenMarketplaceManager = {
     return this._modsList;
   },
 
+  _triggerBuildUpdateWithoutRebuild() {
+    this._doNotRebuildModsList = true;
+    gZenMods.triggerModsUpdate();
+  },
+
   async removeMod(modId) {
     await gZenMods.removeMod(modId);
 
@@ -140,20 +145,13 @@ var gZenMarketplaceManager = {
   async disableMod(modId) {
     await gZenMods.disableMod(modId);
 
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
+    this._triggerBuildUpdateWithoutRebuild();
   },
 
   async enableMod(modId) {
     await gZenMods.enableMod(modId);
 
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
-  },
-
-  _triggerBuildUpdateWithoutRebuild() {
-    this._doNotRebuildModsList = true;
-    gZenMods.triggerModsUpdate();
+    this._triggerBuildUpdateWithoutRebuild();
   },
 
   async _importThemes() {
@@ -635,24 +633,9 @@ const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
 var gZenLooksAndFeel = {
-  kZenColors: [
-    '#aac7ff',
-    '#74d7cb',
-    '#a0d490',
-    '#dec663',
-    '#ffb787',
-    '#dec1b1',
-    '#ffb1c0',
-    '#ddbfc3',
-    '#f6b0ea',
-    '#d4bbff',
-  ],
-
   init() {
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
-    this._initializeColorPicker(this._getInitialAccentColor());
-    window.zenPageAccentColorChanged = this._handleAccentColorChange.bind(this);
     gZenMarketplaceManager.init();
     for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
       Services.prefs.addObserver(pref, this);
@@ -744,37 +727,6 @@ var gZenLooksAndFeel = {
         }
       });
     }
-  },
-
-  _initializeColorPicker(accentColor) {
-    let elem = document.getElementById('zenLooksAndFeelColorOptions');
-    elem.innerHTML = '';
-
-    for (let color of this.kZenColors) {
-      let colorElemParen = document.createElement('div');
-      let colorElem = document.createElement('div');
-      colorElemParen.classList.add('zenLooksAndFeelColorOptionParen');
-      colorElem.classList.add('zenLooksAndFeelColorOption');
-      colorElem.style.setProperty('--zen-primary-color', color, 'important');
-      if (accentColor === color) {
-        colorElemParen.setAttribute('selected', 'true');
-      }
-      colorElemParen.addEventListener('click', () => {
-        Services.prefs.setBoolPref('zen.theme.color-prefs.use-workspace-colors', false);
-        Services.prefs.setStringPref('zen.theme.accent-color', color);
-      });
-      colorElemParen.appendChild(colorElem);
-      elem.appendChild(colorElemParen);
-    }
-    // TODO: add custom color selection!
-  },
-
-  _handleAccentColorChange(accentColor) {
-    this._initializeColorPicker(accentColor);
-  },
-
-  _getInitialAccentColor() {
-    return Services.prefs.getStringPref('zen.theme.accent-color', this.kZenColors[0]);
   },
 };
 
@@ -1046,9 +998,12 @@ var gZenCKSSettings = {
 
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
 
-    // This is because on some OSs (windows/macos mostly) the key is not the same as the keycode
-    // e.g. CTRL+ALT+3 may be displayed as the euro sign
-    let shortcut = event.key;
+    // First, try to read the *physical* key via event.code.
+    // If event.code is like "KeyS", "KeyA", ..., strip off "Key" → "S".
+    // Otherwise, fall back to event.key (e.g. "F5", "Enter", etc.).
+    let shortcut;
+    if (event.code && event.code.startsWith('Key')) shortcut = event.code.slice(3);
+    else shortcut = event.key;
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ''); // Remove all modifiers
 
@@ -1181,11 +1136,6 @@ Preferences.addAll([
     id: 'zen.glance.enabled',
     type: 'bool',
     default: true,
-  },
-  {
-    id: 'zen.theme.color-prefs.use-workspace-colors',
-    type: 'bool',
-    default: false,
   },
   {
     id: 'zen.view.compact.color-toolbar',

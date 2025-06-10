@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d634dadd4d 100644
+index 8c6047e1ada5a22e57e1e665965237c9e22641d7..d3472a36fc99c488f0fd0fa8cb9c6927c24bdc6d 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -2088,7 +2088,6 @@ var SessionStoreInternal = {
@@ -43,7 +43,24 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -5239,7 +5241,7 @@ var SessionStoreInternal = {
+@@ -4361,6 +4363,7 @@ var SessionStoreInternal = {
+       // Append the tab if we're opening into a different window,
+       index: aSource == aTargetWindow ? pos : Infinity,
+       pinned: state.pinned,
++      essential: state.zenEssential,
+       userContextId: state.userContextId,
+       skipLoad: true,
+       preferredRemoteType,
+@@ -5179,7 +5182,7 @@ var SessionStoreInternal = {
+ 
+     for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
+       let tab = tabbrowser.tabs[i];
+-      if (homePages.includes(tab.linkedBrowser.currentURI.spec)) {
++      if (homePages.includes(tab.linkedBrowser.currentURI.spec) && !tab.hasAttribute("zen-empty-tab")) {
+         removableTabs.push(tab);
+       }
+     }
+@@ -5239,7 +5242,7 @@ var SessionStoreInternal = {
      }
  
      let workspaceID = aWindow.getWorkspaceID();
@@ -52,7 +69,7 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
        winData.workspaceID = workspaceID;
      }
    },
-@@ -5430,14 +5432,15 @@ var SessionStoreInternal = {
+@@ -5430,14 +5433,15 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -70,7 +87,7 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
          continue;
        }
        let tabData = lazy.TabState.collect(tab, TAB_CUSTOM_VALUES.get(tab));
-@@ -5456,8 +5459,8 @@ var SessionStoreInternal = {
+@@ -5456,8 +5460,8 @@ var SessionStoreInternal = {
      // We don't store the Firefox View tab in Session Store, so if it was the last selected "tab" when
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
@@ -81,7 +98,7 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5569,8 +5572,8 @@ var SessionStoreInternal = {
+@@ -5569,8 +5573,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -92,7 +109,7 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5613,6 +5616,7 @@ var SessionStoreInternal = {
+@@ -5613,6 +5617,7 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
@@ -100,7 +117,7 @@ index 8c6047e1ada5a22e57e1e665965237c9e22641d7..8d0585e738a5a758ebbddfa0787c71d6
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6162,6 +6166,22 @@ var SessionStoreInternal = {
+@@ -6162,6 +6167,22 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.

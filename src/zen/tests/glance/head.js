@@ -17,17 +17,19 @@ function openGlanceOnTab(callback, close = true) {
         .then(async (glanceTab) => {
           await callback(glanceTab);
           if (close) {
-            gZenGlanceManager
-              .closeGlance({
-                onTabClose: true,
-              })
-              .then(() => {
-                resolve();
-              });
+            setTimeout(() => {
+              gZenGlanceManager
+                .closeGlance({
+                  onTabClose: true,
+                })
+                .then(() => {
+                  resolve();
+                });
+            }, 500); // Give tons of time for the glance to close
           } else {
             resolve();
           }
         });
-    });
+    }, 500); // Give tons of time for the glance to open
   });
 }

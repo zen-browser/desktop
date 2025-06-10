@@ -10,7 +10,6 @@
 }
 
 :root[zen-single-toolbar='true'] {
-  --urlbar-container-padding: 4px;
   & #urlbar:not([breakout-extend='true']) {
     padding: 1px;
     --toolbarbutton-border-radius: 6px;
@@ -26,7 +25,7 @@
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 5px;
-  :root[zen-single-toolbar='true'] {
+  :root[zen-single-toolbar='true'] & {
     --urlbar-container-padding: 4px;
   }
 }
@@ -467,11 +466,11 @@ button.popup-notification-dropmarker {
 #urlbar[open][zen-floating-urlbar='true'] {
   z-index: 1000;
   max-width: unset;
-  min-width: unset !important;
   --urlbar-container-height: 55px !important;
   --urlbar-margin-inline: 10px !important;
 
-  width: min(90%, 50rem) !important;
+  min-width: min(90%, 50rem) !important;
+  width: var(--zen-urlbar-width, min(90%, 50rem)) !important;
   font-size: 1.15em !important;
   @media (-moz-platform: macos) {
     font-size: 1.5em !important;

@@ -23,6 +23,9 @@
       ) {
         return;
       }
+      this.promiseInitialized = new Promise((resolve) => {
+        this._resolveInitialized = resolve;
+      });
       this.dragStartPosition = null;
 
       ChromeUtils.defineLazyGetter(this, 'panel', () =>
@@ -34,14 +37,6 @@
       );
       ChromeUtils.defineLazyGetter(this, 'customColorList', () =>
         document.getElementById('PanelUI-zen-gradient-generator-custom-list')
-      );
-
-      XPCOMUtils.defineLazyPreferenceGetter(
-        this,
-        'allowWorkspaceColors',
-        'zen.theme.color-prefs.use-workspace-colors',
-        true,
-        this.onDarkModeChange.bind(this)
       );
 
       this.panel.addEventListener('popupshowing', this.handlePanelOpen.bind(this));
@@ -116,7 +111,8 @@
       this.initContextMenu();
       this.initPredefinedColors();
 
-      this._hasInitialized = true;
+      this._resolveInitialized();
+      delete this._resolveInitialized;
       this.onDarkModeChange(null);
     }
 
@@ -973,9 +969,14 @@
         texture,
       };
     }
+
     //TODO: add a better noise system that adds noise not just changes transparency
     updateNoise(texture) {
       document.documentElement.style.setProperty('--zen-grainy-background-opacity', texture);
+      document.documentElement.setAttribute(
+        'zen-show-grainy-background',
+        texture > 0 ? 'true' : 'false'
+      );
     }
 
     hexToRgb(hex) {
@@ -1102,9 +1103,14 @@
       let workspaceTheme = theme || workspace.theme;
 
       await this.foreachWindowAsActive(async (browser) => {
-        if (!browser.gZenThemePicker?._hasInitialized) {
+        if (!browser.gZenThemePicker.promiseInitialized) {
           return;
         }
+
+        if (browser.closing || (await browser.gZenThemePicker?.promiseInitialized)) {
+          return;
+        }
+
         // Do not rebuild if the workspace is not the same as the current one
         const windowWorkspace = await browser.gZenWorkspaces.getActiveWorkspace();
         if (windowWorkspace.uuid !== uuid && theme !== null) {

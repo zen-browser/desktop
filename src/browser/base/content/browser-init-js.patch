@@ -1,21 +1,20 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index 3d5173315812589c0b79beec5f0419fc37cb8868..c4216db9e414fbbaead6ecd89b40366b0d8a50c1 100644
+index bcbfab4a3781ff3c7349115751b3830976eec4bf..b1b774e0d335ed3c5ca565a45cd624c7ea2718af 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -175,6 +175,8 @@ var gBrowserInit = {
+@@ -186,6 +186,7 @@ var gBrowserInit = {
    },
  
    onLoad() {
-+    Services.scriptloader.loadSubScript("chrome://browser/content/ZenStartup.mjs", window);
 +    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", window);
      gBrowser.addEventListener("DOMUpdateBlockedPopups", e =>
        PopupBlockerObserver.handleEvent(e)
      );
-@@ -310,6 +312,7 @@ var gBrowserInit = {
-     TelemetryTimestamps.add("delayedStartupStarted");
+@@ -344,6 +345,7 @@ var gBrowserInit = {
  
-     this._cancelDelayedStartup();
-+    gZenWorkspaces.afterLoadInit();
+     this._handleURIToLoad();
  
-     gBrowser.addEventListener(
-       "PermissionStateChange",
++    gZenWorkspaces.selectStartPage();
+     Services.obs.addObserver(gIdentityHandler, "perm-changed");
+     Services.obs.addObserver(gRemoteControl, "devtools-socket");
+     Services.obs.addObserver(gRemoteControl, "marionette-listening");

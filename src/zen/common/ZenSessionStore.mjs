@@ -36,7 +36,6 @@
     }
 
     async #waitAndCleanup() {
-      await SessionStore.promiseAllWindowsRestored;
       await SessionStore.promiseInitialized;
       this.#cleanup();
     }

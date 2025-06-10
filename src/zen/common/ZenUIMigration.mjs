@@ -3,6 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const lazy = {};
 
+var { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppConstants.sys.mjs');
+
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
 });
@@ -13,7 +15,11 @@ class ZenUIMigration {
 
   init(isNewProfile, win) {
     if (!isNewProfile) {
-      this._migrate(win);
+      try {
+        this._migrate(win);
+      } catch (e) {
+        console.error('ZenUIMigration: Error during migration', e);
+      }
     }
     this.clearVariables();
   }

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 8f8c5536cb6e54300897180ca3f950974c60e930..79305485631f14712d8b2674f477b641ec53fcd6 100644
+index 8f8c5536cb6e54300897180ca3f950974c60e930..78076e29faf749b83d6c8e099af6767621f34d58 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -26,6 +26,7 @@
@@ -10,23 +10,22 @@ index 8f8c5536cb6e54300897180ca3f950974c60e930..79305485631f14712d8b2674f477b641
          persist="screenX screenY width height sizemode"
          data-l10n-sync="true">
  <head>
-@@ -105,8 +106,11 @@
+@@ -105,8 +106,10 @@
  
    <title data-l10n-id="browser-main-window-default-title"></title>
  
 +#include zen-preloaded.inc.xhtml
-+
    <script src="chrome://browser/content/global-scripts.js"></script>
    <script src="chrome://browser/content/browser-main.js"></script>
 +#include zen-assets.inc.xhtml
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -128,9 +132,11 @@
+@@ -128,9 +131,11 @@
      </vbox>
    </html:template>
  
-+<hbox id="zen-main-app-wrapper" flex="1" persist="zen-compact-mode">
++<hbox id="zen-main-app-wrapper" flex="1" persist="zen-compact-mode" class="browser-toolbox-background">
  #include navigator-toolbox.inc.xhtml
  
  #include browser-box.inc.xhtml

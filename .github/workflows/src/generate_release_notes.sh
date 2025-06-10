@@ -5,7 +5,7 @@ if [ "$RELEASE_BRANCH" = "release" ]; then
   RELEASE_TYPE="Stable"
 
   echo "Fetching release notes from GitHub..."
-  RELEASE_NOTES_JSON=$(curl -s "$RELEASE_NOTES_URL")
+  RELEASE_NOTES_JSON=$(curl -s --retry 5 --retry-delay 5 "$RELEASE_NOTES_URL")
 
   if [ -z "$RELEASE_NOTES_JSON" ]; then
     echo "Error: Failed to fetch release notes from GitHub"
@@ -18,96 +18,62 @@ else
   RELEASE_TYPE="Twilight"
 fi
 
-cat << EOF > "release_notes.md"
-# Zen ${RELEASE_TYPE} Release
-EOF
+{
+  echo "# Zen ${RELEASE_TYPE} Release"
 
-if [ "$RELEASE_BRANCH" = "release" ]; then
-  echo "${EXTRA_NOTES}" >> "release_notes.md"
-
-  if echo "$LATEST_RELEASE" | jq -e '(.features // []) | length > 0' > /dev/null; then
-    cat << EOF >> "release_notes.md"
-
-## New Features
-$(echo "$LATEST_RELEASE" | jq -r '.features[] | "- " + .')
-EOF
+  if [ "$RELEASE_TYPE" = "Twilight" ]; then
+    echo
+    echo "> [!NOTE]"
+    echo "> You're currently in Twilight mode, this means you're downloading the latest experimental features and updates."
+    echo ">"
+    echo "> If you encounter any issues, please report them on the [issues page](https://github.com/zen-browser/desktop/issues)."
   fi
 
-  if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' > /dev/null; then
-    cat << EOF >> "release_notes.md"
+  if [ "$RELEASE_TYPE" = "Stable" ]; then
+    echo "${EXTRA_NOTES}"
 
-## Fixes
-EOF
-    echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/zen-browser/desktop/issues/" + (.issue|tostring) + "))" else "- " + . end' >> "release_notes.md"
+    if echo "$LATEST_RELEASE" | jq -e '.security != null and .security != ""' > /dev/null; then
+      echo
+      echo "## Security"
+      echo "[Various security fixes]($(echo "$LATEST_RELEASE" | jq -r '.security'))"
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.features // []) | length > 0' > /dev/null; then
+      echo
+      echo "## New Features"
+      echo "$LATEST_RELEASE" | jq -r '.features[] | "- " + .'
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' > /dev/null; then
+      echo
+      echo "## Fixes"
+      echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/zen-browser/desktop/issues/" + (.issue|tostring) + "))" else "- " + . end'
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' > /dev/null; then
+      echo
+      echo "## Breaking Changes"
+      echo "$LATEST_RELEASE" | jq -r '.breakingChanges[] | if type=="string" then "- " + . else "- " + .description + " [Learn more](" + .link + ")" end'
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.themeChanges // []) | length > 0' > /dev/null; then
+      echo
+      echo "## Theme Changes"
+      echo "$LATEST_RELEASE" | jq -r '.themeChanges[] | "- " + .'
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.changes // []) | length > 0' > /dev/null; then
+      echo
+      echo "## Changes"
+      echo "$LATEST_RELEASE" | jq -r '.changes[] | "- " + .'
+    fi
+
+    if echo "$LATEST_RELEASE" | jq -e '(.knownIssues // []) | length > 0' > /dev/null; then
+      echo
+      echo "## Known Issues"
+      echo "$LATEST_RELEASE" | jq -r '.knownIssues[] | "- " + .'
+    fi
   fi
-
-  if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' > /dev/null; then
-    cat << EOF >> "release_notes.md"
-
-## Breaking Changes
-EOF
-    echo "$LATEST_RELEASE" | jq -r '.breakingChanges[] | if type=="string" then "- " + . else "- " + .description + " [Learn more](" + .link + ")" end' >> "release_notes.md"
-  fi
-
-  if echo "$LATEST_RELEASE" | jq -e '(.themeChanges // []) | length > 0' > /dev/null; then
-    cat << EOF >> "release_notes.md"
-
-## Theme Changes
-$(echo "$LATEST_RELEASE" | jq -r '.themeChanges[] | "- " + .')
-EOF
-  fi
-fi
-
-cat << EOF >> "release_notes.md"
-
-<details>
-<summary>File Checksums (SHA-256)</summary>
-
-\`\`\`
-EOF
-
-generate_checksum() {
-  local pattern=$1
-  echo "Generating checksum for $pattern"
-  sha256sum $pattern 2> /dev/null | awk '{sub(".*/", "", $2); print $1 "  " $2}' >> "release_notes.md"
-  if [ ${PIPESTATUS[0]} -ne 0 ]; then
-    echo "Warning: No files found matching $pattern, skipping checksum."
-  fi
-}
-
-files=(
-  "./zen.source.tar.zst/*"
-  "./zen.linux-x86_64.tar.xz/*"
-  "./zen.linux-aarch64.tar.xz/*"
-  "./zen-x86_64.AppImage/*"
-  "./zen-x86_64.AppImage.zsync/*"
-  "./zen-aarch64.AppImage/*"
-  "./zen-aarch64.AppImage.zsync/*"
-  "./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip"
-  "./zen.win-x86_64.zip/*"
-  "./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip"
-  "./zen.win-arm64.zip/*"
-  "./linux.mar/*"
-  "./linux-aarch64.mar/*"
-  "./.github/workflows/object/windows-x64-signed-x86_64/windows.mar"
-  "./windows.mar/*"
-  "./.github/workflows/object/windows-x64-signed-arm64/windows-arm64.mar"
-  "./windows-arm64.mar/*"
-  "./macos.mar/*"
-  "./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe"
-  "./zen.installer.exe/*"
-  "./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe"
-  "./zen.installer-arm64.exe/*"
-  "./zen.macos-universal.dmg/*"
-)
-
-for file in "${files[@]}"; do
-  generate_checksum "$file"
-done
-
-cat << EOF >> "release_notes.md"
-\`\`\`
-</details>
-EOF
+} > "release_notes.md"
 
 echo "Release notes generated: release_notes.md"

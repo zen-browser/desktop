@@ -95,11 +95,6 @@ var ZenThemeModifier = {
   updateAccentColor() {
     const accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
     document.documentElement.style.setProperty('--zen-primary-color', accentColor);
-    // Notify the page that the accent color has changed, only if a function
-    // handler is defined.
-    if (typeof window.zenPageAccentColorChanged === 'function') {
-      window.zenPageAccentColorChanged(accentColor);
-    }
   },
 };
 

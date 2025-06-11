@@ -469,13 +469,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
           );
           this.initIndicatorContextMenu(workspaceWrapper.indicator);
           workspaceWrapper.indicator.addEventListener('wheel', (event) => {
-            let isTrackpad = false;
-            if (
+            const isTrackpad =
               (event.wheelDeltaY && event.wheelDeltaY === event.deltaY * -3) ||
-              event.deltaMode === 0
-            ) {
-              isTrackpad = true;
-            }
+              event.deltaMode === 0;
 
             const verticalScroll = Math.abs(event.deltaY) > Math.abs(event.deltaX);
             if ((isTrackpad && verticalScroll) || !isTrackpad) {

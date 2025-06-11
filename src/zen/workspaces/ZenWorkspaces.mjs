@@ -474,7 +474,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
               event.deltaMode === 0;
 
             const verticalScroll = Math.abs(event.deltaY) > Math.abs(event.deltaX);
-            if ((isTrackpad && verticalScroll) || !isTrackpad) {
+            if (!isTrackpad || verticalScroll) {
               this.scrollInDirection(event.deltaY);
             }
           });

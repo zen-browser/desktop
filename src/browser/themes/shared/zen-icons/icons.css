@@ -39,9 +39,12 @@
 .close-icon,
 #zen-sidebar-web-panel-close,
 #zen-glance-sidebar-close,
-#PanelUI-zen-emojis-picker-none,
 .zen-theme-picker-custom-list-item-remove {
   list-style-image: url('close.svg') !important;
+}
+
+#PanelUI-zen-emojis-picker-none {
+  list-style-image: url('trash.svg');
 }
 
 .reset-icon {
@@ -185,14 +188,8 @@
 #appMenu-zoomEnlarge-button2,
 #PanelUI-zen-profiles-newProfile,
 #zen-sidebar-add-panel-button,
-#PanelUI-zen-workspaces-new image,
 #PanelUI-zen-gradient-generator-color-custom-add image {
   list-style-image: url('plus.svg') !important;
-}
-
-#PanelUI-zen-workspaces-reorder-mode image {
-  list-style-image: url('move-tab.svg') !important;
-  rotate: 90deg;
 }
 
 #cut-button {

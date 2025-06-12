@@ -228,6 +228,7 @@
               }
             )
             .then(() => {
+              gBrowser.tabContainer._invalidateCachedTabs();
               this.#currentBrowser.removeAttribute('animate-glance-open');
               this.overlay.style.removeProperty('overflow');
               this.browserWrapper.removeAttribute('animate');
@@ -615,6 +616,7 @@
     }
 
     finishOpeningGlance() {
+      gBrowser.tabContainer._invalidateCachedTabs();
       gZenWorkspaces.updateTabsContainers();
       this.browserWrapper.removeAttribute('animate-full');
       this.overlay.classList.remove('zen-glance-overlay');
@@ -662,7 +664,7 @@
           type: 'spring',
         }
       );
-      gZenViewSplitter.deactivateCurrentSplitView();
+      gZenViewSplitter.deactivateCurrentSplitView({ removeDeckSelected: true });
       this.finishOpeningGlance();
     }
 

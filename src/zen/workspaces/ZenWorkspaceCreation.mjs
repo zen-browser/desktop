@@ -23,8 +23,10 @@
         <vbox class="zen-workspace-creation" flex="1">
           <form>
             <vbox>
-              <html:h1 data-l10n-id="zen-workspace-creation-title" class="zen-workspace-creation-title" />
-              <label data-l10n-id="zen-workspace-creation-label" class="zen-workspace-creation-label" />
+              <html:h1 data-l10n-id="zen-workspace-creation-header" class="zen-workspace-creation-title" />
+              <html:div>
+                <label data-l10n-id="zen-workspace-creation-label" class="zen-workspace-creation-label" />
+              </html:div>
             </vbox>
             <vbox class="zen-workspace-creation-form">
               <hbox class="zen-workspace-creation-name-wrapper">
@@ -45,8 +47,10 @@
               <menupopup class="zen-workspace-creation-profiles-popup" />
             </vbox>
             <vbox class="zen-workspace-creation-buttons">
-              <button class="zen-workspace-creation-create-button footer-button primary"
+              <html:div>
+                <button class="zen-workspace-creation-create-button footer-button primary"
                   data-l10n-id="zen-panel-ui-workspaces-create" disabled="true" />
+              </html:div>
               <button class="zen-workspace-creation-cancel-button footer-button"
                 data-l10n-id="zen-general-cancel-label" />
             </vbox>
@@ -59,6 +63,22 @@
       return this.getAttribute('workspace-id');
     }
 
+    get previousWorkspaceId() {
+      return this.getAttribute('previous-workspace-id');
+    }
+
+    get elementsToAnimate() {
+      return [
+        this.querySelector('.zen-workspace-creation-title'),
+        this.querySelector('.zen-workspace-creation-label').parentElement,
+        this.querySelector('.zen-workspace-creation-name-wrapper'),
+        this.querySelector('.zen-workspace-creation-profile-wrapper'),
+        this.querySelector('.zen-workspace-creation-edit-theme-button'),
+        this.createButton.parentNode,
+        this.cancelButton,
+      ];
+    }
+
     connectedCallback() {
       if (this.delayConnectedCallback()) {
         // If we are not ready yet, or if we have already connected, we
@@ -66,10 +86,18 @@
         return;
       }
 
-      document.documentElement.setAttribute('zen-creating-workspace', 'true');
-
       this.appendChild(this.constructor.fragment);
       this.initializeAttributeInheritance();
+
+      this.inputName = this.querySelector('.zen-workspace-creation-name');
+      this.inputIcon = this.querySelector('.zen-workspace-creation-icon-label');
+      this.inputProfile = this.querySelector('.zen-workspace-creation-profile');
+      this.createButton = this.querySelector('.zen-workspace-creation-create-button');
+      this.cancelButton = this.querySelector('.zen-workspace-creation-cancel-button');
+
+      for (const element of this.elementsToAnimate) {
+        element.style.opacity = 0;
+      }
 
       this.#wasInCollapsedMode =
         document.documentElement.getAttribute('zen-sidebar-expanded') !== 'true';
@@ -91,23 +119,12 @@
         }
       }
 
-      gBrowser.tabContainer.style.visibility = 'collapse';
-      if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-        document.getElementById('nav-bar').style.visibility = 'collapse';
-      }
-
       for (const element of ZenWorkspaceCreation.elementsToDisable) {
         const el = document.getElementById(element);
         if (el) {
           el.setAttribute('disabled', 'true');
         }
       }
-
-      this.inputName = this.querySelector('.zen-workspace-creation-name');
-      this.inputIcon = this.querySelector('.zen-workspace-creation-icon-label');
-      this.inputProfile = this.querySelector('.zen-workspace-creation-profile');
-      this.createButton = this.querySelector('.zen-workspace-creation-create-button');
-      this.cancelButton = this.querySelector('.zen-workspace-creation-cancel-button');
 
       this.createButton.addEventListener('command', this.onCreateButtonCommand.bind(this));
       this.cancelButton.addEventListener('command', this.onCancelButtonCommand.bind(this));
@@ -133,7 +150,47 @@
         this.inputProfile.parentNode.hidden = true;
       }
 
-      this.resolveInitialized();
+      document.getElementById('zen-sidebar-splitter').style.pointerEvents = 'none';
+
+      gZenUIManager.motion
+        .animate(
+          [gBrowser.tabContainer, gURLBar.textbox],
+          {
+            opacity: [1, 0],
+          },
+          {
+            duration: 0.3,
+            type: 'spring',
+            bounce: 0,
+          }
+        )
+        .then(() => {
+          gBrowser.tabContainer.style.visibility = 'collapse';
+          if (gZenVerticalTabsManager._hasSetSingleToolbar) {
+            document.getElementById('nav-bar').style.visibility = 'collapse';
+          }
+          this.style.visibility = 'visible';
+          gZenUIManager.motion
+            .animate(
+              this.elementsToAnimate,
+              {
+                y: [20, 0],
+                opacity: [0, 1],
+                filter: ['blur(2px)', 'blur(0)'],
+              },
+              {
+                duration: 0.6,
+                type: 'spring',
+                bounce: 0,
+                delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
+              }
+            )
+            .then(() => {
+              this.inputName.focus();
+              gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
+              this.resolveInitialized();
+            });
+        });
     }
 
     async onCreateButtonCommand() {
@@ -143,21 +200,16 @@
       workspace.containerTabId = this.currentProfile;
       await gZenWorkspaces.saveWorkspace(workspace);
 
-      this.#cleanup();
+      await this.#cleanup();
 
       await gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
       await gZenWorkspaces.updateTabsContainers();
 
-      this.tabContainer._invalidateCachedTabs();
-
-      if (gZenVerticalTabsManager._canReplaceNewTab) {
-        BrowserCommands.openTab();
-      }
+      gBrowser.tabContainer._invalidateCachedTabs();
     }
 
     async onCancelButtonCommand() {
-      const workspaces = await gZenWorkspaces._workspaces();
-      await gZenWorkspaces.changeWorkspace(workspaces.workspaces[workspaces.workspaces.length - 2]);
+      await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
     }
 
     onIconCommand(event) {
@@ -208,10 +260,27 @@
 
     async handleZenWorkspacesChange() {
       await gZenWorkspaces.removeWorkspace(this.workspaceId);
-      this.#cleanup();
+      await this.#cleanup();
     }
 
-    #cleanup() {
+    async #cleanup() {
+      await gZenUIManager.motion.animate(
+        this.elementsToAnimate.reverse(),
+        {
+          y: [0, 20],
+          opacity: [1, 0],
+          filter: ['blur(0)', 'blur(2px)'],
+        },
+        {
+          duration: 0.4,
+          type: 'spring',
+          bounce: 0,
+          delay: gZenUIManager.motion.stagger(0.05),
+        }
+      );
+
+      document.getElementById('zen-sidebar-splitter').style.pointerEvents = '';
+
       gZenWorkspaces.removeChangeListeners(this.handleZenWorkspacesChangeBind);
       for (const element of this.constructor.elementsToDisable) {
         const el = document.getElementById(element);
@@ -228,8 +297,32 @@
       document.documentElement.removeAttribute('zen-creating-workspace');
 
       gBrowser.tabContainer.style.visibility = '';
+      gBrowser.tabContainer.style.opacity = 0;
       if (gZenVerticalTabsManager._hasSetSingleToolbar) {
         document.getElementById('nav-bar').style.visibility = '';
+        gURLBar.textbox.style.opacity = 0;
+      }
+
+      gZenUIManager.updateTabsToolbar();
+
+      const workspace = await gZenWorkspaces.getActiveWorkspace();
+      await gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
+      await gZenWorkspaces.updateTabsContainers();
+
+      await gZenUIManager.motion.animate(
+        [gBrowser.tabContainer, gURLBar.textbox],
+        {
+          opacity: [0, 1],
+        },
+        {
+          duration: 0.3,
+          type: 'spring',
+          bounce: 0,
+        }
+      );
+      gBrowser.tabContainer.style.opacity = '';
+      if (gZenVerticalTabsManager._hasSetSingleToolbar) {
+        gURLBar.textbox.style.opacity = '';
       }
 
       for (const element of this.#hiddenElements) {

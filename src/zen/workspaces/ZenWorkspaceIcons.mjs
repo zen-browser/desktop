@@ -14,6 +14,74 @@
 
       this._hasConnected = true;
       window.addEventListener('ZenWorkspacesUIUpdate', this, true);
+
+      this.initDragAndDrop();
+    }
+
+    initDragAndDrop() {
+      let dragStart = 0;
+      let draggedTab = null;
+
+      this.addEventListener('mousedown', (e) => {
+        const target = e.target.closest('toolbarbutton[zen-workspace-id]');
+        if (!target) {
+          return;
+        }
+
+        const isVertical = document.documentElement.getAttribute('zen-sidebar-expanded') != 'true';
+        const clientPos = isVertical ? 'clientY' : 'clientX';
+
+        this.isReorderMode = false;
+        dragStart = e[clientPos];
+        draggedTab = target;
+        draggedTab.setAttribute('dragged', 'true');
+
+        e.stopPropagation();
+
+        const mouseMoveHandler = (moveEvent) => {
+          if (Math.abs(moveEvent[clientPos] - dragStart) > 5) {
+            this.isReorderMode = true;
+          }
+
+          if (this.isReorderMode) {
+            const tabs = [...this.children];
+            const mouse = moveEvent[clientPos];
+
+            for (const tab of tabs) {
+              if (tab === draggedTab) continue;
+              const rect = tab.getBoundingClientRect();
+              if (
+                mouse > rect[isVertical ? 'top' : 'left'] &&
+                mouse < rect[isVertical ? 'bottom' : 'right']
+              ) {
+                if (
+                  mouse <
+                  rect[isVertical ? 'top' : 'left'] + rect[isVertical ? 'height' : 'width'] / 2
+                ) {
+                  this.insertBefore(draggedTab, tab);
+                } else {
+                  this.insertBefore(draggedTab, tab.nextSibling);
+                }
+              }
+            }
+          }
+        };
+
+        const mouseUpHandler = () => {
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+
+          draggedTab.removeAttribute('dragged');
+
+          this.reorderWorkspaceToIndex(draggedTab, Array.from(this.children).indexOf(draggedTab));
+
+          draggedTab = null;
+          this.isReorderMode = false;
+        };
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+      });
     }
 
     #createWorkspaceIcon(workspace) {
@@ -90,6 +158,25 @@
         i++;
       }
       return null;
+    }
+
+    get isReorderMode() {
+      return this.hasAttribute('reorder-mode');
+    }
+
+    set isReorderMode(value) {
+      if (value) {
+        this.setAttribute('reorder-mode', 'true');
+      } else {
+        this.removeAttribute('reorder-mode');
+        this.style.removeProperty('--zen-workspace-icon-width');
+        this.style.removeProperty('--zen-workspace-icon-height');
+      }
+    }
+
+    reorderWorkspaceToIndex(draggedTab, index) {
+      const workspaceId = draggedTab.getAttribute('zen-workspace-id');
+      gZenWorkspaces.reorderWorkspace(workspaceId, index);
     }
   }
 

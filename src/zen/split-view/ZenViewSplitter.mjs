@@ -1142,12 +1142,12 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   /**
    * Deactivates the split view.
    */
-  deactivateCurrentSplitView() {
+  deactivateCurrentSplitView({ removeDeckSelected = false } = {}) {
     if (this.currentView < 0) return;
     this.setTabsDocShellState(this._data[this.currentView].tabs, false);
     for (const tab of this._data[this.currentView].tabs) {
       const container = tab.linkedBrowser.closest('.browserSidebarContainer');
-      this.resetContainerStyle(container);
+      this.resetContainerStyle(container, removeDeckSelected);
     }
     this.removeSplitters();
     this.tabBrowserPanel.removeAttribute('zen-split-view');
@@ -1496,10 +1496,14 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
    * Resets the container style.
    *
    * @param {Element} container - The container element.
+   * @param {boolean} [removeDeckSelected=false] - Whether to remove the 'deck-selected' attribute.
    */
-  resetContainerStyle(container) {
+  resetContainerStyle(container, removeDeckSelected = false) {
     container.removeAttribute('zen-split');
     container.style.inset = '';
+    if (removeDeckSelected) {
+      container.classList.remove('deck-selected');
+    }
   }
 
   /**

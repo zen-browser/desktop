@@ -72,6 +72,13 @@
         .querySelector('.zen-workspaces-actions')
         .addEventListener('click', this.onActionsCommand.bind(this));
 
+      this.indicator
+        .querySelector('.zen-current-workspace-indicator-icon')
+        .addEventListener('dblclick', (event) => {
+          event.stopPropagation();
+          gZenWorkspaces.changeWorkspaceIcon();
+        });
+
       this.scrollbox._getScrollableElements = () => {
         const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
         if (Services.prefs.getBoolPref('zen.view.show-newtab-button-top', false)) {

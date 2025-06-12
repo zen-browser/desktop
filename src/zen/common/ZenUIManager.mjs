@@ -967,14 +967,21 @@ var gZenVerticalTabsManager = {
         gZenCompactModeManager.getAndApplySidebarWidth();
       }
       gZenUIManager.updateTabsToolbar();
-
-      gURLBar._initCopyCutController();
-      gURLBar._initPasteAndGo();
-      gURLBar._initStripOnShare();
+      this.rebuildURLBarMenus();
     } catch (e) {
       console.error(e);
     }
     this._isUpdating = false;
+  },
+
+  rebuildURLBarMenus() {
+    if (document.getElementById('paste-and-go')) {
+      return;
+    }
+    gURLBar._initCopyCutController();
+    gURLBar._initPasteAndGo();
+    gURLBar._initStripOnShare();
+    gURLBar._updatePlaceholderFromDefaultEngine();
   },
 
   rebuildAreas() {

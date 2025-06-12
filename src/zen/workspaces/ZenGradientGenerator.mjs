@@ -76,14 +76,13 @@
     }
 
     openThemePicker(event) {
-      const target = event.explicitOriginalTarget?.classList?.contains(
+      const fromForm = event.explicitOriginalTarget?.classList?.contains(
         'zen-workspace-creation-edit-theme-button'
-      )
-        ? event.explicitOriginalTarget
-        : this.toolbox;
-      PanelMultiView.openPopup(this.panel, target, {
-        position: 'bottomright topright',
+      );
+      PanelMultiView.openPopup(this.panel, this.toolbox, {
+        position: 'topright topleft',
         triggerEvent: event,
+        y: fromForm ? -160 : 0,
       });
     }
 

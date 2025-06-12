@@ -6,29 +6,35 @@
 
 zen-workspace-creation {
   flex: 1;
-  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding) * 2);
+  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding));
+  padding: 3px;
+  visibility: collapse;
 
   & .zen-workspace-creation {
     justify-content: center;
 
     & .zen-workspace-creation-title {
       font-size: large;
+      margin-bottom: 5px;
+      text-align: center;
     }
 
     & .zen-workspace-creation-label {
       margin: 0;
-      opacity: 0.6;
+      opacity: 0.4;
+      text-align: center;
     }
 
     & form {
-      --input-border-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
-      --input-bgcolor: light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
+      --input-bgcolor: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
 
       display: flex;
       flex-direction: column;
       width: calc(100% - 10px);
       margin: auto;
-      gap: 1rem;
+      gap: 3.2rem;
+      margin-top: 1.2rem;
+      height: 100%;
 
       & .zen-workspace-creation-form {
         gap: 0.6rem;
@@ -37,11 +43,12 @@ zen-workspace-creation {
       & xul|button {
         border: none;
         margin: 0;
+        font-weight: 400 !important;
       }
 
       & .zen-workspace-creation-name-wrapper {
         padding: 9px 6px;
-        border-radius: var(--zen-button-border-radius);
+        border-radius: 8px !important;
         margin: 0;
         background-color: var(--input-bgcolor);
         gap: 8px;
@@ -93,7 +100,7 @@ zen-workspace-creation {
 
       & .zen-workspace-creation-profile-wrapper {
         padding: 4px;
-        border-radius: var(--zen-button-border-radius);
+        border-radius: 8px !important;
         margin: 0;
         background-color: var(--input-bgcolor);
         gap: 4px;
@@ -117,22 +124,27 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-edit-theme-button {
-        border-radius: var(--zen-button-border-radius);
+        border-radius: 8px !important;
         margin: 0;
         background-color: var(--input-bgcolor);
         justify-content: center;
         align-items: center;
         appearance: none;
         padding: 10px !important;
+
+        &:hover {
+          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+        }
       }
 
       & .zen-workspace-creation-buttons {
         gap: 0.5rem;
-        margin-top: 2rem;
+        margin-top: auto;
 
         & .zen-workspace-creation-create-button {
           color: var(--button-text-color-primary) !important;
           background: var(--color-accent-primary) !important;
+          width: 100%;
         }
       }
     }

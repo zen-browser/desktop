@@ -786,6 +786,7 @@
       if (!this.enabled) {
         return false;
       }
+      movingTabs = [...movingTabs];
       try {
         const pinnedTabsTarget =
           event.target.closest('.zen-workspace-pinned-tabs-section') ||

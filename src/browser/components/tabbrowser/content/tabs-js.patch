@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 84d633471c89230b981d8a07babef4e0c76c0338..de8b1ecf7cb844f6cf3e66a41b6024c574dfc103 100644
+index 84d633471c89230b981d8a07babef4e0c76c0338..a4101ad4e8aa9745ec807eb0373942b53c8dd285 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -83,7 +83,7 @@
@@ -116,6 +116,15 @@ index 84d633471c89230b981d8a07babef4e0c76c0338..de8b1ecf7cb844f6cf3e66a41b6024c5
                lastBound
              );
            } else {
+@@ -1168,7 +1192,7 @@
+             (oldTranslateX && oldTranslateX != newTranslateX) ||
+             (oldTranslateY && oldTranslateY != newTranslateY);
+         } else if (this.verticalMode) {
+-          shouldTranslate &&= oldTranslateY && oldTranslateY != newTranslateY;
++          shouldTranslate &&= oldTranslateY && oldTranslateY != newTranslateY && movingTabs.length === 1;
+         } else {
+           shouldTranslate &&= oldTranslateX && oldTranslateX != newTranslateX;
+         }
 @@ -1337,6 +1361,7 @@
  
            let nextItem = this.ariaFocusableItems[newIndex];

@@ -423,20 +423,18 @@
 /* ==========================================================================
    Sidebar Bottom Buttons Area
    ========================================================================== */
-#zen-sidebar-bottom-buttons {
+#zen-sidebar-foot-buttons {
   background: transparent;
-  gap: 5px; /* Spacing between buttons */
-  align-items: center; /* Center vertically */
-  padding-top: var(--zen-element-separation); /* Add padding above */
-  --toolbarbutton-inner-padding: 5px; /* Define inner padding for buttons */
+  gap: 5px;
+  align-items: center;
+  padding-top: var(--zen-element-separation);
+  --toolbarbutton-inner-padding: 5px;
 
-  /* Remove padding from direct children (except workspaces button) */
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
   }
 }
 
-/* Hide the default new tab button container */
 #newtab-button-container {
   display: none !important;
 }
@@ -445,7 +443,6 @@
    Tab Arrow Scrollbox Adjustments
    ========================================================================== */
 #tabbrowser-arrowscrollbox {
-  /* Remove gap within the scrollbox part */
   &::part(scrollbox) {
     gap: 0px !important;
   }
@@ -561,10 +558,10 @@
   }
 
   /* Style bottom buttons area when expanded */
-  & #zen-sidebar-bottom-buttons {
+  & #zen-sidebar-foot-buttons {
     display: flex;
-    flex-direction: row; /* Arrange buttons horizontally */
-    justify-content: space-between; /* Distribute space */
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
     position: relative;
   }
@@ -780,8 +777,25 @@
   }
 
   /* Ensure bottom buttons container fits content during customization */
-  :root[customizing] & #zen-sidebar-bottom-buttons {
+  :root[customizing] & #zen-sidebar-foot-buttons {
     min-width: unset !important;
+  }
+
+  #zen-sidebar-foot-buttons {
+    & > .toolbarbutton-1 {
+      min-height: var(--tab-min-height);
+      line-height: var(--tab-label-line-height);
+      border-radius: var(--border-radius-medium);
+      padding: 0 calc(var(--tab-inline-padding) - var(--tab-inner-inline-margin));
+      width: var(--tab-collapsed-background-width);
+      margin-inline: var(--tab-inner-inline-margin);
+
+      & .toolbarbutton-badge-stack {
+        justify-content: center;
+        padding: 8px;
+        width: var(--tab-collapsed-background-width);
+      }
+    }
   }
 
   /* Center top buttons container */
@@ -805,7 +819,7 @@
   }
 
   /* Style bottom buttons area when collapsed */
-  & #zen-sidebar-bottom-buttons {
+  & #zen-sidebar-foot-buttons {
     display: flex;
     flex-direction: column; /* Stack vertically */
     padding-top: var(--zen-element-separation);

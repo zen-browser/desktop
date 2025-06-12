@@ -36,10 +36,12 @@ var gZenCompactModeManager = {
   preInit() {
     // Remove it before initializing so we can properly calculate the width
     // of the sidebar at startup and avoid overflowing items not being hidden
-    const isCompactMode =
-      lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
+    this._wasInCompactMode = Services.xulStore.getValue(
+      AppConstants.BROWSER_CHROME_URL,
+      'zen-main-app-wrapper',
+      'zen-compact-mode'
+    );
     lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
-    this._wasInCompactMode = isCompactMode;
 
     this.addContextMenu();
   },

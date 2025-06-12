@@ -9,7 +9,7 @@
 </menupopup>
 
 <menupopup id="zenWorkspaceMoreActions">
-  <menuitem id="context_zenEditWorkspace" data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenChangeWorkspaceName"/>
+  <menuitem id="context_zenEditWorkspace" data-l10n-id="zen-workspaces-panel-change-name" command="cmd_zenChangeWorkspaceName"/>
   <menuitem id="context_zenEditWorkspaceIcon" data-l10n-id="zen-workspaces-panel-change-icon" command="cmd_zenChangeWorkspaceIcon"/>
   <menuitem class="zenToolbarThemePicker"
           data-l10n-id="zen-workspaces-change-theme"

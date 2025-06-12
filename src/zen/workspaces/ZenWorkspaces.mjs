@@ -233,7 +233,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
         // Only set up URL bar selection if we're switching to a different tab
-        if (gBrowser.selectedTab !== this._emptyTab && selectURLBar) {
+        if (
+          gBrowser.selectedTab !== this._emptyTab &&
+          selectURLBar &&
+          Services.prefs.getBoolPref('zen.startup.focus-urlbar', true)
+        ) {
           // Use a Promise-based approach for better sequencing
           const urlBarSelectionPromise = new Promise((resolve) => {
             const tabSelectListener = () => {

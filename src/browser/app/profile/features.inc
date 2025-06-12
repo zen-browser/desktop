@@ -39,3 +39,4 @@ pref('zen.haptic-feedback.enabled', true);
 
 // Startup flags
 pref('zen.startup.smooth-scroll-in-tabs', true);
+pref('zen.startup.focus-urlbar', true);

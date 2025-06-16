@@ -1,7 +1,16 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d20e129f8b 100644
+index 5b9ad123d819c6ef068acd427416957a1d0939fe..543d42dab2d84593f491a5652fcfe272ede59857 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
+@@ -19,7 +19,7 @@
+   --tab-group-line-thickness: 2px;
+   --tab-group-line-toolbar-border-distance: 1px;
+   /* Collapsed tabs should be square, so set width to match the min height */
+-  --tab-collapsed-background-width: var(--tab-min-height);
++  --tab-collapsed-background-width: 48px;
+   --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-inner-inline-margin));
+   --tab-inner-inline-margin: var(--space-medium);
+   --tab-inline-padding: 8px;
 @@ -33,7 +33,7 @@
    --tab-block-margin: 4px;
    --tab-icon-end-margin: 5.5px;

@@ -11,7 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class ZenUIMigration {
   PREF_NAME = 'zen.migration.version';
-  MIGRATION_VERSION = 4;
+  MIGRATION_VERSION = 5;
 
   init(isNewProfile, win) {
     if (!isNewProfile) {

@@ -44,6 +44,7 @@
         content/browser/zen-components/ZenWorkspaceIcons.mjs                    (../../zen/workspaces/ZenWorkspaceIcons.mjs)
         content/browser/zen-components/ZenWorkspace.mjs                         (../../zen/workspaces/ZenWorkspace.mjs)
         content/browser/zen-components/ZenWorkspaces.mjs                        (../../zen/workspaces/ZenWorkspaces.mjs)
+        content/browser/zen-components/ZenWorkspaceCreation.mjs                 (../../zen/workspaces/ZenWorkspaceCreation.mjs)
         content/browser/zen-components/ZenWorkspacesStorage.mjs                 (../../zen/workspaces/ZenWorkspacesStorage.mjs)
         content/browser/zen-components/ZenWorkspacesSync.mjs                    (../../zen/workspaces/ZenWorkspacesSync.mjs)
         content/browser/zen-components/ZenGradientGenerator.mjs                 (../../zen/workspaces/ZenGradientGenerator.mjs)

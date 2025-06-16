@@ -104,7 +104,7 @@ var gZenUIManager = {
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 2}px`);
+    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 3}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -476,7 +476,7 @@ var gZenUIManager = {
     const wrapper = document.createXULElement('hbox');
     const element = document.createXULElement('vbox');
     const label = document.createXULElement('label');
-    document.l10n.setAttributes(label, messageId, options);
+    document.l10n.setAttributes(label, messageId, options.l10nArgs);
     element.appendChild(label);
     if (options.descriptionId) {
       const description = document.createXULElement('label');
@@ -778,7 +778,9 @@ var gZenVerticalTabsManager = {
       document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
     } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
       try {
-        gURLBar.zenUpdateLayoutBreakout();
+        gURLBar.zenUpdateLayoutBreakout().then(() => {
+          gURLBar.valueFormatter._formatURL();
+        });
       } catch (e) {
         console.warn(e);
       }
@@ -988,14 +990,21 @@ var gZenVerticalTabsManager = {
         gZenCompactModeManager.getAndApplySidebarWidth();
       }
       gZenUIManager.updateTabsToolbar();
-
-      gURLBar._initCopyCutController();
-      gURLBar._initPasteAndGo();
-      gURLBar._initStripOnShare();
+      this.rebuildURLBarMenus();
     } catch (e) {
       console.error(e);
     }
     this._isUpdating = false;
+  },
+
+  rebuildURLBarMenus() {
+    if (document.getElementById('paste-and-go')) {
+      return;
+    }
+    gURLBar._initCopyCutController();
+    gURLBar._initPasteAndGo();
+    gURLBar._initStripOnShare();
+    gURLBar._updatePlaceholderFromDefaultEngine();
   },
 
   rebuildAreas() {

@@ -81,8 +81,10 @@
       }
     }
 
-    #onPopupShowing(event) {
+    // note: It's async on purpose so we can render the popup before processing the emojis
+    async #onPopupShowing(event) {
       if (event.target !== this.#panel) return;
+      this.searchInput.value = '';
       const emojiList = this.emojiList;
       for (const emoji of this.#emojis) {
         const item = document.createXULElement('toolbarbutton');
@@ -94,6 +96,9 @@
         });
         emojiList.appendChild(item);
       }
+      setTimeout(() => {
+        this.searchInput.focus();
+      }, 500);
     }
 
     #onPopupHidden(event) {

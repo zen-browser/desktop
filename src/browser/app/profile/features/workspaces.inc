@@ -14,9 +14,9 @@ pref('services.sync.engine.workspaces', false);
 pref('zen.workspaces.container-specific-essentials-enabled', false);
 
 #ifdef MOZILLA_OFFICIAL
-pref('zen.workspaces.debug', false);
+  pref('zen.workspaces.debug', false);
 #else
-pref('zen.workspaces.debug', true);
+  pref('zen.workspaces.debug', true);
 #endif
 
 // Section: Pinned tabs management

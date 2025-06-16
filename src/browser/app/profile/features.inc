@@ -3,9 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifdef MOZILLA_OFFICIAL
-pref('zen.welcome-screen.seen', false, sticky);
+  pref('zen.welcome-screen.seen', false, sticky);
 #else
-pref('zen.welcome-screen.seen', true, sticky);
+  pref('zen.welcome-screen.seen', true, sticky);
 #endif
 
 pref('zen.tabs.vertical', true);
@@ -34,9 +34,9 @@ pref('zen.haptic-feedback.enabled', true);
 
 // Section: Watermark
 #ifdef MOZILLA_OFFICIAL
-pref('zen.watermark.enabled', true, sticky);
+  pref('zen.watermark.enabled', true, sticky);
 #else
-pref('zen.watermark.enabled', false, sticky);
+  pref('zen.watermark.enabled', false, sticky);
 #endif
 
 // Startup flags

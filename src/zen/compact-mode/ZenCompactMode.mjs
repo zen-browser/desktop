@@ -36,10 +36,12 @@ var gZenCompactModeManager = {
   preInit() {
     // Remove it before initializing so we can properly calculate the width
     // of the sidebar at startup and avoid overflowing items not being hidden
-    const isCompactMode =
-      lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
+    this._wasInCompactMode = Services.xulStore.getValue(
+      AppConstants.BROWSER_CHROME_URL,
+      'zen-main-app-wrapper',
+      'zen-compact-mode'
+    );
     lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
-    this._wasInCompactMode = isCompactMode;
 
     this.addContextMenu();
   },
@@ -211,8 +213,11 @@ var gZenCompactModeManager = {
       return;
     }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
+    const shouldRecalculate =
+      this.preference || document.documentElement.hasAttribute('zen-creating-workspace');
+    const sidebarExpanded = document.documentElement.hasAttribute('zen-sidebar-expanded');
     if (sidebarWidth > 1) {
-      if (this.preference && gZenVerticalTabsManager._prefsSidebarExpanded) {
+      if (shouldRecalculate && sidebarExpanded) {
         sidebarWidth = Math.max(sidebarWidth, 150);
       }
       // Second variable to get the genuine width of the sidebar
@@ -220,8 +225,8 @@ var gZenCompactModeManager = {
       window.dispatchEvent(new window.Event('resize')); // To recalculate the layout
       if (
         event &&
-        this.preference &&
-        gZenVerticalTabsManager._prefsSidebarExpanded &&
+        shouldRecalculate &&
+        sidebarExpanded &&
         !gZenVerticalTabsManager._hadSidebarCollapse
       ) {
         return;

@@ -15,15 +15,15 @@ pref("intl.multilingual.downloadEnabled", false);
 pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
 
 #ifdef XP_WIN
-#include windows.inc
+  #include windows.inc
 #endif
 
 #ifdef UNIX_BUT_NOT_MAC
-#include linux.inc
+  #include linux.inc
 #endif
 
 #ifdef XP_MACOSX
-#include macos.inc
+  #include macos.inc
 #endif
 
 #include urlbar.inc
@@ -37,7 +37,7 @@ pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
 #include features.inc
 
 #ifndef XP_MACOSX
-#include smoothscroll.inc
+  #include smoothscroll.inc
 #endif
 
 #include performance.inc

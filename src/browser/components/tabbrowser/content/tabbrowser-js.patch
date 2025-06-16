@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d5aa64842a35c6697263c63fd3a0571b64b01344..478050fd5202b70ee3191471a017e091a3a87e92 100644
+index d5aa64842a35c6697263c63fd3a0571b64b01344..e8f37acf7761adb7bd97cb06dc1df386ffc8ec0b 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -413,11 +413,41 @@
@@ -9,7 +9,7 @@ index d5aa64842a35c6697263c63fd3a0571b64b01344..478050fd5202b70ee3191471a017e091
 +    get _numVisiblePinTabsWithoutCollapsed() {
 +      let i = 0;
 +      for (let item of this.tabContainer.ariaFocusableItems) {
-+        if (this.isTabGroupLabel(item) && item.closest("zen-folder")?.pinned) {
++        if (this.isTabGroupLabel(item) && item.closest("tab-group")?.pinned) {
 +          i += 1;
 +          continue;
 +        }
@@ -357,7 +357,7 @@ index d5aa64842a35c6697263c63fd3a0571b64b01344..478050fd5202b70ee3191471a017e091
        // to remove the old selected tab.
        if (tabToSelect) {
          let leftoverTab = this.selectedTab;
-+        if (this._hasAlreadyInitializedZenSessionStore) {
++        if (this._hasAlreadyInitializedZenSessionStore || !gZenWorkspaces.workspaceEnabled) {
          this.selectedTab = tabToSelect;
          this.removeTab(leftoverTab);
 +        } else {

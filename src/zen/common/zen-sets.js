@@ -101,8 +101,14 @@ document.addEventListener(
           case 'cmd_zenChangeWorkspaceIcon':
             gZenWorkspaces.changeWorkspaceIcon();
             break;
-          case 'cmd_zenOpenWorkspacePanel':
-            gZenWorkspaces.openWorkspacesDialog(event);
+          case 'cmd_zenReorderWorkspaces':
+            gZenUIManager.showToast('zen-workspaces-how-to-reorder-title', {
+              timeout: 9000,
+              descriptionId: 'zen-workspaces-how-to-reorder-desc',
+            });
+            break;
+          case 'cmd_zenOpenWorkspaceCreation':
+            gZenWorkspaces.openWorkspaceCreation(event);
             break;
           default:
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640dac8ab56 100644
+index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..370bd107be760893516360bd85553acb6533774b 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -68,6 +68,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
@@ -187,7 +187,15 @@ index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4136,6 +4204,11 @@ export class UrlbarInput {
+@@ -4025,6 +4093,7 @@ export class UrlbarInput {
+   _setPlaceholder(name) {
+     this.document.l10n.setAttributes(
+       this.inputField,
++      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ? 'zen-singletoolbar-urlbar-placeholder-with-name' :
+       name ? "urlbar-placeholder-with-name" : "urlbar-placeholder",
+       name ? { name } : undefined
+     );
+@@ -4136,6 +4205,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -199,7 +207,7 @@ index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer ||
-@@ -4207,7 +4280,7 @@ export class UrlbarInput {
+@@ -4207,7 +4281,7 @@ export class UrlbarInput {
        }
      }
  
@@ -208,7 +216,7 @@ index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -4247,9 +4320,16 @@ export class UrlbarInput {
+@@ -4247,9 +4321,16 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -226,7 +234,7 @@ index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640
  
          if (
            event.target != this.inputField &&
-@@ -4261,6 +4341,10 @@ export class UrlbarInput {
+@@ -4261,6 +4342,10 @@ export class UrlbarInput {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -237,7 +245,7 @@ index 0c5145c3d31862bd2c6b5ed2faa88f02425ffde1..1cf86995514b2c00360f6ed681f0c640
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -4301,7 +4385,7 @@ export class UrlbarInput {
+@@ -4301,7 +4386,7 @@ export class UrlbarInput {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.

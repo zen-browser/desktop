@@ -76,7 +76,6 @@
 
 
         # Images
-        content/browser/zen-images/gradient.png                                 (../../zen/images/gradient.png)
         content/browser/zen-images/brand-header.svg                             (../../zen/images/brand-header.svg)
         content/browser/zen-images/layouts/collapsed.png                        (../../zen/images/layouts/collapsed.png)
         content/browser/zen-images/layouts/multiple-toolbar.png                 (../../zen/images/layouts/multiple-toolbar.png)

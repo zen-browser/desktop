@@ -4,13 +4,13 @@
 
 {
   class ZenThemePicker extends ZenMultiWindowFeature {
-    static GRADIENT_IMAGE_URL = 'chrome://browser/content/zen-images/gradient.png';
     static MAX_DOTS = 3;
 
     currentOpacity = 0.5;
     currentRotation = -45;
     dots = [];
-    useAlgo = '';
+    #useAlgo = '';
+    #currentLightness = 50;
 
     #allowTransparencyOnSidebar = Services.prefs.getBoolPref('zen.theme.acrylic-elements', false);
 
@@ -47,7 +47,13 @@
         .getElementById('PanelUI-zen-gradient-generator-opacity')
         .addEventListener('input', this.onOpacityChange.bind(this));
 
-      this.initCanvas();
+      // Call the rest of the initialization
+      this.initContextMenu();
+      this.initPredefinedColors();
+
+      this._resolveInitialized();
+      delete this._resolveInitialized;
+
       this.initCustomColorInput();
       this.initTextureInput();
       this.initRotationInput();
@@ -59,6 +65,16 @@
 
     get isDarkMode() {
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    get colorHarmonies() {
+      return [
+        { type: 'complementary', angles: [180] },
+        { type: 'splitComplementary', angles: [150, 210] },
+        { type: 'analogous', angles: [50, 310] },
+        { type: 'triadic', angles: [120, 240] },
+        { type: 'floating', angles: [] },
+      ];
     }
 
     async onDarkModeChange(event, skipUpdate = false) {
@@ -86,40 +102,6 @@
       });
     }
 
-    initCanvas() {
-      this.image = new Image();
-      this.image.src = ZenThemePicker.GRADIENT_IMAGE_URL;
-
-      this.canvas = document.createElement('canvas');
-      this.panel.appendChild(this.canvas);
-      this.canvasCtx = this.canvas.getContext('2d');
-
-      // wait for the image to load
-      this.image.onload = this.onImageLoad.bind(this);
-    }
-
-    onImageLoad() {
-      // resize the image to fit the panel
-      const imageSize = 350 - 20; // 20 is the padding (10px)
-      const scale = imageSize / Math.max(this.image.width, this.image.height);
-      this.image.width *= scale;
-      this.image.height *= scale;
-
-      this.canvas.width = this.image.width;
-      this.canvas.height = this.image.height;
-      this.canvasCtx.drawImage(this.image, 0, 0);
-
-      this.canvas.setAttribute('hidden', 'true');
-
-      // Call the rest of the initialization
-      this.initContextMenu();
-      this.initPredefinedColors();
-
-      this._resolveInitialized();
-      delete this._resolveInitialized;
-      this.onDarkModeChange(null);
-    }
-
     initPredefinedColors() {
       document
         .getElementById('PanelUI-zen-gradient-generator-predefined')
@@ -130,6 +112,7 @@
             return;
           }
           const algo = target.getAttribute('data-algo');
+          const lightness = target.getAttribute("data-lightness")
           const numDots = parseInt(target.getAttribute('data-num-dots'));
           if (algo == 'float') {
             for (const dot of this.dots) {
@@ -156,8 +139,9 @@
               position: { x: 0, y: 0 },
             });
           }
-          this.useAlgo = algo;
-          dots = this.calculateCompliments(dots, 'update', this.useAlgo);
+          this.#useAlgo = algo;
+          this.#currentLightness = lightness;
+          dots = this.calculateCompliments(dots, 'update', this.#useAlgo);
           if (algo == 'float') {
             for (const dot of dots) {
               this.spawnDot(dot.position);
@@ -312,39 +296,85 @@
       this._onThemePickerClick = null;
     }
 
+    /**
+     * Converts an HSL color value to RGB. Conversion formula
+     * adapted from https://en.wikipedia.org/wiki/HSL_color_space.
+     * Assumes h, s, and l are contained in the set [0, 1] and
+     * returns r, g, and b in the set [0, 255].
+     *
+     * @param   {number}  h       The hue
+     * @param   {number}  s       The saturation
+     * @param   {number}  l       The lightness
+     * @return  {Array}           The RGB representation
+     */
+    hslToRgb(h, s, l) {
+      const { abs, min, max, round } = Math;
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l; // achromatic
+      } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = this.hueToRgb(p, q, h + 1 / 3);
+        g = this.hueToRgb(p, q, h);
+        b = this.hueToRgb(p, q, h - 1 / 3);
+      }
+
+      return [round(r * 255), round(g * 255), round(b * 255)];
+    }
+
+    hueToRgb(p, q, t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    }
+
     calculateInitialPosition(color) {
       const [r, g, b] = color.c;
-      const imageData = this.canvasCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-      // Find all pixels that are at least 90% similar to the color
-      const similarPixels = [];
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const pixelR = imageData.data[i];
-        const pixelG = imageData.data[i + 1];
-        const pixelB = imageData.data[i + 2];
-        if (Math.abs(r - pixelR) < 25 && Math.abs(g - pixelG) < 25 && Math.abs(b - pixelB) < 25) {
-          similarPixels.push(i);
-        }
-      }
-      // Check if there's an exact match
-      for (const pixel of similarPixels) {
-        const x = (pixel / 4) % this.canvas.width;
-        const y = Math.floor(pixel / 4 / this.canvas.width);
-        const pixelColor = this.getColorFromPosition(x, y);
-        if (pixelColor[0] === r && pixelColor[1] === g && pixelColor[2] === b) {
-          return { x: x / this.canvas.width, y: y / this.canvas.height };
-        }
-      }
-      // If there's no exact match, return the first similar pixel
-      const pixel = similarPixels[0];
-      const x = (pixel / 4) % this.canvas.width;
-      const y = Math.floor(pixel / 4 / this.canvas.width);
-      return { x: x / this.canvas.width, y: y / this.canvas.height };
+      const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
+      const rect = gradient.getBoundingClientRect();
+      const padding = 20; // each side
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const radius = (rect.width - padding) / 2;
+      const angle = (Math.atan2(g - centerY, r - centerX) * 180) / Math.PI; // Convert to degrees
+      const normalizedAngle = (angle + 360) % 360; // Normalize to [0, 360)
+      const normalizedDistance = Math.sqrt(((r - centerX) ** 2 + (g - centerY) ** 2) / radius ** 2); // Normalize distance to [0, 1]
+      const hue = (normalizedAngle / 360) * 360; // Normalize angle to [0, 360)
+      const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
+      const lightness = this.#currentLightness; // Fixed lightness for simplicity
+      const rgbColor = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
+      const x = ((rgbColor[0] / 255) * radius + centerX - rect.left) / (rect.width - padding);
+      const y = ((rgbColor[1] / 255) * radius + centerY - rect.top) / (rect.height - padding);
+      return {
+        x: Math.min(Math.max(x, 0), 1), // Ensure x is between 0 and 1
+        y: Math.min(Math.max(y, 0), 1), // Ensure y is between 0 and 1
+      };
     }
 
     getColorFromPosition(x, y) {
-      // get the color from the x and y from the image
-      const imageData = this.canvasCtx.getImageData(x, y, 1, 1);
-      return imageData.data;
+      // Return a color as hsl based on the position in the gradient
+      const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
+      const rect = gradient.getBoundingClientRect();
+      const padding = 20; // each side
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const radius = (rect.width - padding) / 2;
+      const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+      let angle = Math.atan2(y - centerY, x - centerX);
+      angle = (angle * 180) / Math.PI; // Convert to degrees
+      if (angle < 0) {
+        angle += 360; // Normalize to [0, 360)
+      }
+      const normalizedDistance = Math.min(distance / radius, 1); // Normalize distance to [0, 1]
+      const hue = (angle / 360) * 360; // Normalize angle to [0, 360)
+      const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
+      const lightness = this.#currentLightness; // Fixed lightness for simplicity
+      return this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
     }
 
     createDot(color, fromWorkspace = false) {
@@ -483,13 +513,7 @@
     }
 
     calculateCompliments(dots, action = 'update', useHarmony = '') {
-      const colorHarmonies = [
-        { type: 'complementary', angles: [180] },
-        { type: 'splitComplementary', angles: [150, 210] },
-        { type: 'analogous', angles: [30, 330] },
-        { type: 'triadic', angles: [120, 240] },
-        { type: 'floating', angles: [] },
-      ];
+      const colorHarmonies = this.colorHarmonies;
 
       if (dots.length === 0) {
         return [];
@@ -555,7 +579,7 @@
         dots.length + (action === 'add' ? 1 : action === 'remove' ? -1 : 0),
         this.dots
       );
-      this.useAlgo = harmonyAngles.type;
+      this.#useAlgo = harmonyAngles.type;
       if (!harmonyAngles || harmonyAngles.angles.length === 0) return dots;
 
       let primaryDot = dots.find((dot) => dot.ID === 0);
@@ -590,7 +614,7 @@
 
     handleColorPositions(colorPositions) {
       colorPositions.sort((a, b) => a.ID - b.ID);
-      if (this.useAlgo === 'floating') {
+      if (this.#useAlgo === 'floating') {
         const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
         const rect = dotPad.getBoundingClientRect();
         this.dots.forEach((dot) => {
@@ -677,7 +701,7 @@
       const target = event.target;
       if (target.id === 'PanelUI-zen-gradient-generator-color-add') {
         if (this.dots.length >= ZenThemePicker.MAX_DOTS) return;
-        let colorPositions = this.calculateCompliments(this.dots, 'add', this.useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'add', this.#useAlgo);
 
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace();
@@ -703,26 +727,20 @@
         this.updateCurrentWorkspace();
         return;
       } else if (target.id === 'PanelUI-zen-gradient-generator-color-toggle-algo') {
-        const colorHarmonies = [
-          { type: 'complementary', angles: [180] },
-          { type: 'splitComplementary', angles: [150, 210] },
-          { type: 'analogous', angles: [30, 330] },
-          { type: 'triadic', angles: [120, 240] },
-          { type: 'floating', angles: [] },
-        ];
+        const colorHarmonies = this.colorHarmonies;
 
         const applicableHarmonies = colorHarmonies.filter(
           (harmony) => harmony.angles.length + 1 === this.dots.length || harmony.type === 'floating'
         );
 
         let currentIndex = applicableHarmonies.findIndex(
-          (harmony) => harmony.type === this.useAlgo
+          (harmony) => harmony.type === this.#useAlgo
         );
 
         let nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % applicableHarmonies.length;
-        this.useAlgo = applicableHarmonies[nextIndex].type;
+        this.#useAlgo = applicableHarmonies[nextIndex].type;
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace();
         return;
@@ -752,7 +770,7 @@
         clickedDot.ID = 0;
         clickedDot.element.style.zIndex = 999;
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
         this.handleColorPositions(colorPositions);
         return;
       }
@@ -781,7 +799,7 @@
           y: relativeY,
         };
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace(true);
 
@@ -897,7 +915,7 @@
           x: relativeX,
           y: relativeY,
         };
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
         this.handleColorPositions(colorPositions);
 
         this.updateCurrentWorkspace();
@@ -918,6 +936,7 @@
             ],
         isCustom: color.isCustom,
         algorithm: color.algorithm,
+        lightness: color.lightness,
       }));
     }
 
@@ -946,7 +965,8 @@
 
     getGradient(colors, forToolbar = false) {
       const themedColors = this.themedColors(colors);
-      this.useAlgo = themedColors[0]?.algorithm ?? '';
+      this.#useAlgo = themedColors[0]?.algorithm ?? '';
+      this.#currentLightness = themedColors[0]?.lightness ?? 70;
 
       if (themedColors.length === 0) {
         return forToolbar
@@ -954,14 +974,30 @@
           : 'var(--zen-themed-toolbar-bg-transparent)';
       } else if (themedColors.length === 1) {
         return this.getSingleRGBColor(themedColors[0], forToolbar);
-      } else if (themedColors.length !== 3) {
-        return `linear-gradient(${this.currentRotation}deg, ${themedColors.map((color) => this.getSingleRGBColor(color, forToolbar)).join(', ')})`;
+      } else if (themedColors.length === 2) {
+        return [
+          `linear-gradient(${this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${-this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+        ].join(', ');
       } else {
         let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
         let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
         let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
-        return `linear-gradient(${this.currentRotation}deg, ${color1}, ${color2}, ${color3})`;
+        return [
+          `radial-gradient(circle at 50% 0%, ${color1}, transparent 100%)`,
+          `radial-gradient(circle at 0% 50%, ${color2}, transparent 100%)`,
+          `radial-gradient(circle at 100% 50%, ${color3}, transparent 100%)`,
+        ].join(', ');
       }
+    }
+
+    shouldBeDarkMode(accentColor) {
+      const luminance = (r, g, b) => {
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const [r, g, b] = accentColor;
+      const avgLuminance = luminance(r, g, b);
+      return avgLuminance < 128; // Threshold for dark mode
     }
 
     static getTheme(colors = [], opacity = 0.5, rotation = -45, texture = 0) {
@@ -974,7 +1010,6 @@
       };
     }
 
-    //TODO: add a better noise system that adds noise not just changes transparency
     updateNoise(texture) {
       document.documentElement.style.setProperty('--zen-grainy-background-opacity', texture);
       document.documentElement.setAttribute(
@@ -1177,6 +1212,10 @@
             '--zen-primary-color',
             this.getNativeAccentColor()
           );
+          browser.document.documentElement.setAttribute(
+            'zen-should-be-dark-mode',
+            this.shouldBeDarkMode(this.getNativeAccentColor())
+          );
           return;
         }
 
@@ -1290,6 +1329,10 @@
               ? dominantColor
               : `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
           );
+          browser.document.documentElement.setAttribute(
+            'zen-should-be-dark-mode',
+            browser.gZenThemePicker.shouldBeDarkMode(dominantColor)
+          );
         }
 
         if (!skipUpdate) {
@@ -1363,12 +1406,13 @@
             return;
           }
           const isCustom = dot.classList.contains('custom');
-          const algorithm = this.useAlgo;
+          const algorithm = this.#useAlgo;
           return {
             c: isCustom ? color : color.match(/\d+/g).map(Number),
             isCustom,
             algorithm,
             isPrimary,
+            lightness: this.#currentLightness,
           };
         });
       const gradient = ZenThemePicker.getTheme(

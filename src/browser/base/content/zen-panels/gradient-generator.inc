@@ -7,16 +7,16 @@
     <panelview id="PanelUI-zen-gradient-generator-view" class="PanelUI-subView zen-theme-picker" role="document" mainview-with-header="true" has-custom-header="true">
       <hbox>
         <hbox id="PanelUI-zen-gradient-generator-predefined">
-          <box data-algo="analogous" data-num-dots="3" data-position="219,99" style="background: linear-gradient(135deg, rgb(117, 255, 136), rgb(60, 66, 58));"></box>
-          <box data-algo="analogous" data-num-dots="3" data-position="167,201" style="background: linear-gradient(135deg, #a03fe0, #382b5c);"></box>
-          <box data-algo="analogous" data-num-dots="3" data-position="90,170" style="background: linear-gradient(135deg, #c57aa3, #af824f);"></box>
-          <box data-algo="splitComplementary" data-num-dots="3" data-position="83,103" style="background: linear-gradient(135deg, #1e90ff, #968a4a);"></box>
-          <box data-algo="analogous" data-num-dots="3" data-position="186,186" style="background: linear-gradient(135deg, #a07a48, #ab80e4);"></box>
-          <box data-algo="float" data-num-dots="1" data-position="196,176" style="background: #7bcbda;"></box>
-          <box data-algo="float" data-num-dots="1" data-position="116,167" style="background: #be9ac9;"></box>
-          <box data-algo="float" data-num-dots="1" data-position="122,110" style="background: #cdcea1;"></box>
-          <box data-algo="float" data-num-dots="1" data-position="181,83" style="background: #6ac593;"></box>
-          <box data-algo="complementary" data-num-dots="2" data-position="82,112" style="background: linear-gradient(135deg, #1e90ff, #cfb179);"></box>
+          <box data-lightness="00" data-algo="analogous" data-num-dots="3" data-position="219,99" style="background: linear-gradient(135deg, rgb(117, 255, 136), rgb(60, 66, 58));"></box>
+          <box data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="167,201" style="background: linear-gradient(135deg, #a03fe0, #382b5c);"></box>
+          <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="90,170" style="background: linear-gradient(135deg, #c57aa3, #af824f);"></box>
+          <box data-lightness="30" data-algo="splitComplementary" data-num-dots="3" data-position="83,103" style="background: linear-gradient(135deg, #1e90ff, #968a4a);"></box>
+          <box data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="186,186" style="background: linear-gradient(135deg, #a07a48, #ab80e4);"></box>
+          <box data-lightness="50" data-algo="float" data-num-dots="1" data-position="196,176" style="background: #7bcbda;"></box>
+          <box data-lightness="60" data-algo="float" data-num-dots="1" data-position="116,167" style="background: #be9ac9;"></box>
+          <box data-lightness="70" data-algo="float" data-num-dots="1" data-position="122,110" style="background: #cdcea1;"></box>
+          <box data-lightness="80" data-algo="float" data-num-dots="1" data-position="181,83" style="background: #6ac593;"></box>
+          <box data-lightness="150" data-algo="complementary" data-num-dots="2" data-position="82,112" style="background: linear-gradient(135deg, #1e90ff, #cfb179);"></box>
         </hbox>
       </hbox>
       <hbox class="zen-theme-picker-gradient">

@@ -121,7 +121,7 @@
   --zen-button-border-radius: 5px;
   --zen-button-padding: 0.6rem 1.2rem;
 
-  --zen-toolbar-element-bg: light-dark(rgba(89, 89, 89, 0.1), rgba(255, 255, 255, 0.1));
+  --zen-toolbar-element-bg: color-mix(in srgb, currentColor 10%, transparent 90%) !important;
 
   /* Toolbar */
   --zen-toolbar-height: 38px;
@@ -239,6 +239,14 @@
 
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
+
+  &[zen-should-be-dark-mode='true'] {
+    color-scheme: dark !important;
+  }
+
+  &[zen-should-be-dark-mode='false'] {
+    color-scheme: light !important;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

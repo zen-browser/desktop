@@ -220,7 +220,7 @@
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     }
     cursor: pointer;
-    border: 2px solid #ffffff;
+    border: 3px solid #ffffff;
     animation: zen-theme-picker-dot-animation 0.5s;
     transform: translate(-50%, -50%);
 
@@ -229,7 +229,7 @@
       height: 36px;
       border-width: 4px;
       z-index: 2;
-      transition: transform 0.1s;
+      transition: transform 0.2s;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
       }

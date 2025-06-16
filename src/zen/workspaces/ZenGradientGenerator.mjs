@@ -112,7 +112,7 @@
             return;
           }
           const algo = target.getAttribute('data-algo');
-          const lightness = target.getAttribute("data-lightness")
+          const lightness = target.getAttribute('data-lightness');
           const numDots = parseInt(target.getAttribute('data-num-dots'));
           if (algo == 'float') {
             for (const dot of this.dots) {
@@ -370,11 +370,16 @@
       if (angle < 0) {
         angle += 360; // Normalize to [0, 360)
       }
-      const normalizedDistance = Math.min(distance / radius, 1); // Normalize distance to [0, 1]
+      const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
       const hue = (angle / 360) * 360; // Normalize angle to [0, 360)
       const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
       const lightness = this.#currentLightness; // Fixed lightness for simplicity
-      return this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
+      const [r, g, b] = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
+      return [
+        Math.min(255, Math.max(0, r)),
+        Math.min(255, Math.max(0, g)),
+        Math.min(255, Math.max(0, b)),
+      ];
     }
 
     createDot(color, fromWorkspace = false) {
@@ -923,17 +928,10 @@
     }
 
     themedColors(colors) {
-      const isDarkMode = this.isDarkMode;
-      const factor = isDarkMode ? 0.5 : 1.1;
-
       return colors.map((color) => ({
         c: color.isCustom
           ? color.c
-          : [
-              Math.min(255, color.c[0] * factor),
-              Math.min(255, color.c[1] * factor),
-              Math.min(255, color.c[2] * factor),
-            ],
+          : [Math.min(255, color.c[0]), Math.min(255, color.c[1]), Math.min(255, color.c[2])],
         isCustom: color.isCustom,
         algorithm: color.algorithm,
         lightness: color.lightness,
@@ -956,11 +954,12 @@
       if (color.isCustom) {
         return color.c;
       }
+      const opacity = Math.min(1, Math.max(0.15, this.currentOpacity));
       if (forToolbar) {
         const toolbarBg = this.getToolbarModifiedBase();
-        return `color-mix(in srgb, rgb(${color.c[0]}, ${color.c[1]}, ${color.c[2]}) ${this.currentOpacity * 100}%, ${toolbarBg} ${(1 - this.currentOpacity) * 100}%)`;
+        return `color-mix(in srgb, rgb(${color.c[0]}, ${color.c[1]}, ${color.c[2]}) ${opacity * 100}%, ${toolbarBg} ${(1 - opacity) * 100}%)`;
       }
-      return `rgba(${color.c[0]}, ${color.c[1]}, ${color.c[2]}, ${this.currentOpacity})`;
+      return `rgba(${color.c[0]}, ${color.c[1]}, ${color.c[2]}, ${opacity})`;
     }
 
     getGradient(colors, forToolbar = false) {
@@ -993,11 +992,24 @@
 
     shouldBeDarkMode(accentColor) {
       const luminance = (r, g, b) => {
+        // Convert RGB from [0, 255] to [0, 1]
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        // Apply sRGB companding
+        const toLinear = (c) => {
+          return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        };
+        r = toLinear(r);
+        g = toLinear(g);
+        b = toLinear(b);
+        // Calculate relative luminance
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
       };
       const [r, g, b] = accentColor;
-      const avgLuminance = luminance(r, g, b);
-      return avgLuminance < 128; // Threshold for dark mode
+      const lum = luminance(r, g, b);
+      // Return true if background is dark enough that white text is preferred
+      return lum < 0.5;
     }
 
     static getTheme(colors = [], opacity = 0.5, rotation = -45, texture = 0) {
@@ -1175,7 +1187,7 @@
           );
           browser.document.documentElement.style.setProperty(
             '--zen-background-opacity',
-            browser.gZenThemePicker.previousBackgroundOpacity
+            browser.gZenThemePicker.previousBackgroundOpacity ?? 1
           );
           if (browser.gZenThemePicker.previousBackgroundResolve) {
             browser.gZenThemePicker.previousBackgroundResolve();
@@ -1212,10 +1224,7 @@
             '--zen-primary-color',
             this.getNativeAccentColor()
           );
-          browser.document.documentElement.setAttribute(
-            'zen-should-be-dark-mode',
-            this.shouldBeDarkMode(this.getNativeAccentColor())
-          );
+          browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
           return;
         }
 
@@ -1275,7 +1284,7 @@
           const rotationLine = browser.document.getElementById(
             'PanelUI-zen-gradient-generator-rotation-line'
           );
-          if (numberOfColors > 1) {
+          if (numberOfColors != 1 && numberOfColors != 3) {
             rotationDot.style.opacity = 1;
             rotationLine.style.opacity = 1;
             rotationDot.style.removeProperty('pointer-events');
@@ -1329,10 +1338,14 @@
               ? dominantColor
               : `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
           );
-          browser.document.documentElement.setAttribute(
-            'zen-should-be-dark-mode',
-            browser.gZenThemePicker.shouldBeDarkMode(dominantColor)
-          );
+          if (dominantColor !== this.getNativeAccentColor()) {
+            browser.document.documentElement.setAttribute(
+              'zen-should-be-dark-mode',
+              browser.gZenThemePicker.shouldBeDarkMode(dominantColor)
+            );
+          } else {
+            browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
+          }
         }
 
         if (!skipUpdate) {

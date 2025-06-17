@@ -170,13 +170,6 @@
   @media (-moz-windows-mica) or (-moz-platform: macos) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
-    @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
-      --zen-themed-toolbar-bg-transparent: color-mix(
-        in srgb,
-        var(--zen-themed-toolbar-bg) 35%,
-        transparent 65%
-      );
-    }
   }
 
   @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
@@ -240,11 +233,11 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  &[zen-should-be-dark-mode='true'] {
+  &[zen-should-be-dark-mode='true'] #browser {
     color-scheme: dark !important;
   }
 
-  &[zen-should-be-dark-mode='false'] {
+  &[zen-should-be-dark-mode='false'] #browser {
     color-scheme: light !important;
   }
 }

@@ -100,7 +100,7 @@
   border: none;
 }
 
-@supports (-moz-osx-font-smoothing: auto) {
+@media (-moz-platform: macos) {
   #zen-main-app-wrapper,
   #zen-appcontent-wrapper,
   #zen-sidebar-splitter {

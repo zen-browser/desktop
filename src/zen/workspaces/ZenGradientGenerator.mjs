@@ -57,10 +57,6 @@
       this.initCustomColorInput();
       this.initTextureInput();
       this.initRotationInput();
-
-      window
-        .matchMedia('(prefers-color-scheme: dark)')
-        .addListener(this.onDarkModeChange.bind(this));
     }
 
     get isDarkMode() {
@@ -75,11 +71,6 @@
         { type: 'triadic', angles: [120, 240] },
         { type: 'floating', angles: [] },
       ];
-    }
-
-    async onDarkModeChange(event, skipUpdate = false) {
-      const currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
-      this.onWorkspaceChange(currentWorkspace, skipUpdate);
     }
 
     initContextMenu() {
@@ -954,7 +945,7 @@
       if (color.isCustom) {
         return color.c;
       }
-      const opacity = Math.min(1, Math.max(0.15, this.currentOpacity));
+      const opacity = Math.min(0.9, Math.max(0.1, this.currentOpacity));
       if (forToolbar) {
         const toolbarBg = this.getToolbarModifiedBase();
         return `color-mix(in srgb, rgb(${color.c[0]}, ${color.c[1]}, ${color.c[2]}) ${opacity * 100}%, ${toolbarBg} ${(1 - opacity) * 100}%)`;
@@ -975,17 +966,17 @@
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else if (themedColors.length === 2) {
         return [
-          `linear-gradient(${this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
-          `linear-gradient(${-this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} -20%, transparent 100%)`,
+          `linear-gradient(${this.currentRotation + 180}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} -20%, transparent 100%)`,
         ].join(', ');
       } else {
         let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
         let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
         let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
         return [
-          `radial-gradient(circle at 50% 0%, ${color1}, transparent 100%)`,
-          `radial-gradient(circle at 0% 50%, ${color2}, transparent 100%)`,
-          `radial-gradient(circle at 100% 50%, ${color3}, transparent 100%)`,
+          `radial-gradient(circle at -30% -30%, ${color1}, transparent 100%)`,
+          `radial-gradient(circle at 130% -30%, ${color2}, transparent 100%)`,
+          `linear-gradient(to top, ${color3} -30%, transparent 60%)`,
         ].join(', ');
       }
     }

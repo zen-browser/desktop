@@ -1170,7 +1170,10 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       openInContainerMenuItem.setAttribute('hidden', 'true');
     }
     // Call parent node as on windows, the text can be double clicked
-    const target = event.explicitOriginalTarget?.parentNode?.closest('toolbarbutton');
+    let target;
+    try {
+      target = event.explicitOriginalTarget?.closest('toolbarbutton');
+    } catch (_) {}
     this.#contextMenuData = {
       workspaceId: target?.getAttribute('zen-workspace-id'),
       originalTarget: target,

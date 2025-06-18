@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index bde641f7112adde948707c172b9f18d3635d8ef1..0639267770467f6480bb2517ff18eb9622e9dc29 100644
+index bde641f7112adde948707c172b9f18d3635d8ef1..3f430451586904e6be086114ec10f719745093be 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
@@ -10,11 +10,12 @@ index bde641f7112adde948707c172b9f18d3635d8ef1..0639267770467f6480bb2517ff18eb96
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
    ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
-@@ -1644,6 +1645,7 @@ BrowserGlue.prototype = {
+@@ -1659,6 +1660,8 @@ BrowserGlue.prototype = {
+     } else if (profileDataVersion < APP_DATA_VERSION) {
+       lazy.ProfileDataUpgrader.upgrade(profileDataVersion, APP_DATA_VERSION);
+     }
++
++    lazy.gZenUIMigration.init(this._isNewProfile);
    },
  
-   _migrateUI() {
-+    lazy.gZenUIMigration.init(this._isNewProfile, aWindow);
-     // Use an increasing number to keep track of the current state of the user's
-     // profile, so we can move data around as needed as the browser evolves.
-     // Completely unrelated to the current Firefox release number.
+   async _showUpgradeDialog() {

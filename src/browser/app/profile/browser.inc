@@ -53,3 +53,4 @@ pref("app.update.checkInstallTime.days", 6);
 // TODO: Check this out!
 pref("browser.profiles.enabled", false);
 pref("browser.tabs.groups.enabled", false);
+pref("browser.urlbar.scotchBonnet.enableOverride", false);

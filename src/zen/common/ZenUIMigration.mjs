@@ -13,7 +13,8 @@ class ZenUIMigration {
   PREF_NAME = 'zen.migration.version';
   MIGRATION_VERSION = 5;
 
-  init(isNewProfile, win) {
+  init(isNewProfile) {
+    const win = lazy.BrowserWindowTracker.getTopWindow();
     if (!isNewProfile) {
       try {
         this._migrate(win);

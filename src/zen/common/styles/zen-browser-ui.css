@@ -104,7 +104,7 @@
   #zen-main-app-wrapper,
   #zen-appcontent-wrapper,
   #zen-sidebar-splitter {
-    appearance: -moz-window-titlebar !important;
+    appearance: -moz-window-sidebar !important;
   }
 }
 

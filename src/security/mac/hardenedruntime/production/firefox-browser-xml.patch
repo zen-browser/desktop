@@ -1,7 +1,7 @@
-diff --git a/security/mac/hardenedruntime/v2/production/firefox.browser.xml b/security/mac/hardenedruntime/v2/production/firefox.browser.xml
+diff --git a/security/mac/hardenedruntime/production/firefox.browser.xml b/security/mac/hardenedruntime/production/firefox.browser.xml
 index abbf33e9d2b3c9d1e0a34bd46e7cd289c435533b..d580b156fed13f4de8eb73e5c29c646a7a22a1d2 100644
---- a/security/mac/hardenedruntime/v2/production/firefox.browser.xml
-+++ b/security/mac/hardenedruntime/v2/production/firefox.browser.xml
+--- a/security/mac/hardenedruntime/production/firefox.browser.xml
++++ b/security/mac/hardenedruntime/production/firefox.browser.xml
 @@ -26,7 +26,7 @@
  
      <!-- Required for com.apple.developer.web-browser.public-key-credential -->

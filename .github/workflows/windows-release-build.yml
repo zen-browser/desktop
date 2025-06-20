@@ -35,7 +35,7 @@ jobs:
   windows-build:
     name: Build Windows - ${{ matrix.arch }}
     # aarch64 does not need full 16x, and we also dont use full LTO when generating GPO
-    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-gpo && matrix.arch == 'x86_64') && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-gpo && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
@@ -64,7 +64,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: useblacksmith/setup-node@v5
         with:
           node-version-file: '.nvmrc'
 
@@ -103,7 +103,7 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-win-cross
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: ${HOME}/win-cross
           key: win-cross

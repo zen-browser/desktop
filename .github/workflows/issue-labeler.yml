@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   label-component:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404
 
     permissions:
       # required for all workflows

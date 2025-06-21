@@ -92,7 +92,7 @@
   --focus-outline-color: var(--button-bgcolor) !important;
 
   --toolbarbutton-icon-fill-attention: var(--zen-primary-color) !important;
-  --toolbarbutton-icon-fill: light-dark(rgba(57, 57, 58, 0.6), rgba(251, 251, 254, 0.6)) !important;
+  --toolbarbutton-icon-fill: currentColor !important;
 
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
   --button-primary-hover-bgcolor: var(--in-content-primary-button-background-hover) !important;
@@ -121,7 +121,10 @@
   --zen-button-border-radius: 5px;
   --zen-button-padding: 0.6rem 1.2rem;
 
-  --zen-toolbar-element-bg: color-mix(in srgb, currentColor 10%, transparent 90%) !important;
+  --zen-toolbar-element-bg: light-dark(
+    color-mix(in srgb, currentColor 5%, transparent 5%),
+    color-mix(in srgb, currentColor 10%, transparent 90%)
+  ) !important;
 
   /* Toolbar */
   --zen-toolbar-height: 38px;
@@ -176,6 +179,8 @@
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
   }
+
+  --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
     --zen-main-browser-background: linear-gradient(
@@ -233,12 +238,20 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  &[zen-should-be-dark-mode='true'] #browser {
-    color-scheme: dark !important;
-  }
+  &[zen-should-be-dark-mode] {
+    & body {
+      background: rgba(255, 255, 255, 0.3);
+    }
 
-  &[zen-should-be-dark-mode='false'] #browser {
-    color-scheme: light !important;
+    &[zen-should-be-dark-mode='true'] #browser {
+      color-scheme: dark;
+      --tab-selected-color-scheme: dark;
+    }
+
+    &[zen-should-be-dark-mode='false'] #browser {
+      color-scheme: light;
+      --tab-selected-color-scheme: light;
+    }
   }
 }
 

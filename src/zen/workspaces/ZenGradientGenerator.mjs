@@ -315,6 +315,23 @@
       return [round(r * 255), round(g * 255), round(b * 255)];
     }
 
+    rgbToHsl(r, g, b) {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      let max = Math.max(r, g, b);
+      let min = Math.min(r, g, b);
+      let d = max - min;
+      let h;
+      if (d === 0) h = 0;
+      else if (max === r) h = ((g - b) / d) % 6;
+      else if (max === g) h = (b - r) / d + 2;
+      else if (max === b) h = (r - g) / d + 4;
+      let l = (min + max) / 2;
+      let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+      return [h * 60, s, l];
+    }
+
     hueToRgb(p, q, t) {
       if (t < 0) t += 1;
       if (t > 1) t -= 1;
@@ -324,27 +341,36 @@
       return p;
     }
 
-    calculateInitialPosition(color) {
-      const [r, g, b] = color.c;
-      const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
-      const rect = gradient.getBoundingClientRect();
-      const padding = 20; // each side
+    calculateInitialPosition([r, g, b]) {
+      // This function is called before the picker is even rendered, so we hard code the dimensions
+      // important: If any sort of sizing is changed, make sure changes are reflected here
+      const padding = 20;
+      const rect = {
+        width: 308,
+        height: 308,
+      };
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const radius = (rect.width - padding) / 2;
-      const angle = (Math.atan2(g - centerY, r - centerX) * 180) / Math.PI; // Convert to degrees
-      const normalizedAngle = (angle + 360) % 360; // Normalize to [0, 360)
-      const normalizedDistance = Math.sqrt(((r - centerX) ** 2 + (g - centerY) ** 2) / radius ** 2); // Normalize distance to [0, 1]
-      const hue = (normalizedAngle / 360) * 360; // Normalize angle to [0, 360)
-      const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
-      const lightness = this.#currentLightness; // Fixed lightness for simplicity
-      const rgbColor = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
-      const x = ((rgbColor[0] / 255) * radius + centerX - rect.left) / (rect.width - padding);
-      const y = ((rgbColor[1] / 255) * radius + centerY - rect.top) / (rect.height - padding);
-      return {
-        x: Math.min(Math.max(x, 0), 1), // Ensure x is between 0 and 1
-        y: Math.min(Math.max(y, 0), 1), // Ensure y is between 0 and 1
-      };
+
+      // Convert RGB to HSL
+      const [h, s, l] = this.rgbToHsl(r, g, b);
+
+      // We assume lightness is fixed; if not, add a warning or threshold check
+      // const targetLightness = this.#currentLightness / 100;
+      // if (Math.abs(l - targetLightness) > 0.01) return null;
+
+      // Convert hue (0-1) to angle in radians
+      const angleRad = (h * 360 * Math.PI) / 180;
+
+      // Convert saturation to radial distance
+      const distance = (1 - s) * radius;
+
+      // Convert polar to cartesian
+      const x = centerX + Math.cos(angleRad) * distance;
+      const y = centerY + Math.sin(angleRad) * distance;
+
+      return { x, y };
     }
 
     getColorFromPosition(x, y) {
@@ -352,6 +378,8 @@
       const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
       const rect = gradient.getBoundingClientRect();
       const padding = 20; // each side
+      rect.width += padding * 2;
+      rect.height += padding * 2;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const radius = (rect.width - padding) / 2;
@@ -387,13 +415,13 @@
         dot.style.opacity = 0;
         dot.style.setProperty('--zen-theme-picker-dot-color', color.c);
       } else {
-        const { x, y } = this.calculateInitialPosition(color);
+        const { x, y } = this.calculateInitialPosition(color.c);
         const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
 
         dot.classList.add('zen-theme-picker-dot');
 
-        dot.style.left = `${x * 100}%`;
-        dot.style.top = `${y * 100}%`;
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
 
         if (this.dots.length < 1) {
           dot.classList.add('primary');
@@ -930,7 +958,11 @@
     }
 
     onOpacityChange(event) {
-      this.currentOpacity = event.target.value;
+      this.currentOpacity = parseFloat(event.target.value);
+      // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback
+      if (Math.round(this.currentOpacity % 0.1) === 0) {
+        Services.zen.playHapticFeedback();
+      }
       this.updateCurrentWorkspace();
     }
 
@@ -945,12 +977,58 @@
       if (color.isCustom) {
         return color.c;
       }
-      const opacity = Math.min(0.9, Math.max(0.1, this.currentOpacity));
+      const opacity = this.currentOpacity;
       if (forToolbar) {
         const toolbarBg = this.getToolbarModifiedBase();
         return `color-mix(in srgb, rgb(${color.c[0]}, ${color.c[1]}, ${color.c[2]}) ${opacity * 100}%, ${toolbarBg} ${(1 - opacity) * 100}%)`;
       }
       return `rgba(${color.c[0]}, ${color.c[1]}, ${color.c[2]}, ${opacity})`;
+    }
+
+    luminance([r, g, b]) {
+      const a = [r, g, b].map((v) => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+    }
+
+    contrastRatio(rgb1, rgb2) {
+      const lum1 = this.luminance(rgb1);
+      const lum2 = this.luminance(rgb2);
+      const brightest = Math.max(lum1, lum2);
+      const darkest = Math.min(lum1, lum2);
+      return (brightest + 0.05) / (darkest + 0.05);
+    }
+
+    blendColors(rgb1, rgb2, percentage) {
+      const p = percentage / 100;
+      return [
+        Math.round(rgb1[0] * p + rgb2[0] * (1 - p)),
+        Math.round(rgb1[1] * p + rgb2[1] * (1 - p)),
+        Math.round(rgb1[2] * p + rgb2[2] * (1 - p)),
+      ];
+    }
+
+    findOptimalBlend(dominantColor, blendTarget, minContrast = 4.5) {
+      let low = 0;
+      let high = 100;
+      let bestMatch = null;
+
+      for (let i = 0; i < 10; i++) {
+        const mid = (low + high) / 2;
+        const blended = this.blendColors(dominantColor, blendTarget, mid);
+        const contrast = this.contrastRatio(blended, blendTarget);
+
+        if (contrast >= minContrast) {
+          bestMatch = blended;
+          high = mid;
+        } else {
+          low = mid;
+        }
+      }
+
+      return bestMatch || this.blendColors(dominantColor, blendTarget, 10); // fallback
     }
 
     getGradient(colors, forToolbar = false) {
@@ -966,8 +1044,8 @@
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else if (themedColors.length === 2) {
         return [
-          `linear-gradient(${this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} -20%, transparent 100%)`,
-          `linear-gradient(${this.currentRotation + 180}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} -20%, transparent 100%)`,
+          `linear-gradient(${this.currentRotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} -30%, transparent 100%)`,
+          `linear-gradient(${this.currentRotation + 180}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} -30%, transparent 100%)`,
         ].join(', ');
       } else {
         let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
@@ -982,23 +1060,7 @@
     }
 
     shouldBeDarkMode(accentColor) {
-      const luminance = (r, g, b) => {
-        // Convert RGB from [0, 255] to [0, 1]
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        // Apply sRGB companding
-        const toLinear = (c) => {
-          return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-        };
-        r = toLinear(r);
-        g = toLinear(g);
-        b = toLinear(b);
-        // Calculate relative luminance
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      };
-      const [r, g, b] = accentColor;
-      const lum = luminance(r, g, b);
+      const lum = this.luminance(accentColor);
       // Return true if background is dark enough that white text is preferred
       return lum < 0.5;
     }
@@ -1139,6 +1201,16 @@
       return color;
     }
 
+    blendColors(rgb1, rgb2, percentage) {
+      const p = percentage / 100;
+      const blended = [
+        Math.round(rgb1[0] * p + rgb2[0] * (1 - p)),
+        Math.round(rgb1[1] * p + rgb2[1] * (1 - p)),
+        Math.round(rgb1[2] * p + rgb2[2] * (1 - p)),
+      ];
+      return `rgb(${blended[0]}, ${blended[1]}, ${blended[2]})`;
+    }
+
     async onWorkspaceChange(workspace, skipUpdate = false, theme = null) {
       const uuid = workspace.uuid;
       // Use theme from workspace object or passed theme
@@ -1170,7 +1242,6 @@
           }
         }
 
-        const appBackground = browser.document.getElementById('zen-browser-background');
         if (!skipUpdate) {
           browser.document.documentElement.style.setProperty(
             '--zen-main-browser-background-old',
@@ -1275,7 +1346,7 @@
           const rotationLine = browser.document.getElementById(
             'PanelUI-zen-gradient-generator-rotation-line'
           );
-          if (numberOfColors != 1 && numberOfColors != 3) {
+          if (numberOfColors > 1 && numberOfColors != 3) {
             rotationDot.style.opacity = 1;
             rotationLine.style.opacity = 1;
             rotationDot.style.removeProperty('pointer-events');
@@ -1329,14 +1400,25 @@
               ? dominantColor
               : `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
           );
+          let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
           if (dominantColor !== this.getNativeAccentColor()) {
-            browser.document.documentElement.setAttribute(
-              'zen-should-be-dark-mode',
-              browser.gZenThemePicker.shouldBeDarkMode(dominantColor)
-            );
+            isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
+            browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
           } else {
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
           }
+          // Set `--toolbox-textcolor` to have a contrast with the primary color
+          const blendTarget = isDarkMode ? [255, 255, 255] : [0, 0, 0];
+          const blendedColor = this.blendColors(dominantColor, blendTarget, 15); // 15% dominantColor, 85% target
+          await gZenUIManager.motion.animate(
+            browser.document.documentElement,
+            {
+              '--toolbox-textcolor': blendedColor,
+            },
+            {
+              duration: 0.1,
+            }
+          );
         }
 
         if (!skipUpdate) {

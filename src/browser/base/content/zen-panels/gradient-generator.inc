@@ -37,7 +37,7 @@
         <hbox id="PanelUI-zen-gradient-colors-wrapper">
           <vbox flex="1">
             <label data-l10n-id="zen-panel-ui-gradient-generator-opacity-text"></label>
-            <html:input type="range" min="0" max="1" value="0.5" step="0.05" id="PanelUI-zen-gradient-generator-opacity" />
+            <html:input type="range" min="0.15" max="0.85" value="0.5" step="0.05" id="PanelUI-zen-gradient-generator-opacity" />
           </vbox>
           <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">
           </vbox>

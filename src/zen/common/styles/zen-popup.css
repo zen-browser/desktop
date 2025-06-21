@@ -394,7 +394,6 @@ menuseparator {
     }
 
     & button {
-      color-scheme: dark;
       width: min-content;
       padding: 0 10px !important;
       min-width: unset !important;

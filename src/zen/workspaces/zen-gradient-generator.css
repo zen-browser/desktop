@@ -5,7 +5,7 @@
  */
 
 #PanelUI-zen-gradient-generator {
-  --panel-width: 320px;
+  --panel-width: 330px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
 }
@@ -194,11 +194,10 @@
 
 .zen-theme-picker-gradient {
   position: relative;
-  border-radius: calc(var(--zen-border-radius) - 2px);
   overflow: hidden;
   border-radius: var(--zen-border-radius);
 
-  min-height: calc(var(--panel-width) - var(--panel-padding) * 2);
+  min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   margin-bottom: 20px;
 
   background: var(--zen-toolbar-element-bg);

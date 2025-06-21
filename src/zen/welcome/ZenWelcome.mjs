@@ -161,6 +161,7 @@
     async fadeInButtons(page) {
       const buttons = document.getElementById('zen-welcome-page-sidebar-buttons');
       let i = 0;
+      const insertedButtons = [];
       for (const button of page.buttons) {
         const buttonElement = document.createXULElement('button');
         document.l10n.setAttributes(buttonElement, button.l10n);
@@ -174,6 +175,8 @@
             this.next();
           }
         });
+        buttonElement.style.pointerEvents = 'none'; // Disable pointer events until animation is done
+        insertedButtons.push(buttonElement);
         buttons.appendChild(buttonElement);
       }
       await animate(
@@ -185,6 +188,9 @@
           bounce: 0.2,
         }
       );
+      for (const button of insertedButtons) {
+        button.style.pointerEvents = ''; // Enable pointer events after animation
+      }
     }
 
     async fadeInContent() {
@@ -723,17 +729,6 @@
       }
     );
     const button = document.getElementById('zen-welcome-start-button');
-    await animate(
-      button,
-      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
-      {
-        delay: 0.1,
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-        mass: 1.8,
-      }
-    );
     button.addEventListener('click', async () => {
       await animate(
         '#zen-welcome-title span, #zen-welcome-start-button',
@@ -747,6 +742,17 @@
       );
       new ZenWelcomePages(getWelcomePages());
     });
+    await animate(
+      button,
+      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
+      {
+        delay: 0.1,
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+        mass: 1.8,
+      }
+    );
   }
 
   function centerWindowOnScreen() {

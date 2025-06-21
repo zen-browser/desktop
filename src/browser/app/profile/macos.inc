@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 // Enable transparent background for macos
-pref('widget.macos.titlebar-blend-mode.behind-window', true);
+pref('widget.macos.sidebar-blend-mode.behind-window', true);
 // 1. hudWindow
 // 2. fullScreenUI
 // 3. popover

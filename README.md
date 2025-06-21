@@ -30,10 +30,18 @@ Zen is a firefox-based browser with the aim of pushing your productivity to a ne
 ### Firefox Versions
 
 - [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `139.0.4`! 🚀
-- [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 139.0.4`!
+- [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 140.0`!
 
 ### Contributing
 
 If you'd like to report a bug, please do so on our [GitHub Issues page](https://github.com/zen-browser/desktop/issues/) and for feature requests, you can use [Github Discussions](https://github.com/zen-browser/desktop/discussions).
 
 Zen is an open-source project, and we welcome contributions from the community! Please take a look at the [contribution guidelines](./docs/contribute.md) before getting started!
+
+#### Partners
+
+Thanks to all the partners of Zen for their support and contributions:
+
+<a href="https://blacksmith.sh">
+  <img src="./docs/assets/blacksmith-yellow.png" width="350px"/>
+</a>

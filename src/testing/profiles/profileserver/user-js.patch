@@ -1,8 +1,8 @@
 diff --git a/testing/profiles/profileserver/user.js b/testing/profiles/profileserver/user.js
-index 19ff7d474f6d22d2d386764e2e6942ce6a324470..531446847039fd683af52ac7fdfd601bea3cb624 100644
+index 19ff7d474f6d22d2d386764e2e6942ce6a324470..75ec03c0d6a2f12986eb434f4b9b5350e1af37fd 100644
 --- a/testing/profiles/profileserver/user.js
 +++ b/testing/profiles/profileserver/user.js
-@@ -8,3 +8,13 @@
+@@ -8,3 +8,12 @@
  user_pref("dom.timeout.enable_budget_timer_throttling", false);
  // Turn off update
  user_pref("app.update.disabledForTesting", true);
@@ -15,4 +15,3 @@ index 19ff7d474f6d22d2d386764e2e6942ce6a324470..531446847039fd683af52ac7fdfd601b
 +user_pref("zen.urlbar.replace-newtab", false);
 +user_pref("zen.testing.enabled", true);
 +user_pref("zen.testing.profiling.enabled", true);
-+user_pref("dom.security.https_only_mode", false); // Dont ask why

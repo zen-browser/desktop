@@ -1,0 +1,7 @@
+[DEFAULT]
+prefs = ["zen.welcome-screen.seen=false"]
+support-files = [
+  "head.js",
+]
+
+["browser_welcome.js"]

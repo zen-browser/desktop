@@ -1,8 +1,8 @@
 diff --git a/testing/profiles/mochitest/user.js b/testing/profiles/mochitest/user.js
-index a4068ac3f61161d014c49d54ae7a3bf886868f1b..6af5907abb46b6d3b871c159c73eec8373ee8ef5 100644
+index a4068ac3f61161d014c49d54ae7a3bf886868f1b..b9861cfaae19a4a71b75ccc73095dc602df22b12 100644
 --- a/testing/profiles/mochitest/user.js
 +++ b/testing/profiles/mochitest/user.js
-@@ -41,3 +41,10 @@ user_pref("places.history.floodingPrevention.enabled", false);
+@@ -41,3 +41,9 @@ user_pref("places.history.floodingPrevention.enabled", false);
  // permission, and we can open it and wait for the user to give permission, then
  // don't do that.
  user_pref("geo.prompt.open_system_prefs", false);
@@ -12,4 +12,3 @@ index a4068ac3f61161d014c49d54ae7a3bf886868f1b..6af5907abb46b6d3b871c159c73eec83
 +user_pref("zen.watermark.enabled", false);
 +user_pref("zen.urlbar.replace-newtab", false);
 +user_pref("zen.testing.enabled", true);
-+user_pref("dom.security.https_only_mode", false); // Dont ask why

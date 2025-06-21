@@ -173,11 +173,17 @@
   @media (-moz-windows-mica) or (-moz-platform: macos) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
+    &[zen-should-be-dark-mode] {
+      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
+    }
   }
 
   @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
+    &[zen-should-be-dark-mode] {
+      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
+    }
   }
 
   --toolbar-field-color: var(--toolbox-textcolor) !important;
@@ -238,20 +244,14 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  &[zen-should-be-dark-mode] {
-    & body {
-      background: rgba(255, 255, 255, 0.3);
-    }
+  &[zen-should-be-dark-mode='true'] #browser {
+    color-scheme: dark;
+    --tab-selected-color-scheme: dark;
+  }
 
-    &[zen-should-be-dark-mode='true'] #browser {
-      color-scheme: dark;
-      --tab-selected-color-scheme: dark;
-    }
-
-    &[zen-should-be-dark-mode='false'] #browser {
-      color-scheme: light;
-      --tab-selected-color-scheme: light;
-    }
+  &[zen-should-be-dark-mode='false'] #browser {
+    color-scheme: light;
+    --tab-selected-color-scheme: light;
   }
 }
 

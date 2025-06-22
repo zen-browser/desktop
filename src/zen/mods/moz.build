@@ -7,3 +7,23 @@ FINAL_TARGET_FILES.actors += [
     "actors/ZenModsMarketplaceChild.sys.mjs",
     "actors/ZenModsMarketplaceParent.sys.mjs",
 ]
+
+XPIDL_SOURCES += [
+    "nsZenModsBackend.idl",
+]
+
+EXPORTS.mozilla += [
+    "ZenStyleSheetCache.h",
+    "nsZenModsBackend.h",
+]
+
+SOURCES += [
+    "ZenStyleSheetCache.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen"

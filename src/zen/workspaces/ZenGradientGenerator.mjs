@@ -969,8 +969,12 @@
     getToolbarModifiedBase() {
       const opacity = this.#allowTransparencyOnSidebar ? 0.6 : 1;
       return this.isDarkMode
-        ? `color-mix(in srgb, var(--zen-themed-toolbar-bg) 96%, rgba(255,255,255,${opacity}) 4%)`
-        : `color-mix(in srgb, var(--zen-themed-toolbar-bg) 96%, rgba(0,0,0,${opacity}) 4%)`;
+        ? `rgba(23, 23, 26, ${opacity})`
+        : `rgba(240, 240, 244, ${opacity})`;
+    }
+
+    get cantBeTransparent() {
+      return window.matchMedia('(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))').matches;
     }
 
     getSingleRGBColor(color, forToolbar = false) {
@@ -1038,7 +1042,7 @@
 
       if (themedColors.length === 0) {
         return forToolbar
-          ? 'var(--zen-themed-toolbar-bg)'
+          ? this.getToolbarModifiedBase()
           : 'var(--zen-themed-toolbar-bg-transparent)';
       } else if (themedColors.length === 1) {
         return this.getSingleRGBColor(themedColors[0], forToolbar);

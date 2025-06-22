@@ -1046,7 +1046,7 @@
       // Calculate middle to decide 'before' or 'after'
       const rect = targetTab.getBoundingClientRect();
       let shouldPlayHapticFeedback = false;
-      if (isVertical) {
+      if (isVertical || !this.expandedSidebarMode) {
         const separation = 8;
         const middleY = targetTab.screenY + rect.height / 2;
         const indicator = this.dragIndicator;

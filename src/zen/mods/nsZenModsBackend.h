@@ -20,20 +20,11 @@ class nsZenModsBackend final : public nsIZenModsBackend {
  public:
   explicit nsZenModsBackend();
 
-  /**
-   * @brief Insert the mods stylesheet into the document
-   *  if it is enabled and it is a chrome document.
-   * @param aDocument The document to insert the mods stylesheet into.
-   * @param aStylesSet The style set to insert the mods stylesheet into.
-   * @returns void
-   */
-  auto InsertModsStylesheetIfEnabled(mozilla::dom::Document* aDocument, 
-      mozilla::ServoStyleSet& aStylesSet) -> void;
  protected:
   /**
    * @brief Check for the preference and see if the app is on safe mode.
    */
-  auto CheckEnabled() -> void;
+  auto CheckEnabled() -> bool;
 
  private:
   ~nsZenModsBackend() = default;

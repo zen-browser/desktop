@@ -5,7 +5,13 @@
 #include "nsZenModsBackend.h"
 
 #include "nsIXULRuntime.h"
-#include "nsIStyleSheetService.h"
+#include "nsStyleSheetService.h"
+
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/ContentParent.h"
+
+#include "nsIURI.h"
+#include "nsIFile.h"
 
 #include "ZenStyleSheetCache.h"
 
@@ -23,10 +29,10 @@ static auto GetZenStyleSheetCache() -> ZenStyleSheetCache* {
 NS_IMPL_ISUPPORTS(nsZenModsBackend, nsIZenModsBackend)
 
 nsZenModsBackend::nsZenModsBackend() {
-  CheckEnabled();
+  mozilla::Unused << CheckEnabled();
 }
 
-auto nsZenModsBackend::CheckEnabled() -> void {
+auto nsZenModsBackend::CheckEnabled() -> bool {
   // Check if the mods backend is enabled based on the preference.
   nsCOMPtr<nsIXULRuntime> appInfo =
       do_GetService("@mozilla.org/xre/app-info;1");
@@ -35,58 +41,23 @@ auto nsZenModsBackend::CheckEnabled() -> void {
     appInfo->GetInSafeMode(&inSafeMode);
   }
   mEnabled = !inSafeMode &&
-             !mozilla::Preferences::GetBool("zen.themes.disable-all", false);  
-}
-
-auto nsZenModsBackend::InsertModsStylesheetIfEnabled(
-  mozilla::dom::Document* aDocument, mozilla::ServoStyleSet& aStylesSet) -> void {
-  if (!mEnabled || !aDocument->IsInChromeDocShell()) {
-    return;
-  }
-  // Get the mods stylesheet from the cache.
-  auto modsSheet = GetZenStyleSheetCache()->GetModsSheet();
-  if (!modsSheet) {
-    // If the mods stylesheet is not available, we do nothing.
-    return;
-  }
-  // Insert the mods stylesheet into the style set.
-  aStylesSet.AppendStyleSheet(*modsSheet);
+             !mozilla::Preferences::GetBool("zen.themes.disable-all", false);
+  return mEnabled; 
 }
 
 auto nsZenModsBackend::RebuildModsStyles() -> nsresult {
-  CheckEnabled();
-
-  if (!mEnabled) {
-    return NS_OK; // If not enabled, nothing to do.
-  }
-
   // Invalidate the mods stylesheet cache.
   GetZenStyleSheetCache()->InvalidateModsSheet();
-
   // Rebuild the mods stylesheets.
   auto modsSheet = GetZenStyleSheetCache()->GetModsSheet();
   if (!modsSheet) {
-    return NS_OK; // No mods stylesheet to rebuild.
-  }
-
-  // Get the service from @mozilla.org/content/style-sheet-service;1
-  nsCOMPtr<nsIStyleSheetService> styleSheetService =
-      do_GetService(NS_STYLESHEETSERVICE_CONTRACTID);
-  if (!styleSheetService) {
     return NS_ERROR_FAILURE;
   }
-
-  // Unload and unregister the existing mods stylesheet if it exists.
-  nsIURI* modsSheetURI = modsSheet->GetSheetURI();
-  if (modsSheetURI) {
-    nsresult rv = styleSheetService->UnregisterSheet(
-        modsSheetURI, nsIStyleSheetService::USER_SHEET);
-    // Ignore result as it may not be registered yet.
-    rv = styleSheetService->RegisterSheet(
-        modsSheetURI, nsIStyleSheetService::USER_SHEET);
-    mozilla::Unused << rv;
+  // Get the service from @mozilla.org/content/style-sheet-service;1
+  if (auto* sss = nsStyleSheetService::GetInstance()) {
+    // Register the mods stylesheet.
+    sss->UpdateZenModStyles(modsSheet, modsSheet->GetSheetURI(), CheckEnabled());
   }
-
   // Notify that the mods stylesheets have been rebuilt.
   return NS_OK;
 }
@@ -96,9 +67,39 @@ nsZenModsBackend::InvalidateModsSheet() {
   if (!mEnabled) {
     return NS_ERROR_NOT_AVAILABLE;
   }
-
   GetZenStyleSheetCache()->InvalidateModsSheet();
   return NS_OK;
 }
 
 } // namespace: zen
+
+void nsStyleSheetService::UpdateZenModStyles(mozilla::StyleSheet* aSheet, nsIURI* aURI, bool aInsert) {
+  auto sheetType = nsStyleSheetService::USER_SHEET;
+  this->UnregisterSheet(aURI, sheetType);
+  if (!aSheet || !aInsert) {
+    return; // Nothing to update.
+  }
+  mSheets[sheetType].AppendElement(aSheet);
+  // Hold on to a copy of the registered PresShells.
+  for (mozilla::PresShell* presShell : mPresShells.Clone()) {
+    // Only allow on chrome documents.
+    auto doc = presShell->GetDocument();
+    if (doc && !doc->IsInChromeDocShell()) {
+      continue;
+    }
+    presShell->NotifyStyleSheetServiceSheetAdded(aSheet, sheetType);
+  }
+
+  if (XRE_IsParentProcess()) {
+    nsTArray<mozilla::dom::ContentParent*> children;
+    mozilla::dom::ContentParent::GetAll(children);
+
+    if (children.IsEmpty()) {
+      return;
+    }
+
+    for (uint32_t i = 0; i < children.Length(); i++) {
+      mozilla::Unused << children[i]->SendLoadAndRegisterSheet(aURI, sheetType);
+    }
+  }
+}

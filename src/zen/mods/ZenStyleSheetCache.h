@@ -10,17 +10,16 @@
 #include "mozilla/StaticPtr.h"
 
 #ifndef ZEN_MODS_FILENAME
-  #define ZEN_MODS_FILENAME u"zen-mods.css"_ns
+  #define ZEN_MODS_FILENAME u"zen-themes.css"_ns
 #endif
 
 namespace zen {
 
-class ZenStyleSheetCache final : public nsIObserver {
+class ZenStyleSheetCache final : public nsISupports {
   using StyleSheet = mozilla::StyleSheet;
 
  public:
   NS_DECL_ISUPPORTS
-  NS_DECL_NSIOBSERVER
 
   /**
    * @brief Clear up the cache and create a new mods stylesheet.
@@ -34,7 +33,7 @@ class ZenStyleSheetCache final : public nsIObserver {
    * This is called when we need to get the mods stylesheets.
    * @returns The mods stylesheet.
    */
-  auto GetModsSheet() -> RefPtr<StyleSheet>;
+  auto GetModsSheet() -> StyleSheet*;
 
   static auto Singleton() -> ZenStyleSheetCache*;
  private:
@@ -46,9 +45,8 @@ class ZenStyleSheetCache final : public nsIObserver {
    * @param aFile The file to load the stylesheet from.
    */
   auto LoadSheetFile(nsIFile* aFile, mozilla::css::SheetParsingMode aParsingMode)
-      -> RefPtr<StyleSheet>;
+      -> void;
 
-  static mozilla::StaticRefPtr<mozilla::css::Loader> gCSSLoader;
   static mozilla::StaticRefPtr<ZenStyleSheetCache> gZenModsCache;
 
   RefPtr<StyleSheet> mModsSheet;

@@ -14,14 +14,18 @@
 namespace zen {
 
 using namespace mozilla;
+NS_IMPL_ISUPPORTS(ZenStyleSheetCache, nsISupports)
 
 auto ZenStyleSheetCache::InvalidateModsSheet() -> void {
   mModsSheet = nullptr;
 }
 
-auto ZenStyleSheetCache::GetModsSheet() -> RefPtr<StyleSheet> {
+auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
+  if (mModsSheet) {
+    // If the mods stylesheet is already loaded, return it.
+    return mModsSheet;
+  }
   nsCOMPtr<nsIFile> chromeFile;
-  auto* cache = GlobalStyleSheetCache::Singleton();
 
   NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile));
   if (!chromeFile) {
@@ -30,29 +34,26 @@ auto ZenStyleSheetCache::GetModsSheet() -> RefPtr<StyleSheet> {
   }
 
   chromeFile->Append(ZEN_MODS_FILENAME);
-  mModsSheet = LoadSheetFile(chromeFile, css::eUserSheetFeatures);
-  return mModsSheet.forget();
+  LoadSheetFile(chromeFile, css::eUserSheetFeatures);
+  return mModsSheet;
 }
 
 auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
                                         css::SheetParsingMode aParsingMode)
-    -> RefPtr<StyleSheet> {
+    -> void {
   nsCOMPtr<nsIURI> uri;
   NS_NewFileURI(getter_AddRefs(uri), aFile);
   if (!uri) {
-    return nullptr;
+    return;
   }
 
-  if (!gCSSLoader) {
-    gCSSLoader = new mozilla::css::Loader;
-  }
-
-  auto result = gCSSLoader->LoadSheetSync(uri, aParsingMode,
+  auto loader = new mozilla::css::Loader;
+  auto result = loader->LoadSheetSync(uri, aParsingMode,
                                           css::Loader::UseSystemPrincipal::Yes);
   if (MOZ_UNLIKELY(result.isErr())) {
-    return nullptr;
+    return;
   }
-  return result.unwrapOr(nullptr);
+  mModsSheet = result.unwrapOr(nullptr);
 }
   
 /* static */
@@ -64,7 +65,6 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   return gZenModsCache;
 }
 
-mozilla::StaticRefPtr<mozilla::css::Loader> ZenStyleSheetCache::gCSSLoader; 
 mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache; 
 
 } // namespace: zen

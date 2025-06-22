@@ -51,7 +51,7 @@
     }
   }
 
-  class ZenPinnedTabManager extends ZenDOMOperatedFeature {
+  class nsZenPinnedTabManager extends ZenDOMOperatedFeature {
     MAX_ESSENTIALS_TABS = 12;
 
     async init() {
@@ -1104,5 +1104,5 @@
     }
   }
 
-  window.gZenPinnedTabManager = new ZenPinnedTabManager();
+  window.gZenPinnedTabManager = new nsZenPinnedTabManager();
 }

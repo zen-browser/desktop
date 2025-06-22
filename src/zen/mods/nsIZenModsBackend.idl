@@ -5,6 +5,11 @@
 #include "nsISupports.idl"
 #include "nsIURI.idl"
 
+%{C++
+#include "mozilla/ServoStyleSet.h"
+#include "mozilla/dom/Document.h"
+%}
+
 /**
  * @brief Interface for Zen mods backend.
  */

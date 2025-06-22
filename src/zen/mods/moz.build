@@ -26,5 +26,12 @@ XPCOM_MANIFESTS += [
     "components.conf",
 ]
 
+include("/ipc/chromium/chromium-config.mozbuild")
+
+LOCAL_INCLUDES += [
+    "/dom/base",
+    "/dom/ipc",
+]
+
 FINAL_LIBRARY = "xul"
 XPIDL_MODULE = "zen_mods"

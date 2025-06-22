@@ -9,15 +9,16 @@ FINAL_TARGET_FILES.actors += [
 ]
 
 XPIDL_SOURCES += [
-    "nsZenModsBackend.idl",
+    "nsIZenModsBackend.idl",
 ]
 
 EXPORTS.mozilla += [
-    "ZenStyleSheetCache.h",
     "nsZenModsBackend.h",
+    "ZenStyleSheetCache.h",
 ]
 
 SOURCES += [
+    "nsZenModsBackend.cpp",
     "ZenStyleSheetCache.cpp",
 ]
 
@@ -26,4 +27,4 @@ XPCOM_MANIFESTS += [
 ]
 
 FINAL_LIBRARY = "xul"
-XPIDL_MODULE = "zen"
+XPIDL_MODULE = "zen_mods"

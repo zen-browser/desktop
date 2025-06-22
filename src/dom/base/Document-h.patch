@@ -1,0 +1,12 @@
+diff --git a/dom/base/Document.h b/dom/base/Document.h
+index f9f8089ad484330a9d863fac7559b94aa34d80fd..fb10d96246909f3bc1f51cc10eefe068a5158ac5 100644
+--- a/dom/base/Document.h
++++ b/dom/base/Document.h
+@@ -6,6 +6,7 @@
+ 
+ #ifndef mozilla_dom_Document_h___
+ #define mozilla_dom_Document_h___
++#include "mozilla/nsZenModsBackend.h"
+ 
+ #include <bitset>
+ #include <cstddef>

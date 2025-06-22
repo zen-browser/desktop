@@ -25,15 +25,13 @@
     }
 
     // Stylesheet service
-    #sss = null;
+    #_modsBackend = null;
 
-    get #stylesheetService() {
-      if (!this.#sss) {
-        this.#sss = Cc['@mozilla.org/content/style-sheet-service;1'].getService(
-          Ci.nsIStyleSheetService
-        );
+    get #modsBackend() {
+      if (!this.#_modsBackend) {
+        this.#_modsBackend = Cc['@mozilla.org/zen/mods-backend;1'].getService(Ci.nsIZenModsBackend);
       }
-      return this.#sss;
+      return this.#_modsBackend;
     }
 
     #ssu = null;
@@ -50,15 +48,7 @@
     }
 
     async #handleDisableMods() {
-      if (Services.prefs.getBoolPref('zen.themes.disable-all', false)) {
-        console.log('[ZenMods]: Disabling mods module.');
-
-        await this.#removeStylesheet();
-      } else {
-        console.log('[ZenMods]: Enabling mods module.');
-
-        await this.#rebuildModsStylesheet();
-      }
+      await this.#rebuildModsStylesheet();
     }
 
     #getStylesheetURIForMod(mod) {
@@ -68,60 +58,32 @@
     }
 
     async #insertStylesheet() {
-      if (await IOUtils.exists(this.#styleSheetPath)) {
-        await this.#stylesheetService.loadAndRegisterSheet(
-          this.#styleSheetUri,
-          this.#stylesheetService.AGENT_SHEET
-        );
-      }
-
-      if (
-        !this.#stylesheetService.sheetRegistered(
-          this.#styleSheetUri,
-          this.#stylesheetService.AGENT_SHEET
-        )
-      ) {
-        console.error(`[ZenMods]: Failed to register stylesheet at ${this.#styleSheetUri.spec}.`);
-      }
-    }
-
-    async #removeStylesheet() {
-      await this.#stylesheetService.unregisterSheet(
-        this.#styleSheetUri,
-        this.#stylesheetService.AGENT_SHEET
-      );
-      const rv = this.#stylesheetService.sheetRegistered(
-        this.#styleSheetUri,
-        this.#stylesheetService.AGENT_SHEET
-      );
-      await IOUtils.remove(this.#styleSheetPath, { ignoreAbsent: true });
-
-      if (rv || (await IOUtils.exists(this.#styleSheetPath))) {
-        console.error(`[ZenMods]: Failed to unregister stylesheet at ${this.#styleSheetUri.spec}.`);
-      }
+      this.#modsBackend.rebuildModsStyles();
     }
 
     async #rebuildModsStylesheet() {
-      await this.#removeStylesheet();
+      const shouldBeEnabled = Services.prefs.getBoolPref('zen.mods.enabled', true);
+      await this.#modsBackend.checkEnabled();
+      if (shouldBeEnabled) {
+        const mods = await this.#getEnabledMods();
 
-      const mods = await this.#getEnabledMods();
+        await this.#writeStylesheet(mods);
 
-      await this.#writeStylesheet(mods);
+        const modsWithPreferences = await Promise.all(
+          mods.map(async (mod) => {
+            const preferences = await this.getModPreferences(mod);
 
-      const modsWithPreferences = await Promise.all(
-        mods.map(async (mod) => {
-          const preferences = await this.getModPreferences(mod);
+            return {
+              name: mod.name,
+              enabled: mod.enabled,
+              preferences,
+            };
+          })
+        );
 
-          return {
-            name: mod.name,
-            enabled: mod.enabled,
-            preferences,
-          };
-        })
-      );
-
-      this.#setDefaults(modsWithPreferences);
-      this.#writeToDom(modsWithPreferences);
+        this.#setDefaults(modsWithPreferences);
+        this.#writeToDom(modsWithPreferences);
+      }
 
       await this.#insertStylesheet();
     }
@@ -336,20 +298,8 @@
 
           const data = await response.text();
 
-          let content = data;
-
-          if (isStyleSheet) {
-            content = '@-moz-document url-prefix("chrome:") {\n';
-
-            for (const line of data.split('\n')) {
-              content += `  ${line}\n`;
-            }
-
-            content += '}';
-          }
-
           // convert the data into a Uint8Array
-          const buffer = new TextEncoder().encode(content);
+          const buffer = new TextEncoder().encode(data);
           await IOUtils.write(path, buffer);
 
           return; // to exit the loop

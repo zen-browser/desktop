@@ -6,36 +6,50 @@
 #define mozilla_ZenStyleSheetCache_h__
 
 #include "mozilla/css/Loader.h"
+#include "mozilla/NotNull.h"
+#include "mozilla/StaticPtr.h"
+
+#ifndef ZEN_MODS_FILENAME
+  #define ZEN_MODS_FILENAME u"zen-mods.css"_ns
+#endif
 
 namespace zen {
 
-class ZenStyleSheetCache final {
+class ZenStyleSheetCache final : public nsIObserver {
+  using StyleSheet = mozilla::StyleSheet;
+
  public:
-  static ZenStyleSheetCache* Singleton();
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIOBSERVER
 
   /**
    * @brief Clear up the cache and create a new mods stylesheet.
    * This is called when we need to recalculate the mods stylesheets.
    * @returns The mods stylesheet.
    */
-  RefPtr<StyleSheet> InvalidateModsSheet();
+  auto InvalidateModsSheet() -> void;
 
   /**
    * @brief Get the mods stylesheet.
    * This is called when we need to get the mods stylesheets.
    * @returns The mods stylesheet.
    */
-  RefPtr<StyleSheet> GetModsSheet();
+  auto GetModsSheet() -> RefPtr<StyleSheet>;
 
-  /**
-   * @brief Clear the cache and release the stylesheets.
-   * This is called when we need to recalculate the stylesheets,
-   */
-  void Clear();
-
+  static auto Singleton() -> ZenStyleSheetCache*;
  private:
   ZenStyleSheetCache() = default;
   ~ZenStyleSheetCache() = default;
+
+  /**
+   * @brief Load the stylesheet from the given file.
+   * @param aFile The file to load the stylesheet from.
+   */
+  auto LoadSheetFile(nsIFile* aFile, mozilla::css::SheetParsingMode aParsingMode)
+      -> RefPtr<StyleSheet>;
+
+  static mozilla::StaticRefPtr<mozilla::css::Loader> gCSSLoader;
+  static mozilla::StaticRefPtr<ZenStyleSheetCache> gZenModsCache;
 
   RefPtr<StyleSheet> mModsSheet;
 };

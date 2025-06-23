@@ -20,9 +20,12 @@
         </hbox>
       </hbox>
       <hbox class="zen-theme-picker-gradient">
-        <box id="PanelUI-zen-gradient-generator-rotation-dot"></box>
-        <box id="PanelUI-zen-gradient-generator-rotation-line"></box>
-        <box id="PanelUI-zen-gradient-generator-color-actions">
+        <hbox id="PanelUI-zen-gradient-generator-scheme">
+          <button id="PanelUI-zen-gradient-generator-scheme-auto" class="subviewbutton"/>
+          <button id="PanelUI-zen-gradient-generator-scheme-light" class="subviewbutton"/>
+          <button id="PanelUI-zen-gradient-generator-scheme-dark" class="subviewbutton"/> 
+        </hbox>
+        <hbox id="PanelUI-zen-gradient-generator-color-actions">
           <button id="PanelUI-zen-gradient-generator-color-add" class="subviewbutton">
           </button>
           <button id="PanelUI-zen-gradient-generator-color-remove" class="subviewbutton">
@@ -30,13 +33,12 @@
           <html:div class="separator"></html:div>
           <button id="PanelUI-zen-gradient-generator-color-toggle-algo" class="subviewbutton" data-l10n-id="zen-panel-ui-gradient-generator-algo-floating">
           </button>
-        </box>
+        </hbox>
         <label data-l10n-id="zen-panel-ui-gradient-click-to-add" id="PanelUI-zen-gradient-generator-color-click-to-add"></label>
       </hbox>
       <hbox id="PanelUI-zen-gradient-generator-controls">
         <hbox id="PanelUI-zen-gradient-colors-wrapper">
           <vbox flex="1">
-            <label data-l10n-id="zen-panel-ui-gradient-generator-opacity-text"></label>
             <html:input type="range" min="0.15" max="0.85" value="0.5" step="0.05" id="PanelUI-zen-gradient-generator-opacity" />
           </vbox>
           <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">

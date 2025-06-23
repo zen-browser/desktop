@@ -401,6 +401,7 @@ menuseparator {
       border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
       background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1)) !important;
       border: 1px solid light-dark(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15)) !important;
+      color: var(--toolbar-color);
 
       :root[zen-right-side='true'] & {
         order: -1;

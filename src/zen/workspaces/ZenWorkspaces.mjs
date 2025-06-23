@@ -885,7 +885,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     this.activeWorkspace = activeWorkspace?.uuid;
     try {
       if (activeWorkspace) {
-        window.gZenThemePicker = new ZenThemePicker();
+        window.gZenThemePicker = new nsZenThemePicker();
         await gZenThemePicker.onWorkspaceChange(activeWorkspace);
       }
     } catch (e) {
@@ -2179,7 +2179,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       uuid: gZenUIManager.generateUuidv4(),
       icon: icon,
       name: name,
-      theme: ZenThemePicker.getTheme([]),
+      theme: nsZenThemePicker.getTheme([]),
       containerTabId,
     };
     if (moveTabs) {

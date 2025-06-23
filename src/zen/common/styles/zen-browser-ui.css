@@ -46,6 +46,8 @@
   pointer-events: none;
 
   isolation: isolate;
+  background: var(--zen-themed-toolbar-bg-transparent);
+  transition: background-color var(--inactive-window-transition);
 
   &::after,
   &::before {
@@ -118,7 +120,7 @@
 }
 
 #zen-main-app-wrapper {
-  background: var(--zen-themed-toolbar-bg-transparent);
+  background: transparent;
   /* See bug #8814, don't an overflow here as it causes issues 
    * with firefox's rendering of the tab bar */
 

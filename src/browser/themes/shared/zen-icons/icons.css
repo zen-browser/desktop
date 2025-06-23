@@ -768,3 +768,33 @@
     background: transparent !important;
   }
 }
+
+#PanelUI-zen-gradient-generator-scheme-auto {
+  list-style-image: url('sparkles.svg');
+}
+
+@media -moz-pref('zen.theme.window.scheme', 'auto') {
+  #PanelUI-zen-gradient-generator-scheme-auto {
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+  }
+}
+
+#PanelUI-zen-gradient-generator-scheme-dark {
+  list-style-image: url('moon-stars.svg');
+}
+
+@media -moz-pref('zen.theme.window.scheme', 'dark') {
+  #PanelUI-zen-gradient-generator-scheme-dark {
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+  }
+}
+
+#PanelUI-zen-gradient-generator-scheme-light {
+  list-style-image: url('face-sun.svg');
+}
+
+@media -moz-pref('zen.theme.window.scheme', 'light') {
+  #PanelUI-zen-gradient-generator-scheme-light {
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+  }
+}

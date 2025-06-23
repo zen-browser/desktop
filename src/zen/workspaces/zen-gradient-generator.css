@@ -5,7 +5,7 @@
  */
 
 #PanelUI-zen-gradient-generator {
-  --panel-width: 330px;
+  --panel-width: 340px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
 }
@@ -254,7 +254,8 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-color-actions {
+#PanelUI-zen-gradient-generator-color-actions,
+#PanelUI-zen-gradient-generator-scheme {
   display: flex;
   position: absolute;
   bottom: 8px;
@@ -272,6 +273,9 @@
     min-width: fit-content !important;
     transition: background 0.2s;
     appearance: none;
+    max-height: 28px;
+    color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
+    backdrop-filter: blur(5px);
 
     & .button-box {
       gap: 0.1rem;
@@ -282,7 +286,7 @@
     }
 
     &:hover {
-      background: light-dark(#cfcfcf, #313131);
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
     }
 
     &[disabled] {
@@ -296,6 +300,10 @@
     margin: 0 0.5rem;
     height: 30px;
   }
+}
+
+#PanelUI-zen-gradient-generator-scheme {
+  top: 10px;
 }
 
 @media not -moz-pref('zen.theme.gradient.show-custom-colors') {
@@ -377,35 +385,5 @@
     &:hover {
       height: 14px;
     }
-  }
-}
-
-#PanelUI-zen-gradient-generator-rotation-line {
-  border: 1px solid var(--zen-colors-border);
-  position: absolute;
-  --rotation-padding: 15px;
-  width: calc(100% - var(--rotation-padding) * 2);
-  border-bottom-color: transparent;
-  height: calc(100% - var(--rotation-padding) * 2);
-  top: var(--rotation-padding);
-  left: var(--rotation-padding);
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
-}
-
-#PanelUI-zen-gradient-generator-rotation-dot {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  border: 1px solid var(--zen-colors-border);
-  background: var(--zen-colors-tertiary);
-  opacity: 0;
-  cursor: pointer;
-  z-index: 2;
-  transition: transform 0.1s;
-  &:hover {
-    transform: scale(1.1);
   }
 }

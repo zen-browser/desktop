@@ -7,6 +7,7 @@ pref('zen.theme.content-element-separation', 8); // In pixels
 pref('zen.theme.gradient', true);
 pref('zen.theme.gradient.show-custom-colors', false);
 pref('zen.theme.essentials-favicon-bg', true);
+pref('zen.theme.window.scheme', 'auto'); // auto, light, dark
 
 #ifdef XP_MACOSX
   pref('zen.theme.border-radius', 10); // In pixels

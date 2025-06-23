@@ -222,12 +222,11 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-    @media (-moz-windows-mica) or (-moz-platform: macos) {
+  @media (-moz-windows-mica) or (-moz-platform: macos) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
     &[zen-should-be-dark-mode] {
-      color-scheme: light;
-      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.4);
+      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
     }
   }
 
@@ -235,8 +234,7 @@
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
     &[zen-should-be-dark-mode] {
-      color-scheme: light;
-      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.4);
+      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
     }
   }
 
@@ -248,6 +246,26 @@
   &[zen-should-be-dark-mode='false'] #browser {
     color-scheme: light;
     --tab-selected-color-scheme: light;
+  }
+
+  &,
+  & #tabbrowser-tabpanels,
+  & panel,
+  & menupopup {
+    @media -moz-pref('zen.theme.window.scheme', 'dark') {
+      color-scheme: dark;
+    }
+
+    @media -moz-pref('zen.theme.window.scheme', 'light') {
+      color-scheme: light;
+    }
+
+    @media -moz-pref('zen.theme.window.scheme', 'auto') {
+      color-scheme: light;
+      @media (-moz-system-dark-theme) {
+        color-scheme: dark;
+      }
+    }
   }
 }
 

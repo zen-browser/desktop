@@ -164,22 +164,6 @@
 
   --zen-workspace-indicator-height: 48px;
 
-  @media (-moz-windows-mica) or (-moz-platform: macos) {
-    background: transparent;
-    --zen-themed-toolbar-bg-transparent: transparent;
-    &[zen-should-be-dark-mode] {
-      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
-    }
-  }
-
-  @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
-    background: transparent;
-    --zen-themed-toolbar-bg-transparent: transparent;
-    &[zen-should-be-dark-mode] {
-      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
-    }
-  }
-
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
@@ -237,6 +221,24 @@
 
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
+
+    @media (-moz-windows-mica) or (-moz-platform: macos) {
+    background: transparent;
+    --zen-themed-toolbar-bg-transparent: transparent;
+    &[zen-should-be-dark-mode] {
+      color-scheme: light;
+      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
+    background: transparent;
+    --zen-themed-toolbar-bg-transparent: transparent;
+    &[zen-should-be-dark-mode] {
+      color-scheme: light;
+      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.4);
+    }
+  }
 
   &[zen-should-be-dark-mode='true'] #browser {
     color-scheme: dark;

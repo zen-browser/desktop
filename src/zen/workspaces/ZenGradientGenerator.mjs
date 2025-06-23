@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 {
-  class ZenThemePicker extends ZenMultiWindowFeature {
+  class nsZenThemePicker extends ZenMultiWindowFeature {
     static MAX_DOTS = 3;
 
     currentOpacity = 0.5;
@@ -724,7 +724,7 @@
       event.preventDefault();
       const target = event.target;
       if (target.id === 'PanelUI-zen-gradient-generator-color-add') {
-        if (this.dots.length >= ZenThemePicker.MAX_DOTS) return;
+        if (this.dots.length >= nsZenThemePicker.MAX_DOTS) return;
         let colorPositions = this.calculateCompliments(this.dots, 'add', this.useAlgo);
 
         this.handleColorPositions(colorPositions);
@@ -968,9 +968,7 @@
 
     getToolbarModifiedBaseRaw() {
       const opacity = this.#allowTransparencyOnSidebar ? 0.6 : 1;
-      return this.isDarkMode
-        ? [23, 23, 26, opacity]
-        : [240, 240, 244, opacity];
+      return this.isDarkMode ? [23, 23, 26, opacity] : [240, 240, 244, opacity];
     }
 
     getToolbarModifiedBase() {
@@ -979,7 +977,9 @@
     }
 
     get canBeTransparent() {
-      return window.matchMedia('(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))').matches;
+      return window.matchMedia(
+        '(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
+      ).matches;
     }
 
     getSingleRGBColor(color, forToolbar = false) {
@@ -1067,9 +1067,9 @@
             `linear-gradient(to top, ${color3} -30%, transparent 60%)`,
           ].join(', ');
         }
-        return [
-          `linear-gradient(${this.currentRotation}deg, ${color1} -30%, ${color3} 100%)`,
-        ].join(', ');
+        return [`linear-gradient(${this.currentRotation}deg, ${color1} -30%, ${color3} 100%)`].join(
+          ', '
+        );
       }
     }
 
@@ -1077,11 +1077,11 @@
       let minimalLum = 0.6;
       if (!this.canBeTransparent) {
         // Blend the color with the toolbar background
-        const toolbarBg = this.getToolbarModifiedBaseRaw(); 
+        const toolbarBg = this.getToolbarModifiedBaseRaw();
         accentColor = this.blendColorsRaw(
           toolbarBg.slice(0, 3),
           accentColor,
-          (1-this.currentOpacity) * 100
+          (1 - this.currentOpacity) * 100
         );
         minimalLum = this.isDarkMode ? 0.3 : 0.2;
       }
@@ -1322,7 +1322,7 @@
           button.disabled =
             workspaceTheme.gradientColors.length === 0 ||
             (button.id === 'PanelUI-zen-gradient-generator-color-add'
-              ? workspaceTheme.gradientColors.length >= ZenThemePicker.MAX_DOTS
+              ? workspaceTheme.gradientColors.length >= nsZenThemePicker.MAX_DOTS
               : false);
         }
         document
@@ -1522,7 +1522,7 @@
             lightness: this.#currentLightness,
           };
         });
-      const gradient = ZenThemePicker.getTheme(
+      const gradient = nsZenThemePicker.getTheme(
         colors,
         this.currentOpacity,
         this.currentRotation,
@@ -1555,5 +1555,5 @@
     }
   }
 
-  window.ZenThemePicker = ZenThemePicker;
+  window.nsZenThemePicker = nsZenThemePicker;
 }

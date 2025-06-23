@@ -1060,10 +1060,15 @@
         let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
         let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
         let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
+        if (!forToolbar) {
+          return [
+            `radial-gradient(circle at -30% -30%, ${color1}, transparent 100%)`,
+            `radial-gradient(circle at 130% -30%, ${color2}, transparent 100%)`,
+            `linear-gradient(to top, ${color3} -30%, transparent 60%)`,
+          ].join(', ');
+        }
         return [
-          `radial-gradient(circle at -30% -30%, ${color1}, transparent 100%)`,
-          `radial-gradient(circle at 130% -30%, ${color2}, transparent 100%)`,
-          `linear-gradient(to top, ${color3} -30%, transparent 60%)`,
+          `linear-gradient(${this.currentRotation}deg, ${color1} -30%, ${color3} 100%)`,
         ].join(', ');
       }
     }

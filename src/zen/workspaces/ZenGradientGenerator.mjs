@@ -1421,7 +1421,7 @@
               '--toolbox-textcolor': blendedColor,
             },
             {
-              duration: 0.1,
+              duration: 0.01,
             }
           );
         }

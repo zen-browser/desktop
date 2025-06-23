@@ -72,7 +72,7 @@ var gZenCommonActions = {
       let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
         Ci.nsITransferable
       );
-      transferable.init(getLoadContext());
+      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
@@ -110,7 +110,7 @@ var gZenCommonActions = {
       let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
         Ci.nsITransferable
       );
-      transferable.init(getLoadContext());
+      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);

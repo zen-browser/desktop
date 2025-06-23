@@ -10,7 +10,7 @@
     true
   );
 
-  class ZenMediaController {
+  class nsZenMediaController {
     _currentMediaController = null;
     _currentBrowser = null;
     _mediaUpdateInterval = null;
@@ -684,5 +684,5 @@
     }
   }
 
-  window.gZenMediaController = new ZenMediaController();
+  window.gZenMediaController = new nsZenMediaController();
 }

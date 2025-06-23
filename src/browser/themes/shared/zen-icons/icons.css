@@ -16,8 +16,7 @@
   border-radius: 100% !important;
 }
 
-#back-button,
-#zen-sidebar-web-panel-back {
+#back-button {
   list-style-image: url('back.svg') !important;
 }
 
@@ -25,19 +24,16 @@
   list-style-image: url('move-tab.svg') !important;
 }
 
-#forward-button,
-#zen-sidebar-web-panel-forward {
+#forward-button {
   list-style-image: url('forward.svg') !important;
 }
 
-#reload-button,
-#zen-sidebar-web-panel-reload {
+#reload-button {
   list-style-image: url('reload.svg') !important;
 }
 
 #stop-button,
 .close-icon,
-#zen-sidebar-web-panel-close,
 #zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove {
   list-style-image: url('close.svg') !important;
@@ -281,8 +277,7 @@
   list-style-image: url('bookmark-star-on-tray.svg') !important;
 }
 
-#home-button,
-#zen-sidebar-web-panel-home {
+#home-button {
   list-style-image: url('home.svg') !important;
 }
 
@@ -600,21 +595,12 @@
   > #reload-button[displaystop]
   + #stop-button
   > .toolbarbutton-animatable-box
-  > .toolbarbutton-animatable-image,
-#zen-sidebar-web-panel-reload[animate]
-  > #zen-sidebar-web-panel-reload-button[displaystop]
-  + #zen-sidebar-web-panel-stop-button
-  > .toolbarbutton-animatable-box
   > .toolbarbutton-animatable-image {
   background-image: url('reload-to-stop.svg') !important;
 }
 
 #stop-reload-button[animate]
   > #reload-button
-  > .toolbarbutton-animatable-box
-  > .toolbarbutton-animatable-image,
-#zen-sidebar-web-panel-reload[animate]
-  > #zen-sidebar-web-panel-reload-button
   > .toolbarbutton-animatable-box
   > .toolbarbutton-animatable-image {
   background-image: url('stop-to-reload.svg') !important;

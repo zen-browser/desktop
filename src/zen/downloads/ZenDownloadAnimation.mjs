@@ -13,7 +13,7 @@
     },
   });
 
-  class ZenDownloadAnimation extends ZenDOMOperatedFeature {
+  class nsZenDownloadAnimation extends ZenDOMOperatedFeature {
     async init() {
       await this.#setupDownloadListeners();
     }
@@ -26,7 +26,7 @@
         });
       } catch (error) {
         console.error(
-          `[${ZenDownloadAnimation.name}] Failed to set up download animation listeners: ${error}`
+          `[${nsZenDownloadAnimation.name}] Failed to set up download animation listeners: ${error}`
         );
       }
     }
@@ -41,7 +41,7 @@
 
       if (!gZenUIManager._lastClickPosition) {
         console.warn(
-          `[${ZenDownloadAnimation.name}] No recent click position available for animation`
+          `[${nsZenDownloadAnimation.name}] No recent click position available for animation`
         );
         return;
       }
@@ -61,7 +61,7 @@
     }
   }
 
-  class ZenDownloadAnimationElement extends HTMLElement {
+  class nsZenDownloadAnimationElement extends HTMLElement {
     #boxAnimationElement = null;
     #boxAnimationTimeoutId = null;
     #isBoxAnimationRunning = false;
@@ -82,14 +82,14 @@
         );
         this.shadowRoot.appendChild(link);
       } catch (error) {
-        console.error(`[${ZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`);
+        console.error(`[${nsZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`);
       }
     }
 
     async initializeAnimation(startPosition) {
       if (!startPosition) {
         console.warn(
-          `[${ZenDownloadAnimationElement.name}] No start position provided, skipping animation`
+          `[${nsZenDownloadAnimationElement.name}] No start position provided, skipping animation`
         );
         return;
       }
@@ -229,7 +229,7 @@
 
         this.#cleanArcAnimation(arcAnimationElement);
       } catch (error) {
-        console.error('[ZenDownloadAnimationElement] Error in animation sequence:', error);
+        console.error('[nsZenDownloadAnimationElement] Error in animation sequence:', error);
         this.#cleanArcAnimation(arcAnimationElement);
       }
     }
@@ -309,7 +309,7 @@
       // If animation is already in progress, don't start a new one
       if (this.#isBoxAnimationRunning) {
         console.warn(
-          `[${ZenDownloadAnimationElement.name}] Box animation already running, skipping new request.`
+          `[${nsZenDownloadAnimationElement.name}] Box animation already running, skipping new request.`
         );
         return;
       }
@@ -326,7 +326,7 @@
       const wrapper = document.getElementById('zen-main-app-wrapper');
       if (!wrapper) {
         console.warn(
-          `[${ZenDownloadAnimationElement.name}] Cannot start box animation, Wrapper element not found`
+          `[${nsZenDownloadAnimationElement.name}] Cannot start box animation, Wrapper element not found`
         );
         return;
       }
@@ -385,7 +385,7 @@
         );
       } catch (error) {
         console.error(
-          `[${ZenDownloadAnimationElement.name}] Error during box entry animation: ${error}`
+          `[${nsZenDownloadAnimationElement.name}] Error during box entry animation: ${error}`
         );
         this.#cleanBoxAnimation();
       } finally {
@@ -436,7 +436,7 @@
         ).finished;
       } catch (error) {
         console.warn(
-          `[${ZenDownloadAnimationElement.name}] Error during box exit animation: ${error}`
+          `[${nsZenDownloadAnimationElement.name}] Error during box exit animation: ${error}`
         );
       } finally {
         this.#cleanBoxAnimation();
@@ -458,7 +458,7 @@
           this.#boxAnimationElement.remove();
         } catch (error) {
           console.error(
-            `[${ZenDownloadAnimationElement.name}] Error removing box animation element: ${error}`,
+            `[${nsZenDownloadAnimationElement.name}] Error removing box animation element: ${error}`,
             error
           );
         }
@@ -488,7 +488,7 @@
     }
   }
 
-  customElements.define('zen-download-animation', ZenDownloadAnimationElement);
+  customElements.define('zen-download-animation', nsZenDownloadAnimationElement);
 
-  new ZenDownloadAnimation();
+  new nsZenDownloadAnimation();
 }

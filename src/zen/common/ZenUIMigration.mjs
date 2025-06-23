@@ -1,23 +1,15 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-const lazy = {};
 
-var { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppConstants.sys.mjs');
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
-});
-
-class ZenUIMigration {
-  PREF_NAME = 'zen.migration.version';
-  MIGRATION_VERSION = 5;
+class nsZenUIMigration {
+  PREF_NAME = 'zen.ui.migration.version';
+  MIGRATION_VERSION = 1;
 
   init(isNewProfile) {
-    const win = lazy.BrowserWindowTracker.getTopWindow();
     if (!isNewProfile) {
       try {
-        this._migrate(win);
+        this._migrate();
       } catch (e) {
         console.error('ZenUIMigration: Error during migration', e);
       }
@@ -33,18 +25,11 @@ class ZenUIMigration {
     Services.prefs.setIntPref(this.PREF_NAME, value);
   }
 
-  _migrate(win) {
-    if (this._migrationVersion < 1) {
-      this._migrateV1(win);
-    }
-    if (this._migrationVersion < 2) {
-      this._migrateV2(win);
-    }
-    if (this._migrationVersion < 3) {
-      this._migrateV3(win);
-    }
-    if (this._migrationVersion < 4) {
-      this._migrateV4(win);
+  _migrate() {
+    for (let i = 0; i <= this.MIGRATION_VERSION; i++) {
+      if (this._migrationVersion < i) {
+        this[`_migrateV${i}`]?.();
+      }
     }
   }
 
@@ -52,59 +37,21 @@ class ZenUIMigration {
     this._migrationVersion = this.MIGRATION_VERSION;
   }
 
-  _migrateV1(win) {
-    // Introduction of the new URL bar, show a message to the user
-    const notification = win.gNotificationBox.appendNotification(
-      'zen-new-urlbar-notification',
-      {
-        label: { 'l10n-id': 'zen-new-urlbar-notification' },
-        image: 'chrome://browser/skin/notification-icons/persistent-storage-blocked.svg',
-        priority: win.gNotificationBox.PRIORITY_WARNING_HIGH,
-      },
-      [
-        {
-          'l10n-id': 'zen-disable',
-          accessKey: 'D',
-          callback: () => {
-            Services.prefs.setBoolPref('zen.urlbar.replace-newtab', false);
-          },
-        },
-        {
-          link: 'https://docs.zen-browser.app/user-manual/urlbar/',
-          'l10n-id': 'zen-learn-more-text',
-        },
-      ]
-    );
-  }
-
-  _migrateV2(win) {
-    if (Services.prefs.getBoolPref('zen.widget.windows.acrylic', false)) {
-      Services.prefs.setIntPref('widget.windows.mica.toplevel-backdrop', 2);
-      Services.prefs.clearUserPref('zen.widget.windows.acrylic');
+  _migrateV1() {
+    // If there's an userChrome.css or userContent.css existing, we set
+    // 'toolkit.legacyUserProfileCustomizations.stylesheets' back to true
+    // We do this to avoid existing user stylesheets to be ignored
+    const profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile);
+    const userChromeFile = profileDir.clone();
+    userChromeFile.append('chrome');
+    userChromeFile.append('userChrome.css');
+    const userContentFile = profileDir.clone();
+    userContentFile.append('chrome');
+    userContentFile.append('userContent.css');
+    if (userChromeFile.exists() || userContentFile.exists()) {
+      Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
     }
-  }
-
-  _migrateV3(win) {
-    const kArea = win.CustomizableUI.AREA_TABSTRIP;
-    const widgets = win.CustomizableUI.getWidgetsInArea(kArea);
-    for (const widget of widgets) {
-      const widgetId = widget.id;
-      if (widgetId === 'tabbrowser-tabs') {
-        continue;
-      }
-      win.CustomizableUI.removeWidgetFromArea(widgetId);
-    }
-  }
-
-  _migrateV4(win) {
-    if (AppConstants.platform === 'linux') {
-      return;
-    }
-    Services.prefs.setBoolPref(
-      'browser.tabs.unloadOnLowMemory',
-      Services.prefs.getBoolPref('zen.tab-unloader.enabled', true)
-    );
   }
 }
 
-export var gZenUIMigration = new ZenUIMigration();
+export var gZenUIMigration = new nsZenUIMigration();

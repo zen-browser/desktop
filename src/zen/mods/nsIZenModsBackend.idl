@@ -1,0 +1,31 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+#include "nsIURI.idl"
+
+%{C++
+#include "mozilla/ServoStyleSet.h"
+#include "mozilla/dom/Document.h"
+%}
+
+/**
+ * @brief Interface for Zen mods backend.
+ */
+[scriptable, uuid(a0ee4792-b186-4497-936d-53a8989fe836)]
+interface nsIZenModsBackend : nsISupports {
+  /*
+   * @brief Remove, clear cache and create a new mods stylesheet.
+   * This is called when we need to recalculate the mods stylesheets.
+   * @returns The mods stylesheet.
+   */
+  void invalidateModsSheet();
+  /**
+   * @brief Unregister and register the mods stylesheet.
+   * This is called when we need to recalculate the mods stylesheets.
+   * @returns void
+   */
+  void rebuildModsStyles();
+};
+

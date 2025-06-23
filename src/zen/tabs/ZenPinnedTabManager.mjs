@@ -51,7 +51,7 @@
     }
   }
 
-  class ZenPinnedTabManager extends ZenDOMOperatedFeature {
+  class nsZenPinnedTabManager extends ZenDOMOperatedFeature {
     MAX_ESSENTIALS_TABS = 12;
 
     async init() {
@@ -546,6 +546,7 @@
               break;
             }
             await gBrowser.explicitUnloadTabs([selectedTab]);
+            selectedTab.removeAttribute('discarded');
           }
           if (selectedTab.selected) {
             this._handleTabSwitch(selectedTab);
@@ -611,7 +612,7 @@
         // Remove everything except the entry we want to keep
         state.entries = [state.entries[foundEntryIndex]];
       }
-      state.image ||= pin.iconUrl || null;
+      state.image = pin.iconUrl || null;
       state.index = 0;
 
       SessionStore.setTabState(tab, state);
@@ -856,7 +857,7 @@
               const rect = targetTab.getBoundingClientRect();
               let newIndex = targetTab._tPos;
 
-              if (isVertical) {
+              if (isVertical || !this.expandedSidebarMode) {
                 const middleY = targetTab.screenY + rect.height / 2;
                 if (!isRegularTabs && event.screenY > middleY) {
                   newIndex++;
@@ -1045,7 +1046,7 @@
       // Calculate middle to decide 'before' or 'after'
       const rect = targetTab.getBoundingClientRect();
       let shouldPlayHapticFeedback = false;
-      if (isVertical) {
+      if (isVertical || !this.expandedSidebarMode) {
         const separation = 8;
         const middleY = targetTab.screenY + rect.height / 2;
         const indicator = this.dragIndicator;
@@ -1103,5 +1104,5 @@
     }
   }
 
-  window.gZenPinnedTabManager = new ZenPinnedTabManager();
+  window.gZenPinnedTabManager = new nsZenPinnedTabManager();
 }

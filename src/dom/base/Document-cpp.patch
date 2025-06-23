@@ -1,13 +1,13 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index a16bef739fcde0f14ba7e53e0acfa3aa2ee1dd3a..78b9d112a56b3d909e31eb4351ee9f3b06c4ef92 100644
+index a16bef739fcde0f14ba7e53e0acfa3aa2ee1dd3a..f928c0f1df4e86bd344ab7e57dab112234fb92e8 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
 @@ -3332,6 +3332,15 @@ void Document::FillStyleSetUserAndUASheets() {
  
    ServoStyleSet& styleSet = EnsureStyleSet();
    for (StyleSheet* sheet : *sheetService->UserStyleSheets()) {
-+    // If the url starts with "chrome://" and ends with 'zen-themes.css', then
-+    // skip it if the document is in a chrome docshell.
++    // If the url starts with "file://" and ends with 'zen-themes.css', then
++    // skip it if the document is not in a chrome docshell.
 +    // This is to avoid loading the user chrome stylesheet in the content
 +    // process, which is not allowed.
 +    auto spec = sheet->GetSheetURI()->GetSpecOrDefault();

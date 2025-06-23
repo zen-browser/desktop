@@ -9,7 +9,7 @@
     currentOpacity = 0.5;
     currentRotation = -45;
     dots = [];
-    #useAlgo = '';
+    useAlgo = '';
     #currentLightness = 50;
 
     #allowTransparencyOnSidebar = Services.prefs.getBoolPref('zen.theme.acrylic-elements', false);
@@ -130,9 +130,9 @@
               position: { x: 0, y: 0 },
             });
           }
-          this.#useAlgo = algo;
+          this.useAlgo = algo;
           this.#currentLightness = lightness;
-          dots = this.calculateCompliments(dots, 'update', this.#useAlgo);
+          dots = this.calculateCompliments(dots, 'update', this.useAlgo);
           if (algo == 'float') {
             for (const dot of dots) {
               this.spawnDot(dot.position);
@@ -603,7 +603,7 @@
         dots.length + (action === 'add' ? 1 : action === 'remove' ? -1 : 0),
         this.dots
       );
-      this.#useAlgo = harmonyAngles.type;
+      this.useAlgo = harmonyAngles.type;
       if (!harmonyAngles || harmonyAngles.angles.length === 0) return dots;
 
       let primaryDot = dots.find((dot) => dot.ID === 0);
@@ -638,7 +638,7 @@
 
     handleColorPositions(colorPositions) {
       colorPositions.sort((a, b) => a.ID - b.ID);
-      if (this.#useAlgo === 'floating') {
+      if (this.useAlgo === 'floating') {
         const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
         const rect = dotPad.getBoundingClientRect();
         this.dots.forEach((dot) => {
@@ -725,7 +725,7 @@
       const target = event.target;
       if (target.id === 'PanelUI-zen-gradient-generator-color-add') {
         if (this.dots.length >= ZenThemePicker.MAX_DOTS) return;
-        let colorPositions = this.calculateCompliments(this.dots, 'add', this.#useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'add', this.useAlgo);
 
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace();
@@ -758,13 +758,13 @@
         );
 
         let currentIndex = applicableHarmonies.findIndex(
-          (harmony) => harmony.type === this.#useAlgo
+          (harmony) => harmony.type === this.useAlgo
         );
 
         let nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % applicableHarmonies.length;
-        this.#useAlgo = applicableHarmonies[nextIndex].type;
+        this.useAlgo = applicableHarmonies[nextIndex].type;
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace();
         return;
@@ -794,7 +794,7 @@
         clickedDot.ID = 0;
         clickedDot.element.style.zIndex = 999;
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
         this.handleColorPositions(colorPositions);
         return;
       }
@@ -823,7 +823,7 @@
           y: relativeY,
         };
 
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace(true);
 
@@ -939,7 +939,7 @@
           x: relativeX,
           y: relativeY,
         };
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.#useAlgo);
+        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
         this.handleColorPositions(colorPositions);
 
         this.updateCurrentWorkspace();
@@ -966,14 +966,19 @@
       this.updateCurrentWorkspace();
     }
 
-    getToolbarModifiedBase() {
+    getToolbarModifiedBaseRaw() {
       const opacity = this.#allowTransparencyOnSidebar ? 0.6 : 1;
       return this.isDarkMode
-        ? `rgba(23, 23, 26, ${opacity})`
-        : `rgba(240, 240, 244, ${opacity})`;
+        ? [23, 23, 26, opacity]
+        : [240, 240, 244, opacity];
     }
 
-    get cantBeTransparent() {
+    getToolbarModifiedBase() {
+      const baseColor = this.getToolbarModifiedBaseRaw();
+      return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${baseColor[3]})`;
+    }
+
+    get canBeTransparent() {
       return window.matchMedia('(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))').matches;
     }
 
@@ -1005,7 +1010,7 @@
       return (brightest + 0.05) / (darkest + 0.05);
     }
 
-    blendColors(rgb1, rgb2, percentage) {
+    blendColorsRaw(rgb1, rgb2, percentage) {
       const p = percentage / 100;
       return [
         Math.round(rgb1[0] * p + rgb2[0] * (1 - p)),
@@ -1021,7 +1026,7 @@
 
       for (let i = 0; i < 10; i++) {
         const mid = (low + high) / 2;
-        const blended = this.blendColors(dominantColor, blendTarget, mid);
+        const blended = this.blendColorsRaw(dominantColor, blendTarget, mid);
         const contrast = this.contrastRatio(blended, blendTarget);
 
         if (contrast >= minContrast) {
@@ -1032,12 +1037,12 @@
         }
       }
 
-      return bestMatch || this.blendColors(dominantColor, blendTarget, 10); // fallback
+      return bestMatch || this.blendColorsRaw(dominantColor, blendTarget, 10); // fallback
     }
 
     getGradient(colors, forToolbar = false) {
       const themedColors = this.themedColors(colors);
-      this.#useAlgo = themedColors[0]?.algorithm ?? '';
+      this.useAlgo = themedColors[0]?.algorithm ?? '';
       this.#currentLightness = themedColors[0]?.lightness ?? 70;
 
       if (themedColors.length === 0) {
@@ -1064,9 +1069,20 @@
     }
 
     shouldBeDarkMode(accentColor) {
+      let minimalLum = 0.6;
+      if (!this.canBeTransparent) {
+        // Blend the color with the toolbar background
+        const toolbarBg = this.getToolbarModifiedBaseRaw(); 
+        accentColor = this.blendColorsRaw(
+          toolbarBg.slice(0, 3),
+          accentColor,
+          (1-this.currentOpacity) * 100
+        );
+        minimalLum = this.isDarkMode ? 0.3 : 0.2;
+      }
       const lum = this.luminance(accentColor);
       // Return true if background is dark enough that white text is preferred
-      return lum < 0.5;
+      return lum < minimalLum;
     }
 
     static getTheme(colors = [], opacity = 0.5, rotation = -45, texture = 0) {
@@ -1207,11 +1223,7 @@
 
     blendColors(rgb1, rgb2, percentage) {
       const p = percentage / 100;
-      const blended = [
-        Math.round(rgb1[0] * p + rgb2[0] * (1 - p)),
-        Math.round(rgb1[1] * p + rgb2[1] * (1 - p)),
-        Math.round(rgb1[2] * p + rgb2[2] * (1 - p)),
-      ];
+      const blended = this.blendColorsRaw(rgb1, rgb2, percentage);
       return `rgb(${blended[0]}, ${blended[1]}, ${blended[2]})`;
     }
 
@@ -1420,7 +1432,7 @@
               '--toolbox-textcolor': blendedColor,
             },
             {
-              duration: 0.01,
+              duration: 0.05,
             }
           );
         }
@@ -1496,7 +1508,7 @@
             return;
           }
           const isCustom = dot.classList.contains('custom');
-          const algorithm = this.#useAlgo;
+          const algorithm = this.useAlgo;
           return {
             c: isCustom ? color : color.match(/\d+/g).map(Number),
             isCustom,

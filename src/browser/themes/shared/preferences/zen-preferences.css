@@ -249,37 +249,6 @@ groupbox h2 {
   }
 }
 
-.zenLooksAndFeelColorOption {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--zen-primary-color);
-  position: relative;
-  overflow: hidden;
-}
-
-.zenLooksAndFeelColorOption::before {
-  content: '';
-  display: block;
-  width: 50%;
-  height: 50%;
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  background: var(--zen-colors-secondary);
-}
-
-.zenLooksAndFeelColorOption::after {
-  content: '';
-  display: block;
-  width: 50%;
-  height: 50%;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  background: var(--zen-colors-tertiary);
-}
-
 /* Workspace */
 
 #category-zen-tabs-management > .category-icon {

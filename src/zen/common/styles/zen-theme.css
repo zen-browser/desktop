@@ -9,12 +9,7 @@
  */
 
 :host(:is(.anonymous-content-host, notification-message)),
-:root,
-.zenLooksAndFeelColorOption {
-  /** We also add `.zenLooksAndFeelColorOption` so that it recalculates the colors when the theme changes
-   * in the preferences page.
-   */
-
+:root {
   /* Default values */
   --zen-border-radius: 7px;
   --zen-primary-color: #ffb787;

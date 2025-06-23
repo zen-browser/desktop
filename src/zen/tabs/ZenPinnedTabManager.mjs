@@ -51,7 +51,7 @@
     }
   }
 
-  class ZenPinnedTabManager extends ZenDOMOperatedFeature {
+  class nsZenPinnedTabManager extends ZenDOMOperatedFeature {
     async init() {
       if (!this.enabled) {
         return;

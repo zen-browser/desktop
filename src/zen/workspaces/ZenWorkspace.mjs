@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenWorkspace extends MozXULElement {
+  class nsZenWorkspace extends MozXULElement {
     static get markup() {
       return `
         <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator" flex="1" context="zenWorkspaceMoreActions">
@@ -220,5 +220,5 @@
     }
   }
 
-  customElements.define('zen-workspace', ZenWorkspace);
+  customElements.define('zen-workspace', nsZenWorkspace);
 }

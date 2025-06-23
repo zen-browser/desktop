@@ -126,7 +126,7 @@
     }
   }
 
-  class ZenWelcomePages {
+  class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
       this._pages = pages;
@@ -740,7 +740,7 @@
           delay: getMotion().stagger(0.4),
         }
       );
-      new ZenWelcomePages(getWelcomePages());
+      new nsZenWelcomePages(getWelcomePages());
     });
     await animate(
       button,

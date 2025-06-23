@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenGlanceManager extends ZenDOMOperatedFeature {
+  class nsZenGlanceManager extends ZenDOMOperatedFeature {
     _animating = false;
     _lazyPref = {};
 
@@ -783,7 +783,7 @@
     }
   }
 
-  window.gZenGlanceManager = new ZenGlanceManager();
+  window.gZenGlanceManager = new nsZenGlanceManager();
 
   function registerWindowActors() {
     gZenActorsManager.addJSWindowActor('ZenGlance', {

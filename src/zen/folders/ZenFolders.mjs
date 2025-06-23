@@ -17,7 +17,7 @@
     }
 
     #onTabGrouped(event) {
-      const tab = event.target;
+      const tab = event.detail;
       const group = tab.group;
       group.pinned = tab.pinned;
 
@@ -30,8 +30,8 @@
     }
 
     #onTabUngrouped(event) {
-      const tab = event.target;
-      const group = event.detail;
+      const tab = event.detail;
+      const group = event.target;
       if (group.hasAttribute('split-view-group') && tab.hasAttribute('had-zen-pinned-changed')) {
         tab.setAttribute('zen-pinned-changed', true);
         tab.removeAttribute('had-zen-pinned-changed');

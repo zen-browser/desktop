@@ -481,11 +481,14 @@ button.popup-notification-dropmarker {
   left: 50% !important;
 
   #urlbar-container:has(&) {
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium);
     background: var(--toolbarbutton-hover-background);
+    height: var(--urlbar-height) !important;
+    margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar='true']) & {
       max-height: 32px !important;
-      min-height: unset;
+      min-height: unset !important;
+      margin-block: -1px !important;
     }
   }
 }

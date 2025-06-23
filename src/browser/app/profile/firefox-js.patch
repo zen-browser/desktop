@@ -1,10 +1,10 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index beced8067e6c8b5c8cf8e3f6060ba259ec9a294d..33a264e7f9cf97944da3888bdb957fa6e7c4c346 100644
+index 412e0879bbb0c7e7d1eb842212b064e1c77cab8f..bd23e5f2cd3f9c382f704fd1fcfdbb3edd71a454 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -3398,3 +3398,5 @@ pref("toolkit.contentRelevancy.enabled", false);
- pref("toolkit.contentRelevancy.ingestEnabled", false);
- // Pref to enable extra logging for the content relevancy feature
- pref("toolkit.contentRelevancy.log", false);
+@@ -3361,3 +3361,5 @@ pref("toolkit.contentRelevancy.log", false);
+ // rotation altogether.
+ pref("browser.contextual-services.contextId.rotation-in-days", 0);
+ pref("browser.contextual-services.contextId.rust-component.enabled", false);
 +
 +#include zen-browser.js

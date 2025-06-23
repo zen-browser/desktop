@@ -1,0 +1,13 @@
+diff --git a/toolkit/themes/shared/menulist.css b/toolkit/themes/shared/menulist.css
+index e5ac973b1ee2595e8547680465e25d537685a9e7..20f85152d783c81be5e29846353daca9ccd0c67d 100644
+--- a/toolkit/themes/shared/menulist.css
++++ b/toolkit/themes/shared/menulist.css
+@@ -53,7 +53,7 @@
+ 
+ :host(:not([native])) {
+   appearance: none;
+-  background-color: var(--button-background-color);
++  background-color: light-dark(rgba(0,0,0,.1), rgba(255,255,255,.1));
+   color: var(--button-text-color);
+   border-radius: 4px;
+   padding-block: 4px;

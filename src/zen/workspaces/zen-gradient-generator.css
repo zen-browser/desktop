@@ -124,7 +124,7 @@
 #PanelUI-zen-gradient-generator-custom-list {
   margin-top: 15px;
 
-  &:not(:has(.zen-theme-picker-custom-list-item)) {
+  &:empty {
     display: none;
   }
 

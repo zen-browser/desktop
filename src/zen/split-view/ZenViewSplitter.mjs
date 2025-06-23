@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-class SplitLeafNode {
+class nsSplitLeafNode {
   /**
    * The percentage of the size of the parent the node takes up, dependent on parent direction this is either
    * width or height.
@@ -14,7 +14,7 @@ class SplitLeafNode {
    */
   positionToRoot; // position relative to root node
   /**
-   * @type {SplitNode}
+   * @type {nsSplitNode}
    */
   parent;
   constructor(tab, sizeInParent) {
@@ -31,7 +31,7 @@ class SplitLeafNode {
   }
 }
 
-class SplitNode extends SplitLeafNode {
+class nsSplitNode extends nsSplitLeafNode {
   /**
    * @type {string}
    */
@@ -63,7 +63,7 @@ class SplitNode extends SplitLeafNode {
   }
 }
 
-class ZenViewSplitter extends ZenDOMOperatedFeature {
+class nsZenViewSplitter extends ZenDOMOperatedFeature {
   currentView = -1;
   _data = [];
   _tabBrowserPanel = null;
@@ -441,9 +441,9 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   }
 
   /**
-   * Remove a SplitNode from its tree and the view
-   * @param {SplitNode} toRemove
-   * @return {SplitNode} that has to be updated
+   * Remove a nsSplitNode from its tree and the view
+   * @param {nsSplitNode} toRemove
+   * @return {nsSplitNode} that has to be updated
    */
   removeNode(toRemove) {
     this._removeNodeSplitters(toRemove, true);
@@ -825,7 +825,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       nodeSize = node.sizeInParent;
     } else {
       nodeSize = 100;
-      newParent = new SplitNode(splitDirection, node.sizeInParent);
+      newParent = new nsSplitNode(splitDirection, node.sizeInParent);
       if (node.parent) {
         newParent.parent = node.parent;
         const nodeIndex = node.parent.children.indexOf(node);
@@ -1118,7 +1118,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   addTabToSplit(tab, splitNode, prepend = true) {
     const reduce = splitNode.children.length / (splitNode.children.length + 1);
     splitNode.children.forEach((c) => (c.sizeInParent *= reduce));
-    splitNode.addChild(new SplitLeafNode(tab, (1 - reduce) * 100), prepend);
+    splitNode.addChild(new nsSplitLeafNode(tab, (1 - reduce) * 100), prepend);
   }
 
   /**
@@ -1184,21 +1184,24 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   calculateLayoutTree(tabs, gridType) {
     let rootNode;
     if (gridType === 'vsep' || (tabs.length === 2 && gridType === 'grid')) {
-      rootNode = new SplitNode('row');
-      rootNode.children = tabs.map((tab) => new SplitLeafNode(tab, 100 / tabs.length));
+      rootNode = new nsSplitNode('row');
+      rootNode.children = tabs.map((tab) => new nsSplitLeafNode(tab, 100 / tabs.length));
     } else if (gridType === 'hsep') {
-      rootNode = new SplitNode('column');
-      rootNode.children = tabs.map((tab) => new SplitLeafNode(tab, 100 / tabs.length));
+      rootNode = new nsSplitNode('column');
+      rootNode.children = tabs.map((tab) => new nsSplitLeafNode(tab, 100 / tabs.length));
     } else if (gridType === 'grid') {
-      rootNode = new SplitNode('row');
+      rootNode = new nsSplitNode('row');
       const rowWidth = 100 / Math.ceil(tabs.length / 2);
       for (let i = 0; i < tabs.length - 1; i += 2) {
-        const columnNode = new SplitNode('column', rowWidth, 100);
-        columnNode.children = [new SplitLeafNode(tabs[i], 50), new SplitLeafNode(tabs[i + 1], 50)];
+        const columnNode = new nsSplitNode('column', rowWidth, 100);
+        columnNode.children = [
+          new nsSplitLeafNode(tabs[i], 50),
+          new nsSplitLeafNode(tabs[i + 1], 50),
+        ];
         rootNode.addChild(columnNode);
       }
       if (tabs.length % 2 !== 0) {
-        rootNode.addChild(new SplitLeafNode(tabs[tabs.length - 1], rowWidth));
+        rootNode.addChild(new nsSplitLeafNode(tabs[tabs.length - 1], rowWidth));
       }
     }
 
@@ -1260,7 +1263,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   /**
    * Apply grid layout to tabBrowserPanel
    *
-   * @param {SplitNode} splitNode SplitNode
+   * @param {nsSplitNode} splitNode nsSplitNode
    */
   applyGridLayout(splitNode) {
     if (!splitNode.positionToRoot) {
@@ -1317,7 +1320,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   /**
    *
    * @param {String} orient
-   * @param {SplitNode} parentNode
+   * @param {nsSplitNode} parentNode
    * @param {Number} idx
    */
   createSplitter(orient, parentNode, idx) {
@@ -1332,7 +1335,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   }
 
   /**
-   * @param {SplitNode} parentNode
+   * @param {nsSplitNode} parentNode
    * @param {number|undefined} splittersNeeded if provided the amount of splitters for node will be adjusted to match
    */
   getSplitters(parentNode, splittersNeeded) {
@@ -1365,7 +1368,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
 
   /**
    * @param {Tab} tab
-   * @return {SplitNode} splitNode
+   * @return {nsSplitNode} splitNode
    */
   getSplitNodeFromTab(tab) {
     return this._tabToSplitNode.get(tab);
@@ -1703,7 +1706,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
             if (parentNode.direction !== splitDirection) {
               this.splitIntoNode(
                 droppedOnSplitNode,
-                new SplitLeafNode(draggedTab, 50),
+                new nsSplitLeafNode(draggedTab, 50),
                 hoverSide,
                 0.5
               );
@@ -1900,4 +1903,4 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
   }
 }
 
-window.gZenViewSplitter = new ZenViewSplitter();
+window.gZenViewSplitter = new nsZenViewSplitter();

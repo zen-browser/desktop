@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index cebca6d017a0c3fc8eff7a38f987726324789e69..73a24df91bec368f2f27c538b37d57595e18c599 100644
+index bde641f7112adde948707c172b9f18d3635d8ef1..3f430451586904e6be086114ec10f719745093be 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
@@ -8,13 +8,14 @@ index cebca6d017a0c3fc8eff7a38f987726324789e69..73a24df91bec368f2f27c538b37d5759
  ChromeUtils.defineESModuleGetters(lazy, {
 +  gZenUIMigration: "chrome://browser/content/zen-components/ZenUIMigration.mjs",
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
-   AboutNewTab: "resource:///modules/AboutNewTab.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
-@@ -881,6 +882,7 @@ BrowserGlue.prototype = {
+   ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
+@@ -1659,6 +1660,8 @@ BrowserGlue.prototype = {
+     } else if (profileDataVersion < APP_DATA_VERSION) {
+       lazy.ProfileDataUpgrader.upgrade(profileDataVersion, APP_DATA_VERSION);
+     }
++
++    lazy.gZenUIMigration.init(this._isNewProfile);
+   },
  
-     lazy.ProcessHangMonitor.init();
- 
-+    lazy.gZenUIMigration.init(this._isNewProfile, aWindow);
-     // A channel for "remote troubleshooting" code...
-     let channel = new lazy.WebChannel(
-       "remote-troubleshooting",
+   async _showUpgradeDialog() {

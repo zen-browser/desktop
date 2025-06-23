@@ -8,5 +8,6 @@ BROWSER_CHROME_MANIFESTS += [
     "glance/browser.toml",
     "pinned/browser.toml",
     "urlbar/browser.toml",
+    "welcome/browser.toml",
     "workspaces/browser.toml",
 ]

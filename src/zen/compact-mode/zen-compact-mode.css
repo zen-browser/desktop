@@ -185,7 +185,15 @@
       #navigator-toolbox:has(.tabbrowser-tab:active),
       &[zen-renaming-tab='true'] #navigator-toolbox,
       #navigator-toolbox:has(
-          *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)
+          *:is(
+            [panelopen='true'], 
+            [open='true'], 
+            #urlbar:focus-within, 
+            [breakout-extend='true']
+          )
+          :not(#urlbar[zen-floating-urlbar='true'])
+          :not(tab)
+          :not(.zen-compact-mode-ignore)
         ) {
         &:not([animate='true']) {
           --zen-compact-mode-func: linear(
@@ -328,17 +336,12 @@
       }
 
       & #titlebar,
-      & #zen-appcontent-wrapper,
-      & #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned='true'])) {
+      & #zen-appcontent-wrapper {
         margin-top: var(--zen-element-separation) !important;
       }
 
       & #zen-appcontent-wrapper {
         z-index: 3 !important;
-      }
-
-      & #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
-        margin-top: calc(var(--zen-element-separation) * 2) !important;
       }
 
       & #zen-appcontent-navbar-wrapper {

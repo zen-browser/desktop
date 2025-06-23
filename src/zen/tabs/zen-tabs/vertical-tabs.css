@@ -798,18 +798,16 @@
     }
   }
 
-  /* Center top buttons container */
   & #zen-sidebar-top-buttons {
     justify-content: center;
-    max-height: unset !important; /* Allow natural height */
+    max-height: unset !important;
     height: fit-content !important;
   }
 
-  /* Adjust titlebar layout for collapsed state */
   & #titlebar {
     display: grid;
     grid-template-rows: auto 1fr; /* Allow content below button box */
-    overflow: hidden;
+    overflow: clip;
   }
 
   /* Style top buttons customization target */

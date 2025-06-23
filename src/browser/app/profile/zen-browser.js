@@ -11,9 +11,6 @@
 // Dont download the multilingual dictionary
 pref("intl.multilingual.downloadEnabled", false);
 
-// Theme
-pref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
-
 #ifdef XP_WIN
   #include windows.inc
 #endif

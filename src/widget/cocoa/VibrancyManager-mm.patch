@@ -1,20 +1,20 @@
 diff --git a/widget/cocoa/VibrancyManager.mm b/widget/cocoa/VibrancyManager.mm
-index 849b62c9976a7bc5fee35e074e54c8f556ed9c38..a9742c7ff30d417a18f41f9c120259192f33a0fd 100644
+index b4c14233c64dd3515518d3167f8ee2877fe41a93..2b91fa3044794765b8e15c6b66b348de4111f29f 100644
 --- a/widget/cocoa/VibrancyManager.mm
 +++ b/widget/cocoa/VibrancyManager.mm
 @@ -13,6 +13,7 @@
  
- #include "nsChildView.h"
+ #include "nsCocoaWindow.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
  
  using namespace mozilla;
  
-@@ -40,7 +41,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
+@@ -38,7 +39,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
+     VibrancyType aType) {
+   switch (aType) {
      case VibrancyType::Sidebar:
-       return NSVisualEffectMaterialSidebar;
-     case VibrancyType::Titlebar:
--      return NSVisualEffectMaterialTitlebar;
+-      return NSVisualEffectMaterialSidebar;
 +      switch (StaticPrefs::zen_widget_macos_window_material()) {
 +        case 1:
 +          return NSVisualEffectMaterialHUDWindow;
@@ -32,10 +32,10 @@ index 849b62c9976a7bc5fee35e074e54c8f556ed9c38..a9742c7ff30d417a18f41f9c12025919
 +        default:
 +          return NSVisualEffectMaterialUnderWindowBackground;
 +      }
+     case VibrancyType::Titlebar:
+       return NSVisualEffectMaterialTitlebar;
    }
- }
- 
-@@ -78,6 +95,7 @@ static NSVisualEffectBlendingMode VisualEffectBlendingModeForVibrancyType(
+@@ -78,6 +95,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
  
  - (void)prefChanged {
    self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);
@@ -50,4 +50,4 @@ index 849b62c9976a7bc5fee35e074e54c8f556ed9c38..a9742c7ff30d417a18f41f9c12025919
 +    "zen.widget.macos.window-material"_ns,
  };
  
- VibrancyManager::VibrancyManager(const nsChildView& aCoordinateConverter,
+ VibrancyManager::VibrancyManager(const nsCocoaWindow& aCoordinateConverter,

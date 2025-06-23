@@ -1,5 +1,5 @@
 {
-  class ZenWorkspaceCreation extends MozXULElement {
+  class nsZenWorkspaceCreation extends MozXULElement {
     #wasInCollapsedMode = false;
 
     promiseInitialized = new Promise((resolve) => {
@@ -336,5 +336,5 @@
     }
   }
 
-  customElements.define('zen-workspace-creation', ZenWorkspaceCreation);
+  customElements.define('zen-workspace-creation', nsZenWorkspaceCreation);
 }

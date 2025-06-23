@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 panel[type='arrow'][animate='open'] {
-  @media (-moz-platform: macos) {
+  @media (-moz-platform: macos) and (-moz-panel-animations) {
     animation: zen-jello-animation-macos 0.4s ease-out;
     &[side='bottom'] {
       /* Animate from the bottom */
@@ -20,7 +20,7 @@ panel[type='arrow'][animate='open'] {
       }
     }
   }
-  @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) {
+  @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) and (-moz-panel-animations) {
     /* Mica popups have a weird background while the animation is running */
     &::part(content) {
       animation: zen-jello-animation 0.35s ease;

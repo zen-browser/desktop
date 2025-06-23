@@ -597,7 +597,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         break;
     }
     requestAnimationFrame(() => {
-      gNavToolbox.setAttribute('zen-has-hover', 'true');
+      requestAnimationFrame(() => {
+        gNavToolbox.setAttribute('zen-has-hover', 'true');
+      });
     });
   }
 
@@ -1202,7 +1204,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     } else {
       openInContainerMenuItem.setAttribute('hidden', 'true');
     }
-    const target = event.explicitOriginalTarget?.closest('toolbarbutton');
+    // Call parent node as on windows, the text can be double clicked
+    let target;
+    try {
+      target = event.explicitOriginalTarget?.closest('toolbarbutton');
+    } catch (_) {}
     this.#contextMenuData = {
       workspaceId: target?.getAttribute('zen-workspace-id'),
       originalTarget: target,
@@ -1226,7 +1232,11 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         item.className = 'zen-workspace-context-menu-item';
         item.setAttribute('zen-workspace-id', workspace.uuid);
         item.setAttribute('disabled', workspace.uuid === this.activeWorkspace);
-        item.setAttribute('label', (workspace.icon ?? ' \u25CB ') + '  ' + workspace.name);
+        let name = workspace.name;
+        if (workspace.icon && workspace.icon !== '') {
+          name = `${workspace.icon}  ${name}`;
+        }
+        item.setAttribute('label', name);
         item.addEventListener('command', (e) => {
           this.changeWorkspaceWithID(e.target.closest('menuitem').getAttribute('zen-workspace-id'));
         });

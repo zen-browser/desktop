@@ -47,10 +47,6 @@
   list-style-image: url('reload.svg') !important;
 }
 
-#PanelUI-zen-gradient-generator-color-toggle-algo {
-  list-style-image: url('palette.svg');
-}
-
 .tab-reset-button,
 #PanelUI-zen-gradient-generator-color-remove {
   list-style-image: url('unpin.svg') !important;
@@ -101,7 +97,8 @@
   list-style-image: url('chevron.svg') !important;
 }
 
-#zen-rice-share-options .options-header {
+#zen-rice-share-options .options-header,
+#PanelUI-zen-gradient-generator-color-page-right {
   list-style-image: url('arrow-right.svg');
 }
 
@@ -400,7 +397,8 @@
   list-style-image: url('expand-sidebar.svg') !important;
 }
 
-.panel-header > .subviewbutton-back {
+.panel-header > .subviewbutton-back,
+#PanelUI-zen-gradient-generator-color-page-left {
   list-style-image: url('arrow-left.svg') !important;
 }
 
@@ -775,10 +773,7 @@
 
 @media -moz-pref('zen.theme.window.scheme', 'auto') {
   #PanelUI-zen-gradient-generator-scheme-auto {
-    /** Can't use rgba  here because of the background image, provide a solid, gray
-     * background for the auto scheme in dark mode.
-     */
-    background: light-dark(#edebeb, rgb(106, 106, 106));
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
 }
 
@@ -788,7 +783,7 @@
 
 @media -moz-pref('zen.theme.window.scheme', 'dark') {
   #PanelUI-zen-gradient-generator-scheme-dark {
-    background: light-dark(#edebeb, rgb(106, 106, 106));
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
 }
 
@@ -798,6 +793,6 @@
 
 @media -moz-pref('zen.theme.window.scheme', 'light') {
   #PanelUI-zen-gradient-generator-scheme-light {
-    background: light-dark(#edebeb, rgb(106, 106, 106));
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
 }

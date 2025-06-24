@@ -50,10 +50,12 @@
 
     #allowTransparencyOnSidebar = Services.prefs.getBoolPref('zen.theme.acrylic-elements', false);
 
-    #linePath = `M 51.373 27.395 L 419.634 27.395`;
-    #sinePath = `M 51.373 31.629 C 60.14 -4.265 68.906 -4.265 77.671 31.629 C 86.438 67.527 95.205 67.527 103.971 31.629 C 112.738 -4.265 121.504 -4.265 130.271 31.629 C 139.037 67.527 147.803 67.527 156.57 31.629 C 165.335 -4.265 174.101 -4.265 182.868 31.629 C 191.634 67.527 200.4 67.527 209.167 31.629 C 217.933 -4.265 226.7 -4.265 235.467 31.629 C 244.233 67.527 252.999 67.527 261.765 31.629 C 270.531 -4.265 279.297 -4.265 288.064 31.629 C 296.83 67.527 305.596 67.527 314.363 31.629 C 323.13 -4.265 331.896 -4.265 340.662 31.629 M 314.438 31.629 C 323.204 -4.265 331.97 -4.265 340.737 31.629 C 349.503 67.527 358.27 67.527 367.037 31.629 C 375.802 -4.265 384.568 -4.265 393.335 31.629 C 402.101 67.527 410.867 67.527 419.634 31.629`;
+    #linePath = `M 51.373 27.395 L 367.037 27.395`;
+    #sinePath = `M 51.373 27.395 C 60.14 -8.503 68.906 -8.503 77.671 27.395 C 86.438 63.293 95.205 63.293 103.971 27.395 C 112.738 -8.503 121.504 -8.503 130.271 27.395 C 139.037 63.293 147.803 63.293 156.57 27.395 C 165.335 -8.503 174.101 -8.503 182.868 27.395 C 191.634 63.293 200.4 63.293 209.167 27.395 C 217.933 -8.503 226.7 -8.503 235.467 27.395 C 244.233 63.293 252.999 63.293 261.765 27.395 C 270.531 -8.503 279.297 -8.503 288.064 27.395 C 296.83 63.293 305.596 63.293 314.363 27.395 C 323.13 -8.503 331.896 -8.503 340.662 27.395 M 314.438 27.395 C 323.204 -8.503 331.97 -8.503 340.737 27.395 C 349.503 63.293 358.27 63.293 367.037 27.395`;
 
     #sinePoints = parseSinePath(this.#sinePath);
+
+    #colorPage = 0;
 
     constructor() {
       super();
@@ -102,6 +104,7 @@
       this.initCustomColorInput();
       this.initTextureInput();
       this.initSchemeButtons();
+      this.initColorPages();
 
       const darkModeChange = this.handleDarkModeChange.bind(this);
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', darkModeChange);
@@ -162,7 +165,7 @@
 
     initPredefinedColors() {
       document
-        .getElementById('PanelUI-zen-gradient-generator-predefined')
+        .getElementById('PanelUI-zen-gradient-generator-color-pages')
         .addEventListener('click', async (event) => {
           const target = event.target;
           const rawPosition = target.getAttribute('data-position');
@@ -213,6 +216,33 @@
 
     initCustomColorInput() {
       this.customColorInput.addEventListener('keydown', this.onCustomColorKeydown.bind(this));
+    }
+
+    initColorPages() {
+      const leftButton = document.getElementById('PanelUI-zen-gradient-generator-color-page-left');
+      const rightButton = document.getElementById(
+        'PanelUI-zen-gradient-generator-color-page-right'
+      );
+      const pagesWrapper = document.getElementById('PanelUI-zen-gradient-generator-color-pages');
+      const pages = pagesWrapper.children;
+      pagesWrapper.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+      leftButton.addEventListener('command', () => {
+        this.#colorPage = (this.#colorPage - 1 + pages.length) % pages.length;
+        // Scroll to the next page, by using scrollLeft
+        pagesWrapper.scrollLeft = (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
+        rightButton.disabled = false;
+        leftButton.disabled = this.#colorPage === 0;
+      });
+      rightButton.addEventListener('command', () => {
+        this.#colorPage = (this.#colorPage + 1) % pages.length;
+        // Scroll to the next page, by using scrollLeft
+        pagesWrapper.scrollLeft = (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
+        leftButton.disabled = false;
+        rightButton.disabled = this.#colorPage === pages.length - 1;
+      });
     }
 
     initSchemeButtons() {
@@ -431,6 +461,11 @@
       ];
     }
 
+    getJSONPos(x, y) {
+      // Return a JSON string with the position
+      return JSON.stringify({ x: Math.round(x), y: Math.round(y) });
+    }
+
     createDot(color, fromWorkspace = false) {
       const [r, g, b] = color.c;
       const dot = document.createElement('div');
@@ -445,7 +480,7 @@
         dot.style.opacity = 0;
         dot.style.setProperty('--zen-theme-picker-dot-color', color.c);
       } else {
-        const { x, y } = this.calculateInitialPosition(color.c);
+        const { x, y } = color.position || this.calculateInitialPosition([r, g, b]);
         const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
 
         dot.classList.add('zen-theme-picker-dot');
@@ -461,6 +496,7 @@
         let id = this.dots.length;
 
         dot.style.setProperty('--zen-theme-picker-dot-color', `rgb(${r}, ${g}, ${b})`);
+        dot.setAttribute('data-position', this.getJSONPos(x, y));
 
         this.dots.push({
           ID: id,
@@ -558,6 +594,7 @@
         '--zen-theme-picker-dot-color',
         `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
       );
+      dot.setAttribute('data-position', this.getJSONPos(relativePosition.x, relativePosition.y));
 
       this.dots.push({
         ID: id,
@@ -692,6 +729,8 @@
             '--zen-theme-picker-dot-color',
             `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
           );
+
+          dot.element.setAttribute('data-position', this.getJSONPos(pixelX, pixelY));
         });
 
         return;
@@ -708,6 +747,10 @@
           '--zen-theme-picker-dot-color',
           `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
         );
+        existingPrimaryDot.element.setAttribute(
+          'data-position',
+          this.getJSONPos(existingPrimaryDot.position.x, existingPrimaryDot.position.y)
+        );
       }
 
       colorPositions.forEach((dotPosition) => {
@@ -722,6 +765,10 @@
           existingDot.element.style.setProperty(
             '--zen-theme-picker-dot-color',
             `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
+          );
+          existingDot.element.setAttribute(
+            'data-position',
+            this.getJSONPos(dotPosition.position.x, dotPosition.position.y)
           );
 
           if (!this.dragging) {
@@ -780,24 +827,6 @@
         });
 
         let colorPositions = this.calculateCompliments(this.dots, 'remove');
-        this.handleColorPositions(colorPositions);
-        this.updateCurrentWorkspace();
-        return;
-      } else if (target.id === 'PanelUI-zen-gradient-generator-color-toggle-algo') {
-        const colorHarmonies = this.colorHarmonies;
-
-        const applicableHarmonies = colorHarmonies.filter(
-          (harmony) => harmony.angles.length + 1 === this.dots.length || harmony.type === 'floating'
-        );
-
-        let currentIndex = applicableHarmonies.findIndex(
-          (harmony) => harmony.type === this.useAlgo
-        );
-
-        let nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % applicableHarmonies.length;
-        this.useAlgo = applicableHarmonies[nextIndex].type;
-
-        let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
         this.handleColorPositions(colorPositions);
         this.updateCurrentWorkspace();
         return;
@@ -987,6 +1016,7 @@
         isCustom: color.isCustom,
         algorithm: color.algorithm,
         lightness: color.lightness,
+        position: color.position,
       }));
     }
 
@@ -1087,10 +1117,10 @@
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else if (themedColors.length === 2) {
         return [
-          `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} -30%, transparent 100%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} -30%, transparent 100%)`,
+          `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} -25%, transparent 100%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} -25%, transparent 100%)`,
         ].join(', ');
-      } else {
+      } else if (themedColors.length === 3) {
         let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
         let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
         let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
@@ -1102,11 +1132,17 @@
           ].join(', ');
         }
         return [`linear-gradient(${rotation}deg, ${color1} -30%, ${color3} 100%)`].join(', ');
+      } else {
+        // Just return a linear gradient with all colors
+        const gradientColors = themedColors.map((color) =>
+          this.getSingleRGBColor(color, forToolbar)
+        );
+        return `linear-gradient(${rotation}deg, ${gradientColors.join(', ')})`;
       }
     }
 
     shouldBeDarkMode(accentColor) {
-      let minimalLum = 0.6;
+      let minimalLum = this.isDarkMode ? 0.6 : 0.5;
       if (!this.canBeTransparent) {
         // Blend the color with the toolbar background
         const toolbarBg = this.getToolbarModifiedBaseRaw();
@@ -1258,7 +1294,6 @@
     }
 
     blendColors(rgb1, rgb2, percentage) {
-      const p = percentage / 100;
       const blended = this.blendColorsRaw(rgb1, rgb2, percentage);
       return `rgb(${blended[0]}, ${blended[1]}, ${blended[2]})`;
     }
@@ -1297,7 +1332,7 @@
         if (this.isDarkMode) {
           browser.document.documentElement.style.setProperty(
             '--zen-themed-browser-overlay-bg',
-            'rgba(255, 255, 255, 0.4)'
+            'rgba(255, 255, 255, 0.3)'
           );
         } else {
           browser.document.documentElement.style.setProperty(
@@ -1319,18 +1354,6 @@
             browser.gZenThemePicker.previousBackgroundResolve();
           }
           delete browser.gZenThemePicker.previousBackgroundOpacity;
-        }
-
-        const button = browser.document.getElementById(
-          'PanelUI-zen-gradient-generator-color-toggle-algo'
-        );
-        if (browser.gZenThemePicker.useAlgo) {
-          document.l10n.setAttributes(
-            button,
-            `zen-panel-ui-gradient-generator-algo-${browser.gZenThemePicker.useAlgo}`
-          );
-        } else {
-          button.removeAttribute('data-l10n-id');
         }
 
         browser.gZenThemePicker.resetCustomColorList();
@@ -1364,8 +1387,9 @@
         {
           let opacity = browser.gZenThemePicker.currentOpacity;
           const svg = browser.gZenThemePicker.sliderWavePath;
-          const stepSize = 0.05;
-          opacity = Math.floor(opacity / stepSize) * stepSize;
+          const [_, secondStop, thirdStop] = document.querySelectorAll(
+            '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
+          );
           // Opacity can only be between 0.15 to 0.85. Make opacity relative to that range
           // So 0.15 becomes 0, and 0.85 becomes 1.
           if (opacity < 0.15) {
@@ -1375,19 +1399,20 @@
           } else {
             opacity = (opacity - 0.15) / (0.85 - 0.15);
           }
-          svg.setAttribute('d', this.#interpolateWavePath(opacity));
-          const [_, secondStop, thirdStop] = document.querySelectorAll(
-            '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
-          );
-          opacity += 0.025; // add a little bit of opacity so it doesn't look clipped
+          // Since it's sine waves, we can't just set the offset to the opacity, we need to calculate it
+          // The offset is the percentage of the wave that is visible, so we need to multiply
+          // the opacity by 100 to get the percentage.
+          // Set the offset of the stops
           secondStop.setAttribute('offset', `${opacity * 100}%`);
           thirdStop.setAttribute('offset', `${opacity * 100}%`);
+          const interpolatedPath = this.#interpolateWavePath(opacity);
+          svg.setAttribute('d', interpolatedPath);
+          opacitySlider.style.setProperty('--zen-thumb-height', `${40 + opacity * 12}px`);
+          opacitySlider.style.setProperty('--zen-thumb-width', `${10 + opacity * 10}px`);
           svg.style.stroke =
-            opacity < 0.1
+            interpolatedPath === this.#linePath
               ? thirdStop.getAttribute('stop-color')
               : 'url(#PanelUI-zen-gradient-generator-slider-wave-gradient)';
-          opacitySlider.style.setProperty('--zen-thumb-height', `${40 + opacity * 10}px`);
-          opacitySlider.style.setProperty('--zen-thumb-width', `${10 + opacity * 10}px`);
         }
 
         for (const button of browser.document.querySelectorAll(
@@ -1559,12 +1584,15 @@
           }
           const isCustom = dot.classList.contains('custom');
           const algorithm = this.useAlgo;
+          const position =
+            dot.getAttribute('data-position') && JSON.parse(dot.getAttribute('data-position'));
           return {
             c: isCustom ? color : color.match(/\d+/g).map(Number),
             isCustom,
             algorithm,
             isPrimary,
             lightness: this.#currentLightness,
+            position,
           };
         });
       const gradient = nsZenThemePicker.getTheme(colors, this.currentOpacity, this.currentTexture);

@@ -62,7 +62,11 @@
   padding: 0 var(--panel-padding);
 
   @media (-moz-platform: macos) {
-    gap: 3rem;
+    gap: 2rem;
+  }
+
+  #PanelUI-zen-gradient-opacity-wrapper {
+    position: relative;
   }
 
   & label {
@@ -80,7 +84,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin: 5px auto 10px auto;
+  margin: 0 auto 25px auto;
   width: 100%;
 
   & > box {
@@ -164,31 +168,55 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-opacity,
-#PanelUI-zen-gradient-generator-texture {
+#PanelUI-zen-gradient-slider-wave {
+  position: absolute;
+  top: 3px;
+  left: -3px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  scale: 1.2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 14px;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    top: -2px;
+    left: 4px;
+    scale: 0.85;
+  }
+}
+
+#PanelUI-zen-gradient-generator-opacity {
   margin: 0 !important;
-  margin-top: 5px !important;
   background: transparent;
+  z-index: 2;
 
   &::-moz-range-thumb {
-    background: var(--zen-colors-tertiary);
-    border: 2px solid var(--zen-colors-border);
-    border-radius: 12px;
-    height: 25px;
-    width: 13px;
+    background: light-dark(black, white);
+    border-radius: 999px;
+    height: var(--zen-thumb-height);
+    width: var(--zen-thumb-width);
     cursor: pointer;
+    border: none;
   }
 
   &::-moz-range-track {
-    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
     border-radius: 999px;
     height: 6px;
   }
 
   &::-moz-range-progress {
-    background: var(--zen-primary-color);
-    border-radius: 999px;
-    height: 8px;
+    background: transparent;
   }
 }
 
@@ -273,9 +301,9 @@
     min-width: fit-content !important;
     transition: background 0.2s;
     appearance: none;
-    max-height: 28px;
+    max-height: 26px;
+    max-width: 26px;
     color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
-    backdrop-filter: blur(5px);
 
     & .button-box {
       gap: 0.1rem;
@@ -304,6 +332,7 @@
 
 #PanelUI-zen-gradient-generator-scheme {
   top: 10px;
+  max-height: 32px;
 }
 
 @media not -moz-pref('zen.theme.gradient.show-custom-colors') {
@@ -318,9 +347,8 @@
   position: relative;
 
   @media (-moz-platform: macos) {
-    width: 25%;
-    aspect-ratio: 1;
-    height: unset;
+    width: 5rem;
+    height: 5rem;
   }
 
   &::after {

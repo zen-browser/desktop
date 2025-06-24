@@ -1,0 +1,13 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index c4627621344d35081f11a7b0e03d02eca2097609..d2e5fe429aaac8b701a03380a67f4ea978d566b3 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -7376,7 +7376,7 @@ - (id)initWithContentRect:(NSRect)aContentRect
+ 
+ // Returns an autoreleased NSImage.
+ static NSImage* GetMenuMaskImage() {
+-  const CGFloat radius = 6.0f;
++  const CGFloat radius = 14.0f;
+   const NSSize maskSize = {radius * 3.0f, radius * 3.0f};
+   NSImage* maskImage = [NSImage imageWithSize:maskSize
+                                       flipped:FALSE

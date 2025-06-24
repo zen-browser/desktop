@@ -49,7 +49,11 @@
     }
 
     async #insertStylesheet() {
-      this.#modsBackend.rebuildModsStyles();
+      try {
+        this.#modsBackend.rebuildModsStyles();
+      } catch (e) {
+        console.warn('[ZenMods]: Error rebuilding mods styles:', e);
+      }
     }
 
     async #rebuildModsStylesheet() {

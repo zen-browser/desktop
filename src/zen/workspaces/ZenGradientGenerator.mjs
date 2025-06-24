@@ -3,6 +3,43 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 {
+  function parseSinePath(pathStr) {
+    const points = [];
+    const commands = pathStr.match(/[MCL]\s*[\d\s\.\-,]+/g);
+    if (!commands) return points;
+
+    commands.forEach((command) => {
+      const type = command.charAt(0);
+      const coordsStr = command.slice(1).trim();
+      const coords = coordsStr.split(/[\s,]+/).map(Number);
+
+      switch (type) {
+        case 'M':
+          points.push({ x: coords[0], y: coords[1], type: 'M' });
+          break;
+        case 'C':
+          if (coords.length >= 6 && coords.length % 6 === 0) {
+            for (let i = 0; i < coords.length; i += 6) {
+              points.push({
+                x1: coords[i],
+                y1: coords[i + 1],
+                x2: coords[i + 2],
+                y2: coords[i + 3],
+                x: coords[i + 4],
+                y: coords[i + 5],
+                type: 'C',
+              });
+            }
+          }
+          break;
+        case 'L':
+          points.push({ x: coords[0], y: coords[1], type: 'L' });
+          break;
+      }
+    });
+    return points;
+  }
+
   class nsZenThemePicker extends ZenMultiWindowFeature {
     static MAX_DOTS = 3;
 
@@ -12,6 +49,11 @@
     #currentLightness = 50;
 
     #allowTransparencyOnSidebar = Services.prefs.getBoolPref('zen.theme.acrylic-elements', false);
+
+    #linePath = `M 51.373 27.395 L 419.634 27.395`;
+    #sinePath = `M 51.373 31.629 C 60.14 -4.265 68.906 -4.265 77.671 31.629 C 86.438 67.527 95.205 67.527 103.971 31.629 C 112.738 -4.265 121.504 -4.265 130.271 31.629 C 139.037 67.527 147.803 67.527 156.57 31.629 C 165.335 -4.265 174.101 -4.265 182.868 31.629 C 191.634 67.527 200.4 67.527 209.167 31.629 C 217.933 -4.265 226.7 -4.265 235.467 31.629 C 244.233 67.527 252.999 67.527 261.765 31.629 C 270.531 -4.265 279.297 -4.265 288.064 31.629 C 296.83 67.527 305.596 67.527 314.363 31.629 C 323.13 -4.265 331.896 -4.265 340.662 31.629 M 314.438 31.629 C 323.204 -4.265 331.97 -4.265 340.737 31.629 C 349.503 67.527 358.27 67.527 367.037 31.629 C 375.802 -4.265 384.568 -4.265 393.335 31.629 C 402.101 67.527 410.867 67.527 419.634 31.629`;
+
+    #sinePoints = parseSinePath(this.#sinePath);
 
     constructor() {
       super();
@@ -36,6 +78,10 @@
       );
       ChromeUtils.defineLazyGetter(this, 'customColorList', () =>
         document.getElementById('PanelUI-zen-gradient-generator-custom-list')
+      );
+
+      ChromeUtils.defineLazyGetter(this, 'sliderWavePath', () =>
+        document.getElementById('PanelUI-zen-gradient-slider-wave').querySelector('path')
       );
 
       this.panel.addEventListener('popupshowing', this.handlePanelOpen.bind(this));
@@ -349,24 +395,11 @@
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const radius = (rect.width - padding) / 2;
-
-      // Convert RGB to HSL
-      const [h, s, l] = this.rgbToHsl(r, g, b);
-
-      // We assume lightness is fixed; if not, add a warning or threshold check
-      // const targetLightness = this.#currentLightness / 100;
-      // if (Math.abs(l - targetLightness) > 0.01) return null;
-
-      // Convert hue (0-1) to angle in radians
-      const angleRad = (h * 360 * Math.PI) / 180;
-
-      // Convert saturation to radial distance
-      const distance = (1 - s) * radius;
-
-      // Convert polar to cartesian
-      const x = centerX + Math.cos(angleRad) * distance;
-      const y = centerY + Math.sin(angleRad) * distance;
-
+      const [hue, saturation] = this.rgbToHsl(r, g, b);
+      const angle = (hue / 360) * 2 * Math.PI; // Convert to radians
+      const normalizedSaturation = saturation / 100; // Convert to [0, 1]
+      const x = centerX + radius * normalizedSaturation * Math.cos(angle) - padding;
+      const y = centerY + radius * normalizedSaturation * Math.sin(angle) - padding;
       return { x, y };
     }
 
@@ -960,7 +993,7 @@
     onOpacityChange(event) {
       this.currentOpacity = parseFloat(event.target.value);
       // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback
-      if (Math.round(this.currentOpacity % 0.1) === 0) {
+      if ((this.currentOpacity * 10) % 1 === 0) {
         Services.zen.playHapticFeedback();
       }
       this.updateCurrentWorkspace();
@@ -1324,6 +1357,39 @@
         browser.gZenThemePicker.currentOpacity = workspaceTheme.opacity ?? 0.5;
         browser.gZenThemePicker.currentTexture = workspaceTheme.texture ?? 0;
 
+        const opacitySlider = browser.document.getElementById(
+          'PanelUI-zen-gradient-generator-opacity'
+        );
+
+        {
+          let opacity = browser.gZenThemePicker.currentOpacity;
+          const svg = browser.gZenThemePicker.sliderWavePath;
+          const stepSize = 0.05;
+          opacity = Math.floor(opacity / stepSize) * stepSize;
+          // Opacity can only be between 0.15 to 0.85. Make opacity relative to that range
+          // So 0.15 becomes 0, and 0.85 becomes 1.
+          if (opacity < 0.15) {
+            opacity = 0;
+          } else if (opacity > 0.85) {
+            opacity = 1;
+          } else {
+            opacity = (opacity - 0.15) / (0.85 - 0.15);
+          }
+          svg.setAttribute('d', this.#interpolateWavePath(opacity));
+          const [_, secondStop, thirdStop] = document.querySelectorAll(
+            '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
+          );
+          opacity += 0.025; // add a little bit of opacity so it doesn't look clipped
+          secondStop.setAttribute('offset', `${opacity * 100}%`);
+          thirdStop.setAttribute('offset', `${opacity * 100}%`);
+          svg.style.stroke =
+            opacity < 0.1
+              ? thirdStop.getAttribute('stop-color')
+              : 'url(#PanelUI-zen-gradient-generator-slider-wave-gradient)';
+          opacitySlider.style.setProperty('--zen-thumb-height', `${40 + opacity * 10}px`);
+          opacitySlider.style.setProperty('--zen-thumb-width', `${10 + opacity * 10}px`);
+        }
+
         for (const button of browser.document.querySelectorAll(
           '#PanelUI-zen-gradient-generator-color-actions button'
         )) {
@@ -1338,8 +1404,7 @@
           .getElementById('PanelUI-zen-gradient-generator-color-click-to-add')
           .toggleAttribute('hidden', workspaceTheme.gradientColors.length > 0);
 
-        browser.document.getElementById('PanelUI-zen-gradient-generator-opacity').value =
-          browser.gZenThemePicker.currentOpacity;
+        opacitySlider.value = browser.gZenThemePicker.currentOpacity;
         const textureSelectWrapper = browser.document.getElementById(
           'PanelUI-zen-gradient-generator-texture-wrapper'
         );
@@ -1527,6 +1592,37 @@
       setTimeout(() => {
         this.updateCurrentWorkspace();
       }, 200);
+    }
+
+    #interpolateWavePath(progress) {
+      const linePath = this.#linePath;
+      const sinePath = this.#sinePath;
+      const referenceY = 27.3;
+      if (this.#sinePoints.length === 0) {
+        return progress < 0.5 ? linePath : sinePath;
+      }
+      if (progress <= 0.001) return linePath;
+      if (progress >= 0.999) return sinePath;
+      const t = progress;
+      let newPathData = '';
+      this.#sinePoints.forEach((p) => {
+        switch (p.type) {
+          case 'M':
+            const interpolatedY = referenceY + (p.y - referenceY) * t;
+            newPathData += `M ${p.x} ${interpolatedY} `;
+            break;
+          case 'C':
+            const y1 = referenceY + (p.y1 - referenceY) * t;
+            const y2 = referenceY + (p.y2 - referenceY) * t;
+            const y = referenceY + (p.y - referenceY) * t;
+            newPathData += `C ${p.x1} ${y1} ${p.x2} ${y2} ${p.x} ${y} `;
+            break;
+          case 'L':
+            newPathData += `L ${p.x} ${p.y} `;
+            break;
+        }
+      });
+      return newPathData.trim();
     }
   }
 

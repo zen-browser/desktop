@@ -5,20 +5,6 @@
 <panel flip="side" type="arrow" popupalign="center" orient="vertical" id="PanelUI-zen-gradient-generator" position="bottomright topright" mainview="true" side="left">
   <panelmultiview id="PanelUI-zen-gradient-generator-multiview" mainViewId="PanelUI-zen-gradient-generator-view">
     <panelview id="PanelUI-zen-gradient-generator-view" class="PanelUI-subView zen-theme-picker" role="document" mainview-with-header="true" has-custom-header="true">
-      <hbox>
-        <hbox id="PanelUI-zen-gradient-generator-predefined">
-          <box data-lightness="00" data-algo="analogous" data-num-dots="3" data-position="219,99" style="background: linear-gradient(135deg, rgb(117, 255, 136), rgb(60, 66, 58));"></box>
-          <box data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="167,201" style="background: linear-gradient(135deg, #a03fe0, #382b5c);"></box>
-          <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="90,170" style="background: linear-gradient(135deg, #c57aa3, #af824f);"></box>
-          <box data-lightness="30" data-algo="splitComplementary" data-num-dots="3" data-position="83,103" style="background: linear-gradient(135deg, #1e90ff, #968a4a);"></box>
-          <box data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="186,186" style="background: linear-gradient(135deg, #a07a48, #ab80e4);"></box>
-          <box data-lightness="50" data-algo="float" data-num-dots="1" data-position="196,176" style="background: #7bcbda;"></box>
-          <box data-lightness="60" data-algo="float" data-num-dots="1" data-position="116,167" style="background: #be9ac9;"></box>
-          <box data-lightness="70" data-algo="float" data-num-dots="1" data-position="122,110" style="background: #cdcea1;"></box>
-          <box data-lightness="80" data-algo="float" data-num-dots="1" data-position="181,83" style="background: #6ac593;"></box>
-          <box data-lightness="150" data-algo="complementary" data-num-dots="2" data-position="82,112" style="background: linear-gradient(135deg, #1e90ff, #cfb179);"></box>
-        </hbox>
-      </hbox>
       <hbox class="zen-theme-picker-gradient">
         <hbox id="PanelUI-zen-gradient-generator-scheme">
           <button id="PanelUI-zen-gradient-generator-scheme-auto" class="subviewbutton"/>
@@ -36,10 +22,40 @@
         </hbox>
         <label data-l10n-id="zen-panel-ui-gradient-click-to-add" id="PanelUI-zen-gradient-generator-color-click-to-add"></label>
       </hbox>
+      <hbox>
+        <hbox id="PanelUI-zen-gradient-generator-predefined">
+          <box data-lightness="90" data-algo="float" data-num-dots="1" data-position="196,176" style="background: #7bcbda;"></box>
+          <box data-lightness="80" data-algo="float" data-num-dots="1" data-position="116,167" style="background: #be9ac9;"></box>
+          <box data-lightness="70" data-algo="float" data-num-dots="1" data-position="122,110" style="background: #cdcea1;"></box>
+          <box data-lightness="60" data-algo="float" data-num-dots="1" data-position="181,83" style="background: #6ac593;"></box>
+          <box data-lightness="50" data-algo="analogous" data-num-dots="3" data-position="219,99" style="background: linear-gradient(135deg, rgb(117, 255, 136), rgb(60, 66, 58));"></box>
+          <box data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="167,201" style="background: linear-gradient(135deg, #a03fe0, #382b5c);"></box>
+          <box data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="90,170" style="background: linear-gradient(135deg, #c57aa3, #af824f);"></box>
+          <box data-lightness="20" data-algo="splitComplementary" data-num-dots="3" data-position="83,103" style="background: linear-gradient(135deg, #1e90ff, #968a4a);"></box>
+          <box data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="186,186" style="background: linear-gradient(135deg, #a07a48, #ab80e4);"></box>
+          <box data-lightness="150" data-algo="complementary" data-num-dots="2" data-position="82,112" style="background: linear-gradient(135deg, #1e90ff, #cfb179);"></box>
+        </hbox>
+      </hbox>
       <hbox id="PanelUI-zen-gradient-generator-controls">
         <hbox id="PanelUI-zen-gradient-colors-wrapper">
-          <vbox flex="1">
-            <html:input type="range" min="0.15" max="0.85" value="0.5" step="0.05" id="PanelUI-zen-gradient-generator-opacity" />
+          <vbox flex="1" id="PanelUI-zen-gradient-opacity-wrapper">
+            <box id="PanelUI-zen-gradient-slider-wave">
+              <svg viewBox="0 -2.5 455 70" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMid meet">
+                <path d="M 51.373 27.395 L 419.634 27.395" 
+                      fill="none" 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      style="stroke-width: 11px;"/>
+                <defs>
+                  <linearGradient id="PanelUI-zen-gradient-generator-slider-wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="light-dark(rgb(77, 77, 77), rgb(161, 161, 161))"/>
+                    <stop offset="0%" stop-color="light-dark(rgba(77, 77, 77), rgba(161, 161, 161))"/>
+                    <stop offset="100%" stop-color="light-dark(rgba(77, 77, 77, 0.5), rgba(161, 161, 161, 0.5))"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </box>
+            <html:input type="range" min="0.15" max="0.85" value="0.5" step="0.01" id="PanelUI-zen-gradient-generator-opacity" />
           </vbox>
           <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">
           </vbox>

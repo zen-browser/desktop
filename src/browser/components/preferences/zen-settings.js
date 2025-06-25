@@ -987,7 +987,7 @@ var gZenCKSSettings = {
     let input = document.querySelector(
       `.${ZEN_CKS_INPUT_FIELD_CLASS}[${KEYBIND_ATTRIBUTE_KEY}="${this._currentActionID}"]`
     );
-    const modifiers = new KeyShortcutModifiers(
+    const modifiers = new nsKeyShortcutModifiers(
       event.ctrlKey,
       event.altKey,
       event.shiftKey,

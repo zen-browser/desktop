@@ -162,9 +162,10 @@
   }
 
   & #urlbar-background {
-    --zen-urlbar-background-base: light-dark(
-      hsl(0, 0%, 100%),
-      color-mix(in srgb, hsl(0, 0%, 5%) 80%, var(--zen-colors-primary) 20%)
+    --zen-urlbar-background-base: color-mix(
+      in srgb,
+      light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 5%)) 80%,
+      var(--zen-colors-primary) 20%
     );
     @media -moz-pref('zen.theme.acrylic-elements') {
       --zen-urlbar-background-transparent: color-mix(

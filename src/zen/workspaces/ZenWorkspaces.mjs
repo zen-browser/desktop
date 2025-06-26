@@ -694,9 +694,10 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
     element.addEventListener(
       'MozSwipeGestureEnd',
-      (event) => {
+      () => {
         document.documentElement.removeAttribute('swipe-gesture');
         gZenUIManager.tabsWrapper.style.removeProperty('scrollbar-width');
+        delete this._hasAnimatedBackgrounds;
         this.updateTabsContainers();
         document.removeEventListener('popupshown', this.popupOpenHandler, { once: true });
       },
@@ -1710,6 +1711,35 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         }
       }
     }
+    if (offsetPixels) {
+      // Find the next workspace we are scrolling to
+      if (!this._hasAnimatedBackgrounds) {
+        this._hasAnimatedBackgrounds = true;
+        const nextWorkspace = workspaces.workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
+        if (nextWorkspace) {
+          const nextGradient = await gZenThemePicker.getGradientForWorkspace(nextWorkspace);
+          const existingBackground = document.documentElement.style.getPropertyValue(
+            '--zen-main-browser-background'
+          );
+          if (existingBackground !== nextGradient) {
+            document.documentElement.style.setProperty(
+              '--zen-main-browser-background-old',
+              existingBackground
+            );
+            document.documentElement.style.setProperty(
+              '--zen-main-browser-background',
+              nextGradient
+            );
+          }
+        }
+      }
+      document.documentElement.style.setProperty(
+        '--zen-background-opacity',
+        Math.abs(offsetPixels) / 200
+      );
+    } else {
+      delete this._hasAnimatedBackgrounds;
+    }
     delete this._organizingWorkspaceStrip;
   }
 
@@ -1849,6 +1879,24 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       const newWorkspaceEssentialsContainer = clonedEssentials.find((cloned) =>
         cloned.workspaces.some((w) => w.uuid === newWorkspace.uuid)
       );
+      // Get a list of essentials containers that are in between the first and last workspace
+      const essentialsContainersInBetween = clonedEssentials.filter((cloned) => {
+        const essentialsWorkspaces = cloned.workspaces;
+        const firstIndex = workspaces.workspaces.findIndex(
+          (w) => w.uuid === essentialsWorkspaces[0].uuid
+        );
+        const lastIndex = workspaces.workspaces.findIndex(
+          (w) => w.uuid === essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
+        );
+
+        const [start, end] = [
+          Math.min(previousWorkspaceIndex, newWorkspaceIndex),
+          Math.max(previousWorkspaceIndex, newWorkspaceIndex),
+        ];
+
+        // Check if any part of the container overlaps with the movement range
+        return firstIndex <= end && lastIndex >= start;
+      });
       for (const cloned of clonedEssentials) {
         const container = cloned.container;
         const essentialsWorkspaces = cloned.workspaces;
@@ -1875,8 +1923,18 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         cloned.originalContainer.style.removeProperty('transform');
         // Check if the container is even going to appear on the screen, to save on animation
         if (
-          (isGoingLeft && newWorkspaceIndex > lastWorkspaceIndex) ||
-          (!isGoingLeft && newWorkspaceIndex < firstWorkspaceIndex)
+          // We also need to check if the container is even going to appear on the screen.
+          // In order to do this, we need to check if the container is between the first and last workspace.
+          // Note that essential containers can have multiple workspaces,
+          // so we need to check if any of the workspaces in the container are between the
+          // first and last workspace.
+          !essentialsContainersInBetween.find(
+            (clonedEssentials) =>
+              clonedEssentials.workspaces.some((w) => w.uuid === essentialsWorkspaces[0].uuid) &&
+              clonedEssentials.workspaces.some(
+                (w) => w.uuid === essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
+              )
+          )
         ) {
           continue;
         }

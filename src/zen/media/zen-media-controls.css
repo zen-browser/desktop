@@ -16,7 +16,6 @@
 
   .toolbarbutton-1 {
     border-radius: 5px;
-    color: white;
   }
 
   #zen-media-buttons-hbox {
@@ -77,19 +76,19 @@
     transition: height 0.15s ease-out;
 
     &::-moz-range-track {
-      background: var(--zen-colors-border);
+      background: var(--zen-toolbar-element-bg);
       border-radius: 999px;
       height: var(--progress-height);
     }
 
     &::-moz-range-progress {
-      background: var(--zen-primary-color);
+      background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
       border-radius: 999px;
       height: var(--progress-height);
     }
 
     &::-moz-range-thumb {
-      background: var(--zen-primary-color);
+      background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
       border: none;
       width: calc(var(--progress-height) * 2);
       height: calc(var(--progress-height) * 2);

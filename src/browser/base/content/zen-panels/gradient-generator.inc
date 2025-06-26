@@ -33,14 +33,22 @@
             <box data-lightness="50" data-algo="float" data-num-dots="1" data-position="81,84" style="background: #919bb5;"></box>
           </hbox>
           <hbox>
-            <box data-lightness="90" data-algo="analogous" data-num-dots="3" data-position="240,240" style="background: linear-gradient(135deg, #f4efdf, rgb(244, 223, 244));"></box>
-            <box data-lightness="85" data-algo="analogous" data-num-dots="3" data-position="233,157" style="background: linear-gradient(135deg, #f0b8cd,rgb(244, 237, 224));"></box>
-            <box data-lightness="80" data-algo="analogous" data-num-dots="3" data-position="236,111" style="background: linear-gradient(135deg, #e9c3e3,rgb(144, 97, 116));"></box>
-            <box data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="234,173" style="background: linear-gradient(135deg, #da7682,rgb(242, 197, 160));"></box>
-            <box data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="220,187" style="background: linear-gradient(135deg, #eb8570,rgb(229, 244, 164));"></box>
-            <box data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="225,237" style="background: linear-gradient(135deg, #dcce7f,rgb(115, 195, 128));"></box>
-            <box data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="147,195" style="background: linear-gradient(135deg, #5becad,rgb(195, 248, 207));"></box>
-            <box data-lightness="55" data-algo="analogous" data-num-dots="3" data-position="81,84" style="background: linear-gradient(135deg, #919bb5,rgb(179, 176, 223));"></box>
+            <box data-lightness="90" data-algo="analogous" data-num-dots="3" data-position="240,240"
+                style="--c1: rgb(245, 237, 214); --c2: rgb(221, 243, 216); --c3: rgb(243, 216, 225);" />
+            <box data-lightness="85" data-algo="analogous" data-num-dots="3" data-position="233,157"
+                style="--c1: rgb(243, 190, 222); --c2: rgb(247, 222, 186); --c3: rgb(223, 195, 238);" />
+            <box data-lightness="80" data-algo="analogous" data-num-dots="3" data-position="236,111"
+                style="--c1: rgb(229, 179, 228); --c2: rgb(236, 172, 178); --c3: rgb(197, 185, 223);" />
+            <box data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="234,173"
+                style="--c1: rgb(235, 122, 159); --c2: rgb(239, 239, 118); --c3: rgb(210, 133, 224);" />
+            <box data-lightness="70" data-algo="analogous" data-num-dots="3" data-position="220,187"
+                style="--c1: rgb(242, 115, 123); --c2: rgb(175, 242, 115); --c3: rgb(230, 125, 232);" />
+            <box data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="225,237"
+                style="--c1: rgb(221, 205, 85); --c2: rgb(97, 212, 94); --c3: rgb(215, 91, 124);" />
+            <box data-lightness="60" data-algo="analogous" data-num-dots="3" data-position="147,195"
+                style="--c1: rgb(75, 231, 210); --c2: rgb(84, 175, 222); --c3: rgb(62, 244, 112);" />
+            <box data-lightness="55" data-algo="analogous" data-num-dots="3" data-position="81,84"
+                style="--c1: rgb(122, 132, 158); --c2: rgb(137, 117, 164); --c3: rgb(116, 162, 164);" />
           </hbox>
           <hbox>
             <box data-lightness="10" data-algo="float" data-num-dots="1" data-position="171,72" style="background:rgb(93, 86, 106);"></box>
@@ -53,14 +61,22 @@
             <box data-lightness="20" data-algo="float" data-num-dots="1" data-position="118,215" style="background: #447464;"></box>
           </hbox>
           <hbox>
-            <box data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="171,72" style="background: linear-gradient(135deg, #584e69,rgb(32, 27, 41));"></box>
-            <box data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="265,79" style="background: linear-gradient(135deg, #997096,rgb(125, 62, 88));"></box>
-            <box data-lightness="35" data-algo="analogous" data-num-dots="3" data-position="301,176" style="background: linear-gradient(135deg, #956066,rgb(116, 82, 131));"></box>
-            <box data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="237,210" style="background: linear-gradient(135deg, #9c6645,rgb(171, 195, 109));"></box>
-            <box data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="91,228" style="background: linear-gradient(135deg, #517b6c,rgb(118, 141, 164));"></box>
-            <box data-lightness="25" data-algo="analogous" data-num-dots="3" data-position="67,159" style="background: linear-gradient(135deg, #576e75,rgb(67, 66, 92));"></box>
-            <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="314,235" style="background: linear-gradient(135deg, #665951,rgb(81, 67, 59));"></box>
-            <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="118,215" style="background: linear-gradient(135deg, #447464,rgb(109, 129, 168));"></box>
+            <box data-lightness="10" data-algo="analogous" data-num-dots="3" data-position="171,72"
+                style="--c1: rgb(23, 17, 34); --c2: rgb(37, 14, 35); --c3: rgb(18, 22, 33);" />
+            <box data-lightness="40" data-algo="analogous" data-num-dots="3" data-position="265,79"
+                style="--c1: rgb(128, 76, 124); --c2: rgb(141, 63, 66); --c3: rgb(97, 88, 116);" />
+            <box data-lightness="35" data-algo="analogous" data-num-dots="3" data-position="301,176"
+                style="--c1: rgb(122, 56, 64); --c2: rgb(126, 121, 52); --c3: rgb(111, 68, 110);" />
+            <box data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="237,210"
+                style="--c1: rgb(131, 65, 22); --c2: rgb(64, 128, 25); --c3: rgb(122, 31, 91);" />
+            <box data-lightness="30" data-algo="analogous" data-num-dots="3" data-position="91,228"
+                style="--c1: rgb(45, 108, 85); --c2: rgb(52, 85, 101); --c3: rgb(52, 118, 35);" />
+            <box data-lightness="25" data-algo="analogous" data-num-dots="3" data-position="67,159"
+                style="--c1: rgb(45, 74, 83); --c2: rgb(46, 50, 81); --c3: rgb(38, 90, 65);" />
+            <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="314,235"
+                style="--c1: rgb(64, 47, 38); --c2: rgb(55, 64, 38); --c3: rgb(59, 43, 52);" />
+            <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="118,215"
+                style="--c1: rgb(22, 80, 61); --c2: rgb(26, 60, 76); --c3: rgb(27, 87, 15);" />
           </hbox>
         </hbox>
         <toolbarbutton id="PanelUI-zen-gradient-generator-color-page-right" class="toolbarbutton-1" />

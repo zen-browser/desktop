@@ -259,10 +259,10 @@
   }
 
   &,
-  & #tabbrowser-tabpanels,
   & panel,
   & menupopup,
-  & #zen-browser-background {
+  & #zen-browser-background,
+  & #urlbar[breakout-extend='true'] {
     @media -moz-pref('zen.theme.window.scheme', 'dark') {
       color-scheme: dark;
     }

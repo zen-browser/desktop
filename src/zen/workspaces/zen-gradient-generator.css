@@ -105,6 +105,13 @@
       position: relative;
       transition: transform 0.1s;
 
+      &[data-num-dots='3'] {
+        background:
+          radial-gradient(circle at 0% 0%, var(--c1), transparent 100%),
+          radial-gradient(circle at 100% 0%, var(--c2), transparent 100%),
+          linear-gradient(to top, var(--c3) 0%, transparent 60%);
+      }
+
       &::after {
         content: '';
         position: absolute;

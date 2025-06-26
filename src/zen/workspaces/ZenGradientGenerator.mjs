@@ -59,6 +59,7 @@
     #sinePoints = parseSinePath(this.#sinePath);
 
     #colorPage = 0;
+    #gradientsCache = new Map();
 
     constructor() {
       super();
@@ -1012,10 +1013,9 @@
       if (color.isCustom) {
         return color.c;
       }
-      const opacity = this.currentOpacity;
+      let opacity = this.currentOpacity;
       if (forToolbar) {
-        const toolbarBg = this.getToolbarModifiedBase();
-        return `color-mix(in srgb, rgb(${color.c[0]}, ${color.c[1]}, ${color.c[2]}) ${opacity * 100}%, ${toolbarBg} ${(1 - opacity) * 100}%)`;
+        opacity = 1; // Toolbar colors should always be fully opaque
       }
       return `rgba(${color.c[0]}, ${color.c[1]}, ${color.c[2]}, ${opacity})`;
     }
@@ -1089,10 +1089,13 @@
           return `linear-gradient(${rotation}deg, ${colorStops})`;
         }
         if (themedColors.length === 2) {
-          return [
-            `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-            `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
-          ].join(', ');
+          if (!forToolbar) {
+            return [
+              `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+              `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+            ].join(', ');
+          }
+          return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 100%)`;
         } else if (themedColors.length === 3) {
           let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
           let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
@@ -1104,6 +1107,7 @@
               `linear-gradient(to top, ${color1} 0%, transparent 60%)`,
             ].join(', ');
           }
+          // TODO(m): Stop doing this once we have support for bluring the sidebar
           return [`linear-gradient(120deg, ${color1} -30%, ${color3} 100%)`].join(', ');
         }
       }
@@ -1320,28 +1324,10 @@
             browser.gZenThemePicker.previousBackgroundResolve();
           }
           delete browser.gZenThemePicker.previousBackgroundOpacity;
+          browser.gZenThemePicker.invalidateGradientCache();
         }
 
         browser.gZenThemePicker.resetCustomColorList();
-        if (!workspaceTheme || workspaceTheme.type !== 'gradient') {
-          const gradient = browser.gZenThemePicker.getGradient([]);
-          const gradientToolbar = browser.gZenThemePicker.getGradient([], true);
-          browser.document.documentElement.style.setProperty(
-            '--zen-main-browser-background',
-            gradient
-          );
-          browser.document.documentElement.style.setProperty(
-            '--zen-main-browser-background-toolbar',
-            gradientToolbar
-          );
-          browser.gZenThemePicker.updateNoise(0);
-          browser.document.documentElement.style.setProperty(
-            '--zen-primary-color',
-            this.getNativeAccentColor()
-          );
-          browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
-          return;
-        }
 
         browser.gZenThemePicker.currentOpacity = workspaceTheme.opacity ?? 0.5;
         browser.gZenThemePicker.currentTexture = workspaceTheme.texture ?? 0;
@@ -1625,6 +1611,26 @@
         }
       });
       return newPathData.trim();
+    }
+
+    invalidateGradientCache() {
+      this.#gradientsCache = {};
+    }
+
+    async getGradientForWorkspace(workspace) {
+      const uuid = workspace.uuid;
+      if (this.#gradientsCache[uuid]) {
+        return this.#gradientsCache[uuid];
+      }
+      const previousOpacity = this.currentOpacity;
+      const previousLightness = this.#currentLightness;
+      this.currentOpacity = workspace.theme.opacity ?? 0.5;
+      this.#currentLightness = workspace.theme.lightness ?? 70;
+      const gradient = this.getGradient(workspace.theme.gradientColors);
+      this.currentOpacity = previousOpacity;
+      this.#currentLightness = previousLightness;
+      this.#gradientsCache[uuid] = gradient;
+      return gradient;
     }
   }
 

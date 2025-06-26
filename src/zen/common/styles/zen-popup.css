@@ -369,7 +369,6 @@ menuseparator {
       var(--zen-primary-color) -40%,
       color-mix(in srgb, var(--zen-primary-color) 85%, #0f0f0f 15%)
     );
-    color: var(--toolbar-color);
     box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
     display: flex;
@@ -391,6 +390,8 @@ menuseparator {
     & label {
       margin-top: 0;
       margin-bottom: 0;
+      /* Invert the color based on the background */
+      color: light-dark(rgba(255, 255, 255, 0.9), rgba(0, 0, 0, 0.9));
     }
 
     & button {
@@ -401,7 +402,7 @@ menuseparator {
       border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
       background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1)) !important;
       border: 1px solid light-dark(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15)) !important;
-      color: var(--toolbar-color);
+      color: var(--zen-colors-secondary);
 
       :root[zen-right-side='true'] & {
         order: -1;

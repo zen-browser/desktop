@@ -51,6 +51,10 @@ class nsZenUIMigration {
     if (userChromeFile.exists() || userContentFile.exists()) {
       Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
     }
+    Services.prefs.setBoolPref(
+      'zen.workspaces.separate-essentials',
+      Services.prefs.getBoolPref('zen.workspaces.container-specific-essentials-enabled', false)
+    );
   }
 }
 

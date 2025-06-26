@@ -1,4 +1,5 @@
 [DEFAULT]
+prefs = ["zen.workspaces.separate-essentials=false"]
 support-files = [
   "head.js",
 ]

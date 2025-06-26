@@ -1253,7 +1253,11 @@
     };
 
     getMostDominantColor(allColors) {
-      return this.getPrimaryColor(allColors);
+      const color = this.getPrimaryColor(allColors);
+      if (typeof color === 'string') {
+        return this.hexToRgb(color);
+      }
+      return color;
     }
 
     blendColors(rgb1, rgb2, percentage) {
@@ -1629,8 +1633,8 @@
       const gradient = this.getGradient(workspace.theme.gradientColors);
       this.currentOpacity = previousOpacity;
       this.#currentLightness = previousLightness;
-      this.#gradientsCache[uuid] = gradient;
-      return gradient;
+      this.#gradientsCache[uuid] = [gradient, workspace.theme.texture ?? 0];
+      return this.#gradientsCache[uuid];
     }
   }
 

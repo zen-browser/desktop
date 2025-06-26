@@ -11,7 +11,7 @@ pref('zen.workspaces.wrap-around-navigation', true);
 pref('zen.workspaces.natural-scroll', false);
 pref('zen.workspaces.scroll-modifier-key','ctrl'); // can be ctrl, alt, shift, or a meta key
 pref('services.sync.engine.workspaces', false);
-pref('zen.workspaces.container-specific-essentials-enabled', false);
+pref('zen.workspaces.separate-essentials', true);
 
 #ifdef MOZILLA_OFFICIAL
   pref('zen.workspaces.debug', false);

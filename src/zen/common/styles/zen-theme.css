@@ -130,8 +130,8 @@
 
   --toolbarbutton-hover-background: color-mix(
     in srgb,
-    var(--zen-branding-bg-reverse) 5%,
-    transparent 95%
+    var(--zen-branding-bg-reverse) 7.5%,
+    transparent 92.5%
   );
 
   --toolbarbutton-active-background: color-mix(
@@ -192,11 +192,7 @@
   --zen-active-tab-scale: 0.98;
 
   /* Define tab hover background color */
-  --tab-hover-background-color: color-mix(
-    in srgb,
-    var(--toolbarbutton-hover-background) 50%,
-    transparent 50%
-  );
+  --tab-hover-background-color: var(--toolbarbutton-hover-background);
 
   /* Nativity */
   --zen-native-content-radius: var(--zen-border-radius);

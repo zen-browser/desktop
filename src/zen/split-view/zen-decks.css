@@ -35,9 +35,9 @@
   position: absolute !important;
   overflow: hidden;
 
-  &.deck-selected:has(.dialogStack:not([hidden='true'])) {
+  & .dialogStack {
     /* Fix for issue https://github.com/zen-browser/desktop/issues/7564 */
-    z-index: 1;
+    position: absolute;
   }
 }
 

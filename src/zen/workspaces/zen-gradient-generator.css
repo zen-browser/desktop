@@ -5,7 +5,7 @@
  */
 
 #PanelUI-zen-gradient-generator {
-  --panel-width: 320px;
+  --panel-width: 360px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
 }
@@ -20,6 +20,7 @@
 #PanelUI-zen-gradient-generator-controls {
   align-items: center;
   gap: var(--panel-padding);
+  padding-top: 10px;
 }
 
 #zen-theme-picker-color {
@@ -46,9 +47,6 @@
 }
 
 #PanelUI-zen-gradient-generator-color-custom-add {
-  position: absolute;
-  right: 0px;
-  top: 0px;
   cursor: pointer;
 }
 
@@ -62,7 +60,11 @@
   padding: 0 var(--panel-padding);
 
   @media (-moz-platform: macos) {
-    gap: 3rem;
+    gap: 2rem;
+  }
+
+  #PanelUI-zen-gradient-opacity-wrapper {
+    position: relative;
   }
 
   & label {
@@ -76,46 +78,60 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-predefined {
+#PanelUI-zen-gradient-generator-color-pages-wrapper {
+  align-items: center;
+}
+
+#PanelUI-zen-gradient-generator-color-pages {
   display: flex;
   justify-content: space-around;
+  margin: 0 10px;
   align-items: center;
-  margin: 5px auto 10px auto;
   width: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  mask-image: linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%);
 
-  & > box {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.1s;
-    &::after {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      top: 0;
-      left: 0;
-      outline: 2px solid var(--zen-toolbar-element-bg);
+  & > hbox {
+    justify-content: space-around;
+    min-width: 100%;
+
+    & > box {
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      pointer-events: none;
+      cursor: pointer;
+      position: relative;
       transition: transform 0.1s;
-    }
-
-    &:hover {
-      transform: scale(1.05);
 
       &::after {
-        transform: scale(1.05);
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        outline: 2px solid color-mix(in srgb, var(--zen-toolbar-element-bg) 80%, transparent 20%);
+        border-radius: 50%;
+        pointer-events: none;
+        transition: transform 0.1s;
       }
-    }
 
-    &:hover:active {
-      transform: scale(0.95);
+      &:hover {
+        transform: scale(1.05);
 
-      &::after {
+        &::after {
+          transform: scale(1.05);
+        }
+      }
+
+      &:hover:active {
         transform: scale(0.95);
+
+        &::after {
+          transform: scale(0.95);
+        }
       }
     }
   }
@@ -164,46 +180,76 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-opacity,
-#PanelUI-zen-gradient-generator-texture {
+#PanelUI-zen-gradient-slider-wave {
+  position: absolute;
+  left: -5px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 8px);
+    height: 16px;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+  }
+
+  & svg {
+    overflow: visible;
+    min-width: calc(100% + 2rem);
+    scale: 1.2;
+    margin-left: 4px;
+  }
+}
+
+#PanelUI-zen-gradient-generator-opacity {
   margin: 0 !important;
-  margin-top: 5px !important;
   background: transparent;
+  z-index: 2;
+  padding: 0 5px;
 
   &::-moz-range-thumb {
-    background: var(--zen-colors-tertiary);
-    border: 2px solid var(--zen-colors-border);
-    border-radius: 12px;
-    height: 25px;
-    width: 13px;
+    background: light-dark(black, white);
+    border-radius: 999px;
+    height: var(--zen-thumb-height);
+    width: var(--zen-thumb-width);
     cursor: pointer;
+    border: none;
   }
 
   &::-moz-range-track {
-    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
     border-radius: 999px;
-    height: 6px;
+    height: 18px;
   }
 
   &::-moz-range-progress {
-    background: var(--zen-primary-color);
-    border-radius: 999px;
-    height: 8px;
+    background: transparent;
   }
 }
 
 .zen-theme-picker-gradient {
   position: relative;
-  border-radius: calc(var(--zen-border-radius) - 2px);
   overflow: hidden;
-  border-radius: var(--zen-border-radius);
+  border-radius: var(--zen-native-content-radius);
 
-  min-height: calc(var(--panel-width) - var(--panel-padding) * 2);
-  margin-bottom: 20px;
-
-  background: var(--zen-toolbar-element-bg);
+  min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
+  background: light-dark(
+    var(--zen-toolbar-element-bg),
+    color-mix(in srgb, var(--zen-toolbar-element-bg) 60%, transparent 40%)
+  );
   background-image: radial-gradient(
-    light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.4)) 1px,
+    light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 1px,
     transparent 0
   );
   background-position: -19px -19px;
@@ -220,7 +266,7 @@
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     }
     cursor: pointer;
-    border: 2px solid #ffffff;
+    border: 3px solid #ffffff;
     animation: zen-theme-picker-dot-animation 0.5s;
     transform: translate(-50%, -50%);
 
@@ -229,16 +275,21 @@
       height: 36px;
       border-width: 4px;
       z-index: 2;
-      transition: transform 0.1s;
+      transition: transform 0.2s;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
       }
+      transform-origin: center center;
     }
 
     &[dragging='true'] {
       transform: scale(1.2) translate(-50%, -50%) !important;
     }
   }
+}
+
+#PanelUI-zen-gradient-generator-view {
+  gap: 10px;
 }
 
 #PanelUI-zen-gradient-generator-color-click-to-add {
@@ -249,41 +300,46 @@
   transform: translate(-50%, -50%);
   white-space: nowrap;
   pointer-events: none;
+  font-size: small;
+  margin: 0;
 
   &[hidden] {
     display: none;
   }
 }
 
-#PanelUI-zen-gradient-generator-color-actions {
+#PanelUI-zen-gradient-generator-color-actions,
+#PanelUI-zen-gradient-generator-scheme {
   display: flex;
   position: absolute;
-  bottom: 8px;
+  bottom: 12px;
   left: 50%;
   z-index: 1;
   transform: translateX(-50%);
-  & .separator,
-  & #PanelUI-zen-gradient-generator-color-toggle-algo {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.15));
-  }
+  gap: 5px;
 
   & button {
     border: none !important;
-    padding: 0.4rem !important;
+    padding: 0 !important;
     min-width: fit-content !important;
     transition: background 0.2s;
     appearance: none;
+    max-height: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    min-width: 26px !important;
+    color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
 
     & .button-box {
       gap: 0.1rem;
     }
 
-    &:not(#PanelUI-zen-gradient-generator-color-toggle-algo) .button-text {
+    & .button-text {
       display: none;
     }
 
     &:hover {
-      background: light-dark(#cfcfcf, #313131);
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
     }
 
     &[disabled] {
@@ -291,12 +347,11 @@
       cursor: not-allowed;
     }
   }
+}
 
-  & .separator {
-    width: 1px;
-    margin: 0 0.5rem;
-    height: 30px;
-  }
+#PanelUI-zen-gradient-generator-scheme {
+  top: 15px;
+  max-height: 32px;
 }
 
 @media not -moz-pref('zen.theme.gradient.show-custom-colors') {
@@ -306,14 +361,13 @@
 }
 
 #PanelUI-zen-gradient-generator-texture-wrapper {
-  width: 4rem;
-  height: 4rem;
+  width: 5rem;
+  height: 5rem;
   position: relative;
 
   @media (-moz-platform: macos) {
-    width: 25%;
-    aspect-ratio: 1;
-    height: unset;
+    width: 6rem;
+    height: 6rem;
   }
 
   &::after {
@@ -381,32 +435,19 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-rotation-line {
-  border: 1px solid var(--zen-colors-border);
-  position: absolute;
-  --rotation-padding: 15px;
-  width: calc(100% - var(--rotation-padding) * 2);
-  border-bottom-color: transparent;
-  height: calc(100% - var(--rotation-padding) * 2);
-  top: var(--rotation-padding);
-  left: var(--rotation-padding);
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
+#PanelUI-zen-gradient-generator-color-page-left,
+#PanelUI-zen-gradient-generator-color-page-right {
+  max-width: 28px;
+  max-height: 28px;
+  margin: 0 !important;
 }
 
-#PanelUI-zen-gradient-generator-rotation-dot {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  border: 1px solid var(--zen-colors-border);
-  background: var(--zen-colors-tertiary);
-  opacity: 0;
-  cursor: pointer;
-  z-index: 2;
-  transition: transform 0.1s;
-  &:hover {
-    transform: scale(1.1);
+:root:not([zen-should-be-dark-mode]) {
+  #PanelUI-zen-gradient-generator-opacity {
+    display: none !important;
+  }
+
+  #PanelUI-zen-gradient-slider-wave svg path {
+    stroke: dimgray !important;
   }
 }

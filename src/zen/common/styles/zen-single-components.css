@@ -98,3 +98,27 @@ body > #confetti {
     }
   }
 }
+
+.toolbarbutton-1 {
+  :root:is([zen-single-toolbar='true'], :not([zen-sidebar-expanded='true']))
+    #zen-sidebar-top-buttons-customization-target
+    &,
+  #zen-sidebar-foot-buttons & {
+    --tab-border-radius: 6px;
+    --toolbarbutton-border-radius: var(--tab-border-radius);
+    --toolbarbutton-inner-padding: 7px;
+
+    &,
+    & stack {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  transition:
+    background-color 0.1s,
+    scale 0.2s;
+  &:active {
+    transform: scale(0.95);
+  }
+}

@@ -9,12 +9,7 @@
  */
 
 :host(:is(.anonymous-content-host, notification-message)),
-:root,
-.zenLooksAndFeelColorOption {
-  /** We also add `.zenLooksAndFeelColorOption` so that it recalculates the colors when the theme changes
-   * in the preferences page.
-   */
-
+:root {
   /* Default values */
   --zen-border-radius: 7px;
   --zen-primary-color: #ffb787;
@@ -92,7 +87,7 @@
   --focus-outline-color: var(--button-bgcolor) !important;
 
   --toolbarbutton-icon-fill-attention: var(--zen-primary-color) !important;
-  --toolbarbutton-icon-fill: light-dark(rgba(57, 57, 58, 0.6), rgba(251, 251, 254, 0.6)) !important;
+  --toolbarbutton-icon-fill: currentColor !important;
 
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
   --button-primary-hover-bgcolor: var(--in-content-primary-button-background-hover) !important;
@@ -121,18 +116,31 @@
   --zen-button-border-radius: 5px;
   --zen-button-padding: 0.6rem 1.2rem;
 
-  --zen-toolbar-element-bg: light-dark(rgba(89, 89, 89, 0.1), rgba(255, 255, 255, 0.1));
+  --zen-toolbar-element-bg: light-dark(
+    color-mix(in srgb, currentColor 6%, transparent 94%),
+    color-mix(in srgb, currentColor 10%, transparent 90%)
+  ) !important;
 
   /* Toolbar */
   --zen-toolbar-height: 38px;
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-outer-padding: 4px;
 
+  --toolbarbutton-inner-padding: 5px !important;
+
   --toolbarbutton-hover-background: color-mix(
     in srgb,
-    var(--zen-branding-bg-reverse) 10%,
-    transparent 90%
+    var(--zen-branding-bg-reverse) 5%,
+    transparent 95%
   );
+
+  --toolbarbutton-active-background: color-mix(
+    in srgb,
+    var(--zen-branding-bg-reverse) 7%,
+    transparent 93%
+  ) !important;
+
+  --toolbar-color: light-dark(rgb(21, 20, 26, 0.7), rgb(251, 251, 254, 0.7)) !important;
 
   /* Other colors */
   --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
@@ -155,34 +163,15 @@
   --urlbar-margin-inline: 1px !important;
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
-
   --tab-close-button-padding: 5px !important;
-
-  --toolbarbutton-active-background: var(--zen-toolbar-element-bg);
 
   --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
-  --zen-themed-toolbar-bg: light-dark(rgb(240, 240, 244), #171717);
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
   --zen-workspace-indicator-height: 48px;
 
-  @media (-moz-windows-mica) or (-moz-platform: macos) {
-    background: transparent;
-    --zen-themed-toolbar-bg-transparent: transparent;
-    @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
-      --zen-themed-toolbar-bg-transparent: color-mix(
-        in srgb,
-        var(--zen-themed-toolbar-bg) 35%,
-        transparent 65%
-      );
-    }
-  }
-
-  @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
-    background: transparent;
-    --zen-themed-toolbar-bg-transparent: transparent;
-  }
+  --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
     --zen-main-browser-background: linear-gradient(
@@ -239,6 +228,56 @@
 
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
+
+  @media (-moz-windows-mica) or (-moz-platform: macos) {
+    background: transparent;
+    --zen-themed-toolbar-bg-transparent: transparent;
+    @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
+      --zen-themed-toolbar-bg-transparent: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
+    }
+    &[zen-should-be-dark-mode] {
+      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
+    }
+  }
+
+  @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
+    background: transparent;
+    --zen-themed-toolbar-bg-transparent: transparent;
+    &[zen-should-be-dark-mode] {
+      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
+    }
+  }
+
+  &[zen-should-be-dark-mode='true'] #browser {
+    color-scheme: dark;
+    --tab-selected-color-scheme: dark;
+  }
+
+  &[zen-should-be-dark-mode='false'] #browser {
+    color-scheme: light;
+    --tab-selected-color-scheme: light;
+  }
+
+  &,
+  & #tabbrowser-tabpanels,
+  & panel,
+  & menupopup,
+  & #zen-browser-background {
+    @media -moz-pref('zen.theme.window.scheme', 'dark') {
+      color-scheme: dark;
+    }
+
+    @media -moz-pref('zen.theme.window.scheme', 'light') {
+      color-scheme: light;
+    }
+
+    @media -moz-pref('zen.theme.window.scheme', 'auto') {
+      color-scheme: light;
+      @media (-moz-system-dark-theme) {
+        color-scheme: dark;
+      }
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {

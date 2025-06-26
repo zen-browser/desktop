@@ -119,7 +119,7 @@
         }
       }
 
-      for (const element of ZenWorkspaceCreation.elementsToDisable) {
+      for (const element of nsZenWorkspaceCreation.elementsToDisable) {
         const el = document.getElementById(element);
         if (el) {
           el.setAttribute('disabled', 'true');

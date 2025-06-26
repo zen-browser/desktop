@@ -155,13 +155,13 @@ var gZenCompactModeManager = {
   },
 
   updateCompactModeContext(isSingleToolbar) {
-    const IDs = [
-      'zen-context-menu-compact-mode-hide-sidebar',
-      'zen-context-menu-compact-mode-hide-toolbar',
-      'zen-context-menu-compact-mode-hide-both',
-    ];
-    for (let id of IDs) {
-      document.getElementById(id).disabled = isSingleToolbar;
+    const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
+    const menu = document.getElementById('zen-context-menu-compact-mode');
+    menu.setAttribute('hidden', isSingleToolbar);
+    if (isSingleToolbar) {
+      menu.before(menuitem);
+    } else {
+      menu.querySelector('menupopup').prepend(menuitem);
     }
   },
 
@@ -209,7 +209,7 @@ var gZenCompactModeManager = {
   // the caller is from the ResizeObserver
   getAndApplySidebarWidth(event = undefined) {
     if (this._ignoreNextResize) {
-      this._ignoreNextResize = false;
+      delete this._ignoreNextResize;
       return;
     }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
@@ -245,9 +245,9 @@ var gZenCompactModeManager = {
   },
 
   animateCompactMode() {
+    // Get the splitter width before hiding it (we need to hide it before animating on right)
+    document.documentElement.setAttribute('zen-compact-animating', 'true');
     return new Promise((resolve) => {
-      // Get the splitter width before hiding it (we need to hide it before animating on right)
-      document.documentElement.setAttribute('zen-compact-animating', 'true');
       // We need to set the splitter width before hiding it
       let splitterWidth = document
         .getElementById('zen-sidebar-splitter')
@@ -268,6 +268,7 @@ var gZenCompactModeManager = {
       this.sidebar.style.removeProperty('margin-left');
       this.sidebar.style.removeProperty('transform');
       window.requestAnimationFrame(() => {
+        delete this._ignoreNextResize;
         let sidebarWidth = this.getAndApplySidebarWidth();
         const elementSeparation = ZenThemeModifier.elementSeparation;
         if (!canAnimate) {
@@ -324,6 +325,8 @@ var gZenCompactModeManager = {
           } else {
             sidebarWidth -= elementSeparation;
           }
+          this.sidebar.style.marginRight = '0px';
+          this.sidebar.style.marginLeft = '0px';
           gZenUIManager.motion
             .animate(
               this.sidebar,
@@ -335,7 +338,7 @@ var gZenCompactModeManager = {
                 ease: 'easeIn',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.2,
+                duration: 0.15,
               }
             )
             .then(() => {
@@ -386,7 +389,7 @@ var gZenCompactModeManager = {
                 ease: 'easeOut',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.2,
+                duration: 0.15,
               }
             )
             .then(() => {

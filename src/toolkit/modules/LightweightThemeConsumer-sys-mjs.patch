@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-index d8c79cbae4de3ebfc5dc62f3597c7be4965a5429..4398108bd6d74aa8b6689baaf5334d8ba9a26c4e 100644
+index fe01b25c520d1be71224b136b1ce46e9577e11a1..e5501590f3695ed4c2e19be5c104958b497c886e 100644
 --- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
 +++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
 @@ -31,7 +31,7 @@ const toolkitVariableMap = [
@@ -11,3 +11,12 @@ index d8c79cbae4de3ebfc5dc62f3597c7be4965a5429..4398108bd6d74aa8b6689baaf5334d8b
          }
          // Remove the alpha channel
          const { r, g, b } = rgbaChannels;
+@@ -317,7 +317,7 @@ LightweightThemeConsumer.prototype = {
+     }
+ 
+     let theme = useDarkTheme ? themeData.darkTheme : themeData.theme;
+-    if (!theme) {
++    if (!theme || Services.prefs.getBoolPref("zen.theme.disable-lightweight")) {
+       theme = { id: DEFAULT_THEME_ID };
+     }
+     let hasTheme = theme.id != DEFAULT_THEME_ID || useDarkTheme;

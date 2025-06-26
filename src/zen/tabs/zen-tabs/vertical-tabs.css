@@ -42,11 +42,6 @@
     }
   }
 
-  /* Adjust padding for top sidebar buttons */
-  & #zen-sidebar-top-buttons .toolbarbutton-1 > .toolbarbutton-icon {
-    padding: 4px;
-  }
-
   /* Make the separator take full width */
   & #zen-sidebar-top-buttons-separator {
     width: 100%;
@@ -141,9 +136,6 @@
   }
 
   & #nav-bar {
-    /* Add bottom margin */
-    margin-bottom: var(--zen-toolbox-padding);
-
     /* Hide flexible spaces */
     & toolbarspring {
       display: none;
@@ -428,7 +420,6 @@
   gap: 5px;
   align-items: center;
   padding-top: var(--zen-element-separation);
-  --toolbarbutton-inner-padding: 5px;
 
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
@@ -782,18 +773,22 @@
   }
 
   #zen-sidebar-foot-buttons {
-    & > .toolbarbutton-1 {
+    & > .toolbarbutton-1,
+    & .toolbarbutton-badge-stack {
       min-height: var(--tab-min-height);
       line-height: var(--tab-label-line-height);
       border-radius: var(--border-radius-medium);
       padding: 0 calc(var(--tab-inline-padding) - var(--tab-inner-inline-margin));
-      width: var(--tab-collapsed-background-width);
-      margin-inline: var(--tab-inner-inline-margin);
 
-      & .toolbarbutton-badge-stack {
+      &.toolbarbutton-badge-stack {
         justify-content: center;
         padding: 8px;
         width: var(--tab-collapsed-background-width);
+      }
+
+      &.toolbarbutton-1 {
+        width: var(--tab-collapsed-background-width);
+        margin-inline: var(--tab-inner-inline-margin);
       }
     }
   }
@@ -1174,14 +1169,6 @@
       padding-inline-end: var(--zen-toolbox-padding); /* Add end padding for right sidebar */
     }
 
-    /* Standardize height and padding for toolbar buttons (excluding titlebar buttons) */
-    & toolbarbutton:not(.titlebar-button) {
-      height: calc(
-        2 * var(--toolbarbutton-inner-padding) + 16px
-      ); /* Calculate height based on padding + icon */
-      padding: 0 var(--toolbarbutton-outer-padding) !important; /* Apply outer padding */
-    }
-
     /* Hide flexible space when collapsed */
     :root:not([zen-sidebar-expanded='true']) & toolbarspring {
       display: none;
@@ -1325,6 +1312,7 @@
   min-width: calc(100% + var(--zen-toolbox-padding) * 2);
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   padding: 0 var(--zen-toolbox-padding);
+  padding-top: 6px;
   display: grid;
 
   position: absolute;

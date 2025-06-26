@@ -64,7 +64,7 @@ panel[type='arrow'] {
     --panel-border-radius: 6px;
 
     &::part(content) {
-      background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
+      background-color: transparent !important;
     }
   }
 }

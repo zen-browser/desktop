@@ -34,7 +34,8 @@
 
   & toolbarbutton {
     margin: 0;
-    width: 25px;
+    width: 28px;
+    height: 28px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -69,11 +70,6 @@
     &:hover,
     &[dragged='true']{
       background-color: var(--zen-toolbar-element-bg);
-    }
-
-    &[dragged='true'] {
-      outline: 1px solid var(--zen-colors-primary);
-      outline-offset: -1px;
     }
   }
 
@@ -207,7 +203,6 @@
   }
 
   .zen-workspaces-actions {
-    --toolbarbutton-inner-padding: 4px;
     margin-left: auto !important;
     opacity: 0;
     visibility: collapse;

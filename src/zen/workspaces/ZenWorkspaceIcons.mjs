@@ -145,6 +145,7 @@
         i++;
       }
       buttons[selected].setAttribute('active', true);
+      this.scrollLeft = buttons[selected].offsetLeft - 10;
       this.setAttribute('selected', selected);
     }
 

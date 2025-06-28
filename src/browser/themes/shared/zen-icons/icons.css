@@ -165,6 +165,7 @@
 
 #add-ons-button,
 #appMenu-extensions-themes-button,
+#appMenu-unified-extensions-button,
 #unified-extensions-button {
   list-style-image: url('extension.svg') !important;
 }

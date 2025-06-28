@@ -2309,7 +2309,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   async createAndSaveWorkspace(
-    name,
+    name = 'Space',    
     icon,
     setActive = false,
     containerTabId = 0,

@@ -100,13 +100,7 @@
                 </defs>
               </svg>
             </box>
-            <html:input type="range" max="0.9" value="0.4" step="0.01" id="PanelUI-zen-gradient-generator-opacity" 
-#ifdef XP_WIN
-              min="0.2"
-#else
-              min="0.15"
-#endif
-            />
+            <html:input type="range" min="0.3" max="0.8" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity" />
           </vbox>
           <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">
           </vbox>

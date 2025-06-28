@@ -185,15 +185,7 @@
       #navigator-toolbox:has(.tabbrowser-tab:active),
       &[zen-renaming-tab='true'] #navigator-toolbox,
       #navigator-toolbox:has(
-          *:is(
-            [panelopen='true'], 
-            [open='true'], 
-            #urlbar:focus-within, 
-            [breakout-extend='true']
-          )
-          :not(#urlbar[zen-floating-urlbar='true'])
-          :not(tab)
-          :not(.zen-compact-mode-ignore)
+          *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)
         ) {
         &:not([animate='true']) {
           --zen-compact-mode-func: linear(

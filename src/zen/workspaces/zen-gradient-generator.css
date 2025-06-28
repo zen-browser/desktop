@@ -214,7 +214,7 @@
 
   & svg {
     overflow: visible;
-    min-width: calc(100% + 2rem);
+    min-width: calc(100% * 1.1);
     scale: 1.2;
     margin-left: 4px;
   }
@@ -276,12 +276,14 @@
     border: 3px solid #ffffff;
     animation: zen-theme-picker-dot-animation 0.5s;
     transform: translate(-50%, -50%);
+    pointer-events: none;
 
     &:first-of-type {
       width: 36px;
       height: 36px;
       border-width: 4px;
       z-index: 2;
+      pointer-events: all;
       transition: transform 0.2s;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
@@ -455,6 +457,6 @@
   }
 
   #PanelUI-zen-gradient-slider-wave svg path {
-    stroke: dimgray !important;
+    stroke: light-dark(rgba(77, 77, 77, 0.5), rgba(161, 161, 161, 0.5)) !important;
   }
 }

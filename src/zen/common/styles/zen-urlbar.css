@@ -66,7 +66,7 @@
   }
 
   &:hover #urlbar-background {
-    background-color: light-dark(rgba(89, 89, 89, 0.15), rgba(255, 255, 255, 0.2)) !important;
+    background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2)) !important;
   }
 }
 

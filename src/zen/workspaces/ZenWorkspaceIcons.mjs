@@ -62,6 +62,7 @@
                 } else {
                   this.insertBefore(draggedTab, tab.nextSibling);
                 }
+                Services.zen.playHapticFeedback();
               }
             }
           }

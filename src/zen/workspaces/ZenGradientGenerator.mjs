@@ -40,8 +40,8 @@
     return points;
   }
 
-  const MAX_OPACITY = 0.9;
-  const MIN_OPACITY = AppConstants.platform === 'win' ? 0.2 : 0.15;
+  const MAX_OPACITY = 0.8;
+  const MIN_OPACITY = 0.3;
 
   class nsZenThemePicker extends ZenMultiWindowFeature {
     static MAX_DOTS = 3;
@@ -973,10 +973,15 @@
     }
 
     themedColors(colors) {
+      const colorToBlend = this.isDarkMode ? [255, 255, 255] : [0, 0, 0]; // Default to white for dark mode, black otherwise
+      const opacity = this.currentOpacity;
+      // Convert opacity into a percentage where the lowest is 60% and the highest is 100%
+      // The more transparent, the more white the color will be blended with. In order words,
+      // make the transparency relative to these 2 ends.
+      // e.g. 0% opacity becomes 60% blend, 100% opacity becomes 100% blend
+      const blendPercentage = Math.max(30, 30 + opacity * 70);
       return colors.map((color) => ({
-        c: color.isCustom
-          ? color.c
-          : [Math.min(255, color.c[0]), Math.min(255, color.c[1]), Math.min(255, color.c[2])],
+        c: color.isCustom ? color.c : this.blendColors(color.c, colorToBlend, blendPercentage),
         isCustom: color.isCustom,
         algorithm: color.algorithm,
         lightness: color.lightness,
@@ -986,9 +991,10 @@
 
     onOpacityChange(event) {
       this.currentOpacity = parseFloat(event.target.value);
-      // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback
-      if ((this.currentOpacity * 10) % 1 === 0) {
+      // If we reached a whole number (e.g., 0.1, 0.2, etc.), send a haptic feedback.
+      if (Math.round(this.currentOpacity * 10) !== this._lastHapticFeedback) {
         Services.zen.playHapticFeedback();
+        this._lastHapticFeedback = Math.round(this.currentOpacity * 10);
       }
       this.updateCurrentWorkspace();
     }
@@ -1016,8 +1022,11 @@
       let opacity = this.currentOpacity;
       if (forToolbar) {
         opacity = 1; // Toolbar colors should always be fully opaque
+        color = this.blendColors(color.c, this.getToolbarModifiedBaseRaw().slice(0, 3), 80);
+      } else {
+        color = color.c;
       }
-      return `rgba(${color.c[0]}, ${color.c[1]}, ${color.c[2]}, ${opacity})`;
+      return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity})`;
     }
 
     luminance([r, g, b]) {
@@ -1032,7 +1041,7 @@
       return (brightest + 0.05) / (darkest + 0.05);
     }
 
-    blendColorsRaw(rgb1, rgb2, percentage) {
+    blendColors(rgb1, rgb2, percentage) {
       const p = percentage / 100;
       return [
         Math.round(rgb1[0] * p + rgb2[0] * (1 - p)),
@@ -1048,7 +1057,7 @@
 
       for (let i = 0; i < 10; i++) {
         const mid = (low + high) / 2;
-        const blended = this.blendColorsRaw(dominantColor, blendTarget, mid);
+        const blended = this.blendColors(dominantColor, blendTarget, mid);
         const contrast = this.contrastRatio(blended, blendTarget);
 
         if (contrast >= minContrast) {
@@ -1059,7 +1068,7 @@
         }
       }
 
-      return bestMatch || this.blendColorsRaw(dominantColor, blendTarget, 10); // fallback
+      return bestMatch || this.blendColors(dominantColor, blendTarget, 10); // fallback
     }
 
     getGradient(colors, forToolbar = false) {
@@ -1118,7 +1127,7 @@
       if (!this.canBeTransparent) {
         // Blend the color with the toolbar background
         const toolbarBg = this.getToolbarModifiedBaseRaw();
-        accentColor = this.blendColorsRaw(
+        accentColor = this.blendColors(
           toolbarBg.slice(0, 3),
           accentColor,
           (1 - this.currentOpacity) * 100
@@ -1260,11 +1269,6 @@
       return color;
     }
 
-    blendColors(rgb1, rgb2, percentage) {
-      const blended = this.blendColorsRaw(rgb1, rgb2, percentage);
-      return `rgb(${blended[0]}, ${blended[1]}, ${blended[2]})`;
-    }
-
     async onWorkspaceChange(workspace, skipUpdate = false, theme = null) {
       const uuid = workspace.uuid;
       // Use theme from workspace object or passed theme
@@ -1277,6 +1281,10 @@
 
         if (browser.closing || (await browser.gZenThemePicker?.promiseInitialized)) {
           return;
+        }
+
+        if (theme === null) {
+          browser.gZenThemePicker.invalidateGradientCache();
         }
 
         // Do not rebuild if the workspace is not the same as the current one
@@ -1296,25 +1304,6 @@
           }
         }
 
-        if (this.isDarkMode) {
-          if (window.matchMedia('(-moz-windows-mica)').matches) {
-            browser.document.documentElement.style.setProperty(
-              '--zen-themed-browser-overlay-bg',
-              'transparent'
-            );
-          } else {
-            browser.document.documentElement.style.setProperty(
-              '--zen-themed-browser-overlay-bg',
-              'rgba(255, 255, 255, 0.3)'
-            );
-          }
-        } else {
-          browser.document.documentElement.style.setProperty(
-            '--zen-themed-browser-overlay-bg',
-            'rgba(0, 0, 0, 0.2)'
-          );
-        }
-
         if (!skipUpdate) {
           browser.document.documentElement.style.setProperty(
             '--zen-main-browser-background-old',
@@ -1328,7 +1317,6 @@
             browser.gZenThemePicker.previousBackgroundResolve();
           }
           delete browser.gZenThemePicker.previousBackgroundOpacity;
-          browser.gZenThemePicker.invalidateGradientCache();
         }
 
         browser.gZenThemePicker.resetCustomColorList();
@@ -1463,12 +1451,12 @@
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
           }
           // Set `--toolbox-textcolor` to have a contrast with the primary color
-          const blendTarget = isDarkMode ? [255, 255, 255] : [0, 0, 0];
-          const blendedColor = this.blendColors(dominantColor, blendTarget, 15); // 15% dominantColor, 85% target
           await gZenUIManager.motion.animate(
             browser.document.documentElement,
             {
-              '--toolbox-textcolor': blendedColor,
+              '--toolbox-textcolor': isDarkMode
+                ? 'rgba(255, 255, 255, 0.7)'
+                : 'rgba(23, 23, 23, 0.7)',
             },
             {
               duration: 0.05,

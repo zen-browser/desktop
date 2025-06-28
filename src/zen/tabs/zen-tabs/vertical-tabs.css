@@ -626,8 +626,8 @@
     --tab-inline-padding: 8px; /* Define padding for tab content */
 
     & .tabbrowser-tab {
-      /* Show tab label */
       & .tab-label-container {
+        opacity: 1;
         display: flex;
       }
 
@@ -1191,7 +1191,7 @@
 /* Hide the button wrapper by default */
 #tabs-newtab-button {
   display: none;
-  opacity: 0.5; /* Dimmed by default */
+  font-weight: 500;
   -moz-user-focus: ignore !important; /* Prevent focus */
 }
 
@@ -1216,7 +1216,6 @@
     /* Style when placed "in urlbar" (likely a state/attribute) */
     &[in-urlbar] {
       background: var(--tab-selected-bgcolor) !important;
-      opacity: 1 !important; /* Full opacity */
       box-shadow: var(--tab-selected-shadow); /* Apply selected tab shadow */
     }
   }
@@ -1413,7 +1412,7 @@
   }
 
   &:hover .tab-background {
-    background: light-dark(rgba(89, 89, 89, 0.15), var(--tab-selected-bgcolor));
+    background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-selected-bgcolor));
   }
 
   /* Optional blurred favicon background effect (if pref `zen.theme.essentials-favicon-bg` is enabled) */

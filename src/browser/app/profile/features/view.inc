@@ -15,14 +15,10 @@ pref('zen.view.sidebar-expanded', true);
 pref('zen.view.sidebar-collapsed.hide-mute-button', true);
 pref('zen.view.experimental-force-window-controls-left', false);
 
-#ifdef XP_MACOSX
-  pref('zen.view.grey-out-inactive-windows', false);
-#else
-  pref('zen.view.grey-out-inactive-windows', true);
-#endif
-
 pref('zen.view.hide-window-controls', true);
 pref('zen.view.experimental-no-window-controls', false);
+
+pref('zen.view.grey-out-inactive-windows', true);
 
 pref('zen.view.show-newtab-button-border-top', false);
 pref('zen.view.show-newtab-button-top', true);

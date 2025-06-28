@@ -117,9 +117,9 @@
   --zen-button-padding: 0.6rem 1.2rem;
 
   --zen-toolbar-element-bg: light-dark(
-    color-mix(in srgb, currentColor 6%, transparent 94%),
-    color-mix(in srgb, currentColor 10%, transparent 90%)
-  ) !important;
+    color-mix(in srgb, var(--toolbox-textcolor) 10%, transparent 90%),
+    color-mix(in srgb, var(--toolbox-textcolor) 15%, transparent 85%)
+  );
 
   /* Toolbar */
   --zen-toolbar-height: 38px;
@@ -128,11 +128,7 @@
 
   --toolbarbutton-inner-padding: 5px !important;
 
-  --toolbarbutton-hover-background: color-mix(
-    in srgb,
-    var(--zen-branding-bg-reverse) 7.5%,
-    transparent 92.5%
-  );
+  --toolbarbutton-hover-background: color-mix(in srgb, currentColor 6%, transparent 94%) !important;
 
   --toolbarbutton-active-background: color-mix(
     in srgb,
@@ -225,22 +221,11 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  @media (-moz-windows-mica) or (-moz-platform: macos) {
+  @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency')) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
     @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
       --zen-themed-toolbar-bg-transparent: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
-    }
-    &[zen-should-be-dark-mode] {
-      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
-    }
-  }
-
-  @media (-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency') {
-    background: transparent;
-    --zen-themed-toolbar-bg-transparent: transparent;
-    &[zen-should-be-dark-mode] {
-      --zen-themed-toolbar-bg-transparent: var(--zen-themed-browser-overlay-bg);
     }
   }
 
@@ -258,7 +243,8 @@
   & panel,
   & menupopup,
   & #zen-browser-background,
-  & #urlbar[breakout-extend='true'] {
+  & #urlbar[breakout-extend='true'],
+  & #tabbrowser-tabpanels browser[type='content'] {
     @media -moz-pref('zen.theme.window.scheme', 'dark') {
       color-scheme: dark;
     }

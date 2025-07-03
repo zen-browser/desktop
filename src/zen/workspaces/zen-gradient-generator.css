@@ -98,8 +98,8 @@
     min-width: 100%;
 
     & > box {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       cursor: pointer;
       position: relative;
@@ -110,19 +110,6 @@
           radial-gradient(circle at 0% 0%, var(--c1), transparent 100%),
           radial-gradient(circle at 100% 0%, var(--c2), transparent 100%),
           linear-gradient(to top, var(--c3) 0%, transparent 60%);
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        outline: 2px solid color-mix(in srgb, var(--zen-toolbar-element-bg) 80%, transparent 20%);
-        border-radius: 50%;
-        pointer-events: none;
-        transition: transform 0.1s;
       }
 
       &:hover {
@@ -248,19 +235,16 @@
 .zen-theme-picker-gradient {
   position: relative;
   overflow: hidden;
-  border-radius: var(--zen-native-content-radius);
+  border-radius: calc(var(--zen-native-content-radius) - 4px);
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
-  background: light-dark(
-    var(--zen-toolbar-element-bg),
-    color-mix(in srgb, var(--zen-toolbar-element-bg) 60%, transparent 40%)
-  );
+  background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
   background-image: radial-gradient(
     light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 1px,
     transparent 0
   );
-  background-position: -19px -19px;
-  background-size: 5px 5px;
+  background-position: -20px -20px;
+  background-size: 6px 6px;
 
   & .zen-theme-picker-dot {
     position: absolute;

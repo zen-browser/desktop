@@ -22,18 +22,20 @@ class ZenStyleSheetCache final : public nsISupports {
   NS_DECL_ISUPPORTS
 
   /**
-   * @brief Clear up the cache and create a new mods stylesheet.
-   * This is called when we need to recalculate the mods stylesheets.
-   * @returns The mods stylesheet.
-   */
-  auto InvalidateModsSheet() -> void;
-
-  /**
    * @brief Get the mods stylesheet.
    * This is called when we need to get the mods stylesheets.
    * @returns The mods stylesheet.
    */
   auto GetModsSheet() -> StyleSheet*;
+
+  /**
+   * @brief Rebuild the mods stylesheets.
+   * This is re-parses the mods stylesheet and applies it to all
+   * the connected documents.
+   * @param aContents The contents of the mods stylesheet.
+   * @returns NS_OK on success, or an error code on failure.
+   */
+  nsresult RebuildModsStylesheets(const nsACString& aContents);
 
   static auto Singleton() -> ZenStyleSheetCache*;
  private:

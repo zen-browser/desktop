@@ -165,6 +165,7 @@
 
 #add-ons-button,
 #appMenu-extensions-themes-button,
+#appMenu-unified-extensions-button,
 #unified-extensions-button {
   list-style-image: url('extension.svg') !important;
 }
@@ -771,7 +772,7 @@
   list-style-image: url('sparkles.svg');
 }
 
-@media -moz-pref('zen.theme.window.scheme', 'auto') {
+@media -moz-pref('zen.view.window.scheme', 2) {
   #PanelUI-zen-gradient-generator-scheme-auto {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
@@ -781,7 +782,7 @@
   list-style-image: url('moon-stars.svg');
 }
 
-@media -moz-pref('zen.theme.window.scheme', 'dark') {
+@media -moz-pref('zen.view.window.scheme', 0) {
   #PanelUI-zen-gradient-generator-scheme-dark {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
@@ -791,7 +792,7 @@
   list-style-image: url('face-sun.svg');
 }
 
-@media -moz-pref('zen.theme.window.scheme', 'light') {
+@media -moz-pref('zen.view.window.scheme', 1) {
   #PanelUI-zen-gradient-generator-scheme-light {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }

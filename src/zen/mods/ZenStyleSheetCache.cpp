@@ -8,17 +8,22 @@
 #include "nsCOMPtr.h"
 #include "nsIFile.h"
 
+#include "nsStyleSheetService.h"
+
 #include "mozilla/css/SheetParsingMode.h"
 #include "mozilla/GlobalStyleSheetCache.h"
+
+#define GET_MODS_FILE(chromeFile, err) \
+  NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile)); \
+  if (!chromeFile) { \
+    return err; \
+  } \
+  chromeFile->Append(ZEN_MODS_FILENAME);
 
 namespace zen {
 
 using namespace mozilla;
 NS_IMPL_ISUPPORTS(ZenStyleSheetCache, nsISupports)
-
-auto ZenStyleSheetCache::InvalidateModsSheet() -> void {
-  mModsSheet = nullptr;
-}
 
 auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
   if (mModsSheet) {
@@ -26,14 +31,18 @@ auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
     return mModsSheet;
   }
   nsCOMPtr<nsIFile> chromeFile;
+  GET_MODS_FILE(chromeFile, nullptr);
 
-  NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile));
-  if (!chromeFile) {
-    // if we don't have a profile yet, that's OK!
-    return nullptr;
+  // Create the mods stylesheet if it doesn't exist.
+  bool exists;
+  chromeFile->Exists(&exists);
+  if (!exists) {
+    nsresult rv = chromeFile->Create(nsIFile::NORMAL_FILE_TYPE, 0644);
+    if (NS_FAILED(rv)) {
+      return nullptr;
+    }
   }
 
-  chromeFile->Append(ZEN_MODS_FILENAME);
   LoadSheetFile(chromeFile, css::eUserSheetFeatures);
   return mModsSheet;
 }
@@ -49,7 +58,7 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
 
   auto loader = new mozilla::css::Loader;
   auto result = loader->LoadSheetSync(uri, aParsingMode,
-                                          css::Loader::UseSystemPrincipal::Yes);
+                                      css::Loader::UseSystemPrincipal::Yes);
   if (MOZ_UNLIKELY(result.isErr())) {
     return;
   }
@@ -64,6 +73,23 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   }
   return gZenModsCache;
 }
+
+nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents) {
+  // Re-parse the mods stylesheet. By doing so, we read 
+  // Once we have the data as a nsACString, we call ReparseSheet from the
+  // StyleSheet class to re-parse the stylesheet.
+  auto sheet = GetModsSheet();
+  if (!sheet) {
+    return NS_ERROR_FAILURE;
+  }
+  ErrorResult aRv;
+  sheet->ReparseSheet(aContents, aRv);
+  if (auto sss = nsStyleSheetService::GetInstance()) {
+    sss->ZenMarkStylesAsChanged();
+  }
+  return aRv.StealNSResult();
+}
+
 
 mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache; 
 

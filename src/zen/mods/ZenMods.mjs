@@ -42,47 +42,55 @@
       await this.#rebuildModsStylesheet();
     }
 
-    #getStylesheetURIForMod(mod) {
-      return Services.io.newFileURI(
-        new FileUtils.File(PathUtils.join(this.getModFolder(mod.id), 'chrome.css'))
-      );
+    #getStylesheetPathForMod(mod) {
+      return PathUtils.join(this.getModFolder(mod.id), 'chrome.css');
+    }
+
+    async #readStylesheet() {
+      const path = this.modsRootPath;
+      if (!(await IOUtils.exists(path))) {
+        return '';
+      }
+      return await IOUtils.readUTF8(this.#styleSheetPath);
     }
 
     async #insertStylesheet() {
       try {
-        this.#modsBackend.rebuildModsStyles();
+        const content = await this.#readStylesheet();
+        this.#modsBackend.rebuildModsStyles(content);
       } catch (e) {
         console.warn('[ZenMods]: Error rebuilding mods styles:', e);
       }
     }
 
     async #rebuildModsStylesheet() {
-      const shouldBeEnabled = !Services.prefs.getBoolPref('zen.themes.disable-all', false);
-      if (shouldBeEnabled) {
-        const mods = await this.#getEnabledMods();
+      const mods = await this.#getEnabledMods();
 
-        await this.#writeStylesheet(mods);
+      await this.#writeStylesheet(mods);
 
-        const modsWithPreferences = await Promise.all(
-          mods.map(async (mod) => {
-            const preferences = await this.getModPreferences(mod);
+      const modsWithPreferences = await Promise.all(
+        mods.map(async (mod) => {
+          const preferences = await this.getModPreferences(mod);
 
-            return {
-              name: mod.name,
-              enabled: mod.enabled,
-              preferences,
-            };
-          })
-        );
+          return {
+            name: mod.name,
+            enabled: mod.enabled,
+            preferences,
+          };
+        })
+      );
 
-        this.#setDefaults(modsWithPreferences);
-        this.#writeToDom(modsWithPreferences);
-      }
+      this.#setDefaults(modsWithPreferences);
+      this.#writeToDom(modsWithPreferences);
 
       await this.#insertStylesheet();
     }
 
     async #getEnabledMods() {
+      if (Services.prefs.getBoolPref('zen.themes.disable-all', false)) {
+        console.log('[ZenMods]: Mods are disabled by user preference.');
+        return [];
+      }
       const modsObject = await this.getMods();
       const mods = Object.values(modsObject).filter(
         (mod) => mod.enabled === undefined || mod.enabled
@@ -214,7 +222,7 @@
       const mods = [];
 
       for (let mod of modList) {
-        mod._chromeURL = this.#getStylesheetURIForMod(mod).spec;
+        mod._filePath = this.#getStylesheetPathForMod(mod);
         mods.push(mod);
       }
 
@@ -235,7 +243,8 @@
           content += `/* Readme: ${mod.readme} */\n`;
         }
 
-        content += `@import url("${mod._chromeURL}");\n`;
+        const chromeContent = await IOUtils.readUTF8(mod._filePath);
+        content += chromeContent;
       }
 
       content += this.#kZenStylesheetModFooter;

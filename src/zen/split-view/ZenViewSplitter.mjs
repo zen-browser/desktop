@@ -400,6 +400,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
     try {
+      this._canDrop = false;
       Promise.all([
         gZenUIManager.motion.animate(
           gBrowser.tabbox,
@@ -431,7 +432,6 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
           }
         ),
       ]).then(() => {
-        this._canDrop = false;
         this._maybeRemoveFakeBrowser();
       });
     } catch (e) {

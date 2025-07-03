@@ -562,7 +562,7 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
-          if (behavior.includes('unload')) {
+          if (behavior.includes('unload') && !selectedTab.hasAttribute('zen-essential')) {
             if (selectedTab.hasAttribute('glance-id')) {
               break;
             }

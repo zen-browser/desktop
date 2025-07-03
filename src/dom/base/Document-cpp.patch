@@ -1,20 +1,24 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index a16bef739fcde0f14ba7e53e0acfa3aa2ee1dd3a..f928c0f1df4e86bd344ab7e57dab112234fb92e8 100644
+index a16bef739fcde0f14ba7e53e0acfa3aa2ee1dd3a..7c4bee2422f76272022f0c793aa52ea02e292bde 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
-@@ -3332,6 +3332,15 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -10,6 +10,7 @@
  
-   ServoStyleSet& styleSet = EnsureStyleSet();
-   for (StyleSheet* sheet : *sheetService->UserStyleSheets()) {
-+    // If the url starts with "file://" and ends with 'zen-themes.css', then
-+    // skip it if the document is not in a chrome docshell.
-+    // This is to avoid loading the user chrome stylesheet in the content
-+    // process, which is not allowed.
-+    auto spec = sheet->GetSheetURI()->GetSpecOrDefault();
-+    if (!IsInChromeDocShell() && StringBeginsWith(spec, "file://"_ns) &&
-+        StringEndsWith(spec, "zen-themes.css"_ns)) {
-+      continue;
-+    }
+ #include "mozilla/dom/Document.h"
+ #include "mozilla/dom/DocumentInlines.h"
++#include "mozilla/ZenStyleSheetCache.h"
+ 
+ #include <inttypes.h>
+ #include <stdlib.h>
+@@ -3335,6 +3336,11 @@ void Document::FillStyleSetUserAndUASheets() {
      styleSet.AppendStyleSheet(*sheet);
    }
  
++  if (auto sheet = zen::ZenStyleSheetCache::Singleton()->GetModsSheet(); sheet && IsInChromeDocShell()) {
++    // The mods sheet is only used in the chrome docshell.
++    styleSet.AppendStyleSheet(*sheet);
++  }
++
+   StyleSheet* sheet = IsInChromeDocShell() ? cache->GetUserChromeSheet()
+                                            : cache->GetUserContentSheet();
+   if (sheet) {

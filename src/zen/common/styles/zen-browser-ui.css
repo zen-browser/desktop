@@ -11,7 +11,7 @@
 #navigator-toolbox {
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
-  --inactive-titlebar-opacity: 1;
+  --inactive-titlebar-opacity: 0.8;
 }
 
 #nav-bar,
@@ -66,8 +66,8 @@
     }
 
     @media (-moz-pref('zen.view.grey-out-inactive-windows')) {
-      &:-moz-window-inactive::after {
-        background: var(--zen-main-browser-background-toolbar);
+      &:-moz-window-inactive {
+        background: InactiveCaption;
       }
     }
 

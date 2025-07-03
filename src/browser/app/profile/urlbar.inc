@@ -1,6 +1,6 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 pref('browser.urlbar.unitConversion.enabled', true);
 pref('browser.urlbar.trending.featureGate', false);
@@ -12,10 +12,10 @@ pref('browser.urlbar.suggest.calculator', true);
 pref("browser.urlbar.trimHttps", true);
 pref("browser.urlbar.untrimOnUserInteraction.featureGate", true);
 
-// Keep in sync with browser/components/topsites/constants.mjs
+# Keep in sync with browser/components/topsites/constants.mjs
 pref("browser.urlbar.maxRichResults", 7);
 
-// Enable private suggestions
+# Enable private suggestions
 pref('browser.search.suggest.enabled', false);
 pref('browser.search.suggest.enabled.private', false);
 

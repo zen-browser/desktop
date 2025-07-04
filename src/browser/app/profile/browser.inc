@@ -8,6 +8,7 @@ pref("browser.startup.page", 3);
 pref("browser.sessionstore.restore_pinned_tabs_on_demand", true);
 
 // Toolbars
+pref("browser.tabs.closeWindowWithLastTab", false);
 pref("browser.tabs.loadBookmarksInTabs", false);
 pref("browser.tabs.hoverPreview.enabled", false);
 pref("browser.tabs.dragdrop.moveOverThresholdPercent", 50);

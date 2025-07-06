@@ -14,3 +14,6 @@ venv/
 win-cross/
 
 !firefox-patches/
+
+# macOS cache files
+.DS_Store

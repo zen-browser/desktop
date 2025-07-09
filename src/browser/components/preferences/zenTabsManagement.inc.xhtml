@@ -64,6 +64,33 @@
       </hbox>
 </groupbox>
 
+      <hbox id="zenTabsUnloadCategory" class="subcategory" hidden="true" data-category="paneZenTabManagement">
+            <html:h1 data-l10n-id="pane-zen-tabs-unloader-title" />
+      </hbox>
+
+      <hbox id="zenPinnedTabsManagerCategory" class="subcategory" hidden="true" data-category="paneZenTabManagement">
+            <html:h1 data-l10n-id="pane-zen-tab-navigation-title" />
+      </hbox>
+
+      <groupbox id="zenTabsUnloadedNavigationGroup" data-category="paneZenTabManagement" hidden="true"
+            class="highlighting-group">
+            <label>
+                  <html:h2 data-l10n-id="zen-tabs-unloaded-navigation-mode-label" />
+            </label>
+            <description class="description-deemphasized"
+                  data-l10n-id="zen-tabs-unloaded-navigation-mode-description" />
+
+            <radiogroup id="zenTabsUnloadedNavigationMode" preference="zen.tabs.unloaded-navigation-mode"
+                  oncommand="onZenTabsUnloadedNavigationModeChanged(this.value);">
+                  <hbox align="center">
+                        <radio id="zenTabsUnloadedNavigationModeAlways" value="always" />
+                        <description data-l10n-id="zen-tabs-unloaded-navigation-mode-always" />
+                  </hbox>
+                  <hbox align="center">
+                        <radio id="zenTabsUnloadedNavigationModeNever" value="never" />
+                        <description data-l10n-id="zen-tabs-unloaded-navigation-mode-never" />
+                  </hbox>
+            </radiogroup>
+      </groupbox>
+
 </html:template>
-
-

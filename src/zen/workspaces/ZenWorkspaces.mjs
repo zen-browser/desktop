@@ -120,6 +120,14 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.addPopupListeners();
 
+    if (document.readyState === "complete") {
+      this.initializeTabNavigationCommands();
+    } else {
+      window.addEventListener("load", () => {
+        this.initializeTabNavigationCommands();
+      }, { once: true });
+    }
+
     await this.#waitForPromises();
     await this._workspaces();
 
@@ -524,6 +532,40 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   initializeWorkspaceNavigation() {
     this._setupAppCommandHandlers();
     this._setupSidebarHandlers();
+  }
+
+  initializeTabNavigationCommands() {
+    const tabNextNode = document.getElementById("cmd_zenTabNext");
+    if (tabNextNode) {
+      tabNextNode.addEventListener("command", () => zenNavigateTab(1));
+    }
+
+    const tabPrevNode = document.getElementById("cmd_zenTabPrev");
+    if (tabPrevNode) {
+      tabPrevNode.addEventListener("command", () => zenNavigateTab(-1));
+    }
+
+    const toggleNode = document.getElementById("cmd_zenToggleUnloadedCycling");
+    if (toggleNode) {
+      toggleNode.addEventListener("command", () => {
+
+        const currentMode = Services.prefs.getCharPref('zen.tabs.unloaded-navigation-mode', 'always');
+        const nextMode = currentMode === 'always' ? 'never' : 'always';
+
+        Services.prefs.setCharPref('zen.tabs.unloaded-navigation-mode', nextMode);
+
+        const message = nextMode === 'always' ? 'Including unloaded tabs' : 'Skipping unloaded tabs';
+
+        gNotificationBox.appendNotification(
+          'zen-unloaded-cycle-toggle-notification',
+          {
+            label: message,
+            priority: gNotificationBox.PRIORITY_INFO_MEDIUM,
+          },
+          []
+        );
+      });
+    }
   }
 
   _setupAppCommandHandlers() {
@@ -2945,3 +2987,83 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 })();
+
+function zenNavigateTab(direction) {
+  const basePref = Services.prefs.getStringPref('zen.tabs.unloaded-navigation-mode', 'never');
+  const invertedState = Services.prefs.getBoolPref('zen.tabs.unloaded-navigation-mode.inverted', false);
+
+  const cycleUnloaded = (basePref === 'always' && !invertedState) || (basePref === 'never' && invertedState);
+
+  let allTabs = gZenWorkspaces.tabboxChildren.filter(
+    (t) => !t.hidden && !t.hasAttribute('zen-empty-tab')
+  );
+
+  let tabs = cycleUnloaded ? allTabs : allTabs.filter(t => !t.hasAttribute('pending'));
+
+  if (tabs.length === 0) {
+    return;
+  }
+
+  const selectedIndex = tabs.indexOf(gBrowser.selectedTab);
+
+  let newIndex;
+
+  if (selectedIndex === -1) {
+    newIndex = direction > 0 ? 0 : tabs.length - 1;
+  } else {
+    newIndex = selectedIndex + direction;
+
+    if (newIndex < 0) {
+      newIndex = tabs.length - 1;
+    } else if (newIndex >= tabs.length) {
+      newIndex = 0;
+    }
+  }
+
+  gBrowser.selectedTab = tabs[newIndex];
+}
+
+window.cmd_zenTabNext = function () {
+  console.log('[ZenDebug] window.cmd_zenTabNext called');
+  if (typeof zenNavigateTab === 'function') {
+    zenNavigateTab(1);
+  } else {
+    console.error('[ZenDebug] zenNavigateTab is not defined!');
+  }
+};
+window.cmd_zenTabPrev = function () {
+  console.log('[ZenDebug] window.cmd_zenTabPrev called');
+  if (typeof zenNavigateTab === 'function') {
+    zenNavigateTab(-1);
+  } else {
+    console.error('[ZenDebug] zenNavigateTab is not defined!');
+  }
+};
+
+// if (window && window.Commands) {
+//   window.Commands.cmd_zenTabNext = window.cmd_zenTabNext;
+//   window.Commands.cmd_zenTabPrev = window.cmd_zenTabPrev;
+// }
+
+// if (typeof zenNavigateTab === 'function') {
+//   const _zenNavigateTabOrig = zenNavigateTab;
+//   window.zenNavigateTab = function (direction) {
+//     console.log('[ZenDebug] zenNavigateTab called with direction:', direction);
+//     return _zenNavigateTabOrig(direction);
+//   };
+// }
+
+// // Global keydown logger to debug event flow
+// window.addEventListener('keydown', function (e) {
+//   // Only log if not in an input/textarea
+//   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
+//   console.log('[ZenDebug] keydown:', {
+//     key: e.key,
+//     code: e.code,
+//     ctrlKey: e.ctrlKey,
+//     shiftKey: e.shiftKey,
+//     altKey: e.altKey,
+//     metaKey: e.metaKey,
+//     defaultPrevented: e.defaultPrevented
+//   });
+// }, true);

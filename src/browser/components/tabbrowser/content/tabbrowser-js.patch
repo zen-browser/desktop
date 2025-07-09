@@ -158,6 +158,7 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
        userContextId,
        skipLoad,
 +      _forZenEmptyTab,
++      _forZenEmptyTabAllowSplit,
      } = {}) {
        let b = document.createXULElement("browser");
        // Use the JSM global to create the permanentKey, so that if the
@@ -195,14 +196,15 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
          schemelessInput,
          hasValidUserGestureActivation = false,
          textDirectiveUserActivation = false,
-+        _forZenEmptyTab,
-       } = {}
-     ) {
-       // all callers of addTab that pass a params object need to pass
++                _forZenEmptyTab,
+        _forZenEmptyTabAllowSplit,
+      } = {}
+    ) {
+      // all callers of addTab that pass a params object need to pass
 @@ -2639,6 +2693,12 @@
-         );
-       }
- 
+        );
+      }
+
 +      let hasZenDefaultUserContextId = false;
 +      let zenForcedWorkspaceId = undefined;
 +      if (typeof ZenWorkspaces !== "undefined" && !_forZenEmptyTab) {
@@ -224,6 +226,9 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
 +        }
 +        if (_forZenEmptyTab) {
 +          t.setAttribute("zen-empty-tab", "true");
++          if (_forZenEmptyTabAllowSplit) {
++            t.setAttribute("allow-split", "true");
++          }
 +        }
          if (insertTab) {
            // insert the tab into the tab container in the correct position
@@ -233,6 +238,7 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
            openWindowInfo,
            skipLoad,
 +          _forZenEmptyTab,
++          _forZenEmptyTabAllowSplit,
          }));
  
          if (focusUrlBar) {
@@ -280,7 +286,8 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
            openWindowInfo,
            name,
            skipLoad,
-+          _forZenEmptyTab
++          _forZenEmptyTab,
++          _forZenEmptyTabAllowSplit
          });
        }
  
@@ -293,6 +300,9 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
 +          }
 +          if (tabData.zenIsEmpty) {
 +            tab.setAttribute("zen-empty-tab", "true");
++            if (tabData.zenAllowSplit) {
++              tab.setAttribute("allow-split", "true");
++            }
 +          }
 +          if (tabData.zenHasStaticLabel) {
 +            tab.setAttribute("zen-has-static-label", "true");
@@ -333,6 +343,9 @@ index 628aa6596627c85efe361fc1ece8fd58f7ee653e..06a4aae50ebe8a42d08d4689d8e80a63
 +          }
 +          if (tabData.zenIsEmpty) {
 +            tab.setAttribute("zen-empty-tab", "true");
++            if (tabData.zenAllowSplit) {
++              tab.setAttribute("allow-split", "true");
++            }
 +          }
 +          if (tabData.zenHasStaticLabel) {
 +            tab.setAttribute("zen-has-static-label", "true");

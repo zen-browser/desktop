@@ -199,7 +199,7 @@ index fa96568d366fd3608f9bd583fa793150bd815c8b..1c940a3b162919256ca73fa867c5c261
      get visibleTabs() {
        if (!this.#visibleTabs) {
 -        this.#visibleTabs = this.openTabs.filter(tab => tab.visible);
-+        this.#visibleTabs = this.openTabs.filter(tab => tab.visible && !tab.hasAttribute("zen-empty-tab"));
++        this.#visibleTabs = this.openTabs.filter(tab => tab.visible && (!tab.hasAttribute("zen-empty-tab") || tab.hasAttribute("allow-split")));
        }
        return this.#visibleTabs;
      }

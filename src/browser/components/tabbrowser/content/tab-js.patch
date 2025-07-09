@@ -35,7 +35,7 @@ index 777eabb7524f2b021a03b3f54d69faee49b7381d..192d2fa058f7d9f043532c0ae6e4c081
  
      get visible() {
 -      return this.isOpen && !this.hidden && !this.group?.collapsed;
-+      return this.isOpen && !this.hidden && !this.group?.collapsed && !this.hasAttribute("zen-empty-tab");
++      return this.isOpen && !this.hidden && !this.group?.collapsed && (!this.hasAttribute("zen-empty-tab") || this.hasAttribute("allow-split"));
      }
  
      get hidden() {
@@ -44,7 +44,7 @@ index 777eabb7524f2b021a03b3f54d69faee49b7381d..192d2fa058f7d9f043532c0ae6e4c081
        }
  
 -      return true;
-+      return !this.hasAttribute("zen-empty-tab");
++      return !this.hasAttribute("zen-empty-tab") || this.hasAttribute("allow-split");
      }
  
      get lastAccessed() {

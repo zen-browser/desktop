@@ -133,7 +133,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
    */
   onTabSelect(event) {
     const previousTab = event.detail.previousTab;
-    if (previousTab && !previousTab.hasAttribute('zen-empty-tab')) {
+    if (previousTab && (!previousTab.hasAttribute('zen-empty-tab') || previousTab.hasAttribute('allow-split'))) {
       this._lastOpenedTab = previousTab;
     }
   }
@@ -178,7 +178,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       // tab copy or move
       draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       // not our drop then
-      if (!draggedTab || gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+      if (!draggedTab || (gBrowser.selectedTab.hasAttribute('zen-empty-tab') && !gBrowser.selectedTab.hasAttribute('allow-split'))) {
         return;
       }
       draggedTab.container._finishMoveTogetherSelectedTabs(draggedTab);
@@ -893,7 +893,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       return false;
     }
     for (const tab of window.gBrowser.selectedTabs) {
-      if (tab.splitView || tab.hasAttribute('zen-empty-tab') || tab.hasAttribute('zen-essential')) {
+      if (tab.splitView || (tab.hasAttribute('zen-empty-tab') && !tab.hasAttribute('allow-split')) || tab.hasAttribute('zen-essential')) {
         return false;
       }
     }
@@ -944,7 +944,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
    */
   splitTabs(tabs, gridType, initialIndex = 0) {
     // TODO: Add support for splitting essential tabs
-    tabs = tabs.filter((t) => !t.hidden && !t.hasAttribute('zen-empty-tab') && !t.hasAttribute('zen-essential'));
+    tabs = tabs.filter((t) => !t.hidden && (!t.hasAttribute('zen-empty-tab') || t.hasAttribute('allow-split')) && !t.hasAttribute('zen-essential'));
     if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
       return;
     }
@@ -1519,7 +1519,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
       if (groupIndex >= 0) {
         const group = this._data[groupIndex];
         if (group.tabs.length < this.MAX_TABS) {
-          const newTab = this.openAndSwitchToTab('about:newtab');
+          const newTab = this.openAndSwitchToTab('about:blank', { _forZenEmptyTab: true, _forZenEmptyTabAllowSplit: true });
           group.tabs.push(newTab);
 
           // Get the root node of the layout tree
@@ -1564,7 +1564,7 @@ class ZenViewSplitter extends ZenDOMOperatedFeature {
     }
 
     // First time pressing shortcut - create initial split
-    const newTab = this.openAndSwitchToTab('about:newtab');
+    const newTab = this.openAndSwitchToTab('about:blank', { _forZenEmptyTab: true, _forZenEmptyTabAllowSplit: true });
     this.splitTabs([currentTab, newTab], 'vsep');
 
     window.gBrowser.selectedTab = newTab;

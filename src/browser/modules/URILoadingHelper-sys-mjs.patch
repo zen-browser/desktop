@@ -7,7 +7,7 @@ index 313e895980c502d79f64f5a6ab838f6a96c83835..8a1a853567aeae2c368005d375781579
        // we'll open a new tab instead.
        let tab = w.gBrowser.getTabForBrowser(targetBrowser);
 -      if (tab == w.FirefoxViewHandler.tab) {
-+      if (tab == w.FirefoxViewHandler.tab || tab.hasAttribute("zen-empty-tab")) {
++      if (tab == w.FirefoxViewHandler.tab || (tab.hasAttribute("zen-empty-tab") && !tab.hasAttribute("allow-split"))) {
          where = "tab";
          targetBrowser = null;
        } else if (

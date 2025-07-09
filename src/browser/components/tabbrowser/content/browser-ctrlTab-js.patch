@@ -7,7 +7,7 @@ index e5d16e605b7edf11fc9f52b93e415087b76398f1..40b6e29d26c7f8d692a2a9a7d924b289
      // (Normally hidden tabs would be unhidden when selected, but that doesn't
      // happen for Firefox View).
 -    if (aTab.closing || (aTab.hidden && !aTab.selected)) {
-+    if (aTab.closing || (aTab.hidden && !aTab.selected) || aTab.hasAttribute("zen-empty-tab")) {
++    if (aTab.closing || (aTab.hidden && !aTab.selected) || (aTab.hasAttribute("zen-empty-tab") && !aTab.hasAttribute("allow-split"))) {
        return;
      }
  
@@ -16,7 +16,7 @@ index e5d16e605b7edf11fc9f52b93e415087b76398f1..40b6e29d26c7f8d692a2a9a7d924b289
      this._recentlyUsedTabs = Array.prototype.filter.call(
        gBrowser.tabs,
 -      tab => !tab.closing && !tab.hidden
-+      tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
++      tab => !tab.closing && !tab.hidden && (!tab.hasAttribute("zen-empty-tab") || tab.hasAttribute("allow-split"))
      );
      this._sortRecentlyUsedTabs();
    },

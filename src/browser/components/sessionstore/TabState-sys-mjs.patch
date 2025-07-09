@@ -20,6 +20,7 @@ index 8f7ed557e6aa61e7e16ed4a8d785ad5fe651b3d8..aff63696d198055886960072a6130318
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
 +    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
 +    tabData.zenHasStaticLabel = tab.hasAttribute("zen-has-static-label");
++    tabData.zenAllowSplit = tab.hasAttribute("allow-split");
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
  

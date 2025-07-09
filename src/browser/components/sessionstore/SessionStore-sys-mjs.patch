@@ -7,7 +7,7 @@ index f814772114948f87cbb3c3a7231c95ea1f68d776..ae35daa518ca25f4fc95ef983519c390
        return;
      }
 -    if (aTab == aWindow.FirefoxViewHandler.tab) {
-+    if (aTab == aWindow.FirefoxViewHandler.tab || aTab.hasAttribute("zen-empty-tab")) {
++    if (aTab == aWindow.FirefoxViewHandler.tab || (aTab.hasAttribute("zen-empty-tab") && !aTab.hasAttribute("allow-split"))) {
        return;
      }
  
@@ -32,7 +32,7 @@ index f814772114948f87cbb3c3a7231c95ea1f68d776..ae35daa518ca25f4fc95ef983519c390
      // update the internal state data for this window
      for (let tab of tabs) {
 -      if (tab == aWindow.FirefoxViewHandler.tab) {
-+      if (tab == aWindow.FirefoxViewHandler.tab || tab.hasAttribute("zen-empty-tab")) {
++      if (tab == aWindow.FirefoxViewHandler.tab || (tab.hasAttribute("zen-empty-tab") && !tab.hasAttribute("allow-split"))) {
          continue;
        }
        let tabData = lazy.TabState.collect(tab, TAB_CUSTOM_VALUES.get(tab));
@@ -41,7 +41,7 @@ index f814772114948f87cbb3c3a7231c95ea1f68d776..ae35daa518ca25f4fc95ef983519c390
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
 -    if (aWindow.FirefoxViewHandler.tab?.selected) {
-+    if (aWindow.FirefoxViewHandler.tab?.selected || tabbrowser.selectedTab.hasAttribute("zen-empty-tab")) {
++    if (aWindow.FirefoxViewHandler.tab?.selected || (tabbrowser.selectedTab.hasAttribute("zen-empty-tab") && !tabbrowser.selectedTab.hasAttribute("allow-split"))) {
        selectedIndex = 1;
        winData.title = tabbrowser.tabs[0].label;
      }
@@ -54,6 +54,9 @@ index f814772114948f87cbb3c3a7231c95ea1f68d776..ae35daa518ca25f4fc95ef983519c390
 +    }
 +    if (tabData.zenIsEmpty) {
 +      tab.setAttribute("zen-empty-tab", "true");
++      if (tabData.zenAllowSplit) {
++        tab.setAttribute("allow-split", "true");
++      }
 +    }
 +    if (tabData.zenHasStaticLabel) {
 +      tab.setAttribute("zen-has-static-label", "true");

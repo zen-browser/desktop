@@ -25,7 +25,7 @@ index 033582a3badb65d50f58a11f8a259e28eaa04ef3..ef634d76549f0fa4d5789e2bbfb9409f
            return null;
          }
 -        if (filter(tab)) {
-+        if (filter(tab) && !tab.hasAttribute("zen-glance-tab") && !tab.hasAttribute("zen-empty-tab")) {
++        if (filter(tab) && !tab.hasAttribute("zen-glance-tab") && (!tab.hasAttribute("zen-empty-tab") || tab.hasAttribute("allow-split"))) {
            return tab;
          }
        }

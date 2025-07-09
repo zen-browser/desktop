@@ -75,6 +75,9 @@
       });
       this.dragStartPosition = null;
 
+      this.isLegacyVersion =
+        Services.prefs.getIntPref('zen.theme.gradient-legacy-version', 1) === 0;
+
       ChromeUtils.defineLazyGetter(this, 'panel', () =>
         document.getElementById('PanelUI-zen-gradient-generator')
       );
@@ -116,8 +119,8 @@
       XPCOMUtils.defineLazyPreferenceGetter(
         this,
         'windowSchemeType',
-        'zen.theme.window.scheme',
-        true,
+        'zen.view.window.scheme',
+        2,
         darkModeChange
       );
     }
@@ -128,9 +131,9 @@
 
     get isDarkMode() {
       switch (this.windowSchemeType) {
-        case 'dark':
+        case 0:
           return true;
-        case 'light':
+        case 1:
           return false;
         default:
       }
@@ -203,7 +206,7 @@
           this.useAlgo = algo;
           this.#currentLightness = lightness;
           dots = this.calculateCompliments(dots, 'update', this.useAlgo);
-          this.handleColorPositions(dots);
+          this.handleColorPositions(dots, true);
           this.updateCurrentWorkspace();
         });
     }
@@ -252,11 +255,15 @@
         if (!scheme) {
           return;
         }
-        if (this.currentScheme === scheme) {
+        const themeInt = {
+          auto: 2,
+          light: 1,
+          dark: 0,
+        }[scheme];
+        if (themeInt === undefined) {
           return;
         }
-        this.currentScheme = scheme;
-        Services.prefs.setStringPref('zen.theme.window.scheme', scheme);
+        Services.prefs.setIntPref('zen.view.window.scheme', themeInt);
       });
     }
 
@@ -594,6 +601,7 @@
         ID: id,
         element: dot,
         position: { x: relativePosition.x, y: relativePosition.y },
+        lightness: this.#currentLightness,
       });
     }
 
@@ -697,9 +705,14 @@
       return updatedDots;
     }
 
-    handleColorPositions(colorPositions) {
+    handleColorPositions(colorPositions, ignoreLegacy = false) {
       colorPositions.sort((a, b) => a.ID - b.ID);
       const existingPrimaryDot = this.dots.find((d) => d.ID === 0);
+
+      if (this.isLegacyVersion && !ignoreLegacy) {
+        this.isLegacyVersion = false;
+        Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 1);
+      }
 
       if (existingPrimaryDot) {
         existingPrimaryDot.element.style.zIndex = 999;
@@ -836,11 +849,8 @@
       const relativeY = pixelY - rect.top;
 
       if (!clickedDot && this.dots.length < 1) {
-        if (this.dots.length === 0) {
-          this.spawnDot({ x: relativeX, y: relativeY }, true);
-        } else {
-          this.spawnDot({ x: relativeX, y: relativeY });
-        }
+        this.#currentLightness = 50;
+        this.spawnDot({ x: relativeX, y: relativeY }, this.dots.length === 0);
 
         this.updateCurrentWorkspace(true);
       } else if (!clickedDot && existingPrimaryDot) {
@@ -979,7 +989,10 @@
       // The more transparent, the more white the color will be blended with. In order words,
       // make the transparency relative to these 2 ends.
       // e.g. 0% opacity becomes 60% blend, 100% opacity becomes 100% blend
-      const blendPercentage = Math.max(30, 30 + opacity * 70);
+      let blendPercentage = Math.max(30, 30 + opacity * 70);
+      if (this.isLegacyVersion) {
+        blendPercentage = 100; // Legacy version always blends to 100%
+      }
       return colors.map((color) => ({
         c: color.isCustom ? color.c : this.blendColors(color.c, colorToBlend, blendPercentage),
         isCustom: color.isCustom,
@@ -1021,8 +1034,12 @@
       }
       let opacity = this.currentOpacity;
       if (forToolbar) {
+        color = this.blendColors(
+          color.c,
+          this.getToolbarModifiedBaseRaw().slice(0, 3),
+          opacity * 100
+        );
         opacity = 1; // Toolbar colors should always be fully opaque
-        color = this.blendColors(color.c, this.getToolbarModifiedBaseRaw().slice(0, 3), 80);
       } else {
         color = color.c;
       }
@@ -1104,7 +1121,7 @@
               `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
             ].join(', ');
           }
-          return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 100%)`;
+          return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
         } else if (themedColors.length === 3) {
           let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
           let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
@@ -1132,7 +1149,6 @@
           accentColor,
           (1 - this.currentOpacity) * 100
         );
-        minimalLum = this.isDarkMode ? 0.3 : 0.18;
       }
       const lum = this.luminance(accentColor);
       // Return true if background is dark enough that white text is preferred
@@ -1443,24 +1459,19 @@
               `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
             )
           );
+          browser.gZenThemePicker.isLegacyVersion = this.isLegacyVersion;
           let isDarkMode = this.isDarkMode;
-          if (!isDefaultTheme) {
+          if (!isDefaultTheme && !this.isLegacyVersion) {
+            // Check for the primary color
             isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
             browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
           } else {
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
           }
           // Set `--toolbox-textcolor` to have a contrast with the primary color
-          await gZenUIManager.motion.animate(
-            browser.document.documentElement,
-            {
-              '--toolbox-textcolor': isDarkMode
-                ? 'rgba(255, 255, 255, 0.7)'
-                : 'rgba(23, 23, 23, 0.7)',
-            },
-            {
-              duration: 0.05,
-            }
+          document.documentElement.style.setProperty(
+            '--toolbox-textcolor',
+            isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)'
           );
         }
 
@@ -1477,7 +1488,7 @@
         !theme.gradientColors.find((color) => color.isPrimary) &&
         theme.gradientColors.length > 0
       ) {
-        theme.gradientColors[(theme.gradientColors.length / 2) | 0].isPrimary = true;
+        theme.gradientColors[0].isPrimary = true;
       }
       return theme;
     }

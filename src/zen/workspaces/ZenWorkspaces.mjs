@@ -1845,11 +1845,17 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       }
       if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
         previousBackgroundOpacity = 0;
+      } else {
+        previousBackgroundOpacity = 1 - previousBackgroundOpacity;
       }
-      previousBackgroundOpacity = 1 - previousBackgroundOpacity;
+      previousBackgroundOpacity = previousBackgroundOpacity;
       gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
       await new Promise((resolve) => {
         requestAnimationFrame(() => {
+          document.documentElement.style.setProperty(
+            '--zen-background-opacity',
+            previousBackgroundOpacity
+          );
           animations.push(
             gZenUIManager.motion.animate(
               document.documentElement,
@@ -2088,10 +2094,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   }
 
   _shouldChangeToTab(aTab) {
-    return !(
-      aTab?.hasAttribute('zen-essential') ||
-      (aTab?.pinned && aTab?.hasAttribute('pending'))
-    );
+    return !(aTab?.pinned && aTab?.hasAttribute('pending'));
   }
 
   async #shouldShowTabInCurrentWorkspace(tab) {
@@ -2938,30 +2941,46 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     if (!parent || this._processingResize) {
       return;
     }
-    this._processingResize = true;
-    // Once we are overflowing, we align the buttons to always stay inside the container,
-    // meaning we need to remove the overflow attribute to reset the width
-    parent.removeAttribute('icons-overflow');
-    requestAnimationFrame(() => {
-      const overflow = parent.scrollWidth > parent.clientWidth;
-      parent.toggleAttribute('icons-overflow', overflow);
-      // The maximum width a button has when it overflows based on the number of buttons
-      const numButtons = parent.children.length + 1; // +1 to exclude the active button
-      const maxWidth = 100 / numButtons;
-      parent.style.setProperty('--zen-overflowed-workspace-button-width', `${maxWidth}%`);
-      this._processingResize = false;
+    if (!gZenPinnedTabManager.expandedSidebarMode) {
+      for (const icon of parent.children) {
+        if (icon.tagName === 'toolbarbutton') {
+          icon.style.width = ''; // Reset to default size when in expanded mode
+        }
+      }
+      parent.removeAttribute('icons-overflow');
+      return;
+    }
+    const maxButtonSize = 30; // IMPORTANT: This should match the CSS size of the icons
+    const minButtonSize = 15;
+    const separation = 3; // Space between icons
 
-      // Scroll to the active workspace button if it's not visible
-      const activeButton = parent.querySelector('.zen-workspace-button.active');
-      if (!activeButton) {
-        return;
+    // Calculate the total width needed for all icons
+    const totalWidth = Array.from(parent.children).reduce((width, icon) => {
+      if (icon.tagName === 'toolbarbutton') {
+        return width + minButtonSize + separation;
       }
-      const parentRect = parent.getBoundingClientRect();
-      const activeRect = activeButton.getBoundingClientRect();
-      if (activeRect.left < parentRect.left || activeRect.right > parentRect.right) {
-        parent.scrollLeft = activeButton.offsetLeft;
+      return width;
+    }, 0);
+
+    // Check if the total width exceeds the parent's width
+    if (totalWidth > parent.clientWidth) {
+      parent.setAttribute('icons-overflow', 'true');
+    } else {
+      parent.removeAttribute('icons-overflow');
+    }
+
+    // Set the width of each icon to the maximum size they can fit on
+    const widthPerButton = Math.max(
+      Math.floor(
+        (parent.clientWidth - separation * (parent.children.length - 1)) / parent.children.length
+      ),
+      minButtonSize
+    );
+    for (const icon of parent.children) {
+      if (icon.tagName === 'toolbarbutton') {
+        icon.style.width = `${Math.min(widthPerButton, maxButtonSize)}px`;
       }
-    });
+    }
   }
 
   fixTabInsertLocation(tab) {

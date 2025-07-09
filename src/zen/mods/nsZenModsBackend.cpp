@@ -45,61 +45,20 @@ auto nsZenModsBackend::CheckEnabled() -> bool {
   return mEnabled; 
 }
 
-auto nsZenModsBackend::RebuildModsStyles() -> nsresult {
-  // Invalidate the mods stylesheet cache.
-  GetZenStyleSheetCache()->InvalidateModsSheet();
-  // Rebuild the mods stylesheets.
-  auto modsSheet = GetZenStyleSheetCache()->GetModsSheet();
-  if (!modsSheet) {
-    return NS_ERROR_FAILURE;
-  }
-  // Get the service from @mozilla.org/content/style-sheet-service;1
-  if (auto* sss = nsStyleSheetService::GetInstance()) {
-    // Register the mods stylesheet.
-    sss->UpdateZenModStyles(modsSheet, modsSheet->GetSheetURI(), CheckEnabled());
-  }
+auto nsZenModsBackend::RebuildModsStyles(const nsACString& aContents) -> nsresult {
   // Notify that the mods stylesheets have been rebuilt.
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsZenModsBackend::InvalidateModsSheet() {
-  if (!mEnabled) {
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-  GetZenStyleSheetCache()->InvalidateModsSheet();
-  return NS_OK;
+  return GetZenStyleSheetCache()->RebuildModsStylesheets(aContents);
 }
 
 } // namespace: zen
 
-void nsStyleSheetService::UpdateZenModStyles(mozilla::StyleSheet* aSheet, nsIURI* aURI, bool aInsert) {
-  auto sheetType = nsStyleSheetService::USER_SHEET;
-  this->UnregisterSheet(aURI, sheetType);
-  if (!aSheet || !aInsert) {
-    return; // Nothing to update.
-  }
-  mSheets[sheetType].AppendElement(aSheet);
-  // Hold on to a copy of the registered PresShells.
-  for (mozilla::PresShell* presShell : mPresShells.Clone()) {
-    // Only allow on chrome documents.
-    auto doc = presShell->GetDocument();
-    if (doc && !doc->IsInChromeDocShell()) {
-      continue;
-    }
-    presShell->NotifyStyleSheetServiceSheetAdded(aSheet, sheetType);
-  }
-
-  if (XRE_IsParentProcess()) {
-    nsTArray<mozilla::dom::ContentParent*> children;
-    mozilla::dom::ContentParent::GetAll(children);
-
-    if (children.IsEmpty()) {
-      return;
-    }
-
-    for (uint32_t i = 0; i < children.Length(); i++) {
-      mozilla::Unused << children[i]->SendLoadAndRegisterSheet(aURI, sheetType);
+auto nsStyleSheetService::ZenMarkStylesAsChanged() -> void {
+  for (auto& presShell : mPresShells) {
+    if (presShell) {
+      if (auto doc = presShell->GetDocument(); doc && doc->IsInChromeDocShell()) {
+        // Notify the document that styles have changed.
+        doc->ApplicableStylesChanged();
+      }
     }
   }
 }

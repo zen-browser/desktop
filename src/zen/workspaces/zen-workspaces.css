@@ -11,8 +11,8 @@
   align-items: center;
   display: flex;
   font-size: x-small;
-  padding: 0 3px;
-  margin: 0;
+  margin: 0 3px;
+  padding: 0;
   appearance: auto;
 
   position: relative;
@@ -34,8 +34,8 @@
 
   & toolbarbutton {
     margin: 0;
-    width: 28px;
-    height: 28px;
+   max-width: 30px;
+    height: 30px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -71,6 +71,10 @@
     &[dragged='true']{
       background-color: var(--zen-toolbar-element-bg);
     }
+
+    & label {
+      margin: 0 !important;
+    }
   }
 
   &[reorder-mode='true'] toolbarbutton:not([dragged='true']) {
@@ -80,9 +84,11 @@
 
   &[icons-overflow] {
     gap: 0 !important;
+    justify-content: space-between;
 
     & toolbarbutton {
       margin: 0;
+  background: transparent;
     }
 
     /* Inlcude separately since ther'es a bug in the 

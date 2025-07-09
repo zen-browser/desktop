@@ -591,7 +591,9 @@ groupbox h2 {
 #dataCollectionCategory,
 #dataCollectionGroup,
 #websiteAdvertisingCategory,
-#websiteAdvertisingGroup {
+#websiteAdvertisingGroup,
+#webAppearanceGroup,
+#helpButton {
   display: none !important;
 }
 

@@ -4,7 +4,7 @@
 
 class nsZenUIMigration {
   PREF_NAME = 'zen.ui.migration.version';
-  MIGRATION_VERSION = 1;
+  MIGRATION_VERSION = 2;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -55,6 +55,12 @@ class nsZenUIMigration {
       'zen.workspaces.separate-essentials',
       Services.prefs.getBoolPref('zen.workspaces.container-specific-essentials-enabled', false)
     );
+    const theme = Services.prefs.getIntPref('layout.css.prefers-color-scheme.content-override', 0);
+    Services.prefs.setIntPref('zen.view.window.scheme', theme);
+  }
+
+  _migrateV2() {
+    Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 0);
   }
 }
 

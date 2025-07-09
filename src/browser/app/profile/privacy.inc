@@ -1,6 +1,6 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 pref("datareporting.policy.dataSubmissionEnabled", false, locked);
 pref("datareporting.healthreport.uploadEnabled", false, locked);
@@ -25,23 +25,23 @@ pref("app.shield.optoutstudies.enabled", false, locked);
 pref("app.normandy.enabled", false);
 pref("app.normandy.api_url", "", locked);
 
-// Crash reports
+# Crash reports
 pref("breakpad.reportURL", "");
 pref("browser.tabs.crashReporting.sendReport", false);
 pref("browser.crashReports.unsubmittedCheck.autoSubmit2", false);
 
-// Other privacy
+# Other privacy
 pref("extensions.getAddons.cache.enabled", false);
 
-// Disable cache for private browsing
+# Disable cache for private browsing
 pref("browser.privatebrowsing.forceMediaMemoryCache", true);
 
-// Tracking protection
+# Tracking protection
 pref("browser.helperApps.deleteTempFileOnExit", true);
 pref("browser.uitour.enabled", false);
 
 pref("privacy.globalprivacycontrol.enabled", true);
 
-// Contextual identity
+# Contextual identity
 pref('privacy.userContext.enabled', true);
 pref('privacy.userContext.ui.enabled', true);

@@ -95,6 +95,7 @@ zen-workspace-creation {
           --input-bgcolor: transparent;
           padding: 0 !important;
           width: 100%;
+          outline: none;
         }
       }
 

@@ -1302,10 +1302,13 @@
   min-width: calc(100% + var(--zen-toolbox-padding) * 2);
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   padding: 0 var(--zen-toolbox-padding);
-  padding-top: 6px;
   display: grid;
 
   position: absolute;
+
+  &:not(:empty) {
+    padding-top: 6px;
+  }
 
   &[hidden='true'] {
     --hidden-essentials-width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));

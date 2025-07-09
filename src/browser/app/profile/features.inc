@@ -12,7 +12,6 @@ pref('zen.tabs.vertical', true);
 pref('zen.tabs.vertical.right-side', false);
 pref('zen.tabs.rename-tabs', true);
 pref('zen.tabs.essentials.max', 12);
-pref('zen.tabs.essentials.height', 0); // In vh units
 pref('zen.tabs.show-newtab-vertical', true);
 
 pref('zen.ctrlTab.show-pending-tabs', false);

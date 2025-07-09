@@ -1270,10 +1270,6 @@
 #zen-essentials {
   z-index: 1;
   overflow: hidden;
-
-  &:not([data-essentials-height="0"]) {
-    max-height: var(--zen-essentials-height);
-  }
 }
 
 /* Container for essential items (often pinned/favorite tabs) */
@@ -1288,11 +1284,6 @@
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
   opacity: 1;
-
-  #zen-essentials:not([data-essentials-height="0"]) & {
-    height: 100%;
-    max-height: var(--zen-essentials-height);
-  }
 
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
   &[data-hack-type='1'] {

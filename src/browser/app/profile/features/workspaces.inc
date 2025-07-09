@@ -23,3 +23,7 @@ pref('zen.workspaces.separate-essentials', true);
 pref('zen.pinned-tab-manager.debug', false);
 pref('zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url', false);
 pref('zen.pinned-tab-manager.close-shortcut-behavior', 'reset-unload-switch');
+
+# Section: Tab Navigation
+pref('zen.tabs.unloaded-navigation-mode', 'always');
+

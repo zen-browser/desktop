@@ -774,6 +774,10 @@ var zenMissingKeyboardShortcutL10n = {
   key_wrToggleCaptureSequenceCmd: 'zen-key-wr-toggle-capture-sequence-cmd',
   key_undoCloseWindow: 'zen-key-undo-close-window',
 
+  key_zenTabNext: 'zen-key-tab-next-shortcut',
+  key_zenTabPrevious: 'zen-key-tab-prev-shortcut',
+  key_toggleUnloadedCycling: 'zen-toggle-unloaded-cycling-shortcut',
+
   key_selectTab1: 'zen-key-select-tab-1',
   key_selectTab2: 'zen-key-select-tab-2',
   key_selectTab3: 'zen-key-select-tab-3',
@@ -1180,5 +1184,10 @@ Preferences.addAll([
     id: 'zen.mods.auto-update',
     type: 'bool',
     default: true,
+  },
+    {
+    id: 'zen.tabs.unloaded-navigation-mode',
+    type: 'string',
+    default: 'always',
   },
 ]);

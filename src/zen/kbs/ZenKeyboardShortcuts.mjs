@@ -984,6 +984,43 @@ class nsZenKeyboardShortcutsVersioner {
         }
       }
     }
+    if (version < 10) {
+      // Migrate from version 9 to 10
+      // In this new version, we add customizable shortcuts for switching to the next/previous tab.
+      data.push(
+        new KeyShortcut(
+          'zen-tab-next-shortcut',
+          '',
+          'VK_TAB',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          'cmd_zenTabNext',
+          'zen-tab-next-shortcut'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-tab-prev-shortcut',
+          '',
+          'VK_TAB',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenTabPrev',
+          'zen-tab-prev-shortcut'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-toggle-unloaded-cycling-shortcut',
+          '',
+          '',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({ alt: true }),
+          'cmd_zenToggleUnloadedCycling',
+          'zen-toggle-unloaded-cycling-shortcut'
+        )
+      );
+    }
     return data;
   }
 }
@@ -1014,10 +1051,9 @@ var gZenKeyboardShortcutsManager = {
   async init() {
     if (this.inBrowserView) {
       const loadedShortcuts = await this._loadSaved();
-
-      this._currentShortcutList = this.versioner.fixedKeyboardShortcuts(loadedShortcuts);
+      this.versioner = new nsZenKeyboardShortcutsVersioner(loadedShortcuts);
+      this._currentShortcutList = this.versioner.fixedKeyboardShortcuts(loadedShortcuts) || [];
       this._applyShortcuts();
-
       await this._saveShortcuts();
     }
   },

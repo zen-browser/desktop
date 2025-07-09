@@ -3,8 +3,35 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 FINAL_TARGET_FILES.actors += [
-    "actors/ZenThemeMarketplaceChild.sys.mjs",
-    "actors/ZenThemeMarketplaceParent.sys.mjs",
+    "actors/ZenModsMarketplaceChild.sys.mjs",
+    "actors/ZenModsMarketplaceParent.sys.mjs",
 ]
+
+XPIDL_SOURCES += [
+    "nsIZenModsBackend.idl",
+]
+
+EXPORTS.mozilla += [
+    "nsZenModsBackend.h",
+    "ZenStyleSheetCache.h",
+]
+
+SOURCES += [
+    "nsZenModsBackend.cpp",
+    "ZenStyleSheetCache.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+include("/ipc/chromium/chromium-config.mozbuild")
+
+LOCAL_INCLUDES += [
+    "/dom/base",
+    "/dom/ipc",
+]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_mods"

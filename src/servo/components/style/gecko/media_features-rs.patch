@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
-index cc24406e22f536733b07a9398580a8719b61e134..214f238b38377a8480711ea2d0ec30e99800bb5c 100644
+index c66f1e26b22a6eeb2192d531e365ba34a61e220d..097ffce888ee0e180cc06448ea34860e6a467a2a 100644
 --- a/servo/components/style/gecko/media_features.rs
 +++ b/servo/components/style/gecko/media_features.rs
 @@ -13,6 +13,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
@@ -12,7 +12,7 @@ index cc24406e22f536733b07a9398580a8719b61e134..214f238b38377a8480711ea2d0ec30e9
  
  fn device_size(device: &Device) -> Size2D<Au> {
      let mut width = 0;
-@@ -606,6 +609,13 @@ fn eval_moz_overlay_scrollbars(context: &Context) -> bool {
+@@ -610,6 +613,13 @@ fn eval_moz_overlay_scrollbars(context: &Context) -> bool {
      unsafe { bindings::Gecko_MediaFeatures_UseOverlayScrollbars(context.device().document()) }
  }
  
@@ -26,16 +26,16 @@ index cc24406e22f536733b07a9398580a8719b61e134..214f238b38377a8480711ea2d0ec30e9
  fn get_lnf_int(int_id: i32) -> i32 {
      unsafe { bindings::Gecko_GetLookAndFeelInt(int_id) }
  }
-@@ -653,7 +663,7 @@ macro_rules! lnf_int_feature {
+@@ -657,7 +667,7 @@ macro_rules! lnf_int_feature {
  /// to support new types in these entries and (2) ensuring that either
  /// nsPresContext::MediaFeatureValuesChanged is called when the value that
  /// would be returned by the evaluator function could change.
--pub static MEDIA_FEATURES: [QueryFeatureDescription; 61] = [
-+pub static MEDIA_FEATURES: [QueryFeatureDescription; 62] = [
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 62] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 63] = [
      feature!(
          atom!("width"),
          AllowsRanges::Yes,
-@@ -918,6 +928,12 @@ pub static MEDIA_FEATURES: [QueryFeatureDescription; 61] = [
+@@ -928,6 +938,12 @@ pub static MEDIA_FEATURES: [QueryFeatureDescription; 62] = [
          Evaluator::BoolInteger(eval_moz_overlay_scrollbars),
          FeatureFlags::CHROME_AND_UA_ONLY,
      ),

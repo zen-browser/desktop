@@ -11,7 +11,7 @@
 #navigator-toolbox {
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
-  --inactive-titlebar-opacity: 1;
+  --inactive-titlebar-opacity: 0.8;
 }
 
 #nav-bar,
@@ -26,7 +26,7 @@
   }
 }
 
-:root[zen-before-loaded='true'] #browser > *,
+:root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),
 :root[zen-before-loaded='true'] #urlbar {
   opacity: 0 !important;
 }
@@ -47,6 +47,8 @@
 
   isolation: isolate;
 
+  background: var(--zen-themed-toolbar-bg-transparent);
+
   &::after,
   &::before {
     content: '';
@@ -61,6 +63,12 @@
       background: var(--zen-main-browser-background);
       opacity: var(--zen-background-opacity);
       transition: 0s;
+    }
+
+    @media (-moz-pref('zen.view.grey-out-inactive-windows')) {
+      &:-moz-window-inactive {
+        background: InactiveCaption;
+      }
     }
 
     &::before {
@@ -78,26 +86,22 @@
     transition: background-color var(--inactive-window-transition);
   }
 
-  @media (not (-moz-windows-mica)) and -moz-pref('zen.view.grey-out-inactive-windows') {
-    transition: color var(--inactive-window-transition);
-    :root:not([zen-welcome-stage]) &:-moz-window-inactive {
-      color: var(--toolbox-textcolor-inactive);
-      &::before {
-        background-color: var(--toolbox-bgcolor-inactive);
-      }
-    }
+  & #zen-browser-grain {
+    display: none;
   }
 
-  #zen-browser-grain {
-    content: '';
+  :root[zen-show-grainy-background='true'] & #zen-browser-grain {
+    display: flex;
     width: 100%;
     height: 100%;
     background-image: url(chrome://browser/content/zen-images/grain-bg.png);
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     opacity: var(--zen-grainy-background-opacity, 0);
     mix-blend-mode: overlay;
-    transition: opacity 0.3s ease-in-out;
+    :root:not([swipe-gesture='true']) & {
+      transition: opacity 0.3s ease-in-out;
+    }
   }
 }
 
@@ -106,11 +110,9 @@
   border: none;
 }
 
-@supports (-moz-osx-font-smoothing: auto) {
-  #zen-main-app-wrapper,
-  #zen-appcontent-wrapper,
-  #zen-sidebar-splitter {
-    appearance: -moz-window-titlebar !important;
+@media (-moz-platform: macos) {
+  #zen-main-app-wrapper {
+    appearance: -moz-sidebar !important;
   }
 }
 
@@ -124,21 +126,17 @@
 }
 
 #zen-main-app-wrapper {
-  background: var(--zen-themed-toolbar-bg-transparent);
-  overflow: hidden;
+  background: transparent;
+  /* See bug #8814, don't an overflow here as it causes issues 
+   * with firefox's rendering of the tab bar */
 
   & > * {
     z-index: 1;
   }
 
-  @media (-moz-windows-accent-color-in-titlebar) and (-moz-windows-mica) {
-    background-color: ActiveCaption;
+  @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref('browser.theme.windows.accent-color-in-tabs.enabled')) {
+    background: ActiveCaption;
     color: CaptionText;
-    transition: background-color var(--inactive-window-transition);
-    &:-moz-window-inactive {
-      background-color: InactiveCaption;
-      color: InactiveCaptionText;
-    }
   }
 }
 
@@ -190,6 +188,7 @@
 
   @media -moz-pref('zen.widget.mac.mono-window-controls') {
     .titlebar-buttonbox-container {
+      color: var(--toolbox-textcolor);
       /* Draw 3 dots as background to represent the window controls,
         all with the same cololr as the titlebar */
       background-image: radial-gradient(
@@ -264,6 +263,7 @@
     opacity: 0;
     transition: opacity 0.1s ease-in-out;
     pointer-events: none;
+    transform: translateX(-50%);
   }
 
   &:hover::before {
@@ -283,4 +283,18 @@
   border: 1px dashed;
   border-radius: 2px;
   margin: 10px 2px 0 0;
+}
+
+#zen-sidebar-splitter {
+  border-radius: 14px;
+  transition:
+    background 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--zen-primary-color);
+    transition: background 0.2s ease-in-out;
+    transition-delay: 0.2s;
+    opacity: 1;
+  }
 }

@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   const lazy = {};
   XPCOMUtils.defineLazyPreferenceGetter(
@@ -7,7 +10,7 @@
     true
   );
 
-  class ZenMediaController {
+  class nsZenMediaController {
     _currentMediaController = null;
     _currentBrowser = null;
     _mediaUpdateInterval = null;
@@ -681,5 +684,5 @@
     }
   }
 
-  window.gZenMediaController = new ZenMediaController();
+  window.gZenMediaController = new nsZenMediaController();
 }

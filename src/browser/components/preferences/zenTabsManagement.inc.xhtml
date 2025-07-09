@@ -31,15 +31,6 @@
 <html:h1 data-l10n-id="pane-zen-tabs-unloader-title"/>
 </hbox>
 
-<groupbox id="zenTabsUnloadGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
-      <label><html:h2 data-l10n-id="zen-tabs-unloader-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-tabs-unloader-description" />
-
-      <checkbox id="zenTabsUnloadActivate"
-            data-l10n-id="zen-tabs-unloader-enabled"
-            preference="browser.tabs.unloadOnLowMemory"/>
-</groupbox>
-
 <hbox id="zenPinnedTabsManagerCategory"
       class="subcategory"
       hidden="true"
@@ -56,7 +47,7 @@
                 preference="zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url"/>
       <checkbox id="zenPinnedTabContainerSpecificEssentials"
                 data-l10n-id="zen-pinned-tab-manager-container-specific-essentials-enabled"
-                preference="zen.workspaces.container-specific-essentials-enabled"/>
+                preference="zen.workspaces.separate-essentials"/>
 
       <hbox align="center">
             <label id="zenPinnedTabCloseShortcutBehaviorLabel" data-l10n-id="zen-pinned-tab-manager-close-shortcut-behavior-label"/>

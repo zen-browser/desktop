@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.js b/browser/base/content/aboutDialog.js
-index f6e1391baf12abb91c85a95107bb3923118746c0..76c7b75a4e29056110f1631a50047c4ddd8b1f4a 100644
+index f6e1391baf12abb91c85a95107bb3923118746c0..cac04aa288e8a305d0c8b28e0c919abce87658e5 100644
 --- a/browser/base/content/aboutDialog.js
 +++ b/browser/base/content/aboutDialog.js
 @@ -52,7 +52,7 @@ function init() {
@@ -20,3 +20,18 @@ index f6e1391baf12abb91c85a95107bb3923118746c0..76c7b75a4e29056110f1631a50047c4d
      versionIdKey += "-nightly";
      let buildID = Services.appinfo.appBuildID;
      let year = buildID.slice(0, 4);
+@@ -125,14 +125,6 @@ function init() {
+       window.close();
+     });
+   if (AppConstants.MOZ_UPDATER) {
+-    document
+-      .getElementById("aboutDialogHelpLink")
+-      .addEventListener("click", () => {
+-        openHelpLink("firefox-help");
+-      });
+-    document
+-      .getElementById("submit-feedback")
+-      .addEventListener("click", openFeedbackPage);
+     document
+       .getElementById("checkForUpdatesButton")
+       .addEventListener("command", () => {

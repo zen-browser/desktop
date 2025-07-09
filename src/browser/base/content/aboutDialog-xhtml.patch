@@ -1,16 +1,25 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index c64980810570fcea84e33fdc2d66ac42a79f4e46..b7198e810a7510fa82cc6801cfd01c88a08d42c1 100644
+index c64980810570fcea84e33fdc2d66ac42a79f4e46..aa629ebb38a9aa74048fe3fc759f716fad57d6f3 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
-@@ -35,6 +35,7 @@
- 
-     <html:link rel="localization" href="branding/brand.ftl"/>
-     <html:link rel="localization" href="browser/aboutDialog.ftl"/>
-+    <script src="chrome://browser/content/zenThemeModifier.js"></script>
-   </linkset>
- 
-   <html:div id="aboutDialogContainer">
-@@ -125,21 +126,23 @@
+@@ -102,10 +102,6 @@
+                 <label id="version" class="update"/>
+                 <label id="releasenotes" is="text-link" hidden="true" data-l10n-id="releaseNotes-link"/>
+               </hbox>
+-              <description class="text-blurb">
+-                <label id="aboutDialogHelpLink" is="text-link" data-l10n-id="aboutdialog-help-user"/>
+-                <label id="submit-feedback" is="text-link" data-l10n-id="aboutdialog-submit-feedback"/>
+-              </description>
+             </vbox>
+ #endif
+           </hbox>
+@@ -120,26 +116,22 @@
+           <vbox id="experimental" hidden="true">
+             <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
+             <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
+-              <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-exp-mozillaLink"/>
++              <label is="text-link" href="https://zen-browser.app/about" data-l10n-name="community-exp-mozillaLink"/>
+               <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-exp-creditsLink"/>
              </description>
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
@@ -18,12 +27,10 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..b7198e810a7510fa82cc6801cfd01c88
 +            <label is="text-link" href="https://github.com/zen-browser/desktop" data-l10n-name="community-mozillaLink"/>
              <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
            </description>
-+#if 0
-           <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
-             <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
-             <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
-           </description>
-+#endif
+-          <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
+-            <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
+-            <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
+-          </description>
          </vbox>
        </vbox>
      </hbox>

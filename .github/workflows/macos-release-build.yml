@@ -132,6 +132,11 @@ jobs:
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 
+      - name: Insert API Keys
+        run: |
+          mkdir -p ~/.zen-keys
+          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+
       - name: Build Zen
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -151,6 +156,10 @@ jobs:
           export SURFER_PLATFORM="darwin"
           export ZEN_RELEASE=1
           npm run package
+
+      - name: Remove API Keys
+        run: |
+          rm -rf ~/.zen-keys
 
       - name: Rename artifacts
         run: |

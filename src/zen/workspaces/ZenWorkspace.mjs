@@ -1,12 +1,16 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenWorkspace extends MozXULElement {
+  class nsZenWorkspace extends MozXULElement {
     static get markup() {
       return `
-        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator" flex="1">
+        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator" flex="1" context="zenWorkspaceMoreActions">
           <hbox class="zen-current-workspace-indicator-icon"></hbox>
-          <hbox class="zen-current-workspace-indicator-name"></hbox>
+          <hbox class="zen-current-workspace-indicator-name" flex="1"></hbox>
+          <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions"></toolbarbutton>
         </vbox>
-        <arrowscrollbox orient="vertical" tabindex="-1" class="workspace-arrowscrollbox">
+        <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
             <html:div class="vertical-pinned-tabs-container-separator"></html:div>
           </vbox>
@@ -60,6 +64,20 @@
       this.scrollbox.addEventListener('wheel', this, true);
       this.scrollbox.addEventListener('underflow', this);
       this.scrollbox.addEventListener('overflow', this);
+
+      this.indicator.querySelector('.zen-current-workspace-indicator-name').onRenameFinished =
+        this.onIndicatorRenameFinished.bind(this);
+
+      this.indicator
+        .querySelector('.zen-workspaces-actions')
+        .addEventListener('click', this.onActionsCommand.bind(this));
+
+      this.indicator
+        .querySelector('.zen-current-workspace-indicator-icon')
+        .addEventListener('dblclick', (event) => {
+          event.stopPropagation();
+          gZenWorkspaces.changeWorkspaceIcon();
+        });
 
       this.scrollbox._getScrollableElements = () => {
         const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
@@ -168,7 +186,39 @@
         gBrowser.tabContainer.handleEvent(event);
       }
     }
+
+    get workspaceUuid() {
+      return this.id;
+    }
+
+    async onIndicatorRenameFinished(newName) {
+      if (newName === '') {
+        return;
+      }
+      let workspaces = (await gZenWorkspaces._workspaces()).workspaces;
+      let workspaceData = workspaces.find((workspace) => workspace.uuid === this.workspaceUuid);
+      workspaceData.name = newName;
+      await gZenWorkspaces.saveWorkspace(workspaceData);
+      this.indicator.querySelector('.zen-current-workspace-indicator-name').textContent = newName;
+      gZenUIManager.showToast('zen-workspace-renamed-toast');
+    }
+
+    onActionsCommand(event) {
+      event.stopPropagation();
+      const popup = document.getElementById('zenWorkspaceMoreActions');
+      const target = event.target;
+      target.setAttribute('open', 'true');
+      this.indicator.setAttribute('open', 'true');
+      const handlePopupHidden = (event) => {
+        if (event.target !== popup) return;
+        target.removeAttribute('open');
+        this.indicator.removeAttribute('open');
+        popup.removeEventListener('popuphidden', handlePopupHidden);
+      };
+      popup.addEventListener('popuphidden', handlePopupHidden);
+      popup.openPopup(event.target, 'after_start');
+    }
   }
 
-  customElements.define('zen-workspace', ZenWorkspace);
+  customElements.define('zen-workspace', nsZenWorkspace);
 }

@@ -48,7 +48,7 @@
       }
 
       #navigator-toolbox {
-        --zen-toolbox-max-width: 66px !important;
+        --zen-toolbox-max-width: 74px !important;
         --zen-compact-float: var(--zen-element-separation);
 
         /* Initial padding for when we are animating */
@@ -152,6 +152,7 @@
           border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4);
           @media -moz-pref('zen.view.compact.color-sidebar') {
             background: var(--zen-main-browser-background-toolbar) !important;
+            background-attachment: fixed !important;
             background-size: 2000px !important;
             @media -moz-pref('zen.theme.acrylic-elements') {
               backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
@@ -327,17 +328,12 @@
       }
 
       & #titlebar,
-      & #zen-appcontent-wrapper,
-      & #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel:not([pinned='true'])) {
+      & #zen-appcontent-wrapper {
         margin-top: var(--zen-element-separation) !important;
       }
 
       & #zen-appcontent-wrapper {
         z-index: 3 !important;
-      }
-
-      & #zen-sidebar-web-panel-wrapper:has(#zen-sidebar-web-panel[pinned='true']) {
-        margin-top: calc(var(--zen-element-separation) * 2) !important;
       }
 
       & #zen-appcontent-navbar-wrapper {
@@ -390,7 +386,7 @@
         ) {
         & #zen-appcontent-navbar-container {
           visibility: visible !important;
-          &::before {
+          :root[zen-show-grainy-background='true'] &::before {
             content: '';
             position: absolute;
             top: 0;

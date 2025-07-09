@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 6d664917a5a3bb1cea8a747e42e8bc0065ec999e..5059293ebfa29d646455b7a3505bd6eae408ba64 100644
+index 6d664917a5a3bb1cea8a747e42e8bc0065ec999e..dfacd5c40ef14319fe7398452c007f167003a583 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -39,3 +39,13 @@ index 6d664917a5a3bb1cea8a747e42e8bc0065ec999e..5059293ebfa29d646455b7a3505bd6ea
          }
  
          return true;
+@@ -5717,6 +5722,9 @@ var ConfirmationHint = {
+     MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
+     MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
+     document.l10n.setAttributes(this._message, messageId, options.l10nArgs);
++    if (window.gZenUIManager?.showToast) {
++      return window.gZenUIManager.showToast(messageId, options);
++    }
+     if (options.descriptionId) {
+       document.l10n.setAttributes(this._description, options.descriptionId);
+       this._description.hidden = false;

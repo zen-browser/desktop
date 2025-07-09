@@ -1,0 +1,24 @@
+diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
+index a16bef739fcde0f14ba7e53e0acfa3aa2ee1dd3a..7c4bee2422f76272022f0c793aa52ea02e292bde 100644
+--- a/dom/base/Document.cpp
++++ b/dom/base/Document.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include "mozilla/dom/Document.h"
+ #include "mozilla/dom/DocumentInlines.h"
++#include "mozilla/ZenStyleSheetCache.h"
+ 
+ #include <inttypes.h>
+ #include <stdlib.h>
+@@ -3335,6 +3336,11 @@ void Document::FillStyleSetUserAndUASheets() {
+     styleSet.AppendStyleSheet(*sheet);
+   }
+ 
++  if (auto sheet = zen::ZenStyleSheetCache::Singleton()->GetModsSheet(); sheet && IsInChromeDocShell()) {
++    // The mods sheet is only used in the chrome docshell.
++    styleSet.AppendStyleSheet(*sheet);
++  }
++
+   StyleSheet* sheet = IsInChromeDocShell() ? cache->GetUserChromeSheet()
+                                            : cache->GetUserContentSheet();
+   if (sheet) {

@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 var gZenOperatingSystemCommonUtils = {
   kZenOSToSmallName: {
     WINNT: 'windows',
@@ -68,7 +72,7 @@ var gZenCommonActions = {
       let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
         Ci.nsITransferable
       );
-      transferable.init(getLoadContext());
+      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
@@ -106,7 +110,7 @@ var gZenCommonActions = {
       let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
         Ci.nsITransferable
       );
-      transferable.init(getLoadContext());
+      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
       transferable.addDataFlavor('text/plain');
       transferable.setTransferData('text/plain', str);
       Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);

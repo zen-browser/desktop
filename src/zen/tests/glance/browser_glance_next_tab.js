@@ -4,15 +4,20 @@
 'use strict';
 
 add_task(async function test_Glance_Next_Tab() {
-  const selectedTab = gBrowser.selectedTab;
+  const tabToCheck = gBrowser.selectedTab;
   await BrowserTestUtils.openNewForegroundTab(window.gBrowser, 'https://example.com/', true, {
     skipAnimation: true,
   });
-  const tabToCheck = gBrowser.selectedTab;
-  gBrowser.selectedTab = selectedTab;
   await openGlanceOnTab(async (glanceTab) => {
-    const next = gBrowser.tabContainer.findNextTab(glanceTab, { direction: 1 });
-    Assert.equal(next, tabToCheck, 'Next glance tab should equal');
+    gBrowser.tabContainer.advanceSelectedTab(1);
+    const nextTab = gBrowser.selectedTab;
+    gBrowser.selectedTab = glanceTab;
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        Assert.equal(nextTab, tabToCheck, 'Next glance tab should equal');
+        resolve();
+      });
+    });
   });
   await BrowserTestUtils.removeTab(gBrowser.selectedTab);
 });

@@ -1,14 +1,19 @@
-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
         content/browser/zenThemeModifier.js                                     (../../zen/common/zenThemeModifier.js)
         content/browser/ZenStartup.mjs                                          (../../zen/common/ZenStartup.mjs)
+        content/browser/ZenPreloadedScripts.js                                  (../../zen/common/ZenPreloadedScripts.js)
         content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
         content/browser/ZenUIManager.mjs                                        (../../zen/common/ZenUIManager.mjs)
         content/browser/zen-components/ZenActorsManager.mjs                     (../../zen/common/ZenActorsManager.mjs)
-        content/browser/zen-components/ZenEmojies.mjs                           (../../zen/common/ZenEmojies.mjs)
         content/browser/ZenCustomizableUI.sys.mjs                               (../../zen/common/ZenCustomizableUI.sys.mjs)
         content/browser/zen-components/ZenUIMigration.mjs                       (../../zen/common/ZenUIMigration.mjs)
         content/browser/zen-components/ZenCommonUtils.mjs                       (../../zen/common/ZenCommonUtils.mjs)
+        content/browser/zen-components/ZenSessionStore.mjs                      (../../zen/common/ZenSessionStore.mjs)
+        content/browser/zen-components/ZenEmojisData.min.mjs                        (../../zen/common/emojis/ZenEmojisData.min.mjs)
+        content/browser/zen-components/ZenEmojiPicker.mjs                       (../../zen/common/emojis/ZenEmojiPicker.mjs)
 
         content/browser/zen-styles/zen-theme.css                                (../../zen/common/styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css                              (../../zen/common/styles/zen-buttons.css)
@@ -34,14 +39,12 @@
         content/browser/zen-components/ZenViewSplitter.mjs                      (../../zen/split-view/ZenViewSplitter.mjs)
         content/browser/zen-styles/zen-decks.css                                (../../zen/split-view/zen-decks.css)
 
-        content/browser/zen-components/ZenThemesCommon.mjs                      (../../zen/mods/ZenThemesCommon.mjs)
-        content/browser/zen-components/ZenThemesImporter.mjs                    (../../zen/mods/ZenThemesImporter.mjs)
-        content/browser/zen-components/actors/ZenThemeMarketplaceParent.sys.mjs (../../zen/mods/actors/ZenThemeMarketplaceParent.sys.mjs)
-        content/browser/zen-components/actors/ZenThemeMarketplaceChild.sys.mjs  (../../zen/mods/actors/ZenThemeMarketplaceChild.sys.mjs)
+        content/browser/zen-components/ZenMods.mjs                              (../../zen/mods/ZenMods.mjs)
 
         content/browser/zen-components/ZenWorkspaceIcons.mjs                    (../../zen/workspaces/ZenWorkspaceIcons.mjs)
         content/browser/zen-components/ZenWorkspace.mjs                         (../../zen/workspaces/ZenWorkspace.mjs)
         content/browser/zen-components/ZenWorkspaces.mjs                        (../../zen/workspaces/ZenWorkspaces.mjs)
+        content/browser/zen-components/ZenWorkspaceCreation.mjs                 (../../zen/workspaces/ZenWorkspaceCreation.mjs)
         content/browser/zen-components/ZenWorkspacesStorage.mjs                 (../../zen/workspaces/ZenWorkspacesStorage.mjs)
         content/browser/zen-components/ZenWorkspacesSync.mjs                    (../../zen/workspaces/ZenWorkspacesSync.mjs)
         content/browser/zen-components/ZenGradientGenerator.mjs                 (../../zen/workspaces/ZenGradientGenerator.mjs)
@@ -57,8 +60,6 @@
 
         content/browser/zen-components/ZenGlanceManager.mjs                     (../../zen/glance/ZenGlanceManager.mjs)
         content/browser/zen-styles/zen-glance.css                               (../../zen/glance/zen-glance.css)
-        content/browser/zen-components/actors/ZenGlanceChild.sys.mjs            (../../zen/glance/actors/ZenGlanceChild.sys.mjs)
-        content/browser/zen-components/actors/ZenGlanceParent.sys.mjs           (../../zen/glance/actors/ZenGlanceParent.sys.mjs)
 
         content/browser/zen-components/ZenEdgeScrollManager.mjs                 (../../zen/edgescroll/ZenEdgeScrollManager.mjs)
         content/browser/zen-styles/zen-edgescroll.css                               (../../zen/edgescroll/zen-edgescroll.css)
@@ -79,8 +80,7 @@
         content/browser/zen-styles/zen-download-box-animation.css               (../../zen/downloads/zen-download-box-animation.css)
 
 
-        # Images                
-        content/browser/zen-images/gradient.png                                 (../../zen/images/gradient.png)
+        # Images
         content/browser/zen-images/brand-header.svg                             (../../zen/images/brand-header.svg)
         content/browser/zen-images/layouts/collapsed.png                        (../../zen/images/layouts/collapsed.png)
         content/browser/zen-images/layouts/multiple-toolbar.png                 (../../zen/images/layouts/multiple-toolbar.png)
@@ -89,9 +89,9 @@
         content/browser/zen-images/note-indicator.svg                           (../../zen/images/note-indicator.svg)
 
         content/browser/zen-images/downloads/download.svg                       (../../zen/images/downloads/download.svg)
-        content/browser/zen-images/downloads/archive.svg                       (../../zen/images/downloads/archive.svg)
+        content/browser/zen-images/downloads/archive.svg                        (../../zen/images/downloads/archive.svg)
 
-        # Fonts         
+        # Fonts
         content/browser/zen-fonts/JunicodeVF-Italic.woff2                       (../../zen/fonts/JunicodeVF-Italic.woff2)
         content/browser/zen-fonts/JunicodeVF-Roman.woff2                        (../../zen/fonts/JunicodeVF-Roman.woff2)
 
@@ -100,13 +100,13 @@
         content/browser/zen-vendor/motion.min.mjs                               (../../zen/vendor/motion.min.mjs)
 
         # FavIcons for startup
-        content/browser/zen-images/favicons/calendar.ico                           (../../zen/images/favicons/calendar.ico)
-        content/browser/zen-images/favicons/discord.ico                            (../../zen/images/favicons/discord.ico)
-        content/browser/zen-images/favicons/figma.ico                              (../../zen/images/favicons/figma.ico)
-        content/browser/zen-images/favicons/github.ico                            (../../zen/images/favicons/github.ico)
-        content/browser/zen-images/favicons/notion.ico                             (../../zen/images/favicons/notion.ico)
-        content/browser/zen-images/favicons/obsidian.ico                          (../../zen/images/favicons/obsidian.ico)
-        content/browser/zen-images/favicons/slack.ico                             (../../zen/images/favicons/slack.ico)
-        content/browser/zen-images/favicons/reddit.ico                            (../../zen/images/favicons/reddit.ico)
-        content/browser/zen-images/favicons/x.ico                                 (../../zen/images/favicons/x.ico)
-        content/browser/zen-images/favicons/trello.ico                            (../../zen/images/favicons/trello.ico)
+        content/browser/zen-images/favicons/calendar.ico                        (../../zen/images/favicons/calendar.ico)
+        content/browser/zen-images/favicons/discord.ico                         (../../zen/images/favicons/discord.ico)
+        content/browser/zen-images/favicons/figma.ico                           (../../zen/images/favicons/figma.ico)
+        content/browser/zen-images/favicons/github.ico                          (../../zen/images/favicons/github.ico)
+        content/browser/zen-images/favicons/notion.ico                          (../../zen/images/favicons/notion.ico)
+        content/browser/zen-images/favicons/obsidian.ico                        (../../zen/images/favicons/obsidian.ico)
+        content/browser/zen-images/favicons/slack.ico                           (../../zen/images/favicons/slack.ico)
+        content/browser/zen-images/favicons/reddit.ico                          (../../zen/images/favicons/reddit.ico)
+        content/browser/zen-images/favicons/x.ico                               (../../zen/images/favicons/x.ico)
+        content/browser/zen-images/favicons/trello.ico                          (../../zen/images/favicons/trello.ico)

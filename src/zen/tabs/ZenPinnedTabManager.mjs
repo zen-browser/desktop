@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   const lazy = {};
 
@@ -48,7 +51,7 @@
     }
   }
 
-  class ZenPinnedTabManager extends ZenDOMOperatedFeature {
+  class nsZenPinnedTabManager extends ZenDOMOperatedFeature {
     MAX_ESSENTIALS_TABS = 12;
 
     async init() {
@@ -62,21 +65,8 @@
       this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
       this._zenClickEventListener = this._onTabClick.bind(this);
-      gZenWorkspaces.addChangeListeners(this.onWorkspaceChange.bind(this));
 
-      await ZenPinnedTabsStorage.promiseInitialized;
       gZenWorkspaces._resolvePinnedInitialized();
-    }
-
-    async onWorkspaceChange(newWorkspace, onInit) {
-      if (!this.enabled || PrivateBrowsingUtils.isWindowPrivate(window)) {
-        return;
-      }
-
-      if (onInit) {
-        await this._refreshPinnedTabs({ init: onInit });
-        this._hasFinishedLoading = true;
-      }
     }
 
     log(message) {
@@ -87,26 +77,18 @@
 
     onTabIconChanged(tab, url = null) {
       const iconUrl = url ?? tab.iconImage.src;
-      if (!iconUrl) {
+      if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
         try {
           setTimeout(async () => {
-            try {
-              let favicon = await PlacesUtils.favicons.getFaviconForPage(
-                Services.io.newURI(pin.url)
-              );
-              if (favicon) {
-                gBrowser.setIcon(tab, favicon.dataURI);
-              }
-            } catch (error) {
-              console.warn('Error getting favicon URL:', error);
+            const favicon = await this.getFaviconAsBase64(tab.linkedBrowser.currentURI);
+            if (favicon) {
+              gBrowser.setIcon(tab, favicon);
             }
           });
         } catch {}
       } else {
         if (tab.hasAttribute('zen-essential')) {
-          tab
-            .querySelector('.tab-background')
-            .style.setProperty('--zen-tab-icon', `url(${iconUrl})`);
+          tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
         }
       }
       // TODO: work on this
@@ -142,20 +124,25 @@
     }
 
     get enabled() {
-      if (typeof this._enabled === 'undefined') {
-        this._enabled = !(
-          PrivateBrowsingUtils.isWindowPrivate(window) ||
-          document.documentElement.getAttribute('chromehidden')?.includes('toolbar') ||
-          document.documentElement.getAttribute('chromehidden')?.includes('menubar')
-        );
-      }
-      return this._enabled && !gZenWorkspaces.privateWindowOrDisabled;
+      return !gZenWorkspaces.privateWindowOrDisabled;
     }
 
-    async _refreshPinnedTabs({ init = false } = {}) {
+    async refreshPinnedTabs({ init = false } = {}) {
+      if (!this.enabled) {
+        return;
+      }
+      await ZenPinnedTabsStorage.promiseInitialized;
       await gZenWorkspaces.promiseSectionsInitialized;
       await this._initializePinsCache();
-      await this._initializePinnedTabs(init);
+      (async () => {
+        // Execute in a separate task to avoid blocking the main thread
+        await SessionStore.promiseAllWindowsRestored;
+        await gZenWorkspaces.promiseInitialized;
+        await this._initializePinnedTabs(init);
+        if (init) {
+          this._hasFinishedLoading = true;
+        }
+      })();
     }
 
     async _initializePinsCache() {
@@ -439,7 +426,7 @@
 
       await this.savePin(pin);
       this.resetPinChangedUrl(tab);
-      await this._refreshPinnedTabs();
+      await this.refreshPinnedTabs();
       gZenUIManager.showToast('zen-pinned-tab-replaced');
     }
 
@@ -482,7 +469,7 @@
         return;
       }
       this.onLocationChange(browser);
-      await this._refreshPinnedTabs();
+      await this.refreshPinnedTabs();
     }
 
     async _removePinnedAttributes(tab, isClosing = false) {
@@ -508,7 +495,7 @@
           tab.setAttribute('zen-workspace-id', workspace.uuid);
         }
       }
-      await this._refreshPinnedTabs();
+      await this.refreshPinnedTabs();
       tab.dispatchEvent(
         new CustomEvent('ZenPinnedTabRemoved', {
           detail: { tab },
@@ -554,11 +541,12 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
-          if (behavior.includes('unload')) {
+          if (behavior.includes('unload') && !selectedTab.hasAttribute('zen-essential')) {
             if (selectedTab.hasAttribute('glance-id')) {
               break;
             }
             await gBrowser.explicitUnloadTabs([selectedTab]);
+            selectedTab.removeAttribute('discarded');
           }
           if (selectedTab.selected) {
             this._handleTabSwitch(selectedTab);
@@ -641,8 +629,7 @@
         return faviconData.dataURI;
       } catch (ex) {
         console.error('Failed to get favicon:', ex);
-        // console.error("Failed to get favicon:", ex);
-        return `page-icon:${pageUrl}`; // Use this as a fallback
+        return null;
       }
     }
 
@@ -659,7 +646,7 @@
       for (let i = 0; i < tabs.length; i++) {
         let tab = tabs[i];
         const section = gZenWorkspaces.getEssentialsSection(tab);
-        if (section.children.length >= this.MAX_ESSENTIALS_TABS) {
+        if (!this.canEssentialBeAdded(tab)) {
           movedAll = false;
           continue;
         }
@@ -754,29 +741,18 @@
 
       const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
-                      data-lazy-l10n-id="tab-context-zen-add-essential"
+                      data-l10n-id="tab-context-zen-add-essential"
+                      data-l10n-args='{"num": "0"}'
                       hidden="true"
-                      command="cmd_zenAddToEssentials"/>
+                      disabled="true"
+                      command="cmd_contextZenAddToEssentials"/>
             <menuitem id="context_zen-remove-essential"
                       data-lazy-l10n-id="tab-context-zen-remove-essential"
                       hidden="true"
-                      command="cmd_zenRemoveFromEssentials"/>
+                      command="cmd_contextZenRemoveFromEssentials"/>
         `);
 
       document.getElementById('context_pinTab')?.before(element);
-    }
-
-    // TODO: remove this as it's not possible to know the base pinned url any more as it's now stored in tab state
-    resetPinnedTabData(tabData) {
-      if (
-        lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl &&
-        tabData.pinned &&
-        tabData.zenPinnedEntry
-      ) {
-        tabData.entries = [JSON.parse(tabData.zenPinnedEntry)];
-        tabData.image = tabData.zenPinnedIcon;
-        tabData.index = 0;
-      }
     }
 
     updatePinnedTabContextMenu(contextTab) {
@@ -789,9 +765,13 @@
         !isVisible || !contextTab.getAttribute('zen-pin-id');
       document.getElementById('context_zen-replace-pinned-url-with-current').hidden = !isVisible;
       document.getElementById('context_zen-add-essential').hidden =
-        contextTab.getAttribute('zen-essential') ||
-        !!contextTab.group ||
-        gBrowser._numZenEssentials >= this.MAX_ESSENTIALS_TABS;
+        contextTab.getAttribute('zen-essential') || !!contextTab.group;
+      document.l10n.setArgs(document.getElementById('context_zen-add-essential'), {
+        num: gBrowser._numZenEssentials,
+      });
+      document
+        .getElementById('cmd_contextZenAddToEssentials')
+        .setAttribute('disabled', !this.canEssentialBeAdded(contextTab));
       document.getElementById('context_zen-remove-essential').hidden =
         !contextTab.getAttribute('zen-essential');
       document.getElementById('context_unpinTab').hidden =
@@ -807,6 +787,7 @@
       if (!this.enabled) {
         return false;
       }
+      movingTabs = [...movingTabs];
       try {
         const pinnedTabsTarget =
           event.target.closest('.zen-workspace-pinned-tabs-section') ||
@@ -876,7 +857,7 @@
               const rect = targetTab.getBoundingClientRect();
               let newIndex = targetTab._tPos;
 
-              if (isVertical) {
+              if (isVertical || !this.expandedSidebarMode) {
                 const middleY = targetTab.screenY + rect.height / 2;
                 if (!isRegularTabs && event.screenY > middleY) {
                   newIndex++;
@@ -943,7 +924,7 @@
       } else {
         tab.setAttribute('zen-pinned-changed', 'true');
       }
-      tab.style.setProperty('--zen-original-tab-icon', `url(${pin.iconUrl})`);
+      tab.style.setProperty('--zen-original-tab-icon', `url(${pin.iconUrl.spec})`);
     }
 
     removeTabContainersDragoverClass() {
@@ -972,7 +953,7 @@
       const uuid = tab.getAttribute('zen-pin-id');
       await ZenPinnedTabsStorage.updatePinTitle(uuid, newTitle, isEdited, notifyObservers);
 
-      await this._refreshPinnedTabs();
+      await this.refreshPinnedTabs();
 
       const browsers = Services.wm.getEnumerator('navigator:browser');
 
@@ -1002,6 +983,16 @@
           }
         }
       }
+    }
+
+    canEssentialBeAdded(tab) {
+      return (
+        !(
+          (tab.getAttribute('usercontextid') || 0) !=
+            gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
+          gZenWorkspaces.containerSpecificEssentials
+        ) && gBrowser._numZenEssentials < this.MAX_ESSENTIALS_TABS
+      );
     }
 
     applyDragoverClass(event, draggedTab) {
@@ -1037,10 +1028,7 @@
           shouldAddDragOverElement = true;
         }
       } else if (essentialTabsTarget) {
-        if (
-          !draggedTab.hasAttribute('zen-essential') &&
-          gBrowser._numZenEssentials < this.MAX_ESSENTIALS_TABS
-        ) {
+        if (!draggedTab.hasAttribute('zen-essential') && this.canEssentialBeAdded(draggedTab)) {
           shouldAddDragOverElement = true;
           isVertical = false;
         }
@@ -1058,7 +1046,7 @@
       // Calculate middle to decide 'before' or 'after'
       const rect = targetTab.getBoundingClientRect();
       let shouldPlayHapticFeedback = false;
-      if (isVertical) {
+      if (isVertical || !this.expandedSidebarMode) {
         const separation = 8;
         const middleY = targetTab.screenY + rect.height / 2;
         const indicator = this.dragIndicator;
@@ -1116,5 +1104,5 @@
     }
   }
 
-  window.gZenPinnedTabManager = new ZenPinnedTabManager();
+  window.gZenPinnedTabManager = new nsZenPinnedTabManager();
 }

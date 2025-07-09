@@ -1,11 +1,15 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   var ZenStartup = {
-    init() {
+    _watermarkIgnoreElements: ['zen-toast-container'],
+
+    async init() {
       this.openWatermark();
-      this._initBrowserBackground();
+      await this._initBrowserBackground();
       this._changeSidebarLocation();
       this._zenInitBrowserLayout();
-      this._initSearchBar();
     },
 
     _initBrowserBackground() {
@@ -17,11 +21,10 @@
       document.getElementById('browser').prepend(background);
     },
 
-    _zenInitBrowserLayout() {
+    async _zenInitBrowserLayout() {
       if (this.__hasInitBrowserLayout) return;
       this.__hasInitBrowserLayout = true;
       try {
-        console.info('ZenThemeModifier: init browser layout');
         const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
         const kNewContainerId = 'zen-appcontent-navbar-container';
         let newContainer = document.getElementById(kNewContainerId);
@@ -38,10 +41,7 @@
           document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
         }
 
-        this._hideUnusedElements();
-
         gZenWorkspaces.init();
-        gZenVerticalTabsManager.init();
         gZenUIManager.init();
 
         this._checkForWelcomePage();
@@ -73,6 +73,8 @@
       gZenWorkspaces.promiseInitialized.then(async () => {
         await delayedStartupPromise;
         await SessionStore.promiseAllWindowsRestored;
+        delete gZenUIManager.promiseInitialized;
+        this._initSearchBar();
         setTimeout(() => {
           gZenCompactModeManager.init();
           setTimeout(() => {
@@ -104,9 +106,10 @@
     closeWatermark() {
       document.documentElement.removeAttribute('zen-before-loaded');
       if (Services.prefs.getBoolPref('zen.watermark.enabled', false)) {
+        let elementsToIgnore = this._watermarkIgnoreElements.map((id) => '#' + id).join(', ');
         gZenUIManager.motion
           .animate(
-            '#browser > *, #urlbar, #tabbrowser-tabbox > *',
+            '#browser > *:not(' + elementsToIgnore + '), #urlbar, #tabbrowser-tabbox > *',
             {
               opacity: [0, 1],
             },
@@ -143,23 +146,9 @@
       }
     },
 
-    _hideUnusedElements() {
-      const kElements = ['firefox-view-button'];
-      for (let id of kElements) {
-        const elem = document.getElementById(id);
-        if (elem) {
-          elem.setAttribute('hidden', 'true');
-        }
-      }
-    },
-
     _initSearchBar() {
       // Only focus the url bar
       gURLBar.focus();
-
-      gURLBar._initCopyCutController();
-      gURLBar._initPasteAndGo();
-      gURLBar._initStripOnShare();
     },
 
     _checkForWelcomePage() {
@@ -173,5 +162,11 @@
     },
   };
 
-  ZenStartup.init();
+  window.addEventListener(
+    'MozBeforeInitialXULLayout',
+    () => {
+      ZenStartup.init();
+    },
+    { once: true }
+  );
 }

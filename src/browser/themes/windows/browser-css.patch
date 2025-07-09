@@ -1,5 +1,5 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index 007aec91e089a1d2df20235890b268b820b0a529..ac0592cbcec62ffefb58b491dff48749852f2d88 100644
+index 007aec91e089a1d2df20235890b268b820b0a529..a03a0d7b7837f6315f47f76a4491bf08d96e00e0 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
 @@ -31,7 +31,6 @@
@@ -10,3 +10,12 @@ index 007aec91e089a1d2df20235890b268b820b0a529..ac0592cbcec62ffefb58b491dff48749
      }
    }
  
+@@ -56,7 +55,7 @@
+ 
+ /* This is needed for Windows 10, see bug 1961257 */
+ @media (-moz-windows-accent-color-in-titlebar) {
+-  :root[customtitlebar][sizemode="normal"] #navigator-toolbox {
++  :root[customtitlebar][sizemode="normal"] #browser {
+     border-top: .5px solid ActiveBorder;
+     &:-moz-window-inactive {
+       border-top-color: InactiveBorder;

@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const lazyCompactMode = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -33,10 +36,12 @@ var gZenCompactModeManager = {
   preInit() {
     // Remove it before initializing so we can properly calculate the width
     // of the sidebar at startup and avoid overflowing items not being hidden
-    const isCompactMode =
-      lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
+    this._wasInCompactMode = Services.xulStore.getValue(
+      AppConstants.BROWSER_CHROME_URL,
+      'zen-main-app-wrapper',
+      'zen-compact-mode'
+    );
     lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
-    this._wasInCompactMode = isCompactMode;
 
     this.addContextMenu();
   },
@@ -100,6 +105,7 @@ var gZenCompactModeManager = {
     // main-window can't store attributes other than window sizes, so we use this instead
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
+    Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
     this._updateEvent();
     return value;
   },
@@ -149,13 +155,13 @@ var gZenCompactModeManager = {
   },
 
   updateCompactModeContext(isSingleToolbar) {
-    const IDs = [
-      'zen-context-menu-compact-mode-hide-sidebar',
-      'zen-context-menu-compact-mode-hide-toolbar',
-      'zen-context-menu-compact-mode-hide-both',
-    ];
-    for (let id of IDs) {
-      document.getElementById(id).disabled = isSingleToolbar;
+    const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
+    const menu = document.getElementById('zen-context-menu-compact-mode');
+    menu.setAttribute('hidden', isSingleToolbar);
+    if (isSingleToolbar) {
+      menu.before(menuitem);
+    } else {
+      menu.querySelector('menupopup').prepend(menuitem);
     }
   },
 
@@ -203,12 +209,15 @@ var gZenCompactModeManager = {
   // the caller is from the ResizeObserver
   getAndApplySidebarWidth(event = undefined) {
     if (this._ignoreNextResize) {
-      this._ignoreNextResize = false;
+      delete this._ignoreNextResize;
       return;
     }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
+    const shouldRecalculate =
+      this.preference || document.documentElement.hasAttribute('zen-creating-workspace');
+    const sidebarExpanded = document.documentElement.hasAttribute('zen-sidebar-expanded');
     if (sidebarWidth > 1) {
-      if (this.preference && gZenVerticalTabsManager._prefsSidebarExpanded) {
+      if (shouldRecalculate && sidebarExpanded) {
         sidebarWidth = Math.max(sidebarWidth, 150);
       }
       // Second variable to get the genuine width of the sidebar
@@ -216,8 +225,8 @@ var gZenCompactModeManager = {
       window.dispatchEvent(new window.Event('resize')); // To recalculate the layout
       if (
         event &&
-        this.preference &&
-        gZenVerticalTabsManager._prefsSidebarExpanded &&
+        shouldRecalculate &&
+        sidebarExpanded &&
         !gZenVerticalTabsManager._hadSidebarCollapse
       ) {
         return;
@@ -236,9 +245,9 @@ var gZenCompactModeManager = {
   },
 
   animateCompactMode() {
+    // Get the splitter width before hiding it (we need to hide it before animating on right)
+    document.documentElement.setAttribute('zen-compact-animating', 'true');
     return new Promise((resolve) => {
-      // Get the splitter width before hiding it (we need to hide it before animating on right)
-      document.documentElement.setAttribute('zen-compact-animating', 'true');
       // We need to set the splitter width before hiding it
       let splitterWidth = document
         .getElementById('zen-sidebar-splitter')
@@ -259,6 +268,7 @@ var gZenCompactModeManager = {
       this.sidebar.style.removeProperty('margin-left');
       this.sidebar.style.removeProperty('transform');
       window.requestAnimationFrame(() => {
+        delete this._ignoreNextResize;
         let sidebarWidth = this.getAndApplySidebarWidth();
         const elementSeparation = ZenThemeModifier.elementSeparation;
         if (!canAnimate) {
@@ -315,6 +325,8 @@ var gZenCompactModeManager = {
           } else {
             sidebarWidth -= elementSeparation;
           }
+          this.sidebar.style.marginRight = '0px';
+          this.sidebar.style.marginLeft = '0px';
           gZenUIManager.motion
             .animate(
               this.sidebar,
@@ -326,7 +338,7 @@ var gZenCompactModeManager = {
                 ease: 'easeIn',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.2,
+                duration: 0.15,
               }
             )
             .then(() => {
@@ -377,7 +389,7 @@ var gZenCompactModeManager = {
                 ease: 'easeOut',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.2,
+                duration: 0.15,
               }
             )
             .then(() => {

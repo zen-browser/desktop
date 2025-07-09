@@ -6,8 +6,13 @@
   var _tabsToPin = [];
   var _tabsToPinEssentials = [];
 
+  const kZenElementsToIgnore = ['zen-browser-background', 'zen-toast-container'];
+
   function clearBrowserElements() {
     for (const element of document.getElementById('browser').children) {
+      if (kZenElementsToIgnore.includes(element.id)) {
+        continue;
+      }
       element.style.display = 'none';
     }
   }
@@ -121,7 +126,7 @@
     }
   }
 
-  class ZenWelcomePages {
+  class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
       this._pages = pages;
@@ -156,6 +161,7 @@
     async fadeInButtons(page) {
       const buttons = document.getElementById('zen-welcome-page-sidebar-buttons');
       let i = 0;
+      const insertedButtons = [];
       for (const button of page.buttons) {
         const buttonElement = document.createXULElement('button');
         document.l10n.setAttributes(buttonElement, button.l10n);
@@ -169,6 +175,8 @@
             this.next();
           }
         });
+        buttonElement.style.pointerEvents = 'none'; // Disable pointer events until animation is done
+        insertedButtons.push(buttonElement);
         buttons.appendChild(buttonElement);
       }
       await animate(
@@ -180,6 +188,9 @@
           bounce: 0.2,
         }
       );
+      for (const button of insertedButtons) {
+        button.style.pointerEvents = ''; // Enable pointer events after animation
+      }
     }
 
     async fadeInContent() {
@@ -266,16 +277,21 @@
       document.getElementById('zen-welcome').remove();
       document.documentElement.removeAttribute('zen-welcome-stage');
       for (const element of document.getElementById('browser').children) {
+        if (kZenElementsToIgnore.includes(element.id)) {
+          continue;
+        }
         element.style.opacity = 0;
         element.style.removeProperty('display');
       }
       gZenUIManager.updateTabsToolbar();
-      await animate('#browser > *', { opacity: [0, 1] });
+      let elementsToIgnore = kZenElementsToIgnore.map((id) => `#${id}`).join(', ');
+      await animate(`#browser > *:not(${elementsToIgnore})`, { opacity: [0, 1] });
       gZenUIManager.showToast('zen-welcome-finished');
     }
 
     _pinRemainingTabs() {
       for (const tab of _tabsToPin) {
+        tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
         gBrowser.pinTab(tab);
       }
       for (const tab of _tabsToPinEssentials) {
@@ -527,47 +543,47 @@
                   <html:div></html:div>
                 </hbox>
                 <html:div id="zen-welcome-initial-essentials-browser-sidebar-essentials">
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://obsidian.md" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/obsidian.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://obsidian.md" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/obsidian.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://discord.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://trello.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/trello.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://trello.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/trello.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://slack.com/" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/slack.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://slack.com/" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/slack.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://github.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/github.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://twitter.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/x.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://twitter.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/x.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://notion.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://calendar.google.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/calendar.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://calendar.google.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/calendar.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://figma.com" style="--zen-tab-icon: url('chrome://browser/content/zen-images/favicons/figma.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://figma.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/figma.ico');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
@@ -614,7 +630,7 @@
               inBackground: true,
               createLazyBrowser: true,
             });
-            let essentialIconUrl = tab.style.getPropertyValue('--zen-tab-icon');
+            let essentialIconUrl = tab.style.getPropertyValue('--zen-essential-tab-icon');
             // Remove url() from the icon URL
             essentialIconUrl = essentialIconUrl.replace(/url\(['"]?/, '').replace(/['"]?\)/, '');
             essentialIconUrl = await getIconData(essentialIconUrl);
@@ -713,17 +729,6 @@
       }
     );
     const button = document.getElementById('zen-welcome-start-button');
-    await animate(
-      button,
-      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
-      {
-        delay: 0.1,
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-        mass: 1.8,
-      }
-    );
     button.addEventListener('click', async () => {
       await animate(
         '#zen-welcome-title span, #zen-welcome-start-button',
@@ -735,8 +740,19 @@
           delay: getMotion().stagger(0.4),
         }
       );
-      new ZenWelcomePages(getWelcomePages());
+      new nsZenWelcomePages(getWelcomePages());
     });
+    await animate(
+      button,
+      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
+      {
+        delay: 0.1,
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+        mass: 1.8,
+      }
+    );
   }
 
   function centerWindowOnScreen() {

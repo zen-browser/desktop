@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 #include zen-locales.inc.xhtml
 
 # Styles used all over the browser
@@ -29,18 +33,30 @@
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-download-box-animation.css" />
 </linkset>
 
+# Startup "preloaded" scripts that requre globals such as gBrowser and gURLBar
+# JS files which are needed by browser.xhtml but no other top level windows to
+# support MacOS specific features should be loaded directly from browser-main.js
+# rather than this file.
+#
+# If you update this list, you may need to add a mapping within the following
+# file so that ESLint works correctly:
+# tools/lint/eslint/eslint-plugin-mozilla/lib/environments/browser-window.js
+<script type="text/javascript" src="chrome://browser/content/ZenPreloadedScripts.js"></script>
+
 # Scripts used all over the browser
-<script src="chrome://browser/content/ZenUIManager.mjs"></script>                             
-<script src="chrome://browser/content/zen-components/ZenFolders.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenThemesCommon.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenThemesImporter.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenCompactMode.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenPinnedTabsStorage.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenWorkspacesStorage.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenPinnedTabManager.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenGradientGenerator.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenViewSplitter.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenGlanceManager.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenMediaController.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenDownloadAnimation.mjs"></script>
-<script src="chrome://browser/content/zen-components/ZenEdgeScrollManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/ZenUIManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenFolders.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenMods.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenCompactMode.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenPinnedTabsStorage.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspacesStorage.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenPinnedTabManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenGradientGenerator.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenViewSplitter.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenGlanceManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenMediaController.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenDownloadAnimation.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenEmojiPicker.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspaceCreation.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenEdgeScrollManager.mjs"></script>
+

@@ -5,8 +5,8 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "138.0.4",
-    "candidate": "139.0"
+    "version": "140.0.2",
+    "candidate": "140.0.2"
   },
   "buildOptions": {
     "generateBranding": true
@@ -19,7 +19,7 @@
       "brandShortName": "Zen",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.12.8b",
+        "displayVersion": "1.14.3b",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -39,7 +39,7 @@
       "brandShortName": "Twilight",
       "brandFullName": "Zen Twilight",
       "release": {
-        "displayVersion": "1.13t",
+        "displayVersion": "1.15t",
         "github": {
           "repo": "zen-browser/desktop"
         }

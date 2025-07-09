@@ -16,3 +16,8 @@
   type: bool
   value: true
   mirror: always
+
+- name: zen.swipe.is-fast-swipe
+  type: bool
+  value: true
+  mirror: always

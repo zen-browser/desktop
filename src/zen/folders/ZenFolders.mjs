@@ -1,3 +1,6 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
   class ZenFolders {
     constructor() {
@@ -14,7 +17,7 @@
     }
 
     #onTabGrouped(event) {
-      const tab = event.target;
+      const tab = event.detail;
       const group = tab.group;
       group.pinned = tab.pinned;
 
@@ -27,8 +30,8 @@
     }
 
     #onTabUngrouped(event) {
-      const tab = event.target;
-      const group = event.detail;
+      const tab = event.detail;
+      const group = event.target;
       if (group.hasAttribute('split-view-group') && tab.hasAttribute('had-zen-pinned-changed')) {
         tab.setAttribute('zen-pinned-changed', true);
         tab.removeAttribute('had-zen-pinned-changed');

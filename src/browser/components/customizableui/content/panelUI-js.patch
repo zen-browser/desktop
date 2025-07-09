@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 689205034d9df67ff1fe0ebbf4a3481a5f414391..2626b7286deb51f66b6ccbbc32d510139cacb109 100644
+index 689205034d9df67ff1fe0ebbf4a3481a5f414391..2fab7474f1038a7a3cd2f4b4798d59696900cc85 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
 @@ -516,8 +516,7 @@ const PanelUI = {
@@ -12,7 +12,20 @@ index 689205034d9df67ff1fe0ebbf4a3481a5f414391..2626b7286deb51f66b6ccbbc32d51013
          .appendChild(tempPanel);
  
        let multiView = document.createXULElement("panelmultiview");
-@@ -959,7 +958,7 @@ const PanelUI = {
+@@ -608,10 +607,12 @@ const PanelUI = {
+     if (hasKids && !this.navbar.hasAttribute("nonemptyoverflow")) {
+       this.navbar.setAttribute("nonemptyoverflow", "true");
+       this.overflowPanel.setAttribute("hasfixeditems", "true");
++      window.document.getElementById("zen-sidebar-top-buttons").setAttribute("nonemptyoverflow", "true");
+     } else if (!hasKids && this.navbar.hasAttribute("nonemptyoverflow")) {
+       PanelMultiView.hidePopup(this.overflowPanel);
+       this.overflowPanel.removeAttribute("hasfixeditems");
+       this.navbar.removeAttribute("nonemptyoverflow");
++      window.document.getElementById("zen-sidebar-top-buttons").removeAttribute("nonemptyoverflow");
+     }
+   },
+ 
+@@ -959,7 +960,7 @@ const PanelUI = {
          el.removeAttribute("data-lazy-l10n-id");
        });
  

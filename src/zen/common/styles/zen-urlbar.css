@@ -10,7 +10,6 @@
 }
 
 :root[zen-single-toolbar='true'] {
-  --urlbar-container-padding: 4px;
   & #urlbar:not([breakout-extend='true']) {
     padding: 1px;
     --toolbarbutton-border-radius: 6px;
@@ -18,7 +17,7 @@
 }
 
 #urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 90%), hsl(0, 0%, 20%));
+  --urlbarView-separator-color: light-dark(hsl(0, 0%, 74.9%), hsl(0, 0%, 20%));
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
@@ -26,7 +25,7 @@
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 5px;
-  :root[zen-single-toolbar='true'] {
+  :root[zen-single-toolbar='true'] & {
     --urlbar-container-padding: 4px;
   }
 }
@@ -67,7 +66,7 @@
   }
 
   &:hover #urlbar-background {
-    background-color: light-dark(rgba(89, 89, 89, 0.15), rgba(255, 255, 255, 0.2)) !important;
+    background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2)) !important;
   }
 }
 
@@ -163,9 +162,10 @@
   }
 
   & #urlbar-background {
-    --zen-urlbar-background-base: light-dark(
-      hsl(0, 0%, 100%),
-      color-mix(in srgb, hsl(0, 0%, 5%) 80%, var(--zen-colors-primary) 20%)
+    --zen-urlbar-background-base: color-mix(
+      in srgb,
+      light-dark(hsl(0, 0%, 100%), hsl(0, 0%, 5%)) 80%,
+      var(--zen-colors-primary) 20%
     );
     @media -moz-pref('zen.theme.acrylic-elements') {
       --zen-urlbar-background-transparent: color-mix(
@@ -467,11 +467,11 @@ button.popup-notification-dropmarker {
 #urlbar[open][zen-floating-urlbar='true'] {
   z-index: 1000;
   max-width: unset;
-  min-width: unset !important;
   --urlbar-container-height: 55px !important;
   --urlbar-margin-inline: 10px !important;
 
-  width: min(90%, 50rem) !important;
+  min-width: min(90%, 50rem) !important;
+  width: var(--zen-urlbar-width, min(90%, 50rem)) !important;
   font-size: 1.15em !important;
   @media (-moz-platform: macos) {
     font-size: 1.5em !important;
@@ -482,11 +482,14 @@ button.popup-notification-dropmarker {
   left: 50% !important;
 
   #urlbar-container:has(&) {
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium);
     background: var(--toolbarbutton-hover-background);
+    height: var(--urlbar-height) !important;
+    margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar='true']) & {
       max-height: 32px !important;
-      min-height: unset;
+      min-height: unset !important;
+      margin-block: -1px !important;
     }
   }
 }

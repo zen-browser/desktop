@@ -691,7 +691,7 @@ var gZenCompactModeManager = {
     ) {
       gZenUIManager.showToast('zen-background-tab-opened-toast', {
         button: {
-          id: 'open-button',
+          id: 'zen-open-background-tab-button',
           command: () => {
             const targetWindow = window.ownerGlobal.parent || window;
             targetWindow.gBrowser.selectedTab = tab;

@@ -689,7 +689,15 @@ var gZenCompactModeManager = {
       !this._nextTimeWillBeActive &&
       this.canHideSidebar
     ) {
-      gZenUIManager.showToast('zen-background-tab-opened-toast');
+      gZenUIManager.showToast('zen-background-tab-opened-toast', {
+        button: {
+          id: 'open-button',
+          command: () => {
+            const targetWindow = window.ownerGlobal.parent || window;
+            targetWindow.gBrowser.selectedTab = tab;
+          },
+        },
+      });
     }
     delete this._nextTimeWillBeActive;
   },

@@ -34,12 +34,8 @@
     gap: 2px;
   }
 
-  &[media-sharing] #zen-media-controls-hbox > toolbarbutton:not(:first-child) {
+  &[media-sharing] :is(#zen-media-playback-buttons, #zen-media-mute-button) {
     display: none;
-
-    #media-device-buttons {
-      display: flex;
-    }
   }
 
   &:not([can-pip]) {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 37570c54b06f9cebc46aa232e2d01ac5d330e17a..818b1df6778d9d299b86fefa46bbf1d689d29fdb 100644
+index 37570c54b06f9cebc46aa232e2d01ac5d330e17a..3a62769d327e9aa5d5c447e3931f235f984de42c 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -413,11 +413,41 @@
@@ -481,7 +481,15 @@ index 37570c54b06f9cebc46aa232e2d01ac5d330e17a..818b1df6778d9d299b86fefa46bbf1d6
        if (
          !this._beginRemoveTab(aTab, {
            closeWindowFastpath: true,
-@@ -4835,7 +4952,7 @@
+@@ -4828,14 +4945,14 @@
+       var newTab = false;
+       if (
+         aTab.visible &&
+-        this.visibleTabs.length == 1 &&
++        this.visibleTabs.length == 0 &&
+         !this.tabsInCollapsedTabGroups.length
+       ) {
+         closeWindow =
            closeWindowWithLastTab != null
              ? closeWindowWithLastTab
              : !window.toolbar.visible ||

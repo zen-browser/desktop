@@ -398,8 +398,9 @@ menuseparator {
       min-width: unset !important;
       margin: 0px !important;
       border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
-      background: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1)) !important;
-      border: 1px solid light-dark(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15)) !important;
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
+      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
 
       :root[zen-right-side='true'] & {
         order: -1;

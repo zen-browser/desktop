@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 793ba822f087f4d198c9876ed208ff16d8a41e3b..e53ccd748de015997c355d5d37cb38cc73e90f3d 100644
+index 793ba822f087f4d198c9876ed208ff16d8a41e3b..f0c4bc58d7d48491e0c0ab9eb3e915b1bf4d762a 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -21,6 +21,18 @@ index 793ba822f087f4d198c9876ed208ff16d8a41e3b..e53ccd748de015997c355d5d37cb38cc
          </hbox>
        </stack>
        `;
+@@ -97,9 +100,9 @@
+           "src=image,triggeringprincipal=iconloadingprincipal,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
+         ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
+         ".tab-icon-overlay":
+-          "sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
++          "zen-essential,sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
+         ".tab-audio-button":
+-          "crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
++          "zen-essential,crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
+         ".tab-label-container":
+           "pinned,selected=visuallyselected,labeldirection",
+         ".tab-label":
 @@ -180,7 +183,7 @@
      }
  

@@ -111,9 +111,7 @@
 }
 
 @media (-moz-platform: macos) {
-  #zen-main-app-wrapper,
-  #zen-appcontent-wrapper,
-  #zen-sidebar-splitter {
+  #zen-main-app-wrapper {
     appearance: -moz-sidebar !important;
   }
 }
@@ -285,4 +283,18 @@
   border: 1px dashed;
   border-radius: 2px;
   margin: 10px 2px 0 0;
+}
+
+#zen-sidebar-splitter {
+  border-radius: 14px;
+  transition:
+    background 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--zen-primary-color);
+    transition: background 0.2s ease-in-out;
+    transition-delay: 0.2s;
+    opacity: 1;
+  }
 }

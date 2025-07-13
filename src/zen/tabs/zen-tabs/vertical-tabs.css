@@ -253,6 +253,8 @@
   overflow-x: clip; /* Clip horizontal overflow */
   overflow-clip-margin: var(--zen-toolbox-padding); /* Add margin to clipping area */
 
+  --focus-outline-color: transparent;
+
   @media (-moz-platform: macos) {
     font-size: 1.1rem; /* Slightly larger font on macOS */
   }
@@ -1489,6 +1491,7 @@
   background: transparent;
   border: none;
   padding: 0;
+  outline: none !important;
 }
 
 /* ==========================================================================
@@ -1512,4 +1515,17 @@
     padding: 0 var(--zen-toolbox-padding);
     width: 100%;
   }
+}
+
+#tabs-newtab-button:not([in-urlbar='true']) label,
+.zen-current-workspace-indicator-name {
+  opacity: 0.7;
+}
+
+.tab-throbber {
+  display: none !important; /* Hide throbber always */
+}
+
+.tab-icon-image {
+  display: flex !important;
 }

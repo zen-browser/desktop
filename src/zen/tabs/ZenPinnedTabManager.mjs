@@ -541,7 +541,7 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
-          if (behavior.includes('unload') && !selectedTab.hasAttribute('zen-essential')) {
+          if (behavior.includes('unload')) {
             if (selectedTab.hasAttribute('glance-id')) {
               break;
             }
@@ -940,7 +940,7 @@
       if (!this._dragIndicator) {
         this._dragIndicator = document.createElement('div');
         this._dragIndicator.id = 'zen-drag-indicator';
-        document.body.appendChild(this._dragIndicator);
+        gNavToolbox.appendChild(this._dragIndicator);
       }
       return this._dragIndicator;
     }

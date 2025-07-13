@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index d7d9a40e8c473fa3b06f5bbc743e851a392ea8fa..c5b3f015caf666dad800432828a8c615e8353936 100644
+index d7d9a40e8c473fa3b06f5bbc743e851a392ea8fa..23a165fdd80abd754a53f941a5edf839143b2044 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -19,7 +19,7 @@
@@ -103,6 +103,24 @@ index d7d9a40e8c473fa3b06f5bbc743e851a392ea8fa..c5b3f015caf666dad800432828a8c615
        color-scheme: var(--tab-selected-color-scheme);
        border-radius: var(--border-radius-circle);
  
+@@ -633,7 +625,7 @@
+     }
+   }
+ 
+-  &[pinned]:is([soundplaying], [muted], [activemedia-blocked]),
++  &[zen-essential]:is([soundplaying], [muted], [activemedia-blocked]),
+   &[crashed] {
+     display: revert;
+   }
+@@ -737,7 +729,7 @@
+       has not been added to root. There are certain scenarios when that attribute is temporarily
+       removed from root such as when toggling the sidebar to expand with the toolbar button. */
+       #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
+-      :root:not([sidebar-expand-on-hover]) #tabbrowser-tabs[orient="vertical"][expanded] &:not([pinned]):not([crashed]) {
++      :root:not([sidebar-expand-on-hover]) #tabbrowser-tabs[orient="vertical"][expanded] &:not([zen-essential]):not([crashed]) {
+         &:is([soundplaying], [muted], [activemedia-blocked]) {
+           display: block;
+         }
 @@ -1373,7 +1365,7 @@ tab-group {
    }
  }

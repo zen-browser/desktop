@@ -12,3 +12,6 @@ pref('zen.view.compact.color-sidebar', true);
 pref('zen.view.compact.animate-sidebar', true);
 pref('zen.view.compact.show-sidebar-and-toolbar-on-hover', true);
 pref('zen.view.compact.show-background-tab-toast', true);
+
+# Do not edit manually
+pref('zen.view.compact.should-enable-at-startup', false);

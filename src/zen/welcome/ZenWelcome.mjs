@@ -121,7 +121,6 @@
       const iconData = await getIconData(site[2]);
       await setCachedFaviconForURL(site[0], iconData);
       gBrowser.setIcon(tab, iconData);
-      tab.removeAttribute('pending'); // Make it appear loaded
       _tabsToPin.push(tab);
     }
   }

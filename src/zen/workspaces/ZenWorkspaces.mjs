@@ -931,6 +931,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   async initializeWorkspaces() {
     let activeWorkspace = await this.getActiveWorkspace();
     this.activeWorkspace = activeWorkspace?.uuid;
+    await gZenSessionStore.promiseInitialized;
     try {
       if (activeWorkspace) {
         window.gZenThemePicker = new nsZenThemePicker();
@@ -939,7 +940,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     } catch (e) {
       console.error('gZenWorkspaces: Error initializing theme picker', e);
     }
-    await gZenSessionStore.promiseInitialized;
     await this.workspaceBookmarks();
     await this.initializeTabsStripSections();
     this._initializeEmptyTab();
@@ -2923,7 +2923,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       parent.removeAttribute('icons-overflow');
       return;
     }
-    const maxButtonSize = 30; // IMPORTANT: This should match the CSS size of the icons
+    const maxButtonSize = 26; // IMPORTANT: This should match the CSS size of the icons
     const minButtonSize = 15;
     const separation = 3; // Space between icons
 
@@ -2984,6 +2984,12 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       gBrowser.tabContainer.setAttribute('overflow', 'true');
     } else {
       gBrowser.tabContainer.removeAttribute('overflow');
+    }
+  }
+
+  handleTabCloseWindow() {
+    if (this.shouldCloseWindow()) {
+      document.getElementById('cmd_closeWindow').doCommand();
     }
   }
 })();

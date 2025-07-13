@@ -117,8 +117,13 @@
   --zen-button-padding: 0.6rem 1.2rem;
 
   --zen-toolbar-element-bg: light-dark(
-    color-mix(in oklch, var(--toolbox-textcolor) 9%, transparent),
-    color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
+    color-mix(in oklch, var(--toolbox-textcolor) 8%, transparent),
+    color-mix(in oklch, var(--toolbox-textcolor) 12.5%, transparent)
+  );
+
+  --zen-toolbar-element-bg-hover: light-dark(
+    color-mix(in srgb, var(--zen-toolbar-element-bg) 75%, transparent),
+    color-mix(in srgb, var(--zen-toolbar-element-bg) 60%, transparent)
   );
 
   /* Toolbar */
@@ -130,7 +135,7 @@
 
   --toolbarbutton-inner-padding: 5px !important;
 
-  --toolbarbutton-hover-background: var(--zen-toolbar-element-bg) !important;
+  --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
 
   --toolbarbutton-active-background: color-mix(
     in srgb,
@@ -142,7 +147,6 @@
   --toolbox-textcolor-inactive: var(--toolbox-textcolor) !important;
 
   /* Other colors */
-  --urlbar-box-bgcolor: var(--zen-urlbar-background) !important;
   --urlbar-box-active-bgcolor: var(--toolbarbutton-hover-background) !important;
   --toolbar-field-focus-background-color: var(--urlbar-box-bgcolor) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
@@ -173,11 +177,7 @@
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
-    --zen-main-browser-background: linear-gradient(
-      130deg,
-      light-dark(rgb(247, 217, 255), rgb(10, 6, 11)) 0%,
-      light-dark(rgb(242, 198, 255), rgb(19, 7, 22)) 100%
-    );
+    --zen-main-browser-background: linear-gradient(130deg, rgb(10, 6, 11) 0%, rgb(19, 7, 22) 100%);
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
     --zen-primary-color: light-dark(rgb(93, 42, 107), rgb(110, 48, 125)) !important;
     --toolbox-textcolor: currentColor !important;
@@ -229,7 +229,13 @@
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
     @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
-      --zen-themed-toolbar-bg-transparent: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
+      --zen-themed-toolbar-bg-transparent: light-dark(
+        rgba(0, 0, 0, 0.2),
+        rgba(255, 255, 255, 0.35)
+      );
+    }
+    @media (-moz-platform: macos) {
+      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
     }
   }
 
@@ -246,20 +252,31 @@
   & menupopup,
   & #zen-browser-background,
   & #urlbar[breakout-extend='true'],
-  & #tabbrowser-tabpanels browser[type='content'] {
+  & #tabbrowser-tabpanels browser[type='content'],
+  &:not([zen-should-be-dark-mode]) #zen-toast-container {
     @media -moz-pref('zen.view.window.scheme', 0) {
       color-scheme: dark;
+      --toolbar-color-scheme: dark;
     }
 
     @media -moz-pref('zen.view.window.scheme', 1) {
       color-scheme: light;
+      --toolbar-color-scheme: light;
     }
 
     @media -moz-pref('zen.view.window.scheme', 2) {
       color-scheme: light;
+      --toolbar-color-scheme: light;
       @media (-moz-system-dark-theme) {
         color-scheme: dark;
+        --toolbar-color-scheme: dark;
       }
+    }
+
+    :root[privatebrowsingmode='temporary'] &,
+    &[privatebrowsingmode='temporary'] {
+      color-scheme: dark;
+      --toolbar-color-scheme: dark;
     }
   }
 }

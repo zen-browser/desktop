@@ -5,4 +5,8 @@
 # Mica
 pref("widget.windows.mica", true);
 pref("widget.windows.mica.popups", true);
+
+# 1. DWMSBT_MAINWINDOW
+# 2. DWMSBT_TRANSIENTWINDOW (default, also used for popups)
+# 3(default). DWMSBT_TABBEDWINDOW
 pref("widget.windows.mica.toplevel-backdrop", 2);

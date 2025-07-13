@@ -36,11 +36,12 @@ var gZenCompactModeManager = {
   preInit() {
     // Remove it before initializing so we can properly calculate the width
     // of the sidebar at startup and avoid overflowing items not being hidden
-    this._wasInCompactMode = Services.xulStore.getValue(
-      AppConstants.BROWSER_CHROME_URL,
-      'zen-main-app-wrapper',
-      'zen-compact-mode'
-    );
+    this._wasInCompactMode =
+      Services.xulStore.getValue(
+        AppConstants.BROWSER_CHROME_URL,
+        'zen-main-app-wrapper',
+        'zen-compact-mode'
+      ) || Services.prefs.getBoolPref('zen.view.compact.should-enable-at-startup', false);
     lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
 
     this.addContextMenu();
@@ -106,6 +107,7 @@ var gZenCompactModeManager = {
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
     Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
+    Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
     this._updateEvent();
     return value;
   },
@@ -687,7 +689,15 @@ var gZenCompactModeManager = {
       !this._nextTimeWillBeActive &&
       this.canHideSidebar
     ) {
-      gZenUIManager.showToast('zen-background-tab-opened-toast');
+      gZenUIManager.showToast('zen-background-tab-opened-toast', {
+        button: {
+          id: 'zen-open-background-tab-button',
+          command: () => {
+            const targetWindow = window.ownerGlobal.parent || window;
+            targetWindow.gBrowser.selectedTab = tab;
+          },
+        },
+      });
     }
     delete this._nextTimeWillBeActive;
   },

@@ -34,8 +34,8 @@
 
   & toolbarbutton {
     margin: 0;
-   max-width: 30px;
-    height: 30px;
+    max-width: 26px;
+    height: 26px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -69,7 +69,7 @@
 
     &:hover,
     &[dragged='true']{
-      background-color: var(--zen-toolbar-element-bg);
+      background-color: var(--toolbarbutton-hover-background);
     }
 
     & label {
@@ -205,6 +205,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: auto;
+    font-weight: 600;
   }
 
   .zen-workspaces-actions {
@@ -214,7 +215,10 @@
     transition: opacity 0.1s;
     order: 5;
     --toolbarbutton-inner-padding: 6px;
-    --tab-border-radius: 8px;
+
+    & image {
+      border-radius: calc(var(--border-radius-medium) - 4px);
+    }
 
     :root[zen-renaming-tab='true'] & {
       display: none;

@@ -261,6 +261,7 @@
     animation: zen-theme-picker-dot-animation 0.5s;
     transform: translate(-50%, -50%);
     pointer-events: none;
+    transform-origin: center center;
 
     &:first-of-type {
       width: 36px;
@@ -269,10 +270,10 @@
       z-index: 2;
       pointer-events: all;
       transition: transform 0.2s;
+      z-index: 999;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
       }
-      transform-origin: center center;
     }
 
     &[dragging='true'] {
@@ -435,7 +436,7 @@
   margin: 0 !important;
 }
 
-:root:not([zen-should-be-dark-mode]) {
+#PanelUI-zen-gradient-generator[invalidate-controls='true'] {
   #PanelUI-zen-gradient-generator-opacity {
     display: none !important;
   }

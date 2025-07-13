@@ -2,9 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppConstants.sys.mjs');
+
 class nsZenUIMigration {
   PREF_NAME = 'zen.ui.migration.version';
-  MIGRATION_VERSION = 1;
+  MIGRATION_VERSION = 2;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -15,6 +17,9 @@ class nsZenUIMigration {
       }
     }
     this.clearVariables();
+    if (this.shouldRestart) {
+      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+    }
   }
 
   get _migrationVersion() {
@@ -48,16 +53,23 @@ class nsZenUIMigration {
     const userContentFile = profileDir.clone();
     userContentFile.append('chrome');
     userContentFile.append('userContent.css');
-    if (userChromeFile.exists() || userContentFile.exists()) {
-      Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
-    }
     Services.prefs.setBoolPref(
       'zen.workspaces.separate-essentials',
       Services.prefs.getBoolPref('zen.workspaces.container-specific-essentials-enabled', false)
     );
     const theme = Services.prefs.getIntPref('layout.css.prefers-color-scheme.content-override', 0);
     Services.prefs.setIntPref('zen.view.window.scheme', theme);
-    Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 0);
+    if (userChromeFile.exists() || userContentFile.exists()) {
+      Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
+      console.log('ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.');
+      this.shouldRestart = true;
+    }
+  }
+
+  _migrateV2() {
+    if (AppConstants.platform !== 'linux') {
+      Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 0);
+    }
   }
 }
 

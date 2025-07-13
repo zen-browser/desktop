@@ -64,32 +64,33 @@
     }
 
     async #rebuildModsStylesheet() {
-      const shouldBeEnabled = !Services.prefs.getBoolPref('zen.themes.disable-all', false);
-      if (shouldBeEnabled) {
-        const mods = await this.#getEnabledMods();
+      const mods = await this.#getEnabledMods();
 
-        await this.#writeStylesheet(mods);
+      await this.#writeStylesheet(mods);
 
-        const modsWithPreferences = await Promise.all(
-          mods.map(async (mod) => {
-            const preferences = await this.getModPreferences(mod);
+      const modsWithPreferences = await Promise.all(
+        mods.map(async (mod) => {
+          const preferences = await this.getModPreferences(mod);
 
-            return {
-              name: mod.name,
-              enabled: mod.enabled,
-              preferences,
-            };
-          })
-        );
+          return {
+            name: mod.name,
+            enabled: mod.enabled,
+            preferences,
+          };
+        })
+      );
 
-        this.#setDefaults(modsWithPreferences);
-        this.#writeToDom(modsWithPreferences);
-      }
+      this.#setDefaults(modsWithPreferences);
+      this.#writeToDom(modsWithPreferences);
 
       await this.#insertStylesheet();
     }
 
     async #getEnabledMods() {
+      if (Services.prefs.getBoolPref('zen.themes.disable-all', false)) {
+        console.log('[ZenMods]: Mods are disabled by user preference.');
+        return [];
+      }
       const modsObject = await this.getMods();
       const mods = Object.values(modsObject).filter(
         (mod) => mod.enabled === undefined || mod.enabled

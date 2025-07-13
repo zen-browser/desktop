@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index b0b2383453ef771af3eb9260618f1e2e3022eb4e..7c5844582d9adb55c55fb1627a9980cf0e5c110b 100644
+index b0b2383453ef771af3eb9260618f1e2e3022eb4e..d631cc8db95b4285e892ac8fcb5e72b7da489850 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -318,6 +318,10 @@ var BrowserCommands = {
@@ -13,21 +13,19 @@ index b0b2383453ef771af3eb9260618f1e2e3022eb4e..7c5844582d9adb55c55fb1627a9980cf
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -402,6 +406,13 @@ var BrowserCommands = {
+@@ -402,6 +406,11 @@ var BrowserCommands = {
        return;
      }
  
 +    if (gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
-+      if (gZenWorkspaces.shouldCloseWindow()) {
-+        closeWindow(true);
-+      }
++      gZenWorkspaces.handleTabCloseWindow();
 +      return;
 +    }
 +
      // Keyboard shortcuts that would close a tab that is pinned select the first
      // unpinned tab instead.
      if (
-@@ -409,8 +420,8 @@ var BrowserCommands = {
+@@ -409,8 +418,8 @@ var BrowserCommands = {
        (event.ctrlKey || event.metaKey || event.altKey) &&
        gBrowser.selectedTab.pinned
      ) {

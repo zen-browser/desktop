@@ -991,9 +991,9 @@ class nsZenKeyboardShortcutsVersioner {
         new KeyShortcut(
           'zen-tab-next-shortcut',
           '',
-          'VK_TAB',
+          '',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenTabNext',
           'zen-tab-next-shortcut'
         )
@@ -1002,9 +1002,9 @@ class nsZenKeyboardShortcutsVersioner {
         new KeyShortcut(
           'zen-tab-prev-shortcut',
           '',
-          'VK_TAB',
+          '',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenTabPrev',
           'zen-tab-prev-shortcut'
         )
@@ -1012,10 +1012,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-toggle-unloaded-cycling-shortcut',
-          '',
+          'U',
           '',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
+          nsKeyShortcutModifiers.fromObject({ alt: true }),
           'cmd_zenToggleUnloadedCycling',
           'zen-toggle-unloaded-cycling-shortcut'
         )

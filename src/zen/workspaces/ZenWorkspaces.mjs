@@ -3039,31 +3039,3 @@ window.cmd_zenTabPrev = function () {
     console.error('[ZenDebug] zenNavigateTab is not defined!');
   }
 };
-
-// if (window && window.Commands) {
-//   window.Commands.cmd_zenTabNext = window.cmd_zenTabNext;
-//   window.Commands.cmd_zenTabPrev = window.cmd_zenTabPrev;
-// }
-
-// if (typeof zenNavigateTab === 'function') {
-//   const _zenNavigateTabOrig = zenNavigateTab;
-//   window.zenNavigateTab = function (direction) {
-//     console.log('[ZenDebug] zenNavigateTab called with direction:', direction);
-//     return _zenNavigateTabOrig(direction);
-//   };
-// }
-
-// // Global keydown logger to debug event flow
-// window.addEventListener('keydown', function (e) {
-//   // Only log if not in an input/textarea
-//   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
-//   console.log('[ZenDebug] keydown:', {
-//     key: e.key,
-//     code: e.code,
-//     ctrlKey: e.ctrlKey,
-//     shiftKey: e.shiftKey,
-//     altKey: e.altKey,
-//     metaKey: e.metaKey,
-//     defaultPrevented: e.defaultPrevented
-//   });
-// }, true);

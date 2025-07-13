@@ -986,14 +986,14 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 10) {
       // Migrate from version 9 to 10
-      // In this new version, we add customizable shortcuts for switching to the next/previous tab.
+      // In this new version, we add customizable shortcuts for switching to the next/previous tab and toggling unloaded tab cycling.
       data.push(
         new KeyShortcut(
           'zen-tab-next-shortcut',
           '',
           'VK_TAB',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
           'cmd_zenTabNext',
           'zen-tab-next-shortcut'
         )
@@ -1004,7 +1004,7 @@ class nsZenKeyboardShortcutsVersioner {
           '',
           'VK_TAB',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
           'cmd_zenTabPrev',
           'zen-tab-prev-shortcut'
         )
@@ -1015,7 +1015,7 @@ class nsZenKeyboardShortcutsVersioner {
           '',
           '',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ alt: true }),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true, alt: true }),
           'cmd_zenToggleUnloadedCycling',
           'zen-toggle-unloaded-cycling-shortcut'
         )

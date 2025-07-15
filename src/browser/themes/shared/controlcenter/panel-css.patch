@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/controlcenter/panel.css b/browser/themes/shared/controlcenter/panel.css
-index 6c3e1d47648165b4994f3face2df48c87ff48a53..dd1791790356d4dd3c3256e2603cf3287c1b89fc 100644
+index d0bc0e89142ef8d6090f1b270a0193ac8899c41f..cb16ab639c675433b2bfbcee11def5428c41afb3 100644
 --- a/browser/themes/shared/controlcenter/panel.css
 +++ b/browser/themes/shared/controlcenter/panel.css
 @@ -10,11 +10,11 @@

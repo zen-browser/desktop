@@ -128,6 +128,7 @@
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit;
+  --tabstrip-inner-border: transparent;
 
   --zen-toolbar-height: 38px;
   --zen-toolbar-button-inner-padding: 6px;

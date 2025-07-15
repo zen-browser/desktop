@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 2ed2fa02b16013e40a32391b3dba0a4301d65262..f485a7e2e09d81d0699e38e19fbd6d184d6c00ea 100644
+index 6dc774ea335b0c5dba7dcf76cdb23728faae1343..b0b9ef236c2e8517db4bcf3270596456bbefe11d 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
-@@ -270,7 +270,7 @@
+@@ -301,7 +301,7 @@
       */
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {

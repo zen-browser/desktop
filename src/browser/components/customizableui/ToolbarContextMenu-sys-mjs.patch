@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/ToolbarContextMenu.sys.mjs b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-index 0924175cecdceade096a325b2d4cd2656da24524..3c1e4a179d13aac740069c23e9bf8e40376d5032 100644
+index b88b0166fb99bc3d44a2e05798650b8ad6ab9a46..2e66c8294f0ef4f91ae160bd55b7417b55e9f5b2 100644
 --- a/browser/components/customizableui/ToolbarContextMenu.sys.mjs
 +++ b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-@@ -241,8 +241,8 @@ export var ToolbarContextMenu = {
+@@ -240,8 +240,8 @@ export var ToolbarContextMenu = {
      // Show/hide sidebar and vertical tabs menu items
      let sidebarRevampEnabled = Services.prefs.getBoolPref("sidebar.revamp");
      let showSidebarActions =

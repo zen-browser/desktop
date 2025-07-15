@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.js b/browser/components/preferences/dialogs/syncChooseWhatToSync.js
-index 64aa0d98a0622c01f3dcfff1a04bfcda368354d2..2013e04b0881ad2295d6897b91e1573cc6efc571 100644
+index a38c2a235971f2fe470f9bee92fc9c1a6d9b8b15..564be3dabe01621a621ca586421cdb77e0220f8b 100644
 --- a/browser/components/preferences/dialogs/syncChooseWhatToSync.js
 +++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.js
-@@ -21,6 +21,7 @@ Preferences.addAll([
+@@ -13,6 +13,7 @@ Preferences.addAll([
    { id: "services.sync.engine.passwords", type: "bool" },
    { id: "services.sync.engine.addresses", type: "bool" },
    { id: "services.sync.engine.creditcards", type: "bool" },

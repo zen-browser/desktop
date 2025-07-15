@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 8e839c497bba9de04948ad8759679b6a6f61a65f..877ec60553fc64fea860de297dc0858eb05bae7f 100644
+index 6d664917a5a3bb1cea8a747e42e8bc0065ec999e..dfacd5c40ef14319fe7398452c007f167003a583 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -29,6 +29,7 @@ ChromeUtils.defineESModuleGetters(this, {
+@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
    ContextualIdentityService:
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
    CustomizableUI: "resource:///modules/CustomizableUI.sys.mjs",
@@ -10,7 +10,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..877ec60553fc64fea860de297dc0858e
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2282,6 +2283,10 @@ var XULBrowserWindow = {
+@@ -2340,6 +2341,10 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -21,7 +21,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..877ec60553fc64fea860de297dc0858e
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -4617,7 +4622,7 @@ function switchToTabHavingURI(
+@@ -4816,7 +4821,7 @@ function switchToTabHavingURI(
        ignoreQueryString || replaceQueryString,
        ignoreFragmentWhenComparing
      );
@@ -30,7 +30,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..877ec60553fc64fea860de297dc0858e
      for (let i = 0; i < browsers.length; i++) {
        let browser = browsers[i];
        let browserCompare = cleanURL(
-@@ -4660,7 +4665,7 @@ function switchToTabHavingURI(
+@@ -4859,7 +4864,7 @@ function switchToTabHavingURI(
          }
  
          if (!doAdopt) {
@@ -39,7 +39,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..877ec60553fc64fea860de297dc0858e
          }
  
          return true;
-@@ -5476,6 +5481,9 @@ var ConfirmationHint = {
+@@ -5717,6 +5722,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

@@ -1,5 +1,5 @@
 diff --git a/browser/base/jar.mn b/browser/base/jar.mn
-index ad10fe2c55c422090ebfc3989ca6858c1d958a10..0ff76c3bd768b2b337683a35f8dbd197f421905c 100644
+index 4401c78d34007fa7481f8b8eeb070d17110821ae..064f14a7adf4ce1b98d58302998272444466c3ee 100644
 --- a/browser/base/jar.mn
 +++ b/browser/base/jar.mn
 @@ -105,3 +105,5 @@ browser.jar:

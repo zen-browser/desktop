@@ -1,16 +1,16 @@
 diff --git a/toolkit/mozapps/installer/windows/nsis/makensis.mk b/toolkit/mozapps/installer/windows/nsis/makensis.mk
-index facc5b1c058bc90ae12cb2e68f8db86e71626300..5940cf442b38b0c786818c6b76fa6c88b9a619ec 100755
+index b4425034fb198fd5303af513d81a3db6b4d14e36..8c44945b4448eb1c69a73894b3e13fc8d2ef3ade 100644
 --- a/toolkit/mozapps/installer/windows/nsis/makensis.mk
 +++ b/toolkit/mozapps/installer/windows/nsis/makensis.mk
-@@ -63,6 +63,11 @@ endif
- 
+@@ -64,6 +64,11 @@ endif
  ifdef ZIP_IN
  installer:: $(CONFIG_DIR)/setup.exe $(ZIP_IN)
+ 	@echo 'Packaging $(WIN32_INSTALLER_OUT).'
 +ifneq ("$(ZEN_SETUP_EXE_PATH)","")
 +	@echo 'setup-zen.exe exists, moving it to setup.exe ($(ZEN_SETUP_EXE_PATH))'
 +	rm $(CONFIG_DIR)/setup.exe
 +	cp $(ZEN_SETUP_EXE_PATH) $(CONFIG_DIR)/setup.exe
 +endif
- 	$(NSINSTALL) -D '$(ABS_DIST)/$(PKG_PATH)'
+ 	$(NSINSTALL) -D '$(ABS_DIST)/$(PKG_INST_PATH)'
  	$(PYTHON3) $(MOZILLA_DIR)/mach repackage installer \
- 	  -o '$(ABS_DIST)/$(PKG_PATH)$(PKG_INST_BASENAME).exe' \
+ 	  -o '$(ABS_DIST)/$(PKG_INST_PATH)$(PKG_INST_BASENAME).exe' \

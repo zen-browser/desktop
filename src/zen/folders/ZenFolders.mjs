@@ -91,7 +91,10 @@
           gBrowser.pinTab(otherTab);
         }
         this._piningFolder = false;
-        gBrowser.pinnedTabsContainer.insertBefore(group, gBrowser.pinnedTabsContainer.lastChild);
+        gBrowser.verticalPinnedTabsContainer.insertBefore(
+          group,
+          gBrowser.verticalPinnedTabsContainer.lastChild
+        );
         gBrowser.tabContainer._invalidateCachedTabs();
         return true;
       }

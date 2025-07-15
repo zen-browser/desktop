@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
-index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d002791b834dcf 100644
+index 6e74bbce9096179d38db422879349013f3954fa9..859f8b9640ef49411164f8e5160d4d9b8db11e54 100644
 --- a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
 +++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
 @@ -27,6 +27,10 @@
@@ -13,7 +13,7 @@ index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d00279
      </linkset>
      <script src="chrome://global/content/preferencesBindings.js" />
      <script src="chrome://browser/content/preferences/dialogs/syncChooseWhatToSync.js" />
-@@ -87,6 +91,12 @@
+@@ -79,6 +83,12 @@
            preference="services.sync.engine.prefs"
          />
        </html:div>

@@ -273,7 +273,7 @@
   /* Hide default overflow indicators and the provided separator */
   &[overflow]::after,
   #vertical-tabs-newtab-button, /* Assuming this is a button *within* #tabbrowser-tabs, but it looks like it's outside */
-  #vertical-pinned-tabs-splitter {
+  #vertical-pinned-tabs-container-separator {
     /* Selector targets the specific separator ID */
     display: none !important;
   }
@@ -467,7 +467,7 @@
 /* ==========================================================================
    Pinned Tabs Container Specific Styles
    ========================================================================== */
-:root[zen-workspace-id] #pinned-tabs-container {
+:root[zen-workspace-id] #vertical-pinned-tabs-container {
   display: none;
 }
 

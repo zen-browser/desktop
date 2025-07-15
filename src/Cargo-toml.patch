@@ -1,8 +1,8 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index d402d783e2bbc30b87b2c59cf02e38b74d0484c1..b718ee7ed0519cac20d2828fee0350b44fc3f45a 100644
+index 8c6b99bc629ec26e01ab3746f2ae46174bfaa0b1..5791c7470923c7c15986089b40357ce80365e942 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -227,6 +227,9 @@ rure = { path = "third_party/rust/rure" }
+@@ -233,6 +233,9 @@ rure = { path = "third_party/rust/rure" }
  # Patch `plist` to work with `indexmap` 2.*
  plist = { path = "third_party/rust/plist" }
  

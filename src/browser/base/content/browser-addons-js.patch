@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d858218e8 100644
+index f4d5125d9a1c8f0aef24536ca7d2ef3f133d8a99..cacd7f465e67226de4a366354779c6cb0cbd0b4c 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1057,7 +1057,7 @@ var gXPInstallObserver = {
@@ -46,8 +46,8 @@ index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d
 +    await gZenVerticalTabsManager._preCustomize();
  
      CustomizableUI.addWidgetToArea(widgetId, newArea, newPosition);
-     // addWidgetToArea() will trigger onWidgetAdded or onWidgetMoved as needed,
-     // and our handlers will call updateAttention() as needed.
+ 
+     this.updateAttention();
 +    await gZenVerticalTabsManager._postCustomize();
    },
  

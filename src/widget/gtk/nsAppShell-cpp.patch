@@ -1,8 +1,8 @@
 diff --git a/widget/gtk/nsAppShell.cpp b/widget/gtk/nsAppShell.cpp
-index 99fd6dc873362de36dca4c93d5acc604cadb7caf..b5cf7ef750a489e32099884cc25af611ad622e8e 100644
+index 117c1d6ae07c9b2539005dd05edf2c622985ac2f..126748a8fa13f3f9c163aca06a1d65f972b91f8f 100644
 --- a/widget/gtk/nsAppShell.cpp
 +++ b/widget/gtk/nsAppShell.cpp
-@@ -420,7 +420,8 @@ nsresult nsAppShell::Init() {
+@@ -488,7 +488,8 @@ nsresult nsAppShell::Init() {
      gchar* name = gdk_pixbuf_format_get_name(format);
      if (strcmp(name, "jpeg") && strcmp(name, "png") && strcmp(name, "gif") &&
          strcmp(name, "bmp") && strcmp(name, "ico") && strcmp(name, "xpm") &&

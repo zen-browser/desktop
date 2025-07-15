@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index ec5575d8990ee431729d044953924d3a8b79d665..8a5b9f363138736ca168a2e43805540561af64d4 100644
+index e17f3d34367d6567c89f632b6d1ce537608a6829..7528dfb0abc8ea8d9315591cd529a341b4c3962a 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -609,7 +609,7 @@ export class UrlbarView {
@@ -20,7 +20,7 @@ index ec5575d8990ee431729d044953924d3a8b79d665..8a5b9f363138736ca168a2e438055405
        if (result.isHiddenExposure) {
          if (canBeVisible) {
            this.controller.engagementEvent.addExposure(
-@@ -3015,7 +3015,7 @@ export class UrlbarView {
+@@ -2975,7 +2975,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

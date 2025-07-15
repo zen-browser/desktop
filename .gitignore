@@ -14,4 +14,3 @@ venv/
 win-cross/
 
 !firefox-patches/
-.vscode/

@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/PlacesUIUtils.sys.mjs b/browser/components/places/PlacesUIUtils.sys.mjs
-index 513199c212ab22c8af9e084352b6aa2647818000..9610e73af653fbc620e330a1e6e7b543dce50234 100644
+index c7c5c28e1ea6d05094ed9fe751c6b50ab9645370..72f1038aa37b0951a1e78331ee317f714e5b6e8b 100644
 --- a/browser/components/places/PlacesUIUtils.sys.mjs
 +++ b/browser/components/places/PlacesUIUtils.sys.mjs
 @@ -59,6 +59,7 @@ class BookmarkState {

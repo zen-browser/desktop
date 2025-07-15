@@ -1,0 +1,30 @@
+diff --git a/browser/themes/shared/tabbrowser/tab-hover-preview.css b/browser/themes/shared/tabbrowser/tab-hover-preview.css
+index 90680fb5870bd7387656d3066c39b6d6f80916bd..636c2f4c7cfda0280b24e40cf7613321bf1d3905 100644
+--- a/browser/themes/shared/tabbrowser/tab-hover-preview.css
++++ b/browser/themes/shared/tabbrowser/tab-hover-preview.css
+@@ -52,3 +52,24 @@
+   from { opacity: 0; }
+   to { opacity: 100; }
+ }
++
++/**
++ * Zen overrides (try to avoid git conflicts as much as possible)
++ */
++
++.tab-preview-container {
++  --zen-border-color: #bdbcbc;
++  overflow: hidden;
++  border: 1px solid var(--zen-border-color);
++}
++
++@media (prefers-color-scheme: dark) {
++  .tab-preview-container {
++    --zen-border-color: #565656;
++  }
++}
++
++.tab-preview-thumbnail-container img,
++.tab-preview-thumbnail-container canvas {
++  border-top: 1px solid var(--zen-border-color);
++}
+\ No newline at end of file

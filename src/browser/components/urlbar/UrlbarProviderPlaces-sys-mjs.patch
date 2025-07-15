@@ -1,23 +1,33 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index 815734d9a5a589174ac33cb15ff9988d13e78b8c..227511238b13155f70d305bcbaa84dcd45a66e1c 100644
+index 899e808c5f8cf14577404e3d1766fe967b32b065..82854a04edc21ac4552d06d6ba45c4714b5ef5cb 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-@@ -40,11 +40,13 @@ function defaultQuery(conditions = "") {
-   let query = `
-      SELECT h.url, h.title, ${SQL_BOOKMARK_TAGS_FRAGMENT}, h.id, t.open_count,
-             ${lazy.PAGES_FRECENCY_FIELD} AS frecency, t.userContextId,
--            h.last_visit_date, t.groupId
-+            h.last_visit_date, t.groupId, zp.title AS pinned_title, zp.url AS pinned_url
+@@ -35,6 +35,8 @@ const QUERYINDEX_SWITCHTAB = 9;
+ const QUERYINDEX_FRECENCY = 10;
+ const QUERYINDEX_USERCONTEXTID = 11;
+ const QUERYINDEX_LASTVIST = 12;
++const QUERYINDEX_PINNEDTITLE = 13;
++const QUERYINDEX_PINNEDURL = 14;
+ 
+ // This SQL query fragment provides the following:
+ //   - whether the entry is bookmarked (QUERYINDEX_BOOKMARKED)
+@@ -56,11 +58,14 @@ const SQL_BOOKMARK_TAGS_FRAGMENT = `EXISTS(SELECT 1 FROM moz_bookmarks WHERE fk
+ // condition once, and avoid evaluating "btitle" and "tags" when it is false.
+ function defaultQuery(conditions = "") {
+   let query = `SELECT :query_type, h.url, h.title, ${SQL_BOOKMARK_TAGS_FRAGMENT},
+-            h.visit_count, h.typed, h.id, t.open_count, ${lazy.PAGES_FRECENCY_FIELD}, t.userContextId, h.last_visit_date
++            h.visit_count, h.typed, h.id, t.open_count, ${lazy.PAGES_FRECENCY_FIELD}, t.userContextId, h.last_visit_date,
++            zp.title AS pinned_title, zp.url AS pinned_url
       FROM moz_places h
       LEFT JOIN moz_openpages_temp t
              ON t.url = h.url
              AND (t.userContextId = :userContextId OR (t.userContextId <> -1 AND :userContextId IS NULL))
 +     LEFT JOIN zen_pins zp
-+                 ON zp.url = h.url
++            ON zp.url = h.url
       WHERE (
          (:switchTabsEnabled AND t.open_count > 0) OR
          ${lazy.PAGES_FRECENCY_FIELD} <> 0
-@@ -58,7 +60,7 @@ function defaultQuery(conditions = "") {
+@@ -74,7 +79,7 @@ function defaultQuery(conditions = "") {
                                :matchBehavior, :searchBehavior, NULL)
           ELSE
             AUTOCOMPLETE_MATCH(:searchString, h.url,
@@ -26,13 +36,15 @@ index 815734d9a5a589174ac33cb15ff9988d13e78b8c..227511238b13155f70d305bcbaa84dcd
                                h.visit_count, h.typed,
                                0, t.open_count,
                                :matchBehavior, :searchBehavior, NULL)
-@@ -1114,11 +1116,13 @@ Search.prototype = {
+@@ -1130,11 +1135,14 @@ Search.prototype = {
+     let lastVisit = lastVisitPRTime
        ? lazy.PlacesUtils.toDate(lastVisitPRTime).getTime()
        : undefined;
-     let tabGroup = row.getResultByName("groupId");
-+    let pinnedTitle = row.getResultByIndex("pinned_title");
-+    let pinnedUrl = row.getResultByIndex("pinned_url");
- 
+-
++    let pinnedTitle = row.getResultByIndex(QUERYINDEX_PINNEDTITLE);
++    let pinnedUrl = row.getResultByIndex(QUERYINDEX_PINNEDURL);
++    
++    
      let match = {
        placeId,
 -      value: url,

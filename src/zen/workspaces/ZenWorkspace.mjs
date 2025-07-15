@@ -12,7 +12,7 @@
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
-            <html:div class="pinned-tabs-container-separator"></html:div>
+            <html:div class="vertical-pinned-tabs-container-separator"></html:div>
           </vbox>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
             <!-- Let it me as an ID to mantain compatibility with firefox's tabbrowser -->

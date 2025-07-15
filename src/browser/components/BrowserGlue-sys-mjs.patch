@@ -10,6 +10,15 @@ index 05a5063427e4038b3d57f6f5bae31b60428c7880..a01e25b52ffc3a68dddb513cb085b7df
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
    ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
+@@ -1496,7 +1497,7 @@ BrowserGlue.prototype = {
+       windowcount++;
+       let tabbrowser = win.gBrowser;
+       if (tabbrowser) {
+-        pagecount += tabbrowser.visibleTabs.length - tabbrowser.pinnedTabCount;
++        pagecount += tabbrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length;
+       }
+     }
+ 
 @@ -1659,6 +1660,8 @@ BrowserGlue.prototype = {
      } else if (profileDataVersion < APP_DATA_VERSION) {
        lazy.ProfileDataUpgrader.upgrade(profileDataVersion, APP_DATA_VERSION);

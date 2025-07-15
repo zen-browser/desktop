@@ -22,7 +22,6 @@
     display: none !important;
   }
 
-  --toolbarbutton-hover-background: transparent !important;
   border-radius: var(--zen-button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
@@ -215,7 +214,10 @@
     transition: opacity 0.1s;
     order: 5;
     --toolbarbutton-inner-padding: 6px;
-    --tab-border-radius: 6px;
+
+    & image {
+      border-radius: calc(var(--border-radius-medium) - 4px);
+    }
 
     :root[zen-renaming-tab='true'] & {
       display: none;

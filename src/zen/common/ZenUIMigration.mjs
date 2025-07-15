@@ -17,6 +17,9 @@ class nsZenUIMigration {
       }
     }
     this.clearVariables();
+    if (this.shouldRestart) {
+      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+    }
   }
 
   get _migrationVersion() {
@@ -59,8 +62,7 @@ class nsZenUIMigration {
     if (userChromeFile.exists() || userContentFile.exists()) {
       Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
       console.log('ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.');
-      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-      return;
+      this.shouldRestart = true;
     }
   }
 

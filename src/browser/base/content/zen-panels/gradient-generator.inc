@@ -102,9 +102,9 @@
             </box>
             <html:input type="range" max="0.9" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
 #ifdef XP_MACOSX
-              min="0.3"
-#else
               min="0.25"
+#else
+              min="0.35"
 #endif
               />
           </vbox>

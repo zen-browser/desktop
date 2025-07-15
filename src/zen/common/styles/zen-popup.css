@@ -40,8 +40,13 @@
 menupopup,
 panel {
   --panel-background: var(--arrowpanel-background);
-  --panel-border-radius: var(--zen-native-inner-radius);
   --menuitem-padding: 6px !important;
+  --panel-shadow-margin: 10px;
+
+  /* This should match GetMenuMaskImage() on macOS, or be overridden below */
+  @media (-moz-platform: macos) {
+    --panel-border-radius: 10px;
+  }
 }
 
 /* split-view popup */

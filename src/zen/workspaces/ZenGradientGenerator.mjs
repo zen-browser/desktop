@@ -41,7 +41,7 @@
   }
 
   const MAX_OPACITY = 0.9;
-  const MIN_OPACITY = AppConstants.platform === 'macosx' ? 0.3 : 0.25;
+  const MIN_OPACITY = AppConstants.platform === 'macosx' ? 0.25 : 0.35;
 
   const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
 
@@ -462,8 +462,9 @@
       }
       const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
       const hue = (angle / 360) * 360; // Normalize angle to [0, 360)
-      const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
+      let saturation = normalizedDistance * 100; // stays high even in center
       if (type !== EXPLICIT_LIGHTNESS_TYPE) {
+        saturation = 80 + (1 - normalizedDistance) * 20;
         // Set the current lightness to how far we are from the center of the circle
         // For example, moving the dot outside will have higher lightness, while moving it inside will have lower lightness
         this.#currentLightness = Math.round((1 - normalizedDistance) * 100);
@@ -1009,6 +1010,7 @@
     }
 
     themedColors(colors) {
+      // For non-Mica themes, we return the colors as they are
       return [...colors];
     }
 
@@ -1032,25 +1034,36 @@
       return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${baseColor[3]})`;
     }
 
+    get isMica() {
+      return window.matchMedia('(-moz-windows-mica)').matches;
+    }
+
     get canBeTransparent() {
-      return window.matchMedia(
-        '(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
-      ).matches;
+      return (
+        this.isMica ||
+        window.matchMedia(
+          '(-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
+        ).matches
+      );
     }
 
     blendWithWhiteOverlay(baseColor, opacity) {
-      if (AppConstants.platform === 'macosx') {
-        const blendColor = [255, 255, 255];
-        const blendAlpha = 0.2;
-        const baseAlpha = baseColor[3] !== undefined ? baseColor[3] : 1;
-        const blended = [];
-
-        for (let i = 0; i < 3; i++) {
-          blended[i] = Math.round(blendColor[i] * (1 - opacity) + baseColor[i] * opacity);
-        }
-
-        const blendedAlpha = +(blendAlpha * (1 - opacity) + baseAlpha * opacity).toFixed(3);
-        return `rgba(${blended[0]}, ${blended[1]}, ${blended[2]}, ${blendedAlpha})`;
+      let colorToBlend;
+      let colorToBlendOpacity;
+      if (this.isMica) {
+        colorToBlend = !this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
+        colorToBlendOpacity = 0.35;
+      } else if (AppConstants.platform === 'macosx') {
+        colorToBlend = [255, 255, 255];
+        colorToBlendOpacity = 0.3;
+      }
+      if (colorToBlend) {
+        const blendedAlpha = Math.min(
+          1,
+          opacity + MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + MIN_OPACITY))
+        );
+        baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
+        opacity += colorToBlendOpacity * (1 - opacity);
       }
       return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
     }
@@ -1069,6 +1082,10 @@
         opacity = 1; // Toolbar colors should always be fully opaque
       } else {
         color = color.c;
+      }
+      if (this.isLegacyVersion && this.isDarkMode) {
+        // In legacy version, we blend with white overlay or black overlay based on if we are in dark mode
+        color = this.blendColors(color, [0, 0, 0], 30);
       }
       return this.blendWithWhiteOverlay(color, opacity);
     }
@@ -1107,7 +1124,11 @@
 
       const rotation = -45; // TODO: Detect rotation based on the accent color
       if (themedColors.length === 0) {
-        return forToolbar ? this.getToolbarModifiedBase() : 'transparent';
+        return forToolbar
+          ? this.getToolbarModifiedBase()
+          : this.isDarkMode
+            ? 'rgba(0, 0, 0, 0.4)'
+            : 'transparent';
       } else if (themedColors.length === 1) {
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else {
@@ -1154,6 +1175,10 @@
     }
 
     shouldBeDarkMode(accentColor) {
+      if (Services.prefs.getBoolPref('zen.theme.use-sysyem-colors')) {
+        return this.isDarkMode;
+      }
+
       if (!this.canBeTransparent) {
         const toolbarBg = this.getToolbarModifiedBaseRaw();
         accentColor = this.blendColors(
@@ -1170,7 +1195,7 @@
       let lightText = this.getToolbarColor(false); // e.g. [r, g, b, a]
 
       if (this.canBeTransparent) {
-        lightText[3] -= 0.15; // Reduce alpha for light text
+        lightText[3] -= 0.25; // Reduce alpha for light text
       }
 
       // Composite text color over background
@@ -1493,14 +1518,15 @@
           );
           browser.gZenThemePicker.isLegacyVersion = this.isLegacyVersion;
           let isDarkMode = isDarkModeWindow;
-          if (!isDefaultTheme && !this.isLegacyVersion) {
+          const isUsingCustomColors = workspaceTheme.gradientColors.some((color) => color.isCustom);
+          if (!isDefaultTheme && !this.isLegacyVersion && !isUsingCustomColors) {
             // Check for the primary color
             isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
             browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
             browser.gZenThemePicker.panel.removeAttribute('invalidate-controls');
           } else {
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
-            if (!this.isLegacyVersion) {
+            if (!this.isLegacyVersion && !isUsingCustomColors) {
               browser.gZenThemePicker.panel.setAttribute('invalidate-controls', 'true');
             }
           }

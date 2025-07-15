@@ -118,7 +118,7 @@
 
   --zen-toolbar-element-bg: light-dark(
     color-mix(in oklch, var(--toolbox-textcolor) 8%, transparent),
-    color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
+    color-mix(in oklch, var(--toolbox-textcolor) 12.5%, transparent)
   );
 
   --zen-toolbar-element-bg-hover: light-dark(
@@ -229,9 +229,6 @@
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency')) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
-    @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
-      --zen-themed-toolbar-bg-transparent: light-dark(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
-    }
   }
 
   &[zen-should-be-dark-mode='true'] #browser {
@@ -251,22 +248,27 @@
   &:not([zen-should-be-dark-mode]) #zen-toast-container {
     @media -moz-pref('zen.view.window.scheme', 0) {
       color-scheme: dark;
+      --toolbar-color-scheme: dark;
     }
 
     @media -moz-pref('zen.view.window.scheme', 1) {
       color-scheme: light;
+      --toolbar-color-scheme: light;
     }
 
     @media -moz-pref('zen.view.window.scheme', 2) {
       color-scheme: light;
+      --toolbar-color-scheme: light;
       @media (-moz-system-dark-theme) {
         color-scheme: dark;
+        --toolbar-color-scheme: dark;
       }
     }
 
     :root[privatebrowsingmode='temporary'] &,
     &[privatebrowsingmode='temporary'] {
       color-scheme: dark;
+      --toolbar-color-scheme: dark;
     }
   }
 }

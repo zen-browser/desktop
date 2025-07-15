@@ -163,7 +163,8 @@
   list-style-image: url('search-page.svg') !important;
 }
 
-#open-file-button {
+#open-file-button,
+#zen-open-background-tab-button {
   list-style-image: url('open.svg') !important;
 }
 

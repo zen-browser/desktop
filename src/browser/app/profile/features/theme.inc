@@ -22,3 +22,4 @@ pref('zen.theme.essentials-favicon-bg', true);
 
 # Light weight themes
 pref('zen.theme.disable-lightweight', true);
+pref('zen.theme.use-sysyem-colors', false);

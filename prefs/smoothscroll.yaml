@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Smooth scrolling and mousewheel tuning preferences
+
+- name: general.smoothScroll.msdPhysics.enabled
+  value: true
+
+- name: general.smoothScroll.currentVelocityWeighting
+  value: '0.15'
+
+- name: general.smoothScroll.stopDecelerationWeighting
+  value: '0.6'
+
+- name: mousewheel.min_line_scroll_amount
+  value: 10
+
+- name: general.smoothScroll.mouseWheel.durationMinMS
+  value: 80
+
+- name: general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS
+  value: 12
+
+- name: general.smoothScroll.msdPhysics.motionBeginSpringConstant
+  value: 600
+
+- name: general.smoothScroll.msdPhysics.regularSpringConstant
+  value: 650
+
+- name: general.smoothScroll.msdPhysics.slowdownMinDeltaMS
+  value: 25
+
+- name: general.smoothScroll.msdPhysics.slowdownSpringConstant
+  value: 250
+
+- name: mousewheel.default.delta_multiplier_y
+  value: 200

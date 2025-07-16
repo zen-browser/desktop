@@ -11,7 +11,7 @@
   mirror: always
   rust: false
 
-#if if defined(XP_MACOSX)
+#if defined(XP_MACOSX)
 - name: zen.widget.macos.window-material
   type: uint32_t
   value: 1

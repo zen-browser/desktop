@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pref('pdfjs.enableHighlightEditor', true);
-pref('pdfjs.enableHighlightFloatingButton', true);
-pref("pdfjs.enableScripting", false);
+- name: xpinstall.signatures.required
+  value: true
+
+- name: extensions.pocket.enabled
+  value: false

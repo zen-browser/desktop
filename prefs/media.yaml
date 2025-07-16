@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: image.jxl.enabled
+  value: true
+  locked: true
+
+- name: svg.context-properties.content.enabled
+  value: true
+
+- name: image.avif.enabled
+  value: true
+  locked: true
+
+- name: media.eme.enabled
+  value: true

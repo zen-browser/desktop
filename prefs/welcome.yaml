@@ -2,15 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.haptic-feedback.enabled
-  cpptype: bool
-  value: true
-  mirror: always
-  type: static
+- name: zen.welcome-screen.seen
+  value: false
+  sticky: true
+  condition: defined(MOZILLA_OFFICIAL)
 
-- name: zen.swipe.is-fast-swipe
-  cpptype: bool
+- name: zen.welcome-screen.seen
   value: true
-  mirror: always
-  hidden: true
-  type: static
+  sticky: true
+  condition: '!defined(MOZILLA_OFFICIAL)'

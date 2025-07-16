@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.tabs.vertical
+  value: true
+
+- name: zen.tabs.vertical.right-side
+  value: false
+
+- name: zen.tabs.rename-tabs
+  value: true
+
+- name: zen.tabs.show-newtab-vertical
+  value: true
+
+- name: zen.ctrlTab.show-pending-tabs
+  value: false
+
+- name: zen.mediacontrols.enabled
+  value: true
+
+- name: zen.haptic-feedback.enabled
+  value: true
+
+- name: zen.startup.smooth-scroll-in-tabs
+  value: true

@@ -27,6 +27,8 @@
 //     mirror: <never | once | always>                   // mandatory if static
 //     lang: <static | rust | dynamic>                   // optional
 //     condition: <condition>                            // optional
+//     locked: <true | false>.                           // optional only on dynamic prefs
+//     sticky: <true | false>                            // optional only on dynamic prefs
 //
 // - `name` is the name of the pref, without double-quotes, as it appears
 //   in about:config. It is used in most libpref API functions (from both C++
@@ -81,8 +83,13 @@
 // - `condition` is an optional condition that must be true for the pref to be
 //   defined. It is a C++ expression that can use any global variable or macro
 //   defined in the C++ code, such as `MOZ_WIDGET_GTK` or `XP_MACOS`.
-//   
+//
 //   example: condition: "defined(XP_MACOS) || defined(MOZ_WIDGET_GTK)"
+//
+// - `locked` is an optional boolean that indicates whether the pref is locked
+//   (i.e., cannot be changed by the user). If set to `true`, the pref will
+//   be locked in the generated code, and the user will not be able
+//   to change it in about:config.
 //
 // The getter function's base name is the same as the pref's name, but with
 // '.' or '-' chars converted to '_', to make a valid identifier. For example,
@@ -94,14 +101,14 @@
 //   value was obtained at startup.
 //
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::env;
 use std::fs;
 use std::path::PathBuf;
-use std::env;
 
 const STATIC_PREFS: &str = "../engine/modules/libpref/init/zen-static-prefs.inc";
-const FIREFOX_PREFS: &str ="../engine/browser/app/profile/firefox.js";
-const DYNAMIC_PREFS: &str ="../engine/browser/app/profile/zen.js";
+const FIREFOX_PREFS: &str = "../engine/browser/app/profile/firefox.js";
+const DYNAMIC_PREFS: &str = "../engine/browser/app/profile/zen.js";
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Preference {
@@ -112,6 +119,8 @@ struct Preference {
     hidden: Option<bool>,
     cpptype: Option<String>,
     mirror: Option<String>,
+    locked: Option<bool>,
+    sticky: Option<bool>,
 }
 
 fn get_config_path() -> PathBuf {
@@ -123,8 +132,6 @@ fn get_config_path() -> PathBuf {
 fn ordered_prefs(mut prefs: Vec<Preference>) -> Vec<Preference> {
     // Sort preferences by name
     prefs.sort_by(|a, b| a.name.cmp(&b.name));
-    // Remove duplicates while preserving order
-    prefs.dedup_by(|a, b| a.name == b.name);
     prefs
 }
 
@@ -138,10 +145,9 @@ fn load_preferences() -> Vec<Preference> {
                 if let Some(ext) = entry.path().extension() {
                     if ext == "yaml" || ext == "yml" {
                         let file_path = entry.path();
-                        let content = fs::read_to_string(&file_path)
-                            .expect("Failed to read file");
-                        let mut parsed_prefs: Vec<Preference> = serde_yaml::from_str(&content)
-                            .expect("Failed to parse YAML");
+                        let content = fs::read_to_string(&file_path).expect("Failed to read file");
+                        let mut parsed_prefs: Vec<Preference> =
+                            serde_yaml::from_str(&content).expect("Failed to parse YAML");
                         prefs.append(&mut parsed_prefs);
                     }
                 }
@@ -152,16 +158,9 @@ fn load_preferences() -> Vec<Preference> {
 }
 
 fn get_condition_string(condition: &Option<String>) -> String {
-    match condition {
-        Some(cond) => {
-            if cond.is_empty() {
-                String::new()
-            } else {
-                format!("if {}", cond)
-            }
-        }
-        None => String::new(),
-    }
+    condition
+        .as_deref()
+        .map_or_else(String::new, |cond| cond.trim().to_string())
 }
 
 fn get_pref_with_condition(content: &str, condition: &str) -> String {
@@ -182,32 +181,65 @@ fn get_static_pref(pref: &Preference) -> String {
     //   set_spidermonkey_pref: <false | startup | always> # optional
     // We do not hide preferences in static prefs, so we ignore the `hidden` field.
     let name = format!("- name: {}\n", pref.name);
-    let cpp_type = format!("  type: {}\n", pref.cpptype.as_deref().expect("cpp type is mandatory on static prefs"));
+    let cpp_type = format!(
+        "  type: {}\n",
+        pref.cpptype
+            .as_deref()
+            .expect("cpp type is mandatory on static prefs")
+    );
     let value = format!("  value: {}\n", pref.value);
     let rust = if pref.r#type.as_deref() == Some("rust") {
         "  rust: true\n".to_string()
     } else {
         "  rust: false\n".to_string()
     };
-    let mirror = format!("  mirror: {}\n", pref.mirror.as_deref().expect("mirror is mandatory on static prefs"));
-    let mut content = format!(
-        "{}{}{}{}{}",
-        name, cpp_type, value, mirror, rust
+    let mirror = format!(
+        "  mirror: {}\n",
+        pref.mirror
+            .as_deref()
+            .expect("mirror is mandatory on static prefs")
     );
-    get_pref_with_condition(
-        &content,
-        &get_condition_string(&pref.condition)
-    )
+    let content = format!("{}{}{}{}{}", name, cpp_type, value, mirror, rust);
+    get_pref_with_condition(&content, &get_condition_string(&pref.condition))
 }
 
 fn get_dynamic_pref(pref: &Preference) -> String {
+    let value = get_value(pref);
     if pref.hidden.unwrap_or(false) {
-        return format!("# Hidden preference: {} = {}", pref.name, pref.value);
+        return format!("# Hidden preference: {} = {}", pref.name, value);
+    }
+    let third_arg;
+    let is_locked = pref.locked.unwrap_or(false);
+    let is_sticky = pref.sticky.unwrap_or(false);
+    if is_locked && is_sticky {
+        panic!("A dynamic pref cannot be both locked and sticky");
+    } else if is_locked {
+        third_arg = ", locked".to_string();
+    } else if is_sticky {
+        third_arg = ", sticky".to_string();
+    } else {
+        third_arg = String::new();
     }
     get_pref_with_condition(
-        &format!("pref(\"{}\", {});\n", pref.name, pref.value),
-        &get_condition_string(&pref.condition)
+        &format!("pref(\"{}\", {}{});\n", pref.name, value, third_arg),
+        &get_condition_string(&pref.condition),
     )
+}
+
+fn get_value(pref: &Preference) -> String {
+    // Strings must be wrapped inside double quotes
+    let value = &pref.value;
+    // Other values such as numbers or booleans can be used directly
+    // If the value is empty or there are any characters that could be misinterpreted,
+    // we should wrap it in double quotes.
+    let letters_inside_value = value.chars().any(|c| c.is_alphabetic()) 
+        && value != "true"
+        && value != "false" ;
+    if value.is_empty() || value.contains([' ', '\n', '\t', '"']) || letters_inside_value{
+        format!("\"{}\"", value.replace('"', "\\\""))
+    } else {
+        value.to_string()
+    }
 }
 
 fn write_preferences(prefs: &[Preference]) {
@@ -215,15 +247,18 @@ fn write_preferences(prefs: &[Preference]) {
     if !config_path.exists() {
         fs::create_dir_all(&config_path).expect("Failed to create prefs directory");
     }
-    
+
     let static_prefs_path = config_path.join(STATIC_PREFS);
     let dynamic_prefs_path = config_path.join(DYNAMIC_PREFS);
-    println!("Writing preferences to:\n  Static: {}\n  Dynamic: {}", 
-             static_prefs_path.display(), dynamic_prefs_path.display());
+    println!(
+        "Writing preferences to:\n  Static: {}\n  Dynamic: {}",
+        static_prefs_path.display(),
+        dynamic_prefs_path.display()
+    );
     let mut static_content = String::new();
     let mut dynamic_content = String::new();
     for pref in prefs {
-        println!("Writing preference: {} = {}", pref.name, pref.value);
+        println!("Writing preference: {} = {}", pref.name, get_value(pref));
         let ty = pref.r#type.as_deref().unwrap_or("");
         if ty == "static" || ty == "rust" {
             let content = get_static_pref(pref);
@@ -235,7 +270,7 @@ fn write_preferences(prefs: &[Preference]) {
 
     fs::write(&static_prefs_path, static_content).expect("Failed to write static prefs");
     fs::write(&dynamic_prefs_path, dynamic_content).expect("Failed to write dynamic prefs");
-}   
+}
 
 fn prepare_zen_prefs() {
     // Add `#include zen.js` to the bottom of the firefox.js file if it doesn't exist
@@ -246,7 +281,10 @@ fn prepare_zen_prefs() {
             fs::write(&firefox_prefs_path, content).expect("Failed to write firefox prefs");
         }
     } else {
-        eprintln!("Warning: {} does not exist or cannot be read.", firefox_prefs_path.display());
+        eprintln!(
+            "Warning: {} does not exist or cannot be read.",
+            firefox_prefs_path.display()
+        );
     }
 }
 

@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.watermark.enabled
-  value: '@cond'
-  sticky: true
-  condition: 'defined(MOZILLA_OFFICIAL)'
+- name: zen.downloads.download-animation
+  value: true
+
+- name: zen.downloads.download-animation-duration
+  value: 1000 # ms

@@ -69,7 +69,7 @@
 
 - name: app.update.checkInstallTime.days
   value: 6
-  condition: defined(MOZILLA_OFFICIAL)
+  condition: 'defined(MOZILLA_OFFICIAL)'
 
 - name: browser.profiles.enabled
   value: false

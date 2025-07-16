@@ -129,9 +129,6 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser --no-system-changes --exclude macos-sdk || true
           cd ..
 
-      - name: Import prefs
-        run: npm run ffprefs
-
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 

@@ -6,12 +6,12 @@
     "**/*": ""
   },
   "scripts": {
-    "build": "surfer build",
+    "build": "npm run ffprefs && surfer build",
     "build:ui": "surfer build --ui",
     "start": "cd engine && ./mach run --noprofile",
     "import": "surfer import",
     "export": "surfer export",
-    "init": "npm run download && npm run bootstrap && npm run import && npm run ffprefs",
+    "init": "npm run download && npm run bootstrap && npm run import",
     "download": "surfer download",
     "bootstrap": "surfer bootstrap",
     "package": "surfer package",

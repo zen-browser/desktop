@@ -89,9 +89,6 @@ jobs:
       - name: Import
         run: npm run import
 
-      - name: Import prefs
-        run: npm run ffprefs
-
       - name: Populate mozconfig
         env:
           SURFER_MOZCONFIG_ONLY: true

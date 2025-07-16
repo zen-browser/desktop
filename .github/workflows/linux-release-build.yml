@@ -107,9 +107,6 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
         run: npm run import
 
-      - name: Import prefs
-        run: npm run ffprefs
-
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 

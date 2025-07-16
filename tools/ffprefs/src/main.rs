@@ -108,7 +108,7 @@ use std::path::PathBuf;
 
 const STATIC_PREFS: &str = "../engine/modules/libpref/init/zen-static-prefs.inc";
 const FIREFOX_PREFS: &str = "../engine/browser/app/profile/firefox.js";
-const DYNAMIC_PREFS: &str = "../engine/browser/app/profile/zen.js";
+const DYNAMIC_PREFS: &str = "../engine/browser/app/profile/zen-browser.js";
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Preference {
@@ -220,6 +220,18 @@ fn get_dynamic_pref(pref: &Preference) -> String {
     } else {
         third_arg = String::new();
     }
+    // note: Dont use "value" here, as it adds quotes around the value
+    if pref.value == "@cond" {
+        // If the value is "@cond", we assume it is a placeholder for a condition
+        // that will be replaced later, so we do not include it in the pref definition.
+        return get_pref_with_condition(
+            &format!(
+                "pref(\"{}\", true);\n#else\npref(\"{}\", false);\n",
+                pref.name, pref.name
+            ),
+            &get_condition_string(&pref.condition),
+        );
+    }
     get_pref_with_condition(
         &format!("pref(\"{}\", {}{});\n", pref.name, value, third_arg),
         &get_condition_string(&pref.condition),
@@ -232,10 +244,9 @@ fn get_value(pref: &Preference) -> String {
     // Other values such as numbers or booleans can be used directly
     // If the value is empty or there are any characters that could be misinterpreted,
     // we should wrap it in double quotes.
-    let letters_inside_value = value.chars().any(|c| c.is_alphabetic()) 
-        && value != "true"
-        && value != "false" ;
-    if value.is_empty() || value.contains([' ', '\n', '\t', '"']) || letters_inside_value{
+    let letters_inside_value =
+        value.chars().any(|c| c.is_alphabetic()) && value != "true" && value != "false";
+    if value.is_empty() || value.contains([' ', '\n', '\t', '"']) || letters_inside_value {
         format!("\"{}\"", value.replace('"', "\\\""))
     } else {
         value.to_string()
@@ -258,7 +269,6 @@ fn write_preferences(prefs: &[Preference]) {
     let mut static_content = String::new();
     let mut dynamic_content = String::new();
     for pref in prefs {
-        println!("Writing preference: {} = {}", pref.name, get_value(pref));
         let ty = pref.r#type.as_deref().unwrap_or("");
         if ty == "static" || ty == "rust" {
             let content = get_static_pref(pref);
@@ -273,11 +283,13 @@ fn write_preferences(prefs: &[Preference]) {
 }
 
 fn prepare_zen_prefs() {
-    // Add `#include zen.js` to the bottom of the firefox.js file if it doesn't exist
+    // Add `#include zen-browser.js` to the bottom of the firefox.js file if it doesn't exist
+    let line = "#include zen-browser.js";
     let firefox_prefs_path = get_config_path().join(FIREFOX_PREFS);
     if let Ok(mut content) = fs::read_to_string(&firefox_prefs_path) {
-        if !content.contains("#include zen.js") {
-            content.push_str("\n#include zen.js\n");
+        if !content.contains(line) {
+            content.push_str(format!("\n{}\n", line).as_str());
+            // Ensure the file ends with a newline
             fs::write(&firefox_prefs_path, content).expect("Failed to write firefox prefs");
         }
     } else {

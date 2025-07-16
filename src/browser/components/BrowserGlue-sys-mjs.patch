@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index bde641f7112adde948707c172b9f18d3635d8ef1..70c4769d265210084c8ee2910fa68a0a38d6fb34 100644
+index 05a5063427e4038b3d57f6f5bae31b60428c7880..a01e25b52ffc3a68dddb513cb085b7df726d15b0 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";

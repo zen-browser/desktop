@@ -1,8 +1,8 @@
 diff --git a/image/DecoderFactory.cpp b/image/DecoderFactory.cpp
-index f36f03c7f2622f0fc54c04f5278ee83cbf03e9e8..d2cdd79f70056af8dc1304d3a2f5307986aeda49 100644
+index 21c94898cbbce9bdc9dec87c7e3e05fec77fb7c1..83a8fcc3aca34c61ac7334eb4b4ef3f3ea21c7ab 100644
 --- a/image/DecoderFactory.cpp
 +++ b/image/DecoderFactory.cpp
-@@ -244,7 +244,12 @@ nsresult DecoderFactory::CreateAnimationDecoder(
+@@ -249,7 +249,12 @@ nsresult DecoderFactory::CreateAnimationDecoder(
    }
  
    MOZ_ASSERT(aType == DecoderType::GIF || aType == DecoderType::PNG ||
@@ -16,7 +16,7 @@ index f36f03c7f2622f0fc54c04f5278ee83cbf03e9e8..d2cdd79f70056af8dc1304d3a2f53079
               "Calling CreateAnimationDecoder for non-animating DecoderType");
  
    // Create an anonymous decoder. Interaction with the SurfaceCache and the
-@@ -299,7 +304,12 @@ already_AddRefed<Decoder> DecoderFactory::CloneAnimationDecoder(
+@@ -304,7 +309,12 @@ already_AddRefed<Decoder> DecoderFactory::CloneAnimationDecoder(
    // rediscover it is animated).
    DecoderType type = aDecoder->GetType();
    MOZ_ASSERT(type == DecoderType::GIF || type == DecoderType::PNG ||

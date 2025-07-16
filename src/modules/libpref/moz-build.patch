@@ -1,5 +1,5 @@
 diff --git a/modules/libpref/moz.build b/modules/libpref/moz.build
-index 4e582caaa58884b27be20c45e4c39b0b841261ef..f8ce17a33f20380b3f56a3774e043b9fba849977 100644
+index bff4fa68bbb4f7937632395351a0f8800815f862..d823accd1227635b555af2ca710645244d53aa12 100644
 --- a/modules/libpref/moz.build
 +++ b/modules/libpref/moz.build
 @@ -93,6 +93,7 @@ pref_groups = [

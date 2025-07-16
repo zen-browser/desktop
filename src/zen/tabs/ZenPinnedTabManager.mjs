@@ -855,7 +855,7 @@
             const targetTab = event.target.closest('.tabbrowser-tab');
             if (targetTab) {
               const rect = targetTab.getBoundingClientRect();
-              let newIndex = targetTab._tPos;
+              let newIndex = targetTab.elementIndex;
 
               if (isVertical || !this.expandedSidebarMode) {
                 const middleY = targetTab.screenY + rect.height / 2;

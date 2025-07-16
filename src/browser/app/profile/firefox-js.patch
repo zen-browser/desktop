@@ -1,10 +1,10 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index 412e0879bbb0c7e7d1eb842212b064e1c77cab8f..bd23e5f2cd3f9c382f704fd1fcfdbb3edd71a454 100644
+index 4050c0090e7fa9e0b3121194f47c7d29d4c394ab..138a17f5907540edbf39867a2ef9e63148e3ffa6 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -3361,3 +3361,5 @@ pref("toolkit.contentRelevancy.log", false);
- // rotation altogether.
- pref("browser.contextual-services.contextId.rotation-in-days", 0);
- pref("browser.contextual-services.contextId.rust-component.enabled", false);
+@@ -3397,3 +3397,5 @@ pref("browser.contextual-services.contextId.rust-component.enabled", true);
+ 
+ // Pref to enable the IP protection feature
+ pref("browser.ipProtection.enabled", false);
 +
 +#include zen-browser.js

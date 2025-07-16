@@ -82,6 +82,9 @@ jobs:
           SURFER_NO_BRANDING_PATCH: true
         run: npm run import
 
+      - name: Import prefs
+        run: npm run ffprefs
+
       - name: Generate
         if: ${{ matrix.arch == 'x86_64' }}
         run: |

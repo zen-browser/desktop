@@ -31,6 +31,7 @@ Start-Job -Name "SurferInit" -ScriptBlock {
     param($PWD)
     cd $PWD
     npm run import -- --verbose
+    npm run ffprefs
     npm run surfer -- ci --brand release
 } -Verbose -ArgumentList $PWD -Debug
 

@@ -185,6 +185,9 @@ jobs:
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2022 || true
 
+      - name: Import prefs
+        run: npm run ffprefs
+
       - name: Setup Rust
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         run: |

@@ -1,0 +1,19 @@
+
+- name: zen.widget.macos.window-material
+  cpptype: uint32_t
+  value: 1
+  mirror: always
+  condition: "defined(XP_MACOSX)"
+  type: static
+
+- name: zen.haptic-feedback.enabled
+  cpptype: bool
+  value: true
+  mirror: always
+  type: static
+
+- name: zen.swipe.is-fast-swipe
+  cpptype: bool
+  value: true
+  mirror: always
+  type: static

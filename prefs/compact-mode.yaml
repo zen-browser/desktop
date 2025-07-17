@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.view.compact.hide-tabbar
+  value: true
+
+- name: zen.view.compact.hide-toolbar
+  value: false
+
+- name: zen.view.compact.toolbar-flash-popup
+  value: false
+
+- name: zen.view.compact.toolbar-flash-popup.duration
+  value: 800
+
+- name: zen.view.compact.toolbar-hide-after-hover.duration
+  value: 1000
+
+- name: zen.view.compact.color-toolbar
+  value: true
+
+- name: zen.view.compact.color-sidebar
+  value: true
+
+- name: zen.view.compact.animate-sidebar
+  value: true
+
+- name: zen.view.compact.show-sidebar-and-toolbar-on-hover
+  value: true
+
+- name: zen.view.compact.show-background-tab-toast
+  value: true
+
+# Do not edit manually
+- name: zen.view.compact.should-enable-at-startup
+  hidden: true
+  value: false

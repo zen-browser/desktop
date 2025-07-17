@@ -31,7 +31,7 @@ add_task(async function test_Restore_Closed_Tabs() {
       'Current tab should still be selected after closing tabs'
     );
     Assert.equal(gBrowser.tabs.length, 2, 'There should be one tab left after closing all tabs');
-    restoreLastClosedTabOrWindowOrSession();
+    SessionWindowUI.restoreLastClosedTabOrWindowOrSession(window);
     ok(!currentTab.selected, 'Current tab should not be selected after restore');
     Assert.equal(
       gBrowser.tabs.length,

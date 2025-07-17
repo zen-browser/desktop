@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Machine learning and chat feature preferences
+- name: browser.ml.chat.enabled
+  value: false
+
+- name: browser.ml.chat.shortcuts
+  value: false
+
+- name: browser.ml.chat.shortcuts.custom
+  value: false
+
+- name: browser.ml.chat.sidebar
+  value: false
+
+- name: browser.ml.enable
+  value: false

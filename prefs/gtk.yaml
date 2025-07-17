@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# GTK-specific preferences
+- name: widget.gtk.rounded-bottom-corners.enabled
+  value: true
+  condition: 'defined(MOZ_WIDGET_GTK) && defined(UNIX_BUT_NOT_MAC)'
+
+- name: zen.widget.linux.transparency
+  value: false
+  condition: 'defined(MOZ_WIDGET_GTK)'
+
+# VAAPI/FFmpeg preferences for Linux
+- name: media.ffmpeg.vaapi.enabled
+  value: true
+  condition: 'defined(MOZ_WIDGET_GTK)'
+
+- name: media.ffmpeg.encoder.enabled
+  value: true
+  condition: 'defined(MOZ_WIDGET_GTK)'

@@ -1,0 +1,47 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.view.sidebar-height-throttle
+  value: 0
+
+- name: zen.view.sidebar-expanded.max-width
+  value: 500
+
+- name: zen.view.mac.show-three-dot-menu
+  value: false
+  condition: 'defined(XP_MACOSX)'
+
+- name: zen.widget.mac.mono-window-controls
+  value: true
+  condition: 'defined(XP_MACOSX)'
+
+- name: zen.view.use-single-toolbar
+  value: true
+
+- name: zen.view.sidebar-expanded
+  value: true
+
+- name: zen.view.sidebar-collapsed.hide-mute-button
+  value: true
+
+- name: zen.view.experimental-force-window-controls-left
+  value: false
+
+- name: zen.view.hide-window-controls
+  value: true
+
+- name: zen.view.experimental-no-window-controls
+  value: false
+
+- name: zen.view.grey-out-inactive-windows
+  value: true
+
+- name: zen.view.show-newtab-button-border-top
+  value: false
+
+- name: zen.view.show-newtab-button-top
+  value: true
+
+- name: zen.view.window.scheme
+  value: 2

@@ -156,7 +156,7 @@
 /* ==========================================================================
    Pinned Tabs Separator
    ========================================================================== */
-.vertical-pinned-tabs-container-separator {
+.pinned-tabs-container-separator {
   background: light-dark(rgba(1, 1, 1, 0.075), rgba(255, 255, 255, 0.1));
   margin: 8px auto; /* Center horizontally */
   border: none;

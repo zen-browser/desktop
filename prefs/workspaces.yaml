@@ -1,0 +1,46 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.workspaces.continue-where-left-off
+  value: false
+
+- name: zen.workspaces.hide-default-container-indicator
+  value: true
+
+- name: zen.workspaces.force-container-workspace
+  value: false
+
+- name: zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed
+  value: false
+
+- name: zen.workspaces.swipe-actions
+  value: true
+
+- name: zen.workspaces.wrap-around-navigation
+  value: true
+
+- name: zen.workspaces.natural-scroll
+  value: false
+
+- name: zen.workspaces.scroll-modifier-key
+  value: ctrl
+
+- name: services.sync.engine.workspaces
+  value: false
+
+- name: zen.workspaces.separate-essentials
+  value: true
+
+- name: zen.workspaces.debug
+  value: '@cond'
+  condition: '!defined(MOZILLA_OFFICIAL)' # Section: Pinned tabs management
+
+- name: zen.pinned-tab-manager.debug
+  value: false
+
+- name: zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url
+  value: false
+
+- name: zen.pinned-tab-manager.close-shortcut-behavior
+  value: reset-unload-switch

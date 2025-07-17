@@ -1,0 +1,39 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.theme.accent-color
+  value: '#ffb787'
+
+- name: zen.theme.content-element-separation
+  value: 8
+
+- name: zen.theme.gradient
+  value: true
+
+- name: zen.theme.gradient.show-custom-colors
+  value: false
+
+- name: zen.theme.essentials-favicon-bg
+  value: true
+
+- name: zen.theme.acrylic-elements
+  value: false
+
+- name: zen.theme.disable-lightweight
+  value: true
+
+- name: zen.theme.use-sysyem-colors
+  value: false
+
+# ==== Mark: border radius ====
+
+# macOS border radius
+- name: zen.theme.border-radius
+  value: 10
+  condition: 'defined(XP_MACOSX)'
+
+# non-macOS border radius
+- name: zen.theme.border-radius
+  value: 8
+  condition: '!defined(XP_MACOSX)'

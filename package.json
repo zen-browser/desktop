@@ -6,7 +6,7 @@
     "**/*": ""
   },
   "scripts": {
-    "build": "surfer build",
+    "build": "npm run ffprefs && surfer build",
     "build:ui": "surfer build --ui",
     "start": "cd engine && ./mach run --noprofile",
     "import": "surfer import",
@@ -25,7 +25,8 @@
     "reset-ff": "surfer reset",
     "surfer": "surfer",
     "test": "python3 scripts/run_tests.py",
-    "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure"
+    "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure",
+    "ffprefs": "cd tools/ffprefs && cargo run --release --bin ffprefs -- ../../"
   },
   "repository": {
     "type": "git",
@@ -42,7 +43,7 @@
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.11.13"
+    "@zen-browser/surfer": "^1.11.14"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",

@@ -380,7 +380,6 @@ menuseparator {
     font-weight: 600;
     align-items: center;
     width: max-content;
-    font-size: small;
     position: absolute;
     transform-origin: top center;
     max-height: var(--zen-toast-max-height);

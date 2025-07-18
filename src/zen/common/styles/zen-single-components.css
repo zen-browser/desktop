@@ -106,13 +106,8 @@ body > #confetti {
   #zen-sidebar-foot-buttons & {
     --tab-border-radius: 6px;
     --toolbarbutton-border-radius: var(--tab-border-radius);
-    --toolbarbutton-inner-padding: 7px;
-
-    &,
-    & stack {
-      width: 30px;
-      height: 30px;
-    }
+    --toolbarbutton-inner-padding: 5px;
+    --toolbarbutton-outer-padding: 2px;
   }
 
   transition:

@@ -1,5 +1,11 @@
-<vbox id="zen-glance-sidebar-container" hidden="true">
-  <toolbarbutton id="zen-glance-sidebar-close" data-l10n-id="zen-general-confirm" class="toolbarbutton-1"/>
-  <toolbarbutton id="zen-glance-sidebar-open" class="toolbarbutton-1"/>
-  <toolbarbutton id="zen-glance-sidebar-split" class="toolbarbutton-1"/>
-</vbox>
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<html:template id="zen-glance-sidebar-template">
+  <vbox class="zen-glance-sidebar-container">
+    <toolbarbutton class="zen-glance-sidebar-close toolbarbutton-1" command="cmd_zenGlanceClose" data-l10n-id="zen-general-confirm" />
+    <toolbarbutton class="zen-glance-sidebar-open toolbarbutton-1" command="cmd_zenGlanceExpand" />
+    <toolbarbutton class="zen-glance-sidebar-split toolbarbutton-1" command="cmd_zenGlanceSplit" />
+  </vbox>
+</html:template>

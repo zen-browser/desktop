@@ -344,7 +344,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   get pinnedTabsContainer() {
     if (!this.workspaceEnabled || !this._hasInitializedTabsStrip) {
-      return document.getElementById('vertical-pinned-tabs-container');
+      return document.getElementById('pinned-tabs-container');
     }
     return document.querySelector(`zen-workspace[active]`)?.pinnedTabsContainer;
   }
@@ -889,6 +889,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   async initializeWorkspaces() {
     let activeWorkspace = await this.getActiveWorkspace();
     this.activeWorkspace = activeWorkspace?.uuid;
+    await gZenSessionStore.promiseInitialized;
     try {
       if (activeWorkspace) {
         window.gZenThemePicker = new nsZenThemePicker();
@@ -897,7 +898,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     } catch (e) {
       console.error('gZenWorkspaces: Error initializing theme picker', e);
     }
-    await gZenSessionStore.promiseInitialized;
     await this.workspaceBookmarks();
     await this.initializeTabsStripSections();
     this._initializeEmptyTab();
@@ -1537,10 +1537,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       const container = this.workspaceElement(otherWorkspace.uuid);
       container.active = otherWorkspace.uuid === workspace.uuid;
     }
-    gBrowser.verticalPinnedTabsContainer =
-      this.pinnedTabsContainer || gBrowser.verticalPinnedTabsContainer;
-    gBrowser.tabContainer.verticalPinnedTabsContainer =
-      this.pinnedTabsContainer || gBrowser.tabContainer.verticalPinnedTabsContainer;
+    gBrowser.pinnedTabsContainer = this.pinnedTabsContainer || gBrowser.pinnedTabsContainer;
+    gBrowser.tabContainer.pinnedTabsContainer =
+      this.pinnedTabsContainer || gBrowser.tabContainer.pinnedTabsContainer;
     // Move empty tab to the new workspace
     this._moveEmptyTabToWorkspace(workspace.uuid);
 
@@ -2677,7 +2676,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     let pinnedContainers = [];
     let normalContainers = [];
     if (!this._hasInitializedTabsStrip) {
-      pinnedContainers = [document.getElementById('vertical-pinned-tabs-container')];
+      pinnedContainers = [document.getElementById('pinned-tabs-container')];
       normalContainers = [this.activeWorkspaceStrip];
     } else {
       for (const workspace of this._workspaceCache.workspaces) {
@@ -2881,7 +2880,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       parent.removeAttribute('icons-overflow');
       return;
     }
-    const maxButtonSize = 30; // IMPORTANT: This should match the CSS size of the icons
+    const maxButtonSize = 26; // IMPORTANT: This should match the CSS size of the icons
     const minButtonSize = 15;
     const separation = 3; // Space between icons
 

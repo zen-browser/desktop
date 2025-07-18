@@ -19,6 +19,12 @@
       & browser[transparent='true'] {
         background: light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
       }
+
+      @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
+        & browser[type='content'] {
+          color-scheme: env(-moz-content-preferred-color-scheme);
+        }
+      }
     }
   }
 }

@@ -34,7 +34,7 @@
 
 #stop-button,
 .close-icon,
-#zen-glance-sidebar-close,
+.zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove {
   list-style-image: url('close.svg') !important;
 }
@@ -66,6 +66,10 @@
 #appMenu-downloads-button,
 #appMenu-library-downloads-button {
   list-style-image: url('downloads.svg') !important;
+}
+
+#downloads-indicator-icon {
+  max-height: 16px;
 }
 
 #appMenu-translate-button {
@@ -159,7 +163,8 @@
   list-style-image: url('search-page.svg') !important;
 }
 
-#open-file-button {
+#open-file-button,
+#zen-open-background-tab-button {
   list-style-image: url('open.svg') !important;
 }
 
@@ -252,7 +257,7 @@
 
 #restore-button,
 #fullscreen-button,
-#zen-glance-sidebar-open,
+.zen-glance-sidebar-open,
 #appMenu-fullscreen-button2,
 .zen-tab-unsplit-button {
   list-style-image: url('fullscreen.svg') !important;
@@ -427,7 +432,7 @@
   list-style-image: url('bookmark.svg') !important;
 }
 
-#zen-glance-sidebar-split {
+.zen-glance-sidebar-split {
   list-style-image: url('split.svg');
 
   &[disabled='true'] {

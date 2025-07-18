@@ -1,0 +1,22 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Enable transparent background for macos
+- name: widget.macos.sidebar-blend-mode.behind-window
+  value: true
+  condition: 'defined(XP_MACOSX)'
+
+# 1. hudWindow
+# 2. fullScreenUI
+# 3. popover
+# 4. menu
+# 5. toolTip
+# 6. headerView
+# 7. underlay
+- name: zen.widget.macos.window-material
+  value: 1
+  condition: 'defined(XP_MACOSX)'
+  cpptype: uint32_t
+  mirror: always
+  type: static

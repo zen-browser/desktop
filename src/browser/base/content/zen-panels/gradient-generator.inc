@@ -100,7 +100,13 @@
                 </defs>
               </svg>
             </box>
-            <html:input type="range" min="0.3" max="0.9" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity" />
+            <html:input type="range" max="0.9" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
+#ifdef XP_MACOSX
+              min="0.25"
+#else
+              min="0.35"
+#endif
+              />
           </vbox>
           <vbox id="PanelUI-zen-gradient-generator-texture-wrapper">
           </vbox>
@@ -110,7 +116,8 @@
         <vbox id="zen-theme-picker-color">
           <label data-l10n-id="zen-panel-ui-gradient-generator-custom-color"></label>
           <hbox>
-            <html:input type="text" placeholder="#000000" id="PanelUI-zen-gradient-generator-custom-input" />
+            <html:input type="color" id="PanelUI-zen-gradient-generator-custom-input" />
+            <html:input type="number" value="1" min="0" max="1" step="0.01" id="PanelUI-zen-gradient-generator-custom-opacity" />
             <toolbarbutton id="PanelUI-zen-gradient-generator-color-custom-add" class="subviewbutton">
               <image></image>
             </toolbarbutton>

@@ -41,7 +41,7 @@
   }
 
   const MAX_OPACITY = 0.9;
-  const MIN_OPACITY = 0.3;
+  const MIN_OPACITY = AppConstants.platform === 'macosx' ? 0.25 : 0.35;
 
   const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
 
@@ -125,6 +125,8 @@
         2,
         darkModeChange
       );
+
+      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.25);
     }
 
     handleDarkModeChange(event) {
@@ -132,6 +134,9 @@
     }
 
     get isDarkMode() {
+      if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+        return true;
+      }
       switch (this.windowSchemeType) {
         case 0:
           return true;
@@ -169,6 +174,13 @@
         position: 'topright topleft',
         triggerEvent: event,
         y: fromForm ? -160 : 0,
+      });
+    }
+
+    initCustomColorInput() {
+      this.customColorInput.addEventListener('change', (event) => {
+        // Prevent the popup from closing when the input is focused
+        this.openThemePicker(event);
       });
     }
 
@@ -213,10 +225,6 @@
           this.handleColorPositions(dots, true);
           this.updateCurrentWorkspace();
         });
-    }
-
-    initCustomColorInput() {
-      this.customColorInput.addEventListener('keydown', this.onCustomColorKeydown.bind(this));
     }
 
     initColorPages() {
@@ -333,14 +341,6 @@
       this._onTextureMouseUp = null;
     }
 
-    onCustomColorKeydown(event) {
-      // Check for Enter key to add custom colors
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        this.addCustomColor();
-      }
-    }
-
     initThemePicker() {
       const themePicker = this.panel.querySelector('.zen-theme-picker-gradient');
       this._onDotMouseMove = this.onDotMouseMove.bind(this);
@@ -422,7 +422,7 @@
     calculateInitialPosition([r, g, b]) {
       // This function is called before the picker is even rendered, so we hard code the dimensions
       // important: If any sort of sizing is changed, make sure changes are reflected here
-      const padding = 20;
+      const padding = 30;
       const rect = {
         width: 338,
         height: 338,
@@ -442,7 +442,7 @@
       // Return a color as hsl based on the position in the gradient
       const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
       const rect = gradient.getBoundingClientRect();
-      const padding = 20; // each side
+      const padding = 30; // each side
       const dotHalfSize = 36 / 2; // half the size of the dot
       x += dotHalfSize;
       y += dotHalfSize;
@@ -459,8 +459,9 @@
       }
       const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
       const hue = (angle / 360) * 360; // Normalize angle to [0, 360)
-      const saturation = normalizedDistance * 100; // Scale distance to [0, 100]
+      let saturation = normalizedDistance * 100; // stays high even in center
       if (type !== EXPLICIT_LIGHTNESS_TYPE) {
+        saturation = 80 + (1 - normalizedDistance) * 20;
         // Set the current lightness to how far we are from the center of the circle
         // For example, moving the dot outside will have higher lightness, while moving it inside will have lower lightness
         this.#currentLightness = Math.round((1 - normalizedDistance) * 100);
@@ -515,7 +516,7 @@
         this.dots.push({
           ID: id,
           element: dot,
-          position: { x: null, y: null }, // at some point possition should instead be stored as percentege just so that the size of the color picker does not matter.
+          position: { x, y },
           type: color.type,
           lightness: color.lightness,
         });
@@ -554,6 +555,24 @@
         return;
       }
 
+      let colorOpacity =
+        document.getElementById('PanelUI-zen-gradient-generator-custom-opacity')?.value ?? 1;
+      // Convert the opacity into a hex value if it's not already
+      if (colorOpacity < 1) {
+        // e.g. if opacity is 1, we add to the color FF, if it's 0.5 we add 80, etc.
+        const hexOpacity = Math.round(colorOpacity * 255)
+          .toString(16)
+          .padStart(2, '0')
+          .toUpperCase();
+        // If the color is in hex format
+        if (color.startsWith('#')) {
+          // If the color is already in hex format, we just append the opacity
+          if (color.length === 7) {
+            color += hexOpacity;
+          }
+        }
+      }
+
       // Add '#' prefix if it's missing and the input appears to be a hex color
       if (!color.startsWith('#') && /^[0-9A-Fa-f]{3,6}$/.test(color)) {
         color = '#' + color;
@@ -566,6 +585,7 @@
       dot.style.setProperty('--zen-theme-picker-dot-color', color);
       this.panel.querySelector('#PanelUI-zen-gradient-generator-custom-list').prepend(dot);
       this.customColorInput.value = '';
+      document.getElementById('PanelUI-zen-gradient-generator-custom-opacity').value = 1;
       await this.updateCurrentWorkspace();
     }
 
@@ -688,7 +708,7 @@
 
       const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
       const rect = dotPad.getBoundingClientRect();
-      const padding = 20;
+      const padding = 30;
 
       let updatedDots = [...dots];
       const centerPosition = { x: rect.width / 2, y: rect.height / 2 };
@@ -837,7 +857,7 @@
 
       const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
       const rect = gradient.getBoundingClientRect();
-      const padding = 20;
+      const padding = 30;
 
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -970,7 +990,7 @@
       if (this.dragging) {
         event.preventDefault();
         const rect = this.panel.querySelector('.zen-theme-picker-gradient').getBoundingClientRect();
-        const padding = 20; // each side
+        const padding = 30; // each side
         // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
         // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
         // should be placed on the edge of the circle. If it's inside the circle, then the ball just follows the mouse
@@ -1006,6 +1026,7 @@
     }
 
     themedColors(colors) {
+      // For non-Mica themes, we return the colors as they are
       return [...colors];
     }
 
@@ -1029,24 +1050,38 @@
       return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${baseColor[3]})`;
     }
 
+    get isMica() {
+      return window.matchMedia('(-moz-windows-mica)').matches;
+    }
+
     get canBeTransparent() {
-      return window.matchMedia(
-        '(-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
-      ).matches;
+      return (
+        this.isMica ||
+        window.matchMedia(
+          '(-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref("zen.widget.linux.transparency"))'
+        ).matches
+      );
     }
 
     blendWithWhiteOverlay(baseColor, opacity) {
-      const blendColor = [255, 255, 255];
-      const blendAlpha = 0.2;
-      const baseAlpha = baseColor[3] !== undefined ? baseColor[3] : 1;
-      const blended = [];
-
-      for (let i = 0; i < 3; i++) {
-        blended[i] = Math.round(blendColor[i] * (1 - opacity) + baseColor[i] * opacity);
+      let colorToBlend;
+      let colorToBlendOpacity;
+      if (this.isMica) {
+        colorToBlend = !this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
+        colorToBlendOpacity = 0.35;
+      } else if (AppConstants.platform === 'macosx') {
+        colorToBlend = [255, 255, 255];
+        colorToBlendOpacity = 0.3;
       }
-
-      const blendedAlpha = +(blendAlpha * (1 - opacity) + baseAlpha * opacity).toFixed(3);
-      return `rgba(${blended[0]}, ${blended[1]}, ${blended[2]}, ${blendedAlpha})`;
+      if (colorToBlend) {
+        const blendedAlpha = Math.min(
+          1,
+          opacity + MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + MIN_OPACITY))
+        );
+        baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
+        opacity += colorToBlendOpacity * (1 - opacity);
+      }
+      return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
     }
 
     getSingleRGBColor(color, forToolbar = false) {
@@ -1064,11 +1099,21 @@
       } else {
         color = color.c;
       }
+      if (this.isLegacyVersion && this.isDarkMode) {
+        // In legacy version, we blend with white overlay or black overlay based on if we are in dark mode
+        color = this.blendColors(color, [0, 0, 0], 30);
+      }
       return this.blendWithWhiteOverlay(color, opacity);
     }
 
     luminance([r, g, b]) {
-      return 0.2126 * (r / 255) + 0.7152 * (g / 255) + 0.0722 * (b / 255);
+      // These magic numbers are extracted from the wikipedia article on relative luminance
+      // https://en.wikipedia.org/wiki/Relative_luminance
+      var a = [r, g, b].map((v) => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
     }
 
     contrastRatio(rgb1, rgb2) {
@@ -1095,7 +1140,11 @@
 
       const rotation = -45; // TODO: Detect rotation based on the accent color
       if (themedColors.length === 0) {
-        return forToolbar ? this.getToolbarModifiedBase() : 'transparent';
+        return forToolbar
+          ? this.getToolbarModifiedBase()
+          : this.isDarkMode
+            ? 'rgba(0, 0, 0, 0.4)'
+            : 'transparent';
       } else if (themedColors.length === 1) {
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else {
@@ -1142,6 +1191,10 @@
     }
 
     shouldBeDarkMode(accentColor) {
+      if (Services.prefs.getBoolPref('zen.theme.use-sysyem-colors')) {
+        return this.isDarkMode;
+      }
+
       if (!this.canBeTransparent) {
         const toolbarBg = this.getToolbarModifiedBaseRaw();
         accentColor = this.blendColors(
@@ -1157,7 +1210,9 @@
       let darkText = this.getToolbarColor(true); // e.g. [r, g, b, a]
       let lightText = this.getToolbarColor(false); // e.g. [r, g, b, a]
 
-      lightText[3] -= 0.4; // Reduce alpha for light text
+      if (this.canBeTransparent) {
+        lightText[3] -= this.darkModeBias; // Reduce alpha for light text
+      }
 
       // Composite text color over background
       darkText = this.blendColors(bg, darkText.slice(0, 3), (1 - darkText[3]) * 100);
@@ -1203,93 +1258,13 @@
       ];
     }
 
-    pSBC = (p, c0, c1, l) => {
-      let r,
-        g,
-        b,
-        P,
-        f,
-        t,
-        h,
-        i = parseInt,
-        m = Math.round,
-        a = typeof c1 == 'string';
-      if (
-        typeof p != 'number' ||
-        p < -1 ||
-        p > 1 ||
-        typeof c0 != 'string' ||
-        (c0[0] != 'r' && c0[0] != '#') ||
-        (c1 && !a)
-      )
-        return null;
-      if (!this.pSBCr)
-        this.pSBCr = (d) => {
-          let n = d.length,
-            x = {};
-          if (n > 9) {
-            ([r, g, b, a] = d = d.split(',')), (n = d.length);
-            if (n < 3 || n > 4) return null;
-            (x.r = i(r[3] == 'a' ? r.slice(5) : r.slice(4))),
-              (x.g = i(g)),
-              (x.b = i(b)),
-              (x.a = a ? parseFloat(a) : -1);
-          } else {
-            if (n == 8 || n == 6 || n < 4) return null;
-            if (n < 6)
-              d = '#' + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : '');
-            d = i(d.slice(1), 16);
-            if (n == 9 || n == 5)
-              (x.r = (d >> 24) & 255),
-                (x.g = (d >> 16) & 255),
-                (x.b = (d >> 8) & 255),
-                (x.a = m((d & 255) / 0.255) / 1000);
-            else (x.r = d >> 16), (x.g = (d >> 8) & 255), (x.b = d & 255), (x.a = -1);
-          }
-          return x;
-        };
-      (h = c0.length > 9),
-        (h = a ? (c1.length > 9 ? true : c1 == 'c' ? !h : false) : h),
-        (f = this.pSBCr(c0)),
-        (P = p < 0),
-        (t =
-          c1 && c1 != 'c'
-            ? this.pSBCr(c1)
-            : P
-              ? { r: 0, g: 0, b: 0, a: -1 }
-              : { r: 255, g: 255, b: 255, a: -1 }),
-        (p = P ? p * -1 : p),
-        (P = 1 - p);
-      if (!f || !t) return null;
-      if (l) (r = m(P * f.r + p * t.r)), (g = m(P * f.g + p * t.g)), (b = m(P * f.b + p * t.b));
-      else
-        (r = m((P * f.r ** 2 + p * t.r ** 2) ** 0.5)),
-          (g = m((P * f.g ** 2 + p * t.g ** 2) ** 0.5)),
-          (b = m((P * f.b ** 2 + p * t.b ** 2) ** 0.5));
-      (a = f.a),
-        (t = t.a),
-        (f = a >= 0 || t >= 0),
-        (a = f ? (a < 0 ? t : t < 0 ? a : a * P + t * p) : 0);
-      if (h)
-        return (
-          'rgb' +
-          (f ? 'a(' : '(') +
-          r +
-          ',' +
-          g +
-          ',' +
-          b +
-          (f ? ',' + m(a * 1000) / 1000 : '') +
-          ')'
-        );
-      else
-        return (
-          '#' +
-          (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0))
-            .toString(16)
-            .slice(1, f ? undefined : -2)
-        );
-    };
+    /**
+     * Get the primary color from a list of colors.
+     * @returns {string} The primary color in hex format.
+     */
+    getAccentColorForUI(accentColor) {
+      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    }
 
     getMostDominantColor(allColors) {
       const color = this.getPrimaryColor(allColors);
@@ -1309,7 +1284,7 @@
       let workspaceTheme = theme || workspace.theme;
 
       await this.foreachWindowAsActive(async (browser) => {
-        if (!browser.gZenThemePicker.promiseInitialized) {
+        if (!browser.gZenThemePicker?.promiseInitialized) {
           return;
         }
 
@@ -1361,7 +1336,7 @@
         let dominantColor = this.getMostDominantColor(workspaceTheme.gradientColors);
         const isDefaultTheme = !dominantColor;
         if (isDefaultTheme) {
-          dominantColor = this.hexToRgb(this.getNativeAccentColor());
+          dominantColor = this.getNativeAccentColor();
         }
 
         const opacitySlider = browser.document.getElementById(
@@ -1468,25 +1443,21 @@
           '--zen-main-browser-background',
           gradient
         );
-
+        const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
         if (dominantColor) {
-          browser.document.documentElement.style.setProperty(
-            '--zen-primary-color',
-            this.pSBC(
-              this.isDarkMode ? 0.2 : -0.5,
-              `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`
-            )
-          );
+          const primaryColor = this.getAccentColorForUI(dominantColor);
+          browser.document.documentElement.style.setProperty('--zen-primary-color', primaryColor);
           browser.gZenThemePicker.isLegacyVersion = this.isLegacyVersion;
-          let isDarkMode = this.isDarkMode;
-          if (!isDefaultTheme && !this.isLegacyVersion) {
+          let isDarkMode = isDarkModeWindow;
+          const isUsingCustomColors = workspaceTheme.gradientColors.some((color) => color.isCustom);
+          if (!isDefaultTheme && !this.isLegacyVersion && !isUsingCustomColors) {
             // Check for the primary color
             isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
             browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
             browser.gZenThemePicker.panel.removeAttribute('invalidate-controls');
           } else {
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
-            if (!this.isLegacyVersion) {
+            if (!this.isLegacyVersion && !isUsingCustomColors) {
               browser.gZenThemePicker.panel.setAttribute('invalidate-controls', 'true');
             }
           }
@@ -1499,7 +1470,7 @@
         }
 
         if (!skipUpdate) {
-          this.dots = [];
+          browser.gZenThemePicker.dots = [];
           browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
         }
       });
@@ -1517,7 +1488,13 @@
     }
 
     getNativeAccentColor() {
-      return Services.prefs.getStringPref('zen.theme.accent-color');
+      const accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
+      const rgb = this.hexToRgb(accentColor);
+      if (this.isDarkMode) {
+        // If the theme is dark, we want to use a lighter color
+        return this.blendColors(rgb, [0, 0, 0], 60);
+      }
+      return rgb;
     }
 
     resetCustomColorList() {
@@ -1593,7 +1570,7 @@
         currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
       }
 
-      await this.onWorkspaceChange(currentWorkspace, true, skipSave ? gradient : null);
+      await this.onWorkspaceChange(currentWorkspace, skipSave, skipSave ? gradient : null);
     }
 
     async handlePanelClose() {

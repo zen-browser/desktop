@@ -1887,7 +1887,12 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
     document
       .getElementById('cmd_zenSplitViewLinkInNewTab')
       .setAttribute('disabled', shouldBeDisabled);
-    document.getElementById('zen-glance-sidebar-split').setAttribute('disabled', shouldBeDisabled);
+    const splitGlanceCommand = document.getElementById('cmd_zenGlanceSplit');
+    if (shouldBeDisabled) {
+      splitGlanceCommand.setAttribute('disabled', true);
+    } else {
+      splitGlanceCommand.removeAttribute('disabled');
+    }
   }
 
   canOpenLinkInSplitView() {

@@ -22,7 +22,6 @@
     display: none !important;
   }
 
-  --toolbarbutton-hover-background: transparent !important;
   border-radius: var(--zen-button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
@@ -34,8 +33,8 @@
 
   & toolbarbutton {
     margin: 0;
-   max-width: 30px;
-    height: 30px;
+    max-width: 26px;
+    height: 26px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -69,11 +68,15 @@
 
     &:hover,
     &[dragged='true']{
-      background-color: var(--zen-toolbar-element-bg);
+      background-color: var(--toolbarbutton-hover-background);
     }
 
     & label {
       margin: 0 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      min-width: 36px;
     }
   }
 
@@ -205,6 +208,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: auto;
+    font-weight: 600;
   }
 
   .zen-workspaces-actions {
@@ -214,7 +218,10 @@
     transition: opacity 0.1s;
     order: 5;
     --toolbarbutton-inner-padding: 6px;
-    --tab-border-radius: 8px;
+
+    & image {
+      border-radius: calc(var(--border-radius-medium) - 4px);
+    }
 
     :root[zen-renaming-tab='true'] & {
       display: none;
@@ -302,6 +309,14 @@ zen-workspace {
     & .zen-workspace-normal-tabs-section {
       height: 100%;
     }
+  }
+}
+
+.workspace-arrowscrollbox {
+  font-size: 14px;
+
+  @media not (-moz-platform: linux) {
+    font-weight: 500;
   }
 }
 

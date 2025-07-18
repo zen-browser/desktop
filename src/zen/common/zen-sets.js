@@ -111,6 +111,7 @@ document.addEventListener(
             gZenWorkspaces.openWorkspaceCreation(event);
             break;
           default:
+            gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;
               gZenWorkspaces.shortcutSwitchTo(index);

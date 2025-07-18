@@ -136,16 +136,6 @@ groupbox h2 {
   left: 0;
 }
 
-#searchInput {
-  width: 100% !important;
-  border: none;
-  outline: none;
-  min-height: 40px;
-  border-radius: 10px;
-  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  padding-inline: 15px;
-}
-
 .textbox-search-sign {
   margin-right: 15px;
 }
@@ -592,7 +582,6 @@ groupbox h2 {
 #dataCollectionGroup,
 #websiteAdvertisingCategory,
 #websiteAdvertisingGroup,
-#webAppearanceGroup,
 #helpButton {
   display: none !important;
 }

@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index b3b128cb5eb8c005c642965a8c8e5e68bf756e77..6e128d45c983b267e349b08097c56380dd04be3d 100644
+index a50fc9cae85527a10c3949163594ce43b68b14c0..82aec0fb0ebd6ffc6dc3143ddb56e9fe102f0caa 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -44,6 +44,8 @@
@@ -15,7 +15,7 @@ index b3b128cb5eb8c005c642965a8c8e5e68bf756e77..6e128d45c983b267e349b08097c56380
    <hbox flex="1">
  
      <vbox class="navigation">
-+      <search-textbox
++      <html:moz-input-search
 +        id="searchInput"
 +        data-l10n-id="search-input-box2"
 +        data-l10n-attrs="placeholder, style"
@@ -78,7 +78,7 @@ index b3b128cb5eb8c005c642965a8c8e5e68bf756e77..6e128d45c983b267e349b08097c56380
                  <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
                </hbox>
              </hbox>
--            <search-textbox
+-            <html:moz-input-search
 -              id="searchInput"
 -              data-l10n-id="search-input-box2"
 -              data-l10n-attrs="placeholder, style"

@@ -541,7 +541,7 @@
         case 'unload-switch':
         case 'reset-switch':
         case 'switch':
-          if (behavior.includes('unload') && !selectedTab.hasAttribute('zen-essential')) {
+          if (behavior.includes('unload')) {
             if (selectedTab.hasAttribute('glance-id')) {
               break;
             }
@@ -855,7 +855,7 @@
             const targetTab = event.target.closest('.tabbrowser-tab');
             if (targetTab) {
               const rect = targetTab.getBoundingClientRect();
-              let newIndex = targetTab._tPos;
+              let newIndex = targetTab.elementIndex;
 
               if (isVertical || !this.expandedSidebarMode) {
                 const middleY = targetTab.screenY + rect.height / 2;
@@ -940,7 +940,7 @@
       if (!this._dragIndicator) {
         this._dragIndicator = document.createElement('div');
         this._dragIndicator.id = 'zen-drag-indicator';
-        document.body.appendChild(this._dragIndicator);
+        gNavToolbox.appendChild(this._dragIndicator);
       }
       return this._dragIndicator;
     }

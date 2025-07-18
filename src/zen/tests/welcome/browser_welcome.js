@@ -18,6 +18,11 @@ add_task(async function test_Welcome_Steps() {
     }, 2000); // Give tons of time for the welcome start button to be clicked
   });
   ok(true, 'Welcome start button clicked successfully');
+  Assert.equal(
+    window.windowState,
+    window.STATE_MAXIMIZED,
+    'Window should be maximized after clicking the welcome start button'
+  );
 
   const welcomeContent = document.getElementById('zen-welcome-page-content');
 

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/TabUnloader.sys.mjs b/browser/components/tabbrowser/TabUnloader.sys.mjs
-index 44846cc902fd3fc17d12be38ac9abccb47a12f23..c715c7cf47486066b3fd6f92bf78bc8a720759bc 100644
+index 0c62cdf29a72a7518cc54c014b5042f9695311eb..d5ac63d5005065863391e415f7072145d3247cad 100644
 --- a/browser/components/tabbrowser/TabUnloader.sys.mjs
 +++ b/browser/components/tabbrowser/TabUnloader.sys.mjs
 @@ -52,7 +52,7 @@ let CRITERIA_WEIGHT = 1;

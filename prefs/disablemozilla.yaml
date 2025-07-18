@@ -1,0 +1,33 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: browser.privatebrowsing.vpnpromourl
+  value: ''
+  locked: true
+
+- name: extensions.getAddons.showPane
+  value: false
+
+- name: extensions.htmlaboutaddons.recommendations.enabled
+  value: false
+
+- name: browser.discovery.enabled
+  value: false
+
+- name: browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons
+  value: false
+
+- name: browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features
+  value: false
+
+- name: browser.preferences.moreFromMozilla
+  value: false
+  locked: true
+
+- name: browser.aboutwelcome.enabled
+  value: false
+
+- name: browser.contentblocking.report.show_mobile_app
+  value: false
+  locked: true

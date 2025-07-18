@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index 9ab4e96cc4738d0ba549dca67b8559e0f9534f37..07b9087b0b17e33853d78c66ea1e5321a2bfef80 100644
+index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08fb697811b 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
 @@ -386,6 +386,10 @@ var gEditItemOverlay = {

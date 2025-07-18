@@ -235,7 +235,7 @@
 .zen-theme-picker-gradient {
   position: relative;
   overflow: hidden;
-  border-radius: calc(var(--zen-native-content-radius) - 4px);
+  border-radius: calc(var(--arrowpanel-border-radius) - 4px);
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
@@ -243,7 +243,7 @@
     light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 1px,
     transparent 0
   );
-  background-position: -20px -20px;
+  background-position: -23px -23px;
   background-size: 6px 6px;
 
   & .zen-theme-picker-dot {

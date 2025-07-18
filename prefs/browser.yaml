@@ -1,0 +1,81 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: browser.startup.page
+  value: 3
+
+- name: browser.sessionstore.restore_pinned_tabs_on_demand
+  value: true
+
+- name: browser.tabs.loadBookmarksInTabs
+  value: false
+
+- name: browser.tabs.hoverPreview.enabled
+  value: false
+
+- name: browser.tabs.dragdrop.moveOverThresholdPercent
+  value: 50
+
+- name: browser.tabs.unloadTabInContextMenu
+  value: true
+
+- name: browser.tabs.fadeOutExplicitlyUnloadedTabs
+  value: true
+
+- name: browser.toolbars.bookmarks.visibility
+  value: 'never'
+
+- name: browser.bookmarks.openInTabClosesMenu
+  value: false
+
+- name: browser.menu.showViewImageInfo
+  value: true
+
+- name: findbar.highlightAll
+  value: true
+
+- name: layout.word_select.eat_space_to_next_word
+  value: false
+
+- name: widget.non-native-theme.scrollbar.style
+  value: 2
+
+- name: widget.non-native-theme.use-theme-accent
+  value: true
+
+- name: browser.download.autohideButton
+  value: false
+
+- name: sidebar.revamp
+  value: false
+  locked: true
+
+- name: sidebar.verticalTabs
+  value: false
+  locked: true
+
+- name: browser.preferences.experimental
+  value: true
+
+- name: browser.download.manager.addToRecentDocs
+  value: false
+
+- name: browser.download.open_pdf_attachments_inline
+  value: true
+
+- name: browser.download.alwaysOpenPanel
+  value: false
+
+- name: app.update.checkInstallTime.days
+  value: 6
+  condition: 'defined(MOZILLA_OFFICIAL)'
+
+- name: browser.profiles.enabled
+  value: false
+
+- name: browser.tabs.groups.enabled
+  value: false
+
+- name: browser.urlbar.scotchBonnet.enableOverride
+  value: false

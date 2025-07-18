@@ -6,7 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 echo "Preparing environment"
-git pull --recurse
+git pull origin dev --recurse
 mkdir windsign-temp -ErrorAction SilentlyContinue
 
 # Download in parallel
@@ -113,6 +113,7 @@ signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $fi
 
 $env:ZEN_RELEASE="true"
 $env:SURFER_SIGNING_MODE="true"
+$env:SCCACHE_GHA_ENABLED="false"
 Wait-Job -Name "SurferInit"
 Wait-Job -Name "DownloadGitl10n"
 

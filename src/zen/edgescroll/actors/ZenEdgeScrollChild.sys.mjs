@@ -99,11 +99,7 @@ export class ZenEdgeScrollChild extends JSWindowActorChild {
         modifiers,
         0,
         0,
-        true,
-        false,
-        false,
-        false,
-        false
+        0
       );
     } catch (e) {
       console.error('Error dispatching wheel event:', e);

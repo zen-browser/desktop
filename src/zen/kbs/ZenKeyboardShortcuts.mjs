@@ -990,10 +990,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-tab-next-shortcut',
-          '',
-          '',
+          'TAB',
+          'VK_TAB',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({}),
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
           'cmd_zenTabNext',
           'zen-tab-next-shortcut'
         )
@@ -1001,10 +1001,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-tab-prev-shortcut',
-          '',
-          '',
+          'TAB',
+          'VK_TAB',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({}),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
           'cmd_zenTabPrev',
           'zen-tab-prev-shortcut'
         )

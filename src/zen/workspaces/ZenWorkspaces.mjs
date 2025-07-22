@@ -120,14 +120,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.addPopupListeners();
 
-    if (document.readyState === "complete") {
-      this.initializeTabNavigationCommands();
-    } else {
-      window.addEventListener("load", () => {
-        this.initializeTabNavigationCommands();
-      }, { once: true });
-    }
-
     await this.#waitForPromises();
     await this._workspaces();
 
@@ -532,40 +524,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   initializeWorkspaceNavigation() {
     this._setupAppCommandHandlers();
     this._setupSidebarHandlers();
-  }
-
-  initializeTabNavigationCommands() {
-    const tabNextNode = document.getElementById("cmd_zenTabNext");
-    if (tabNextNode) {
-      tabNextNode.addEventListener("command", () => zenNavigateTab(1));
-    }
-
-    const tabPrevNode = document.getElementById("cmd_zenTabPrev");
-    if (tabPrevNode) {
-      tabPrevNode.addEventListener("command", () => zenNavigateTab(-1));
-    }
-
-    const toggleNode = document.getElementById("cmd_zenToggleUnloadedCycling");
-    if (toggleNode) {
-      toggleNode.addEventListener("command", () => {
-
-        const currentMode = Services.prefs.getCharPref('zen.tabs.unloaded-navigation-mode', 'always');
-        const nextMode = currentMode === 'always' ? 'never' : 'always';
-
-        Services.prefs.setCharPref('zen.tabs.unloaded-navigation-mode', nextMode);
-
-        const message = nextMode === 'always' ? 'Including unloaded tabs' : 'Skipping unloaded tabs';
-
-        gNotificationBox.appendNotification(
-          'zen-unloaded-cycle-toggle-notification',
-          {
-            label: message,
-            priority: gNotificationBox.PRIORITY_INFO_MEDIUM,
-          },
-          []
-        );
-      });
-    }
   }
 
   _setupAppCommandHandlers() {
@@ -2993,55 +2951,3 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 })();
-
-function zenNavigateTab(direction) {
-  const basePref = Services.prefs.getStringPref('zen.tabs.unloaded-navigation-mode', 'never');
-  const invertedState = Services.prefs.getBoolPref('zen.tabs.unloaded-navigation-mode.inverted', false);
-
-  const cycleUnloaded = (basePref === 'always' && !invertedState) || (basePref === 'never' && invertedState);
-
-  let allTabs = gZenWorkspaces.tabboxChildren.filter(
-    (t) => !t.hidden && !t.hasAttribute('zen-empty-tab')
-  );
-
-  let tabs = cycleUnloaded ? allTabs : allTabs.filter(t => !t.hasAttribute('pending'));
-
-  if (tabs.length === 0) {
-    return;
-  }
-
-  const selectedIndex = tabs.indexOf(gBrowser.selectedTab);
-
-  let newIndex;
-
-  if (selectedIndex === -1) {
-    newIndex = direction > 0 ? 0 : tabs.length - 1;
-  } else {
-    newIndex = selectedIndex + direction;
-
-    if (newIndex < 0) {
-      newIndex = tabs.length - 1;
-    } else if (newIndex >= tabs.length) {
-      newIndex = 0;
-    }
-  }
-
-  gBrowser.selectedTab = tabs[newIndex];
-}
-
-window.cmd_zenTabNext = function () {
-  console.log('[ZenDebug] window.cmd_zenTabNext called');
-  if (typeof zenNavigateTab === 'function') {
-    zenNavigateTab(1);
-  } else {
-    console.error('[ZenDebug] zenNavigateTab is not defined!');
-  }
-};
-window.cmd_zenTabPrev = function () {
-  console.log('[ZenDebug] window.cmd_zenTabPrev called');
-  if (typeof zenNavigateTab === 'function') {
-    zenNavigateTab(-1);
-  } else {
-    console.error('[ZenDebug] zenNavigateTab is not defined!');
-  }
-};

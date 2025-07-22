@@ -118,6 +118,58 @@ var gZenCommonActions = {
     }
   },
 
+  zenNavigateTab(direction) {
+    try {
+      const basePref = Services.prefs.getStringPref('zen.tabs.unloaded-navigation-mode', 'never');
+      const invertedState = Services.prefs.getBoolPref('zen.tabs.unloaded-navigation-mode.inverted', false);
+      const cycleUnloaded = (basePref === 'always' && !invertedState) || (basePref === 'never' && invertedState);
+
+      let allTabs = window.gZenWorkspaces?.tabboxChildren?.filter(
+        (t) => !t.hidden && !t.hasAttribute('zen-empty-tab')
+      ) || [];
+      let tabs = cycleUnloaded ? allTabs : allTabs.filter(t => !t.hasAttribute('pending'));
+      if (tabs.length === 0) return;
+      const selectedIndex = tabs.indexOf(window.gBrowser?.selectedTab);
+      let newIndex;
+      if (selectedIndex === -1) {
+        newIndex = direction > 0 ? 0 : tabs.length - 1;
+      } else {
+        newIndex = selectedIndex + direction;
+        if (newIndex < 0) newIndex = tabs.length - 1;
+        else if (newIndex >= tabs.length) newIndex = 0;
+      }
+      if (window.gBrowser) window.gBrowser.selectedTab = tabs[newIndex];
+    } catch (e) {
+      console.error('Error in gZenCommonActions.zenNavigateTab:', e);
+    }
+  },
+
+  nextTab() {
+    this.zenNavigateTab(1);
+  },
+  previousTab() {
+    this.zenNavigateTab(-1);
+  },
+
+  toggleUnloadedCycling() {
+    try {
+      const currentMode = Services.prefs.getCharPref('zen.tabs.unloaded-navigation-mode', 'always');
+      const nextMode = currentMode === 'always' ? 'never' : 'always';
+      Services.prefs.setCharPref('zen.tabs.unloaded-navigation-mode', nextMode);
+      const message = nextMode === 'always' ? 'Including unloaded tabs' : 'Skipping unloaded tabs';
+      gNotificationBox.appendNotification(
+        'zen-unloaded-cycle-toggle-notification',
+        {
+          label: message,
+          priority: gNotificationBox.PRIORITY_INFO_MEDIUM,
+        },
+        []
+      );
+    } catch (e) {
+      console.error('[gZenCommonActions] Error on unloaded cycling:', e);
+    }
+  },
+
   throttle(f, delay) {
     let timer = 0;
     return function (...args) {

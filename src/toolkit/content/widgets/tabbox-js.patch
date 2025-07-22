@@ -5,7 +5,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..1678c1d34873df2cb97d75d8d3a6cc49
 @@ -126,32 +126,32 @@
        const { ShortcutUtils } = imports;
  
-       switch (ShortcutUtils.getSystemActionForEvent(event)) {
+-       switch (ShortcutUtils.getSystemActionForEvent(event)) {
 -        case ShortcutUtils.CYCLE_TABS:
 -          Glean.browserUiInteraction.keyboard["ctrl-tab"].add(1);
 -          Services.prefs.setBoolPref(
@@ -32,33 +32,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..1678c1d34873df2cb97d75d8d3a6cc49
 -            event.preventDefault();
 -          }
 -          break;
-+        // case ShortcutUtils.CYCLE_TABS:
-+        //   Glean.browserUiInteraction.keyboard["ctrl-tab"].add(1);
-+        //   Services.prefs.setBoolPref(
-+        //     "browser.engagement.ctrlTab.has-used",
-+        //     true
-+        //   );
-+        //   if (this.tabs && this.handleCtrlTab) {
-+        //     this.tabs.advanceSelectedTab(
-+        //       event.shiftKey ? DIRECTION_BACKWARD : DIRECTION_FORWARD,
-+        //       true
-+        //     );
-+        //     event.preventDefault();
-+        //   }
-+        //   break;
-+        // case ShortcutUtils.PREVIOUS_TAB:
-+        //   if (this.tabs) {
-+        //     this.tabs.advanceSelectedTab(DIRECTION_BACKWARD, true);
-+        //     event.preventDefault();
-+        //   }
-+        //   break;
-+        // case ShortcutUtils.NEXT_TAB:
-+        //   if (this.tabs) {
-+        //     this.tabs.advanceSelectedTab(DIRECTION_FORWARD, true);
-+        //     event.preventDefault();
-+        //   }
-+        //   break;
-       }
+-       }
      }
    }
 @@ -213,7 +213,7 @@

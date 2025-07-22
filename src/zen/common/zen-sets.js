@@ -47,6 +47,15 @@ document.addEventListener(
           case 'cmd_zenSplitViewUnsplit':
             gZenViewSplitter.toggleShortcut('unsplit');
             break;
+          case 'cmd_zenTabNext':
+            gZenCommonActions.nextTab();
+            break;
+          case 'cmd_zenTabPrev':
+            gZenCommonActions.previousTab();
+            break;
+          case 'cmd_zenToggleUnloadedCycling':
+            gZenCommonActions.toggleUnloadedCycling();
+            break;
           case 'cmd_zenSplitViewContextMenu':
             gZenViewSplitter.contextSplitTabs();
             break;

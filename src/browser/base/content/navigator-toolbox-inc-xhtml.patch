@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index ad1515eb111bc2532b2f17ea28fc04463030d30d..899f4baf2cd3472abd5591f3c9987f0c02b9313f 100644
+index 5f79e21271ad8b4e97604b9c84ed4e6e9de4a5f2..1c8cc6795d51130b29a32ecafa40e27ea6df655e 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -22,15 +22,15 @@ index ad1515eb111bc2532b2f17ea28fc04463030d30d..899f4baf2cd3472abd5591f3c9987f0c
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -50,6 +50,8 @@
-               tooltip="tabbrowser-tab-tooltip"
-               orient="horizontal"
-               stopwatchid="tabClick">
+@@ -56,6 +56,8 @@
+ # the current structure that we may want to revisit.
+           <arrowscrollbox id="pinned-tabs-container" orient="horizontal" tabindex="-1"></arrowscrollbox>
+           <splitter orient="vertical" id="vertical-pinned-tabs-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
 +<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">
            <hbox class="tab-drop-indicator" hidden="true"/>
- # If the name (tabbrowser-arrowscrollbox) or structure of this changes
- # significantly, there is an optimization in
+           <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="horizontal" flex="1" clicktoscroll="" scrolledtostart="" scrolledtoend="">
+             <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
 @@ -75,6 +77,7 @@
                                tooltip="dynamic-shortcut-tooltip"
                                data-l10n-id="tabs-toolbar-new-tab"/>

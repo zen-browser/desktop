@@ -19,7 +19,7 @@ add_task(async function test_Restore_Pinned_Tab() {
       ok(tab.pinned, 'The tab should be pinned after being created');
       await BrowserTestUtils.removeTab(tab);
       await TabStateFlusher.flushWindow(window);
-      restoreLastClosedTabOrWindowOrSession();
+      SessionWindowUI.restoreLastClosedTabOrWindowOrSession(window);
       tab = gBrowser.selectedTab;
       ok(tab.pinned, 'The tab should be pinned after restore');
       ok(
@@ -46,7 +46,7 @@ add_task(async function test_Restore_Essential_Tab() {
       );
       await BrowserTestUtils.removeTab(tab);
       await TabStateFlusher.flushWindow(window);
-      restoreLastClosedTabOrWindowOrSession();
+      SessionWindowUI.restoreLastClosedTabOrWindowOrSession(window);
       tab = gBrowser.selectedTab;
       ok(tab.hasAttribute('zen-essential'), 'The tab should be marked as essential after restore');
       ok(

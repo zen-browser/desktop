@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 # note: you need to be in the same directory as the script to run it
 
 if [ $(basename $PWD) != "zen-icons" ]; then
@@ -5,7 +9,10 @@ if [ $(basename $PWD) != "zen-icons" ]; then
   exit 1
 fi
 
-echo "" > jar.inc.mn
+echo "# This Source Code Form is subject to the terms of the Mozilla Public" > jar.inc.mn
+echo "# License, v. 2.0. If a copy of the MPL was not distributed with this" >> jar.inc.mn
+echo "# file, You can obtain one at http://mozilla.org/MPL/2.0/." >> jar.inc.mn
+echo "" >> jar.inc.mn
 
 do_icons() {
   os=$1

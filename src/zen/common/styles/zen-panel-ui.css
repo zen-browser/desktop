@@ -5,7 +5,8 @@
  */
 panel[type='arrow'][animate='open'] {
   @media (-moz-platform: macos) and (-moz-panel-animations) {
-    animation: zen-jello-animation-macos 0.4s ease-out;
+    -moz-window-transform: scale(0.3);
+    animation: zen-jello-animation-macos 0.4s ease-out forwards;
     &[side='bottom'] {
       /* Animate from the bottom */
       -zen-window-transform-origin: 0 100%;
@@ -60,8 +61,6 @@ panel[type='arrow'] {
     --panel-shadow-margin: 0px !important;
     --panel-background: transparent !important;
     --panel-border-color: transparent;
-    /* This should be kept in sync with GetMenuMaskImage() */
-    --panel-border-radius: 6px;
 
     &::part(content) {
       background-color: transparent !important;

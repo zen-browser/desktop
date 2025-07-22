@@ -22,7 +22,6 @@
     display: none !important;
   }
 
-  --toolbarbutton-hover-background: transparent !important;
   border-radius: var(--zen-button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
@@ -74,6 +73,10 @@
 
     & label {
       margin: 0 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      min-width: 36px;
     }
   }
 

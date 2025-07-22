@@ -1,0 +1,121 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Telemetry & Data Reporting
+- name: datareporting.policy.dataSubmissionEnabled
+  value: false
+  locked: true
+
+- name: datareporting.healthreport.uploadEnabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.unified
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.server
+  value: 'data:,'
+  locked: true
+
+- name: toolkit.telemetry.archive.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.newProfilePing.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.shutdownPingSender.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.updatePing.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.bhrPing.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.firstShutdownPing.enabled
+  value: false
+  locked: true
+
+- name: toolkit.telemetry.coverage.opt-out
+  value: true
+  locked: true
+
+- name: toolkit.coverage.opt-out
+  value: true
+  locked: true
+
+- name: toolkit.coverage.endpoint.base
+  value: ''
+  locked: true
+
+- name: browser.newtabpage.activity-stream.feeds.telemetry
+  value: false
+  locked: true
+
+- name: browser.newtabpage.activity-stream.telemetry
+  value: false
+  locked: true
+
+- name: browser.ping-centre.telemetry
+  value: false
+
+- name: browser.attribution.enabled
+  value: false
+
+- name: toolkit.telemetry.pioneer-new-studies-available
+  value: false
+
+- name: app.shield.optoutstudies.enabled
+  value: false
+  locked: true
+
+- name: app.normandy.enabled
+  value: false
+
+- name: app.normandy.api_url
+  value: ''
+  locked: true
+
+# Crash Reports
+- name: breakpad.reportURL
+  value: ''
+
+- name: browser.tabs.crashReporting.sendReport
+  value: false
+
+- name: browser.crashReports.unsubmittedCheck.autoSubmit2
+  value: false
+
+# Privacy and Misc
+- name: extensions.getAddons.cache.enabled
+  value: false
+
+- name: browser.privatebrowsing.forceMediaMemoryCache
+  value: true
+
+- name: browser.helperApps.deleteTempFileOnExit
+  value: true
+
+- name: browser.uitour.enabled
+  value: false
+
+- name: privacy.globalprivacycontrol.enabled
+  value: true
+
+# Contextual Identities
+- name: privacy.userContext.enabled
+  value: true
+
+- name: privacy.userContext.ui.enabled
+  value: true

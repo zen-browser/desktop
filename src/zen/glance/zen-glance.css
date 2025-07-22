@@ -4,40 +4,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#zen-glance-sidebar-container {
+.zen-glance-sidebar-container {
   position: absolute;
   display: flex;
   z-index: 999;
 
-  &[hidden='true'] {
-    display: none;
-  }
-
-  top: 10%;
-  transform: translateY(-50%);
-
-  padding: 5px;
+  top: 0;
+  padding: 12px;
   gap: 12px;
+  max-width: 56px;
 
-  &[right='true'] {
-    right: 2%;
+  :root[zen-right-side='true'] & {
+    left: 100%;
   }
-  &[right='false'] {
-    left: 2%;
+
+  :root:not([zen-right-side='true']) & {
+    right: 100%;
   }
 
   & toolbarbutton {
     width: 32px;
     height: 32px;
-    background: light-dark(rgb(24, 24, 24), rgb(231, 231, 231));
+    background: color-mix(
+      in srgb,
+      light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%,
+      var(--zen-primary-color)
+    );
     transition:
       background 0.05s ease,
       scale 0.05s ease;
     border-radius: 999px;
     appearance: none;
     box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
-    opacity: 0;
     padding: 8px;
+    opacity: 1 !important;
+    color: var(--zen-primary-color);
 
     &:hover {
       background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));
@@ -56,12 +57,15 @@
       }
     }
 
-    & image {
-      filter: invert(1);
+    &[disabled='true'] {
+      scale: 1 !important;
+      & image {
+        opacity: 0.5;
+      }
     }
   }
 
-  & #zen-glance-sidebar-close {
+  & .zen-glance-sidebar-close {
     width: fit-content;
     & label {
       display: block;
@@ -139,7 +143,7 @@
 
     &[animate-full='true'] {
       transform: translate(-50%, -50%);
-      & #zen-glance-sidebar-container {
+      & .zen-glance-sidebar-container {
         opacity: 0 !important;
       }
     }

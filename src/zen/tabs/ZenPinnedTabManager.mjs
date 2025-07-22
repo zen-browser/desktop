@@ -855,26 +855,26 @@
             const targetTab = event.target.closest('.tabbrowser-tab');
             if (targetTab) {
               const rect = targetTab.getBoundingClientRect();
-              let newIndex = targetTab._tPos;
+              let elementIndex = targetTab.elementIndex;
 
               if (isVertical || !this.expandedSidebarMode) {
                 const middleY = targetTab.screenY + rect.height / 2;
                 if (!isRegularTabs && event.screenY > middleY) {
-                  newIndex++;
+                  elementIndex++;
                 } else if (isRegularTabs && event.screenY < middleY) {
-                  newIndex--;
+                  elementIndex--;
                 }
               } else {
                 const middleX = targetTab.screenX + rect.width / 2;
                 if (event.screenX > middleX) {
-                  newIndex++;
+                  elementIndex++;
                 }
               }
               // If it's the last tab, move it to the end
               if (tabsTarget === gBrowser.tabs.at(-1)) {
-                newIndex++;
+                elementIndex++;
               }
-              gBrowser.moveTabTo(draggedTab, { tabIndex: newIndex, forceUngrouped: true });
+              gBrowser.moveTabTo(draggedTab, { elementIndex, forceUngrouped: true });
             }
           }
         }

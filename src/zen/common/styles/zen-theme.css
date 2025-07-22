@@ -128,6 +128,7 @@
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit;
+  --tabstrip-inner-border: transparent;
 
   --zen-toolbar-height: 38px;
   --zen-toolbar-button-inner-padding: 6px;
@@ -220,6 +221,10 @@
       Segoe UI Symbol,
       Noto Color Emoji;
   }
+
+  @media (-moz-platform: windows) {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 }
 
 #main-window:not([chromehidden~='toolbar']) {
@@ -228,23 +233,6 @@
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency')) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
-    @media -moz-pref('widget.windows.mica.toplevel-backdrop', 2) {
-      --zen-themed-toolbar-bg-transparent: light-dark(
-        rgba(0, 0, 0, 0.2),
-        rgba(255, 255, 255, 0.35)
-      );
-    }
-    @media (-moz-platform: macos) {
-      --zen-themed-toolbar-bg-transparent: rgba(255, 255, 255, 0.3);
-    }
-  }
-
-  &[zen-should-be-dark-mode='true'] #browser {
-    color-scheme: dark;
-  }
-
-  &[zen-should-be-dark-mode='false'] #browser {
-    color-scheme: light;
   }
 
   &,
@@ -278,6 +266,16 @@
       color-scheme: dark;
       --toolbar-color-scheme: dark;
     }
+  }
+
+  &[zen-should-be-dark-mode='true'] #browser {
+    color-scheme: dark;
+    --toolbar-color-scheme: dark;
+  }
+
+  &[zen-should-be-dark-mode='false'] #browser {
+    color-scheme: light;
+    --toolbar-color-scheme: light;
   }
 }
 

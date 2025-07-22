@@ -1,0 +1,80 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# URL bar and search-related preferences
+
+- name: browser.urlbar.unitConversion.enabled
+  value: true
+
+- name: browser.urlbar.trending.featureGate
+  value: false
+
+- name: browser.urlbar.weather.featureGate
+  value: false
+
+- name: browser.urlbar.quickactions.enabled
+  value: true
+
+- name: browser.urlbar.clipboard.featureGate
+  value: true
+
+- name: browser.urlbar.suggest.calculator
+  value: true
+
+- name: browser.urlbar.trimHttps
+  value: true
+
+- name: browser.urlbar.untrimOnUserInteraction.featureGate
+  value: true
+
+# Keep in sync with browser/components/topsites/constants.mjs
+- name: browser.urlbar.maxRichResults
+  value: 7
+
+# Enable private suggestions
+- name: browser.search.suggest.enabled
+  value: false
+
+- name: browser.search.suggest.enabled.private
+  value: false
+
+- name: browser.search.separatePrivateDefault.ui.enabled
+  value: true
+
+- name: browser.urlbar.update2.engineAliasRefresh
+  value: true
+
+- name: browser.urlbar.quicksuggest.enabled
+  value: false
+  locked: true
+
+- name: browser.urlbar.suggest.quicksuggest.sponsored
+  value: false
+  locked: true
+
+- name: browser.urlbar.suggest.quicksuggest.nonsponsored
+  value: false
+  locked: true
+
+- name: browser.urlbar.groupLabels.enabled
+  value: false
+
+- name: browser.urlbar.keepPanelOpenDuringImeComposition
+  value: true # IMPORTANT: Fixes closing the urlbar when on some languages
+
+- name: browser.formfill.enable
+  value: false
+
+- name: security.insecure_connection_text.enabled
+  value: true
+
+- name: security.insecure_connection_text.pbmode.enabled
+  value: true
+
+- name: network.IDN_show_punycode
+  value: true
+
+- name: browser.urlbar.suggest.topsites
+  value: true
+  locked: true

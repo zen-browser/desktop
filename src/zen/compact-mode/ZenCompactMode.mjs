@@ -107,7 +107,9 @@ var gZenCompactModeManager = {
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
     Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
-    Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
+    if (typeof this._wasInCompactMode === 'undefined') {
+      Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
+    }
     this._updateEvent();
     return value;
   },

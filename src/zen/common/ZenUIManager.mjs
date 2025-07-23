@@ -398,17 +398,19 @@ var gZenUIManager = {
       }
 
       if (gURLBar.focused) {
-        gURLBar.view.close({ elementPicked: onSwitch });
-        gURLBar.updateTextOverflow();
+        setTimeout(() => {
+          gURLBar.view.close({ elementPicked: onSwitch });
+          gURLBar.updateTextOverflow();
 
-        // Ensure tab and browser are valid before updating state
-        const selectedTab = gBrowser.selectedTab;
-        if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
-          const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
-          if (browserState) {
-            browserState.urlbarFocused = false;
+          // Ensure tab and browser are valid before updating state
+          const selectedTab = gBrowser.selectedTab;
+          if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
+            const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
+            if (browserState) {
+              browserState.urlbarFocused = false;
+            }
           }
-        }
+        }, 0);
       }
     });
   },

@@ -5,6 +5,7 @@
 BROWSER_CHROME_MANIFESTS += [
     "compact_mode/browser.toml",
     "container_essentials/browser.toml",
+    "edgescroll/browser.toml",
     "glance/browser.toml",
     "pinned/browser.toml",
     "tabs/browser.toml",

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class nsZenGlanceManager extends ZenDOMOperatedFeature {
+  class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     _animating = false;
     _lazyPref = {};
 
@@ -71,6 +71,7 @@
 
     onUnload() {
       // clear everything
+      /* eslint-disable no-unused-vars */
       for (let [id, glance] of this.#glances) {
         gBrowser.removeTab(glance.tab, { animate: false });
       }
@@ -412,7 +413,7 @@
       });
     }
 
-    quickOpenGlance({} = {}) {
+    quickOpenGlance() {
       if (!this.#currentBrowser || this._duringOpening) {
         return;
       }
@@ -562,7 +563,7 @@
           return false;
         }
         return Services.io.newURI(url1).host !== url2.host;
-      } catch (e) {
+      } catch {
         return true;
       }
     }

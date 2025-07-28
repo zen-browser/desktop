@@ -5,7 +5,7 @@
 {
   function parseSinePath(pathStr) {
     const points = [];
-    const commands = pathStr.match(/[MCL]\s*[\d\s\.\-,]+/g);
+    const commands = pathStr.match(/[MCL]\s*[\d\s.\-,]+/g);
     if (!commands) return points;
 
     commands.forEach((command) => {
@@ -45,7 +45,7 @@
 
   const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
 
-  class nsZenThemePicker extends ZenMultiWindowFeature {
+  class nsZenThemePicker extends nsZenMultiWindowFeature {
     static MAX_DOTS = 3;
 
     currentOpacity = 0.5;
@@ -129,7 +129,7 @@
       XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.25);
     }
 
-    handleDarkModeChange(event) {
+    handleDarkModeChange() {
       this.updateCurrentWorkspace();
     }
 
@@ -377,7 +377,7 @@
      * @return  {Array}           The RGB representation
      */
     hslToRgb(h, s, l) {
-      const { abs, min, max, round } = Math;
+      const { round } = Math;
       let r, g, b;
 
       if (s === 0) {
@@ -1346,9 +1346,9 @@
         {
           let opacity = browser.gZenThemePicker.currentOpacity;
           const svg = browser.gZenThemePicker.sliderWavePath;
-          const [_, secondStop, thirdStop] = document.querySelectorAll(
-            '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
-          );
+          const [secondStop, thirdStop] = document
+            .querySelectorAll('#PanelUI-zen-gradient-generator-slider-wave-gradient stop')
+            .slice(1, 3);
           // Opacity can only be between MIN_OPACITY to MAX_OPACITY. Make opacity relative to that range
           if (opacity < MIN_OPACITY) {
             opacity = 0;
@@ -1599,16 +1599,18 @@
       let newPathData = '';
       this.#sinePoints.forEach((p) => {
         switch (p.type) {
-          case 'M':
+          case 'M': {
             const interpolatedY = referenceY + (p.y - referenceY) * t;
             newPathData += `M ${p.x} ${interpolatedY} `;
             break;
-          case 'C':
+          }
+          case 'C': {
             const y1 = referenceY + (p.y1 - referenceY) * t;
             const y2 = referenceY + (p.y2 - referenceY) * t;
             const y = referenceY + (p.y - referenceY) * t;
             newPathData += `C ${p.x1} ${y1} ${p.x2} ${y2} ${p.x} ${y} `;
             break;
+          }
           case 'L':
             newPathData += `L ${p.x} ${p.y} `;
             break;

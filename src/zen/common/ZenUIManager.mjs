@@ -129,11 +129,6 @@ var gZenUIManager = {
     return Services.uuid.generateUUID().toString();
   },
 
-  toogleBookmarksSidebar() {
-    const button = document.getElementById('zen-bookmark-button');
-    SidebarController.toggle('viewBookmarksSidebar', button);
-  },
-
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   },
@@ -447,7 +442,7 @@ var gZenUIManager = {
         this._toastTimeouts[messageId] = setTimeout(timeoutFunction, options.timeout || 2000);
       });
     }
-    if (!toast.style.hasOwnProperty('transform')) {
+    if (!toast.style.transform) {
       toast.style.transform = 'scale(0)';
     }
     await this.motion.animate(toast, { scale: 1 }, { type: 'spring', bounce: 0.2, duration: 0.5 });
@@ -466,7 +461,7 @@ var gZenUIManager = {
 
 var gZenVerticalTabsManager = {
   init() {
-    this._multiWindowFeature = new ZenMultiWindowFeature();
+    this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();
 
     ChromeUtils.defineLazyGetter(this, 'isWindowsStyledButtons', () => {
@@ -695,7 +690,7 @@ var gZenVerticalTabsManager = {
       browser.gZenVerticalTabsManager._initWaitPromise();
     });
 
-    if (ZenMultiWindowFeature.isActiveWindow) {
+    if (nsZenMultiWindowFeature.isActiveWindow) {
       this._updateEvent();
       this._initWaitPromise();
     }

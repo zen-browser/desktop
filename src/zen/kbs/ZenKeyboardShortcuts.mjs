@@ -1123,7 +1123,7 @@ var gZenKeyboardShortcutsManager = {
   },
 
   _applyShortcuts() {
-    for (const browser of ZenMultiWindowFeature.browsers) {
+    for (const browser of nsZenMultiWindowFeature.browsers) {
       let mainKeyset = browser.document.getElementById(ZEN_MAIN_KEYSET_ID);
       if (!mainKeyset) {
         throw new Error('Main keyset not found');
@@ -1186,7 +1186,7 @@ var gZenKeyboardShortcutsManager = {
 
   async _saveShortcuts() {
     let json = [];
-    for (shortcut of this._currentShortcutList) {
+    for (const shortcut of this._currentShortcutList) {
       json.push(shortcut.toJSONForm());
     }
 

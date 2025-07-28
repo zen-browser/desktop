@@ -43,7 +43,8 @@ def get_js_code(emojis):
   Returns:
       str: JavaScript code as a string.
   """
-  js_code = "var ZenEmojisData = "
+  js_code = "/* eslint-disable no-unused-vars */\n"
+  js_code += "var ZenEmojisData = "
   # dump without unicode escape
   js_code += json.dumps(emojis, ensure_ascii=False)
   return js_code

@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
@@ -15,7 +17,7 @@ var gZenMarketplaceManager = {
     }
 
     if (!window.gZenMods) {
-      window.gZenMods = ZenMultiWindowFeature.currentBrowser.gZenMods;
+      window.gZenMods = nsZenMultiWindowFeature.currentBrowser.gZenMods;
     }
 
     header.appendChild(this._initDisableAll());
@@ -83,7 +85,7 @@ var gZenMarketplaceManager = {
 
   _initDisableAll() {
     const areModsDisabled = Services.prefs.getBoolPref('zen.themes.disable-all', false);
-    const browser = ZenMultiWindowFeature.currentBrowser;
+    const browser = nsZenMultiWindowFeature.currentBrowser;
     const mozToggle = document.createElement('moz-toggle');
 
     mozToggle.className =
@@ -268,7 +270,7 @@ var gZenMarketplaceManager = {
     }
 
     const mods = await gZenMods.getMods();
-    const browser = ZenMultiWindowFeature.currentBrowser;
+    const browser = nsZenMultiWindowFeature.currentBrowser;
     const modList = document.createElement('div');
 
     for (const mod of Object.values(mods).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -632,6 +634,7 @@ var gZenMarketplaceManager = {
 const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
+/* eslint-disable no-unused-vars */
 var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) return;
@@ -650,7 +653,7 @@ var gZenLooksAndFeel = {
     this.applySidebarLayout();
   },
 
-  observe(subject, topic, data) {
+  observe() {
     this.applySidebarLayout();
   },
 
@@ -730,10 +733,11 @@ var gZenLooksAndFeel = {
   },
 };
 
+/* eslint-disable no-unused-vars */
 var gZenWorkspacesSettings = {
   init() {
     var tabsUnloaderPrefListener = {
-      async observe(subject, topic, data) {
+      async observe() {
         let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
         if (buttonIndex == CONFIRM_RESTART_PROMPT_RESTART_NOW) {
           Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
@@ -811,6 +815,7 @@ var zenIgnoreKeyboardShortcutL10n = [
   'zen-full-zoom-reduce-shortcut-alt-a',
 ];
 
+/* eslint-disable no-unused-vars */
 var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
@@ -906,7 +911,6 @@ var gZenCKSSettings = {
       input.setAttribute('data-id', keyID);
 
       input.addEventListener('focus', (event) => {
-        const value = event.target.getAttribute(KEYBIND_ATTRIBUTE_KEY);
         this._currentActionID = event.target.getAttribute('data-id');
         event.target.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
         this._hasSafed = true;
@@ -1012,6 +1016,7 @@ var gZenCKSSettings = {
       );
 
       if (!this._latestValidKey && !this._latestModifier) {
+        // todo(lint): This is a bit weird, we need to remove this empty block
       } else if (!this._latestValidKey || hasConflicts) {
         if (!input.classList.contains(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`)) {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);

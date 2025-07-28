@@ -36,11 +36,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
     return this._hoverActivationDelay;
   }
 
-  async receiveMessage(message) {
-    switch (message.name) {
-    }
-  }
-
   async initiateGlance() {
     this.mouseIsDown = false;
     const activationMethod = await this.getActivationMethod();

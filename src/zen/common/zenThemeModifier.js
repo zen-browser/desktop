@@ -57,7 +57,7 @@ var ZenThemeModifier = {
     );
   },
 
-  handleEvent(event) {
+  handleEvent() {
     // note: even might be undefined, but we shoudnt use it!
     this.updateAllThemeBasics();
   },

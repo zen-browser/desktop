@@ -113,7 +113,7 @@ var gZenCompactModeManager = {
         delete this._wasInCompactMode;
       }
       // We dont want the user to be able to spam the button
-      return value;
+      return;
     }
     this.sidebar.removeAttribute('zen-user-show');
     // We use this element in order to make it persis across restarts, by using the XULStore.
@@ -125,7 +125,6 @@ var gZenCompactModeManager = {
       Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
     }
     this._updateEvent();
-    return value;
   },
 
   get sidebarIsOnRight() {
@@ -313,40 +312,6 @@ var gZenCompactModeManager = {
 
           this.getAndApplySidebarWidth({});
           this._ignoreNextResize = true;
-
-          // TODO: Work on this a bit more, needs polishing
-          if (lazyCompactMode.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && false) {
-            gZenUIManager.motion
-              .animate(
-                [
-                  this.sidebar,
-                  ...(gZenVerticalTabsManager._hasSetSingleToolbar &&
-                  !gURLBar.hasAttribute('zen-floating-urlbar')
-                    ? [gURLBar.textbox]
-                    : []),
-                ],
-                {
-                  transform: [
-                    `translateY(${((isCompactMode ? -1 : 1) * elementSeparation) / 2}px) translateX(${
-                      isCompactMode
-                        ? (this.sidebarIsOnRight ? elementSeparation : -elementSeparation) / 2
-                        : (this.sidebarIsOnRight ? -elementSeparation : elementSeparation) / 2
-                    }px)`,
-                    `translateY(0px) translateX(0px)`,
-                  ],
-                },
-                {
-                  ease: 'easeIn',
-                  type: 'spring',
-                  bounce: 0,
-                  duration: 0.2,
-                }
-              )
-              .then(() => {
-                this.sidebar.style.transform = '';
-                gURLBar.textbox.style.transform = '';
-              });
-          }
 
           resolve();
           return;
@@ -666,7 +631,7 @@ var gZenCompactModeManager = {
       }
     });
 
-    gURLBar.textbox.addEventListener('mouseleave', (event) => {
+    gURLBar.textbox.addEventListener('mouseleave', () => {
       setTimeout(() => {
         delete this._hasHoveredUrlbar;
       }, 0);

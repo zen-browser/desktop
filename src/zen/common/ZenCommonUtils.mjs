@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenOperatingSystemCommonUtils = {
+window.gZenOperatingSystemCommonUtils = {
   kZenOSToSmallName: {
     WINNT: 'windows',
     Darwin: 'macos',
@@ -15,7 +15,8 @@ var gZenOperatingSystemCommonUtils = {
   },
 };
 
-class ZenMultiWindowFeature {
+/* eslint-disable no-unused-vars */
+class nsZenMultiWindowFeature {
   constructor() {}
 
   static get browsers() {
@@ -27,18 +28,18 @@ class ZenMultiWindowFeature {
   }
 
   static get isActiveWindow() {
-    return ZenMultiWindowFeature.currentBrowser === window;
+    return nsZenMultiWindowFeature.currentBrowser === window;
   }
 
   windowIsActive(browser) {
-    return browser === ZenMultiWindowFeature.currentBrowser;
+    return browser === nsZenMultiWindowFeature.currentBrowser;
   }
 
   async foreachWindowAsActive(callback) {
-    if (!ZenMultiWindowFeature.isActiveWindow) {
+    if (!nsZenMultiWindowFeature.isActiveWindow) {
       return;
     }
-    for (const browser of ZenMultiWindowFeature.browsers) {
+    for (const browser of nsZenMultiWindowFeature.browsers) {
       try {
         if (browser.closed) continue;
         await callback(browser);
@@ -49,14 +50,16 @@ class ZenMultiWindowFeature {
   }
 }
 
-class ZenDOMOperatedFeature {
+/* eslint-disable no-unused-vars */
+class nsZenDOMOperatedFeature {
   constructor() {
     var initBound = this.init.bind(this);
     document.addEventListener('DOMContentLoaded', initBound, { once: true });
   }
 }
 
-class ZenPreloadedFeature {
+/* eslint-disable no-unused-vars */
+class nsZenPreloadedFeature {
   constructor() {
     var initBound = this.init.bind(this);
     document.addEventListener('MozBeforeInitialXULLayout', initBound, { once: true });

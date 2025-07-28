@@ -52,7 +52,7 @@
       }
     }
 
-    #onTabGroupRemoved(event) {}
+    #onTabGroupRemoved() {}
 
     #onTabPinned(event) {
       const tab = event.target;

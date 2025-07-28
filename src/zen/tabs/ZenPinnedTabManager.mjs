@@ -51,7 +51,7 @@
     }
   }
 
-  class nsZenPinnedTabManager extends ZenDOMOperatedFeature {
+  class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     MAX_ESSENTIALS_TABS = 12;
 
     async init() {
@@ -85,7 +85,9 @@
               gBrowser.setIcon(tab, favicon);
             }
           });
-        } catch {}
+        } catch {
+          // Handle error
+        }
       } else {
         if (tab.hasAttribute('zen-essential')) {
           tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
@@ -159,7 +161,7 @@
                 ...pin,
                 iconUrl: image || null,
               };
-            } catch (ex) {
+            } catch {
               // If favicon fetch fails, continue without icon
               return {
                 ...pin,
@@ -895,7 +897,7 @@
       if (!pin) {
         return;
       }
-      // Remove # and ? from the url
+      // Remove # and ? from the url
       const pinUrl = pin.url.split('#')[0];
       const currentUrl = browser.currentURI.spec.split('#')[0];
       // Add an indicator that the pin has been changed

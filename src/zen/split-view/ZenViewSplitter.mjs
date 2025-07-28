@@ -63,7 +63,7 @@ class nsSplitNode extends nsSplitLeafNode {
   }
 }
 
-class nsZenViewSplitter extends ZenDOMOperatedFeature {
+class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   currentView = -1;
   _data = [];
   _tabBrowserPanel = null;
@@ -435,7 +435,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
       ]).then(() => {
         this._maybeRemoveFakeBrowser();
       });
-    } catch (e) {
+    } catch {
       this._canDrop = false;
       this._maybeRemoveFakeBrowser();
     }
@@ -732,7 +732,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
       return;
     }
 
-    const { tab, browser, isSplitHeaderDrag } = this._dragState;
+    const { browser, isSplitHeaderDrag } = this._dragState;
 
     if (browser) {
       browser.style.opacity = isSplitHeaderDrag ? '1' : '.85';
@@ -1213,7 +1213,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
    * @param {Tab} activeTab - The active tab.
    */
   applyGridToTabs(tabs) {
-    tabs.forEach((tab, index) => {
+    tabs.forEach((tab) => {
       tab.splitView = true;
       tab.splitViewValue = this.currentView;
       tab.setAttribute('split-view', 'true');
@@ -1446,13 +1446,13 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
       });
     };
 
-    setCursor(isVertical ? 'ew-resize' : 'ns-resize');
+    window.setCursor(isVertical ? 'ew-resize' : 'ns-resize');
     document.addEventListener('mousemove', dragFunc);
     document.addEventListener(
       'mouseup',
       () => {
         document.removeEventListener('mousemove', dragFunc);
-        setCursor('auto');
+        window.setCursor('auto');
         this.tabBrowserPanel.removeAttribute('zen-split-resizing');
       },
       { once: true }
@@ -1778,7 +1778,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
       .then(callback);
   }
 
-  handleTabDrop(event, urls, replace, inBackground) {
+  handleTabDrop(event, urls, replace) {
     if (replace || urls.length !== 1) {
       return false;
     }
@@ -1829,7 +1829,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
     // We can't create an empty group, so only create if we have tabs
     if (tabs?.length) {
       // Create a new group with the initial tabs
-      const group = gBrowser.addTabGroup(tabs, {
+      gBrowser.addTabGroup(tabs, {
         label: '',
         showCreateUI: false,
         insertBefore: tabs[0],

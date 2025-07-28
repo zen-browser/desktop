@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
+var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   /**
    * Stores workspace IDs and their last selected tabs.
    */
@@ -151,7 +151,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
 
     if (!this.privateWindowOrDisabled) {
-      const observerFunction = async function observe(subject) {
+      const observerFunction = async function observe() {
         this._workspaceBookmarksCache = null;
         await this.workspaceBookmarks();
         this._invalidateBookmarkContainers();
@@ -242,30 +242,26 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       ) {
         // Only set up URL bar selection if we're switching to a different tab
         if (gBrowser.selectedTab !== this._emptyTab && selectURLBar) {
-          // Use a Promise-based approach for better sequencing
-          const urlBarSelectionPromise = new Promise((resolve) => {
-            const tabSelectListener = () => {
-              // Remove the event listener first to prevent any chance of multiple executions
-              window.removeEventListener('TabSelect', tabSelectListener);
+          const tabSelectListener = () => {
+            // Remove the event listener first to prevent any chance of multiple executions
+            window.removeEventListener('TabSelect', tabSelectListener);
 
-              // Use requestAnimationFrame to ensure DOM is updated
-              requestAnimationFrame(() => {
-                // Then use setTimeout to ensure browser has time to process tab switch
-                setTimeout(() => {
-                  if (gURLBar) {
-                    try {
-                      gURLBar.select();
-                    } catch (e) {
-                      console.warn('Error selecting URL bar:', e);
-                    }
+            // Use requestAnimationFrame to ensure DOM is updated
+            requestAnimationFrame(() => {
+              // Then use setTimeout to ensure browser has time to process tab switch
+              setTimeout(() => {
+                if (gURLBar) {
+                  try {
+                    gURLBar.select();
+                  } catch (e) {
+                    console.warn('Error selecting URL bar:', e);
                   }
-                  resolve();
-                }, 50);
-              });
-            };
+                }
+              }, 50);
+            });
+          };
 
-            window.addEventListener('TabSelect', tabSelectListener, { once: true });
-          });
+          window.addEventListener('TabSelect', tabSelectListener, { once: true });
         }
 
         // Safely switch to the empty tab using our debounced method
@@ -483,7 +479,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     await new Promise((resolve) => {
       workspaceWrapper.addEventListener(
         'ZenWorkspaceAttached',
-        (event) => {
+        () => {
           this._organizeTabsToWorkspaceSections(
             workspace,
             workspaceWrapper.tabsContainer,
@@ -589,7 +585,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         if (event.deltaMode !== 1) return;
 
         const isVerticalScroll = event.deltaY && !event.deltaX;
-        const isHorizontalScroll = event.deltaX && !event.deltaY;
 
         //if the scroll is vertical this checks that a modifier key is used before proceeding
         if (isVerticalScroll) {
@@ -665,7 +660,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     );
   }
 
-  _popupOpenHandler(event) {
+  _popupOpenHandler() {
     // If a popup is opened, we should stop the swipe gesture
     if (this._swipeState?.isGestureActive) {
       document.documentElement.removeAttribute('swipe-gesture');
@@ -788,7 +783,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   get shouldHaveWorkspaces() {
     if (typeof this._shouldHaveWorkspaces === 'undefined') {
-      let chromeFlags = docShell.treeOwner
+      let chromeFlags = window.docShell.treeOwner
         .QueryInterface(Ci.nsIInterfaceRequestor)
         .getInterface(Ci.nsIAppWindow).chromeFlags;
       this._shouldHaveWorkspaces =
@@ -823,7 +818,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
   getWorkspaceFromId(id) {
     try {
       return this._workspaceCache.workspaces.find((workspace) => workspace.uuid === id);
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -1193,7 +1188,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     let target;
     try {
       target = event.explicitOriginalTarget?.closest('toolbarbutton');
-    } catch (_) {}
+    } catch (e) {
+      console.error('Error getting explicitOriginalTarget in context menu:', e);
+    }
     this.#contextMenuData = {
       workspaceId: target?.getAttribute('zen-workspace-id'),
       originalTarget: target,
@@ -1686,7 +1683,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       if (nextWorkspace) {
         const [nextGradient, nextGrain] =
           await gZenThemePicker.getGradientForWorkspace(nextWorkspace);
-        const [_, existingGrain] = await gZenThemePicker.getGradientForWorkspace(workspace);
+        const existingGrain = await gZenThemePicker.getGradientForWorkspace(workspace)[1];
         const percentage = Math.abs(offsetPixels) / 200;
         await new Promise((resolve) => {
           requestAnimationFrame(() => {
@@ -1786,7 +1783,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
         if (previousBackgroundOpacity) {
           previousBackgroundOpacity = parseFloat(previousBackgroundOpacity);
         }
-      } catch (e) {
+      } catch {
         previousBackgroundOpacity = 1;
       }
       if (previousBackgroundOpacity == 1 || !previousBackgroundOpacity) {
@@ -1794,7 +1791,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       } else {
         previousBackgroundOpacity = 1 - previousBackgroundOpacity;
       }
-      previousBackgroundOpacity = previousBackgroundOpacity;
       gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
       await new Promise((resolve) => {
         requestAnimationFrame(() => {
@@ -2591,7 +2587,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
 
   // Tab browser utilities
 
-  getContextIdIfNeeded(userContextId, fromExternal, allowInheritPrincipal) {
+  getContextIdIfNeeded(userContextId, fromExternal) {
     if (!this.workspaceEnabled) {
       return [userContextId, false, undefined];
     }
@@ -2793,7 +2789,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     }
   }
 
-  async switchIfNeeded(browser, i) {
+  async switchIfNeeded(browser) {
     const tab = gBrowser.getTabForBrowser(browser);
     await this.switchTabIfNeeded(tab);
   }

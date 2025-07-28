@@ -8,7 +8,7 @@ document.addEventListener(
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById('zenCommandSet')
-      // eslint-disable-next-line complexity
+
       .addEventListener('command', (event) => {
         switch (event.target.id) {
           case 'cmd_zenCompactModeToggle':

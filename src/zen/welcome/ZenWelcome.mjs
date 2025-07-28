@@ -432,7 +432,7 @@
             'zen-welcome-set-default-browser'
           ).checked;
           if (AppConstants.HAVE_SHELL_SERVICE && shouldSetDefault) {
-            let shellSvc = getShellService();
+            let shellSvc = window.getShellService();
             if (!shellSvc) {
               return;
             }

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 8e839c497bba9de04948ad8759679b6a6f61a65f..f94a160427b7e465e2c7134fbaf876f589a3fcce 100644
+index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab87d7fbf3 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -29,6 +29,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -33,7 +33,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..f94a160427b7e465e2c7134fbaf876f5
  
          if (!doAdopt) {
 -          aWindow.gBrowser.tabContainer.selectedIndex = i;
-+          aWindow.gZenWorkspaces.switchIfNeeded(browser, i);
++          aWindow.gZenWorkspaces.switchIfNeeded(browser);
          }
  
          return true;

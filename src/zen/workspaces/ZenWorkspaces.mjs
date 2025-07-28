@@ -1683,7 +1683,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       if (nextWorkspace) {
         const [nextGradient, nextGrain] =
           await gZenThemePicker.getGradientForWorkspace(nextWorkspace);
-        const existingGrain = await gZenThemePicker.getGradientForWorkspace(workspace)[1];
+        const existingGrain = (await gZenThemePicker.getGradientForWorkspace(workspace))[1];
         const percentage = Math.abs(offsetPixels) / 200;
         await new Promise((resolve) => {
           requestAnimationFrame(() => {

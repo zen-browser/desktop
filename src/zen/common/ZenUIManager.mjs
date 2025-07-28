@@ -37,9 +37,13 @@ var gZenUIManager = {
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
     ChromeUtils.defineLazyGetter(this, 'motion', () => {
-      return ChromeUtils.importESModule('chrome://browser/content/zen-vendor/motion.min.mjs', {
-        global: 'current',
-      });
+      Services.scriptloader.loadSubScript(
+        'chrome://browser/content/zen-vendor/motion.min.mjs',
+        window
+      );
+      const motion = window.Motion;
+      delete window.Motion;
+      return motion;
     });
 
     ChromeUtils.defineLazyGetter(this, '_toastContainer', () => {

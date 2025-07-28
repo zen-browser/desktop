@@ -1346,9 +1346,10 @@
         {
           let opacity = browser.gZenThemePicker.currentOpacity;
           const svg = browser.gZenThemePicker.sliderWavePath;
-          const [secondStop, thirdStop] = document
-            .querySelectorAll('#PanelUI-zen-gradient-generator-slider-wave-gradient stop')
-            .slice(1, 3);
+          /* eslint-disable no-unused-vars */
+          const [_, secondStop, thirdStop] = document.querySelectorAll(
+            '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
+          );
           // Opacity can only be between MIN_OPACITY to MAX_OPACITY. Make opacity relative to that range
           if (opacity < MIN_OPACITY) {
             opacity = 0;

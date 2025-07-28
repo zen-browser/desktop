@@ -1,0 +1,3 @@
+
+zen-folders-search-placeholder =
+    .placeholder = Search { $folder-name }...

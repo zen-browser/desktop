@@ -1,0 +1,15 @@
+files:
+  - source: locales/en-US/browser/browser/zen-general.ftl
+    translation: browser/browser/zen-general.ftl
+  - source: locales/en-US/browser/browser/zen-split-view.ftl
+    translation: browser/browser/zen-split-view.ftl
+  - source: locales/en-US/browser/browser/zen-vertical-tabs.ftl
+    translation: browser/browser/zen-vertical-tabs.ftl
+  - source: locales/en-US/browser/browser/zen-welcome.ftl
+    translation: browser/browser/zen-welcome.ftl
+  - source: locales/en-US/browser/browser/zen-workspaces.ftl
+    translation: browser/browser/zen-workspaces.ftl
+  - source: locales/en-US/browser/browser/preferences/zen-preferences.ftl
+    translation: browser/browser/preferences/zen-preferences.ftl
+  - source: locales/en-US/browser/browser/zen-folders.ftl
+    translation: browser/browser/zen-folders.ftl

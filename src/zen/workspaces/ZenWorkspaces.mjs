@@ -922,6 +922,7 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     window.addEventListener('TabPinned', tabUpdateListener);
     window.addEventListener('TabUnpinned', tabUpdateListener);
     window.addEventListener('aftercustomization', tabUpdateListener);
+    window.addEventListener('TabSelect', this.onLocationChange.bind(this));
 
     window.addEventListener('TabBrowserInserted', this.onTabBrowserInserted.bind(this));
   }
@@ -1621,7 +1622,9 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
           }
         );
       } else {
-        workspaceElement.style.paddingTop = essentialsHeight + 'px';
+        window.requestAnimationFrame(() => {
+          workspaceElement.style.paddingTop = essentialsHeight + 'px';
+        });
       }
     }
   }
@@ -2448,7 +2451,8 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
     tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
   }
 
-  async onLocationChange(browser) {
+  async onLocationChange(event) {
+    let tab = event.target;
     gZenCompactModeManager.sidebar.toggleAttribute(
       'zen-has-empty-tab',
       gBrowser.selectedTab.hasAttribute('zen-empty-tab')
@@ -2457,7 +2461,6 @@ var gZenWorkspaces = new (class extends ZenMultiWindowFeature {
       return;
     }
 
-    let tab = gBrowser.getTabForBrowser(browser);
     if (tab.hasAttribute('zen-glance-tab')) {
       // Extract from parent node so we are not selecting the wrong (current) tab
       tab = tab.parentNode.closest('.tabbrowser-tab');

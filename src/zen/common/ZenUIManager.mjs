@@ -603,7 +603,13 @@ var gZenVerticalTabsManager = {
   },
 
   animateTab(aTab) {
-    if (!gZenUIManager.motion || !aTab || !gZenUIManager._hasLoadedDOM || !aTab.isConnected) {
+    if (
+      !gZenUIManager.motion ||
+      !aTab ||
+      !gZenUIManager._hasLoadedDOM ||
+      !aTab.isConnected ||
+      gZenUIManager.testingEnabled
+    ) {
       return;
     }
     // get next visible tab

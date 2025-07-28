@@ -177,6 +177,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
     if (previousTab && !previousTab.hasAttribute('zen-empty-tab')) {
       this._lastOpenedTab = previousTab;
     }
+    this.onLocationChange(event.target.linkedBrowser);
   }
 
   /**
@@ -527,7 +528,6 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
       this._thumnailCanvas.width = 280 * devicePixelRatio;
       this._thumnailCanvas.height = 140 * devicePixelRatio;
     }
-
     const browsers = this._data[this.currentView].tabs.map((t) => t.linkedBrowser);
     browsers.forEach((b) => {
       b.style.pointerEvents = 'none';
@@ -1108,11 +1108,6 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
         }
       }
     }
-
-    if (this._sessionRestoring) {
-      return;
-    }
-    this.activateSplitView(splitData);
   }
 
   addTabToSplit(tab, splitNode, prepend = true) {
@@ -1181,6 +1176,7 @@ class nsZenViewSplitter extends ZenDOMOperatedFeature {
     this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
     this.toggleWrapperDisplay(true);
+    window.dispatchEvent(new CustomEvent('ZenViewSplitter:SplitViewActivated'));
   }
 
   calculateLayoutTree(tabs, gridType) {

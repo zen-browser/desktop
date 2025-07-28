@@ -1,0 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+  "!/zen/tests/glance/head.js",
+]
+
+["browser_basic_split_view.js"]
+["browser_split_inset_checks.js"]
+["browser_split_groups.js"]
+["browser_split_browser_duplication.js"]
+["browser_split_view_with_glance.js"]

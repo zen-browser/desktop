@@ -223,6 +223,7 @@
               this.browserWrapper.setAttribute('has-finished-animation', true);
               this._animating = false;
               this.animatingOpen = false;
+              this.#currentTab.dispatchEvent(new Event('GlanceOpen', { bubbles: true }));
               resolve(this.#currentTab);
             });
         });
@@ -358,12 +359,12 @@
             this.overlay.removeAttribute('fade-out');
             this.browserWrapper.removeAttribute('animate');
 
-            this.lastCurrentTab = this.#currentTab;
+            const lastCurrentTab = this.#currentTab;
 
             this.overlay.classList.remove('zen-glance-overlay');
             gBrowser
               ._getSwitcher()
-              .setTabStateNoAction(this.lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
+              .setTabStateNoAction(lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
 
             if (!onTabClose) {
               this.#currentParentTab._visuallySelected = false;
@@ -381,14 +382,15 @@
             this.overlay = null;
             this.contentWrapper = null;
 
-            this.lastCurrentTab.removeAttribute('zen-glance-tab');
-            this.lastCurrentTab._closingGlance = true;
+            lastCurrentTab.removeAttribute('zen-glance-tab');
+            lastCurrentTab._closingGlance = true;
 
             if (!isDifferent) {
               gBrowser.selectedTab = this.#currentParentTab;
             }
             this._ignoreClose = true;
-            gBrowser.removeTab(this.lastCurrentTab, { animate: true, skipPermitUnload: true });
+            lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));
+            gBrowser.removeTab(lastCurrentTab, { animate: true, skipPermitUnload: true });
             gBrowser.tabContainer._invalidateCachedTabs();
 
             this.#currentParentTab.removeAttribute('glance-id');
@@ -396,7 +398,6 @@
             this.#glances.delete(this.#currentGlanceID);
             this.#currentGlanceID = setNewID;
 
-            this.lastCurrentTab = null;
             this._duringOpening = false;
 
             this._animating = false;

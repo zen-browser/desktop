@@ -567,31 +567,37 @@ var gZenCompactModeManager = {
           return;
         }
 
-        if (event.target.matches(':hover')) {
-          return;
-        }
+        // See bug https://bugzilla.mozilla.org/show_bug.cgi?id=1979340 and issue https://github.com/zen-browser/desktop/issues/7746.
+        // If we want the toolbars to be draggable, we need to make sure to check the hover state after a short delay.
+        // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
+        setTimeout(() => {
+          // Let's double check if the mouse is still hovering over the element, see the bug above.
+          if (event.target.matches(':hover')) {
+            return;
+          }
 
-        if (
-          event.explicitOriginalTarget.closest('#urlbar[zen-floating-urlbar]') ||
-          (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
-            gZenVerticalTabsManager._hasSetSingleToolbar) ||
-          this._hasHoveredUrlbar
-        ) {
-          return;
-        }
+          if (
+            event.explicitOriginalTarget.closest('#urlbar[zen-floating-urlbar]') ||
+            (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
+              gZenVerticalTabsManager._hasSetSingleToolbar) ||
+            this._hasHoveredUrlbar
+          ) {
+            return;
+          }
 
-        if (this.hoverableElements[i].keepHoverDuration) {
-          this.flashElement(
-            target,
-            this.hoverableElements[i].keepHoverDuration,
-            'has-hover' + target.id,
-            'zen-has-hover'
-          );
-        } else {
-          this._removeHoverFrames[target.id] = window.requestAnimationFrame(() =>
-            target.removeAttribute('zen-has-hover')
-          );
-        }
+          if (this.hoverableElements[i].keepHoverDuration) {
+            this.flashElement(
+              target,
+              this.hoverableElements[i].keepHoverDuration,
+              'has-hover' + target.id,
+              'zen-has-hover'
+            );
+          } else {
+            this._removeHoverFrames[target.id] = window.requestAnimationFrame(() =>
+              target.removeAttribute('zen-has-hover')
+            );
+          }
+        }, 0);
       };
 
       target.addEventListener('mouseenter', onEnter);

@@ -129,7 +129,7 @@ add_task(async function test_Split_View_Duplication_Essential() {
   );
   for (const tab of essentials) {
     ok(!tab.group, 'Each essential tab should not be in a split group after duplication');
-    ok(!tab.splitView, 'Each essential tab should be in a split view after duplication');
+    ok(!tab.splitView, 'Each essential tab should not be in a split view after duplication');
   }
   for (const tab of gBrowser.tabs) {
     if (existingTabs.includes(tab)) {

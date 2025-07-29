@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.11.15"
+    "@zen-browser/surfer": "^1.11.16"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",

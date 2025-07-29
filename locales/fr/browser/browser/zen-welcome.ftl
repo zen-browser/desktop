@@ -13,7 +13,7 @@ zen-welcome-dont-set-default-browser = NE PAS définir { -brand-short-name } com
 zen-welcome-initial-essentials-title = Vos onglets principaux, toujours à portée de main
 zen-welcome-initial-essentials-description-1 = Gardez vos onglets les plus importants facilement accessibles et toujours à portée de main, peu importe combien vous en ouvrez.
 zen-welcome-initial-essentials-description-2 = Les onglets Essentiels sont toujours visibles, peu importe l’espace de travail où vous êtes.
-zen-welcome-workspace-colors-title = Vos espaces de travail, vos couleurs
+zen-welcome-workspace-colors-title = Vos Espaces de travail, vos couleurs
 zen-welcome-workspace-colors-description = Personnalisez votre navigateur en donnant à chaque espace de travail sa propre identité de couleur.
 zen-welcome-start-browsing-title =
     Tout est prêt ?<br/>

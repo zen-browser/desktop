@@ -37,7 +37,7 @@ var gZenUIManager = {
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
     // Add global click handler for split link feature
-    document.addEventListener('click', (event) => {
+    document.addEventListener('click', async (event) => {
       // Only handle left-clicks
       if (event.button !== 0) return;
       // Only handle anchor elements
@@ -45,21 +45,65 @@ var gZenUIManager = {
       if (!anchor) return;
       // Ignore if default prevented or not in main content area
       if (event.defaultPrevented) return;
-      // Check for Shift key
-      if (!event.shiftKey) return;
+      // Only trigger if Shift is pressed and no other modifier
+      if (!gZenUIManager._isOnlyShift(event)) return;
+
+      // Check if Glance is configured to use Shift+Click
+      if (typeof gZenUIManager._getGlanceActivationMethod === 'function') {
+        const glanceActivation = await gZenUIManager._getGlanceActivationMethod();
+        if (glanceActivation === 'shift') {
+          // Let Glance handle this, not split view
+          return;
+        }
+      }
+
       // Prevent default navigation
       event.preventDefault();
       event.stopPropagation();
+      // Normalize URL (absolute if relative)
+      const url = gZenUIManager._getAbsoluteUrl(anchor);
       // Open in split tab
       if (window.gZenViewSplitter && typeof window.gZenViewSplitter.splitLinkInNewTab === 'function') {
         // Temporarily set up gContextMenu to provide the link URL for splitLinkInNewTab
         window.gContextMenu = window.gContextMenu || {};
-        window.gContextMenu.linkURL = anchor.href;
+        window.gContextMenu.linkURL = url;
         window.gZenViewSplitter.splitLinkInNewTab();
         // Clean up
         delete window.gContextMenu.linkURL;
       }
     }, true);
+  // Returns a promise for the current Glance activation method, or undefined if not available
+  async _getGlanceActivationMethod() {
+    // This should be replaced with the actual way to get the user's Glance activation method
+    // For now, check if window.gZenGlanceChild exists and has getActivationMethod
+    if (window.gZenGlanceChild && typeof window.gZenGlanceChild.getActivationMethod === 'function') {
+      try {
+        return await window.gZenGlanceChild.getActivationMethod();
+      } catch (e) {
+        return undefined;
+      }
+    }
+    // Fallback: not available
+    return undefined;
+  }
+
+  // Helper: Only Shift (no other modifier)
+  _isOnlyShift(event) {
+    return event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey;
+  }
+
+  // Helper: Normalize anchor href to absolute URL
+  _getAbsoluteUrl(anchor) {
+    const url = anchor.getAttribute('href');
+    if (!/^(?:[a-z]+:)?\/\//i.test(url)) {
+      try {
+        return new URL(url, window.location.origin).href;
+      } catch (e) {
+        return url; // fallback
+      }
+    }
+    return url;
+  }
     
     ChromeUtils.defineLazyGetter(this, 'motion', () => {
       Services.scriptloader.loadSubScript(

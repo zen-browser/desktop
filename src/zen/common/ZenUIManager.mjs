@@ -36,6 +36,31 @@ var gZenUIManager = {
 
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
+    // Add global click handler for split link feature
+    document.addEventListener('click', (event) => {
+      // Only handle left-clicks
+      if (event.button !== 0) return;
+      // Only handle anchor elements
+      const anchor = event.target.closest('a[href]');
+      if (!anchor) return;
+      // Ignore if default prevented or not in main content area
+      if (event.defaultPrevented) return;
+      // Check for Shift key
+      if (!event.shiftKey) return;
+      // Prevent default navigation
+      event.preventDefault();
+      event.stopPropagation();
+      // Open in split tab
+      if (window.gZenViewSplitter && typeof window.gZenViewSplitter.splitLinkInNewTab === 'function') {
+        // Temporarily set up gContextMenu to provide the link URL for splitLinkInNewTab
+        window.gContextMenu = window.gContextMenu || {};
+        window.gContextMenu.linkURL = anchor.href;
+        window.gZenViewSplitter.splitLinkInNewTab();
+        // Clean up
+        delete window.gContextMenu.linkURL;
+      }
+    }, true);
+    
     ChromeUtils.defineLazyGetter(this, 'motion', () => {
       Services.scriptloader.loadSubScript(
         'chrome://browser/content/zen-vendor/motion.min.mjs',

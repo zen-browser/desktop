@@ -1448,7 +1448,11 @@
         if (dominantColor) {
           const primaryColor = this.getAccentColorForUI(dominantColor);
           browser.document.documentElement.style.setProperty('--zen-primary-color', primaryColor);
-          browser.gZenThemePicker.isLegacyVersion = this.isLegacyVersion;
+
+          // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
+          // so instead get the pref value directly.
+          browser.gZenThemePicker.isLegacyVersion = Services.prefs.getIntPref('zen.theme.gradient-legacy-version', 1) === 0;
+
           let isDarkMode = isDarkModeWindow;
           if (!isDefaultTheme && !this.isLegacyVersion) {
             // Check for the primary color

@@ -1,23 +1,23 @@
 zen-panel-ui-current-profile-text = Aktuelles Profil
-unified-extensions-description = Erweiterungen fügen { -brand-short-name } zusätzliche Funktionen hinzu.
+unified-extensions-description = Erweiterungen werden verwendet, um { -brand-short-name } zusätzliche Funktionen hinzuzufügen.
 tab-context-zen-reset-pinned-tab = 
     .label = Angepinnten Tab zurücksetzen
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Zu Essentials hinzufügen ({ $num } / 12 Plätze gefüllt)
+    .label = Zu Essentials hinzufügen ({ $num } / 12 Plätze belegt)
     .accesskey = E
 tab-context-zen-remove-essential = 
-    .label = Von Essentials entfernen
+    .label = Aus Essentials entfernen
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Angepinnte URL durch aktuelle ersetzen
     .accesskey = C
-zen-themes-corrupted = Deine { -brand-short-name } Mod Datei wurde beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
-zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkombinationsdatei ist beschädigt. Sie wurde auf die Standard-Tastenkombinationen zurückgesetzt.
+zen-themes-corrupted = Ihre { -brand-short-name } Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
+zen-shortcuts-corrupted = Ihre { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Sie wurde auf die Standard-Tastenkürzel zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Die neue URL-Leiste wurde aktiviert, sodass neue Tab-Seiten nicht mehr erforderlich sind.<br/><br/>
-    Versuche, einen neuen Tab zu öffnen, um die neue URL-Leiste in Aktion zu sehen!
+    Die neue Adressleiste wurde aktiviert und macht neue Tab-Seiten überflüssig.<br/><br/>
+    Öffnen Sie einen neuen Tab, um die neue Adressleiste in Aktion zu sehen!
 zen-disable = Deaktivieren
 pictureinpicture-minimize-btn = 
     .aria-label = Minimieren
@@ -29,12 +29,12 @@ zen-general-cancel-label =
     .label = Abbrechen
 zen-general-confirm = 
     .label = Bestätigen
-zen-pinned-tab-replaced = Angepinnte Tab URL wurde mit aktueller URL ersetzt.
+zen-pinned-tab-replaced = Die URL des angepinnten Tabs wurde durch die aktuelle URL ersetzt!
 zen-tabs-renamed = Tab wurde erfolgreich umbenannt!
 zen-background-tab-opened-toast = Neuer Hintergrund-Tab geöffnet!
 zen-workspace-renamed-toast = Arbeitsbereich wurde erfolgreich umbenannt!
 zen-library-sidebar-workspaces = 
-    .label = Bereiche
+    .label = Arbeitsbereiche
 zen-library-sidebar-mods = 
     .label = Mods
 

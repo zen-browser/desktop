@@ -1,5 +1,5 @@
 zen-toolbar-context-tabs-right = 
-    .label = Tabs auf der rechten Seite
+    .label = Tabs rechts
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompaktmodus
@@ -24,13 +24,13 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Entladen und wechsle zum Tab
-           *[other] Entlade { $tabCount } Tabs und wechsle zum ersten
+        [one] Tab entladen und dorthin wechseln
+        *[other] { $tabCount } Tabs entladen und zum ersten wechseln
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Zurücksetzen und Tab anpinnen
-           *[other] Setze  { $tabCount } Tabs zurück und pinne sie an
+        [one] Tab zurücksetzen und anpinnen
+        *[other] { $tabCount } Tabs zurücksetzen und anpinnen
         }
-tab-reset-pin-label = Zurück zu angepinnter URL
+tab-reset-pin-label = Zurück zur angepinnten URL

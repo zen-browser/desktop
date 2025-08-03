@@ -1,16 +1,16 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Tab aufteilen (benötigt mehrere ausgewählte Tabs)
-           *[other] { $tabCount } Tabs teilen
+        [1] Tab aufteilen (mehrere ausgewählte Tabs erforderlich)
+        *[other] { $tabCount } Tabs aufteilen
         }
     .accesskey = S
 zen-split-link = 
-    .label = Link in neuen Tab aufteilen
+    .label = Link in neuem Tab aufteilen
     .accesskey = S
-zen-split-view-modifier-header = Ansicht teilen
+zen-split-view-modifier-header = Geteilte Ansicht
 zen-split-view-modifier-activate-reallocation = 
-    .label = Neuzuordnung aktivieren
-zen-split-view-modifier-enabled-toast = Neuanordnung der geteilten Ansicht ist AKTIVIERT.
-zen-split-view-modifier-enabled-toast-description = Ziehe die Ansicht, um sie neu anzuordnen. Drücke Esc, um zu beenden.
-zen-split-view-modifier-disabled-toast = Neuanordnung der geteilten Ansicht ist DEAKTIVIERT.
+    .label = Neuanordnung aktivieren
+zen-split-view-modifier-enabled-toast = Neuanordnung der geteilten Ansicht ist EIN.
+zen-split-view-modifier-enabled-toast-description = Ziehen Sie die Ansicht per Drag & Drop, um sie neu anzuordnen. Drücken Sie Esc zum Beenden.
+zen-split-view-modifier-disabled-toast = Neuanordnung der geteilten Ansicht ist AUS.

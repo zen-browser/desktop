@@ -44,3 +44,7 @@ zen-learn-more-text = 더 알아보기
 zen-close-label = 닫기
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = 검색...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

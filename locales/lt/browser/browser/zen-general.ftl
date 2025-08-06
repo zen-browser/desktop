@@ -44,3 +44,7 @@ zen-learn-more-text = Sužinoti daugiau
 zen-close-label = Užverti
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Ieškokite...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

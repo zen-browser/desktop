@@ -1,2 +1,15 @@
 zen-folders-search-placeholder = 
     .placeholder = Keresés { $folder-name } mappában...
+zen-folders-panel-rename-folder = 
+    .label = Mappa átnevezése
+zen-folders-panel-expand-folder = 
+    .label = Mappa kinyitása
+zen-folders-panel-delete-folder = 
+    .label = Mappa törlése
+zen-folders-panel-convert-folder-to-space = 
+    .label = Mappa konvertálása munkakörnyezeté
+zen-folders-panel-change-folder-space = 
+    .label = Környezet váltása...
+zen-folders-panel-change-icon-folder = 
+    .label = Ikon módosítása
+zen-folders-search-no-results = Nincsenek a keresésnek megfelelő lapok 🤔

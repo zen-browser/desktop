@@ -44,3 +44,7 @@ zen-learn-more-text = Rohkem teavet
 zen-close-label = Sulge
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Search...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

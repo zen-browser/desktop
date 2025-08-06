@@ -44,3 +44,7 @@ zen-learn-more-text = Zjistit více
 zen-close-label = Zavřít
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Hledat...
+zen-icons-picker-emoji = 
+    .label = Emodži
+zen-icons-picker-svg = 
+    .label = Ikony

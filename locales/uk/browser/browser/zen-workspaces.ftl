@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Простори
 zen-panel-ui-workspaces-create = 
     .label = Створити простір
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Видалити простір
     .accesskey = D

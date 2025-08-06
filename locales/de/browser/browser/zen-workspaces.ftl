@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Arbeitsbereiche
 zen-panel-ui-workspaces-create = 
     .label = Arbeitsbereich erstellen
+zen-panel-ui-folder-create = 
+    .label = Ordner erstellen
 zen-workspaces-panel-context-delete = 
     .label = Arbeitsbereich löschen
     .accesskey = D

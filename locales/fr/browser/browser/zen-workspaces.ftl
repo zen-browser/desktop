@@ -1,13 +1,15 @@
 zen-panel-ui-workspaces-text = Espaces
 zen-panel-ui-workspaces-create = 
     .label = Créer un Espace
+zen-panel-ui-folder-create = 
+    .label = Créer un dossier
 zen-workspaces-panel-context-delete = 
     .label = Supprimer l’Espace
     .accesskey = D
 zen-workspaces-panel-change-name = 
     .label = Modifier le nom
 zen-workspaces-panel-change-icon = 
-    .label = Changer l'icône
+    .label = Changer d'icône
 zen-workspaces-panel-context-default-profile = 
     .label = Définir le profil
 zen-workspaces-how-to-reorder-title = Comment réordonner les Espaces

@@ -44,3 +44,7 @@ zen-learn-more-text = Més informació
 zen-close-label = Tanca
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Cerca...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

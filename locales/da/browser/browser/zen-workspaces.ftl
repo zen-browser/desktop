@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Arbejdsområder
 zen-panel-ui-workspaces-create = 
     .label = Opret rum
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Slet arbejdsområde
     .accesskey = D

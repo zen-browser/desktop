@@ -44,3 +44,7 @@ zen-learn-more-text = Μάθετε Περισσότερα
 zen-close-label = Κλείσιμο
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Αναζήτηση...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

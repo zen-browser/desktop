@@ -44,3 +44,7 @@ zen-learn-more-text = Pelajari Lebih Lanjut
 zen-close-label = Tutup
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Cari...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

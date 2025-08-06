@@ -44,3 +44,7 @@ zen-learn-more-text = Lær mere
 zen-close-label = Luk
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Søg...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

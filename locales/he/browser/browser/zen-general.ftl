@@ -44,3 +44,7 @@ zen-learn-more-text = מידע נוסף
 zen-close-label = סגור
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = חיפוש...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

@@ -42,3 +42,7 @@ zen-learn-more-text = 瞭解更多
 zen-close-label = 關閉
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Search...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

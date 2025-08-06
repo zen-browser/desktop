@@ -1,8 +1,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-        [1] Tab aufteilen (mehrere ausgewählte Tabs erforderlich)
-        *[other] { $tabCount } Tabs aufteilen
+            [1] Tab aufteilen (mehrere ausgewählte Tabs erforderlich)
+           *[other] { $tabCount } Tabs aufteilen
         }
     .accesskey = S
 zen-split-link = 

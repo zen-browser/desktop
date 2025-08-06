@@ -668,7 +668,7 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         'zen-workspace-forward',
-        'E',
+        'A',
         '',
         ZEN_WORKSPACE_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),

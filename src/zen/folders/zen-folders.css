@@ -144,7 +144,10 @@ tab-group[split-view-group] .tabbrowser-tab {
 }
 
 tab-group[split-view-group] .tab-group-label-container {
-  visibility: collapse;
+  position: absolute;
+  width: 100%;
+  height: 40px;
+  visibility: hidden;
   padding: 0 !important;
   margin: 0 !important;
 }

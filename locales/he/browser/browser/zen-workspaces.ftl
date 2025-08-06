@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = סביבות עבודה
 zen-panel-ui-workspaces-create = 
     .label = צור סביבה
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = מחק סיבת עבודה
     .accesskey = ג

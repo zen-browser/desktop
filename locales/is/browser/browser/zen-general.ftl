@@ -44,3 +44,7 @@ zen-learn-more-text = Læra Meira
 zen-close-label = Loka
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Search...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

@@ -1,2 +1,15 @@
 zen-folders-search-placeholder = 
     .placeholder = Buscar { $folder-name }...
+zen-folders-panel-rename-folder = 
+    .label = Renombrar carpeta
+zen-folders-panel-expand-folder = 
+    .label = Expandir carpeta
+zen-folders-panel-delete-folder = 
+    .label = Borrar carpeta
+zen-folders-panel-convert-folder-to-space = 
+    .label = Convertir carpeta en espacio
+zen-folders-panel-change-folder-space = 
+    .label = Cambiar espacio...
+zen-folders-panel-change-icon-folder = 
+    .label = Cambiar icono
+zen-folders-search-no-results = Ninguna pestaña coincide con esa búsqueda 🤔

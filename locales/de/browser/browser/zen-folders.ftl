@@ -1,2 +1,15 @@
 zen-folders-search-placeholder = 
     .placeholder = { $folder-name } durchsuchen...
+zen-folders-panel-rename-folder = 
+    .label = Ordner umbenennen
+zen-folders-panel-expand-folder = 
+    .label = Ordner ausklappen
+zen-folders-panel-delete-folder = 
+    .label = Ordner löschen
+zen-folders-panel-convert-folder-to-space = 
+    .label = Ordner in Arbeitsbereich konvertieren
+zen-folders-panel-change-folder-space = 
+    .label = Arbeitsbereich wechseln...
+zen-folders-panel-change-icon-folder = 
+    .label = Symbol anpassen
+zen-folders-search-no-results = Keine Tabs passend zu dieser Suche 🤔

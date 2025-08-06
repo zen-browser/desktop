@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Không gian làm việc khác
 zen-panel-ui-workspaces-create = 
     .label = Create Space
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Xóa không gian làm việc
     .accesskey = D

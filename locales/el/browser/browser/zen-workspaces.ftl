@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Χώροι Εργασίας
 zen-panel-ui-workspaces-create = 
     .label = Δημιουργία Χώρου
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Διαγραφή Χώρου Εργασίας
     .accesskey = D

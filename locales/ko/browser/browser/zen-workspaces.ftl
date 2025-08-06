@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = 다른 워크스페이스
 zen-panel-ui-workspaces-create = 
     .label = 스페이스 만들기
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = 워크스페이스 삭제
     .accesskey = D

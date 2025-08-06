@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Espacios de trabajo
 zen-panel-ui-workspaces-create = 
     .label = Crear espacio
+zen-panel-ui-folder-create = 
+    .label = Crear carpeta
 zen-workspaces-panel-context-delete = 
     .label = Eliminar espacio de trabajo
     .accesskey = D

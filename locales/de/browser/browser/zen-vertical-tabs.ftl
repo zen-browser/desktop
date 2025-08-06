@@ -24,13 +24,13 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-        [one] Tab entladen und dorthin wechseln
-        *[other] { $tabCount } Tabs entladen und zum ersten wechseln
+            [one] Tab entladen und dorthin wechseln
+           *[other] { $tabCount } Tabs entladen und zum ersten wechseln
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-        [one] Tab zurücksetzen und anpinnen
-        *[other] { $tabCount } Tabs zurücksetzen und anpinnen
+            [one] Tab zurücksetzen und anpinnen
+           *[other] { $tabCount } Tabs zurücksetzen und anpinnen
         }
 tab-reset-pin-label = Zurück zur angepinnten URL

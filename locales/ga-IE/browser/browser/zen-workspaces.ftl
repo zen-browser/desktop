@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Spásanna
 zen-panel-ui-workspaces-create = 
     .label = Cruthaigh Spás
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Scrios Spás
     .accesskey = D

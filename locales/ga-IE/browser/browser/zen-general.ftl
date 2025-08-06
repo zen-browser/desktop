@@ -44,3 +44,7 @@ zen-learn-more-text = Foghlaim Tuilleadh
 zen-close-label = Dún
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Cuardaigh...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

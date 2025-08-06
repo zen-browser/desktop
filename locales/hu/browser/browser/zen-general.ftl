@@ -44,3 +44,7 @@ zen-learn-more-text = Tudjon meg többet
 zen-close-label = Bezárás
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Keresés...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icons

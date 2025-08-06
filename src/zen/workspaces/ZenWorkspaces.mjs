@@ -407,7 +407,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         if (tabs.length) {
           const defaultSelectedContainer = this.workspaceElement(
             this.activeWorkspace
-          ).querySelector('.zen-workspace-normal-tabs-section');
+          )?.querySelector('.zen-workspace-normal-tabs-section');
           const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
             '.zen-workspace-pinned-tabs-section'
           );

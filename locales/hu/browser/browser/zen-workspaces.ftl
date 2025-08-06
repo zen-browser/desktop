@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Más munkakörnyezetek
 zen-panel-ui-workspaces-create = 
     .label = Környezet létrehozása
+zen-panel-ui-folder-create = 
+    .label = Mappa létrehozása
 zen-workspaces-panel-context-delete = 
     .label = Munkakörnyezet törlése
     .accesskey = D

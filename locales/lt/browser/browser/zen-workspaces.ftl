@@ -1,6 +1,8 @@
 zen-panel-ui-workspaces-text = Darbo sritys
 zen-panel-ui-workspaces-create = 
     .label = Kurti erdvę
+zen-panel-ui-folder-create = 
+    .label = Create Folder
 zen-workspaces-panel-context-delete = 
     .label = Ištrinti darbo sritį
     .accesskey = D

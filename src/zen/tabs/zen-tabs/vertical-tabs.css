@@ -1492,10 +1492,11 @@
   opacity: 0.7;
 }
 
-.tab-throbber {
-  display: none !important; /* Hide throbber always */
-}
-
-.tab-icon-image {
-  display: flex !important;
+@media (-moz-pref('zen.theme.hide-tab-throbber')) {
+  .tab-throbber {
+    display: none !important;
+  }
+  .tab-icon-image {
+    display: flex !important;
+  }
 }

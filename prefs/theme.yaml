@@ -29,6 +29,9 @@
 - name: zen.theme.use-sysyem-colors
   value: false
 
+- name: zen.theme.hide-tab-throbber
+  value: true
+
 # ==== Mark: border radius ====
 
 # macOS border radius

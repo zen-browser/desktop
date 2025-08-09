@@ -650,6 +650,40 @@ class nsZenKeyboardShortcutsLoader {
         'zen-compact-mode-shortcut-show-toolbar'
       )
     );
+    // Glance mode's KeySet
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-glance-expand',
+        'Enter',
+        '',
+        '',
+        '',
+        'cmd_zenGlanceExpand',
+        'zen-glance-shortcut-expand'
+      )
+    );
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-glance-split',
+        'S',
+        '',
+        '',
+        '',
+        'cmd_zenGlanceSplit',
+        'zen_glance-shortcut-split'
+      )
+    );
+    newShortcutList.push(
+      new KeyShortcut(
+        'zen-glance-close',
+        'Escape',
+        '',
+        '',
+        '',
+        'cmd_zenGlanceClose',
+        'zen-glance-shortcut-close'
+      )
+    )
 
     // Workspace shortcuts
     for (let i = 10; i > 0; i--) {

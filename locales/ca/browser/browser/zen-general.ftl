@@ -47,4 +47,4 @@ zen-singletoolbar-urlbar-placeholder-with-name =
 zen-icons-picker-emoji = 
     .label = Emojis
 zen-icons-picker-svg = 
-    .label = Icons
+    .label = Icones

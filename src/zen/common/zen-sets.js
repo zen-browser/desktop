@@ -115,6 +115,9 @@ document.addEventListener(
               renameFolder: true,
             });
             break;
+          case 'cmd_zenOpenNoteCreation':
+            gZenNotes.openNoteCreation();
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

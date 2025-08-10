@@ -306,4 +306,5 @@ export default [
   'ProfilesDatastoreService',
 
   'TAB_DROP_TYPE',
+  'gZenNotes',
 ];

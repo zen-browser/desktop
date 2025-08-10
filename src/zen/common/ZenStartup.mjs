@@ -58,6 +58,14 @@
             'tabs-toolbar-new-tab'
           );
         }, 0);
+        // Initialize notes manager
+        console.log('[ZenStartup] Checking gZenNotes:', typeof gZenNotes);
+        if (typeof gZenNotes !== 'undefined') {
+          console.log('[ZenStartup] Initializing gZenNotes');
+          gZenNotes.init();
+        } else {
+          console.error('[ZenStartup] gZenNotes is undefined!');
+        }
       } catch (e) {
         console.error('ZenThemeModifier: Error initializing browser layout', e);
       }

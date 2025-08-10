@@ -6,6 +6,7 @@
 DIRS += [
     "glance",
     "mods",
+    "notes",
     "tests",
     "toolkit",
 ]

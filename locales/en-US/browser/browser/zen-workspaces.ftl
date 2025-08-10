@@ -67,3 +67,7 @@ zen-workspace-creation-label = Spaces are used to organize your tabs and session
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete this space? This action cannot be undone.
+
+zen-panel-ui-notes-create =
+    .label = New Note
+    .accesskey = N

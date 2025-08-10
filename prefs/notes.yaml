@@ -1,0 +1,11 @@
+- name: zen.notes.enabled
+  value: true
+
+- name: zen.notes.auto-save
+  value: true
+
+- name: zen.notes.max-notes
+  value: 100
+
+- name: zen.notes.default-title
+  value: "Untitled Note"

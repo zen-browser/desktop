@@ -216,7 +216,7 @@ var gZenUIManager = {
     return true;
   },
 
-  handleNewTab(werePassedURL, searchClipboard, where) {
+  async handleNewTab(werePassedURL, searchClipboard, where) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn('Browser state invalid for new tab operation');
@@ -248,6 +248,11 @@ var gZenUIManager = {
     if (!this._lastTab) {
       console.warn('No selected tab found when creating new tab');
       return false;
+    }
+
+    // Exit fullscreen if it is active
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
     }
 
     // Set visual state with proper validation

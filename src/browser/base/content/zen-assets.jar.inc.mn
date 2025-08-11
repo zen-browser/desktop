@@ -108,3 +108,8 @@
         content/browser/zen-images/favicons/reddit.ico                          (../../zen/images/favicons/reddit.ico)
         content/browser/zen-images/favicons/x.ico                               (../../zen/images/favicons/x.ico)
         content/browser/zen-images/favicons/trello.ico                          (../../zen/images/favicons/trello.ico)
+
+        # Notes chrome namespace (using browser namespace)
+        content/browser/zen-notes/note.xhtml                                    (../../zen/notes/content/note.xhtml)
+        content/browser/zen-notes/note.mjs                                      (../../zen/notes/content/note.mjs)
+        skin/browser/zen-notes/note.css                                         (../../zen/notes/skin/note.css)

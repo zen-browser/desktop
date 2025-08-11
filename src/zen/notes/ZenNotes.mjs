@@ -23,14 +23,22 @@ var gZenNotes = new (class extends nsZenMultiWindowFeature {
 
   openNoteCreation() {
     console.log('[ZenNotes] openNoteCreation called');
-    // For MVP: Just show a simple alert
-    // Later: Create a proper note creation dialog
-    alert('Note creation coming soon! This is the MVP version.');
     
-    // TODO: Implement proper note creation
-    // 1. Show note creation dialog
-    // 2. Create note in sidebar
-    // 3. Save note to storage
+    // Try using the browser chrome namespace instead
+    const noteURL = 'chrome://browser/content/zen-notes/note.xhtml';
+    
+    // Get the system principal for chrome URLs
+    const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+    
+    const newTab = window.gBrowser.addTab(noteURL, {
+      triggeringPrincipal: systemPrincipal,
+      relatedToCurrent: true
+    });
+    
+    // Switch to the new tab
+    window.gBrowser.selectedTab = newTab;
+    
+    console.log('[ZenNotes] Note tab opened:', noteURL);
   }
 
   // ... rest of implementation will come later

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://notes/skin/note.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/zen-notes/note.css" type="text/css"?>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,11 +10,83 @@
 </head>
 <body>
   <div id="note-container">
-    <div id="note-header">
-      <input type="text" id="note-title" placeholder="Note Title" />
+    <!-- Note Content -->
+    <div id="note-content-area">
+      <div id="note-header">
+        <input type="text" id="note-title" placeholder="Untitled" />
+      </div>
+      <div id="note-body">
+        <div id="note-text" contenteditable="true" placeholder="Type '/' for commands or # for headings..."></div>
+      </div>
     </div>
-    <div id="note-content">
-      <textarea id="note-text" placeholder="Start writing your note..."></textarea>
+    
+    <!-- Bottom Toolbar -->
+    <div id="note-toolbar">
+      <button class="toolbar-btn" data-command="bold" title="Bold (Ctrl+B)">
+        <span style="font-weight: bold;">B</span>
+      </button>
+      <button class="toolbar-btn" data-command="italic" title="Italic (Ctrl+I)">
+        <span style="font-style: italic;">I</span>
+      </button>
+      <button class="toolbar-btn" data-command="underline" title="Underline (Ctrl+U)">
+        <span style="text-decoration: underline;">U</span>
+      </button>
+      
+      <div class="toolbar-separator"></div>
+      
+      <button class="toolbar-btn" data-command="insertUnorderedList" title="Bullet List">
+        •
+      </button>
+      <button class="toolbar-btn" data-command="insertOrderedList" title="Numbered List">
+        1.
+      </button>
+      <button class="toolbar-btn" data-command="insertLink" title="Insert Link (Ctrl+K)">
+        🔗
+      </button>
+    </div>
+    
+    <!-- Slash Menu (Hidden by default) -->
+    <div id="slash-menu" class="slash-menu">
+      <div class="slash-item" data-command="heading1">
+        <div class="slash-icon">H1</div>
+        <div class="slash-label">Heading 1</div>
+        <div class="slash-description"># Heading</div>
+      </div>
+      <div class="slash-item" data-command="heading2">
+        <div class="slash-icon">H2</div>
+        <div class="slash-label">Heading 2</div>
+        <div class="slash-description">## Heading</div>
+      </div>
+      <div class="slash-item" data-command="heading3">
+        <div class="slash-icon">H3</div>
+        <div class="slash-label">Heading 3</div>
+        <div class="slash-description">### Heading</div>
+      </div>
+      <div class="slash-item" data-command="bulletList">
+        <div class="slash-icon">•</div>
+        <div class="slash-label">Bullet List</div>
+        <div class="slash-description">- Item</div>
+      </div>
+      <div class="slash-item" data-command="orderedList">
+        <div class="slash-icon">1.</div>
+        <div class="slash-label">Numbered List</div>
+        <div class="slash-description">1. Item</div>
+      </div>
+      <div class="slash-item" data-command="blockquote">
+        <div class="slash-icon">"</div>
+        <div class="slash-label">Quote</div>
+        <div class="slash-description">> Quote</div>
+      </div>
+      <div class="slash-item" data-command="codeBlock">
+        <div class="slash-icon">{ }</div>
+        <div class="slash-label">Code Block</div>
+        <div class="slash-description">``` Code ```</div>
+      </div>
+      <div class="slash-item" data-command="divider">
+        <div class="slash-icon">—</div>
+        <div class="slash-label">Divider</div>
+        <div class="slash-description">---</div>
+      </div>
     </div>
   </div>
 </body>

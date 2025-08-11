@@ -7,7 +7,7 @@
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-folder-create" command="cmd_zenOpenFolderCreation" image="chrome://browser/skin/zen-icons/folder.svg" />
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation" image="chrome://browser/skin/zen-icons/duplicate-tab.svg" />
-  <menuitem data-l10n-id="zen-panel-ui-notes-create" command="cmd_zenOpenNoteCreation" image="chrome://browser/skin/zen-icons/page-portrait.svg" />
+  <menuitem label="New Note" command="cmd_zenOpenNoteCreation" image="chrome://browser/skin/zen-icons/page-portrait.svg" />
 </menupopup>
 
 <menupopup id="zenWorkspaceMoreActions">

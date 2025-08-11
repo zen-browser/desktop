@@ -19,31 +19,35 @@ if test "$ZEN_RELEASE"; then
     export MOZ_PGO=1
     ac_add_options MOZ_PGO=1
   fi
+fi
 
-  if test "$SURFER_COMPAT" = "x86_64"; then
-      ac_add_options --target=x86_64-apple-darwin
+if test "$SURFER_COMPAT" = "x86_64"; then
+  ac_add_options --target=x86_64-apple-darwin
 
-      ac_add_options --enable-wasm-avx
-      ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O3 -w"
+  if test "$ZEN_RELEASE"; then
+    ac_add_options --enable-wasm-avx
+    ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O3 -w"
 
-      export CFLAGS="-O3 -march=nehalem"
-      export CPPFLAGS="-O3 -march=nehalem"
-      export CXXFLAGS="-O3 -march=nehalem"
-      export LDFLAGS="-Wl,-O3 -march=nehalem"
-      export RUSTFLAGS="-Ctarget-cpu=nehalem"
-  else
-      ac_add_options --enable-clang-plugin
-      ac_add_options --target=aarch64-apple-darwin
+    export CFLAGS="-O3 -march=nehalem"
+    export CPPFLAGS="-O3 -march=nehalem"
+    export CXXFLAGS="-O3 -march=nehalem"
+    export LDFLAGS="-Wl,-O3 -march=nehalem"
+    export RUSTFLAGS="-Ctarget-cpu=nehalem"
+  fi
+else
+  ac_add_options --enable-clang-plugin
+  ac_add_options --target=aarch64-apple-darwin
 
-      ac_add_options --enable-optimize="-O3 -mcpu=apple-m1 -march=armv8.3-a+simd"
+  if test "$ZEN_RELEASE"; then
+    ac_add_options --enable-optimize="-O3 -mcpu=apple-m1 -march=armv8.3-a+simd"
 
-      # As of Clang 13, the default is -mcpu=apple-m1 when using a aarch64-apple-macos target,
-      # but we're using apple64-apple-darwin, which defaults to -mcpu=apple-a7, which disables
-      # a bunch of # performance-enabling CPU features.
-      export CFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-      export CPPFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-      export CXXFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-      export LDFLAGS="-Wl,-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-      export RUSTFLAGS="-C target-feature=+v8.3a -Ctarget-cpu=apple-m1"
+    # As of Clang 13, the default is -mcpu=apple-m1 when using a aarch64-apple-macos target,
+    # but we're using apple64-apple-darwin, which defaults to -mcpu=apple-a7, which disables
+    # a bunch of # performance-enabling CPU features.
+    export CFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
+    export CPPFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
+    export CXXFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
+    export LDFLAGS="-Wl,-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
+    export RUSTFLAGS="-C target-feature=+v8.3a -Ctarget-cpu=apple-m1"
   fi
 fi

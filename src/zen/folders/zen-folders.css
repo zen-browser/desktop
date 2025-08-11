@@ -260,6 +260,8 @@ zen-folder {
 
       & svg {
         filter: contrast(150%);
+        transition: 0.2s scale;
+        transform-origin: right bottom;
 
         & image {
           fill-opacity: 0.9;
@@ -267,6 +269,10 @@ zen-folder {
           fill: var(--zen-folder-stroke);
           transform: translate(-180%, 8%);
         }
+      }
+
+      & svg[state='open'] {
+        scale: 0.9;
       }
     }
 
@@ -360,8 +366,10 @@ zen-folder {
   outline: none !important;
 }
 
-#zen-folder-tabs-popup #zen-folder-tabs-list {
-  padding: 4px;
+#zen-folder-tabs-list {
+  padding: 0 4px;
+  max-height: 248px;
+  overflow-y: auto;
 }
 
 #zen-folder-tabs-popup .zen-folder-tabs-list-search-icon {
@@ -424,8 +432,8 @@ zen-folder {
   direction: ltr;
   padding: 0 var(--tab-inline-padding);
   border-radius: 4px;
+  margin: 2px 0;
 
-  &:hover,
   .folders-tabs-list-item[selected] & {
     background-color: color-mix(in srgb, currentColor, transparent 90%);
   }

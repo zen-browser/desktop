@@ -698,7 +698,7 @@
           items.forEach((item) => item.removeAttribute('selected'));
           const targetItem = items[index];
           targetItem.setAttribute('selected', 'true');
-          targetItem.scrollIntoView({ block: 'nearest' });
+          targetItem.scrollIntoView({ block: 'start', behavior: 'smooth' });
         } else if (event.key === 'Enter') {
           // Enter to select the currently highlighted item
           const highlightedItem = tabsList.querySelector('.folders-tabs-list-item[selected]');
@@ -801,6 +801,13 @@
           this.#popup.hidePopup();
         });
 
+        item.addEventListener('mouseenter', () => {
+          for (const sibling of tabsList.children) {
+            sibling.removeAttribute('selected');
+          }
+          item.setAttribute('selected', 'true');
+        });
+
         tabsList.appendChild(item);
       }
     }
@@ -808,7 +815,6 @@
     updateFolderIcon(group, state = 'auto', play = true) {
       const svg = group.querySelector('svg');
       if (!svg) return [];
-
       let animations = this.#folderAnimCache.get(group);
       if (!animations) {
         animations = svg.querySelectorAll('animate, animateTransform, animateMotion');
@@ -816,6 +822,7 @@
       }
 
       const isCollapsed = group.collapsed;
+      svg.setAttribute('state', state === 'auto' ? (isCollapsed ? 'close' : 'open') : state);
       const hasActive = group.hasAttribute('has-active');
 
       const OPACITY = {

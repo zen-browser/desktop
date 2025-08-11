@@ -94,12 +94,29 @@
         this.closeWatermark();
         // --- BEGIN PATCH: Fixes https://github.com/zen-browser/desktop/issues/9837 ---
         try {
-          // Attempt to clear the update ready state (preference or update manager)
-          if (Services.prefs.prefHasUserValue('app.update.readyToInstall')) {
-            Services.prefs.clearUserPref('app.update.readyToInstall');
-          }
+          // Clear any persistent update notification state that might cause the popup to reappear
+          // This addresses the issue where "Update ready to install" popup persists after restart
+          const updatePrefs = [
+            'app.update.lastUpdateTime',
+            'app.update.lastUpdateTime.background-update-timer',
+            'app.update.pending',
+            'app.update.staging.enabled',
+            'app.update.timer',
+            'app.update.timerFirstInterval',
+            'app.update.timerMinimumDelay'
+          ];
+          
+          updatePrefs.forEach(pref => {
+            try {
+              if (Services.prefs.prefHasUserValue(pref)) {
+                Services.prefs.clearUserPref(pref);
+              }
+            } catch (e) {
+              // Ignore errors for individual prefs
+            }
+          });
         } catch (e) {
-          // Ignore if pref does not exist
+          console.warn('Failed to clear update notification state:', e);
         }
         // --- END PATCH ---
         this.isReady = true;

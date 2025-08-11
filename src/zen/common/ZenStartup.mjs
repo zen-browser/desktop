@@ -92,6 +92,16 @@
         // Just in case we didn't get the right size.
         gZenUIManager.updateTabsToolbar();
         this.closeWatermark();
+        // --- BEGIN PATCH: Fixes https://github.com/zen-browser/desktop/issues/9837 ---
+        try {
+          // Attempt to clear the update ready state (preference or update manager)
+          if (Services.prefs.prefHasUserValue('app.update.readyToInstall')) {
+            Services.prefs.clearUserPref('app.update.readyToInstall');
+          }
+        } catch (e) {
+          // Ignore if pref does not exist
+        }
+        // --- END PATCH ---
         this.isReady = true;
       });
     },

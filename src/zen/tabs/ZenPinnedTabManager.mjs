@@ -1199,7 +1199,7 @@
       const isGoingToPinnedTabs = translate < topToNormalTabs;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
       this._isGoingToPinnedTabs = isGoingToPinnedTabs;
-      if (!dropElement) {
+      if (!dropElement && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0) {
         itemsToCheck.forEach((item) => {
           item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
         });

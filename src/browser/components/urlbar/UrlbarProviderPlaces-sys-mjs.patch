@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index 815734d9a5a589174ac33cb15ff9988d13e78b8c..227511238b13155f70d305bcbaa84dcd45a66e1c 100644
+index 815734d9a5a589174ac33cb15ff9988d13e78b8c..adbd1e99987a92c9b79af8bcde204543e46e181f 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 @@ -40,11 +40,13 @@ function defaultQuery(conditions = "") {
@@ -7,7 +7,7 @@ index 815734d9a5a589174ac33cb15ff9988d13e78b8c..227511238b13155f70d305bcbaa84dcd
       SELECT h.url, h.title, ${SQL_BOOKMARK_TAGS_FRAGMENT}, h.id, t.open_count,
              ${lazy.PAGES_FRECENCY_FIELD} AS frecency, t.userContextId,
 -            h.last_visit_date, t.groupId
-+            h.last_visit_date, t.groupId, zp.title AS pinned_title, zp.url AS pinned_url
++            h.last_visit_date, t.groupId, zp.url AS pinned_url, zp.title AS pinned_title
       FROM moz_places h
       LEFT JOIN moz_openpages_temp t
              ON t.url = h.url
@@ -30,7 +30,7 @@ index 815734d9a5a589174ac33cb15ff9988d13e78b8c..227511238b13155f70d305bcbaa84dcd
        ? lazy.PlacesUtils.toDate(lastVisitPRTime).getTime()
        : undefined;
      let tabGroup = row.getResultByName("groupId");
-+    let pinnedTitle = row.getResultByIndex("pinned_title");
++    let pinnedTitle = row.getResultByIndex(12);
 +    let pinnedUrl = row.getResultByIndex("pinned_url");
  
      let match = {

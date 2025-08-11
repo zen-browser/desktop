@@ -308,7 +308,7 @@ zen-folder {
       border: none !important;
       color: var(--sidebar-text-color) !important;
       margin: 0 !important;
-      font-weight: 500;
+      font-weight: 600;
       display: flex;
       align-items: center;
       height: 100% !important;

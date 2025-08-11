@@ -24,6 +24,10 @@
   #zen-sidebar-splitter {
     visibility: collapse;
   }
+
+  #nav-bar {
+    visibility: initial;
+  }
 }
 
 :root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),

@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profilis
 zen-workspace-creation-header = Kurti erdvę
 zen-workspace-creation-label = Erdvės naudojamos tvarkyti jūsų korteles ir seansus.
 zen-workspaces-delete-workspace-title = Delete Workspace?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete this workspace? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

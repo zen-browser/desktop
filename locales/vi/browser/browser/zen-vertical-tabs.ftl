@@ -15,7 +15,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Ẩn cả hai
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = Tệp tin mới
+    .label = Thư mực thẻ mới
     .accesskey = N
 sidebar-zen-expand = 
     .label = Mở rộng thanh bên
@@ -33,4 +33,4 @@ tabbrowser-reset-pin-button =
             [one] Tải lại và gim thẻ
            *[other] Tải lại và gim { $tabCount } thẻ
         }
-tab-reset-pin-label = Quay trở lại đường dẫn đã gim
+tab-reset-pin-label = Quay trở lại đường dẫn đã ghim

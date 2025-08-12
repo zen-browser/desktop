@@ -1,5 +1,5 @@
 zen-folders-search-placeholder = 
-    .placeholder = Hledat { $folder-name }...
+    .placeholder = Hledat v { $folder-name }...
 zen-folders-panel-rename-folder = 
     .label = Přejmenovat složku
 zen-folders-panel-expand-folder = 

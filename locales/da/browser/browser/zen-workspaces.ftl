@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Opret et rum
 zen-workspace-creation-label = Rum bruges til at organisere dine faner og sessioner.
 zen-workspaces-delete-workspace-title = Slet arbejdsområde?
-zen-workspaces-delete-workspace-body = Er du sikker på, at du vil slette dette arbejdsområde? Det kan ikke fortrydes.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

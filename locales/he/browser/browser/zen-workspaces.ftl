@@ -48,4 +48,4 @@ zen-workspace-creation-profile = פרופיל
 zen-workspace-creation-header = צור סביבה
 zen-workspace-creation-label = סביבות משומשות לסידור כרטיסיות והפעלות.
 zen-workspaces-delete-workspace-title = Delete Workspace?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete this workspace? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

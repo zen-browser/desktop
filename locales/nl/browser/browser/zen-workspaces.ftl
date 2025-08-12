@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profiel
 zen-workspace-creation-header = Maak een ruimte
 zen-workspace-creation-label = Ruimtes worden gebruikt om je tabbladen en sessies te organiseren.
 zen-workspaces-delete-workspace-title = Ruimte verwijderen?
-zen-workspaces-delete-workspace-body = Weet je zeker dat je deze ruimte wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

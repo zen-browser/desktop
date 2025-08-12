@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Профиль
 zen-workspace-creation-header = Создать пространство
 zen-workspace-creation-label = Пространства используются для организации ваших вкладок и сеансов.
 zen-workspaces-delete-workspace-title = Удалить пространство?
-zen-workspaces-delete-workspace-body = Вы уверены, что хотите удалить своё пространство? Это действие нельзя отменить.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

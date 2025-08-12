@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Προφίλ
 zen-workspace-creation-header = Δημιουργία Χώρου
 zen-workspace-creation-label = Οι χώροι χρησιμοποιούνται για την οργάνωση των καρτελών και των συνεδριών σας.
 zen-workspaces-delete-workspace-title = Διαγραφή Χώρου Εργασίας;
-zen-workspaces-delete-workspace-body = Σίγουρα θέλετε να διαγράψετε αυτόν το χώρο εργασίας; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

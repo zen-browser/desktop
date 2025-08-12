@@ -66,4 +66,4 @@ zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
 
 zen-workspaces-delete-workspace-title = Delete Space?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete this space? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

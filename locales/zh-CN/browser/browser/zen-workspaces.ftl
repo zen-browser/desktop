@@ -48,4 +48,4 @@ zen-workspace-creation-profile = 身份
 zen-workspace-creation-header = 创建工作区
 zen-workspace-creation-label = 工作区用于组织标签页和会话。
 zen-workspaces-delete-workspace-title = 删除工作区？
-zen-workspaces-delete-workspace-body = 确定要删除此工作区？此操作无法撤消。
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

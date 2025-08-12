@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Perfil
 zen-workspace-creation-header = Criar um Espaço
 zen-workspace-creation-label = Os espaços são usados para organizar os seus separadores e sessões.
 zen-workspaces-delete-workspace-title = Eliminar Espaço de Trabalho?
-zen-workspaces-delete-workspace-body = Tem certeza que deseja eliminar este espaço de trabalho? Esta ação não pode ser desfeita.
+zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

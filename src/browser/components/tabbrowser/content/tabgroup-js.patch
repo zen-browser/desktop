@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1fda11a48c 100644
+index caea196b22b4689f55780a528661d87b52f4e728..a1f835078d17ff10f416f82387e419c7cdb1f4ba 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -13,10 +13,12 @@
@@ -15,10 +15,10 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
 +      <html:div class="tab-group-container">
 +        <html:div class="zen-tab-group-start"/>
 +      </html:div>
-       `;
- 
-     /** @type {string} */
-@@ -45,16 +47,22 @@
+       <vbox class="tab-group-overflow-count-container" pack="center">
+         <label class="tab-group-overflow-count" role="button" />
+       </vbox>
+@@ -57,6 +59,15 @@
      }
  
      connectedCallback() {
@@ -34,46 +34,23 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
        // Always set the mutation observer to listen for tab change events, even
        // if we are already initialized.
        // This is needed to ensure events continue to fire even if the tab group is
-       // moved from the horizontal to vertical tab layout or vice-versa, which
-       // causes the component to be repositioned in the DOM.
--      this.#observeTabChanges();
- 
--      if (this._initialized) {
--        return;
--      }
-+      if (!this._initialized) {
- 
-       this._initialized = true;
-       this.saveOnWindowClose = true;
-@@ -68,12 +76,14 @@
+@@ -97,11 +108,10 @@
        this.#labelElement.container = gBrowser.tabContainer;
        this.#labelElement.group = this;
  
--      this.#labelElement.addEventListener("click", this);
-+      this.querySelector(".tab-group-label-container").addEventListener("click", this);
-+      if (!this.isZenFolder) {
-       this.#labelElement.addEventListener("contextmenu", e => {
-         e.preventDefault();
-         gBrowser.tabGroupMenu.openEditModal(this);
-         return false;
-       });
-+      }
+-      this.#labelElement.addEventListener("contextmenu", e => {
+-        e.preventDefault();
+-        gBrowser.tabGroupMenu.openEditModal(this);
+-        return false;
+-      });
++      this.appendChild = function (child) {
++        this.querySelector(".tab-group-container").appendChild(child);
++      };
++
  
        this.#updateLabelAriaAttributes();
        this.#updateCollapsedAriaAttributes();
-@@ -93,6 +103,11 @@
-       // claim that a tab group was created by adoption the first time it
-       // mounts after getting created by `Tabbrowser.adoptTabGroup`.
-       this.#wasCreatedByAdoption = false;
-+      this.appendChild = function (child) {
-+        this.querySelector(".tab-group-container").appendChild(child);
-+      }
-+      }
-+      this.#observeTabChanges();
-     }
- 
-     disconnectedCallback() {
-@@ -123,7 +138,10 @@
+@@ -197,7 +207,10 @@
            }
          });
        }
@@ -85,15 +62,12 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
      }
  
      get color() {
-@@ -172,7 +190,6 @@
-       // always create a text node and get consistent layout.
-       this.setAttribute("label", val || "\u200b");
- 
--      this.dataset.tooltip = val;
- 
-       this.#updateLabelAriaAttributes();
-       if (diff) {
-@@ -244,7 +261,53 @@
+@@ -338,12 +351,57 @@
+           tabGroupName,
+         })
+         .then(result => {
+-          this.dataset.tooltip = result;
+         });
      }
  
      get tabs() {
@@ -148,7 +122,7 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
      }
  
      /**
-@@ -270,7 +333,7 @@
+@@ -373,7 +431,7 @@
       */
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {
@@ -157,16 +131,16 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
            tab.ownerGlobal.gBrowser.unpinTab(tab);
          }
          let tabToMove =
-@@ -333,7 +396,7 @@
-      * @param {PointerEvent} event
+@@ -437,7 +495,7 @@
       */
      on_click(event) {
--      if (event.target === this.#labelElement && event.button === 0) {
-+      if (event.target.closest('.tab-group-label-container') && event.button === 0) {
+       let isToggleElement =
+-        event.target === this.#labelElement ||
++        event.target === this.querySelector(".tab-group-label-container") ||
+         event.target === this.#overflowCountLabel;
+       if (isToggleElement && event.button === 0) {
          event.preventDefault();
-         this.collapsed = !this.collapsed;
-         gBrowser.tabGroupMenu.close();
-@@ -364,5 +427,6 @@
+@@ -470,5 +528,6 @@
      }
    }
  

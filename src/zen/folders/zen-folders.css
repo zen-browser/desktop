@@ -192,6 +192,8 @@ zen-folder {
   -moz-window-dragging: no-drag;
   transition: margin-inline-start 0.15s ease-in-out;
 
+  margin-inline-start: var(--zen-folder-indent) !important;
+
   &[selected] > .tab-group-label-container::before {
     background-color: color-mix(in srgb, var(--zen-colors-border) 60%, transparent);
   }
@@ -272,7 +274,7 @@ zen-folder {
       }
 
       & svg[state='open'] {
-        scale: 0.9;
+        scale: 0.92;
       }
     }
 
@@ -442,4 +444,8 @@ zen-folder {
     border-bottom-left-radius: max(calc(var(--panel-border-radius) - 4px), 4px);
     border-bottom-right-radius: max(calc(var(--panel-border-radius) - 4px), 4px);
   }
+}
+
+.tab-group-overflow-count-container {
+  display: none !important;
 }

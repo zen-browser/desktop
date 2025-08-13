@@ -2,18 +2,18 @@ diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/
 index bef746dc594ad974c91075cf3657c199f8f8830f..bb671341b6715c42df76f7298ba55e1fac73f33b 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
-@@ -424,10 +424,10 @@ var FullScreen = {
+@@ -423,10 +423,10 @@ var FullScreen = {
+     shiftSize = shiftSize.toFixed(2);
      gNavToolbox.classList.toggle("fullscreen-with-menubar", shiftSize > 0);
  
-     let transform = shiftSize > 0 ? `translateY(${shiftSize}px)` : "";
+-    let transform = shiftSize > 0 ? `translateY(${shiftSize}px)` : "";
 -    gNavToolbox.style.transform = transform;
 -    gURLBar.textbox.style.transform = gURLBar.textbox.hasAttribute("breakout")
 -      ? transform
--      : "";
-+    //gNavToolbox.style.transform = transform;
-+    //gURLBar.textbox.style.transform = gURLBar.textbox.hasAttribute("breakout")
-+    //  ? transform
-+    //  : "";
++    const padding = shiftSize > 0 ? `${shiftSize}px` : "";
++    const appContentNavbarWrapper = document.getElementById('zen-appcontent-navbar-wrapper');
++    appContentNavbarWrapper.style.paddingTop = gURLBar.textbox.hasAttribute("breakout")
++      ? padding
+       : "";
      if (shiftSize > 0) {
        // If the mouse tracking missed our fullScreenToggler, then the toolbox
-       // might not have been shown before the menubar is animated down. Make

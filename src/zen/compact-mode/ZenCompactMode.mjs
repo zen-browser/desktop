@@ -715,6 +715,15 @@ window.gZenCompactModeManager = {
           if (event.target.matches(':hover')) {
             return;
           }
+          if (AppConstants.platform == 'macosx' && FullScreen._currentToolbarShift > 0) {
+            this.flashElement(
+              target,
+              this.hideAfterHoverDuration,
+              'has-hover' + target.id,
+              'zen-has-hover'
+            );
+            return;
+          }
 
           if (
             event.explicitOriginalTarget?.closest?.('#urlbar[zen-floating-urlbar]') ||
@@ -764,12 +773,20 @@ window.gZenCompactModeManager = {
           }
           window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
 
-          this.flashElement(
-            target,
-            this.hideAfterHoverDuration,
-            'has-hover' + target.id,
-            'zen-has-hover'
-          );
+          if (
+            AppConstants.platform == 'macosx' &&
+            window.fullScreen &&
+            entry.screenEdge === 'top'
+          ) {
+            target.setAttribute('zen-has-hover', 'true');
+          } else {
+            this.flashElement(
+              target,
+              this.hideAfterHoverDuration,
+              'has-hover' + target.id,
+              'zen-has-hover'
+            );
+          }
           document.addEventListener(
             'mousemove',
             () => {

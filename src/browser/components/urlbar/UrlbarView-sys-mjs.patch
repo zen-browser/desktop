@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index ec5575d8990ee431729d044953924d3a8b79d665..376d68f3a30bc75ca19bba5efc97fe923ab0e49e 100644
+index b3608bb8b851979b893da9c83e86d08b54288047..021ce0b80015256767b88132e99c67fa8ddfd2c4 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -609,7 +609,7 @@ export class UrlbarView {
@@ -11,7 +11,7 @@ index ec5575d8990ee431729d044953924d3a8b79d665..376d68f3a30bc75ca19bba5efc97fe92
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -1325,7 +1325,7 @@ export class UrlbarView {
+@@ -1333,7 +1333,7 @@ export class UrlbarView {
            includeHiddenExposures: true,
          });
        let canBeVisible =
@@ -20,7 +20,7 @@ index ec5575d8990ee431729d044953924d3a8b79d665..376d68f3a30bc75ca19bba5efc97fe92
        if (result.isHiddenExposure) {
          if (canBeVisible) {
            this.controller.engagementEvent.addExposure(
-@@ -3015,7 +3015,7 @@ export class UrlbarView {
+@@ -3061,7 +3061,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

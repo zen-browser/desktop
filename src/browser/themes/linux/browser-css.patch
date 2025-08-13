@@ -1,31 +1,31 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index 714e465f6d5bb28fc0c9517013ce7f9961bd0ace..8d739cb6e0cee93d994b17f7e3451fb3fcf11ed7 100644
+index dadb198cbf968dc622d2d0ee6c754f3541c052a2..5b7d17d8705c7cfddaee04c90d342bd705338a18 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
-@@ -42,7 +42,8 @@
-     -moz-default-appearance: -moz-window-decorations;
-     appearance: auto;
+@@ -43,7 +43,8 @@
+       -moz-default-appearance: -moz-window-decorations;
+       appearance: auto;
  
--    #navigator-toolbox,
+-      #navigator-toolbox,
 +    #zen-main-app-wrapper,
 +    #zen-browser-background,
-     dialog::backdrop {
-       border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
-       border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
-@@ -50,13 +51,14 @@
+       dialog::backdrop {
+         border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+         border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+@@ -51,13 +52,14 @@
  
-     /* stylelint-disable-next-line media-query-no-invalid */
-     @media -moz-pref("widget.gtk.rounded-bottom-corners.enabled") {
--      #navigator-toolbox {
+       /* stylelint-disable-next-line media-query-no-invalid */
+       @media -moz-pref("widget.gtk.rounded-bottom-corners.enabled") {
+-        #navigator-toolbox {
 +      #zen-main-app-wrapper {
-         /* The body clip below covers this. */
-         border-radius: 0;
-       }
+           /* The body clip below covers this. */
+           border-radius: 0;
+         }
  
-       body,
--      dialog::backdrop {
+         body,
+-        dialog::backdrop {
 +      dialog::backdrop,
 +      #zen-browser-background {
-         /* Use an uniform clip to allow WebRender to optimize it better */
-         border-radius: env(-moz-gtk-csd-titlebar-radius);
-       }
+           /* Use an uniform clip to allow WebRender to optimize it better */
+           border-radius: env(-moz-gtk-csd-titlebar-radius);
+         }

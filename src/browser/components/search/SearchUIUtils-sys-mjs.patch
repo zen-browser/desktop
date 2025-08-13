@@ -1,5 +1,5 @@
 diff --git a/browser/components/search/SearchUIUtils.sys.mjs b/browser/components/search/SearchUIUtils.sys.mjs
-index 3666beb83bc50e80fa8848f18aaeb6545d5ff8a7..0566fc87e90531456e78bc6c33a0696f0aff6cb3 100644
+index dfd18da85323751c4be7963cb5ab2357de488d83..e228bf594a0a736396cabd247bac4033091afccc 100644
 --- a/browser/components/search/SearchUIUtils.sys.mjs
 +++ b/browser/components/search/SearchUIUtils.sys.mjs
 @@ -412,7 +412,7 @@ export var SearchUIUtils = {

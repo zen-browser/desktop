@@ -1,5 +1,5 @@
 diff --git a/layout/base/nsStyleSheetService.h b/layout/base/nsStyleSheetService.h
-index 8c49b338bf8e6830874ace9a08e8c0713167ee58..115bf09314970fd2fe79793e9cf8e0c40eb0459b 100644
+index 83fc829aad19f8b80692e67bddb781778fbc4f8d..04806a1f51686a82c1dc2555dae86a4397b181fb 100644
 --- a/layout/base/nsStyleSheetService.h
 +++ b/layout/base/nsStyleSheetService.h
 @@ -50,6 +50,8 @@ class nsStyleSheetService final : public nsIStyleSheetService,

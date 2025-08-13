@@ -1,5 +1,5 @@
 diff --git a/browser/modules/ExtensionsUI.sys.mjs b/browser/modules/ExtensionsUI.sys.mjs
-index a31179ef7986e1290aef8af58d1f82e23e55fcbe..4adaa921ce5fce8155cd98aa0e7a2b0b6d44ac1b 100644
+index 3302b1e9a66c8495e1a627b33488b952e8ef72b1..1de6ee8b59595da4acbb91bc625cd380be32845a 100644
 --- a/browser/modules/ExtensionsUI.sys.mjs
 +++ b/browser/modules/ExtensionsUI.sys.mjs
 @@ -466,7 +466,7 @@ export var ExtensionsUI = {

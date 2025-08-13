@@ -31,7 +31,7 @@
 
   const ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref('zen.folders.max-subfolders');
 
-  class nsZenFolders extends nsZenPreloadedFeature {
+  class nsZenFolders extends nsZenDOMOperatedFeature {
     #popup = null;
     #popupTimer = null;
     #mouseTimer = null;

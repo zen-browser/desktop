@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index caea196b22b4689f55780a528661d87b52f4e728..0237807f1ba38776113e3c89a256ee5a3d644113 100644
+index caea196b22b4689f55780a528661d87b52f4e728..43d815218d652055378f50cb577086f3f01b681a 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -13,10 +13,12 @@
@@ -18,7 +18,7 @@ index caea196b22b4689f55780a528661d87b52f4e728..0237807f1ba38776113e3c89a256ee5a
        <vbox class="tab-group-overflow-count-container" pack="center">
          <label class="tab-group-overflow-count" role="button" />
        </vbox>
-@@ -57,6 +59,15 @@
+@@ -57,20 +59,27 @@
      }
  
      connectedCallback() {
@@ -34,7 +34,23 @@ index caea196b22b4689f55780a528661d87b52f4e728..0237807f1ba38776113e3c89a256ee5a
        // Always set the mutation observer to listen for tab change events, even
        // if we are already initialized.
        // This is needed to ensure events continue to fire even if the tab group is
-@@ -97,11 +108,10 @@
+       // moved from the horizontal to vertical tab layout or vice-versa, which
+       // causes the component to be repositioned in the DOM.
+-      this.#observeTabChanges();
+ 
+       // Similar to above, always set up TabSelect listener, as this gets
+       // removed in disconnectedCallback
+       this.ownerGlobal.addEventListener("TabSelect", this);
+ 
+-      if (this._initialized) {
+-        return;
+-      }
++      if (!this._initialized) {
++
+ 
+       this._initialized = true;
+       this.saveOnWindowClose = true;
+@@ -97,11 +106,10 @@
        this.#labelElement.container = gBrowser.tabContainer;
        this.#labelElement.group = this;
  
@@ -50,6 +66,15 @@ index caea196b22b4689f55780a528661d87b52f4e728..0237807f1ba38776113e3c89a256ee5a
  
        this.#updateLabelAriaAttributes();
        this.#updateCollapsedAriaAttributes();
+@@ -127,6 +135,8 @@
+       // mounts after getting created by `Tabbrowser.adoptTabGroup`.
+       this.#wasCreatedByAdoption = false;
+     }
++      this.#observeTabChanges();
++    }
+ 
+     resetDefaultGroupName = () => {
+       this.#defaultGroupName = "";
 @@ -197,7 +207,10 @@
            }
          });

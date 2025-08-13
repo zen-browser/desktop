@@ -45,4 +45,3 @@
   <menuseparator />
   <menuitem id="context_zenFolderDelete" data-l10n-id="zen-folders-panel-delete-folder"/>
 </menupopup>
-

@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Perfil
 zen-workspace-creation-header = Creació d'un espai
 zen-workspace-creation-label = Els espais s'utilitzen per organitzar les pestanyes i les sessions.
 zen-workspaces-delete-workspace-title = Voleu suprimir l'espai de treball?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Esteu segur que voleu suprimir { $name }? Aquesta acció no es pot desfer.

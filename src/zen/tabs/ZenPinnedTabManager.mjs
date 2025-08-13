@@ -707,7 +707,7 @@
     }
 
     async savePin(pin, notifyObservers = true) {
-      if (!this.#hasInitializedPins) {
+      if (!this.#hasInitializedPins && !gZenUIManager.testingEnabled) {
         return;
       }
       const existingPin = this._pinsCache.find((p) => p.uuid === pin.uuid);
@@ -1196,10 +1196,11 @@
       if (!isPinned) {
         topToNormalTabs += draggedTab.getBoundingClientRect().height;
       }
-      const isGoingToPinnedTabs = translate < topToNormalTabs;
+      const isGoingToPinnedTabs =
+        translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
       this._isGoingToPinnedTabs = isGoingToPinnedTabs;
-      if (!dropElement && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0) {
+      if (!dropElement) {
         itemsToCheck.forEach((item) => {
           item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
         });

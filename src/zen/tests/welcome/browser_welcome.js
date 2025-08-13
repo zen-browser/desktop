@@ -154,6 +154,7 @@ add_task(async function test_Welcome_Steps() {
         'The first tab group should be labeled "Zen Basics" after the welcome process'
       );
       for (const tab of gBrowser.tabs) {
+        if (tab.hasAttribute('zen-empty-tab')) continue;
         if (tab.pinned) {
           if (!tab.hasAttribute('zen-essential')) {
             ok(

@@ -13,6 +13,9 @@
       <html:div class="tab-group-container">
         <html:div class="zen-tab-group-start" />
       </html:div>
+      <vbox class="tab-group-overflow-count-container" pack="center">
+        <label class="tab-group-overflow-count" role="button" />
+      </vbox>
     `;
 
     static rawIcon = new DOMParser().parseFromString(
@@ -131,11 +134,6 @@
         }
       }
       return activeGroups;
-    }
-
-    // Dont expand the folder when the user selects a tab in it
-    on_TabSelect() {
-      this.collapsed = this.hasAttribute('has-active');
     }
 
     rename() {

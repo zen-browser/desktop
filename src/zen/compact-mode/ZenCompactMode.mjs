@@ -604,10 +604,10 @@ var gZenCompactModeManager = {
         }, this.HOVER_HACK_DELAY);
       };
 
-      target.addEventListener('mouseenter', onEnter);
+      target.addEventListener('mouseover', onEnter);
       target.addEventListener('dragover', onEnter);
 
-      target.addEventListener('mouseleave', onLeave);
+      target.addEventListener('mouseout', onLeave);
       target.addEventListener('dragleave', onLeave);
     }
 

@@ -68,6 +68,8 @@
       this.indicator.querySelector('.zen-current-workspace-indicator-name').onRenameFinished =
         this.onIndicatorRenameFinished.bind(this);
 
+      this.pinnedTabsContainer.scrollbox = this.scrollbox;
+
       this.indicator
         .querySelector('.zen-workspaces-actions')
         .addEventListener('click', this.onActionsCommand.bind(this));

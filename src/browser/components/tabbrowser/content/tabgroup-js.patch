@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index caea196b22b4689f55780a528661d87b52f4e728..a1f835078d17ff10f416f82387e419c7cdb1f4ba 100644
+index caea196b22b4689f55780a528661d87b52f4e728..0237807f1ba38776113e3c89a256ee5a3d644113 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -13,10 +13,12 @@
@@ -136,7 +136,7 @@ index caea196b22b4689f55780a528661d87b52f4e728..a1f835078d17ff10f416f82387e419c7
      on_click(event) {
        let isToggleElement =
 -        event.target === this.#labelElement ||
-+        event.target === this.querySelector(".tab-group-label-container") ||
++        event.target.closest(".tab-group-label-container") ||
          event.target === this.#overflowCountLabel;
        if (isToggleElement && event.button === 0) {
          event.preventDefault();

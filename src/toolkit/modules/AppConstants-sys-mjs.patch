@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/AppConstants.sys.mjs b/toolkit/modules/AppConstants.sys.mjs
-index a794e82288d30c979f2d2798bded49fb4dd3118b..cd1875dc048607447e25d30341052a6930d1c08f 100644
+index 5465ed3fb01e4214029b44f338d5e1e1580c3aab..a4d6b42916014d5e0f643b35a7b4feb281f59023 100644
 --- a/toolkit/modules/AppConstants.sys.mjs
 +++ b/toolkit/modules/AppConstants.sys.mjs
 @@ -172,6 +172,8 @@ export var AppConstants = Object.freeze({

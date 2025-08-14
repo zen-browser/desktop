@@ -147,7 +147,11 @@
   }
 
   & > toolbaritem {
-    --zen-media-control-bg: light-dark(rgba(255, 255, 255, 0.87), rgba(0, 0, 0, 0.87));
+    --zen-media-control-bg: color-mix(
+      in srgb,
+      var(--zen-primary-color) 15%,
+      light-dark(white, black)
+    );
     flex-grow: 1;
     padding: 0;
     transition: padding 0.3s ease-out;
@@ -158,7 +162,6 @@
     border-radius: var(--border-radius-medium);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: var(--zen-media-control-bg);
-    backdrop-filter: saturate(3) contrast(2) blur(10px);
     width: 100%;
   }
 

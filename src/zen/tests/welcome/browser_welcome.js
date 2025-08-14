@@ -130,30 +130,45 @@ add_task(async function test_Welcome_Steps() {
     setTimeout(async () => {
       Assert.greater(
         gBrowser._numZenEssentials,
-        2,
-        'There should be more than 2 Zen Essentials after the welcome process'
+        3,
+        'There should be more than 3 Zen Essentials after the welcome process'
       );
       Assert.equal(
         gBrowser.tabs.filter((tab) => tab.pinned && !tab.hasAttribute('zen-essential')).length,
-        2,
-        'There should be 2 pinned tabs after the welcome process'
+        3,
+        'There should be 3 pinned tabs after the welcome process'
       );
 
       gBrowser.selectedTab = selectedTab;
+      const groups = gBrowser.tabGroups;
+      Assert.equal(groups.length, 1, 'There should be one tab group after the welcome process');
+      const group = groups[0];
+      Assert.equal(
+        group.tabs.length,
+        3,
+        'The first tab group should have 3 tabs after the welcome process'
+      );
+      Assert.equal(
+        group.label,
+        'Zen Basics',
+        'The first tab group should be labeled "Zen Basics" after the welcome process'
+      );
       for (const tab of gBrowser.tabs) {
+        if (tab.hasAttribute('zen-empty-tab')) continue;
         if (tab.pinned) {
           if (!tab.hasAttribute('zen-essential')) {
             ok(
               tab.hasAttribute('zen-workspace-id'),
               'Pinned tabs should have a zen-workspace-id attribute'
             );
+            Assert.equal(tab.group, group, 'Pinned tabs should belong to the first tab group');
           }
           ok(tab.hasAttribute('zen-pin-id'), 'Pinned tabs should have a zen-pin-id attribute');
-          await BrowserTestUtils.removeTab(tab);
         }
       }
+      group.delete();
       resolve();
-    }, 8000); // Wait for the transition to complete
+    }, 5000); // Wait for the transition to complete
   });
   ok(true, 'Welcome process completed successfully');
 });

@@ -5,7 +5,7 @@
 {
   function parseSinePath(pathStr) {
     const points = [];
-    const commands = pathStr.match(/[MCL]\s*[\d\s\.\-,]+/g);
+    const commands = pathStr.match(/[MCL]\s*[\d\s.\-,]+/g);
     if (!commands) return points;
 
     commands.forEach((command) => {
@@ -45,7 +45,7 @@
 
   const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
 
-  class nsZenThemePicker extends ZenMultiWindowFeature {
+  class nsZenThemePicker extends nsZenMultiWindowFeature {
     static MAX_DOTS = 3;
 
     currentOpacity = 0.5;
@@ -129,7 +129,7 @@
       XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.25);
     }
 
-    handleDarkModeChange(event) {
+    handleDarkModeChange() {
       this.updateCurrentWorkspace();
     }
 
@@ -377,7 +377,7 @@
      * @return  {Array}           The RGB representation
      */
     hslToRgb(h, s, l) {
-      const { abs, min, max, round } = Math;
+      const { round } = Math;
       let r, g, b;
 
       if (s === 0) {
@@ -1268,7 +1268,8 @@
     getMostDominantColor(allColors) {
       const color = this.getPrimaryColor(allColors);
       if (typeof color === 'string') {
-        return this.hexToRgb(color);
+        // We found a custom color, we should rather return the native accent color
+        return this.getNativeAccentColor();
       }
       return color;
     }
@@ -1345,6 +1346,7 @@
         {
           let opacity = browser.gZenThemePicker.currentOpacity;
           const svg = browser.gZenThemePicker.sliderWavePath;
+          /* eslint-disable no-unused-vars */
           const [_, secondStop, thirdStop] = document.querySelectorAll(
             '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
           );
@@ -1446,17 +1448,21 @@
         if (dominantColor) {
           const primaryColor = this.getAccentColorForUI(dominantColor);
           browser.document.documentElement.style.setProperty('--zen-primary-color', primaryColor);
-          browser.gZenThemePicker.isLegacyVersion = this.isLegacyVersion;
+
+          // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
+          // so instead get the pref value directly.
+          browser.gZenThemePicker.isLegacyVersion =
+            Services.prefs.getIntPref('zen.theme.gradient-legacy-version', 1) === 0;
+
           let isDarkMode = isDarkModeWindow;
-          const isUsingCustomColors = workspaceTheme.gradientColors.some((color) => color.isCustom);
-          if (!isDefaultTheme && !this.isLegacyVersion && !isUsingCustomColors) {
+          if (!isDefaultTheme && !this.isLegacyVersion) {
             // Check for the primary color
             isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
             browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
             browser.gZenThemePicker.panel.removeAttribute('invalidate-controls');
           } else {
             browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
-            if (!this.isLegacyVersion && !isUsingCustomColors) {
+            if (!this.isLegacyVersion) {
               browser.gZenThemePicker.panel.setAttribute('invalidate-controls', 'true');
             }
           }
@@ -1599,16 +1605,18 @@
       let newPathData = '';
       this.#sinePoints.forEach((p) => {
         switch (p.type) {
-          case 'M':
+          case 'M': {
             const interpolatedY = referenceY + (p.y - referenceY) * t;
             newPathData += `M ${p.x} ${interpolatedY} `;
             break;
-          case 'C':
+          }
+          case 'C': {
             const y1 = referenceY + (p.y1 - referenceY) * t;
             const y2 = referenceY + (p.y2 - referenceY) * t;
             const y = referenceY + (p.y - referenceY) * t;
             newPathData += `C ${p.x1} ${y1} ${p.x2} ${y2} ${p.x} ${y} `;
             break;
+          }
           case 'L':
             newPathData += `L ${p.x} ${p.y} `;
             break;

@@ -64,7 +64,7 @@
   }
 }
 
-#tabbrowser-tabbox:has(#tabbrowser-tabpanels[zen-split-view='true']) {
+#tabbrowser-tabbox[zen-split-view='true'] {
   :root[zen-no-padding='true'] & {
     --zen-element-separation: 8px;
   }

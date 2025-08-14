@@ -4,7 +4,10 @@
 'use strict';
 
 add_task(async function test_Restore_Closed_Tabs() {
-  const currentTab = gBrowser.selectedTab;
+  const currentTab = BrowserTestUtils.addTab(window.gBrowser, 'https://example.com/current', {
+    skipAnimation: true,
+  });
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
   const tabsToClose = [];
   for (let i = 0; i < 3; i++) {
     const tab = await BrowserTestUtils.openNewForegroundTab(
@@ -35,7 +38,7 @@ add_task(async function test_Restore_Closed_Tabs() {
     ok(!currentTab.selected, 'Current tab should not be selected after restore');
     Assert.equal(
       gBrowser.tabs.length,
-      5, // 1 initial tab + 3 restored tabs
+      5, // 1 initial tab + 3 restored tabs + 1 for empty tab
       'There should be four tabs after restoring closed tabs'
     );
     gBrowser.selectedTab = currentTab;

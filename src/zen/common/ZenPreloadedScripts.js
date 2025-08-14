@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 // prettier-ignore
-// eslint-disable-next-line no-lone-blocks
+
 {
   Services.scriptloader.loadSubScript("chrome://browser/content/ZenStartup.mjs", this);
 }

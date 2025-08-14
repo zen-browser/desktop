@@ -66,8 +66,15 @@ zen-workspace-creation {
           appearance: none;
           align-content: center;
           padding: 0;
+          fill-opacity: 0.6;
 
           & image {
+            position: absolute;
+            -moz-context-properties: fill-opacity, fill;
+            fill: currentColor;
+          }
+
+          &:not([has-svg-icon='true']) image {
             display: none;
           }
 
@@ -75,6 +82,10 @@ zen-workspace-creation {
             display: flex;
             font-size: 12px;
             justify-content: center;
+          }
+
+          &[has-svg-icon='true'] label {
+            display: none;
           }
 
           &::before {

@@ -37,9 +37,13 @@ var gZenUIManager = {
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
     ChromeUtils.defineLazyGetter(this, 'motion', () => {
-      return ChromeUtils.importESModule('chrome://browser/content/zen-vendor/motion.min.mjs', {
-        global: 'current',
-      });
+      Services.scriptloader.loadSubScript(
+        'chrome://browser/content/zen-vendor/motion.min.mjs',
+        window
+      );
+      const motion = window.Motion;
+      delete window.Motion;
+      return motion;
     });
 
     ChromeUtils.defineLazyGetter(this, '_toastContainer', () => {
@@ -129,11 +133,6 @@ var gZenUIManager = {
     return Services.uuid.generateUUID().toString();
   },
 
-  toogleBookmarksSidebar() {
-    const button = document.getElementById('zen-bookmark-button');
-    SidebarController.toggle('viewBookmarksSidebar', button);
-  },
-
   createValidXULText(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   },
@@ -197,54 +196,6 @@ var gZenUIManager = {
   _clearTimeout: null,
   _lastTab: null,
 
-  // Track tab switching state to prevent race conditions
-  _tabSwitchState: {
-    inProgress: false,
-    lastSwitchTime: 0,
-    debounceTime: 100, // ms to wait between tab switches
-    queue: [],
-    processingQueue: false,
-  },
-
-  // Queue tab switch operations to prevent race conditions
-  async _queueTabOperation(operation) {
-    // Add operation to queue
-    this._tabSwitchState.queue.push(operation);
-
-    // If already processing queue, just return
-    if (this._tabSwitchState.processingQueue) {
-      return;
-    }
-
-    // Start processing queue
-    this._tabSwitchState.processingQueue = true;
-
-    try {
-      while (this._tabSwitchState.queue.length > 0) {
-        // Get next operation
-        const nextOp = this._tabSwitchState.queue.shift();
-
-        // Check if we need to wait for debounce
-        const now = Date.now();
-        const timeSinceLastSwitch = now - this._tabSwitchState.lastSwitchTime;
-
-        if (timeSinceLastSwitch < this._tabSwitchState.debounceTime) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, this._tabSwitchState.debounceTime - timeSinceLastSwitch)
-          );
-        }
-
-        // Execute operation
-        this._tabSwitchState.inProgress = true;
-        await nextOp();
-        this._tabSwitchState.inProgress = false;
-        this._tabSwitchState.lastSwitchTime = Date.now();
-      }
-    } finally {
-      this._tabSwitchState.processingQueue = false;
-    }
-  },
-
   // Check if browser elements are in a valid state for tab operations
   _validateBrowserState() {
     // Check if browser window is still open
@@ -286,52 +237,45 @@ var gZenUIManager = {
       return false;
     }
 
-    // Queue the tab operation to prevent race conditions
-    this._queueTabOperation(async () => {
-      // Clear any existing timeout
-      if (this._clearTimeout) {
-        clearTimeout(this._clearTimeout);
-        this._clearTimeout = null;
-      }
+    // Clear any existing timeout
+    if (this._clearTimeout) {
+      clearTimeout(this._clearTimeout);
+      this._clearTimeout = null;
+    }
 
-      // Store the current tab
-      this._lastTab = gBrowser.selectedTab;
-      if (!this._lastTab) {
-        console.warn('No selected tab found when creating new tab');
-        return false;
-      }
+    // Store the current tab
+    this._lastTab = gBrowser.selectedTab;
+    if (!this._lastTab) {
+      console.warn('No selected tab found when creating new tab');
+      return false;
+    }
 
-      // Set visual state with proper validation
-      if (this._lastTab && !this._lastTab.closing) {
-        this._lastTab._visuallySelected = false;
-      }
+    // Set visual state with proper validation
+    if (this._lastTab && !this._lastTab.closing) {
+      this._lastTab._visuallySelected = false;
+    }
 
-      // Store URL bar state
-      this._prevUrlbarLabel = gURLBar._untrimmedValue || '';
+    // Store URL bar state
+    this._prevUrlbarLabel = gURLBar._untrimmedValue || '';
 
-      // Set up URL bar for new tab
-      gURLBar._zenHandleUrlbarClose = this.handleUrlbarClose.bind(this);
-      gURLBar.setAttribute('zen-newtab', true);
+    // Set up URL bar for new tab
+    gURLBar._zenHandleUrlbarClose = this.handleUrlbarClose.bind(this);
+    gURLBar.setAttribute('zen-newtab', true);
 
-      // Update newtab buttons
-      for (const button of this.newtabButtons) {
-        button.setAttribute('in-urlbar', true);
-      }
+    // Update newtab buttons
+    for (const button of this.newtabButtons) {
+      button.setAttribute('in-urlbar', true);
+    }
 
-      // Open location command
-      try {
-        // Wait for a small delay to ensure DOM is ready
-        await new Promise((resolve) => setTimeout(resolve, 10));
-
-        document.getElementById('Browser:OpenLocation').doCommand();
-        gURLBar.search(this._lastSearch || '');
-      } catch (e) {
-        console.error('Error opening location in new tab:', e);
-        this.handleUrlbarClose(false);
-        return false;
-      }
-    });
-
+    // Open location command
+    try {
+      document.getElementById('Browser:OpenLocation').doCommand();
+      gURLBar.search(this._lastSearch || '');
+    } catch (e) {
+      console.error('Error opening location in new tab:', e);
+      this.handleUrlbarClose(false);
+      return false;
+    }
     return true;
   },
 
@@ -347,57 +291,56 @@ var gZenUIManager = {
       return;
     }
 
-    // Queue the operation to prevent race conditions
-    this._queueTabOperation(async () => {
-      // Reset URL bar state
-      if (gURLBar._zenHandleUrlbarClose) {
-        gURLBar._zenHandleUrlbarClose = null;
-      }
-      gURLBar.removeAttribute('zen-newtab');
+    // Reset URL bar state
+    if (gURLBar._zenHandleUrlbarClose) {
+      gURLBar._zenHandleUrlbarClose = null;
+    }
+    gURLBar.removeAttribute('zen-newtab');
 
-      // Safely restore tab visual state with proper validation
-      if (
-        this._lastTab &&
-        !this._lastTab.closing &&
-        this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed
-      ) {
-        this._lastTab._visuallySelected = true;
-        this._lastTab = null;
-      }
+    // Safely restore tab visual state with proper validation
+    if (
+      this._lastTab &&
+      !this._lastTab.closing &&
+      this._lastTab.ownerGlobal &&
+      !this._lastTab.ownerGlobal.closed
+    ) {
+      this._lastTab._visuallySelected = true;
+      this._lastTab = null;
+    }
 
-      // Reset newtab buttons
-      for (const button of this.newtabButtons) {
-        button.removeAttribute('in-urlbar');
-      }
+    // Reset newtab buttons
+    for (const button of this.newtabButtons) {
+      button.removeAttribute('in-urlbar');
+    }
 
-      // Handle search data
-      if (!onElementPicked) {
-        if (onSwitch) {
-          this.clearUrlbarData();
-        } else {
-          this._lastSearch = gURLBar._untrimmedValue || '';
-
-          if (this._clearTimeout) {
-            clearTimeout(this._clearTimeout);
-          }
-
-          this._clearTimeout = setTimeout(() => {
-            this.clearUrlbarData();
-          }, this.urlbarWaitToClear);
-        }
-
-        // Safely restore URL bar state with proper validation
-        if (this._prevUrlbarLabel) {
-          gURLBar.setURI(this._prevUrlbarLabel, onSwitch, false, false, !onSwitch);
-        }
-
-        gURLBar.handleRevert();
-      } else if (onElementPicked && onSwitch) {
+    // Handle search data
+    if (!onElementPicked) {
+      if (onSwitch) {
         this.clearUrlbarData();
+      } else {
+        this._lastSearch = gURLBar._untrimmedValue || '';
+
+        if (this._clearTimeout) {
+          clearTimeout(this._clearTimeout);
+        }
+
+        this._clearTimeout = setTimeout(() => {
+          this.clearUrlbarData();
+        }, this.urlbarWaitToClear);
       }
 
-      if (gURLBar.focused) {
+      // Safely restore URL bar state with proper validation
+      if (this._prevUrlbarLabel) {
+        gURLBar.setURI(this._prevUrlbarLabel, onSwitch, false, false, !onSwitch);
+      }
+
+      gURLBar.handleRevert();
+    } else if (onElementPicked && onSwitch) {
+      this.clearUrlbarData();
+    }
+
+    if (gURLBar.focused) {
+      setTimeout(() => {
         gURLBar.view.close({ elementPicked: onSwitch });
         gURLBar.updateTextOverflow();
 
@@ -409,8 +352,8 @@ var gZenUIManager = {
             browserState.urlbarFocused = false;
           }
         }
-      }
-    });
+      }, 0);
+    }
   },
 
   urlbarTrim(aURL) {
@@ -503,7 +446,7 @@ var gZenUIManager = {
         this._toastTimeouts[messageId] = setTimeout(timeoutFunction, options.timeout || 2000);
       });
     }
-    if (!toast.style.hasOwnProperty('transform')) {
+    if (!toast.style.transform) {
       toast.style.transform = 'scale(0)';
     }
     await this.motion.animate(toast, { scale: 1 }, { type: 'spring', bounce: 0.2, duration: 0.5 });
@@ -522,7 +465,7 @@ var gZenUIManager = {
 
 var gZenVerticalTabsManager = {
   init() {
-    this._multiWindowFeature = new ZenMultiWindowFeature();
+    this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();
 
     ChromeUtils.defineLazyGetter(this, 'isWindowsStyledButtons', () => {
@@ -600,26 +543,33 @@ var gZenVerticalTabsManager = {
     return this.__topButtonsSeparatorElement;
   },
 
-  animateTab(aTab) {
-    if (!gZenUIManager.motion || !aTab || !gZenUIManager._hasLoadedDOM || !aTab.isConnected) {
+  animateItemOpen(aItem) {
+    if (
+      !gZenUIManager.motion ||
+      !aItem ||
+      !gZenUIManager._hasLoadedDOM ||
+      !aItem.isConnected ||
+      gZenUIManager.testingEnabled ||
+      !gZenStartup.isReady
+    ) {
       return;
     }
     // get next visible tab
-    const isLastTab = () => {
-      const visibleTabs = gBrowser.visibleTabs;
-      return visibleTabs[visibleTabs.length - 1] === aTab;
+    const isLastItem = () => {
+      const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
+      return visibleItems[visibleItems.length - 1] === aItem;
     };
 
     try {
-      const tabSize = aTab.getBoundingClientRect().height;
-      const transform = `-${tabSize}px`;
+      const itemSize = aItem.getBoundingClientRect().height;
+      const transform = `-${itemSize}px`;
       gZenUIManager.motion
         .animate(
-          aTab,
+          aItem,
           {
             opacity: [0, 1],
             transform: ['scale(0.95)', 'scale(1)'],
-            marginBottom: isLastTab() ? [] : [transform, '0px'],
+            marginBottom: isLastItem() ? [] : [transform, '0px'],
           },
           {
             duration: 0.12,
@@ -631,13 +581,15 @@ var gZenVerticalTabsManager = {
           console.error(err);
         })
         .finally(() => {
-          aTab.style.removeProperty('margin-bottom');
-          aTab.style.removeProperty('transform');
-          aTab.style.removeProperty('opacity');
+          aItem.style.removeProperty('margin-bottom');
+          aItem.style.removeProperty('transform');
+          aItem.style.removeProperty('opacity');
         });
+      const itemLabel =
+        aItem.querySelector('.tab-group-label-container') || aItem.querySelector('.tab-content');
       gZenUIManager.motion
         .animate(
-          aTab.querySelector('.tab-content'),
+          itemLabel,
           {
             filter: ['blur(1px)', 'blur(0px)'],
           },
@@ -651,7 +603,7 @@ var gZenVerticalTabsManager = {
           console.error(err);
         })
         .finally(() => {
-          aTab.querySelector('.tab-stack').style.removeProperty('filter');
+          itemLabel.style.removeProperty('filter');
         });
     } catch (e) {
       console.error(e);
@@ -745,7 +697,7 @@ var gZenVerticalTabsManager = {
       browser.gZenVerticalTabsManager._initWaitPromise();
     });
 
-    if (ZenMultiWindowFeature.isActiveWindow) {
+    if (nsZenMultiWindowFeature.isActiveWindow) {
       this._updateEvent();
       this._initWaitPromise();
     }
@@ -1095,7 +1047,8 @@ var gZenVerticalTabsManager = {
       return;
     this._tabEdited =
       event.target.closest('.tabbrowser-tab') ||
-      event.target.closest('.zen-current-workspace-indicator-name');
+      event.target.closest('.zen-current-workspace-indicator-name') ||
+      (event.explicit && event.target.closest('.tab-group-label'));
     if (
       !this._tabEdited ||
       ((!this._tabEdited.pinned || this._tabEdited.hasAttribute('zen-essential')) && isTab)
@@ -1103,6 +1056,7 @@ var gZenVerticalTabsManager = {
       this._tabEdited = null;
       return;
     }
+    gZenFolders.cancelPopupTimer();
     event.stopPropagation?.();
     document.documentElement.setAttribute('zen-renaming-tab', 'true');
     const label = isTab ? this._tabEdited.querySelector('.tab-label-container') : this._tabEdited;

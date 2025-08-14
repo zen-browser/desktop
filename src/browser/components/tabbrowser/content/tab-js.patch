@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2972905b5 100644
+index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..32e21e1295aa508a2b8dc6b8a0ea4d678dd81594 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -42,16 +42,30 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
          return;
        }
  
-@@ -224,7 +227,7 @@
+@@ -224,9 +227,19 @@
      }
  
      get visible() {
--      return this.isOpen && !this.hidden && !this.group?.collapsed;
-+      return this.isOpen && !this.hidden && !this.group?.collapsed && !this.hasAttribute("zen-empty-tab");
+-      return (
+-        this.isOpen && !this.hidden && (!this.group?.collapsed || this.selected)
+-      );
++      if (!this.isOpen || this.hidden || this.hasAttribute("zen-empty-tab")) {
++        return false;
++      }
++
++      // Recursively check all parent groups
++      let currentParent = this.group;
++      while (currentParent && !this.hasAttribute("folder-active")) {
++        if (currentParent.collapsed) {
++          return false;
++        }
++        currentParent = currentParent.group;
++      }
++      return true;
      }
  
      get hidden() {
-@@ -295,7 +298,7 @@
+@@ -297,7 +310,7 @@
          return false;
        }
  
@@ -60,7 +74,21 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
      }
  
      get lastAccessed() {
-@@ -467,6 +470,8 @@
+@@ -374,8 +387,11 @@
+     }
+ 
+     get group() {
+-      if (this.parentElement?.tagName == "tab-group") {
+-        return this.parentElement;
++      if (typeof gBrowser === "undefined") {
++        return null;
++      }
++      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
++        return this.parentElement.parentElement;
+       }
+       return null;
+     }
+@@ -469,6 +485,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -69,7 +97,7 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -521,6 +526,10 @@
+@@ -523,6 +541,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -80,7 +108,7 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -569,6 +578,7 @@
+@@ -571,6 +593,7 @@
              )
            );
          } else {
@@ -88,7 +116,7 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
            gBrowser.removeTab(this, {
              animate: true,
              triggeringEvent: event,
-@@ -581,6 +591,14 @@
+@@ -583,6 +606,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -103,7 +131,7 @@ index e5509953509c4da8756e36a0792f76814e24ba0c..5ce4207e5e580053aa9a857168fd20a2
      }
  
      on_dblclick(event) {
-@@ -604,6 +622,8 @@
+@@ -606,6 +637,8 @@
            animate: true,
            triggeringEvent: event,
          });

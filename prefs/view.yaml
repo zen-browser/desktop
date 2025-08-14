@@ -37,11 +37,17 @@
 - name: zen.view.grey-out-inactive-windows
   value: true
 
-- name: zen.view.show-newtab-button-border-top
-  value: false
-
 - name: zen.view.show-newtab-button-top
   value: true
 
 - name: zen.view.window.scheme
   value: 2
+
+- name: zen.view.drag-and-drop.move-over-threshold
+  value: 70
+
+- name: zen.view.drag-and-drop.drop-inside-upper-threshold
+  value: 80
+
+- name: zen.view.drag-and-drop.drop-inside-lower-threshold
+  value: 30

@@ -5,7 +5,6 @@
  */
 
 &:not(:hover) {
-  width: min(var(--zen-overflowed-workspace-button-width,10px), 25px) !important;
   min-width: 10px;
 
   &::after {

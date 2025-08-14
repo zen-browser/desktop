@@ -1,0 +1,15 @@
+zen-folders-search-placeholder = 
+    .placeholder = Rechercher dans { $folder-name }...
+zen-folders-panel-rename-folder = 
+    .label = Renommer le dossier
+zen-folders-panel-expand-folder = 
+    .label = Développer le dossier
+zen-folders-panel-delete-folder = 
+    .label = Supprimer le dossier
+zen-folders-panel-convert-folder-to-space = 
+    .label = Convertir le dossier en Espace
+zen-folders-panel-change-folder-space = 
+    .label = Changer d'Espace...
+zen-folders-panel-change-icon-folder = 
+    .label = Changer d'icône
+zen-folders-search-no-results = Aucun onglet ne correspond à cette recherche 🤔

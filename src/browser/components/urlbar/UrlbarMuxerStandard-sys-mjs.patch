@@ -1,0 +1,12 @@
+diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
+index 57463d2c4e39e67eeec7e2c752fe5236a662c7d2..4ca28540a71594e935847679a4b676ae48eb10d8 100644
+--- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
++++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
+@@ -845,6 +845,7 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+     }
+ 
+     if (result.providerName == lazy.UrlbarProviderTabToSearch.name) {
++      return false;
+       // Discard the result if a tab-to-search result was added already.
+       if (!state.canAddTabToSearch) {
+         return false;

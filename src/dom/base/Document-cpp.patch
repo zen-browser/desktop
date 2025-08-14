@@ -1,5 +1,5 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 36f9681a989bf4007fa837e7c9ef332ee14e55bd..8c407b5297570aee5322515d47b0895b833e3a10 100644
+index 40da41ae4ac7d8d61c664e25bec8a74091d8b3e0..59773e80c6220115d0c51e268bb1eff0fe208010 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
 @@ -10,6 +10,7 @@
@@ -10,7 +10,7 @@ index 36f9681a989bf4007fa837e7c9ef332ee14e55bd..8c407b5297570aee5322515d47b0895b
  
  #include <inttypes.h>
  #include <stdlib.h>
-@@ -3300,6 +3301,11 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -3306,6 +3307,11 @@ void Document::FillStyleSetUserAndUASheets() {
      styleSet.AppendStyleSheet(*sheet);
    }
  

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 5f79e21271ad8b4e97604b9c84ed4e6e9de4a5f2..1c8cc6795d51130b29a32ecafa40e27ea6df655e 100644
+index 3484906e59f5da958a3f0c810c7b89cfce643d9a..7434caf4710af872d42ef4703ed8347cd8b07af2 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -24,7 +24,7 @@ index 5f79e21271ad8b4e97604b9c84ed4e6e9de4a5f2..1c8cc6795d51130b29a32ecafa40e27e
             fullscreentoolbar="true"
 @@ -56,6 +56,8 @@
  # the current structure that we may want to revisit.
-           <arrowscrollbox id="pinned-tabs-container" orient="horizontal" tabindex="-1"></arrowscrollbox>
+           <arrowscrollbox id="pinned-tabs-container" orient="horizontal"></arrowscrollbox>
            <splitter orient="vertical" id="vertical-pinned-tabs-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
 +<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">

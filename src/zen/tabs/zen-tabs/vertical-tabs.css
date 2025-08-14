@@ -157,7 +157,7 @@
    ========================================================================== */
 .pinned-tabs-container-separator {
   background: light-dark(rgba(1, 1, 1, 0.075), rgba(255, 255, 255, 0.1));
-  margin: 8px auto; /* Center horizontally */
+  margin: 8px auto;
   border: none;
   height: 1px;
   max-height: 1px;
@@ -166,11 +166,21 @@
     margin 0.2s ease-in-out,
     background 0.2s ease-in-out,
     max-height 0.2s ease-in-out;
+  overflow: hidden;
+  position: relative;
+  opacity: 1;
 
-  /* Hide separator when specified by parent container attribute */
+  #tabbrowser-tabs[movingtab] & {
+    transition:
+      margin 0.2s ease-in-out,
+      background 0.2s ease-in-out,
+      max-height 0.2s ease-in-out,
+      transform 0.1s ease-in-out;
+  }
+
   .zen-workspace-pinned-tabs-section[hide-separator] & {
     max-height: 0;
-    margin: 0 auto; /* Collapse margins */
+    margin: 0 auto;
   }
 }
 
@@ -248,32 +258,29 @@
 #tabbrowser-tabs {
   margin-inline-start: 0 !important;
   padding-inline-start: 0 !important;
-  overflow-y: unset !important; /* Critical: Prevents rendering issues on workspace changes */
-  overflow-x: clip; /* Clip horizontal overflow */
-  overflow-clip-margin: var(--zen-toolbox-padding); /* Add margin to clipping area */
+  overflow-y: unset !important;
+  overflow-x: clip;
+  overflow-clip-margin: var(--zen-toolbox-padding);
 
   --focus-outline-color: transparent;
 
   @media (-moz-platform: macos) {
-    font-size: 1.1rem; /* Slightly larger font on macOS */
+    font-size: 1.2rem; /* Slightly larger font on macOS */
   }
 
-  --tab-inner-inline-margin: 0; /* Reset default inner margin */
+  --tab-inner-inline-margin: 0;
 
   position: relative;
-  border-bottom: 0px solid transparent !important; /* Remove default bottom border */
+  border-bottom: 0px solid transparent !important;
 
-  /* Define tab variables */
   --tab-block-margin: 2px;
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.12));
   --tab-selected-shadow: 0 1px 1px 1px light-dark(rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.1)) !important;
-  grid-gap: 0 !important; /* Reset grid gap */
+  grid-gap: 0 !important;
 
-  /* Hide default overflow indicators and the provided separator */
   &[overflow]::after,
-  #vertical-tabs-newtab-button, /* Assuming this is a button *within* #tabbrowser-tabs, but it looks like it's outside */
+  #vertical-tabs-newtab-button,
   #vertical-pinned-tabs-splitter {
-    /* Selector targets the specific separator ID */
     display: none !important;
   }
 
@@ -281,11 +288,14 @@
      Individual Tab Styles (.tabbrowser-tab within #tabbrowser-tabs)
      ======================================================================== */
   & .tabbrowser-tab {
-    /* Add smooth scaling transition */
     &,
     & .tab-content > image {
-      transition: scale 0.07s ease;
+      transition:
+        scale 0.07s ease,
+        margin-inline-start 0.15s ease-in-out;
     }
+
+    margin-inline-start: var(--zen-folder-indent) !important;
 
     /* Hide specific empty tabs (likely placeholders) */
     &[zen-empty-tab] {
@@ -429,10 +439,6 @@
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
   }
-}
-
-#newtab-button-container {
-  display: none !important;
 }
 
 /* ==========================================================================
@@ -1187,22 +1193,23 @@
 #tabs-newtab-button {
   display: none;
   font-weight: 500;
-  -moz-user-focus: ignore !important; /* Prevent focus */
+  -moz-user-focus: ignore !important;
 }
 
 /* Show and style the button if preference `zen.tabs.show-newtab-vertical` is enabled */
 @media -moz-pref('zen.tabs.show-newtab-vertical') {
   #tabs-newtab-button {
-    display: flex !important; /* Show the button */
-    transition: scale 0.1s ease; /* Add scale transition */
+    display: flex !important;
+    transition: scale 0.1s ease;
+    #tabbrowser-tabs[movingtab] & {
+      transition: transform 0.1s ease;
+    }
 
-    /* Style text within the button */
     & .toolbarbutton-text {
       align-items: center;
       padding-top: 0;
     }
 
-    /* Scale down slightly on press */
     &:active,
     &[open] {
       scale: 0.98;
@@ -1225,29 +1232,6 @@
     /* Move button to the top if preference is set */
     @media -moz-pref('zen.view.show-newtab-button-top') {
       order: -1;
-    }
-
-    /* Add a separator line above the button if preferences are set and there are tabs */
-    @media -moz-pref('zen.view.show-newtab-button-border-top') and (not -moz-pref('zen.view.show-newtab-button-top')) {
-      #tabbrowser-arrowscrollbox:has(tab:not([hidden])) & {
-        /* Only if tabs exist */
-        margin-top: 15px; /* Space above */
-        position: relative; /* For pseudo-element */
-        &::before {
-          content: '';
-          display: block;
-          height: 1px;
-          background: light-dark(
-            rgba(1, 1, 1, 0.075),
-            rgba(255, 255, 255, 0.1)
-          ); /* Separator color */
-          width: 98%; /* Near full width */
-          position: absolute;
-          top: -8px; /* Position above the button */
-          left: 50%;
-          transform: translateX(-50%); /* Center horizontally */
-        }
-      }
     }
   }
 }
@@ -1515,10 +1499,11 @@
   opacity: 0.7;
 }
 
-.tab-throbber {
-  display: none !important; /* Hide throbber always */
-}
-
-.tab-icon-image {
-  display: flex !important;
+@media (-moz-pref('zen.theme.hide-tab-throbber')) {
+  .tab-throbber {
+    display: none !important;
+  }
+  .tab-icon-image {
+    display: flex !important;
+  }
 }

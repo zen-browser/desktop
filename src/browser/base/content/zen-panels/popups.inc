@@ -5,6 +5,7 @@
 <menupopup id="zenCreateNewPopup">
   <menuitem data-l10n-id="tabs-toolbar-new-tab" command="cmd_newNavigatorTab" image="chrome://browser/skin/zen-icons/plus.svg" />
   <menuseparator/>
+  <menuitem data-l10n-id="zen-panel-ui-folder-create" command="cmd_zenOpenFolderCreation" image="chrome://browser/skin/zen-icons/folder.svg" />
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation" image="chrome://browser/skin/zen-icons/duplicate-tab.svg" />
 </menupopup>
 
@@ -29,4 +30,18 @@
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
   <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>
+</menupopup>
+
+<menupopup id="zenFolderActions">
+  <menuitem id="context_zenFolderRename" data-l10n-id="zen-folders-panel-rename-folder"/>
+  <menuitem id="context_zenFolderChangeIcon" data-l10n-id="zen-folders-panel-change-icon-folder"/>
+  <menuitem id="context_zenFolderExpand" data-l10n-id="zen-folders-panel-expand-folder"/>
+  <menuseparator />
+  <menu id="context_zenChangeFolderSpace"
+    data-l10n-id="zen-folders-panel-change-folder-space">
+    <menupopup />
+  </menu>
+  <menuitem id="context_zenFolderToSpace" data-l10n-id="zen-folders-panel-convert-folder-to-space" />
+  <menuseparator />
+  <menuitem id="context_zenFolderDelete" data-l10n-id="zen-folders-panel-delete-folder"/>
 </menupopup>

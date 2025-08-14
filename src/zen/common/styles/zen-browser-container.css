@@ -8,7 +8,7 @@
   #tabbrowser-tabpanels[dragging-split='true'] {
     width: -moz-available;
     position: relative;
-    overflow: hidden;
+    overflow: clip;
 
     &.browserSidebarContainer {
       :root:not([zen-no-padding='true']) & {
@@ -23,6 +23,14 @@
       @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
         & browser[type='content'] {
           color-scheme: env(-moz-content-preferred-color-scheme);
+        }
+      }
+
+      @media -moz-pref('zen.theme.acrylic-elements') {
+        & browser[type='content'] {
+          /* For the rendering engine to apply layering optimizations. This
+           * is a hacky solution, but it works for now. */
+          will-change: transform;
         }
       }
     }

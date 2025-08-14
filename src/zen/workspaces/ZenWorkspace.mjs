@@ -11,7 +11,7 @@
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions"></toolbarbutton>
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
-          <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
+          <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
             <html:div class="pinned-tabs-container-separator"></html:div>
           </vbox>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
@@ -67,6 +67,8 @@
 
       this.indicator.querySelector('.zen-current-workspace-indicator-name').onRenameFinished =
         this.onIndicatorRenameFinished.bind(this);
+
+      this.pinnedTabsContainer.scrollbox = this.scrollbox;
 
       this.indicator
         .querySelector('.zen-workspaces-actions')
@@ -217,6 +219,10 @@
       };
       popup.addEventListener('popuphidden', handlePopupHidden);
       popup.openPopup(event.target, 'after_start');
+    }
+
+    get newTabButton() {
+      return this.querySelector('#tabs-newtab-button');
     }
   }
 

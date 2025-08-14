@@ -107,6 +107,7 @@
 .browserSidebarContainer.zen-glance-overlay {
   box-shadow: none !important;
   visibility: inherit;
+  z-index: 1;
 
   :root[zen-no-padding='true'] & {
     --zen-native-inner-radius: 0px;

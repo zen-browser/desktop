@@ -3,8 +3,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 FINAL_TARGET_FILES.actors += [
     "actors/ZenGlanceChild.sys.mjs",
     "actors/ZenGlanceParent.sys.mjs",
 ]
+
+TESTING_JS_MODULES += ["tests/GlanceTestUtils.sys.mjs"]

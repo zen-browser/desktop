@@ -4,12 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 @import url('chrome://browser/content/zen-styles/zen-panels/bookmarks.css');
-@import url('chrome://browser/content/zen-styles/zen-panels/extensions.css');
 @import url('chrome://browser/content/zen-styles/zen-panels/print.css');
 @import url('chrome://browser/content/zen-styles/zen-panels/dialog.css');
 
 :root {
   --panel-subview-body-padding: 2px 0;
+  --arrowpanel-menuitem-border-radius: 5px;
+  --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block)
+    var(--uc-arrowpanel-menuitem-margin-inline);
   --arrowpanel-menuitem-padding-block: 8px;
   --arrowpanel-menuitem-padding-inline: 14px;
   --uc-arrowpanel-menuicon-margin-inline: 14px;

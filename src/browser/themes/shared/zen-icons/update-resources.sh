@@ -34,6 +34,12 @@ do_common_icons() {
     echo "Working on $filename"
     echo "  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/common/$filename) " >> jar.inc.mn
   done
+  for filename in common/selectable/*.svg; do
+    # remove the os/ prefix
+    filename=$(basename $filename)
+    echo "Working on $filename"
+    echo "  skin/classic/browser/zen-icons/selectable/$filename          (../shared/zen-icons/common/selectable/$filename) " >> jar.inc.mn
+  done
 }
 
 do_icons lin WIN

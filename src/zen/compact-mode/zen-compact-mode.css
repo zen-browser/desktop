@@ -182,11 +182,8 @@
       #navigator-toolbox[flash-popup],
       #navigator-toolbox[has-popup-menu],
       #navigator-toolbox[movingtab],
-      #navigator-toolbox:has(.tabbrowser-tab:active),
       &[zen-renaming-tab='true'] #navigator-toolbox,
-      #navigator-toolbox:has(
-          *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)
-        ) {
+      #navigator-toolbox[zen-compact-mode-active] {
         &:not([animate='true']) {
           --zen-compact-mode-func: linear(
             0 0%,

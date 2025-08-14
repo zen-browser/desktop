@@ -1,8 +1,8 @@
 diff --git a/browser/components/search/SearchOneOffs.sys.mjs b/browser/components/search/SearchOneOffs.sys.mjs
-index 23808139bc885c5e6457b3e4be0b1727c0f3bbf9..472fdbe863db5725d01af903b69a479b9edc3244 100644
+index 3930862215a667e223f1bf6959dcf1c08421b37d..68d767b6d8490a374973eb86a032a6386879fd93 100644
 --- a/browser/components/search/SearchOneOffs.sys.mjs
 +++ b/browser/components/search/SearchOneOffs.sys.mjs
-@@ -455,7 +455,7 @@ export class SearchOneOffs {
+@@ -466,7 +466,7 @@ export class SearchOneOffs {
      // For the search-bar, always show the one-off buttons where there is an
      // option to add an engine.
      let addEngineNeeded = isSearchBar && addEngines.length;

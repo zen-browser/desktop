@@ -246,7 +246,9 @@ ZenWorkspacesStore.prototype._validateRecord = function (record) {
     try {
       JSON.parse(record.theme_colors);
     } catch (e) {
-      throw new Error(`Invalid theme_colors JSON for workspace ID ${record.id}`);
+      throw new Error(
+        `Invalid theme_colors JSON for workspace ID ${record.id}. Error: ${e.message}`
+      );
     }
     if (record.theme_opacity != null && typeof record.theme_opacity !== 'number') {
       throw new Error(`Invalid theme_opacity for workspace ID ${record.id}`);
@@ -390,7 +392,7 @@ ZenWorkspacesTracker.prototype.observe = async function (subject, topic, data) {
         break;
       case 'zen-workspace-removed':
       case 'zen-workspace-updated':
-      case 'zen-workspace-added':
+      case 'zen-workspace-added': {
         let workspaceIDs;
         if (data) {
           try {
@@ -424,6 +426,7 @@ ZenWorkspacesTracker.prototype.observe = async function (subject, topic, data) {
           this.score += SCORE_INCREMENT_XLARGE;
         }
         break;
+      }
     }
   } catch (error) {
     this._log.error(`Error handling ${topic} in observe method`, error);

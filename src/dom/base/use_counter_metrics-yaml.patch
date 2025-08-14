@@ -1,8 +1,8 @@
 diff --git a/dom/base/use_counter_metrics.yaml b/dom/base/use_counter_metrics.yaml
-index c3830ede7637a047ffa285c0e8e281befd933f18..ddc8be98dc969c54774682361bc1f191754a4609 100644
+index c8dd3cca62e788eed5e5df5294fa7c9f3a2e9492..91e6281f4eb1c4c6aa1dddd8a0f06aa0c15a71ab 100644
 --- a/dom/base/use_counter_metrics.yaml
 +++ b/dom/base/use_counter_metrics.yaml
-@@ -21765,6 +21765,22 @@ use.counter.css.page:
+@@ -21460,6 +21460,22 @@ use.counter.css.page:
      send_in_pings:
        - use-counters
  
@@ -25,7 +25,7 @@ index c3830ede7637a047ffa285c0e8e281befd933f18..ddc8be98dc969c54774682361bc1f191
    css_transform_origin:
      type: counter
      description: >
-@@ -33752,6 +33768,22 @@ use.counter.css.doc:
+@@ -33447,6 +33463,22 @@ use.counter.css.doc:
      send_in_pings:
        - use-counters
  

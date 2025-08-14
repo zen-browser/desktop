@@ -1,0 +1,15 @@
+zen-folders-search-placeholder = 
+    .placeholder = Hledat { $folder-name }...
+zen-folders-panel-rename-folder = 
+    .label = Přejmenovat složku
+zen-folders-panel-expand-folder = 
+    .label = Rozbalit složku
+zen-folders-panel-delete-folder = 
+    .label = Smazat složku
+zen-folders-panel-convert-folder-to-space = 
+    .label = Převést složku na prostor
+zen-folders-panel-change-folder-space = 
+    .label = Změnit prostor...
+zen-folders-panel-change-icon-folder = 
+    .label = Změnit ikonu
+zen-folders-search-no-results = Žádný panel neodpovídá tomuto hledání 🤔

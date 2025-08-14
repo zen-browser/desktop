@@ -105,12 +105,22 @@
       button.setAttribute('context', 'zenWorkspaceMoreActions');
       const icon = document.createXULElement('label');
       icon.setAttribute('class', 'zen-workspace-icon');
+      const isSvgIcon = workspace.icon && workspace.icon.endsWith('.svg');
       if (gZenWorkspaces.workspaceHasIcon(workspace)) {
-        icon.textContent = workspace.icon;
+        if (isSvgIcon) {
+          const image = document.createElement('img');
+          image.src = workspace.icon;
+          image.classList.add('zen-workspace-icon');
+          button.appendChild(image);
+        } else {
+          icon.textContent = workspace.icon;
+        }
       } else {
         icon.setAttribute('no-icon', true);
       }
-      button.appendChild(icon);
+      if (!isSvgIcon) {
+        button.appendChild(icon);
+      }
       button.addEventListener('command', this);
       return button;
     }

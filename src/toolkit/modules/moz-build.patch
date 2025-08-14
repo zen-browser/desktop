@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/moz.build b/toolkit/modules/moz.build
-index 4c45be797e2cca88d302f98e765545b13da3f0dc..31f2694a8cfb73c4f31b819e4362b46bdb22faef 100644
+index 8c020ddc23afd11b2592bfd98b3131613b084202..045be1fa401d24932d0fe4197a9dc0d7a63bcd20 100644
 --- a/toolkit/modules/moz.build
 +++ b/toolkit/modules/moz.build
 @@ -280,6 +280,7 @@ for var in (

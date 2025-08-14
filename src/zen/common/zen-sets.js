@@ -8,7 +8,7 @@ document.addEventListener(
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById('zenCommandSet')
-      // eslint-disable-next-line complexity
+
       .addEventListener('command', (event) => {
         switch (event.target.id) {
           case 'cmd_zenCompactModeToggle':
@@ -118,6 +118,11 @@ document.addEventListener(
             break;
           case 'cmd_zenOpenWorkspaceCreation':
             gZenWorkspaces.openWorkspaceCreation(event);
+            break;
+          case 'cmd_zenOpenFolderCreation':
+            gZenFolders.createFolder([], {
+              renameFolder: true,
+            });
             break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);

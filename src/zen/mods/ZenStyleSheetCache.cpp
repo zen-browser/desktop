@@ -7,6 +7,7 @@
 
 #include "nsCOMPtr.h"
 #include "nsIFile.h"
+#include "nsNetUtil.h"
 
 #include "nsStyleSheetService.h"
 

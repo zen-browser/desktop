@@ -644,3 +644,7 @@ button.popup-notification-dropmarker {
     }
   }
 }
+
+#urlbar-results .action-contextualidentity {
+  display: none;
+}

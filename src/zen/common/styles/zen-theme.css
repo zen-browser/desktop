@@ -44,7 +44,7 @@
     var(--zen-colors-tertiary) 99%
   );
 
-  --zen-dialog-background: light-dark(var(--zen-colors-tertiary), var(--zen-branding-bg));
+  --zen-dialog-background: light-dark(rgb(219, 219, 219), rgb(31, 31, 31));
   --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%);
 
   --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
@@ -86,7 +86,7 @@
   --button-hover-color: var(--in-content-button-text-color-hover) !important;
   --focus-outline-color: var(--color-accent-primary) !important;
 
-  --toolbarbutton-icon-fill-attention: var(--zen-primary-color) !important;
+  --toolbarbutton-icon-fill-attention: var(--toolbar-color) !important;
   --toolbarbutton-icon-fill: currentColor !important;
 
   --button-primary-bgcolor: var(--in-content-primary-button-background) !important;
@@ -169,7 +169,6 @@
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
   --tab-close-button-padding: 5px !important;
 
-  --input-bgcolor: var(--zen-colors-tertiary) !important;
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npm run ffprefs && surfer build",
     "build:ui": "surfer build --ui",
-    "start": "cd engine && ./mach run --noprofile",
+    "start": "cd engine && python3 ./mach run --noprofile",
     "import": "surfer import",
     "export": "surfer export",
     "init": "npm run download && npm run import && npm run bootstrap",
@@ -20,13 +20,14 @@
     "update-ff:rc": "python3 scripts/update_ff.py --rc",
     "update-ff:l10n": "python3 scripts/update_ff.py --just-l10n",
     "pretty": "prettier . --write && autopep8 -r --in-place scripts/ src/",
-    "lint": "npx prettier . --check && autopep8 --diff scripts/ src/",
+    "lint": "npx eslint src/ && prettier . --check && autopep8 --diff scripts/ src/",
+    "lint:fix": "npx eslint src/ --fix && npm run pretty",
     "prepare": "husky",
     "reset-ff": "surfer reset",
     "surfer": "surfer",
     "test": "python3 scripts/run_tests.py",
     "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure",
-    "ffprefs": "cd tools/ffprefs && cargo run --release --bin ffprefs -- ../../",
+    "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
     "lc": "surfer license-check",
     "lc:fix": "surfer license-check --fix"
   },
@@ -45,11 +46,20 @@
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.11.15"
+    "@zen-browser/surfer": "^1.11.16"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
+    "@eslint/js": "^9.32.0",
+    "@microsoft/eslint-plugin-sdl": "^1.1.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-html": "^8.1.3",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-json": "^4.0.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "formal-git": "^1.1.5",
+    "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",

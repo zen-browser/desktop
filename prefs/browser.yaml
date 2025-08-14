@@ -14,9 +14,6 @@
 - name: browser.tabs.hoverPreview.enabled
   value: false
 
-- name: browser.tabs.dragdrop.moveOverThresholdPercent
-  value: 50
-
 - name: browser.tabs.unloadTabInContextMenu
   value: true
 

@@ -13,7 +13,7 @@
     },
   });
 
-  class nsZenDownloadAnimation extends ZenDOMOperatedFeature {
+  class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
     async init() {
       await this.#setupDownloadListeners();
     }
@@ -34,7 +34,7 @@
     #handleNewDownload() {
       if (
         !Services.prefs.getBoolPref('zen.downloads.download-animation') ||
-        !ZenMultiWindowFeature.isActiveWindow
+        !nsZenMultiWindowFeature.isActiveWindow
       ) {
         return;
       }

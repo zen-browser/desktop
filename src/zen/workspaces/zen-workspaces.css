@@ -40,6 +40,7 @@
     padding: 0 !important;
     align-items: center;
     position: relative;
+    fill-opacity: 0.6;
 
     & .zen-workspace-icon {
       pointer-events: none;
@@ -91,7 +92,7 @@
 
     & toolbarbutton {
       margin: 0;
-  background: transparent;
+      background: transparent;
     }
 
     /* Inlcude separately since ther'es a bug in the 
@@ -188,6 +189,9 @@
     height: 16px;
     justify-content: center;
     align-items: center;
+    fill-opacity: 0.6;
+    -moz-context-properties: fill-opacity, fill;
+    fill: currentColor;
 
     &[zen-emoji-open='true']::before {
       border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));

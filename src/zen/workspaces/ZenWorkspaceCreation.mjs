@@ -15,6 +15,7 @@
       return [
         'cmd_zenOpenWorkspacePanel',
         'cmd_zenOpenWorkspaceCreation',
+        'cmd_zenOpenFolderCreation',
         'cmd_zenToggleSidebar',
         'cmd_newNavigatorTab',
         'cmd_newNavigatorTabNoEvent',
@@ -200,7 +201,7 @@
     async onCreateButtonCommand() {
       const workspace = await gZenWorkspaces.getActiveWorkspace();
       workspace.name = this.inputName.value.trim();
-      workspace.icon = this.inputIcon.label || undefined;
+      workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
       workspace.containerTabId = this.currentProfile;
       await gZenWorkspaces.saveWorkspace(workspace);
 
@@ -220,7 +221,16 @@
       gZenEmojiPicker
         .open(event.target)
         .then(async (emoji) => {
-          this.inputIcon.label = emoji || '';
+          const isSvg = emoji && emoji.endsWith('.svg');
+          if (isSvg) {
+            this.inputIcon.label = '';
+            this.inputIcon.image = emoji;
+            this.inputIcon.setAttribute('has-svg-icon', 'true');
+          } else {
+            this.inputIcon.image = '';
+            this.inputIcon.label = emoji || '';
+            this.inputIcon.removeAttribute('has-svg-icon');
+          }
         })
         .catch((error) => {
           console.warn('Error changing workspace icon:', error);

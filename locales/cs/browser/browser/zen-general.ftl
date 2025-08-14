@@ -34,7 +34,7 @@ zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nová karta na pozadí byla otevřena!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
 zen-library-sidebar-workspaces = 
-    .label = Pracovní prostory
+    .label = Prostory
 zen-library-sidebar-mods = 
     .label = Módy
 

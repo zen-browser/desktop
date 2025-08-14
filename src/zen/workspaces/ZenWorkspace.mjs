@@ -144,6 +144,8 @@
 
       this.#updateOverflow();
 
+      window.addEventListener('ZenGradientCacheChanged', this.#onGradientCacheChanged.bind(this));
+
       this.dispatchEvent(
         new CustomEvent('ZenWorkspaceAttached', {
           bubbles: true,
@@ -223,6 +225,26 @@
 
     get newTabButton() {
       return this.querySelector('#tabs-newtab-button');
+    }
+
+    #onGradientCacheChanged() {
+      const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
+        gZenThemePicker.getGradientForWorkspace(
+          gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid)
+        );
+      if (isExplicitMode) {
+        this.style.colorScheme = isDarkMode ? 'dark' : 'light';
+      } else {
+        this.style.colorScheme = '';
+      }
+      this.style.setProperty('--toolbox-textcolor', `rgba(${toolbarColor.join(',')})`);
+      this.style.setProperty('--zen-primary-color', primaryColor);
+    }
+
+    clearThemeStyles() {
+      this.style.colorScheme = '';
+      this.style.removeProperty('--toolbox-textcolor');
+      this.style.removeProperty('--zen-primary-color');
     }
   }
 

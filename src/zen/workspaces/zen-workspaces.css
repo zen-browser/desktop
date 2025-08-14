@@ -247,6 +247,7 @@ zen-workspace {
   position: absolute;
   height: 100%;
   overflow: hidden;
+  color: var(--toolbox-textcolor);
 
   :root:not([zen-sidebar-expanded='true']) & {
     width: 100%;

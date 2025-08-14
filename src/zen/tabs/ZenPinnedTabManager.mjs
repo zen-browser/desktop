@@ -989,7 +989,8 @@
       }
       movingTabs = [...movingTabs];
       try {
-        const pinnedTabsTarget = this._isGoingToPinnedTabs;
+        const pinnedTabsTarget =
+          event.target.closest('.zen-current-workspace-indicator') || this._isGoingToPinnedTabs;
         const essentialTabsTarget = event.target.closest('.zen-essentials-container');
         const tabsTarget = !this._isGoingToPinnedTabs;
 

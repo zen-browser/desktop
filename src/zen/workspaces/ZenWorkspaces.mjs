@@ -1710,9 +1710,9 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       // Find the next workspace we are scrolling to
       const nextWorkspace = workspaces.workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
       if (nextWorkspace) {
-        const [nextGradient, nextGrain] =
-          await gZenThemePicker.getGradientForWorkspace(nextWorkspace);
-        const existingGrain = (await gZenThemePicker.getGradientForWorkspace(workspace))[1];
+        const { gradient: nextGradient, grain: nextGrain } =
+          gZenThemePicker.getGradientForWorkspace(nextWorkspace);
+        const existingGrain = gZenThemePicker.getGradientForWorkspace(workspace).grain;
         const percentage = Math.abs(offsetPixels) / 200;
         await new Promise((resolve) => {
           requestAnimationFrame(() => {

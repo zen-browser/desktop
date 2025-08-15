@@ -303,7 +303,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
 +      }
 +      group.essential = tabs.some(tab => tab.hasAttribute("essential"));
 +      group.pinned = group.essential || tabs.some(tab => tab.pinned);
-+      if (forSplitView) insertBefore = insertBefore.group ?? insertBefore;
++      if (forSplitView && !insertBefore?.group?.isZenFolder) insertBefore = insertBefore?.group ?? insertBefore;
 +      insertBefore.before(
          group,
 -        insertBefore?.group ?? insertBefore

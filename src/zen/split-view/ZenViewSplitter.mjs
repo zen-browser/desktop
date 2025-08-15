@@ -200,9 +200,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // We need to remove all remaining tabs from the group when unsplitting
       let remainingTabs = [...group.tabs]; // Copy array since we'll modify it
       for (let remainingTab of remainingTabs) {
-        if (remainingTab.group && remainingTab.group.hasAttribute('split-view-group')) {
-          gBrowser.ungroupTab(remainingTab);
-        }
         this.resetTabState(remainingTab, forUnsplit);
       }
       this.removeGroup(groupIndex);

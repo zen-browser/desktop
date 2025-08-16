@@ -1387,4 +1387,3 @@
 
   window.gZenFolders = new nsZenFolders();
 }
-

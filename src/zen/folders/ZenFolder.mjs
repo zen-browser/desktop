@@ -205,4 +205,3 @@
 
   customElements.define('zen-folder', ZenFolder);
 }
-

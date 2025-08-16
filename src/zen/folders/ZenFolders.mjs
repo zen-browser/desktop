@@ -62,8 +62,14 @@
 
       const folderActionsMenu = document.getElementById('zenFolderActions');
       folderActionsMenu.addEventListener('popupshowing', (event) => {
-        const folder =
-          event.explicitOriginalTarget?.group || event.explicitOriginalTarget.parentElement;
+        const target = event.explicitOriginalTarget;
+        let folder;
+        if (gBrowser.isTabGroupLabel(target)) {
+          folder = target.group;
+        } else if (gBrowser.isTabGroupLabel(target.parentElement)) {
+          folder = target.parentElement.group;
+        }
+
         // We only want to rename zen-folders as firefox groups don't work well with this
         if (!folder?.isZenFolder) {
           return;

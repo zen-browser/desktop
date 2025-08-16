@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf76482a941 100644
+index d80a66a01002e78a9c65545d08fe786328ddf124..94497c80328551ac5bc14179bfc16722ec0c0158 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -422,15 +422,60 @@
@@ -646,7 +646,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
            if (neighbor && this.isTab(element) && tabIndex > element._tPos) {
              neighbor.after(element);
            } else {
-@@ -6136,22 +6273,26 @@
+@@ -6136,22 +6273,23 @@
      #moveTabNextTo(element, targetElement, moveBefore = false, metricsContext) {
        if (this.isTabGroupLabel(targetElement)) {
          targetElement = targetElement.group;
@@ -667,9 +667,6 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
  
        // Don't allow mixing pinned and unpinned tabs.
 +      targetElement = gZenGlanceManager.getTabOrGlanceParent(targetElement);
-+      if (targetElement?.group?.hasAttribute("split-view-group")) {
-+        targetElement = targetElement.group;
-+      }
 +      if (element.hasAttribute('zen-essential') && !targetElement?.hasAttribute('zen-essential')) {
 +        targetElement = this.tabsWithoutGlance[this._numZenEssentials - 1];
 +      } else
@@ -679,7 +676,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
          moveBefore = false;
        } else if (!element.pinned && targetElement && targetElement.pinned) {
          // If the caller asks to move an unpinned element next to a pinned
-@@ -6165,14 +6306,18 @@
+@@ -6165,14 +6303,29 @@
          //    move the tab group right before the first unpinned tab.
          // 4. Moving a tab group and the first unpinned tab is grouped:
          //    move the tab group right before the first unpinned tab's tab group.
@@ -693,13 +690,24 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
 +      if (!gZenFolders.canDropElement(element, targetElement)) {
 +        element = element.group;
 +      }
++      // It is necessary to place the check below to avoid inserting an element
++      // inside when the split group is the last element.
++      if (targetElement?.group?.hasAttribute("split-view-group")) {
++        targetElement = targetElement.group;
++      }
++      // When the folder is the last element in the pinned section,
++      // targetElement is a tab with the zen-empty-tab attribute.
++      // If the movement is from top to bottom, it must be redefined as a folder.
++      if (targetElement?.hasAttribute("zen-empty-tab") && !moveBefore) {
++        targetElement = targetElement.group;
++      }
  
        let getContainer = () =>
 +        element.hasAttribute("zen-essential") ? gZenWorkspaces.getEssentialsSection(element) :
          element.pinned
            ? this.tabContainer.pinnedTabsContainer
            : this.tabContainer;
-@@ -6181,7 +6326,7 @@
+@@ -6181,7 +6334,7 @@
          element,
          () => {
            if (moveBefore) {
@@ -708,7 +716,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
            } else if (targetElement) {
              targetElement.after(element);
            } else {
-@@ -6230,7 +6375,7 @@
+@@ -6230,7 +6383,7 @@
        if (!this.isTab(aTab)) {
          throw new Error("Can only move a tab into a tab group");
        }
@@ -717,7 +725,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
          return;
        }
        if (aTab.group && aTab.group.id === aGroup.id) {
-@@ -6324,6 +6469,10 @@
+@@ -6324,6 +6477,10 @@
  
        moveActionCallback();
  
@@ -728,7 +736,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
        // Clear tabs cache after moving nodes because the order of tabs may have
        // changed.
        this.tabContainer._invalidateCachedTabs();
-@@ -7221,7 +7370,7 @@
+@@ -7221,7 +7378,7 @@
              // preventDefault(). It will still raise the window if appropriate.
              break;
            }
@@ -737,7 +745,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
            window.focus();
            aEvent.preventDefault();
            break;
-@@ -8166,6 +8315,7 @@
+@@ -8166,6 +8323,7 @@
              aWebProgress.isTopLevel
            ) {
              this.mTab.setAttribute("busy", "true");
@@ -745,7 +753,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
              gBrowser._tabAttrModified(this.mTab, ["busy"]);
              this.mTab._notselectedsinceload = !this.mTab.selected;
            }
-@@ -9157,7 +9307,7 @@ var TabContextMenu = {
+@@ -9157,7 +9315,7 @@ var TabContextMenu = {
      );
      contextUnpinSelectedTabs.hidden =
        !this.contextTab.pinned || !this.multiselected;
@@ -754,7 +762,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
      // Build Ask Chat items
      TabContextMenu.GenAI.buildTabMenu(
        document.getElementById("context_askChat"),
-@@ -9476,6 +9626,7 @@ var TabContextMenu = {
+@@ -9476,6 +9634,7 @@ var TabContextMenu = {
          )
        );
      } else {
@@ -762,3 +770,4 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..50ff735a4621110ff3691186139cabf7
        gBrowser.removeTab(this.contextTab, {
          animate: true,
          ...gBrowser.TabMetrics.userTriggeredContext(
+

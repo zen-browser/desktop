@@ -179,10 +179,6 @@
       return items;
     }
 
-    get level() {
-      return this.group?.level + 1 || 0;
-    }
-
     get allItems() {
       return [...this.querySelector('.tab-group-container').children].filter(
         (child) => !child.classList.contains('zen-tab-group-start')
@@ -209,3 +205,4 @@
 
   customElements.define('zen-folder', ZenFolder);
 }
+

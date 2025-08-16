@@ -887,26 +887,30 @@
       return [];
     }
 
-    setFolderIndentation(tabs, group = undefined, forCollapse = true) {
+    setFolderIndentation(tabs, groupElem = undefined, forCollapse = true) {
       if (!gZenPinnedTabManager.expandedSidebarMode) {
         return;
       }
       const tab = tabs[0];
       let isTab = false;
-      if (!group && tab?.group) {
-        group = tab; // So we can set isTab later
+      if (!groupElem && tab?.group) {
+        groupElem = tab; // So we can set isTab later
       }
       if (
-        gBrowser.isTab(group) &&
-        !(group.hasAttribute('zen-empty-tab') && group.group === tab.group)
+        gBrowser.isTab(groupElem) &&
+        !(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group)
       ) {
-        group = group.group;
+        groupElem = groupElem.group;
         isTab = true;
       }
-      if (!isTab && !group?.hasAttribute('selected') && !forCollapse) {
-        group = null; // Don't indent if the group is not selected
+      if (!isTab && !groupElem?.hasAttribute('selected') && !forCollapse) {
+        groupElem = null; // Don't indent if the group is not selected
       }
-      const level = group?.level + 1 || 0;
+      let level = groupElem?.level + 1 || 0;
+      if (gBrowser.isTabGroupLabel(groupElem)) {
+        // If it is a group label, we should not increase its level by one.
+        level = groupElem.group.level;
+      }
       const baseSpacing = 14; // Base spacing for each level
       let tabToAnimate = tab;
       if (gBrowser.isTabGroupLabel(tab)) {
@@ -1348,10 +1352,11 @@
       let dragDownThreshold =
         Services.prefs.getIntPref('zen.view.drag-and-drop.drop-inside-lower-threshold') / 100;
 
-      let dropElementGroup = dropElement.group;
+      const dropElementGroup = dropElement.group;
       const isSplitGroup = dropElement?.group?.hasAttribute('split-view-group');
       let firstGroupElem =
         dropElementGroup.querySelector('.zen-tab-group-start').nextElementSibling;
+      if (gBrowser.isTabGroup(firstGroupElem)) firstGroupElem = firstGroupElem.labelElement;
 
       const isRestrictedGroup = isSplitGroup || dropElementGroup.collapsed;
 
@@ -1368,15 +1373,10 @@
         this.highlightGroupOnDragOver(dropElementGroup, movingTabs);
       } else if (shouldDropNear) {
         if (dropBefore) {
-          dropElement = dropElementGroup;
           colorCode = undefined;
-        } else {
-          if (isRestrictedGroup) {
-            dropElement = dropElementGroup;
-          } else {
-            dropElement = firstGroupElem;
-            dropBefore = true;
-          }
+        } else if (!isRestrictedGroup) {
+          dropElement = firstGroupElem;
+          dropBefore = true;
         }
         this.highlightGroupOnDragOver(null);
       }
@@ -1387,3 +1387,4 @@
 
   window.gZenFolders = new nsZenFolders();
 }
+

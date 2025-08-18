@@ -24,13 +24,15 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] Uspat a přepnout na kartu
+            [few] Uspat { $tabCount } karty a přepnout na první
+           *[other] Uspat { $tabCount } karet a přepnout na první
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] Resetovat a připnout kartu
+            [few] Resetovat a připnout { $tabCount } karty
+           *[other] Resetovat a připnout { $tabCount } karet
         }
 tab-reset-pin-label = Zpět na původní adresu

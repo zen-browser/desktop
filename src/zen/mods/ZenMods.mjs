@@ -153,6 +153,9 @@
 
     #writeToDom(modsWithPreferences) {
       for (const browser of nsZenMultiWindowFeature.browsers) {
+        const container = browser.document.getElementById('themes-container');
+        let hasEnabledMods = false;
+        
         for (const { enabled, preferences, name } of modsWithPreferences) {
           const sanitizedName = this.sanitizeModName(name);
 
@@ -172,6 +175,14 @@
             }
 
             continue;
+          } else {
+            if (!hasEnabledMods && !container) {
+              const element = browser.document.createElement('div');
+              element.setAttribute('id', 'themes-container');
+              browser.document.body.appendChild(element);
+            }
+            
+            hasEnabledMods = true;
           }
 
           for (const { property, type } of preferences) {
@@ -189,7 +200,7 @@
                     element.style.display = 'none';
                     element.setAttribute('id', sanitizedName);
 
-                    browser.document.body.getElementById("zen-themes").appendChild(element);
+                    browser.document.getElementById('themes-container').appendChild(element);
                   }
 
                   element.setAttribute(sanitizedProperty, value);
@@ -211,6 +222,10 @@
               }
             }
           }
+        }
+
+        if (!hasEnabledMods && container) {
+          container.remove();
         }
       }
     }

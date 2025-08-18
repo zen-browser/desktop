@@ -189,7 +189,7 @@
                     element.style.display = 'none';
                     element.setAttribute('id', sanitizedName);
 
-                    browser.document.body.appendChild(element);
+                    browser.document.body.getElementById("zen-themes").appendChild(element);
                   }
 
                   element.setAttribute(sanitizedProperty, value);

@@ -155,7 +155,7 @@
       for (const browser of nsZenMultiWindowFeature.browsers) {
         const container = browser.document.getElementById('themes-container');
         let hasEnabledMods = false;
-        
+
         for (const { enabled, preferences, name } of modsWithPreferences) {
           const sanitizedName = this.sanitizeModName(name);
 

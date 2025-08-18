@@ -481,16 +481,15 @@
             tabsContainer.style.overflow = '';
           })
       );
-      await Promise.all(animations).then(() => {
-        groupItems.map((item) => {
-          // Cleanup just in case
-          item.style.opacity = '';
-          item.style.height = '';
-        });
-        itemsToHide.map((item) => {
-          item.style.opacity = '';
-          item.style.height = '';
-        });
+      await Promise.all(animations);
+      groupItems.forEach((item) => {
+        // Cleanup just in case
+        item.style.opacity = '';
+        item.style.height = '';
+      });
+      itemsToHide.forEach((item) => {
+        item.style.opacity = '';
+        item.style.height = '';
       });
     }
 

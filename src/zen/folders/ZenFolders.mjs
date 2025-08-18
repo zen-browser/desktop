@@ -466,23 +466,31 @@
 
       animations.push(...this.updateFolderIcon(group));
       animations.push(
-        gZenUIManager.motion.animate(
-          groupStart,
-          {
-            marginTop: 0,
-          },
-          {
-            duration: 0.15,
-            ease: 'linear',
-          }
-        )
+        gZenUIManager.motion
+          .animate(
+            groupStart,
+            {
+              marginTop: 0,
+            },
+            {
+              duration: 0.15,
+              ease: 'linear',
+            }
+          )
+          .then(() => {
+            tabsContainer.style.overflow = '';
+          })
       );
-      await Promise.all(animations);
-      tabsContainer.style.overflow = '';
-      groupItems.map((item) => {
-        // Cleanup just in case
-        item.style.opacity = '';
-        item.style.height = '';
+      await Promise.all(animations).then(() => {
+        groupItems.map((item) => {
+          // Cleanup just in case
+          item.style.opacity = '';
+          item.style.height = '';
+        });
+        itemsToHide.map((item) => {
+          item.style.opacity = '';
+          item.style.height = '';
+        });
       });
     }
 
@@ -1014,7 +1022,7 @@
       let itemHeight = 0;
       for (const item of group.allItems) {
         itemHeight += item.getBoundingClientRect().height;
-        if (item.hasAttribute('folder-active')) {
+        if (item.hasAttribute('folder-active') && !item.selected) {
           item.removeAttribute('folder-active');
           if (!onlyIfActive) {
             item.setAttribute('was-folder-active', 'true');

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenGlanceManager extends ZenDOMOperatedFeature {
+  class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     _animating = false;
     _lazyPref = {};
 
@@ -22,35 +22,25 @@
         false
       );
 
-      ChromeUtils.defineLazyGetter(this, 'sidebarButtons', () =>
-        document.getElementById('zen-glance-sidebar-container')
-      );
       document
         .getElementById('tabbrowser-tabpanels')
         .addEventListener('click', this.onOverlayClick.bind(this));
       Services.obs.addObserver(this, 'quit-application-requested');
-
-      this.#addSidebarButtonListeners();
     }
 
-    #addSidebarButtonListeners() {
-      this.sidebarButtons.addEventListener('command', (event) => {
-        const button = event.target.closest('toolbarbutton');
-        if (!button) {
-          return;
-        }
-        switch (button.id) {
-          case 'zen-glance-sidebar-close':
-            this.closeGlance({ onTabClose: true });
-            break;
-          case 'zen-glance-sidebar-open':
-            this.fullyOpenGlance();
-            break;
-          case 'zen-glance-sidebar-split':
-            this.splitGlance();
-            break;
-        }
-      });
+    handleMainCommandSet(event) {
+      const command = event.target;
+      switch (command.id) {
+        case 'cmd_zenGlanceClose':
+          this.closeGlance({ onTabClose: true });
+          break;
+        case 'cmd_zenGlanceExpand':
+          this.fullyOpenGlance();
+          break;
+        case 'cmd_zenGlanceSplit':
+          this.splitGlance();
+          break;
+      }
     }
 
     get #currentBrowser() {
@@ -81,6 +71,7 @@
 
     onUnload() {
       // clear everything
+      /* eslint-disable no-unused-vars */
       for (let [id, glance] of this.#glances) {
         gBrowser.removeTab(glance.tab, { animate: false });
       }
@@ -120,28 +111,24 @@
       this.contentWrapper = browser.closest('.browserStack');
     }
 
-    showSidebarButtons(animate = false) {
-      if (this.sidebarButtons.hasAttribute('hidden') && animate) {
-        const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-        this.sidebarButtons.setAttribute('right', isRightSide);
-
-        for (const button of this.sidebarButtons.querySelectorAll('toolbarbutton')) {
-          button.style.opacity = 0;
+    #createNewOverlayButtons() {
+      const newButtons = document
+        .getElementById('zen-glance-sidebar-template')
+        .content.cloneNode(true);
+      const container = newButtons.querySelector('.zen-glance-sidebar-container');
+      container.style.opacity = 0;
+      gZenUIManager.motion.animate(
+        container,
+        {
+          opacity: [0, 1],
+        },
+        {
+          duration: 0.2,
+          type: 'spring',
+          delay: 0.05,
         }
-
-        const startX = isRightSide ? -50 : 50;
-
-        gZenUIManager.motion.animate(
-          this.sidebarButtons.querySelectorAll('toolbarbutton'),
-          { x: [startX, 0], opacity: [0, 1] },
-          { delay: gZenUIManager.motion.stagger(0.1) }
-        );
-      }
-      this.sidebarButtons.removeAttribute('hidden');
-    }
-
-    hideSidebarButtons() {
-      this.sidebarButtons.setAttribute('hidden', true);
+      );
+      return newButtons;
     }
 
     openGlance(data, existingTab = null, ownerTab = null) {
@@ -162,7 +149,6 @@
 
       this.browserWrapper?.removeAttribute('animate');
       this.browserWrapper?.removeAttribute('animate-end');
-      this.browserWrapper?.removeAttribute('animate-full');
       this.browserWrapper?.removeAttribute('has-finished-animation');
       this.overlay?.removeAttribute('post-fade-out');
 
@@ -177,8 +163,9 @@
       this.browserWrapper.removeAttribute('animate-end');
       return new Promise((resolve) => {
         window.requestAnimationFrame(() => {
-          this.quickOpenGlance({ dontOpenButtons: true });
-          this.showSidebarButtons(true);
+          this.quickOpenGlance();
+          const newButtons = this.#createNewOverlayButtons();
+          this.browserWrapper.appendChild(newButtons);
 
           gZenUIManager.motion.animate(
             this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer'),
@@ -222,12 +209,13 @@
                 opacity: 1,
               },
               {
-                duration: 0.3,
+                duration: 0.4,
                 type: 'spring',
-                bounce: 0.2,
+                bounce: 0.25,
               }
             )
             .then(() => {
+              gBrowser.tabContainer._invalidateCachedTabs();
               this.#currentBrowser.removeAttribute('animate-glance-open');
               this.overlay.style.removeProperty('overflow');
               this.browserWrapper.removeAttribute('animate');
@@ -235,6 +223,7 @@
               this.browserWrapper.setAttribute('has-finished-animation', true);
               this._animating = false;
               this.animatingOpen = false;
+              this.#currentTab.dispatchEvent(new Event('GlanceOpen', { bubbles: true }));
               resolve(this.#currentTab);
             });
         });
@@ -271,8 +260,12 @@
         }
       }
 
-      if (onTabClose && hasFocused && !this.#confirmationTimeout) {
-        const cancelButton = document.getElementById('zen-glance-sidebar-close');
+      const browserSidebarContainer = this.#currentParentTab?.linkedBrowser?.closest(
+        '.browserSidebarContainer'
+      );
+      const sidebarButtons = this.browserWrapper.querySelector('.zen-glance-sidebar-container');
+      if (onTabClose && hasFocused && !this.#confirmationTimeout && sidebarButtons) {
+        const cancelButton = sidebarButtons?.querySelector('.zen-glance-sidebar-close');
         cancelButton.setAttribute('waitconfirmation', true);
         this.#confirmationTimeout = setTimeout(() => {
           cancelButton.removeAttribute('waitconfirmation');
@@ -283,9 +276,7 @@
 
       this.browserWrapper.removeAttribute('has-finished-animation');
       if (noAnimation) {
-        this._clearContainerStyles(
-          this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer')
-        );
+        this._clearContainerStyles(browserSidebarContainer);
         this.quickCloseGlance({ closeCurrentTab: false });
         return;
       }
@@ -310,9 +301,26 @@
       this.overlay.style.pointerEvents = 'none';
       this.quickCloseGlance({ justAnimateParent: true, clearID: false });
       const originalPosition = this.#glances.get(this.#currentGlanceID).originalPosition;
+      if (sidebarButtons) {
+        gZenUIManager.motion
+          .animate(
+            sidebarButtons,
+            {
+              opacity: [1, 0],
+            },
+            {
+              duration: 0.2,
+              type: 'spring',
+              bounce: 0.2,
+            }
+          )
+          .then(() => {
+            sidebarButtons.remove();
+          });
+      }
       gZenUIManager.motion
         .animate(
-          this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer'),
+          browserSidebarContainer,
           {
             scale: [0.98, 1],
             backdropFilter: ['blur(5px)', 'blur(0px)'],
@@ -325,9 +333,7 @@
           }
         )
         .then(() => {
-          this._clearContainerStyles(
-            this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer')
-          );
+          this._clearContainerStyles(browserSidebarContainer);
         });
       this.browserWrapper.style.opacity = 1;
       return new Promise((resolve) => {
@@ -353,12 +359,12 @@
             this.overlay.removeAttribute('fade-out');
             this.browserWrapper.removeAttribute('animate');
 
-            this.lastCurrentTab = this.#currentTab;
+            const lastCurrentTab = this.#currentTab;
 
             this.overlay.classList.remove('zen-glance-overlay');
             gBrowser
               ._getSwitcher()
-              .setTabStateNoAction(this.lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
+              .setTabStateNoAction(lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
 
             if (!onTabClose) {
               this.#currentParentTab._visuallySelected = false;
@@ -376,14 +382,15 @@
             this.overlay = null;
             this.contentWrapper = null;
 
-            this.lastCurrentTab.removeAttribute('zen-glance-tab');
-            this.lastCurrentTab._closingGlance = true;
+            lastCurrentTab.removeAttribute('zen-glance-tab');
+            lastCurrentTab._closingGlance = true;
 
             if (!isDifferent) {
               gBrowser.selectedTab = this.#currentParentTab;
             }
             this._ignoreClose = true;
-            gBrowser.removeTab(this.lastCurrentTab, { animate: true, skipPermitUnload: true });
+            lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));
+            gBrowser.removeTab(lastCurrentTab, { animate: true, skipPermitUnload: true });
             gBrowser.tabContainer._invalidateCachedTabs();
 
             this.#currentParentTab.removeAttribute('glance-id');
@@ -391,7 +398,6 @@
             this.#glances.delete(this.#currentGlanceID);
             this.#currentGlanceID = setNewID;
 
-            this.lastCurrentTab = null;
             this._duringOpening = false;
 
             this._animating = false;
@@ -406,14 +412,11 @@
       });
     }
 
-    quickOpenGlance({ dontOpenButtons = false } = {}) {
+    quickOpenGlance() {
       if (!this.#currentBrowser || this._duringOpening) {
         return;
       }
       this._duringOpening = true;
-      if (!dontOpenButtons) {
-        this.showSidebarButtons();
-      }
 
       const parentBrowserContainer = this.#currentParentTab.linkedBrowser.closest(
         '.browserSidebarContainer'
@@ -442,18 +445,16 @@
       clearID = true,
     } = {}) {
       const parentHasBrowser = !!this.#currentParentTab.linkedBrowser;
-      this.hideSidebarButtons();
+      const browserContainer = this.#currentParentTab.linkedBrowser.closest(
+        '.browserSidebarContainer'
+      );
       if (parentHasBrowser) {
-        this.#currentParentTab.linkedBrowser
-          .closest('.browserSidebarContainer')
-          .classList.remove('zen-glance-background');
+        browserContainer.classList.remove('zen-glance-background');
       }
       if (!justAnimateParent && this.overlay) {
         if (parentHasBrowser && !this.#currentParentTab.hasAttribute('split-view')) {
           if (closeParentTab) {
-            this.#currentParentTab.linkedBrowser
-              .closest('.browserSidebarContainer')
-              .classList.remove('deck-selected');
+            browserContainer.classList.remove('deck-selected');
           }
           this.#currentParentTab.linkedBrowser.zenModeActive = false;
         }
@@ -483,18 +484,9 @@
       }
     }
 
-    clearConfirmationTimeout() {
-      if (this.#confirmationTimeout) {
-        clearTimeout(this.#confirmationTimeout);
-        this.#confirmationTimeout = null;
-      }
-      document.getElementById('zen-glance-sidebar-close')?.removeAttribute('waitconfirmation');
-    }
-
     // note: must be sync to avoid timing issues
     onLocationChange(event) {
       const tab = event.target;
-      this.clearConfirmationTimeout();
       if (this.animatingFullOpen || this.closingGlance) {
         return;
       }
@@ -570,7 +562,7 @@
           return false;
         }
         return Services.io.newURI(url1).host !== url2.host;
-      } catch (e) {
+      } catch {
         return true;
       }
     }
@@ -615,8 +607,8 @@
     }
 
     finishOpeningGlance() {
+      gBrowser.tabContainer._invalidateCachedTabs();
       gZenWorkspaces.updateTabsContainers();
-      this.browserWrapper.removeAttribute('animate-full');
       this.overlay.classList.remove('zen-glance-overlay');
       this._clearContainerStyles(this.browserWrapper);
       this.animatingFullOpen = false;
@@ -630,10 +622,9 @@
 
       gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
+      const browserRect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper);
       this.#currentTab.removeAttribute('zen-glance-tab');
       this._clearContainerStyles(this.browserWrapper);
-      this.browserWrapper.removeAttribute('has-finished-animation');
-      this.browserWrapper.setAttribute('animate-full', true);
       this.#currentTab.removeAttribute('glance-id');
       this.#currentParentTab.removeAttribute('glance-id');
       gBrowser.selectedTab = this.#currentTab;
@@ -641,7 +632,11 @@
         .closest('.browserSidebarContainer')
         .classList.remove('zen-glance-background');
       this.#currentParentTab._visuallySelected = false;
-      this.hideSidebarButtons();
+      gBrowser.TabStateFlusher.flush(this.#currentTab.linkedBrowser);
+      const sidebarButtons = this.browserWrapper.querySelector('.zen-glance-sidebar-container');
+      if (sidebarButtons) {
+        sidebarButtons.remove();
+      }
       if (forSplit) {
         this.finishOpeningGlance();
         return;
@@ -651,6 +646,10 @@
         this.finishOpeningGlance();
         return;
       }
+      // Write the styles early to avoid flickering
+      this.browserWrapper.style.opacity = 1;
+      this.browserWrapper.style.width = `${browserRect.width}px`;
+      this.browserWrapper.style.height = `${browserRect.height}px`;
       await gZenUIManager.motion.animate(
         this.browserWrapper,
         {
@@ -658,11 +657,14 @@
           height: ['100%', '100%'],
         },
         {
-          duration: 0.4,
+          duration: 0.5,
           type: 'spring',
         }
       );
-      gZenViewSplitter.deactivateCurrentSplitView();
+      this.browserWrapper.style.width = '';
+      this.browserWrapper.style.height = '';
+      this.browserWrapper.style.opacity = '';
+      gZenViewSplitter.deactivateCurrentSplitView({ removeDeckSelected: true });
       this.finishOpeningGlance();
     }
 
@@ -748,8 +750,11 @@
     }
 
     onSearchSelectCommand(where) {
-      // Check if glance is enabled in user preferences
-      if (!Services.prefs.getBoolPref('zen.glance.enabled', false)) {
+      // Check if Glance is globally enabled and specifically enabled for contextmenu/search
+      if (
+        !Services.prefs.getBoolPref('zen.glance.enabled', false) ||
+        !Services.prefs.getBoolPref('zen.glance.enable-contextmenu-search', true)
+      ) {
         return;
       }
       if (where !== 'tab') {
@@ -778,7 +783,7 @@
     }
   }
 
-  window.gZenGlanceManager = new ZenGlanceManager();
+  window.gZenGlanceManager = new nsZenGlanceManager();
 
   function registerWindowActors() {
     gZenActorsManager.addJSWindowActor('ZenGlance', {

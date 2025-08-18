@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 64ded8fb2c08f1dbfec8fe08ab427a24b53f1169..9e1e888554279b6e1df3bc1cb907afd2ccb330ca 100644
+index 31d0ee325847834e7c58c1079225adf43d738bcd..4d2c69d4dd7e313bdb085530b3289dc9d93530a5 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
 @@ -8,7 +8,7 @@
@@ -17,8 +17,8 @@ index 64ded8fb2c08f1dbfec8fe08ab427a24b53f1169..9e1e888554279b6e1df3bc1cb907afd2
          #reader-mode-button,
 +        #zen-tabs-wrapper,
          #picture-in-picture-button,
-         #shopping-sidebar-button,
          #urlbar-zoom-button,
+         #star-button-box,
 @@ -208,6 +209,7 @@ document.addEventListener(
          case "vertical-tabs-newtab-button":
          case "tabs-newtab-button":

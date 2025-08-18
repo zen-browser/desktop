@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 if test "$ZEN_CROSS_COMPILING"; then
 
@@ -53,7 +56,6 @@ elif test "$SURFER_COMPAT" = "aarch64"; then
 fi
 
 #export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"
-export VERBOSE=1
 
 if test "$ZEN_CROSS_COMPILING"; then
   if test "$ZEN_GA_GENERATE_PROFILE"; then

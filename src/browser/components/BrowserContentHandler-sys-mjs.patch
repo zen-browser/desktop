@@ -1,8 +1,8 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index e72feb538c0dc182211945a66e51bcea73d3d4a0..b4d9115873b7af414043c53fb817b611b78ec58f 100644
+index 81f72563b93b9ce77191ad4cf200489222e0122e..40bc484301b3d66542c4171921f527c2ac6ed047 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -1281,6 +1281,7 @@ function maybeRecordToHandleTelemetry(uri, isLaunch) {
+@@ -1276,6 +1276,7 @@ function maybeRecordToHandleTelemetry(uri, isLaunch) {
        ".avif",
        ".htm",
        ".html",

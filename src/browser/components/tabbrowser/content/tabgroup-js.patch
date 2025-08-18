@@ -1,8 +1,157 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 6dc774ea335b0c5dba7dcf76cdb23728faae1343..b0b9ef236c2e8517db4bcf3270596456bbefe11d 100644
+index caea196b22b4689f55780a528661d87b52f4e728..54f3be2b115f6b3691792796f758534aec90206d 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
-@@ -301,7 +301,7 @@
+@@ -13,10 +13,12 @@
+ 
+   class MozTabbrowserTabGroup extends MozXULElement {
+     static markup = `
+-      <vbox class="tab-group-label-container" pack="center">
++      <hbox class="tab-group-label-container" pack="center">
+         <label class="tab-group-label" role="button"/>
+-      </vbox>
+-      <html:slot/>
++      </hbox>
++      <html:div class="tab-group-container">
++        <html:div class="zen-tab-group-start"/>
++      </html:div>
+       <vbox class="tab-group-overflow-count-container" pack="center">
+         <label class="tab-group-overflow-count" role="button" />
+       </vbox>
+@@ -57,20 +59,27 @@
+     }
+ 
+     connectedCallback() {
++      if (this.group && this._lastGroup != this.group) {
++        this._lastGroup = this.group;
++        this.group.dispatchEvent(
++          new CustomEvent("FolderGrouped", {
++            bubbles: true,
++            detail: this,
++          })
++        );
++      }
+       // Always set the mutation observer to listen for tab change events, even
+       // if we are already initialized.
+       // This is needed to ensure events continue to fire even if the tab group is
+       // moved from the horizontal to vertical tab layout or vice-versa, which
+       // causes the component to be repositioned in the DOM.
+-      this.#observeTabChanges();
+ 
+       // Similar to above, always set up TabSelect listener, as this gets
+       // removed in disconnectedCallback
+       this.ownerGlobal.addEventListener("TabSelect", this);
+ 
+-      if (this._initialized) {
+-        return;
+-      }
++      if (!this._initialized) {
++
+ 
+       this._initialized = true;
+       this.saveOnWindowClose = true;
+@@ -97,11 +106,10 @@
+       this.#labelElement.container = gBrowser.tabContainer;
+       this.#labelElement.group = this;
+ 
+-      this.#labelElement.addEventListener("contextmenu", e => {
+-        e.preventDefault();
+-        gBrowser.tabGroupMenu.openEditModal(this);
+-        return false;
+-      });
++      this.appendChild = function (child) {
++        this.querySelector(".tab-group-container").appendChild(child);
++      };
++
+ 
+       this.#updateLabelAriaAttributes();
+       this.#updateCollapsedAriaAttributes();
+@@ -127,6 +135,8 @@
+       // mounts after getting created by `Tabbrowser.adoptTabGroup`.
+       this.#wasCreatedByAdoption = false;
+     }
++      this.#observeTabChanges();
++    }
+ 
+     resetDefaultGroupName = () => {
+       this.#defaultGroupName = "";
+@@ -197,7 +207,10 @@
+           }
+         });
+       }
+-      this.#tabChangeObserver.observe(this, { childList: true });
++      const container = this.querySelector(".tab-group-container");
++      if (container) {
++        this.#tabChangeObserver.observe(container, { childList: true });
++      }
+     }
+ 
+     get color() {
+@@ -338,12 +351,61 @@
+           tabGroupName,
+         })
+         .then(result => {
+-          this.dataset.tooltip = result;
+         });
+     }
+ 
+     get tabs() {
+-      return Array.from(this.children).filter(node => node.matches("tab"));
++      // add other group tabs if they are under this group
++      let childs = Array.from(this.querySelector(".tab-group-container")?.children ?? []);
++      const tabsCollect = [];
++      for (let item of childs) {
++        tabsCollect.push(item);
++        if (gBrowser.isTabGroup(item)) {
++          tabsCollect.push(...item.tabs);
++        }
++      }
++      return tabsCollect.filter(node => node.matches("tab"));
++    }
++
++    get childGroupsAndTabs() {
++      const result = [];
++      const container = this.querySelector(".tab-group-container");
++
++      for (const item of Array.from(container.children)) {
++        if (gBrowser.isTab(item)) {
++          result.push(item);
++        } else if (gBrowser.isTabGroup(item)) {
++          const labelContainer = item.labelElement;
++          labelContainer.visible = item.visible;
++          if (gBrowser.isTabGroupLabel(labelContainer)) {
++            result.push(labelContainer);
++          }
++          result.push(...item.childGroupsAndTabs);
++        }
++      }
++      return result;
++    }
++
++    get group() {
++      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
++        return this.parentElement.parentElement;
++      }
++      return null;
++    }
++
++    get visible() {
++      let currentGroup = this;
++      while (currentGroup?.group) {
++        currentGroup = currentGroup?.group;
++        if (currentGroup.collapsed) {
++          return false;
++        }
++      }
++      return true;
++    }
++
++    get level() {
++      return this.group?.level + 1 || 0;
+     }
+ 
+     /**
+@@ -373,7 +435,7 @@
       */
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {
@@ -11,3 +160,20 @@ index 6dc774ea335b0c5dba7dcf76cdb23728faae1343..b0b9ef236c2e8517db4bcf3270596456
            tab.ownerGlobal.gBrowser.unpinTab(tab);
          }
          let tabToMove =
+@@ -437,7 +499,7 @@
+      */
+     on_click(event) {
+       let isToggleElement =
+-        event.target === this.#labelElement ||
++        this.labelElement.parentElement.contains(event.target) ||
+         event.target === this.#overflowCountLabel;
+       if (isToggleElement && event.button === 0) {
+         event.preventDefault();
+@@ -470,5 +532,6 @@
+     }
+   }
+ 
++  window.MozTabbrowserTabGroup = MozTabbrowserTabGroup;
+   customElements.define("tab-group", MozTabbrowserTabGroup);
+ }
+

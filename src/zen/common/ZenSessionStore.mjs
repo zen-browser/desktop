@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenSessionStore extends ZenPreloadedFeature {
+  class ZenSessionStore extends nsZenPreloadedFeature {
     init() {
       this.#waitAndCleanup();
     }
@@ -17,9 +17,6 @@
       }
       if (tabData.zenPinnedId) {
         tab.setAttribute('zen-pin-id', tabData.zenPinnedId);
-      }
-      if (tabData.zenIsEmpty) {
-        tab.setAttribute('zen-empty-tab', 'true');
       }
       if (tabData.zenHasStaticLabel) {
         tab.setAttribute('zen-has-static-label', 'true');

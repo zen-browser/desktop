@@ -4,7 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 @import url('chrome://browser/content/zen-styles/zen-panels/bookmarks.css');
-@import url('chrome://browser/content/zen-styles/zen-panels/extensions.css');
 @import url('chrome://browser/content/zen-styles/zen-panels/print.css');
 @import url('chrome://browser/content/zen-styles/zen-panels/dialog.css');
 
@@ -40,8 +39,13 @@
 menupopup,
 panel {
   --panel-background: var(--arrowpanel-background);
-  --panel-border-radius: var(--zen-native-inner-radius);
   --menuitem-padding: 6px !important;
+  --panel-shadow-margin: 10px;
+
+  /* This should match GetMenuMaskImage() on macOS, or be overridden below */
+  @media (-moz-platform: macos) {
+    --panel-border-radius: 10px;
+  }
 }
 
 /* split-view popup */
@@ -369,14 +373,12 @@ menuseparator {
       var(--zen-primary-color) -40%,
       color-mix(in srgb, var(--zen-primary-color) 85%, #0f0f0f 15%)
     );
-    color: var(--button-primary-color);
     box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
     display: flex;
     font-weight: 600;
     align-items: center;
     width: max-content;
-    font-size: small;
     position: absolute;
     transform-origin: top center;
     max-height: var(--zen-toast-max-height);
@@ -394,12 +396,14 @@ menuseparator {
     }
 
     & button {
-      color-scheme: dark;
       width: min-content;
       padding: 0 10px !important;
       min-width: unset !important;
       margin: 0px !important;
       border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
+      color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
 
       :root[zen-right-side='true'] & {
         order: -1;
@@ -415,4 +419,8 @@ menuseparator {
 .downloadButton {
   padding: 0 !important;
   min-width: unset !important;
+}
+
+#window-modal-dialog {
+  inset: 0;
 }

@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 // Utility to register JSWindowActors
 
-var gZenActorsManager = {
+window.gZenActorsManager = {
   _actors: new Set(),
   _lazy: {},
 

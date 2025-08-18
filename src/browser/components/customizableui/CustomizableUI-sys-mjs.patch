@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361efac34729 100644
+index 8c9b11d0c1ce7ae016889950e92b3adda318235c..ba81498aa16ce844a8d189c047f596d1969f4fed 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -10,7 +10,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
    HomePage: "resource:///modules/HomePage.sys.mjs",
    PanelMultiView: "resource:///modules/PanelMultiView.sys.mjs",
    PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-@@ -331,20 +332,14 @@ var CustomizableUIInternal = {
+@@ -331,19 +332,14 @@ var CustomizableUIInternal = {
        "back-button",
        "forward-button",
        "stop-reload-button",
@@ -21,7 +21,6 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
        "vertical-spacer",
        "urlbar-container",
        "spring",
--      "save-to-pocket-button",
 -      "downloads-button",
        AppConstants.MOZ_DEV_EDITION ? "developer-button" : null,
 -      "fxa-toolbar-menu-button",
@@ -32,7 +31,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      this.registerArea(
        CustomizableUI.AREA_NAVBAR,
        {
-@@ -352,8 +347,6 @@ var CustomizableUIInternal = {
+@@ -351,8 +347,6 @@ var CustomizableUIInternal = {
          overflowable: true,
          defaultPlacements: navbarPlacements,
          verticalTabsDefaultPlacements: [
@@ -41,7 +40,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
          ],
          defaultCollapsed: false,
        },
-@@ -377,10 +370,7 @@ var CustomizableUIInternal = {
+@@ -376,10 +370,7 @@ var CustomizableUIInternal = {
        {
          type: CustomizableUI.TYPE_TOOLBAR,
          defaultPlacements: [
@@ -52,7 +51,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
          ],
          verticalTabsDefaultPlacements: [],
          defaultCollapsed: null,
-@@ -462,6 +452,7 @@ var CustomizableUIInternal = {
+@@ -461,6 +452,7 @@ var CustomizableUIInternal = {
        CustomizableUI.AREA_NAVBAR,
        CustomizableUI.AREA_BOOKMARKS,
        CustomizableUI.AREA_TABSTRIP,
@@ -60,7 +59,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      ]);
      if (AppConstants.platform != "macosx") {
        toolbars.add(CustomizableUI.AREA_MENUBAR);
-@@ -1262,6 +1253,9 @@ var CustomizableUIInternal = {
+@@ -1245,6 +1237,9 @@ var CustomizableUIInternal = {
          placements = gPlacements.get(area);
        }
  
@@ -70,7 +69,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
        // For toolbars that need it, mark as dirty.
        let defaultPlacements = areaProperties.get("defaultPlacements");
        if (
-@@ -1769,7 +1763,7 @@ var CustomizableUIInternal = {
+@@ -1752,7 +1747,7 @@ var CustomizableUIInternal = {
          lazy.log.info(
            "Widget " + aWidgetId + " not found, unable to remove from " + aArea
          );
@@ -79,7 +78,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
        }
  
        this.notifyDOMChange(widgetNode, null, container, true, () => {
-@@ -1779,7 +1773,7 @@ var CustomizableUIInternal = {
+@@ -1762,7 +1757,7 @@ var CustomizableUIInternal = {
          // We also need to remove the panel context menu if it's there:
          this.ensureButtonContextMenu(widgetNode);
          if (gPalette.has(aWidgetId) || this.isSpecialWidget(aWidgetId)) {
@@ -88,7 +87,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
          } else {
            window.gNavToolbox.palette.appendChild(widgetNode);
          }
-@@ -1947,16 +1941,16 @@ var CustomizableUIInternal = {
+@@ -1930,16 +1925,16 @@ var CustomizableUIInternal = {
          elem.setAttribute("skipintoolbarset", "true");
        }
      }
@@ -108,7 +107,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      // Handle initial state of vertical tabs.
      if (isVerticalTabs) {
        // Show the vertical tabs toolbar
-@@ -2198,6 +2192,10 @@ var CustomizableUIInternal = {
+@@ -2181,6 +2176,10 @@ var CustomizableUIInternal = {
     *   The identifier string of the area that aNode is being inserted into.
     */
    insertWidgetBefore(aNode, aNextNode, aContainer, aAreaId) {
@@ -119,7 +118,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      this.notifyDOMChange(aNode, aNextNode, aContainer, false, () => {
        this.setLocationAttributes(aNode, aAreaId);
        aContainer.insertBefore(aNode, aNextNode);
-@@ -3321,7 +3319,6 @@ var CustomizableUIInternal = {
+@@ -3301,7 +3300,6 @@ var CustomizableUIInternal = {
      if (!this.isWidgetRemovable(aWidgetId)) {
        return;
      }
@@ -127,7 +126,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      let placements = gPlacements.get(oldPlacement.area);
      let position = placements.indexOf(aWidgetId);
      if (position != -1) {
-@@ -4556,7 +4553,7 @@ var CustomizableUIInternal = {
+@@ -4536,7 +4534,7 @@ var CustomizableUIInternal = {
     * For all registered areas, builds those areas to reflect the current
     * placement state of all widgets.
     */
@@ -136,7 +135,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      for (let [areaId, areaNodes] of gBuildAreas) {
        let placements = gPlacements.get(areaId);
        let isFirstChangedToolbar = true;
-@@ -4567,7 +4564,7 @@ var CustomizableUIInternal = {
+@@ -4547,7 +4545,7 @@ var CustomizableUIInternal = {
          if (area.get("type") == CustomizableUI.TYPE_TOOLBAR) {
            let defaultCollapsed = area.get("defaultCollapsed");
            let win = areaNode.ownerGlobal;
@@ -145,7 +144,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
              win.setToolbarVisibility(
                areaNode,
                typeof defaultCollapsed == "string"
-@@ -5858,6 +5855,7 @@ export var CustomizableUI = {
+@@ -5838,6 +5836,7 @@ export var CustomizableUI = {
    unregisterArea(aName, aDestroyPlacements) {
      CustomizableUIInternal.unregisterArea(aName, aDestroyPlacements);
    },
@@ -153,7 +152,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
    /**
     * Add a widget to an area.
     * If the area to which you try to add is not known to CustomizableUI,
-@@ -7905,11 +7903,11 @@ class OverflowableToolbar {
+@@ -7885,11 +7884,11 @@ class OverflowableToolbar {
          parseFloat(style.paddingLeft) -
          parseFloat(style.paddingRight) -
          toolbarChildrenWidth;
@@ -167,7 +166,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      });
  
      lazy.log.debug(
-@@ -7919,7 +7917,8 @@ class OverflowableToolbar {
+@@ -7899,7 +7898,8 @@ class OverflowableToolbar {
      // If the target has min-width: 0, their children might actually overflow
      // it, so check for both cases explicitly.
      let targetContentWidth = Math.max(targetWidth, targetChildrenWidth);
@@ -177,7 +176,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
      return { isOverflowing, targetContentWidth, totalAvailWidth };
    }
  
-@@ -8013,7 +8012,7 @@ class OverflowableToolbar {
+@@ -7993,7 +7993,7 @@ class OverflowableToolbar {
          }
        }
        if (!inserted) {
@@ -186,7 +185,7 @@ index 5bb6be19f7f855b129aac921af1ed5cfc63d732b..41230a61f3088a234903dcc10abd361e
        }
        child.removeAttribute("cui-anchorid");
        child.removeAttribute("overflowedItem");
-@@ -8358,7 +8357,7 @@ class OverflowableToolbar {
+@@ -8338,7 +8338,7 @@ class OverflowableToolbar {
          break;
        }
        case "mousedown": {

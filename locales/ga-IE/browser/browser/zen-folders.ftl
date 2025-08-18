@@ -1,0 +1,15 @@
+zen-folders-search-placeholder = 
+    .placeholder = Cuardaigh { $folder-name }...
+zen-folders-panel-rename-folder = 
+    .label = Athainmnigh Fillteán
+zen-folders-panel-expand-folder = 
+    .label = Leathnaigh an Fillteán
+zen-folders-panel-delete-folder = 
+    .label = Scrios Fillteán
+zen-folders-panel-convert-folder-to-space = 
+    .label = Tiontaigh fillteán go Spás
+zen-folders-panel-change-folder-space = 
+    .label = Athraigh Spás...
+zen-folders-panel-change-icon-folder = 
+    .label = Athraigh Deilbhín
+zen-folders-search-no-results = Níl aon chluaisíní ann a mheaitseálann an cuardach sin 🤔

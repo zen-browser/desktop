@@ -46,14 +46,18 @@ var ZenThemeModifier = {
       Services.prefs.addObserver(pref, handleEvent);
     }
 
-    window.addEventListener('unload', () => {
-      for (let pref of kZenThemePrefsList) {
-        Services.prefs.removeObserver(pref, handleEvent);
-      }
-    });
+    window.addEventListener(
+      'unload',
+      () => {
+        for (let pref of kZenThemePrefsList) {
+          Services.prefs.removeObserver(pref, handleEvent);
+        }
+      },
+      { once: true }
+    );
   },
 
-  handleEvent(event) {
+  handleEvent() {
     // note: even might be undefined, but we shoudnt use it!
     this.updateAllThemeBasics();
   },

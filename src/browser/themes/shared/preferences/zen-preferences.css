@@ -136,16 +136,6 @@ groupbox h2 {
   left: 0;
 }
 
-#searchInput {
-  width: 100% !important;
-  border: none;
-  outline: none;
-  min-height: 40px;
-  border-radius: 10px;
-  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  padding-inline: 15px;
-}
-
 .textbox-search-sign {
   margin-right: 15px;
 }
@@ -247,37 +237,6 @@ groupbox h2 {
     border-radius: 5px;
     box-shadow: var(--zen-compact-mode-styles-shadow);
   }
-}
-
-.zenLooksAndFeelColorOption {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--zen-primary-color);
-  position: relative;
-  overflow: hidden;
-}
-
-.zenLooksAndFeelColorOption::before {
-  content: '';
-  display: block;
-  width: 50%;
-  height: 50%;
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  background: var(--zen-colors-secondary);
-}
-
-.zenLooksAndFeelColorOption::after {
-  content: '';
-  display: block;
-  width: 50%;
-  height: 50%;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  background: var(--zen-colors-tertiary);
 }
 
 /* Workspace */
@@ -622,11 +581,18 @@ groupbox h2 {
 #dataCollectionCategory,
 #dataCollectionGroup,
 #websiteAdvertisingCategory,
-#websiteAdvertisingGroup {
+#websiteAdvertisingGroup,
+#helpButton {
   display: none !important;
 }
 
 .sync-engine-workspaces .checkbox-icon,
 .sync-engine-workspaces.sync-engine-image {
   list-style-image: url('chrome://devtools/skin/images/tool-storage.svg');
+}
+
+@media -moz-pref('zen.theme.disable-lightweight') {
+  html|div[data-l10n-id='preferences-web-appearance-footer'] {
+    display: none;
+  }
 }

@@ -1,12 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 unset MOZ_STDCXX_COMPAT
 
 ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
-# override LTO settings
-# TODO: Dont use LTO for now, it's causing a lot of issues
-export MOZ_LTO=cross,thin
-ac_add_options --enable-lto=cross,thin
+if test "$ZEN_RELEASE"; then
+  # override LTO settings
+  # TODO: Dont use LTO for now, it's causing a lot of issues
+  export MOZ_LTO=cross,thin
+  ac_add_options --enable-lto=cross,thin
+fi
 
 if test "$ZEN_RELEASE"; then
   if test "$ZEN_GA_DISABLE_PGO"; then
@@ -18,8 +24,9 @@ if test "$ZEN_RELEASE"; then
 fi
 
 if test "$SURFER_COMPAT" = "x86_64"; then
-    ac_add_options --target=x86_64-apple-darwin
+  ac_add_options --target=x86_64-apple-darwin
 
+  if test "$ZEN_RELEASE"; then
     ac_add_options --enable-wasm-avx
     ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O3 -w"
 
@@ -28,10 +35,12 @@ if test "$SURFER_COMPAT" = "x86_64"; then
     export CXXFLAGS="-O3 -march=nehalem"
     export LDFLAGS="-Wl,-O3 -march=nehalem"
     export RUSTFLAGS="-Ctarget-cpu=nehalem"
+  fi
 else
-    ac_add_options --enable-clang-plugin
-    ac_add_options --target=aarch64-apple-darwin
+  ac_add_options --enable-clang-plugin
+  ac_add_options --target=aarch64-apple-darwin
 
+  if test "$ZEN_RELEASE"; then
     ac_add_options --enable-optimize="-O3 -mcpu=apple-m1 -march=armv8.3-a+simd"
 
     # As of Clang 13, the default is -mcpu=apple-m1 when using a aarch64-apple-macos target,
@@ -42,11 +51,5 @@ else
     export CXXFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
     export LDFLAGS="-Wl,-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
     export RUSTFLAGS="-C target-feature=+v8.3a -Ctarget-cpu=apple-m1"
+  fi
 fi
-
-export VERBOSE=1
-
-# Enable polly for macos, since they have a more stable set of GPU drivers,
-# unlike Linux, which has a lot of different drivers.
-# Edit: let's run some experiments, see if RAM usage lowers significantly
-# export POLLY="-mllvm -polly -mllvm -polly-2nd-level-tiling -mllvm -polly-loopfusion-greedy -mllvm -polly-pattern-matching-based-opts -mllvm -polly-position=before-vectorizer -mllvm -polly-vectorizer=stripmine"

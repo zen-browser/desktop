@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenWorkspaceIcons extends MozXULElement {
+  class nsZenWorkspaceIcons extends MozXULElement {
     constructor() {
       super();
     }
@@ -14,6 +14,87 @@
 
       this._hasConnected = true;
       window.addEventListener('ZenWorkspacesUIUpdate', this, true);
+
+      this.initDragAndDrop();
+      this.addEventListener('mouseover', (e) => {
+        if (this.isReorderMode) {
+          return;
+        }
+        const target = e.target.closest('toolbarbutton[zen-workspace-id]');
+        if (target) {
+          this.scrollLeft = target.offsetLeft - 10;
+        }
+      });
+    }
+
+    initDragAndDrop() {
+      let dragStart = 0;
+      let draggedTab = null;
+
+      this.addEventListener('mousedown', (e) => {
+        const target = e.target.closest('toolbarbutton[zen-workspace-id]');
+        if (!target || e.button != 0 || e.ctrlKey || e.shiftKey || e.altKey) {
+          return;
+        }
+
+        const isVertical = document.documentElement.getAttribute('zen-sidebar-expanded') != 'true';
+        const clientPos = isVertical ? 'clientY' : 'clientX';
+
+        this.isReorderMode = false;
+        dragStart = e[clientPos];
+        draggedTab = target;
+        draggedTab.setAttribute('dragged', 'true');
+
+        e.stopPropagation();
+
+        const mouseMoveHandler = (moveEvent) => {
+          if (Math.abs(moveEvent[clientPos] - dragStart) > 5) {
+            this.isReorderMode = true;
+          }
+
+          if (this.isReorderMode) {
+            const tabs = [...this.children];
+            const mouse = moveEvent[clientPos];
+
+            for (const tab of tabs) {
+              if (tab === draggedTab) continue;
+              const rect = tab.getBoundingClientRect();
+              if (
+                mouse > rect[isVertical ? 'top' : 'left'] &&
+                mouse < rect[isVertical ? 'bottom' : 'right']
+              ) {
+                const nextSibling = draggedTab.nextSibling;
+                if (
+                  mouse <
+                  rect[isVertical ? 'top' : 'left'] + rect[isVertical ? 'height' : 'width'] / 2
+                ) {
+                  this.insertBefore(draggedTab, tab);
+                } else {
+                  this.insertBefore(draggedTab, tab.nextSibling);
+                }
+                if (nextSibling !== draggedTab.nextSibling) {
+                  Services.zen.playHapticFeedback();
+                }
+              }
+            }
+          }
+        };
+
+        const mouseUpHandler = () => {
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+
+          draggedTab.removeAttribute('dragged');
+
+          this.reorderWorkspaceToIndex(draggedTab, Array.from(this.children).indexOf(draggedTab));
+
+          draggedTab = null;
+          this.isReorderMode = false;
+        };
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+      });
     }
 
     #createWorkspaceIcon(workspace) {
@@ -21,14 +102,25 @@
       button.setAttribute('class', 'subviewbutton');
       button.setAttribute('tooltiptext', workspace.name);
       button.setAttribute('zen-workspace-id', workspace.uuid);
+      button.setAttribute('context', 'zenWorkspaceMoreActions');
       const icon = document.createXULElement('label');
       icon.setAttribute('class', 'zen-workspace-icon');
+      const isSvgIcon = workspace.icon && workspace.icon.endsWith('.svg');
       if (gZenWorkspaces.workspaceHasIcon(workspace)) {
-        icon.textContent = workspace.icon;
+        if (isSvgIcon) {
+          const image = document.createElement('img');
+          image.src = workspace.icon;
+          image.classList.add('zen-workspace-icon');
+          button.appendChild(image);
+        } else {
+          icon.textContent = workspace.icon;
+        }
       } else {
         icon.setAttribute('no-icon', true);
       }
-      button.appendChild(icon);
+      if (!isSvgIcon) {
+        button.appendChild(icon);
+      }
       button.addEventListener('command', this);
       return button;
     }
@@ -45,6 +137,7 @@
       } else {
         this.removeAttribute('dont-show');
       }
+      gZenWorkspaces.onWindowResize();
     }
 
     on_command(event) {
@@ -76,6 +169,7 @@
         i++;
       }
       buttons[selected].setAttribute('active', true);
+      this.scrollLeft = buttons[selected].offsetLeft - 10;
       this.setAttribute('selected', selected);
     }
 
@@ -91,7 +185,26 @@
       }
       return null;
     }
+
+    get isReorderMode() {
+      return this.hasAttribute('reorder-mode');
+    }
+
+    set isReorderMode(value) {
+      if (value) {
+        this.setAttribute('reorder-mode', 'true');
+      } else {
+        this.removeAttribute('reorder-mode');
+        this.style.removeProperty('--zen-workspace-icon-width');
+        this.style.removeProperty('--zen-workspace-icon-height');
+      }
+    }
+
+    reorderWorkspaceToIndex(draggedTab, index) {
+      const workspaceId = draggedTab.getAttribute('zen-workspace-id');
+      gZenWorkspaces.reorderWorkspace(workspaceId, index);
+    }
   }
 
-  customElements.define('zen-workspace-icons', ZenWorkspaceIcons);
+  customElements.define('zen-workspace-icons', nsZenWorkspaceIcons);
 }

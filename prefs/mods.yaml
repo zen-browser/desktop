@@ -1,0 +1,28 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.mods.updated-value-observer
+  value: false
+
+- name: zen.mods.auto-update-days
+  value: 20 # In days
+
+- name: zen.mods.auto-update
+  value: '@cond'
+  condition: 'defined(MOZILLA_OFFICIAL)'
+
+- name: zen.rice.share.notice.accepted
+  value: false
+
+# === Mark: Site Injection ===
+
+- name: zen.injections.match-urls
+  value: 'https://zen-browser.app/*'
+  locked: true
+  condition: 'defined(MOZILLA_OFFICIAL)'
+
+- name: zen.injections.match-urls
+  value: 'http://localhost/*'
+  locked: true
+  condition: '!defined(MOZILLA_OFFICIAL)'

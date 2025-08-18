@@ -36,19 +36,45 @@ body > #confetti {
   min-height: 30px;
 }
 
+/* Firefox View */
+#firefox-view-button {
+  display: none !important;
+}
+
 /* Emojis picker */
 
 #PanelUI-zen-emojis-picker {
   --panel-width: 250px;
-  --panel-padding: 10px;
-
-  &::part(content) {
-    gap: 15px;
-  }
+  --panel-padding: 0px;
 
   #PanelUI-zen-emojis-picker-header {
     gap: 10px;
     align-items: center;
+    padding: 0px 10px;
+    padding-bottom: 6px;
+  }
+
+  #PanelUI-zen-emojis-picker-pages {
+    overflow: hidden;
+    max-height: 230px;
+
+    & > * {
+      min-width: 100%;
+    }
+  }
+
+  &[only-svg-icons='true'] {
+    & #PanelUI-zen-emojis-picker-change-emojis {
+      display: none;
+    }
+
+    & #PanelUI-zen-emojis-picker-change-svg {
+      pointer-events: none;
+    }
+
+    & #PanelUI-zen-emojis-picker-pages > vbox[emojis='true'] {
+      display: none;
+    }
   }
 
   #PanelUI-zen-emojis-picker-none label {
@@ -57,36 +83,101 @@ body > #confetti {
 
   #PanelUI-zen-emojis-picker-search {
     padding: 4px;
+    width: 100%;
   }
 
-  #PanelUI-zen-emojis-picker-list {
-    flex-wrap: wrap;
-    max-height: 265px;
+  #PanelUI-zen-picker-header {
+    padding: 6px 16px;
+    justify-content: space-between;
+
+    & > toolbarbutton:first-of-type {
+      pointer-events: none;
+    }
+
+    & #PanelUI-zen-emojis-buttons-wrapper {
+      gap: 4px;
+
+      & toolbarbutton {
+        appearance: none;
+        font-size: small;
+        padding: 0 6px;
+        border-radius: 4px;
+        font-weight: 600;
+
+        &:hover {
+          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+        }
+
+        &.selected {
+          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+        }
+      }
+    }
+  }
+
+  #PanelUI-zen-emojis-picker-list,
+  #PanelUI-zen-emojis-picker-svgs {
     overflow-y: auto;
     overflow-x: hidden;
+    width: 100%;
+
+    padding: 10px;
+    padding-top: 5px;
 
     gap: 5px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
 
     .zen-emojis-picker-emoji {
-      appearance: none;
       font-size: 14px;
+      padding: 0px !important;
       & image {
         display: none;
+      }
+    }
+
+    .zen-emojis-picker-svg {
+      padding: 0px !important;
+      & label {
+        display: none;
+      }
+
+      & .toolbarbutton-icon {
+        width: 22px;
       }
     }
   }
 
   .zen-emojis-picker-emoji,
+  .zen-emojis-picker-svg,
   #PanelUI-zen-emojis-picker-none {
     width: 22px;
     height: 22px;
+    appearance: none;
 
     &:hover {
       background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
       border-radius: 4px;
       cursor: pointer;
     }
+  }
+}
+
+.toolbarbutton-1 {
+  :root:is([zen-single-toolbar='true'], :not([zen-sidebar-expanded='true']))
+    #zen-sidebar-top-buttons-customization-target
+    &,
+  #zen-sidebar-foot-buttons & {
+    --tab-border-radius: 6px;
+    --toolbarbutton-border-radius: var(--tab-border-radius);
+    --toolbarbutton-inner-padding: 5px;
+    --toolbarbutton-outer-padding: 2px;
+  }
+
+  transition:
+    background-color 0.1s,
+    scale 0.2s;
+  &:active {
+    transform: scale(0.98);
   }
 }

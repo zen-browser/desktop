@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import os
 import shutil
 import sys
@@ -27,7 +31,7 @@ def copy_browser_locales(lang_id: str):
           os.remove(os.path.join(root, file))
 
     # Copy files from the source directory
-    source_path = "./l10n/en-US/browser/"
+    source_path = "./locales/en-US/browser/"
     copy_files(source_path, lang_path)
     return
 
@@ -35,7 +39,7 @@ def copy_browser_locales(lang_id: str):
   if os.path.exists(lang_path):
     shutil.rmtree(lang_path)  # Remove existing directory
 
-  source_path = f"./l10n/{lang_id}/"
+  source_path = f"./locales/{lang_id}/"
   copy_files(source_path, lang_path)
 
 

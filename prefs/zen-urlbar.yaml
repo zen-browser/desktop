@@ -1,0 +1,24 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.urlbar.replace-newtab
+  value: true
+
+- name: zen.urlbar.show-protections-icon
+  value: false
+
+- name: zen.urlbar.behavior
+  value: floating-on-type
+
+- name: zen.urlbar.wait-to-clear
+  value: 45000
+
+- name: zen.urlbar.show-domain-only-in-sidebar
+  value: true
+
+- name: zen.urlbar.hide-one-offs
+  value: true
+
+- name: zen.urlbar.enable-overrides
+  value: false

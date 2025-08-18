@@ -121,12 +121,11 @@
       const iconData = await getIconData(site[2]);
       await setCachedFaviconForURL(site[0], iconData);
       gBrowser.setIcon(tab, iconData);
-      tab.removeAttribute('pending'); // Make it appear loaded
       _tabsToPin.push(tab);
     }
   }
 
-  class ZenWelcomePages {
+  class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
       this._pages = pages;
@@ -161,6 +160,7 @@
     async fadeInButtons(page) {
       const buttons = document.getElementById('zen-welcome-page-sidebar-buttons');
       let i = 0;
+      const insertedButtons = [];
       for (const button of page.buttons) {
         const buttonElement = document.createXULElement('button');
         document.l10n.setAttributes(buttonElement, button.l10n);
@@ -174,6 +174,8 @@
             this.next();
           }
         });
+        buttonElement.style.pointerEvents = 'none'; // Disable pointer events until animation is done
+        insertedButtons.push(buttonElement);
         buttons.appendChild(buttonElement);
       }
       await animate(
@@ -185,6 +187,9 @@
           bounce: 0.2,
         }
       );
+      for (const button of insertedButtons) {
+        button.style.pointerEvents = ''; // Enable pointer events after animation
+      }
     }
 
     async fadeInContent() {
@@ -292,6 +297,10 @@
         tab.removeAttribute('pending'); // Make it appear loaded
         gZenPinnedTabManager.addToEssentials(tab);
       }
+      gZenFolders.createFolder(_tabsToPin, {
+        renameFolder: false,
+        label: 'Zen Basics',
+      });
     }
 
     async animHeart() {
@@ -427,7 +436,7 @@
             'zen-welcome-set-default-browser'
           ).checked;
           if (AppConstants.HAVE_SHELL_SERVICE && shouldSetDefault) {
-            let shellSvc = getShellService();
+            let shellSvc = window.getShellService();
             if (!shellSvc) {
               return;
             }
@@ -723,17 +732,6 @@
       }
     );
     const button = document.getElementById('zen-welcome-start-button');
-    await animate(
-      button,
-      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
-      {
-        delay: 0.1,
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-        mass: 1.8,
-      }
-    );
     button.addEventListener('click', async () => {
       await animate(
         '#zen-welcome-title span, #zen-welcome-start-button',
@@ -745,8 +743,19 @@
           delay: getMotion().stagger(0.4),
         }
       );
-      new ZenWelcomePages(getWelcomePages());
+      new nsZenWelcomePages(getWelcomePages());
     });
+    await animate(
+      button,
+      { opacity: [0, 1], y: [20, 0], filter: ['blur(2px)', 'blur(0px)'] },
+      {
+        delay: 0.1,
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+        mass: 1.8,
+      }
+    );
   }
 
   function centerWindowOnScreen() {

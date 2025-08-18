@@ -1,5 +1,5 @@
 diff --git a/browser/themes/BuiltInThemeConfig.sys.mjs b/browser/themes/BuiltInThemeConfig.sys.mjs
-index a5361f1f0ec57f575f8d76e118ff762dc7547501..db5c5eb2059b4ceef3911fd807bf985408859d1a 100644
+index 28b254d5757caf35c4ba755ef4cfed44bab5af00..660f517e0e3342970c6e30837fcf4d0adf360777 100644
 --- a/browser/themes/BuiltInThemeConfig.sys.mjs
 +++ b/browser/themes/BuiltInThemeConfig.sys.mjs
 @@ -33,11 +33,4 @@ export const BuiltInThemeConfig = new Map([

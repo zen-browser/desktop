@@ -1,8 +1,8 @@
 diff --git a/Cargo.lock b/Cargo.lock
-index f7ebed9b2a71da90c5751cfd5d5f018cc8b73612..96e881c7782198f1e58be2578f167c7079a8191e 100644
+index fe4eff865884fb79983f636861897648c36491b5..a9516246ffacfd50b7e4198967bebb71b2c73eca 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -4014,8 +4014,6 @@ dependencies = [
+@@ -4067,8 +4067,6 @@ dependencies = [
  [[package]]
  name = "mime_guess"
  version = "2.0.4"

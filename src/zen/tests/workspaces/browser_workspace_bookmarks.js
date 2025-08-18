@@ -3,10 +3,10 @@
 
 'use strict';
 
-function getToolbarNodeForItemGuid(aItemGuid) {
+function getToolbarNodeForItemGuid(aItemTitle) {
   var children = document.getElementById('PlacesToolbarItems').children;
   for (let child of children) {
-    if (aItemGuid == child._placesNode.bookmarkGuid) {
+    if (aItemTitle == child._placesNode.title) {
       return child;
     }
   }
@@ -30,7 +30,8 @@ function promiseSetToolbarVisibility(aToolbar, aVisible) {
 }
 
 async function changeWorkspaceForBookmark(aBookmark, aWorkspace) {
-  const toolbarNode = getToolbarNodeForItemGuid(aBookmark.guid);
+  const toolbarNode = getToolbarNodeForItemGuid(aBookmark.title);
+  ok(toolbarNode, 'Toolbar node should be found');
   await withBookmarksDialog(
     false,
     async function openPropertiesDialog() {
@@ -98,9 +99,6 @@ add_setup(async function () {
 });
 
 add_task(async function test_workspace_bookmark() {
-  todo(false, 'Properly implement this function');
-  return;
-
   await withBookmarksShowing(async () => {
     await gZenWorkspaces.createAndSaveWorkspace('Test Workspace 2');
     const workspaces = await gZenWorkspaces._workspaces();
@@ -112,40 +110,47 @@ add_task(async function test_workspace_bookmark() {
       'The new workspace should be different from the current one.'
     );
 
+    await gZenWorkspaces.changeWorkspaceWithID(firstWorkspace.uuid);
+
     const bookmark1 = await PlacesUtils.bookmarks.insert({
       parentGuid: PlacesUtils.bookmarks.toolbarGuid,
       title: 'workspace1',
       url: Services.io.newURI('https://example.com/'),
-      workspaces: [firstWorkspace.uuid],
     });
 
     await changeWorkspaceForBookmark(bookmark1, firstWorkspace);
 
+    await new Promise((resolve) => setTimeout(resolve, 100));
     const bookmark2 = await PlacesUtils.bookmarks.insert({
       parentGuid: PlacesUtils.bookmarks.toolbarGuid,
       title: 'workspace2',
       url: Services.io.newURI('https://example.com/'),
-      workspaces: [secondWorkspace.uuid],
     });
 
     await changeWorkspaceForBookmark(bookmark2, secondWorkspace);
 
     await gZenWorkspaces.changeWorkspace(secondWorkspace);
-    const toolbarNode1 = getToolbarNodeForItemGuid(bookmark1.guid);
-    const toolbarNode2 = getToolbarNodeForItemGuid(bookmark2.guid);
-    ok(toolbarNode1, 'Bookmark1 should be in the toolbar');
-    ok(!toolbarNode2, 'Bookmark2 should be in the toolbar');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const toolbarNode1 = getToolbarNodeForItemGuid(bookmark1.title);
+    const toolbarNode2 = getToolbarNodeForItemGuid(bookmark2.title);
+    ok(!toolbarNode1, 'Bookmark1 should not be in the toolbar');
+    ok(toolbarNode2, 'Bookmark2 should be in the toolbar');
 
     await gZenWorkspaces.changeWorkspace(firstWorkspace);
-
-    const toolbarNode3 = getToolbarNodeForItemGuid(bookmark1.guid);
-    const toolbarNode4 = getToolbarNodeForItemGuid(bookmark2.guid);
-    ok(!toolbarNode3, 'Bookmark1 should be in the toolbar');
-    ok(toolbarNode4, 'Bookmark2 should be in the toolbar');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const toolbarNode3 = getToolbarNodeForItemGuid(bookmark1.title);
+    const toolbarNode4 = getToolbarNodeForItemGuid(bookmark2.title);
+    ok(toolbarNode3, 'Bookmark1 should be in the toolbar');
+    ok(!toolbarNode4, 'Bookmark2 should not be in the toolbar');
 
     await PlacesUtils.bookmarks.remove(bookmark1);
     await PlacesUtils.bookmarks.remove(bookmark2);
 
     await gZenWorkspaces.removeWorkspace(secondWorkspace.uuid);
+    Assert.equal(
+      (await gZenWorkspaces._workspaces()).workspaces.length,
+      1,
+      'Only one workspace should remain after removing the second one.'
+    );
   });
 });

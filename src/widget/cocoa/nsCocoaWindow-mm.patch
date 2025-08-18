@@ -1,0 +1,13 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index f753a7a8bf132044060bdcd7bf14b134ca785f4a..ec1f2b26ea2bc178c66c386dc078d6a8f2ec3423 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -7398,7 +7398,7 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+ 
+ // Returns an autoreleased NSImage.
+ static NSImage* GetMenuMaskImage() {
+-  const CGFloat radius = 6.0f;
++  const CGFloat radius = 10.0f;
+   const NSSize maskSize = {radius * 3.0f, radius * 3.0f};
+   NSImage* maskImage = [NSImage imageWithSize:maskSize
+                                       flipped:FALSE

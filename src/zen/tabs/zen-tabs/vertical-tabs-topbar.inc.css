@@ -35,6 +35,11 @@ z-index: 1;
       opacity: 0;
       pointer-events: none;
     }
+
+    & .titlebar-button {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
   }
 
   @media -moz-pref('zen.view.experimental-no-window-controls') {

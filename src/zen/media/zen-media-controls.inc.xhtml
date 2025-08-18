@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 <toolbar id="zen-media-controls-toolbar"
   class="browser-toolbar customization-target zen-sidebar-toolbar"
   context="toolbar-context-menu"
@@ -29,12 +33,14 @@
       <hbox id="zen-media-controls-hbox">
         <toolbarbutton id="zen-media-focus-button"
           class="toolbarbutton-1" />
-        <toolbarbutton id="zen-media-previoustrack-button"
-          class="toolbarbutton-1" />
-        <toolbarbutton id="zen-media-playpause-button"
-          class="toolbarbutton-1" />
-        <toolbarbutton id="zen-media-nexttrack-button"
-          class="toolbarbutton-1" />
+        <hbox id="zen-media-playback-buttons">
+          <toolbarbutton id="zen-media-previoustrack-button"
+            class="toolbarbutton-1" />
+          <toolbarbutton id="zen-media-playpause-button"
+            class="toolbarbutton-1" />
+          <toolbarbutton id="zen-media-nexttrack-button"
+            class="toolbarbutton-1" />
+        </hbox>
         <toolbarbutton id="zen-media-mute-button"
           class="toolbarbutton-1" />
         <hbox id="media-device-buttons">

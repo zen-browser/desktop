@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index c64980810570fcea84e33fdc2d66ac42a79f4e46..11fe00e84dbac781b3da90abb1251c70bd3b094a 100644
+index c64980810570fcea84e33fdc2d66ac42a79f4e46..aa629ebb38a9aa74048fe3fc759f716fad57d6f3 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
 @@ -102,10 +102,6 @@
@@ -13,7 +13,13 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..11fe00e84dbac781b3da90abb1251c70
              </vbox>
  #endif
            </hbox>
-@@ -125,21 +121,17 @@
+@@ -120,26 +116,22 @@
+           <vbox id="experimental" hidden="true">
+             <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
+             <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
+-              <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-exp-mozillaLink"/>
++              <label is="text-link" href="https://zen-browser.app/about" data-l10n-name="community-exp-mozillaLink"/>
+               <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-exp-creditsLink"/>
              </description>
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">

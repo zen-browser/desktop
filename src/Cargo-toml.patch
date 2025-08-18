@@ -1,12 +1,11 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index 8c6b99bc629ec26e01ab3746f2ae46174bfaa0b1..5791c7470923c7c15986089b40357ce80365e942 100644
+index c41cc4f4e68e5b30e1a290e07b2c5061db4400cc..7fa5402b32116922766ee1463b441d3fc86c1eff 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -233,6 +233,9 @@ rure = { path = "third_party/rust/rure" }
- # Patch `plist` to work with `indexmap` 2.*
- plist = { path = "third_party/rust/plist" }
+@@ -218,6 +218,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }
+ # Workaround for https://github.com/rust-lang/cargo/issues/11232
+ rure = { path = "third_party/rust/rure" }
  
-+# Patch mime_guess to add missing mime types
 +mime_guess = { path = "third_party/rust/mime_guess" }
 +
  # Patch `unicode-width` 0.1.* to 0.2.

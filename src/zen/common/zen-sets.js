@@ -8,7 +8,7 @@ document.addEventListener(
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById('zenCommandSet')
-      // eslint-disable-next-line complexity
+
       .addEventListener('command', (event) => {
         switch (event.target.id) {
           case 'cmd_zenCompactModeToggle':
@@ -101,10 +101,22 @@ document.addEventListener(
           case 'cmd_zenChangeWorkspaceIcon':
             gZenWorkspaces.changeWorkspaceIcon();
             break;
-          case 'cmd_zenOpenWorkspacePanel':
-            gZenWorkspaces.openWorkspacesDialog(event);
+          case 'cmd_zenReorderWorkspaces':
+            gZenUIManager.showToast('zen-workspaces-how-to-reorder-title', {
+              timeout: 9000,
+              descriptionId: 'zen-workspaces-how-to-reorder-desc',
+            });
+            break;
+          case 'cmd_zenOpenWorkspaceCreation':
+            gZenWorkspaces.openWorkspaceCreation(event);
+            break;
+          case 'cmd_zenOpenFolderCreation':
+            gZenFolders.createFolder([], {
+              renameFolder: true,
+            });
             break;
           default:
+            gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
               const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;
               gZenWorkspaces.shortcutSwitchTo(index);

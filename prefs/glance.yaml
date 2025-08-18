@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.glance.enabled
+  value: true
+
+- name: zen.glance.enable-contextmenu-search
+  value: true
+
+- name: zen.glance.hold-duration
+  value: 300 # in ms
+
+- name: zen.glance.open-essential-external-links
+  value: true
+
+- name: zen.glance.activation-method
+  value: 'alt' # ctrl, alt, shift, none, hold

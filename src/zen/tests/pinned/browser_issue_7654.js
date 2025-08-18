@@ -48,6 +48,11 @@ add_task(async function test_Search_Pinned_Title() {
           'https://example.com/1',
           `Should have the found result '${url}' in the expected list of entries`
         );
+        Assert.equal(
+          result?.title,
+          customLabel,
+          `Should have the found result '${result?.title}' in the expected list of entries`
+        );
 
         BrowserTestUtils.removeTab(gBrowser.selectedTab);
         resolvePromise();

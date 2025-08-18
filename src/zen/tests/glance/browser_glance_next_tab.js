@@ -4,12 +4,10 @@
 'use strict';
 
 add_task(async function test_Glance_Next_Tab() {
-  const selectedTab = gBrowser.selectedTab;
+  const tabToCheck = gBrowser.selectedTab;
   await BrowserTestUtils.openNewForegroundTab(window.gBrowser, 'https://example.com/', true, {
     skipAnimation: true,
   });
-  const tabToCheck = gBrowser.selectedTab;
-  gBrowser.selectedTab = selectedTab;
   await openGlanceOnTab(async (glanceTab) => {
     gBrowser.tabContainer.advanceSelectedTab(1);
     const nextTab = gBrowser.selectedTab;

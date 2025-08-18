@@ -1,0 +1,49 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Smooth scrolling and mousewheel tuning preferences
+
+- name: general.smoothScroll.msdPhysics.enabled
+  condition: '!defined(XP_MACOSX)'
+  value: true
+
+- name: general.smoothScroll.currentVelocityWeighting
+  condition: '!defined(XP_MACOSX)'
+  value: '0.15'
+
+- name: general.smoothScroll.stopDecelerationWeighting
+  condition: '!defined(XP_MACOSX)'
+  value: '0.6'
+
+- name: mousewheel.min_line_scroll_amount
+  condition: '!defined(XP_MACOSX)'
+  value: 10
+
+- name: general.smoothScroll.mouseWheel.durationMinMS
+  condition: '!defined(XP_MACOSX)'
+  value: 80
+
+- name: general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS
+  condition: '!defined(XP_MACOSX)'
+  value: 12
+
+- name: general.smoothScroll.msdPhysics.motionBeginSpringConstant
+  condition: '!defined(XP_MACOSX)'
+  value: 600
+
+- name: general.smoothScroll.msdPhysics.regularSpringConstant
+  condition: '!defined(XP_MACOSX)'
+  value: 650
+
+- name: general.smoothScroll.msdPhysics.slowdownMinDeltaMS
+  condition: '!defined(XP_MACOSX)'
+  value: 25
+
+- name: general.smoothScroll.msdPhysics.slowdownSpringConstant
+  condition: '!defined(XP_MACOSX)'
+  value: 250
+
+- name: mousewheel.default.delta_multiplier_y
+  condition: '!defined(XP_MACOSX)'
+  value: 200

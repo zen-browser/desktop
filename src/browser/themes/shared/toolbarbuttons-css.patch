@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index d84326072652a48d7fc9b61c585fb00ac4b506ab..c91654eb852460721cf7e45623fb471027f06d90 100644
+index 1f91bda717979f3e81d2f6b243336078d97c5cb9..4232ec4761cb15ff96e9b18810b05f548a6f5fd9 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
-@@ -249,7 +249,7 @@ toolbar[brighttext] .toolbaritem-combined-buttons > separator {
+@@ -256,7 +256,7 @@ toolbar .toolbaritem-combined-buttons > separator {
  #nav-bar-overflow-button {
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
@@ -11,7 +11,7 @@ index d84326072652a48d7fc9b61c585fb00ac4b506ab..c91654eb852460721cf7e45623fb4710
      display: none;
    }
  
-@@ -459,7 +459,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+@@ -466,7 +466,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
       */
      align-items: stretch;
      > .toolbarbutton-icon {

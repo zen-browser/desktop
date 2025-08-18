@@ -1,35 +1,37 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d20e129f8b 100644
+index b710cbf2aa3febc0693bdc6aef48ef4aea855235..61c813322c866ae823dac6c0826d572a1e768135 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
-@@ -33,7 +33,7 @@
+@@ -19,7 +19,7 @@
+   --tab-group-line-thickness: 2px;
+   --tab-group-line-toolbar-border-distance: 1px;
+   /* Collapsed tabs should be square, so set width to match the min height */
+-  --tab-collapsed-background-width: var(--tab-min-height);
++  --tab-collapsed-background-width: 48px;
+   --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-inner-inline-margin));
+   --tab-inner-inline-margin: var(--space-medium);
+   --tab-inline-padding: 8px;
+@@ -33,9 +33,9 @@
    --tab-block-margin: 4px;
    --tab-icon-end-margin: 5.5px;
    --tab-label-line-height: 1.7;
--  --tab-loading-fill: #0A84FF;
+-  --tab-loading-fill: #0a84ff;
 +  --tab-loading-fill: var(--zen-primary-color);
    --tab-hover-background-color: color-mix(in srgb, currentColor 11%, transparent);
-   --tab-selected-textcolor: var(--toolbar-color);
+-  --tab-selected-textcolor: var(--toolbar-color);
++  --tab-selected-textcolor: currentColor;
    --tab-selected-bgcolor: var(--toolbar-bgcolor);
-@@ -211,8 +211,7 @@
+   --tab-selected-color-scheme: var(--toolbar-color-scheme);
+   &[lwt-tab-selected="light"] {
+@@ -255,7 +255,6 @@
    }
  
-   #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > &[pinned] {
--    position: absolute !important;
--    display: block;
-+
-   }
- 
-   #tabbrowser-tabs[movingtab] &:is(:active, [multiselected]) {
-@@ -258,7 +257,6 @@
-   }
- 
-   :root:not([uidensity=compact], [sidebar-expand-on-hover]) &[pinned] {
+   :root:not([uidensity="compact"], [sidebar-expand-on-hover]) &[pinned] {
 -    padding: 0 10px;
    }
  
    &:is([selected], [multiselected]) {
-@@ -272,6 +270,7 @@
+@@ -269,6 +268,7 @@
      border-radius: inherit;
      position: relative;
      overflow: hidden;
@@ -37,7 +39,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
  
      &::before {
        position: absolute;
-@@ -459,14 +458,11 @@
+@@ -468,14 +468,11 @@
  .tab-icon-image {
    -moz-context-properties: fill, stroke;
    fill: currentColor;
@@ -53,7 +55,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -483,10 +479,6 @@
+@@ -492,10 +489,6 @@
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("browser.tabs.fadeOutExplicitlyUnloadedTabs") {
      &[pending][discarded] {
@@ -64,16 +66,16 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -559,7 +551,7 @@
+@@ -568,7 +561,7 @@
    z-index: 1; /* Overlay tab title */
  
-   #tabbrowser-tabs[orient=vertical] & {
+   #tabbrowser-tabs[orient="vertical"] & {
 -    top: 7px;
 +    top: -7px;
    }
  
    &[crashed] {
-@@ -567,7 +559,7 @@
+@@ -576,7 +569,7 @@
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) &:not([crashed]),
@@ -82,16 +84,34 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -597,7 +589,7 @@
-       background-image: linear-gradient(var(--audio-overlay-extra-background)),
-                         linear-gradient(var(--toolbox-bgcolor));
-       -moz-context-properties: fill;
--      fill: var(--tab-selected-textcolor);
-+      fill: var(--tab-selected-textcolor) !important;
-       color-scheme: var(--tab-selected-color-scheme);
-       border-radius: var(--border-radius-circle);
+@@ -633,7 +626,7 @@
+     }
+   }
  
-@@ -1365,7 +1357,7 @@ tab-group {
+-  &[pinned]:is([soundplaying], [muted], [activemedia-blocked]),
++  &[zen-essential]:is([soundplaying], [muted], [activemedia-blocked]),
+   &[crashed] {
+     display: revert;
+   }
+@@ -734,7 +727,7 @@
+       has not been added to root. There are certain scenarios when that attribute is temporarily
+       removed from root such as when toggling the sidebar to expand with the toolbar button. */
+     #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
+-    :root:not([sidebar-expand-on-hover]) #tabbrowser-tabs[orient="vertical"][expanded] &:not([pinned]):not([crashed]) {
++    :root:not([sidebar-expand-on-hover]) #tabbrowser-tabs[orient="vertical"][expanded] &:not([zen-essential]):not([crashed]) {
+       &:is([soundplaying], [muted], [activemedia-blocked]) {
+         display: flex;
+       }
+@@ -1039,7 +1032,7 @@ tab-group {
+ }
+ 
+ #tabbrowser-tabs[orient="vertical"][expanded] {
+-  tab-group > :is(.tab-group-label-container, .tabbrowser-tab),
++  tab-group > :is(.tab-group-label-container, .tab-group-container, .tabbrowser-tab),
+   &[movingtab][movingtab-addToGroup]:not([movingtab-createGroup], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
+     margin-inline-start: var(--space-medium);
+   }
+@@ -1457,7 +1450,7 @@ tab-group {
    }
  }
  
@@ -100,7 +120,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -1376,7 +1368,7 @@ tab-group {
+@@ -1468,7 +1461,7 @@ tab-group {
    margin-inline: var(--tab-inner-inline-margin);
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -109,7 +129,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
    }
  
    &:hover {
-@@ -1400,7 +1392,7 @@ tab-group {
+@@ -1492,7 +1485,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -118,16 +138,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
    margin-block: var(--tab-block-margin);
  }
  
-@@ -1474,8 +1466,6 @@ tab-group {
-   }
- 
-   :root:not([sidebar-expand-on-hover]) & {
--    --tab-inline-padding: calc((var(--tab-collapsed-background-width) + 2 *
--      var(--tab-pinned-margin-inline-expanded) - var(--icon-size-default)) / 2);
-     /* stylelint-disable-next-line media-query-no-invalid */
-     @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
-       /* We need these rules to apply at all times when the sidebar.visibility
-@@ -1585,7 +1575,6 @@ tab-group {
+@@ -1687,7 +1680,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -135,16 +146,7 @@ index 5b9ad123d819c6ef068acd427416957a1d0939fe..311caa27ee268c95215d459be02a93d2
      }
  
      .tab-background {
-@@ -1716,7 +1705,7 @@ tab-group {
-   toolbarbutton:not(#firefox-view-button),
-   toolbarpaletteitem:not(#wrapper-firefox-view-button)
- ) ~ #tabbrowser-tabs {
--  border-inline-start: var(--tabstrip-inner-border);
-+  border-inline-start: transparent;
-   padding-inline-start: calc(var(--tab-overflow-pinned-tabs-width) + 2px);
-   margin-inline-start: 2px;
- }
-@@ -1750,7 +1739,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -1847,7 +1839,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

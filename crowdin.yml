@@ -1,0 +1,20 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+base_path: locales
+files:
+  - source: en-US/browser/browser/zen-general.ftl
+    translation: browser/browser/zen-general.ftl
+  - source: en-US/browser/browser/zen-split-view.ftl
+    translation: browser/browser/zen-split-view.ftl
+  - source: en-US/browser/browser/zen-vertical-tabs.ftl
+    translation: browser/browser/zen-vertical-tabs.ftl
+  - source: en-US/browser/browser/zen-welcome.ftl
+    translation: browser/browser/zen-welcome.ftl
+  - source: en-US/browser/browser/zen-workspaces.ftl
+    translation: browser/browser/zen-workspaces.ftl
+  - source: en-US/browser/browser/preferences/zen-preferences.ftl
+    translation: browser/browser/preferences/zen-preferences.ftl
+  - source: en-US/browser/browser/zen-folders.ftl
+    translation: browser/browser/zen-folders.ftl

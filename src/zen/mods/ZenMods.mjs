@@ -175,14 +175,16 @@
             }
 
             continue;
-          } else {
-            if (!hasEnabledMods && !container) {
+          }
+
+          if (!hasEnabledMods) {
+            hasEnabledMods = true;
+
+            if (!container) {
               const element = browser.document.createElement('div');
               element.setAttribute('id', 'themes-container');
               browser.document.body.appendChild(element);
             }
-            
-            hasEnabledMods = true;
           }
 
           for (const { property, type } of preferences) {

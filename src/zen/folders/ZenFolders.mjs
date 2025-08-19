@@ -260,7 +260,7 @@
       if (activeGroup?.length > 0) {
         for (const folder of activeGroup) {
           folder.removeAttribute('has-active');
-          folder.removeAttribute('selected-tab-id');
+          folder.removeAttribute('selected-tab-ids');
           this.collapseVisibleTab(folder);
           this.updateFolderIcon(folder, 'close', false);
         }
@@ -316,26 +316,29 @@
       const tabsContainer = group.querySelector('.tab-group-container');
       const animations = [];
       const groupStart = group.querySelector('.zen-tab-group-start');
-      let selectedItem = null;
-      let selectedGroupId = null;
-      let itemsAfterSelected = [];
+      let selectedItems = [];
+      let selectedGroupIds = new Set();
+      let itemsToHide = [];
 
-      const items = group.childGroupsAndTabs.map((item) => {
-        const isSplitView = item.group?.hasAttribute?.('split-view-group');
-        const splitGroupId = isSplitView ? item.group.id : null;
-        if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
+      const items = group.childGroupsAndTabs
+        .filter((item) => !item.hasAttribute('zen-empty-tab'))
+        .map((item) => {
+          const isSplitView = item.group?.hasAttribute?.('split-view-group');
+          const splitGroupId = isSplitView ? item.group.id : null;
+          if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
 
-        if (item.hasAttribute('visuallyselected')) {
-          selectedItem = item;
-          selectedGroupId = splitGroupId;
-        }
+          if (item.hasAttribute('multiselected') || item.hasAttribute('visuallyselected')) {
+            selectedItems.push(item);
+            if (splitGroupId) selectedGroupIds.add(splitGroupId);
+          }
 
-        return { item, splitGroupId };
-      });
+          return { item, splitGroupId };
+        });
 
       // Calculate the height we need to hide until we reach the selected item.
       let heightUntilSelected;
-      if (selectedItem) {
+      if (selectedItems.length) {
+        const selectedItem = selectedItems[0];
         const selectedContainer = selectedItem.group?.hasAttribute('split-view-group')
           ? selectedItem.group
           : selectedItem;
@@ -346,25 +349,55 @@
         heightUntilSelected = window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
       }
 
-      let afterSelected = false;
-      for (let { item, splitGroupId } of items) {
-        if (item === selectedItem) {
-          afterSelected = true;
-          continue;
+      let selectedIdx = -1;
+      if (selectedItems.length) {
+        for (let i = 0; i < items.length; i++) {
+          if (selectedItems.includes(items[i].item)) {
+            selectedIdx = i;
+            break;
+          }
         }
-        if (selectedGroupId && splitGroupId === selectedGroupId) continue;
-        if (afterSelected && splitGroupId) item = item.group;
-        if (afterSelected) itemsAfterSelected.push(item);
       }
 
-      if (selectedItem) {
+      for (let i = 0; i < items.length; i++) {
+        const { item, splitGroupId } = items[i];
+
+        // Dont hide items before the first selected tab
+        if (selectedIdx >= 0 && i < selectedIdx) continue;
+
+        // Skip selected items
+        if (selectedItems.includes(item)) continue;
+
+        // Skip items from selected split-view groups
+        if (splitGroupId && selectedGroupIds.has(splitGroupId)) continue;
+
+        const itemToHide = splitGroupId ? item.group : item;
+        if (!itemsToHide.includes(itemToHide)) {
+          itemsToHide.push(itemToHide);
+        }
+      }
+
+      if (selectedItems.length) {
         group.setAttribute('has-active', 'true');
-        selectedItem.setAttribute('folder-active', 'true');
-        group.setAttribute('selected-tab-id', selectedItem.getAttribute('zen-pin-id'));
-        this.setFolderIndentation([selectedItem], group, /* for collapse = */ true);
+
+        selectedItems.forEach((item) => {
+          item.setAttribute('folder-active', 'true');
+        });
+
+        const selectedTabIds = selectedItems
+          .map((item) => item.getAttribute('zen-pin-id'))
+          .filter((id) => id)
+          .join(',');
+        if (selectedTabIds) {
+          group.setAttribute('selected-tab-ids', selectedTabIds);
+        }
+
+        selectedItems.forEach((item) => {
+          this.setFolderIndentation([item], group, /* for collapse = */ true);
+        });
       }
 
-      for (const item of itemsAfterSelected) {
+      itemsToHide.map((item) => {
         animations.push(
           gZenUIManager.motion.animate(
             item,
@@ -375,23 +408,28 @@
             { duration: 0.1, ease: 'easeInOut' }
           )
         );
-      }
+      });
 
       animations.push(...this.updateFolderIcon(group));
       animations.push(
         gZenUIManager.motion.animate(
           groupStart,
           {
-            marginTop: [0, -(heightUntilSelected + 4 * !selectedItem)],
+            marginTop: [0, -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0))],
           },
           { duration: 0.1, ease: 'easeInOut' }
         )
       );
+
       this.#animationCount += 1;
       await Promise.all(animations);
+      // Clear multi-selected tabs
+      gBrowser.clearMultiSelectedTabs();
       // Prevent hiding if we spam the group animations
       this.#animationCount -= 1;
-      if (!selectedItem && !this.#animationCount) tabsContainer.setAttribute('hidden', true);
+      if (selectedItems.length === 0 && !this.#animationCount) {
+        tabsContainer.setAttribute('hidden', true);
+      }
     }
 
     async #onTabGroupExpand(event) {
@@ -407,14 +445,25 @@
       const animations = [];
       tabsContainer.style.overflow = 'hidden';
       if (group.hasAttribute('has-active')) {
-        const selectedTabId = group.getAttribute('selected-tab-id');
-        const selectedTab = group?.querySelector(`tab[zen-pin-id="${selectedTabId}"]`);
-        // Since the folder is now expanded, we should remove active attribute
-        // to the tab that was previously visible
-        selectedTab.removeAttribute('folder-active');
-        selectedTab.style.removeProperty('--zen-folder-indent');
+        const selectedTabIds = group.getAttribute('selected-tab-ids');
+        if (selectedTabIds) {
+          const tabIds = selectedTabIds.split(',');
+          for (const tabId of tabIds) {
+            const selectedTab = group?.querySelector(`tab[zen-pin-id="${tabId}"]`);
+            if (selectedTab) {
+              // Since the folder is now expanded, we should remove active attribute
+              // to the tab that was previously visible
+              selectedTab.removeAttribute('folder-active');
+              if (selectedTab.group?.hasAttribute('split-view-group')) {
+                selectedTab.group.style.removeProperty('--zen-folder-indent');
+              } else {
+                selectedTab.style.removeProperty('--zen-folder-indent');
+              }
+            }
+          }
+          group.removeAttribute('selected-tab-ids');
+        }
         group.removeAttribute('has-active');
-        group.removeAttribute('selected-tab-id');
       }
 
       const normalizeGroupItems = (items) => {
@@ -439,15 +488,54 @@
       const itemsToHide = [];
 
       for (const activeGroup of activeGroups) {
-        let selectedTabId = activeGroup.getAttribute('selected-tab-id');
-        let selectedTab = activeGroup.querySelector(`tab[zen-pin-id="${selectedTabId}"]`);
-        // If the selected tab is in a split view group, we need to get the last tab
-        if (selectedTab?.group?.hasAttribute('split-view-group')) {
-          selectedTab = selectedTab.group.tabs.at(-1);
+        const selectedTabIds = activeGroup.getAttribute('selected-tab-ids');
+        let selectedTabs = [];
+        let selectedGroupIds = new Set();
+
+        if (selectedTabIds) {
+          const tabIds = selectedTabIds.split(',');
+          selectedTabs = tabIds
+            .map((tabId) => activeGroup.querySelector(`tab[zen-pin-id="${tabId}"]`))
+            .filter((tab) => tab !== null);
         }
-        let index = activeGroup.childGroupsAndTabs.indexOf(selectedTab);
-        let itemsAfter = activeGroup.childGroupsAndTabs.slice(index + 1);
-        itemsToHide.push(...normalizeGroupItems(itemsAfter));
+
+        selectedTabs.forEach((tab) => {
+          if (tab?.group?.hasAttribute('split-view-group')) {
+            selectedGroupIds.add(tab.group.id);
+          }
+        });
+
+        if (selectedTabs.length) {
+          let selectedIdx = -1;
+          for (let i = 0; i < activeGroup.childGroupsAndTabs.length; i++) {
+            const item = activeGroup.childGroupsAndTabs[i];
+            let selectedTab = item;
+
+            // If the item is in a split view group, we need to get the last tab
+            if (selectedTab?.group?.hasAttribute('split-view-group')) {
+              selectedTab = selectedTab.group.tabs.at(-1);
+            }
+
+            if (selectedTabs.includes(selectedTab) || selectedTabs.includes(item)) {
+              selectedIdx = i;
+              break;
+            }
+          }
+
+          if (selectedIdx >= 0) {
+            for (let i = selectedIdx; i < activeGroup.childGroupsAndTabs.length; i++) {
+              const item = activeGroup.childGroupsAndTabs[i];
+
+              if (selectedTabs.includes(item)) continue;
+
+              const isSplitView = item.group?.hasAttribute?.('split-view-group');
+              const splitGroupId = isSplitView ? item.group.id : null;
+              if (splitGroupId && selectedGroupIds.has(splitGroupId)) continue;
+
+              itemsToHide.push(...normalizeGroupItems([item]));
+            }
+          }
+        }
       }
 
       groupItems.map((item) => {
@@ -1003,6 +1091,11 @@
           tab.group.style.setProperty('--zen-folder-indent', `${spacing}px`);
           continue;
         }
+        if (tab.group?.hasAttribute('split-view-group')) {
+          // TODO: Fix this wrong calculate for split-view
+          tab.group.style.setProperty('--zen-folder-indent', `${spacing * 0.5}px`);
+          continue;
+        }
         tab.style.setProperty('--zen-folder-indent', `${spacing}px`);
       }
     }
@@ -1033,10 +1126,22 @@
       }
     }
 
-    collapseVisibleTab(group, onlyIfActive = false) {
+    collapseVisibleTab(group, onlyIfActive = false, selectedTabId = null) {
       if (!group?.isZenFolder) return;
-      if (onlyIfActive && !group.hasAttribute('has-active')) return;
+      // if (onlyIfActive && !group.hasAttribute('has-active')) return;
+      if (onlyIfActive && group.activeGroups.length) {
+        for (const activeGroup of group.activeGroups) {
+          if (activeGroup.getAttribute('selected-tab-id') === selectedTabId) {
+            activeGroup.removeAttribute('has-active');
+            activeGroup
+              .querySelector(`tab[zen-pin-id="${selectedTabId}"]`)
+              .style.removeProperty('--zen-folder-indent');
+            this.collapseVisibleTab(activeGroup, true, selectedTabId);
+          }
+        }
+      }
 
+      if (group.getAttribute('selected-tab-id') !== selectedTabId) return;
       const groupStart = group.querySelector('.zen-tab-group-start');
       groupStart.setAttribute('old-margin', groupStart.style.marginTop);
       let itemHeight = 0;

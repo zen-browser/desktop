@@ -1346,18 +1346,19 @@
             switch (stateData?.prevSiblingInfo?.type) {
               case 'group': {
                 const folder = document.getElementById(stateData.prevSiblingInfo.id);
-                gBrowser.moveTabAfter(node, folder);
+                folder.after(node);
                 break;
               }
               case 'tab': {
                 const tab = parentWorkingData.node.querySelector(
                   `[zen-pin-id="${stateData.prevSiblingInfo.id}"]`
                 );
-                gBrowser.moveTabAfter(node, tab);
+                tab.after(node);
                 break;
               }
               default: {
-                const start = parentWorkingData.node.querySelector('.zen-tab-group-start');
+                // Should insert after zen-empty-tab
+                const start = parentWorkingData.node.querySelector('.zen-tab-group-start').nextElementSibling;
                 start.after(node);
               }
             }

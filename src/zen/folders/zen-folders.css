@@ -189,7 +189,7 @@ zen-folder {
     color-mix(in srgb, var(--zen-primary-color), black 20%)
   );
   --zen-folder-stroke: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 70%, black),
+    color-mix(in srgb, var(--zen-primary-color) 60%, black),
     color-mix(in srgb, var(--zen-colors-primary) 20%, var(--toolbox-textcolor))
   );
 

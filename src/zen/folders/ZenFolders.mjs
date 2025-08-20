@@ -1513,10 +1513,12 @@
 
     /**
      * Ungroup a tab from all the active groups it belongs to.
-     * @param {MozTabbrowserTab} tab The tab to ungroup.
+     * @param {MozTabbrowserTab[]} tabs The tab to ungroup.
      */
-    ungroupTabFromActiveGroups(tab) {
-      gBrowser.ungroupTabsUntilNoActive(tab);
+    ungroupTabsFromActiveGroups(tabs) {
+      for (const tab of tabs) {
+        gBrowser.ungroupTabsUntilNoActive(tab);
+      }
     }
 
     /**

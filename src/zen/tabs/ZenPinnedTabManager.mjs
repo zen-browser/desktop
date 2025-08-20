@@ -1350,8 +1350,8 @@
         gZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
       }
 
-      if (draggedTab) {
-        gZenFolders.ungroupTabFromActiveGroups(draggedTab);
+      if (draggedTab?._dragData?.movingTabs) {
+        gZenFolders.ungroupTabsFromActiveGroups(draggedTab._dragData.movingTabs);
       }
 
       let shouldAddDragOverElement = false;

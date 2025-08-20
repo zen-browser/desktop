@@ -245,8 +245,14 @@
       // Edge case: In occations where we add a tab with an ownerTab
       // inside a folder, the tab gets added into the folder in an
       // unpinned state. We need to pin it and re-add it into the folder.
-      gBrowser.pinTab(tab);
-      group.addTabs([tab]);
+      if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder')) {
+        gBrowser.pinTab(tab);
+        group.addTabs([tab]);
+      } else {
+        // Otherwise, we must move it to the first tab since it was added in an unpinned state
+        gZenWorkspaces._emptyTab.after(tab);
+        gBrowser.tabContainer._invalidateCachedTabs();
+      }
     }
 
     #onTabUngrouped(event) {

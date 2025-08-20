@@ -657,8 +657,9 @@
           height: ['100%', '100%'],
         },
         {
-          duration: 0.5,
+          duration: 0.4,
           type: 'spring',
+          bounce: 0,
         }
       );
       this.browserWrapper.style.width = '';

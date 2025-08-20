@@ -1,3 +1,7 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.5 5C13.1319 5 13.7295 5.14656 14.2606 5.40753C16.6831 6.59781 18 9.80094 18 12.5V12.5C18 15.5376 15.5376 18 12.5 18C9.46243 18 7 15.5376 7 12.5V12.5C7 9.80119 8.31627 6.5984 10.7383 5.40792C11.2698 5.1467 11.8677 5 12.5 5Z" fill="context-fill" fill-opacity="context-fill-opacity"/>
 </svg>

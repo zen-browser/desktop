@@ -299,7 +299,7 @@
       }
       gZenFolders.createFolder(_tabsToPin, {
         renameFolder: false,
-        label: 'Zen Basics',
+        label: 'zen basics',
       });
     }
 

@@ -754,7 +754,27 @@
         case 'switch':
           if (behavior.includes('unload')) {
             if (selectedTab.hasAttribute('glance-id')) {
-              break;
+              // We have a glance tab inside the tab we are trying to unload,
+              // before we used to just ignore it but now we need to fully close
+              // it as well.
+              gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
+              await new Promise((resolve) => {
+                let hasRan = false;
+                const onGlanceClose = () => {
+                  hasRan = true;
+                  resolve();
+                };
+                window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                // Set a timeout to resolve the promise if the event doesn't fire.
+                // We do this to prevent any future issues where glance woudnt close such as
+                // glance requering to ask for permit unload.
+                setTimeout(() => {
+                  if (!hasRan) {
+                    console.warn('GlanceClose event did not fire within 3 seconds');
+                    resolve();
+                  }
+                }, 3000);
+              });
             }
             await gZenFolders.collapseVisibleTab(selectedTab.group, /* only if active */ true);
             await gBrowser.explicitUnloadTabs([selectedTab]);

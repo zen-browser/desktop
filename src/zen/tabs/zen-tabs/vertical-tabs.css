@@ -302,25 +302,18 @@
       display: none;
     }
 
-    /* Scale down tab slightly on active press (but not when dragging or clicking images) */
     #tabbrowser-tabs:not([movingtab]) &:active:not(:has(.tab-content > image:active)) {
-      scale: var(
-        --zen-active-tab-scale
-      ); /* Requires --zen-active-tab-scale to be defined elsewhere */
+      scale: var(--zen-active-tab-scale);
     }
 
-    /* Scale down icon/image specifically on active press */
     #tabbrowser-tabs:not([movingtab]) & .tab-content > image:active {
       scale: 0.92;
     }
 
-    /* Fallback icon for broken/missing favicons */
     & .tab-icon-image {
       &:not([src]),
       &:-moz-broken {
-        /* Use an empty SVG as placeholder */
         content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
-        /* Semi-transparent background based on primary color */
         background: color-mix(
           in srgb,
           var(--zen-primary-color) 80%,
@@ -329,27 +322,23 @@
       }
     }
 
-    max-width: unset; /* Allow tabs to take full width */
-    padding: 0 !important; /* Remove default padding */
-    position: relative; /* For absolute positioning of children */
+    max-width: unset;
+    padding: 0 !important;
+    position: relative;
 
-    /* Tab Background Styles */
     & .tab-background {
-      overflow: hidden; /* Hide overflowing content/pseudo-elements */
+      overflow: hidden;
 
-      /* Context line (usually for container tabs) styling */
       & .tab-context-line {
-        margin: 0 0px !important; /* Reset margin */
-        width: 3px !important; /* Set specific width */
+        margin: 0 0px !important;
+        width: 3px !important;
       }
     }
 
     /* --- Glance Tab Styles (Nested .tabbrowser-tab) --- */
-    /* Styles for a tab nested within another tab (representing a "glance"?) */
     & .tabbrowser-tab {
-      pointer-events: none; /* Disable interaction */
-      margin: 0 0 0 4px; /* Add left margin */
-      /* Reset/override variables for smaller size */
+      pointer-events: none;
+      margin: 0 0 0 4px !important;
       --toolbarbutton-inner-padding: 0;
       --border-radius-medium: 8px;
       width: 24px;
@@ -357,7 +346,6 @@
       --tab-min-height: 24px;
       --tab-min-width: 24px;
 
-      /* Style glance tab background */
       & .tab-background {
         background: var(--zen-toolbar-element-bg) !important;
         margin-block: 0 !important;
@@ -365,11 +353,11 @@
         box-shadow: none !important;
         border-radius: calc(var(--border-radius-medium) - 2px);
       }
-      /* Adjust padding for content */
+
       & .tab-content {
         padding: 0 5px;
       }
-      /* Hide label and buttons */
+
       & label,
       & .tab-close-button,
       & .tab-reset-button,
@@ -634,7 +622,7 @@
 
   /* Style tabs container when expanded */
   & #tabbrowser-tabs {
-    --tab-inline-padding: 8px; /* Define padding for tab content */
+    --tab-inline-padding: 8px;
 
     & .tabbrowser-tab {
       & .tab-label-container {
@@ -645,7 +633,7 @@
       /* Adjust tab background margin and width */
       & .tab-background {
         margin-inline: var(--tab-block-margin);
-        width: -moz-available; /* Take available width */
+        width: -moz-available;
       }
 
       /* --- Pinned Tab Icon Repositioning & Reset Button --- */
@@ -657,48 +645,40 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        left: 8px; /* Position near the start */
+        left: 8px;
         margin: 0 !important;
-        pointer-events: none; /* Icon stack itself is not interactive */
+        pointer-events: none;
 
-        /* Allow interaction with elements inside the stack (e.g., overlays) */
         & > *:not(.tab-icon-image) {
           pointer-events: all;
         }
       }
 
-      /* Hide the reset-pin image by default */
       &[zen-pinned-changed='true']:not([zen-essential]) .tab-reset-pin-button image {
         opacity: 0;
       }
 
-      /* Show reset-pin interactions on hover */
       &[zen-pinned-changed='true']:not([zen-essential]) .tab-reset-pin-button:hover {
-        /* Show the helper label */
         & ~ .tab-label-container .tab-reset-pin-label {
           max-height: 10px;
           opacity: 0.6;
         }
-        /* Fade out the original tab icon */
+
         & ~ .tab-icon-stack .tab-icon-image {
           opacity: 0;
         }
-        /* Show the reset-pin button image */
+
         & image {
           opacity: 1;
         }
       }
       /* --- End Pinned Tab --- */
-
-      /* Show close button on hover or when selected */
       &:is(:hover, [visuallyselected]) .tab-close-button {
         display: block;
-        /* Reset padding for close button positioning */
         --tab-inline-padding: 0;
         margin-inline-end: 0;
       }
 
-      /* Adjust margins for various tab icon states/overlays */
       .tab-throbber,
       .tab-icon-pending,
       .tab-icon-image,
@@ -876,7 +856,7 @@
         padding: 0 !important;
 
         & .tab-label-container {
-          display: none !important; /* Hide label */
+          display: none !important;
         }
 
         /* Reset icon end margin */
@@ -885,7 +865,6 @@
           margin-inline-end: 0 !important;
         }
 
-        /* Hide nested glance tabs completely */
         & .tabbrowser-tab {
           display: none !important;
         }
@@ -912,7 +891,7 @@
           #tabbrowser-tabs:not([secondarytext-unsupported])
           .tabbrowser-tab:not(:hover)
           &[indicator-replaces-favicon] {
-          opacity: 1 !important; /* Ensure full opacity */
+          opacity: 1 !important;
         }
       }
     }
@@ -942,27 +921,25 @@
    Mark: Sidebar Splitter Styling
    ========================================================================== */
 #zen-sidebar-splitter {
-  opacity: 0; /* Hidden by default, maybe shown on hover/drag? */
-  max-width: var(--zen-toolbox-padding) !important; /* Width based on padding */
+  opacity: 0;
+  max-width: var(--zen-toolbox-padding) !important;
   min-width: var(--zen-toolbox-padding) !important;
   height: 100%;
   transition: opacity 0.2s ease-in-out;
-  background: var(--zen-colors-border); /* Use theme border color */
-  appearance: none; /* Remove default styling */
-  position: relative !important; /* Ensure positioning context */
-  order: 0; /* Default order */
+  background: var(--zen-colors-border);
+  appearance: none;
+  position: relative !important;
+  order: 0;
 }
 
 /* ==========================================================================
    Mark: Move Sidebar to the Right (`zen-right-side='true'`)
    ========================================================================== */
 :root[zen-right-side='true'] {
-  /* Move the main toolbox (sidebar) to the right */
   & #navigator-toolbox {
-    order: 10 !important; /* High order value */
+    order: 10 !important;
   }
 
-  /* Move the splitter just before the toolbox */
   & #zen-sidebar-splitter {
     order: 9 !important;
   }
@@ -973,12 +950,10 @@
    ========================================================================== */
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    /* Hide standard close button on pinned tabs (except pending) */
     &[pinned]:not([pending='true']) .tab-close-button {
       display: none !important;
     }
 
-    /* Show custom reset (unpin) button on hover/selection for non-essential pinned tabs */
     &[pinned]:not([pending='true']):not([zen-essential]) {
       &:hover .tab-reset-button,
       &[visuallyselected] .tab-reset-button {
@@ -986,12 +961,10 @@
       }
     }
 
-    /* Hide the reset-pin button if tab isn't marked as changed */
     &:not([zen-pinned-changed='true']) .tab-reset-pin-button {
       display: none;
     }
 
-    /* Never show reset buttons on essential tabs */
     &[zen-essential] .tab-reset-button,
     &[zen-essential] .tab-reset-pin-button {
       display: none;
@@ -1303,14 +1276,12 @@
   }
 }
 
-/* Style tabs within the Essentials container (and a related welcome sidebar) */
 .zen-essentials-container > .tabbrowser-tab,
 #zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
-  --toolbarbutton-inner-padding: 0; /* Reset padding */
-  max-width: unset; /* Allow stretching */
-  width: 100% !important; /* Force full width of grid cell */
+  --toolbarbutton-inner-padding: 0;
+  max-width: unset;
+  width: 100% !important;
 
-  /* Style background */
   & .tab-background {
     border-radius: var(--border-radius-medium) !important;
     transition: background 0.1s ease-in-out;
@@ -1342,39 +1313,35 @@
     background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-selected-bgcolor));
   }
 
-  /* Optional blurred favicon background effect (if pref `zen.theme.essentials-favicon-bg` is enabled) */
   @media -moz-pref('zen.theme.essentials-favicon-bg') {
     &[visuallyselected] > .tab-stack > .tab-background {
-      /* Create a blurred background pseudo-element using the tab icon */
       &::after {
         content: '';
-        inset: -50%; /* Extend beyond bounds */
-        filter: blur(20px); /* Apply blur */
+        inset: -50%;
+        filter: blur(20px);
         position: absolute;
         background-size: contain;
         background-clip: padding-box;
-        background-image: var(--zen-essential-tab-icon); /* Use tab icon variable */
-        z-index: -1; /* Place behind content */
+        background-image: var(--zen-essential-tab-icon);
+        z-index: -1;
         background-position: center;
       }
 
-      background: transparent; /* Make main background transparent */
-      overflow: hidden; /* Clip pseudo-elements */
-      position: relative; /* Positioning context */
-      --zen-essential-bg-margin: 2px; /* Margin for inner layer */
+      background: transparent;
+      overflow: hidden;
+      position: relative;
+      --zen-essential-bg-margin: 2px;
 
       /* Create an inner background layer for contrast */
       &::before {
         background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
-        margin: var(--zen-essential-bg-margin); /* Apply margin */
-        border-radius: calc(
-          var(--border-radius-medium) - var(--zen-essential-bg-margin)
-        ); /* Adjust radius */
+        margin: var(--zen-essential-bg-margin);
+        border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;
         inset: 0;
-        z-index: 0; /* Position above ::after, below content */
+        z-index: 0;
         content: '';
-        transition: background 0.1s ease-in-out; /* Smooth transition */
+        transition: background 0.1s ease-in-out;
       }
     }
 

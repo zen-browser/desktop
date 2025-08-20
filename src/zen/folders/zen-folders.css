@@ -266,7 +266,7 @@ zen-folder {
       }
 
       & svg {
-        filter: contrast(150%);
+        filter: contrast(125%);
         transition: 0.2s scale;
         transform-origin: right bottom;
 

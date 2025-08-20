@@ -726,7 +726,7 @@
         _forZenEmptyTab: true,
       });
 
-      tabs = [...tabs, emptyTab];
+      tabs = [emptyTab, ...tabs];
 
       const folder = this._createFolderNode(options);
       if (options.initialPinId) {
@@ -1355,7 +1355,7 @@
         if (prevSibling) {
           if (gBrowser.isTabGroup(prevSibling)) {
             prevSiblingInfo = { type: 'group', id: prevSibling.id };
-          } else if (gBrowser.isTab(prevSibling)) {
+          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-pin-id')) {
             const zenPinId = prevSibling.getAttribute('zen-pin-id');
             prevSiblingInfo = { type: 'tab', id: zenPinId };
           } else {
@@ -1424,7 +1424,9 @@
             workingData.node = oldGroup;
           }
           while (oldGroup.tabs.length > 0) {
-            workingData.containingTabsFragment.appendChild(oldGroup.tabs[0]);
+            const tab = oldGroup.tabs[0];
+            tab.setAttribute('zen-workspace-id', folderData.workspaceId);
+            workingData.containingTabsFragment.appendChild(tab);
           }
           if (!folderData.splitViewGroup) {
             oldGroup.remove();

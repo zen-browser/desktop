@@ -494,7 +494,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       workspaceWrapper.addEventListener(
         'ZenWorkspaceAttached',
         () => {
-          this._organizeTabsToWorkspaceSections(
+          this.#organizeTabsToWorkspaceSections(
             workspace,
             workspaceWrapper.tabsContainer,
             workspaceWrapper.pinnedTabsContainer,
@@ -508,7 +508,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
-  _organizeTabsToWorkspaceSections(workspace, section, pinnedSection, tabs) {
+  #organizeTabsToWorkspaceSections(workspace, section, pinnedSection, tabs) {
     const workspaceTabs = Array.from(tabs).filter(
       (tab) => tab.getAttribute('zen-workspace-id') === workspace.uuid
     );
@@ -545,11 +545,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   initializeWorkspaceNavigation() {
-    this._setupAppCommandHandlers();
-    this._setupSidebarHandlers();
+    this.#setupAppCommandHandlers();
+    this.#setupSidebarHandlers();
   }
 
-  _setupAppCommandHandlers() {
+  #setupAppCommandHandlers() {
     // Remove existing handler temporarily - this is needed so that _handleAppCommand is called before the original
     window.removeEventListener('AppCommand', HandleAppCommandEvent, true);
 
@@ -591,7 +591,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
-  _setupSidebarHandlers() {
+  #setupSidebarHandlers() {
     const toolbox = gNavToolbox;
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll

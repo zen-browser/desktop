@@ -230,7 +230,8 @@
       const group = tab?.group;
       const isActive = group?.activeGroups?.length > 0;
       if (isActive) tab.setAttribute('folder-active', true);
-      if (prevTab.hasAttribute('folder-active')) prevTab.removeAttribute('folder-active');
+      // TODO: Figure out what to do with this
+      // if (prevTab.hasAttribute('folder-active')) prevTab.removeAttribute('folder-active');
       if (tab.group?.collapsed) {
         this.expandToSelected(group);
       }
@@ -318,21 +319,27 @@
       const groupStart = group.querySelector('.zen-tab-group-start');
       let selectedItems = [];
       let selectedGroupIds = new Set();
+      let activeGroupIds = new Set();
       let itemsToHide = [];
 
       const items = group.childGroupsAndTabs
         .filter((item) => !item.hasAttribute('zen-empty-tab'))
         .map((item) => {
           const isSplitView = item.group?.hasAttribute?.('split-view-group');
+          const lastActiveGroup = !isSplitView
+            ? item?.group?.activeGroups?.at(-1)
+            : item?.group?.group?.activeGroups?.at(-1);
+          const activeGroupId = lastActiveGroup?.id;
           const splitGroupId = isSplitView ? item.group.id : null;
           if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
 
           if (item.hasAttribute('multiselected') || item.hasAttribute('visuallyselected')) {
             selectedItems.push(item);
             if (splitGroupId) selectedGroupIds.add(splitGroupId);
+            if (activeGroupId) activeGroupIds.add(activeGroupId);
           }
 
-          return { item, splitGroupId };
+          return { item, splitGroupId, activeGroupId };
         });
 
       // Calculate the height we need to hide until we reach the selected item.
@@ -360,7 +367,7 @@
       }
 
       for (let i = 0; i < items.length; i++) {
-        const { item, splitGroupId } = items[i];
+        const { item, splitGroupId, activeGroupId } = items[i];
 
         // Dont hide items before the first selected tab
         if (selectedIdx >= 0 && i < selectedIdx) continue;
@@ -371,6 +378,14 @@
         // Skip items from selected split-view groups
         if (splitGroupId && selectedGroupIds.has(splitGroupId)) continue;
 
+        // Skip items from selected active groups
+        if (activeGroupId && activeGroupIds.has(activeGroupId)) {
+          // If item is tab-group-label-container we should hide it.
+          // Other items between tab-group-labe-container and folder-active tab should be visible cuz they are hidden by margin-top
+          if (item.parentElement.id !== activeGroupId && !item.hasAttribute('folder-active'))
+            continue;
+        }
+
         const itemToHide = splitGroupId ? item.group : item;
         if (!itemsToHide.includes(itemToHide)) {
           itemsToHide.push(itemToHide);
@@ -379,18 +394,7 @@
 
       if (selectedItems.length) {
         group.setAttribute('has-active', 'true');
-
-        selectedItems.forEach((item) => {
-          item.setAttribute('folder-active', 'true');
-        });
-
-        const selectedTabIds = selectedItems
-          .map((item) => item.getAttribute('zen-pin-id'))
-          .filter((id) => id)
-          .join(',');
-        if (selectedTabIds) {
-          group.setAttribute('selected-tab-ids', selectedTabIds);
-        }
+        group.activeTabs = selectedItems;
 
         selectedItems.forEach((item) => {
           this.setFolderIndentation([item], group, /* for collapse = */ true);
@@ -445,25 +449,31 @@
       const animations = [];
       tabsContainer.style.overflow = 'hidden';
       if (group.hasAttribute('has-active')) {
-        const selectedTabIds = group.getAttribute('selected-tab-ids');
-        if (selectedTabIds) {
-          const tabIds = selectedTabIds.split(',');
-          for (const tabId of tabIds) {
-            const selectedTab = group?.querySelector(`tab[zen-pin-id="${tabId}"]`);
-            if (selectedTab) {
-              // Since the folder is now expanded, we should remove active attribute
-              // to the tab that was previously visible
-              selectedTab.removeAttribute('folder-active');
-              if (selectedTab.group?.hasAttribute('split-view-group')) {
-                selectedTab.group.style.removeProperty('--zen-folder-indent');
-              } else {
-                selectedTab.style.removeProperty('--zen-folder-indent');
-              }
+        const activeTabs = group.activeTabs;
+        const folders = new Map();
+        group.removeAttribute('has-active');
+        for (let tab of activeTabs) {
+          if (!folders.has(tab?.group?.id)) {
+            folders.set(tab.group.id, tab?.group?.activeGroups?.at(-1));
+          }
+          let activeGroup = folders.get(tab?.group?.id);
+          // If group has active tabs, we need to update the indentation
+          if (activeGroup) {
+            this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
+          } else {
+            // Since the folder is now expanded, we should remove active attribute
+            // to the tab that was previously visible
+            tab.removeAttribute('folder-active');
+            if (tab.group?.hasAttribute('split-view-group')) {
+              tab.group.style.removeProperty('--zen-folder-indent');
+            } else {
+              tab.style.removeProperty('--zen-folder-indent');
             }
           }
-          group.removeAttribute('selected-tab-ids');
         }
-        group.removeAttribute('has-active');
+        // Folder has been expanded and has no active tabs
+        group.activeTabs = [];
+        folders.clear();
       }
 
       const normalizeGroupItems = (items) => {
@@ -488,16 +498,8 @@
       const itemsToHide = [];
 
       for (const activeGroup of activeGroups) {
-        const selectedTabIds = activeGroup.getAttribute('selected-tab-ids');
-        let selectedTabs = [];
+        let selectedTabs = activeGroup.activeTabs;
         let selectedGroupIds = new Set();
-
-        if (selectedTabIds) {
-          const tabIds = selectedTabIds.split(',');
-          selectedTabs = tabIds
-            .map((tabId) => activeGroup.querySelector(`tab[zen-pin-id="${tabId}"]`))
-            .filter((tab) => tab !== null);
-        }
 
         selectedTabs.forEach((tab) => {
           if (tab?.group?.hasAttribute('split-view-group')) {

@@ -209,6 +209,19 @@
     get iconURL() {
       return this.icon.querySelector('image')?.getAttribute('href') || '';
     }
+
+    set activeTabs(tabs) {
+      if (tabs.length) {
+        this._activeTabs = tabs;
+        for (let tab of tabs) {
+          tab.setAttribute('folder-active', 'true');
+        }
+      }
+    }
+
+    get activeTabs() {
+      return this._activeTabs;
+    }
   }
 
   customElements.define('zen-folder', ZenFolder);

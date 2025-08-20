@@ -226,10 +226,10 @@
 
     #onTabSelected(event) {
       const tab = event.target;
-      const prevTab = event.detail.previousTab;
+      // const prevTab = event.detail.previousTab;
       const group = tab?.group;
-      const isActive = group?.activeGroups?.length > 0;
-      if (isActive) tab.setAttribute('folder-active', true);
+      // const isActive = group?.activeGroups?.length > 0;
+      // if (isActive) tab.setAttribute('folder-active', true);
       // TODO: Figure out what to do with this
       // if (prevTab.hasAttribute('folder-active')) prevTab.removeAttribute('folder-active');
       if (tab.group?.collapsed) {
@@ -260,8 +260,9 @@
       const activeGroup = group.activeGroups;
       if (activeGroup?.length > 0) {
         for (const folder of activeGroup) {
-          folder.removeAttribute('has-active');
-          folder.removeAttribute('selected-tab-ids');
+          if (!folder.activeTabs.length) {
+            folder.removeAttribute('has-active');
+          }
           this.collapseVisibleTab(folder);
           this.updateFolderIcon(folder, 'close', false);
         }
@@ -333,7 +334,7 @@
           const splitGroupId = isSplitView ? item.group.id : null;
           if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
 
-          if (item.hasAttribute('multiselected') || item.hasAttribute('visuallyselected')) {
+          if (item.multiselected || item.selected) {
             selectedItems.push(item);
             if (splitGroupId) selectedGroupIds.add(splitGroupId);
             if (activeGroupId) activeGroupIds.add(activeGroupId);
@@ -454,7 +455,7 @@
         group.removeAttribute('has-active');
         for (let tab of activeTabs) {
           if (!folders.has(tab?.group?.id)) {
-            folders.set(tab.group.id, tab?.group?.activeGroups?.at(-1));
+            folders.set(tab?.group?.id, tab?.group?.activeGroups?.at(-1));
           }
           let activeGroup = folders.get(tab?.group?.id);
           // If group has active tabs, we need to update the indentation

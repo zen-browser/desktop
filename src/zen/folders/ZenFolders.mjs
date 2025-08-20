@@ -353,12 +353,14 @@
       let heightUntilSelected;
       if (selectedItems.length) {
         const selectedItem = selectedItems[0];
-        const selectedContainer = selectedItem.group?.hasAttribute('split-view-group')
-          ? selectedItem.group
-          : selectedItem;
+        const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
+        const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
         heightUntilSelected =
           window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
           window.windowUtils.getBoundsWithoutFlushing(groupStart).bottom;
+        if (isSplitView) {
+          heightUntilSelected -= 2;
+        }
       } else {
         heightUntilSelected = window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
       }
@@ -610,7 +612,7 @@
     #onNewFolder(event) {
       const isFromToolbar = event.target.id === 'zen-context-menu-new-folder-toolbar';
       const contextMenu = event.target.parentElement;
-      let tabs = TabContextMenu.contextTab.multiselected
+      let tabs = TabContextMenu.contextTab?.multiselected
         ? gBrowser.selectedTabs
         : [TabContextMenu.contextTab];
       let triggerTab =
@@ -1068,8 +1070,12 @@
       if (!gZenPinnedTabManager.expandedSidebarMode) {
         return;
       }
-      const tab = tabs[0];
+      let tab = tabs[0];
       let isTab = false;
+      if (tab.group?.hasAttribute('split-view-group')) {
+        tab = tab.group;
+        isTab = true;
+      }
       if (!groupElem && tab?.group) {
         groupElem = tab; // So we can set isTab later
       }
@@ -1096,13 +1102,8 @@
       const tabLevel = tabToAnimate?.group?.level || 0;
       const spacing = (level - tabLevel) * baseSpacing;
       for (const tab of tabs) {
-        if (gBrowser.isTabGroupLabel(tab)) {
+        if (gBrowser.isTabGroupLabel(tab) || tab.group?.hasAttribute('split-view-group')) {
           tab.group.style.setProperty('--zen-folder-indent', `${spacing}px`);
-          continue;
-        }
-        if (tab.group?.hasAttribute('split-view-group')) {
-          // TODO: Fix this wrong calculate for split-view
-          tab.group.style.setProperty('--zen-folder-indent', `${spacing * 0.5}px`);
           continue;
         }
         tab.style.setProperty('--zen-folder-indent', `${spacing}px`);

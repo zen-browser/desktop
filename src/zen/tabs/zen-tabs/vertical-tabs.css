@@ -292,7 +292,7 @@
     & .tab-content > image {
       transition:
         scale 0.07s ease,
-        margin-inline-start 0.15s ease-in-out;
+        var(--zen-tabbox-element-indent-transition);
     }
 
     margin-inline-start: var(--zen-folder-indent) !important;

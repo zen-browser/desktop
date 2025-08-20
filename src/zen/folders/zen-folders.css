@@ -7,8 +7,10 @@
 tab-group[split-view-group] {
   display: block;
   @media (prefers-reduced-motion: no-preference) {
-    #tabbrowser-tabs[movingtab] &:not(:active) {
-      transition: var(--tab-dragover-transition);
+    transition: var(--zen-tabbox-element-indent-transition);
+
+    #tabbrowser-tabs[movingtab] & {
+      transition: var(--zen-tabbox-element-indent-transition);
     }
   }
   --zen-split-view-active-tab-bg: color-mix(
@@ -18,10 +20,6 @@ tab-group[split-view-group] {
   );
 
   margin-inline-start: var(--zen-folder-indent) !important;
-
-  #tabbrowser-tabs[movingtab] & {
-    transition: margin-inline-start 0.15s ease-in-out;
-  }
 
   & .tab-group-label {
     height: 100% !important;
@@ -194,7 +192,7 @@ zen-folder {
   );
 
   -moz-window-dragging: no-drag;
-  transition: margin-inline-start 0.15s ease-in-out;
+  transition: var(--zen-tabbox-element-indent-transition);
 
   margin-inline-start: var(--zen-folder-indent) !important;
 
@@ -226,7 +224,7 @@ zen-folder {
     }
 
     & > zen-folder {
-      transition: margin-inline-start 0.15s ease-in-out;
+      transition: var(--zen-tabbox-element-indent-transition);
     }
 
     & > tab::before {

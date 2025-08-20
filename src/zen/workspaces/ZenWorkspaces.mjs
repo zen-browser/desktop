@@ -928,7 +928,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     this.#fixTabPositions();
     this.onWindowResize();
     this._resolveInitialized();
-    this._clearAnyZombieTabs(); // Dont call with await
+    this.#clearAnyZombieTabs(); // Dont call with await
 
     const tabUpdateListener = this.updateTabsContainers.bind(this);
     window.addEventListener('TabOpen', tabUpdateListener);
@@ -1100,7 +1100,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     );
   }
 
-  async _clearAnyZombieTabs() {
+  async #clearAnyZombieTabs() {
     const tabs = this.allStoredTabs;
     const workspaces = await this._workspaces();
     for (let tab of tabs) {

@@ -1426,7 +1426,9 @@
           }
           while (oldGroup.tabs.length > 0) {
             const tab = oldGroup.tabs[0];
-            tab.setAttribute('zen-workspace-id', folderData.workspaceId);
+            if (folderData.workspaceId) {
+              tab.setAttribute('zen-workspace-id', folderData.workspaceId);
+            }
             workingData.containingTabsFragment.appendChild(tab);
           }
           if (!folderData.splitViewGroup) {

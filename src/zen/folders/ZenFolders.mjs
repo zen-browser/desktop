@@ -1273,7 +1273,8 @@
                 heightUntilSelected -= 2;
               }
             } else {
-              heightUntilSelected = window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
+              heightUntilSelected =
+                window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
             }
 
             animations.push(...this.updateFolderIcon(current, 'close', false));
@@ -1349,8 +1350,8 @@
       }
 
       let curMarginTop = parseInt(groupStart.style.marginTop) || 0;
-        animations.push(
-          gZenUIManager.motion
+      animations.push(
+        gZenUIManager.motion
           .animate(
             groupStart,
             {
@@ -1361,7 +1362,7 @@
           .then(() => {
             tabsContainer.style.overflow = '';
           })
-        );
+      );
 
       animations.push(...this.updateFolderIcon(group));
 

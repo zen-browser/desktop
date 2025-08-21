@@ -232,9 +232,6 @@
       // if (isActive) tab.setAttribute('folder-active', true);
       // TODO: Figure out what to do with this
       // if (prevTab.hasAttribute('folder-active')) prevTab.removeAttribute('folder-active');
-      if (tab.group?.collapsed) {
-        this.expandToSelected(group);
-      }
       gBrowser.tabContainer._invalidateCachedTabs();
     }
 
@@ -436,8 +433,6 @@
 
       this.#animationCount += 1;
       await Promise.all(animations);
-      // Clear multi-selected tabs
-      gBrowser.clearMultiSelectedTabs();
       // Prevent hiding if we spam the group animations
       this.#animationCount -= 1;
       if (selectedItems.length === 0 && !this.#animationCount) {
@@ -994,6 +989,7 @@
         item.addEventListener('click', () => {
           group.setAttribute('has-active', 'true');
           gBrowser.selectedTab = tab;
+          this.expandToSelected(group);
           this.#popup.hidePopup();
         });
 
@@ -1217,72 +1213,129 @@
       groupStart.removeAttribute('new-margin');
     }
 
-    expandToSelected(group) {
-      const tabsContainer = group.querySelector('.tab-group-container');
-      const animations = [];
-      const groupStart = group.querySelector('.zen-tab-group-start');
-      let selectedItem = null;
-      let selectedGroupId = null;
+    async expandToSelected(group) {
+      if (!group?.isZenFolder) return;
 
-      const groupItems = [];
-      group.childGroupsAndTabs.forEach((item) => {
-        if (gBrowser.isTabGroupLabel(item)) {
-          if (item?.group?.hasAttribute('split-view-group')) {
-            item = item.group;
-          } else {
-            item = item.parentNode;
+      this.cancelPopupTimer?.();
+
+      const tabsContainer = group.querySelector('.tab-group-container');
+      const groupStart = group.querySelector('.zen-tab-group-start');
+      const animations = [];
+
+      const normalizeGroupItems = (items) => {
+        const processed = [];
+        items
+          .filter((item) => !item.hasAttribute('zen-empty-tab'))
+          .forEach((item) => {
+            if (gBrowser.isTabGroupLabel(item)) {
+              if (item?.group?.hasAttribute('split-view-group')) {
+                item = item.group;
+              } else {
+                item = item.parentElement;
+              }
+            }
+            processed.push(item);
+          });
+        return processed;
+      };
+
+      const selectedItems = [];
+      const groupItems = normalizeGroupItems(group.childGroupsAndTabs);
+
+      for (const item of groupItems) {
+        if (item.hasAttribute('folder-active') || item.selected) {
+          selectedItems.push(item);
+        }
+      }
+
+      // Always new selected item
+      let current = selectedItems?.at(-1)?.group;
+      while (current) {
+        const activeForGroup = selectedItems.filter((t) => current.contains(t));
+        if (activeForGroup.length) {
+          current.activeTabs = activeForGroup;
+
+          if (current.collapsed) {
+            const tabsContainer = current.querySelector('.tab-group-container');
+            const groupStart = current.querySelector('.zen-tab-group-start');
+
+            if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
+
+            let heightUntilSelected;
+            if (activeForGroup.length) {
+              const selectedItem = activeForGroup[0];
+              const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
+              const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
+              heightUntilSelected =
+                window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
+                window.windowUtils.getBoundsWithoutFlushing(groupStart).bottom;
+              if (isSplitView) {
+                heightUntilSelected -= 2;
+              }
+            } else {
+              heightUntilSelected = window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
+            }
+
+            animations.push(...this.updateFolderIcon(current, 'close', false));
+            animations.push(
+              gZenUIManager.motion.animate(
+                groupStart,
+                {
+                  marginTop: [0, -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0))],
+                },
+                { duration: 0.1, ease: 'easeInOut' }
+              )
+            );
+          }
+
+          for (const tab of activeForGroup) {
+            this.setFolderIndentation([tab], current, /* for collapse = */ true);
           }
         }
-        groupItems.push(item);
-      });
+        current = current.group;
+      }
 
-      groupItems.map((item) => {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 1,
-              height: 'auto',
-            },
-            { duration: 0.1, ease: 'easeInOut' }
-          )
-        );
-      });
+      const selectedItemsSet = new Set();
+      const selectedGroupIds = new Set();
+      for (const tab of selectedItems) {
+        const isSplit = tab?.group?.hasAttribute?.('split-view-group');
+        if (isSplit) selectedGroupIds.add(tab.group.id);
+        const container = isSplit ? tab.group : tab;
+        selectedItemsSet.add(container);
+      }
 
-      const items = group.childGroupsAndTabs.map((item) => {
-        const isSplitView = item.group?.hasAttribute?.('split-view-group');
-        const splitGroupId = isSplitView ? item.group.id : null;
-        if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
-        if (item.selected) {
-          selectedItem = item;
-          selectedGroupId = splitGroupId;
+      const itemsToHide = [];
+      for (const item of groupItems) {
+        const isSplit = item.group?.hasAttribute?.('split-view-group');
+        const splitId = isSplit ? item.group.id : null;
+        const itemElem = isSplit ? item.group : item;
+
+        if (selectedItemsSet.has(itemElem)) continue;
+        if (splitId && selectedGroupIds.has(splitId)) continue;
+
+        if (!itemElem.hasAttribute?.('folder-active')) {
+          if (!itemsToHide.includes(itemElem)) itemsToHide.push(itemElem);
         }
-        return { item, splitGroupId };
-      });
+      }
 
       if (tabsContainer.hasAttribute('hidden')) {
         tabsContainer.removeAttribute('hidden');
       }
 
-      const curMarginTop = parseInt(groupStart.style.marginTop) || 0;
+      for (const item of groupItems) {
+        animations.push(
+          gZenUIManager.motion.animate(
+            item,
+            {
+              opacity: 1,
+              height: '',
+            },
+            { duration: 0.1, ease: 'easeInOut' }
+          )
+        );
+      }
 
-      animations.push(
-        gZenUIManager.motion.animate(
-          groupStart,
-          {
-            marginTop: [curMarginTop, 0],
-          },
-          { duration: 0.15, ease: 'easeInOut' }
-        )
-      );
-
-      for (let { item, splitGroupId } of items) {
-        if (item === selectedItem || (selectedGroupId && splitGroupId === selectedGroupId)) {
-          continue;
-        }
-
-        if (item && splitGroupId) item = item.group;
-
+      for (const item of itemsToHide) {
         animations.push(
           gZenUIManager.motion.animate(
             item,
@@ -1295,12 +1348,35 @@
         );
       }
 
-      selectedItem.setAttribute('folder-active', 'true');
-      group.setAttribute('selected-tab-id', selectedItem.getAttribute('zen-pin-id'));
+      let curMarginTop = parseInt(groupStart.style.marginTop) || 0;
+        animations.push(
+          gZenUIManager.motion
+          .animate(
+            groupStart,
+            {
+              marginTop: [curMarginTop, 0],
+            },
+            { duration: 0.1, ease: 'linear' }
+          )
+          .then(() => {
+            tabsContainer.style.overflow = '';
+          })
+        );
 
-      animations.push(...this.updateFolderIcon(group, 'close', false));
+      animations.push(...this.updateFolderIcon(group));
 
-      return Promise.all(animations);
+      this.#animationCount = (this.#animationCount || 0) + 1;
+      await Promise.all(animations);
+      this.#animationCount -= 1;
+
+      for (const item of groupItems) {
+        item.style.opacity = '';
+        item.style.height = '';
+      }
+      for (const item of itemsToHide) {
+        item.style.opacity = '';
+        item.style.height = '';
+      }
     }
 
     #groupInit(group, stateData) {

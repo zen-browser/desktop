@@ -81,6 +81,7 @@
         return;
       }
       this.#initialized = true;
+      this._activeTabs = [];
       this.icon.appendChild(ZenFolder.rawIcon.cloneNode(true));
       // Save original values for animations
       this.icon.querySelectorAll('animate, animateTransform, animateMotion').forEach((anim) => {
@@ -220,6 +221,10 @@
         }
       } else {
         this.removeAttribute('has-active');
+        for (let tab of this._activeTabs) {
+          tab.removeAttribute('folder-active');
+        }
+        this._activeTabs = [];
       }
     }
 

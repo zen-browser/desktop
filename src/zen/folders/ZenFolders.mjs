@@ -1358,7 +1358,8 @@
               }
               default: {
                 // Should insert after zen-empty-tab
-                const start = parentWorkingData.node.querySelector('.zen-tab-group-start').nextElementSibling;
+                const start =
+                  parentWorkingData.node.querySelector('.zen-tab-group-start').nextElementSibling;
                 start.after(node);
               }
             }

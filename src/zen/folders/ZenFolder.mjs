@@ -212,10 +212,13 @@
 
     set activeTabs(tabs) {
       if (tabs.length) {
+        this.setAttribute('has-active', 'true');
         this._activeTabs = tabs;
         for (let tab of tabs) {
           tab.setAttribute('folder-active', 'true');
         }
+      } else {
+        this.removeAttribute('has-active');
       }
     }
 

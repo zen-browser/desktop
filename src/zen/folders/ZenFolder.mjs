@@ -9,6 +9,7 @@
       <hbox class="tab-group-label-container" pack="center">
         <html:div class="tab-group-folder-icon"/>
         <label class="tab-group-label" role="button"/>
+        <image class="tab-reset-button reset-icon" role="button" keyNav="false"/>
       </hbox>
       <html:div class="tab-group-container">
         <html:div class="zen-tab-group-start" />
@@ -224,6 +225,25 @@
 
     get activeTabs() {
       return this._activeTabs;
+    }
+
+    get resetButton() {
+      return this.labelElement.parentElement.querySelector('.tab-reset-button');
+    }
+
+    async #unloadAllActiveTabs(event) {
+      for (const tab of this.activeTabs) {
+        await gZenPinnedTabManager._onCloseTabShortcut(event, tab);
+      }
+      this.activeTabs = [];
+    }
+
+    on_click(event) {
+      if (event.target === this.resetButton) {
+        this.#unloadAllActiveTabs(event);
+        return;
+      }
+      super.on_click(event);
     }
   }
 

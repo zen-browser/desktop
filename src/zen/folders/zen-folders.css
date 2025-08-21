@@ -243,7 +243,8 @@ zen-folder {
     padding-block-end: 0 !important;
     margin: 0 !important;
     height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
-    padding-inline: var(--tab-group-label-padding);
+    padding-inline-start: var(--tab-group-label-padding);
+    padding-inline-end: calc(var(--tab-group-label-padding) * 2);
     align-items: center;
     font-weight: 600;
 
@@ -337,6 +338,17 @@ zen-folder {
 
     & > .tab-group-container {
       overflow-y: clip;
+    }
+  }
+
+  &[has-active] > .tab-group-label-container {
+    & .tab-reset-button {
+      display: flex;
+      opacity: 0;
+    }
+
+    &:hover .tab-reset-button {
+      opacity: 1;
     }
   }
 }

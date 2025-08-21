@@ -10,7 +10,7 @@ tab-group[split-view-group] {
     transition: var(--zen-tabbox-element-indent-transition);
 
     #tabbrowser-tabs[movingtab] & {
-      transition: var(--tab-dragover-transition) var(--zen-tabbox-element-indent-transition);
+      transition: var(--tab-dragover-transition), var(--zen-tabbox-element-indent-transition);
     }
   }
   --zen-split-view-active-tab-bg: color-mix(

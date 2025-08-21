@@ -365,7 +365,7 @@
         heightUntilSelected = window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
       }
 
-      let selectedIdx = -1;
+      let selectedIdx = items.length;
       if (selectedItems.length) {
         for (let i = 0; i < items.length; i++) {
           if (selectedItems.includes(items[i].item)) {
@@ -841,7 +841,7 @@
       }
 
       const activeGroup = event.target.parentElement;
-      if (activeGroup.tabs.filter((tab) => !tab.hasAttribute('zen-empty-tab')).length === 0) {
+      if (activeGroup.tabs.filter((tab) => this.#shouldAppearOnTabSearch(tab)).length === 0) {
         // If the group has no tabs, we don't show the popup
         return;
       }
@@ -928,12 +928,23 @@
       };
     }
 
+    #shouldAppearOnTabSearch(tab) {
+      // Note that tab.visible and tab.hidden act in different ways.
+      // We specifically do tab.visible because we don't want appearing
+      // as 'folder active' in the tab list, it would be rather useless to have
+      // that option as the user. tab.hidden doesn't actually tell translate
+      // to `!tab.visible`, it represents the literally state of it having the
+      // attribute `hidden` set, which doesn't take into account the visibility
+      // of the tab itself.
+      return !(tab.visible || tab.hidden || tab.hasAttribute('zen-empty-tab'));
+    }
+
     #populateTabsList(group) {
       const tabsList = this.#popup.querySelector('#zen-folder-tabs-list');
       tabsList.replaceChildren();
 
       for (const tab of group.tabs) {
-        if (tab.hidden || tab.hasAttribute('zen-empty-tab')) continue;
+        if (!this.#shouldAppearOnTabSearch(tab)) continue;
 
         const item = document.createElement('div');
         item.className = 'folders-tabs-list-item';

@@ -1146,7 +1146,7 @@
 
     collapseVisibleTab(group, onlyIfActive = false, selectedTab) {
       if (!group?.isZenFolder) return;
-      
+
       if (onlyIfActive && group.activeGroups.length && selectedTab) {
         for (const activeGroup of group.activeGroups) {
           activeGroup.removeAttribute('has-active');

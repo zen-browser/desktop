@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d80a66a01002e78a9c65545d08fe786328ddf124..749991884735a1a6d7b1a2c2e1c77f7eae2e5c28 100644
+index d80a66a01002e78a9c65545d08fe786328ddf124..1c01a1931a2d0b98f2d8f9a3b27e565c1ec15e92 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -422,15 +422,60 @@
@@ -718,8 +718,12 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..749991884735a1a6d7b1a2c2e1c77f7e
            } else if (targetElement) {
              targetElement.after(element);
            } else {
-@@ -6230,7 +6388,7 @@
-       if (!this.isTab(aTab)) {
+@@ -6227,10 +6385,10 @@
+      * @param {TabMetricsContext} [metricsContext]
+      */
+     moveTabToGroup(aTab, aGroup, metricsContext) {
+-      if (!this.isTab(aTab)) {
++      if (!this.isTab(aTab) && !aTab.hasAttribute('split-view-group')) {
          throw new Error("Can only move a tab into a tab group");
        }
 -      if (aTab.pinned) {

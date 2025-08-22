@@ -615,12 +615,26 @@
         contextMenu.triggerNode &&
         (contextMenu.triggerNode.tab || contextMenu.triggerNode.closest('tab'));
 
-      tabs.push(triggerTab, ...gBrowser.selectedTabs);
+      const selectedTabs = gBrowser.selectedTabs;
+      if (selectedTabs.length > 1) {
+        tabs.push(triggerTab, ...gBrowser.selectedTabs);
+      } else {
+        tabs.push(triggerTab);
+      }
       if (isFromToolbar) {
         tabs = [];
       }
 
-      const group = this.createFolder(tabs, { insertBefore: triggerTab, renameFolder: true });
+      const canInsertBefore =
+        !triggerTab.hasAttribute('zen-essential') &&
+        !triggerTab?.group?.hasAttribute('split-view-group') &&
+        this.canDropElement({ isZenFolder: true }, triggerTab);
+
+      const group = this.createFolder(tabs, {
+        insertAfter: !canInsertBefore ? triggerTab?.group : null,
+        insertBefore: canInsertBefore ? triggerTab : null,
+        renameFolder: true,
+      });
       if (!group) return;
       this.#groupInit(group);
     }
@@ -695,19 +709,25 @@
     }
 
     canDropElement(element, targetElement) {
-      if (element?.isZenFolder && targetElement?.group?.level >= ZEN_MAX_SUBFOLDERS) {
+      const isZenFolder = element?.isZenFolder;
+      const level = targetElement?.group?.level + 1;
+      if (isZenFolder && level >= ZEN_MAX_SUBFOLDERS) {
         return false;
       }
       return true;
     }
 
     createFolder(tabs = [], options = {}) {
-      for (const tab of tabs) {
-        if (tab.hasAttribute('zen-essential')) return;
-        if (tab.group?.hasAttribute('split-view-group')) return;
+      const filteredTabs = tabs
+        .filter((tab) => !tab.hasAttribute('zen-essential'))
+        .map((tab) => {
+          gBrowser.pinTab(tab);
+          if (tab?.group?.hasAttribute('split-view-group')) {
+            tab = tab.group;
+          }
+          return tab;
+        });
 
-        gBrowser.pinTab(tab);
-      }
       const workspacePinned = gZenWorkspaces.workspaceElement(
         options.workspaceId
       )?.pinnedTabsContainer;
@@ -724,7 +744,7 @@
         _forZenEmptyTab: true,
       });
 
-      tabs = [emptyTab, ...tabs];
+      tabs = [emptyTab, ...filteredTabs];
 
       const folder = this._createFolderNode(options);
       if (options.initialPinId) {

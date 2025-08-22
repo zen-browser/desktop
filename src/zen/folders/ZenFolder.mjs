@@ -234,7 +234,7 @@
       return this.labelElement.parentElement.querySelector('.tab-reset-button');
     }
 
-    async #unloadAllActiveTabs() {
+    #unloadAllActiveTabs() {
       for (const tab of this.activeTabs) {
         const tabResetButton = tab.querySelector('.tab-reset-button');
         if (tabResetButton) {

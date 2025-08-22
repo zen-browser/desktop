@@ -1184,13 +1184,17 @@
         this.updateFolderIcon(group, 'close', false);
       }
 
-      gZenUIManager.motion.animate(
-        groupStart,
-        {
-          marginTop: newMargin,
-        },
-        { duration: 0.15, ease: 'easeInOut' }
-      );
+      gZenUIManager.motion
+        .animate(
+          groupStart,
+          {
+            marginTop: newMargin,
+          },
+          { duration: 0.15, ease: 'easeInOut' }
+        )
+        .then(() => {
+          selectedTab.style.removeProperty('--zen-folder-indent');
+        });
 
       gBrowser.tabContainer._invalidateCachedVisibleTabs();
     }

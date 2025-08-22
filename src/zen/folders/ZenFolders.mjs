@@ -224,10 +224,10 @@
       folder.group.collapsed = false;
     }
 
-    #onTabSelected(event) {
-      const tab = event.target;
+    #onTabSelected() {
+      // const tab = event.target;
       // const prevTab = event.detail.previousTab;
-      const group = tab?.group;
+      // const group = tab?.group;
       // const isActive = group?.activeGroups?.length > 0;
       // if (isActive) tab.setAttribute('folder-active', true);
       // TODO: Figure out what to do with this
@@ -477,6 +477,7 @@
         }
         // Folder has been expanded and has no active tabs
         group.activeTabs = [];
+
         folders.clear();
       }
 
@@ -1143,17 +1144,16 @@
       }
     }
 
-    collapseVisibleTab(group, onlyIfActive = false, selectedTabId = null) {
+    collapseVisibleTab(group, onlyIfActive = false, selectedTab) {
       if (!group?.isZenFolder) return;
+      const selectedTabId = selectedTab?.getAttribute('zen-pin-id');
       // if (onlyIfActive && !group.hasAttribute('has-active')) return;
       if (onlyIfActive && group.activeGroups.length) {
         for (const activeGroup of group.activeGroups) {
-          if (activeGroup.getAttribute('selected-tab-id') === selectedTabId) {
+          if (activeGroup.getAttribute('selected-tab-id') === selectedTabId && selectedTab) {
             activeGroup.removeAttribute('has-active');
-            activeGroup
-              .querySelector(`tab[zen-pin-id="${selectedTabId}"]`)
-              .style.removeProperty('--zen-folder-indent');
-            this.collapseVisibleTab(activeGroup, true, selectedTabId);
+            selectedTab.style.removeProperty('--zen-folder-indent');
+            this.collapseVisibleTab(activeGroup, true, selectedTab);
           }
         }
       }
@@ -1164,7 +1164,7 @@
       let itemHeight = 0;
       for (const item of group.allItems) {
         itemHeight += item.getBoundingClientRect().height;
-        if (item.hasAttribute('folder-active') && !item.selected) {
+        if (item.hasAttribute('folder-active') && (!item.selected || !onlyIfActive)) {
           item.removeAttribute('folder-active');
           if (!onlyIfActive) {
             item.setAttribute('was-folder-active', 'true');
@@ -1186,6 +1186,8 @@
         },
         { duration: 0.15, ease: 'easeInOut' }
       );
+
+      gBrowser.tabContainer._invalidateCachedVisibleTabs();
     }
 
     expandVisibleTab(group) {
@@ -1211,6 +1213,8 @@
       );
       groupStart.removeAttribute('old-margin');
       groupStart.removeAttribute('new-margin');
+
+      gBrowser.tabContainer._invalidateCachedVisibleTabs();
     }
 
     async expandToSelected(group) {

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "surfer build",
     "build:ui": "surfer build --ui",
-    "start": "cd engine && python ./mach run --noprofile",
+    "start": "cd engine && python3 ./mach run --noprofile",
     "import": "npm run ffprefs && surfer import",
     "export": "surfer export",
     "init": "npm run download && npm run import && npm run bootstrap",

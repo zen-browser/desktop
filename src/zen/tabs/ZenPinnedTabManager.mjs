@@ -776,7 +776,11 @@
                 }, 3000);
               });
             }
-            await gZenFolders.collapseVisibleTab(selectedTab.group, /* only if active */ true);
+            await gZenFolders.collapseVisibleTab(
+              selectedTab.group,
+              /* only if active */ true,
+              selectedTab
+            );
             await gBrowser.explicitUnloadTabs([selectedTab]);
             selectedTab.removeAttribute('discarded');
           }

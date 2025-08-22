@@ -234,16 +234,20 @@
       return this.labelElement.parentElement.querySelector('.tab-reset-button');
     }
 
-    async #unloadAllActiveTabs(event) {
+    async #unloadAllActiveTabs() {
       for (const tab of this.activeTabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab);
+        const tabResetButton = tab.querySelector('.tab-reset-button');
+        if (tabResetButton) {
+          tabResetButton.click();
+        }
       }
       this.activeTabs = [];
     }
 
     on_click(event) {
       if (event.target === this.resetButton) {
-        this.#unloadAllActiveTabs(event);
+        event.stopPropagation();
+        this.#unloadAllActiveTabs();
         return;
       }
       super.on_click(event);

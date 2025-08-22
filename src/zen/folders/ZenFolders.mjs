@@ -1146,19 +1146,24 @@
 
     collapseVisibleTab(group, onlyIfActive = false, selectedTab) {
       if (!group?.isZenFolder) return;
-      const selectedTabId = selectedTab?.getAttribute('zen-pin-id');
       // if (onlyIfActive && !group.hasAttribute('has-active')) return;
-      if (onlyIfActive && group.activeGroups.length) {
+      if (onlyIfActive && group.activeGroups.length && selectedTab) {
         for (const activeGroup of group.activeGroups) {
-          if (activeGroup.getAttribute('selected-tab-id') === selectedTabId && selectedTab) {
-            activeGroup.removeAttribute('has-active');
-            selectedTab.style.removeProperty('--zen-folder-indent');
-            this.collapseVisibleTab(activeGroup, true, selectedTab);
-          }
+          activeGroup.removeAttribute('has-active');
+          selectedTab.style.removeProperty('--zen-folder-indent');
+          this.collapseVisibleTab(activeGroup, true, selectedTab);
         }
       }
-
-      if (group.getAttribute('selected-tab-id') !== selectedTabId) return;
+      // Only continue from here if we have the active tab for this group.
+      // This is important so we dont set the margin to the wrong group.
+      // Example:
+      //   folder1
+      //   ├─ folder2
+      //   └─── tab
+      // When we collapse folder1 ONLY and reset tab since it's `active`, pinned
+      // manager gives originally the direct group of `tab`, which is `folder2`.
+      // But we should be setting the margin only on `folder1`.
+      if (!group.activeTabs.includes(selectedTab)) return;
       const groupStart = group.querySelector('.zen-tab-group-start');
       groupStart.setAttribute('old-margin', groupStart.style.marginTop);
       let itemHeight = 0;

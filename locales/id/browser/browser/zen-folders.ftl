@@ -14,4 +14,4 @@ zen-folders-panel-change-folder-space =
     .label = Ubah Ruang...
 zen-folders-panel-change-icon-folder = 
     .label = Ubah Ikon
-zen-folders-search-no-results = Tidak ada tab yang cocok dengan pencarian 🤔
+zen-folders-search-no-results = Tidak ada tab yang cocok 🤔

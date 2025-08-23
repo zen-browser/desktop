@@ -1090,11 +1090,7 @@
       }
       let opacity = this.currentOpacity;
       if (forToolbar && !this.#allowTransparencyOnSidebar) {
-        color = this.blendColors(
-          color.c,
-          this.getToolbarModifiedBaseRaw().slice(0, 3),
-          90
-        );
+        color = this.blendColors(color.c, this.getToolbarModifiedBaseRaw().slice(0, 3), 90);
         opacity = 1; // Toolbar colors should always be fully opaque
       } else {
         color = color.c;

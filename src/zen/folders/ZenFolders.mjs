@@ -471,7 +471,9 @@
         const folders = new Map();
         group.removeAttribute('has-active');
         for (let tab of activeTabs) {
-          const group = tab?.group?.hasAttribute('split-view-group') ? tab?.group?.group : tab?.group;
+          const group = tab?.group?.hasAttribute('split-view-group')
+            ? tab?.group?.group
+            : tab?.group;
           if (!folders.has(group?.id)) {
             folders.set(group?.id, group?.activeGroups?.at(-1));
           }
@@ -1126,10 +1128,8 @@
       }
       if (
         gBrowser.isTab(groupElem) &&
-        (
-          !(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group)
-          || groupElem?.hasAttribute('zen-empty-tab')
-        )
+        (!(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group) ||
+          groupElem?.hasAttribute('zen-empty-tab'))
       ) {
         groupElem = groupElem.group;
         isTab = true;

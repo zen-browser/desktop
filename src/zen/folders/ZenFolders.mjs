@@ -1013,7 +1013,7 @@
 
         const secondaryLabel = document.createElement('div');
         secondaryLabel.className = 'tab-list-item-secondary-label';
-        secondaryLabel.textContent = formatRelativeTime(tab.lastAccessed);
+        secondaryLabel.textContent = `${formatRelativeTime(tab.lastAccessed)} • ${tab.group.label}`;
 
         labelsContainer.append(mainLabel, secondaryLabel);
         content.append(icon, labelsContainer);

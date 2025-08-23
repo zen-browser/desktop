@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d80a66a01002e78a9c65545d08fe786328ddf124..2a6e1e202deca8b4746327b82db3dca4718bd553 100644
+index d80a66a01002e78a9c65545d08fe786328ddf124..bb57b1eeb033f602d5014ab23e2cc1389bb9e615 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -422,15 +422,60 @@
@@ -337,7 +337,7 @@ index d80a66a01002e78a9c65545d08fe786328ddf124..2a6e1e202deca8b4746327b82db3dca4
          if (!tab) {
            let createLazyBrowser =
 -            restoreTabsLazily && !select && !tabData.pinned;
-+            restoreTabsLazily && !tabData.pinned;
++            restoreTabsLazily;
  
            let url = "about:blank";
            if (tabData.entries?.length) {

@@ -1093,7 +1093,7 @@
         color = this.blendColors(
           color.c,
           this.getToolbarModifiedBaseRaw().slice(0, 3),
-          opacity * 100
+          90
         );
         opacity = 1; // Toolbar colors should always be fully opaque
       } else {

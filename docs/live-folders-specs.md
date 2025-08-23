@@ -102,3 +102,11 @@ Remote APIs can return any JSON, but the Live Folder must provide a mapping conf
   }
 }
 ```
+
+### Installation of REST API Live Folder
+
+These schemas would be stored inside a marketplace on Zen's web platform, allowing users to easily discover and integrate new REST API Live Folders into their workspace.
+
+If the user wants to create a new REST API Live Folder, they can do so by providing the necessary schema and configuration through the marketplace interface. This will enable them to customize the folder's behavior and data mapping according to their specific needs.
+
+If it's a custom API and the schema is not publicly available, users can still create a Live Folder by defining their own mapping configuration. This allows them to integrate with proprietary APIs while adhering to Zen's Live Folder standards. This mapping configuration will be fetched via `https://example.com/zen-live-folder.schema.json`.

@@ -278,6 +278,7 @@
       const activeGroup = group.activeGroups;
       if (activeGroup?.length > 0) {
         for (const folder of activeGroup) {
+          folder.activeTabs = folder.activeTabs.filter((tab) => tab.hasAttribute('folder-active'));
           if (!folder.activeTabs.length) {
             folder.removeAttribute('has-active');
           }
@@ -470,8 +471,9 @@
         const folders = new Map();
         group.removeAttribute('has-active');
         for (let tab of activeTabs) {
-          if (!folders.has(tab?.group?.id)) {
-            folders.set(tab?.group?.id, tab?.group?.activeGroups?.at(-1));
+          const group = tab?.group?.hasAttribute('split-view-group') ? tab?.group?.group : tab?.group;
+          if (!folders.has(group?.id)) {
+            folders.set(group?.id, group?.activeGroups?.at(-1));
           }
           let activeGroup = folders.get(tab?.group?.id);
           // If group has active tabs, we need to update the indentation
@@ -1125,6 +1127,7 @@
       if (
         gBrowser.isTab(groupElem) &&
         !(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group)
+        || groupElem?.hasAttribute('zen-empty-tab')
       ) {
         groupElem = groupElem.group;
         isTab = true;

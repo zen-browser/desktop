@@ -178,17 +178,16 @@
     }
 
     #initEventListeners() {
-      window.addEventListener('TabGrouped', this.#onTabGrouped.bind(this));
-      window.addEventListener('TabUngrouped', this.#onTabUngrouped.bind(this));
-      window.addEventListener('TabGroupRemoved', this.#onTabGroupRemoved.bind(this));
-      window.addEventListener('TabGroupCreate', this.#onTabGroupCreate.bind(this));
-      window.addEventListener('TabPinned', this.#onTabPinned.bind(this));
-      window.addEventListener('TabUnpinned', this.#onTabUnpinned.bind(this));
-      window.addEventListener('TabGroupExpand', this.#onTabGroupExpand.bind(this));
-      window.addEventListener('TabGroupCollapse', this.#onTabGroupCollapse.bind(this));
-      window.addEventListener('FolderGrouped', this.#onFolderGrouped.bind(this));
-      window.addEventListener('TabSelect', this.#onTabSelected.bind(this));
-      window.addEventListener('TabOpen', this.#onTabOpened.bind(this));
+      window.addEventListener('TabGrouped', this);
+      window.addEventListener('TabUngrouped', this);
+      window.addEventListener('TabGroupCreate', this);
+      window.addEventListener('TabPinned', this);
+      window.addEventListener('TabUnpinned', this);
+      window.addEventListener('TabGroupExpand', this);
+      window.addEventListener('TabGroupCollapse', this);
+      window.addEventListener('FolderGrouped', this);
+      window.addEventListener('TabSelect', this);
+      window.addEventListener('TabOpen', this);
       const onNewFolder = this.#onNewFolder.bind(this);
       document
         .getElementById('zen-context-menu-new-folder')
@@ -201,7 +200,16 @@
       });
     }
 
-    #onTabGrouped(event) {
+    handleEvent(aEvent) {
+      let methodName = `on_${aEvent.type}`;
+      if (methodName in this) {
+        this[methodName](aEvent);
+      } else {
+        throw new Error(`Unexpected event ${aEvent.type}`);
+      }
+    }
+
+    on_TabGrouped(event) {
       const tab = event.detail;
       const group = tab.group;
       group.pinned = tab.pinned;
@@ -218,13 +226,13 @@
       }
     }
 
-    #onFolderGrouped(event) {
+    on_FolderGrouped(event) {
       if (this._sessionRestoring) return;
       const folder = event.detail;
       folder.group.collapsed = false;
     }
 
-    async #onTabSelected(event) {
+    async on_TabSelect(event) {
       const tab = event.target;
       let group = tab?.group;
       if (group?.hasAttribute('split-view-group')) group = group?.group;
@@ -241,7 +249,7 @@
       gBrowser.tabContainer._invalidateCachedTabs();
     }
 
-    #onTabOpened(event) {
+    on_TabOpen(event) {
       const tab = event.target;
       const group = tab.group;
       if (!group?.isZenFolder || tab.pinned) return;
@@ -258,7 +266,7 @@
       }
     }
 
-    #onTabUngrouped(event) {
+    on_TabUngrouped(event) {
       const tab = event.detail;
       const group = event.target;
       tab.removeAttribute('folder-active');
@@ -278,7 +286,7 @@
       }
     }
 
-    #onTabGroupCreate(event) {
+    on_TabGroupCreate(event) {
       const group = event.target;
       const tabs = group.tabs;
       if (!group.pinned) {
@@ -292,9 +300,7 @@
       }
     }
 
-    #onTabGroupRemoved() {}
-
-    #onTabPinned(event) {
+    on_TabPinned(event) {
       const tab = event.target;
       const group = tab.group;
       if (group && group.hasAttribute('split-view-group')) {
@@ -302,7 +308,7 @@
       }
     }
 
-    #onTabUnpinned(event) {
+    on_TabUnpinned(event) {
       const tab = event.target;
       const group = tab.group;
       if (group && group.hasAttribute('split-view-group')) {
@@ -318,7 +324,7 @@
       this.#popup.hidePopup();
     }
 
-    async #onTabGroupCollapse(event) {
+    async on_TabGroupCollapse(event) {
       const group = event.target;
       if (!group.isZenFolder) return;
 
@@ -446,7 +452,7 @@
       }
     }
 
-    async #onTabGroupExpand(event) {
+    async on_TabGroupExpand(event) {
       const group = event.target;
       if (!group.isZenFolder) return;
 
@@ -1433,7 +1439,7 @@
       }
 
       if (group.collapsed) {
-        this.#onTabGroupCollapse({ target: group });
+        this.on_TabGroupCollapse({ target: group });
       }
 
       const labelContainer = group.querySelector('.tab-group-label-container');

@@ -1126,8 +1126,10 @@
       }
       if (
         gBrowser.isTab(groupElem) &&
-        !(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group)
-        || groupElem?.hasAttribute('zen-empty-tab')
+        (
+          !(groupElem.hasAttribute('zen-empty-tab') && groupElem.group === tab.group)
+          || groupElem?.hasAttribute('zen-empty-tab')
+        )
       ) {
         groupElem = groupElem.group;
         isTab = true;

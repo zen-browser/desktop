@@ -50,6 +50,9 @@
       #navigator-toolbox {
         --zen-toolbox-max-width: 74px !important;
         --zen-compact-float: var(--zen-element-separation);
+        :root[zen-no-padding='true'] & {
+          --zen-compact-float: 10px;
+        }
 
         /* Initial padding for when we are animating */
         padding: 0 0 0 var(--zen-toolbox-padding) !important;
@@ -62,14 +65,14 @@
             right 0.15s ease,
             visibility 0.15s ease;
           top: 0;
-          bottom: var(--zen-element-separation);
+          bottom: var(--zen-compact-float);
           padding: 0 var(--zen-compact-float) !important;
           :root[zen-single-toolbar='true'] & {
-            top: calc(var(--zen-element-separation) / 2);
-            height: calc(100% - var(--zen-element-separation));
+            top: calc(var(--zen-compact-float) / 2);
+            height: calc(100% - var(--zen-compact-float));
           }
           :root:not([zen-single-toolbar='true']) & {
-            top: calc(var(--zen-element-separation) / -2);
+            top: calc(var(--zen-compact-float) / -2);
             height: calc(100% - var(--zen-toolbar-height));
             @media -moz-pref('zen.view.compact.hide-toolbar') {
               height: 100%;
@@ -289,10 +292,6 @@
             1.003423 100%
           );
           --zen-compact-mode-time: 0.25s;
-          :root[zen-no-padding='true'] & {
-            --zen-compact-mode-func: ease-out;
-            --zen-compact-mode-time: 0.1s;
-          }
           transition:
             left var(--zen-compact-mode-time) var(--zen-compact-mode-func),
             right var(--zen-compact-mode-time) var(--zen-compact-mode-func);
@@ -303,9 +302,9 @@
               visibility: visible;
             }
 
-            left: calc(var(--zen-element-separation) / -2 - 1px);
+            left: calc(var(--zen-compact-float) / -2);
             :root[zen-right-side='true'] & {
-              right: calc(var(--zen-element-separation) / -2 - 1px);
+              right: calc(var(--zen-compact-float) / -2);
               left: auto;
             }          
           }

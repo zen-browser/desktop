@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab87d7fbf3 100644
+index 05f6aec3dac31231e15cb316f6e06d66ee87bea9..3bbbe8553777056798ea9ddce1744a8e48848a37 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -29,6 +29,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2282,6 +2283,8 @@ var XULBrowserWindow = {
+@@ -2287,6 +2288,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -19,7 +19,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -4617,7 +4620,7 @@ function switchToTabHavingURI(
+@@ -4630,7 +4633,7 @@ function switchToTabHavingURI(
        ignoreQueryString || replaceQueryString,
        ignoreFragmentWhenComparing
      );
@@ -28,7 +28,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab
      for (let i = 0; i < browsers.length; i++) {
        let browser = browsers[i];
        let browserCompare = cleanURL(
-@@ -4660,7 +4663,7 @@ function switchToTabHavingURI(
+@@ -4673,7 +4676,7 @@ function switchToTabHavingURI(
          }
  
          if (!doAdopt) {
@@ -37,7 +37,7 @@ index 8e839c497bba9de04948ad8759679b6a6f61a65f..d79bd14443d94b91309f0add133e35ab
          }
  
          return true;
-@@ -5476,6 +5479,9 @@ var ConfirmationHint = {
+@@ -5489,6 +5492,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

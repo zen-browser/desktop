@@ -7,10 +7,12 @@ unset MOZ_STDCXX_COMPAT
 ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
-# override LTO settings
-# TODO: Dont use LTO for now, it's causing a lot of issues
-export MOZ_LTO=cross,thin
-ac_add_options --enable-lto=cross,thin
+if test "$ZEN_RELEASE"; then
+  # override LTO settings
+  # TODO: Dont use LTO for now, it's causing a lot of issues
+  export MOZ_LTO=cross,thin
+  ac_add_options --enable-lto=cross,thin
+fi
 
 if test "$ZEN_RELEASE"; then
   if test "$ZEN_GA_DISABLE_PGO"; then

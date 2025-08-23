@@ -14,15 +14,25 @@ echo "# License, v. 2.0. If a copy of the MPL was not distributed with this" >> 
 echo "# file, You can obtain one at http://mozilla.org/MPL/2.0/." >> jar.inc.mn
 echo "" >> jar.inc.mn
 
+add_header_to_file() {
+  # add "#filter dumbComments emptyLines substitution" if it doesnt exist at the top of the file
+  HEADER="#filter dumbComments emptyLines substitution"
+  file="$1"
+  if ! grep -qF "$HEADER" "$file"; then
+    echo "$HEADER" | cat - "$file" > temp && mv temp "$file"
+  fi
+}
+
 do_icons() {
   os=$1
   preprocessed_os=$2
   echo "#ifdef XP_$preprocessed_os" >> jar.inc.mn
   for filename in $os/*.svg; do
     # remove the os/ prefix
+    add_header_to_file $filename
     filename=$(basename $filename)
     echo "Working on $filename"
-    echo "  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/$os/$filename) " >> jar.inc.mn
+    echo "*  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/$os/$filename) " >> jar.inc.mn
   done
   echo "#endif" >> jar.inc.mn
 }
@@ -30,15 +40,17 @@ do_icons() {
 do_common_icons() {
   for filename in common/*.svg; do
     # remove the os/ prefix
+    add_header_to_file $filename
     filename=$(basename $filename)
     echo "Working on $filename"
-    echo "  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/common/$filename) " >> jar.inc.mn
+    echo "*  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/common/$filename) " >> jar.inc.mn
   done
   for filename in common/selectable/*.svg; do
     # remove the os/ prefix
+    add_header_to_file $filename
     filename=$(basename $filename)
     echo "Working on $filename"
-    echo "  skin/classic/browser/zen-icons/selectable/$filename          (../shared/zen-icons/common/selectable/$filename) " >> jar.inc.mn
+    echo "*  skin/classic/browser/zen-icons/selectable/$filename          (../shared/zen-icons/common/selectable/$filename) " >> jar.inc.mn
   done
 }
 

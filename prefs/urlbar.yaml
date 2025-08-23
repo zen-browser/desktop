@@ -4,9 +4,6 @@
 
 # URL bar and search-related preferences
 
-- name: browser.urlbar.unitConversion.enabled
-  value: true
-
 - name: browser.urlbar.trending.featureGate
   value: false
 
@@ -19,18 +16,14 @@
 - name: browser.urlbar.clipboard.featureGate
   value: true
 
-- name: browser.urlbar.suggest.calculator
-  value: true
-
 - name: browser.urlbar.trimHttps
   value: true
 
 - name: browser.urlbar.untrimOnUserInteraction.featureGate
   value: true
 
-# Keep in sync with browser/components/topsites/constants.mjs
 - name: browser.urlbar.maxRichResults
-  value: 7
+  value: 5
 
 # Enable private suggestions
 - name: browser.search.suggest.enabled
@@ -40,9 +33,6 @@
   value: false
 
 - name: browser.search.separatePrivateDefault.ui.enabled
-  value: true
-
-- name: browser.urlbar.update2.engineAliasRefresh
   value: true
 
 - name: browser.urlbar.quicksuggest.enabled
@@ -65,12 +55,6 @@
 
 - name: browser.formfill.enable
   value: false
-
-- name: security.insecure_connection_text.enabled
-  value: true
-
-- name: security.insecure_connection_text.pbmode.enabled
-  value: true
 
 - name: network.IDN_show_punycode
   value: true

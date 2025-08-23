@@ -23,7 +23,6 @@ add_task(async function test_Create_Folder() {
     'Subfolder contains the tab and the empty tab created by Zen Folders'
   );
   Assert.equal(parent.tabs.length, 4, 'Parent folder contains the subfolder');
-  const removeEvent = BrowserTestUtils.waitForEvent(window, 'TabGroupRemoved');
-  parent.delete();
-  await removeEvent;
+  await removeFolder(subfolder);
+  await removeFolder(parent);
 });

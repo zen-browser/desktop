@@ -148,7 +148,7 @@ var gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       'zen-compact-mode-active'
@@ -604,7 +604,7 @@ var gZenCompactModeManager = {
         }, this.HOVER_HACK_DELAY);
       };
 
-      target.addEventListener('mouseenter', onEnter);
+      target.addEventListener('mouseover', onEnter);
       target.addEventListener('dragover', onEnter);
 
       target.addEventListener('mouseleave', onLeave);

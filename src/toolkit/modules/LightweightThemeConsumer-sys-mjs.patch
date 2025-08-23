@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-index c42269ca92e21d1058046d7247e19dc5fde4c1c0..b12d38aa8999d4c2c4c7218b299cd9ed1566fc7d 100644
+index 1d16b3f191a53b6877122086de9bba1fbcaa71f4..64df5577aac095ddd3d9a381bf118496bf279276 100644
 --- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
 +++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
 @@ -31,7 +31,7 @@ const toolkitVariableMap = [

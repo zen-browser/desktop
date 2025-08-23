@@ -245,6 +245,7 @@
       }
 
       const groups = new Map();
+      const pendingTabsInsideGroups = {};
 
       // Third pass: create new tabs for pins that don't have tabs
       for (let pin of pins) {
@@ -260,6 +261,13 @@
               const pinObject = this._pinsCache.find((p) => p.uuid === uuid);
               if (pinObject && pinObject.parentUuid === pin.uuid) {
                 tabs.push(existingTab);
+              }
+            }
+            // We still need to iterate through pending tabs since the database
+            // query doesn't guarantee the order of insertion
+            for (const [parentUuid, folderTabs] of Object.entries(pendingTabsInsideGroups)) {
+              if (parentUuid === pin.uuid) {
+                tabs.push(...folderTabs);
               }
             }
             const group = gZenFolders.createFolder(tabs, {
@@ -338,6 +346,12 @@
             const parentGroup = groups.get(pin.parentUuid);
             if (parentGroup) {
               parentGroup.querySelector('.tab-group-container').appendChild(newTab);
+            } else {
+              if (pendingTabsInsideGroups[pin.parentUuid]) {
+                pendingTabsInsideGroups[pin.parentUuid].push(newTab);
+              } else {
+                pendingTabsInsideGroups[pin.parentUuid] = [newTab];
+              }
             }
           } else {
             if (!pin.isEssential) {
@@ -707,7 +721,7 @@
     }
 
     async savePin(pin, notifyObservers = true) {
-      if (!this.#hasInitializedPins) {
+      if (!this.#hasInitializedPins && !gZenUIManager.testingEnabled) {
         return;
       }
       const existingPin = this._pinsCache.find((p) => p.uuid === pin.uuid);
@@ -740,9 +754,33 @@
         case 'switch':
           if (behavior.includes('unload')) {
             if (selectedTab.hasAttribute('glance-id')) {
-              break;
+              // We have a glance tab inside the tab we are trying to unload,
+              // before we used to just ignore it but now we need to fully close
+              // it as well.
+              gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
+              await new Promise((resolve) => {
+                let hasRan = false;
+                const onGlanceClose = () => {
+                  hasRan = true;
+                  resolve();
+                };
+                window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                // Set a timeout to resolve the promise if the event doesn't fire.
+                // We do this to prevent any future issues where glance woudnt close such as
+                // glance requering to ask for permit unload.
+                setTimeout(() => {
+                  if (!hasRan) {
+                    console.warn('GlanceClose event did not fire within 3 seconds');
+                    resolve();
+                  }
+                }, 3000);
+              });
             }
-            await gZenFolders.collapseVisibleTab(selectedTab.group, /* only if active */ true);
+            await gZenFolders.collapseVisibleTab(
+              selectedTab.group,
+              /* only if active */ true,
+              selectedTab
+            );
             await gBrowser.explicitUnloadTabs([selectedTab]);
             selectedTab.removeAttribute('discarded');
           }
@@ -989,7 +1027,8 @@
       }
       movingTabs = [...movingTabs];
       try {
-        const pinnedTabsTarget = this._isGoingToPinnedTabs;
+        const pinnedTabsTarget =
+          event.target.closest('.zen-current-workspace-indicator') || this._isGoingToPinnedTabs;
         const essentialTabsTarget = event.target.closest('.zen-essentials-container');
         const tabsTarget = !this._isGoingToPinnedTabs;
 
@@ -1162,7 +1201,10 @@
             continue;
           }
         }
-        const itemToAnimate = item.group?.hasAttribute('split-view-group') ? item.group : item;
+        const itemToAnimate =
+          item.group?.hasAttribute('split-view-group') || gBrowser.isTabGroupLabel(item)
+            ? item.group
+            : item;
         itemToAnimate.style.removeProperty('--zen-folder-indent');
       }
       this.removeTabContainersDragoverClass();
@@ -1196,10 +1238,11 @@
       if (!isPinned) {
         topToNormalTabs += draggedTab.getBoundingClientRect().height;
       }
-      const isGoingToPinnedTabs = translate < topToNormalTabs;
+      const isGoingToPinnedTabs =
+        translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
       this._isGoingToPinnedTabs = isGoingToPinnedTabs;
-      if (!dropElement && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0) {
+      if (!dropElement) {
         itemsToCheck.forEach((item) => {
           item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
         });
@@ -1311,8 +1354,8 @@
         gZenWorkspaces.activeWorkspaceIndicator?.removeAttribute('open');
       }
 
-      if (draggedTab) {
-        gZenFolders.ungroupTabFromActiveGroups(draggedTab);
+      if (draggedTab?._dragData?.movingTabs) {
+        gZenFolders.ungroupTabsFromActiveGroups(draggedTab._dragData.movingTabs);
       }
 
       let shouldAddDragOverElement = false;

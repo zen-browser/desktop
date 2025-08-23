@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 79a95268e5..3a9fe04d6a 100644
+index b710cbf2aa3febc0693bdc6aef48ef4aea855235..61c813322c866ae823dac6c0826d572a1e768135 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -19,7 +19,7 @@
@@ -23,7 +23,7 @@ index 79a95268e5..3a9fe04d6a 100644
    --tab-selected-bgcolor: var(--toolbar-bgcolor);
    --tab-selected-color-scheme: var(--toolbar-color-scheme);
    &[lwt-tab-selected="light"] {
-@@ -251,7 +251,6 @@
+@@ -255,7 +255,6 @@
    }
  
    :root:not([uidensity="compact"], [sidebar-expand-on-hover]) &[pinned] {
@@ -31,7 +31,7 @@ index 79a95268e5..3a9fe04d6a 100644
    }
  
    &:is([selected], [multiselected]) {
-@@ -265,6 +264,7 @@
+@@ -269,6 +268,7 @@
      border-radius: inherit;
      position: relative;
      overflow: hidden;
@@ -39,7 +39,7 @@ index 79a95268e5..3a9fe04d6a 100644
  
      &::before {
        position: absolute;
-@@ -464,14 +464,11 @@
+@@ -468,14 +468,11 @@
  .tab-icon-image {
    -moz-context-properties: fill, stroke;
    fill: currentColor;
@@ -55,7 +55,7 @@ index 79a95268e5..3a9fe04d6a 100644
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -488,10 +485,6 @@
+@@ -492,10 +489,6 @@
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("browser.tabs.fadeOutExplicitlyUnloadedTabs") {
      &[pending][discarded] {
@@ -66,7 +66,7 @@ index 79a95268e5..3a9fe04d6a 100644
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -564,7 +557,7 @@
+@@ -568,7 +561,7 @@
    z-index: 1; /* Overlay tab title */
  
    #tabbrowser-tabs[orient="vertical"] & {
@@ -75,7 +75,7 @@ index 79a95268e5..3a9fe04d6a 100644
    }
  
    &[crashed] {
-@@ -572,7 +565,7 @@
+@@ -576,7 +569,7 @@
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) &:not([crashed]),
@@ -84,7 +84,7 @@ index 79a95268e5..3a9fe04d6a 100644
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -629,7 +622,7 @@
+@@ -633,7 +626,7 @@
      }
    }
  
@@ -93,7 +93,7 @@ index 79a95268e5..3a9fe04d6a 100644
    &[crashed] {
      display: revert;
    }
-@@ -730,7 +723,7 @@
+@@ -734,7 +727,7 @@
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
      #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
@@ -102,22 +102,7 @@ index 79a95268e5..3a9fe04d6a 100644
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1004,20 +997,20 @@ tab-group {
-    */
-   display: contents;
- 
--  #tabbrowser-tabs[orient="horizontal"] &[collapsed] > .tabbrowser-tab {
-+  #tabbrowser-tabs[orient="horizontal"] &[collapsed] .tab-group-container > .tabbrowser-tab {
-     min-width: 0 !important;
-     max-width: 0 !important;
-     padding: 0;
-     overflow-clip-margin: 0;
-   }
- 
--  #tabbrowser-tabs[orient="vertical"] &[collapsed] > .tabbrowser-tab {
-+  #tabbrowser-tabs[orient="vertical"] &[collapsed] .tab-group-container > .tabbrowser-tab {
-     display: none;
-   }
+@@ -1039,7 +1032,7 @@ tab-group {
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
@@ -126,7 +111,7 @@ index 79a95268e5..3a9fe04d6a 100644
    &[movingtab][movingtab-addToGroup]:not([movingtab-createGroup], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -1370,7 +1363,7 @@ tab-group {
+@@ -1457,7 +1450,7 @@ tab-group {
    }
  }
  
@@ -135,7 +120,7 @@ index 79a95268e5..3a9fe04d6a 100644
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -1381,7 +1374,7 @@ tab-group {
+@@ -1468,7 +1461,7 @@ tab-group {
    margin-inline: var(--tab-inner-inline-margin);
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -144,7 +129,7 @@ index 79a95268e5..3a9fe04d6a 100644
    }
  
    &:hover {
-@@ -1405,7 +1398,7 @@ tab-group {
+@@ -1492,7 +1485,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -153,7 +138,7 @@ index 79a95268e5..3a9fe04d6a 100644
    margin-block: var(--tab-block-margin);
  }
  
-@@ -1600,7 +1593,6 @@ tab-group {
+@@ -1687,7 +1680,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -161,7 +146,7 @@ index 79a95268e5..3a9fe04d6a 100644
      }
  
      .tab-background {
-@@ -1760,7 +1752,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -1847,7 +1839,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

@@ -31,3 +31,6 @@
 - name: browser.contentblocking.report.show_mobile_app
   value: false
   locked: true
+
+- name: termsofuse.bypassNotification
+  value: true

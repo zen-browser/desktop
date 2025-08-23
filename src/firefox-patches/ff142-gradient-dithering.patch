@@ -1,0 +1,545 @@
+diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src/bindings.rs
+index 578c2f80a9db..08823b7fea22 100644
+--- a/gfx/webrender_bindings/src/bindings.rs
++++ b/gfx/webrender_bindings/src/bindings.rs
+@@ -2144,12 +2144,6 @@ pub extern "C" fn wr_window_new(
+         }
+     };
+ 
+-    let enable_dithering = if !software && static_prefs::pref!("gfx.webrender.dithering") {
+-        true
+-    } else {
+-        false
+-    };
+-
+     let opts = WebRenderOptions {
+         enable_aa: true,
+         enable_subpixel_aa,
+@@ -2204,7 +2198,6 @@ pub extern "C" fn wr_window_new(
+         reject_software_rasterizer,
+         low_quality_pinch_zoom,
+         max_shared_surface_size,
+-        enable_dithering,
+         ..Default::default()
+     };
+ 
+@@ -4615,11 +4608,8 @@ pub extern "C" fn wr_shaders_new(
+ 
+     device.begin_frame();
+ 
+-    let mut options = WebRenderOptions::default();
+-    options.enable_dithering = static_prefs::pref!("gfx.webrender.dithering");
+-
+     let gl_type = device.gl().get_type();
+-    let mut shaders = match Shaders::new(&mut device, gl_type, &options) {
++    let mut shaders = match Shaders::new(&mut device, gl_type, &WebRenderOptions::default()) {
+         Ok(shaders) => shaders,
+         Err(e) => {
+             warn!(" Failed to create a Shaders: {:?}", e);
+diff --git a/gfx/wr/glsl-to-cxx/src/hir.rs b/gfx/wr/glsl-to-cxx/src/hir.rs
+index 626a3643e6ee..f0bb95d1df38 100644
+--- a/gfx/wr/glsl-to-cxx/src/hir.rs
++++ b/gfx/wr/glsl-to-cxx/src/hir.rs
+@@ -3964,6 +3964,14 @@ pub fn ast_to_hir(state: &mut State, tu: &syntax::TranslationUnit) -> Translatio
+         vec![Type::new(Sampler2D), Type::new(Int), Type::new(Float), Type::new(Bool), Type::new(Bool),
+              Type::new(Vec2), Type::new(Vec2), Type::new(Float)],
+     );
++    declare_function(
++        state,
++        "swgl_commitDitheredLinearGradientRGBA8",
++        None,
++        Type::new(Void),
++        vec![Type::new(Sampler2D), Type::new(Int), Type::new(Float), Type::new(Bool), Type::new(Bool),
++             Type::new(Vec2), Type::new(Vec2), Type::new(Float), Type::new(Vec4)],
++    );
+     declare_function(
+         state,
+         "swgl_commitRadialGradientRGBA8",
+@@ -3972,6 +3980,14 @@ pub fn ast_to_hir(state: &mut State, tu: &syntax::TranslationUnit) -> Translatio
+         vec![Type::new(Sampler2D), Type::new(Int), Type::new(Float), Type::new(Bool), Type::new(Vec2),
+              Type::new(Float)],
+     );
++    declare_function(
++        state,
++        "swgl_commitDitheredRadialGradientRGBA8",
++        None,
++        Type::new(Void),
++        vec![Type::new(Sampler2D), Type::new(Int), Type::new(Float), Type::new(Bool), Type::new(Vec2),
++             Type::new(Float), Type::new(Vec4)],
++    );
+     declare_function(
+         state,
+         "swgl_commitGradientRGBA8",
+diff --git a/gfx/wr/swgl/build.rs b/gfx/wr/swgl/build.rs
+index fd6ec3fc4726..b8c9ad2ec174 100644
+--- a/gfx/wr/swgl/build.rs
++++ b/gfx/wr/swgl/build.rs
+@@ -142,6 +142,7 @@ fn main() {
+     let shader_flags = ShaderFeatureFlags::GL
+         | ShaderFeatureFlags::DUAL_SOURCE_BLENDING
+         | ShaderFeatureFlags::ADVANCED_BLEND_EQUATION
++        | ShaderFeatureFlags::DITHERING
+         | ShaderFeatureFlags::DEBUG;
+     let mut shaders: Vec<String> = Vec::new();
+     for (name, features) in get_shader_features(shader_flags) {
+diff --git a/gfx/wr/swgl/src/swgl_ext.h b/gfx/wr/swgl/src/swgl_ext.h
+index 36b66843f63a..5a517afbe25c 100644
+--- a/gfx/wr/swgl/src/swgl_ext.h
++++ b/gfx/wr/swgl/src/swgl_ext.h
+@@ -1383,14 +1383,63 @@ static inline WideRGBA8 sampleGradient(sampler2D sampler, int address,
+   swgl_commitChunk(RGBA8, applyColor(sampleGradient(sampler, address, entry), \
+                                      packColor(swgl_OutRGBA, color)))
+ 
++static const int8_t ditherNoiseMatrix[] = {
++    -126, 66,  -78,  114, -114, 78,   -66,  126, 2,   -62, 50,   -14,  14,
++    -50,  62,  -2,   -94, 98,   -110, 82,   -82, 110, -98, 94,   34,   -30,
++    18,   -46, 46,   -18, 30,   -34,  -118, 74,  -70, 122, -122, 70,   -74,
++    118,  10,  -54,  58,  -6,   6,    -58,  54,  -10, -86, 106,  -102, 90,
++    -90,  102, -106, 86,  42,   -22,  26,   -38, 38,  -26, 22,   -42,
++};
++
++// Values in color should be in the 0..0xFF00 range so that dithering has enough
++// overhead to avoid overflow.
++static inline VectorType<uint16_t, 4 * 4> dither(
++    const VectorType<uint16_t, 4 * 4>* color, ivec4_scalar fragCoord) {
++  VectorType<uint16_t, 4 * 4> ret = *color;
++
++  // This isn't technically proper behaviour, but it's fast. Proper
++  // behaviour would be to do a bounds check on every addition, or to otherwise
++  // recreate that behaviour. Instead, we refuse to dither all 4
++  // pixels if any channel from any one of them would underflow.
++  auto boundsCheck = ret < 126;
++
++  // This is a vectorized or operation on all RGB values (ignores A)
++  auto boundsCheckRGB = SHUFFLE(boundsCheck, boundsCheck, 0, 1, 2, 4, 5, 6, 8,
++                                9, 10, 12, 13, 14, 0, 0, 0, 0);
++  auto boundsCheckRGBReducedV8 =
++      lowHalf(boundsCheckRGB) | highHalf(boundsCheckRGB);
++  auto boundsCheckRGBReducedV4 =
++      lowHalf(boundsCheckRGBReducedV8) | highHalf(boundsCheckRGBReducedV8);
++  auto boundsCheckRGBReducedV2 =
++      lowHalf(boundsCheckRGBReducedV4) | highHalf(boundsCheckRGBReducedV4);
++  if (bit_cast<uint32_t>(boundsCheckRGBReducedV2) != 0) {
++    return ret;
++  }
++
++  const int row = (fragCoord.y & 7) * 8;
++  int8_t n0 = ditherNoiseMatrix[row + ((fragCoord.x + 0) & 7)];
++  int8_t n1 = ditherNoiseMatrix[row + ((fragCoord.x + 1) & 7)];
++  int8_t n2 = ditherNoiseMatrix[row + ((fragCoord.x + 2) & 7)];
++  int8_t n3 = ditherNoiseMatrix[row + ((fragCoord.x + 3) & 7)];
++
++  VectorType<uint16_t, 4 * 4> noiseVector = {
++      uint16_t(n0), uint16_t(n0), uint16_t(n0), 0,
++      uint16_t(n1), uint16_t(n1), uint16_t(n1), 0,
++      uint16_t(n2), uint16_t(n2), uint16_t(n2), 0,
++      uint16_t(n3), uint16_t(n3), uint16_t(n3), 0};
++
++  ret += noiseVector;
++  return ret;
++}
++
+ // Samples an entire span of a linear gradient by crawling the gradient table
+ // and looking for consecutive stops that can be merged into a single larger
+ // gradient, then interpolating between those larger gradients within the span.
+-template <bool BLEND>
++template <bool BLEND, bool DITHER>
+ static bool commitLinearGradient(sampler2D sampler, int address, float size,
+                                  bool tileRepeat, bool gradientRepeat, vec2 pos,
+                                  const vec2_scalar& scaleDir, float startOffset,
+-                                 uint32_t* buf, int span) {
++                                 uint32_t* buf, int span, vec4 fragCoord) {
+   assert(sampler->format == TextureFormat::RGBA32F);
+   assert(address >= 0 && address < int(sampler->height * sampler->stride));
+   GradientStops* stops = (GradientStops*)&sampler->buf[address];
+@@ -1402,6 +1451,11 @@ static bool commitLinearGradient(sampler2D sampler, int address, float size,
+   if (!isfinite(delta)) {
+     return false;
+   }
++
++  // Only incremented in the case of dithering
++  ivec4_scalar currentFragCoord =
++      ivec4_scalar(fragCoord.x.x, fragCoord.y.x, fragCoord.z.x, fragCoord.w.x);
++
+   // If we have a repeating brush, then the position will be modulo the [0,1)
+   // interval. Compute coefficients that can be used to quickly evaluate the
+   // distance to the interval boundary where the offset will wrap.
+@@ -1536,7 +1590,14 @@ static bool commitLinearGradient(sampler2D sampler, int address, float size,
+         // deltas.
+         int segment = min(remaining, 256 / 4);
+         for (auto* end = buf + segment * 4; buf < end; buf += 4) {
+-          commit_blend_span<BLEND>(buf, bit_cast<WideRGBA8>(color >> 8));
++          if (DITHER) {
++            commit_blend_span<BLEND>(
++                buf,
++                bit_cast<WideRGBA8>(dither(&color, currentFragCoord) >> 8));
++            currentFragCoord.x += 4;
++          } else {
++            commit_blend_span<BLEND>(buf, bit_cast<WideRGBA8>(color >> 8));
++          }
+           color += deltaColor;
+         }
+         remaining -= segment;
+@@ -1569,7 +1630,20 @@ static bool commitLinearGradient(sampler2D sampler, int address, float size,
+     // will calculate a table entry for each sample, assuming the samples may
+     // have different table entries.
+     Float entry = clamp(offset * size + 1.0f, 0.0f, 1.0f + size);
+-    commit_blend_span<BLEND>(buf, sampleGradient(sampler, address, entry));
++
++    if (DITHER) {
++      auto gradientSample = static_cast<VectorType<uint16_t, 4 * 4>>(
++                                sampleGradient(sampler, address, entry))
++                            << 8;
++      commit_blend_span<BLEND>(
++          buf,
++          static_cast<WideRGBA8>(
++              dither(&gradientSample, currentFragCoord) >> 8));
++      currentFragCoord.x += 4;
++    } else {
++      commit_blend_span<BLEND>(
++          buf, static_cast<WideRGBA8>(sampleGradient(sampler, address, entry)));
++    }
+     span -= 4;
+     buf += 4;
+     pos += posStep;
+@@ -1589,13 +1663,35 @@ static bool commitLinearGradient(sampler2D sampler, int address, float size,
+   do {                                                                       \
+     bool drawn = false;                                                      \
+     if (blend_key) {                                                         \
+-      drawn = commitLinearGradient<true>(                                    \
++      drawn = commitLinearGradient<true, false>(                             \
++          sampler, address, size, tileRepeat, gradientRepeat, pos, scaleDir, \
++          startOffset, swgl_OutRGBA8, swgl_SpanLength,                       \
++          static_cast<vec4>(0x0));                                           \
++    } else {                                                                 \
++      drawn = commitLinearGradient<false, false>(                            \
++          sampler, address, size, tileRepeat, gradientRepeat, pos, scaleDir, \
++          startOffset, swgl_OutRGBA8, swgl_SpanLength,                       \
++          static_cast<vec4>(0x0));                                           \
++    }                                                                        \
++    if (drawn) {                                                             \
++      swgl_OutRGBA8 += swgl_SpanLength;                                      \
++      swgl_SpanLength = 0;                                                   \
++    }                                                                        \
++  } while (0)
++
++#define swgl_commitDitheredLinearGradientRGBA8(                              \
++    sampler, address, size, tileRepeat, gradientRepeat, pos, scaleDir,       \
++    startOffset, fragCoord)                                                  \
++  do {                                                                       \
++    bool drawn = false;                                                      \
++    if (blend_key) {                                                         \
++      drawn = commitLinearGradient<true, true>(                              \
+           sampler, address, size, tileRepeat, gradientRepeat, pos, scaleDir, \
+-          startOffset, swgl_OutRGBA8, swgl_SpanLength);                      \
++          startOffset, swgl_OutRGBA8, swgl_SpanLength, fragCoord);           \
+     } else {                                                                 \
+-      drawn = commitLinearGradient<false>(                                   \
++      drawn = commitLinearGradient<false, true>(                             \
+           sampler, address, size, tileRepeat, gradientRepeat, pos, scaleDir, \
+-          startOffset, swgl_OutRGBA8, swgl_SpanLength);                      \
++          startOffset, swgl_OutRGBA8, swgl_SpanLength, fragCoord);           \
+     }                                                                        \
+     if (drawn) {                                                             \
+       swgl_OutRGBA8 += swgl_SpanLength;                                      \
+@@ -1625,10 +1721,10 @@ static ALWAYS_INLINE auto fastLength(V v) {
+ // and looking for consecutive stops that can be merged into a single larger
+ // gradient, then interpolating between those larger gradients within the span
+ // based on the computed position relative to a radius.
+-template <bool BLEND>
++template <bool BLEND, bool DITHER>
+ static bool commitRadialGradient(sampler2D sampler, int address, float size,
+                                  bool repeat, vec2 pos, float radius,
+-                                 uint32_t* buf, int span) {
++                                 uint32_t* buf, int span, vec4 fragCoord) {
+   assert(sampler->format == TextureFormat::RGBA32F);
+   assert(address >= 0 && address < int(sampler->height * sampler->stride));
+   GradientStops* stops = (GradientStops*)&sampler->buf[address];
+@@ -1658,6 +1754,11 @@ static bool commitRadialGradient(sampler2D sampler, int address, float size,
+   if (!isfinite(deltaDelta) || !isfinite(radius)) {
+     return false;
+   }
++
++  // Only incremented in the case of dithering
++  ivec4_scalar currentFragCoord =
++      ivec4_scalar(fragCoord.x.x, fragCoord.y.x, fragCoord.z.x, fragCoord.w.x);
++
+   float invDelta, middleT, middleB;
+   if (deltaDelta > 0) {
+     invDelta = 1.0f / deltaDelta;
+@@ -1778,9 +1879,12 @@ static bool commitRadialGradient(sampler2D sampler, int address, float size,
+     // Figure out how many chunks are actually inside the merged gradient.
+     if (t + 4.0f <= endT) {
+       int inside = int(endT - t) & ~3;
+-      // Convert start and end colors to BGRA and scale to 0..255 range later.
+-      auto minColorF = stops[minIndex].startColor.zyxw * 255.0f;
+-      auto maxColorF = stops[maxIndex].end_color().zyxw * 255.0f;
++      // Convert start and end colors to BGRA and scale to 0..0xFF00 range (for
++      // dithered) and 0..255 range (for non-dithered).
++      auto minColorF =
++          stops[minIndex].startColor.zyxw * (DITHER ? float(0xFF00) : 255.0f);
++      auto maxColorF =
++          stops[maxIndex].end_color().zyxw * (DITHER ? float(0xFF00) : 255.0f);
+       // Compute the change in color per change in gradient offset.
+       auto deltaColorF =
+           (maxColorF - minColorF) * (size / (maxIndex + 1 - minIndex));
+@@ -1789,18 +1893,29 @@ static bool commitRadialGradient(sampler2D sampler, int address, float size,
+       Float colorF =
+           minColorF - deltaColorF * (startRadius + (minIndex - 1) / size);
+       // Finally, walk over the span accumulating the position dot product and
+-      // getting its sqrt as an offset into the color ramp. Since we're already
+-      // in BGRA format and scaled to 255, we just need to round to an integer
+-      // and pack down to pixel format.
++      // getting its sqrt as an offset into the color ramp. At this point we
++      // just need to round to an integer and pack down to an 8-bit pixel
++      // format.
+       for (auto* end = buf + inside; buf < end; buf += 4) {
+         Float offsetG = fastSqrt<false>(dotPos);
+-        commit_blend_span<BLEND>(
+-            buf,
+-            combine(
+-                packRGBA8(round_pixel(colorF + deltaColorF * offsetG.x, 1),
+-                          round_pixel(colorF + deltaColorF * offsetG.y, 1)),
+-                packRGBA8(round_pixel(colorF + deltaColorF * offsetG.z, 1),
+-                          round_pixel(colorF + deltaColorF * offsetG.w, 1))));
++        if (DITHER) {
++          auto color = combine(
++              CONVERT(round_pixel(colorF + deltaColorF * offsetG.x, 1), U16),
++              CONVERT(round_pixel(colorF + deltaColorF * offsetG.y, 1), U16),
++              CONVERT(round_pixel(colorF + deltaColorF * offsetG.z, 1), U16),
++              CONVERT(round_pixel(colorF + deltaColorF * offsetG.w, 1), U16));
++          commit_blend_span<BLEND>(
++              buf, static_cast<WideRGBA8>(
++                       dither(&color, currentFragCoord) >> 8));
++          currentFragCoord.x += 4;
++        } else {
++          auto color = combine(
++              packRGBA8(round_pixel(colorF + deltaColorF * offsetG.x, 1),
++                        round_pixel(colorF + deltaColorF * offsetG.y, 1)),
++              packRGBA8(round_pixel(colorF + deltaColorF * offsetG.z, 1),
++                        round_pixel(colorF + deltaColorF * offsetG.w, 1)));
++          commit_blend_span<BLEND>(buf, color);
++        }
+         dotPos += dotPosDelta;
+         dotPosDelta += deltaDelta2;
+       }
+@@ -1837,25 +1952,45 @@ static bool commitRadialGradient(sampler2D sampler, int address, float size,
+ // swglcommitLinearGradient, but given a varying 2D position scaled to
+ // gradient-space and a radius at which the distance from the origin maps to the
+ // start of the gradient table.
+-#define swgl_commitRadialGradientRGBA8(sampler, address, size, repeat, pos,    \
+-                                       radius)                                 \
+-  do {                                                                         \
+-    bool drawn = false;                                                        \
+-    if (blend_key) {                                                           \
+-      drawn =                                                                  \
+-          commitRadialGradient<true>(sampler, address, size, repeat, pos,      \
+-                                     radius, swgl_OutRGBA8, swgl_SpanLength);  \
+-    } else {                                                                   \
+-      drawn =                                                                  \
+-          commitRadialGradient<false>(sampler, address, size, repeat, pos,     \
+-                                      radius, swgl_OutRGBA8, swgl_SpanLength); \
+-    }                                                                          \
+-    if (drawn) {                                                               \
+-      swgl_OutRGBA8 += swgl_SpanLength;                                        \
+-      swgl_SpanLength = 0;                                                     \
+-    }                                                                          \
++#define swgl_commitRadialGradientRGBA8(sampler, address, size, repeat, pos, \
++                                       radius)                              \
++  do {                                                                      \
++    bool drawn = false;                                                     \
++    if (blend_key) {                                                        \
++      drawn = commitRadialGradient<true, false>(                            \
++          sampler, address, size, repeat, pos, radius, swgl_OutRGBA8,       \
++          swgl_SpanLength,                     \
++          static_cast<vec4>(0x0));                                          \
++    } else {                                                                \
++      drawn = commitRadialGradient<false, false>(                           \
++          sampler, address, size, repeat, pos, radius, swgl_OutRGBA8,       \
++          swgl_SpanLength,                     \
++          static_cast<vec4>(0x0));                                          \
++    }                                                                       \
++    if (drawn) {                                                            \
++      swgl_OutRGBA8 += swgl_SpanLength;                                     \
++      swgl_SpanLength = 0;                                                  \
++    }                                                                       \
+   } while (0)
+ 
++#define swgl_commitDitheredRadialGradientRGBA8(                            \
++    sampler, address, size, repeat, pos, radius, fragCoord) \
++  do {                                                                     \
++    bool drawn = false;                                                    \
++    if (blend_key) {                                                       \
++      drawn = commitRadialGradient<true, true>(                            \
++          sampler, address, size, repeat, pos, radius, swgl_OutRGBA8,      \
++          swgl_SpanLength, fragCoord);                      \
++    } else {                                                               \
++      drawn = commitRadialGradient<false, true>(                           \
++          sampler, address, size, repeat, pos, radius, swgl_OutRGBA8,      \
++          swgl_SpanLength, fragCoord);                      \
++    }                                                                      \
++    if (drawn) {                                                           \
++      swgl_OutRGBA8 += swgl_SpanLength;                                    \
++      swgl_SpanLength = 0;                                                 \
++    }                                                                      \
++  } while (0)
+ // Extension to set a clip mask image to be sampled during blending. The offset
+ // specifies the positioning of the clip mask image relative to the viewport
+ // origin. The bounding box specifies the rectangle relative to the clip mask's
+diff --git a/gfx/wr/webrender/res/brush_linear_gradient.glsl b/gfx/wr/webrender/res/brush_linear_gradient.glsl
+index 235be4b24be8..6f923052ffb1 100644
+--- a/gfx/wr/webrender/res/brush_linear_gradient.glsl
++++ b/gfx/wr/webrender/res/brush_linear_gradient.glsl
+@@ -87,8 +87,13 @@ void swgl_drawSpanRGBA8() {
+         return;
+     }
+ 
++#ifdef WR_FEATURE_DITHERING
++    swgl_commitDitheredLinearGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, true, v_gradient_repeat.x != 0.0,
++                                   v_pos, v_scale_dir, v_start_offset.x, gl_FragCoord);
++#else
+     swgl_commitLinearGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, true, v_gradient_repeat.x != 0.0,
+                                    v_pos, v_scale_dir, v_start_offset.x);
++#endif
+ }
+ #endif
+ 
+diff --git a/gfx/wr/webrender/res/cs_radial_gradient.glsl b/gfx/wr/webrender/res/cs_radial_gradient.glsl
+index 10919ac6283e..8084d8d47be1 100644
+--- a/gfx/wr/webrender/res/cs_radial_gradient.glsl
++++ b/gfx/wr/webrender/res/cs_radial_gradient.glsl
+@@ -63,8 +63,14 @@ void swgl_drawSpanRGBA8() {
+     if (address < 0) {
+         return;
+     }
++
++#ifdef WR_FEATURE_DITHERING
++    swgl_commitDitheredRadialGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, v_gradient_repeat.x != 0.0,
++                                   v_pos, v_start_radius.x, gl_FragCoord);
++#else
+     swgl_commitRadialGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, v_gradient_repeat.x != 0.0,
+                                    v_pos, v_start_radius.x);
++#endif
+ }
+ #endif
+ 
+diff --git a/gfx/wr/webrender/res/ps_quad_radial_gradient.glsl b/gfx/wr/webrender/res/ps_quad_radial_gradient.glsl
+index 05b4dd2aa8c6..dc83f3c27742 100644
+--- a/gfx/wr/webrender/res/ps_quad_radial_gradient.glsl
++++ b/gfx/wr/webrender/res/ps_quad_radial_gradient.glsl
+@@ -73,8 +73,14 @@ void swgl_drawSpanRGBA8() {
+     if (address < 0) {
+         return;
+     }
++
++#ifdef WR_FEATURE_DITHERING
++    swgl_commitDitheredRadialGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, v_gradient_repeat.x != 0.0,
++                                   v_pos, v_start_radius.x, gl_FragCoord);
++#else
+     swgl_commitRadialGradientRGBA8(sGpuBufferF, address, GRADIENT_ENTRIES, v_gradient_repeat.x != 0.0,
+                                    v_pos, v_start_radius.x);
++#endif
+ }
+ #endif
+ 
+diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/renderer/init.rs
+index 7c63798bc644..169d4c7a4437 100644
+--- a/gfx/wr/webrender/src/renderer/init.rs
++++ b/gfx/wr/webrender/src/renderer/init.rs
+@@ -224,7 +224,7 @@ impl Default for WebRenderOptions {
+             resource_override_path: None,
+             use_optimized_shaders: false,
+             enable_aa: true,
+-            enable_dithering: false,
++            enable_dithering: true,
+             debug_flags: DebugFlags::empty(),
+             max_recorded_profiles: 0,
+             precache_flags: ShaderPrecacheFlags::empty(),
+diff --git a/gfx/wr/webrender/src/renderer/shade.rs b/gfx/wr/webrender/src/renderer/shade.rs
+index ed38e7aa24e3..0171cb4092e1 100644
+--- a/gfx/wr/webrender/src/renderer/shade.rs
++++ b/gfx/wr/webrender/src/renderer/shade.rs
+@@ -873,14 +873,22 @@ impl Shaders {
+         let ps_quad_radial_gradient = loader.create_shader(
+             ShaderKind::Primitive,
+             "ps_quad_radial_gradient",
+-            &[],
++            if options.enable_dithering {
++               &[DITHERING_FEATURE]
++            } else {
++               &[]
++            },
+             &shader_list,
+         )?;
+ 
+         let ps_quad_conic_gradient = loader.create_shader(
+             ShaderKind::Primitive,
+             "ps_quad_conic_gradient",
+-            &[],
++            if options.enable_dithering {
++               &[DITHERING_FEATURE]
++            } else {
++               &[]
++            },
+             &shader_list,
+         )?;
+ 
+@@ -1032,14 +1040,22 @@ impl Shaders {
+         let cs_radial_gradient = loader.create_shader(
+             ShaderKind::Cache(VertexArrayKind::RadialGradient),
+             "cs_radial_gradient",
+-            &[],
++            if options.enable_dithering {
++               &[DITHERING_FEATURE]
++            } else {
++               &[]
++            },
+             &shader_list,
+         )?;
+ 
+         let cs_conic_gradient = loader.create_shader(
+             ShaderKind::Cache(VertexArrayKind::ConicGradient),
+             "cs_conic_gradient",
+-            &[],
++            if options.enable_dithering {
++               &[DITHERING_FEATURE]
++            } else {
++               &[]
++            },
+             &shader_list,
+         )?;
+ 
+diff --git a/gfx/wr/webrender_build/src/shader_features.rs b/gfx/wr/webrender_build/src/shader_features.rs
+index 72b82df00228..97247c929609 100644
+--- a/gfx/wr/webrender_build/src/shader_features.rs
++++ b/gfx/wr/webrender_build/src/shader_features.rs
+@@ -242,9 +242,9 @@ pub fn get_shader_features(flags: ShaderFeatureFlags) -> ShaderFeatures {
+ 
+     shaders.insert("ps_quad_textured", vec![base_prim_features.finish()]);
+ 
+-    shaders.insert("ps_quad_radial_gradient", vec![base_prim_features.finish()]);
++    shaders.insert("ps_quad_radial_gradient", vec![base_prim_features.finish(), if flags.contains(ShaderFeatureFlags::DITHERING) { "DITHERING".to_string() } else { String::new() }]);
+ 
+-    shaders.insert("ps_quad_conic_gradient", vec![base_prim_features.finish()]);
++    shaders.insert("ps_quad_conic_gradient", vec![base_prim_features.finish(), if flags.contains(ShaderFeatureFlags::DITHERING) { "DITHERING".to_string() } else { String::new() }]);
+ 
+     shaders.insert("ps_clear", vec![base_prim_features.finish()]);
+ 
+diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
+index e21849fa3db4..258e12665ca8 100644
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -8007,13 +8007,6 @@
+   value: true
+   mirror: once
+ 
+-# Enable dithering in hardware WebRender
+-- name: gfx.webrender.dithering
+-  type: bool
+-  rust: true
+-  value: false
+-  mirror: once
+-
+ # Use vsync events generated by hardware
+ - name: gfx.work-around-driver-bugs
+   type: bool

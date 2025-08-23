@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index 815734d9a5a589174ac33cb15ff9988d13e78b8c..adbd1e99987a92c9b79af8bcde204543e46e181f 100644
+index ad971f090bdaba2865cf1fac2840b1f553d2630c..a9e676e43d35b617eebd5a67c8653397b7c0c6bf 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 @@ -40,11 +40,13 @@ function defaultQuery(conditions = "") {
@@ -26,7 +26,7 @@ index 815734d9a5a589174ac33cb15ff9988d13e78b8c..adbd1e99987a92c9b79af8bcde204543
                                h.visit_count, h.typed,
                                0, t.open_count,
                                :matchBehavior, :searchBehavior, NULL)
-@@ -1114,11 +1116,13 @@ Search.prototype = {
+@@ -1116,11 +1118,13 @@ Search.prototype = {
        ? lazy.PlacesUtils.toDate(lastVisitPRTime).getTime()
        : undefined;
      let tabGroup = row.getResultByName("groupId");

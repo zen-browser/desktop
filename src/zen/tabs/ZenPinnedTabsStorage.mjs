@@ -331,7 +331,7 @@ var ZenPinnedTabsStorage = {
           }
 
           if (!tabCheck[0].getResultByName('folder_parent_uuid')) {
-            throw new Error(`Tab with UUID ${tabUuid} is not in a group`);
+            return;
           }
 
           const now = Date.now();

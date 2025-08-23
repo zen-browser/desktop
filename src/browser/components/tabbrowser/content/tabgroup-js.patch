@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1fda11a48c 100644
+index caea196b22b4689f55780a528661d87b52f4e728..9c1e141b6b2121d32f30c82862b597146f664b34 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -13,10 +13,12 @@
@@ -15,10 +15,10 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
 +      <html:div class="tab-group-container">
 +        <html:div class="zen-tab-group-start"/>
 +      </html:div>
-       `;
- 
-     /** @type {string} */
-@@ -45,16 +47,22 @@
+       <vbox class="tab-group-overflow-count-container" pack="center">
+         <label class="tab-group-overflow-count" role="button" />
+       </vbox>
+@@ -57,20 +59,26 @@
      }
  
      connectedCallback() {
@@ -38,6 +38,10 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
        // causes the component to be repositioned in the DOM.
 -      this.#observeTabChanges();
  
+       // Similar to above, always set up TabSelect listener, as this gets
+       // removed in disconnectedCallback
+       this.ownerGlobal.addEventListener("TabSelect", this);
+ 
 -      if (this._initialized) {
 -        return;
 -      }
@@ -45,35 +49,36 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
  
        this._initialized = true;
        this.saveOnWindowClose = true;
-@@ -68,12 +76,14 @@
+@@ -97,11 +105,14 @@
        this.#labelElement.container = gBrowser.tabContainer;
        this.#labelElement.group = this;
  
--      this.#labelElement.addEventListener("click", this);
-+      this.querySelector(".tab-group-label-container").addEventListener("click", this);
-+      if (!this.isZenFolder) {
-       this.#labelElement.addEventListener("contextmenu", e => {
-         e.preventDefault();
-         gBrowser.tabGroupMenu.openEditModal(this);
-         return false;
-       });
-+      }
+-      this.#labelElement.addEventListener("contextmenu", e => {
+-        e.preventDefault();
+-        gBrowser.tabGroupMenu.openEditModal(this);
+-        return false;
+-      });
++      this.appendChild = function (child) {
++        this.querySelector(".tab-group-container").appendChild(child);
++        for (let tab of this.tabs) {
++          if (tab.hasAttribute("zen-empty-tab") && tab.group === this) {
++            this.querySelector(".zen-tab-group-start").after(tab);
++          }
++        }
++      };
  
        this.#updateLabelAriaAttributes();
        this.#updateCollapsedAriaAttributes();
-@@ -93,6 +103,11 @@
-       // claim that a tab group was created by adoption the first time it
+@@ -127,6 +138,8 @@
        // mounts after getting created by `Tabbrowser.adoptTabGroup`.
        this.#wasCreatedByAdoption = false;
-+      this.appendChild = function (child) {
-+        this.querySelector(".tab-group-container").appendChild(child);
-+      }
-+      }
-+      this.#observeTabChanges();
      }
++      this.#observeTabChanges();
++    }
  
-     disconnectedCallback() {
-@@ -123,7 +138,10 @@
+     resetDefaultGroupName = () => {
+       this.#defaultGroupName = "";
+@@ -197,7 +210,10 @@
            }
          });
        }
@@ -85,15 +90,12 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
      }
  
      get color() {
-@@ -172,7 +190,6 @@
-       // always create a text node and get consistent layout.
-       this.setAttribute("label", val || "\u200b");
- 
--      this.dataset.tooltip = val;
- 
-       this.#updateLabelAriaAttributes();
-       if (diff) {
-@@ -244,7 +261,53 @@
+@@ -338,12 +354,61 @@
+           tabGroupName,
+         })
+         .then(result => {
+-          this.dataset.tooltip = result;
+         });
      }
  
      get tabs() {
@@ -145,10 +147,14 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
 +        }
 +      }
 +      return true;
++    }
++
++    get level() {
++      return this.group?.level + 1 || 0;
      }
  
      /**
-@@ -270,7 +333,7 @@
+@@ -373,7 +438,7 @@
       */
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {
@@ -157,16 +163,16 @@ index 2ed2fa02b16013e40a32391b3dba0a4301d65262..aea9fb03dbc28a524ec5a26e76510b1f
            tab.ownerGlobal.gBrowser.unpinTab(tab);
          }
          let tabToMove =
-@@ -333,7 +396,7 @@
-      * @param {PointerEvent} event
+@@ -437,7 +502,7 @@
       */
      on_click(event) {
--      if (event.target === this.#labelElement && event.button === 0) {
-+      if (event.target.closest('.tab-group-label-container') && event.button === 0) {
+       let isToggleElement =
+-        event.target === this.#labelElement ||
++        this.labelElement.parentElement.contains(event.target) ||
+         event.target === this.#overflowCountLabel;
+       if (isToggleElement && event.button === 0) {
          event.preventDefault();
-         this.collapsed = !this.collapsed;
-         gBrowser.tabGroupMenu.close();
-@@ -364,5 +427,6 @@
+@@ -470,5 +535,6 @@
      }
    }
  

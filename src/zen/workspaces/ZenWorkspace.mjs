@@ -68,6 +68,8 @@
       this.indicator.querySelector('.zen-current-workspace-indicator-name').onRenameFinished =
         this.onIndicatorRenameFinished.bind(this);
 
+      this.pinnedTabsContainer.scrollbox = this.scrollbox;
+
       this.indicator
         .querySelector('.zen-workspaces-actions')
         .addEventListener('click', this.onActionsCommand.bind(this));
@@ -142,6 +144,9 @@
 
       this.#updateOverflow();
 
+      this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
+      window.addEventListener('ZenGradientCacheChanged', this.onGradientCacheChanged);
+
       this.dispatchEvent(
         new CustomEvent('ZenWorkspaceAttached', {
           bubbles: true,
@@ -149,6 +154,10 @@
           detail: { workspace: this },
         })
       );
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('ZenGradientCacheChanged', this.onGradientCacheChanged);
     }
 
     get active() {
@@ -221,6 +230,26 @@
 
     get newTabButton() {
       return this.querySelector('#tabs-newtab-button');
+    }
+
+    #onGradientCacheChanged() {
+      const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
+        gZenThemePicker.getGradientForWorkspace(
+          gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid)
+        );
+      if (isExplicitMode) {
+        this.style.colorScheme = isDarkMode ? 'dark' : 'light';
+      } else {
+        this.style.colorScheme = '';
+      }
+      this.style.setProperty('--toolbox-textcolor', `rgba(${toolbarColor.join(',')})`);
+      this.style.setProperty('--zen-primary-color', primaryColor);
+    }
+
+    clearThemeStyles() {
+      this.style.colorScheme = '';
+      this.style.removeProperty('--toolbox-textcolor');
+      this.style.removeProperty('--zen-primary-color');
     }
   }
 

@@ -72,6 +72,35 @@ var gZenUIManager = {
 
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
+
+    this._initCreateNewPopup();
+  },
+
+  _initCreateNewPopup() {
+    const popup = document.getElementById('zenCreateNewPopup');
+    const button = document.getElementById('zen-create-new-button');
+
+    popup.addEventListener('popupshowing', () => {
+      const image = button.querySelector('image');
+      button.setAttribute('open', 'true');
+      gZenUIManager.motion.animate(
+        image,
+        { transform: ['rotate(0deg)', 'rotate(45deg)'] },
+        { duration: 0.2 }
+      );
+      popup.addEventListener(
+        'popuphidden',
+        () => {
+          button.removeAttribute('open');
+          gZenUIManager.motion.animate(
+            image,
+            { transform: ['rotate(45deg)', 'rotate(0deg)'] },
+            { duration: 0.2 }
+          );
+        },
+        { once: true }
+      );
+    });
   },
 
   handleMouseDown(event) {
@@ -709,9 +738,7 @@ var gZenVerticalTabsManager = {
       document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
     } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
       try {
-        gURLBar.zenUpdateLayoutBreakout().then(() => {
-          gURLBar.valueFormatter._formatURL();
-        });
+        gURLBar.zenUpdateLayoutBreakout();
       } catch (e) {
         console.warn(e);
       }
@@ -778,6 +805,7 @@ var gZenVerticalTabsManager = {
 
       const appContentNavbarContaienr = document.getElementById('zen-appcontent-navbar-container');
       const appContentNavbarWrapper = document.getElementById('zen-appcontent-navbar-wrapper');
+      appContentNavbarWrapper.style.transition = 'none';
       let shouldHide = false;
       if (
         ((!isRightSide && this.isWindowsStyledButtons) ||
@@ -922,6 +950,7 @@ var gZenVerticalTabsManager = {
       }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();
+      appContentNavbarWrapper.style.transition = '';
     } catch (e) {
       console.error(e);
     }

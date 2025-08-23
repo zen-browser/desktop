@@ -560,12 +560,12 @@ button.popup-notification-dropmarker {
 }
 
 .urlbarView-row[has-action]:is([type='switchtab'], [type='remotetab'], [type='clipboard']) {
-  & .urlbarView-action {
+  & .urlbarView-action:last-child {
     margin-left: auto !important;
     margin-right: 0 !important;
   }
 
-  &:is([type='switchtab'], [type='remotetab']) .urlbarView-action {
+  &:is([type='switchtab'], [type='remotetab']) .urlbarView-action:last-child {
     background: transparent !important;
     align-items: center;
     display: flex;

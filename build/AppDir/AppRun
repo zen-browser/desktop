@@ -1,4 +1,8 @@
 #!/bin/sh
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 CURRENTDIR="$(dirname "$(readlink -f "$0")")"
 export PATH="${CURRENTDIR}:${PATH}"
 export MOZ_LEGACY_PROFILES=1          # Prevent per installation profiles

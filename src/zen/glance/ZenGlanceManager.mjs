@@ -149,7 +149,6 @@
 
       this.browserWrapper?.removeAttribute('animate');
       this.browserWrapper?.removeAttribute('animate-end');
-      this.browserWrapper?.removeAttribute('animate-full');
       this.browserWrapper?.removeAttribute('has-finished-animation');
       this.overlay?.removeAttribute('post-fade-out');
 
@@ -610,7 +609,6 @@
     finishOpeningGlance() {
       gBrowser.tabContainer._invalidateCachedTabs();
       gZenWorkspaces.updateTabsContainers();
-      this.browserWrapper.removeAttribute('animate-full');
       this.overlay.classList.remove('zen-glance-overlay');
       this._clearContainerStyles(this.browserWrapper);
       this.animatingFullOpen = false;
@@ -627,8 +625,6 @@
       const browserRect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper);
       this.#currentTab.removeAttribute('zen-glance-tab');
       this._clearContainerStyles(this.browserWrapper);
-      this.browserWrapper.removeAttribute('has-finished-animation');
-      this.browserWrapper.setAttribute('animate-full', true);
       this.#currentTab.removeAttribute('glance-id');
       this.#currentParentTab.removeAttribute('glance-id');
       gBrowser.selectedTab = this.#currentTab;
@@ -651,6 +647,7 @@
         return;
       }
       // Write the styles early to avoid flickering
+      this.browserWrapper.style.opacity = 1;
       this.browserWrapper.style.width = `${browserRect.width}px`;
       this.browserWrapper.style.height = `${browserRect.height}px`;
       await gZenUIManager.motion.animate(
@@ -662,8 +659,12 @@
         {
           duration: 0.4,
           type: 'spring',
+          bounce: 0,
         }
       );
+      this.browserWrapper.style.width = '';
+      this.browserWrapper.style.height = '';
+      this.browserWrapper.style.opacity = '';
       gZenViewSplitter.deactivateCurrentSplitView({ removeDeckSelected: true });
       this.finishOpeningGlance();
     }

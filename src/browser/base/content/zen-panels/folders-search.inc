@@ -5,7 +5,10 @@
 <panel id="zen-folder-tabs-popup" type="arrow" orient="vertical">
   <hbox class="tabs-list-header">
     <image class="zen-folder-tabs-list-search-icon" src="chrome://global/skin/icons/search-glass.svg"/>
-    <html:input id="zen-folder-tabs-list-search" data-l10n-id="zen-folders-search-placeholder" type="search"/>
+    <html:input id="zen-folder-tabs-list-search" 
+      data-l10n-id="zen-folders-search-placeholder" 
+      data-l10n-args="{&quot;folder-name&quot;:&quot;&quot;}"
+      type="search" />
   </hbox>
   <scrollbox class="zen-folder-tabs-list-scrollbox" flex="1">
     <vbox id="zen-folder-tabs-list"></vbox>

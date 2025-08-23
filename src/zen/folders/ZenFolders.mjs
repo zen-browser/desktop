@@ -1237,7 +1237,7 @@
           {
             marginTop: newMargin,
           },
-          { duration: 0.15, ease: 'easeInOut' }
+          { duration: 0.1, ease: 'easeInOut' }
         )
         .then(() => {
           selectedTab.style.removeProperty('--zen-folder-indent');
@@ -1265,7 +1265,7 @@
         {
           marginTop: [newMargin, oldMargin],
         },
-        { duration: 0.15, ease: 'easeInOut' }
+        { duration: 0.1, ease: 'easeInOut' }
       );
       groupStart.removeAttribute('old-margin');
       groupStart.removeAttribute('new-margin');
@@ -1332,15 +1332,14 @@
                   { duration: 0.1, ease: 'easeInOut' }
                 )
               );
-            }
-
-            for (const tab of activeForGroup) {
-              this.setFolderIndentation(
-                [tab],
-                current,
-                /* for collapse = */ true,
-                /* animate = */ false
-              );
+              for (const tab of activeForGroup) {
+                this.setFolderIndentation(
+                  [tab],
+                  current,
+                  /* for collapse = */ true,
+                  /* animate = */ false
+                );
+              }
             }
           }
           current = current.group;

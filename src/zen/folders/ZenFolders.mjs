@@ -224,9 +224,10 @@
       folder.group.collapsed = false;
     }
 
-    async #onTabSelected() {
+    async #onTabSelected(event) {
       const tab = event.target;
-      const group = tab?.group;
+      let group = tab?.group;
+      if (group?.hasAttribute('split-view-group')) group = group?.group;
       if (!group?.isZenFolder) return;
 
       const collapsedRoot = group.rootMostCollapsedFolder;
@@ -235,6 +236,7 @@
       }
 
       collapsedRoot.setAttribute('has-active', 'true');
+      // FIX: expandToSelected should not be called when switching to another tab.hasAttribute("folder-active").
       await this.expandToSelected(collapsedRoot);
       gBrowser.tabContainer._invalidateCachedTabs();
     }
@@ -507,7 +509,9 @@
       const groupItems = normalizeGroupItems(group.childGroupsAndTabs);
       const itemsToHide = [];
 
+      // TODO: It is necessary to correctly set marginTop for groups with has-active
       for (const activeGroup of activeGroups) {
+        const activeGroupItems = activeGroup.childGroupsAndTabs;
         let selectedTabs = activeGroup.activeTabs;
         let selectedGroupIds = new Set();
 
@@ -519,7 +523,7 @@
 
         if (selectedTabs.length) {
           let selectedIdx = -1;
-          for (let i = 0; i < activeGroup.childGroupsAndTabs.length; i++) {
+          for (let i = 0; i < activeGroupItems.length; i++) {
             const item = activeGroup.childGroupsAndTabs[i];
             let selectedTab = item;
 
@@ -535,7 +539,7 @@
           }
 
           if (selectedIdx >= 0) {
-            for (let i = selectedIdx; i < activeGroup.childGroupsAndTabs.length; i++) {
+            for (let i = selectedIdx; i < activeGroupItems.length; i++) {
               const item = activeGroup.childGroupsAndTabs[i];
 
               if (selectedTabs.includes(item)) continue;
@@ -1016,6 +1020,7 @@
 
         item.addEventListener('click', () => {
           gBrowser.selectedTab = tab;
+          // this.expandToSelected(group);
         });
 
         item.addEventListener('mouseenter', () => {
@@ -1297,57 +1302,43 @@
         }
       }
 
-      // Always new selected item
-      let current = selectedItems?.at(-1)?.group;
-      while (current) {
-        const activeForGroup = selectedItems.filter((t) => current.contains(t));
-        if (activeForGroup.length) {
-          current.activeTabs = activeForGroup;
+      for (const tab of selectedItems) {
+        let current = tab?.group?.hasAttribute('split-view-group') ? tab.group.group : tab?.group;
+        while (current) {
+          const activeForGroup = selectedItems.filter((t) => current.contains(t));
+          if (activeForGroup.length) {
+            if (current.collapsed) {
+              current.setAttribute('has-active', 'true');
+              current.activeTabs = activeForGroup;
+              const tabsContainer = current.querySelector('.tab-group-container');
+              const groupStart = current.querySelector('.zen-tab-group-start');
+              const curMarginTop = parseInt(groupStart.style.marginTop) || 0;
 
-          if (current.collapsed) {
-            const tabsContainer = current.querySelector('.tab-group-container');
-            const groupStart = current.querySelector('.zen-tab-group-start');
+              if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
 
-            if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
-
-            let heightUntilSelected;
-            if (activeForGroup.length) {
-              const selectedItem = activeForGroup[0];
-              const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
-              const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
-              heightUntilSelected =
-                window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
-                window.windowUtils.getBoundsWithoutFlushing(groupStart).bottom;
-              if (isSplitView) {
-                heightUntilSelected -= 2;
-              }
-            } else {
-              heightUntilSelected =
-                window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
+              animations.push(...this.updateFolderIcon(current, 'close', false));
+              animations.push(
+                gZenUIManager.motion.animate(
+                  groupStart,
+                  {
+                    marginTop: [curMarginTop, 0],
+                  },
+                  { duration: 0.1, ease: 'easeInOut' }
+                )
+              );
             }
 
-            animations.push(...this.updateFolderIcon(current, 'close', false));
-            animations.push(
-              gZenUIManager.motion.animate(
-                groupStart,
-                {
-                  marginTop: [0, -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0))],
-                },
-                { duration: 0.1, ease: 'easeInOut' }
-              )
-            );
+            for (const tab of activeForGroup) {
+              this.setFolderIndentation(
+                [tab],
+                current,
+                /* for collapse = */ true,
+                /* animate = */ false
+              );
+            }
           }
-
-          for (const tab of activeForGroup) {
-            this.setFolderIndentation(
-              [tab],
-              current,
-              /* for collapse = */ true,
-              /* animate = */ false
-            );
-          }
+          current = current.group;
         }
-        current = current.group;
       }
 
       const selectedItemsSet = new Set();

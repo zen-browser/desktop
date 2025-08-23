@@ -236,7 +236,9 @@
       const tab = event.target;
       let group = tab?.group;
       if (group?.hasAttribute('split-view-group')) group = group?.group;
-      if (!group?.isZenFolder) return;
+      if (!group?.isZenFolder || tab.hasAttribute('folder-active')) {
+        return;
+      }
 
       const collapsedRoot = group.rootMostCollapsedFolder;
       if (!collapsedRoot) {
@@ -244,7 +246,6 @@
       }
 
       collapsedRoot.setAttribute('has-active', 'true');
-      // FIX: expandToSelected should not be called when switching to another tab.hasAttribute("folder-active").
       await this.expandToSelected(collapsedRoot);
       gBrowser.tabContainer._invalidateCachedTabs();
     }
@@ -1026,7 +1027,6 @@
 
         item.addEventListener('click', () => {
           gBrowser.selectedTab = tab;
-          // this.expandToSelected(group);
         });
 
         item.addEventListener('mouseenter', () => {

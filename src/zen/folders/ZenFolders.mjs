@@ -575,75 +575,77 @@
       animations.push(...this.updateFolderIcon(group));
       animations.push(
         gZenUIManager.motion
-        .animate(
-          groupStart,
-          {
-            marginTop: 0,
-          },
-          {
-            duration: 0.1,
-            ease: 'linear',
-          }
-        )
-        .then(() => {
-          tabsContainer.style.overflow = '';
-          if (group.hasAttribute('has-active')) {
-            const activeTabs = group.activeTabs;
-            const folders = new Map();
-            group.removeAttribute('has-active');
-            for (let tab of activeTabs) {
-              const group = tab?.group?.hasAttribute('split-view-group')
-                ? tab?.group?.group
-                : tab?.group;
-              if (!folders.has(group?.id)) {
-                folders.set(group?.id, group?.activeGroups?.at(-1));
-              }
-              let activeGroup = folders.get(tab?.group?.id);
-              // If group has active tabs, we need to update the indentation
-              if (activeGroup) {
-                const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
-                const selectedTabs = activeGroup.activeTabs;
-                if (selectedTabs.length > 0) {
-                  const selectedItem = selectedTabs[0];
-                  const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
-                  const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
-
-                  const heightUntilSelected = 
-                    window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
-                    window.windowUtils.getBoundsWithoutFlushing(activeGroupStart).bottom;
-
-                  const adjustedHeight = isSplitView ? heightUntilSelected - 2 : heightUntilSelected;
-
-                  animations.push(
-                    gZenUIManager.motion.animate(
-                      activeGroupStart,
-                      {
-                        marginTop: -(adjustedHeight + 4),
-                      },
-                      { duration: 0, ease: 'linear' }
-                    )
-                  );
-                }
-
-                this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
-              } else {
-                // Since the folder is now expanded, we should remove active attribute
-                // to the tab that was previously visible
-                tab.removeAttribute('folder-active');
-                if (tab.group?.hasAttribute('split-view-group')) {
-                  tab.group.style.removeProperty('--zen-folder-indent');
-                } else {
-                  tab.style.removeProperty('--zen-folder-indent');
-                }
-              }
+          .animate(
+            groupStart,
+            {
+              marginTop: 0,
+            },
+            {
+              duration: 0.1,
+              ease: 'linear',
             }
+          )
+          .then(() => {
+            tabsContainer.style.overflow = '';
+            if (group.hasAttribute('has-active')) {
+              const activeTabs = group.activeTabs;
+              const folders = new Map();
+              group.removeAttribute('has-active');
+              for (let tab of activeTabs) {
+                const group = tab?.group?.hasAttribute('split-view-group')
+                  ? tab?.group?.group
+                  : tab?.group;
+                if (!folders.has(group?.id)) {
+                  folders.set(group?.id, group?.activeGroups?.at(-1));
+                }
+                let activeGroup = folders.get(tab?.group?.id);
+                // If group has active tabs, we need to update the indentation
+                if (activeGroup) {
+                  const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
+                  const selectedTabs = activeGroup.activeTabs;
+                  if (selectedTabs.length > 0) {
+                    const selectedItem = selectedTabs[0];
+                    const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
+                    const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
 
-            folders.clear();
-          }
-          // Folder has been expanded and has no active tabs
-          group.activeTabs = [];
-        })
-      )
+                    const heightUntilSelected =
+                      window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
+                      window.windowUtils.getBoundsWithoutFlushing(activeGroupStart).bottom;
+
+                    const adjustedHeight = isSplitView
+                      ? heightUntilSelected - 2
+                      : heightUntilSelected;
+
+                    animations.push(
+                      gZenUIManager.motion.animate(
+                        activeGroupStart,
+                        {
+                          marginTop: -(adjustedHeight + 4),
+                        },
+                        { duration: 0, ease: 'linear' }
+                      )
+                    );
+                  }
+
+                  this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
+                } else {
+                  // Since the folder is now expanded, we should remove active attribute
+                  // to the tab that was previously visible
+                  tab.removeAttribute('folder-active');
+                  if (tab.group?.hasAttribute('split-view-group')) {
+                    tab.group.style.removeProperty('--zen-folder-indent');
+                  } else {
+                    tab.style.removeProperty('--zen-folder-indent');
+                  }
+                }
+              }
+
+              folders.clear();
+            }
+            // Folder has been expanded and has no active tabs
+            group.activeTabs = [];
+          })
+      );
 
       this.#animationCount += 1;
       await Promise.all(animations);

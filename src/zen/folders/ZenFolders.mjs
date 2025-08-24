@@ -1329,8 +1329,13 @@
           const activeForGroup = selectedItems.filter((t) => current.contains(t));
           if (activeForGroup.length) {
             if (current.collapsed) {
-              current.setAttribute('has-active', 'true');
-              current.activeTabs = activeForGroup;
+              if (current.hasAttribute('has-active')) {
+                current.activeTabs = [...new Set([...current.activeTabs, ...activeForGroup])];
+              } else {
+                current.setAttribute('has-active', 'true');
+                current.activeTabs = activeForGroup;
+              }
+
               const tabsContainer = current.querySelector('.tab-group-container');
               const groupStart = current.querySelector('.zen-tab-group-start');
               const curMarginTop = parseInt(groupStart.style.marginTop) || 0;

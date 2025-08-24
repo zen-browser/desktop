@@ -582,7 +582,7 @@
             },
             {
               duration: 0.1,
-              ease: 'linear',
+              ease: 'easeInOut',
             }
           )
           .then(() => {
@@ -598,7 +598,7 @@
                 if (!folders.has(group?.id)) {
                   folders.set(group?.id, group?.activeGroups?.at(-1));
                 }
-                let activeGroup = folders.get(tab?.group?.id);
+                let activeGroup = folders.get(group?.id);
                 // If group has active tabs, we need to update the indentation
                 if (activeGroup) {
                   const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
@@ -1337,12 +1337,26 @@
           if (activeForGroup.length) {
             if (current.collapsed) {
               if (current.hasAttribute('has-active')) {
-                current.activeTabs = [...new Set([...current.activeTabs, ...activeForGroup])];
+                // It is important to keep the sequence of elements as in the DOM
+                current.activeTabs = [...new Set([...current.activeTabs, ...activeForGroup])].sort(
+                  (a, b) => {
+                    const position = a.compareDocumentPosition(b);
+                    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+                    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+                    return 0;
+                  }
+                );
               } else {
                 current.setAttribute('has-active', 'true');
                 current.activeTabs = activeForGroup;
               }
 
+              // If selectedItems does not have a tab, it is necessary to add it
+              current.activeTabs.forEach((tab) => {
+                if (!selectedItems.includes(tab)) {
+                  selectedItems.push(tab);
+                }
+              });
               const tabsContainer = current.querySelector('.tab-group-container');
               const groupStart = current.querySelector('.zen-tab-group-start');
               const curMarginTop = parseInt(groupStart.style.marginTop) || 0;
@@ -1434,7 +1448,7 @@
             {
               marginTop: [curMarginTop, 0],
             },
-            { duration: 0.1, ease: 'linear' }
+            { duration: 0.1, ease: 'easeInOut' }
           )
           .then(() => {
             tabsContainer.style.overflow = '';

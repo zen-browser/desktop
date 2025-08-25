@@ -28,3 +28,6 @@
 
 - name: zen.tabs.open-pinned-in-new-tab
   value: true
+
+- name: zen.sessionstore.restore_workspace
+  value: false

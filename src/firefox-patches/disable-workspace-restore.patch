@@ -5,7 +5,7 @@
  
    LOG("nsWindow::MoveToWorkspace() ID %d", workspaceID);
 +
-+  if (!mozilla::Preferences::GetBool("browser.sessionstore.restore_workspace", true)) {
++  if (!mozilla::Preferences::GetBool("zen.sessionstore.restore_workspace", true)) {
 +    return;
 +  }
 +

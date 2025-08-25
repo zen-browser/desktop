@@ -277,7 +277,6 @@ zen-folder {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
           fill: var(--zen-folder-stroke);
-          transform: translate(-180%, 2.5px);
         }
       }
 
@@ -341,7 +340,7 @@ zen-folder {
     }
   }
 
-  &[has-active] > .tab-group-label-container {
+  :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
     & .tab-reset-button {
       display: flex;
       opacity: 0;

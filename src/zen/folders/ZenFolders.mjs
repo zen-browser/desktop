@@ -133,8 +133,11 @@
           case 'context_zenFolderRename':
             this.#lastFolderContextMenu.rename();
             break;
-          case 'context_zenFolderExpand':
-            this.#lastFolderContextMenu.expandGroupTabs();
+          case 'context_zenFolderUnpack':
+            this.#lastFolderContextMenu.unpackTabs();
+            break;
+          case 'context_zenFolderUnloadAll':
+            this.#lastFolderContextMenu.unloadAllTabs(event);
             break;
           case 'context_zenFolderNewSubfolder':
             this.#lastFolderContextMenu.createSubfolder();
@@ -448,11 +451,12 @@
       });
 
       animations.push(...this.updateFolderIcon(group));
+      const startMargin = -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0));
       animations.push(
         gZenUIManager.motion.animate(
           groupStart,
           {
-            marginTop: -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0)),
+            marginTop: startMargin,
           },
           { duration: 0.12, ease: 'easeInOut' }
         )
@@ -1235,6 +1239,11 @@
     }
 
     collapseVisibleTab(group, onlyIfActive = false, selectedTab = null) {
+      let tabsToCollapse = [selectedTab];
+      if (group?.hasAttribute('split-view-group')) {
+        group = group.group;
+        tabsToCollapse = group.tabs;
+      }
       if (!group?.isZenFolder) return;
 
       if (onlyIfActive && group.activeGroups.length && selectedTab) {
@@ -1255,7 +1264,7 @@
       for (const item of group._prevActiveTabs) {
         if (
           item.hasAttribute('folder-active') &&
-          (selectedTab ? item === selectedTab : !item.selected || !onlyIfActive)
+          (selectedTab ? tabsToCollapse.includes(item) : !item.selected || !onlyIfActive)
         ) {
           item.removeAttribute('folder-active');
           group.activeTabs = group.activeTabs.filter((t) => t !== item);

@@ -733,7 +733,7 @@
     async _onCloseTabShortcut(
       event,
       selectedTab = gBrowser.selectedTab,
-      behavior = lazy.zenPinnedTabCloseShortcutBehavior
+      { behavior = lazy.zenPinnedTabCloseShortcutBehavior, noClose = false } = {}
     ) {
       if (!selectedTab?.pinned) {
         return;
@@ -741,6 +741,10 @@
 
       event.stopPropagation();
       event.preventDefault();
+
+      if (noClose && behavior === 'close') {
+        behavior = 'unload-switch';
+      }
 
       switch (behavior) {
         case 'close':
@@ -780,7 +784,11 @@
               /* only if active */ true,
               selectedTab
             );
-            await gBrowser.explicitUnloadTabs([selectedTab]);
+            let tabsToUnload = [selectedTab];
+            if (selectedTab.group?.hasAttribute('split-view-group')) {
+              tabsToUnload = selectedTab.group.tabs;
+            }
+            await gBrowser.explicitUnloadTabs(tabsToUnload);
             selectedTab.removeAttribute('discarded');
           }
           if (selectedTab.selected) {

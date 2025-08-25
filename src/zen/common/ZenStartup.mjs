@@ -177,13 +177,16 @@
       const appWrapper = document.getElementById('zen-main-app-wrapper');
       const element = document.createElement('div');
       element.id = 'zen-update-animation';
+      const elementBorder = document.createElement('div');
+      elementBorder.id = 'zen-update-animation-border';
       requestIdleCallback(() => {
         if (gReduceMotion) {
           return;
         }
         appWrapper.appendChild(element);
-        gZenUIManager.motion
-          .animate(
+        appWrapper.appendChild(elementBorder);
+        Promise.all([
+          gZenUIManager.motion.animate(
             '#zen-update-animation',
             {
               top: ['100%', '-50%'],
@@ -192,10 +195,21 @@
             {
               duration: 0.35,
             }
-          )
-          .then(() => {
-            element.remove();
-          });
+          ),
+          gZenUIManager.motion.animate(
+            '#zen-update-animation-border',
+            {
+              '--background-top': ['150%', '-50%'],
+            },
+            {
+              duration: 0.35,
+              delay: 0.1,
+            }
+          ),
+        ]).then(() => {
+          element.remove();
+          elementBorder.remove();
+        });
       });
     }
   })();

@@ -36,8 +36,9 @@
   <menuitem id="context_zenFolderRename" data-l10n-id="zen-folders-panel-rename-folder"/>
   <menuitem id="context_zenFolderChangeIcon" data-l10n-id="zen-folders-panel-change-icon-folder"/>
   <menuseparator />
+  <menuitem id="context_zenFolderUnloadAll" data-l10n-id="zen-folders-unload-folder"/>
   <menuitem id="context_zenFolderNewSubfolder" data-l10n-id="zen-folders-new-subfolder"/>
-  <menuitem id="context_zenFolderExpand" data-l10n-id="zen-folders-panel-unpack-folder"/>
+  <menuitem id="context_zenFolderUnpack" data-l10n-id="zen-folders-panel-unpack-folder"/>
   <menuseparator />
   <menu id="context_zenChangeFolderSpace"
     data-l10n-id="zen-folders-panel-change-folder-space">

@@ -201,3 +201,24 @@ body > #confetti {
   transform: translateY(-50%);
   pointer-events: none;
 }
+
+#zen-update-animation-border {
+  position: absolute;
+  inset: 0;
+  border: solid 2px #0000;
+  border-radius: var(--zen-native-content-radius);
+  background: radial-gradient(
+      ellipse 100% 50% at center var(--background-top),
+      rgba(255, 255, 255, 0.8) 80%,
+      transparent
+    )
+    border-box;
+  /* ensure gradient size is relative to border-box (not default padding-box) */
+  --lyr: conic-gradient(white 0 0); /* any kind of gradient that's opaque everywhere */
+  /* exclude padding-box (that is, mask out everything but the border area) */
+  mask:
+    var(--lyr) padding-box exclude,
+    var(--lyr);
+  content: '';
+  pointer-events: none;
+}

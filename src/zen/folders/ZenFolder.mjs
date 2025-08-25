@@ -9,7 +9,7 @@
       <hbox class="tab-group-label-container" pack="center">
         <html:div class="tab-group-folder-icon"/>
         <label class="tab-group-label" role="button"/>
-        <image class="tab-reset-button reset-icon" role="button" keyNav="false"/>
+        <image class="tab-reset-button reset-icon" role="button" keyNav="false" data-l10n-id="zen-folders-unload-all-tooltip"/>
       </hbox>
       <html:div class="tab-group-container">
         <html:div class="zen-tab-group-start" />
@@ -52,7 +52,7 @@
         </rect>
       <!--Icon (g)-->
         <g id="folder-icon" shape-rendering="geometricPrecision" style="fill-opacity: 1; transform-origin: -53.05px 5.399px; fill: var(--zen-folder-stroke);">
-          <image href="" height="18px" width="19px"/>
+          <image href="" transform="translate(-52.5,2)" height="18px" width="19px"/>
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;-17" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="-10 -9;-7.5 -9" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
           <animate attributeName="opacity" values="1;1" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
@@ -153,7 +153,7 @@
       });
     }
 
-    async expandGroupTabs() {
+    async unpackTabs() {
       for (let tab of this.allItems.reverse()) {
         tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
         if (tab.hasAttribute('zen-empty-tab')) {
@@ -234,20 +234,20 @@
       return this.labelElement.parentElement.querySelector('.tab-reset-button');
     }
 
-    #unloadAllActiveTabs() {
-      for (const tab of this.activeTabs) {
-        const tabResetButton = tab.querySelector('.tab-reset-button');
-        if (tabResetButton) {
-          tabResetButton.click();
-        }
+    unloadAllTabs(event) {
+      this.#unloadAllActiveTabs(event, /* noClose */ true);
+    }
+
+    #unloadAllActiveTabs(event, noClose = false) {
+      for (const tab of this.tabs) {
+        gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
       }
       this.activeTabs = [];
     }
 
     on_click(event) {
       if (event.target === this.resetButton) {
-        event.stopPropagation();
-        this.#unloadAllActiveTabs();
+        this.#unloadAllActiveTabs(event);
         return;
       }
       super.on_click(event);

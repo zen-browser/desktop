@@ -1,0 +1,14 @@
+--- a/widget/gtk/nsWindow.cpp
++++ b/widget/gtk/nsWindow.cpp
+@@ -3790,6 +3790,11 @@
+   int32_t workspaceID = workspaceIDStr.ToInteger(&rv);
+ 
+   LOG("nsWindow::MoveToWorkspace() ID %d", workspaceID);
++
++  if (!mozilla::Preferences::GetBool("browser.sessionstore.restore_workspace", true)) {
++    return;
++  }
++
+   if (NS_FAILED(rv) || !workspaceID || !GdkIsX11Display() || !mShell) {
+     LOG("  MoveToWorkspace disabled, quit");
+     return;

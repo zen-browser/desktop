@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Buat sebuah Ruang
 zen-workspace-creation-label = Ruang digunakan untuk mengorganisasikan tab dan sesi Anda.
 zen-workspaces-delete-workspace-title = Delete Workspace?
-zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus {$name}? Tindakan ini tidak bisa dibatalkan.
+zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus { $name }? Tindakan ini tidak bisa dibatalkan.

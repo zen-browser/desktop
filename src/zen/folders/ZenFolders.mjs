@@ -231,7 +231,7 @@
       }
 
       if (group.collapsed && !this._sessionRestoring) {
-        group.collapsed = false;
+        group.collapsed = group.hasAttribute('has-active');
       }
     }
 
@@ -618,7 +618,7 @@
                 let activeGroup = folders.get(group?.id);
                 // If group has active tabs, we need to update the indentation
                 if (activeGroup) {
-                  this.on_TabGroupCollapse({ target: activeGroup });
+                  this.on_TabGroupCollapse({ target: activeGroup, forCollapseVisible: true });
                   this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
                 } else {
                   // Since the folder is now expanded, we should remove active attribute

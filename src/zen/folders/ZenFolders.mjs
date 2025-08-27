@@ -618,7 +618,31 @@
                 let activeGroup = folders.get(group?.id);
                 // If group has active tabs, we need to update the indentation
                 if (activeGroup) {
-                  this.on_TabGroupCollapse({ target: activeGroup, forCollapseVisible: true });
+                  const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
+                  const selectedTabs = activeGroup.activeTabs;
+                  if (selectedTabs.length > 0) {
+                    const selectedItem = selectedTabs[0];
+                    const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
+                    const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
+
+                    const heightUntilSelected =
+                      window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
+                      window.windowUtils.getBoundsWithoutFlushing(activeGroupStart).bottom;
+
+                    const adjustedHeight = isSplitView
+                      ? heightUntilSelected - 2
+                      : heightUntilSelected;
+
+                    animations.push(
+                      gZenUIManager.motion.animate(
+                        activeGroupStart,
+                        {
+                          marginTop: -(adjustedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)),
+                        },
+                        { duration: 0, ease: 'linear' }
+                      )
+                    );
+                  }
                   this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
                 } else {
                   // Since the folder is now expanded, we should remove active attribute

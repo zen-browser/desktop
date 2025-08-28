@@ -620,6 +620,11 @@
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 
+      const isZenFolder = this.#currentParentTab?.group?.isZenFolder;
+      if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder') && isZenFolder) {
+        gBrowser.pinTab(this.#currentTab);
+      }
+
       gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
       const browserRect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper);

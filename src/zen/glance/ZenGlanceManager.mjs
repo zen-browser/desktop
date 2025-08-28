@@ -710,6 +710,10 @@
         const currentTab = this.#currentTab;
         const currentParentTab = this.#currentParentTab;
 
+        const isZenFolder = currentParentTab?.group?.isZenFolder;
+        if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder') && isZenFolder) {
+          gBrowser.pinTab(currentTab);
+        }
         await this.fullyOpenGlance({ forSplit: true });
         gZenViewSplitter.splitTabs([currentTab, currentParentTab], 'vsep', 1);
         const browserContainer = currentTab.linkedBrowser?.closest('.browserSidebarContainer');

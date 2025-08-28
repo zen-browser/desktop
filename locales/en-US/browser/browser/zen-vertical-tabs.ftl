@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Hide both
     .accesskey = H
 zen-toolbar-context-new-folder =
-    .label = New folder
+    .label = New Folder
     .accesskey = N
 
 sidebar-zen-expand =

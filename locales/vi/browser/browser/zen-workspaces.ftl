@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Hồ sơ
 zen-workspace-creation-header = Tạo không gian làm việc
 zen-workspace-creation-label = Không gian làm việc sẽ là nơi để bạn chứa các trang web và lượt truy cập của bạn.
 zen-workspaces-delete-workspace-title = Delete Workspace?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Bạn có chắc là bạn muốn xóa { $name }? Thao tác này sẽ không được hoàn lại.

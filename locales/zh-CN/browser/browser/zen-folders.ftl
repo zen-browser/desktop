@@ -18,4 +18,4 @@ zen-folders-unload-all-tooltip =
     .tooltiptext = 休眠此文件夹中的所有标签页
 zen-folders-unload-folder = 
     .label = 休眠所有标签页
-zen-folders-search-no-results = No tabs matching that search 🤔
+zen-folders-search-no-results = 没有找到符合条件的标签页 🤔

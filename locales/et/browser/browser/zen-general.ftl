@@ -2,49 +2,49 @@ zen-panel-ui-current-profile-text = praegune profiil
 unified-extensions-description = Laiendusi kasutatakse täiendava funktsionaalsuse lisamiseks { -brand-short-name }i.
 tab-context-zen-reset-pinned-tab = 
     .label = Lähtesta püsikaart
-    .accesskey = R
+    .accesskey = p
 tab-context-zen-add-essential = 
-    .label = Add to Essentials ({ $num } / 12 slots filled)
-    .accesskey = E
+    .label = Märgi oluliseks ({ $num } / 12 täidetud)
+    .accesskey = o
 tab-context-zen-remove-essential = 
     .label = Eemalda olulistest
-    .accesskey = R
+    .accesskey = o
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Asenda püsikaardi URL praegusega
-    .accesskey = C
-zen-themes-corrupted = Sinu { -brand-short-name } muudatuste fail on vigane. See on nüüd lähtestatud vaikimisi teemaks.
+    .accesskey = p
+zen-themes-corrupted = Sinu { -brand-short-name } mods-ide fail on vigane. See on nüüd lähtestatud vaikimisi teemaks.
 zen-shortcuts-corrupted = Sinu { -brand-short-name } otseteede fail on vigane. See on nüüd lähtestatud vaikimisi otseteedeks.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+    Uus asukohariba on sisse lülitatud, mistõttu pole enam uue kaardi lehte tarvis.<br/><br/>
+    Proovi avada uut kaarti, et näha uut asukohariba!
+zen-disable = Lülita välja
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
+    .aria-label = Minimeeri
+    .tooltip = Minimeeri
 zen-panel-ui-gradient-generator-custom-color = Kohandatud värv
 zen-panel-ui-gradient-generator-saved-message = Värviüleminek on edukalt salvestatud!
 zen-copy-current-url-confirmation = URL kopeeriti lõikelauale.
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Tühista
 zen-general-confirm = 
     .label = Kinnita
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
+zen-tabs-renamed = Kaart on edukalt ümber nimetatud!
+zen-background-tab-opened-toast = Taustal avati uus kaart!
+zen-workspace-renamed-toast = Tööruum on edukalt ümber nimetatud!
 zen-library-sidebar-workspaces = 
-    .label = Spaces
+    .label = Tööruumid
 zen-library-sidebar-mods = 
-    .label = Mods
+    .label = Mods-id
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = Rohkem teavet
 zen-close-label = Sulge
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Otsi...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emojid
 zen-icons-picker-svg = 
-    .label = Icons
+    .label = Ikoonid

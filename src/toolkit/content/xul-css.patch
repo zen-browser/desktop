@@ -1,8 +1,24 @@
 diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
-index ba7642c9264ac201fec7be1bd492bc778bb147a2..9e89735e8a0886183ae7ecf98e6ce08142bf3bbc 100644
+index ba7642c9264ac201fec7be1bd492bc778bb147a2..f0e02bcc000f106e186b3123ada96b4cbf83b40f 100644
 --- a/toolkit/content/xul.css
 +++ b/toolkit/content/xul.css
-@@ -456,7 +456,8 @@ deck > *|*:not(:-moz-native-anonymous) {
+@@ -401,6 +401,15 @@ tooltip {
+       border-radius: 4px;
+     }
+   }
++
++  border-radius: 16px !important;
++  border-top-left-radius: 4px !important;
++  border: 1px solid rgba(225, 225, 225, 0.15) !important;
++  padding: 5px 9px 6px 9px !important;
++  font-weight: 600 !important;
++  background: color-mix(in srgb, var(--zen-primary-color, white), black 80%) !important;
++  color: #f3f3f3 !important;
++  font-size: smaller !important;
+ }
+ 
+ /******** tree ******/
+@@ -456,7 +465,8 @@ deck > *|*:not(:-moz-native-anonymous) {
  }
  
  tabpanels > .deck-selected,

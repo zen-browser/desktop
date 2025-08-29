@@ -15,22 +15,22 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Peida mõlemad
     .accesskey = P
 zen-toolbar-context-new-folder = 
-    .label = New Folder
-    .accesskey = N
+    .label = Uus kaust
+    .accesskey = U
 sidebar-zen-expand = 
     .label = Laienda külgriba
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Loo uus...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] Eemalda mälust ning vaheta kaarti
+           *[other] Eemalda mälust { $tabCount } kaarti ning vaheta esimesele kaardile
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] Lähtesta ja tee püsikaardiks
+           *[other] Lähtesta ja tee püsikaardiks { $tabCount } kaarti
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = Tagasi püsikaardi URL-ile

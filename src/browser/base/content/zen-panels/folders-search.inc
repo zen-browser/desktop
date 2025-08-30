@@ -8,8 +8,7 @@
     <html:input id="zen-folder-tabs-list-search" 
       data-l10n-id="zen-folders-search-placeholder" 
       data-l10n-args="{&quot;folder-name&quot;:&quot;&quot;}"
-      type="search" 
-      flex="1" />
+      type="search" />
   </hbox>
   <scrollbox class="zen-folder-tabs-list-scrollbox" flex="1">
     <vbox id="zen-folder-tabs-list"></vbox>

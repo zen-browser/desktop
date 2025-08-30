@@ -24,7 +24,7 @@ zen-folders-panel-change-icon-folder =
     .label = Change Icon
 
 zen-folders-unload-all-tooltip =
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Unload all tabs in this folder
 
 zen-folders-unload-folder =
     .label = Unload All Tabs

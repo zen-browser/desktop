@@ -392,6 +392,7 @@ zen-folder {
   background-color: transparent;
   border: none !important;
   outline: none !important;
+  flex: 1;
 }
 
 #zen-folder-tabs-list {

@@ -252,15 +252,15 @@
 
           & .extra-tab {
             width: 100%;
-            height: 3rem;
-            border-radius: 0.8rem;
+            height: 4rem;
+            border-radius: var(--border-radius-large);
             margin-top: 0.5rem;
             background: var(--zen-toolbar-element-bg);
             grid-column: span 3;
           }
 
           & .tabbrowser-tab {
-            --tab-min-height: 5rem !important;
+            --tab-min-height: 6rem !important;
             min-width: 5rem !important;
             transition: transform 0.1s;
             position: relative;
@@ -268,14 +268,14 @@
             &::after {
               position: absolute;
               content: '';
-              width: 1.6rem;
-              height: 1.6rem;
+              width: 2rem;
+              height: 2rem;
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
               background: var(--zen-essential-tab-icon);
               background-position: center;
-              background-size: cover;
+              background-size: contain;
               background-repeat: no-repeat;
             }
 

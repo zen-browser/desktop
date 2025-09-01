@@ -103,6 +103,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   onTabIconChanged(tab, url = null) {
+    tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
     const iconUrl = url ?? tab.iconImage.src;
     if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
       try {
@@ -1564,6 +1565,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   async onTabLabelChanged(tab) {
+    tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
     if (!this._pinsCache) {
       return;
     }

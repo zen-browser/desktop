@@ -40,6 +40,8 @@
         'TabHide',
         'TabShow',
         'TabMove',
+        'ZenTabIconChanged',
+        'ZenTabLabelChanged',
       ];
       const eventListener = this.#handleEvent.bind(this);
       for (const event of kEvents) {
@@ -104,6 +106,12 @@
         case 'TabMove':
           this.#onTabMove(event);
           break;
+        case 'ZenTabIconChanged':
+          this.#onTabIconChanged(event);
+          break;
+        case 'ZenTabLabelChanged':
+          this.#onTabLabelChanged(event);
+          break;
         default:
           console.warn(`Unhandled event type: ${event.type}`);
           break;
@@ -153,6 +161,26 @@
       const tabToUnpin = this.#getTabWithId(tabId);
       if (tabToUnpin) {
         gBrowser.unpinTab(tabToUnpin);
+      }
+    }
+
+    #onTabIconChanged(event) {
+      this.#updateTabIconAndLabel(event);
+    }
+
+    #onTabLabelChanged(event) {
+      this.#updateTabIconAndLabel(event);
+    }
+
+    #updateTabIconAndLabel(event) {
+      const targetTab = event.target;
+      if (targetTab.hasAttribute("pending")) {
+        const tabId = this.#getTabId(targetTab);
+        const tabToChange = this.#getTabWithId(tabId);
+        if (tabToChange) {
+          gBrowser.setIcon(tabToChange, gBrowser.getIcon(targetTab));
+          gBrowser._setTabLabel(tabToChange, targetTab.label);
+        }
       }
     }
 
@@ -209,7 +237,7 @@
         const isEssential = isPinned && targetTab.hasAttribute('zen-essential');
         const elementIndex = targetTab.elementIndex;
 
-        const duplicatedTab = SessionStore.duplicateTab(window, targetTab, 0, true);
+        const duplicatedTab = SessionStore.duplicateTab(window, targetTab, 0);
         if (isEssential) {
           gZenPinnedTabManager.addToEssentials(duplicatedTab);
         } else if (isPinned) {

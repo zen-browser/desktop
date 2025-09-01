@@ -92,6 +92,7 @@
     }
 
     onTabIconChanged(tab, url = null) {
+      tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
       const iconUrl = url ?? tab.iconImage.src;
       if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
         try {
@@ -1436,6 +1437,7 @@
     }
 
     async onTabLabelChanged(tab) {
+      tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
       if (!this._pinsCache) {
         return;
       }

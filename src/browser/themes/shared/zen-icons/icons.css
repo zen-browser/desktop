@@ -344,6 +344,7 @@
 }
 
 #identity-popup[connection='chrome'] .identity-popup-security-connection {
+  list-style-image: url('chrome://branding/content/icon16.png') !important;
   filter: grayscale(1);
 }
 

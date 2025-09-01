@@ -48,13 +48,6 @@
   isolation: isolate;
   background: var(--zen-themed-toolbar-bg-transparent);
 
-  /*
-   *  Important: We set the color to `AccentColor` so we can
-   *  Compute the stylings and get the native accent color.
-   *  Please, do not remove this.
-   */
-  color: AccentColor;
-
   &::after,
   &::before {
     content: '';

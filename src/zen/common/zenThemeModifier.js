@@ -97,10 +97,7 @@ var ZenThemeModifier = {
    * Update the accent color.
    */
   updateAccentColor() {
-    let accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
-    if (accentColor.startsWith('system:')) {
-      accentColor = accentColor.replace('system:', '').trim();
-    }
+    const accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
     document.documentElement.style.setProperty('--zen-primary-color', accentColor);
   },
 };

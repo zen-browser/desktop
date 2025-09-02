@@ -24,7 +24,7 @@
 }
 
 @media -moz-pref('zen.theme.disable-lightweight') {
-  #customization-footer #customization-lwtheme-link {
+  #customization-lwtheme-link {
     display: none !important;
   }
 }

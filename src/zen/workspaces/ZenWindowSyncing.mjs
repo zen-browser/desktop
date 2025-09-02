@@ -66,13 +66,14 @@
       if (this.#waitForPromise) {
         await this.#waitForPromise;
       }
-      this.#waitForPromise = new Promise(async (resolve) => {
-        await this.foreachWindowAsActive(async (browser) => {
+      this.#waitForPromise = new Promise((resolve) => {
+        this.foreachWindowAsActive(async (browser) => {
           if (browser.gZenWorkspaceWindowSync && !this.windowIsActive(browser)) {
             await browser.gZenWorkspaceWindowSync.onExternalTabEvent(event);
           }
+        }).then(() => {
+          resolve();
         });
-        resolve();
       });
     }
 
@@ -174,13 +175,11 @@
 
     #updateTabIconAndLabel(event) {
       const targetTab = event.target;
-      if (targetTab.hasAttribute("pending")) {
-        const tabId = this.#getTabId(targetTab);
-        const tabToChange = this.#getTabWithId(tabId);
-        if (tabToChange) {
-          gBrowser.setIcon(tabToChange, gBrowser.getIcon(targetTab));
-          gBrowser._setTabLabel(tabToChange, targetTab.label);
-        }
+      const tabId = this.#getTabId(targetTab);
+      const tabToChange = this.#getTabWithId(tabId);
+      if (tabToChange && tabToChange.hasAttribute('pending')) {
+        gBrowser.setIcon(tabToChange, gBrowser.getIcon(targetTab));
+        gBrowser._setTabLabel(tabToChange, targetTab.label);
       }
     }
 
@@ -223,30 +222,34 @@
     #onTabMove(event) {
       const targetTab = event.target;
       const tabId = this.#getTabId(targetTab);
-      const elementIndex = targetTab.elementIndex;
+      const tabIndex = targetTab._pPos;
       const tabToMove = this.#getTabWithId(tabId);
       if (tabToMove) {
-        gBrowser.moveTabTo(tabToMove, { elementIndex, forceUngrouped: !!targetTab.group });
+        gBrowser.moveTabTo(tabToMove, { tabIndex, forceUngrouped: !!targetTab.group });
       }
     }
 
     async #onTabOpen(event) {
-      await new Promise((resolve) => {
-        const targetTab = event.target;
-        const isPinned = targetTab.pinned;
-        const isEssential = isPinned && targetTab.hasAttribute('zen-essential');
-        const elementIndex = targetTab.elementIndex;
+      const targetTab = event.target;
+      const isPinned = targetTab.pinned;
+      const isEssential = isPinned && targetTab.hasAttribute('zen-essential');
+      const elementIndex = targetTab.elementIndex;
 
-        const duplicatedTab = SessionStore.duplicateTab(window, targetTab, 0);
-        if (isEssential) {
-          gZenPinnedTabManager.addToEssentials(duplicatedTab);
-        } else if (isPinned) {
-          gBrowser.pinTab(duplicatedTab);
-        }
-
-        gBrowser.moveTabTo(duplicatedTab, { elementIndex, forceUngrouped: !!targetTab.group });
-        resolve();
+      const duplicatedTab = gBrowser.addTrustedTab(targetTab.linkedBrowser.currentURI.spec, {
+        createLazyBrowser: true,
       });
+
+      duplicatedTab.setAttribute('zen-pin-id', targetTab.getAttribute('zen-pin-id'));
+      duplicatedTab.setAttribute('zen-tab-id', targetTab.getAttribute('zen-tab-id'));
+      duplicatedTab.setAttribute('zen-workspace-id', targetTab.getAttribute('zen-workspace-id'));
+
+      if (isEssential) {
+        gZenPinnedTabManager.addToEssentials(duplicatedTab);
+      } else if (isPinned) {
+        gBrowser.pinTab(duplicatedTab);
+      }
+
+      gBrowser.moveTabTo(duplicatedTab, { elementIndex, forceUngrouped: !!targetTab.group });
     }
   }
 

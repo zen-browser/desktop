@@ -238,10 +238,6 @@
   list-style-image: url('privateBrowsing.svg') !important;
 }
 
-#save-to-pocket-button {
-  list-style-image: url('pocket-outline.svg') !important;
-}
-
 #profiler-button-button > .toolbarbutton-icon,
 .subviewbutton[label='Task Manager'] {
   list-style-image: url('tool-profiler.svg') !important;

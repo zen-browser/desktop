@@ -4,7 +4,7 @@
 {
   // prettier-ignore
   const SVG_ICONS = [
-    "airplane.svg", "baseball.svg", "basket.svg", "bed.svg", 
+    "airplane.svg", "at.svg", "baseball.svg", "basket.svg", "bed.svg", 
     "bell.svg", "book.svg", "bookmark.svg", "chat.svg", "checkbox.svg", 
     "circle.svg", "cloud.svg", "code.svg", "coins.svg", 
     "cutlery.svg", "egg.svg", "flag.svg", "folder.svg", "globe.svg", 
@@ -12,7 +12,8 @@
     "layers.svg", "lightning.svg", "mail.svg", "map.svg", "moon.svg", "music.svg", 
     "page.svg", "palette.svg", "paw.svg", "people.svg", "pizza.svg", "planet.svg", 
     "present.svg", "shapes.svg", "skull.svg", "square.svg", "squares.svg", "star.svg", 
-    "star-1.svg", "sun.svg", "terminal.svg", "triangle.svg", "video.svg", "weight.svg",
+    "star-1.svg", "sun.svg", "tada.svg", "terminal.svg", "triangle.svg", "video.svg",
+    "weight.svg",
   ];
 
   class nsZenEmojiPicker extends nsZenDOMOperatedFeature {

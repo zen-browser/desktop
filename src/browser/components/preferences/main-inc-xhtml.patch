@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index f9129fb171362e81369056923bf25acbb87d2ad8..924bcd2cd66a5dfcf9c45aac0c63cd0257c21a2c 100644
+index 66ce978d9b022285dea67fdb75b3c005adb05d9b..db61587570ca18403a82ea6796a756d403cc207e 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
 @@ -29,6 +29,9 @@
@@ -12,23 +12,17 @@ index f9129fb171362e81369056923bf25acbb87d2ad8..924bcd2cd66a5dfcf9c45aac0c63cd02
  #ifdef XP_WIN
      <hbox id="windowsLaunchOnLoginBox" align="center" hidden="true">
        <checkbox id="windowsLaunchOnLogin"
-@@ -186,6 +189,7 @@
- </groupbox>
- 
+@@ -188,7 +191,8 @@
  <!-- Browser layout -->
-+#if 0
  <groupbox data-category="paneGeneral"
            data-subcategory="layout"
-           hidden="true">
-@@ -201,6 +205,7 @@
-             preference="sidebar.revamp"/>
-   <description class="indent" data-l10n-id="browser-layout-show-sidebar-desc"></description>
- </groupbox>
-+#endif
- 
- <hbox id="languageAndAppearanceCategory"
-       class="subcategory"
-@@ -421,6 +426,7 @@
+-          hidden="true">
++          hidden="true"
++          style="display: none !important;">
+   <label><html:h2 data-l10n-id="browser-layout-header"/></label>
+   <radiogroup id="browserLayoutRadioGroup" preference="sidebar.verticalTabs">
+     <radio id="browserLayoutHorizontalTabs" data-l10n-id="browser-layout-horizontal-tabs" value="false"/>
+@@ -419,6 +423,7 @@
                languages-customize-add.label,
              " />
    </hbox>

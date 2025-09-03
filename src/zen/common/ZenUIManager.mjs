@@ -78,6 +78,9 @@ var gZenUIManager = {
   },
 
   _debloatContextMenus() {
+    if (!Services.prefs.getBoolPref('zen.view.context-menu.refresh', false)) {
+      return;
+    }
     const contextMenusToClean = [
       // Remove the 'new tab below' context menu.
       // reason: It doesn't properly work with zen and it's philosophy of not having
@@ -129,7 +132,7 @@ var gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 336;
+    const kUrlbarHeight = 388;
     gURLBar.textbox.style.setProperty(
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`

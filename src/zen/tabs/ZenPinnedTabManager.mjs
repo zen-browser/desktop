@@ -191,6 +191,7 @@
     async #initializePinnedTabs(init = false) {
       const pins = this._pinsCache;
       if (!pins?.length || !init) {
+        this.#hasInitializedPins = true;
         return;
       }
 
@@ -373,12 +374,12 @@
         }
       }
 
-      gBrowser._updateTabBarForPinnedTabs();
-      gZenUIManager.updateTabsToolbar();
-
       setTimeout(() => {
         this.#hasInitializedPins = true;
       }, 0);
+
+      gBrowser._updateTabBarForPinnedTabs();
+      gZenUIManager.updateTabsToolbar();
     }
 
     _onPinnedTabEvent(action, event) {
@@ -446,6 +447,18 @@
         group._pPos
       );
       group.setAttribute('zen-pin-id', id);
+      for (const tab of group.tabs) {
+        // Only add it if the tab is directly under the group
+        if (
+          tab.pinned &&
+          tab.hasAttribute('zen-pin-id') &&
+          tab.group === group &&
+          this.#hasInitializedPins
+        ) {
+          const tabPinId = tab.getAttribute('zen-pin-id');
+          await ZenPinnedTabsStorage.addTabToGroup(tabPinId, id, /* position */ tab._pPos);
+        }
+      }
       await this.refreshPinnedTabs();
     }
 
@@ -521,11 +534,13 @@
       if (!pinId) {
         return;
       }
-      for (const tab of group.tabs) {
+      for (const tab of group.allItemsRecursive) {
         if (tab.pinned && tab.getAttribute('zen-pin-id') === pinId) {
           const pin = this._pinsCache.find((p) => p.uuid === pinId);
           if (pin) {
             pin.position = tab._pPos;
+            pin.parentUuid = tab.group?.getAttribute('zen-pin-id') || null;
+            pin.workspaceUuid = group.getAttribute('zen-workspace-id');
             await this.savePin(pin, false);
           }
           break;
@@ -535,6 +550,7 @@
       if (groupPin) {
         groupPin.position = newIndex;
         groupPin.parentUuid = group.group?.getAttribute('zen-pin-id');
+        groupPin.workspaceUuid = group.getAttribute('zen-workspace-id');
         await this.savePin(groupPin);
       }
     }
@@ -591,7 +607,7 @@
     async _onTabClick(e) {
       const tab = e.target?.closest('tab');
       if (e.button === 1 && tab) {
-        await this._onCloseTabShortcut(e, tab);
+        await this._onCloseTabShortcut(e, tab, { closeIfPending: true });
       }
     }
 
@@ -727,6 +743,10 @@
       const existingPin = this._pinsCache.find((p) => p.uuid === pin.uuid);
       if (existingPin) {
         Object.assign(existingPin, pin);
+      } else {
+        // We shouldn't need it, but just in case there's
+        // a race condition while making new pinned tabs.
+        this._pinsCache.push(pin);
       }
       await ZenPinnedTabsStorage.savePin(pin, notifyObservers);
     }
@@ -734,7 +754,11 @@
     async _onCloseTabShortcut(
       event,
       selectedTab = gBrowser.selectedTab,
-      { behavior = lazy.zenPinnedTabCloseShortcutBehavior, noClose = false } = {}
+      {
+        behavior = lazy.zenPinnedTabCloseShortcutBehavior,
+        noClose = false,
+        closeIfPending = false,
+      } = {}
     ) {
       if (!selectedTab?.pinned) {
         return;
@@ -788,6 +812,12 @@
             let tabsToUnload = [selectedTab];
             if (selectedTab.group?.hasAttribute('split-view-group')) {
               tabsToUnload = selectedTab.group.tabs;
+            }
+            const allAreUnloaded = tabsToUnload.every(
+              (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
+            );
+            if (allAreUnloaded && closeIfPending) {
+              return await this._onCloseTabShortcut(event, selectedTab, { behavior: 'close' });
             }
             await gBrowser.explicitUnloadTabs(tabsToUnload);
             selectedTab.removeAttribute('discarded');
@@ -858,7 +888,7 @@
         existingEntry.title = pin.title;
         state.entries = [existingEntry];
       }
-      state.image = pin.iconUrl || null;
+      state.image = pin.iconUrl || state.image;
       state.index = 0;
 
       SessionStore.setTabState(tab, state);
@@ -870,7 +900,7 @@
         const faviconData = await PlacesUtils.favicons.getFaviconForPage(pageUrl);
         if (!faviconData) {
           // empty favicon
-          return 'data:image/png;base64,';
+          return null;
         }
         return faviconData.dataURI;
       } catch (ex) {
@@ -1178,7 +1208,7 @@
       } else {
         tab.setAttribute('zen-pinned-changed', 'true');
       }
-      tab.style.setProperty('--zen-original-tab-icon', `url(${pin.iconUrl.spec})`);
+      tab.style.setProperty('--zen-original-tab-icon', `url(${pin.iconUrl?.spec})`);
     }
 
     removeTabContainersDragoverClass(hideIndicator = true) {

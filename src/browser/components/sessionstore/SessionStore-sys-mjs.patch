@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index e954a8df26ed84731b08b151f90a758206946582..5b8013c71c6b50579668d16a5f7d5a82b5d43e4d 100644
+index e954a8df26ed84731b08b151f90a758206946582..64ab1cce10324d574b49fe861975188c292756c3 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -2135,7 +2135,6 @@ var SessionStoreInternal = {
@@ -143,3 +143,12 @@ index e954a8df26ed84731b08b151f90a758206946582..5b8013c71c6b50579668d16a5f7d5a82
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
+@@ -7266,7 +7289,7 @@ var SessionStoreInternal = {
+ 
+       let groupsToSave = new Map();
+       for (let tIndex = 0; tIndex < window.tabs.length; ) {
+-        if (window.tabs[tIndex].pinned) {
++        if (window.tabs[tIndex].pinned && false) {
+           // Adjust window.selected
+           if (tIndex + 1 < window.selected) {
+             window.selected -= 1;

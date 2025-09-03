@@ -38,7 +38,6 @@
   <menuseparator />
   <menuitem id="context_zenFolderUnloadAll" data-l10n-id="zen-folders-unload-folder"/>
   <menuitem id="context_zenFolderNewSubfolder" data-l10n-id="zen-folders-new-subfolder"/>
-  <menuitem id="context_zenFolderUnpack" data-l10n-id="zen-folders-panel-unpack-folder"/>
   <menuseparator />
   <menu id="context_zenChangeFolderSpace"
     data-l10n-id="zen-folders-panel-change-folder-space">
@@ -46,5 +45,6 @@
   </menu>
   <menuitem id="context_zenFolderToSpace" data-l10n-id="zen-folders-panel-convert-folder-to-space" />
   <menuseparator />
+  <menuitem id="context_zenFolderUnpack" data-l10n-id="zen-folders-panel-unpack-folder"/>
   <menuitem id="context_zenFolderDelete" data-l10n-id="zen-folders-panel-delete-folder"/>
 </menupopup>

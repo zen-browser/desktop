@@ -24,7 +24,7 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Hiberna i canvia la pestanya
+            [one] Hiberna i canvia a la pestanya
            *[other] Hiberna { $tabCount } pestanyes i canvia a la primera
         }
 tabbrowser-reset-pin-button = 

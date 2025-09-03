@@ -139,7 +139,7 @@
     }
 
     rename() {
-      if (!gZenVerticalTabsManager._hasSetSingleToolbar) {
+      if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
         return;
       }
       gZenVerticalTabsManager.renameTabStart({
@@ -149,6 +149,12 @@
     }
 
     createSubfolder() {
+      // We need to expand all parent folders
+      let currentFolder = this;
+      do {
+        currentFolder.collapsed = false;
+        currentFolder = currentFolder.group;
+      } while (currentFolder);
       gZenFolders.createFolder([], {
         renameFolder: !gZenUIManager.testingEnabled,
         label: 'Subfolder',

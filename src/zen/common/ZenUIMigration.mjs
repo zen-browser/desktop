@@ -6,7 +6,7 @@ const { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppC
 
 class nsZenUIMigration {
   PREF_NAME = 'zen.ui.migration.version';
-  MIGRATION_VERSION = 2;
+  MIGRATION_VERSION = 3;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -69,6 +69,12 @@ class nsZenUIMigration {
   _migrateV2() {
     if (AppConstants.platform !== 'linux') {
       Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 0);
+    }
+  }
+
+  _migrateV3() {
+    if (Services.prefs.getStringPref('zen.theme.accent-color', '').startsWith('system')) {
+      Services.prefs.setStringPref('zen.theme.accent-color', '#ffb787');
     }
   }
 }

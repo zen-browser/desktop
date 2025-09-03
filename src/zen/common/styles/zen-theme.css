@@ -44,7 +44,7 @@
     var(--zen-colors-tertiary) 99%
   );
 
-  --zen-dialog-background: light-dark(rgb(219, 219, 219), rgb(31, 31, 31));
+  --zen-dialog-background: light-dark(rgb(244, 244, 244), rgb(31, 31, 31));
   --zen-urlbar-background: color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%);
 
   --zen-secondary-btn-color: var(--zen-colors-primary-foreground);

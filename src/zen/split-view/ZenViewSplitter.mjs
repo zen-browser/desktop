@@ -898,7 +898,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       document.getElementById('context_zenSplitTabs').setAttribute('data-l10n-args', tabCountInfo);
       document
         .getElementById('context_zenSplitTabs')
-        .setAttribute('disabled', !this.contextCanSplitTabs());
+        .setAttribute('hidden', !this.contextCanSplitTabs());
     });
   }
 
@@ -907,14 +907,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   insertSplitViewTabContextMenu() {
     const element = window.MozXULElement.parseXULToFragment(`
-      <menuseparator/>
       <menuitem id="context_zenSplitTabs"
                 data-lazy-l10n-id="tab-zen-split-tabs"
                 data-l10n-args='{"tabCount": 1}'
                 command="cmd_zenSplitViewContextMenu"/>
-      <menuseparator/>
     `);
-    document.getElementById('context_closeDuplicateTabs').after(element);
+    document.getElementById('context_duplicateTab').before(element);
   }
 
   /**

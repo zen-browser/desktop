@@ -35,7 +35,8 @@
 #stop-button,
 .close-icon,
 .zen-glance-sidebar-close,
-.zen-theme-picker-custom-list-item-remove {
+.zen-theme-picker-custom-list-item-remove,
+#appMenu-quit-button2 {
   list-style-image: url('close.svg') !important;
 }
 
@@ -343,6 +344,7 @@
 }
 
 #identity-popup[connection='chrome'] .identity-popup-security-connection {
+  list-style-image: url('chrome://branding/content/icon48.png') !important;
   filter: grayscale(1);
 }
 

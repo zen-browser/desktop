@@ -628,7 +628,11 @@ button.popup-notification-dropmarker {
   }
 
   &[selected] {
-    background-color: color-mix(in srgb, var(--zen-primary-color) 50%, transparent 50%) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--zen-primary-color) 50%,
+      light-dark(transparent, rgba(255, 255, 255, 0.3)) 50%
+    ) !important;
 
     & *,
     & .urlbarView-title-separator::before {

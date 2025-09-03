@@ -24,5 +24,4 @@
 
 - name: zen.injections.match-urls
   value: 'http://localhost/*'
-  locked: true
   condition: '!defined(MOZILLA_OFFICIAL)'

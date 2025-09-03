@@ -231,7 +231,7 @@
       }
 
       if (group.collapsed && !this._sessionRestoring) {
-        group.collapsed = false;
+        group.collapsed = group.hasAttribute('has-active');
       }
     }
 
@@ -269,10 +269,6 @@
       if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder')) {
         gBrowser.pinTab(tab);
         group.addTabs([tab]);
-      } else {
-        // Otherwise, we must move it to the first tab since it was added in an unpinned state
-        gZenWorkspaces._emptyTab.after(tab);
-        gBrowser.tabContainer._invalidateCachedTabs();
       }
     }
 
@@ -291,7 +287,7 @@
           if (!folder.activeTabs.length) {
             folder.removeAttribute('has-active');
           }
-          this.collapseVisibleTab(folder);
+          this.collapseVisibleTab(folder, true);
           this.updateFolderIcon(folder, 'close', false);
         }
       }
@@ -332,7 +328,9 @@
         clearTimeout(this.#mouseTimer);
         this.#mouseTimer = null;
       }
-      this.#popup.hidePopup();
+      if (this.#popup) {
+        this.#popup.hidePopup();
+      }
     }
 
     async on_TabGroupCollapse(event) {
@@ -618,7 +616,23 @@
                 let activeGroup = folders.get(group?.id);
                 // If group has active tabs, we need to update the indentation
                 if (activeGroup) {
-                  this.on_TabGroupCollapse({ target: activeGroup });
+                  const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
+                  const selectedTabs = activeGroup.activeTabs;
+                  if (selectedTabs.length > 0) {
+                    const selectedItem = selectedTabs[0];
+                    const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
+                    const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
+
+                    const heightUntilSelected =
+                      window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
+                      window.windowUtils.getBoundsWithoutFlushing(activeGroupStart).bottom;
+
+                    const adjustedHeight = isSplitView
+                      ? heightUntilSelected - 2
+                      : heightUntilSelected;
+                    activeGroupStart.style.marginTop =
+                      -(adjustedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)) + 'px';
+                  }
                   this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
                 } else {
                   // Since the folder is now expanded, we should remove active attribute
@@ -745,9 +759,11 @@
       const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
       const pinnedTabsContainer = workspaceElement.pinnedTabsContainer;
       pinnedTabsContainer.insertBefore(folder, pinnedTabsContainer.lastChild);
-      folder.setAttribute('zen-workspace-id', workspaceId);
       for (const tab of folder.tabs) {
         tab.setAttribute('zen-workspace-id', workspaceId);
+        // This sets the ID for the current folder and any sub-folder
+        // we may encounter
+        tab.group.setAttribute('zen-workspace-id', workspaceId);
         gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
         if (gZenWorkspaces._lastSelectedWorkspaceTabs[workspaceId] === tab) {
           // This tab is no longer the last selected tab in the previous workspace because it's being moved to a new workspace
@@ -755,7 +771,9 @@
         }
       }
       folder.dispatchEvent(new CustomEvent('ZenFolderChangedWorkspace', { bubbles: true }));
-      gZenWorkspaces.changeWorkspaceWithID(workspaceId);
+      gZenWorkspaces.changeWorkspaceWithID(workspaceId).then(() => {
+        gBrowser.moveTabTo(folder, { elementIndex: 0, forceUngrouped: true });
+      });
     }
 
     canDropElement(element, targetElement) {
@@ -792,8 +810,10 @@
         pinned: true,
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
         _forZenEmptyTab: true,
+        createLazyBrowser: true,
       });
 
+      gBrowser.pinTab(emptyTab);
       tabs = [emptyTab, ...filteredTabs];
 
       const folder = this._createFolderNode(options);
@@ -1034,9 +1054,7 @@
           // We don't need to do anything if the URL is invalid. e.g. about:blank
         }
         let tabLabel = tab.label || '';
-        let iconURL =
-          gBrowser.getIcon(tab) ||
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E";
+        let iconURL = gBrowser.getIcon(tab) || PlacesUtils.favicons.defaultFavicon.spec;
 
         icon.src = iconURL;
 
@@ -1288,6 +1306,11 @@
           tab.setAttribute('folder-active', 'true');
           tab.removeAttribute('was-folder-active');
         }
+      }
+
+      if (group.activeTabs.length === 0) {
+        group.removeAttribute('has-active');
+        this.updateFolderIcon(group, 'close', false);
       }
 
       this.on_TabGroupExpand({ target: group, forExpandVisible: true });

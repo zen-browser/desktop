@@ -23,6 +23,12 @@
   display: none !important;
 }
 
+@media -moz-pref('zen.theme.disable-lightweight') {
+  #customization-lwtheme-link {
+    display: none !important;
+  }
+}
+
 .private-browsing-indicator-with-label {
   display: none !important;
 }
@@ -227,4 +233,22 @@ body > #confetti {
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   mask-composite: exclude;
+}
+
+/* Status panel */
+
+@media (-moz-pref('zen.theme.styled-status-panel')) {
+  #statuspanel {
+    padding: 4px 3px;
+
+    & > #statuspanel-label {
+      border-radius: 16px !important;
+      border: 1px solid rgba(225, 225, 225, 0.15) !important;
+      padding: 4px 8px 5px 8px !important;
+      font-weight: 600 !important;
+      background: color-mix(in srgb, var(--zen-primary-color), black 80%) !important;
+      color: #f3f3f3 !important;
+      font-size: small !important;
+    }
+  }
 }

@@ -201,7 +201,7 @@
     display: none;
   }
 
-  #identity-box:not([pageproxystate='invalid']) #identity-icon-box:not([open]) {
+  #identity-box:not([pageproxystate='invalid']):not(.notSecure) #identity-icon-box:not([open]) {
     margin-inline-start: calc(-8px - 2 * var(--urlbar-icon-padding));
     transform: translateX(100%);
     opacity: 0;
@@ -376,7 +376,7 @@ button.popup-notification-dropmarker {
   #identity-box:is(:not(.chromeUI), [pageproxystate='invalid'])
   #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
-  min-width: 30px;
+  min-width: 28px;
 }
 
 /* Notification Stack */

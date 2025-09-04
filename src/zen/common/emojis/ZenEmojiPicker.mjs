@@ -4,7 +4,7 @@
 {
   // prettier-ignore
   const SVG_ICONS = [
-    "airplane.svg", "at.svg", "baseball.svg", "basket.svg", "bed.svg", 
+    "airplane.svg", "baseball.svg", "basket.svg", "bed.svg", 
     "bell.svg", "book.svg", "bookmark.svg", "chat.svg", "checkbox.svg", 
     "circle.svg", "cloud.svg", "code.svg", "coins.svg", 
     "cutlery.svg", "egg.svg", "flag.svg", "folder.svg", "globe.svg", 

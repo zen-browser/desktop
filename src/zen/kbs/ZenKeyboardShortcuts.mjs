@@ -773,7 +773,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 9;
+  static LATEST_KBS_VERSION = 10;
 
   constructor() {}
 
@@ -992,6 +992,22 @@ class nsZenKeyboardShortcutsVersioner {
           }
         }
       }
+    }
+    if (version < 10) {
+      // Migrate from version 9 to 10
+      // Add shortcut to expand Glance into a full tab
+      // Default: Ctrl+O (Cmd+O on macOS)
+      data.push(
+        new KeyShortcut(
+          'zen-glance-expand',
+          'O',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          'cmd_zenGlanceExpand',
+          ''
+        )
+      );
     }
     return data;
   }

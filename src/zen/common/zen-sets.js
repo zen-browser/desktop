@@ -115,6 +115,16 @@ document.addEventListener(
               renameFolder: true,
             });
             break;
+          case 'cmd_zenTogglePinTab':
+            const currentTab = gBrowser.selectedTab;
+            if (currentTab) {
+              if (currentTab.pinned) {
+                gBrowser.unpinTab(currentTab);
+              } else {
+                gBrowser.pinTab(currentTab);
+              }
+            }
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

@@ -1,0 +1,6 @@
+[DEFAULT]
+prefs = [
+    "zen.keyboard.shortcuts.enabled=true",
+]
+
+["browser_shortcuts_pin_tab.js"]

@@ -259,6 +259,7 @@ zen-key-exit-full-screen = Exit Full Screen
 zen-ai-chatbot-sidebar-shortcut = Toggle AI Chatbot Sidebar
 zen-key-inspector-mac = Toggle Inspector (Mac)
 zen-toggle-sidebar-shortcut = Toggle Firefox Sidebar
+zen-toggle-pin-tab-shortcut = Toggle Pin Tab
 zen-reader-mode-toggle-shortcut-other = Toggle Reader Mode
 zen-picture-in-picture-toggle-shortcut = Toggle Picture-in-Picture
 zen-nav-reload-shortcut-2 = Reload Page

@@ -636,6 +636,22 @@
   list-style-image: url('manage.svg') !important;
 }
 
+#panelMenuBookmarkThisPage {
+  list-style-image: url('bookmark.svg') !important;
+}
+
+#panelMenu_searchBookmarks {
+  list-style-image: url('search-glass.svg') !important;
+}
+
+#panelMenu_viewBookmarksToolbar {
+  list-style-image: url('open.svg') !important;
+}
+
+#panelMenu_showAllBookmarks {
+  list-style-image: url('manage.svg') !important;
+}
+
 /* FIX header icons for the app menu sub menus (eg. fx account, history...) */
 .panel-header > h1 {
   text-align: left;

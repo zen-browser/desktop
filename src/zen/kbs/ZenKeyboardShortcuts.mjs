@@ -838,7 +838,14 @@ class nsZenKeyboardShortcutsVersioner {
   }
 
   fixedKeyboardShortcuts(data) {
-    return this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+    // Apply migrations and ensure defaults exist
+    let out = this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+
+    // Hard-remove deprecated or conflicting defaults regardless of version
+    // - Remove the built-in "Open File" keybinding; menu item remains available
+    out = out.filter((shortcut) => shortcut.getAction?.() !== 'Browser:OpenFile');
+
+    return out;
   }
 
   migrate(data, version) {
@@ -1008,13 +1015,8 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
 
-      // 2) Rebind default Open File to Accel+Alt+O
-      for (let shortcut of data) {
-        if (shortcut.getAction && shortcut.getAction() === 'Browser:OpenFile') {
-          shortcut.setNewBinding('O');
-          shortcut.setModifiers(nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }));
-        }
-      }
+      // 2) Remove default Open File keybinding entirely (menu item remains available)
+      data = data.filter((shortcut) => shortcut.getAction?.() !== 'Browser:OpenFile');
     }
     return data;
   }

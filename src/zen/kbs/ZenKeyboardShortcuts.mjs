@@ -995,8 +995,7 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 10) {
       // Migrate from version 9 to 10
-      // Add shortcut to expand Glance into a full tab
-      // Default: Ctrl+O (Cmd+O on macOS)
+      // 1) Add shortcut to expand Glance into a full tab: Default Accel+O
       data.push(
         new KeyShortcut(
           'zen-glance-expand',
@@ -1008,6 +1007,14 @@ class nsZenKeyboardShortcutsVersioner {
           ''
         )
       );
+
+      // 2) Rebind default Open File to Accel+Alt+O
+      for (let shortcut of data) {
+        if (shortcut.getAction && shortcut.getAction() === 'Browser:OpenFile') {
+          shortcut.setNewBinding('O');
+          shortcut.setModifiers(nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }));
+        }
+      }
     }
     return data;
   }

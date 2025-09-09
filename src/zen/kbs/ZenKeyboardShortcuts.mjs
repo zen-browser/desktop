@@ -1051,7 +1051,6 @@ var gZenKeyboardShortcutsManager = {
   async init() {
     if (this.inBrowserView) {
       const loadedShortcuts = await this._loadSaved();
-      this.versioner = new nsZenKeyboardShortcutsVersioner(loadedShortcuts);
       this._currentShortcutList = this.versioner.fixedKeyboardShortcuts(loadedShortcuts) || [];
       this._applyShortcuts();
       await this._saveShortcuts();

@@ -32,6 +32,9 @@
 - name: zen.theme.hide-tab-throbber
   value: true
 
+- name: zen.theme.styled-status-panel
+  value: false
+
 # ==== Mark: border radius ====
 
 # macOS border radius

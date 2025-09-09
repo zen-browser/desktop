@@ -17,7 +17,7 @@
 }
 
 #urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 74.9%), hsl(0, 0%, 20%));
+  --urlbarView-separator-color: light-dark(hsl(0, 0%, 55%), hsl(0, 0%, 20%));
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
@@ -201,7 +201,7 @@
     display: none;
   }
 
-  #identity-box:not([pageproxystate='invalid']) #identity-icon-box:not([open]) {
+  #identity-box:not([pageproxystate='invalid']):not(.notSecure) #identity-icon-box:not([open]) {
     margin-inline-start: calc(-8px - 2 * var(--urlbar-icon-padding));
     transform: translateX(100%);
     opacity: 0;
@@ -376,7 +376,7 @@ button.popup-notification-dropmarker {
   #identity-box:is(:not(.chromeUI), [pageproxystate='invalid'])
   #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
-  min-width: 30px;
+  min-width: 28px;
 }
 
 /* Notification Stack */
@@ -545,7 +545,7 @@ button.popup-notification-dropmarker {
 .urlbarView-title-separator::before {
   font-size: 14px !important;
   font-weight: 500 !important;
-  color: #aaa !important;
+  color: light-dark(#4f4f4f, #aaa) !important;
 }
 
 .urlbarView-favicon {
@@ -560,12 +560,12 @@ button.popup-notification-dropmarker {
 }
 
 .urlbarView-row[has-action]:is([type='switchtab'], [type='remotetab'], [type='clipboard']) {
-  & .urlbarView-action {
+  & .urlbarView-action:last-child {
     margin-left: auto !important;
     margin-right: 0 !important;
   }
 
-  &:is([type='switchtab'], [type='remotetab']) .urlbarView-action {
+  &:is([type='switchtab'], [type='remotetab']) .urlbarView-action:last-child {
     background: transparent !important;
     align-items: center;
     display: flex;
@@ -628,7 +628,11 @@ button.popup-notification-dropmarker {
   }
 
   &[selected] {
-    background-color: color-mix(in srgb, var(--zen-primary-color) 50%, transparent 50%) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--zen-primary-color) 50%,
+      light-dark(transparent, rgba(255, 255, 255, 0.3)) 50%
+    ) !important;
 
     & *,
     & .urlbarView-title-separator::before {

@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Próifíl
 zen-workspace-creation-header = Cruthaigh Spás
 zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus do sheisiúin a eagrú.
 zen-workspaces-delete-workspace-title = Scrios an spás?
-zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat an spás seo a scriosadh? Ní féidir an gníomh seo a chealú.
+zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.

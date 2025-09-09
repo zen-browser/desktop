@@ -35,7 +35,8 @@
 #stop-button,
 .close-icon,
 .zen-glance-sidebar-close,
-.zen-theme-picker-custom-list-item-remove {
+.zen-theme-picker-custom-list-item-remove,
+#appMenu-quit-button2 {
   list-style-image: url('close.svg') !important;
 }
 
@@ -237,10 +238,6 @@
   list-style-image: url('privateBrowsing.svg') !important;
 }
 
-#save-to-pocket-button {
-  list-style-image: url('pocket-outline.svg') !important;
-}
-
 #profiler-button-button > .toolbarbutton-icon,
 .subviewbutton[label='Task Manager'] {
   list-style-image: url('tool-profiler.svg') !important;
@@ -343,6 +340,7 @@
 }
 
 #identity-popup[connection='chrome'] .identity-popup-security-connection {
+  list-style-image: url('chrome://branding/content/icon48.png') !important;
   filter: grayscale(1);
 }
 
@@ -638,6 +636,22 @@
   list-style-image: url('manage.svg') !important;
 }
 
+#panelMenuBookmarkThisPage {
+  list-style-image: url('bookmark.svg') !important;
+}
+
+#panelMenu_searchBookmarks {
+  list-style-image: url('search-glass.svg') !important;
+}
+
+#panelMenu_viewBookmarksToolbar {
+  list-style-image: url('open.svg') !important;
+}
+
+#panelMenu_showAllBookmarks {
+  list-style-image: url('manage.svg') !important;
+}
+
 /* FIX header icons for the app menu sub menus (eg. fx account, history...) */
 .panel-header > h1 {
   text-align: left;
@@ -801,4 +815,10 @@
   #PanelUI-zen-gradient-generator-scheme-light {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   }
+}
+
+.zen-workspace-context-icon image {
+  -moz-context-properties: fill;
+  fill: currentColor;
+  scale: 1.6;
 }

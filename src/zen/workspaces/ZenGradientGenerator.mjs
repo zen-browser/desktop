@@ -1089,11 +1089,11 @@
         return color.c;
       }
       let opacity = this.currentOpacity;
-      if (forToolbar) {
+      if (forToolbar && !this.#allowTransparencyOnSidebar) {
         color = this.blendColors(
           color.c,
           this.getToolbarModifiedBaseRaw().slice(0, 3),
-          opacity * 100
+          this.canBeTransparent ? 90 : opacity * 100
         );
         opacity = 1; // Toolbar colors should always be fully opaque
       } else {
@@ -1313,6 +1313,13 @@
           }
         }
 
+        if (theme) {
+          const workspaceElement = browser.gZenWorkspaces.workspaceElement(windowWorkspace.uuid);
+          if (workspaceElement) {
+            workspaceElement.clearThemeStyles();
+          }
+        }
+
         if (!skipUpdate) {
           browser.document.documentElement.style.setProperty(
             '--zen-main-browser-background-old',
@@ -1497,7 +1504,7 @@
       const rgb = this.hexToRgb(accentColor);
       if (this.isDarkMode) {
         // If the theme is dark, we want to use a lighter color
-        return this.blendColors(rgb, [0, 0, 0], 60);
+        return this.blendColors(rgb, [0, 0, 0], 40);
       }
       return rgb;
     }
@@ -1627,21 +1634,42 @@
 
     invalidateGradientCache() {
       this.#gradientsCache = {};
+      window.dispatchEvent(new Event('ZenGradientCacheChanged'));
     }
 
-    async getGradientForWorkspace(workspace) {
+    getGradientForWorkspace(workspace) {
       const uuid = workspace.uuid;
       if (this.#gradientsCache[uuid]) {
         return this.#gradientsCache[uuid];
       }
       const previousOpacity = this.currentOpacity;
       const previousLightness = this.#currentLightness;
-      this.currentOpacity = workspace.theme.opacity ?? 0.5;
-      this.#currentLightness = workspace.theme.lightness ?? 50;
-      const gradient = this.getGradient(workspace.theme.gradientColors);
+      const theme = workspace.theme;
+      this.currentOpacity = theme.opacity ?? 0.5;
+      this.#currentLightness = theme.lightness ?? 50;
+      const gradient = this.getGradient(theme.gradientColors);
+      let dominantColor = this.getMostDominantColor(theme.gradientColors);
+      const isDefaultTheme = !dominantColor;
+      if (isDefaultTheme) {
+        dominantColor = this.getNativeAccentColor();
+      }
+      let isDarkMode = this.isDarkMode;
+      let isExplicitMode = false;
+      if (!isDefaultTheme && !this.isLegacyVersion) {
+        // Check for the primary color
+        isDarkMode = this.shouldBeDarkMode(dominantColor);
+        isExplicitMode = true;
+      }
+      this.#gradientsCache[uuid] = {
+        gradient,
+        grain: theme.texture ?? 0,
+        isDarkMode,
+        isExplicitMode,
+        toolbarColor: this.getToolbarColor(isDarkMode),
+        primaryColor: this.getAccentColorForUI(dominantColor),
+      };
       this.currentOpacity = previousOpacity;
       this.#currentLightness = previousLightness;
-      this.#gradientsCache[uuid] = [gradient, workspace.theme.texture ?? 0];
       return this.#gradientsCache[uuid];
     }
   }

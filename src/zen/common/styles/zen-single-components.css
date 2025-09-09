@@ -23,6 +23,12 @@
   display: none !important;
 }
 
+@media -moz-pref('zen.theme.disable-lightweight') {
+  #customization-lwtheme-link {
+    display: none !important;
+  }
+}
+
 .private-browsing-indicator-with-label {
   display: none !important;
 }
@@ -179,5 +185,74 @@ body > #confetti {
     scale 0.2s;
   &:active {
     transform: scale(0.98);
+  }
+}
+
+/** Update animation */
+
+#zen-update-animation {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0.5) 60%,
+    transparent 100%
+  );
+  left: 0;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+#zen-update-animation-border {
+  position: absolute;
+  border-radius: var(--zen-native-content-radius);
+  width: 100%;
+  height: 100%;
+}
+
+#zen-update-animation-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* thickness of border */
+
+  background: radial-gradient(
+    ellipse 100% 50% at center var(--background-top),
+    rgba(255, 255, 255, 0.5) 80%,
+    transparent
+  );
+
+  /* Punch out the inside once (not animated) */
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+#TabsToolbar {
+  -moz-window-dragging: unset;
+}
+
+/* Status panel */
+
+@media (-moz-pref('zen.theme.styled-status-panel')) {
+  #statuspanel {
+    padding: 4px 3px;
+
+    & > #statuspanel-label {
+      border-radius: 16px !important;
+      border: 1px solid rgba(225, 225, 225, 0.15) !important;
+      padding: 4px 8px 5px 8px !important;
+      font-weight: 600 !important;
+      background: color-mix(in srgb, var(--zen-primary-color), black 80%) !important;
+      color: #f3f3f3 !important;
+      font-size: small !important;
+    }
   }
 }

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 665b048cf149b9a6d0ccc43f8d9199f077b8ada2..d031a99ae5c9c6e69cfd831c7d271d8a8d097dc8 100644
+index 665b048cf149b9a6d0ccc43f8d9199f077b8ada2..fcff5cc6a4a50ff2d76930e4d2a1e1d0b2e6bc02 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -26,6 +26,7 @@
@@ -25,7 +25,7 @@ index 665b048cf149b9a6d0ccc43f8d9199f077b8ada2..d031a99ae5c9c6e69cfd831c7d271d8a
      </vbox>
    </html:template>
  
-+<hbox id="zen-main-app-wrapper" flex="1" persist="zen-compact-mode" class="browser-toolbox-background">
++<hbox id="zen-main-app-wrapper" flex="1" class="browser-toolbox-background">
  #include navigator-toolbox.inc.xhtml
  
  #include browser-box.inc.xhtml

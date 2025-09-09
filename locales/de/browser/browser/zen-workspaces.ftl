@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Arbeitsbereich erstellen
 zen-workspace-creation-label = Arbeitsbereiche werden verwendet, um Ihre Tabs und Sitzungen zu organisieren.
 zen-workspaces-delete-workspace-title = Arbeitsbereich löschen?
-zen-workspaces-delete-workspace-body = Sind Sie sicher, dass Sie diesen Arbeitsbereich löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
+zen-workspaces-delete-workspace-body = Sind Sie sicher, dass Sie { $name } löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.

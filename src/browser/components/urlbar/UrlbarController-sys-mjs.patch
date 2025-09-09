@@ -1,0 +1,13 @@
+diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/components/urlbar/UrlbarController.sys.mjs
+index 4f85be7203f44c16944924d50947a89e436f00bc..518956c320af4e7045e8ff9fe63b70f8c2430b22 100644
+--- a/browser/components/urlbar/UrlbarController.sys.mjs
++++ b/browser/components/urlbar/UrlbarController.sys.mjs
+@@ -410,7 +410,7 @@ export class UrlbarController {
+         // When there's no search string and no view selection, we want to focus
+         // the next toolbar item instead, for accessibility reasons.
+         let allowTabbingThroughResults =
+-          this.input.focusedViaMousedown ||
++          true ||
+           this.input.searchMode?.isPreview ||
+           this.view.selectedElement ||
+           (this.input.value &&

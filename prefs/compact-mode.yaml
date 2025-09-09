@@ -32,7 +32,10 @@
 - name: zen.view.compact.show-background-tab-toast
   value: true
 
+- name: zen.view.compact.debug
+  value: false
+
 # Do not edit manually
-- name: zen.view.compact.should-enable-at-startup
+- name: zen.view.compact.enable-at-startup
   hidden: true
   value: false

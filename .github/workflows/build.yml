@@ -734,8 +734,8 @@ jobs:
           GIT_CURL_VERBOSE: 1
         with:
           token: ${{ secrets.DEPLOY_KEY }}
-          commit-message: 🚀 Update to version ${{ needs.build-data.outputs.version }}
-          title: 🚀 Update to version ${{ needs.build-data.outputs.version }}
+          commit-message: Update to version `${{ needs.build-data.outputs.version }}`
+          title: Update to version `${{ needs.build-data.outputs.version }}`
           body: |
             This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
 

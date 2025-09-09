@@ -16,8 +16,8 @@
         box-shadow: var(--zen-big-shadow);
       }
 
-      & browser[transparent='true'] {
-        background: light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+      & browser[type='content'] {
+        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
       }
 
       @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {

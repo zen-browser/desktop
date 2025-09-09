@@ -7,6 +7,7 @@ add_task(async function test_Restore_Closed_Tabs() {
   const currentTab = BrowserTestUtils.addTab(window.gBrowser, 'https://example.com/current', {
     skipAnimation: true,
   });
+  const tabsToIgnore = gBrowser.tabs;
   BrowserTestUtils.removeTab(gBrowser.selectedTab);
   const tabsToClose = [];
   for (let i = 0; i < 3; i++) {
@@ -44,7 +45,7 @@ add_task(async function test_Restore_Closed_Tabs() {
     gBrowser.selectedTab = currentTab;
     resolve();
   });
-  for (const tab of gBrowser.tabs.filter((t) => t !== currentTab)) {
+  for (const tab of gBrowser.tabs.filter((t) => !tabsToIgnore.includes(t))) {
     await BrowserTestUtils.removeTab(tab);
   }
 });

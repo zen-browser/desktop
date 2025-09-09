@@ -1,3 +1,8 @@
+<!--
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   -->
 <!-- TODO: Get a job -->
 <img src="./docs/assets/zen-dark.svg" width="100px" align="left">
 
@@ -29,8 +34,8 @@ Zen is a firefox-based browser with the aim of pushing your productivity to a ne
 
 ### Firefox Versions
 
-- [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `141.0.3`! 🚀
-- [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 142.0`!
+- [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `142.0.1`! 🚀
+- [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 142.0.1`!
 
 ### Contributing
 

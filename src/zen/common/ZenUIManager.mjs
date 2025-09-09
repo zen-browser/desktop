@@ -72,6 +72,56 @@ var gZenUIManager = {
 
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
+
+    this._initCreateNewPopup();
+    this._debloatContextMenus();
+  },
+
+  _debloatContextMenus() {
+    if (!Services.prefs.getBoolPref('zen.view.context-menu.refresh', false)) {
+      return;
+    }
+    const contextMenusToClean = [
+      // Remove the 'new tab below' context menu.
+      // reason: It doesn't properly work with zen and it's philosophy of not having
+      //   new tabs. It's also semi-not working as it doesn't create a new tab below
+      //   the current one.
+      'context_openANewTab',
+    ];
+    for (const id of contextMenusToClean) {
+      const menu = document.getElementById(id);
+      if (!menu) {
+        continue;
+      }
+      menu.setAttribute('hidden', 'true');
+    }
+  },
+
+  _initCreateNewPopup() {
+    const popup = document.getElementById('zenCreateNewPopup');
+    const button = document.getElementById('zen-create-new-button');
+
+    popup.addEventListener('popupshowing', () => {
+      const image = button.querySelector('image');
+      button.setAttribute('open', 'true');
+      gZenUIManager.motion.animate(
+        image,
+        { transform: ['rotate(0deg)', 'rotate(45deg)'] },
+        { duration: 0.2 }
+      );
+      popup.addEventListener(
+        'popuphidden',
+        () => {
+          button.removeAttribute('open');
+          gZenUIManager.motion.animate(
+            image,
+            { transform: ['rotate(45deg)', 'rotate(0deg)'] },
+            { duration: 0.2 }
+          );
+        },
+        { once: true }
+      );
+    });
   },
 
   handleMouseDown(event) {
@@ -82,7 +132,7 @@ var gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 440;
+    const kUrlbarHeight = 388;
     gURLBar.textbox.style.setProperty(
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
@@ -461,6 +511,30 @@ var gZenUIManager = {
       ? 'bottomleft topleft'
       : 'bottomright topright';
   },
+
+  urlStringsDomainMatch(url1, url2) {
+    if (!url1.startsWith('http') || !url2?.startsWith('http')) {
+      return false;
+    }
+    return Services.io.newURI(url1).host === Services.io.newURI(url2).host;
+  },
+
+  getOpenUILinkWhere(url, browser, openUILinkWhere) {
+    try {
+      let tab = gBrowser.getTabForBrowser(browser);
+      if (
+        openUILinkWhere === 'current' &&
+        !this.urlStringsDomainMatch(url, browser.currentURI.spec) &&
+        tab.pinned &&
+        Services.prefs.getBoolPref('zen.tabs.open-pinned-in-new-tab')
+      ) {
+        return 'tab';
+      }
+    } catch (e) {
+      console.error('Error in getOpenUILinkWhere:', e);
+    }
+    return openUILinkWhere;
+  },
 };
 
 var gZenVerticalTabsManager = {
@@ -478,8 +552,8 @@ var gZenVerticalTabsManager = {
 
     ChromeUtils.defineLazyGetter(this, 'hidesTabsToolbar', () => {
       return (
-        document.documentElement.getAttribute('chromehidden').includes('toolbar') ||
-        document.documentElement.getAttribute('chromehidden').includes('menubar')
+        document.documentElement.getAttribute('chromehidden')?.includes('toolbar') ||
+        document.documentElement.getAttribute('chromehidden')?.includes('menubar')
       );
     });
 
@@ -572,7 +646,7 @@ var gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? [] : [transform, '0px'],
           },
           {
-            duration: 0.12,
+            duration: 0.11,
             easing: 'ease-out',
           }
         )
@@ -594,7 +668,7 @@ var gZenVerticalTabsManager = {
             filter: ['blur(1px)', 'blur(0px)'],
           },
           {
-            duration: 0.12,
+            duration: 0.11,
             easing: 'ease-out',
           }
         )
@@ -608,6 +682,27 @@ var gZenVerticalTabsManager = {
     } catch (e) {
       console.error(e);
     }
+  },
+
+  animateTabClose(aTab, animate) {
+    if (!animate) {
+      return new Promise((resolve) => {
+        resolve();
+      });
+    }
+    const height = aTab.getBoundingClientRect().height;
+    return gZenUIManager.motion.animate(
+      aTab,
+      {
+        opacity: [1, 0],
+        transform: ['scale(1)', 'scale(0.95)'],
+        marginBottom: [`0px`, `-${height}px`],
+      },
+      {
+        duration: 0.075,
+        easing: 'ease-out',
+      }
+    );
   },
 
   get actualWindowButtons() {
@@ -709,9 +804,7 @@ var gZenVerticalTabsManager = {
       document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
     } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
       try {
-        gURLBar.zenUpdateLayoutBreakout().then(() => {
-          gURLBar.valueFormatter._formatURL();
-        });
+        gURLBar.zenUpdateLayoutBreakout();
       } catch (e) {
         console.warn(e);
       }
@@ -778,6 +871,7 @@ var gZenVerticalTabsManager = {
 
       const appContentNavbarContaienr = document.getElementById('zen-appcontent-navbar-container');
       const appContentNavbarWrapper = document.getElementById('zen-appcontent-navbar-wrapper');
+      appContentNavbarWrapper.style.transition = 'none';
       let shouldHide = false;
       if (
         ((!isRightSide && this.isWindowsStyledButtons) ||
@@ -922,6 +1016,7 @@ var gZenVerticalTabsManager = {
       }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();
+      appContentNavbarWrapper.style.transition = '';
     } catch (e) {
       console.error(e);
     }

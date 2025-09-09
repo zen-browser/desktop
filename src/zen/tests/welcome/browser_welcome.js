@@ -150,8 +150,8 @@ add_task(async function test_Welcome_Steps() {
       );
       Assert.equal(
         group.label,
-        'Zen Basics',
-        'The first tab group should be labeled "Zen Basics" after the welcome process'
+        'zen basics',
+        'The first tab group should be labeled "zen basics" after the welcome process'
       );
       for (const tab of gBrowser.tabs) {
         if (tab.hasAttribute('zen-empty-tab')) continue;
@@ -168,7 +168,12 @@ add_task(async function test_Welcome_Steps() {
       }
       group.delete();
       resolve();
-    }, 5000); // Wait for the transition to complete
+    }, 3000); // Wait for the transition to complete
   });
+  for (const tab of gBrowser.tabs) {
+    if (tab.pinned) {
+      gBrowser.removeTab(tab);
+    }
+  }
   ok(true, 'Welcome process completed successfully');
 });

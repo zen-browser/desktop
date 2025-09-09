@@ -165,7 +165,9 @@ jobs:
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
-        run: npm run import -- --verbose
+        run: |
+          . "$HOME/.cargo/env"
+          npm run import -- --verbose
 
       - name: Bootstrap
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}

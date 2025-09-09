@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Créer un Espace
 zen-workspace-creation-label = Les Espaces sont utilisés pour organiser vos onglets et sessions.
 zen-workspaces-delete-workspace-title = Supprimer l’Espace ?
-zen-workspaces-delete-workspace-body = Êtes-vous sûr de vouloir supprimer cet Espace ? Cette action ne peut pas être annulée.
+zen-workspaces-delete-workspace-body = Êtes-vous sûr de vouloir supprimer { $name } ? Cette action ne peut pas être annulée.

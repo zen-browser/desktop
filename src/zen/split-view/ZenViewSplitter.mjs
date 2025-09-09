@@ -200,9 +200,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // We need to remove all remaining tabs from the group when unsplitting
       let remainingTabs = [...group.tabs]; // Copy array since we'll modify it
       for (let remainingTab of remainingTabs) {
-        if (remainingTab.group && remainingTab.group.hasAttribute('split-view-group')) {
-          gBrowser.ungroupTab(remainingTab);
-        }
         this.resetTabState(remainingTab, forUnsplit);
       }
       this.removeGroup(groupIndex);
@@ -901,7 +898,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       document.getElementById('context_zenSplitTabs').setAttribute('data-l10n-args', tabCountInfo);
       document
         .getElementById('context_zenSplitTabs')
-        .setAttribute('disabled', !this.contextCanSplitTabs());
+        .setAttribute('hidden', !this.contextCanSplitTabs());
     });
   }
 
@@ -910,14 +907,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   insertSplitViewTabContextMenu() {
     const element = window.MozXULElement.parseXULToFragment(`
-      <menuseparator/>
       <menuitem id="context_zenSplitTabs"
                 data-lazy-l10n-id="tab-zen-split-tabs"
                 data-l10n-args='{"tabCount": 1}'
                 command="cmd_zenSplitViewContextMenu"/>
-      <menuseparator/>
     `);
-    document.getElementById('context_closeDuplicateTabs').after(element);
+    document.getElementById('context_duplicateTab').before(element);
   }
 
   /**

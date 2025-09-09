@@ -25,3 +25,6 @@
 
 - name: zen.startup.smooth-scroll-in-tabs
   value: true
+
+- name: zen.tabs.open-pinned-in-new-tab
+  value: true

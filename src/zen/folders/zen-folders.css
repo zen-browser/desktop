@@ -7,8 +7,10 @@
 tab-group[split-view-group] {
   display: block;
   @media (prefers-reduced-motion: no-preference) {
-    #tabbrowser-tabs[movingtab] &:not(:active) {
-      transition: var(--tab-dragover-transition);
+    transition: var(--zen-tabbox-element-indent-transition);
+
+    #tabbrowser-tabs[movingtab] & {
+      transition: var(--tab-dragover-transition), var(--zen-tabbox-element-indent-transition);
     }
   }
   --zen-split-view-active-tab-bg: color-mix(
@@ -17,10 +19,12 @@ tab-group[split-view-group] {
     transparent 40%
   );
 
-  margin-inline-start: var(--zen-folder-indent) !important;
+  :root[zen-sidebar-expanded='true'] & {
+    margin-inline-start: var(--zen-folder-indent) !important;
+  }
 
-  #tabbrowser-tabs[movingtab] & {
-    transition: margin-inline-start 0.15s ease-in-out;
+  & .tab-group-label {
+    height: 100% !important;
   }
 
   & .tab-group-container {
@@ -37,7 +41,7 @@ tab-group[split-view-group] {
     outline-offset: var(--tab-outline-offset);
     outline-color: var(--tab-selected-outline-color);
     transition: scale 0.1s ease;
-    margin-inline-start: 0 !important;
+    margin-inline: 2px !important;
 
     :root:not([zen-sidebar-expanded='true']) & {
       padding: 0;
@@ -152,11 +156,11 @@ tab-group[split-view-group] .tabbrowser-tab {
 
 tab-group[split-view-group] .tab-group-label-container {
   position: absolute;
-  width: 100%;
-  height: 40px;
+  width: -moz-available;
+  height: 36px;
   visibility: hidden;
   padding: 0 !important;
-  margin: 0 !important;
+  margin: 2px 0 0 0 !important;
 }
 
 tab-group[split-view-group] .tab-close-button {
@@ -178,21 +182,23 @@ zen-folder {
   flex-direction: column;
   --zen-folder-behind-bgcolor: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 85%, white),
-    color-mix(in srgb, var(--zen-primary-color) 75%, white)
+    color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1)
   );
   --zen-folder-front-bgcolor: light-dark(
     color-mix(in srgb, var(--zen-primary-color), white 70%),
-    color-mix(in srgb, var(--zen-primary-color), black 20%)
+    color-mix(in srgb, var(--zen-primary-color), black 40%)
   );
   --zen-folder-stroke: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 70%, black),
+    color-mix(in srgb, var(--zen-primary-color) 60%, black),
     color-mix(in srgb, var(--zen-colors-primary) 20%, var(--toolbox-textcolor))
   );
 
   -moz-window-dragging: no-drag;
-  transition: margin-inline-start 0.15s ease-in-out;
+  transition: var(--zen-tabbox-element-indent-transition);
 
-  margin-inline-start: var(--zen-folder-indent) !important;
+  :root[zen-sidebar-expanded='true'] & {
+    margin-inline-start: var(--zen-folder-indent) !important;
+  }
 
   &[selected] > .tab-group-label-container::before {
     background-color: color-mix(in srgb, var(--zen-colors-border) 60%, transparent);
@@ -208,7 +214,7 @@ zen-folder {
 
   :root:not([zen-sidebar-expanded]) & {
     width: var(--tab-min-width) !important;
-    margin: var(--tab-block-margin) auto !important;
+    margin: 0 !important;
 
     & .tab-group-label {
       visibility: hidden !important;
@@ -222,7 +228,7 @@ zen-folder {
     }
 
     & > zen-folder {
-      transition: margin-inline-start 0.15s ease-in-out;
+      transition: var(--zen-tabbox-element-indent-transition);
     }
 
     & > tab::before {
@@ -240,9 +246,15 @@ zen-folder {
     --tab-group-color: transparent !important;
     padding-block-end: 0 !important;
     margin: 0 !important;
-    height: 40px;
+    height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
     padding-inline: var(--tab-group-label-padding);
+
+    :root[zen-sidebar-expanded='true'] & {
+      padding-inline-end: calc(var(--tab-group-label-padding) * 2);
+    }
+
     align-items: center;
+    font-weight: 600;
 
     :root:not([zen-sidebar-expanded]) {
       width: var(--tab-min-width) !important;
@@ -257,11 +269,11 @@ zen-folder {
       pointer-events: none;
 
       :root[zen-sidebar-expanded] & {
-        left: 2px;
+        left: 4px;
       }
 
       & svg {
-        filter: contrast(150%);
+        filter: contrast(125%);
         transition: 0.2s scale;
         transform-origin: right bottom;
 
@@ -273,7 +285,7 @@ zen-folder {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
           fill: var(--zen-folder-stroke);
-          transform: translate(-180%, 8%);
+          transform: translate(-182%, 2.4px);
         }
       }
 
@@ -304,7 +316,7 @@ zen-folder {
 
     & > label,
     & > #tab-label-input {
-      padding: 0 0 0 30px !important;
+      padding: 0 0 0 32px !important;
       width: 100%;
     }
 
@@ -315,10 +327,10 @@ zen-folder {
       color: var(--sidebar-text-color) !important;
       margin: 0 !important;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      height: 100% !important;
+      align-self: center !important;
       text-align: start;
+      align-content: center;
+      height: 100% !important;
 
       :root:not([zen-sidebar-expanded]) & {
         padding: 0 !important;
@@ -334,6 +346,17 @@ zen-folder {
 
     & > .tab-group-container {
       overflow-y: clip;
+    }
+  }
+
+  :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
+    & .tab-reset-button {
+      display: flex;
+      opacity: 0;
+    }
+
+    &:hover .tab-reset-button {
+      opacity: 1;
     }
   }
 }
@@ -363,18 +386,20 @@ zen-folder {
   flex-direction: row;
   padding: 6px;
   border-bottom: 1px solid color-mix(in srgb, currentColor, transparent 90%);
-  margin-bottom: 2px;
 }
 
 #zen-folder-tabs-popup #zen-folder-tabs-list-search {
   background-color: transparent;
   border: none !important;
   outline: none !important;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #zen-folder-tabs-list {
   padding: 0 4px;
-  max-height: 248px;
+  max-height: 263px;
   overflow-y: auto;
 }
 
@@ -393,6 +418,8 @@ zen-folder {
   flex-shrink: 0;
   margin-inline-end: 10px;
   margin-inline-start: 4px;
+  fill: currentColor;
+  -moz-context-properties: fill;
 }
 
 .folders-tabs-list-item-labels {
@@ -437,19 +464,30 @@ zen-folder {
   align-items: center;
   direction: ltr;
   padding: 0 var(--tab-inline-padding);
-  border-radius: 4px;
-  margin: 2px 0;
+  border-radius: 6px;
+  margin: 4px 0;
 
   .folders-tabs-list-item[selected] & {
     background-color: color-mix(in srgb, currentColor, transparent 90%);
   }
 
   &:last-child {
-    border-bottom-left-radius: max(calc(var(--panel-border-radius) - 4px), 4px);
-    border-bottom-right-radius: max(calc(var(--panel-border-radius) - 4px), 4px);
+    border-bottom-left-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
+    border-bottom-right-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
+  }
+
+  &:first-child {
+    border-top-left-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
+    border-top-right-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
   }
 }
 
 .tab-group-overflow-count-container {
   display: none !important;
+}
+
+:root:not([zen-sidebar-expanded]) {
+  & #context_zenFolderRename {
+    display: none !important;
+  }
 }

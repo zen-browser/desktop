@@ -142,13 +142,6 @@
       transition: opacity 0.2s ease-in-out;
     }
 
-    &[animate-full='true'] {
-      transform: translate(-50%, -50%);
-      & .zen-glance-sidebar-container {
-        opacity: 0 !important;
-      }
-    }
-
     &[animate='true'] {
       position: absolute;
     }

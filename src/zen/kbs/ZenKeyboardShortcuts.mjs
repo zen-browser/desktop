@@ -609,10 +609,19 @@ class nsZenKeyboardShortcutsLoader {
     let keySet = document.getElementById(ZEN_MAIN_KEYSET_ID);
     let newShortcutList = [];
 
+    const correctDefaultShortcut = (shortcut) => {
+      if (shortcut.getID() === 'key_savePage') {
+        shortcut.setModifiers(
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
+        );
+      }
+    };
+
     // Firefox's standard keyset. Reverse order to keep the order of the keys
     for (let i = keySet.children.length - 1; i >= 0; i--) {
       let key = keySet.children[i];
       let parsed = KeyShortcut.parseFromXHTML(key);
+      correctDefaultShortcut(parsed);
       newShortcutList.push(parsed);
     }
 
@@ -620,10 +629,10 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         'zen-compact-mode-toggle',
-        'C',
+        'S',
         '',
         ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+        nsKeyShortcutModifiers.fromObject({ accel: true }),
         'cmd_zenCompactModeToggle',
         'zen-compact-mode-shortcut-toggle'
       )
@@ -668,10 +677,10 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         'zen-workspace-forward',
-        'E',
         '',
+        'VK_RIGHT',
         ZEN_WORKSPACE_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+        nsKeyShortcutModifiers.fromObject({ alt: true, accel: true }),
         'cmd_zenWorkspaceForward',
         'zen-workspace-shortcut-forward'
       )
@@ -679,10 +688,10 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         'zen-workspace-backward',
-        'Q',
         '',
+        'VK_LEFT',
         ZEN_WORKSPACE_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+        nsKeyShortcutModifiers.fromObject({ alt: true, accel: true }),
         'cmd_zenWorkspaceBackward',
         'zen-workspace-shortcut-backward'
       )

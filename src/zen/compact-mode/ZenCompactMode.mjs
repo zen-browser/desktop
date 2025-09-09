@@ -37,18 +37,13 @@ var gZenCompactModeManager = {
   HOVER_HACK_DELAY: Services.prefs.getIntPref('zen.view.compact.hover-hack-delay', 0),
 
   preInit() {
-    // Remove it before initializing so we can properly calculate the width
-    // of the sidebar at startup and avoid overflowing items not being hidden
-    this._wasInCompactMode =
-      Services.xulStore.getValue(
-        AppConstants.BROWSER_CHROME_URL,
-        'zen-main-app-wrapper',
-        'zen-compact-mode'
-      ) || Services.prefs.getBoolPref('zen.view.compact.should-enable-at-startup', false);
-    lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
+    this._wasInCompactMode = Services.prefs.getBoolPref(
+      'zen.view.compact.enable-at-startup',
+      false
+    );
+    this._canDebugLog = Services.prefs.getBoolPref('zen.view.compact.debug', false);
 
     this.addContextMenu();
-    this._resolvePreInit();
   },
 
   init() {
@@ -88,25 +83,30 @@ var gZenCompactModeManager = {
       });
     }
 
-    this._preInitPromise.then(() => {
+    SessionStore.promiseAllWindowsRestored.then(() => {
       this.preference = this._wasInCompactMode;
-      delete this._resolvePreInit;
-      delete this._preInitPromise;
     });
   },
 
+  log(...args) {
+    if (this._canDebugLog) {
+      console.log('[Zen Compact Mode]', ...args);
+    }
+  },
+
   get preference() {
-    return lazyCompactMode.mainAppWrapper.getAttribute('zen-compact-mode') === 'true';
+    return document.documentElement.getAttribute('zen-compact-mode') === 'true';
   },
 
   get shouldBeCompact() {
-    return !document.documentElement.getAttribute('chromehidden').includes('toolbar');
+    return !document.documentElement.getAttribute('chromehidden')?.includes('toolbar');
   },
 
   set preference(value) {
     if (!this.shouldBeCompact) {
       value = false;
     }
+    this.log('Setting compact mode preference to', value);
     if (
       this.preference === value ||
       document.documentElement.hasAttribute('zen-compact-animating')
@@ -123,9 +123,8 @@ var gZenCompactModeManager = {
     // main-window can't store attributes other than window sizes, so we use this instead
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
-    Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
     if (typeof this._wasInCompactMode === 'undefined') {
-      Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
+      Services.prefs.setBoolPref('zen.view.compact.enable-at-startup', value);
     }
     this._updateEvent();
   },
@@ -148,7 +147,7 @@ var gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       'zen-compact-mode-active'
@@ -225,6 +224,7 @@ var gZenCompactModeManager = {
   },
 
   async _updateEvent() {
+    const isUrlbarFocused = gURLBar.focused;
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     this.updateContextMenu();
@@ -241,6 +241,9 @@ var gZenCompactModeManager = {
       this._evenListeners.forEach((callback) => callback());
     }
     gZenUIManager.updateTabsToolbar();
+    if (isUrlbarFocused) {
+      gURLBar.focus();
+    }
   },
 
   // NOTE: Dont actually use event, it's just so we make sure
@@ -585,7 +588,6 @@ var gZenCompactModeManager = {
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
             this._hasHoveredUrlbar
           ) {
-            delete this._hasHoveredUrlbar;
             return;
           }
 
@@ -641,6 +643,16 @@ var gZenCompactModeManager = {
           );
         }
       }, this.HOVER_HACK_DELAY);
+    });
+
+    gURLBar.textbox.addEventListener('mouseleave', () => {
+      setTimeout(() => {
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            delete this._hasHoveredUrlbar;
+          });
+        }, 0);
+      }, 0);
     });
   },
 
@@ -707,10 +719,6 @@ var gZenCompactModeManager = {
     delete this._nextTimeWillBeActive;
   },
 };
-
-gZenCompactModeManager._preInitPromise = new Promise((resolve) => {
-  gZenCompactModeManager._resolvePreInit = resolve;
-});
 
 document.addEventListener(
   'MozBeforeInitialXULLayout',

@@ -92,12 +92,12 @@
       [
         'https://reddit.com/r/zen_browser',
         'Zen on Reddit',
-        'chrome://browser/content/zen-images/favicons/reddit.ico',
+        'chrome://browser/content/zen-images/favicons/reddit.svg',
       ],
       [
         'https://x.com/zen_browser',
         'Zen on Twitter',
-        'chrome://browser/content/zen-images/favicons/x.ico',
+        'chrome://browser/content/zen-images/favicons/x.svg',
       ],
     ];
 
@@ -137,7 +137,7 @@
       document.getElementById('zen-welcome-pages').style.display = 'flex';
       document.getElementById('zen-welcome-start').remove();
       window.maximize();
-      animate('#zen-welcome-pages', { opacity: [0, 1] }, { delay: 0.2, duration: 0.2 });
+      animate('#zen-welcome-pages', { opacity: [0, 1] }, { delay: 0.2, duration: 0.1 });
     }
 
     async fadeInTitles(page) {
@@ -238,7 +238,7 @@
           delay: getMotion().stagger(0.05, { startDelay: 0.3 }),
           type: 'spring',
           bounce: 0,
-          duration: 0.2,
+          duration: 0.1,
         }
       );
     }
@@ -271,7 +271,7 @@
       await animate('#zen-welcome-page-content', { x: [0, '100%'] }, { bounce: 0 });
       document.getElementById('zen-welcome-page-content').remove();
       await this.animHeart();
-      this._pinRemainingTabs();
+      await this.#pinRemainingTabs();
       await animate('#zen-welcome-pages', { opacity: [1, 0] });
       document.getElementById('zen-welcome').remove();
       document.documentElement.removeAttribute('zen-welcome-stage');
@@ -288,10 +288,13 @@
       gZenUIManager.showToast('zen-welcome-finished');
     }
 
-    _pinRemainingTabs() {
+    async #pinRemainingTabs() {
       for (const tab of _tabsToPin) {
         tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
         gBrowser.pinTab(tab);
+        await new Promise((resolve) => {
+          tab.addEventListener('ZenPinnedTabCreated', resolve, { once: true });
+        });
       }
       for (const tab of _tabsToPinEssentials) {
         tab.removeAttribute('pending'); // Make it appear loaded
@@ -299,7 +302,7 @@
       }
       gZenFolders.createFolder(_tabsToPin, {
         renameFolder: false,
-        label: 'Zen Basics',
+        label: 'zen basics',
       });
     }
 
@@ -546,47 +549,47 @@
                   <html:div></html:div>
                 </hbox>
                 <html:div id="zen-welcome-initial-essentials-browser-sidebar-essentials">
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://obsidian.md" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/obsidian.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://obsidian.md" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/obsidian.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://trello.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/trello.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://trello.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/trello.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://slack.com/" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/slack.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://slack.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/slack.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://twitter.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/x.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://twitter.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/x.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://calendar.google.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/calendar.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://calendar.google.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/calendar.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://figma.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/figma.ico');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://figma.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/figma.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>

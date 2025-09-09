@@ -1,0 +1,13 @@
+diff --git a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+index 555273f6ea1efd77aa3062b9910bbfe28568775d..c8aae86e1233d256e538970d58fd0febed745893 100644
+--- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
++++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+@@ -138,7 +138,7 @@ class ProvidersManager {
+     // To improve dataflow and reduce UI work, when a result is added we may notify
+     // it to the controller after a delay, so that we can chunk results in that
+     // timeframe into a single call. See _notifyResultsFromProvider for details.
+-    this.CHUNK_RESULTS_DELAY_MS = 16;
++    this.CHUNK_RESULTS_DELAY_MS = 20;
+   }
+ 
+   /**

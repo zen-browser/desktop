@@ -9,6 +9,7 @@
       <hbox class="tab-group-label-container" pack="center">
         <html:div class="tab-group-folder-icon"/>
         <label class="tab-group-label" role="button"/>
+        <image class="tab-reset-button reset-icon" role="button" keyNav="false" data-l10n-id="zen-folders-unload-all-tooltip"/>
       </hbox>
       <html:div class="tab-group-container">
         <html:div class="zen-tab-group-start" />
@@ -51,7 +52,7 @@
         </rect>
       <!--Icon (g)-->
         <g id="folder-icon" shape-rendering="geometricPrecision" style="fill-opacity: 1; transform-origin: -53.05px 5.399px; fill: var(--zen-folder-stroke);">
-          <image href="" height="18px" width="19px"/>
+          <image href="" height="19px" width="20px"/>
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;-17" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="-10 -9;-7.5 -9" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
           <animate attributeName="opacity" values="1;1" dur="0.15s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0.58 1"/>
@@ -80,6 +81,7 @@
         return;
       }
       this.#initialized = true;
+      this._activeTabs = [];
       this.icon.appendChild(ZenFolder.rawIcon.cloneNode(true));
       // Save original values for animations
       this.icon.querySelectorAll('animate, animateTransform, animateMotion').forEach((anim) => {
@@ -92,7 +94,7 @@
       this.labelElement.parentElement.setAttribute('context', 'zenFolderActions');
 
       this.labelElement.onRenameFinished = (newLabel) => {
-        this.name = newLabel;
+        this.name = newLabel.trim() || 'Folder';
         const event = new CustomEvent('ZenFolderRenamed', {
           bubbles: true,
         });
@@ -137,13 +139,30 @@
     }
 
     rename() {
+      if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
+        return;
+      }
       gZenVerticalTabsManager.renameTabStart({
         target: this.labelElement,
         explicit: true,
       });
     }
 
-    async expandGroupTabs() {
+    createSubfolder() {
+      // We need to expand all parent folders
+      let currentFolder = this;
+      do {
+        currentFolder.collapsed = false;
+        currentFolder = currentFolder.group;
+      } while (currentFolder);
+      gZenFolders.createFolder([], {
+        renameFolder: !gZenUIManager.testingEnabled,
+        label: 'Subfolder',
+        insertAfter: this.querySelector('.tab-group-container').lastElementChild,
+      });
+    }
+
+    async unpackTabs() {
       for (let tab of this.allItems.reverse()) {
         tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
         if (tab.hasAttribute('zen-empty-tab')) {
@@ -179,10 +198,6 @@
       return items;
     }
 
-    get level() {
-      return this.group?.level + 1 || 0;
-    }
-
     get allItems() {
       return [...this.querySelector('.tab-group-container').children].filter(
         (child) => !child.classList.contains('zen-tab-group-start')
@@ -204,6 +219,64 @@
 
     get iconURL() {
       return this.icon.querySelector('image')?.getAttribute('href') || '';
+    }
+
+    set activeTabs(tabs) {
+      if (tabs.length) {
+        this._activeTabs = tabs;
+        for (let tab of tabs) {
+          tab.setAttribute('folder-active', 'true');
+        }
+      } else {
+        for (let tab of this._activeTabs) {
+          tab.removeAttribute('folder-active');
+        }
+        this._activeTabs = [];
+      }
+    }
+
+    get activeTabs() {
+      return this._activeTabs;
+    }
+
+    get resetButton() {
+      return this.labelElement.parentElement.querySelector('.tab-reset-button');
+    }
+
+    unloadAllTabs(event) {
+      this.#unloadAllActiveTabs(event, /* noClose */ true);
+    }
+
+    async #unloadAllActiveTabs(event, noClose = false) {
+      for (const tab of this.tabs) {
+        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
+      }
+      this.activeTabs = [];
+    }
+
+    on_click(event) {
+      if (event.target === this.resetButton) {
+        event.stopPropagation();
+        this.#unloadAllActiveTabs(event);
+        return;
+      }
+      super.on_click(event);
+    }
+
+    /**
+     * Get the root most collapsed folder in the tree.
+     * @returns {ZenFolder|null} The root most collapsed folder, or null if none are collapsed.
+     */
+    get rootMostCollapsedFolder() {
+      let current = this;
+      let rootMost = null;
+      do {
+        if (current.collapsed) {
+          rootMost = current;
+        }
+        current = current.group;
+      } while (current);
+      return rootMost;
     }
   }
 

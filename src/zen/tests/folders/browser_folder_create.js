@@ -18,9 +18,7 @@ add_task(async function test_Create_Folder() {
   ok(tab.pinned, 'Tab is pinned after folder creation');
   Assert.equal(folder.label, 'test', 'Folder label is set correctly');
   ok(!folder.collapsed, 'Folder is expanded after creation');
-  const removeEvent = BrowserTestUtils.waitForEvent(window, 'TabGroupRemoved');
-  folder.delete();
-  await removeEvent;
+  await removeFolder(folder);
   Assert.equal(folder.tabs.length, 0, 'Folder is empty after deletion');
   ok(!folder.parentElement, 'Folder is removed from the DOM');
   ok(tab.closing, 'Tab is closing after folder deletion');

@@ -6,6 +6,7 @@
 add_task(async function test_Check_ScrollBox_Overflow() {
   const scrollbox = gZenWorkspaces.activeScrollbox;
   scrollbox.smoothScroll = false;
+  const selectedTab = gBrowser.selectedTab;
   const tabsToRemove = [];
   while (!scrollbox.overflowing) {
     await BrowserTestUtils.openNewForegroundTab(window.gBrowser, 'https://example.com/', true);
@@ -36,7 +37,7 @@ add_task(async function test_Check_ScrollBox_Overflow() {
       resolve();
     }, 200);
   });
-
+  gBrowser.selectedTab = selectedTab;
   for (const tab of tabsToRemove) {
     await BrowserTestUtils.removeTab(tab);
   }

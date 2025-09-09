@@ -34,3 +34,6 @@
 
 - name: termsofuse.bypassNotification
   value: true
+
+- name: browser.newtabpage.activity-stream.showSponsoredCheckboxes
+  value: false

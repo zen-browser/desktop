@@ -110,26 +110,8 @@ export var ZenCustomizableUI = new (class {
       if (button.hasAttribute('open')) {
         return;
       }
-      const image = button.querySelector('image');
       const popup = window.document.getElementById('zenCreateNewPopup');
-      button.setAttribute('open', 'true');
-      const handlePopupHidden = () => {
-        window.setTimeout(() => {
-          button.removeAttribute('open');
-        }, 500);
-        window.gZenUIManager.motion.animate(
-          image,
-          { transform: ['rotate(45deg)', 'rotate(0deg)'] },
-          { duration: 0.2 }
-        );
-      };
-      popup.addEventListener('popuphidden', handlePopupHidden, { once: true });
       popup.openPopup(button, 'after_start');
-      window.gZenUIManager.motion.animate(
-        image,
-        { transform: ['rotate(0deg)', 'rotate(45deg)'] },
-        { duration: 0.2 }
-      );
     });
   }
 

@@ -7,7 +7,7 @@ index 13b1659ed5a3b9bb0342b601998d0fd5c9760e22..4f13c401f23f51962986fe8caf197aa5
  #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button,
  #urlbar-label-box {
 -  background-color: var(--urlbar-box-bgcolor);
-+  background-color: light-dark(#cecece, rgb(66, 65, 77));
++  background-color: transparent;
    color: var(--urlbar-box-text-color);
    padding-inline: 8px;
    border-radius: var(--urlbar-icon-border-radius);

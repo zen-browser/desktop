@@ -17,7 +17,5 @@ add_task(async function test_Basic_Toggle() {
   folder.labelElement.click();
   ok(!folder.collapsed, 'Folder should be expanded after clicking on it again');
 
-  const removeEvent = BrowserTestUtils.waitForEvent(folder, 'TabGroupRemoved');
-  folder.delete();
-  await removeEvent;
+  await removeFolder(folder);
 });

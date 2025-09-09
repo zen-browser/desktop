@@ -51,3 +51,6 @@
 
 - name: zen.view.drag-and-drop.drop-inside-lower-threshold
   value: 30
+
+- name: zen.view.context-menu.refresh
+  value: false

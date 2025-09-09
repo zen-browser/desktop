@@ -36,6 +36,9 @@
   value: '@cond'
   condition: '!defined(MOZILLA_OFFICIAL)' # Section: Pinned tabs management
 
+- name: zen.pinned-tab-manager.wheel-close-if-pending
+  value: true
+
 - name: zen.pinned-tab-manager.debug
   value: false
 

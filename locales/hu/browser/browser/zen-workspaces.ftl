@@ -48,4 +48,4 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Környezet létrehozása
 zen-workspace-creation-label = A munkakörnyezetek a lapok és munkamenetek rendszerezésére szolgálnak.
 zen-workspaces-delete-workspace-title = Munkakörnyezet törlése?
-zen-workspaces-delete-workspace-body = Biztos, hogy törölni szeretné ezt a munkakörnyezetet? Ez a művelet nem vonható vissza.
+zen-workspaces-delete-workspace-body = Biztosan törölni szeretnéd ezt: { $name }? Ez a művelet visszafordíthatatlan.

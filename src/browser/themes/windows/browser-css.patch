@@ -1,5 +1,5 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index 4f960ae35aa69a1d1ce4ad368f5bae365229bbdf..3a17985b3376eb8a966cd85324d86d00d891bf0f 100644
+index 4f960ae35aa69a1d1ce4ad368f5bae365229bbdf..a60d16adee588a1ab0d06d7676bbe80f179e088d 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
 @@ -31,7 +31,6 @@
@@ -10,12 +10,19 @@ index 4f960ae35aa69a1d1ce4ad368f5bae365229bbdf..3a17985b3376eb8a966cd85324d86d00
      }
  
      /* Using a semitransparent background preserves the tinting from the backdrop.
-@@ -61,7 +60,7 @@
+@@ -60,14 +59,12 @@
+ }
  
  /* This is needed for Windows 10, see bug 1961257 */
- @media (-moz-windows-accent-color-in-titlebar) {
+-@media (-moz-windows-accent-color-in-titlebar) {
 -  :root[customtitlebar][sizemode="normal"] #navigator-toolbox {
 +  :root[customtitlebar][sizemode="normal"] #browser {
      border-top: 0.5px solid ActiveBorder;
      &:-moz-window-inactive {
        border-top-color: InactiveBorder;
+     }
+   }
+-}
+ 
+ /* Titlebar */
+ 

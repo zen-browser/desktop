@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index b3608bb8b851979b893da9c83e86d08b54288047..021ce0b80015256767b88132e99c67fa8ddfd2c4 100644
+index b3608bb8b851979b893da9c83e86d08b54288047..97ffb0b855b1f1c3fe5c4081aa1ec03ceda82b05 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -609,7 +609,7 @@ export class UrlbarView {
@@ -16,7 +16,7 @@ index b3608bb8b851979b893da9c83e86d08b54288047..021ce0b80015256767b88132e99c67fa
          });
        let canBeVisible =
 -        newSpanCount <= this.#queryContext.maxResults && !seenMisplacedResult;
-+        newSpanCount < this.#queryContext.maxResults+1 && !seenMisplacedResult;
++        newSpanCount < this.#queryContext.maxResults && !seenMisplacedResult;
        if (result.isHiddenExposure) {
          if (canBeVisible) {
            this.controller.engagementEvent.addExposure(

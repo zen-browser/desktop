@@ -26,9 +26,7 @@
         .getElementById('tabbrowser-tabpanels')
         .addEventListener('click', this.onOverlayClick.bind(this));
       Services.obs.addObserver(this, 'quit-application-requested');
-
     }
-
 
     handleMainCommandSet(event) {
       const command = event.target;
@@ -409,11 +407,6 @@
               this.quickOpenGlance();
             }
 
-            // Disable expand shortcut when there is no active glance
-            if (!this.#currentGlanceID) {
-              document.getElementById('zen-glance-expand')?.setAttribute('disabled', true);
-            }
-
             resolve();
           });
       });
@@ -441,9 +434,6 @@
 
       this.overlay.classList.add('deck-selected');
       this.overlay.classList.add('zen-glance-overlay');
-
-      // Enable expand shortcut when a glance is active
-      document.getElementById('zen-glance-expand')?.removeAttribute('disabled');
 
       this._duringOpening = false;
     }
@@ -624,16 +614,9 @@
       this.animatingFullOpen = false;
       this.closeGlance({ noAnimation: true, skipPermitUnload: true });
       this.#glances.delete(this.#currentGlanceID);
-
-      // Disable expand shortcut since no glance is active anymore
-      document.getElementById('zen-glance-expand')?.setAttribute('disabled', true);
     }
 
     async fullyOpenGlance({ forSplit = false } = {}) {
-      // If there is no active glance, do nothing
-      if (!this.#currentGlanceID || !this.#currentTab) {
-        return;
-      }
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 

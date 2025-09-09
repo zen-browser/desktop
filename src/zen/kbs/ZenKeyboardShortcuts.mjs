@@ -743,18 +743,6 @@ class nsZenKeyboardShortcutsLoader {
       )
     );
 
-    // Pin/Unpin tab toggle
-    newShortcutList.push(
-      new KeyShortcut(
-        'zen-toggle-pin-tab',
-        'P',
-        '',
-        ZEN_OTHER_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
-        'cmd_zenTogglePinTab',
-        'zen-toggle-pin-tab-shortcut'
-      )
-    );
 
     return newShortcutList;
   }
@@ -786,7 +774,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 9;
+  static LATEST_KBS_VERSION = 10;
 
   constructor() {}
 
@@ -1005,6 +993,21 @@ class nsZenKeyboardShortcutsVersioner {
           }
         }
       }
+    }
+    if (version < 10) {
+      // Migrate from version 9 to 10
+      // Add the new pin/unpin tab toggle shortcut
+      data.push(
+        new KeyShortcut(
+          'zen-toggle-pin-tab',
+          'D',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenTogglePinTab',
+          'zen-toggle-pin-tab-shortcut'
+        )
+      );
     }
     return data;
   }

@@ -191,8 +191,10 @@
     }
 
     #finishedInitializingPins() {
-      this._resolvePinnedInitializedInternal();
-      delete this._resolvePinnedInitializedInternal;
+      if (this._resolvePinnedInitializedInternal) {
+        this._resolvePinnedInitializedInternal();
+        delete this._resolvePinnedInitializedInternal;
+      }
       this.#hasInitializedPins = true;
     }
 

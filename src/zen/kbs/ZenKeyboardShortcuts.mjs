@@ -996,14 +996,14 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 10) {
       // Migrate from version 9 to 10
-      // Add the new pin/unpin tab toggle shortcut
+      // Add the new pin/unpin tab toggle shortcut (no default key assigned)
       data.push(
         new KeyShortcut(
           'zen-toggle-pin-tab',
-          'D',
+          '',
           '',
           ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenTogglePinTab',
           'zen-toggle-pin-tab-shortcut'
         )

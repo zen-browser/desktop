@@ -1021,10 +1021,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-toggle-unloaded-cycling-shortcut',
-          'U',
+          '',
           '',
           'windowAndTabManagement',
-          nsKeyShortcutModifiers.fromObject({ alt: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenToggleUnloadedCycling',
           'zen-toggle-unloaded-cycling-shortcut'
         )

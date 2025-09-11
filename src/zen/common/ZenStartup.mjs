@@ -169,7 +169,10 @@
 
     async #createUpdateAnimation() {
       const appID = Services.appinfo.appBuildID;
-      if (Services.prefs.getStringPref('zen.updates.last-build-id', '') === appID) {
+      if (
+        Services.prefs.getStringPref('zen.updates.last-build-id', '') === appID ||
+        gZenUIManager.testingEnabled
+      ) {
         return;
       }
       Services.prefs.setStringPref('zen.updates.last-build-id', appID);

@@ -1,5 +1,5 @@
 diff --git a/dom/media/mediacontrol/MediaController.h b/dom/media/mediacontrol/MediaController.h
-index 8fec9c59e38bc24b9ff6d30ddbaebff67107bc76..5e7f3634f9edef48d6f96b4900f82a7ebbd730be 100644
+index 327ea6201304b3d26a2b4f0267b1c926c73ee9e4..ad14bb2572c29df4897672e14afc185b9b517da4 100644
 --- a/dom/media/mediacontrol/MediaController.h
 +++ b/dom/media/mediacontrol/MediaController.h
 @@ -90,6 +90,7 @@ class MediaController final : public DOMEventTargetHelper,

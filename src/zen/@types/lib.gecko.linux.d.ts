@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from source XPCOM .idl files.
@@ -13,6 +10,8 @@ declare global {
   interface nsIGNOMEShellService extends nsIShellService {
     readonly canSetDesktopBackground: boolean;
     isDefaultForScheme(aScheme: string): boolean;
+    getGSettingsString(aScheme: string, aKey: string): string;
+    setGSettingsString(aScheme: string, aKey: string, aValue: string): void;
   }
 
   // https://searchfox.org/mozilla-central/source/browser/components/shell/nsIOpenTabsProvider.idl

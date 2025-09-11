@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from xpc.msg and error_list.json.
@@ -374,6 +371,9 @@ interface nsIXPCComponents_Results {
   /** User attempted basic HTTP authentication when it is disabled */
   NS_ERROR_BASIC_HTTP_AUTH_DISABLED: 0x804b005c;
 
+  /** The access to local network is denied */
+  NS_ERROR_LOCAL_NETWORK_ACCESS_DENIED: 0x804b005d;
+
   // Error codes return from the proxy
 
   /** The connection to the proxy server was refused */
@@ -507,6 +507,12 @@ interface nsIXPCComponents_Results {
 
   /** Can't access a wrapped JS object from a different thread */
   NS_ERROR_NOT_SAME_THREAD: 0x80460004;
+
+  /** Access to restricted URI denied */
+  NS_ERROR_DOM_BAD_URI: 0x805303f4;
+
+  /** Opening the Websocket failed */
+  NS_ERROR_WEBSOCKET_CONNECTION_REFUSED: 0x804b0057;
 
   // storage related codes (from mozStorage.h)
 
@@ -675,6 +681,11 @@ interface nsIXPCComponents_Results {
 
   /** The existing UserChoice Hash was verified, but we're on an older, unsupported Windows build, so do not attempt to update the UserChoice hash. */
   NS_ERROR_WDBA_BUILD: 0x80720004;
+
+  // Codes related to QuotaManager
+
+  /** Client initialization attempted before origin has been initialized. */
+  NS_ERROR_DOM_QM_CLIENT_INIT_ORIGIN_UNINITIALIZED: 0x80730001;
 }
 
 type nsIXPCComponents_Values = nsIXPCComponents_Results[keyof nsIXPCComponents_Results];

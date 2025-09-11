@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index a60831d9309ed73ea6d37725f9b9177dd6677501..c4d357d300b08b5adbe24d38eef5bd20842df665 100644
+index 3f578f3888684a1830d456f2a4896e8a5f6630fd..7de18a724d3953a5616577f65a8cf9a18f71893c 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -443,7 +443,7 @@ function getBundleForLocales(newLocales) {
+@@ -424,7 +424,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

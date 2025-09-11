@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/extensions/parent/ext-downloads.js b/toolkit/components/extensions/parent/ext-downloads.js
-index ea6929d23d432958def5be46e42e329bc224d3aa..942cfddc090399ef239cc34ab47682cab6a33cd4 100644
+index 3b81d5e60a5e3006b80a2acec0b6720ccb7e5b33..5b6272986e13b48047f3bae1ec4205fc3e8012ef 100644
 --- a/toolkit/components/extensions/parent/ext-downloads.js
 +++ b/toolkit/components/extensions/parent/ext-downloads.js
 @@ -87,6 +87,7 @@ const FILTER_IMAGES_EXTENSIONS = [

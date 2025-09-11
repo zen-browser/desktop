@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d858218e8 100644
+index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd693f1f1135 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -1057,7 +1057,7 @@ var gXPInstallObserver = {
+@@ -1064,7 +1064,7 @@ var gXPInstallObserver = {
        persistent: true,
        hideClose: true,
        popupOptions: {
@@ -11,7 +11,7 @@ index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d
        },
      };
  
-@@ -1266,7 +1266,7 @@ var gXPInstallObserver = {
+@@ -1273,7 +1273,7 @@ var gXPInstallObserver = {
        hideClose: true,
        timeout: Date.now() + 30000,
        popupOptions: {
@@ -20,7 +20,7 @@ index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d
        },
      };
  
-@@ -2571,7 +2571,7 @@ var gUnifiedExtensions = {
+@@ -2608,7 +2608,7 @@ var gUnifiedExtensions = {
          this.recordButtonTelemetry(reason || "extensions_panel_showing");
          this.ensureButtonShownBeforeAttachingPanel(panel);
          PanelMultiView.openPopup(panel, this._button, {
@@ -29,7 +29,7 @@ index 061edde0e05e0744ba1aa80df5f9699e264fe69b..cc2b2f04758ee9690429ea6c4aad959d
            triggerEvent: aEvent,
          });
        }
-@@ -2758,18 +2758,20 @@ var gUnifiedExtensions = {
+@@ -2795,18 +2795,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

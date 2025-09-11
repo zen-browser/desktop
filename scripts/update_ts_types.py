@@ -6,6 +6,13 @@ import os
 
 FILES = [
     "index.d.ts",
+    "lib.gecko.tweaks.d.ts",
+    "lib.gecko.xpidl.d.ts",
+]
+
+GENERATED_FILES = [
+    "lib.gecko.win32.d.ts",
+    "lib.gecko.xpcom.d.ts",
     "lib.gecko.darwin.d.ts",
     "lib.gecko.dom.d.ts",
     "lib.gecko.glean.d.ts",
@@ -13,21 +20,21 @@ FILES = [
     "lib.gecko.modules.d.ts",
     "lib.gecko.nsresult.d.ts",
     "lib.gecko.services.d.ts",
-    "lib.gecko.tweaks.d.ts",
-    "lib.gecko.win32.d.ts",
-    "lib.gecko.xpcom.d.ts",
-    "lib.gecko.xpidl.d.ts",
 ]
 
 ENGINE_PATH = os.path.join("engine", "tools", "@types")
+GENERATED_PATH = os.path.join(ENGINE_PATH, "generated")
 SRC_PATH = os.path.join("src", "zen", "@types")
 
 
 def update_ts_types():
   os.system("cd engine && ./mach ts build && ./mach ts update")
   # copy the files from engine/tools/@types to src/@types
-  for file in FILES:
-    src_file = os.path.join(ENGINE_PATH, file)
+  for file in FILES + GENERATED_FILES:
+    if file in GENERATED_FILES:
+      src_file = os.path.join(GENERATED_PATH, file)
+    else:
+      src_file = os.path.join(ENGINE_PATH, file)
     dest_file = os.path.join(SRC_PATH, file)
     if os.path.exists(src_file):
       os.system(f"cp {src_file} {dest_file}")

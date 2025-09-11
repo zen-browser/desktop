@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index f3253d2565cf735bdf33792697f91db9ca9ba5e9..5a6a62e3de3d510a3ae514773e6f8886ef8f9a09 100644
+index eae3ed9518ad9ce2103bb912963465c1b10ac050..51859cd542bc69f524d891a67e725c30d4cf14bb 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
@@ -10,7 +10,7 @@ index f3253d2565cf735bdf33792697f91db9ca9ba5e9..5a6a62e3de3d510a3ae514773e6f8886
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
    ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
-@@ -1490,7 +1491,7 @@ BrowserGlue.prototype = {
+@@ -1448,7 +1449,7 @@ BrowserGlue.prototype = {
        windowcount++;
        let tabbrowser = win.gBrowser;
        if (tabbrowser) {
@@ -19,7 +19,7 @@ index f3253d2565cf735bdf33792697f91db9ca9ba5e9..5a6a62e3de3d510a3ae514773e6f8886
        }
      }
  
-@@ -1653,6 +1654,8 @@ BrowserGlue.prototype = {
+@@ -1611,6 +1612,8 @@ BrowserGlue.prototype = {
      } else if (profileDataVersion < APP_DATA_VERSION) {
        lazy.ProfileDataUpgrader.upgrade(profileDataVersion, APP_DATA_VERSION);
      }

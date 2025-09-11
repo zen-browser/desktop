@@ -67,6 +67,7 @@
   );
 
   --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
+  --panel-separator-zap-gradient: none !important;
 
   --in-content-primary-button-background: color-mix(
     in srgb,

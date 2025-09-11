@@ -1,12 +1,12 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index c5b7ef2616c1dab9f42970605897e862d57ab7d0..46bb1a33258b84987da324f32bff199666c355cc 100644
+index c5b7ef2616c1dab9f42970605897e862d57ab7d0..659188c4b648ace3e831a87a268563adb27e6889 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
-+  ZenCustomizableUI: "resource://gre/modules/ZenCustomizableUI.sys.mjs",
++  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",

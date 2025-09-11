@@ -1,8 +1,8 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index ef29179988bb37e7ea441aa051b692e3ccc90f21..6c9641ed27722b5febd83f6e121df24d46b00067 100644
+index 11217c210dd8dc5f7c4bdc6043df9aeb361529c6..18c3c4d658170d0646483cd289fe8ad1f21ffae0 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
-@@ -444,11 +444,11 @@ Tester.prototype = {
+@@ -440,11 +440,11 @@ Tester.prototype = {
        this.currentTest &&
        window.gBrowser &&
        AppConstants.MOZ_APP_NAME != "thunderbird" &&
@@ -16,7 +16,7 @@ index ef29179988bb37e7ea441aa051b692e3ccc90f21..6c9641ed27722b5febd83f6e121df24d
          let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
          if (!lastTab.closing) {
            // Report the stale tab as an error only when they're not closing.
-@@ -483,12 +483,12 @@ Tester.prototype = {
+@@ -479,12 +479,12 @@ Tester.prototype = {
  
      // Replace the last tab with a fresh one
      if (window.gBrowser && AppConstants.MOZ_APP_NAME != "thunderbird") {

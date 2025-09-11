@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-siteIdentity.js b/browser/base/content/browser-siteIdentity.js
-index a2a5f6ff71b9a6587e2a033aee39385abd319645..8111c6bcffdcfd51d03cc9dea4aac902d57c83d8 100644
+index 65354e0ad3097e10de72f36e257c94472524baf7..bc9527ec9ddfab11c0839398d3f3953872ad9632 100644
 --- a/browser/base/content/browser-siteIdentity.js
 +++ b/browser/base/content/browser-siteIdentity.js
-@@ -825,7 +825,7 @@ var gIdentityHandler = {
+@@ -834,7 +834,7 @@ var gIdentityHandler = {
        // This is a secure internal Firefox page.
        this._identityBox.className = "chromeUI";
        let brandBundle = document.getElementById("bundle_brand");
@@ -11,7 +11,7 @@ index a2a5f6ff71b9a6587e2a033aee39385abd319645..8111c6bcffdcfd51d03cc9dea4aac902
      } else if (this._pageExtensionPolicy) {
        // This is a WebExtension page.
        this._identityBox.className = "extensionPage";
-@@ -1143,6 +1143,12 @@ var gIdentityHandler = {
+@@ -1163,6 +1163,12 @@ var gIdentityHandler = {
        }
      }
  

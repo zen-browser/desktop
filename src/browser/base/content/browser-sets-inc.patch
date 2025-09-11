@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-sets.inc b/browser/base/content/browser-sets.inc
-index 269b025d7fb942602c1b1b6c9747540bcde11375..9dcecfe205cadacace5195ec84d8b2ee292a0632 100644
+index 2e7654036647796715aec392f9e714e7256c9864..0b3b76ab479bb6ae5439dd424b69f641d3b86c28 100644
 --- a/browser/base/content/browser-sets.inc
 +++ b/browser/base/content/browser-sets.inc
 @@ -405,3 +405,4 @@

@@ -2521,7 +2521,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (!activeWorkspace) {
       return;
     }
-    tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    if (tab.hasAttribute('zen-workspace-id')) {
+      const tabWorkspaceId = tab.getAttribute('zen-workspace-id');
+      this.moveTabToWorkspace(tab, tabWorkspaceId);
+      await this.changeWorkspaceWithID(tabWorkspaceId);
+    } else {
+      tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    }
   }
 
   async onLocationChange(event) {

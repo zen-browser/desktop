@@ -624,7 +624,8 @@ var gZenVerticalTabsManager = {
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
       gZenUIManager.testingEnabled ||
-      !gZenStartup.isReady
+      !gZenStartup.isReady ||
+      !gZenPinnedTabManager.hasInitializedPins
     ) {
       return;
     }
@@ -684,12 +685,7 @@ var gZenVerticalTabsManager = {
     }
   },
 
-  animateTabClose(aTab, animate) {
-    if (!animate) {
-      return new Promise((resolve) => {
-        resolve();
-      });
-    }
+  animateTabClose(aTab) {
     const height = aTab.getBoundingClientRect().height;
     return gZenUIManager.motion.animate(
       aTab,

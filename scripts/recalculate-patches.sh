@@ -10,21 +10,16 @@ IGNORE_FILES=(
 
 # Recursively find all .patch files in the current directory and its subdirectories
 find src -type f -name "*.patch" | while read -r patch_file; do
-  # Replace all - with . and remove the .patch extension
-  new_file="${patch_file%/*}/$(basename "$patch_file" | sed 's/-/./' | sed 's/\.patch$//').patch"
-  new_file="${new_file%.patch}"
-  new_file="${new_file#src/}"
-
-  if [[ $new_file == *-mjs ]]; then
-    new_file="${new_file/-mjs/.mjs}"
-  fi
-  if [[ $new_file == *-ftl ]]; then
-    new_file="${new_file/-ftl/.ftl}"
+  # Get the file from the inside of the file as indicated by the patch
+  target_file=$(grep -m 1 -oP '(?<=\+\+\+ b/).+' "$patch_file")
+  if [[ -z "$target_file" ]]; then
+    echo "No target file found in patch: $patch_file"
+    continue
   fi
 
-  new_file_base=$(basename "$new_file")
+  new_file_base=$(basename "$target_file")
   if [[ ! " ${IGNORE_FILES[@]} " =~ " ${new_file_base} " ]]; then
-    npm run export ${new_file}
+    npm run export ${target_file}
   fi
 done
 

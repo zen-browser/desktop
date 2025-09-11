@@ -1,12 +1,12 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 4f62449d670701c77c681ae36e00bae8bf2f636c..5e5783d47d5eed91b5efc35d6dc581cf59838496 100644
+index 4f62449d670701c77c681ae36e00bae8bf2f636c..132c77e396cb259181ed13ca8ff784e0ade05e3b 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
    BrowserUsageTelemetry: "resource:///modules/BrowserUsageTelemetry.sys.mjs",
    CustomizableWidgets:
      "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
-+  ZenCustomizableUI: "resource://gre/modules/ZenCustomizableUI.sys.mjs",
++  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
    HomePage: "resource:///modules/HomePage.sys.mjs",
    PanelMultiView:
      "moz-src:///browser/components/customizableui/PanelMultiView.sys.mjs",

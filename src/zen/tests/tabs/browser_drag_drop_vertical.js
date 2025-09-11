@@ -124,7 +124,7 @@ add_setup(async () => {
 
   registerCleanupFunction(async () => {
     // replace the default new tab in the test window
-    await addTab('about:blank');
+    addTabTo(gBrowser, 'about:blank');
 
     BrowserTestUtils.removeTab(tab1);
     BrowserTestUtils.removeTab(tab2);

@@ -602,8 +602,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       async (event) => {
         if (this.privateWindowOrDisabled) return;
 
-        // Only process non-gesture scrolls
-        if (event.deltaMode !== 1) return;
+        // Allow DOM_DELTA_LINE (1) and DOM_DELTA_PIXEL (0) events
+        if (event.deltaMode > 1) return;
 
         const isVerticalScroll = event.deltaY && !event.deltaX;
 

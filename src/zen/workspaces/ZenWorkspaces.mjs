@@ -616,30 +616,42 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
           }
         }
 
-        const isVerticalScroll = event.deltaY && !event.deltaX;
+        const absX = Math.abs(event.deltaX || 0);
+        const absY = Math.abs(event.deltaY || 0);
 
-        //if the scroll is vertical this checks that a modifier key is used before proceeding
-        if (isVerticalScroll) {
-          const activationKeyMap = {
-            ctrl: event.ctrlKey,
-            alt: event.altKey,
-            shift: event.shiftKey,
-            meta: event.metaKey,
-          };
+        const isVerticalScroll = absY > absX * 2;
+        const isHorizontalScroll = absX > absY * 2;
 
-          if (
-            this.activationMethod in activationKeyMap &&
-            !activationKeyMap[this.activationMethod]
-          ) {
-            return;
-          }
+        const activationKeyMap = {
+          ctrl: event.ctrlKey,
+          alt: event.altKey,
+          shift: event.shiftKey,
+          meta: event.metaKey,
+        };
+        const modifierActive =
+          this.activationMethod in activationKeyMap && activationKeyMap[this.activationMethod];
+
+        let delta;
+        let shouldProceed = false;
+
+        if (isVerticalScroll && modifierActive) {
+          // scroll is vertical + modifier key
+          delta = event.deltaY;
+          shouldProceed = true;
+        } else if (isHorizontalScroll) {
+          // clear horizontal scrolling
+          delta = event.deltaX;
+          shouldProceed = true;
+        } else {
+          // diagonal scrolling or unclear direction, ignore
+          return;
         }
+
+        if (!shouldProceed) return;
 
         const currentTime = Date.now();
         if (currentTime - this._lastScrollTime < scrollCooldown) return;
 
-        //this decides which delta to use
-        const delta = isVerticalScroll ? event.deltaY : event.deltaX;
         if (Math.abs(delta) < scrollThreshold) return;
 
         // Determine scroll direction

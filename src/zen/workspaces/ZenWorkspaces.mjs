@@ -596,6 +596,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const scrollThreshold = 2; // Minimum scroll delta to trigger workspace change
+    const scrollDeltaMode0Cooldown = 200; // Cooldown for consecutive DOM_DELTA_PIXEL events
 
     toolbox.addEventListener(
       'wheel',
@@ -611,7 +612,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
           const timeSinceLastDeltaMode0 = now - (this._lastDeltaMode0Time || 0);
           this._lastDeltaMode0Time = now;
 
-          if (Math.abs(event.deltaY || 0) === 0 && timeSinceLastDeltaMode0 < 200) {
+          if (
+            Math.abs(event.deltaY || 0) === 0 &&
+            timeSinceLastDeltaMode0 < scrollDeltaMode0Cooldown
+          ) {
             return;
           }
         }

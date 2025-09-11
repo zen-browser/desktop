@@ -743,7 +743,6 @@ class nsZenKeyboardShortcutsLoader {
       )
     );
 
-
     return newShortcutList;
   }
 
@@ -996,18 +995,21 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 10) {
       // Migrate from version 9 to 10
-      // Add the new pin/unpin tab toggle shortcut (no default key assigned)
+      // 1) Add the new pin/unpin tab toggle shortcut with Ctrl+Shift+D
       data.push(
         new KeyShortcut(
           'zen-toggle-pin-tab',
-          '',
+          'D',
           '',
           ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({}),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
           'cmd_zenTogglePinTab',
           'zen-toggle-pin-tab-shortcut'
         )
       );
+
+      // 2) Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
+      data = data.filter((shortcut) => shortcut.getAction?.() !== 'Browser:BookmarkAllTabs');
     }
     return data;
   }

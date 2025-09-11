@@ -1166,6 +1166,48 @@ var gZenKeyboardShortcutsManager = {
     this.triggerShortcutRebuild();
   },
 
+  _registerPrecedentShortcut(shortcut, browser) {
+    const listener = (event) => {
+
+      let keyMatch = false;
+      if (shortcut.getKeyName()) {
+        keyMatch = event.key.toLowerCase() === shortcut.getKeyName().toLowerCase();
+      } else if (shortcut.getKeyCode()) {
+        for (const [mapKey, mapValue] of Object.entries(KEYCODE_MAP)) {
+          if (mapValue === shortcut.getKeyCode()) {
+            if (mapKey.toLowerCase() === event.code.toLowerCase()) {
+              keyMatch = true;
+            }
+            break;
+          }
+        }
+      }
+
+      if (!keyMatch) {
+        return;
+      }
+
+      const modifiers = shortcut.getModifiers();
+      const accelPressed = AppConstants.platform === 'macosx' ? event.metaKey : event.ctrlKey;
+      const modifiersMatch =
+        modifiers.accel === accelPressed &&
+        modifiers.alt === event.altKey &&
+        modifiers.shift === event.shiftKey;
+
+      if (modifiersMatch) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const command = browser.document.getElementById(shortcut.getAction());
+        if (command) {
+          command.doCommand();
+        }
+      }
+    };
+
+    browser.addEventListener('keydown', listener, true);
+    browser.gZenKeyboardShortcutsManager._precedentListeners.push(listener);
+  },
+
   _applyShortcuts() {
     for (const browser of nsZenMultiWindowFeature.browsers) {
       let mainKeyset = browser.document.getElementById(ZEN_MAIN_KEYSET_ID);
@@ -1182,12 +1224,22 @@ var gZenKeyboardShortcutsManager = {
       //  throw new Error('Child list not empty');
       //}
 
+      browser.gZenKeyboardShortcutsManager._precedentListeners = [];
+
       for (let key of this._currentShortcutList) {
         if (key.isInternal()) {
           continue;
         }
-        let child = key.toXHTMLElement(browser);
-        keyset.appendChild(child);
+
+        if (
+          key.getID() === 'zen-tab-next-shortcut' ||
+          key.getID() === 'zen-tab-prev-shortcut'
+        ) {
+          this._registerPrecedentShortcut(key, browser);
+        } else {
+          let child = key.toXHTMLElement(browser);
+          keyset.appendChild(child);
+        }
       }
 
       this._applyDevtoolsShortcuts(browser);

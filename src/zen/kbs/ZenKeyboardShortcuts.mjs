@@ -847,7 +847,8 @@ class nsZenKeyboardShortcutsVersioner {
     out = out.filter(
       (shortcut) =>
         shortcut.getAction?.() !== 'Browser:OpenFile' &&
-        shortcut.getAction?.() !== 'Browser:BookmarkAllTabs'
+        shortcut.getAction?.() !== 'Browser:BookmarkAllTabs' &&
+        shortcut.getAction?.() !== 'key_stop'
     );
 
     return out;

@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/infobar.css b/toolkit/content/widgets/infobar.css
-index e2272e913ad0215fa733c5fa01d180ccfa919abc..f6da9321fcdc70ab4a81f01787c3d2a55057fda9 100644
+index a13978527bf921b412ec4729612ce8f831caccb9..8f0dfad852d7f5e4fbade48e2d114767bacdda36 100644
 --- a/toolkit/content/widgets/infobar.css
 +++ b/toolkit/content/widgets/infobar.css
 @@ -102,3 +102,18 @@ strong {

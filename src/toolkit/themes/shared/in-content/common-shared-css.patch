@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 3c72faca31b8a52a1668f78c8154a5726790a6dc..583348194113521b0a47d6ee3272c485fcd33db9 100644
+index c45d48dc3106a2dc36f6dd704ebb2721817f016e..cfaf394d8ada7f4256037ead08fd338b7e28df32 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
 @@ -4,7 +4,7 @@
@@ -11,7 +11,7 @@ index 3c72faca31b8a52a1668f78c8154a5726790a6dc..583348194113521b0a47d6ee3272c485
  @namespace html "http://www.w3.org/1999/xhtml";
  @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
  
-@@ -777,7 +777,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
+@@ -708,7 +708,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
    fill-opacity: 1;
  }
  
@@ -20,7 +20,7 @@ index 3c72faca31b8a52a1668f78c8154a5726790a6dc..583348194113521b0a47d6ee3272c485
    :root {
      --in-content-sidebar-width: 118px;
    }
-@@ -1167,7 +1167,7 @@ xul|*.sidebar-footer-link {
+@@ -1098,7 +1098,7 @@ xul|*.sidebar-footer-link {
    user-select: none;
  }
  

@@ -1,5 +1,5 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index c41cc4f4e68e5b30e1a290e07b2c5061db4400cc..7fa5402b32116922766ee1463b441d3fc86c1eff 100644
+index 0fdad8b956be8119f5a914b9cee01bb6520cd13d..f1414b5afd5c66c61d1585184de6b32f9918670d 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -218,6 +218,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }

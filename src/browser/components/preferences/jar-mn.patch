@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index 118709048e7de13f6ac10d0047e446b72303428f..c8cc2d7ee551b96be668a7844dab1db5abc9d684 100644
+index eac1fc65c01107cc7f1a3f3aeb1e8caac3c4a3f5..c3bd265acc924bcf26816e9e78f314c31af41f6d 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
-@@ -26,3 +26,5 @@ browser.jar:
+@@ -27,3 +27,5 @@ browser.jar:
     content/browser/preferences/widgets/setting-control.mjs              (widgets/setting-control/setting-control.mjs)
     content/browser/preferences/widgets/setting-group.mjs                (widgets/setting-group/setting-group.mjs)
     content/browser/preferences/widgets/setting-group.css                (widgets/setting-group/setting-group.css)

@@ -838,7 +838,19 @@ class nsZenKeyboardShortcutsVersioner {
   }
 
   fixedKeyboardShortcuts(data) {
-    return this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+    // Apply migrations and ensure defaults exist
+    let out = this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+
+    // Hard-remove deprecated or conflicting defaults regardless of version
+    // - Remove the built-in "Open File" keybinding; menu item remains available
+    // - Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
+    out = out.filter(
+      (shortcut) =>
+        shortcut.getAction?.() !== 'Browser:OpenFile' &&
+        shortcut.getAction?.() !== 'Browser:BookmarkAllTabs'
+    );
+
+    return out;
   }
 
   migrate(data, version) {
@@ -1008,8 +1020,18 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
 
-      // 2) Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
-      data = data.filter((shortcut) => shortcut.getAction?.() !== 'Browser:BookmarkAllTabs');
+      // 2) Add shortcut to expand Glance into a full tab: Default Accel+O
+      data.push(
+        new KeyShortcut(
+          'zen-glance-expand',
+          'O',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          'cmd_zenGlanceExpand',
+          ''
+        )
+      );
     }
     return data;
   }

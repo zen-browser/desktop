@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-index 57463d2c4e39e67eeec7e2c752fe5236a662c7d2..4ca28540a71594e935847679a4b676ae48eb10d8 100644
+index cdc476a3eb2ee2cb6193d215513b65ed375f6153..a2b106916d6cca25096d37b80bea45f016ad82a5 100644
 --- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-@@ -845,6 +845,7 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -855,6 +855,7 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
      }
  
      if (result.providerName == lazy.UrlbarProviderTabToSearch.name) {

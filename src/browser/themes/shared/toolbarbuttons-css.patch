@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index 1f91bda717979f3e81d2f6b243336078d97c5cb9..4232ec4761cb15ff96e9b18810b05f548a6f5fd9 100644
+index e7b1c17391ffae02226015d0dd8bbe8eca29731f..938a8cb8c3d854a75fe300db2a7330d188c9ed6f 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
 @@ -256,7 +256,7 @@ toolbar .toolbaritem-combined-buttons > separator {

@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index bc601c9cd248637f304b8f3219862e8e6f6c7506..da28068906ddeb81337696da568608edb43223b7 100644
+index fd3c54a1d80f5800ffd2dcaaf594eed4bd2d300c..259af2688e5a8bca88017e5da0bfdb488ab59f59 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
-@@ -502,7 +502,7 @@ export class CustomizeMode {
+@@ -503,7 +503,7 @@ export class CustomizeMode {
        this.#transitioning = true;
  
        let customizer = document.getElementById("customization-container");
@@ -11,7 +11,7 @@ index bc601c9cd248637f304b8f3219862e8e6f6c7506..da28068906ddeb81337696da568608ed
        browser.hidden = true;
        customizer.hidden = false;
  
-@@ -639,7 +639,7 @@ export class CustomizeMode {
+@@ -640,7 +640,7 @@ export class CustomizeMode {
      }
  
      let customizer = document.getElementById("customization-container");
@@ -20,7 +20,7 @@ index bc601c9cd248637f304b8f3219862e8e6f6c7506..da28068906ddeb81337696da568608ed
      customizer.hidden = true;
      browser.hidden = false;
  
-@@ -1175,6 +1175,7 @@ export class CustomizeMode {
+@@ -1176,6 +1176,7 @@ export class CustomizeMode {
      return (
        aNode.localName == "toolbarbutton" ||
        aNode.localName == "toolbaritem" ||
@@ -28,7 +28,7 @@ index bc601c9cd248637f304b8f3219862e8e6f6c7506..da28068906ddeb81337696da568608ed
        aNode.localName == "toolbarseparator" ||
        aNode.localName == "toolbarspring" ||
        aNode.localName == "toolbarspacer"
-@@ -3127,6 +3128,20 @@ export class CustomizeMode {
+@@ -3128,6 +3129,20 @@ export class CustomizeMode {
          if (makeSpaceImmediately) {
            aDraggedOverItem.setAttribute("notransition", "true");
          }

@@ -1,22 +1,22 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-/**
- * NOTE: Do not modify this file by hand.
- * If you're updating some of the sources, see README for instructions.
- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// <reference types="./lib.gecko.dom.d.ts" />
-/// <reference types="./lib.gecko.glean.d.ts" />
-/// <reference types="./lib.gecko.nsresult.d.ts" />
-/// <reference types="./lib.gecko.services.d.ts" />
-/// <reference types="./lib.gecko.xpcom.d.ts" />
+/// <reference lib="es2024" />
+/// <reference lib="esnext.iterator" />
+
+/// <reference types="./lib.gecko.custom.d.ts" />
+/// <reference types="./generated/lib.gecko.dom.d.ts" />
+/// <reference types="./generated/lib.gecko.glean.d.ts" />
+/// <reference types="./generated/lib.gecko.nsresult.d.ts" />
+/// <reference types="./generated/lib.gecko.services.d.ts" />
+/// <reference types="./generated/lib.gecko.xpcom.d.ts" />
 /// <reference types="./lib.gecko.xpidl.d.ts" />
 
 /// Platform specific XPCOM modules.
-/// <reference types="./lib.gecko.darwin.d.ts" />
-/// <reference types="./lib.gecko.linux.d.ts" />
-/// <reference types="./lib.gecko.win32.d.ts" />
+/// <reference types="./generated/lib.gecko.darwin.d.ts" />
+/// <reference types="./generated/lib.gecko.linux.d.ts" />
+/// <reference types="./generated/lib.gecko.win32.d.ts" />
 
 /// Order of references matters here, for overriding type signatures.
 /// <reference types="./lib.gecko.tweaks.d.ts" />

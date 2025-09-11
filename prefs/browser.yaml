@@ -76,3 +76,6 @@
 
 - name: browser.urlbar.scotchBonnet.enableOverride
   value: false
+
+- name: browser.tabs.groups.hoverPreview.enabled
+  value: false

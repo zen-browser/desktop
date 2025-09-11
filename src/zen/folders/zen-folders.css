@@ -180,6 +180,8 @@ tab-group[split-view-group] .tab-group-line {
 zen-folder {
   display: flex;
   flex-direction: column;
+  visibility: visible;
+
   --zen-folder-behind-bgcolor: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 85%, white),
     color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1)
@@ -201,7 +203,7 @@ zen-folder {
   }
 
   &[selected] > .tab-group-label-container::before {
-    background-color: color-mix(in srgb, var(--zen-colors-border) 60%, transparent);
+    background-color: var(--zen-toolbar-element-bg-hover);
   }
 
   &[collapsed][has-active] {

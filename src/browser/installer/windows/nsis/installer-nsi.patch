@@ -1,8 +1,8 @@
 diff --git a/browser/installer/windows/nsis/installer.nsi b/browser/installer/windows/nsis/installer.nsi
-index 491bcbbd8430410fa930e7b52491ea62f2c48bbc..42d960f4adb4837009e0106a137c14fcbd7a55f9 100755
+index 92eb3f11ea8035ce72eb5b1e110c98b1ef8665d1..e6b91ecfa8f16d2b884c70468ec1d3a0197351d1 100755
 --- a/browser/installer/windows/nsis/installer.nsi
 +++ b/browser/installer/windows/nsis/installer.nsi
-@@ -837,7 +837,7 @@ Section "-InstallEndCleanup"
+@@ -841,7 +841,7 @@ Section "-InstallEndCleanup"
    ; When we're using the GUI, .onGUIEnd sends the ping, but of course that isn't
    ; invoked when we're running silently.
    ${If} ${Silent}
@@ -11,7 +11,7 @@ index 491bcbbd8430410fa930e7b52491ea62f2c48bbc..42d960f4adb4837009e0106a137c14fc
    ${EndIf}
  SectionEnd
  
-@@ -1965,5 +1965,5 @@ FunctionEnd
+@@ -1969,5 +1969,5 @@ FunctionEnd
  
  Function .onGUIEnd
    ${OnEndCommon}

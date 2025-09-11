@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from source XPCOM .idl files.
@@ -159,6 +156,7 @@ declare global {
     canSetDefaultBrowserUserChoice(): boolean;
     checkAllProgIDsExist(): boolean;
     checkBrowserUserChoiceHashes(): boolean;
+    checkCurrentProcessAUMIDForTesting(): string;
     isDefaultHandlerFor(aFileExtensionOrProtocol: string): boolean;
     queryCurrentDefaultHandlerFor(aFileExtensionOrProtocol: string): string;
   }
@@ -307,7 +305,7 @@ declare global {
     setWindowIconNoData(aWindow: mozIDOMWindowProxy): void;
     readonly inWin10TabletMode: boolean;
     readonly inWin11TabletMode: boolean;
-    shareUrl(shareTitle: string, urlToShare: string): void;
+    shareUrl(urlToShare: string, shareTitle: string): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/system/windowsPackageManager/nsIWindowsPackageManager.idl

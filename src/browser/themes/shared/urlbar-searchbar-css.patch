@@ -1,33 +1,33 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index d6c0b56270aee3dd0e74840314ea25af3ca8050a..17b22809744a8903b916b7769681a0c14d054f45 100644
+index 11636a976736ba56dcc5a58081cee998bbdf58d4..0a6ca26f25511c799d8b40484b6bd1c81ceeb4e0 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
-@@ -5,7 +5,7 @@
- @namespace html url("http://www.w3.org/1999/xhtml");
+@@ -6,7 +6,7 @@
  
  :root {
+   --urlbar-container-min-width: 310px;
 -  --urlbar-container-padding: 1px;
 +  --urlbar-container-padding: 2px;
    --urlbar-margin-inline: 5px;
    --urlbar-padding-block: 4px;
- }
-@@ -23,7 +23,7 @@
- #urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
- #urlbar:not([focused]) > .urlbar-input-container > .urlbar-go-button,
- #urlbar-revert-button-container {
+ 
+@@ -33,7 +33,7 @@
+ #urlbar[usertyping] > .urlbar-input-container > #page-action-buttons > #urlbar-zoom-button,
+ .urlbar:is(:not([usertyping]), :not([focused])) > .urlbar-input-container > .urlbar-go-button,
+ .urlbar-revert-button-container {
 -  display: none;
 +  display: none !important;
  }
  
  /* When rich suggestions are enabled the urlbar identity icon is given extra padding to
-@@ -288,10 +288,14 @@
+@@ -307,10 +307,14 @@
  
- #urlbar[breakout][breakout-extend] {
+ .urlbar[breakout][breakout-extend] {
    height: auto;
++  align-items: center;
 +  :root:not([zen-single-toolbar='true']) {
    margin-left: calc(-1 * var(--urlbar-margin-inline));
 +  }
-+  align-items: center;
    width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
  
    > .urlbar-input-container {

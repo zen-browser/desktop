@@ -605,6 +605,17 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         // Allow DOM_DELTA_LINE (1) and DOM_DELTA_PIXEL (0) events
         if (event.deltaMode > 1) return;
 
+        // Add cooling to consecutive DOM_DELTA_PIXEL events, which are usually from touchpads
+        if (event.deltaMode === 0) {
+          const now = Date.now();
+          const timeSinceLastDeltaMode0 = now - (this._lastDeltaMode0Time || 0);
+          this._lastDeltaMode0Time = now;
+
+          if (Math.abs(event.deltaY || 0) === 0 && timeSinceLastDeltaMode0 < 200) {
+            return;
+          }
+        }
+
         const isVerticalScroll = event.deltaY && !event.deltaX;
 
         //if the scroll is vertical this checks that a modifier key is used before proceeding

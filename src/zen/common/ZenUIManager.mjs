@@ -75,6 +75,14 @@ var gZenUIManager = {
 
     this._initCreateNewPopup();
     this._debloatContextMenus();
+    this._initOmniboxCommands();
+  },
+
+  _initOmniboxCommands() {
+    const { registerZenUrlbarProviders } = ChromeUtils.importESModule(
+      'resource:///modules/ZenUBProvider.sys.mjs'
+    );
+    registerZenUrlbarProviders();
   },
 
   _debloatContextMenus() {

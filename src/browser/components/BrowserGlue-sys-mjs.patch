@@ -1,12 +1,12 @@
 diff --git a/browser/components/BrowserGlue.sys.mjs b/browser/components/BrowserGlue.sys.mjs
-index eae3ed9518ad9ce2103bb912963465c1b10ac050..51859cd542bc69f524d891a67e725c30d4cf14bb 100644
+index eae3ed9518ad9ce2103bb912963465c1b10ac050..ccbb04cd36fd8fd63fd8c9ebd0b51f0a5966829c 100644
 --- a/browser/components/BrowserGlue.sys.mjs
 +++ b/browser/components/BrowserGlue.sys.mjs
 @@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
  const lazy = {};
  
  ChromeUtils.defineESModuleGetters(lazy, {
-+  gZenUIMigration: "chrome://browser/content/zen-components/ZenUIMigration.mjs",
++  gZenUIMigration: "resource:///modules/ZenUIMigration.sys.mjs",
    AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
    AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
    ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",

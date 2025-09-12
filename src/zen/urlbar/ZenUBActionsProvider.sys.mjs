@@ -100,7 +100,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @param {string} query The user's search query.
    * @returns {number} A score representing the match quality.
    *
-   * @credits Thanks a lot @BibekBhusal0 on github for this implementation!
+   * @credits Thanks a lot @BibekBhusal0 on GitHub for this implementation!
    */
   #calculateFuzzyScore(target, query) {
     if (!target || !query) return 0;

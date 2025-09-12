@@ -572,6 +572,10 @@ button.popup-notification-dropmarker {
   margin-top: auto;
   margin-bottom: auto;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+  &:empty {
+    display: none !important;
+  }
 }
 
 .urlbarView-row[has-action]:is([type='switchtab'], [type='remotetab'], [type='clipboard']) {

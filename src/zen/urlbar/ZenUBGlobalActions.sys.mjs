@@ -8,4 +8,10 @@ export const globalActions = [
     command: 'cmd_zenCompactModeToggle',
     icon: 'chrome://browser/skin/zen-icons/sidebar.svg',
   },
+  {
+    label: 'Open Theme Picker',
+    command: 'cmd_zenOpenZenThemePicker',
+    icon: 'chrome://browser/skin/zen-icons/edit-theme.svg',
+    suggestedIndex: 4,
+  },
 ];

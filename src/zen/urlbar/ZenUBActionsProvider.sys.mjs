@@ -34,6 +34,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * A provider that lets the user view all available global actions for a query.
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
+  get name() {
+    return 'ZenUrlbarProviderGlobalActions';
+  }
+
   /**
    * @returns {Values<typeof UrlbarUtils.PROVIDER_TYPE>}
    */
@@ -184,6 +188,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         payload,
         payloadHighlights
       );
+      if (action.suggestedIndex) {
+        result.suggestedIndex = action.suggestedIndex;
+      }
       addCallback(this, result);
     }
   }

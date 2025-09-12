@@ -194,20 +194,26 @@ class nsKeyShortcutModifiers {
 
   toUserString() {
     let str = '';
+    const separation = AppConstants.platform == 'macosx' ? ' ' : '+';
     if (this.#control && !this.#accel) {
-      str += 'Ctrl+';
+      str += AppConstants.platform == 'macosx' ? '⌃' : 'Ctrl';
+      str += separation;
     }
     if (this.#alt) {
-      str += AppConstants.platform == 'macosx' ? 'Option+' : 'Alt+';
+      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
+      str += separation;
     }
     if (this.#shift) {
-      str += 'Shift+';
+      str += '⇧';
+      str += separation;
     }
     if (this.#meta) {
-      str += AppConstants.platform == 'macosx' ? 'Cmd+' : 'Win+';
+      str += AppConstants.platform == 'macosx' ? '⌘' : 'Win';
+      str += separation;
     }
     if (this.#accel) {
-      str += AppConstants.platform == 'macosx' ? 'Cmd+' : 'Ctrl+';
+      str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
+      str += separation;
     }
     return str;
   }
@@ -546,7 +552,32 @@ class KeyShortcut {
       // Get the key from the value
       for (let [key, value] of Object.entries(KEYCODE_MAP)) {
         if (value == this.#keycode) {
-          str += key.toLowerCase();
+          const normalizedKey = key.toLowerCase();
+          switch (normalizedKey) {
+            case 'arrowleft':
+              str += '←';
+              break;
+            case 'arrowright':
+              str += '→';
+              break;
+            case 'arrowup':
+              str += '↑';
+              break;
+            case 'arrowdown':
+              str += '↓';
+              break;
+            case 'escape':
+              str += AppConstants.platform == 'macosx' ? '⎋' : 'Esc';
+              break;
+            case 'enter':
+              str += AppConstants.platform == 'macosx' ? '↩' : 'Enter';
+              break;
+            case 'space':
+              str += AppConstants.platform == 'macosx' ? '␣' : 'Space';
+              break;
+            default:
+              str += normalizedKey;
+          }
           break;
         }
       }
@@ -1314,6 +1345,28 @@ var gZenKeyboardShortcutsManager = {
     }
 
     return false;
+  },
+
+  getShortcutFromCommand(command) {
+    for (let targetShortcut of this._currentShortcutList) {
+      if (targetShortcut.getAction() == command) {
+        return targetShortcut;
+      }
+    }
+    return null;
+  },
+
+  /**
+   * Get the shortcut as a display format for a given action/command.
+   * @param {string} command The action/command to search for
+   * @returns {string|null} The shortcut as a string or null if not found
+   */
+  getShortcutDisplayFromCommand(command) {
+    const shortcut = this.getShortcutFromCommand(command);
+    if (shortcut) {
+      return shortcut.toUserString();
+    }
+    return null;
   },
 };
 

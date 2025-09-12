@@ -6,7 +6,7 @@ import { UrlbarProvidersManager } from 'resource:///modules/UrlbarProvidersManag
 
 const providers = {};
 ChromeUtils.defineESModuleGetters(providers, {
-  ZenUBActions: 'resource:///modules/ZenUBActionsProvider.sys.mjs',
+  ZenUrlbarProviderGlobalActions: 'resource:///modules/ZenUBActionsProvider.sys.mjs',
 });
 
 export function registerZenUrlbarProviders() {

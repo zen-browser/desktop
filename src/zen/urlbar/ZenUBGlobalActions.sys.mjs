@@ -2,4 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-export const globalActions = [{}];
+export const globalActions = [
+  {
+    label: 'Toggle Compact Mode',
+    command: 'cmd_zenCompactModeToggle',
+    icon: 'chrome://browser/skin/zen-icons/sidebar.svg',
+  },
+];

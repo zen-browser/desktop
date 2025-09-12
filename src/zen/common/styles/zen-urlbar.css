@@ -61,8 +61,11 @@
 }
 
 #urlbar:not([breakout-extend='true']) {
-  :root:not([supress-primary-adjustment]) & .urlbar-background {
+  & .urlbar-background {
     transition: background-color 0.15s ease;
+    :root[supress-primary-adjustment] & {
+      transition: none !important;
+    }
   }
 
   &:hover .urlbar-background {
@@ -559,6 +562,18 @@ button.popup-notification-dropmarker {
   border-top: none !important;
 }
 
+.urlbarView-shortcutContent {
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
 .urlbarView-row[has-action]:is([type='switchtab'], [type='remotetab'], [type='clipboard']) {
   & .urlbarView-action:last-child {
     margin-left: auto !important;
@@ -616,15 +631,14 @@ button.popup-notification-dropmarker {
   --urlbarView-item-inline-padding: 8px;
   --urlbarView-item-block-padding: 10px;
 
-  &:hover {
-    .urlbarView-favicon,
-    & {
-      background-color: color-mix(
-        in srgb,
-        var(--zen-branding-bg-reverse) 5%,
-        transparent 95%
-      ) !important;
-    }
+  &:hover.urlbarView-favicon,
+  &:hover,
+  & .urlbarView-shortcutContent {
+    background-color: color-mix(
+      in srgb,
+      var(--zen-branding-bg-reverse) 5%,
+      transparent 95%
+    ) !important;
   }
 
   &[selected] {
@@ -643,7 +657,12 @@ button.popup-notification-dropmarker {
       fill: black !important;
     }
 
-    & .urlbarView-favicon {
+    & .urlbarView-shortcutContent {
+      color: black !important;
+    }
+
+    & .urlbarView-favicon,
+    & .urlbarView-shortcutContent {
       background-color: rgba(255, 255, 255, 0.9) !important;
     }
   }

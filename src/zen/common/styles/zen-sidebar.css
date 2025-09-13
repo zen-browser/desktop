@@ -8,7 +8,7 @@
 #zen-tabbox-wrapper {
   & #sidebar-splitter {
     opacity: 0;
-    margin: 0 calc(-1 * var(--zen-element-separation) + 2px);
+    margin: 0 calc(-1 * var(--zen-element-separation) + 8px);
   }
 
   & #sidebar-box {
@@ -17,22 +17,20 @@
     overflow: hidden;
 
     :root:not([zen-right-side='true']) &[positionend='true'] {
-      margin-right: var(--zen-element-separation);
+      margin-right: 0;
     }
 
     :root[zen-right-side='true'] & {
-      margin-left: var(--zen-element-separation);
+      margin-left: 0;
     }
   }
 
-  & #tabbrowser-tabbox[sidebar-positionend] {
-    & #sidebar-box {
-      order: 8 !important;
-    }
+  & #sidebar-box[sidebar-positionend] {
+    order: 8 !important;
+  }
 
-    & #sidebar-splitter {
-      order: 7 !important;
-    }
+  #sidebar-box[sidebar-positionend] + #sidebar-splitter {
+    order: 7 !important;
   }
 }
 

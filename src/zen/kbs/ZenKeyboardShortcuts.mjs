@@ -816,7 +816,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 10;
+  static LATEST_KBS_VERSION = 11;
 
   constructor() {}
 
@@ -1075,6 +1075,32 @@ class nsZenKeyboardShortcutsVersioner {
           nsKeyShortcutModifiers.fromObject({ accel: true }),
           'cmd_zenGlanceExpand',
           ''
+        )
+      );
+    }
+    if (version < 11) {
+      // Migrate from version 10 to 11
+      // Add glance mode keyboard shortcuts: 'f' for expand and 's' for split
+      data.push(
+        new KeyShortcut(
+          'zen-glance-expand-f',
+          'F',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          'cmd_zenGlanceExpand',
+          'zen-glance-expand-shortcut-f'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-glance-split-s',
+          'S',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          'cmd_zenGlanceSplit',
+          'zen-glance-split-shortcut-s'
         )
       );
     }

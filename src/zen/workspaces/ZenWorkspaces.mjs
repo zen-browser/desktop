@@ -596,66 +596,39 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const scrollThreshold = 2; // Minimum scroll delta to trigger workspace change
-    const scrollDeltaMode0Cooldown = 200; // Cooldown for consecutive DOM_DELTA_PIXEL events
 
     toolbox.addEventListener(
       'wheel',
       async (event) => {
         if (this.privateWindowOrDisabled) return;
 
-        // Allow DOM_DELTA_LINE (1) and DOM_DELTA_PIXEL (0) events
-        if (event.deltaMode > 1) return;
+        // Only process non-gesture scrolls
+        if (event.deltaMode !== 1) return;
 
-        // Add cooling to consecutive DOM_DELTA_PIXEL events, which are usually from touchpads
-        if (event.deltaMode === 0) {
-          const now = Date.now();
-          const timeSinceLastDeltaMode0 = now - (this._lastDeltaMode0Time || 0);
-          this._lastDeltaMode0Time = now;
+        const isVerticalScroll = event.deltaY && !event.deltaX;
+
+        //if the scroll is vertical this checks that a modifier key is used before proceeding
+        if (isVerticalScroll) {
+          const activationKeyMap = {
+            ctrl: event.ctrlKey,
+            alt: event.altKey,
+            shift: event.shiftKey,
+            meta: event.metaKey,
+          };
 
           if (
-            Math.abs(event.deltaY || 0) === 0 &&
-            timeSinceLastDeltaMode0 < scrollDeltaMode0Cooldown
+            this.activationMethod in activationKeyMap &&
+            !activationKeyMap[this.activationMethod]
           ) {
             return;
           }
         }
 
-        const absX = Math.abs(event.deltaX || 0);
-        const absY = Math.abs(event.deltaY || 0);
-
-        const isVerticalScroll = absY > absX * 2;
-        const isHorizontalScroll = absX > absY * 2;
-
-        const activationKeyMap = {
-          ctrl: event.ctrlKey,
-          alt: event.altKey,
-          shift: event.shiftKey,
-          meta: event.metaKey,
-        };
-        const modifierActive =
-          this.activationMethod in activationKeyMap && activationKeyMap[this.activationMethod];
-
-        let delta;
-        let shouldProceed = false;
-
-        if (isVerticalScroll && modifierActive) {
-          // scroll is vertical + modifier key
-          delta = event.deltaY;
-          shouldProceed = true;
-        } else if (isHorizontalScroll) {
-          // clear horizontal scrolling
-          delta = event.deltaX;
-          shouldProceed = true;
-        } else {
-          // diagonal scrolling or unclear direction, ignore
-          return;
-        }
-
-        if (!shouldProceed) return;
-
         const currentTime = Date.now();
         if (currentTime - this._lastScrollTime < scrollCooldown) return;
 
+        //this decides which delta to use
+        const delta = isVerticalScroll ? event.deltaY : event.deltaX;
         if (Math.abs(delta) < scrollThreshold) return;
 
         // Determine scroll direction

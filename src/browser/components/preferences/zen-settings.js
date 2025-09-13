@@ -778,7 +778,7 @@ var zenMissingKeyboardShortcutL10n = {
   key_zenTabNext: 'zen-key-tab-next-shortcut',
   key_zenTabPrevious: 'zen-key-tab-prev-shortcut',
   key_toggleUnloadedCycling: 'zen-toggle-unloaded-cycling-shortcut',
-  
+
   'zen-glance-expand': 'zen-glance-expand',
 
   key_selectTab1: 'zen-key-select-tab-1',
@@ -1169,7 +1169,7 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
-    {
+  {
     id: 'zen.tabs.unloaded-navigation-mode',
     type: 'string',
     default: 'always',

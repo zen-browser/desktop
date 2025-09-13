@@ -1084,7 +1084,9 @@ class nsZenKeyboardShortcutsVersioner {
           nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenToggleUnloadedCycling',
           'zen-toggle-unloaded-cycling-shortcut'
-          
+        )
+      );
+
       // 2) Add the new pin/unpin tab toggle shortcut with Ctrl+Shift+D
       data.push(
         new KeyShortcut(
@@ -1249,7 +1251,6 @@ var gZenKeyboardShortcutsManager = {
 
   _registerPrecedentShortcut(shortcut, browser) {
     const listener = (event) => {
-
       let keyMatch = false;
       if (shortcut.getKeyName()) {
         keyMatch = event.key.toLowerCase() === shortcut.getKeyName().toLowerCase();
@@ -1312,10 +1313,7 @@ var gZenKeyboardShortcutsManager = {
           continue;
         }
 
-        if (
-          key.getID() === 'zen-tab-next-shortcut' ||
-          key.getID() === 'zen-tab-prev-shortcut'
-        ) {
+        if (key.getID() === 'zen-tab-next-shortcut' || key.getID() === 'zen-tab-prev-shortcut') {
           this._registerPrecedentShortcut(key, browser);
         } else {
           let child = key.toXHTMLElement(browser);

@@ -29,7 +29,7 @@
     order: 8 !important;
   }
 
-  #sidebar-box[sidebar-positionend]+#sidebar-splitter {
+  #sidebar-box[sidebar-positionend] + #sidebar-splitter {
     order: 7 !important;
   }
 }

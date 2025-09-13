@@ -334,6 +334,9 @@ zen-folder {
       align-self: center !important;
       text-align: start;
       align-content: center;
+      overflow: visible !important;
+      direction: ltr !important;
+      mask-image: linear-gradient(to left, transparent, black 1em) !important;
       height: 100% !important;
 
       :root:not([zen-sidebar-expanded]) & {

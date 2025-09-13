@@ -1,7 +1,7 @@
-diff --git a/dom/html/HTMLMediaElement.cpp b/dom/html/HTMLMediaElement.cpp
-index 2becc049b5a0ee8544819b08d65f1df0a4c23658..6e7a05f135c6ab2c4955a679c1a4ac0e9aae7592 100644
---- a/dom/html/HTMLMediaElement.cpp
-+++ b/dom/html/HTMLMediaElement.cpp
+diff --git a/dom/media/mediaelement/HTMLMediaElement.cpp b/dom/media/mediaelement/HTMLMediaElement.cpp
+index d46d5edc1d66c1eee8780abad444289fdc36a518..0e0d69819d9eee82add726792ec829c05551a076 100644
+--- a/dom/media/mediaelement/HTMLMediaElement.cpp
++++ b/dom/media/mediaelement/HTMLMediaElement.cpp
 @@ -453,6 +453,7 @@ class HTMLMediaElement::MediaControlKeyListener final
      // audible state. Therefore, in that case we would noitfy the audible state
      // when media starts playing.

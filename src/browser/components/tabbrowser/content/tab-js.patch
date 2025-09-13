@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3888a6a64 100644
+index fd2465046407261e8c29b4cd3d56122d232e701c..937068562975a26834572c408e9a75453bdf49cb 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -21,19 +21,25 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
          </hbox>
        </stack>
        `;
-@@ -97,9 +100,9 @@
-           "src=image,triggeringprincipal=iconloadingprincipal,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
-         ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
-         ".tab-icon-overlay":
+@@ -84,7 +87,7 @@
+         ".tab-content":
+           "pinned,selected=visuallyselected,multiselected,titlechanged,attention",
+         ".tab-icon-stack":
 -          "sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
 +          "zen-essential,sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
+         ".tab-throbber":
+           "fadein,pinned,busy,progress,selected=visuallyselected",
+         ".tab-icon-pending":
+@@ -95,7 +98,7 @@
+         ".tab-icon-overlay":
+           "sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
          ".tab-audio-button":
 -          "crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
 +          "zen-essential,crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
          ".tab-label-container":
            "pinned,selected=visuallyselected,labeldirection",
          ".tab-label":
-@@ -188,7 +191,7 @@
+@@ -184,7 +187,7 @@
      }
  
      set _visuallySelected(val) {
@@ -42,12 +48,14 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
          return;
        }
  
-@@ -224,9 +227,21 @@
+@@ -220,11 +223,21 @@
      }
  
      get visible() {
 -      return (
--        this.isOpen && !this.hidden && (!this.group?.collapsed || this.selected)
+-        this.isOpen &&
+-        !this.hidden &&
+-        (!this.group || this.group.isTabVisibleInGroup(this))
 -      );
 +      if (!this.isOpen || this.hidden || this.hasAttribute("zen-empty-tab")) {
 +        return false;
@@ -67,7 +75,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
      }
  
      get hidden() {
-@@ -297,7 +312,7 @@
+@@ -295,7 +308,7 @@
          return false;
        }
  
@@ -76,7 +84,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
      }
  
      get lastAccessed() {
-@@ -374,8 +389,11 @@
+@@ -372,8 +385,11 @@
      }
  
      get group() {
@@ -90,7 +98,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
        }
        return null;
      }
-@@ -469,6 +487,8 @@
+@@ -459,6 +475,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -99,7 +107,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -523,6 +543,10 @@
+@@ -513,6 +531,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -110,7 +118,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -571,6 +595,7 @@
+@@ -561,6 +583,7 @@
              )
            );
          } else {
@@ -118,7 +126,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
            gBrowser.removeTab(this, {
              animate: true,
              triggeringEvent: event,
-@@ -583,6 +608,14 @@
+@@ -573,6 +596,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -133,7 +141,7 @@ index f261f0f2c7945cbdb41e5d1b6067a8db38bef117..f126879aa9e843c74992aa751795aef3
      }
  
      on_dblclick(event) {
-@@ -606,6 +639,8 @@
+@@ -596,6 +627,8 @@
            animate: true,
            triggeringEvent: event,
          });

@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index b0b2383453ef771af3eb9260618f1e2e3022eb4e..d631cc8db95b4285e892ac8fcb5e72b7da489850 100644
+index 637e9dda83df5b490d6340367dd63077904ea056..6ffb1dc6ed1d6e58b4e8de1faca887f6b38115cb 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
-@@ -318,6 +318,10 @@ var BrowserCommands = {
+@@ -317,6 +317,10 @@ var BrowserCommands = {
        }
      }
  
@@ -13,7 +13,7 @@ index b0b2383453ef771af3eb9260618f1e2e3022eb4e..d631cc8db95b4285e892ac8fcb5e72b7
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -402,6 +406,11 @@ var BrowserCommands = {
+@@ -401,6 +405,11 @@ var BrowserCommands = {
        return;
      }
  
@@ -25,7 +25,7 @@ index b0b2383453ef771af3eb9260618f1e2e3022eb4e..d631cc8db95b4285e892ac8fcb5e72b7
      // Keyboard shortcuts that would close a tab that is pinned select the first
      // unpinned tab instead.
      if (
-@@ -409,8 +418,8 @@ var BrowserCommands = {
+@@ -408,8 +417,8 @@ var BrowserCommands = {
        (event.ctrlKey || event.metaKey || event.altKey) &&
        gBrowser.selectedTab.pinned
      ) {

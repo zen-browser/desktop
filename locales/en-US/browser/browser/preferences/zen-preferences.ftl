@@ -57,8 +57,6 @@ zen-tabs-unloader-enabled =
 
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
-zen-look-and-feel-compact-sidebar-themed =
-    .label = Use themed background for compact sidebar
 
 zen-workspace-continue-where-left-off =
     .label = Continue where you left off
@@ -259,6 +257,7 @@ zen-key-exit-full-screen = Exit Full Screen
 zen-ai-chatbot-sidebar-shortcut = Toggle AI Chatbot Sidebar
 zen-key-inspector-mac = Toggle Inspector (Mac)
 zen-toggle-sidebar-shortcut = Toggle Firefox Sidebar
+zen-toggle-pin-tab-shortcut = Toggle Pin Tab
 zen-reader-mode-toggle-shortcut-other = Toggle Reader Mode
 zen-picture-in-picture-toggle-shortcut = Toggle Picture-in-Picture
 zen-nav-reload-shortcut-2 = Reload Page
@@ -293,6 +292,7 @@ zen-close-tab-shortcut = Close Tab
 zen-compact-mode-shortcut-show-sidebar = Toggle Floating Sidebar
 zen-compact-mode-shortcut-show-toolbar = Toggle Floating Toolbar
 zen-compact-mode-shortcut-toggle = Toggle Compact Mode
+zen-glance-expand = Expand Glance
 zen-workspace-shortcut-switch-1 = Switch to Workspace 1
 zen-workspace-shortcut-switch-2 = Switch to Workspace 2
 zen-workspace-shortcut-switch-3 = Switch to Workspace 3

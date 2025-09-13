@@ -1,8 +1,8 @@
 diff --git a/layout/style/test/ListCSSProperties.cpp b/layout/style/test/ListCSSProperties.cpp
-index df06ffac358c1b245c84432aa6f143f9c5806029..0bca4b9b40b3b030c54fc36c659966dd3a8894f7 100644
+index 673c1677703ef2de3fafbe86f0ffab720738f4cb..267556f66de3180fc6ae91d5b54b8648f1b41cc4 100644
 --- a/layout/style/test/ListCSSProperties.cpp
 +++ b/layout/style/test/ListCSSProperties.cpp
-@@ -109,6 +109,7 @@ const char* gInaccessibleProperties[] = {
+@@ -110,6 +110,7 @@ const char* gInaccessibleProperties[] = {
      "-moz-window-opacity",                // chrome-only internal properties
      "-moz-window-transform",              // chrome-only internal properties
      "-moz-window-shadow",                 // chrome-only internal properties

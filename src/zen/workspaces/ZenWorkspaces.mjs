@@ -1747,8 +1747,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       // Find the next workspace we are scrolling to
       const nextWorkspace = workspaces.workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
       if (nextWorkspace) {
-        const { gradient: nextGradient, grain: nextGrain } =
-          gZenThemePicker.getGradientForWorkspace(nextWorkspace);
+        const {
+          gradient: nextGradient,
+          grain: nextGrain,
+          toolbarGradient: nextToolbarGradient,
+        } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
         const existingGrain = gZenThemePicker.getGradientForWorkspace(workspace).grain;
         const percentage = Math.abs(offsetPixels) / 200;
         await new Promise((resolve) => {
@@ -1760,6 +1763,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
                 '--zen-main-browser-background-old',
                 nextGradient
               );
+              document.documentElement.style.setProperty(
+                '--zen-main-browser-background-toolbar-old',
+                nextToolbarGradient
+              );
+              document.documentElement.setAttribute('animating-background', 'true');
             }
             resolve();
           });
@@ -1773,7 +1781,9 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         const grainValue =
           minGrain +
           (maxGrain - minGrain) * (existingGrain > nextGrain ? 1 - percentage : percentage);
-        gZenThemePicker.updateNoise(grainValue);
+        if (!this._inChangingWorkspace) {
+          gZenThemePicker.updateNoise(grainValue);
+        }
       }
     } else {
       delete this._hasAnimatedBackgrounds;
@@ -2521,7 +2531,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (!activeWorkspace) {
       return;
     }
-    tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    if (tab.hasAttribute('zen-workspace-id')) {
+      const tabWorkspaceId = tab.getAttribute('zen-workspace-id');
+      this.moveTabToWorkspace(tab, tabWorkspaceId);
+      await this.changeWorkspaceWithID(tabWorkspaceId);
+    } else {
+      tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    }
   }
 
   async onLocationChange(event) {

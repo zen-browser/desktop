@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index bcbfab4a3781ff3c7349115751b3830976eec4bf..b1b774e0d335ed3c5ca565a45cd624c7ea2718af 100644
+index e4a94863c0f0810d1894475b020814b2ad32ffb3..515f61d2df5d4a593fc32d3f32e8fdec2b8f5983 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -186,6 +186,7 @@ var gBrowserInit = {
+@@ -191,6 +191,7 @@ var gBrowserInit = {
    },
  
    onLoad() {
@@ -10,7 +10,7 @@ index bcbfab4a3781ff3c7349115751b3830976eec4bf..b1b774e0d335ed3c5ca565a45cd624c7
      gBrowser.addEventListener("DOMUpdateBlockedPopups", e =>
        PopupBlockerObserver.handleEvent(e)
      );
-@@ -344,6 +345,7 @@ var gBrowserInit = {
+@@ -359,6 +360,7 @@ var gBrowserInit = {
  
      this._handleURIToLoad();
  

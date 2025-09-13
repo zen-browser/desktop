@@ -1,5 +1,5 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 1e382981a33ca341c306a78ed81718e4ad7c2b3e..e98f76f1e9dd381116328d6d9b901585ea80dce4 100644
+index 0baa038232d7e0fd9942f392c48acf7ea5ba50ed..093e1c29c3538d18eb2162b4e4b23ba40c695739 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
 @@ -351,6 +351,7 @@ class TabTracker extends TabTrackerBase {

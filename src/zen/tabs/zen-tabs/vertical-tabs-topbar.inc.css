@@ -43,7 +43,7 @@ z-index: 1;
   }
 
   @media -moz-pref('zen.view.experimental-no-window-controls') {
-    &:has(#PersonalToolbar[collapsed='true']) {
+    &:has(#PersonalToolbar[collapsed]) {
       max-height: 0 !important;
       overflow: hidden;
       opacity: 0 !important;

@@ -1,8 +1,8 @@
 diff --git a/toolkit/components/extensions/parent/ext-runtime.js b/toolkit/components/extensions/parent/ext-runtime.js
-index ff7aae6e5f1919d8d4ff1c7e85b6150332adc20f..5d935e3d0dfb91cd01268d4e2c4dee4696c33efe 100644
+index 0d7a3e505b6bd30548c6dda1504dd343a517b083..71bab6f1562ef6ec43541e52573d2ed5c4e8e3af 100644
 --- a/toolkit/components/extensions/parent/ext-runtime.js
 +++ b/toolkit/components/extensions/parent/ext-runtime.js
-@@ -331,7 +331,7 @@ this.runtime = class extends ExtensionAPIPersistent {
+@@ -333,7 +333,7 @@ this.runtime = class extends ExtensionAPIPersistent {
  
          getBrowserInfo: function () {
            const { name, vendor, version, appBuildID } = Services.appinfo;

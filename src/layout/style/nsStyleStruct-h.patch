@@ -1,8 +1,8 @@
 diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
-index 3236244280edaae2bbe4440e76da3455015ab722..3474d4bcfab2944aae9635250350b674a8ed1c42 100644
+index 9db1b385ac12e0142921c49e6b6c2ba0fadccf95..919089fd9bc278b0c2fede4b2babe133acd4632e 100644
 --- a/layout/style/nsStyleStruct.h
 +++ b/layout/style/nsStyleStruct.h
-@@ -2033,6 +2033,7 @@ struct MOZ_NEEDS_MEMMOVABLE_MEMBERS nsStyleUIReset {
+@@ -2075,6 +2075,7 @@ struct MOZ_NEEDS_MEMMOVABLE_MEMBERS nsStyleUIReset {
    // The margin of the window region that should be transparent to events.
    mozilla::StyleLength mMozWindowInputRegionMargin;
    mozilla::StyleTransform mMozWindowTransform;

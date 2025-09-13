@@ -1,8 +1,8 @@
 diff --git a/servo/components/style/properties/longhands/ui.mako.rs b/servo/components/style/properties/longhands/ui.mako.rs
-index b7d24fe7bb54b1c143876e3bc9da59c64324ffa5..c36f7edcf076e31209e847af0b59361033d3b4da 100644
+index 24e1e1b7e8fe4d4b70aaa4f5f022500c3dcfcbae..1176bf5d12885b4d96abb2f72288f6c631072578 100644
 --- a/servo/components/style/properties/longhands/ui.mako.rs
 +++ b/servo/components/style/properties/longhands/ui.mako.rs
-@@ -286,6 +286,18 @@ ${helpers.predefined_type(
+@@ -284,6 +284,18 @@ ${helpers.predefined_type(
      affects="",
  )}
  

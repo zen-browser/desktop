@@ -37,3 +37,7 @@
 
 - name: browser.newtabpage.activity-stream.showSponsoredCheckboxes
   value: false
+
+- name: sidebar.verticalTabs.dragToPinPromo.dismissed
+  value: true
+  locked: true

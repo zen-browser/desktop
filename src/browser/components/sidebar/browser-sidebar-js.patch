@@ -1,8 +1,8 @@
 diff --git a/browser/components/sidebar/browser-sidebar.js b/browser/components/sidebar/browser-sidebar.js
-index 178c05099b671c4ec8d4c225955e65cff73824e2..6abb0ee2d4be94f997ee8d4bc755a393d9759099 100644
+index f62decaa3f7400787b245b3e765197f4e70dffbb..329240cf434fdbefcf145a733179bd565a814280 100644
 --- a/browser/components/sidebar/browser-sidebar.js
 +++ b/browser/components/sidebar/browser-sidebar.js
-@@ -729,7 +729,7 @@ var SidebarController = {
+@@ -779,7 +779,7 @@ var SidebarController = {
    setPosition() {
      // First reset all ordinals to match DOM ordering.
      let contentArea = document.getElementById("tabbrowser-tabbox");

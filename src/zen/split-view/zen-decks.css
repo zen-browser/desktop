@@ -54,7 +54,7 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
-    outline: 1px solid var(--zen-primary-color) !important;
+    outline: 2px solid var(--zen-primary-color) !important;
   }
 
   &.zen-glance-overlay {
@@ -181,10 +181,12 @@
 #zen-split-view-fake-browser {
   position: absolute;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--zen-primary-color);
+  background: rgba(255, 255, 255, 0.01);
   border-radius: var(--zen-native-inner-radius);
   box-shadow: var(--zen-big-shadow);
   overflow: hidden;
+  will-change: width, margin-left;
 
   &[side='right'] {
     right: 0;

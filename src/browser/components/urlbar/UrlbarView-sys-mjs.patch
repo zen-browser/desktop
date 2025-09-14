@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index fdbab8806fd320f4aacec46a42c8ef953580d00c..5ed31d5dbfa2e2041e6616f6b036d67928e64114 100644
+index fdbab8806fd320f4aacec46a42c8ef953580d00c..f327ca63ff4c99f7aa9acbddc69d2d8b80442d35 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -613,7 +613,7 @@ export class UrlbarView {
@@ -11,27 +11,25 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..5ed31d5dbfa2e2041e6616f6b036d679
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -823,6 +823,19 @@ export class UrlbarView {
+@@ -823,7 +823,16 @@ export class UrlbarView {
          // them, resembling tab-to-search. In that case, the input value is
          // still associated with the first result.
          this.input.setResultForCurrentValue(firstResult);
-+      } else if (firstResult.payload.zenAction) {
-+        this.#selectElement(this.getFirstSelectableElement(), {
-+          updateInput: false,
-+          setAccessibleFocus:
-+            this.controller._userSelectionBehavior == "arrow",
-+        });
-+        this.window.setTimeout(() => {
+-      }
++      } 
++      this.window.setTimeout(() => {
++        if (queryContext.results[0].payload.zenAction) {
 +          this.#selectElement(this.getFirstSelectableElement(), {
 +            updateInput: false,
 +            setAccessibleFocus:
 +              this.controller._userSelectionBehavior == "arrow",
 +          });
-+        }, 140);
-       }
++        }
++      }, 10);
      }
  
-@@ -1341,7 +1354,7 @@ export class UrlbarView {
+     // Announce tab-to-search results to screen readers as the user types.
+@@ -1341,7 +1350,7 @@ export class UrlbarView {
            includeHiddenExposures: true,
          });
        let canBeVisible =
@@ -40,7 +38,7 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..5ed31d5dbfa2e2041e6616f6b036d679
        if (result.isHiddenExposure) {
          if (canBeVisible) {
            this.controller.engagementEvent.addExposure(
-@@ -3189,7 +3202,7 @@ export class UrlbarView {
+@@ -3189,7 +3198,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

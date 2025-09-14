@@ -1377,6 +1377,9 @@ var gZenKeyboardShortcutsManager = {
    * @returns {string|null} The shortcut as a string or null if not found
    */
   getShortcutDisplayFromCommand(command) {
+    if (!command) {
+      return null;
+    }
     const shortcut = this.getShortcutFromCommand(command);
     if (shortcut) {
       return shortcut.toUserString();

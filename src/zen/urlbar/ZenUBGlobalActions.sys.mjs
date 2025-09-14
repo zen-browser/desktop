@@ -37,11 +37,22 @@ const globalActionsTemplate = [
     command: (window) => window.openPreferences(),
     icon: 'chrome://browser/skin/zen-icons/settings.svg',
   },
+  {
+    label: 'Open New Window',
+    command: 'cmd_newNavigator',
+    icon: 'chrome://browser/skin/zen-icons/window.svg',
+  },
+  {
+    label: 'Open Private Window',
+    command: 'Tools:PrivateBrowsing',
+    icon: 'chrome://browser/skin/zen-icons/private-window.svg',
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({
-  ...action,
   isAvailable: (window) => {
     return window.document.getElementById(action.command)?.getAttribute('disabled') !== 'true';
   },
+  extraPayload: {},
+  ...action,
 }));

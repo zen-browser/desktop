@@ -563,17 +563,48 @@ button.popup-notification-dropmarker {
 }
 
 .urlbarView-shortcutContent {
-  border-radius: 4px;
-  padding: 6px 8px;
-  font-size: 10px;
-  font-weight: 600;
   text-transform: uppercase;
   margin-left: auto;
-  margin-top: auto;
-  margin-bottom: auto;
+  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 95%);
+  padding: 6px 8px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  font-size: 10px;
 
   &:empty {
+    display: none !important;
+  }
+}
+
+.urlbarView-prettyName,
+.urlbarView-shortcutContent {
+  border-radius: 4px;
+  font-weight: 600;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.urlbarView-prettyName {
+  padding: 4px 6px;
+  background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 90%);
+  margin-left: 6px;
+  font-size: 12px;
+  align-items: center;
+  gap: 6px;
+  display: flex;
+  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%);
+
+  & img {
+    -moz-context-properties: fill;
+    fill: currentColor;
+    width: 16px;
+    height: 16px;
+
+    &[workspaceIcon] {
+      scale: 1.4;
+    }
+  }
+
+  &[hidden] {
     display: none !important;
   }
 }
@@ -635,14 +666,15 @@ button.popup-notification-dropmarker {
   --urlbarView-item-inline-padding: 8px;
   --urlbarView-item-block-padding: 10px;
 
-  &:hover.urlbarView-favicon,
-  &:hover,
-  & .urlbarView-shortcutContent {
-    background-color: color-mix(
-      in srgb,
-      var(--zen-branding-bg-reverse) 5%,
-      transparent 95%
-    ) !important;
+  &:hover {
+    &,
+    & .urlbarView-favicon {
+      background-color: color-mix(
+        in srgb,
+        var(--zen-branding-bg-reverse) 5%,
+        transparent 95%
+      ) !important;
+    }
   }
 
   &[selected] {
@@ -668,6 +700,10 @@ button.popup-notification-dropmarker {
     & .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    & .urlbarView-prettyName {
+      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse), transparent 80%);
     }
   }
 }

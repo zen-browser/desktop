@@ -5,8 +5,8 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "134.0",
-    "candidate": "134.0"
+    "version": "142.0.1",
+    "candidate": "143.0"
   },
   "buildOptions": {
     "generateBranding": true
@@ -19,7 +19,7 @@
       "brandShortName": "Zen",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.6b",
+        "displayVersion": "1.15.5b",
         "github": {
           "repo": "zen-browser/desktop"
         },
@@ -36,10 +36,10 @@
     "twilight": {
       "backgroundColor": "#282A33",
       "brandShorterName": "Zen",
-      "brandShortName": "Zen",
+      "brandShortName": "Twilight",
       "brandFullName": "Zen Twilight",
       "release": {
-        "displayVersion": "1.7t",
+        "displayVersion": "1.16t",
         "github": {
           "repo": "zen-browser/desktop"
         }
@@ -47,7 +47,9 @@
     }
   },
   "license": {
-    "ignoredFiles": [".*\\.json"],
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
     "licenseType": "MPL-2.0"
   },
   "updateHostname": "updates.zen-browser.app"

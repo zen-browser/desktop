@@ -1,29 +1,28 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index 95b571aca107a6b3e0e5a7e5eb8672c66be9bf61..9ed448c2142b6a5dbb6132ffe5e65a1771a4a525 100644
+index 4485369284ee762bc8b35afb84fec0874a831fff..7096e2e5d50cda99b62a2aa7118fea6371e76b85 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
-@@ -31,15 +31,6 @@
-       &:not([lwtheme]) {
-         background-color: transparent;
- 
--        /* Accent color in titlebar overrides Mica. */
--        @media not (-moz-windows-accent-color-in-titlebar) {
--          /* Hide the Firefox buttons since Windows draws their own.
--           * FIXME(emilio): Find a way of hiding the native buttons, or make them
--           * taller, this is very hacky. */
--          .titlebar-buttonbox {
--            opacity: 0;
--          }
--        }
-       }
+@@ -31,7 +31,6 @@
+     /* stylelint-disable-next-line media-query-no-invalid */
+     @media -moz-pref("widget.windows.mica.toplevel-backdrop", 2) {
+       /* For acrylic, do the same we do for popups to guarantee some contrast */
+-      background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.6));
      }
  
-@@ -57,7 +48,7 @@
-     }
+     /* Using a semitransparent background preserves the tinting from the backdrop.
+@@ -60,14 +59,12 @@
+ }
  
-     &[sizemode="normal"] #navigator-toolbox {
--      border-top: .5px solid ActiveBorder;
-+      /* border-top: .5px solid ActiveBorder; Zen: Remove annoying top border, dont remove */
-       &:-moz-window-inactive {
-         border-top-color: InactiveBorder;
-       }
+ /* This is needed for Windows 10, see bug 1961257 */
+-@media (-moz-windows-accent-color-in-titlebar) {
+-  :root[customtitlebar][sizemode="normal"] #navigator-toolbox {
++  :root[customtitlebar][sizemode="normal"] #browser {
+     border-top: 0.5px solid ActiveBorder;
+     &:-moz-window-inactive {
+       border-top-color: InactiveBorder;
+     }
+   }
+-}
+ 
+ /* Titlebar */
+ 

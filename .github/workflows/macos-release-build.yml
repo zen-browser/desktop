@@ -1,4 +1,6 @@
 name: macOS Release Build
+permissions:
+  contents: read
 
 on:
   workflow_call:
@@ -11,17 +13,30 @@ on:
         description: 'The branch to build'
         required: true
         type: string
+      MOZ_BUILD_DATE:
+        type: string
+        required: true
+        default: ''
+      use-sccache:
+        description: 'Use sccache'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   mac-build:
     name: Build macOS - ${{ matrix.arch }}
-    runs-on: ${{ inputs.release-branch == 'release' && 'macos-14' || 'macos-14' }}
+    runs-on: macos-15
 
     strategy:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-
+    env:
+      SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      CARGO_TERM_COLOR: always
+      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
+      CARGO_INCREMENTAL: 0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,6 +48,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@main
+        if: ${{ inputs.use-sccache }}
+        with:
+          disable_annotations: true
+
+      - name: Expose actions cache variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -46,7 +74,7 @@ jobs:
       - name: Install system dependencies
         run: |
           brew update
-          brew install cairo sccache gnu-tar mercurial
+          brew install cairo gnu-tar mercurial
           sudo pip install setuptools
 
           brew uninstall --ignore-dependencies python3.12 -f
@@ -62,7 +90,7 @@ jobs:
 
           brew install watchman
 
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.79
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
           source $HOME/.cargo/env
 
           if test "${{ matrix.arch }}" = "aarch64"; then
@@ -77,40 +105,37 @@ jobs:
           echo 'export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"' >> ~/.zsh
           source ~/.bash_profile
 
-      - name: Setup pnpm
-        run: npm install -g pnpm
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
       - name: Install dependencies
         run: |
-          pnpm install
+          npm install
 
       - name: Load surfer CI setup
-        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox source and dependencies
-        run: pnpm surfer download
+        run: npm run download
+
+      - name: Import
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+        run: npm run import -- --verbose
 
       - name: Bootstrap
         run: |
           cd engine
           export SURFER_PLATFORM="darwin"
           export PATH="$(python3 -m site --user-base)/bin":$PATH
-          ./mach --no-interactive bootstrap --application-choice browser --no-system-changes
+          # Always exist with 0, even if bootstrap fails
+          ./mach --no-interactive bootstrap --application-choice browser --no-system-changes --exclude macos-sdk || true
           cd ..
-
-      - name: Import
-        env:
-          SURFER_COMPAT: ${{ matrix.arch }}
-        run: pnpm surfer import --verbose
 
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
+
+      - name: Insert API Keys
+        run: |
+          mkdir -p ~/.zen-keys
+          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
 
       - name: Build Zen
         env:
@@ -118,72 +143,51 @@ jobs:
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
         run: |
           export SURFER_PLATFORM="darwin"
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
           bash .github/workflows/src/release-build.sh
-
-      - name: Import APPLE DEVELOPER ID CERTIFICATE for .app
-        uses: Apple-Actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.macOS_CERTIFICATES_P12_For_App_BASE64 }}
-          p12-password: ${{ secrets.macOS_CERTIFICATES_P12_PASSWORD }}
-
-      - name: Import provisioning profile for .app
-        run: |
-          echo "${{ secrets.macOS_PROVISIONING_PROFILE }}" | base64 --decode > ./engine/Zen_Browser.provisionprofile
-          ls -la
 
       - name: Package
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
-          MACOS_APPLE_ACCOUNT_ID: ${{ secrets.macOS_AppleAccountId }}
-          MACOS_APPLE_DEVELOPER_ID_TEAM_ID: ${{ secrets.macOS_AppleDeveloperIdTeamId }}
-          MACOS_APPLE_DEVELOPER_ID_PASSWORD: ${{ secrets.macOS_AppleDeveloperIdPassword }}
         run: |
           export SURFER_PLATFORM="darwin"
-          export MACOS_APPLE_DEVELOPER_ID="${{ secrets.macOS_AppleDeveloperId }}"
           export ZEN_RELEASE=1
-          pnpm package
+          npm run package
+
+      - name: Remove API Keys
+        run: |
+          rm -rf ~/.zen-keys
 
       - name: Rename artifacts
         run: |
-          mv ./dist/output.mar macos-${{ matrix.arch }}.mar
-
-      - name: Remove sensitive information
-        run: |
-          rm -f ./engine/Zen_Browser.provisionprofile
-
-      - name: Sign .dmg
-        run: |
+          echo "Tarballing DMG"
           set -ex
-          hdiutil convert ./dist/*.dmg -format UDZO -imagekey zlib-level=9 -o zen.macos-${{ matrix.arch }}.dmg
-          xattr -cr zen.macos-${{ matrix.arch }}.dmg
-          codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-${{ matrix.arch }}.dmg
-          xcrun notarytool submit "zen.macos-${{ matrix.arch }}.dmg" \
-            --apple-id "${{ secrets.macOS_AppleAccountId }}" \
-            --team-id "${{ secrets.macOS_AppleDeveloperIdTeamId }}" \
-            --password "${{ secrets.macOS_AppleDeveloperIdPassword }}" \
-            --no-s3-acceleration \
-            --verbose \
-            --wait
-          xcrun stapler staple "zen.macos-${{ matrix.arch }}.dmg"
+          mv ./dist/*.dmg ./zen-${{ matrix.arch }}-apple-darwin-dist.dmg
+          mv ./engine/obj-${{ matrix.arch }}-apple-darwin/dist/host/bin/mar ./zen-macos-host-mar
+          mv ./engine/obj-${{ matrix.arch }}-apple-darwin/dist/bin/platform.ini ./platform.ini
 
-      - name: Upload build artifact
+      - name: Upload dist dmg
         uses: actions/upload-artifact@v4
         with:
-          retention-days: 5
-          name: zen.macos-${{ matrix.arch }}.dmg
-          path: ./zen.macos-${{ matrix.arch }}.dmg
+          retention-days: 1
+          name: zen-${{ matrix.arch }}-apple-darwin-dist.dmg
+          path: ./zen-${{ matrix.arch }}-apple-darwin-dist.dmg
 
-      - name: Upload build artifact (.mar)
+      - name: Upload host mar
         uses: actions/upload-artifact@v4
+        if: matrix.arch == 'aarch64'
         with:
-          retention-days: 5
-          name: macos-${{ matrix.arch }}.mar
-          path: ./macos-${{ matrix.arch }}.mar
+          retention-days: 1
+          name: zen-macos-host-mar
+          path: ./zen-macos-host-mar
 
-      - name: Upload build artifact (update manifests)
+      - name: Upload platform.ini
         uses: actions/upload-artifact@v4
+        if: matrix.arch == 'x86_64'
         with:
-          retention-days: 5
-          name: macos_update_manifest_${{ matrix.arch }}
-          path: ./dist/update
+          retention-days: 1
+          name: platform.ini
+          path: ./platform.ini

@@ -1,0 +1,301 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-welcome,
+#zen-welcome-start,
+#zen-welcome-pages {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -moz-window-dragging: drag;
+}
+
+:root[zen-welcome-stage] {
+  min-width: 875px;
+  min-height: 560px;
+
+  #zen-sidebar-splitter {
+    display: none;
+  }
+}
+
+#zen-welcome-start {
+  flex-direction: column;
+  -moz-window-dragging: drag;
+
+  --zen-primary-color: light-dark(black, white);
+
+  #zen-welcome-start-button {
+    opacity: 0;
+    list-style-image: url(chrome://browser/skin/zen-icons/forward.svg);
+    position: absolute;
+    bottom: 10%;
+    padding: 0.8em !important;
+  }
+
+  #zen-welcome-title {
+    text-align: center;
+    font-size: 5rem;
+    line-height: 1.1;
+    max-width: 50%;
+    font-weight: 500;
+    white-space: nowrap;
+
+    & > span {
+      display: block;
+      opacity: 0;
+    }
+  }
+}
+
+#zen-welcome-pages {
+  -moz-window-dragging: no-drag;
+  opacity: 0;
+  justify-content: start;
+  align-items: start;
+  display: none;
+  background: var(--zen-branding-bg);
+  border-radius: 1em;
+  overflow: hidden;
+  position: relative;
+  width: 60%;
+  height: 60%;
+  box-shadow: var(--zen-big-shadow);
+  overflow: hidden;
+
+  /* Small screens */
+  @media (max-width: 1400px) {
+    width: 80%;
+    height: 80%;
+  }
+
+  @media (max-width: 1200px) {
+    width: 90%;
+    height: 90%;
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+  }
+
+  #zen-welcome-page-sidebar {
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3.8rem;
+    width: 40%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    & #zen-welcome-heart {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      color: currentColor;
+      fill: currentColor;
+      -moz-context-properties: fill, fill-opacity;
+      background-image: url(chrome://browser/skin/zen-icons/essential-add.svg);
+      background-size: 15%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &[animate-heart] {
+      overflow: hidden;
+    }
+  }
+
+  #zen-welcome-page-sidebar-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #zen-welcome-page-sidebar-content {
+    & h1 {
+      font-size: xx-large;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    & p {
+      margin: 0 0 1.1rem 0;
+      color: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6));
+    }
+
+    & > * {
+      transform: translate(300%);
+    }
+  }
+
+  & button {
+    justify-content: center;
+    align-items: center;
+    transform: translate(300%);
+  }
+
+  #zen-welcome-page-content {
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    width: 60%;
+    max-width: 80rem;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+
+    &[select-engine='true'] {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-sizing: border-box;
+      padding: 5rem;
+    }
+
+    & > label {
+      opacity: 0;
+      transition:
+        scale 0.1s,
+        box-shadow 0.1s;
+      padding: 1.5rem 1.1rem;
+      border-radius: 0.6rem;
+      width: 50%;
+      gap: 0.8rem;
+      display: flex;
+      border: 2px solid var(--zen-colors-border);
+      background: light-dark(rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.4));
+      align-items: center;
+
+      &:hover {
+        box-shadow: var(--zen-big-shadow);
+      }
+
+      &:has(:checked) {
+        box-shadow: var(--zen-big-shadow);
+        border: 2px solid var(--zen-primary-color);
+        scale: 1.03;
+      }
+    }
+
+    &[select-engine='true'] > label {
+      flex-direction: column;
+      font-weight: 600;
+      aspect-ratio: 1 / 0.7;
+      align-items: center;
+      width: 60%;
+      justify-self: center;
+      align-self: center;
+      justify-content: space-around;
+    }
+
+    /* 3 or more engines */
+    &[select-engine='true']:has(label:nth-of-type(3)) > label {
+      height: 50%;
+    }
+
+    #zen-welcome-workspace-colors-anchor {
+      width: 1px;
+      height: 1px;
+    }
+
+    #zen-welcome-initial-essentials-browser {
+      min-width: 70%;
+      min-height: 80%;
+      display: flex;
+      margin-left: auto;
+      margin-top: auto;
+      border-top-left-radius: 1.2em;
+      box-shadow: var(--zen-big-shadow);
+      background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.2));
+      padding-right: 20%;
+      overflow: hidden;
+      opacity: 0;
+      border: 1px solid var(--zen-colors-border);
+      border-bottom-width: 0;
+      border-right-width: 0;
+
+      #zen-welcome-initial-essentials-browser-sidebar {
+        width: 100%;
+        padding: 1.4rem;
+        gap: 1.2rem;
+        background: light-dark(rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.4));
+
+        #zen-welcome-initial-essentials-browser-sidebar-win-buttons {
+          gap: 0.5rem;
+          align-items: center;
+
+          & > div {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--zen-toolbar-element-bg);
+          }
+        }
+
+        #zen-welcome-initial-essentials-browser-sidebar-essentials {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          visibility: visible;
+
+          & * {
+            visibility: visible;
+          }
+
+          & .extra-tab {
+            width: 100%;
+            height: 4rem;
+            border-radius: var(--border-radius-large);
+            margin-top: 0.5rem;
+            background: var(--zen-toolbar-element-bg);
+            grid-column: span 3;
+          }
+
+          & .tabbrowser-tab {
+            --tab-min-height: 6rem !important;
+            min-width: 5rem !important;
+            transition: transform 0.1s;
+            position: relative;
+
+            &::after {
+              position: absolute;
+              content: '';
+              width: 1.8rem;
+              height: 1.8rem;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: var(--zen-essential-tab-icon);
+              background-position: center;
+              background-size: contain;
+              background-repeat: no-repeat;
+              border-radius: 4px;
+            }
+
+            --border-radius-medium: 1rem;
+
+            &[visuallyselected] {
+              transform: scale(1.06);
+            }
+
+            & .tab-background {
+              margin: 0 !important;
+            }
+
+            & .tab-background::after {
+              filter: blur(30px) brightness(1.2);
+            }
+          }
+        }
+      }
+    }
+  }
+}

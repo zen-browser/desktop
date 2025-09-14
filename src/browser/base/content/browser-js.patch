@@ -1,53 +1,31 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index ccd83c15d0d73a1e53bdbfdfbe6fed43a26c961d..f18a6abf7debb97539a4cdf8422315b4dff08adb 100644
+index c5b7ef2616c1dab9f42970605897e862d57ab7d0..77f0731db6c4a8d835cf8733115d27ae7782a987 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -32,6 +32,7 @@ ChromeUtils.defineESModuleGetters(this, {
-   ContextualIdentityService:
+@@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
-   CustomizableUI: "resource:///modules/CustomizableUI.sys.mjs",
-+  ZenCustomizableUI: "chrome://browser/content/ZenCustomizableUI.sys.mjs",
+   CustomizableUI:
+     "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
++  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -632,6 +633,15 @@ XPCOMUtils.defineLazyPreferenceGetter(
-   false
- );
- 
-+const ZEN_WELCOME_PATH = "zen-welcome";
-+const ZEN_WELCOME_ELEMENT_ATTR = "zen-dialog-welcome-element";
-+XPCOMUtils.defineLazyServiceGetter(
-+  this,
-+  "ProfileService",
-+  "@mozilla.org/toolkit/profile-service;1",
-+  "nsIToolkitProfileService"
-+);
-+
- customElements.setElementCreationCallback("screenshots-buttons", () => {
-   Services.scriptloader.loadSubScript(
-     "chrome://browser/content/screenshots/screenshots-buttons.js",
-@@ -3438,6 +3448,11 @@ var XULBrowserWindow = {
+@@ -2291,6 +2292,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
-+    gZenViewSplitter.onLocationChange(gBrowser.selectedBrowser);
-+    ZenWorkspaces.onLocationChange(gBrowser.selectedBrowser);
-+    gZenTabUnloader.onLocationChange(gBrowser.selectedBrowser);
-+    gZenGlanceManager.onLocationChange(gBrowser.selectedBrowser);
++    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser);
 +
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -7289,6 +7304,12 @@ var gDialogBox = {
-     parentElement.showModal();
-     this._didOpenHTMLDialog = true;
- 
-+    if (uri.includes(ZEN_WELCOME_PATH)) {
-+      parentElement.setAttribute(ZEN_WELCOME_ELEMENT_ATTR, true);
-+    } else if (parentElement.hasAttribute(ZEN_WELCOME_ELEMENT_ATTR)) {
-+      parentElement.removeAttribute(ZEN_WELCOME_ELEMENT_ATTR);
+@@ -5232,6 +5235,9 @@ var ConfirmationHint = {
+     MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
+     MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
+     document.l10n.setAttributes(this._message, messageId, options.l10nArgs);
++    if (window.gZenUIManager?.showToast) {
++      return window.gZenUIManager.showToast(messageId, options);
 +    }
-+
-     // Disable menus and shortcuts.
-     this._updateMenuAndCommandState(false /* to disable */);
- 
+     if (options.descriptionId) {
+       document.l10n.setAttributes(this._description, options.descriptionId);
+       this._description.hidden = false;

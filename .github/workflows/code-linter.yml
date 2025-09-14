@@ -4,14 +4,18 @@ on:
   push:
     branches:
       - dev
-  workflow_dispatch:
+  workflow_call:
   pull_request:
     branches:
       - dev
 
+permissions:
+  contents: read
+
 jobs:
-  pr-test:
+  lint:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[no-lint]') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,11 +27,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Setup pnpm
-        run: npm install -g pnpm
+      - name: Setup autopep8
+        run: sudo apt install python3-autopep8
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint

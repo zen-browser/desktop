@@ -1,0 +1,12 @@
+diff --git a/modules/libpref/moz.build b/modules/libpref/moz.build
+index 68a0bd6b50b804745b052e1921f4f6120354443e..23e7d03a6796af39dc2d39733b16548e73f8b10f 100644
+--- a/modules/libpref/moz.build
++++ b/modules/libpref/moz.build
+@@ -93,6 +93,7 @@ pref_groups = [
+     "view_source",
+     "webgl",
+     "widget",
++    "zen",
+     "zoom",
+ ]
+ if CONFIG["OS_TARGET"] == "Android":

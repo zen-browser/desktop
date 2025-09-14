@@ -1,0 +1,38 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+:root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
+  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer,
+  #tabbrowser-tabpanels[dragging-split='true'] {
+    width: -moz-available;
+    position: relative;
+    overflow: clip;
+
+    &.browserSidebarContainer {
+      :root:not([zen-no-padding='true']) & {
+        border-radius: var(--zen-native-inner-radius);
+        box-shadow: var(--zen-big-shadow);
+      }
+
+      & browser[type='content'] {
+        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+      }
+
+      @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
+        & browser[type='content'] {
+          color-scheme: env(-moz-content-preferred-color-scheme);
+        }
+      }
+
+      @media -moz-pref('zen.theme.acrylic-elements') {
+        & browser[type='content'] {
+          /* For the rendering engine to apply layering optimizations. This
+           * is a hacky solution, but it works for now. */
+          will-change: transform;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+diff --git a/browser/components/tabbrowser/TabUnloader.sys.mjs b/browser/components/tabbrowser/TabUnloader.sys.mjs
+index 0c62cdf29a72a7518cc54c014b5042f9695311eb..d5ac63d5005065863391e415f7072145d3247cad 100644
+--- a/browser/components/tabbrowser/TabUnloader.sys.mjs
++++ b/browser/components/tabbrowser/TabUnloader.sys.mjs
+@@ -52,7 +52,7 @@ let CRITERIA_WEIGHT = 1;
+  */
+ let DefaultTabUnloaderMethods = {
+   isNonDiscardable(tab, weight) {
+-    if (tab.undiscardable || tab.selected) {
++    if (tab.undiscardable || tab.selected || tab.zenModeActive) {
+       return weight;
+     }
+ 

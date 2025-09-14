@@ -1,0 +1,48 @@
+diff --git a/browser/installer/windows/nsis/shared.nsh b/browser/installer/windows/nsis/shared.nsh
+old mode 100755
+new mode 100644
+index bc8f5775785e08a0cc1c8a6ad1f0e19e980c607d..bf11d30d10fb38855f6a0e8d5346be271042769e
+--- a/browser/installer/windows/nsis/shared.nsh
++++ b/browser/installer/windows/nsis/shared.nsh
+@@ -513,6 +513,7 @@ ${RemoveDefaultBrowserAgentShortcut}
+   ${AddAssociationIfNoneExist} ".svg" "FirefoxHTML$5"
+   ${AddAssociationIfNoneExist} ".webp"  "FirefoxHTML$5"
+   ${AddAssociationIfNoneExist} ".avif" "FirefoxHTML$5"
++  ${AddAssociationIfNoneExist} ".jxl" "FirefoxHTML$5"
+ 
+   ${AddAssociationIfNoneExist} ".pdf" "FirefoxPDF$5"
+ 
+@@ -609,6 +610,7 @@ ${RemoveDefaultBrowserAgentShortcut}
+   WriteRegStr ${RegKey} "$0\Capabilities\FileAssociations" ".svg"   "FirefoxHTML$2"
+   WriteRegStr ${RegKey} "$0\Capabilities\FileAssociations" ".webp"  "FirefoxHTML$2"
+   WriteRegStr ${RegKey} "$0\Capabilities\FileAssociations" ".avif"  "FirefoxHTML$2"
++  WriteRegStr ${RegKey} "$0\Capabilities\FileAssociations" ".jxl"   "FirefoxHTML$2"
+ 
+   WriteRegStr ${RegKey} "$0\Capabilities\FileAssociations" ".pdf"   "FirefoxPDF$2"
+ 
+@@ -681,6 +683,7 @@ ${RemoveDefaultBrowserAgentShortcut}
+     ${WriteApplicationsSupportedType} ${RegKey} ".webm"
+     ${WriteApplicationsSupportedType} ${RegKey} ".webp"
+     ${WriteApplicationsSupportedType} ${RegKey} ".avif"
++    ${WriteApplicationsSupportedType} ${RegKey} ".jxl"
+     ${WriteApplicationsSupportedType} ${RegKey} ".xht"
+     ${WriteApplicationsSupportedType} ${RegKey} ".xhtml"
+     ${WriteApplicationsSupportedType} ${RegKey} ".xml"
+@@ -1727,6 +1730,8 @@ Function SetAsDefaultAppUserHKCU
+     Pop $0
+     AppAssocReg::SetAppAsDefault "$R9" ".avif" "file"
+     Pop $0
++    AppAssocReg::SetAppAsDefault "$R9" ".jxl" "file"
++    Pop $0
+     AppAssocReg::SetAppAsDefault "$R9" ".xht" "file"
+     Pop $0
+     AppAssocReg::SetAppAsDefault "$R9" ".xhtml" "file"
+@@ -1856,7 +1861,7 @@ FunctionEnd
+   ; uninstalled.
+ 
+   ; Do all of that twice, once for the local machine and once for the current user
+-  
++
+   ; Remove protocol handlers
+   ClearErrors
+   ReadRegStr $0 HKLM "Software\Classes\${_PROTOCOL}\DefaultIcon" ""

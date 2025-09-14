@@ -1,0 +1,14 @@
+diff --git a/widget/gtk/nsAppShell.cpp b/widget/gtk/nsAppShell.cpp
+index 99fd6dc873362de36dca4c93d5acc604cadb7caf..b5cf7ef750a489e32099884cc25af611ad622e8e 100644
+--- a/widget/gtk/nsAppShell.cpp
++++ b/widget/gtk/nsAppShell.cpp
+@@ -420,7 +420,8 @@ nsresult nsAppShell::Init() {
+     gchar* name = gdk_pixbuf_format_get_name(format);
+     if (strcmp(name, "jpeg") && strcmp(name, "png") && strcmp(name, "gif") &&
+         strcmp(name, "bmp") && strcmp(name, "ico") && strcmp(name, "xpm") &&
+-        strcmp(name, "svg") && strcmp(name, "webp") && strcmp(name, "avif")) {
++        strcmp(name, "svg") && strcmp(name, "webp") && strcmp(name, "avif") &&
++        strcmp(name, "jxl")) {
+       gdk_pixbuf_format_set_disabled(format, TRUE);
+     }
+     g_free(name);

@@ -1,0 +1,18 @@
+diff --git a/toolkit/mozapps/extensions/content/aboutaddons.css b/toolkit/mozapps/extensions/content/aboutaddons.css
+index 733396c68be4f1dd9de99bd602c9f8cde8843957..e0d9489a89e366e3f6dab2a6f472c6752a8815b3 100644
+--- a/toolkit/mozapps/extensions/content/aboutaddons.css
++++ b/toolkit/mozapps/extensions/content/aboutaddons.css
+@@ -105,6 +105,13 @@ h2 {
+ .category[name="theme"] {
+   background-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
+ }
++
++@media -moz-pref('zen.theme.disable-lightweight') {
++  .category[name="theme"] {
++    display: none;
++  }
++}
++
+ .category[name="plugin"] {
+   background-image: url("chrome://mozapps/skin/extensions/category-plugins.svg");
+ }

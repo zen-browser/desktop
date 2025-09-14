@@ -1,8 +1,35 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 992d07daaef1abc4554a43aa654888f66963c575..73e620b70b7ed14e9d140e875c2cd5f5ac31456b 100644
+index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd693f1f1135 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -2105,18 +2105,20 @@ var gUnifiedExtensions = {
+@@ -1064,7 +1064,7 @@ var gXPInstallObserver = {
+       persistent: true,
+       hideClose: true,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition,
+       },
+     };
+ 
+@@ -1273,7 +1273,7 @@ var gXPInstallObserver = {
+       hideClose: true,
+       timeout: Date.now() + 30000,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition,
+       },
+     };
+ 
+@@ -2608,7 +2608,7 @@ var gUnifiedExtensions = {
+         this.recordButtonTelemetry(reason || "extensions_panel_showing");
+         this.ensureButtonShownBeforeAttachingPanel(panel);
+         PanelMultiView.openPopup(panel, this._button, {
+-          position: "bottomright topright",
++          position: gZenUIManager.panelUIPosition,
+           triggerEvent: aEvent,
+         });
+       }
+@@ -2795,18 +2795,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  
@@ -19,8 +46,8 @@ index 992d07daaef1abc4554a43aa654888f66963c575..73e620b70b7ed14e9d140e875c2cd5f5
 +    await gZenVerticalTabsManager._preCustomize();
  
      CustomizableUI.addWidgetToArea(widgetId, newArea, newPosition);
- 
-     this.updateAttention();
+     // addWidgetToArea() will trigger onWidgetAdded or onWidgetMoved as needed,
+     // and our handlers will call updateAttention() as needed.
 +    await gZenVerticalTabsManager._postCustomize();
    },
  

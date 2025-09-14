@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/PlacesUIUtils.sys.mjs b/browser/components/places/PlacesUIUtils.sys.mjs
-index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c176c12bd23 100644
+index 86cc499f9b959ef87ab57fc4195e0c65f25e8c7c..a928ea83b9f4d0133238e744d2fb91318d36d4de 100644
 --- a/browser/components/places/PlacesUIUtils.sys.mjs
 +++ b/browser/components/places/PlacesUIUtils.sys.mjs
-@@ -58,6 +58,7 @@ class BookmarkState {
+@@ -60,6 +60,7 @@ class BookmarkState {
      info,
      tags = "",
      keyword = "",
@@ -10,7 +10,7 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
      isFolder = false,
      children = [],
      autosave = false,
-@@ -82,12 +83,18 @@ class BookmarkState {
+@@ -84,12 +85,18 @@ class BookmarkState {
        keyword,
        parentGuid: info.parentGuid,
        index,
@@ -29,7 +29,7 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
    /**
     * Save edited title for the bookmark
     *
-@@ -181,6 +188,14 @@ class BookmarkState {
+@@ -183,6 +190,14 @@ class BookmarkState {
        "BookmarkState::createBookmark"
      );
      this._guid = results?.[0];
@@ -44,7 +44,7 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
      return this._guid;
    }
  
-@@ -214,6 +229,14 @@ class BookmarkState {
+@@ -216,6 +231,14 @@ class BookmarkState {
        "BookmarkState::save::createFolder"
      );
      this._guid = results[0];
@@ -59,7 +59,7 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
      return this._guid;
    }
  
-@@ -300,11 +323,97 @@ class BookmarkState {
+@@ -302,11 +325,97 @@ class BookmarkState {
        await lazy.PlacesTransactions.batch(transactions, "BookmarkState::save");
      }
  
@@ -95,7 +95,7 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
 +          const placeholders = workspacesToRemove.map(() => '?').join(',');
 +          await db.execute(`
 +          DELETE FROM zen_bookmarks_workspaces
-+          WHERE bookmark_guid = :bookmark_guid 
++          WHERE bookmark_guid = :bookmark_guid
 +          AND workspace_uuid IN (${placeholders})
 +        `, [bookmarkGuid, ...workspacesToRemove]);
 +
@@ -157,3 +157,12 @@ index 0f79ba5dd42116d626445b86f6b24731d2fa8aad..76d692db1731e84b28d9035b03e34c17
    /**
     * Append transactions to update tags by given information.
     *
+@@ -904,7 +1013,7 @@ export var PlacesUIUtils = {
+     aNode,
+     aWhere,
+     aWindow,
+-    { aPrivate = false, userContextId = 0 } = {}
++    { aPrivate = false, userContextId = undefined } = {}
+   ) {
+     if (
+       aNode &&

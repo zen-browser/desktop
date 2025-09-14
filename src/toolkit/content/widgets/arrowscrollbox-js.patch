@@ -1,0 +1,21 @@
+diff --git a/toolkit/content/widgets/arrowscrollbox.js b/toolkit/content/widgets/arrowscrollbox.js
+index b80d1049bb6ae305f2ac9c4c35fe975fd508031c..0d900883d903ed48ac57863c0468ab39a6f3d98f 100644
+--- a/toolkit/content/widgets/arrowscrollbox.js
++++ b/toolkit/content/widgets/arrowscrollbox.js
+@@ -98,6 +98,7 @@
+ 
+       let slot = this.shadowRoot.querySelector("slot");
+       let overflowObserver = new ResizeObserver(_ => {
++        if (this.id == 'tabbrowser-arrowscrollbox') return; // zen: do NOT underflow/overflow on tabbrowser-arrowscrollbox
+         let contentSize =
+           slot.getBoundingClientRect()[this.#verticalMode ? "height" : "width"];
+         // NOTE(emilio): This should be contentSize > scrollClientSize, but due
+@@ -642,7 +643,7 @@
+ 
+     on_wheel(event) {
+       // Don't consume the event if we can't scroll.
+-      if (!this.overflowing) {
++      if (!this.overflowing || this.id === 'tabbrowser-arrowscrollbox' || ((event.deltaY == 0 || gZenWorkspaces._swipeState?.isGestureActive) && this.classList.contains('workspace-arrowscrollbox'))) {
+         return;
+       }
+ 

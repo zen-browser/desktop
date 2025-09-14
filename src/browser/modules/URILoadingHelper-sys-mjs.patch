@@ -1,0 +1,31 @@
+diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
+index f7a3e8272f1f22286a26bf50d78b23aa82b49df8..a690732012331dfc40cc08fef4453c28c6587a24 100644
+--- a/browser/modules/URILoadingHelper.sys.mjs
++++ b/browser/modules/URILoadingHelper.sys.mjs
+@@ -541,7 +541,7 @@ export const URILoadingHelper = {
+       // page. If a load request bounces off for the currently selected tab,
+       // we'll open a new tab instead.
+       let tab = w.gBrowser.getTabForBrowser(targetBrowser);
+-      if (tab == w.FirefoxViewHandler.tab) {
++      if (tab == w.FirefoxViewHandler.tab || tab.hasAttribute("zen-empty-tab")) {
+         where = "tab";
+         targetBrowser = null;
+       } else if (
+@@ -971,7 +971,7 @@ export const URILoadingHelper = {
+         ignoreQueryString || replaceQueryString,
+         ignoreFragmentWhenComparing
+       );
+-      let browsers = aWindow.gBrowser.browsers;
++      let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
+       for (let i = 0; i < browsers.length; i++) {
+         let browser = browsers[i];
+         let browserCompare = cleanURL(
+@@ -1017,7 +1017,7 @@ export const URILoadingHelper = {
+           }
+ 
+           if (!doAdopt) {
+-            aWindow.gBrowser.tabContainer.selectedIndex = i;
++            aWindow.gZenWorkspaces.switchIfNeeded(browser);
+           }
+ 
+           return true;

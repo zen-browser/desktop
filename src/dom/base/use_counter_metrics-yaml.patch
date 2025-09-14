@@ -1,0 +1,50 @@
+diff --git a/dom/base/use_counter_metrics.yaml b/dom/base/use_counter_metrics.yaml
+index adf8d1ed451a54426d92e65557801cffa2f64281..0bf810d3544e42689ad530468bfce5380a51e274 100644
+--- a/dom/base/use_counter_metrics.yaml
++++ b/dom/base/use_counter_metrics.yaml
+@@ -21477,6 +21477,22 @@ use.counter.css.page:
+     send_in_pings:
+       - use-counters
+ 
++  css_zen_window_transform_origin:
++    type: counter
++    description: >
++      Whether a page used the CSS property -zen-window-transform-origin.
++      Compare against `use.counter.top_level_content_documents_destroyed`
++      to calculate the rate.
++    bugs:
++      - https://bugzilla.mozilla.org/show_bug.cgi?id=1852098
++    data_reviews:
++      - https://bugzilla.mozilla.org/show_bug.cgi?id=1852098
++    notification_emails:
++      - dom-core@mozilla.com
++    expires: never
++    send_in_pings:
++      - use-counters
++
+   css_transform_origin:
+     type: counter
+     description: >
+@@ -33481,6 +33497,22 @@ use.counter.css.doc:
+     send_in_pings:
+       - use-counters
+ 
++  css_zen_window_transform_origin:
++    type: counter
++    description: >
++      Whether a document used the CSS property -zen-window-transform-origin.
++      Compare against `use.counter.content_documents_destroyed`
++      to calculate the rate.
++    bugs:
++      - https://bugzilla.mozilla.org/show_bug.cgi?id=1852098
++    data_reviews:
++      - https://bugzilla.mozilla.org/show_bug.cgi?id=1852098
++    notification_emails:
++      - dom-core@mozilla.com
++    expires: never
++    send_in_pings:
++      - use-counters
++
+   css_transform_origin:
+     type: counter
+     description: >

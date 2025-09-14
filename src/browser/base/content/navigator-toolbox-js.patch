@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 64ded8fb2c08f1dbfec8fe08ab427a24b53f1169..69009d53d7242c26f777ac2e0bb1897ff27ad916 100644
+index 413bad2a62058a1c434d6a44e927e44eb397289d..b621c586e679bb8686fe9a5e6743512e71604425 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
 @@ -8,7 +8,7 @@
@@ -11,3 +11,19 @@ index 64ded8fb2c08f1dbfec8fe08ab427a24b53f1169..69009d53d7242c26f777ac2e0bb1897f
      const widgetOverflow = document.getElementById("widget-overflow");
  
      function onPopupShowing(event) {
+@@ -187,6 +187,7 @@ document.addEventListener(
+         #reload-button ,
+         #urlbar-go-button,
+         #reader-mode-button,
++        #zen-tabs-wrapper,
+         #picture-in-picture-button,
+         #urlbar-zoom-button,
+         #star-button-box,
+@@ -208,6 +209,7 @@ document.addEventListener(
+         case "vertical-tabs-newtab-button":
+         case "tabs-newtab-button":
+         case "new-tab-button":
++        case "zen-tabs-wrapper":
+           gBrowser.handleNewTabMiddleClick(element, event);
+           break;
+ 

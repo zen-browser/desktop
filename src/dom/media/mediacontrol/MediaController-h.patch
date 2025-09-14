@@ -1,0 +1,12 @@
+diff --git a/dom/media/mediacontrol/MediaController.h b/dom/media/mediacontrol/MediaController.h
+index 327ea6201304b3d26a2b4f0267b1c926c73ee9e4..ad14bb2572c29df4897672e14afc185b9b517da4 100644
+--- a/dom/media/mediacontrol/MediaController.h
++++ b/dom/media/mediacontrol/MediaController.h
+@@ -90,6 +90,7 @@ class MediaController final : public DOMEventTargetHelper,
+                        JS::Handle<JSObject*> aGivenProto) override;
+   void GetSupportedKeys(nsTArray<MediaControlKey>& aRetVal) const;
+   void GetMetadata(MediaMetadataInit& aMetadata, ErrorResult& aRv);
++  void GetPositionState(MediaControllerPositionState& aPositionState, ErrorResult& aRv);
+   IMPL_EVENT_HANDLER(activated);
+   IMPL_EVENT_HANDLER(deactivated);
+   IMPL_EVENT_HANDLER(metadatachange);

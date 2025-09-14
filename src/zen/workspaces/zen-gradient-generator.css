@@ -1,0 +1,458 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#PanelUI-zen-gradient-generator {
+  --panel-width: 360px;
+  --panel-padding: 10px;
+  min-width: var(--panel-width);
+}
+
+#PanelUI-zen-gradient-generator .panel-viewcontainer,
+#PanelUI-zen-gradient-generator .panel-viewstack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#PanelUI-zen-gradient-generator-controls {
+  align-items: center;
+  gap: var(--panel-padding);
+  padding-top: 10px;
+}
+
+#zen-theme-picker-color {
+  align-items: start;
+  width: 100%;
+
+  & label {
+    font-size: 12px;
+    margin-left: 0;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  & input,
+  & > hbox {
+    width: 100%;
+    position: relative;
+  }
+
+  & #PanelUI-zen-gradient-generator-custom-input {
+    padding: 0;
+    align-self: center;
+    border: none;
+    background: transparent;
+  }
+
+  & #PanelUI-zen-gradient-generator-custom-opacity {
+    max-width: 50px;
+  }
+}
+
+#PanelUI-zen-gradient-generator-custom-input {
+  position: relative;
+  padding-right: 6px !important;
+}
+
+#PanelUI-zen-gradient-generator-color-custom-add {
+  cursor: pointer;
+}
+
+#PanelUI-zen-gradient-colors-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 var(--panel-padding);
+
+  @media (-moz-platform: macos) {
+    gap: 2rem;
+  }
+
+  #PanelUI-zen-gradient-opacity-wrapper {
+    position: relative;
+  }
+
+  & label {
+    margin-left: 0;
+    font-weight: 600;
+    margin-inline: 0;
+    margin-bottom: 2px;
+    @media (-moz-platform: macos) {
+      font-size: larger;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-color-pages-wrapper {
+  align-items: center;
+}
+
+#PanelUI-zen-gradient-generator-color-pages {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 10px;
+  align-items: center;
+  width: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  mask-image: linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%);
+
+  & > hbox {
+    justify-content: space-around;
+    min-width: 100%;
+
+    & > box {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.1s;
+
+      &[data-num-dots='3'] {
+        background:
+          radial-gradient(circle at 0% 0%, var(--c1), transparent 100%),
+          radial-gradient(circle at 100% 0%, var(--c2), transparent 100%),
+          linear-gradient(to top, var(--c3) 0%, transparent 60%);
+      }
+
+      &:hover {
+        transform: scale(1.05);
+
+        &::after {
+          transform: scale(1.05);
+        }
+      }
+
+      &:hover:active {
+        transform: scale(0.95);
+
+        &::after {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-custom-list {
+  margin-top: 15px;
+
+  &:empty {
+    display: none;
+  }
+
+  & .zen-theme-picker-custom-list-item {
+    display: flex;
+    padding: 5px;
+    position: relative;
+
+    & .zen-theme-picker-dot.custom {
+      background: var(--zen-theme-picker-dot-color);
+      border: 1px solid var(--zen-colors-border);
+      border-radius: 5px;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    & .zen-theme-picker-custom-list-item-label {
+      font-size: 12px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    & .zen-theme-picker-custom-list-item-remove {
+      padding: 2px 4px !important;
+      margin: 0 !important;
+      margin-left: auto !important;
+      transition: opacity 0.1s;
+      opacity: 0;
+    }
+
+    &:hover .zen-theme-picker-custom-list-item-remove {
+      opacity: 1;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-slider-wave {
+  position: absolute;
+  left: -5px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 8px);
+    height: 16px;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+  }
+
+  & svg {
+    overflow: visible;
+    min-width: calc(100% * 1.1);
+    scale: 1.2;
+    margin-left: 4px;
+  }
+}
+
+#PanelUI-zen-gradient-generator-opacity {
+  margin: 0 !important;
+  background: transparent;
+  z-index: 2;
+  padding: 0 5px;
+
+  &::-moz-range-thumb {
+    background: light-dark(black, white);
+    border-radius: 999px;
+    height: var(--zen-thumb-height);
+    width: var(--zen-thumb-width);
+    cursor: pointer;
+    border: none;
+  }
+
+  &::-moz-range-track {
+    border-radius: 999px;
+    height: 18px;
+  }
+
+  &::-moz-range-progress {
+    background: transparent;
+  }
+}
+
+.zen-theme-picker-gradient {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--panel-border-radius) - 4px);
+
+  min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
+  background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
+  background-image: radial-gradient(
+    light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 1px,
+    transparent 0
+  );
+  background-position: -23px -23px;
+  background-size: 6px 6px;
+
+  & .zen-theme-picker-dot {
+    position: absolute;
+    z-index: 2;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--zen-theme-picker-dot-color);
+    @media (-prefers-color-scheme: dark) {
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    animation: zen-theme-picker-dot-animation 0.5s;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transform-origin: center center;
+
+    &:first-of-type {
+      width: 36px;
+      height: 36px;
+      border-width: 4px;
+      z-index: 2;
+      pointer-events: all;
+      transition: transform 0.2s;
+      z-index: 999;
+      &:hover {
+        transform: scale(1.05) translate(-50%, -50%);
+      }
+    }
+
+    &[dragging='true'] {
+      transform: scale(1.2) translate(-50%, -50%) !important;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-view {
+  gap: 10px;
+}
+
+#PanelUI-zen-gradient-generator-color-click-to-add {
+  position: absolute;
+  font-weight: 600;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: small;
+  margin: 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+#PanelUI-zen-gradient-generator-color-actions,
+#PanelUI-zen-gradient-generator-scheme {
+  display: flex;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  gap: 5px;
+
+  & button {
+    border: none !important;
+    padding: 0 !important;
+    min-width: fit-content !important;
+    transition: background 0.2s;
+    appearance: none;
+    max-height: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    min-width: 26px !important;
+    color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
+
+    & .button-box {
+      gap: 0.1rem;
+    }
+
+    & .button-text {
+      display: none;
+    }
+
+    &:hover {
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-scheme {
+  top: 15px;
+  max-height: 32px;
+}
+
+@media not -moz-pref('zen.theme.gradient.show-custom-colors') {
+  #PanelUI-zen-gradient-generator-custom-colors {
+    display: none !important;
+  }
+}
+
+#PanelUI-zen-gradient-generator-texture-wrapper {
+  width: 5rem;
+  height: 5rem;
+  position: relative;
+
+  @media (-moz-platform: macos) {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    border: 1px solid color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
+    border-radius: 50%;
+    /* 3d effect */
+    background: linear-gradient(
+      -45deg,
+      transparent -10%,
+      light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) 110%
+    );
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  &::before {
+    background-image: url(chrome://browser/content/zen-images/grain-bg.png);
+    opacity: var(--zen-grainy-background-opacity, 0);
+    mix-blend-mode: hard-light;
+    width: 60%;
+    height: 60%;
+    pointer-events: none;
+    top: 50%;
+    border-radius: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    content: '';
+    position: absolute;
+  }
+
+  & .zen-theme-picker-texture-dot {
+    height: 4px;
+    width: 4px;
+    border-radius: 50%;
+    background: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+    position: absolute;
+    transition: opacity 0.2s;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    &:not(.active) {
+      opacity: 0.4;
+    }
+  }
+
+  & #PanelUI-zen-gradient-generator-texture-handler {
+    width: 6px;
+    height: 12px;
+    background: light-dark(#757575, #d1d1d1);
+    position: absolute;
+    transition: height 0.1s;
+    z-index: 2;
+    border-radius: 2px;
+    cursor: pointer;
+    &:hover {
+      height: 14px;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-color-page-left,
+#PanelUI-zen-gradient-generator-color-page-right {
+  max-width: 28px;
+  max-height: 28px;
+  margin: 0 !important;
+}
+
+#PanelUI-zen-gradient-generator[invalidate-controls='true'] {
+  #PanelUI-zen-gradient-generator-opacity {
+    display: none !important;
+  }
+
+  #PanelUI-zen-gradient-slider-wave svg path {
+    stroke: light-dark(rgba(77, 77, 77, 0.5), rgba(161, 161, 161, 0.5)) !important;
+  }
+}

@@ -1,0 +1,72 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+panel[type='arrow'] {
+  @media (-moz-platform: macos) and (-moz-panel-animations) {
+    -moz-window-transform: scale(0.3);
+
+    &[animate='open'] {
+      animation: zen-jello-animation-macos 0.4s ease-out forwards;
+      &[side='bottom'] {
+        /* Animate from the bottom */
+        -zen-window-transform-origin: 0 100%;
+      }
+      :root[zen-right-side='true'] & {
+        /* Animate from the right */
+        -zen-window-transform-origin: 100% 0;
+
+        &[side='bottom'] {
+          /* Animate from the bottom right */
+          -zen-window-transform-origin: 100% 100%;
+        }
+      }
+    }
+  }
+  @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) and (-moz-panel-animations) {
+    /* Mica popups have a weird background while the animation is running */
+    &::part(content) {
+      animation: zen-jello-animation 0.35s ease;
+    }
+  }
+}
+
+panel[type='arrow'][animate]:not([animate='open']) {
+  animation: zen-jello-out-animation 0.3s ease-in-out;
+}
+
+menupopup,
+panel[type='arrow'] {
+  @media (-moz-windows-mica-popups) {
+    appearance: auto !important;
+    -moz-default-appearance: menupopup;
+    /* The blur behind doesn't blur all that much, add a semi-transparent
+     * background to improve contrast */
+    --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
+    --panel-border-color: transparent !important;
+    --panel-shadow-margin: 0px !important;
+
+    transition-duration: 0s !important;
+
+    &::part(content) {
+      animation: none !important;
+    }
+  }
+
+  @media (-moz-platform: macos) {
+    appearance: auto !important;
+    -moz-default-appearance: menupopup;
+    /* We set the default background here, rather than on ::part(content),
+     * because otherwise it'd interfere with the native look. Non-native-looking
+     * popups should get their background via --panel-background */
+    background-color: Menu;
+    --panel-shadow-margin: 0px !important;
+    --panel-background: transparent !important;
+    --panel-border-color: transparent;
+
+    &::part(content) {
+      background-color: transparent !important;
+    }
+  }
+}

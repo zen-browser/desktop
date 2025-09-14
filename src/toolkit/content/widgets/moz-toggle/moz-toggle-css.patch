@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/widgets/moz-toggle/moz-toggle.css b/toolkit/content/widgets/moz-toggle/moz-toggle.css
-index 8509f15f02f01b3259e6b6ddf97203e7aa8e9e60..b94fcc8fa002c497941c81623145942ba566d80a 100644
+index 7b9ec91bf0cfd8fda6a161995c9de57270557f6c..b1049bd2b2c03104e5b35978a9b81674d6920d53 100644
 --- a/toolkit/content/widgets/moz-toggle/moz-toggle.css
 +++ b/toolkit/content/widgets/moz-toggle/moz-toggle.css
-@@ -34,8 +34,8 @@
+@@ -6,8 +6,8 @@
    --toggle-background-color: var(--button-background-color);
    --toggle-background-color-hover: var(--button-background-color-hover);
    --toggle-background-color-active: var(--button-background-color-active);

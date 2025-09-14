@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index 197e0a1c3030b6346c49a010338130797c1e5f4b..333d38aea2116c5407ffc242b805db633df12968 100644
+index fdbab8806fd320f4aacec46a42c8ef953580d00c..5ed31d5dbfa2e2041e6616f6b036d67928e64114 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
-@@ -628,7 +628,7 @@ export class UrlbarView {
+@@ -613,7 +613,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,3 +11,41 @@ index 197e0a1c3030b6346c49a010338130797c1e5f4b..333d38aea2116c5407ffc242b805db63
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
+@@ -823,6 +823,19 @@ export class UrlbarView {
+         // them, resembling tab-to-search. In that case, the input value is
+         // still associated with the first result.
+         this.input.setResultForCurrentValue(firstResult);
++      } else if (firstResult.payload.zenAction) {
++        this.#selectElement(this.getFirstSelectableElement(), {
++          updateInput: false,
++          setAccessibleFocus:
++            this.controller._userSelectionBehavior == "arrow",
++        });
++        this.window.setTimeout(() => {
++          this.#selectElement(this.getFirstSelectableElement(), {
++            updateInput: false,
++            setAccessibleFocus:
++              this.controller._userSelectionBehavior == "arrow",
++          });
++        }, 140);
+       }
+     }
+ 
+@@ -1341,7 +1354,7 @@ export class UrlbarView {
+           includeHiddenExposures: true,
+         });
+       let canBeVisible =
+-        newSpanCount <= this.#queryContext.maxResults && !seenMisplacedResult;
++        newSpanCount < this.#queryContext.maxResults && !seenMisplacedResult;
+       if (result.isHiddenExposure) {
+         if (canBeVisible) {
+           this.controller.engagementEvent.addExposure(
+@@ -3189,7 +3202,7 @@ export class UrlbarView {
+   }
+ 
+   #enableOrDisableRowWrap() {
+-    let wrap = getBoundsWithoutFlushing(this.input.textbox).width < 650;
++    let wrap = false;
+     this.#rows.toggleAttribute("wrap", wrap);
+     this.oneOffSearchButtons.container.toggleAttribute("wrap", wrap);
+   }

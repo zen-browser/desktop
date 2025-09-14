@@ -1,0 +1,22 @@
+diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
+index c612e7d021122e3e4823994071cd613563d3e12e..682d7a47624460ce33e8fcb5ff9c995f3413bab2 100644
+--- a/browser/themes/shared/browser-shared.css
++++ b/browser/themes/shared/browser-shared.css
+@@ -99,7 +99,7 @@ body {
+   --toolbarbutton-border-radius: 4px;
+   --identity-box-margin-inline: 4px;
+   --urlbar-min-height: max(32px, 1.4em);
+-  --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
++  --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 14px /* icon */) / 2);
+ 
+   /* This should be used for icons and chiclets inside the input field. It makes
+      the gap around them more uniform when they are close to the field edges */
+@@ -167,8 +167,6 @@ body {
+    */
+   &.fullscreen-with-menubar {
+     z-index: var(--browser-area-z-index-toolbox-while-animating);
+-    box-shadow: var(--content-area-shadow);
+-    border-bottom-color: var(--chrome-content-separator-color);
+   }
+ 
+   /* Themes define a set of toolbox foreground and background colors which we

@@ -1,5 +1,5 @@
 diff --git a/browser/components/aboutlogins/content/components/login-list.css b/browser/components/aboutlogins/content/components/login-list.css
-index bc8e72a3cd07e8746c6fbf190bdd2bf70f4000d4..07031dfdfadf393db5fd848948e33510bd7225d7 100644
+index 3c766eaa80c00ef145168f7a2ceced95ce94295e..db7a7da03c8346f97b472b8e561fec79c1036337 100644
 --- a/browser/components/aboutlogins/content/components/login-list.css
 +++ b/browser/components/aboutlogins/content/components/login-list.css
 @@ -3,7 +3,7 @@
@@ -11,7 +11,7 @@ index bc8e72a3cd07e8746c6fbf190bdd2bf70f4000d4..07031dfdfadf393db5fd848948e33510
    background-color: var(--background-color-box);
    display: flex;
    flex-direction: column;
-@@ -161,3 +161,8 @@ ol {
+@@ -162,3 +162,8 @@ ol {
    font-size: 0.85em;
    color: var(--text-color-deemphasized);
  }

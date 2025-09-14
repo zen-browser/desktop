@@ -1,0 +1,31 @@
+diff --git a/third_party/rust/mime_guess/src/mime_types.rs b/third_party/rust/mime_guess/src/mime_types.rs
+index 13c91b7bee77a0c0a4b45b8e05a25bb89daac66e..1521cd729ec78dbc51b86cf04546c4cd4ceb1163 100644
+--- a/third_party/rust/mime_guess/src/mime_types.rs
++++ b/third_party/rust/mime_guess/src/mime_types.rs
+@@ -103,6 +103,7 @@ pub static MIME_TYPES: &[(&str, &[&str])] = &[
+     ("au", &["audio/basic"]),
+     ("avi", &["video/x-msvideo"]),
+     ("avif", &["image/avif"]),
++    ("avifs", &["image/avif-sequence"]),
+     ("aw", &["application/applixware"]),
+     ("axa", &["audio/annodex"]),
+     ("axs", &["application/olescript"]),
+@@ -449,6 +450,10 @@ pub static MIME_TYPES: &[(&str, &[&str])] = &[
+     ("hdf", &["application/x-hdf"]),
+     ("hdml", &["text/x-hdml"]),
+     ("hdr", &["image/vnd.radiance"]),
++    ("heic", &["image/heic"]),
++    ("heics", &["image/heic-sequence"]),
++    ("heif", &["image/heif"]),
++    ("heifs", &["image/heif-sequence"]),
+     ("hh", &["text/plain"]),
+     ("hhc", &["application/x-oleobject"]),
+     ("hhk", &["application/octet-stream"]),
+@@ -567,6 +572,7 @@ pub static MIME_TYPES: &[(&str, &[&str])] = &[
+     ("jsonml", &["application/jsonml+json"]),
+     ("jsx", &["text/jscript"]),
+     ("jsxbin", &["text/plain"]),
++    ("jxl", &["image/jxl"]),
+     ("kar", &["audio/midi"]),
+     ("karbon", &["application/vnd.kde.karbon"]),
+     ("kfo", &["application/vnd.kde.kformula"]),

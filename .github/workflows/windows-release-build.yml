@@ -1,5 +1,8 @@
 name: Windows Release Build
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:
@@ -18,13 +21,26 @@ on:
         description: 'The branch to build'
         required: true
         type: string
+      MOZ_BUILD_DATE:
+        type: string
+        required: true
+        default: ''
+      use-sccache:
+        description: 'Use sccache'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   windows-build:
     name: Build Windows - ${{ matrix.arch }}
     # aarch64 does not need full 16x, and we also dont use full LTO when generating GPO
-    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-gpo && matrix.arch == 'x86_64') && 'ubuntu-latest' || 'ubuntu-latest' }}
-
+    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-gpo && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
+    env:
+      SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      CARGO_TERM_COLOR: always
+      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
+      CARGO_INCREMENTAL: 0
     strategy:
       fail-fast: false
       matrix:
@@ -44,12 +60,22 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: useblacksmith/setup-node@v5
         with:
           node-version-file: '.nvmrc'
 
-      - name: Setup pnpm
-        run: npm install -g pnpm
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@main
+        if: ${{ inputs.use-sccache }}
+        with:
+          disable_annotations: true
+
+      - name: Expose actions cache variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
       - name: Setup Git
         run: |
@@ -58,30 +84,25 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm --fix-missing
 
       - name: Load Surfer CI setup
-        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox and dependencies
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
-        run: pnpm surfer download
+        run: npm run download
 
       - name: win-cross Cache
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-win-cross
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: ${HOME}/win-cross
           key: win-cross
-
-      - name: Configure sccache
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Setup for Windows
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs.generate-gpo && matrix.arch == 'aarch64')
@@ -89,11 +110,8 @@ jobs:
           set -x
           mkdir -p ~/win-cross
           cd engine/
-          echo Setup wine
-          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
-          tar --zstd -xvf wine.tar.zst -C ~/win-cross
-          rm wine.tar.zst
-          echo Setup Visual Studio
+          sudo apt-get install python3-launchpadlib
+          sudo add-apt-repository ppa:savoury1/backports
           sudo apt-get update
           sudo apt-get install -y python3-pip autoconf \
             autoconf2.13 \
@@ -134,8 +152,22 @@ jobs:
             uuid-dev \
             wget \
             zip \
-            zlib1g-dev
+            zlib1g-dev \
+            aria2
+          echo Setup wine
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
+          tar --zstd -xf wine.tar.zst -C ~/win-cross
+          rm wine.tar.zst
+          echo Setup Visual Studio
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
+
+      - name: Import
+        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+        run: |
+          . "$HOME/.cargo/env"
+          npm run import -- --verbose
 
       - name: Bootstrap
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
@@ -144,9 +176,8 @@ jobs:
           cd engine/
           chmod -R +x "$(echo ~)/win-cross/vs2022" || true
           cd ..
-          npm install -g pnpm
           export SURFER_PLATFORM="win32"
-          pnpm surfer bootstrap
+          npm run bootstrap
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
@@ -159,25 +190,19 @@ jobs:
       - name: Setup Rust
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         run: |
-          cd engine/
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.79
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
           source $HOME/.cargo/env
           if test "${{ matrix.arch }}" = "aarch64"; then
             rustup target add aarch64-pc-windows-msvc
           else
             rustup target add x86_64-pc-windows-msvc
           fi
-          cargo install cargo-download
+          cd engine/
+          cargo install cargo-download --locked
           cargo download -x windows=0.58.0
           export CARGO_INCREMENTAL=0
           echo "" >> ../configs/common/mozconfig
           echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-0.58.0" >> ../configs/common/mozconfig
-
-      - name: Import
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
-        env:
-          SURFER_COMPAT: ${{ matrix.arch }}
-        run: pnpm surfer import --verbose
 
       - name: Build language packs
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
@@ -199,6 +224,11 @@ jobs:
           chmod +x ~/artifact/en-US.log
           chmod +x ~/artifact/merged.profdata
 
+      - name: Insert API Keys
+        run: |
+          mkdir -p ~/.zen-keys
+          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+
       - name: Build
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         env:
@@ -212,6 +242,9 @@ jobs:
           if test ${{ inputs.generate-gpo }} = true; then
             export ZEN_GA_GENERATE_PROFILE=1
           fi
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
           bash .github/workflows/src/release-build.sh
 
       - name: Package
@@ -224,15 +257,14 @@ jobs:
           export SURFER_PLATFORM="win32"
           export ZEN_CROSS_COMPILING=1
           export ZEN_RELEASE=1
-          pnpm package
-          mv ./dist/zen-$(pnpm surfer get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
+          npm run package
+          mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
           ls ./dist
           ls .
 
-      - name: Debug session
-        if: ${{ failure() }}
-        uses: WarpBuilds/action-debugger@v1.3
-        timeout-minutes: 15
+      - name: Remove API Keys
+        run: |
+          rm -rf ~/.zen-keys
 
       - name: Move package for PGO upload
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
@@ -259,21 +291,24 @@ jobs:
         if: ${{ !inputs.generate-gpo }}
         run: |
           set -x
-          if test "${{ matrix.arch }}" = "aarch64"; then
-            find engine/obj-aarch64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type d -not -name 'dist' -exec rm -rf {} \;
-            find engine/obj-aarch64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type f -not -name 'dist' -exec rm -f {} \;
-          else
-            find engine/obj-x86_64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type d -not -name 'dist' -exec rm -rf {} \;
-            find engine/obj-x86_64-pc-windows-msvc/ -mindepth 1 -maxdepth 1 -type f -not -name 'dist' -exec rm -f {} \;
-          fi
+          mkdir obj-${{ matrix.arch }}-pc-windows-msvc/
+
+          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/_tests
+          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/config/autoconf.mk
+          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/
+          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install
+
+          find engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist -maxdepth 1 -type f -name "*.zip" -delete
+
+          cp -r --no-dereference engine/obj-${{ matrix.arch }}-pc-windows-msvc/* obj-${{ matrix.arch }}-pc-windows-msvc/ || true
 
       - name: Upload dist object
         if: ${{ !inputs.generate-gpo }}
         uses: actions/upload-artifact@v4
         with:
-          retention-days: 5
+          retention-days: 2
           name: windows-x64-obj-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
-          path: engine/obj-${{ matrix.arch == 'aarch64' && 'aarch64' || 'x86_64' }}-pc-windows-msvc/
+          path: obj-${{ matrix.arch }}-pc-windows-msvc
 
       - name: Upload artifact (if Twilight branch, binary)
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}

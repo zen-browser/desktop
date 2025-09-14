@@ -1,0 +1,43 @@
+diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
+index 3d4630e2250476729d21cdcb1726a7af93f9fd75..489d1dc624bb1e7b3f7ed22a0073d3ada29846e4 100644
+--- a/servo/components/style/gecko/media_features.rs
++++ b/servo/components/style/gecko/media_features.rs
+@@ -13,6 +13,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
+ use crate::values::specified::color::ForcedColors;
+ use app_units::Au;
+ use euclid::default::Size2D;
++use crate::queries::condition::MozPrefFeatureValue;
++use selectors::kleene_value::KleeneValue;
++use crate::values::AtomString;
+ 
+ fn device_size(device: &Device) -> Size2D<Au> {
+     let mut width = 0;
+@@ -609,6 +612,13 @@ fn eval_scripting(context: &Context, query_value: Option<Scripting>) -> bool {
+ fn eval_moz_overlay_scrollbars(context: &Context) -> bool {
+     unsafe { bindings::Gecko_MediaFeatures_UseOverlayScrollbars(context.device().document()) }
+ }
++ 
++fn eval_moz_bool_pref(_: &Context, pref: Option<&AtomString>) -> KleeneValue {
++    let Some(pref) = pref else {
++        return KleeneValue::False;
++    };
++    KleeneValue::from(unsafe { bindings::Gecko_EvalMozPrefFeature(pref.as_ptr(), &MozPrefFeatureValue::<i32>::None) })
++}
+ 
+ fn get_lnf_int(int_id: i32) -> i32 {
+     unsafe { bindings::Gecko_GetLookAndFeelInt(int_id) }
+@@ -641,7 +651,13 @@ macro_rules! lnf_int_feature {
+ /// to support new types in these entries and (2) ensuring that either
+ /// nsPresContext::MediaFeatureValuesChanged is called when the value that
+ /// would be returned by the evaluator function could change.
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 58] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
++    feature!(
++        atom!("-moz-bool-pref"),
++        AllowsRanges::No,
++        Evaluator::String(eval_moz_bool_pref),
++        FeatureFlags::CHROME_AND_UA_ONLY,
++    ),
+     feature!(
+         atom!("width"),
+         AllowsRanges::Yes,

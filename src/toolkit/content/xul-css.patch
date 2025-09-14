@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
-index 26c11188d3edcc9806fab7144aa0e22540a32a57..df3dbca06ede3eda1854febe314c38779f754c03 100644
+index badef34e6072da6e0e1180f5f08ab201a89fa195..2842eee9d5655444ccac8c085f19df0247886d64 100644
 --- a/toolkit/content/xul.css
 +++ b/toolkit/content/xul.css
-@@ -485,7 +485,8 @@ deck > *|*:not(:-moz-native-anonymous) {
+@@ -461,7 +461,8 @@ deck > *|*:not(:-moz-native-anonymous) {
  }
  
  tabpanels > .deck-selected,

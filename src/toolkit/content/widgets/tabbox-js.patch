@@ -1,0 +1,40 @@
+diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
+index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2f767296db8043318fab2aeb39bfc5eee090b258 100644
+--- a/toolkit/content/widgets/tabbox.js
++++ b/toolkit/content/widgets/tabbox.js
+@@ -213,7 +213,7 @@
+     ) {
+       this._inAsyncOperation = false;
+       if (oldPanel != this._selectedPanel) {
+-        oldPanel?.classList.remove("deck-selected");
++        if (!(window.gZenGlanceManager && gZenGlanceManager.shouldShowDeckSelected(this._selectedPanel, oldPanel))) oldPanel?.classList.remove("deck-selected");
+         this._selectedPanel?.classList.add("deck-selected");
+       }
+       this.setAttribute("selectedIndex", val);
+@@ -610,7 +610,7 @@
+       if (!tab) {
+         return;
+       }
+-      for (let otherTab of this.allTabs) {
++      for (let otherTab of window.gZenWorkspaces?.allStoredTabs ?? this.allTabs) {
+         if (otherTab != tab && otherTab.selected) {
+           otherTab._selected = false;
+         }
+@@ -823,7 +823,7 @@
+         if (tab == startTab) {
+           return null;
+         }
+-        if (filter(tab)) {
++        if (filter(tab) && !tab.hasAttribute("zen-glance-tab") && !tab.hasAttribute("zen-empty-tab")) {
+           return tab;
+         }
+       }
+@@ -888,7 +888,7 @@
+       let { ariaFocusedItem } = this;
+       let startTab = ariaFocusedItem;
+       if (!ariaFocusedItem || !this.allTabs.includes(ariaFocusedItem)) {
+-        startTab = this.selectedItem;
++        startTab = gZenGlanceManager.getFocusedTab(aDir) || this.selectedItem;
+       }
+       let newTab = null;
+ 

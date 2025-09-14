@@ -1,0 +1,23 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+
+["browser_folder_create.js"]
+["browser_folder_subfolder.js"]
+["browser_folder_basic_toggle.js"]
+["browser_folder_owner_tabs.js"]
+["browser_folder_density.js"]
+["browser_folder_max_subfolders.js"]
+["browser_folder_empty_tab.js"]
+["browser_folder_multiselected.js"]
+["browser_folder_visible_tabs.js"]
+["browser_folder_level_checks.js"]
+["browser_folder_reset_button.js"]
+
+["browser_folder_issue_9885.js"]
+["browser_folder_issue_9981.js"]

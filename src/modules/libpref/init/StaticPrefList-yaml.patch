@@ -1,13 +1,12 @@
 diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
-index c63a259a51c4862bc8f73eabdc5730bfe2f28da4..f9b8431071e73ce55972c12354ed44bc3a4df9c0 100644
+index a6c49438aaf3464e70bf9c75c2849a6062bd096a..2ee33493ed541b36a29f29c104d1275b80e5a20a 100644
 --- a/modules/libpref/init/StaticPrefList.yaml
 +++ b/modules/libpref/init/StaticPrefList.yaml
-@@ -17651,7 +17651,7 @@
- # Whether we use the mica backdrop. Off by default for now.
- - name: widget.windows.mica
-   type: bool
--  value: false
-+  value: true
-   mirror: once
+@@ -19222,6 +19215,7 @@
+   mirror: always
  #endif
  
++#include zen-static-prefs.inc
+ #---------------------------------------------------------------------------
+ # Prefs starting with "zoom."
+ #---------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+diff --git a/image/decoders/nsJXLDecoder.h b/image/decoders/nsJXLDecoder.h
+index 0b723878aefdc5a37c2cffb72a561f859ad79cdf..6d39326dbefa9a85cc02b426de5c9f9149fe612d 100644
+--- a/image/decoders/nsJXLDecoder.h
++++ b/image/decoders/nsJXLDecoder.h
+@@ -46,6 +46,18 @@ class nsJXLDecoder final : public Decoder {
+   Vector<uint8_t> mBuffer;
+   Vector<uint8_t> mOutBuffer;
+   JxlBasicInfo mInfo{};
++  JxlPixelFormat mFormat;
++  JxlFrameHeader mFrameHeader;
++
++  bool mUsePipeTransform;
++  uint8_t mChannels;
++  uint8_t* mCMSLine;
++
++  uint32_t mNumFrames;
++  FrameTimeout mTimeout;
++  gfx::SurfaceFormat mSurfaceFormat;
++  SurfacePipe mPipe;
++  bool mContinue;
+ };
+ 
+ }  // namespace mozilla::image

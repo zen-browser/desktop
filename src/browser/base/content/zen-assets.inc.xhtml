@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 #include zen-locales.inc.xhtml
 
 # Styles used all over the browser
@@ -10,37 +14,47 @@
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-tabs.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-browser-ui.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-gradient-generator.css" />
-<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-rices.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-panel-ui.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-single-components.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-browser-container.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-urlbar.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-workspaces.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-decks.css" />
+<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-folders.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-glance.css" />
-<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-profile-dialog.css" />
-<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-sidebar-panels.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-popup.css" />
 
 <link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-compact-mode.css" />
 <link rel="stylesheet" type="text/css" href="chrome://browser/skin/zen-icons/icons.css" />
+<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-branding.css" />
+<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-welcome.css" />
+<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-media-controls.css" />
+<link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-download-box-animation.css" />
 </linkset>
 
-# Scripts used all over the browser
-<script src="chrome://browser/content/zen-components/ZenThemesCommon.mjs" />
-<script src="chrome://browser/content/zen-components/ZenActorsManager.mjs" />
-<script src="chrome://browser/content/zen-components/ZenGlanceManager.mjs" />
-<script src="chrome://browser/content/zen-components/ZenThemesImporter.mjs" />
-<script src="chrome://browser/content/zen-components/ZenCompactMode.mjs" />
-<script src="chrome://browser/content/ZenUIManager.mjs" />
-<script src="chrome://browser/content/zen-components/ZenSidebarManager.mjs"/>
-<script src="chrome://browser/content/zen-components/ZenTabUnloader.mjs" />
-<script src="chrome://browser/content/zen-components/ZenWorkspaces.mjs" />
-<script src="chrome://browser/content/zen-components/ZenPinnedTabsStorage.mjs" />
-<script src="chrome://browser/content/zen-components/ZenPinnedTabManager.mjs" />
-<script src="chrome://browser/content/zen-components/ZenGradientGenerator.mjs" />
-<script src="chrome://browser/content/zen-components/ZenViewSplitter.mjs"/>
-<script src="chrome://browser/content/zen-components/ZenProfileDialogUI.mjs" />
+# Startup "preloaded" scripts that requre globals such as gBrowser and gURLBar
+# JS files which are needed by browser.xhtml but no other top level windows to
+# support MacOS specific features should be loaded directly from browser-main.js
+# rather than this file.
+#
+# If you update this list, you may need to add a mapping within the following
+# file so that ESLint works correctly:
+# tools/lint/eslint/eslint-plugin-mozilla/lib/environments/browser-window.js
+<script type="text/javascript" src="chrome://browser/content/ZenPreloadedScripts.js"></script>
 
-# Unimportant scripts
-<script src="chrome://browser/content/zen-components/ZenRices.mjs" />
+# Scripts used all over the browser
+<script type="text/javascript" src="chrome://browser/content/ZenUIManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenFolder.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenFolders.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenMods.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenCompactMode.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenPinnedTabsStorage.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspacesStorage.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenPinnedTabManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenGradientGenerator.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenViewSplitter.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenGlanceManager.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenMediaController.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenDownloadAnimation.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenEmojiPicker.mjs"></script>
+<script type="text/javascript" src="chrome://browser/content/zen-components/ZenWorkspaceCreation.mjs"></script>

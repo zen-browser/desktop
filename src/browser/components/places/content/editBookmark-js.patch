@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index 9f17174fdd9cc1eaefb4330da1e10f40eeda2f31..e2c38872ee3a5c45d2e288e67d33f9ce24cab2b9 100644
+index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4016594b9 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
-@@ -370,6 +370,10 @@ var gEditItemOverlay = {
+@@ -387,6 +387,10 @@ var gEditItemOverlay = {
          this._keywordField.readOnly = this.readOnly;
        }
  
@@ -13,7 +13,7 @@ index 9f17174fdd9cc1eaefb4330da1e10f40eeda2f31..e2c38872ee3a5c45d2e288e67d33f9ce
        // Collapse the tag selector if the item does not accept tags.
        if (showOrCollapse("tagsRow", isBookmark || bulkTagging, "tags")) {
          this._initTagsField();
-@@ -682,6 +686,7 @@ var gEditItemOverlay = {
+@@ -693,6 +697,7 @@ var gEditItemOverlay = {
        if (this._paneInfo.isBookmark) {
          options.tags = this._element("tagsField").value;
          options.keyword = this._keyword;
@@ -21,7 +21,17 @@ index 9f17174fdd9cc1eaefb4330da1e10f40eeda2f31..e2c38872ee3a5c45d2e288e67d33f9ce
        }
  
        if (this._paneInfo.bulkTagging) {
-@@ -1232,6 +1237,148 @@ var gEditItemOverlay = {
+@@ -1194,6 +1199,9 @@ var gEditItemOverlay = {
+           case "editBMPanel_tagsSelectorExpander":
+             this.toggleTagsSelector().catch(console.error);
+             break;
++          case "editBMPanel_workspacesSelectorExpander":
++            this.onWorkspaceDropdownToggle();
++            break;
+         }
+         break;
+     }
+@@ -1280,6 +1288,148 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
@@ -170,7 +180,7 @@ index 9f17174fdd9cc1eaefb4330da1e10f40eeda2f31..e2c38872ee3a5c45d2e288e67d33f9ce
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1267,6 +1414,9 @@ for (let elt of [
+@@ -1318,6 +1468,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/content/bookmarkProperties.xhtml b/browser/components/places/content/bookmarkProperties.xhtml
-index 047652a52e705d49f870399992873fce536c07b9..37ea726fe427a31db8fae97c99fd38c8669fa0f9 100644
+index 4aad4e4fb4139aa3d81e00eefa82e26b697df973..a2bfac11322f3679af9b51ebc7478323aa8e4adb 100644
 --- a/browser/components/places/content/bookmarkProperties.xhtml
 +++ b/browser/components/places/content/bookmarkProperties.xhtml
-@@ -37,6 +37,8 @@
+@@ -38,6 +38,8 @@
      />
  
      <html:link rel="localization" href="browser/editBookmarkOverlay.ftl"/>
@@ -11,7 +11,7 @@ index 047652a52e705d49f870399992873fce536c07b9..37ea726fe427a31db8fae97c99fd38c8
    </linkset>
  
    <stringbundleset id="stringbundleset">
-@@ -44,6 +46,8 @@
+@@ -45,6 +47,8 @@
                    src="chrome://browser/locale/places/bookmarkProperties.properties"/>
    </stringbundleset>
  

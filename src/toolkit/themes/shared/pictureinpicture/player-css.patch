@@ -1,0 +1,22 @@
+diff --git a/toolkit/themes/shared/pictureinpicture/player.css b/toolkit/themes/shared/pictureinpicture/player.css
+index 4a4ab15f9801d9443f3dbc131a533823be423bd9..ed487012d172c278f7d5a59ee953de4a05456019 100644
+--- a/toolkit/themes/shared/pictureinpicture/player.css
++++ b/toolkit/themes/shared/pictureinpicture/player.css
+@@ -736,3 +736,17 @@ input:checked + .slider::before {
+     justify-self: center;
+   }
+ }
++
++#minimize {
++  background-image: url("chrome://browser/skin/zen-icons/unpin.svg");
++  background-color: rgba(255, 255, 255, .8);
++  position: absolute;
++  fill: var(--close-btn-fill-color);
++  right: 50px;
++  top: 10px;
++}
++
++#minimize[mac="true"] {
++  right: auto;
++  left: 50px;
++}

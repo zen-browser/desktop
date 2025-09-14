@@ -1,0 +1,20 @@
+diff --git a/servo/components/style/queries/feature.rs b/servo/components/style/queries/feature.rs
+index a9a4decb178234037a6d285ddd3206bd52f214e5..18ea220a14cbb59ef3c9809cb679f8fdb5352f98 100644
+--- a/servo/components/style/queries/feature.rs
++++ b/servo/components/style/queries/feature.rs
+@@ -6,6 +6,7 @@
+ 
+ use crate::parser::ParserContext;
+ use crate::values::computed::{self, CSSPixelLength, Ratio, Resolution};
++use crate::values::AtomString;
+ use crate::Atom;
+ use cssparser::Parser;
+ use selectors::kleene_value::KleeneValue;
+@@ -44,6 +45,7 @@ pub enum Evaluator {
+     OptionalNumberRatio(QueryFeatureGetter<Option<Ratio>>),
+     /// A resolution.
+     Resolution(QueryFeatureGetter<Resolution>),
++    String(fn(&computed::Context, Option<&AtomString>) -> KleeneValue),
+     /// A keyword value.
+     Enumerated {
+         /// The parser to get a discriminant given a string.

@@ -1,4 +1,7 @@
 name: Monthly issue metrics
+permissions:
+  contents: write
+  issues: read
 on:
   workflow_dispatch:
   schedule:
@@ -59,6 +62,6 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Update monthly issue metrics'
+          commit_message: 'docs: Update monthly issue metrics, b=(no bug), c={docs}'
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com

@@ -4,43 +4,82 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for filing a bug report!
+        <p align="center">
+          <a href="https://zen-browser.app">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg">
+              <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-dark.svg">
+              <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg" alt="Zen Logo" width="64" height="64">
+            </picture>
+            <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-browser.svg" alt="Zen Browser Text" width="156" height="64">
+          </a>
+        </p>
 
-        ## Important
-        - Please search existing issues to avoid creating duplicates.
-        - For enhancement requests, please use GitHub Discussions.
-        - Please fill out the template below to the best of your ability.
-        - Please describe the issue as much as possible and provide steps to reproduce it along with visual aids if possible.
+        <p align="center"><em>Thank you for filing a bug report!</em></p>
+
+        > [!IMPORTANT]
+        > - Please provide descriptive titles. Bad titles do more harm than good.
+        > - Please search existing issues to avoid creating duplicates.
+        > - For enhancement requests, please use GitHub Discussions.
+        > - Please fill out the template below to the best of your ability.
+        > - Please describe the issue as much as possible and provide steps to reproduce it along with visual aids if possible.
   - type: checkboxes
     id: captchas
     attributes:
-      label: Captchas
-      description: Just making sure you did actually read the instructions.
+      label: Preliminary Checks
+      description: Please confirm the following before submitting a bug report. This helps us triage and resolve issues more efficiently.
       options:
-        - label: I have read the instructions.
+        - label: I have read and understood the important section above.
+          required: true
         - label: I have searched existing issues and avoided creating duplicates.
+          required: true
         - label: I am not filing an enhancement request.
+          required: true
+        - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.
+          required: true
+        - label: I have checked that this issue can be reproduced once I removed all my Mods and Custom CSS.
+          required: true
   - type: textarea
     id: what-happened
     attributes:
       label: What happened?
-      description: Also tell us, what did you expect to happen?
+      description: Describe the bug clearly and concisely.
       placeholder: Tell us what you see!
     validations:
       required: true
-  - type: checkboxes
-    id: firefox
+  - type: input
+    id: expected-behavior
     attributes:
-      label: Reproducible?
-      description: Is this issue reproducible on Firefox?
-      options:
-        - label: I have checked that this issue cannot be reproduced on Mozilla Firefox.
+      label: Expected behavior
+      description: Please write a description of what was supposed to happen.
+    validations:
+      required: true
+  - type: input
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: Please write a description of what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: how-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Please Provide numbered steps to reproduce this issue so developers can replicate them easily.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots and videos
+      description: |
+        If applicable, add screenshots or videos to help explain your problem.
   - type: input
     id: version
     attributes:
       label: Version
       description: What version of our software are you running? Please do not use "latest" or "newest" as version numbers. Go to `Help -> About Zen` to find the version number.
-      placeholder: 1.0.0
+      placeholder: 1.0.0b
     validations:
       required: true
   - type: dropdown
@@ -54,27 +93,43 @@ body:
         - Linux (Tarball)
         - macOS - aarch64
         - macOS - Intel
-        - Windows
+        - Windows - aarch64
+        - Windows - x64
         - Other
     validations:
       required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: What component is this issue related to?
+      options:
+        - Other
+        - Bookmarks
+        - Compact Mode
+        - Customizable UI / Toolbars
+        - Extensions
+        - Glance
+        - Keyboard Shortcuts
+        - Localization
+        - Media Controler
+        - Mods / Themes
+        - Performance
+        - Privacy
+        - Security
+        - Settings
+        - Split View
+        - Sync
+        - Tab Folders
+        - Tab unloading
+        - Tabs
+        - URL Bar
+        - Workspaces
+    validations:
+      required: true
+
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output if applicable
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
-  - type: textarea
-    id: support
-    attributes:
-      label: Data from about:support if applicable (click on the "Copy text to clipboard" button)
-      description: Please copy and paste about:support data if you think it might be relevant. This will help us understand your environment.
-      value: |
-        <details>
-          <summary>about:support</summary>
-          <!-- Please leave one blank line below for enabling the code block rendering. -->
-
-          ```
-          Select this line and paste your about:support clipboard
-          ```
-        </details>

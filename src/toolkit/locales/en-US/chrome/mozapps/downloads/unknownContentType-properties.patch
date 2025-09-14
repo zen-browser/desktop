@@ -1,0 +1,12 @@
+diff --git a/toolkit/locales/en-US/chrome/mozapps/downloads/unknownContentType.properties b/toolkit/locales/en-US/chrome/mozapps/downloads/unknownContentType.properties
+index fa3c5e389bad5abb05c86a3cb08d6c7abf34166c..1bb1f48c4d3964e4637462bb0b3d4a1e965ca5ec 100644
+--- a/toolkit/locales/en-US/chrome/mozapps/downloads/unknownContentType.properties
++++ b/toolkit/locales/en-US/chrome/mozapps/downloads/unknownContentType.properties
+@@ -17,6 +17,7 @@ fileType=%S file
+ # LOCALIZATION NOTE (orderedFileSizeWithType): first %S is type, second %S is size, and third %S is unit
+ orderedFileSizeWithType=%1$S (%2$S %3$S)
+ avifExtHandlerDescription=AV1 Image File (AVIF)
++jxlExtHandlerDescription=JPEG XL Image (JXL)
+ pdfExtHandlerDescription=Portable Document Format (PDF)
+ svgExtHandlerDescription=Scalable Vector Graphics (SVG)
+ webpExtHandlerDescription=WebP Image

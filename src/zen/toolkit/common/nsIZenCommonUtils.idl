@@ -1,0 +1,36 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+#include "nsIURI.idl"
+
+/**
+ * @brief Common utility functions for Zen.
+ */
+[scriptable, uuid(d034642a-43b1-4814-be1c-8ad75e337c84)]
+interface nsIZenCommonUtils : nsISupports {
+  /*
+   * @brief Share using the native share dialog.
+   * @param window The window to use for the share dialog.
+   * @param url The URL to share.
+   * @param title The title of the share.
+   * @param text The text to share.
+   * @param x The x coordinate of the share dialog.
+   * @param y The y coordinate of the share dialog.
+   * @returns A promise that resolves when the share is complete.
+   */
+  void share(in nsIURI url, in ACString title, in ACString text, 
+             in uint32_t x, in uint32_t y, in uint32_t width, in uint32_t height);
+  /*
+   * @brief Check if the current context can share data.
+   * @param window The window to check.
+   * @returns True if the current context can share data, false otherwise.
+   */
+  boolean canShare();
+  /*
+   * @brief Play a single haptic feedback note if supported.
+   */
+  void playHapticFeedback();
+};
+

@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/UpdateUtils.sys.mjs b/toolkit/modules/UpdateUtils.sys.mjs
-index be9ce9d5402c30bf4a9712f1ce9026503c191a53..230882363b3e1bbe7f0977567db61f72494a19ea 100644
+index 2c8a093013d40623aa16864eca18945887add7c8..592f8a77665f8e8b4c2f64fe6ae44f3f1f3935e1 100644
 --- a/toolkit/modules/UpdateUtils.sys.mjs
 +++ b/toolkit/modules/UpdateUtils.sys.mjs
 @@ -81,7 +81,7 @@ export var UpdateUtils = {

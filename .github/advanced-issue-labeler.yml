@@ -1,0 +1,58 @@
+policy:
+  - section:
+      - id: [component]
+        label:
+          # Make sure it's in sync with the dropdown in the issue template
+          - name: 'component: sync'
+            keys: ['Sync']
+          - name: 'component: compact-mode'
+            keys: ['Compact Mode']
+          - name: 'component: workspaces'
+            keys: ['Workspaces']
+          - name: 'component: mods-themes'
+            keys: ['Mods / Themes']
+          - name: 'component: bookmarks'
+            keys: ['Bookmarks']
+          - name: 'component: glance'
+            keys: ['Glance']
+          - name: 'component: url-bar'
+            keys: ['URL Bar']
+          - name: 'component: tabs'
+            keys: ['Tabs']
+          - name: 'component: settings'
+            keys: ['Settings']
+          - name: 'component: privacy'
+            keys: ['Privacy']
+          - name: 'component: split-view'
+            keys: ['Split View']
+          - name: 'component: performance'
+            keys: ['Performance']
+          - name: 'component: media-controller'
+            keys: ['Media Controler']
+          - name: 'component: tab-unloading'
+            keys: ['Tab unloading']
+          - name: 'component: tab-folders'
+            keys: ['Tab Folders']
+          - name: 'component: keyboard-shortcuts'
+            keys: ['Keyboard Shortcuts']
+          - name: 'component: security'
+            keys: ['Security']
+          - name: 'component: extensions'
+            keys: ['Extensions']
+          - name: 'component: customizable-ui-toolbars'
+            keys: ['Customizable UI / Toolbars']
+          - name: 'component: localization'
+            keys: ['Localization']
+          - name: 'component: other'
+            keys: ['Other']
+
+      - id: [platform]
+        block-list: ['Other']
+        label:
+          # Make sure it's in sync with the dropdown in the issue template
+          - name: 'platform: linux'
+            keys: ['Linux (AppImage)', 'Linux (Flatpak)', 'Linux (Tarball)']
+          - name: 'platform: macOS'
+            keys: ['macOS - aarch64', 'macOS - Intel']
+          - name: 'platform: windows'
+            keys: ['Windows - x64', 'Windows - aarch64']

@@ -1,0 +1,53 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+height: var(--zen-toolbar-height);
+z-index: 1;
+
+#zen-appcontent-navbar-container {
+  display: flex;
+}
+
+@media -moz-pref('zen.view.hide-window-controls') {
+  & {
+    transition:
+      height 0.15s ease,
+      opacity 0.1s ease-out;
+    transition-delay: 0.2s;
+
+    & > * {
+      transition: opacity 0.2s ease-out;
+      transition-delay: 0.2s;
+    }
+  }
+
+  &:not([zen-has-hover='true']):not([has-popup-menu]):not(:focus-within):not(
+      :has(*:is([panelopen='true'], [open='true']))
+    ) {
+    transition-delay: 0.2s;
+    /* In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible) */
+    height: calc(var(--zen-element-separation) + 0.1px);
+    overflow: hidden;
+    opacity: 0;
+    & > * {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    & .titlebar-button {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+
+  @media -moz-pref('zen.view.experimental-no-window-controls') {
+    &:has(#PersonalToolbar[collapsed]) {
+      max-height: 0 !important;
+      overflow: hidden;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+}

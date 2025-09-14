@@ -1,17 +1,18 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 7f71abe7d80e4c09dd088517ec9ef106c7cb8654..7e764f08346a048fd352d7f7c06ea434f9b19903 100644
+index afa7f8e7dd74173bf2c696bd96f7e86e8b0126bc..4847c24923f673e91eb7fb65ea6b037f38062405 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -22,7 +22,14 @@
-     <browser id="sidebar" autoscroll="false" disablehistory="true" disablefullscreen="true" tooltip="aHTMLTooltip"/>
+@@ -25,7 +25,15 @@
+     </stack>
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
-+#include zen-sidebar-panel.inc.xhtml
 +<vbox flex="1" id="zen-appcontent-wrapper">
-+<html:div id="zen-appcontent-navbar-container"></html:div>
-+<hbox id="zen-tabbox-wrapper" flex="1">
++  <html:div id="zen-appcontent-navbar-wrapper">
++    <html:div id="zen-appcontent-navbar-container"></html:div>
++  </html:div>
++  <hbox id="zen-tabbox-wrapper" flex="1">
    <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
-+    #include zen-tabbrowser-elements.inc.xhtml
++#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
  </hbox>

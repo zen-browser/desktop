@@ -1,5 +1,5 @@
 diff --git a/testing/profiles/profileserver/user.js b/testing/profiles/profileserver/user.js
-index 19ff7d474f6d22d2d386764e2e6942ce6a324470..40d1906bdebd08510014fd6124be17052248e748 100644
+index 19ff7d474f6d22d2d386764e2e6942ce6a324470..9334d609a69f05762cfb3a667e01c4da8beb66dd 100644
 --- a/testing/profiles/profileserver/user.js
 +++ b/testing/profiles/profileserver/user.js
 @@ -8,3 +8,11 @@
@@ -9,8 +9,8 @@ index 19ff7d474f6d22d2d386764e2e6942ce6a324470..40d1906bdebd08510014fd6124be1705
 +
 +// zen:
 +// Disable some of zen's features to better match the default Firefox experience
-+user_pref("zen.workspaces.disabled_for_testing", true);
-+user_pref("zen.welcome-screen.enabled", false);
-+user_pref("zen.tab-unloader.enabled", false);
++user_pref("zen.welcome-screen.seen", true);
 +user_pref("zen.watermark.enabled", false);
-+user_pref("zen.glance.enabled", false);
++user_pref("zen.urlbar.replace-newtab", false);
++user_pref("zen.testing.enabled", true);
++user_pref("zen.testing.profiling.enabled", true);

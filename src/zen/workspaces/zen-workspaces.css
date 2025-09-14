@@ -1,0 +1,333 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+@namespace html 'http://www.w3.org/1999/xhtml';
+@namespace xul 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+
+#zen-workspaces-button {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-size: x-small;
+  margin: 0 3px;
+  padding: 0;
+  appearance: auto;
+
+  position: relative;
+  -moz-window-dragging: no-drag;
+
+  &[dont-show='true'] {
+    display: none !important;
+  }
+
+  border-radius: var(--zen-button-border-radius) !important;
+  background: transparent;
+  appearance: unset !important;
+  height: fit-content;
+  gap: 3px;
+
+  container-type: inline-size;
+  width: 100%;
+
+  & toolbarbutton {
+    margin: 0;
+    max-width: 26px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    padding: 0 !important;
+    align-items: center;
+    position: relative;
+    fill-opacity: 0.6;
+
+    & .zen-workspace-icon {
+      pointer-events: none;
+   
+      &[no-icon='true'] {
+        width: 6px;
+        height: 6px;
+        background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
+        border-radius: 50%;
+      }
+    }
+
+    filter: grayscale(1);
+    opacity: 0.5;
+    transition:
+      filter 0.2s,
+      opacity 0.2s,
+      width 0.1s;
+
+    &[active='true'],
+    &:hover,
+    &[dragged='true'] {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+
+    &:hover,
+    &[dragged='true']{
+      background-color: var(--toolbarbutton-hover-background);
+    }
+
+    & label {
+      margin: 0 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      min-width: 36px;
+    }
+  }
+
+  &[reorder-mode='true'] toolbarbutton:not([dragged='true']) {
+    opacity: 0.2 !important;
+    filter: grayscale(1) !important;
+  }
+
+  &[icons-overflow] {
+    gap: 0 !important;
+    justify-content: space-between;
+
+    & toolbarbutton {
+      margin: 0;
+      background: transparent;
+    }
+
+    /* Inlcude separately since ther'es a bug in the 
+     * rendering of XUL in firefox */
+    & toolbarbutton:not([active='true']) {
+%include overflow-icons.inc.css
+    }
+
+    &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
+%include overflow-icons.inc.css 
+    }
+  }
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-wrapper {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-name {
+  margin-left: 0.2rem;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+/** Keep these selectors in sync with the ones in vertical-tabs.css */
+#navigator-toolbox {
+  & #zen-workspaces-button .zen-workspace-sidebar-name {
+    display: block;
+  }
+
+  & #zen-workspaces-button .zen-workspace-sidebar-icon {
+    margin-inline-end: 5px;
+  }
+
+  & #zen-workspaces-button {
+    overflow: hidden;
+    display: flex;
+    gap: 0.5ch;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mark workspaces indicator */
+.zen-current-workspace-indicator {
+  padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  font-weight: 500;
+  position: relative;
+  max-height: var(--zen-workspace-indicator-height);
+  min-height: var(--zen-workspace-indicator-height);
+  gap: 10px;
+  align-items: center;
+  flex-direction: row !important;
+  max-width: 100%;
+  width: 100%;
+  font-size: small;
+  padding-right: 10px;
+  -moz-window-dragging: no-drag;
+
+  &::before {
+    border-radius: var(--border-radius-medium);
+    background: transparent;
+    transition: background 0.1s;
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    top: var(--zen-toolbox-padding);
+    left: calc(var(--zen-toolbox-padding) + 2px);
+    width: calc(100% - var(--zen-toolbox-padding) * 3);
+    height: calc(100% - var(--zen-toolbox-padding) * 2);
+  }
+
+  :root:not([zen-private-window]) & {
+    &:hover,
+    &[open='true'] {
+      &::before {
+        background: var(--tab-hover-background-color);
+      }
+    }
+  }
+
+  & .zen-current-workspace-indicator-icon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    justify-content: center;
+    align-items: center;
+    fill-opacity: 0.6;
+    -moz-context-properties: fill-opacity, fill;
+    fill: currentColor;
+
+    &[zen-emoji-open='true']::before {
+      border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
+      border-radius: 6px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      pointer-events: none;
+    }
+
+    @media (-moz-platform: windows) {
+      & img {
+        margin-bottom: -4px;
+      }
+    }
+  }
+
+  .zen-current-workspace-indicator-name {
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: auto;
+    font-weight: 600;
+    align-items: center;
+    margin: 0;
+  }
+
+  .zen-workspaces-actions {
+    margin-left: auto !important;
+    opacity: 0;
+    visibility: collapse;
+    transition: opacity 0.1s;
+    order: 5;
+    --toolbarbutton-inner-padding: 6px;
+
+    & image {
+      border-radius: calc(var(--border-radius-medium) - 4px);
+    }
+
+    :root[zen-renaming-tab='true'] & {
+      display: none;
+    }
+  }
+
+  :root:not([zen-private-window]) &:hover .zen-workspaces-actions,
+  & .zen-workspaces-actions[open='true'] {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
+/* mark: workspace element */
+zen-workspace {
+  will-change: transform;
+  flex-direction: column;
+  width: calc(100% + var(--zen-toolbox-padding) * 2);
+  position: absolute;
+  height: 100%;
+  overflow: hidden;
+  color: var(--toolbox-textcolor);
+
+  :root:not([zen-sidebar-expanded='true']) & {
+    width: 100%;
+  }
+
+  & > arrowscrollbox {
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    &::part(scrollbutton-up),
+    &::part(scrollbutton-down) {
+      display: none;
+    }
+
+    &::part(scrollbox) {
+      scrollbar-width: auto;
+      scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
+      overflow-y: auto;
+    }
+
+    :root[swipe-gesture] &::part(scrollbox) {
+      scrollbar-width: none;
+    }
+
+    &[overflowing] {
+      --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &:not([scrolledtostart])::before {
+        opacity: 1;
+      }
+
+      &:not([scrolledtoend])::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  &[active] .zen-workspace-empty-space {
+    -moz-window-dragging: drag;
+  }
+}
+
+/** Customizable UI, this is an auto generated ID */
+#wrapper-zen-workspaces-button {
+  width: 100%;
+}
+
+%include create-workspace-form.css

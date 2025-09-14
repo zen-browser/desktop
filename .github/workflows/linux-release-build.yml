@@ -11,17 +11,31 @@ on:
         description: 'The branch to build'
         required: true
         type: string
+      MOZ_BUILD_DATE:
+        type: string
+        required: true
+        default: ''
+      use-sccache:
+        description: 'Use sccache'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build-linux:
     permissions:
       contents: write
     # aarch64 does not need full 16x
-    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'ubuntu-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
     strategy:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
+    env:
+      SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      CARGO_TERM_COLOR: always
+      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
+      CARGO_INCREMENTAL: 0
     name: Build Linux - ${{ matrix.arch }}
 
     steps:
@@ -37,9 +51,22 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: useblacksmith/setup-node@v5
         with:
           node-version-file: '.nvmrc'
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@main
+        if: ${{ inputs.use-sccache }}
+        with:
+          disable_annotations: true
+
+      - name: Expose actions cache variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
       - name: Setup Git
         run: |
@@ -51,55 +78,22 @@ jobs:
           set -x
           sudo apt-get update --fix-missing
           sudo apt-get update
-          sudo apt-get install -y dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm
-
-      - name: Configure sccache
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-      - name: Setup sccache
-        env:
-          LINK: https://github.com/mozilla/sccache/releases/download
-          SCCACHE_VERSION: 0.2.13
-        run: |
-          SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-          mkdir -p $HOME/.local/bin
-          curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-          mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Save sccache
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/.cache/sccache
-          key: ${{ runner.os }}-sccache
-
-      - name: Setup pnpm
-        run: npm install -g pnpm
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          sudo apt-get install -y python3 python3-pip dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm
 
       - name: Install dependencies
         run: |
-          pnpm install
+          npm install
 
       - name: Load Surfer CI setup
-        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox source and dependencies
-        run: pnpm surfer download
+        run: npm run download
 
       - name: Fix Rust version
         run: |
           # Install a rust version compatible with LLVM 18
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.79
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
           source $HOME/.cargo/env
 
           if test "${{ matrix.arch }}" = "aarch64"; then
@@ -111,7 +105,9 @@ jobs:
       - name: Import
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
-        run: pnpm surfer import
+        run: |
+          . "$HOME/.cargo/env"
+          npm run import
 
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
@@ -123,6 +119,11 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
+      - name: Insert API Keys
+        run: |
+          mkdir -p ~/.zen-keys
+          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+
       - name: Build
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -130,6 +131,9 @@ jobs:
         continue-on-error: true
         run: |
           export SURFER_PLATFORM="linux"
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
           bash .github/workflows/src/release-build.sh
 
       - name: Package
@@ -139,19 +143,23 @@ jobs:
         run: |
           export SURFER_PLATFORM="linux"
           export ZEN_RELEASE=1
-          pnpm package
+          npm run package
+
+      - name: Remove API Keys
+        run: |
+          rm -rf ~/.zen-keys
 
       - name: Rename artifacts
         run: |
-          mv dist/zen-*.tar.bz2 "zen.linux-${{ matrix.arch }}.tar.bz2"
+          mv dist/zen-*.tar.xz "zen.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
 
       - name: Upload build artifact (binary)
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.linux-${{ matrix.arch }}.tar.bz2
-          path: ./zen.linux-${{ matrix.arch }}.tar.bz2
+          name: zen.linux-${{ matrix.arch }}.tar.xz
+          path: ./zen.linux-${{ matrix.arch }}.tar.xz
 
       - name: Upload build artifact (.mar)
         uses: actions/upload-artifact@v4

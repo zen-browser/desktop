@@ -1,17 +1,22 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 8f7ed557e6aa61e7e16ed4a8d785ad5fe651b3d8..83bf443ca158c07e05075777da02b7f228d83dff 100644
+index 82721356d191055bec0d4b0ca49e481221988801..9c8a2b1791e780e0fcd3a9bfc7efdadf35d52165 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -84,6 +84,13 @@ class _TabState {
+@@ -85,6 +85,18 @@ class _TabState {
        tabData.groupId = tab.group.id;
      }
  
 +    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");
 +    tabData.zenPinnedId = tab.getAttribute("zen-pin-id");
 +    tabData.zenEssential = tab.getAttribute("zen-essential");
++    tabData.pinned = tabData.pinned || tabData.zenEssential;
 +    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
 +    tabData.zenPinnedEntry = tab.getAttribute("zen-pinned-entry");
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
++    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
++    tabData.zenHasStaticLabel = tab.hasAttribute("zen-has-static-label");
++    tabData.zenGlanceId = tab.getAttribute("glance-id");
++    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
  

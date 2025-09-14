@@ -1,0 +1,12 @@
+diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
+index dfa91b76ad3890ceadb1b1b5d7a63b7074fbb776..6369fa1cdb242de32338bbce6debcdab2a04ca02 100644
+--- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
++++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
+@@ -585,6 +585,7 @@ export class UrlbarValueFormatter {
+       this.window.requestAnimationFrame(() => {
+         if (instance == this._resizeInstance) {
+           this.#ensureFormattedHostVisible();
++          this._formatURL();
+         }
+       });
+     }, 100);

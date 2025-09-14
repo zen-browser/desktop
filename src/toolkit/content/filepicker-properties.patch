@@ -1,0 +1,13 @@
+diff --git a/toolkit/content/filepicker.properties b/toolkit/content/filepicker.properties
+index 03daec114c2882ed5ab7899b9b435d1cce936838..b6bd09c3c5625a1649b31dc99935bc90773d4133 100644
+--- a/toolkit/content/filepicker.properties
++++ b/toolkit/content/filepicker.properties
+@@ -5,7 +5,7 @@
+ allFilter=*
+ htmlFilter=*.html; *.htm; *.shtml; *.xhtml
+ textFilter=*.txt; *.text
+-imageFilter=*.jpe; *.jpg; *.jpeg; *.gif; *.png; *.bmp; *.ico; *.svg; *.svgz; *.tif; *.tiff; *.ai; *.drw; *.pct; *.psp; *.xcf; *.psd; *.raw; *.webp; *.heic
++imageFilter=*.jpe; *.jpg; *.jpeg; *.gif; *.png; *.bmp; *.ico; *.svg; *.svgz; *.tif; *.tiff; *.ai; *.drw; *.pct; *.psp; *.xcf; *.psd; *.raw; *.webp; *.heic; *.avif; *.jxl
+ xmlFilter=*.xml
+ xulFilter=*.xul
+ audioFilter=*.aac; *.aif; *.flac; *.iff; *.m4a; *.m4b; *.mid; *.midi; *.mp3; *.mpa; *.mpc; *.oga; *.ogg; *.opus; *.ra; *.ram; *.snd; *.wav; *.wma

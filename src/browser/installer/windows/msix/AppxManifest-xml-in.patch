@@ -1,0 +1,12 @@
+diff --git a/browser/installer/windows/msix/AppxManifest.xml.in b/browser/installer/windows/msix/AppxManifest.xml.in
+index b81a73518a183b7b1d178793886c66f44651058d..89690a4177229b70013bcf35ec1d805fff7e1b26 100644
+--- a/browser/installer/windows/msix/AppxManifest.xml.in
++++ b/browser/installer/windows/msix/AppxManifest.xml.in
+@@ -61,6 +61,7 @@
+               <uap:FileType>.avif</uap:FileType>
+               <uap:FileType>.htm</uap:FileType>
+               <uap:FileType>.html</uap:FileType>
++              <uap:FileType>.jxl</uap:FileType>
+               <uap:FileType>.pdf</uap:FileType>
+               <uap:FileType>.shtml</uap:FileType>
+               <uap:FileType>.xht</uap:FileType>

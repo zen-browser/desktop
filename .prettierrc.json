@@ -7,6 +7,6 @@
   "useTabs": false,
   "jsxSingleQuote": false,
   "semi": true,
-  "printWidth": 128,
+  "printWidth": 100,
   "plugins": ["prettier-plugin-sh"]
 }

@@ -1,5 +1,5 @@
 diff --git a/browser/app/macbuild/Contents/Info.plist.in b/browser/app/macbuild/Contents/Info.plist.in
-index 73b400d58fd25ac13132f1a3fe3ea619e4f4e4f9..ee90ce7ac67bd9aa7bbc2a656843875afb985591 100644
+index ea28831b90662b12bdcb137c35b6bb83626c77e7..d28f4eca976ad9de12b03d995d2363e643224421 100644
 --- a/browser/app/macbuild/Contents/Info.plist.in
 +++ b/browser/app/macbuild/Contents/Info.plist.in
 @@ -191,7 +191,7 @@

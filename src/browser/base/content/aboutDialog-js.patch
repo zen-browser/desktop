@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/aboutDialog.js b/browser/base/content/aboutDialog.js
-index 8c5c7768e0e716c196063b4c986dea2631185972..d31f57a176fffc9725b1c31b165fb5cdc55e186e 100644
+index f6e1391baf12abb91c85a95107bb3923118746c0..cac04aa288e8a305d0c8b28e0c919abce87658e5 100644
 --- a/browser/base/content/aboutDialog.js
 +++ b/browser/base/content/aboutDialog.js
-@@ -51,7 +51,7 @@ function init() {
+@@ -52,7 +52,7 @@ function init() {
    ]);
    let versionIdKey = "base";
    let versionAttributes = {
@@ -11,7 +11,7 @@ index 8c5c7768e0e716c196063b4c986dea2631185972..d31f57a176fffc9725b1c31b165fb5cd
    };
  
    let arch = Services.sysinfo.get("arch");
-@@ -63,7 +63,7 @@ function init() {
+@@ -64,7 +64,7 @@ function init() {
    }
  
    let version = Services.appinfo.version;
@@ -20,3 +20,18 @@ index 8c5c7768e0e716c196063b4c986dea2631185972..d31f57a176fffc9725b1c31b165fb5cd
      versionIdKey += "-nightly";
      let buildID = Services.appinfo.appBuildID;
      let year = buildID.slice(0, 4);
+@@ -125,14 +125,6 @@ function init() {
+       window.close();
+     });
+   if (AppConstants.MOZ_UPDATER) {
+-    document
+-      .getElementById("aboutDialogHelpLink")
+-      .addEventListener("click", () => {
+-        openHelpLink("firefox-help");
+-      });
+-    document
+-      .getElementById("submit-feedback")
+-      .addEventListener("click", openFeedbackPage);
+     document
+       .getElementById("checkForUpdatesButton")
+       .addEventListener("command", () => {

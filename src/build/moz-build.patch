@@ -1,8 +1,8 @@
 diff --git a/build/moz.build b/build/moz.build
-index 7bf9c501db06d38f924c26372d4243d448af8d81..90b02a99af90c40cea7d90c20ce1bac3d8c109a8 100644
+index f7a912ec35dd089ea9a7e712765e954854f55cb3..a84534efbc7662f81573a4a80bc045e0a6d2ed3e 100644
 --- a/build/moz.build
 +++ b/build/moz.build
-@@ -91,7 +91,7 @@ if CONFIG["MOZ_APP_BASENAME"]:
+@@ -89,7 +89,7 @@ if CONFIG["MOZ_APP_BASENAME"]:
          if CONFIG[var]:
              appini_defines[var] = True
  

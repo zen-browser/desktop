@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+BROWSER_CHROME_MANIFESTS += [
+    "compact_mode/browser.toml",
+    "container_essentials/browser.toml",
+    "folders/browser.toml",
+    "glance/browser.toml",
+    "pinned/browser.toml",
+    "split_view/browser.toml",
+    "tabs/browser.toml",
+    "ub-actions/browser.toml",
+    "urlbar/browser.toml",
+    "welcome/browser.toml",
+    "workspaces/browser.toml",
+]

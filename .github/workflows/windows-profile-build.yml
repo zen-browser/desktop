@@ -1,5 +1,8 @@
 name: Windows PGO Builds
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:
@@ -41,14 +44,11 @@ jobs:
           git config --global user.email "mauro-balades@users.noreply.github.com"
           git config --global user.name "mauro-balades"
 
-      - name: Setup pnpm
-        run: npm install -g pnpm
-
       - name: Install Surfer
         run: npm i -g @zen-browser/surfer
 
       - name: Load Surfer CI setup
-        run: pnpm surfer ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download artifact
         if: ${{ matrix.arch == 'x86_64' }}
@@ -74,13 +74,13 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           git config --global core.safecrlf false
-          pnpm surfer download
+          npm run download
 
       - name: Import patches
         if: ${{ matrix.arch == 'x86_64' }}
         env:
           SURFER_NO_BRANDING_PATCH: true
-        run: pnpm surfer import
+        run: npm run import
 
       - name: Generate
         if: ${{ matrix.arch == 'x86_64' }}
@@ -93,14 +93,8 @@ jobs:
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
-          echo 'ls /c/Users/runneradmin/.mozbuild/clang/bin' '' >> mozilla-build-run.sh
           echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
-
-      - name: Debug session
-        if: ${{ failure() }}
-        uses: WarpBuilds/action-debugger@v1.3
-        timeout-minutes: 15
 
       - name: Move profile data
         if: ${{ matrix.arch == 'x86_64' }}

@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 1805bad6c58e060533f634ed9e511c05cad3ded1..f153761e406535270343fa1f430dea4f740cb2fc 100644
+index 7156397d597579f745ea20ae2b9327433a31c8ec..13b844a63e79e227c96faf153ee5908759306407 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
-@@ -496,8 +496,7 @@ const PanelUI = {
+@@ -518,8 +518,7 @@ const PanelUI = {
          tempPanel.setAttribute("animate", "false");
        }
        tempPanel.setAttribute("context", "");
@@ -12,13 +12,25 @@ index 1805bad6c58e060533f634ed9e511c05cad3ded1..f153761e406535270343fa1f430dea4f
          .appendChild(tempPanel);
  
        let multiView = document.createXULElement("panelmultiview");
-@@ -544,8 +543,8 @@ const PanelUI = {
-       }
+@@ -610,10 +609,12 @@ const PanelUI = {
+     if (hasKids && !this.navbar.hasAttribute("nonemptyoverflow")) {
+       this.navbar.setAttribute("nonemptyoverflow", "true");
+       this.overflowPanel.setAttribute("hasfixeditems", "true");
++      window.document.getElementById("zen-sidebar-top-buttons").setAttribute("nonemptyoverflow", "true");
+     } else if (!hasKids && this.navbar.hasAttribute("nonemptyoverflow")) {
+       PanelMultiView.hidePopup(this.overflowPanel);
+       this.overflowPanel.removeAttribute("hasfixeditems");
+       this.navbar.removeAttribute("nonemptyoverflow");
++      window.document.getElementById("zen-sidebar-top-buttons").removeAttribute("nonemptyoverflow");
+     }
+   },
  
-       if (viewShown) {
--        CustomizableUI.addPanelCloseListeners(tempPanel);
-         tempPanel.addEventListener("popuphidden", panelRemover);
-+        CustomizableUI.addPanelCloseListeners(tempPanel);
-       } else {
-         panelRemover();
-       }
+@@ -961,7 +962,7 @@ const PanelUI = {
+         el.removeAttribute("data-lazy-l10n-id");
+       });
+ 
+-    this.notificationPanel.openPopup(anchor, "bottomright topright");
++    this.notificationPanel.openPopup(anchor, gZenUIManager.panelUIPosition);
+   },
+ 
+   _clearNotificationPanel() {

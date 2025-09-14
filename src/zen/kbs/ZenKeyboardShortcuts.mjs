@@ -816,7 +816,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 10;
+  static LATEST_KBS_VERSION = 11;
 
   constructor() {}
 
@@ -1075,6 +1075,21 @@ class nsZenKeyboardShortcutsVersioner {
           nsKeyShortcutModifiers.fromObject({ accel: true }),
           'cmd_zenGlanceExpand',
           ''
+        )
+      );
+    }
+
+    if (version < 11) {
+      // Migrate from version 10 to 11
+      data.push(
+        new KeyShortcut(
+          'zen-new-empty-split-view',
+          '+',
+          '',
+          ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+          'cmd_zenNewEmptySplit',
+          'zen-new-empty-split-view-shortcut'
         )
       );
     }

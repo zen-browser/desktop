@@ -1008,6 +1008,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       tab.linkedBrowser.docShellIsActive = true;
     }
     this._maybeRemoveFakeBrowser();
+    {
+      const shouldDisableEmptySplits = tab.hasAttribute('zen-empty-tab') || tab.splitView;
+      const command = document.getElementById('cmd_zenNewEmptySplit');
+      if (shouldDisableEmptySplits) {
+        command.setAttribute('disabled', 'true');
+      } else {
+        command.removeAttribute('disabled');
+      }
+    }
   }
 
   /**
@@ -1912,6 +1921,42 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return false;
     }
     return true;
+  }
+
+  createEmptySplit() {
+    const selectedTab = gBrowser.selectedTab;
+    const emptyTab = gZenWorkspaces._emptyTab;
+    const data = {
+      tabs: [selectedTab, emptyTab],
+      gridType: 'grid',
+      layoutTree: this.calculateLayoutTree([selectedTab, emptyTab], 'grid'),
+    };
+    this._data.push(data);
+    this.activateSplitView(data);
+    gBrowser.selectedTab = emptyTab;
+    window.addEventListener(
+      'ZenURLBarClosed',
+      (event) => {
+        const { onElementPicked } = event.detail;
+        const groupIndex = this._data.findIndex((group) => group.tabs.includes(emptyTab));
+        const newSelectedTab = gBrowser.selectedTab;
+        requestAnimationFrame(() => {
+          this.removeTabFromGroup(emptyTab, groupIndex);
+          if (onElementPicked) {
+            if (newSelectedTab === emptyTab || newSelectedTab === selectedTab) {
+              return;
+            }
+            this.splitTabs([selectedTab, newSelectedTab], 'grid', 1);
+          } else {
+            gBrowser.selectedTab = selectedTab;
+          }
+        });
+      },
+      { once: true }
+    );
+    setTimeout(() => {
+      gZenUIManager.handleNewTab(false, false, 'tab', true);
+    }, 0);
   }
 }
 

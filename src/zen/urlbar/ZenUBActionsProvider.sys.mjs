@@ -64,21 +64,22 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   /**
+   * @param {Window} window The window to check available actions for.
    * @returns All the available global actions.
    */
-  get #availableActions() {
-    return globalActions.filter((a) =>
-      typeof a.isAvailable === 'function' ? a.isAvailable() : true
-    );
+  #getAvailableActions(window) {
+    return globalActions.filter((a) => a.isAvailable(window));
   }
 
   /**
    * Starts a search query amongst the available global actions.
    *
-   * @param {string} queryContext The query context object
+   * @param {string} query The user's search query.
+   *
    */
   #findMatchingActions(query) {
-    const actions = this.#availableActions;
+    const window = lazy.BrowserWindowTracker.getTopWindow();
+    const actions = this.#getAvailableActions(window);
     let results = [];
     for (let action of actions) {
       const label = action.label;
@@ -261,6 +262,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       return;
     }
     const ownerGlobal = details.element.ownerGlobal;
+    if (typeof command === 'function') {
+      command(ownerGlobal);
+      return;
+    }
     const commandToRun = ownerGlobal.document.getElementById(command);
     if (commandToRun) {
       ownerGlobal.gBrowser.selectedBrowser.focus();

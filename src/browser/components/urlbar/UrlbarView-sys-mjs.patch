@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index fdbab8806fd320f4aacec46a42c8ef953580d00c..40568280c3ba2f0a36f4443a5116430d3c502ec1 100644
+index fdbab8806fd320f4aacec46a42c8ef953580d00c..5ed31d5dbfa2e2041e6616f6b036d67928e64114 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -613,7 +613,7 @@ export class UrlbarView {
@@ -27,7 +27,7 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..40568280c3ba2f0a36f4443a5116430d
 +            setAccessibleFocus:
 +              this.controller._userSelectionBehavior == "arrow",
 +          });
-+        }, 150);
++        }, 140);
        }
      }
  

@@ -111,7 +111,7 @@ export var ZenCustomizableUI = new (class {
         return;
       }
       const popup = window.document.getElementById('zenCreateNewPopup');
-      popup.openPopup(button, 'after_start');
+      popup.openPopup(button, 'before_start');
     });
   }
 

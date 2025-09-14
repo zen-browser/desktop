@@ -274,22 +274,23 @@ var gZenUIManager = {
     return true;
   },
 
-  handleNewTab(werePassedURL, searchClipboard, where) {
+  handleNewTab(werePassedURL, searchClipboard, where, overridePreferance = false) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn('Browser state invalid for new tab operation');
       return false;
     }
 
-    if (this.testingEnabled) {
+    if (this.testingEnabled && !overridePreferance) {
       return false;
     }
 
     const shouldOpenURLBar =
-      gZenVerticalTabsManager._canReplaceNewTab &&
-      !werePassedURL &&
-      !searchClipboard &&
-      where === 'tab';
+      overridePreferance ||
+      (gZenVerticalTabsManager._canReplaceNewTab &&
+        !werePassedURL &&
+        !searchClipboard &&
+        where === 'tab');
 
     if (!shouldOpenURLBar) {
       return false;
@@ -399,7 +400,10 @@ var gZenUIManager = {
 
     if (gURLBar.focused) {
       setTimeout(() => {
-        gURLBar.view.close({ elementPicked: onSwitch });
+        window.dispatchEvent(
+          new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
+        );
+        gURLBar.view.close({ elementPicked: onElementPicked });
         gURLBar.updateTextOverflow();
 
         // Ensure tab and browser are valid before updating state

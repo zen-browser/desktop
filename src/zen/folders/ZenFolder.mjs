@@ -163,6 +163,7 @@
     }
 
     async unpackTabs() {
+      this.collapsed = false;
       for (let tab of this.allItems.reverse()) {
         tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
         if (tab.hasAttribute('zen-empty-tab')) {

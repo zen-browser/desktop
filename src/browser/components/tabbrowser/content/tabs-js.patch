@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7923c6e7b 100644
+index c7557dad38db9ef02b981c46de9595df77cb67db..c2001aac234d1575498df82db21da2374efe9697 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -44,6 +44,9 @@
@@ -602,7 +602,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
  
        for (let item of this.ariaFocusableItems) {
          this.#resetGroupTarget(item);
-@@ -3394,7 +3472,7 @@
+@@ -3394,16 +3472,15 @@
          tab.style.left = "";
          tab.style.top = "";
          tab.style.maxWidth = "";
@@ -611,8 +611,9 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
        }
        for (let label of draggedTabDocument.getElementsByClassName(
          "tab-group-label-container"
-@@ -3403,7 +3481,7 @@
-         label.style.height = "";
+       )) {
+         label.style.width = "";
+-        label.style.height = "";
          label.style.left = "";
          label.style.top = "";
 -        label.removeAttribute("dragtarget");
@@ -620,7 +621,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
        }
        let periphery = draggedTabDocument.getElementById(
          "tabbrowser-arrowscrollbox-periphery"
-@@ -3475,7 +3553,7 @@
+@@ -3475,7 +3552,7 @@
          let postTransitionCleanup = () => {
            movingTab._moveTogetherSelectedTabsData.animate = false;
          };
@@ -629,7 +630,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
            postTransitionCleanup();
          } else {
            let onTransitionEnd = transitionendEvent => {
-@@ -3639,7 +3717,7 @@
+@@ -3639,7 +3716,7 @@
      }
  
      _notifyBackgroundTab(aTab) {
@@ -638,7 +639,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
          return;
        }
  
-@@ -3748,7 +3826,10 @@
+@@ -3748,7 +3825,10 @@
      #getDragTarget(event, { ignoreSides = false } = {}) {
        let { target } = event;
        while (target) {
@@ -650,7 +651,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..246ba5403d9e08818d00c2949a136cd7
            break;
          }
          target = target.parentNode;
-@@ -3765,6 +3846,9 @@
+@@ -3765,6 +3845,9 @@
            return null;
          }
        }

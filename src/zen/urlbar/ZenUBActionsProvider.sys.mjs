@@ -286,7 +286,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           style: `--zen-primary-color: ${result.payload.accentColor || 'currentColor'}`,
         },
       },
-      prettyNameStrong: {
+      prettyNameTitle: {
         textContent: result.payload.prettyName
           ? prettyIconIsSvg || !result.payload.prettyIcon
             ? result.payload.prettyName
@@ -338,8 +338,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
               attributes: { hidden: true },
             },
             {
-              name: 'prettyNameStrong',
-              tag: 'strong',
+              name: 'prettyNameTitle',
+              tag: 'span',
             },
           ],
         },

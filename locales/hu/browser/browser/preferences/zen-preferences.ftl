@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Osztott nézet grid ki-/bekapcsolása
 zen-split-view-shortcut-vertical = Osztott nézet függőlegesen
 zen-split-view-shortcut-horizontal = Osztott nézet vízszintesen
 zen-split-view-shortcut-unsplit = Osztott nézet bezárása
+zen-new-empty-split-view-shortcut = Új üres osztott nézet
 zen-key-select-tab-1 = Első lap kiválasztása
 zen-key-select-tab-2 = Második lap kiválasztása
 zen-key-select-tab-3 = Harmadik lap kiválasztása

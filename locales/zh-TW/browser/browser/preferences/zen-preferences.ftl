@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = 切換分割畫面
 zen-split-view-shortcut-vertical = 切換垂直分割畫面
 zen-split-view-shortcut-horizontal = 切換水平分割畫面
 zen-split-view-shortcut-unsplit = 關閉分割畫面
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = 選擇分頁 #1
 zen-key-select-tab-2 = 選擇分頁 #2
 zen-key-select-tab-3 = 選擇分頁 #3

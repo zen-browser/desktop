@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Gesplitste weergave raster togglen
 zen-split-view-shortcut-vertical = Gesplitste weergave verticaal togglen
 zen-split-view-shortcut-horizontal = Gesplitste weergave horizontaal togglen
 zen-split-view-shortcut-unsplit = Gesplitste weergave sluiten
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Selecteer tabblad #1
 zen-key-select-tab-2 = Selecteer tabblad #2
 zen-key-select-tab-3 = Selecteer tabblad #3

@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Izgaralı Bölünmüş Görünümü Aç/Kapat
 zen-split-view-shortcut-vertical = Dikey Bölünmüş Görünümü Aç/Kapat
 zen-split-view-shortcut-horizontal = Yatay Bölünmüş Görünümü Aç/Kapat
 zen-split-view-shortcut-unsplit = Bölünmüş Görünümü Kapat
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = 1. Sekmeyi Seç
 zen-key-select-tab-2 = 2. Sekmeyi Seç
 zen-key-select-tab-3 = 3. Sekmeyi Seç

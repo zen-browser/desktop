@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = 切换网格拆分视图
 zen-split-view-shortcut-vertical = 切换垂直拆分视图
 zen-split-view-shortcut-horizontal = 切换水平拆分视图
 zen-split-view-shortcut-unsplit = 关闭拆分视图
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = 选择标签页 #1
 zen-key-select-tab-2 = 选择标签页 #2
 zen-key-select-tab-3 = 选择标签页 #3

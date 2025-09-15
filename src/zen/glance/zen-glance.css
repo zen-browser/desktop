@@ -108,6 +108,8 @@
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
+  /* Hint compositor to optimize animations and scrolling */
+  will-change: transform, opacity, filter;
 
   :root[zen-no-padding='true'] & {
     --zen-native-inner-radius: 0px;
@@ -120,6 +122,8 @@
     top: 0;
     left: 0;
     flex: unset !important;
+    /* Promote to its own layer during transitions to reduce jank */
+    will-change: transform, opacity, top, left, width, height;
 
     &[has-finished-animation='true'] {
       position: relative !important;

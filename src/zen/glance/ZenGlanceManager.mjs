@@ -167,13 +167,26 @@
           const newButtons = this.#createNewOverlayButtons();
           this.browserWrapper.appendChild(newButtons);
 
+          // Performance: backdrop-filter blur on Windows significantly impacts scroll smoothness
+          // in the Glance preview (particularly for wheel scrolling). Avoid applying it on Windows.
+          const parentSidebarContainer = this.#currentParentTab.linkedBrowser.closest(
+            '.browserSidebarContainer'
+          );
+          const isWindows = AppConstants.platform === 'win';
+          const backgroundOpenAnimationProps = isWindows
+            ? {
+                // Skip blur on Windows, keep a subtle dim/scale to preserve the visual cue
+                scale: [1, 0.98],
+                opacity: [1, 0.85],
+              }
+            : {
+                scale: [1, 0.98],
+                backdropFilter: ['blur(0px)', 'blur(5px)'],
+                opacity: [1, 0.5],
+              };
           gZenUIManager.motion.animate(
-            this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer'),
-            {
-              scale: [1, 0.98],
-              backdropFilter: ['blur(0px)', 'blur(5px)'],
-              opacity: [1, 0.5],
-            },
+            parentSidebarContainer,
+            backgroundOpenAnimationProps,
             {
               duration: 0.4,
               type: 'spring',
@@ -318,14 +331,22 @@
             sidebarButtons.remove();
           });
       }
-      gZenUIManager.motion
-        .animate(
-          browserSidebarContainer,
-          {
+      const isWindows = AppConstants.platform === 'win';
+      const backgroundCloseAnimationProps = isWindows
+        ? {
+            // Mirror open animation without blur on Windows
+            scale: [0.98, 1],
+            opacity: [0.85, 1],
+          }
+        : {
             scale: [0.98, 1],
             backdropFilter: ['blur(5px)', 'blur(0px)'],
             opacity: [0.5, 1],
-          },
+          };
+      gZenUIManager.motion
+        .animate(
+          browserSidebarContainer,
+          backgroundCloseAnimationProps,
           {
             duration: 0.4,
             type: 'spring',

@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Alternar grade de visualização dividida
 zen-split-view-shortcut-vertical = Alternar visualização de divisão vertical
 zen-split-view-shortcut-horizontal = Alternar visualização horizontal de divisão
 zen-split-view-shortcut-unsplit = Fechar visualização dividida
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Selecionar guia #1
 zen-key-select-tab-2 = Selecionar guia #2
 zen-key-select-tab-3 = Selecionar guia #3

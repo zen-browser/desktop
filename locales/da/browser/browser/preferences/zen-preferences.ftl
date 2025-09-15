@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Opdelt visning i gitter til/fra
 zen-split-view-shortcut-vertical = Lodret opdelt visning til/fra
 zen-split-view-shortcut-horizontal = Vandret opdelt visning til/fra
 zen-split-view-shortcut-unsplit = Luk opdelt visning
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Vælg fane #1
 zen-key-select-tab-2 = Vælg fane #2
 zen-key-select-tab-3 = Vælg fane #3

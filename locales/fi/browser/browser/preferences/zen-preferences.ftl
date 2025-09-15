@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Vaihda Jaettu Näkymä ruudukkoon
 zen-split-view-shortcut-vertical = Vaihda Jaettu Näkymä Pystysuunnassa
 zen-split-view-shortcut-horizontal = Vaihda Jaettu Näkymä Vaakasuoraan
 zen-split-view-shortcut-unsplit = Sulje Jaettu Näkymä
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Valitse välilehti #1
 zen-key-select-tab-2 = Valitse välilehti #2
 zen-key-select-tab-3 = Valitse välilehti #3

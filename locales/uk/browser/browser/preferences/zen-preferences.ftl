@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Перемкнути розділену сітк�
 zen-split-view-shortcut-vertical = Перемкнути розділений Перегляд вертикально
 zen-split-view-shortcut-horizontal = Перемкнути розділений Перегляд горизонтально
 zen-split-view-shortcut-unsplit = Закрити розділений вигляд
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Вибрати вкладку #1
 zen-key-select-tab-2 = Вибрати вкладку #2
 zen-key-select-tab-3 = Вибрати вкладку #3

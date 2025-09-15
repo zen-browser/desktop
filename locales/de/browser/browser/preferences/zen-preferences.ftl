@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Geteilte Ansicht Raster umschalten
 zen-split-view-shortcut-vertical = Geteilte Ansicht vertikal umschalten
 zen-split-view-shortcut-horizontal = Geteilte Ansicht horizontal umschalten
 zen-split-view-shortcut-unsplit = Geteilte Ansicht schließen
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Tab #1 auswählen
 zen-key-select-tab-2 = Tab #2 auswählen
 zen-key-select-tab-3 = Tab #3 auswählen

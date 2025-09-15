@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Perjungti skaidymo rodinį tinkleliu
 zen-split-view-shortcut-vertical = Perjungti skaidymo rodinį vertikaliai
 zen-split-view-shortcut-horizontal = Perjungti skaidymo rodinį horizontaliai
 zen-split-view-shortcut-unsplit = Užverti skaidymo rodinį
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Pasirinkti #1 kortelę
 zen-key-select-tab-2 = Pasirinkti #2 kortelę
 zen-key-select-tab-3 = Pasirinkti #3 kortelę

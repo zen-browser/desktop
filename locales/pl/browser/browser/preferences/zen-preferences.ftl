@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Przełącz siatkę widoku dzielonego
 zen-split-view-shortcut-vertical = Przełącz Podziel Widok Pionowy
 zen-split-view-shortcut-horizontal = Przełącz Podziel Widok Poziomo
 zen-split-view-shortcut-unsplit = Zamknij Podziel Widok
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Wybierz kartę #1
 zen-key-select-tab-2 = Wybierz kartę #2
 zen-key-select-tab-3 = Wybierz kartę #3

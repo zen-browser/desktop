@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Bật viền chia trang
 zen-split-view-shortcut-vertical = Bật chia trang theo chiều dọc
 zen-split-view-shortcut-horizontal = Bật chia trang theo chiều ngang
 zen-split-view-shortcut-unsplit = Đóng chế độ xem chia đôi
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Chọn thẻ #1
 zen-key-select-tab-2 = Chọn thẻ #2
 zen-key-select-tab-3 = Chọn thẻ #3

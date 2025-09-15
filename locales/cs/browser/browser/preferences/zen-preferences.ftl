@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Přepnout rozdělený pohled v mřížce
 zen-split-view-shortcut-vertical = Přepnout rozdělené zobrazení vertikálně
 zen-split-view-shortcut-horizontal = Přepnout horizontální zobrazení rozdělení
 zen-split-view-shortcut-unsplit = Zavřít rozdělené zobrazení
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Vybrat první kartu
 zen-key-select-tab-2 = Vybrat druhou kartu
 zen-key-select-tab-3 = Vybrat třetí kartu

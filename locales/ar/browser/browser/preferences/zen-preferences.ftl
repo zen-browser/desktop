@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = تبديل عرض تقسيم الشبكة
 zen-split-view-shortcut-vertical = تبديل العرض العمودي للتقسيم
 zen-split-view-shortcut-horizontal = تبديل عرض تقسيم أفقي
 zen-split-view-shortcut-unsplit = Close Split View
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Select tab #1
 zen-key-select-tab-2 = Select tab #2
 zen-key-select-tab-3 = Select tab #3

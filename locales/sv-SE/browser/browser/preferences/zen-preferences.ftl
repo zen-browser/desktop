@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Växla delad vy rutnät
 zen-split-view-shortcut-vertical = Växla delad vy vertikal
 zen-split-view-shortcut-horizontal = Växla delad vy Horisontell
 zen-split-view-shortcut-unsplit = Stäng delad vy
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Select tab #1
 zen-key-select-tab-2 = Select tab #2
 zen-key-select-tab-3 = Select tab #3

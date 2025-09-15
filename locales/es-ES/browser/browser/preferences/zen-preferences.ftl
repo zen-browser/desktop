@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Cambiar a vista dividida en cuadrícula
 zen-split-view-shortcut-vertical = Cambiar a vista dividida vertical
 zen-split-view-shortcut-horizontal = Cambiar a vista dividida horizontal
 zen-split-view-shortcut-unsplit = Cerrar vista dividida
+zen-new-empty-split-view-shortcut = Nueva vista dividida vacía
 zen-key-select-tab-1 = Seleccionar pestaña 1
 zen-key-select-tab-2 = Seleccionar pestaña 2
 zen-key-select-tab-3 = Seleccionar pestaña 3

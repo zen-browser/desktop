@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Attiva/Disattiva Griglia Visualizzazione Dividi
 zen-split-view-shortcut-vertical = Attiva/Disattiva Dividi Vista Verticale
 zen-split-view-shortcut-horizontal = Attiva/Disattiva Dividi Vista Orizzontale
 zen-split-view-shortcut-unsplit = Chiudi vista divisa
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Seleziona Scheda #1
 zen-key-select-tab-2 = Seleziona Scheda #2
 zen-key-select-tab-3 = Seleziona Scheda #3

@@ -24,11 +24,6 @@
     -moz-window-transform: scale(0.3);
   }
 
-  50% {
-    opacity: 1;
-    -moz-window-transform: scale(1.04);
-  }
-
   100% {
     opacity: 1;
     -moz-window-transform: scale(1);

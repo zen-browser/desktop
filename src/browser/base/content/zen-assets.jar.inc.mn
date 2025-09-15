@@ -14,7 +14,7 @@
         content/browser/zen-components/ZenEmojiPicker.mjs                       (../../zen/common/emojis/ZenEmojiPicker.mjs)
         content/browser/zen-components/ZenHasPolyfill.mjs                       (../../zen/common/ZenHasPolyfill.mjs)
 
-        content/browser/zen-styles/zen-theme.css                                (../../zen/common/styles/zen-theme.css)
+*       content/browser/zen-styles/zen-theme.css                                (../../zen/common/styles/zen-theme.css)
         content/browser/zen-styles/zen-buttons.css                              (../../zen/common/styles/zen-buttons.css)
         content/browser/zen-styles/zen-browser-ui.css                           (../../zen/common/styles/zen-browser-ui.css)
         content/browser/zen-styles/zen-animations.css                           (../../zen/common/styles/zen-animations.css)
@@ -23,7 +23,7 @@
         content/browser/zen-styles/zen-sidebar.css                              (../../zen/common/styles/zen-sidebar.css)
         content/browser/zen-styles/zen-toolbar.css                              (../../zen/common/styles/zen-toolbar.css)
         content/browser/zen-styles/zen-browser-container.css                    (../../zen/common/styles/zen-browser-container.css)
-        content/browser/zen-styles/zen-urlbar.css                               (../../zen/common/styles/zen-urlbar.css)
+        content/browser/zen-styles/zen-omnibox.css                               (../../zen/common/styles/zen-omnibox.css)
         content/browser/zen-styles/zen-popup.css                                (../../zen/common/styles/zen-popup.css)
         content/browser/zen-styles/zen-branding.css                             (../../zen/common/styles/zen-branding.css)
 

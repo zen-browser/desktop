@@ -145,7 +145,7 @@ var gZenUIManager = {
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 3}px`);
+    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 2}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -808,14 +808,14 @@ var gZenVerticalTabsManager = {
 
   recalculateURLBarHeight() {
     document.getElementById('urlbar').removeAttribute('--urlbar-height');
+    let height;
     if (!this._hasSetSingleToolbar) {
-      document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
+      height = 32;
     } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
-      try {
-        gURLBar.zenUpdateLayoutBreakout();
-      } catch (e) {
-        console.warn(e);
-      }
+      height = 40;
+    }
+    if (typeof height !== 'undefined') {
+      document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
     }
   },
 

@@ -96,6 +96,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   async #getExtensionActions(window) {
     const addons = await lazy.AddonManager.getAddonsByTypes(['extension']);
+    if (window.gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+      // Don't show extension actions on empty tabs, as extensions can't run there.
+      return [];
+    }
     return addons
       .filter(
         (addon) =>
@@ -286,7 +290,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           style: `--zen-primary-color: ${result.payload.accentColor || 'currentColor'}`,
         },
       },
-      prettyNameStrong: {
+      prettyNameTitle: {
         textContent: result.payload.prettyName
           ? prettyIconIsSvg || !result.payload.prettyIcon
             ? result.payload.prettyName
@@ -338,8 +342,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
               attributes: { hidden: true },
             },
             {
-              name: 'prettyNameStrong',
-              tag: 'strong',
+              name: 'prettyNameTitle',
+              tag: 'span',
             },
           ],
         },

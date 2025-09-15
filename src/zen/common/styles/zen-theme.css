@@ -283,38 +283,31 @@
   & #tabbrowser-tabpanels browser[type='content'],
   &:not([zen-should-be-dark-mode]) #zen-toast-container {
     @media -moz-pref('zen.view.window.scheme', 0) {
-      color-scheme: dark;
-      --toolbar-color-scheme: dark;
+%include schemes/dark.inc.css
     }
 
     @media -moz-pref('zen.view.window.scheme', 1) {
-      color-scheme: light;
-      --toolbar-color-scheme: light;
+%include schemes/light.inc.css
     }
 
     @media -moz-pref('zen.view.window.scheme', 2) {
-      color-scheme: light;
-      --toolbar-color-scheme: light;
+%include schemes/light.inc.css
       @media (-moz-system-dark-theme) {
-        color-scheme: dark;
-        --toolbar-color-scheme: dark;
+%include schemes/dark.inc.css
       }
     }
 
     :root[privatebrowsingmode='temporary'] &,
     &[privatebrowsingmode='temporary'] {
-      color-scheme: dark;
-      --toolbar-color-scheme: dark;
+%include schemes/dark.inc.css
     }
   }
 
   &[zen-should-be-dark-mode='true'] #browser {
-    color-scheme: dark;
-    --toolbar-color-scheme: dark;
+%include schemes/dark.inc.css
   }
 
   &[zen-should-be-dark-mode='false'] #browser {
-    color-scheme: light;
-    --toolbar-color-scheme: light;
+%include schemes/light.inc.css
   }
 }

@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = 그리드 스플릿 뷰 전환
 zen-split-view-shortcut-vertical = 수직 스플릿 뷰 전환
 zen-split-view-shortcut-horizontal = 수평 스플릿 뷰 전환
 zen-split-view-shortcut-unsplit = 스플릿 뷰 닫기
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = 탭 #1 선택
 zen-key-select-tab-2 = 탭 #2 선택
 zen-key-select-tab-3 = 탭 #3 선택

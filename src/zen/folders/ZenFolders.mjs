@@ -195,6 +195,7 @@
       window.addEventListener('TabGroupExpand', this);
       window.addEventListener('TabGroupCollapse', this);
       window.addEventListener('FolderGrouped', this);
+      window.addEventListener('FolderUngrouped', this);
       window.addEventListener('TabSelect', this);
       window.addEventListener('TabOpen', this);
       const onNewFolder = this.#onNewFolder.bind(this);
@@ -222,6 +223,13 @@
       const tab = event.detail;
       const group = tab.group;
       group.pinned = tab.pinned;
+      const isActiveFolder = group?.activeGroups?.length > 0;
+
+      if (isActiveFolder) {
+        group.activeTabs = [...new Set([...group.activeTabs, tab])].sort(
+          (a, b) => a._tPos > b._tPos
+        );
+      }
 
       if (group.hasAttribute('split-view-group') && group.hasAttribute('zen-pinned-changed')) {
         // zen-pinned-changed remove it and set it to had-zen-pinned-changed to keep
@@ -238,7 +246,24 @@
     on_FolderGrouped(event) {
       if (this._sessionRestoring) return;
       const folder = event.detail;
-      folder.group.collapsed = false;
+      const parentFolder = event.target;
+      const isActiveFolder = parentFolder?.activeGroups?.length > 0;
+      const isSplitView = folder.hasAttribute('split-view-group');
+      if (isActiveFolder && isSplitView) {
+        parentFolder.activeTabs = [...new Set([...parentFolder.activeTabs, ...folder.tabs])].sort(
+          (a, b) => a._tPos > b._tPos
+        );
+      }
+      parentFolder.collapsed = isActiveFolder;
+    }
+
+    on_FolderUngrouped(event) {
+      if (this._sessionRestoring) return;
+      const parentFolder = event.target;
+      const folder = event.detail;
+      for (const tab of folder.tabs) {
+        this.animateUnload(parentFolder, tab, true);
+      }
     }
 
     async on_TabSelect(event) {
@@ -272,26 +297,15 @@
       }
     }
 
-    on_TabUngrouped(event) {
+    async on_TabUngrouped(event) {
       const tab = event.detail;
       const group = event.target;
-      tab.removeAttribute('folder-active');
       if (group.hasAttribute('split-view-group') && tab.hasAttribute('had-zen-pinned-changed')) {
         tab.setAttribute('zen-pinned-changed', true);
         tab.removeAttribute('had-zen-pinned-changed');
       }
-      const activeGroup = group.activeGroups;
-      if (activeGroup?.length > 0) {
-        for (const folder of activeGroup) {
-          folder.activeTabs = folder.activeTabs.filter((tab) => tab.hasAttribute('folder-active'));
-          if (!folder.activeTabs.length) {
-            folder.removeAttribute('has-active');
-          }
-          // TODO: Figure out how to implement it
-          // this.collapseVisibleTab(folder, true);
-          this.updateFolderIcon(folder, 'close', false);
-        }
-      }
+
+      await this.animateUnload(group, tab, true);
     }
 
     on_TabGroupCreate(event) {
@@ -1488,14 +1502,15 @@
       this.styleCleanup(itemsToHide);
     }
 
-    async animateUnload(group, tabToHide) {
-      const isSplitView = tabToHide.group?.hasAttribute('split-view-group');
-      if ((!group?.isZenFolder || !isSplitView) && !tabToHide.hasAttribute('folder-active')) return;
+    async animateUnload(group, tabToUnload, ungroup = false) {
+      const isSplitView = tabToUnload.group?.hasAttribute('split-view-group');
+      if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
+        return;
       const animations = [];
 
       const activeGroups = group.activeGroups;
       for (const folder of activeGroups) {
-        folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToHide);
+        folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
 
         if (folder.activeTabs.length === 0) {
           folder.removeAttribute('has-active');
@@ -1524,29 +1539,33 @@
         }
       }
 
-      tabToHide.removeAttribute('folder-active');
+      tabToUnload.removeAttribute('folder-active');
       if (isSplitView) {
-        tabToHide = tabToHide.group;
+        tabToUnload = tabToUnload.group;
       }
 
-      tabToHide.style.removeProperty('--zen-folder-indent');
-      animations.push(
-        ...this.#createAnimation(
-          tabToHide,
-          {
-            opacity: 0,
-            height: 0,
-          },
-          {
-            duration: 0.12,
-            ease: 'easeInOut',
-          }
-        )
-      );
+      tabToUnload.style.removeProperty('--zen-folder-indent');
+
+      if (!ungroup) {
+        animations.push(
+          ...this.#createAnimation(
+            tabToUnload,
+            {
+              opacity: 0,
+              height: 0,
+            },
+            {
+              duration: 0.12,
+              ease: 'easeInOut',
+            }
+          )
+        );
+      }
 
       this.#animationCount += 1;
       await Promise.all(animations);
       this.#animationCount -= 1;
+      gBrowser.tabContainer._invalidateCachedTabs();
     }
 
     async animateSelect(group) {
@@ -1681,6 +1700,7 @@
       const groupStart = group.querySelector('.zen-tab-group-start');
       const tabsContainer = group.querySelector('.tab-group-container');
       const heightContainer = expand ? 0 : this.#calculateHeightShift(tabsContainer, []);
+      tabsContainer.style.overflow = expand ? '' : 'clip';
 
       this.#createAnimation(
         groupStart,

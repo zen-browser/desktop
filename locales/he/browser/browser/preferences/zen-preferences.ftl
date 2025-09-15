@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = הפעל/כבה תצוגה מפוצלת רשת
 zen-split-view-shortcut-vertical = הפעל/כבה תצוגה מפוצלת אנכית
 zen-split-view-shortcut-horizontal = הפעל/כבה תצוגה מפוצלת אופקית
 zen-split-view-shortcut-unsplit = סגור תצוגה מפוצלת
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = בחר כרטיסיה #1
 zen-key-select-tab-2 = בחר כרטיסיה #2
 zen-key-select-tab-3 = בחר כרטיסיה #3

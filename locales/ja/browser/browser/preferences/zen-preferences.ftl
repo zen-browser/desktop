@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = 分割表示グリッドの切り替え
 zen-split-view-shortcut-vertical = 分割ビューを垂直に切り替える
 zen-split-view-shortcut-horizontal = 分割ビューを水平に切り替える
 zen-split-view-shortcut-unsplit = 分割ビューを閉じる
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = 1つめのタブを選択
 zen-key-select-tab-2 = 2つめのタブを選択
 zen-key-select-tab-3 = 3つめのタブを選択

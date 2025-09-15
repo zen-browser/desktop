@@ -274,6 +274,7 @@ zen-split-view-shortcut-grid = Ativar Vista Dividida em Grelha
 zen-split-view-shortcut-vertical = Ativar Vista Dividida Vertical
 zen-split-view-shortcut-horizontal = Ativar Vista Dividida Horizontal
 zen-split-view-shortcut-unsplit = Fechar a Vista Dividida
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Selecionar separador #1
 zen-key-select-tab-2 = Selecionar separador #2
 zen-key-select-tab-3 = Selecionar separador #3

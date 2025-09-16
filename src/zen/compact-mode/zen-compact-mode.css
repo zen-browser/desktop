@@ -361,7 +361,7 @@
           @media -moz-pref('zen.view.compact.color-toolbar') {
             background-attachment: fixed;
             background: var(--zen-main-browser-background-toolbar);
-            background-size: 100% 100vw;
+            background-size: 100% 100vh;
           }
         }
       }

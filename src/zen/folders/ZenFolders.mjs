@@ -1603,6 +1603,7 @@
 
               const tabsContainer = currentGroup.querySelector('.tab-group-container');
               const groupStart = currentGroup.querySelector('.zen-tab-group-start');
+              tabsContainer.style.overflow = 'clip';
 
               if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
 
@@ -1635,9 +1636,12 @@
         }
       }
 
+      const itemsToShow = [];
       if (selectedTabs.length) {
         for (let i = 0; i < groupItems.length; i++) {
           const { item, splitViewId } = groupItems[i];
+
+          itemsToShow.push(item);
 
           // Skip selected items
           if (selectedTabs.includes(item)) continue;
@@ -1652,18 +1656,18 @@
       }
 
       // FIXME: This is a hack to fix the animations not working properly
+      this.styleCleanup(itemsToShow);
       itemsToHide.forEach((item) => {
         item.style.opacity = 0;
         item.style.height = 0;
       });
-      this.styleCleanup(selectedTabs);
 
       animations.push(
         ...this.#createAnimation(
-          itemsToHide,
+          itemsToShow,
           {
-            opacity: 0,
-            height: 0,
+            opacity: '',
+            height: '',
           },
           {
             duration: 0.12,
@@ -1671,10 +1675,10 @@
           }
         ),
         ...this.#createAnimation(
-          selectedTabs,
+          itemsToHide,
           {
-            opacity: '',
-            height: '',
+            opacity: 0,
+            height: 0,
           },
           {
             duration: 0.12,

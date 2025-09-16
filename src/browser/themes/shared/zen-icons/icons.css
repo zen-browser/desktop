@@ -633,7 +633,7 @@
 }
 
 #panelMenuBookmarkThisPage {
-  list-style-image: url('bookmark.svg') !important;
+  list-style-image: url('bookmark-hollow.svg') !important;
 }
 
 #panelMenu_searchBookmarks {

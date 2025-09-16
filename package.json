@@ -29,7 +29,8 @@
     "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure",
     "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
     "lc": "surfer license-check",
-    "lc:fix": "surfer license-check --fix"
+    "lc:fix": "surfer license-check --fix",
+    "use-moz-src": "cd engine && ./mach use-moz-src"
   },
   "repository": {
     "type": "git",

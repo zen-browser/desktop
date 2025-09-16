@@ -617,6 +617,10 @@
     }
 
     async fullyOpenGlance({ forSplit = false } = {}) {
+      // If there is no active glance, do nothing
+      if (!this.#currentGlanceID || !this.#currentTab) {
+        return;
+      }
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 

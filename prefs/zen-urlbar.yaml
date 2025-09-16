@@ -22,3 +22,8 @@
 
 - name: zen.urlbar.enable-overrides
   value: false
+
+# Mark: Zen suggestions controls
+
+- name: zen.urlbar.suggestions.quick-actions
+  value: true

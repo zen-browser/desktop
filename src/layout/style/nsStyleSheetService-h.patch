@@ -1,7 +1,7 @@
-diff --git a/layout/base/nsStyleSheetService.h b/layout/base/nsStyleSheetService.h
+diff --git a/layout/style/nsStyleSheetService.h b/layout/style/nsStyleSheetService.h
 index 83fc829aad19f8b80692e67bddb781778fbc4f8d..04806a1f51686a82c1dc2555dae86a4397b181fb 100644
---- a/layout/base/nsStyleSheetService.h
-+++ b/layout/base/nsStyleSheetService.h
+--- a/layout/style/nsStyleSheetService.h
++++ b/layout/style/nsStyleSheetService.h
 @@ -50,6 +50,8 @@ class nsStyleSheetService final : public nsIStyleSheetService,
  
    size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;

@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index 5c721ee07f0be1318a50cb381ddf59550a04d496..fa2d21687dd8ea7dd03fb4cc2952fe783782a955 100644
+index 44f6c942f2e4b08f784b2ff96f785e9beed01ecd..834e174186972c3297a552bbd579f0ea1261c19e 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
-@@ -237,7 +237,7 @@
+@@ -276,7 +276,7 @@
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);

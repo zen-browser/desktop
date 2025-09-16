@@ -1,11 +1,11 @@
 diff --git a/testing/profiles/mochitest/user.js b/testing/profiles/mochitest/user.js
-index c43196b3c9cf8c90fa1cca5b6d205c410adec022..854aec05b568aa3dfe7d9b994c0ee7ee9a6b5fd8 100644
+index a4068ac3f61161d014c49d54ae7a3bf886868f1b..7771d8c99aa20105b1382437881cdc02b17688c2 100644
 --- a/testing/profiles/mochitest/user.js
 +++ b/testing/profiles/mochitest/user.js
-@@ -44,3 +44,7 @@ user_pref("geo.prompt.open_system_prefs", false);
- 
- // Enable Nimbus debug logging.
- user_pref("messaging-system.log", "all");
+@@ -41,3 +41,7 @@ user_pref("places.history.floodingPrevention.enabled", false);
+ // permission, and we can open it and wait for the user to give permission, then
+ // don't do that.
+ user_pref("geo.prompt.open_system_prefs", false);
 +
 +user_pref("zen.welcome-screen.seen", true);
 +user_pref("zen.watermark.enabled", false);

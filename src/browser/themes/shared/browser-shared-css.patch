@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 7fcb1d906c3aaec3e6b099ae731267c2b9d0b96a..ea8e0f510b09faaed0955e9974a2d9f285a52649 100644
+index c612e7d021122e3e4823994071cd613563d3e12e..682d7a47624460ce33e8fcb5ff9c995f3413bab2 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -78,7 +78,7 @@ body {
+@@ -99,7 +99,7 @@ body {
    --toolbarbutton-border-radius: 4px;
    --identity-box-margin-inline: 4px;
    --urlbar-min-height: max(32px, 1.4em);
@@ -11,7 +11,7 @@ index 7fcb1d906c3aaec3e6b099ae731267c2b9d0b96a..ea8e0f510b09faaed0955e9974a2d9f2
  
    /* This should be used for icons and chiclets inside the input field. It makes
       the gap around them more uniform when they are close to the field edges */
-@@ -148,8 +148,6 @@ body {
+@@ -167,8 +167,6 @@ body {
     */
    &.fullscreen-with-menubar {
      z-index: var(--browser-area-z-index-toolbox-while-animating);

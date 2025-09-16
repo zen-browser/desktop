@@ -38,7 +38,7 @@ body > #confetti {
 }
 
 /* Bookmarks */
-#PersonalToolbar:not([collapsed='true']) {
+#PersonalToolbar:not([collapsed]) {
   min-height: 30px;
 }
 
@@ -255,4 +255,9 @@ body > #confetti {
       font-size: small !important;
     }
   }
+}
+
+/* Customizable modes */
+#customization-container {
+  --toolbar-bgcolor: var(--zen-dialog-background);
 }

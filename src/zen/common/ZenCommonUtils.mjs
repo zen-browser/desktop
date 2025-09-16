@@ -17,7 +17,7 @@ window.gZenOperatingSystemCommonUtils = {
 
 /* eslint-disable no-unused-vars */
 class nsZenMultiWindowFeature {
-  constructor() { }
+  constructor() {}
 
   static get browsers() {
     return Services.wm.getEnumerator('navigator:browser');
@@ -130,7 +130,10 @@ var gZenCommonActions = {
 
   toggleUnloadedCycling() {
     try {
-      const currentMode = Services.prefs.getStringPref('zen.tabs.unloaded-navigation-mode', 'always');
+      const currentMode = Services.prefs.getStringPref(
+        'zen.tabs.unloaded-navigation-mode',
+        'always'
+      );
       const nextMode = currentMode === 'always' ? 'never' : 'always';
       Services.prefs.setStringPref('zen.tabs.unloaded-navigation-mode', nextMode);
     } catch (e) {

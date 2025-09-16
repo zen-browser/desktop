@@ -20,9 +20,6 @@
 - name: zen.view.compact.color-toolbar
   value: true
 
-- name: zen.view.compact.color-sidebar
-  value: true
-
 - name: zen.view.compact.animate-sidebar
   value: true
 

@@ -20,10 +20,6 @@
   list-style-image: url('back.svg') !important;
 }
 
-#zenSplitViewModifierActivateReallocation > image {
-  list-style-image: url('move-tab.svg') !important;
-}
-
 #forward-button {
   list-style-image: url('forward.svg') !important;
 }
@@ -770,7 +766,7 @@
   list-style-image: url('chrome://global/skin/media/picture-in-picture-open.svg');
 }
 
-#zenCreateNewPopup > menuitem image {
+#zenCreateNewPopup > menuitem img {
   -moz-context-properties: fill;
   fill: currentColor;
 }
@@ -817,7 +813,7 @@
   }
 }
 
-.zen-workspace-context-icon image {
+.zen-workspace-context-icon img {
   -moz-context-properties: fill;
   fill: currentColor;
   scale: 1.6;

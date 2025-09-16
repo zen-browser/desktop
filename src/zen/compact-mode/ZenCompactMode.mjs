@@ -189,10 +189,11 @@ var gZenCompactModeManager = {
   updateCompactModeContext(isSingleToolbar) {
     const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
     const menu = document.getElementById('zen-context-menu-compact-mode');
-    menu.setAttribute('hidden', isSingleToolbar);
     if (isSingleToolbar) {
+      menu.setAttribute('hidden', 'true');
       menu.before(menuitem);
     } else {
+      menu.removeAttribute('hidden');
       menu.querySelector('menupopup').prepend(menuitem);
     }
   },
@@ -533,6 +534,12 @@ var gZenCompactModeManager = {
 
     for (let i = 0; i < this.hoverableElements.length; i++) {
       let target = this.hoverableElements[i].element;
+
+      // Add the attribute on startup if the mouse is already over the element
+      if (target.matches(':hover')) {
+        target.setAttribute('zen-has-hover', 'true');
+      }
+
       const onEnter = (event) => {
         setTimeout(() => {
           if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;

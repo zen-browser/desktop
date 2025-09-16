@@ -5,6 +5,11 @@
  */
 /* All overrides for compact mode go here */
 
+#zen-toolbar-background {
+  display: none;
+  pointer-events: none;
+}
+
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
 
@@ -140,43 +145,29 @@
           margin-left: 0 !important;
         }
 
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--zen-dialog-background);
-          outline: 1px solid rgba(255,255,255,.15);
-          outline-offset: -1px;
-          box-shadow: var(--zen-big-shadow);
-          pointer-events: none;
+        & #zen-toolbar-background {
+          display: flex;
+          overflow: clip;
+          background: transparent;
           z-index: -1;
-          border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
-          @media -moz-pref('zen.view.compact.color-sidebar') {
-            background: var(--zen-main-browser-background-toolbar) !important;
+          box-shadow: var(--zen-big-shadow);
+          @media -moz-pref('zen.theme.acrylic-elements') {
+            backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+          }
+
+          &::before,
+          &::after {
+            outline: 1px solid rgba(255, 255, 255, .15);
+            outline-offset: -1px;
             background-attachment: fixed !important;
             background-size: 2000px !important;
-            @media -moz-pref('zen.theme.acrylic-elements') {
-              backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-            }
           }
-        }
 
-        &::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: url(chrome://browser/content/zen-images/grain-bg.png);
-          pointer-events: none;
-          z-index: 0;
-          opacity: var(--zen-grainy-background-opacity, 0);
-          mix-blend-mode: overlay;
-          transition: opacity 0.3s ease-in-out;
+          &,
+          &::before,
+          &::after {
+            border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+          }
         }
       }
 

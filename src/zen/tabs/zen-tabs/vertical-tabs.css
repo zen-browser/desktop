@@ -200,7 +200,7 @@
 
   @media (-moz-platform: macos) {
     --border-radius-medium: 12px;
-    --tab-border-radius: 10px;
+    --tab-border-radius: 8px;
   }
 
   min-width: var(--zen-toolbox-min-width);
@@ -498,7 +498,7 @@
   padding-top: 0; /* Reset top padding */
 
   /* Ensure Personal Toolbar has no left padding when expanded */
-  #PersonalToolbar:not([collapsed='true']) {
+  #PersonalToolbar:not([collapsed]) {
     padding-left: 0 !important;
   }
 
@@ -742,6 +742,7 @@
 
   /* Center items in essentials container */
   & .zen-essentials-container {
+    will-change: transform;
     justify-content: center;
     grid-template-columns: 1fr !important;
     padding: 0 !important;

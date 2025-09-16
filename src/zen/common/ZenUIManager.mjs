@@ -75,6 +75,14 @@ var gZenUIManager = {
 
     this._initCreateNewPopup();
     this._debloatContextMenus();
+    this._initOmniboxCommands();
+  },
+
+  _initOmniboxCommands() {
+    const { registerZenUrlbarProviders } = ChromeUtils.importESModule(
+      'resource:///modules/ZenUBProvider.sys.mjs'
+    );
+    registerZenUrlbarProviders();
   },
 
   _debloatContextMenus() {
@@ -624,7 +632,8 @@ var gZenVerticalTabsManager = {
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
       gZenUIManager.testingEnabled ||
-      !gZenStartup.isReady
+      !gZenStartup.isReady ||
+      !gZenPinnedTabManager.hasInitializedPins
     ) {
       return;
     }
@@ -684,12 +693,7 @@ var gZenVerticalTabsManager = {
     }
   },
 
-  animateTabClose(aTab, animate) {
-    if (!animate) {
-      return new Promise((resolve) => {
-        resolve();
-      });
-    }
+  animateTabClose(aTab) {
     const height = aTab.getBoundingClientRect().height;
     return gZenUIManager.motion.animate(
       aTab,

@@ -67,6 +67,7 @@
   );
 
   --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
+  --panel-separator-zap-gradient: none !important;
 
   --in-content-primary-button-background: color-mix(
     in srgb,
@@ -207,7 +208,7 @@
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
-  --zen-workspace-indicator-height: 48px;
+  --zen-workspace-indicator-height: 46px;
 
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
@@ -264,7 +265,8 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and -moz-pref('zen.widget.linux.transparency')) {
+  @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and 
+        -moz-pref('zen.widget.linux.transparency')) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;
 
@@ -276,7 +278,7 @@
   &,
   & panel,
   & menupopup,
-  & #zen-browser-background,
+  & .zen-browser-generic-background,
   & #urlbar[breakout-extend='true'],
   & #tabbrowser-tabpanels browser[type='content'],
   &:not([zen-should-be-dark-mode]) #zen-toast-container {

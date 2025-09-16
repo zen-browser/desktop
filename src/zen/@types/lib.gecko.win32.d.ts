@@ -159,6 +159,7 @@ declare global {
     canSetDefaultBrowserUserChoice(): boolean;
     checkAllProgIDsExist(): boolean;
     checkBrowserUserChoiceHashes(): boolean;
+    checkCurrentProcessAUMIDForTesting(): string;
     isDefaultHandlerFor(aFileExtensionOrProtocol: string): boolean;
     queryCurrentDefaultHandlerFor(aFileExtensionOrProtocol: string): string;
   }
@@ -307,7 +308,7 @@ declare global {
     setWindowIconNoData(aWindow: mozIDOMWindowProxy): void;
     readonly inWin10TabletMode: boolean;
     readonly inWin11TabletMode: boolean;
-    shareUrl(shareTitle: string, urlToShare: string): void;
+    shareUrl(urlToShare: string, shareTitle: string): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/system/windowsPackageManager/nsIWindowsPackageManager.idl

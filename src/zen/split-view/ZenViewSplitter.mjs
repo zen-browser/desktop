@@ -332,7 +332,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 paddingLeft: 0,
               },
           {
-            duration: 0.08,
+            duration: 0.1,
             easing: 'ease-out',
           }
         ),
@@ -347,7 +347,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               : {}),
           },
           {
-            duration: 0.08,
+            duration: 0.1,
             easing: 'ease-out',
           }
         ),
@@ -513,7 +513,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const wrapper = this.overlay?.parentNode;
     if (!wrapper) return;
 
-    wrapper.setAttribute('hidden', !value);
+    if (!value) {
+      wrapper.setAttribute('hidden', 'true');
+    } else {
+      wrapper.removeAttribute('hidden');
+    }
   }
 
   enableTabRearrangeView(tabDrag = false) {
@@ -896,9 +900,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         tabCount: window.gBrowser.selectedTabs.length,
       });
       document.getElementById('context_zenSplitTabs').setAttribute('data-l10n-args', tabCountInfo);
-      document
-        .getElementById('context_zenSplitTabs')
-        .setAttribute('hidden', !this.contextCanSplitTabs());
+      const splitTabs = document.getElementById('context_zenSplitTabs');
+      if (!this.contextCanSplitTabs()) {
+        splitTabs.setAttribute('hidden', 'true');
+      } else {
+        splitTabs.removeAttribute('hidden');
+      }
     });
   }
 

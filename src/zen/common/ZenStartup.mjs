@@ -23,10 +23,14 @@
     #initBrowserBackground() {
       const background = document.createXULElement('box');
       background.id = 'zen-browser-background';
+      background.classList.add('zen-browser-generic-background');
       const grain = document.createXULElement('box');
-      grain.id = 'zen-browser-grain';
+      grain.classList.add('zen-browser-grain');
       background.appendChild(grain);
       document.getElementById('browser').prepend(background);
+      const toolbarBackground = background.cloneNode(true);
+      toolbarBackground.id = 'zen-toolbar-background';
+      document.getElementById('titlebar').prepend(toolbarBackground);
     }
 
     #zenInitBrowserLayout() {
@@ -169,7 +173,10 @@
 
     async #createUpdateAnimation() {
       const appID = Services.appinfo.appBuildID;
-      if (Services.prefs.getStringPref('zen.updates.last-build-id', '') === appID) {
+      if (
+        Services.prefs.getStringPref('zen.updates.last-build-id', '') === appID ||
+        gZenUIManager.testingEnabled
+      ) {
         return;
       }
       Services.prefs.setStringPref('zen.updates.last-build-id', appID);

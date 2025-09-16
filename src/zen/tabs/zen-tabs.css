@@ -36,7 +36,7 @@
       * - Bookmarks toolbar is visible OR
       * - The container is explicitly marked to hide controls (e.g., on Linux with reversed controls)
       */
-    &:has(#PersonalToolbar[collapsed='false']) {
+    &:has(#PersonalToolbar:not([collapsed])) {
 %include zen-tabs/vertical-tabs-topbar.inc.css
     }
     &[should-hide='true'] {

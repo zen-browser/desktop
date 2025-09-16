@@ -770,7 +770,6 @@ var zenMissingKeyboardShortcutL10n = {
   key_enterFullScreen: 'zen-key-enter-full-screen',
   key_exitFullScreen: 'zen-key-exit-full-screen',
   key_aboutProcesses: 'zen-key-about-processes',
-  key_stop: 'zen-key-stop',
   key_sanitize: 'zen-key-sanitize',
   key_wrCaptureCmd: 'zen-key-wr-capture-cmd',
   key_wrToggleCaptureSequenceCmd: 'zen-key-wr-toggle-capture-sequence-cmd',
@@ -779,6 +778,8 @@ var zenMissingKeyboardShortcutL10n = {
   key_zenTabNext: 'zen-tab-next-shortcut',
   key_zenTabPrevious: 'zen-tab-prev-shortcut',
   key_toggleUnloadedCycling: 'zen-toggle-unloaded-cycling-shortcut',
+
+  'zen-glance-expand': 'zen-glance-expand',
 
   key_selectTab1: 'zen-key-select-tab-1',
   key_selectTab2: 'zen-key-select-tab-2',
@@ -883,7 +884,7 @@ var gZenCKSSettings = {
 
       const labelValue = zenMissingKeyboardShortcutL10n[keyID] ?? l10nID;
 
-      if (zenIgnoreKeyboardShortcutL10n.includes(labelValue)) {
+      if (zenIgnoreKeyboardShortcutL10n.includes(labelValue) || shortcut.shouldBeEmpty) {
         continue;
       }
 
@@ -1139,11 +1140,6 @@ Preferences.addAll([
     default: 'float',
   },
   {
-    id: 'zen.view.compact.color-sidebar',
-    type: 'bool',
-    default: true,
-  },
-  {
     id: 'zen.workspaces.separate-essentials',
     type: 'bool',
     default: false,
@@ -1173,7 +1169,7 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
-    {
+  {
     id: 'zen.tabs.unloaded-navigation-mode',
     type: 'string',
     default: 'always',

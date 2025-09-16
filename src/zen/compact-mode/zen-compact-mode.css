@@ -160,7 +160,7 @@
             outline: 1px solid rgba(255, 255, 255, .15);
             outline-offset: -1px;
             background-attachment: fixed !important;
-            background-size: 2000px !important;
+            background-size: 100vw !important;
           }
 
           &,
@@ -361,7 +361,7 @@
           @media -moz-pref('zen.view.compact.color-toolbar') {
             background-attachment: fixed;
             background: var(--zen-main-browser-background-toolbar);
-            background-size: 100% 2000px;
+            background-size: 100% 100vw;
           }
         }
       }

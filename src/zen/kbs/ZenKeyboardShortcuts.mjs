@@ -1287,7 +1287,6 @@ var gZenKeyboardShortcutsManager = {
     };
 
     browser.addEventListener('keydown', listener, true);
-    browser.gZenKeyboardShortcutsManager._precedentListeners.push(listener);
   },
 
   _applyShortcuts() {
@@ -1305,8 +1304,6 @@ var gZenKeyboardShortcutsManager = {
       //if (mainKeyset.children.length > 0) {
       //  throw new Error('Child list not empty');
       //}
-
-      browser.gZenKeyboardShortcutsManager._precedentListeners = [];
 
       for (let key of this._currentShortcutList) {
         if (key.isInternal()) {

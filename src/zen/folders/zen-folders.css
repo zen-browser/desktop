@@ -265,7 +265,7 @@ zen-folder {
     }
 
     .tab-group-folder-icon {
-      width: 30px;
+      width: 28px;
       height: 28px;
       align-content: center;
       pointer-events: none;
@@ -273,28 +273,18 @@ zen-folder {
       pointer-events: none;
 
       :root[zen-sidebar-expanded] & {
-        left: 4px;
+        left: 5px;
       }
 
       & svg {
         filter: contrast(125%);
-        transition: 0.2s scale;
-        transform-origin: right bottom;
-
-        :root:not([zen-sidebar-expanded]) & {
-          transform-origin: center bottom;
-        }
 
         & image {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
           fill: var(--zen-folder-stroke);
-          transform: translate(-182%, 2.4px);
+          transform: translate(4px, 6.5px);
         }
-      }
-
-      & svg[state='open'] {
-        scale: 0.92;
       }
     }
 

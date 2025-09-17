@@ -17,7 +17,7 @@ window.gZenOperatingSystemCommonUtils = {
 
 /* eslint-disable no-unused-vars */
 class nsZenMultiWindowFeature {
-  constructor() {}
+  constructor() { }
 
   static get browsers() {
     return Services.wm.getEnumerator('navigator:browser');
@@ -122,10 +122,15 @@ var gZenCommonActions = {
   },
 
   nextTab() {
-    gBrowser.tabContainer.advanceSelectedTab(1, false);
+    gBrowser
+      .tabContainer
+      .advanceSelectedTab(1, false);
   },
+
   previousTab() {
-    gBrowser.tabContainer.advanceSelectedTab(-1, false);
+    gBrowser
+      .tabContainer
+      .advanceSelectedTab(-1, false);
   },
 
   toggleUnloadedCycling() {

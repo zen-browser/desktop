@@ -124,13 +124,13 @@ var gZenCommonActions = {
   nextTab() {
     gBrowser
       .tabContainer
-      .advanceSelectedTab(1, false);
+      .advanceSelectedTab(1, true);
   },
 
   previousTab() {
     gBrowser
       .tabContainer
-      .advanceSelectedTab(-1, false);
+      .advanceSelectedTab(-1, true);
   },
 
   toggleUnloadedCycling() {

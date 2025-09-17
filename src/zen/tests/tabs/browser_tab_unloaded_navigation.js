@@ -115,7 +115,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
    * Helper to test navigation scenarios. Each run is isolated by creating and
    * then cleaning up its own set of tabs.
    */
-  async function runNavTest({ setup, startIndex, direction, expectedURL, description }) {
+  async function runNavTest({ setup, startIndex, direction, shouldWrap, expectedURL, description }) {
     info(`Running test: ${description}`);
 
     let allTestTabs = [];
@@ -159,7 +159,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
 
       info(`Starting navigation from tab index ${startTabIndex}, direction ${direction}`);
 
-      gBrowser.tabContainer.advanceSelectedTab(direction, false);
+      gBrowser.tabContainer.advanceSelectedTab(direction, shouldWrap);
       await TestUtils.waitForTick();
 
       const finalURL = gBrowser.selectedTab.linkedBrowser.currentURI.spec;
@@ -189,6 +189,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
     ],
     startIndex: 0,
     direction: 1,
+    shouldWrap: false,
     expectedURL: URL3,
     description: 'Should skip one unloaded tab and land on the correct URL.',
   });
@@ -201,6 +202,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
     ],
     startIndex: 2,
     direction: -1,
+    shouldWrap: false,
     expectedURL: URL1,
     description: 'Should skip one unloaded tab backward and land on the correct URL.',
   });
@@ -214,6 +216,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
     ],
     startIndex: 0,
     direction: 1,
+    shouldWrap: false,
     expectedURL: URL3,
     description: 'Should skip multiple unloaded tabs and land on the correct URL.',
   });
@@ -226,6 +229,7 @@ add_task(async function test_unloaded_navigation_never_mode() {
     ],
     startIndex: 0,
     direction: 1,
+    shouldWrap: false,
     expectedURL: URL1,
     description: 'Should not move if there is no next loaded tab.',
   });
@@ -238,8 +242,22 @@ add_task(async function test_unloaded_navigation_never_mode() {
     ],
     startIndex: 2,
     direction: -1,
+    shouldWrap: false,
     expectedURL: URL1,
-    description: "Should wrap around to the first loaded tab's URL.",
+    description: "Should skip the unloaded tab and reach the correct URLto the first loaded tab's URL, by moving backwards.",
+  });
+
+  await runNavTest({
+    setup: [
+      { type: 'loaded', url: URL1 },
+      { type: 'loaded', url: URL2 },
+      { type: 'loaded', url: URL3 },
+    ],
+    startIndex: 2,
+    direction: 1,
+    shouldWrap: true,
+    expectedURL: URL1,
+    description: "Should wrap from the last tab to the first one, by moving forward.",
   });
 
   await SpecialPowers.popPrefEnv();

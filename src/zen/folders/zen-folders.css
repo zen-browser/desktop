@@ -185,7 +185,7 @@ zen-folder {
   visibility: visible;
 
   --zen-folder-behind-bgcolor: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 85%, white),
+    color-mix(in srgb, var(--zen-primary-color) 60%, gray),
     color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1)
   );
   --zen-folder-front-bgcolor: light-dark(
@@ -193,8 +193,8 @@ zen-folder {
     color-mix(in srgb, var(--zen-primary-color), black 40%)
   );
   --zen-folder-stroke: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 60%, black),
-    color-mix(in srgb, var(--zen-colors-primary) 20%, var(--toolbox-textcolor))
+    color-mix(in srgb, var(--zen-primary-color) 50%, black),
+    color-mix(in srgb, var(--zen-colors-primary) 15%, var(--toolbox-textcolor))
   );
 
   -moz-window-dragging: no-drag;

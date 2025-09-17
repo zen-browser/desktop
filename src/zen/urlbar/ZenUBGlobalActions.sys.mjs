@@ -13,7 +13,6 @@ const globalActionsTemplate = [
     label: 'Open Theme Picker',
     command: 'cmd_zenOpenZenThemePicker',
     icon: 'chrome://browser/skin/zen-icons/edit-theme.svg',
-    suggestedIndex: 4,
   },
   {
     label: 'New Split View',
@@ -46,6 +45,30 @@ const globalActionsTemplate = [
     label: 'Open Private Window',
     command: 'Tools:PrivateBrowsing',
     icon: 'chrome://browser/skin/zen-icons/private-window.svg',
+  },
+  {
+    label: 'Toggle Pinned Tab',
+    command: 'cmd_zenTogglePinTab',
+    icon: 'chrome://browser/skin/zen-icons/pin.svg',
+    isAvailable: (window) => {
+      return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
+    },
+  },
+  {
+    label: 'Next Workspace',
+    command: 'cmd_zenWorkspaceForward',
+    icon: 'chrome://browser/skin/zen-icons/forward.svg',
+  },
+  {
+    label: 'Previous Workspace',
+    command: 'cmd_zenWorkspaceBackward',
+    icon: 'chrome://browser/skin/zen-icons/back.svg',
+  },
+  {
+    label: 'Close Tab',
+    command: 'cmd_close',
+    icon: 'chrome://browser/skin/zen-icons/close.svg',
+    suggestedIndex: 1,
   },
 ];
 

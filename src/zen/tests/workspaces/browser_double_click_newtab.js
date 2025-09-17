@@ -14,7 +14,10 @@ add_setup(async function () {
 });
 
 add_task(async function test_Check_Creation() {
-  const placeToDoubleClick = gZenWorkspaces.activeWorkspaceStrip;
+  const placeToDoubleClick = gZenWorkspaces.activeWorkspaceElement.querySelector(
+    '.zen-workspace-empty-space'
+  );
+  ok(placeToDoubleClick, 'We should have found the place to double click.');
   EventUtils.sendMouseEvent({ type: 'dblclick' }, placeToDoubleClick, window);
   await TestUtils.waitForCondition(() => gBrowser.tabs.length === 3, 'New tab should be opened.');
 

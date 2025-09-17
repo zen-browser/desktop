@@ -126,7 +126,7 @@
         darkModeChange
       );
 
-      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.25);
+      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.5);
     }
 
     handleDarkModeChange() {
@@ -1182,14 +1182,11 @@
           let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
           let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
           let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
-          if (!forToolbar) {
-            return [
-              `radial-gradient(circle at 0% 0%, ${color2}, transparent 100%)`,
-              `radial-gradient(circle at 100% 0%, ${color3}, transparent 100%)`,
-              `linear-gradient(to top, ${color1} 0%, transparent 60%)`,
-            ].join(', ');
-          }
-          return [`linear-gradient(-45deg, ${color1} 15%, ${color2})`].join(', ');
+          return [
+            `linear-gradient(to top, ${color1} -50%, transparent 110%)`,
+            `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 80%)`,
+            `radial-gradient(circle at 100% -100%, ${color3} -100%, transparent 400%)`,
+          ].join(', ');
         }
       }
     }

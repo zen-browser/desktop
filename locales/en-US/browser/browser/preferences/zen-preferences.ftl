@@ -55,9 +55,6 @@ pane-settings-workspaces-title = Workspaces
 zen-tabs-unloader-enabled =
     .label = Enable Tab Unloader
 
-zen-look-and-feel-compact-toolbar-themed =
-    .label = Use themed background for compact toolbar
-
 zen-workspace-continue-where-left-off =
     .label = Continue where you left off
 

@@ -1449,6 +1449,7 @@
 
     :root:not([zen-sidebar-expanded='true']) & {
       max-width: var(--zen-sidebar-width);
+      align-items: center;
     }
   }
 

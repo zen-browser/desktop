@@ -17,9 +17,6 @@
 - name: zen.view.compact.toolbar-hide-after-hover.duration
   value: 1000
 
-- name: zen.view.compact.color-toolbar
-  value: true
-
 - name: zen.view.compact.animate-sidebar
   value: true
 

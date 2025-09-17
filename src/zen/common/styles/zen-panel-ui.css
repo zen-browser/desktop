@@ -5,21 +5,22 @@
  */
 panel[type='arrow'] {
   @media (-moz-platform: macos) and (-moz-panel-animations) {
-    &[animate='open'] {
-      animation: zen-jello-animation-macos 0.2s ease-out forwards;
-      &[side='bottom'] {
-        /* Animate from the bottom */
-        -zen-window-transform-origin: 0 100%;
-      }
-      :root[zen-right-side='true'] & {
-        /* Animate from the right */
-        -zen-window-transform-origin: 100% 0;
+    &[side='bottom'] {
+      /* Animate from the bottom */
+      -zen-window-transform-origin: 0 100%;
+    }
+    :root[zen-right-side='true'] & {
+      /* Animate from the right */
+      -zen-window-transform-origin: 100% 0;
 
-        &[side='bottom'] {
-          /* Animate from the bottom right */
-          -zen-window-transform-origin: 100% 100%;
-        }
+      &[side='bottom'] {
+        /* Animate from the bottom right */
+        -zen-window-transform-origin: 100% 100%;
       }
+    }
+    -moz-window-opacity: 0;
+    &[animate='open'] {
+      animation: zen-jello-animation-macos 0.2s ease-in-out forwards !important;
     }
   }
   @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) and (-moz-panel-animations) {
@@ -28,10 +29,6 @@ panel[type='arrow'] {
       animation: zen-jello-animation 0.35s ease;
     }
   }
-}
-
-panel[type='arrow'][animate]:not([animate='open']) {
-  animation: zen-jello-out-animation 0.3s ease-in-out;
 }
 
 menupopup,

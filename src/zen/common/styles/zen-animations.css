@@ -20,12 +20,12 @@
 
 @keyframes zen-jello-animation-macos {
   0% {
-    opacity: 0;
-    -moz-window-transform: scale(0.3);
+    -moz-window-opacity: 0;
+    -moz-window-transform: scale(0.8);
   }
 
   100% {
-    opacity: 1;
+    -moz-window-opacity: 1;
     -moz-window-transform: scale(1);
   }
 }
@@ -54,26 +54,6 @@
   }
   to {
     transform: scale(1) translate(-50%, -50%);
-  }
-}
-
-@keyframes zen-jello-out-animation {
-  0% {
-    transform: scale3d(1, 1, 1);
-  }
-
-  60% {
-    transform: scale3d(1.02, 1.02, 1.02);
-  }
-
-  99% {
-    opacity: 0;
-    transform: scale3d(0.8, 0.8, 0.8);
-  }
-
-  100% {
-    -moz-window-transform: none;
-    transform: none;
   }
 }
 

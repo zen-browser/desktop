@@ -163,6 +163,7 @@
     }
 
     async unpackTabs() {
+      this.collapsed = false;
       for (let tab of this.allItems.reverse()) {
         tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
         if (tab.hasAttribute('zen-empty-tab')) {
@@ -228,10 +229,21 @@
           tab.setAttribute('folder-active', 'true');
         }
       } else {
+        const folders = new Map();
         for (let tab of this._activeTabs) {
-          tab.removeAttribute('folder-active');
+          const group = tab?.group?.hasAttribute('split-view-group')
+            ? tab?.group?.group
+            : tab?.group;
+          if (!folders.has(group?.id)) {
+            folders.set(group?.id, group?.activeGroups?.at(-1));
+          }
+          let activeGroup = folders.get(group?.id);
+          if (!activeGroup) {
+            tab.removeAttribute('folder-active');
+          }
         }
         this._activeTabs = [];
+        folders.clear();
       }
     }
 

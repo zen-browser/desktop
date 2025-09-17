@@ -35,6 +35,11 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * A provider that lets the user view all available global actions for a query.
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
+  constructor() {
+    super();
+    lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
+  }
+
   get name() {
     return 'ZenUrlbarProviderGlobalActions';
   }
@@ -211,7 +216,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   async startQuery(queryContext, addCallback) {
-    const query = queryContext.searchString.trim().toLowerCase();
+    const query = queryContext.trimmedLowerCaseSearchString;
     if (!query) {
       return;
     }
@@ -234,6 +239,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
           action.command
         ),
+        keywords: action.label.split(' '),
         ...action.extraPayload,
       });
 

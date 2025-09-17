@@ -140,12 +140,15 @@ var gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 388;
+    const kUrlbarHeight = 335;
     gURLBar.textbox.style.setProperty(
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 2}px`);
+    gURLBar.textbox.style.setProperty(
+      '--zen-urlbar-width',
+      `${Math.min(window.innerWidth / 2, 700)}px`
+    );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -328,8 +331,8 @@ var gZenUIManager = {
 
     // Open location command
     try {
-      document.getElementById('Browser:OpenLocation').doCommand();
       gURLBar.search(this._lastSearch || '');
+      document.getElementById('Browser:OpenLocation').doCommand();
     } catch (e) {
       console.error('Error opening location in new tab:', e);
       this.handleUrlbarClose(false);
@@ -698,13 +701,22 @@ var gZenVerticalTabsManager = {
   },
 
   animateTabClose(aTab) {
+    if (aTab.hasAttribute('zen-essential') || aTab.group?.hasAttribute('split-view-group')) {
+      return Promise.resolve();
+    }
     const height = aTab.getBoundingClientRect().height;
+    const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
+    const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
     return gZenUIManager.motion.animate(
       aTab,
       {
         opacity: [1, 0],
         transform: ['scale(1)', 'scale(0.95)'],
-        marginBottom: [`0px`, `-${height}px`],
+        ...(isLastItem
+          ? {}
+          : {
+              marginBottom: [`0px`, `-${height}px`],
+            }),
       },
       {
         duration: 0.075,
@@ -807,16 +819,19 @@ var gZenVerticalTabsManager = {
   },
 
   recalculateURLBarHeight() {
-    document.getElementById('urlbar').removeAttribute('--urlbar-height');
-    let height;
-    if (!this._hasSetSingleToolbar) {
-      height = 32;
-    } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
-      height = 40;
-    }
-    if (typeof height !== 'undefined') {
-      document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
-    }
+    requestAnimationFrame(() => {
+      document.getElementById('urlbar').removeAttribute('--urlbar-height');
+      let height;
+      if (!this._hasSetSingleToolbar) {
+        height = 32;
+      } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
+        height = 40;
+      }
+      if (typeof height !== 'undefined') {
+        document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
+      }
+      gURLBar.valueFormatter._formatURL();
+    });
   },
 
   _updateEvent({ forCustomizableMode = false, dontRebuildAreas = false } = {}) {

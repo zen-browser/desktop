@@ -192,7 +192,7 @@ class nsKeyShortcutModifiers {
     return new nsKeyShortcutModifiers(ctrl, alt, shift, meta, accel);
   }
 
-  toUserString() {
+  toDisplayString() {
     let str = '';
     const separation = AppConstants.platform == 'macosx' ? ' ' : '+';
     if (this.#control && !this.#accel) {
@@ -543,8 +543,8 @@ class KeyShortcut {
     };
   }
 
-  toUserString() {
-    let str = this.#modifiers.toUserString();
+  toDisplayString() {
+    let str = this.#modifiers.toDisplayString();
 
     if (this.#key) {
       str += this.#key.toUpperCase();
@@ -1087,7 +1087,7 @@ class nsZenKeyboardShortcutsVersioner {
           '+',
           '',
           ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
           'cmd_zenNewEmptySplit',
           'zen-new-empty-split-view-shortcut'
         )
@@ -1382,7 +1382,7 @@ var gZenKeyboardShortcutsManager = {
     }
     const shortcut = this.getShortcutFromCommand(command);
     if (shortcut) {
-      return shortcut.toUserString();
+      return shortcut.toDisplayString();
     }
     return null;
   },

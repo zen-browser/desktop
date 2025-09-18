@@ -117,40 +117,43 @@ const globalActionsTemplate = [
     suggestedIndex: 1,
   },
   {
-    label: "Toggle Tabs on right",
-    command: "cmd_zenToggleTabsOnRight",
-    icon: "chrome://browser/skin/zen-icons/sidebars-right.svg",
+    label: 'Toggle Tabs on right',
+    command: 'cmd_zenToggleTabsOnRight',
+    icon: 'chrome://browser/skin/zen-icons/sidebars-right.svg',
     suggestedIndex: 1,
   },
   {
-    label: "Add to Essentials",
+    label: 'Add to Essentials',
     command: (window) => window.gZenPinnedTabManager.addToEssentials(window.gBrowser.selectedTab),
     isAvailable: (window) => {
-      return window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab) && !window.gBrowser.selectedTab.hasAttribute("zen-essential")
+      return (
+        window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab) &&
+        !window.gBrowser.selectedTab.hasAttribute('zen-essential')
+      );
     },
-    icon: "chrome://browser/skin/zen-icons/essential-add.svg",
+    icon: 'chrome://browser/skin/zen-icons/essential-add.svg',
     suggestedIndex: 1,
   },
   {
-    label: "Remove from Essentials",
+    label: 'Remove from Essentials',
     command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
-    isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute("zen-essential"),
-    icon: "chrome://browser/skin/zen-icons/essential-remove.svg",
+    isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute('zen-essential'),
+    icon: 'chrome://browser/skin/zen-icons/essential-remove.svg',
     suggestedIndex: 1,
   },
   {
-    label: "Find in Page",
-    command: "cmd_find",
-    icon: "chrome://browser/skin/zen-icons/search-page.svg",
+    label: 'Find in Page',
+    command: 'cmd_find',
+    icon: 'chrome://browser/skin/zen-icons/search-page.svg',
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
     suggestedIndex: 1,
   },
   {
-    label: "Manage Extensions",
-    command: "Tools:Addons",
-    icon: "chrome://browser/skin/zen-icons/extension.svg",
+    label: 'Manage Extensions',
+    command: 'Tools:Addons',
+    icon: 'chrome://browser/skin/zen-icons/extension.svg',
     suggestedIndex: 1,
   },
 ];

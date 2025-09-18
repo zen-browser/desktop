@@ -116,6 +116,90 @@ const globalActionsTemplate = [
     },
     suggestedIndex: 1,
   },
+  {
+    label: "Toggle Tabs on right",
+    command: "cmd_zenToggleTabsOnRight",
+    icon: "chrome://browser/skin/zen-icons/sidebars-right.svg",
+  },
+  {
+    label: "Add to Essentials",
+    command: (window) => window.gZenPinnedTabManager.addToEssentials(window.gBrowser.selectedTab),
+    isAvailable: (window) => window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab),
+    icon: "chrome://browser/skin/zen-icons/essential-add.svg",
+  },
+  {
+    label: "Remove from Essentials",
+    command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
+    isAvailable: (window) => window.gBrowser.selectedTab?.hasAttribute("zen-essential"),
+    icon: "chrome://browser/skin/zen-icons/essential-remove.svg",
+  },
+  {
+    label: "Bookmark This Page",
+    command: "Browser:AddBookmarkAs",
+    icon: "chrome://browser/skin/bookmark.svg",
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    label: "Bookmark All Tabs",
+    command: "Browser:BookmarkAllTabs",
+    icon: "chrome://browser/skin/bookmarks-toolbar.svg",
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    label: "Show All Bookmarks",
+    command: "Browser:ShowAllHistory",
+    icon: "chrome://browser/skin/zen-icons/library.svg",
+  },
+  {
+    label: "Find in Page",
+    command: "cmd_find",
+    icon: "chrome://browser/skin/zen-icons/search-page.svg",
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    label: "Translate Page",
+    command: "cmd_translate",
+    icon: "chrome://browser/skin/zen-icons/translations.svg",
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
+    label: "View Downloads",
+    command: "Tools:Downloads",
+    icon: "chrome://browser/skin/zen-icons/download.svg",
+  },
+  {
+    label: "View History",
+    command: "Browser:ShowAllHistory",
+    icon: "chrome://browser/skin/zen-icons/history.svg",
+  },
+  {
+    label: "Manage Extensions",
+    command: "Tools:Addons",
+    icon: "chrome://browser/skin/zen-icons/extension.svg",
+  },
+  {
+    label: "Customize Toolbar...",
+    command: "cmd_CustomizeToolbars",
+    icon: "chrome://browser/skin/zen-icons/customize.svg",
+  },
+  {
+    label: "Clear Recent History...",
+    command: "Tools:Sanitize",
+    icon: "chrome://browser/skin/zen-icons/edit-delete.svg",
+  },
+  {
+    label: "Create New Profile",
+    command: "Profiles:CreateProfile",
+    icon: "chrome://browser/skin/zen-icons/container-tab.svg",
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

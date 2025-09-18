@@ -124,13 +124,15 @@ const globalActionsTemplate = [
   {
     label: "Add to Essentials",
     command: (window) => window.gZenPinnedTabManager.addToEssentials(window.gBrowser.selectedTab),
-    isAvailable: (window) => window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab),
+    isAvailable: (window) => {
+      return window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab) && !window.gBrowser.selectedTab.hasAttribute("zen-essential")
+    },
     icon: "chrome://browser/skin/zen-icons/essential-add.svg",
   },
   {
     label: "Remove from Essentials",
     command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
-    isAvailable: (window) => window.gBrowser.selectedTab?.hasAttribute("zen-essential"),
+    isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute("zen-essential"),
     icon: "chrome://browser/skin/zen-icons/essential-remove.svg",
   },
   {

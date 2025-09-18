@@ -481,6 +481,14 @@ class KeyShortcut {
     this.#action = action;
   }
 
+  set reserved(value) {
+    this.#reserved = value;
+  }
+
+  get reserved() {
+    return this.#reserved;
+  }
+
   getL10NID() {
     return this.#l10nId;
   }
@@ -816,7 +824,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 11;
+  static LATEST_KBS_VERSION = 12;
 
   constructor() {}
 
@@ -975,7 +983,9 @@ class nsZenKeyboardShortcutsVersioner {
           ZEN_OTHER_SHORTCUTS_GROUP,
           nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
           'cmd_zenCopyCurrentURL',
-          'zen-text-action-copy-url-shortcut'
+          'zen-text-action-copy-url-shortcut',
+          false,
+          true
         )
       );
     }
@@ -1092,6 +1102,14 @@ class nsZenKeyboardShortcutsVersioner {
           'zen-new-empty-split-view-shortcut'
         )
       );
+    }
+
+    if (version < 12) {
+      for (let shortcut of data) {
+        if (shortcut.getID() === 'zen-copy-url') {
+          shortcut.reserved = true;
+        }
+      }
     }
     return data;
   }

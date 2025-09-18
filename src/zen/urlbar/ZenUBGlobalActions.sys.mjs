@@ -100,12 +100,12 @@ const globalActionsTemplate = [
   {
     label: 'Next Tab',
     command: 'Browser:NextTab',
-    icon: 'chrome://browser/skin/zen-icons/next-tab.svg',
+    icon: 'chrome://browser/skin/zen-icons/forward.svg',
   },
   {
     label: 'Previous Tab',
     command: 'Browser:PrevTab',
-    icon: 'chrome://browser/skin/zen-icons/previous-tab.svg',
+    icon: 'chrome://browser/skin/zen-icons/back.svg',
   },
   {
     label: 'Capture Screenshot',
@@ -136,27 +136,6 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/essential-remove.svg",
   },
   {
-    label: "Bookmark This Page",
-    command: "Browser:AddBookmarkAs",
-    icon: "chrome://browser/skin/bookmark.svg",
-    isAvailable: (window) => {
-      return isNotEmptyTab(window);
-    },
-  },
-  {
-    label: "Bookmark All Tabs",
-    command: "Browser:BookmarkAllTabs",
-    icon: "chrome://browser/skin/bookmarks-toolbar.svg",
-    isAvailable: (window) => {
-      return isNotEmptyTab(window);
-    },
-  },
-  {
-    label: "Show All Bookmarks",
-    command: "Browser:ShowAllHistory",
-    icon: "chrome://browser/skin/zen-icons/library.svg",
-  },
-  {
     label: "Find in Page",
     command: "cmd_find",
     icon: "chrome://browser/skin/zen-icons/search-page.svg",
@@ -165,42 +144,9 @@ const globalActionsTemplate = [
     },
   },
   {
-    label: "Translate Page",
-    command: "cmd_translate",
-    icon: "chrome://browser/skin/zen-icons/translations.svg",
-    isAvailable: (window) => {
-      return isNotEmptyTab(window);
-    },
-  },
-  {
-    label: "View Downloads",
-    command: "Tools:Downloads",
-    icon: "chrome://browser/skin/zen-icons/download.svg",
-  },
-  {
-    label: "View History",
-    command: "Browser:ShowAllHistory",
-    icon: "chrome://browser/skin/zen-icons/history.svg",
-  },
-  {
     label: "Manage Extensions",
     command: "Tools:Addons",
     icon: "chrome://browser/skin/zen-icons/extension.svg",
-  },
-  {
-    label: "Customize Toolbar...",
-    command: "cmd_CustomizeToolbars",
-    icon: "chrome://browser/skin/zen-icons/customize.svg",
-  },
-  {
-    label: "Clear Recent History...",
-    command: "Tools:Sanitize",
-    icon: "chrome://browser/skin/zen-icons/edit-delete.svg",
-  },
-  {
-    label: "Create New Profile",
-    command: "Profiles:CreateProfile",
-    icon: "chrome://browser/skin/zen-icons/container-tab.svg",
   },
 ];
 

@@ -120,6 +120,7 @@ const globalActionsTemplate = [
     label: "Toggle Tabs on right",
     command: "cmd_zenToggleTabsOnRight",
     icon: "chrome://browser/skin/zen-icons/sidebars-right.svg",
+    suggestedIndex: 1,
   },
   {
     label: "Add to Essentials",

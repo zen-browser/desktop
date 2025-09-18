@@ -21,6 +21,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarTokenizer: 'resource:///modules/UrlbarTokenizer.sys.mjs',
   QueryScorer: 'resource:///modules/UrlbarProviderInterventions.sys.mjs',
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
+  AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -34,6 +35,11 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * A provider that lets the user view all available global actions for a query.
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
+  constructor() {
+    super();
+    lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
+  }
+
   get name() {
     return 'ZenUrlbarProviderGlobalActions';
   }
@@ -63,25 +69,85 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     );
   }
 
+  #getWorkspaceActions(window) {
+    if (window.gZenWorkspaces.privateWindowOrDisabled) {
+      return [];
+    }
+    const workspaces = window.gZenWorkspaces._workspaceCache?.workspaces;
+    if (!workspaces?.length) {
+      return [];
+    }
+    let actions = [];
+    const activeSpaceUUID = window.gZenWorkspaces.activeWorkspace;
+    for (const workspace of workspaces) {
+      if (workspace.uuid !== activeSpaceUUID) {
+        const accentColor = window.gZenWorkspaces
+          .workspaceElement(workspace.uuid)
+          ?.style.getPropertyValue('--zen-primary-color');
+        actions.push({
+          label: 'Focus on',
+          extraPayload: {
+            workspaceId: workspace.uuid,
+            prettyName: workspace.name,
+            prettyIcon: workspace.icon,
+            accentColor,
+          },
+          icon: 'chrome://browser/skin/zen-icons/forward.svg',
+        });
+      }
+    }
+    return actions;
+  }
+
+  async #getExtensionActions(window) {
+    const addons = await lazy.AddonManager.getAddonsByTypes(['extension']);
+    if (window.gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+      // Don't show extension actions on empty tabs, as extensions can't run there.
+      return [];
+    }
+    return addons
+      .filter(
+        (addon) =>
+          addon.isActive &&
+          !addon.isSystem &&
+          window.gUnifiedExtensions.browserActionFor(window.WebExtensionPolicy.getByID(addon.id))
+      )
+      .map((addon) => {
+        return {
+          icon: 'chrome://browser/skin/zen-icons/extension.svg',
+          label: 'Extension',
+          extraPayload: {
+            extensionId: addon.id,
+            prettyName: addon.name,
+            prettyIcon: addon.iconURL,
+          },
+        };
+      });
+  }
+
   /**
+   * @param {Window} window The window to check available actions for.
    * @returns All the available global actions.
    */
-  get #availableActions() {
-    return globalActions.filter((a) =>
-      typeof a.isAvailable === 'function' ? a.isAvailable() : true
-    );
+  async #getAvailableActions(window) {
+    return globalActions
+      .filter((a) => a.isAvailable(window))
+      .concat(this.#getWorkspaceActions(window))
+      .concat(await this.#getExtensionActions(window));
   }
 
   /**
    * Starts a search query amongst the available global actions.
    *
-   * @param {string} queryContext The query context object
+   * @param {string} query The user's search query.
+   *
    */
-  #findMatchingActions(query) {
-    const actions = this.#availableActions;
+  async #findMatchingActions(query) {
+    const window = lazy.BrowserWindowTracker.getTopWindow();
+    const actions = await this.#getAvailableActions(window);
     let results = [];
     for (let action of actions) {
-      const label = action.label;
+      const label = action.extraPayload?.prettyName || action.label;
       const score = this.#calculateFuzzyScore(label, query);
       if (score > MINIMUM_QUERY_SCORE) {
         results.push({
@@ -150,12 +216,12 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   async startQuery(queryContext, addCallback) {
-    const query = queryContext.searchString.trim().toLowerCase();
+    const query = queryContext.trimmedLowerCaseSearchString;
     if (!query) {
       return;
     }
 
-    const actionsResults = this.#findMatchingActions(query);
+    const actionsResults = await this.#findMatchingActions(query);
     if (!actionsResults.length) {
       return;
     }
@@ -173,6 +239,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
           action.command
         ),
+        keywords: action.label.split(' '),
+        ...action.extraPayload,
       });
 
       let result = new lazy.UrlbarResult(
@@ -206,6 +274,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @returns {object} An object describing the view update.
    */
   getViewUpdate(result) {
+    const prettyIconIsSvg =
+      result.payload.prettyIcon &&
+      (result.payload.prettyIcon.endsWith('.svg') || result.payload.prettyIcon.endsWith('.png'));
     return {
       icon: {
         attributes: {
@@ -218,6 +289,27 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       },
       shortcutContent: {
         textContent: result.payload.shortcutContent || '',
+      },
+      prettyName: {
+        attributes: {
+          hidden: !result.payload.prettyName,
+          style: `--zen-primary-color: ${result.payload.accentColor || 'currentColor'}`,
+        },
+      },
+      prettyNameTitle: {
+        textContent: result.payload.prettyName
+          ? prettyIconIsSvg || !result.payload.prettyIcon
+            ? result.payload.prettyName
+            : `${result.payload.prettyIcon}  ${result.payload.prettyName}`
+          : '',
+        attributes: { dir: 'ltr' },
+      },
+      prettyNameIcon: {
+        attributes: {
+          src: result.payload.prettyIcon || '',
+          hidden: !prettyIconIsSvg || !result.payload.prettyIcon,
+          workspaceIcon: !!result.payload.workspaceId,
+        },
       },
     };
   }
@@ -245,6 +337,23 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           ],
         },
         {
+          tag: 'span',
+          classList: ['urlbarView-prettyName'],
+          hidden: true,
+          name: 'prettyName',
+          children: [
+            {
+              tag: 'img',
+              name: 'prettyNameIcon',
+              attributes: { hidden: true },
+            },
+            {
+              name: 'prettyNameTitle',
+              tag: 'span',
+            },
+          ],
+        },
+        {
           name: 'shortcutContent',
           tag: 'span',
           classList: ['urlbarView-shortcutContent'],
@@ -257,10 +366,28 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const result = details.result;
     const payload = result.payload;
     const command = payload.zenCommand;
+    const ownerGlobal = details.element.ownerGlobal;
+    if (typeof command === 'function') {
+      command(ownerGlobal);
+      return;
+    }
+    // Switch workspace if theres a workspaceId in the payload.
+    if (payload.workspaceId) {
+      ownerGlobal.gZenWorkspaces.changeWorkspaceWithID(payload.workspaceId);
+      return;
+    }
+    if (payload.extensionId) {
+      const action = ownerGlobal.gUnifiedExtensions.browserActionFor(
+        ownerGlobal.WebExtensionPolicy.getByID(payload.extensionId)
+      );
+      if (action) {
+        action.openPopup(ownerGlobal, /* without user interaction = */ true);
+      }
+      return;
+    }
     if (!command) {
       return;
     }
-    const ownerGlobal = details.element.ownerGlobal;
     const commandToRun = ownerGlobal.document.getElementById(command);
     if (commandToRun) {
       ownerGlobal.gBrowser.selectedBrowser.focus();

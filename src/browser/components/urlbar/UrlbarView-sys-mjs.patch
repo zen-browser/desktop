@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index fdbab8806fd320f4aacec46a42c8ef953580d00c..40568280c3ba2f0a36f4443a5116430d3c502ec1 100644
+index fdbab8806fd320f4aacec46a42c8ef953580d00c..e23fae0d7e0b71d74899c11c229359864cd7e427 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -613,7 +613,7 @@ export class UrlbarView {
@@ -11,36 +11,48 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..40568280c3ba2f0a36f4443a5116430d
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -823,6 +823,19 @@ export class UrlbarView {
-         // them, resembling tab-to-search. In that case, the input value is
+@@ -824,6 +824,31 @@ export class UrlbarView {
          // still associated with the first result.
          this.input.setResultForCurrentValue(firstResult);
-+      } else if (firstResult.payload.zenAction) {
+       }
++      if (queryContext.results[0].payload.zenAction) {
 +        this.#selectElement(this.getFirstSelectableElement(), {
 +          updateInput: false,
 +          setAccessibleFocus:
 +            this.controller._userSelectionBehavior == "arrow",
 +        });
 +        this.window.setTimeout(() => {
++          this.window.setTimeout(() => {
++            this.#selectElement(this.getFirstSelectableElement(), {
++              updateInput: false,
++              setAccessibleFocus:
++                this.controller._userSelectionBehavior == "arrow",
++            });
++          });
++        });
++      }
++      this.window.setTimeout(() => {
++        if (queryContext.results[0].payload.zenAction) {
 +          this.#selectElement(this.getFirstSelectableElement(), {
 +            updateInput: false,
 +            setAccessibleFocus:
 +              this.controller._userSelectionBehavior == "arrow",
 +          });
-+        }, 150);
-       }
++        }
++      }, 220);
      }
  
-@@ -1341,7 +1354,7 @@ export class UrlbarView {
-           includeHiddenExposures: true,
-         });
-       let canBeVisible =
--        newSpanCount <= this.#queryContext.maxResults && !seenMisplacedResult;
-+        newSpanCount < this.#queryContext.maxResults && !seenMisplacedResult;
-       if (result.isHiddenExposure) {
-         if (canBeVisible) {
-           this.controller.engagementEvent.addExposure(
-@@ -3189,7 +3202,7 @@ export class UrlbarView {
+     // Announce tab-to-search results to screen readers as the user types.
+@@ -2706,6 +2731,8 @@ export class UrlbarView {
+       if (row?.hasAttribute("row-selectable")) {
+         row?.toggleAttribute("selected", true);
+       }
++      // only scroll if its not already fully visible
++      element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+       if (element != row) {
+         row?.toggleAttribute("descendant-selected", true);
+       }
+@@ -3189,7 +3216,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

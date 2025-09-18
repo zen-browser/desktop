@@ -543,6 +543,7 @@ var gZenCompactModeManager = {
       const onEnter = (event) => {
         setTimeout(() => {
           if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
+          if (event.target.closest('panel')) return;
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout('has-hover' + target.id);
           window.requestAnimationFrame(() => {

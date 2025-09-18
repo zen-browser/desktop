@@ -693,7 +693,12 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
   _handleSwipeMayStart(event) {
     if (this.privateWindowOrDisabled || this._inChangingWorkspace) return;
-    if (event.target.closest('#zen-sidebar-foot-buttons')) return;
+    if (
+      event.target.closest('#zen-sidebar-foot-buttons') ||
+      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
+    ) {
+      return;
+    }
 
     // Only handle horizontal swipes
     if (event.direction === event.DIRECTION_LEFT || event.direction === event.DIRECTION_RIGHT) {
@@ -1553,7 +1558,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (!this.workspaceEnabled || this._inChangingWorkspace) {
+    if (
+      !this.workspaceEnabled ||
+      this._inChangingWorkspace ||
+      gNavToolbox.hasAttribute('movingtab')
+    ) {
       return;
     }
     this._inChangingWorkspace = true;
@@ -2102,7 +2111,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       gZenUIManager._preventToolbarRebuild = true;
       gZenUIManager.updateTabsToolbar();
     }
-    await Promise.all(animations);
+    let promiseTimeout = new Promise((resolve) =>
+      setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
+    );
+    // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
+    // some sort of timeout to the animation promise, just in case it gets stuck.
+    // We are doing a race between the timeout and the animations finishing.
+    await Promise.race([Promise.all(animations), promiseTimeout]).catch(console.error);
     document.documentElement.removeAttribute('animating-background');
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
@@ -2540,12 +2555,14 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
   }
 
+  #changeToEmptyTab() {
+    const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
+    gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
+  }
+
   async onLocationChange(event) {
     let tab = event.target;
-    gZenCompactModeManager.sidebar.toggleAttribute(
-      'zen-has-empty-tab',
-      gBrowser.selectedTab.hasAttribute('zen-empty-tab')
-    );
+    this.#changeToEmptyTab();
     if (!this.workspaceEnabled || this._inChangingWorkspace || this._isClosingWindow) {
       return;
     }

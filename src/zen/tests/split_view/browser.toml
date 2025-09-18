@@ -14,3 +14,4 @@ support-files = [
 ["browser_split_browser_duplication.js"]
 ["browser_split_view_with_glance.js"]
 ["browser_split_view_with_folders.js"]
+["browser_split_view_empty.js"]

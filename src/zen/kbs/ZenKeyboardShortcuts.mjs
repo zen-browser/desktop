@@ -229,10 +229,10 @@ class nsKeyShortcutModifiers {
       this.#control == other.#control &&
       (AppConstants.platform == 'macosx'
         ? (this.#meta || this.#accel) == (other.#meta || other.#accel) &&
-          this.#control == other.#control
+        this.#control == other.#control
         : // In other platforms, we can have control and accel counting as the same thing
-          this.#meta == other.#meta &&
-          (this.#control || this.#accel) == (other.#control || other.#accel))
+        this.#meta == other.#meta &&
+        (this.#control || this.#accel) == (other.#control || other.#accel))
     );
   }
 
@@ -303,6 +303,7 @@ class KeyShortcut {
   #reserved = false;
   #internal = false;
   #shouldBeEmpty = false;
+  #isPrecedent = false;
 
   constructor(
     id,
@@ -314,7 +315,8 @@ class KeyShortcut {
     l10nId,
     disabled = false,
     reserved = false,
-    internal = false
+    internal = false,
+    isPrecedent = false
   ) {
     this.#id = id;
     this.#key = key?.toLowerCase();
@@ -331,6 +333,7 @@ class KeyShortcut {
     this.#disabled = disabled;
     this.#reserved = reserved;
     this.#internal = internal;
+    this.#isPrecedent = isPrecedent;
   }
 
   isEmpty() {
@@ -369,7 +372,8 @@ class KeyShortcut {
       json['l10nId'],
       json['disabled'],
       json['reserved'],
-      json['internal']
+      json['internal'],
+      json['isPrecedent']
     );
   }
 
@@ -379,16 +383,17 @@ class KeyShortcut {
       key.getAttribute('key'),
       key.getAttribute('keycode'),
       group ??
-        KeyShortcut.getGroupFromL10nId(
-          KeyShortcut.sanitizeL10nId(key.getAttribute('data-l10n-id')),
-          key.getAttribute('id')
-        ),
+      KeyShortcut.getGroupFromL10nId(
+        KeyShortcut.sanitizeL10nId(key.getAttribute('data-l10n-id')),
+        key.getAttribute('id')
+      ),
       nsKeyShortcutModifiers.parseFromXHTMLAttribute(key.getAttribute('modifiers')),
       key.getAttribute('command'),
       key.getAttribute('data-l10n-id'),
       key.getAttribute('disabled') == 'true',
       key.getAttribute('reserved') == 'true',
-      key.getAttribute('internal') == 'true'
+      key.getAttribute('internal') == 'true',
+      key.getAttribute('isPrecedent') == 'true'
     );
   }
 
@@ -451,6 +456,9 @@ class KeyShortcut {
     }
     if (this.#internal) {
       key.setAttribute('internal', this.#internal);
+    }
+    if (this.#isPrecedent) {
+      key.setAttribute('isPrecedent', this.#isPrecedent);
     }
     key.setAttribute('zen-keybind', 'true');
 
@@ -517,6 +525,10 @@ class KeyShortcut {
     return this.#internal;
   }
 
+  isPrecedent() {
+    return this.#isPrecedent;
+  }
+
   isInvalid() {
     return this.#key == '' && this.#keycode == '' && this.#l10nId == null;
   }
@@ -540,6 +552,7 @@ class KeyShortcut {
       disabled: this.#disabled,
       reserved: this.#reserved,
       internal: this.#internal,
+      isPrecedent: this.#isPrecedent,
     };
   }
 
@@ -1061,7 +1074,11 @@ class nsZenKeyboardShortcutsVersioner {
           'windowAndTabManagement',
           nsKeyShortcutModifiers.fromObject({ accel: true }),
           'cmd_zenTabNext',
-          'zen-tab-next-shortcut'
+          'zen-tab-next-shortcut',
+          false, // disabled
+          false, // reserved
+          false, // internal
+          true   // isPrecedent
         )
       );
       data.push(
@@ -1072,7 +1089,11 @@ class nsZenKeyboardShortcutsVersioner {
           'windowAndTabManagement',
           nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
           'cmd_zenTabPrev',
-          'zen-tab-prev-shortcut'
+          'zen-tab-prev-shortcut',
+          false, // disabled
+          false, // reserved
+          false, // internal
+          true   // isPrecedent
         )
       );
       data.push(
@@ -1083,7 +1104,11 @@ class nsZenKeyboardShortcutsVersioner {
           'windowAndTabManagement',
           nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenToggleUnloadedCycling',
-          'zen-toggle-unloaded-cycling-shortcut'
+          'zen-toggle-unloaded-cycling-shortcut',
+          false, // disabled
+          false, // reserved
+          false, // internal
+          true   // isPrecedent
         )
       );
 
@@ -1310,7 +1335,7 @@ var gZenKeyboardShortcutsManager = {
           continue;
         }
 
-        if (key.getID() === 'zen-tab-next-shortcut' || key.getID() === 'zen-tab-prev-shortcut') {
+        if (key.isPrecedent()) {
           this._registerPrecedentShortcut(key, browser);
         } else {
           let child = key.toXHTMLElement(browser);

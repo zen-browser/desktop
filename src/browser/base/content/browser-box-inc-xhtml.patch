@@ -10,7 +10,7 @@ index afa7f8e7dd..68aa587863 100644
 +  <html:div id="zen-appcontent-navbar-wrapper">
 +    <html:div id="zen-appcontent-navbar-container"></html:div>
 +  </html:div>
-+  <hbox id="zen-tabbox-wrapper" flex="1" tabcontainer="tabbrowser-tabs">
++  <hbox id="zen-tabbox-wrapper" flex="1">
    <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
 +#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>

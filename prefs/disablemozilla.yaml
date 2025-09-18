@@ -41,3 +41,6 @@
 - name: sidebar.verticalTabs.dragToPinPromo.dismissed
   value: true
   locked: true
+
+- name: browser.taskbarTabs.enabled
+  value: false

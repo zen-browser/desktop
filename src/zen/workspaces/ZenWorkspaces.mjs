@@ -596,66 +596,39 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const scrollThreshold = 2; // Minimum scroll delta to trigger workspace change
-    const scrollDeltaMode0Cooldown = 200; // Cooldown for consecutive DOM_DELTA_PIXEL events
 
     toolbox.addEventListener(
       'wheel',
       async (event) => {
         if (this.privateWindowOrDisabled) return;
 
-        // Allow DOM_DELTA_LINE (1) and DOM_DELTA_PIXEL (0) events
-        if (event.deltaMode > 1) return;
+        // Only process non-gesture scrolls
+        if (event.deltaMode !== 1) return;
 
-        // Add cooling to consecutive DOM_DELTA_PIXEL events, which are usually from touchpads
-        if (event.deltaMode === 0) {
-          const now = Date.now();
-          const timeSinceLastDeltaMode0 = now - (this._lastDeltaMode0Time || 0);
-          this._lastDeltaMode0Time = now;
+        const isVerticalScroll = event.deltaY && !event.deltaX;
+
+        //if the scroll is vertical this checks that a modifier key is used before proceeding
+        if (isVerticalScroll) {
+          const activationKeyMap = {
+            ctrl: event.ctrlKey,
+            alt: event.altKey,
+            shift: event.shiftKey,
+            meta: event.metaKey,
+          };
 
           if (
-            Math.abs(event.deltaY || 0) === 0 &&
-            timeSinceLastDeltaMode0 < scrollDeltaMode0Cooldown
+            this.activationMethod in activationKeyMap &&
+            !activationKeyMap[this.activationMethod]
           ) {
             return;
           }
         }
 
-        const absX = Math.abs(event.deltaX || 0);
-        const absY = Math.abs(event.deltaY || 0);
-
-        const isVerticalScroll = absY > absX * 2;
-        const isHorizontalScroll = absX > absY * 2;
-
-        const activationKeyMap = {
-          ctrl: event.ctrlKey,
-          alt: event.altKey,
-          shift: event.shiftKey,
-          meta: event.metaKey,
-        };
-        const modifierActive =
-          this.activationMethod in activationKeyMap && activationKeyMap[this.activationMethod];
-
-        let delta;
-        let shouldProceed = false;
-
-        if (isVerticalScroll && modifierActive) {
-          // scroll is vertical + modifier key
-          delta = event.deltaY;
-          shouldProceed = true;
-        } else if (isHorizontalScroll) {
-          // clear horizontal scrolling
-          delta = event.deltaX;
-          shouldProceed = true;
-        } else {
-          // diagonal scrolling or unclear direction, ignore
-          return;
-        }
-
-        if (!shouldProceed) return;
-
         const currentTime = Date.now();
         if (currentTime - this._lastScrollTime < scrollCooldown) return;
 
+        //this decides which delta to use
+        const delta = isVerticalScroll ? event.deltaY : event.deltaX;
         if (Math.abs(delta) < scrollThreshold) return;
 
         // Determine scroll direction
@@ -720,7 +693,12 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
   _handleSwipeMayStart(event) {
     if (this.privateWindowOrDisabled || this._inChangingWorkspace) return;
-    if (event.target.closest('#zen-sidebar-foot-buttons')) return;
+    if (
+      event.target.closest('#zen-sidebar-foot-buttons') ||
+      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
+    ) {
+      return;
+    }
 
     // Only handle horizontal swipes
     if (event.direction === event.DIRECTION_LEFT || event.direction === event.DIRECTION_RIGHT) {
@@ -1580,7 +1558,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (!this.workspaceEnabled || this._inChangingWorkspace) {
+    if (
+      !this.workspaceEnabled ||
+      this._inChangingWorkspace ||
+      gNavToolbox.hasAttribute('movingtab')
+    ) {
       return;
     }
     this._inChangingWorkspace = true;
@@ -1808,7 +1790,9 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         const grainValue =
           minGrain +
           (maxGrain - minGrain) * (existingGrain > nextGrain ? 1 - percentage : percentage);
-        gZenThemePicker.updateNoise(grainValue);
+        if (!this._inChangingWorkspace) {
+          gZenThemePicker.updateNoise(grainValue);
+        }
       }
     } else {
       delete this._hasAnimatedBackgrounds;
@@ -2127,7 +2111,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       gZenUIManager._preventToolbarRebuild = true;
       gZenUIManager.updateTabsToolbar();
     }
-    await Promise.all(animations);
+    let promiseTimeout = new Promise((resolve) =>
+      setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
+    );
+    // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
+    // some sort of timeout to the animation promise, just in case it gets stuck.
+    // We are doing a race between the timeout and the animations finishing.
+    await Promise.race([Promise.all(animations), promiseTimeout]).catch(console.error);
     document.documentElement.removeAttribute('animating-background');
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
@@ -2565,12 +2555,14 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
   }
 
+  #changeToEmptyTab() {
+    const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
+    gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
+  }
+
   async onLocationChange(event) {
     let tab = event.target;
-    gZenCompactModeManager.sidebar.toggleAttribute(
-      'zen-has-empty-tab',
-      gBrowser.selectedTab.hasAttribute('zen-empty-tab')
-    );
+    this.#changeToEmptyTab();
     if (!this.workspaceEnabled || this._inChangingWorkspace || this._isClosingWindow) {
       return;
     }

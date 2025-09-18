@@ -1,0 +1,23 @@
+diff --git a/browser/components/screenshots/overlay/overlay.css b/browser/components/screenshots/overlay/overlay.css
+index 037b060327d896e1ec0d087ade80df7548c8c1f7..7a158291c56df0e3b01bf7a37d04de71940d395f 100644
+--- a/browser/components/screenshots/overlay/overlay.css
++++ b/browser/components/screenshots/overlay/overlay.css
+@@ -225,6 +225,9 @@
+   pointer-events: none;
+   position: absolute;
+   z-index: var(--screenshots-high-layer);
++  transition: all .1s;
++  border: 2px solid rgba(255,255,255,.4);
++  border-radius: 6px;
+ }
+ 
+ #top-background {
+@@ -243,7 +246,7 @@
+ }
+ 
+ .bghighlight {
+-  background-color: rgba(0, 0, 0, 0.7);
++  background-color: rgba(0, 0, 0, 0.5);
+   position: absolute;
+   overflow: clip;
+   pointer-events: none;

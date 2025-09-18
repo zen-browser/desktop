@@ -821,11 +821,10 @@
                   }, 3000);
                 });
               }
-              await gZenFolders.collapseVisibleTab(
-                selectedTab.group,
-                /* only if active */ true,
-                selectedTab
-              );
+              const group = selectedTab.group?.hasAttribute('split-view-group')
+                ? selectedTab.group.group
+                : selectedTab.group;
+              await gZenFolders.animateUnload(group, selectedTab);
               let tabsToUnload = [selectedTab];
               if (selectedTab.group?.hasAttribute('split-view-group')) {
                 tabsToUnload = selectedTab.group.tabs;
@@ -1251,7 +1250,7 @@
           let isVisible = true;
           let parent = item.group;
           while (parent) {
-            if (parent.collapsed && !parent.hasAttribute('has-active')) {
+            if (!parent.visible) {
               isVisible = false;
               break;
             }

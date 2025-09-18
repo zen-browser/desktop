@@ -95,12 +95,12 @@
       }
 
       &:not([zen-right-side='true']) #navigator-toolbox {
-        left: calc(-1 * var(--actual-zen-sidebar-width) + 1px);
+        left: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
       }
 
       /* When we have multiple toolbars and the top-toolbar is NOT being hidden,
-          * we need to adjust the top-padding of the toolbox to account for the
-          * extra toolbar height. */
+       * we need to adjust the top-padding of the toolbox to account for the
+       * extra toolbar height. */
       @media not -moz-pref('zen.view.compact.hide-toolbar') {
         &:not([zen-single-toolbar='true']) {
           #navigator-toolbox:not([animate='true']) {
@@ -115,7 +115,7 @@
 
       &[zen-right-side='true'] {
         & #navigator-toolbox:not([animate='true']) {
-          right: calc(-1 * var(--actual-zen-sidebar-width) + 1px);
+          right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
         }
 
         & .browserSidebarContainer {
@@ -148,17 +148,22 @@
         & #zen-toolbar-background {
           display: flex;
           overflow: clip;
-          background: transparent;
           z-index: -1;
+          background: black; /* Any color thats not white */
           box-shadow: var(--zen-big-shadow);
           @media -moz-pref('zen.theme.acrylic-elements') {
+            background: transparent;
             backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
           }
+
           &::before,
           &::after {
             outline: 1px solid rgba(255, 255, 255, .15);
             outline-offset: -1px;
+            background-attachment: fixed !important;
+            background-size: 100vw !important;
           }
+
           &,
           &::before,
           &::after {
@@ -353,12 +358,6 @@
           & > * {
             position: relative !important;
           }
-
-          @media -moz-pref('zen.view.compact.color-toolbar') {
-            background-attachment: fixed;
-            background: var(--zen-main-browser-background-toolbar);
-            background-size: 100% 2000px;
-          }
         }
       }
 
@@ -385,7 +384,7 @@
             transition: opacity 0.3s ease-in-out;
           }
         }
-        border-top-width: 1px;
+        border-top-width: 0px;
 
         top: -1px;
         overflow: initial;

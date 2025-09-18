@@ -140,12 +140,15 @@ var gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 388;
+    const kUrlbarHeight = 335;
     gURLBar.textbox.style.setProperty(
       '--zen-urlbar-top',
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty('--zen-urlbar-width', `${window.innerWidth / 3}px`);
+    gURLBar.textbox.style.setProperty(
+      '--zen-urlbar-width',
+      `${Math.min(window.innerWidth / 2, 700)}px`
+    );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -274,22 +277,23 @@ var gZenUIManager = {
     return true;
   },
 
-  handleNewTab(werePassedURL, searchClipboard, where) {
+  handleNewTab(werePassedURL, searchClipboard, where, overridePreferance = false) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn('Browser state invalid for new tab operation');
       return false;
     }
 
-    if (this.testingEnabled) {
+    if (this.testingEnabled && !overridePreferance) {
       return false;
     }
 
     const shouldOpenURLBar =
-      gZenVerticalTabsManager._canReplaceNewTab &&
-      !werePassedURL &&
-      !searchClipboard &&
-      where === 'tab';
+      overridePreferance ||
+      (gZenVerticalTabsManager._canReplaceNewTab &&
+        !werePassedURL &&
+        !searchClipboard &&
+        where === 'tab');
 
     if (!shouldOpenURLBar) {
       return false;
@@ -327,8 +331,8 @@ var gZenUIManager = {
 
     // Open location command
     try {
-      document.getElementById('Browser:OpenLocation').doCommand();
       gURLBar.search(this._lastSearch || '');
+      document.getElementById('Browser:OpenLocation').doCommand();
     } catch (e) {
       console.error('Error opening location in new tab:', e);
       this.handleUrlbarClose(false);
@@ -399,7 +403,10 @@ var gZenUIManager = {
 
     if (gURLBar.focused) {
       setTimeout(() => {
-        gURLBar.view.close({ elementPicked: onSwitch });
+        window.dispatchEvent(
+          new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
+        );
+        gURLBar.view.close({ elementPicked: onElementPicked });
         gURLBar.updateTextOverflow();
 
         // Ensure tab and browser are valid before updating state
@@ -694,13 +701,22 @@ var gZenVerticalTabsManager = {
   },
 
   animateTabClose(aTab) {
+    if (aTab.hasAttribute('zen-essential') || aTab.group?.hasAttribute('split-view-group')) {
+      return Promise.resolve();
+    }
     const height = aTab.getBoundingClientRect().height;
+    const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
+    const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
     return gZenUIManager.motion.animate(
       aTab,
       {
         opacity: [1, 0],
         transform: ['scale(1)', 'scale(0.95)'],
-        marginBottom: [`0px`, `-${height}px`],
+        ...(isLastItem
+          ? {}
+          : {
+              marginBottom: [`0px`, `-${height}px`],
+            }),
       },
       {
         duration: 0.075,
@@ -803,16 +819,19 @@ var gZenVerticalTabsManager = {
   },
 
   recalculateURLBarHeight() {
-    document.getElementById('urlbar').removeAttribute('--urlbar-height');
-    if (!this._hasSetSingleToolbar) {
-      document.getElementById('urlbar').style.setProperty('--urlbar-height', '32px');
-    } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
-      try {
-        gURLBar.zenUpdateLayoutBreakout();
-      } catch (e) {
-        console.warn(e);
+    requestAnimationFrame(() => {
+      document.getElementById('urlbar').removeAttribute('--urlbar-height');
+      let height;
+      if (!this._hasSetSingleToolbar) {
+        height = 32;
+      } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
+        height = 40;
       }
-    }
+      if (typeof height !== 'undefined') {
+        document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
+      }
+      gURLBar.valueFormatter._formatURL();
+    });
   },
 
   _updateEvent({ forCustomizableMode = false, dontRebuildAreas = false } = {}) {

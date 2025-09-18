@@ -47,7 +47,6 @@
   overflow: clip;
 
   isolation: isolate;
-  background: var(--zen-themed-toolbar-bg-transparent);
 
   &::after,
   &::before {
@@ -68,12 +67,6 @@
     &:is(#zen-toolbar-background) {
       &::after {
         background: var(--zen-main-browser-background-toolbar);
-      }
-    }
-
-    @media (-moz-pref('zen.view.grey-out-inactive-windows')) {
-      &:-moz-window-inactive {
-        background: InactiveCaption;
       }
     }
 
@@ -140,9 +133,15 @@
 }
 
 #zen-main-app-wrapper {
-  background: transparent;
+  background: var(--zen-themed-toolbar-bg-transparent);
   /* See bug #8814, don't an overflow here as it causes issues 
    * with firefox's rendering of the tab bar */
+
+  @media (-moz-pref('zen.view.grey-out-inactive-windows')) {
+    &:-moz-window-inactive {
+      background: InactiveCaption;
+    }
+  }
 
   & > * {
     z-index: 1;

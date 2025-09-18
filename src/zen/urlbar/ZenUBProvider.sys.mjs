@@ -10,7 +10,11 @@ ChromeUtils.defineESModuleGetters(providers, {
 });
 
 export function registerZenUrlbarProviders() {
-  for (let provider of Object.values(providers)) {
-    UrlbarProvidersManager.registerProvider(new provider());
+  for (let i = 0; i < Object.keys(providers).length; i++) {
+    const provider = Object.values(providers)[i];
+    const name = Object.keys(providers)[i];
+    if (!UrlbarProvidersManager.getProvider(name)) {
+      UrlbarProvidersManager.registerProvider(new provider());
+    }
   }
 }

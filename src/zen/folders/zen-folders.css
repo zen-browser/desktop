@@ -185,7 +185,7 @@ zen-folder {
   visibility: visible;
 
   --zen-folder-behind-bgcolor: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 85%, white),
+    color-mix(in srgb, var(--zen-primary-color) 60%, gray),
     color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1)
   );
   --zen-folder-front-bgcolor: light-dark(
@@ -193,8 +193,8 @@ zen-folder {
     color-mix(in srgb, var(--zen-primary-color), black 40%)
   );
   --zen-folder-stroke: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 60%, black),
-    color-mix(in srgb, var(--zen-colors-primary) 20%, var(--toolbox-textcolor))
+    color-mix(in srgb, var(--zen-primary-color) 50%, black),
+    color-mix(in srgb, var(--zen-colors-primary) 15%, var(--toolbox-textcolor))
   );
 
   -moz-window-dragging: no-drag;
@@ -265,7 +265,7 @@ zen-folder {
     }
 
     .tab-group-folder-icon {
-      width: 30px;
+      width: 28px;
       height: 28px;
       align-content: center;
       pointer-events: none;
@@ -273,28 +273,26 @@ zen-folder {
       pointer-events: none;
 
       :root[zen-sidebar-expanded] & {
-        left: 4px;
+        left: 5px;
       }
 
       & svg {
         filter: contrast(125%);
-        transition: 0.2s scale;
-        transform-origin: right bottom;
 
         :root:not([zen-sidebar-expanded]) & {
-          transform-origin: center bottom;
+          transition: transform 0.1s ease;
+
+          &[state='open'] {
+            transform: translate(-2px);
+          }
         }
 
         & image {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
           fill: var(--zen-folder-stroke);
-          transform: translate(-182%, 2.4px);
+          transform: translate(4px, 6.5px);
         }
-      }
-
-      & svg[state='open'] {
-        scale: 0.92;
       }
     }
 
@@ -348,7 +346,7 @@ zen-folder {
       display: flex;
     }
 
-    & > .tab-group-container {
+    &:not([has-active]) > .tab-group-container {
       overflow-y: clip;
     }
   }

@@ -57,8 +57,6 @@ zen-tabs-unloader-enabled =
 
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
-zen-look-and-feel-compact-sidebar-themed =
-    .label = Use themed background for compact sidebar
 
 zen-workspace-continue-where-left-off =
     .label = Continue where you left off
@@ -313,6 +311,7 @@ zen-split-view-shortcut-grid = Toggle Split View Grid
 zen-split-view-shortcut-vertical = Toggle Split View Vertical
 zen-split-view-shortcut-horizontal = Toggle Split View Horizontal
 zen-split-view-shortcut-unsplit = Close Split View
+zen-new-empty-split-view-shortcut = New Empty Split View
 zen-key-select-tab-1 = Select tab #1
 zen-key-select-tab-2 = Select tab #2
 zen-key-select-tab-3 = Select tab #3

@@ -79,6 +79,11 @@ document.addEventListener(
           case 'cmd_zenSplitViewLinkInNewTab':
             gZenViewSplitter.splitLinkInNewTab();
             break;
+          case 'cmd_zenNewEmptySplit':
+            setTimeout(() => {
+              gZenViewSplitter.createEmptySplit();
+            }, 0);
+            break;
           case 'cmd_zenReplacePinnedUrlWithCurrent':
             gZenPinnedTabManager.replacePinnedUrlWithCurrent();
             break;

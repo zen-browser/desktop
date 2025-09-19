@@ -779,12 +779,18 @@
     ) {
       try {
         const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
-        const pinnedTabs = tabs.filter((tab) => tab?.pinned);
-        const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
+        const pinnedTabs = [... new Set(tabs.flatMap((tab) => {
+          if (tab.group?.hasAttribute('split-view-group')) {
+            return tab.group.tabs;
+          }
+          return tab;
+        }).filter((tab) => tab?.pinned))];
 
         if (!pinnedTabs.length) {
           return;
         }
+
+        const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
 
         event.stopPropagation();
         event.preventDefault();
@@ -805,7 +811,6 @@
           case 'reset-switch':
           case 'switch':
             if (behavior.includes('unload')) {
-              let tabsToUnload = pinnedTabs;
               for (const tab of pinnedTabs) {
                 if (tab.hasAttribute('glance-id')) {
                   // We have a glance tab inside the tab we are trying to unload,
@@ -836,28 +841,24 @@
                 if (!folderToUnload) {
                   await gZenFolders.animateUnload(group, tab);
                 }
-
-                if (isSpltView && !folderToUnload) {
-                  tabsToUnload = tab.group.tabs;
-                }
               }
 
               if (folderToUnload) {
                 await gZenFolders.animateUnloadAll(folderToUnload);
               }
 
-              const allAreUnloaded = tabsToUnload.every(
-                (t) => t.hasAttribute('pending') && !t.hasAttribute('zen-essential')
+              const allAreUnloaded = pinnedTabs.every(
+                (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
               );
 
-              for (const tab of tabsToUnload) {
+              for (const tab of pinnedTabs) {
                 if (allAreUnloaded && closeIfPending) {
                   return await this._onCloseTabShortcut(event, tab, { behavior: 'close' });
                 }
               }
 
-              await gBrowser.explicitUnloadTabs(tabsToUnload);
-              for (const tab of tabsToUnload) {
+              await gBrowser.explicitUnloadTabs(pinnedTabs);
+              for (const tab of pinnedTabs) {
                 tab.removeAttribute('discarded');
               }
             }

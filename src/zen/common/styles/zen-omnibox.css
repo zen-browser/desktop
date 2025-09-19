@@ -586,6 +586,7 @@
 
 .urlbarView-no-wrap {
   align-items: center !important;
+  position: relative;
 }
 
 #urlbar-label-box,
@@ -656,6 +657,10 @@
   padding-block: 0 !important;
 
   & .action-contextualidentity {
+    display: none;
+  }
+
+  .urlbarView[noresults] > .urlbarView-body-outer > .urlbarView-body-inner > & {
     display: none;
   }
 }

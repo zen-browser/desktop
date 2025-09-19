@@ -238,7 +238,7 @@
   --focus-outline-color: transparent;
 
   @media (-moz-platform: macos) {
-    font-size: 1.3rem; /* Slightly larger font on macOS */
+    font-size: 1.25rem; /* Slightly larger font on macOS */
   }
 
   --tab-inner-inline-margin: 0;

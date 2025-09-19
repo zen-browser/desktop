@@ -844,7 +844,7 @@
                 const isSpltView = tab.group?.hasAttribute('split-view-group');
                 const group = isSpltView ? tab.group.group : tab.group;
 
-                if (!folderToUnload) {
+                if (!folderToUnload && tab.hasAttribute('folder-active')) {
                   await gZenFolders.animateUnload(group, tab);
                 }
               }

@@ -24,39 +24,39 @@
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient gradientUnits="userSpaceOnUse" x1="14" y1="5.625" x2="14" y2="22.375" id="gradient-0">
-            <stop offset="0" style="stop-color: rgb(255, 255, 255)"></stop>
-            <stop offset="1" style="stop-color: rgb(0% 0% 0%)"></stop>
+            <stop offset="0" style="stop-color: rgb(255, 255, 255)"/>
+            <stop offset="1" style="stop-color: rgb(0% 0% 0%)"/>
           </linearGradient>
           <linearGradient gradientUnits="userSpaceOnUse" x1="14" y1="9.625" x2="14" y2="22.375" id="gradient-1">
-            <stop offset="0" style="stop-color: rgb(255, 255, 255)"></stop>
-            <stop offset="1" style="stop-color: rgb(0% 0% 0%)"></stop>
+            <stop offset="0" style="stop-color: rgb(255, 255, 255)"/>
+            <stop offset="1" style="stop-color: rgb(0% 0% 0%)"/>
           </linearGradient>
         </defs>
         <!--Back Folder (path)-->
-        <path d="M8 5.625H11.9473C12.4866 5.625 13.0105 5.80861 13.4316 6.14551L14.2881 6.83105C14.9308 7.34508 15.7298 7.625 16.5527 7.625H20C21.3117 7.625 22.375 8.68832 22.375 10V20C22.375 21.3117 21.3117 22.375 20 22.375H8C6.68832 22.375 5.625 21.3117 5.625 20V8C5.625 6.68832 6.68832 5.625 8 5.625Z" style="stroke-width: 1.3px; stroke: var(--zen-folder-stroke); fill: var(--zen-folder-behind-bgcolor);">
+        <path d="M8 5.625H11.9473C12.4866 5.625 13.0105 5.80861 13.4316 6.14551L14.2881 6.83105C14.9308 7.34508 15.7298 7.625 16.5527 7.625H20C21.3117 7.625 22.375 8.68832 22.375 10V20C22.375 21.3117 21.3117 22.375 20 22.375H8C6.68832 22.375 5.625 21.3117 5.625 20V8C5.625 6.68832 6.68832 5.625 8 5.625Z" style="fill: var(--zen-folder-behind-bgcolor);">
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;16" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;-2 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
         </path>
-        <path d="M8 5.625H11.9473C12.4866 5.625 13.0105 5.80861 13.4316 6.14551L14.2881 6.83105C14.9308 7.34508 15.7298 7.625 16.5527 7.625H20C21.3117 7.625 22.375 8.68832 22.375 10V20C22.375 21.3117 21.3117 22.375 20 22.375H8C6.68832 22.375 5.625 21.3117 5.625 20V8C5.625 6.68832 6.68832 5.625 8 5.625Z" style="stroke-width: 1.3px; fill: url(#gradient-0); fill-opacity: 0.1;">
+        <path d="M8 5.625H11.9473C12.4866 5.625 13.0105 5.80861 13.4316 6.14551L14.2881 6.83105C14.9308 7.34508 15.7298 7.625 16.5527 7.625H20C21.3117 7.625 22.375 8.68832 22.375 10V20C22.375 21.3117 21.3117 22.375 20 22.375H8C6.68832 22.375 5.625 21.3117 5.625 20V8C5.625 6.68832 6.68832 5.625 8 5.625Z" style="stroke-width: 1.5px; stroke: var(--zen-folder-stroke); fill: url(#gradient-0); fill-opacity: 0.1;">
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;16" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;-2 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
         </path>
         <!--Front Folder (rect)-->
-        <rect x="5.625" y="9.625" width="16.75" height="12.75" rx="2.375" style="stroke-width: 1.3px; stroke: var(--zen-folder-stroke); fill: var(--zen-folder-front-bgcolor);">
+        <rect x="5.625" y="9.625" width="16.75" height="12.75" rx="2.375" style="fill: var(--zen-folder-front-bgcolor);">
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;-16" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;11.1 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
         </rect>
-        <rect x="5.625" y="9.625" width="16.75" height="12.75" rx="2.375" style="stroke-width: 1.3px; fill: url(#gradient-1); fill-opacity: 0.1;">
+        <rect x="5.625" y="9.625" width="16.75" height="12.75" rx="2.375" style="stroke-width: 1.5px; stroke: var(--zen-folder-stroke); fill: url(#gradient-1); fill-opacity: 0.1;">
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;-16" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;11.1 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
         </rect>
         <!--Icon (g)-->
         <g id="folder-icon" style="fill: var(--zen-folder-stroke);">
-          <image href="" height="19" width="20"></image>
+          <image href="" height="19" width="20"/>
           <animateTransform type="skewX" additive="sum" attributeName="transform" values="0;-16" begin="0s" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;11.1 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
@@ -68,9 +68,9 @@
           <animateTransform type="translate" additive="sum" attributeName="transform" values="0 0;11.1 3.4" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animateTransform type="scale" additive="sum" attributeName="transform" values="1 1;0.85 0.85" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
           <animate attributeName="opacity" values="0;0" dur="0.3s" fill="freeze" keyTimes="0; 1" calcMode="spline" keySplines="0.42 0 0 1"/>
-          <ellipse cx="10" cy="16" rx="1.25" ry="1.25"></ellipse>
-          <ellipse cx="14" cy="16" rx="1.25" ry="1.25"></ellipse>
-          <ellipse cx="18" cy="16" rx="1.25" ry="1.25"></ellipse>
+          <ellipse cx="10" cy="16" rx="1.25" ry="1.25"/>
+          <ellipse cx="14" cy="16" rx="1.25" ry="1.25"/>
+          <ellipse cx="18" cy="16" rx="1.25" ry="1.25"/>
         </g>
       </svg>`,
       'image/svg+xml'

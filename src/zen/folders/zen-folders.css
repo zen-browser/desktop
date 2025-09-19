@@ -194,7 +194,7 @@ zen-folder {
   );
   --zen-folder-stroke: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 50%, black),
-    color-mix(in srgb, var(--zen-colors-primary) 15%, var(--toolbox-textcolor))
+    color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb)
   );
 
   -moz-window-dragging: no-drag;

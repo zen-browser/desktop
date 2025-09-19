@@ -174,7 +174,7 @@
             parentSidebarContainer,
             {
               scale: [1, 0.98],
-              opacity: [1, 0.7],
+              opacity: [1, 0.6],
             },
             {
               duration: 0.4,
@@ -210,9 +210,9 @@
                 opacity: 1,
               },
               {
-                duration: 0.4,
+                duration: 0.3,
                 type: 'spring',
-                bounce: 0.25,
+                bounce: 0.2,
               }
             )
             .then(() => {
@@ -322,7 +322,7 @@
           browserSidebarContainer,
           {
             scale: [0.98, 1],
-            opacity: [0.7, 1],
+            opacity: [0.6, 1],
           },
           {
             duration: 0.4,

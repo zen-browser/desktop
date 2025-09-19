@@ -107,9 +107,12 @@ var gZenUIManager = {
 
   _initCreateNewPopup() {
     const popup = document.getElementById('zenCreateNewPopup');
-    const button = document.getElementById('zen-create-new-button');
 
     popup.addEventListener('popupshowing', () => {
+      const button = document.getElementById('zen-create-new-button');
+      if (!button) {
+        return;
+      }
       const image = button.querySelector('image');
       button.setAttribute('open', 'true');
       gZenUIManager.motion.animate(
@@ -1102,7 +1105,7 @@ var gZenVerticalTabsManager = {
         ? this._tabEdited.querySelector('.tab-label-container-editing')
         : this._tabEdited;
       let input = document.getElementById('tab-label-input');
-      let newName = input.value.trim();
+      let newName = input.value.replace(/\s+/g, ' ').trim();
 
       document.documentElement.removeAttribute('zen-renaming-tab');
       input.remove();

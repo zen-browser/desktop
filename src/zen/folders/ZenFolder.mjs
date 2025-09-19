@@ -267,7 +267,10 @@
 
     async #unloadAllActiveTabs(event, noClose = false) {
       for (const tab of this.tabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
+        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, {
+          noClose,
+          expandSplitViewList: false,
+        });
       }
       this.activeTabs = [];
     }

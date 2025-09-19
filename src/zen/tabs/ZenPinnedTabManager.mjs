@@ -774,6 +774,7 @@
         behavior = lazy.zenPinnedTabCloseShortcutBehavior,
         noClose = false,
         closeIfPending = false,
+        expandSplitViewList = true,
       } = {}
     ) {
       try {
@@ -826,7 +827,7 @@
                 : selectedTab.group;
               await gZenFolders.animateUnload(group, selectedTab);
               let tabsToUnload = [selectedTab];
-              if (selectedTab.group?.hasAttribute('split-view-group')) {
+              if (selectedTab.group?.hasAttribute('split-view-group') && expandSplitViewList) {
                 tabsToUnload = selectedTab.group.tabs;
               }
               const allAreUnloaded = tabsToUnload.every(

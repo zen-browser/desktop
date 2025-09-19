@@ -774,17 +774,23 @@
         behavior = lazy.zenPinnedTabCloseShortcutBehavior,
         noClose = false,
         closeIfPending = false,
-        folderToUnload = false,
+        folderToUnload = null,
       } = {}
     ) {
       try {
         const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
-        const pinnedTabs = [... new Set(tabs.flatMap((tab) => {
-          if (tab.group?.hasAttribute('split-view-group')) {
-            return tab.group.tabs;
-          }
-          return tab;
-        }).filter((tab) => tab?.pinned))];
+        const pinnedTabs = [
+          ...new Set(
+            tabs
+              .flatMap((tab) => {
+                if (tab.group?.hasAttribute('split-view-group')) {
+                  return tab.group.tabs;
+                }
+                return tab;
+              })
+              .filter((tab) => tab?.pinned)
+          ),
+        ];
 
         if (!pinnedTabs.length) {
           return;

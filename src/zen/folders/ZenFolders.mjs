@@ -1610,7 +1610,7 @@
 
       // Await the tab unload animation first
       await Promise.all(tabUnloadAnimations);
-      await Promise.all(animations.map((promise) => promise()));
+      await Promise.all(animations.map((item) => (typeof item === 'function' ? item() : item)));
       this.#animationCount -= 1;
       gBrowser.tabContainer._invalidateCachedTabs();
     }

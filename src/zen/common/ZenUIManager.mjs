@@ -1105,7 +1105,7 @@ var gZenVerticalTabsManager = {
         ? this._tabEdited.querySelector('.tab-label-container-editing')
         : this._tabEdited;
       let input = document.getElementById('tab-label-input');
-      let newName = input.value.trim();
+      let newName = input.value.replace(/\s+/g, ' ').trim();
 
       document.documentElement.removeAttribute('zen-renaming-tab');
       input.remove();

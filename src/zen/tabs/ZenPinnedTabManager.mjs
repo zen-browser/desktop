@@ -779,8 +779,8 @@
     ) {
       try {
         const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
-        const pinnedTabs = tabs.filter(tab => tab?.pinned);
-        const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+        const pinnedTabs = tabs.filter((tab) => tab?.pinned);
+        const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
 
         if (!pinnedTabs.length) {
           return;
@@ -809,9 +809,9 @@
               for (const tab of pinnedTabs) {
                 if (tab.hasAttribute('glance-id')) {
                   // We have a glance tab inside the tab we are trying to unload,
-                    // before we used to just ignore it but now we need to fully close
+                  // before we used to just ignore it but now we need to fully close
                   // it as well.
-                    gZenGlanceManager.manageTabClose(tab.glanceTab);
+                  gZenGlanceManager.manageTabClose(tab.glanceTab);
                   await new Promise((resolve) => {
                     let hasRan = false;
                     const onGlanceClose = () => {
@@ -820,20 +820,18 @@
                     };
                     window.addEventListener('GlanceClose', onGlanceClose, { once: true });
                     // Set a timeout to resolve the promise if the event doesn't fire.
-                      // We do this to prevent any future issues where glance woudnt close such as
+                    // We do this to prevent any future issues where glance woudnt close such as
                     // glance requering to ask for permit unload.
-                      setTimeout(() => {
-                        if (!hasRan) {
-                          console.warn('GlanceClose event did not fire within 3 seconds');
-                          resolve();
-                        }
-                      }, 3000);
+                    setTimeout(() => {
+                      if (!hasRan) {
+                        console.warn('GlanceClose event did not fire within 3 seconds');
+                        resolve();
+                      }
+                    }, 3000);
                   });
                 }
                 const isSpltView = tab.group?.hasAttribute('split-view-group');
-                const group = isSpltView
-                  ? tab.group.group
-                  : tab.group;
+                const group = isSpltView ? tab.group.group : tab.group;
 
                 if (!folderToUnload) {
                   await gZenFolders.animateUnload(group, tab);
@@ -862,7 +860,6 @@
               for (const tab of tabsToUnload) {
                 tab.removeAttribute('discarded');
               }
-
             }
             if (selectedTabs.length) {
               this._handleTabSwitch(selectedTabs[0]);

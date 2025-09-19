@@ -1523,7 +1523,7 @@
         const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
 
         // Collect animations for this specific folder becoming inactive
-        animations.push( 
+        animations.push(
           ...this.updateFolderIcon(folder, 'close', false),
           ...this.#createAnimation(
             groupStart,
@@ -1531,7 +1531,7 @@
               marginTop: -(heightUntilSelected + 4),
             },
             { duration: 0.12, ease: 'easeInOut' }
-          ),
+          )
         );
       }
 

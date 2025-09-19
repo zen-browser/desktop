@@ -143,7 +143,7 @@
       }
       return activeGroups;
     }
-    
+
     get childActiveGroups() {
       return Array.from(this.querySelectorAll('zen-folder[has-active]'));
     }

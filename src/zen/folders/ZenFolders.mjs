@@ -1543,7 +1543,7 @@
 
     async animateUnload(group, tabToUnload, ungroup = false) {
       const isSplitView = tabToUnload.group?.hasAttribute('split-view-group');
-      if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
+      if ((!group?.isZenFolder || isSplitView) && !tabToUnload.hasAttribute('folder-active'))
         return;
       const animations = [];
 

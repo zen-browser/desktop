@@ -1508,6 +1508,7 @@
         return;
       const animations = [];
 
+      const containersToHide = [];
       const activeGroups = group.activeGroups;
       for (const folder of activeGroups) {
         folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
@@ -1522,7 +1523,7 @@
           const groupStart = folder.querySelector('.zen-tab-group-start');
 
           tabsContainer.offsetHeight;
-          tabsContainer.setAttribute('hidden', true);
+          containersToHide.push(tabsContainer);
 
           const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
 
@@ -1565,6 +1566,9 @@
       this.#animationCount += 1;
       await Promise.all(animations);
       this.#animationCount -= 1;
+      for (const container of containersToHide) {
+        container.setAttribute('hidden', true);
+      }
       gBrowser.tabContainer._invalidateCachedTabs();
     }
 

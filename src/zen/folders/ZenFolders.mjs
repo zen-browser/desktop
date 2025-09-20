@@ -1398,7 +1398,7 @@
 
       const groupStart = group.querySelector('.zen-tab-group-start');
       const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
-      const activeFolders = Array.from(group.querySelectorAll('zen-folder[has-active]'));
+      const activeFolders = group.childActiveGroups;
 
       for (const folder of activeFolders) {
         const splitViewIds = new Set();
@@ -1502,6 +1502,45 @@
       this.styleCleanup(itemsToHide);
     }
 
+    async animateUnloadAll(group) {
+      const animations = [];
+
+      const activeGroups = [group, ...group.childActiveGroups];
+      for (const folder of activeGroups) {
+        folder.removeAttribute('has-active');
+        folder.activeTabs = [];
+        const groupItems = this.#normalizeGroupItems(folder.allItems);
+        const tabsContainer = folder.querySelector('.tab-group-container');
+
+        this.styleCleanup(groupItems);
+
+        const groupStart = folder.querySelector('.zen-tab-group-start');
+
+        // Trigger a reflow
+        tabsContainer.offsetHeight;
+        // tabsContainer.setAttribute('hidden', true);
+
+        const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+
+        // Collect animations for this specific folder becoming inactive
+        animations.push(
+          ...this.updateFolderIcon(folder, 'close', false),
+          ...this.#createAnimation(
+            groupStart,
+            {
+              marginTop: -(heightUntilSelected + 4),
+            },
+            { duration: 0.12, ease: 'easeInOut' }
+          )
+        );
+      }
+
+      this.#animationCount += 1;
+      await Promise.all(animations);
+      this.#animationCount -= 1;
+      gBrowser.tabContainer._invalidateCachedTabs();
+    }
+
     async animateUnload(group, tabToUnload, ungroup = false) {
       const isSplitView = tabToUnload.group?.hasAttribute('split-view-group');
       if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
@@ -1513,29 +1552,34 @@
         folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
 
         if (folder.activeTabs.length === 0) {
-          folder.removeAttribute('has-active');
-          const groupItems = this.#normalizeGroupItems(folder.allItems);
-          const tabsContainer = folder.querySelector('.tab-group-container');
+          animations.push(async () => {
+            folder.removeAttribute('has-active');
+            const groupItems = this.#normalizeGroupItems(folder.allItems);
+            const tabsContainer = folder.querySelector('.tab-group-container');
 
-          this.styleCleanup(groupItems);
+            this.styleCleanup(groupItems);
 
-          const groupStart = folder.querySelector('.zen-tab-group-start');
+            const groupStart = folder.querySelector('.zen-tab-group-start');
 
-          tabsContainer.offsetHeight;
-          tabsContainer.setAttribute('hidden', true);
+            // Trigger a reflow
+            tabsContainer.offsetHeight;
+            tabsContainer.setAttribute('hidden', true);
 
-          const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+            const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
 
-          animations.push(
-            ...this.updateFolderIcon(folder, 'close', false),
-            ...this.#createAnimation(
-              groupStart,
-              {
-                marginTop: -(heightUntilSelected + 4),
-              },
-              { duration: 0.12, ease: 'easeInOut' }
-            )
-          );
+            // Collect animations for this specific folder becoming inactive
+            const folderAnimation = [
+              ...this.updateFolderIcon(folder, 'close', false),
+              ...this.#createAnimation(
+                groupStart,
+                {
+                  marginTop: -(heightUntilSelected + 4),
+                },
+                { duration: 0.12, ease: 'easeInOut' }
+              ),
+            ];
+            await Promise.all(folderAnimation);
+          });
         }
       }
 
@@ -1546,24 +1590,27 @@
 
       tabToUnload.style.removeProperty('--zen-folder-indent');
 
+      let tabUnloadAnimations = [];
       if (!ungroup) {
-        animations.push(
-          ...this.#createAnimation(
-            tabToUnload,
-            {
-              opacity: 0,
-              height: 0,
-            },
-            {
-              duration: 0.12,
-              ease: 'easeInOut',
-            }
-          )
+        tabUnloadAnimations = this.#createAnimation(
+          tabToUnload,
+          {
+            opacity: 0,
+            height: 0,
+          },
+          {
+            duration: 0.12,
+            ease: 'easeInOut',
+          }
         );
       }
 
+      // Manage global animation count
       this.#animationCount += 1;
-      await Promise.all(animations);
+
+      // Await the tab unload animation first
+      await Promise.all(tabUnloadAnimations);
+      await Promise.all(animations.map((item) => (typeof item === 'function' ? item() : item)));
       this.#animationCount -= 1;
       gBrowser.tabContainer._invalidateCachedTabs();
     }

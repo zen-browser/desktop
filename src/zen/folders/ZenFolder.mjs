@@ -144,6 +144,10 @@
       return activeGroups;
     }
 
+    get childActiveGroups() {
+      return Array.from(this.querySelectorAll('zen-folder[has-active]'));
+    }
+
     rename() {
       if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
         return;
@@ -246,6 +250,7 @@
           let activeGroup = folders.get(group?.id);
           if (!activeGroup) {
             tab.removeAttribute('folder-active');
+            tab.style.removeProperty('--zen-folder-indent');
           }
         }
         this._activeTabs = [];
@@ -266,12 +271,10 @@
     }
 
     async #unloadAllActiveTabs(event, noClose = false) {
-      for (const tab of this.tabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, {
-          noClose,
-          expandSplitViewList: false,
-        });
-      }
+      await gZenPinnedTabManager._onCloseTabShortcut(event, this.tabs, {
+        noClose,
+        folderToUnload: this,
+      });
       this.activeTabs = [];
     }
 

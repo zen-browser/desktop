@@ -774,29 +774,12 @@
         behavior = lazy.zenPinnedTabCloseShortcutBehavior,
         noClose = false,
         closeIfPending = false,
-        folderToUnload = null,
       } = {}
     ) {
       try {
-        const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
-        const pinnedTabs = [
-          ...new Set(
-            tabs
-              .flatMap((tab) => {
-                if (tab.group?.hasAttribute('split-view-group')) {
-                  return tab.group.tabs;
-                }
-                return tab;
-              })
-              .filter((tab) => tab?.pinned)
-          ),
-        ];
-
-        if (!pinnedTabs.length) {
+        if (!selectedTab?.pinned) {
           return;
         }
-
-        const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
 
         event.stopPropagation();
         event.preventDefault();
@@ -807,80 +790,64 @@
 
         switch (behavior) {
           case 'close':
-            for (const tab of pinnedTabs) {
-              this._removePinnedAttributes(tab, true);
-              gBrowser.removeTab(tab, { animate: true });
-            }
+            this._removePinnedAttributes(selectedTab, true);
+            gBrowser.removeTab(selectedTab, { animate: true });
             break;
           case 'reset-unload-switch':
           case 'unload-switch':
           case 'reset-switch':
           case 'switch':
             if (behavior.includes('unload')) {
-              for (const tab of pinnedTabs) {
-                if (tab.hasAttribute('glance-id')) {
-                  // We have a glance tab inside the tab we are trying to unload,
-                  // before we used to just ignore it but now we need to fully close
-                  // it as well.
-                  gZenGlanceManager.manageTabClose(tab.glanceTab);
-                  await new Promise((resolve) => {
-                    let hasRan = false;
-                    const onGlanceClose = () => {
-                      hasRan = true;
+              if (selectedTab.hasAttribute('glance-id')) {
+                // We have a glance tab inside the tab we are trying to unload,
+                // before we used to just ignore it but now we need to fully close
+                // it as well.
+                gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
+                await new Promise((resolve) => {
+                  let hasRan = false;
+                  const onGlanceClose = () => {
+                    hasRan = true;
+                    resolve();
+                  };
+                  window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                  // Set a timeout to resolve the promise if the event doesn't fire.
+                  // We do this to prevent any future issues where glance woudnt close such as
+                  // glance requering to ask for permit unload.
+                  setTimeout(() => {
+                    if (!hasRan) {
+                      console.warn('GlanceClose event did not fire within 3 seconds');
                       resolve();
-                    };
-                    window.addEventListener('GlanceClose', onGlanceClose, { once: true });
-                    // Set a timeout to resolve the promise if the event doesn't fire.
-                    // We do this to prevent any future issues where glance woudnt close such as
-                    // glance requering to ask for permit unload.
-                    setTimeout(() => {
-                      if (!hasRan) {
-                        console.warn('GlanceClose event did not fire within 3 seconds');
-                        resolve();
-                      }
-                    }, 3000);
-                  });
-                }
-                const isSpltView = tab.group?.hasAttribute('split-view-group');
-                const group = isSpltView ? tab.group.group : tab.group;
-
-                if (!folderToUnload && tab.hasAttribute('folder-active')) {
-                  await gZenFolders.animateUnload(group, tab);
-                }
+                    }
+                  }, 3000);
+                });
               }
-
-              if (folderToUnload) {
-                await gZenFolders.animateUnloadAll(folderToUnload);
+              await gZenFolders.collapseVisibleTab(
+                selectedTab.group,
+                /* only if active */ true,
+                selectedTab
+              );
+              let tabsToUnload = [selectedTab];
+              if (selectedTab.group?.hasAttribute('split-view-group')) {
+                tabsToUnload = selectedTab.group.tabs;
               }
-
-              const allAreUnloaded = pinnedTabs.every(
+              const allAreUnloaded = tabsToUnload.every(
                 (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
               );
-
-              for (const tab of pinnedTabs) {
-                if (allAreUnloaded && closeIfPending) {
-                  return await this._onCloseTabShortcut(event, tab, { behavior: 'close' });
-                }
+              if (allAreUnloaded && closeIfPending) {
+                return await this._onCloseTabShortcut(event, selectedTab, { behavior: 'close' });
               }
-
-              await gBrowser.explicitUnloadTabs(pinnedTabs);
-              for (const tab of pinnedTabs) {
-                tab.removeAttribute('discarded');
-              }
+              await gBrowser.explicitUnloadTabs(tabsToUnload);
+              selectedTab.removeAttribute('discarded');
             }
-            if (selectedTabs.length) {
-              this._handleTabSwitch(selectedTabs[0]);
+            if (selectedTab.selected) {
+              this._handleTabSwitch(selectedTab);
             }
             if (behavior.includes('reset')) {
-              for (const tab of pinnedTabs) {
-                this._resetTabToStoredState(tab);
-              }
+              this._resetTabToStoredState(selectedTab);
             }
             break;
           case 'reset':
-            for (const tab of pinnedTabs) {
-              this._resetTabToStoredState(tab);
-            }
+            this._resetTabToStoredState(selectedTab);
             break;
           default:
             return;
@@ -1284,7 +1251,7 @@
           let isVisible = true;
           let parent = item.group;
           while (parent) {
-            if (!parent.visible) {
+            if (parent.collapsed && !parent.hasAttribute('has-active')) {
               isVisible = false;
               break;
             }

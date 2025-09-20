@@ -144,6 +144,10 @@
       return activeGroups;
     }
 
+    get childActiveGroups() {
+      return Array.from(this.querySelectorAll('zen-folder[has-active]'));
+    }
+
     rename() {
       if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
         return;
@@ -267,9 +271,10 @@
     }
 
     async #unloadAllActiveTabs(event, noClose = false) {
-      for (const tab of this.tabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
-      }
+      await gZenPinnedTabManager._onCloseTabShortcut(event, this.tabs, {
+        noClose,
+        folderToUnload: this,
+      });
       this.activeTabs = [];
     }
 

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index fd2465046407261e8c29b4cd3d56122d232e701c..590a86d09b359f75fee12303d963a7ee68fee0f3 100644
+index fd2465046407261e8c29b4cd3d56122d232e701c..937068562975a26834572c408e9a75453bdf49cb 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -62,7 +62,7 @@ index fd2465046407261e8c29b4cd3d56122d232e701c..590a86d09b359f75fee12303d963a7ee
 +      }
 +
 +      // Selected tabs are always visible
-+      if (this.selected || this.multiselected || this.hasAttribute("folder-active")) return true;
++      if ((this.selected || this.multiselected || this.hasAttribute("folder-active")) && !this.hasAttribute("was-folder-active")) return true;
 +      // Recursively check all parent groups
 +      let currentParent = this.group;
 +      while (currentParent) {

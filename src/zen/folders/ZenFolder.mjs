@@ -246,6 +246,7 @@
           let activeGroup = folders.get(group?.id);
           if (!activeGroup) {
             tab.removeAttribute('folder-active');
+            tab.style.removeProperty('--zen-folder-indent');
           }
         }
         this._activeTabs = [];
@@ -267,10 +268,7 @@
 
     async #unloadAllActiveTabs(event, noClose = false) {
       for (const tab of this.tabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, {
-          noClose,
-          expandSplitViewList: false,
-        });
+        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
       }
       this.activeTabs = [];
     }

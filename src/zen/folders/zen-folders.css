@@ -346,7 +346,7 @@ zen-folder {
       display: flex;
     }
 
-    &:not([has-active]) > .tab-group-container {
+    & > .tab-group-container {
       overflow-y: clip;
     }
   }

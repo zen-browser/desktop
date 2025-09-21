@@ -774,7 +774,6 @@
         behavior = lazy.zenPinnedTabCloseShortcutBehavior,
         noClose = false,
         closeIfPending = false,
-        expandSplitViewList = true,
       } = {}
     ) {
       try {
@@ -822,12 +821,13 @@
                   }, 3000);
                 });
               }
-              const group = selectedTab.group?.hasAttribute('split-view-group')
-                ? selectedTab.group.group
-                : selectedTab.group;
-              await gZenFolders.animateUnload(group, selectedTab);
+              await gZenFolders.collapseVisibleTab(
+                selectedTab.group,
+                /* only if active */ true,
+                selectedTab
+              );
               let tabsToUnload = [selectedTab];
-              if (selectedTab.group?.hasAttribute('split-view-group') && expandSplitViewList) {
+              if (selectedTab.group?.hasAttribute('split-view-group')) {
                 tabsToUnload = selectedTab.group.tabs;
               }
               const allAreUnloaded = tabsToUnload.every(
@@ -1251,7 +1251,7 @@
           let isVisible = true;
           let parent = item.group;
           while (parent) {
-            if (!parent.visible) {
+            if (parent.collapsed && !parent.hasAttribute('has-active')) {
               isVisible = false;
               break;
             }

@@ -69,14 +69,21 @@ const globalActionsTemplate = [
     },
   },
   {
-    label: 'Next Workspace',
+    label: 'Next Space',
     command: 'cmd_zenWorkspaceForward',
     icon: 'chrome://browser/skin/zen-icons/forward.svg',
+    isAvailable: (window) => {
+      return window.gZenWorkspaces._workspaceCache.workspaces.length > 1;
+    },
   },
   {
-    label: 'Previous Workspace',
+    label: 'Previous Space',
     command: 'cmd_zenWorkspaceBackward',
     icon: 'chrome://browser/skin/zen-icons/back.svg',
+    isAvailable: (window) => {
+      // This also covers the case of being in private mode
+      return window.gZenWorkspaces._workspaceCache.workspaces.length > 1;
+    },
   },
   {
     label: 'Close Tab',

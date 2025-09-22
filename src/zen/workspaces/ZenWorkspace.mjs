@@ -15,7 +15,7 @@
             <html:div class="pinned-tabs-container-separator"></html:div>
           </vbox>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
-            <!-- Let it me as an ID to mantain compatibility with firefox's tabbrowser -->
+            <!-- Let it as an ID to mantain compatibility with firefox's tabbrowser -->
             <hbox id="tabbrowser-arrowscrollbox-periphery">
               <toolbartabstop/>
               <toolbarbutton id="tabs-newtab-button"

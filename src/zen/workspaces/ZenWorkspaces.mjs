@@ -1130,7 +1130,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
   }
 
-  handleTabBeforeClose(tab, closeWindowWithLastTab = false) {
+  handleTabBeforeClose(tab, closeWindowWithLastTab) {
     if (!this.workspaceEnabled || this.__contextIsDelete || this._removedByStartupPage) {
       return null;
     }
@@ -1144,7 +1144,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     let tabsPinned = tabs.filter(
       (t) => !this.shouldOpenNewTabIfLastUnpinnedTabIsClosed || !t.pinned
     );
-    const shouldCloseWindow = this.shouldCloseWindow() && closeWindowWithLastTab;
+    const shouldCloseWindow =
+      closeWindowWithLastTab != null ? closeWindowWithLastTab : this.shouldCloseWindow();
     if (tabs.length === 1 && tabs[0] === tab) {
       if (shouldCloseWindow) {
         // We've already called beforeunload on all the relevant tabs if we get here,

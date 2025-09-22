@@ -65,7 +65,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-hardening
   ac_add_options --disable-profiling
 
-  ac_add_options --disable-crashreporter
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
 
@@ -101,6 +100,8 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-updater
 
   export MOZ_PACKAGE_JSSHELL=1
+else
+  ac_add_options --disable-crashreporter
 fi
 
 ac_add_options --enable-unverified-updates

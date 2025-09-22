@@ -146,7 +146,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
 
       - name: Setup Surfer
         run: |
@@ -206,7 +206,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
 
       - name: Setup Surfer
         run: |
@@ -253,7 +253,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
 
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs.update_branch }} --display-version ${{ needs.build-data.outputs.version }}
@@ -378,7 +378,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
           sudo apt-get update
           sudo apt-get -y install libfuse2 desktop-file-utils appstream
 
@@ -618,7 +618,7 @@ jobs:
         run: |
           git pull
           sudo apt-get update
-          npm install
+          npm ci
 
       - name: Generate new Flatpak release
         run: |

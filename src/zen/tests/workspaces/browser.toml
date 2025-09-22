@@ -15,6 +15,7 @@ support-files = [
 
 ["browser_issue_8699.js"]
 ["browser_issue_9900.js"]
+["browser_issue_10455.js"]
 
 ["browser_private_mode.js"]
 ["browser_private_mode_startup.js"]

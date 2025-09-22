@@ -33,7 +33,7 @@
   value: true
 
 - name: zen.theme.styled-status-panel
-  value: true
+  value: '@IS_TWILIGHT@'
 
 # ==== Mark: border radius ====
 

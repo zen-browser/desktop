@@ -79,3 +79,6 @@
 
 - name: browser.tabs.groups.hoverPreview.enabled
   value: false
+
+- name: browser.tabs.closeWindowWithLastTab
+  value: false

@@ -66,13 +66,6 @@
 }
 
 #urlbar:not([breakout-extend='true']) {
-  & .urlbar-background {
-    transition: background-color 0.15s ease;
-    :root[supress-primary-adjustment] & {
-      transition: none !important;
-    }
-  }
-
   &:hover .urlbar-background {
     background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2)) !important;
   }

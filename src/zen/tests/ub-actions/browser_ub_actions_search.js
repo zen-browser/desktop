@@ -10,6 +10,10 @@ ChromeUtils.defineESModuleGetters(this, {
 
 add_task(async function test_Ub_Actions_Search() {
   for (const action of globalActions) {
+    if (!action.isAvailable(window)) {
+      ok(true, `Skipping action: ${action.command}`);
+      continue;
+    }
     const label = action.label;
     await UrlbarTestUtils.promiseAutocompleteResultPopup({
       window,

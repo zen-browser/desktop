@@ -28,7 +28,6 @@ if test "$ZEN_RELEASE"; then
         ac_add_options --enable-optimize="-O3 -w -ftree-vectorize -mfpmath=sse -mprfchw -msse3 -mcx16 -msahf"
 
         export LDFLAGS="$LDFLAGS -Wl,-O3"
-        export RUSTFLAGS="$RUSTFLAGS -Clink-args=--icf=safe"
     elif test "$SURFER_COMPAT" = "aarch64"; then
         ac_add_options --target=aarch64-linux-gnu
 
@@ -42,7 +41,6 @@ if test "$ZEN_RELEASE"; then
         export CPPFLAGS="$CPPFLAGS -O3"
         export CXXFLAGS="$CXXFLAGS -O3"
         export LDFLAGS="$LDFLAGS -Wl,-O3"
-        export RUSTFLAGS="$RUSTFLAGS -Clink-args=--icf=safe"
     fi
 
     # Disable DMD and ELF hacks, enable linker lld

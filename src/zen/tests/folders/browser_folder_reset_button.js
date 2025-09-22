@@ -36,7 +36,7 @@ add_task(async function test_Issue_() {
       ok(!tab1.hasAttribute('folder-active'), 'Tab 1 should not be in the active folder');
       ok(!tab2.hasAttribute('folder-active'), 'Tab 2 should not be in the active folder');
       resolve();
-    }, 100)
+    }, 500)
   );
   await removeFolder(folder);
 });

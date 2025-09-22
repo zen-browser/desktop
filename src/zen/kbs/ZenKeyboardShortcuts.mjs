@@ -1144,7 +1144,7 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-new-empty-split-view',
-          '+',
+          AppConstants.platform == 'linux' ? '*' : '+',
           '',
           ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
           nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),

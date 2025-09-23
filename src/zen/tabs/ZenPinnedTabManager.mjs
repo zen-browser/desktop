@@ -1280,7 +1280,7 @@
         : [separator];
     }
 
-    animateSeparatorMove(movingTabs, dropElement, isPinned, event) {
+    animateSeparatorMove(movingTabs, isPinned, event) {
       let draggedTab = movingTabs[0];
       if (gBrowser.isTabGroupLabel(draggedTab) && draggedTab.group.isZenFolder) {
         this._isGoingToPinnedTabs = true;
@@ -1302,11 +1302,9 @@
         translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
       this._isGoingToPinnedTabs = isGoingToPinnedTabs;
-      if (!dropElement) {
-        itemsToCheck.forEach((item) => {
-          item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
-        });
-      }
+      itemsToCheck.forEach((item) => {
+        item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
+      });
     }
 
     getLastTabBound(lastBound, lastTab, isDraggingFolder = false) {

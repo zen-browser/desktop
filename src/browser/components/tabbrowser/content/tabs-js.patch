@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index c7557dad38db9ef02b981c46de9595df77cb67db..4192dc797d5f07ece57e7e9ecb0cd0698e189659 100644
+index c7557dad38db9ef02b981c46de9595df77cb67db..4b49d647f2d780cefe23a8fcd7b76d84c2156a1d 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -44,6 +44,9 @@
@@ -471,7 +471,7 @@ index c7557dad38db9ef02b981c46de9595df77cb67db..4192dc797d5f07ece57e7e9ecb0cd069
  
        let dropElement = getOverlappedElement();
 +      if (dropElement?.hasAttribute("split-view-group")) dropElement = dropElement.labelElement;
-+      gZenPinnedTabManager.animateSeparatorMove(movingTabs, dropElement, isPinned, event);
++      gZenPinnedTabManager.animateSeparatorMove(movingTabs, isPinned, event);
  
        let newDropElementIndex;
        if (dropElement) {

@@ -1294,12 +1294,19 @@
       const draggingTabHeight = movingTabs.reduce((acc, item) => {
         return acc + window.windowUtils.getBoundsWithoutFlushing(item).height;
       }, 0);
-      let topToNormalTabs = itemsToCheck[0].screenY;
-      if (!isPinned) {
-        topToNormalTabs += draggedTab.getBoundingClientRect().height;
+      const draggedTabHeight = draggedTab.getBoundingClientRect().height;
+      const separatorStyle = window.getComputedStyle(itemsToCheck[0]);
+      let boundaryY = itemsToCheck[0].screenY;
+      if (isPinned) {
+        boundaryY -= parseInt(separatorStyle.marginTop) + draggedTabHeight / 2;
+      } else {
+        boundaryY += parseInt(separatorStyle.marginBottom) + draggedTabHeight / 2;
+        if (Services.prefs.getBoolPref('zen.view.show-newtab-button-top')) {
+          boundaryY += itemsToCheck[1].getBoundingClientRect().height;
+        }
       }
       const isGoingToPinnedTabs =
-        translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
+        translate < boundaryY && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
       this._isGoingToPinnedTabs = isGoingToPinnedTabs;
       itemsToCheck.forEach((item) => {

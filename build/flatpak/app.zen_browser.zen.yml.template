@@ -32,7 +32,6 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
   - --talk-name=org.gtk.vfs.*
-  - --talk-name=org.freedesktop.Notifications
   - --own-name=org.mpris.MediaPlayer2.firefox.*
   - --own-name=org.mozilla.zen.*
 cleanup:

@@ -1131,6 +1131,11 @@ Preferences.addAll([
     default: 'float',
   },
   {
+    id: 'zen.urlbar.vim-navigation.enabled',
+    type: 'bool',
+    default: false,
+  },
+  {
     id: 'zen.workspaces.separate-essentials',
     type: 'bool',
     default: false,

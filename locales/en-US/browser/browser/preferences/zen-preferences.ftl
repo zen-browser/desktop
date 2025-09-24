@@ -169,6 +169,8 @@ zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking
 
 zen-urlbar-behavior-label = Behavior
+zen-urlbar-vim-navigation =
+  .label = Vim Navigation
 zen-urlbar-behavior-normal =
     .label = Normal
 zen-urlbar-behavior-floating-on-type =

@@ -11,6 +11,9 @@
 - name: zen.urlbar.behavior
   value: floating-on-type
 
+- name: zen.urlbar.vim-navigation.enabled
+  value: false
+
 - name: zen.urlbar.wait-to-clear
   value: 45000
 

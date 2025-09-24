@@ -2,6 +2,27 @@ diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/compon
 index 36e3ab4a5a153230bb488b66dda7e3e7c763ca23..81f2944b939ac0963c129f86aab0b55817349401 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
+@@ -302,6 +302,20 @@ export class UrlbarController {
+       return;
+     }
+
++    // Handle vim navigation bindings.
++    if (
++      Services.prefs.getBoolPref("zen.urlbar.vim-navigation.enabled", false) &&
++      this.view.isOpen &&
++      event.ctrlKey &&
++      (event.key == "j" || event.key == "k")
++    ) {
++      if (executeAction) {
++        this.view.selectBy(1, { reverse: event.key == "k" });
++      }
++      event.preventDefault();
++      return;
++    }
++
+     if (this.view.isOpen && executeAction && this._lastQueryContextWrapper) {
+       // In native inputs on most platforms, Shift+Up/Down moves the caret to the
+       // start/end of the input and changes its selection, so in that case defer
 @@ -434,6 +434,8 @@ export class UrlbarController {
              });
            }

@@ -296,7 +296,7 @@ zen-folder {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
           fill: var(--zen-folder-stroke);
-          transform: translate(4px, 6.5px);
+          transform: translate(9px, 11px);
         }
 
         & g,

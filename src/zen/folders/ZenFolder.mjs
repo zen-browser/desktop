@@ -44,7 +44,7 @@
         </rect>
         <!--Icon (g)-->
         <g class="icon" style="fill: var(--zen-folder-stroke);">
-          <image href="" height="19" width="20"/>
+          <image href="" height="10" width="10"/>
         </g>
         <!--End Icon (g)-->
         <g class="dots" style="fill: var(--zen-folder-stroke);">

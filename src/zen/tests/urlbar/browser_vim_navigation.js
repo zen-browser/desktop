@@ -11,7 +11,7 @@ add_task(async function test_Vim_Navigation() {
   gURLBar.blur();
 
   await SpecialPowers.pushPrefEnv({
-    set: [['zen.urlbar.vim-navigation.enabled', true]]
+    set: [['zen.urlbar.vim-navigation.enabled', true]],
   });
 
   await SimpleTest.promiseFocus(window);
@@ -29,8 +29,10 @@ add_task(async function test_Vim_Navigation() {
   EventUtils.synthesizeKey('j', { ctrlKey: true }, window);
   EventUtils.synthesizeKey('VK_DOWN', {}, window);
 
-  ok(UrlbarTestUtils.getSelectedRowIndex(window) == 3, 'Ctrl+j and down should change the selection');
-
+  ok(
+    UrlbarTestUtils.getSelectedRowIndex(window) == 3,
+    'Ctrl+j and down should change the selection'
+  );
 
   // Ctrl+k and up should work to move the selection up
   EventUtils.synthesizeKey('k', { ctrlKey: true }, window);

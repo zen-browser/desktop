@@ -143,7 +143,7 @@ body > #confetti {
     }
 
     .zen-emojis-picker-svg {
-      padding: 0px !important;
+      padding: 4px !important;
       & label {
         display: none;
       }

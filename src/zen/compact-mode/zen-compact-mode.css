@@ -5,9 +5,32 @@
  */
 /* All overrides for compact mode go here */
 
-#zen-toolbar-background {
+.zen-toolbar-background {
   display: none;
   pointer-events: none;
+
+  overflow: clip;
+  z-index: -1;
+  background: black; /* Any color thats not white */
+  box-shadow: var(--zen-big-shadow);
+  @media -moz-pref('zen.theme.acrylic-elements') {
+    background: transparent;
+    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+  }
+
+  &::before,
+  &::after {
+    outline: 1px solid rgba(255, 255, 255, .15);
+    outline-offset: -1px;
+    background-attachment: fixed !important;
+    background-size: 100vw 100vh !important;
+  }
+
+  &,
+  &::before,
+  &::after {
+    border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+  }
 }
 
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
@@ -140,30 +163,8 @@
           width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
         }
 
-        & #zen-toolbar-background {
+        & .zen-toolbar-background {
           display: flex;
-          overflow: clip;
-          z-index: -1;
-          background: black; /* Any color thats not white */
-          box-shadow: var(--zen-big-shadow);
-          @media -moz-pref('zen.theme.acrylic-elements') {
-            background: transparent;
-            backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-          }
-
-          &::before,
-          &::after {
-            outline: 1px solid rgba(255, 255, 255, .15);
-            outline-offset: -1px;
-            background-attachment: fixed !important;
-            background-size: 100vw !important;
-          }
-
-          &,
-          &::before,
-          &::after {
-            border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
-          }
         }
       }
 
@@ -348,11 +349,6 @@
           }
           transition: all 0.15s ease;
           width: 100%;
-          background: var(--zen-dialog-background);
-
-          & > * {
-            position: relative !important;
-          }
         }
       }
 
@@ -364,19 +360,8 @@
         ) {
         & #zen-appcontent-navbar-container {
           visibility: visible !important;
-          :root[zen-show-grainy-background='true'] &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url(chrome://browser/content/zen-images/grain-bg.png);
-            pointer-events: none;
-            z-index: 0;
-            opacity: var(--zen-grainy-background-opacity, 0);
-            mix-blend-mode: overlay;
-            transition: opacity 0.3s ease-in-out;
+          & .zen-toolbar-background {
+            display: flex;
           }
         }
         border-top-width: 0px;

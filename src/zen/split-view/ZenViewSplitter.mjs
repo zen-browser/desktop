@@ -297,7 +297,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       // Add a min width to all the browser elements to prevent them from resizing
       const panelsWidth = gBrowser.tabbox.getBoundingClientRect().width;
-      const halfWidth = panelsWidth / 2;
+      let numOfTabsToDivide = 2;
+      if (currentView) {
+        numOfTabsToDivide = currentView.tabs.length + 1;
+      }
+      const halfWidth = panelsWidth / numOfTabsToDivide;
       let threshold =
         gNavToolbox.getBoundingClientRect().width *
         (gZenVerticalTabsManager._prefsRightSide ? 0 : 1);
@@ -397,7 +401,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     const panelsWidth = panelsRect.width;
-    const halfWidth = panelsWidth / 2;
+    let numOfTabsToDivide = 2;
+    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    if (currentView) {
+      numOfTabsToDivide = currentView.tabs.length + 1;
+    }
+    const halfWidth = panelsWidth / numOfTabsToDivide;
     const padding = ZenThemeModifier.elementSeparation;
     if (!this.fakeBrowser) {
       return;
@@ -1180,6 +1189,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this.currentView = -1;
     this.toggleWrapperDisplay(false);
     this.maybeDisableOpeningTabOnSplitView();
+    window.dispatchEvent(new CustomEvent('ZenViewSplitter:SplitViewDeactivated'));
   }
 
   /**
@@ -1754,24 +1764,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       } else {
         // Create new split view with layout based on drop position
         let gridType = 'vsep';
-        //switch (hoverSide) {
-        //  case 'left':
-        //  case 'right':
-        //    gridType = 'vsep';
-        //    break;
-        //  case 'top':
-        //  case 'bottom':
-        //    gridType = 'hsep';
-        //    break;
-        //  default:
-        //    gridType = 'grid';
-        //}
 
         // Put tabs always as if it was dropped from the left
         this.splitTabs(
           dropSide == 'left' ? [draggedTab, droppedOnTab] : [droppedOnTab, draggedTab],
           gridType,
-          1
+          dropSide == 'left' ? 0 : 1
         );
       }
     }

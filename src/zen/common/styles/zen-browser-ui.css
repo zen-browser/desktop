@@ -64,7 +64,7 @@
       transition: 0s;
     }
 
-    &:is(#zen-toolbar-background) {
+    &:is(.zen-toolbar-background) {
       &::after {
         background: var(--zen-main-browser-background-toolbar);
       }
@@ -76,7 +76,7 @@
       transition: 0s;
     }
 
-    &:is(#zen-toolbar-background) {
+    &:is(.zen-toolbar-background) {
       &::before {
         background: var(--zen-main-browser-background-toolbar-old);
       }

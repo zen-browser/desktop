@@ -246,6 +246,7 @@ var gZenCompactModeManager = {
     } else {
       ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
     }
+    window.dispatchEvent(new CustomEvent('ZenCompactMode:Toggled', { detail: this.preference }));
   },
 
   // NOTE: Dont actually use event, it's just so we make sure

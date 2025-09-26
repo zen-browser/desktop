@@ -29,8 +29,12 @@
       background.appendChild(grain);
       document.getElementById('browser').prepend(background);
       const toolbarBackground = background.cloneNode(true);
-      toolbarBackground.id = 'zen-toolbar-background';
+      toolbarBackground.removeAttribute('id');
+      toolbarBackground.classList.add('zen-toolbar-background');
       document.getElementById('titlebar').prepend(toolbarBackground);
+      document
+        .getElementById('zen-appcontent-navbar-container')
+        .prepend(toolbarBackground.cloneNode(true));
     }
 
     #zenInitBrowserLayout() {

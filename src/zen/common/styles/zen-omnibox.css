@@ -632,7 +632,7 @@
       var(--zen-primary-color) 50%,
       light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%
     );
-    --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), light-dark(white, black) 60%);
+    --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
     & *,

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..5fa5367571d77f760ad1b3e1191e53e43b255b3b 100644
+index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..1dc520f63b240cccda7be074346d2079774eed27 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -74,6 +74,13 @@ ChromeUtils.defineLazyGetter(lazy, "logger", () =>
@@ -264,3 +264,12 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..5fa5367571d77f760ad1b3e1191e53e4
            break;
          }
  
+@@ -4716,7 +4802,7 @@ export class UrlbarInput {
+     // When we are in actions search mode we can show more results so
+     // increase the limit.
+     let maxResults =
+-      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ACTIONS
++      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS
+         ? lazy.UrlbarPrefs.get("maxRichResults")
+         : UNLIMITED_MAX_RESULTS;
+     let options = {

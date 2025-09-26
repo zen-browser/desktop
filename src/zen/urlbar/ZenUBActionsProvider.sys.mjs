@@ -13,7 +13,9 @@ const DYNAMIC_TYPE_NAME = 'zen-actions';
 
 // The suggestion index of the actions row within the urlbar results.
 const MAX_RECENT_ACTIONS = 5;
+
 const MINIMUM_QUERY_SCORE = 92;
+const MINIMUM_PREFIXED_QUERY_SCORE = 50;
 
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: 'resource:///modules/UrlbarResult.sys.mjs',
@@ -157,7 +159,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       }
       const label = action.extraPayload?.prettyName || action.label;
       const score = this.#calculateFuzzyScore(label, query);
-      if (score > MINIMUM_QUERY_SCORE) {
+      if (score > (isPrefixed ? MINIMUM_PREFIXED_QUERY_SCORE : MINIMUM_QUERY_SCORE)) {
         results.push({
           score,
           action,

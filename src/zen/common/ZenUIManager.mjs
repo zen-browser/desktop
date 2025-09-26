@@ -262,7 +262,7 @@ var gZenUIManager = {
             gURLBar.removeAttribute('animate-searchmode');
             delete this._animatingSearchModeTimeout;
           });
-        }, 3000);
+        }, 700);
       }
     }
   },
@@ -277,7 +277,7 @@ var gZenUIManager = {
     if (!currentSearchMode) {
       searchMode = {
         source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
-        isPreview: false,
+        isPreview: true,
       };
     }
     gURLBar.removeAttribute('animate-searchmode');

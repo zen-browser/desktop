@@ -572,20 +572,14 @@
 /* tab sound icons */
 .tab-icon-overlay[soundplaying] {
   list-style-image: url('tab-audio-playing-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 .tab-icon-overlay[muted] {
   list-style-image: url('tab-audio-muted-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 .tab-icon-overlay[activemedia-blocked] {
   list-style-image: url('tab-audio-blocked-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 /* reload/stop animation */
@@ -816,5 +810,4 @@
 .zen-workspace-context-icon img {
   -moz-context-properties: fill;
   fill: currentColor;
-  scale: 1.6;
 }

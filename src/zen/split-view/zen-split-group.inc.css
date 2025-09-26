@@ -1,0 +1,181 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+tab-group[split-view-group] {
+  display: block;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: var(--zen-tabbox-element-indent-transition);
+
+    #tabbrowser-tabs[movingtab] & {
+      transition: var(--tab-dragover-transition), var(--zen-tabbox-element-indent-transition);
+    }
+  }
+  --zen-split-view-active-tab-bg: color-mix(
+    in srgb,
+    var(--zen-toolbar-element-bg),
+    transparent 40%
+  );
+
+  --tab-collapsed-background-width: none;
+
+  :root[zen-sidebar-expanded='true'] & {
+    margin-inline-start: var(--zen-folder-indent) !important;
+  }
+
+  & .tab-group-label {
+    height: 100% !important;
+  }
+
+  & .tab-group-container {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    border-radius: var(--border-radius-medium);
+    padding: 0 2px;
+    margin-inline: var(--tab-block-margin);
+    margin-block: var(--tab-block-margin);
+    min-height: var(--tab-min-height);
+    outline: var(--tab-outline);
+    outline-offset: var(--tab-outline-offset);
+    outline-color: var(--tab-selected-outline-color);
+    transition: scale 0.1s ease;
+    margin-inline: 2px !important;
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      padding: 0;
+      --tab-collapsed-width: 38px;
+      overflow: clip;
+      --tab-min-width: 34px;
+      outline: 2px solid var(--zen-colors-border-contrast);
+      outline-offset: -2px;
+    }
+
+    & > .tabbrowser-tab {
+      --tab-selected-bgcolor: var(--zen-split-view-active-tab-bg);
+      --tab-hover-background-color: transparent;
+      --tab-selected-shadow: none;
+      --border-radius-medium: var(--tab-border-radius);
+      --zen-active-tab-scale: 1;
+      --zen-folder-indent: 0 !important;
+
+      :root[zen-sidebar-expanded='true'] & {
+        --tab-min-height: 28px;
+      }
+
+      container-type: inline-size;
+      container-name: browser-tab;
+
+      flex: 1 !important;
+      padding-inline: 2px !important;
+      overflow: clip;
+
+      &:not(:last-child)::after {
+        content: '';
+        width: 1px;
+        height: 16px;
+        background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      :root:not([zen-sidebar-expanded='true']) &:not(:last-child)::after {
+        width: 16px;
+        height: 1px;
+        top: auto;
+        bottom: 0;
+        right: 50%;
+        transform: translateX(50%);
+      }
+
+      & .tab-content {
+        min-width: 0;
+        padding: 0 4px !important;
+        :root[zen-sidebar-expanded='true'] & {
+          justify-content: unset !important;
+        }
+      }
+    }
+
+    &:has(> tab:is([visuallyselected], [multiselected])) {
+      background-color: var(--tab-selected-bgcolor);
+      box-shadow: var(--tab-selected-shadow);
+
+      & > .tabbrowser-tab {
+        --tab-hover-background-color: var(--zen-split-view-active-tab-bg);
+        & .tab-background {
+          background-color: var(--zen-split-view-active-tab-bg) !important;
+        }
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    &:active {
+      scale: var(--zen-active-tab-scale);
+    }
+
+    &:hover {
+      background-color: var(--zen-toolbar-element-bg);
+    }
+
+    & .tab-close-button,
+    & .tab-reset-button {
+      display: none !important;
+    }
+
+    @container browser-tab (min-width: 70px) {
+      :root[zen-sidebar-expanded='true'] &:hover > .tabbrowser-tab:not([pinned]) .tab-close-button {
+        display: block !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      #tabbrowser-tabs[movingtab] & {
+        transition: var(--tab-dragover-transition);
+      }
+    }
+  }
+}
+
+:root:not([zen-sidebar-expanded='true']) {
+  tab-group .tab-group-container {
+    flex-direction: column;
+  }
+
+  tab-group[split-view-group] {
+    min-width: 100%;
+  }
+}
+
+tab-group[split-view-group] .tabbrowser-tab {
+  width: 100%;
+  max-width: unset;
+}
+
+tab-group[split-view-group] .tab-group-label-container {
+  position: absolute;
+  width: -moz-available;
+  height: 36px;
+  visibility: hidden;
+  padding: 0 !important;
+  margin: 2px 0 0 0 !important;
+}
+
+tab-group[split-view-group] .tab-close-button {
+  display: block;
+  visibility: visible;
+}
+
+tab-group[split-view-group] .tab-group-line {
+  display: none;
+  background: transparent;
+}

@@ -968,10 +968,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-toggle-sidebar',
-          'B',
+          '',
           '',
           ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ alt: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenToggleSidebar',
           'zen-sidebar-shortcut-toggle'
         )

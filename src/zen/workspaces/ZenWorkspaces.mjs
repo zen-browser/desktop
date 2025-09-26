@@ -2258,7 +2258,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     // Update workspace UI
     await this._updateWorkspacesChangeContextMenu();
-    // gZenUIManager.updateTabsToolbar();
     await this._propagateWorkspaceData({ clearCache: false, onInit });
 
     gZenThemePicker.onWorkspaceChange(workspace);
@@ -3082,7 +3081,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   handleTabCloseWindow() {
-    if (this.shouldCloseWindow()) {
+    if (Services.prefs.getBoolPref('zen.tabs.close-window-with-empty')) {
       document.getElementById('cmd_closeWindow').doCommand();
     }
   }

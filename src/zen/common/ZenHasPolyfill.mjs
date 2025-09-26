@@ -12,7 +12,7 @@
     /**
      * @param {{selector: string, exists: boolean}} descendantSelectors
      */
-    observeSelectorExistence(element, descendantSelectors, stateAttribute) {
+    observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
       const updateState = () => {
         const exists = descendantSelectors.some(({ selector }) => {
           return element.querySelector(selector);
@@ -36,6 +36,7 @@
         id: observerId,
         observer,
         element,
+        attributeFilter,
       });
       return observerId;
     }
@@ -54,6 +55,7 @@
           childList: true,
           subtree: true,
           attributes: true,
+          attributeFilter: observer.attributeFilter.length ? observer.attributeFilter : undefined,
         });
       }
     }

@@ -16,12 +16,6 @@ var gZenUIManager = {
     document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
-      'sidebarHeightThrottle',
-      'zen.view.sidebar-height-throttle',
-      500
-    );
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
       'contentElementSeparation',
       'zen.theme.content-element-separation',
       0
@@ -52,14 +46,10 @@ var gZenUIManager = {
 
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
 
-    new ResizeObserver(this.updateTabsToolbar.bind(this)).observe(
-      document.getElementById('TabsToolbar')
-    );
-
     new ResizeObserver(
       gZenCommonActions.throttle(
         gZenCompactModeManager.getAndApplySidebarWidth.bind(gZenCompactModeManager),
-        this.sidebarHeightThrottle
+        Services.prefs.getIntPref('zen.view.sidebar-height-throttle', 500)
       )
     ).observe(gNavToolbox);
 
@@ -643,7 +633,8 @@ var gZenVerticalTabsManager = {
       !aItem.isConnected ||
       gZenUIManager.testingEnabled ||
       !gZenStartup.isReady ||
-      !gZenPinnedTabManager.hasInitializedPins
+      !gZenPinnedTabManager.hasInitializedPins ||
+      aItem.group?.hasAttribute('split-view-group')
     ) {
       return;
     }

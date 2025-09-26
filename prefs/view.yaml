@@ -22,9 +22,6 @@
 - name: zen.view.sidebar-expanded
   value: true
 
-- name: zen.view.sidebar-collapsed.hide-mute-button
-  value: true
-
 - name: zen.view.experimental-force-window-controls-left
   value: false
 

@@ -70,6 +70,8 @@ zen-workspace-creation {
 
           & image {
             position: absolute;
+            width: 16px;
+            height: 16px;
             -moz-context-properties: fill-opacity, fill;
             fill: currentColor;
           }

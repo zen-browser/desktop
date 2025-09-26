@@ -1246,6 +1246,7 @@
       for (const item of this.dragShiftableItems) {
         item.style.transform = '';
       }
+      delete this._topToNormalTabs;
       for (const item of gBrowser.tabContainer.ariaFocusableItems) {
         if (gBrowser.isTab(item)) {
           let isVisible = true;
@@ -1280,7 +1281,7 @@
         : [separator];
     }
 
-    animateSeparatorMove(movingTabs, dropElement, isPinned, event) {
+    animateSeparatorMove(movingTabs, dropElement, isPinned) {
       let draggedTab = movingTabs[0];
       if (gBrowser.isTabGroupLabel(draggedTab) && draggedTab.group.isZenFolder) {
         this._isGoingToPinnedTabs = true;
@@ -1290,14 +1291,19 @@
         draggedTab = draggedTab.group;
       }
       const itemsToCheck = this.dragShiftableItems;
-      const translate = event.screenY;
+      let translate = movingTabs[isPinned ? movingTabs.length - 1 : 0].getBoundingClientRect().top;
+      if (isPinned) {
+        const rect = draggedTab.getBoundingClientRect();
+        translate += rect.height;
+      }
       const draggingTabHeight = movingTabs.reduce((acc, item) => {
         return acc + window.windowUtils.getBoundsWithoutFlushing(item).height;
       }, 0);
-      let topToNormalTabs = itemsToCheck[0].screenY;
-      if (!isPinned) {
-        topToNormalTabs += draggedTab.getBoundingClientRect().height;
+      if (typeof this._topToNormalTabs === 'undefined') {
+        const rects = itemsToCheck.map((item) => window.windowUtils.getBoundsWithoutFlushing(item));
+        this._topToNormalTabs = rects[0].top + rects.at(-1).height / (isPinned ? 2 : 4);
       }
+      let topToNormalTabs = this._topToNormalTabs;
       const isGoingToPinnedTabs =
         translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;

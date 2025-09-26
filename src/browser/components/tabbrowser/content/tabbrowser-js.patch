@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 3204f253c23551650991d3385dd256d55892a012..29e0471616f979bfe40bb4d34148bf35a63f59ee 100644
+index 3204f253c23551650991d3385dd256d55892a012..792e54079e9f82013617306243fe313c1ee4358d 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -427,15 +427,64 @@
@@ -481,7 +481,7 @@ index 3204f253c23551650991d3385dd256d55892a012..29e0471616f979bfe40bb4d34148bf35
 +        index = Math.min(index, tab.hasAttribute("zen-essential") ? this._numZenEssentials : this._numVisiblePinTabsWithoutCollapsed);
        } else {
 -        index = Math.max(index, this.pinnedTabCount);
-+        index = Math.max(index, this._numVisiblePinTabsWithoutCollapsed);
++        index = Math.max(index, typeof elementIndex == "number" ? this._numVisiblePinTabsWithoutCollapsed : this.pinnedTabCount);
          index = Math.min(index, allItems.length);
        }
        /** @type {MozTabbrowserTab|undefined} */

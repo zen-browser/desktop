@@ -1,0 +1,21 @@
+diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
+index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..b69a4d34f700637bd352620c520b989cf00fa39f 100644
+--- a/browser/components/urlbar/UrlbarUtils.sys.mjs
++++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
+@@ -75,6 +75,7 @@ export var UrlbarUtils = {
+     RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
+     SUGGESTED_INDEX: "suggestedIndex",
+     TAIL_SUGGESTION: "tailSuggestion",
++    ZEN_ACTION: "zenAction",
+   }),
+ 
+   // Defines provider types.
+@@ -576,6 +577,8 @@ export var UrlbarUtils = {
+         return this.RESULT_GROUP.INPUT_HISTORY;
+       case "UrlbarProviderQuickSuggest":
+         return this.RESULT_GROUP.GENERAL_PARENT;
++      case "ZenUrlbarProviderGlobalActions":
++        return this.RESULT_GROUP.ZEN_ACTION;
+       default:
+         break;
+     }

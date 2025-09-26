@@ -2,6 +2,4 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M13.5 7.87402V17.9375L10.5 16.4375V5.99902L13.5 7.87402ZM9.5 16.4375L6.72363 17.8262C6.39134 17.9922 6.00028 17.7503 6 17.3789V8.9375C6.00001 8.78013 6.0743 8.63153 6.2002 8.53711L9.5 6.0625V16.4375ZM16.7588 6.34863C16.9081 6.24915 17.0993 6.23715 17.2598 6.31738L17.7236 6.5498C17.8928 6.63447 17.9998 6.80696 18 6.99609V15.4102C18 15.5826 17.9108 15.7426 17.7646 15.834L14.5 17.875V7.85449L16.7588 6.34863Z" fill="context-fill" fill-opacity="context-fill-opacity"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="context-fill" fill-opacity="context-fill-opacity" viewBox="0 0 512 512"><path d="M48.17 113.34A32 32 0 0032 141.24V438a32 32 0 0047 28.37c.43-.23.85-.47 1.26-.74l84.14-55.05a8 8 0 003.63-6.72V46.45a8 8 0 00-12.51-6.63zM212.36 39.31A8 8 0 00200 46v357.56a8 8 0 003.63 6.72l96 62.42A8 8 0 00312 466V108.67a8 8 0 00-3.64-6.73zM464.53 46.47a31.64 31.64 0 00-31.5-.88 12.07 12.07 0 00-1.25.74l-84.15 55a8 8 0 00-3.63 6.72v357.46a8 8 0 0012.52 6.63l107.07-73.46a32 32 0 0016.41-28v-296a32.76 32.76 0 00-15.47-28.21z"/></svg>

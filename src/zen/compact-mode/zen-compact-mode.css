@@ -140,11 +140,6 @@
           width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
         }
 
-        :root[zen-single-toolbar='true'] {
-          padding-top: 0 !important;
-          margin-left: 0 !important;
-        }
-
         & #zen-toolbar-background {
           display: flex;
           overflow: clip;

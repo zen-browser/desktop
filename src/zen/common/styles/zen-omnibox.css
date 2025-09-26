@@ -163,7 +163,7 @@
   z-index: 2;
 
   & .urlbar-input-container {
-    font-weight: 500;
+    font-weight: 400;
   }
 
   & #identity-box {
@@ -584,7 +584,11 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
-  background-color: color-mix(in srgb, var(--zen-primary-color), transparent 30%) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--zen-primary-color) 50%,
+    light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%
+  ) !important;
   color: white;
   padding: 4px 8px;
   border-radius: 50px;
@@ -611,7 +615,7 @@
     --zen-selected-bg: color-mix(
       in srgb,
       var(--zen-primary-color) 50%,
-      light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.2)) 50%
+      light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%
     );
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), light-dark(white, black) 40%);
     background-color: var(--zen-selected-bg) !important;

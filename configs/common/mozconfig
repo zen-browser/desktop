@@ -52,23 +52,14 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-debug-symbols
   ac_add_options --disable-debug-js-modules
   ac_add_options --disable-tests
-  ac_add_options --disable-js-shell
-
-  ac_add_options --disable-vtune
 
   ac_add_options --enable-rust-simd
   ac_add_options --enable-wasm-simd
 
   mk_add_options MOZ_PARALLEL_COMPILE=1
 
-  ac_add_options --enable-proxy-bypass-protection
-  ac_add_options --enable-hardening
-  ac_add_options --disable-profiling
-
   ac_add_options --disable-geckodriver
   ac_add_options --disable-rust-tests
-
-  ac_add_options --disable-default-browser-agent
 
   if ! test "$ZEN_DISABLE_LTO"; then
     # only enable full LTO when ZEN_RELEASE_BRANCH is 'release'
@@ -99,6 +90,7 @@ if test "$ZEN_RELEASE"; then
 
   ac_add_options --enable-updater
 
+  ac_add_options --enable-js-shell
   export MOZ_PACKAGE_JSSHELL=1
 else
   ac_add_options --disable-crashreporter

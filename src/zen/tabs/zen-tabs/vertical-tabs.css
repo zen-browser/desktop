@@ -20,6 +20,11 @@
   width: 100%;
 }
 
+#pinned-drop-indicator {
+  /* We dont use this firefox feature */
+  display: none !important;
+}
+
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
@@ -785,28 +790,6 @@
 
         & .tabbrowser-tab {
           display: none !important;
-        }
-      }
-    }
-
-    @media -moz-pref('zen.view.sidebar-collapsed.hide-mute-button') {
-      & .tab-icon-overlay:is([soundplaying], [muted]):not([selected]) {
-        display: none !important;
-
-        :is(
-            :root[uidensity='compact'],
-            #tabbrowser-tabs[secondarytext-unsupported],
-            :root:not([uidensity='compact'])
-              #tabbrowser-tabs:not([secondarytext-unsupported])
-              .tabbrowser-tab:hover
-          )
-          .tab-icon-stack[indicator-replaces-favicon]
-          > :not(&),
-        :root:not([uidensity='compact'])
-          #tabbrowser-tabs:not([secondarytext-unsupported])
-          .tabbrowser-tab:not(:hover)
-          &[indicator-replaces-favicon] {
-          opacity: 1 !important;
         }
       }
     }

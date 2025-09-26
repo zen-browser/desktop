@@ -40,7 +40,6 @@
     #lastFolderContextMenu = null;
 
     #foldersEnabled = false;
-    #folderAnimCache = new Map();
 
     #animationCount = 0;
 
@@ -304,7 +303,7 @@
             folder.removeAttribute('has-active');
           }
           this.collapseVisibleTab(folder, true);
-          this.updateFolderIcon(folder, 'close', false);
+          this.updateFolderIcon(folder, 'close');
         }
       }
     }
@@ -721,7 +720,7 @@
     async #convertFolderToSpace(folder) {
       const currentWorkspace = gZenWorkspaces.getActiveWorkspaceFromCache();
       let selectedTab = folder.tabs.find((tab) => tab.selected);
-      const icon = folder.icon?.querySelector('svg #folder-icon image');
+      const icon = folder.icon?.querySelector('svg .icon image');
 
       const newSpace = await gZenWorkspaces.createAndSaveWorkspace(
         folder.label,
@@ -855,7 +854,7 @@
         gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
       });
 
-      this.updateFolderIcon(folder, 'auto', false);
+      this.updateFolderIcon(folder, 'auto');
 
       if (options.renameFolder) {
         folder.rename();
@@ -1116,71 +1115,14 @@
       }
     }
 
-    updateFolderIcon(group, state = 'auto', play = true) {
+    updateFolderIcon(group, state = 'auto') {
       const svg = group.querySelector('svg');
       if (!svg) return [];
-      let animations = this.#folderAnimCache.get(group);
-      if (!animations) {
-        animations = svg.querySelectorAll('animate, animateTransform, animateMotion');
-        this.#folderAnimCache.set(group, animations);
-      }
 
       const isCollapsed = group.collapsed;
       svg.setAttribute('state', state === 'auto' ? (isCollapsed ? 'close' : 'open') : state);
       const hasActive = group.hasAttribute('has-active');
-
-      const OPACITY = {
-        'folder-dots': { active: '0;1', baseOrig: '0;0' },
-        'folder-icon': { active: '1;0', baseOrig: '1;1' },
-      };
-
-      animations.forEach((animation) => {
-        const parentId = animation.parentElement.id;
-        const isOpacity = animation.getAttribute('attributeName') === 'opacity';
-
-        if (!animation.dataset.origValues) {
-          animation.dataset.origValues = animation.getAttribute('values');
-        }
-
-        const origValues = animation.dataset.origValues;
-        const [fromValue, toValue] = origValues.split(';');
-
-        const isActiveState = isCollapsed && hasActive && isOpacity;
-
-        if (!play && !isActiveState) {
-          if (isOpacity && OPACITY[parentId]) {
-            const staticValue = OPACITY[parentId].baseOrig;
-            animation.dataset.origValues = staticValue;
-            animation.setAttribute('values', staticValue);
-            animation.beginElement();
-          }
-          return;
-        }
-
-        if (isOpacity && OPACITY[parentId]) {
-          animation.dataset.origValues = OPACITY[parentId].baseOrig;
-        }
-
-        let newValues;
-
-        if (isActiveState && OPACITY[parentId]) {
-          newValues = OPACITY[parentId].active;
-          const [activeFrom, activeTo] = newValues.split(';');
-          animation.dataset.origValues = `${activeTo};${activeFrom}`;
-        } else {
-          const stateValues = {
-            open: `${fromValue};${toValue}`,
-            close: `${toValue};${fromValue}`,
-            auto: isCollapsed ? `${toValue};${fromValue}` : `${fromValue};${toValue}`,
-          };
-          newValues = stateValues[state] || stateValues.auto;
-        }
-
-        if (animation.getAttribute('values') !== newValues) {
-          animation.setAttribute('values', newValues);
-          animation.beginElement();
-        }
-      });
+      svg.setAttribute('active', hasActive && isCollapsed ? 'true' : 'false');
 
       return [];
     }
@@ -1256,7 +1198,7 @@
     }
 
     setFolderUserIcon(group, icon) {
-      const svgIcon = group.icon.querySelector('svg #folder-icon image');
+      const svgIcon = group.icon.querySelector('svg .icon image');
       if (!svgIcon) return;
       svgIcon.setAttribute('href', icon ?? '');
       if (svgIcon.getAttribute('href') !== icon) {
@@ -1305,7 +1247,7 @@
 
       if (group.activeTabs.length === 0) {
         group.removeAttribute('has-active');
-        this.updateFolderIcon(group, 'close', false);
+        this.updateFolderIcon(group, 'close');
       }
 
       return this.on_TabGroupCollapse({
@@ -1332,7 +1274,7 @@
 
       if (group.activeTabs.length === 0) {
         group.removeAttribute('has-active');
-        this.updateFolderIcon(group, 'close', false);
+        this.updateFolderIcon(group, 'close');
       }
 
       this.on_TabGroupExpand({ target: group, forExpandVisible: true });
@@ -1408,7 +1350,7 @@
 
               if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
 
-              animations.push(...this.updateFolderIcon(current, 'close', false));
+              animations.push(...this.updateFolderIcon(current, 'close'));
               animations.push(
                 gZenUIManager.motion.animate(
                   groupStart,
@@ -1518,7 +1460,7 @@
 
     #groupInit(group, stateData) {
       // Setup zen-folder icon to the correct position
-      this.updateFolderIcon(group, 'auto', false);
+      this.updateFolderIcon(group, 'auto');
       if (stateData?.userIcon) {
         this.setFolderUserIcon(group, stateData.userIcon);
       }
@@ -1575,7 +1517,7 @@
 
         let prevSiblingInfo = null;
         const prevSibling = folder.previousElementSibling;
-        const userIcon = folder?.icon?.querySelector('svg #folder-icon image');
+        const userIcon = folder?.icon?.querySelector('svg .icon image');
 
         if (prevSibling) {
           if (gBrowser.isTabGroup(prevSibling)) {

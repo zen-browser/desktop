@@ -35,7 +35,7 @@
 *       content/browser/zen-styles/zen-compact-mode.css                         (../../zen/compact-mode/zen-compact-mode.css)
 
         content/browser/zen-components/ZenViewSplitter.mjs                      (../../zen/split-view/ZenViewSplitter.mjs)
-        content/browser/zen-styles/zen-decks.css                                (../../zen/split-view/zen-decks.css)
+*       content/browser/zen-styles/zen-decks.css                                (../../zen/split-view/zen-decks.css)
 
         content/browser/zen-components/ZenMods.mjs                              (../../zen/mods/ZenMods.mjs)
 

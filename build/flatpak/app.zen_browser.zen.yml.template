@@ -9,6 +9,9 @@ add-extensions:
     directory: lib/ffmpeg
     version: '24.08'
     add-ld-path: .
+  app.zen_browser.zen.systemconfig:
+    directory: etc/zen
+    no-autodownload: true
 command: launch-script.sh
 finish-args:
   - --allow=devel
@@ -29,7 +32,6 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
   - --talk-name=org.gtk.vfs.*
-  - --talk-name=org.freedesktop.Notifications
   - --own-name=org.mpris.MediaPlayer2.firefox.*
   - --own-name=org.mozilla.zen.*
 cleanup:
@@ -50,6 +52,7 @@ modules:
     build-commands:
       - mv zen /app/
       - mkdir -p /app/lib/ffmpeg
+      - mkdir -p /app/etc/zen
 
       - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh
       - install -Dm0644 metadata/policies.json ${{FLATPAK_DEST}}/bin/distribution/policies.json

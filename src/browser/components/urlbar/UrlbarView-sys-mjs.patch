@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index fdbab8806fd320f4aacec46a42c8ef953580d00c..e23fae0d7e0b71d74899c11c229359864cd7e427 100644
+index fdbab8806fd320f4aacec46a42c8ef953580d00c..031a615ad09274c578184b129434bbd93b49353d 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -613,7 +613,7 @@ export class UrlbarView {
@@ -11,39 +11,7 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..e23fae0d7e0b71d74899c11c22935986
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -824,6 +824,31 @@ export class UrlbarView {
-         // still associated with the first result.
-         this.input.setResultForCurrentValue(firstResult);
-       }
-+      if (queryContext.results[0].payload.zenAction) {
-+        this.#selectElement(this.getFirstSelectableElement(), {
-+          updateInput: false,
-+          setAccessibleFocus:
-+            this.controller._userSelectionBehavior == "arrow",
-+        });
-+        this.window.setTimeout(() => {
-+          this.window.setTimeout(() => {
-+            this.#selectElement(this.getFirstSelectableElement(), {
-+              updateInput: false,
-+              setAccessibleFocus:
-+                this.controller._userSelectionBehavior == "arrow",
-+            });
-+          });
-+        });
-+      }
-+      this.window.setTimeout(() => {
-+        if (queryContext.results[0].payload.zenAction) {
-+          this.#selectElement(this.getFirstSelectableElement(), {
-+            updateInput: false,
-+            setAccessibleFocus:
-+              this.controller._userSelectionBehavior == "arrow",
-+          });
-+        }
-+      }, 220);
-     }
- 
-     // Announce tab-to-search results to screen readers as the user types.
-@@ -2706,6 +2731,8 @@ export class UrlbarView {
+@@ -2706,6 +2706,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -52,7 +20,7 @@ index fdbab8806fd320f4aacec46a42c8ef953580d00c..e23fae0d7e0b71d74899c11c22935986
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3189,7 +3216,7 @@ export class UrlbarView {
+@@ -3189,7 +3191,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

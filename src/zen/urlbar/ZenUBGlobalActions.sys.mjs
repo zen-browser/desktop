@@ -11,7 +11,6 @@ const globalActionsTemplate = [
     label: 'Toggle Compact Mode',
     command: 'cmd_zenCompactModeToggle',
     icon: 'chrome://browser/skin/zen-icons/sidebar.svg',
-    suggestedIndex: 0,
   },
   {
     label: 'Open Theme Picker',
@@ -22,7 +21,6 @@ const globalActionsTemplate = [
     label: 'New Split View',
     command: 'cmd_zenNewEmptySplit',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
-    suggestedIndex: 0,
   },
   {
     label: 'New Folder',
@@ -33,7 +31,6 @@ const globalActionsTemplate = [
     label: 'Copy Current URL',
     command: 'cmd_zenCopyCurrentURL',
     icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
-    suggestedIndex: 0,
   },
   {
     label: 'Settings',
@@ -89,7 +86,6 @@ const globalActionsTemplate = [
     label: 'Close Tab',
     command: 'cmd_close',
     icon: 'chrome://browser/skin/zen-icons/close.svg',
-    suggestedIndex: 1,
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
@@ -121,13 +117,11 @@ const globalActionsTemplate = [
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
-    suggestedIndex: 1,
   },
   {
     label: 'Toggle Tabs on right',
     command: 'cmd_zenToggleTabsOnRight',
     icon: 'chrome://browser/skin/zen-icons/sidebars-right.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Add to Essentials',
@@ -139,14 +133,12 @@ const globalActionsTemplate = [
       );
     },
     icon: 'chrome://browser/skin/zen-icons/essential-add.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Remove from Essentials',
     command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
     isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute('zen-essential'),
     icon: 'chrome://browser/skin/zen-icons/essential-remove.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Find in Page',
@@ -155,13 +147,11 @@ const globalActionsTemplate = [
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
-    suggestedIndex: 1,
   },
   {
     label: 'Manage Extensions',
     command: 'Tools:Addons',
     icon: 'chrome://browser/skin/zen-icons/extension.svg',
-    suggestedIndex: 1,
   },
 ];
 
@@ -169,6 +159,10 @@ export const globalActions = globalActionsTemplate.map((action) => ({
   isAvailable: (window) => {
     return window.document.getElementById(action.command)?.getAttribute('disabled') !== 'true';
   },
+  commandId:
+    typeof action.command === 'string'
+      ? action.command
+      : `zen:global-action-${action.label.toLowerCase().replace(/\s+/g, '-')}`,
   extraPayload: {},
   ...action,
 }));

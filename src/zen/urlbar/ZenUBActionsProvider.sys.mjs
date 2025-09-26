@@ -5,6 +5,7 @@
 import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
 import { UrlbarProvider, UrlbarUtils } from 'resource:///modules/UrlbarUtils.sys.mjs';
 import { globalActions } from 'resource:///modules/ZenUBGlobalActions.sys.mjs';
+import { zenUrlbarResultsLearner } from './ZenUBResultsLearner.sys.mjs';
 
 const lazy = {};
 
@@ -14,14 +15,13 @@ const DYNAMIC_TYPE_NAME = 'zen-actions';
 const MAX_RECENT_ACTIONS = 5;
 const MINIMUM_QUERY_SCORE = 92;
 
-const EN_LOCALE_MATCH = /^en(-.*)$/;
-
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: 'resource:///modules/UrlbarResult.sys.mjs',
   UrlbarTokenizer: 'resource:///modules/UrlbarTokenizer.sys.mjs',
   QueryScorer: 'resource:///modules/UrlbarProviderInterventions.sys.mjs',
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
+  zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -35,6 +35,8 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * A provider that lets the user view all available global actions for a query.
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
+  #seenCommands = new Set();
+
   constructor() {
     super();
     lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
@@ -64,8 +66,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       queryContext.searchString &&
       queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
       queryContext.searchString.length > 2 &&
-      !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString) &&
-      EN_LOCALE_MATCH.test(Services.locale.appLocaleAsBCP47)
+      !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString)
     );
   }
 
@@ -92,6 +93,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
             prettyIcon: workspace.icon,
             accentColor,
           },
+          commandId: `zen:workspace-${workspace.uuid}`,
           icon: 'chrome://browser/skin/zen-icons/forward.svg',
         });
       }
@@ -116,6 +118,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         return {
           icon: 'chrome://browser/skin/zen-icons/extension.svg',
           label: 'Extension',
+          commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
             prettyName: addon.name,
@@ -227,6 +230,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     }
 
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
+    const finalResults = [];
     for (const action of actionsResults) {
       const [payload, payloadHighlights] = lazy.UrlbarResult.payloadAndSimpleHighlights([], {
         suggestion: action.label,
@@ -235,7 +239,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         zenCommand: action.command,
         dynamicType: DYNAMIC_TYPE_NAME,
         zenAction: true,
-        icon: action.icon || 'chrome://browser/skin/trending.svg',
+        icon: action.icon,
         shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
           action.command
         ),
@@ -249,11 +253,18 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         payload,
         payloadHighlights
       );
-      if (typeof action.suggestedIndex === 'number') {
-        result.suggestedIndex = action.suggestedIndex;
+      if (zenUrlbarResultsLearner.shouldPrioritize(action.commandId)) {
+        result.heuristic = true;
+      } else {
+        result.suggestedIndex = zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId);
       }
-      addCallback(this, result);
+      result.commandId = action.commandId;
+      this.#seenCommands.add(action.commandId);
+      finalResults.push(result);
     }
+    zenUrlbarResultsLearner.sortCommandsByPriority(finalResults).forEach((result) => {
+      addCallback(this, result);
+    });
   }
 
   /**
@@ -360,6 +371,19 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         },
       ],
     };
+  }
+
+  onSearchSessionEnd(_queryContext, _controller, details) {
+    // We should only record the execution if a result was actually used.
+    // Otherwise we would start de-prioritizing commands that were never used.
+    if (details?.result) {
+      let usedCommand = null;
+      if (details?.provider === this.name) {
+        usedCommand = details.result?.commandId;
+      }
+      zenUrlbarResultsLearner.recordExecution(usedCommand, [...this.#seenCommands]);
+    }
+    this.#seenCommands = new Set();
   }
 
   onEngagement(queryContext, controller, details) {

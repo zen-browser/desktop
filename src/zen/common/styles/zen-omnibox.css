@@ -627,6 +627,7 @@
 
     & .urlbarView-favicon {
       fill: currentColor !important;
+      stroke: currentColor !important;
     }
 
     & .urlbarView-shortcutContent {

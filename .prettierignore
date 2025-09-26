@@ -33,6 +33,7 @@ src/zen/common/styles/zen-theme.css
 src/zen/compact-mode/zen-compact-mode.css
 src/zen/common/ZenEmojis.mjs
 
+src/zen/split-view/zen-decks.css
 src/zen/workspaces/zen-workspaces.css
 
 *.inc

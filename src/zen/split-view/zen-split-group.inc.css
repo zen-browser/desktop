@@ -96,6 +96,7 @@ tab-group[split-view-group] {
 
       & .tab-content {
         min-width: 0;
+        padding: 0 4px !important;
         :root[zen-sidebar-expanded='true'] & {
           justify-content: unset !important;
         }
@@ -128,7 +129,6 @@ tab-group[split-view-group] {
 
     & .tab-close-button,
     & .tab-reset-button {
-      margin-inline-end: -3px !important;
       display: none !important;
     }
 

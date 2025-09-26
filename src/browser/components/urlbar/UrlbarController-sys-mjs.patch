@@ -1,13 +1,13 @@
 diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/components/urlbar/UrlbarController.sys.mjs
-index 36e3ab4a5a153230bb488b66dda7e3e7c763ca23..28b59c7c3a95febafc3f2a6e0ac3493b9785ff1a 100644
+index 36e3ab4a5a153230bb488b66dda7e3e7c763ca23..81f2944b939ac0963c129f86aab0b55817349401 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
-@@ -411,7 +411,7 @@ export class UrlbarController {
-         // When there's no search string and no view selection, we want to focus
-         // the next toolbar item instead, for accessibility reasons.
-         let allowTabbingThroughResults =
--          this.input.focusedViaMousedown ||
-+          true ||
-           this.input.searchMode?.isPreview ||
-           this.input.searchMode?.source ==
-             lazy.UrlbarUtils.RESULT_SOURCE.ACTIONS ||
+@@ -434,6 +434,8 @@ export class UrlbarController {
+             });
+           }
+           event.preventDefault();
++        } else {
++          this.browserWindow.gZenUIManager.enableCommandsMode(event);
+         }
+         break;
+       }

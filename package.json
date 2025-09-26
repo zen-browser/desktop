@@ -5,6 +5,7 @@
   "lint-staged": {
     "**/*": ""
   },
+  "type": "module",
   "scripts": {
     "build": "surfer build",
     "build:ui": "surfer build --ui",

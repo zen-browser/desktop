@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..3b2c1218532dcbd79d5c970ab9fd075d4e58d1ff 100644
+index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..40da868f68f21d8411107fb8a95e2d0b74337b51 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -75,6 +75,7 @@ export var UrlbarUtils = {
@@ -10,7 +10,15 @@ index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..3b2c1218532dcbd79d5c970ab9fd075d
    }),
  
    // Defines provider types.
-@@ -553,6 +554,8 @@ export var UrlbarUtils = {
+@@ -134,6 +135,7 @@ export var UrlbarUtils = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
+   }),
+ 
+   // Per-result exposure telemetry.
+@@ -553,6 +555,8 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_SEARCH_TIP;
          case "HistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;

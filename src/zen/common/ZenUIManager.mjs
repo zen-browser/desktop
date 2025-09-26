@@ -59,6 +59,10 @@ var gZenUIManager = {
     });
 
     window.addEventListener('TabClose', this.onTabClose.bind(this));
+    window.addEventListener(
+      'Zen:UrlbarSearchModeChanged',
+      this.onUrlbarSearchModeChanged.bind(this)
+    );
 
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
@@ -240,6 +244,53 @@ var gZenUIManager = {
   },
 
   // Section: URL bar
+
+  onUrlbarSearchModeChanged(event) {
+    const { searchMode } = event.detail;
+    const input = gURLBar.textbox;
+    if (gURLBar.hasAttribute('breakout-extend') && !this._animatingSearchMode) {
+      this._animatingSearchMode = true;
+      this.motion
+        .animate(input, { scale: [1, 0.98, 1] }, { duration: 0.25, delay: 0.1 })
+        .then(() => {
+          delete this._animatingSearchMode;
+        });
+      if (searchMode) {
+        gURLBar.setAttribute('animate-searchmode', 'true');
+        this._animatingSearchModeTimeout = setTimeout(() => {
+          requestAnimationFrame(() => {
+            gURLBar.removeAttribute('animate-searchmode');
+            delete this._animatingSearchModeTimeout;
+          });
+        }, 3000);
+      }
+    }
+  },
+
+  enableCommandsMode(event) {
+    event.preventDefault();
+    if (!gURLBar.hasAttribute('breakout-extend') || this._animatingSearchMode) {
+      return;
+    }
+    const currentSearchMode = gURLBar.getSearchMode(gBrowser.selectedBrowser);
+    let searchMode = null;
+    if (!currentSearchMode) {
+      searchMode = {
+        source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+        isPreview: false,
+      };
+    }
+    gURLBar.removeAttribute('animate-searchmode');
+    if (this._animatingSearchModeTimeout) {
+      clearTimeout(this._animatingSearchModeTimeout);
+      delete this._animatingSearchModeTimeout;
+    }
+    gURLBar.searchMode = searchMode;
+    gURLBar.startQuery({
+      allowAutofill: false,
+      event,
+    });
+  },
 
   get newtabButtons() {
     return document.querySelectorAll('#tabs-newtab-button');

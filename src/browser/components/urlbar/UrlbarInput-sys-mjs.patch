@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c563851ae89385 100644
+index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..5fa5367571d77f760ad1b3e1191e53e43b255b3b 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -74,6 +74,13 @@ ChromeUtils.defineLazyGetter(lazy, "logger", () =>
@@ -184,7 +184,20 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4130,6 +4195,7 @@ export class UrlbarInput {
+@@ -3836,7 +3901,11 @@ export class UrlbarInput {
+     if (!engineName && !source && !this.hasAttribute("searchmode")) {
+       return;
+     }
+-
++    this.window.dispatchEvent(
++      new CustomEvent("Zen:UrlbarSearchModeChanged", {
++        detail: { searchMode },
++      })
++    );
+     this._searchModeIndicatorTitle.textContent = "";
+     this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
+ 
+@@ -4130,6 +4199,7 @@ export class UrlbarInput {
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -192,7 +205,7 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
        l10nId,
        l10nId == "urlbar-placeholder-with-name" ? { name } : undefined
      );
-@@ -4241,6 +4307,11 @@ export class UrlbarInput {
+@@ -4241,6 +4311,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -204,7 +217,7 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer
-@@ -4311,7 +4382,7 @@ export class UrlbarInput {
+@@ -4311,7 +4386,7 @@ export class UrlbarInput {
        }
      }
  
@@ -213,7 +226,7 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -4351,9 +4422,16 @@ export class UrlbarInput {
+@@ -4351,9 +4426,16 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -231,7 +244,7 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
  
          if (
            event.target != this.inputField &&
-@@ -4364,6 +4442,10 @@ export class UrlbarInput {
+@@ -4364,6 +4446,10 @@ export class UrlbarInput {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -242,7 +255,7 @@ index 1c447bd31de854d1522dbcfb5d7ad557c84f1388..2341d04c5afee303ce4150c3c2c56385
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -4399,7 +4481,7 @@ export class UrlbarInput {
+@@ -4399,7 +4485,7 @@ export class UrlbarInput {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.

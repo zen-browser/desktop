@@ -62,11 +62,12 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async isActive(queryContext) {
     return (
-      lazy.enabledPref &&
-      queryContext.searchString &&
-      queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
-      queryContext.searchString.length > 2 &&
-      !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString)
+      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
+      (lazy.enabledPref &&
+        queryContext.searchString &&
+        queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
+        queryContext.searchString.length > 2 &&
+        !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
     );
   }
 
@@ -145,11 +146,15 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @param {string} query The user's search query.
    *
    */
-  async #findMatchingActions(query) {
+  async #findMatchingActions(query, isPrefixed) {
     const window = lazy.BrowserWindowTracker.getTopWindow();
     const actions = await this.#getAvailableActions(window);
     let results = [];
     for (let action of actions) {
+      if (isPrefixed && query.length < 1) {
+        results.push({ action, score: 100 });
+        continue;
+      }
       const label = action.extraPayload?.prettyName || action.label;
       const score = this.#calculateFuzzyScore(label, query);
       if (score > MINIMUM_QUERY_SCORE) {
@@ -160,6 +165,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       }
     }
     results.sort((a, b) => b.score - a.score);
+    // We must show all we can when prefixed, to avoid showing no results.
+    if (isPrefixed) {
+      return results.map((r) => r.action);
+    }
     return results.slice(0, MAX_RECENT_ACTIONS).map((r) => r.action);
   }
 
@@ -220,11 +229,12 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
-    if (!query) {
+    const isPrefixed = queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
+    if (!query && !isPrefixed) {
       return;
     }
 
-    const actionsResults = await this.#findMatchingActions(query);
+    const actionsResults = await this.#findMatchingActions(query, isPrefixed);
     if (!actionsResults.length) {
       return;
     }
@@ -249,7 +259,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
       let result = new lazy.UrlbarResult(
         UrlbarUtils.RESULT_TYPE.DYNAMIC,
-        UrlbarUtils.RESULT_SOURCE.OTHER_LOCAL,
+        UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
         payloadHighlights
       );
@@ -259,7 +269,11 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         result.suggestedIndex = zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId);
       }
       result.commandId = action.commandId;
-      this.#seenCommands.add(action.commandId);
+      if (!(isPrefixed && query.length < 2)) {
+        // We dont want to record prefixed results, as the user explicitly asked for them.
+        // Selecting other results would de-prioritize these actions unfairly.
+        this.#seenCommands.add(action.commandId);
+      }
       finalResults.push(result);
     }
     zenUrlbarResultsLearner.sortCommandsByPriority(finalResults).forEach((result) => {

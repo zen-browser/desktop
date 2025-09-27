@@ -48,4 +48,4 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Ikon
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Aksi

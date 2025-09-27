@@ -43,11 +43,13 @@
     fill-opacity: 0.6;
 
     & .zen-workspace-icon {
+      padding: 6px;
       pointer-events: none;
    
       &[no-icon='true'] {
         width: 6px;
         height: 6px;
+        padding: 0;
         background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
         border-radius: 50%;
       }
@@ -250,6 +252,7 @@
 
 /* mark: workspace element */
 zen-workspace {
+  will-change: transform;
   flex-direction: column;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
@@ -271,7 +274,7 @@ zen-workspace {
       display: none;
     }
 
-    &::part(scrollbox) {
+    &[overflowing]::part(scrollbox) {
       scrollbar-width: auto;
       scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
       overflow-y: auto;
@@ -317,15 +320,14 @@ zen-workspace {
         opacity: 1;
       }
     }
+  }
 
-    &,
-    & .zen-workspace-normal-tabs-section {
-      height: 100%;
-    }
+  &[active] .zen-workspace-empty-space {
+    -moz-window-dragging: drag;
   }
 }
 
-/** Customiable UI, this is an auto generated ID */
+/** Customizable UI, this is an auto generated ID */
 #wrapper-zen-workspaces-button {
   width: 100%;
 }

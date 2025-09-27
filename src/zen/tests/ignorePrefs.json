@@ -1,6 +1,6 @@
 [
   "zen.mods.updated-value-observer",
   "zen.mods.last-update",
-  "zen.view.compact.should-enable-at-startup",
+  "zen.view.compact.enable-at-startup",
   "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine"
 ]

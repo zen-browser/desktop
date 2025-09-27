@@ -9,8 +9,12 @@ add-extensions:
     directory: lib/ffmpeg
     version: '24.08'
     add-ld-path: .
+  app.zen_browser.zen.systemconfig:
+    directory: etc/zen
+    no-autodownload: true
 command: launch-script.sh
 finish-args:
+  - --allow=devel
   - --share=ipc
   - --share=network
   - --socket=pulseaudio
@@ -19,22 +23,36 @@ finish-args:
   - --socket=pcsc
   - --socket=cups
   - --persist=.zen
+  - --env=DICPATH=/usr/share/hunspell
   - --filesystem=xdg-download:rw
+  - --filesystem=/run/.heim_org.h5l.kcm-socket
+  - --filesystem=xdg-run/speech-dispatcher:ro
   - --device=all
   - --talk-name=org.freedesktop.FileManager1
-  - --talk-name=org.freedesktop.ScreenSaver
-  - --own-name=org.mozilla.zen.*
-  - --own-name=org.mpris.MediaPlayer2.firefox.*
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
-  - --env=GTK_PATH=/app/lib/gtkmodules
-  - --env=MESA_SHADER_CACHE_DIR=/var/cache/mesa_shader_cache_db
+  - --talk-name=org.gtk.vfs.*
+  - --own-name=org.mpris.MediaPlayer2.firefox.*
+  - --own-name=org.mozilla.zen.*
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - /share/aclocal
+  - /share/gtk-doc
+  - /share/doc
+  - /share/info
+  - /man
+  - /share/man
+  - '*.la'
+  - '*.a'
 modules:
   - name: zen_browser
     buildsystem: simple
     build-commands:
       - mv zen /app/
       - mkdir -p /app/lib/ffmpeg
+      - mkdir -p /app/etc/zen
 
       - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh
       - install -Dm0644 metadata/policies.json ${{FLATPAK_DEST}}/bin/distribution/policies.json

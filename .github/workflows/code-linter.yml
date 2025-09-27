@@ -31,7 +31,7 @@ jobs:
         run: sudo apt install python3-autopep8
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint
         run: npm run lint

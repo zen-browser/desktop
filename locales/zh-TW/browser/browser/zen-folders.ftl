@@ -18,4 +18,4 @@ zen-folders-unload-all-tooltip =
     .tooltiptext = Unload active in this folder
 zen-folders-unload-folder = 
     .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+zen-folders-search-no-results = 沒有找到搜尋的分頁 🤔

@@ -15,6 +15,15 @@ interface CanonicalBrowsingContext extends LoadContextMixin {
   topWindowContext: WindowGlobalParent;
 }
 
+declare namespace ChromeUtils {
+  type Modules = import('./generated/lib.gecko.modules').Modules;
+
+  function importESModule<T extends keyof Modules>(
+    aResourceURI: T,
+    aOptions?: ImportESModuleOptionsDictionary
+  ): Modules[T];
+}
+
 interface ChromeWindow extends Window {
   isChromeWindow: true;
 }
@@ -114,9 +123,14 @@ interface nsXPCComponents_Utils {
 
 type Sandbox = typeof globalThis & nsISupports;
 
+interface WindowGlobalParent extends WindowContext {
+  readonly browsingContext: CanonicalBrowsingContext;
+}
+
 // Hand-crafted artisanal types.
 interface XULBrowserElement extends XULFrameElement, FrameLoader {
   currentURI: nsIURI;
+  documentURI: nsIURI | null;
   docShellIsActive: boolean;
   isRemoteBrowser: boolean;
   remoteType: string;
@@ -125,4 +139,28 @@ interface XULBrowserElement extends XULFrameElement, FrameLoader {
 // https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1736
 interface Localization {
   formatValuesSync(aKeys: L10nKey[]): (string | null)[];
+}
+
+/**
+ * Redefine the DOMStringMap interface to match its implementation.
+ * xref Bug 1965336.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMStringMap)
+ */
+interface DOMStringMap {
+  [name: string]: string | undefined;
+}
+
+/**
+ * Define base64/hex methods for Uint8Array
+ * https://github.com/microsoft/TypeScript/issues/61695
+ */
+interface Uint8Array<TArrayBuffer extends ArrayBufferLike> {
+  setFromBase64(
+    string: string,
+    options?: { alphabet?: string; lastChunkHandling: string }
+  ): { read: number; written: number };
+  setFromHex(string: string): { read: number; written: number };
+  toBase64(options?: { alphabet?: string; omitPadding: boolean }): string;
+  toHex(): string;
 }

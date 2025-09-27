@@ -4,6 +4,3 @@
 
 - name: xpinstall.signatures.required
   value: true
-
-- name: extensions.pocket.enabled
-  value: false

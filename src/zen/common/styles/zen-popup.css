@@ -374,7 +374,7 @@ menuseparator {
       color-mix(in srgb, var(--zen-primary-color) 85%, #0f0f0f 15%)
     );
     box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
+    border: 1px solid rgba(0, 0, 0, 0.2);
     display: flex;
     font-weight: 600;
     align-items: center;

@@ -15,14 +15,6 @@
     border-radius: var(--zen-native-inner-radius);
     box-shadow: var(--zen-big-shadow);
     overflow: hidden;
-
-    :root:not([zen-right-side='true']) &[positionend='true'] {
-      margin-right: var(--zen-element-separation);
-    }
-
-    :root[zen-right-side='true'] & {
-      margin-left: var(--zen-element-separation);
-    }
   }
 
   & #tabbrowser-tabbox[sidebar-positionend] {

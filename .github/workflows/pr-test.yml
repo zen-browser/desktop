@@ -25,7 +25,7 @@ jobs:
         run: npm i -g @zen-browser/surfer
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download Firefox and dependencies
         run: surfer download

@@ -103,6 +103,7 @@ var gZenCommonActions = {
       gZenUIManager.showToast('zen-copy-current-url-confirmation', { button, timeout: 3000 });
     }
   },
+
   copyCurrentURLAsMarkdownToClipboard() {
     const currentUrl = gBrowser.currentURI.spec;
     const tabTitle = gBrowser.selectedTab.label;

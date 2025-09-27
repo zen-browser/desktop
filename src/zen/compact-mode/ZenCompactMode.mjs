@@ -37,21 +37,10 @@ var gZenCompactModeManager = {
   HOVER_HACK_DELAY: Services.prefs.getIntPref('zen.view.compact.hover-hack-delay', 0),
 
   preInit() {
-    // Remove it before initializing so we can properly calculate the width
-    // of the sidebar at startup and avoid overflowing items not being hidden
-    let xulStoreValue = Services.xulStore.getValue(
-      AppConstants.BROWSER_CHROME_URL,
-      'zen-main-app-wrapper',
-      'zen-compact-mode'
+    this._wasInCompactMode = Services.prefs.getBoolPref(
+      'zen.view.compact.enable-at-startup',
+      false
     );
-    if (xulStoreValue === '-moz-missing\n' || !xulStoreValue) {
-      xulStoreValue = false;
-    }
-    this._wasInCompactMode =
-      xulStoreValue ||
-      Services.prefs.getBoolPref('zen.view.compact.should-enable-at-startup', false);
-    lazyCompactMode.mainAppWrapper.removeAttribute('zen-compact-mode');
-
     this._canDebugLog = Services.prefs.getBoolPref('zen.view.compact.debug', false);
 
     this.addContextMenu();
@@ -134,9 +123,8 @@ var gZenCompactModeManager = {
     // main-window can't store attributes other than window sizes, so we use this instead
     lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
-    Services.xulStore.persist(lazyCompactMode.mainAppWrapper, 'zen-compact-mode');
     if (typeof this._wasInCompactMode === 'undefined') {
-      Services.prefs.setBoolPref('zen.view.compact.should-enable-at-startup', value);
+      Services.prefs.setBoolPref('zen.view.compact.enable-at-startup', value);
     }
     this._updateEvent();
   },
@@ -162,7 +150,8 @@ var gZenCompactModeManager = {
             ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
-      'zen-compact-mode-active'
+      'zen-compact-mode-active',
+      ['panelopen', 'open', 'breakout-extend', 'zen-floating-urlbar']
     );
   },
 
@@ -201,10 +190,11 @@ var gZenCompactModeManager = {
   updateCompactModeContext(isSingleToolbar) {
     const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
     const menu = document.getElementById('zen-context-menu-compact-mode');
-    menu.setAttribute('hidden', isSingleToolbar);
     if (isSingleToolbar) {
+      menu.setAttribute('hidden', 'true');
       menu.before(menuitem);
     } else {
+      menu.removeAttribute('hidden');
       menu.querySelector('menupopup').prepend(menuitem);
     }
   },
@@ -240,11 +230,6 @@ var gZenCompactModeManager = {
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     this.updateContextMenu();
-    if (this.preference) {
-      ZenHasPolyfill.connectObserver(this.sidebarObserverId);
-    } else {
-      ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
-    }
     if (!this.preference) {
       this._evenListeners.forEach((callback) => callback());
       await this.animateCompactMode();
@@ -256,6 +241,12 @@ var gZenCompactModeManager = {
     if (isUrlbarFocused) {
       gURLBar.focus();
     }
+    if (this.preference) {
+      ZenHasPolyfill.connectObserver(this.sidebarObserverId);
+    } else {
+      ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
+    }
+    window.dispatchEvent(new CustomEvent('ZenCompactMode:Toggled', { detail: this.preference }));
   },
 
   // NOTE: Dont actually use event, it's just so we make sure
@@ -545,9 +536,16 @@ var gZenCompactModeManager = {
 
     for (let i = 0; i < this.hoverableElements.length; i++) {
       let target = this.hoverableElements[i].element;
+
+      // Add the attribute on startup if the mouse is already over the element
+      if (target.matches(':hover')) {
+        target.setAttribute('zen-has-hover', 'true');
+      }
+
       const onEnter = (event) => {
         setTimeout(() => {
           if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
+          if (event.target.closest('panel')) return;
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout('has-hover' + target.id);
           window.requestAnimationFrame(() => {

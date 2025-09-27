@@ -38,7 +38,7 @@ body > #confetti {
 }
 
 /* Bookmarks */
-#PersonalToolbar:not([collapsed='true']) {
+#PersonalToolbar:not([collapsed]) {
   min-height: 30px;
 }
 
@@ -143,7 +143,7 @@ body > #confetti {
     }
 
     .zen-emojis-picker-svg {
-      padding: 0px !important;
+      padding: 4px !important;
       & label {
         display: none;
       }
@@ -235,20 +235,28 @@ body > #confetti {
   mask-composite: exclude;
 }
 
+#TabsToolbar {
+  -moz-window-dragging: unset;
+}
+
 /* Status panel */
 
 @media (-moz-pref('zen.theme.styled-status-panel')) {
   #statuspanel {
-    padding: 4px 3px;
+    padding: 6px;
 
     & > #statuspanel-label {
       border-radius: 16px !important;
       border: 1px solid rgba(225, 225, 225, 0.15) !important;
       padding: 4px 8px 5px 8px !important;
       font-weight: 600 !important;
-      background: color-mix(in srgb, var(--zen-primary-color), black 80%) !important;
-      color: #f3f3f3 !important;
-      font-size: small !important;
+      background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
     }
   }
+}
+
+/* Customizable modes */
+#customization-container {
+  --toolbar-bgcolor: var(--zen-dialog-background);
 }

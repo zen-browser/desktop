@@ -9,7 +9,7 @@
   display: flex;
   z-index: 999;
 
-  top: 0;
+  top: 15px;
   padding: 12px;
   gap: 12px;
   max-width: 56px;
@@ -108,18 +108,22 @@
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
+  /* Hint compositor to optimize animations and scrolling */
+  will-change: transform, opacity, filter;
 
   :root[zen-no-padding='true'] & {
     --zen-native-inner-radius: 0px;
   }
 
   & .browserContainer {
-    background: var(--zen-dialog-background);
+    background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
     position: fixed;
     opacity: 0;
     top: 0;
     left: 0;
     flex: unset !important;
+    /* Promote to its own layer during transitions to reduce jank */
+    will-change: transform, opacity, top, left, width, height;
 
     &[has-finished-animation='true'] {
       position: relative !important;
@@ -149,13 +153,8 @@
 
   &[fade-out='true'] {
     & browser {
-      transition: opacity 0.1s ease;
+      transition: opacity 0.2s ease;
       opacity: 0;
     }
-  }
-
-  & browser[animate-glance-open='true'] {
-    transition: opacity 0.2s ease-in-out;
-    opacity: 0;
   }
 }

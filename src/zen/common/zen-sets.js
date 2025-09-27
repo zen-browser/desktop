@@ -79,6 +79,11 @@ document.addEventListener(
           case 'cmd_zenSplitViewLinkInNewTab':
             gZenViewSplitter.splitLinkInNewTab();
             break;
+          case 'cmd_zenNewEmptySplit':
+            setTimeout(() => {
+              gZenViewSplitter.createEmptySplit();
+            }, 0);
+            break;
           case 'cmd_zenReplacePinnedUrlWithCurrent':
             gZenPinnedTabManager.replacePinnedUrlWithCurrent();
             break;
@@ -115,6 +120,17 @@ document.addEventListener(
               renameFolder: true,
             });
             break;
+          case 'cmd_zenTogglePinTab': {
+            const currentTab = gBrowser.selectedTab;
+            if (currentTab && !currentTab.hasAttribute('zen-empty-tab')) {
+              if (currentTab.pinned) {
+                gBrowser.unpinTab(currentTab);
+              } else {
+                gBrowser.pinTab(currentTab);
+              }
+            }
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

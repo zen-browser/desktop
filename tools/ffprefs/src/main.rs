@@ -105,6 +105,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
+use std::collections::HashMap;
 
 const STATIC_PREFS: &str = "../engine/modules/libpref/init/zen-static-prefs.inc";
 const FIREFOX_PREFS: &str = "../engine/browser/app/profile/firefox.js";
@@ -308,6 +309,37 @@ fn prepare_zen_prefs() {
     }
 }
 
+fn is_twilight_build() -> bool {
+    // Check if '"twilight"' is on .surfer/dynamicConfig.brand.json
+    let mut dynamic_config_path = env::current_dir().expect("Failed to get current directory");
+    dynamic_config_path.push(".surfer");
+    dynamic_config_path.push("dynamicConfig.brand.json");
+    if let Ok(content) = fs::read_to_string(&dynamic_config_path) {
+        return !content.contains("\"release\"");
+    }
+    false
+}
+
+fn get_env_values() -> HashMap<String, bool> {
+    let mut env_values = HashMap::new();
+    env_values.insert("IS_TWILIGHT".into(), is_twilight_build());
+    env_values
+}
+
+fn expand_pref_values(prefs: &mut [Preference]) {
+    let env_values = get_env_values();
+    for pref in prefs {
+        let mut new_value = pref.value.clone();
+        for (key, value) in &env_values {
+            let placeholder = format!("@{}@", key);
+            if new_value.contains(&placeholder) {
+                new_value = new_value.replace(&placeholder, if *value { "true" } else { "false" });
+            }
+            pref.value = new_value.clone();
+        }
+    }
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let root_path = if args.len() > 1 {
@@ -318,6 +350,7 @@ fn main() {
     env::set_current_dir(&root_path).expect("Failed to change directory");
 
     prepare_zen_prefs();
-    let preferences = load_preferences();
+    let mut preferences = load_preferences();
+    expand_pref_values(&mut preferences);
     write_preferences(&preferences);
 }

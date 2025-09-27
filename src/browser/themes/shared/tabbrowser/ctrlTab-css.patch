@@ -1,12 +1,12 @@
 diff --git a/browser/themes/shared/tabbrowser/ctrlTab.css b/browser/themes/shared/tabbrowser/ctrlTab.css
-index 50045ec27abcde91d5aea12fc7faaefbddf50229..f4e98dce5195ff3298fb98714d56cf5d3bdaaf48 100644
+index aaeae8fd0e999aecda02bf287b39c4d96ad73f3c..d8196d9b1b5491d73b18a7c7d7fef55bc11fe31b 100644
 --- a/browser/themes/shared/tabbrowser/ctrlTab.css
 +++ b/browser/themes/shared/tabbrowser/ctrlTab.css
-@@ -12,6 +12,7 @@
-   --panel-color: white;
+@@ -11,6 +11,7 @@
    --panel-border-color: transparent;
    --panel-padding: 20px 10px 10px;
+   -moz-window-shadow: none;
 +  --panel-shadow-margin: 0;
- }
- 
- @media (-moz-platform: macos) {
+   @media not (-moz-platform: macos) {
+     font-weight: bold;
+   }

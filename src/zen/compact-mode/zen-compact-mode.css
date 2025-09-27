@@ -5,6 +5,34 @@
  */
 /* All overrides for compact mode go here */
 
+.zen-toolbar-background {
+  display: none;
+  pointer-events: none;
+
+  overflow: clip;
+  z-index: -1;
+  background: black; /* Any color thats not white */
+  box-shadow: var(--zen-big-shadow);
+  @media -moz-pref('zen.theme.acrylic-elements') {
+    background: transparent;
+    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+  }
+
+  &::before,
+  &::after {
+    outline: 1px solid rgba(255, 255, 255, .15);
+    outline-offset: -1px;
+    background-attachment: fixed !important;
+    background-size: 100vw 100vh !important;
+  }
+
+  &,
+  &::before,
+  &::after {
+    border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+  }
+}
+
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
 
@@ -90,12 +118,12 @@
       }
 
       &:not([zen-right-side='true']) #navigator-toolbox {
-        left: calc(-1 * var(--actual-zen-sidebar-width) + 1px);
+        left: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
       }
 
       /* When we have multiple toolbars and the top-toolbar is NOT being hidden,
-          * we need to adjust the top-padding of the toolbox to account for the
-          * extra toolbar height. */
+       * we need to adjust the top-padding of the toolbox to account for the
+       * extra toolbar height. */
       @media not -moz-pref('zen.view.compact.hide-toolbar') {
         &:not([zen-single-toolbar='true']) {
           #navigator-toolbox:not([animate='true']) {
@@ -110,7 +138,7 @@
 
       &[zen-right-side='true'] {
         & #navigator-toolbox:not([animate='true']) {
-          right: calc(-1 * var(--actual-zen-sidebar-width) + 1px);
+          right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
         }
 
         & .browserSidebarContainer {
@@ -135,48 +163,8 @@
           width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
         }
 
-        :root[zen-single-toolbar='true'] {
-          padding-top: 0 !important;
-          margin-left: 0 !important;
-        }
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--zen-dialog-background);
-          outline: 1px solid var(--zen-colors-border);
-          outline-offset: -1px;
-          box-shadow: var(--zen-big-shadow);
-          pointer-events: none;
-          z-index: -1;
-          border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
-          @media -moz-pref('zen.view.compact.color-sidebar') {
-            background: var(--zen-main-browser-background-toolbar) !important;
-            background-attachment: fixed !important;
-            background-size: 2000px !important;
-            @media -moz-pref('zen.theme.acrylic-elements') {
-              backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-            }
-          }
-        }
-
-        &::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: url(chrome://browser/content/zen-images/grain-bg.png);
-          pointer-events: none;
-          z-index: 0;
-          opacity: var(--zen-grainy-background-opacity, 0);
-          mix-blend-mode: overlay;
-          transition: opacity 0.3s ease-in-out;
+        & .zen-toolbar-background {
+          display: flex;
         }
       }
 
@@ -361,17 +349,6 @@
           }
           transition: all 0.15s ease;
           width: 100%;
-          background: var(--zen-dialog-background);
-
-          & > * {
-            position: relative !important;
-          }
-
-          @media -moz-pref('zen.view.compact.color-toolbar') {
-            background-attachment: fixed;
-            background: var(--zen-main-browser-background-toolbar);
-            background-size: 100% 2000px;
-          }
         }
       }
 
@@ -383,22 +360,11 @@
         ) {
         & #zen-appcontent-navbar-container {
           visibility: visible !important;
-          :root[zen-show-grainy-background='true'] &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url(chrome://browser/content/zen-images/grain-bg.png);
-            pointer-events: none;
-            z-index: 0;
-            opacity: var(--zen-grainy-background-opacity, 0);
-            mix-blend-mode: overlay;
-            transition: opacity 0.3s ease-in-out;
+          & .zen-toolbar-background {
+            display: flex;
           }
         }
-        border-top-width: 1px;
+        border-top-width: 0px;
 
         top: -1px;
         overflow: initial;

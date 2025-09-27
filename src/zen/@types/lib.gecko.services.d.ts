@@ -62,4 +62,5 @@ interface JSServices {
   wm: nsIWindowMediator;
   ww: nsIWindowWatcher;
   xulStore: nsIXULStore;
+  zen: nsIZenCommonUtils;
 }

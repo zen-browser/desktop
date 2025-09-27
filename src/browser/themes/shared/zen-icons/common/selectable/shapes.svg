@@ -2,7 +2,4 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M6.0294 13.8704L10.1257 6.13303C10.2172 5.96013 10.4629 5.95462 10.5621 6.12325L15.1135 13.8606C15.2115 14.0273 15.0914 14.2374 14.898 14.2374H6.25034C6.06195 14.2374 5.94125 14.0369 6.0294 13.8704Z" fill="context-fill" fill-opacity="context-fill-opacity"/>
-<path d="M10.0912 15.2374C10.709 16.9852 12.3759 18.2374 14.3351 18.2374C16.8203 18.2374 18.8351 16.2227 18.8351 13.7374C18.8351 11.2521 16.8203 9.2374 14.3351 9.2374C14.0813 9.2374 13.8324 9.25839 13.5901 9.29877L15.9753 13.3536C16.4655 14.1869 15.8647 15.2374 14.8979 15.2374H10.0912Z" fill="context-fill" fill-opacity="context-fill-opacity"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="context-fill" fill-opacity="context-fill-opacity" viewBox="0 0 512 512"><path d="M336 336H32a16 16 0 01-14-23.81l152-272a16 16 0 0127.94 0l152 272A16 16 0 01336 336z"/><path d="M336 160a161.07 161.07 0 00-32.57 3.32l74.47 133.27A48 48 0 01336 368H183.33A160 160 0 10336 160z"/></svg>

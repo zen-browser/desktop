@@ -8,41 +8,41 @@
    Initial Setup & Layout Changes for Vertical Tabs
    ========================================================================== */
 
-/* Ensure tabs, toolbar, and titlebar stack vertically */
 #tabbrowser-tabs,
 #TabsToolbar,
 #titlebar,
 #TabsToolbar-customization-target {
   flex-direction: column;
-  height: 100%; /* Make sure they take up full height */
+  height: 100%;
 }
 
 #zen-appcontent-navbar-container {
   width: 100%;
 }
 
+#pinned-drop-indicator {
+  /* We dont use this firefox feature */
+  display: none !important;
+}
+
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
-  /* Define and apply a smaller toolbar height for single toolbar mode */
   & #zen-appcontent-navbar-wrapper,
   & #zen-sidebar-top-buttons {
     --zen-toolbar-height: 32px;
     height: var(--zen-toolbar-height);
   }
 
-  /* Specific styling for macOS when the three-dot menu is hidden */
   @media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
-    /* Hide the PanelUI (hamburger) button when not customizing or open */
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
-      position: absolute; /* Remove from layout flow */
+      position: absolute;
       opacity: 0;
-      pointer-events: none; /* Make it unclickable */
+      pointer-events: none;
     }
   }
 
-  /* Make the separator take full width */
   & #zen-sidebar-top-buttons-separator {
     width: 100%;
   }
@@ -53,38 +53,32 @@
    ========================================================================== */
 @media -moz-pref('zen.tabs.vertical') {
   :root:not([zen-window-buttons-reversed='true']) {
-    /* Align window controls to the right by default */
     & .titlebar-buttonbox-container {
       margin-left: auto;
       width: fit-content;
     }
 
-    /* Specific adjustments for window controls when sidebar is on the right */
     &:root[zen-right-side='true'] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
-      /* Selector ensures this only applies when buttons are in the sidebar */
-      margin-right: calc(-1 * var(--zen-toolbox-padding)); /* Pull slightly outside */
-      margin-top: -10px /* Align vertically with top buttons */;
-      height: calc(4px + var(--zen-toolbar-height)) !important; /* Adjust height */
+      margin-right: calc(-1 * var(--zen-toolbox-padding));
+      margin-top: -10px;
+      height: calc(4px + var(--zen-toolbar-height)) !important;
 
       & .titlebar-button {
-        align-items: end; /* Align button content to the bottom */
+        align-items: end;
       }
     }
   }
 
-  /* Ensure arrow scrollbox takes minimum necessary height */
   #tabbrowser-arrowscrollbox {
     min-height: fit-content !important;
   }
 }
 
-/* Alignreversed window controls to the left */
 :root[zen-window-buttons-reversed='true'] .titlebar-buttonbox-container {
   margin-right: auto;
   width: fit-content;
 }
 
-/* Center items within the TabsToolbar */
 #TabsToolbar > * {
   justify-content: center;
 }
@@ -97,7 +91,6 @@
 }
 
 #browser {
-  /* Define base padding with platform-specific overrides */
   --zen-min-toolbox-padding: 0.4rem;
   @media (-moz-platform: macos) {
     --zen-min-toolbox-padding: 0.52rem;
@@ -105,7 +98,7 @@
   @media (-moz-platform: linux) {
     --zen-min-toolbox-padding: 0.35rem;
   }
-  /* Actual padding used, ensuring it's at least min padding or based on element separation */
+
   --zen-toolbox-padding: max(
     var(--zen-min-toolbox-padding),
     calc(var(--zen-element-separation) / 1.5)
@@ -120,14 +113,7 @@
     width: -moz-available !important;
   }
 
-  #identity-icon-box,
-  #identity-permission-box {
-    margin-top: auto;
-    margin-bottom: auto;
-    padding: 6px !important;
-  }
-
-  & #urlbar-container[breakout='true']:has([zen-floating-urlbar='true']) {
+  & #urlbar-container[breakout='true']:has(#urlbar[zen-floating-urlbar='true']) {
     --urlbar-container-height: 36px !important;
     --urlbar-height: 38px !important;
   }
@@ -148,7 +134,6 @@
 }
 
 :root:not([zen-single-toolbar='true']) #tabbrowser-tabs {
-  /* Make up for the margin on tab's background */
   margin-top: -2px;
 }
 
@@ -156,25 +141,25 @@
    Pinned Tabs Separator
    ========================================================================== */
 .pinned-tabs-container-separator {
-  background: light-dark(rgba(1, 1, 1, 0.075), rgba(255, 255, 255, 0.1));
+  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   margin: 8px auto;
   border: none;
   height: 1px;
   max-height: 1px;
-  width: 98%; /* Slightly less than full width */
+  width: 98%;
   transition:
-    margin 0.2s ease-in-out,
-    background 0.2s ease-in-out,
-    max-height 0.2s ease-in-out;
+    margin 0.1s ease-in-out,
+    background 0.1s ease-in-out,
+    max-height 0.1s ease-in-out;
   overflow: hidden;
   position: relative;
   opacity: 1;
 
   #tabbrowser-tabs[movingtab] & {
     transition:
-      margin 0.2s ease-in-out,
-      background 0.2s ease-in-out,
-      max-height 0.2s ease-in-out,
+      margin 0.1s ease-in-out,
+      background 0.1s ease-in-out,
+      max-height 0.1s ease-in-out,
       transform 0.1s ease-in-out;
   }
 
@@ -191,7 +176,7 @@
   /* Define theme variables, including platform specifics for native look */
   --border-radius-medium: 10px;
   --tab-border-radius: 6px;
-  --zen-toolbox-min-width: 1px; /* Default minimum width (used when collapsed) */
+  --zen-toolbox-min-width: 1px;
 
   @media (-moz-platform: windows) {
     --border-radius-medium: 6px;
@@ -200,14 +185,14 @@
 
   @media (-moz-platform: macos) {
     --border-radius-medium: 12px;
-    --tab-border-radius: 10px;
+    --tab-border-radius: 8px;
   }
 
   min-width: var(--zen-toolbox-min-width);
-  margin-top: 0 !important; /* Fix potential issues in full screen mode */
-  border: none; /* Remove default borders */
-  order: 0 !important; /* Default order (can be changed for right-side) */
-  display: flex; /* Use flex layout */
+  margin-top: 0 !important;
+  border: none;
+  order: 0 !important;
+  display: flex;
 }
 
 /* Hide default titlebar spacers */
@@ -222,9 +207,8 @@
 #TabsToolbar-customization-target {
   position: relative;
   max-width: 100%;
-  gap: 0; /* Remove default gap */
+  gap: 0;
 
-  /* Add a separator line at the bottom */
   &::after {
     content: '';
     display: block;
@@ -234,27 +218,21 @@
     left: 50%;
     transform: translateX(-50%);
     position: absolute;
-    bottom: calc(-1 * var(--zen-toolbox-padding)); /* Position below the target */
+    bottom: calc(-1 * var(--zen-toolbox-padding));
   }
 
-  /* Remove top borders from direct children */
   & > * {
     border-top-width: 0 !important;
   }
 }
 
-/* Style the new tab button specifically */
 #vertical-tabs-newtab-button {
-  /* Transparent background unless active */
   &:hover,
   &:not(:is(:hover, :active)) .toolbarbutton-icon {
     background: transparent !important;
   }
 }
 
-/* ==========================================================================
-   Tab Container (#tabbrowser-tabs) Base Styles
-   ========================================================================== */
 #tabbrowser-tabs {
   margin-inline-start: 0 !important;
   padding-inline-start: 0 !important;
@@ -265,7 +243,7 @@
   --focus-outline-color: transparent;
 
   @media (-moz-platform: macos) {
-    font-size: 1.2rem; /* Slightly larger font on macOS */
+    font-size: 1.25rem; /* Slightly larger font on macOS */
   }
 
   --tab-inner-inline-margin: 0;
@@ -284,9 +262,6 @@
     display: none !important;
   }
 
-  /* ========================================================================
-     Individual Tab Styles (.tabbrowser-tab within #tabbrowser-tabs)
-     ======================================================================== */
   & .tabbrowser-tab {
     &,
     & .tab-content > image {
@@ -299,7 +274,6 @@
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 
-    /* Hide specific empty tabs (likely placeholders) */
     &[zen-empty-tab] {
       display: none;
     }
@@ -366,6 +340,7 @@
       & .tab-reset-pin-button {
         display: none !important;
       }
+
       /* Style glance tab icon */
       & .tab-icon-image {
         --toolbarbutton-inner-padding: 0 !important;
@@ -398,17 +373,16 @@
     /* --- Essentials Glance Tab Specifics (Floating) --- */
     /* Additional styles for glance tabs in "essential" mode */
     &[zen-essential='true'] .tabbrowser-tab {
-      position: absolute; /* Position absolutely relative to parent tab */
+      position: absolute;
       top: 0px;
       right: 0px;
-      /* Define variables for size */
+
       --tab-collapsed-width: 34px;
       --tab-min-height: 16px;
       width: var(--tab-collapsed-width) !important;
-      z-index: 1; /* Ensure it's above parent tab content */
-      pointer-events: none; /* Still non-interactive */
+      z-index: 1;
+      pointer-events: none;
 
-      /* Specific background and border for floating effect */
       & .tab-background {
         background: light-dark(rgb(249, 249, 249), rgb(63, 63, 63)) !important;
         border: 2px solid light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
@@ -417,9 +391,6 @@
   }
 }
 
-/* ==========================================================================
-   Sidebar Bottom Buttons Area
-   ========================================================================== */
 #zen-sidebar-foot-buttons {
   background: transparent;
   gap: 5px;
@@ -431,74 +402,54 @@
   }
 }
 
-/* ==========================================================================
-   Tab Arrow Scrollbox Adjustments
-   ========================================================================== */
 #tabbrowser-arrowscrollbox {
   &::part(scrollbox) {
     gap: 0px !important;
   }
 
-  /* Hide default overflow indicators */
   &::part(overflow-start-indicator),
   &::part(overflow-end-indicator) {
     display: none !important;
   }
 }
 
-/* ==========================================================================
-   Custom Tab Wrapper & Container Styles
-   ========================================================================== */
-
-/* Wrapper for vertical tabs, enabling scrolling */
 #zen-tabs-wrapper {
   min-height: fit-content;
-  overflow-y: auto; /* Allow vertical scrolling */
-  height: 100%; /* Take full available height */
+  overflow-y: auto;
+  height: 100%;
 
-  /* Negative margin hack for workspace transitions (only if workspaces are enabled) */
   :root[zen-workspace-id][zen-sidebar-expanded='true'] & {
     margin-left: calc(-1 * var(--zen-toolbox-padding));
     width: calc(100% + var(--zen-toolbox-padding) * 2);
   }
 }
 
-/* ==========================================================================
-   Pinned Tabs Container Specific Styles
-   ========================================================================== */
 :root[zen-workspace-id] #pinned-tabs-container {
   display: none;
 }
 
-/* Styling for the label shown when hovering the reset-pin button */
 .tab-reset-pin-label {
-  pointer-events: none; /* Non-interactive */
+  pointer-events: none;
   transition:
     opacity 0.1s ease-in-out,
     margin 0.1s ease-in-out,
     max-height 0.1s ease-in-out;
-  max-height: 0px; /* Hidden by default */
+  max-height: 0px;
   opacity: 0;
-  transform: translateY(-5px); /* Slight offset */
+  transform: translateY(-5px);
   font-size: x-small;
   margin: 0;
 }
 
-/* ==========================================================================
-   Mark: EXPANDED Sidebar Styles (`zen-sidebar-expanded='true'`)
-   ========================================================================== */
 #navigator-toolbox[zen-sidebar-expanded='true'] {
-  /* Set width to fit content when expanded */
   --zen-toolbox-min-width: fit-content;
 
-  /* Define margin for tab icons */
-  --tab-icon-end-margin: 8.5px; /* Used later? Not directly applied here */
+  --tab-icon-end-margin: 8.5px;
   padding: var(--zen-toolbox-padding);
-  padding-left: 0; /* Reset left padding (adjusted later based on side) */
-  padding-top: 0; /* Reset top padding */
+  padding-left: 0;
+  padding-top: 0;
 
-  /* Ensure Personal Toolbar has no left padding when expanded */
-  #PersonalToolbar:not([collapsed='true']) {
+  #PersonalToolbar:not([collapsed]) {
     padding-left: 0 !important;
   }
 
@@ -512,16 +463,13 @@
     min-width: 150px;
   }
 
-  /* Add margin to the new tab button area */
   & #tabbrowser-arrowscrollbox-periphery {
     margin-inline: var(--tab-block-margin);
   }
 
-  /* Adjust nav-bar padding */
   & #nav-bar {
-    padding-right: 0; /* Reset right padding */
+    padding-right: 0;
 
-    /* Specific padding for URL bar input in single toolbar mode */
     :root[zen-single-toolbar='true'] & {
       &
         #urlbar:not([breakout-extend='true']):not([pageproxystate='invalid'])
@@ -532,24 +480,20 @@
     }
   }
 
-  /* Remove top margin from nav-bar */
   & #nav-bar {
     margin-top: 0;
   }
 
-  /* Hide workspace indicator icon if it has no specific icon set */
   & .zen-current-workspace-indicator-icon[no-icon='true'] {
     display: none;
   }
 
-  /* Hide workspace button icon if it has no specific icon set */
   & #zen-workspaces-button {
     & .zen-workspace-sidebar-icon[no-icon='true'] {
       display: none;
     }
   }
 
-  /* Style bottom buttons area when expanded */
   & #zen-sidebar-foot-buttons {
     display: flex;
     flex-direction: row;
@@ -558,71 +502,60 @@
     position: relative;
   }
 
-  /* Set min height for tabs in the essentials wrapper */
   & #zen-essentials {
     --tab-min-height: 44px;
   }
 
-  /* Adjust padding based on sidebar side */
   &[zen-right-side='true'] {
-    padding-left: 0; /* No padding on the inside edge (left) */
+    padding-left: 0;
   }
   &:not([zen-right-side='true']) {
-    padding-right: 0; /* No padding on the inside edge (right) */
-    padding-left: var(--zen-toolbox-padding); /* Add padding on the outside edge (left) */
+    padding-right: 0;
+    padding-left: var(--zen-toolbox-padding);
   }
 
-  /* Style the customization target and its contents when expanded */
   & #TabsToolbar-customization-target {
-    /* Make separator full width */
     &::after {
       width: 100%;
       bottom: calc(-0.5 * var(--zen-toolbox-padding));
     }
 
-    /* Style toolbar items (buttons, etc.) */
     & > :is(toolbaritem, toolbarbutton):not(#search-container):not(#zen-workspaces-button),
     & #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
-      /* Target new tab button too */
-      width: 100% !important; /* Full width */
-      border-radius: var(--border-radius-medium) !important; /* Apply border radius */
-      padding-left: var(--toolbarbutton-inner-padding) !important; /* Apply padding */
+      width: 100% !important;
+      border-radius: var(--border-radius-medium) !important;
+      padding-left: var(--toolbarbutton-inner-padding) !important;
       padding-right: var(--toolbarbutton-inner-padding) !important;
 
-      /* Ensure label takes full width */
       & label {
         display: flex;
         width: 100%;
       }
 
-      /* Standardize icon size */
       & image {
         height: 16px;
         width: 16px;
         padding: 0 !important;
       }
 
-      /* Style for active/checked state */
       &:is([open], [checked]) {
         background: var(--toolbarbutton-active-background) !important;
         & image,
         label {
           background: transparent !important;
-        } /* Ensure children are transparent */
+        }
       }
 
-      /* Style for hover state */
       &:hover {
         background: var(--toolbarbutton-hover-background);
         & image,
         label {
           background: transparent !important;
-        } /* Ensure children are transparent */
+        }
       }
     }
   }
 
-  /* Style tabs container when expanded */
   & #tabbrowser-tabs {
     --tab-inline-padding: 8px;
 
@@ -632,7 +565,6 @@
         display: flex;
       }
 
-      /* Adjust tab background margin and width */
       & .tab-background {
         margin-inline: var(--tab-block-margin);
         width: -moz-available;
@@ -674,7 +606,7 @@
           opacity: 1;
         }
       }
-      /* --- End Pinned Tab --- */
+
       &:is(:hover, [visuallyselected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
@@ -693,11 +625,6 @@
   }
 }
 
-/* ==========================================================================
-   Mark: COLLAPSED Sidebar Styles (`:not([zen-sidebar-expanded='true'])`)
-   ========================================================================== */
-
-/* Define fixed width and padding for collapsed state */
 :root:not([zen-sidebar-expanded='true']) {
   --tab-min-width: 48px !important;
   --zen-toolbox-padding: 6px !important;
@@ -711,12 +638,10 @@
 }
 
 #navigator-toolbox:not([zen-sidebar-expanded='true']) {
-  /* Force fixed width */
   max-width: var(--zen-toolbox-max-width) !important;
   min-width: var(--zen-toolbox-max-width) !important;
-  padding-bottom: var(--zen-toolbox-padding); /* Apply bottom padding */
+  padding-bottom: var(--zen-toolbox-padding);
 
-  /* Hide text labels */
   & .zen-current-workspace-indicator-name,
   & zen-workspace .toolbarbutton-text {
     display: none !important;
@@ -740,8 +665,8 @@
     }
   }
 
-  /* Center items in essentials container */
   & .zen-essentials-container {
+    will-change: transform;
     justify-content: center;
     grid-template-columns: 1fr !important;
     padding: 0 !important;
@@ -754,13 +679,11 @@
     margin-left: unset !important;
   }
 
-  /* Style new tab button when collapsed */
   & #vertical-tabs-newtab-button {
     padding: 0 !important;
     background: transparent !important;
   }
 
-  /* Ensure bottom buttons container fits content during customization */
   :root[customizing] & #zen-sidebar-foot-buttons {
     min-width: unset !important;
   }
@@ -819,13 +742,12 @@
         width: 100%;
       }
     }
-    /* Adjust separator */
+
     &::before {
       width: 90% !important;
     }
   }
 
-  /* Hide optional elements */
   & #EssentialsToolbar,
   & #essentials-accordion-header {
     display: none !important;
@@ -861,7 +783,6 @@
           display: none !important;
         }
 
-        /* Reset icon end margin */
         & .tab-icon-image,
         & .tab-icon-pending {
           margin-inline-end: 0 !important;
@@ -873,32 +794,6 @@
       }
     }
 
-    /* Optionally hide mute button overlay on non-selected tabs when collapsed */
-    @media -moz-pref('zen.view.sidebar-collapsed.hide-mute-button') {
-      & .tab-icon-overlay:is([soundplaying], [muted]):not([selected]) {
-        display: none !important;
-
-        /* Complex selectors to ensure indicators still show correctly in specific density/hover states */
-        /* This part seems overly complex and might need review/simplification if possible */
-        :is(
-            :root[uidensity='compact'],
-            #tabbrowser-tabs[secondarytext-unsupported],
-            :root:not([uidensity='compact'])
-              #tabbrowser-tabs:not([secondarytext-unsupported])
-              .tabbrowser-tab:hover
-          )
-          .tab-icon-stack[indicator-replaces-favicon]
-          > :not(&),
-        :root:not([uidensity='compact'])
-          #tabbrowser-tabs:not([secondarytext-unsupported])
-          .tabbrowser-tab:not(:hover)
-          &[indicator-replaces-favicon] {
-          opacity: 1 !important;
-        }
-      }
-    }
-
-    /* Reset end margins for all icon types when collapsed */
     & .tab-throbber,
     & .tab-icon-pending,
     & .tab-icon-image,
@@ -908,20 +803,15 @@
     }
   }
 
-  /* Stack workspace button content vertically */
   & #zen-workspaces-button {
     flex-direction: column;
   }
 }
 
-/* Hide splitter when sidebar is collapsed */
 :root:not([zen-sidebar-expanded='true']) #zen-sidebar-splitter {
   display: none !important;
 }
 
-/* ==========================================================================
-   Mark: Sidebar Splitter Styling
-   ========================================================================== */
 #zen-sidebar-splitter {
   opacity: 0;
   max-width: var(--zen-toolbox-padding) !important;
@@ -934,9 +824,6 @@
   order: 0;
 }
 
-/* ==========================================================================
-   Mark: Move Sidebar to the Right (`zen-right-side='true'`)
-   ========================================================================== */
 :root[zen-right-side='true'] {
   & #navigator-toolbox {
     order: 10 !important;
@@ -947,9 +834,6 @@
   }
 }
 
-/* ==========================================================================
-   Mark: Override Default Tab Close/Reset Button Behavior
-   ========================================================================== */
 #tabbrowser-tabs {
   & .tabbrowser-tab {
     &[pinned]:not([pending='true']) .tab-close-button {
@@ -972,35 +856,28 @@
       display: none;
     }
 
-    /* Hide reset button unless pinned and selected/hovered */
     &:not([pinned][visuallyselected]) .tab-reset-button {
       display: none;
     }
 
-    /* Ensure selected tab background border is transparent */
     &[selected] .tab-background {
       border-color: transparent;
     }
   }
 }
 
-/* ==========================================================================
-   Custom Reset/Unpin Button Styles
-   ========================================================================== */
-.tab-reset-button, /* Standard unpin button */
+.tab-reset-button,
 .tab-reset-pin-button {
-  /* Button shown when pinning state changes */
-  display: none; /* Hidden by default, shown conditionally above */
-  -moz-context-properties: fill, fill-opacity; /* Inherit fill properties */
+  display: none;
+  -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);
   color: inherit;
   fill: currentColor;
-  padding: var(--tab-close-button-padding); /* Use standard close button padding */
-  width: 24px; /* Fixed size */
+  padding: var(--tab-close-button-padding);
+  width: 24px;
   height: 24px;
-  outline: var(--toolbarbutton-outline); /* Use standard outline */
+  outline: var(--toolbarbutton-outline);
 
-  /* Hover/active outline styles */
   &:hover {
     outline-color: var(--toolbarbutton-hover-outline-color);
   }
@@ -1009,34 +886,29 @@
   }
 }
 
-/* Specific styling for the alternative reset-pin button */
 .tab-reset-pin-button {
-  display: flex; /* Use flex for alignment */
-  position: relative; /* For pseudo-element positioning */
-  height: calc(100% - var(--tab-block-margin) * 2); /* Adjust height based on margins */
-  margin-left: calc(
-    -1 * var(--tab-inline-padding) + var(--tab-block-margin)
-  ); /* Overlap slightly */
+  display: flex;
+  position: relative;
+  height: calc(100% - var(--tab-block-margin) * 2);
+  margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-block-margin));
   margin-right: 8px;
   padding: 0 calc(var(--toolbarbutton-inner-padding) - 2px) 0
-    calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px); /* Custom padding */
-  border-radius: 0; /* Remove general radius */
-  border-top-left-radius: var(--border-radius-medium); /* Apply radius only to left corners */
-  width: unset; /* Auto width */
+    calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px);
+  border-radius: 0;
+  border-top-left-radius: var(--border-radius-medium);
+  width: unset;
   border-bottom-left-radius: var(--border-radius-medium);
   align-items: center;
   justify-content: center;
 
-  /* Style the image inside (uses original tab icon) */
   & > image {
-    list-style-image: var(--zen-original-tab-icon); /* Expects variable set elsewhere */
-    width: 16px; /* Fixed size */
+    list-style-image: var(--zen-original-tab-icon);
+    width: 16px;
     height: 16px;
     pointer-events: none;
-    border-radius: 4px; /* Slightly rounded */
+    border-radius: 4px;
   }
 
-  /* Add a decorative vertical line */
   &::after {
     content: '';
     display: block;
@@ -1047,35 +919,31 @@
     right: 0;
     top: 50%;
     border-radius: 2px;
-    transform: rotate(15deg) translateY(-50%); /* Tilted line */
+    transform: rotate(15deg) translateY(-50%);
   }
 
-  /* Hide the line on hover (reveals icon change) */
   &:hover::after {
     opacity: 0;
   }
 }
 
-/* Remove default appearance for custom buttons */
-.reset-icon, /* Assuming this is used within .tab-reset-button */
+.reset-icon,
 .tab-reset-pin-button {
   appearance: none;
 }
 
-/* Background color changes on hover/active (for non-forced-colors mode) */
 @media not (forced-colors) {
   .tab-reset-button:hover,
   .tab-reset-pin-button:hover {
-    background-color: color-mix(in srgb, currentColor 10%, transparent); /* Slight tint */
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
   }
 
   .tab-reset-button:hover:active,
   .tab-reset-pin-button:hover:active {
-    background-color: color-mix(in srgb, currentColor 20%, transparent); /* Darker tint */
+    background-color: color-mix(in srgb, currentColor 20%, transparent);
   }
 }
 
-/* Ensure icons within reset buttons have no margin */
 .tab-reset-button > .button-icon,
 .tab-reset-button > .button-box > .button-icon,
 .tab-reset-button > .toolbarbutton-icon,
@@ -1085,7 +953,6 @@
   margin: 0;
 }
 
-/* Hide text labels within reset buttons */
 .tab-reset-button > .button-box > .button-text,
 .tab-reset-button > .toolbarbutton-text,
 .tab-reset-pin-button > .button-box > .button-text,
@@ -1093,85 +960,62 @@
   display: none;
 }
 
-/* ==========================================================================
-   Customization Mode Adjustments
-   ========================================================================== */
 :root[customizing] #TabsToolbar > *,
 :root[customizing] #TabsToolbar-customization-target {
-  min-width: unset !important; /* Allow shrinking during customization */
+  min-width: unset !important;
 }
 
-/* ==========================================================================
-   Mark: Sidebar Top Buttons Area Styles
-   ========================================================================== */
 #zen-sidebar-top-buttons {
-  order: -1; /* Ensure it appears at the top */
-  min-width: unset !important; /* Allow shrinking */
+  order: -1;
+  min-width: unset !important;
 
-  /* Adjust inner padding based on sidebar state */
   :root[zen-sidebar-expanded='true'] & {
-    --toolbarbutton-inner-padding: var(
-      --zen-toolbar-button-inner-padding
-    ) !important; /* Use theme variable */
+    --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
   }
   :root[zen-single-toolbar='true'] & {
-    --toolbarbutton-inner-padding: calc(
-      var(--zen-toolbar-button-inner-padding) - 2px
-    ) !important; /* Slightly less in single toolbar */
+    --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
 
-    /* Reorder buttons in single toolbar mode */
     & #PanelUI-button {
-      order: -2; /* Hamburger first */
+      order: -2;
     }
     & #unified-extensions-button {
-      order: -1; /* Extensions next */
+      order: -1;
     }
   }
 
-  /* Style the customization target within the top buttons area */
   & #zen-sidebar-top-buttons-customization-target {
-    height: 100%; /* Full height */
-    align-items: center; /* Center items vertically */
+    height: 100%;
+    align-items: center;
 
-    /* Adjust start padding based on state and side */
     :root:not([zen-sidebar-expanded='true']):not([zen-right-side='true']) {
       padding-inline-start: var(--zen-toolbox-padding);
     }
     #nav-bar & {
-      /* If nested in nav-bar, use outer padding */
       padding-inline-start: var(--toolbarbutton-outer-padding);
     }
     :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) {
-      padding-inline-end: var(--zen-toolbox-padding); /* Add end padding for right sidebar */
+      padding-inline-end: var(--zen-toolbox-padding);
     }
 
-    /* Hide flexible space when collapsed */
     :root:not([zen-sidebar-expanded='true']) & toolbarspring {
       display: none;
     }
   }
 
-  /* Style specific action buttons (likely icon-only) */
   & .zen-sidebar-action-button {
-    padding: 0 !important; /* Remove padding */
+    padding: 0 !important;
     & label {
-      display: none !important; /* Hide label */
+      display: none !important;
     }
   }
 }
 
-/* ==========================================================================
-   Vertical New Tab Button (Optional Feature)
-   ========================================================================== */
-
-/* Hide the button wrapper by default */
 #tabs-newtab-button {
   display: none;
   font-weight: 500;
   -moz-user-focus: ignore !important;
 }
 
-/* Show and style the button if preference `zen.tabs.show-newtab-vertical` is enabled */
 @media -moz-pref('zen.tabs.show-newtab-vertical') {
   #tabs-newtab-button {
     display: flex !important;
@@ -1190,21 +1034,17 @@
       scale: 0.98;
     }
 
-    /* Style when placed "in urlbar" (likely a state/attribute) */
     &[in-urlbar] {
       background: var(--tab-selected-bgcolor) !important;
-      box-shadow: var(--tab-selected-shadow); /* Apply selected tab shadow */
+      box-shadow: var(--tab-selected-shadow);
     }
   }
 
-  /* Style the container ("periphery") holding the new tab button */
   #tabbrowser-arrowscrollbox-periphery {
-    /* Conditional border color for light mode */
     @media not (prefers-color-scheme: dark) {
-      --zen-colors-border: var(--zen-colors-tertiary); /* Use tertiary color */
+      --zen-colors-border: var(--zen-colors-tertiary);
     }
 
-    /* Move button to the top if preference is set */
     @media -moz-pref('zen.view.show-newtab-button-top') {
       order: -1;
     }
@@ -1225,7 +1065,6 @@
   z-index: 1;
 }
 
-/* Container for essential items (often pinned/favorite tabs) */
 .zen-essentials-container {
   will-change: transform;
 
@@ -1267,7 +1106,6 @@
     ) !important; /* To still allow essentials to grid the tabs */
     min-width: var(--hidden-essentials-width) !important;
 
-    /* Hide section visually and disable interaction when hidden attribute is present */
     visibility: hidden;
     pointer-events: none;
     position: fixed; /* Fix position to prevent scrolling */
@@ -1334,7 +1172,6 @@
       position: relative;
       --zen-essential-bg-margin: 2px;
 
-      /* Create an inner background layer for contrast */
       &::before {
         background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
         margin: var(--zen-essential-bg-margin);
@@ -1347,18 +1184,13 @@
       }
     }
 
-    /* Slightly fade inner background on hover */
     &[visuallyselected]:hover .tab-background::before {
       background: light-dark(rgba(255, 255, 255, 0.8), rgba(68, 64, 64, 0.75));
     }
   }
 }
 
-/* ==========================================================================
-   Vertical Tabs Reordering Drag Indicator
-   ========================================================================== */
 #zen-drag-indicator {
-  /* Define indicator variables */
   --zen-drag-indicator-height: 2px;
   --zen-drag-indicator-bg: color-mix(
     in srgb,
@@ -1366,26 +1198,23 @@
     light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.95)) 50%
   );
 
-  position: fixed; /* Position relative to viewport */
-  z-index: 1000; /* Ensure it's on top */
+  position: fixed;
+  z-index: 1000;
   background: var(--zen-drag-indicator-bg);
-  pointer-events: none; /* Non-interactive */
-  border-radius: 5px; /* Rounded ends */
+  pointer-events: none;
+  border-radius: 5px;
 
-  /* Add a circle at the start of the indicator */
   &::before {
     content: '';
     position: absolute;
-    height: calc(2 * var(--zen-drag-indicator-height)); /* Circle diameter */
+    height: calc(2 * var(--zen-drag-indicator-height));
     width: calc(2 * var(--zen-drag-indicator-height));
-    border: var(--zen-drag-indicator-height) solid var(--zen-drag-indicator-bg); /* Thick border */
-    border-radius: 50%; /* Make it a circle */
-    background: transparent; /* Hollow circle */
+    border: var(--zen-drag-indicator-height) solid var(--zen-drag-indicator-bg);
+    border-radius: 50%;
+    background: transparent;
   }
 
-  /* Styles for horizontal drag indicator (e.g., between workspaces?) */
   &[orientation='horizontal'] {
-    /* Position and size based on external CSS variables */
     left: calc(var(--indicator-left) + 2 * var(--zen-drag-indicator-height) + 4px);
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
@@ -1394,7 +1223,6 @@
       left 0.1s ease-out,
       width 0.1s ease-out;
 
-    /* Position the circle at the left end */
     &::before {
       left: calc(-2 * var(--zen-drag-indicator-height));
       top: 50%;
@@ -1402,9 +1230,7 @@
     }
   }
 
-  /* Styles for vertical drag indicator (between tabs) */
   &[orientation='vertical'] {
-    /* Position and size based on external CSS variables */
     top: calc(var(--indicator-top) + 2 * var(--zen-drag-indicator-height) + 4px);
     height: calc(var(--indicator-height) - 2 * var(--zen-drag-indicator-height) - 4px);
     width: var(--zen-drag-indicator-height);
@@ -1413,7 +1239,6 @@
       left 0.1s ease-out,
       height 0.1s ease-out;
 
-    /* Position the circle at the top end */
     &::before {
       top: calc(-2 * var(--zen-drag-indicator-height));
       left: 50%;
@@ -1450,11 +1275,12 @@
     display: flex;
 
     :root[zen-sidebar-expanded='true'] & {
-      min-width: calc(100% - var(--zen-toolbox-padding) * 2); /* Set width based on padding */
+      min-width: calc(100% - var(--zen-toolbox-padding) * 2);
     }
 
     :root:not([zen-sidebar-expanded='true']) & {
       max-width: var(--zen-sidebar-width);
+      align-items: center;
     }
   }
 

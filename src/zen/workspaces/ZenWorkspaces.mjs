@@ -693,7 +693,12 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
   _handleSwipeMayStart(event) {
     if (this.privateWindowOrDisabled || this._inChangingWorkspace) return;
-    if (event.target.closest('#zen-sidebar-foot-buttons')) return;
+    if (
+      event.target.closest('#zen-sidebar-foot-buttons') ||
+      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
+    ) {
+      return;
+    }
 
     // Only handle horizontal swipes
     if (event.direction === event.DIRECTION_LEFT || event.direction === event.DIRECTION_RIGHT) {
@@ -1125,7 +1130,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
   }
 
-  handleTabBeforeClose(tab, closeWindowWithLastTab = false) {
+  handleTabBeforeClose(tab, closeWindowWithLastTab) {
     if (!this.workspaceEnabled || this.__contextIsDelete || this._removedByStartupPage) {
       return null;
     }
@@ -1139,7 +1144,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     let tabsPinned = tabs.filter(
       (t) => !this.shouldOpenNewTabIfLastUnpinnedTabIsClosed || !t.pinned
     );
-    const shouldCloseWindow = this.shouldCloseWindow() && closeWindowWithLastTab;
+    const shouldCloseWindow =
+      closeWindowWithLastTab != null ? closeWindowWithLastTab : this.shouldCloseWindow();
     if (tabs.length === 1 && tabs[0] === tab) {
       if (shouldCloseWindow) {
         // We've already called beforeunload on all the relevant tabs if we get here,
@@ -1492,8 +1498,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       if (container) {
         if (tab.group?.hasAttribute('split-view-group')) {
           gBrowser.zenHandleTabMove(tab.group, () => {
-            for (const tab of tab.group.tabs) {
-              tab.setAttribute('zen-workspace-id', workspaceID);
+            for (const subTab of tab.group.tabs) {
+              subTab.setAttribute('zen-workspace-id', workspaceID);
             }
             container.insertBefore(tab.group, container.lastChild);
           });
@@ -1553,7 +1559,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (!this.workspaceEnabled || this._inChangingWorkspace) {
+    if (
+      !this.workspaceEnabled ||
+      this._inChangingWorkspace ||
+      gNavToolbox.hasAttribute('movingtab')
+    ) {
       return;
     }
     this._inChangingWorkspace = true;
@@ -1747,8 +1757,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       // Find the next workspace we are scrolling to
       const nextWorkspace = workspaces.workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
       if (nextWorkspace) {
-        const { gradient: nextGradient, grain: nextGrain } =
-          gZenThemePicker.getGradientForWorkspace(nextWorkspace);
+        const {
+          gradient: nextGradient,
+          grain: nextGrain,
+          toolbarGradient: nextToolbarGradient,
+        } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
         const existingGrain = gZenThemePicker.getGradientForWorkspace(workspace).grain;
         const percentage = Math.abs(offsetPixels) / 200;
         await new Promise((resolve) => {
@@ -1760,6 +1773,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
                 '--zen-main-browser-background-old',
                 nextGradient
               );
+              document.documentElement.style.setProperty(
+                '--zen-main-browser-background-toolbar-old',
+                nextToolbarGradient
+              );
+              document.documentElement.setAttribute('animating-background', 'true');
             }
             resolve();
           });
@@ -1773,7 +1791,9 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         const grainValue =
           minGrain +
           (maxGrain - minGrain) * (existingGrain > nextGrain ? 1 - percentage : percentage);
-        gZenThemePicker.updateNoise(grainValue);
+        if (!this._inChangingWorkspace) {
+          gZenThemePicker.updateNoise(grainValue);
+        }
       }
     } else {
       delete this._hasAnimatedBackgrounds;
@@ -2092,7 +2112,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       gZenUIManager._preventToolbarRebuild = true;
       gZenUIManager.updateTabsToolbar();
     }
-    await Promise.all(animations);
+    let promiseTimeout = new Promise((resolve) =>
+      setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
+    );
+    // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
+    // some sort of timeout to the animation promise, just in case it gets stuck.
+    // We are doing a race between the timeout and the animations finishing.
+    await Promise.race([Promise.all(animations), promiseTimeout]).catch(console.error);
     document.documentElement.removeAttribute('animating-background');
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
@@ -2232,7 +2258,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     // Update workspace UI
     await this._updateWorkspacesChangeContextMenu();
-    // gZenUIManager.updateTabsToolbar();
     await this._propagateWorkspaceData({ clearCache: false, onInit });
 
     gZenThemePicker.onWorkspaceChange(workspace);
@@ -2521,15 +2546,23 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (!activeWorkspace) {
       return;
     }
-    tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    if (tab.hasAttribute('zen-workspace-id')) {
+      const tabWorkspaceId = tab.getAttribute('zen-workspace-id');
+      this.moveTabToWorkspace(tab, tabWorkspaceId);
+      await this.changeWorkspaceWithID(tabWorkspaceId);
+    } else {
+      tab.setAttribute('zen-workspace-id', activeWorkspace.uuid);
+    }
+  }
+
+  #changeToEmptyTab() {
+    const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
+    gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
   }
 
   async onLocationChange(event) {
     let tab = event.target;
-    gZenCompactModeManager.sidebar.toggleAttribute(
-      'zen-has-empty-tab',
-      gBrowser.selectedTab.hasAttribute('zen-empty-tab')
-    );
+    this.#changeToEmptyTab();
     if (!this.workspaceEnabled || this._inChangingWorkspace || this._isClosingWindow) {
       return;
     }
@@ -3048,7 +3081,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   handleTabCloseWindow() {
-    if (this.shouldCloseWindow()) {
+    if (Services.prefs.getBoolPref('zen.tabs.close-window-with-empty')) {
       document.getElementById('cmd_closeWindow').doCommand();
     }
   }

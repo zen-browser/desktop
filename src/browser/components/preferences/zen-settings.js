@@ -770,11 +770,12 @@ var zenMissingKeyboardShortcutL10n = {
   key_enterFullScreen: 'zen-key-enter-full-screen',
   key_exitFullScreen: 'zen-key-exit-full-screen',
   key_aboutProcesses: 'zen-key-about-processes',
-  key_stop: 'zen-key-stop',
   key_sanitize: 'zen-key-sanitize',
   key_wrCaptureCmd: 'zen-key-wr-capture-cmd',
   key_wrToggleCaptureSequenceCmd: 'zen-key-wr-toggle-capture-sequence-cmd',
   key_undoCloseWindow: 'zen-key-undo-close-window',
+
+  'zen-glance-expand': 'zen-glance-expand',
 
   key_selectTab1: 'zen-key-select-tab-1',
   key_selectTab2: 'zen-key-select-tab-2',
@@ -875,11 +876,11 @@ var gZenCKSSettings = {
       const action = shortcut.getAction();
       const l10nID = shortcut.getL10NID();
       const group = shortcut.getGroup();
-      const keyInString = shortcut.toUserString();
+      const keyInString = shortcut.toDisplayString();
 
       const labelValue = zenMissingKeyboardShortcutL10n[keyID] ?? l10nID;
 
-      if (zenIgnoreKeyboardShortcutL10n.includes(labelValue)) {
+      if (zenIgnoreKeyboardShortcutL10n.includes(labelValue) || shortcut.shouldBeEmpty) {
         continue;
       }
 
@@ -1068,7 +1069,7 @@ var gZenCKSSettings = {
     this._hasSafed = false;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
-    input.value = modifiers.toUserString() + shortcut;
+    input.value = modifiers.toDisplayString() + shortcut;
     this._latestValidKey = shortcut;
   },
 };
@@ -1125,19 +1126,9 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: 'zen.view.compact.color-toolbar',
-    type: 'bool',
-    default: true,
-  },
-  {
     id: 'zen.urlbar.behavior',
     type: 'string',
     default: 'float',
-  },
-  {
-    id: 'zen.view.compact.color-sidebar',
-    type: 'bool',
-    default: true,
   },
   {
     id: 'zen.workspaces.separate-essentials',

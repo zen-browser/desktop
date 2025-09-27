@@ -20,10 +20,6 @@
   list-style-image: url('back.svg') !important;
 }
 
-#zenSplitViewModifierActivateReallocation > image {
-  list-style-image: url('move-tab.svg') !important;
-}
-
 #forward-button {
   list-style-image: url('forward.svg') !important;
 }
@@ -236,10 +232,6 @@
 
 #privatebrowsing-button {
   list-style-image: url('privateBrowsing.svg') !important;
-}
-
-#save-to-pocket-button {
-  list-style-image: url('pocket-outline.svg') !important;
 }
 
 #profiler-button-button > .toolbarbutton-icon,
@@ -580,20 +572,14 @@
 /* tab sound icons */
 .tab-icon-overlay[soundplaying] {
   list-style-image: url('tab-audio-playing-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 .tab-icon-overlay[muted] {
   list-style-image: url('tab-audio-muted-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 .tab-icon-overlay[activemedia-blocked] {
   list-style-image: url('tab-audio-blocked-small.svg') !important;
-  background-image: none !important;
-  fill: white !important;
 }
 
 /* reload/stop animation */
@@ -637,6 +623,22 @@
 }
 
 #PanelUI-historyMore {
+  list-style-image: url('manage.svg') !important;
+}
+
+#panelMenuBookmarkThisPage {
+  list-style-image: url('bookmark-hollow.svg') !important;
+}
+
+#panelMenu_searchBookmarks {
+  list-style-image: url('search-glass.svg') !important;
+}
+
+#panelMenu_viewBookmarksToolbar {
+  list-style-image: url('open.svg') !important;
+}
+
+#panelMenu_showAllBookmarks {
   list-style-image: url('manage.svg') !important;
 }
 
@@ -758,7 +760,7 @@
   list-style-image: url('chrome://global/skin/media/picture-in-picture-open.svg');
 }
 
-#zenCreateNewPopup > menuitem image {
+#zenCreateNewPopup > menuitem img {
   -moz-context-properties: fill;
   fill: currentColor;
 }
@@ -805,8 +807,7 @@
   }
 }
 
-.zen-workspace-context-icon image {
+.zen-workspace-context-icon img {
   -moz-context-properties: fill;
   fill: currentColor;
-  scale: 1.6;
 }

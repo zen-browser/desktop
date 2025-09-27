@@ -133,8 +133,8 @@ const VALID_SHORTCUT_GROUPS = [
   ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
   ZEN_WORKSPACE_SHORTCUTS_GROUP,
   ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
-  ...Object.keys(defaultKeyboardGroups),
   ZEN_OTHER_SHORTCUTS_GROUP,
+  ...Object.keys(defaultKeyboardGroups),
   'other',
 ];
 
@@ -192,22 +192,28 @@ class nsKeyShortcutModifiers {
     return new nsKeyShortcutModifiers(ctrl, alt, shift, meta, accel);
   }
 
-  toUserString() {
+  toDisplayString() {
     let str = '';
+    const separation = AppConstants.platform == 'macosx' ? ' ' : '+';
     if (this.#control && !this.#accel) {
-      str += 'Ctrl+';
+      str += AppConstants.platform == 'macosx' ? '⌃' : 'Ctrl';
+      str += separation;
     }
     if (this.#alt) {
-      str += AppConstants.platform == 'macosx' ? 'Option+' : 'Alt+';
+      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
+      str += separation;
     }
     if (this.#shift) {
-      str += 'Shift+';
+      str += '⇧';
+      str += separation;
     }
     if (this.#meta) {
-      str += AppConstants.platform == 'macosx' ? 'Cmd+' : 'Win+';
+      str += AppConstants.platform == 'macosx' ? '⌘' : 'Win';
+      str += separation;
     }
     if (this.#accel) {
-      str += AppConstants.platform == 'macosx' ? 'Cmd+' : 'Ctrl+';
+      str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
+      str += separation;
     }
     return str;
   }
@@ -296,6 +302,7 @@ class KeyShortcut {
   #disabled = false;
   #reserved = false;
   #internal = false;
+  #shouldBeEmpty = false;
 
   constructor(
     id,
@@ -394,6 +401,17 @@ class KeyShortcut {
       return fixedL10nIds[action];
     }
     return `zen-${id}`;
+  }
+
+  set shouldBeEmpty(value) {
+    this.#shouldBeEmpty = value;
+    if (value) {
+      this.clearKeybind();
+    }
+  }
+
+  get shouldBeEmpty() {
+    return this.#shouldBeEmpty;
   }
 
   toXHTMLElement(window) {
@@ -525,8 +543,8 @@ class KeyShortcut {
     };
   }
 
-  toUserString() {
-    let str = this.#modifiers.toUserString();
+  toDisplayString() {
+    let str = this.#modifiers.toDisplayString();
 
     if (this.#key) {
       str += this.#key.toUpperCase();
@@ -534,7 +552,32 @@ class KeyShortcut {
       // Get the key from the value
       for (let [key, value] of Object.entries(KEYCODE_MAP)) {
         if (value == this.#keycode) {
-          str += key.toLowerCase();
+          const normalizedKey = key.toLowerCase();
+          switch (normalizedKey) {
+            case 'arrowleft':
+              str += '←';
+              break;
+            case 'arrowright':
+              str += '→';
+              break;
+            case 'arrowup':
+              str += '↑';
+              break;
+            case 'arrowdown':
+              str += '↓';
+              break;
+            case 'escape':
+              str += AppConstants.platform == 'macosx' ? '⎋' : 'Esc';
+              break;
+            case 'enter':
+              str += AppConstants.platform == 'macosx' ? '↩' : 'Enter';
+              break;
+            case 'space':
+              str += AppConstants.platform == 'macosx' ? '␣' : 'Space';
+              break;
+            default:
+              str += normalizedKey;
+          }
           break;
         }
       }
@@ -773,7 +816,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 9;
+  static LATEST_KBS_VERSION = 11;
 
   constructor() {}
 
@@ -838,7 +881,21 @@ class nsZenKeyboardShortcutsVersioner {
   }
 
   fixedKeyboardShortcuts(data) {
-    return this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+    // Apply migrations and ensure defaults exist
+    let out = this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+
+    // Hard-remove deprecated or conflicting defaults regardless of version
+    // - Remove the built-in "Open File" keybinding; menu item remains available
+    // - Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
+    // - Remove "Stop" keybinding to avoid conflict with Firefox's built-in binding
+    const shouldBeEmptyShortcuts = ['openFileKb', 'bookmarkAllTabsKb', 'key_stop'];
+    for (let shortcut of out) {
+      if (shouldBeEmptyShortcuts.includes(shortcut.getID?.())) {
+        shortcut.shouldBeEmpty = true;
+      }
+    }
+
+    return out;
   }
 
   migrate(data, version) {
@@ -898,10 +955,10 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           'zen-toggle-sidebar',
-          'B',
+          '',
           '',
           ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ alt: true }),
+          nsKeyShortcutModifiers.fromObject({}),
           'cmd_zenToggleSidebar',
           'zen-sidebar-shortcut-toggle'
         )
@@ -992,6 +1049,49 @@ class nsZenKeyboardShortcutsVersioner {
           }
         }
       }
+    }
+    if (version < 10) {
+      // Migrate from version 9 to 10
+      // 1) Add the new pin/unpin tab toggle shortcut with Ctrl+Shift+D
+      data.push(
+        new KeyShortcut(
+          'zen-toggle-pin-tab',
+          'D',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenTogglePinTab',
+          'zen-toggle-pin-tab-shortcut'
+        )
+      );
+
+      // 2) Add shortcut to expand Glance into a full tab: Default Accel+O
+      data.push(
+        new KeyShortcut(
+          'zen-glance-expand',
+          'O',
+          '',
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          'cmd_zenGlanceExpand',
+          ''
+        )
+      );
+    }
+
+    if (version < 11) {
+      // Migrate from version 10 to 11
+      data.push(
+        new KeyShortcut(
+          'zen-new-empty-split-view',
+          AppConstants.platform == 'linux' ? '*' : '+',
+          '',
+          ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenNewEmptySplit',
+          'zen-new-empty-split-view-shortcut'
+        )
+      );
     }
     return data;
   }
@@ -1260,6 +1360,31 @@ var gZenKeyboardShortcutsManager = {
     }
 
     return false;
+  },
+
+  getShortcutFromCommand(command) {
+    for (let targetShortcut of this._currentShortcutList) {
+      if (targetShortcut.getAction() == command) {
+        return targetShortcut;
+      }
+    }
+    return null;
+  },
+
+  /**
+   * Get the shortcut as a display format for a given action/command.
+   * @param {string} command The action/command to search for
+   * @returns {string|null} The shortcut as a string or null if not found
+   */
+  getShortcutDisplayFromCommand(command) {
+    if (!command) {
+      return null;
+    }
+    const shortcut = this.getShortcutFromCommand(command);
+    if (shortcut) {
+      return shortcut.toDisplayString();
+    }
+    return null;
   },
 };
 

@@ -1,8 +1,8 @@
 diff --git a/toolkit/mozapps/update/updater/updater-common.build b/toolkit/mozapps/update/updater/updater-common.build
-index 6c6d0adf6f56b66c06494b95982b4afae52de536..67e381659dba0c6938a12d16fe12bc2f3e2039ae 100644
+index 57ea0415653678bb300e277e66c97e332e756cc7..5f757e68a685948c83fee8f963c49bee71a8e4a4 100644
 --- a/toolkit/mozapps/update/updater/updater-common.build
 +++ b/toolkit/mozapps/update/updater/updater-common.build
-@@ -78,6 +78,11 @@ if link_with_nss:
+@@ -88,6 +88,11 @@ if link_with_nss:
          "nss",
          "signmar",
      ]

@@ -9,7 +9,7 @@
   value: 8
 
 - name: zen.theme.dark-mode-bias
-  value: 0.25
+  value: 0.3
 
 - name: zen.theme.gradient
   value: true
@@ -33,7 +33,7 @@
   value: true
 
 - name: zen.theme.styled-status-panel
-  value: false
+  value: '@IS_TWILIGHT@'
 
 # ==== Mark: border radius ====
 

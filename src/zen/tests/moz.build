@@ -10,6 +10,7 @@ BROWSER_CHROME_MANIFESTS += [
     "pinned/browser.toml",
     "split_view/browser.toml",
     "tabs/browser.toml",
+    "ub-actions/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
     "workspaces/browser.toml",

@@ -1,5 +1,5 @@
 diff --git a/dom/media/mediacontrol/MediaController.cpp b/dom/media/mediacontrol/MediaController.cpp
-index 3f08d24d4ed56bb72ed513ed602b2c8fa48afe7b..98dfe4df48f5daebd2b619f0d4d4eb3ac873a66f 100644
+index 8a1735b70f2003b7ee554230c4ad93c68793fce2..86d86a83545287356be5e455501b8c30062adc3a 100644
 --- a/dom/media/mediacontrol/MediaController.cpp
 +++ b/dom/media/mediacontrol/MediaController.cpp
 @@ -51,6 +51,25 @@ void MediaController::GetSupportedKeys(

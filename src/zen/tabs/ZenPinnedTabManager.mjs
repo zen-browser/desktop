@@ -68,7 +68,10 @@
   class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     MAX_ESSENTIALS_TABS = 12;
 
-    #hasInitializedPins = false;
+    hasInitializedPins = false;
+    promiseInitializedPinned = new Promise((resolve) => {
+      this._resolvePinnedInitializedInternal = resolve;
+    });
 
     async init() {
       if (!this.enabled) {
@@ -188,10 +191,19 @@
       return this._pinsCache;
     }
 
+    #finishedInitializingPins() {
+      if (this.hasInitializedPins) {
+        return;
+      }
+      this._resolvePinnedInitializedInternal();
+      delete this._resolvePinnedInitializedInternal;
+      this.hasInitializedPins = true;
+    }
+
     async #initializePinnedTabs(init = false) {
       const pins = this._pinsCache;
       if (!pins?.length || !init) {
-        this.#hasInitializedPins = true;
+        this.#finishedInitializingPins();
         return;
       }
 
@@ -375,7 +387,7 @@
       }
 
       setTimeout(() => {
-        this.#hasInitializedPins = true;
+        this.#finishedInitializingPins();
       }, 0);
 
       gBrowser._updateTabBarForPinnedTabs();
@@ -453,7 +465,7 @@
           tab.pinned &&
           tab.hasAttribute('zen-pin-id') &&
           tab.group === group &&
-          this.#hasInitializedPins
+          this.hasInitializedPins
         ) {
           const tabPinId = tab.getAttribute('zen-pin-id');
           await ZenPinnedTabsStorage.addTabToGroup(tabPinId, id, /* position */ tab._pPos);
@@ -607,7 +619,11 @@
     async _onTabClick(e) {
       const tab = e.target?.closest('tab');
       if (e.button === 1 && tab) {
-        await this._onCloseTabShortcut(e, tab, { closeIfPending: true });
+        await this._onCloseTabShortcut(e, tab, {
+          closeIfPending: Services.prefs.getBoolPref(
+            'zen.pinned-tab-manager.wheel-close-if-pending'
+          ),
+        });
       }
     }
 
@@ -679,6 +695,7 @@
         workspaceUuid: tab.getAttribute('zen-workspace-id'),
         isEssential: tab.getAttribute('zen-essential') === 'true',
         parentUuid: tab.group?.getAttribute('zen-pin-id') || null,
+        position: tab._pPos,
       });
 
       tab.setAttribute('zen-pin-id', uuid);
@@ -737,7 +754,7 @@
     }
 
     async savePin(pin, notifyObservers = true) {
-      if (!this.#hasInitializedPins && !gZenUIManager.testingEnabled) {
+      if (!this.hasInitializedPins && !gZenUIManager.testingEnabled) {
         return;
       }
       const existingPin = this._pinsCache.find((p) => p.uuid === pin.uuid);
@@ -760,80 +777,84 @@
         closeIfPending = false,
       } = {}
     ) {
-      if (!selectedTab?.pinned) {
-        return;
-      }
-
-      event.stopPropagation();
-      event.preventDefault();
-
-      if (noClose && behavior === 'close') {
-        behavior = 'unload-switch';
-      }
-
-      switch (behavior) {
-        case 'close':
-          this._removePinnedAttributes(selectedTab, true);
-          gBrowser.removeTab(selectedTab, { animate: true });
-          break;
-        case 'reset-unload-switch':
-        case 'unload-switch':
-        case 'reset-switch':
-        case 'switch':
-          if (behavior.includes('unload')) {
-            if (selectedTab.hasAttribute('glance-id')) {
-              // We have a glance tab inside the tab we are trying to unload,
-              // before we used to just ignore it but now we need to fully close
-              // it as well.
-              gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
-              await new Promise((resolve) => {
-                let hasRan = false;
-                const onGlanceClose = () => {
-                  hasRan = true;
-                  resolve();
-                };
-                window.addEventListener('GlanceClose', onGlanceClose, { once: true });
-                // Set a timeout to resolve the promise if the event doesn't fire.
-                // We do this to prevent any future issues where glance woudnt close such as
-                // glance requering to ask for permit unload.
-                setTimeout(() => {
-                  if (!hasRan) {
-                    console.warn('GlanceClose event did not fire within 3 seconds');
-                    resolve();
-                  }
-                }, 3000);
-              });
-            }
-            await gZenFolders.collapseVisibleTab(
-              selectedTab.group,
-              /* only if active */ true,
-              selectedTab
-            );
-            let tabsToUnload = [selectedTab];
-            if (selectedTab.group?.hasAttribute('split-view-group')) {
-              tabsToUnload = selectedTab.group.tabs;
-            }
-            const allAreUnloaded = tabsToUnload.every(
-              (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
-            );
-            if (allAreUnloaded && closeIfPending) {
-              return await this._onCloseTabShortcut(event, selectedTab, { behavior: 'close' });
-            }
-            await gBrowser.explicitUnloadTabs(tabsToUnload);
-            selectedTab.removeAttribute('discarded');
-          }
-          if (selectedTab.selected) {
-            this._handleTabSwitch(selectedTab);
-          }
-          if (behavior.includes('reset')) {
-            this._resetTabToStoredState(selectedTab);
-          }
-          break;
-        case 'reset':
-          this._resetTabToStoredState(selectedTab);
-          break;
-        default:
+      try {
+        if (!selectedTab?.pinned) {
           return;
+        }
+
+        event.stopPropagation();
+        event.preventDefault();
+
+        if (noClose && behavior === 'close') {
+          behavior = 'unload-switch';
+        }
+
+        switch (behavior) {
+          case 'close':
+            this._removePinnedAttributes(selectedTab, true);
+            gBrowser.removeTab(selectedTab, { animate: true });
+            break;
+          case 'reset-unload-switch':
+          case 'unload-switch':
+          case 'reset-switch':
+          case 'switch':
+            if (behavior.includes('unload')) {
+              if (selectedTab.hasAttribute('glance-id')) {
+                // We have a glance tab inside the tab we are trying to unload,
+                // before we used to just ignore it but now we need to fully close
+                // it as well.
+                gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
+                await new Promise((resolve) => {
+                  let hasRan = false;
+                  const onGlanceClose = () => {
+                    hasRan = true;
+                    resolve();
+                  };
+                  window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                  // Set a timeout to resolve the promise if the event doesn't fire.
+                  // We do this to prevent any future issues where glance woudnt close such as
+                  // glance requering to ask for permit unload.
+                  setTimeout(() => {
+                    if (!hasRan) {
+                      console.warn('GlanceClose event did not fire within 3 seconds');
+                      resolve();
+                    }
+                  }, 3000);
+                });
+              }
+              await gZenFolders.collapseVisibleTab(
+                selectedTab.group,
+                /* only if active */ true,
+                selectedTab
+              );
+              let tabsToUnload = [selectedTab];
+              if (selectedTab.group?.hasAttribute('split-view-group')) {
+                tabsToUnload = selectedTab.group.tabs;
+              }
+              const allAreUnloaded = tabsToUnload.every(
+                (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
+              );
+              if (allAreUnloaded && closeIfPending) {
+                return await this._onCloseTabShortcut(event, selectedTab, { behavior: 'close' });
+              }
+              await gBrowser.explicitUnloadTabs(tabsToUnload);
+              selectedTab.removeAttribute('discarded');
+            }
+            if (selectedTab.selected) {
+              this._handleTabSwitch(selectedTab);
+            }
+            if (behavior.includes('reset')) {
+              this._resetTabToStoredState(selectedTab);
+            }
+            break;
+          case 'reset':
+            this._resetTabToStoredState(selectedTab);
+            break;
+          default:
+            return;
+        }
+      } catch (ex) {
+        console.error('Error handling close tab shortcut for pinned tab:', ex);
       }
     }
 
@@ -1226,6 +1247,7 @@
       for (const item of this.dragShiftableItems) {
         item.style.transform = '';
       }
+      delete this._topToNormalTabs;
       for (const item of gBrowser.tabContainer.ariaFocusableItems) {
         if (gBrowser.isTab(item)) {
           let isVisible = true;
@@ -1260,7 +1282,7 @@
         : [separator];
     }
 
-    animateSeparatorMove(movingTabs, dropElement, isPinned, event) {
+    animateSeparatorMove(movingTabs, dropElement, isPinned) {
       let draggedTab = movingTabs[0];
       if (gBrowser.isTabGroupLabel(draggedTab) && draggedTab.group.isZenFolder) {
         this._isGoingToPinnedTabs = true;
@@ -1270,14 +1292,19 @@
         draggedTab = draggedTab.group;
       }
       const itemsToCheck = this.dragShiftableItems;
-      const translate = event.screenY;
+      let translate = movingTabs[isPinned ? movingTabs.length - 1 : 0].getBoundingClientRect().top;
+      if (isPinned) {
+        const rect = draggedTab.getBoundingClientRect();
+        translate += rect.height;
+      }
       const draggingTabHeight = movingTabs.reduce((acc, item) => {
         return acc + window.windowUtils.getBoundsWithoutFlushing(item).height;
       }, 0);
-      let topToNormalTabs = itemsToCheck[0].screenY;
-      if (!isPinned) {
-        topToNormalTabs += draggedTab.getBoundingClientRect().height;
+      if (typeof this._topToNormalTabs === 'undefined') {
+        const rects = itemsToCheck.map((item) => window.windowUtils.getBoundsWithoutFlushing(item));
+        this._topToNormalTabs = rects[0].top + rects.at(-1).height / (isPinned ? 2 : 4);
       }
+      let topToNormalTabs = this._topToNormalTabs;
       const isGoingToPinnedTabs =
         translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
       const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;

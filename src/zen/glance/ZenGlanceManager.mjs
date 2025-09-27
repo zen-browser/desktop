@@ -148,7 +148,6 @@
       const initialHeight = data.height;
 
       this.browserWrapper?.removeAttribute('animate');
-      this.browserWrapper?.removeAttribute('animate-end');
       this.browserWrapper?.removeAttribute('has-finished-animation');
       this.overlay?.removeAttribute('post-fade-out');
 
@@ -160,19 +159,22 @@
 
       this.overlay.classList.add('zen-glance-overlay');
 
-      this.browserWrapper.removeAttribute('animate-end');
       return new Promise((resolve) => {
         window.requestAnimationFrame(() => {
           this.quickOpenGlance();
           const newButtons = this.#createNewOverlayButtons();
           this.browserWrapper.appendChild(newButtons);
 
+          // Performance: backdrop-filter blur on Windows significantly impacts scroll smoothness
+          // in the Glance preview (particularly for wheel scrolling). Avoid applying it on Windows.
+          const parentSidebarContainer = this.#currentParentTab.linkedBrowser.closest(
+            '.browserSidebarContainer'
+          );
           gZenUIManager.motion.animate(
-            this.#currentParentTab.linkedBrowser.closest('.browserSidebarContainer'),
+            parentSidebarContainer,
             {
               scale: [1, 0.98],
-              backdropFilter: ['blur(0px)', 'blur(5px)'],
-              opacity: [1, 0.5],
+              opacity: [1, 0.6],
             },
             {
               duration: 0.4,
@@ -180,7 +182,6 @@
               bounce: 0.2,
             }
           );
-          this.#currentBrowser.setAttribute('animate-glance-open', true);
           this.overlay.removeAttribute('fade-out');
           this.browserWrapper.setAttribute('animate', true);
           const top = initialY + initialHeight / 2;
@@ -209,17 +210,15 @@
                 opacity: 1,
               },
               {
-                duration: 0.4,
+                duration: 0.3,
                 type: 'spring',
-                bounce: 0.25,
+                bounce: 0.2,
               }
             )
             .then(() => {
               gBrowser.tabContainer._invalidateCachedTabs();
-              this.#currentBrowser.removeAttribute('animate-glance-open');
               this.overlay.style.removeProperty('overflow');
               this.browserWrapper.removeAttribute('animate');
-              this.browserWrapper.setAttribute('animate-end', true);
               this.browserWrapper.setAttribute('has-finished-animation', true);
               this._animating = false;
               this.animatingOpen = false;
@@ -323,8 +322,7 @@
           browserSidebarContainer,
           {
             scale: [0.98, 1],
-            backdropFilter: ['blur(5px)', 'blur(0px)'],
-            opacity: [0.5, 1],
+            opacity: [0.6, 1],
           },
           {
             duration: 0.4,
@@ -348,7 +346,6 @@
           )
           .then(() => {
             this.browserWrapper.removeAttribute('animate');
-            this.browserWrapper.removeAttribute('animate-end');
             if (!this.#currentParentTab) {
               return;
             }
@@ -617,6 +614,10 @@
     }
 
     async fullyOpenGlance({ forSplit = false } = {}) {
+      // If there is no active glance, do nothing
+      if (!this.#currentGlanceID || !this.#currentTab) {
+        return;
+      }
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 
@@ -662,7 +663,7 @@
           height: ['100%', '100%'],
         },
         {
-          duration: 0.4,
+          duration: 0.3,
           type: 'spring',
           bounce: 0,
         }

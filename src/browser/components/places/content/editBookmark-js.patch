@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08fb697811b 100644
+index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4016594b9 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
-@@ -386,6 +386,10 @@ var gEditItemOverlay = {
+@@ -387,6 +387,10 @@ var gEditItemOverlay = {
          this._keywordField.readOnly = this.readOnly;
        }
  
@@ -13,7 +13,7 @@ index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08f
        // Collapse the tag selector if the item does not accept tags.
        if (showOrCollapse("tagsRow", isBookmark || bulkTagging, "tags")) {
          this._initTagsField();
-@@ -692,6 +696,7 @@ var gEditItemOverlay = {
+@@ -693,6 +697,7 @@ var gEditItemOverlay = {
        if (this._paneInfo.isBookmark) {
          options.tags = this._element("tagsField").value;
          options.keyword = this._keyword;
@@ -21,7 +21,7 @@ index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08f
        }
  
        if (this._paneInfo.bulkTagging) {
-@@ -1193,6 +1198,9 @@ var gEditItemOverlay = {
+@@ -1194,6 +1199,9 @@ var gEditItemOverlay = {
            case "editBMPanel_tagsSelectorExpander":
              this.toggleTagsSelector().catch(console.error);
              break;
@@ -31,7 +31,7 @@ index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08f
          }
          break;
      }
-@@ -1279,6 +1287,148 @@ var gEditItemOverlay = {
+@@ -1280,6 +1288,148 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
@@ -180,7 +180,7 @@ index ac84ff7b7623a279191c7608ef0b47363b54cd31..53919bae7a49f1e87edaedc8072ee08f
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1317,6 +1467,9 @@ for (let elt of [
+@@ -1318,6 +1468,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

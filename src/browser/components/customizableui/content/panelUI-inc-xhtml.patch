@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
-index c78f08bdd3fc4d01e10552ef65c2d5813dd053e8..154fb1de2ab9384937d02c14cb7c9c607b330da9 100644
+index 85acb96a3deefed708ea768b2f163e7fd6480b97..bb3aed53758da7dafcfed4492acb0cbf2b80cd2f 100644
 --- a/browser/components/customizableui/content/panelUI.inc.xhtml
 +++ b/browser/components/customizableui/content/panelUI.inc.xhtml
 @@ -132,7 +132,7 @@

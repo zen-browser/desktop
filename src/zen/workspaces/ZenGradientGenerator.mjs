@@ -126,7 +126,7 @@
         darkModeChange
       );
 
-      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.25);
+      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.5);
     }
 
     handleDarkModeChange() {
@@ -1089,7 +1089,10 @@
         return color.c;
       }
       let opacity = this.currentOpacity;
-      if (forToolbar && !this.#allowTransparencyOnSidebar) {
+      if (
+        (forToolbar && !this.#allowTransparencyOnSidebar) ||
+        (!forToolbar && !this.canBeTransparent)
+      ) {
         color = this.blendColors(
           color.c,
           this.getToolbarModifiedBaseRaw().slice(0, 3),
@@ -1140,11 +1143,13 @@
 
       const rotation = -45; // TODO: Detect rotation based on the accent color
       if (themedColors.length === 0) {
-        return forToolbar
-          ? this.getToolbarModifiedBase()
-          : this.isDarkMode
-            ? 'rgba(0, 0, 0, 0.4)'
-            : 'transparent';
+        const getBrowserBg = () => {
+          if (this.canBeTransparent) {
+            return this.isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'transparent';
+          }
+          return this.isDarkMode ? '#131313' : '#e9e9e9';
+        };
+        return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
       } else if (themedColors.length === 1) {
         return this.getSingleRGBColor(themedColors[0], forToolbar);
       } else {
@@ -1177,14 +1182,11 @@
           let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
           let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
           let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
-          if (!forToolbar) {
-            return [
-              `radial-gradient(circle at 0% 0%, ${color2}, transparent 100%)`,
-              `radial-gradient(circle at 100% 0%, ${color3}, transparent 100%)`,
-              `linear-gradient(to top, ${color1} 0%, transparent 60%)`,
-            ].join(', ');
-          }
-          return [`linear-gradient(-45deg, ${color1} 15%, ${color2})`].join(', ');
+          return [
+            `linear-gradient(to top, ${color1} -50%, transparent 125%)`,
+            `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 80%)`,
+            `radial-gradient(circle at 100% -100%, ${color3} -100%, transparent 400%)`,
+          ].join(', ');
         }
       }
     }
@@ -1326,6 +1328,12 @@
             browser.document.documentElement.style.getPropertyValue('--zen-main-browser-background')
           );
           browser.document.documentElement.style.setProperty(
+            '--zen-main-browser-background-toolbar-old',
+            browser.document.documentElement.style.getPropertyValue(
+              '--zen-main-browser-background-toolbar'
+            )
+          );
+          browser.document.documentElement.style.setProperty(
             '--zen-background-opacity',
             browser.gZenThemePicker.previousBackgroundOpacity ?? 1
           );
@@ -1394,9 +1402,14 @@
               ? workspaceTheme.gradientColors.length >= nsZenThemePicker.MAX_DOTS
               : false);
         }
-        document
-          .getElementById('PanelUI-zen-gradient-generator-color-click-to-add')
-          .toggleAttribute('hidden', workspaceTheme.gradientColors.length > 0);
+        const clickToAdd = browser.document.getElementById(
+          'PanelUI-zen-gradient-generator-color-click-to-add'
+        );
+        if (workspaceTheme.gradientColors.length > 0) {
+          clickToAdd.setAttribute('hidden', 'true');
+        } else {
+          clickToAdd.removeAttribute('hidden');
+        }
 
         opacitySlider.value = browser.gZenThemePicker.currentOpacity;
         const textureSelectWrapper = browser.document.getElementById(
@@ -1648,6 +1661,7 @@
       this.currentOpacity = theme.opacity ?? 0.5;
       this.#currentLightness = theme.lightness ?? 50;
       const gradient = this.getGradient(theme.gradientColors);
+      const toolbarGradient = this.getGradient(theme.gradientColors, true);
       let dominantColor = this.getMostDominantColor(theme.gradientColors);
       const isDefaultTheme = !dominantColor;
       if (isDefaultTheme) {
@@ -1662,6 +1676,7 @@
       }
       this.#gradientsCache[uuid] = {
         gradient,
+        toolbarGradient,
         grain: theme.texture ?? 0,
         isDarkMode,
         isExplicitMode,

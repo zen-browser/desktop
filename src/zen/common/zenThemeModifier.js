@@ -46,11 +46,26 @@ var ZenThemeModifier = {
       Services.prefs.addObserver(pref, handleEvent);
     }
 
+    // Add fullscreen listener to update the theme when going in and out of fullscreen
+    const eventsForSeparation = [
+      'ZenViewSplitter:SplitViewDeactivated',
+      'ZenViewSplitter:SplitViewActivated',
+      'fullscreen',
+      'ZenCompactMode:Toggled',
+    ];
+    const separationHandler = this.updateElementSeparation.bind(this);
+    for (let eventName of eventsForSeparation) {
+      window.addEventListener(eventName, separationHandler);
+    }
+
     window.addEventListener(
       'unload',
       () => {
         for (let pref of kZenThemePrefsList) {
           Services.prefs.removeObserver(pref, handleEvent);
+        }
+        for (let eventName of eventsForSeparation) {
+          window.removeEventListener(eventName, separationHandler);
         }
       },
       { once: true }
@@ -78,6 +93,13 @@ var ZenThemeModifier = {
 
   updateElementSeparation() {
     let separation = this.elementSeparation;
+    if (
+      window.fullScreen &&
+      window.gZenCompactModeManager?.preference &&
+      !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view')
+    ) {
+      separation = 0;
+    }
     document.documentElement.style.setProperty('--zen-element-separation', separation + 'px');
     if (separation == 0) {
       document.documentElement.setAttribute('zen-no-padding', true);

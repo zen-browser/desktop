@@ -48,3 +48,4 @@ zen-icons-picker-emoji =
     .label = Emojid
 zen-icons-picker-svg = 
     .label = Ikoonid
+urlbar-search-mode-zen_actions = Actions

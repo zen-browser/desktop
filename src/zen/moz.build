@@ -10,3 +10,7 @@ DIRS += [
     "urlbar",
     "toolkit",
 ]
+
+EXTRA_PP_COMPONENTS += [
+    "ZenComponents.manifest",
+]

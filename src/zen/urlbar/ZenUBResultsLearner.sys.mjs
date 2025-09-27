@@ -10,11 +10,22 @@ const DEFAULT_DB_DATA = '{}';
 const DEPRIORITIZE_MAX = -4;
 const PRIORITIZE_MAX = 5;
 
+function addDataToLazy(data) {
+  try {
+    lazy.databaseData = JSON.parse(data);
+  } catch {
+    lazy.databaseData = {};
+  }
+}
+
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'database',
+  'rawDatabase',
   'zen.urlbar.suggestions-learner',
-  'DEFAULT_DB_DATA'
+  DEFAULT_DB_DATA,
+  (_aPreference, _previousValue, newValue) => {
+    addDataToLazy(newValue);
+  }
 );
 
 /**
@@ -33,14 +44,12 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * The priority number is incremented each time the command is executed.
  */
 class ZenUrlbarResultsLearner {
-  constructor() {}
+  constructor() {
+    addDataToLazy(lazy.rawDatabase);
+  }
 
   get database() {
-    try {
-      return JSON.parse(lazy.database);
-    } catch {
-      return {};
-    }
+    return lazy.databaseData;
   }
 
   saveDatabase(db) {

@@ -92,7 +92,7 @@ if test "$ZEN_RELEASE"; then
 
   ac_add_options --enable-js-shell
   export MOZ_PACKAGE_JSSHELL=1
-else
+
   ac_add_options --disable-crashreporter
 fi
 

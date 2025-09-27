@@ -43,13 +43,16 @@
     fill-opacity: 0.6;
 
     & .zen-workspace-icon {
-      padding: 6px;
       pointer-events: none;
+      line-height: 0;
+
+      &:is(img) {
+        padding: 6px;
+      }
    
       &[no-icon='true'] {
         width: 6px;
         height: 6px;
-        padding: 0;
         background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
         border-radius: 50%;
       }

@@ -19,6 +19,8 @@
       'TabGrouped',
       'TabUngrouped',
       'ZenFolderChangedWorkspace',
+      'TabAddedToEssentials',
+      'TabRemovedFromEssentials',
     ];
 
     #listeners = [];
@@ -397,12 +399,23 @@
     _onPinnedTabEvent(action, event) {
       if (!this.enabled) return;
       const tab = event.target;
+      if (this._ignoreNextTabPinnedEvent) {
+        delete this._ignoreNextTabPinnedEvent;
+        return;
+      }
       switch (action) {
         case 'TabPinned':
+        case 'TabAddedToEssentials':
           tab._zenClickEventListener = this._zenClickEventListener;
           tab.addEventListener('click', tab._zenClickEventListener);
           this._setPinnedAttributes(tab);
           break;
+        case 'TabRemovedFromEssentials':
+          if (tab.pinned) {
+            this.#onTabMove(tab);
+            break;
+          }
+        // [Fall through]
         case 'TabUnpinned':
           this._removePinnedAttributes(tab);
           if (tab._zenClickEventListener) {
@@ -958,30 +971,33 @@
           const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
           if (pin) {
             pin.isEssential = true;
+            pin.workspaceUuid = null;
             this.savePin(pin);
           }
-          if (tab.ownerGlobal !== window) {
-            tab = gBrowser.adoptTab(tab, {
-              selectTab: tab.selected,
-            });
-            tab.setAttribute('zen-essential', 'true');
-          } else {
-            section.appendChild(tab);
-          }
-          gBrowser.tabContainer._invalidateCachedTabs();
+          gBrowser.zenHandleTabMove(tab, () => {
+            if (tab.ownerGlobal !== window) {
+              tab = gBrowser.adoptTab(tab, {
+                selectTab: tab.selected,
+              });
+              tab.setAttribute('zen-essential', 'true');
+            } else {
+              section.appendChild(tab);
+            }
+          });
         } else {
           gBrowser.pinTab(tab);
+          this._ignoreNextTabPinnedEvent = true;
         }
         tab.setAttribute('zenDefaultUserContextId', true);
         if (tab.selected) {
           gZenWorkspaces.switchTabIfNeeded(tab);
         }
-        this.#onTabMove(tab);
         this.onTabIconChanged(tab);
-
         // Dispatch the event to update the UI
         const event = new CustomEvent('TabAddedToEssentials', {
           detail: { tab },
+          bubbles: true,
+          cancelable: false,
         });
         tab.dispatchEvent(event);
       }
@@ -1004,15 +1020,16 @@
         if (unpin) {
           gBrowser.unpinTab(tab);
         } else {
-          const pinContainer = gZenWorkspaces.pinnedTabsContainer;
-          pinContainer.prepend(tab);
-          gBrowser.tabContainer._invalidateCachedTabs();
-          this.#onTabMove(tab);
+          gBrowser.zenHandleTabMove(tab, () => {
+            const pinContainer = gZenWorkspaces.pinnedTabsContainer;
+            pinContainer.prepend(tab);
+          });
         }
-
         // Dispatch the event to update the UI
         const event = new CustomEvent('TabRemovedFromEssentials', {
           detail: { tab },
+          bubbles: true,
+          cancelable: false,
         });
         tab.dispatchEvent(event);
       }
@@ -1069,6 +1086,7 @@
       document
         .getElementById('cmd_contextZenAddToEssentials')
         .setAttribute('disabled', !this.canEssentialBeAdded(contextTab));
+      document.getElementById('context_closeTab').hidden = contextTab.hasAttribute('zen-essential');
       document.getElementById('context_zen-remove-essential').hidden =
         !contextTab.getAttribute('zen-essential');
       document.getElementById('zen-context-menu-new-folder').hidden =

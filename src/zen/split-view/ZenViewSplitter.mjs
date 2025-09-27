@@ -380,20 +380,21 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
-  onBrowserDragEndToSplit(event) {
+  onBrowserDragEndToSplit(event, cancelled = false) {
     if (!this._canDrop) {
       return;
     }
     const panelsRect = gBrowser.tabbox.getBoundingClientRect();
     const fakeBrowserRect = this.fakeBrowser && this.fakeBrowser.getBoundingClientRect();
     if (
-      (event.target.closest('#tabbrowser-tabbox') && event.target != this.fakeBrowser) ||
-      (fakeBrowserRect &&
-        event.clientX > fakeBrowserRect.left &&
-        event.clientX < fakeBrowserRect.left + fakeBrowserRect.width &&
-        event.clientY > fakeBrowserRect.top &&
-        event.clientY < fakeBrowserRect.top + fakeBrowserRect.height) ||
-      (event.screenX === 0 && event.screenY === 0) // It's equivalent to 0 if the event has been dropped
+      ((event.target.closest('#tabbrowser-tabbox') && event.target != this.fakeBrowser) ||
+        (fakeBrowserRect &&
+          event.clientX > fakeBrowserRect.left &&
+          event.clientX < fakeBrowserRect.left + fakeBrowserRect.width &&
+          event.clientY > fakeBrowserRect.top &&
+          event.clientY < fakeBrowserRect.top + fakeBrowserRect.height) ||
+        (event.screenX === 0 && event.screenY === 0)) && // It's equivalent to 0 if the event has been dropped
+      !cancelled
     ) {
       return;
     }

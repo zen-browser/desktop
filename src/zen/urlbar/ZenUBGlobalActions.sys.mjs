@@ -158,6 +158,11 @@ const globalActionsTemplate = [
     command: 'cmd_zenOpenWorkspaceCreation',
     icon: 'chrome://browser/skin/zen-icons/duplicate-tab.svg',
   },
+  {
+    label: 'Delete Current Workspace',
+    command: 'cmd_zenCtxDeleteWorkspace',
+    icon: 'chrome://browser/skin/zen-icons/trash.svg',
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

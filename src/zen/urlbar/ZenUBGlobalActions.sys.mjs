@@ -153,6 +153,11 @@ const globalActionsTemplate = [
     command: 'Tools:Addons',
     icon: 'chrome://browser/skin/zen-icons/extension.svg',
   },
+  {
+    label: 'Create New Workspace',
+    command: 'cmd_zenOpenWorkspaceCreation',
+    icon: 'chrome://browser/skin/zen-icons/duplicate-tab.svg',
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

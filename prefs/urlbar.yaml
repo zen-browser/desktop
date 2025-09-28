@@ -53,9 +53,6 @@
 - name: browser.formfill.enable
   value: false
 
-- name: network.IDN_show_punycode
-  value: false
-
 - name: browser.urlbar.suggest.topsites
   value: true
   locked: true

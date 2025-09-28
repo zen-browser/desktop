@@ -54,7 +54,7 @@
   value: false
 
 - name: network.IDN_show_punycode
-  value: true
+  value: false
 
 - name: browser.urlbar.suggest.topsites
   value: true

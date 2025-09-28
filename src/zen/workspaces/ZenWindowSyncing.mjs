@@ -22,7 +22,7 @@
     #makeSureAllTabsHaveIds() {
       const allTabs = gZenWorkspaces.allStoredTabs;
       for (const tab of allTabs) {
-        if (!tab.hasAttribute('zen-sync-id')) {
+        if (!tab.hasAttribute('zen-sync-id') && !tab.hasAttribute('zen-empty-tab')) {
           const tabId = gZenUIManager.generateUuidv4();
           tab.setAttribute('zen-sync-id', tabId);
         }
@@ -33,15 +33,25 @@
       const kEvents = [
         'TabClose',
         'TabOpen',
+        'TabMove',
+
         'TabPinned',
         'TabUnpinned',
+
         'TabAddedToEssentials',
         'TabRemovedFromEssentials',
+
         'TabHide',
         'TabShow',
-        'TabMove',
+
         'ZenTabIconChanged',
         'ZenTabLabelChanged',
+
+        'TabGroupCreate',
+        'TabGroupRemoved',
+        'TabGrouped',
+        'TabUngrouped',
+        'TabGroupMoved',
       ];
       const eventListener = this.#handleEvent.bind(this);
       for (const event of kEvents) {
@@ -105,6 +115,7 @@
           this.#onTabShow(event);
           break;
         case 'TabMove':
+        case 'TabGroupMoved':
           this.#onTabMove(event);
           break;
         case 'ZenTabIconChanged':
@@ -112,6 +123,14 @@
           break;
         case 'ZenTabLabelChanged':
           this.#onTabLabelChanged(event);
+          break;
+        case 'TabGroupCreate':
+          this.#onTabGroupCreate(event);
+          break;
+        case 'TabGroupRemoved':
+        case 'TabGrouped':
+        case 'TabUngrouped':
+          // Tab grouping changes are automatically synced by Firefox
           break;
         default:
           console.warn(`Unhandled event type: ${event.type}`);
@@ -222,10 +241,36 @@
     #onTabMove(event) {
       const targetTab = event.target;
       const tabId = this.#getTabId(targetTab);
-      const tabIndex = targetTab._pPos;
       const tabToMove = this.#getTabWithId(tabId);
+      const workspaceId = targetTab.getAttribute('zen-workspace-id');
+      const isEssential = targetTab.hasAttribute('zen-essential');
       if (tabToMove) {
-        gBrowser.moveTabTo(tabToMove, { tabIndex, forceUngrouped: !!targetTab.group });
+        let tabSibling = targetTab.previousElementSibling;
+        let isFirst = false;
+        if (!tabSibling?.hasAttribute('zen-sync-id')) {
+          isFirst = true;
+        }
+        gBrowser.zenHandleTabMove(tabToMove, () => {
+          if (isFirst) {
+            let container;
+            if (isEssential) {
+              container = gZenWorkspaces.getEssentialsSection(tabToMove);
+            } else {
+              const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
+              container = tabToMove.pinned
+                ? workspaceElement.pinnedTabsContainer
+                : workspaceElement.tabsContainer;
+            }
+            container.insertBefore(tabToMove, container.firstChild);
+          } else {
+            let relativeTab = gZenWorkspaces.allStoredTabs.find((tab) => {
+              return this.#getTabId(tab) === this.#getTabId(tabSibling);
+            });
+            if (relativeTab) {
+              relativeTab.after(tabToMove);
+            }
+          }
+        });
       }
     }
 
@@ -233,23 +278,29 @@
       const targetTab = event.target;
       const isPinned = targetTab.pinned;
       const isEssential = isPinned && targetTab.hasAttribute('zen-essential');
-      const elementIndex = targetTab.elementIndex;
-
+      if (!this.#getTabId(targetTab) && !targetTab.hasAttribute('zen-empty-tab')) {
+        const tabId = gZenUIManager.generateUuidv4();
+        targetTab.setAttribute('zen-sync-id', tabId);
+      }
       const duplicatedTab = gBrowser.addTrustedTab(targetTab.linkedBrowser.currentURI.spec, {
         createLazyBrowser: true,
+        essential: isEssential,
+        pinned: isPinned,
       });
-
-      duplicatedTab.setAttribute('zen-pin-id', targetTab.getAttribute('zen-pin-id'));
-      duplicatedTab.setAttribute('zen-tab-id', targetTab.getAttribute('zen-tab-id'));
-      duplicatedTab.setAttribute('zen-workspace-id', targetTab.getAttribute('zen-workspace-id'));
-
-      if (isEssential) {
-        gZenPinnedTabManager.addToEssentials(duplicatedTab);
-      } else if (isPinned) {
-        gBrowser.pinTab(duplicatedTab);
+      if (!isEssential) {
+        gZenWorkspaces.moveTabToWorkspace(
+          duplicatedTab,
+          targetTab.getAttribute('zen-workspace-id')
+        );
       }
+      duplicatedTab.setAttribute('zen-pin-id', targetTab.getAttribute('zen-pin-id'));
+      duplicatedTab.setAttribute('zen-sync-id', targetTab.getAttribute('zen-sync-id'));
+    }
 
-      gBrowser.moveTabTo(duplicatedTab, { elementIndex, forceUngrouped: !!targetTab.group });
+    #onTabGroupCreate(event) {
+      const targetGroup = event.target;
+      const isSplitView = targetGroup.classList.contains('zen-split-view');
+      const isFolder = targetGroup.isZenFolder;
     }
   }
 

@@ -163,6 +163,14 @@ const globalActionsTemplate = [
     command: 'cmd_zenCtxDeleteWorkspace',
     icon: 'chrome://browser/skin/zen-icons/trash.svg',
   },
+  {
+    label: 'Unsplit Tabs',
+    command: 'cmd_zenSplitViewUnsplit',
+    icon: 'chrome://browser/skin/zen-icons/fullscreen.svg',
+    isAvailable: (window) => {
+      return window.gZenViewSplitter.splitViewActive;
+    },
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

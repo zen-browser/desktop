@@ -2,25 +2,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 {
-  class ZenStartupManager {
+  var gZenStartup = new (class {
     #watermarkIgnoreElements = ['zen-toast-container'];
     #hasInitializedLayout = false;
 
     isReady = false;
 
-    constructor() {
-      gZenWorkspaces.init();
-
-      window.addEventListener(
-        'MozBeforeInitialXULLayout',
-        () => {
-          this.openWatermark();
-          this.#zenInitBrowserLayout();
-          this.#initBrowserBackground();
-          this.#changeSidebarLocation();
-        },
-        { once: true }
-      );
+    async init() {
+      // important: We do this to ensure that some firefox components
+      // are initialized before we start our own initialization.
+      // please, do not remove this line and if you do, make sure to
+      // test the startup process.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      this.openWatermark();
+      this.#initBrowserBackground();
+      this.#changeSidebarLocation();
+      this.#zenInitBrowserLayout();
     }
 
     #initBrowserBackground() {
@@ -60,6 +57,7 @@
           document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
         }
 
+        gZenWorkspaces.init();
         setTimeout(() => {
           gZenUIManager.init();
           this.#checkForWelcomePage();
@@ -225,7 +223,13 @@
         });
       });
     }
-  }
+  })();
 
-  window.gZenStartup = new ZenStartupManager();
+  window.addEventListener(
+    'MozBeforeInitialXULLayout',
+    () => {
+      gZenStartup.init();
+    },
+    { once: true }
+  );
 }

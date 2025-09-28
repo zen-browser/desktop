@@ -51,7 +51,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     await Promise.all([this.promiseDBInitialized, this.promisePinnedInitialized]);
   }
 
-  init() {
+  async init() {
     // Initialize tab selection state
     this._tabSelectionState = {
       inProgress: false,
@@ -118,8 +118,12 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     this.popupOpenHandler = this._popupOpenHandler.bind(this);
 
     window.addEventListener('resize', this.onWindowResize.bind(this));
+    this.addPopupListeners();
 
-    this.afterLoadInit();
+    await this.#waitForPromises();
+    await this._workspaces();
+
+    await this.afterLoadInit();
   }
 
   log(...args) {
@@ -132,13 +136,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (!this._hasInitializedTabsStrip) {
       await this.delayedStartup();
     }
-    this.#initializeWorkspaceTabContextMenus();
+    this._initializeWorkspaceTabContextMenus();
     await this.initializeWorkspaces();
     await this.promiseSectionsInitialized;
 
     // Non UI related initializations
-    this.addPopupListeners();
-
     if (
       Services.prefs.getBoolPref('zen.workspaces.swipe-actions', false) &&
       this.workspaceEnabled &&
@@ -309,7 +311,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async _createDefaultWorkspaceIfNeeded() {
-    await this.#waitForPromises();
     const workspaces = await this._workspaces();
     if (!workspaces.workspaces.length) {
       await this.createAndSaveWorkspace('Space', null, true);
@@ -400,42 +401,46 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   async initializeTabsStripSections() {
     await SessionStore.promiseInitialized;
     await SessionStore.promiseAllWindowsRestored;
-    await gZenSessionStore.promiseInitialized;
     const perifery = document.getElementById('tabbrowser-arrowscrollbox-periphery');
     perifery.setAttribute('hidden', 'true');
-    const tabs = gBrowser.tabContainer.allTabs;
-    const workspaces = await this._workspaces();
-    for (const workspace of workspaces.workspaces) {
-      await this._createWorkspaceTabsSection(workspace, tabs);
-    }
-    if (tabs.length) {
-      const defaultSelectedContainer = this.workspaceElement(this.activeWorkspace)?.querySelector(
-        '.zen-workspace-normal-tabs-section'
-      );
-      const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
-        '.zen-workspace-pinned-tabs-section'
-      );
-      // New profile with no workspaces does not have a default selected container
-      if (defaultSelectedContainer) {
-        for (const tab of tabs) {
-          if (tab.hasAttribute('zen-essential')) {
-            this.getEssentialsSection(tab).appendChild(tab);
-            continue;
-          } else if (tab.pinned) {
-            pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
-            continue;
-          }
-          // before to the last child (perifery)
-          defaultSelectedContainer.insertBefore(tab, defaultSelectedContainer.lastChild);
+    await new Promise((resolve) => {
+      setTimeout(async () => {
+        const tabs = gBrowser.tabContainer.allTabs;
+        const workspaces = await this._workspaces();
+        for (const workspace of workspaces.workspaces) {
+          await this._createWorkspaceTabsSection(workspace, tabs);
         }
-      }
-      gBrowser.tabContainer._invalidateCachedTabs();
-    }
-    perifery.setAttribute('hidden', 'true');
-    this._hasInitializedTabsStrip = true;
-    this.registerPinnedResizeObserver();
-    this._fixIndicatorsNames(workspaces);
-    this._resolveSectionsInitialized();
+        if (tabs.length) {
+          const defaultSelectedContainer = this.workspaceElement(
+            this.activeWorkspace
+          )?.querySelector('.zen-workspace-normal-tabs-section');
+          const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
+            '.zen-workspace-pinned-tabs-section'
+          );
+          // New profile with no workspaces does not have a default selected container
+          if (defaultSelectedContainer) {
+            for (const tab of tabs) {
+              if (tab.hasAttribute('zen-essential')) {
+                this.getEssentialsSection(tab).appendChild(tab);
+                continue;
+              } else if (tab.pinned) {
+                pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
+                continue;
+              }
+              // before to the last child (perifery)
+              defaultSelectedContainer.insertBefore(tab, defaultSelectedContainer.lastChild);
+            }
+          }
+          gBrowser.tabContainer._invalidateCachedTabs();
+        }
+        perifery.setAttribute('hidden', 'true');
+        this._hasInitializedTabsStrip = true;
+        this.registerPinnedResizeObserver();
+        this._fixIndicatorsNames(workspaces);
+        this._resolveSectionsInitialized();
+        resolve();
+      }, 0);
+    });
   }
 
   getEssentialsSection(container = 0) {
@@ -915,6 +920,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   async initializeWorkspaces() {
     let activeWorkspace = await this.getActiveWorkspace();
     this.activeWorkspace = activeWorkspace?.uuid;
+    await gZenSessionStore.promiseInitialized;
     try {
       if (activeWorkspace) {
         window.gZenThemePicker = new nsZenThemePicker();
@@ -2654,7 +2660,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     await this.changeWorkspace(nextWorkspace, { whileScrolling });
   }
 
-  #initializeWorkspaceTabContextMenus() {
+  _initializeWorkspaceTabContextMenus() {
     if (this.privateWindowOrDisabled) {
       const commandsToDisable = [
         'cmd_zenOpenFolderCreation',

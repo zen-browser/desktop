@@ -418,13 +418,13 @@
   overflow-y: auto;
   height: 100%;
 
-  :root[zen-sidebar-expanded='true'] & {
+  :root[zen-workspace-id][zen-sidebar-expanded='true'] & {
     margin-left: calc(-1 * var(--zen-toolbox-padding));
     width: calc(100% + var(--zen-toolbox-padding) * 2);
   }
 }
 
-#pinned-tabs-container {
+:root[zen-workspace-id] #pinned-tabs-container {
   display: none;
 }
 

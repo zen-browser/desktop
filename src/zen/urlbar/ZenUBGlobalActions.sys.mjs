@@ -166,9 +166,26 @@ const globalActionsTemplate = [
   {
     label: 'Unsplit Tabs',
     command: 'cmd_zenSplitViewUnsplit',
-    icon: 'chrome://browser/skin/zen-icons/fullscreen.svg',
+    icon: 'chrome://browser/skin/zen-icons/tab.svg',
     isAvailable: (window) => {
       return window.gZenViewSplitter.splitViewActive;
+    },
+  },
+  {
+    label: 'Unsplit Current Tab',
+    icon: 'chrome://browser/skin/zen-icons/fullscreen.svg',
+    command: (window) => {
+      const container = window.gBrowser.selectedTab.linkedBrowser?.closest(
+        '.browserSidebarContainer'
+      );
+      window.gZenViewSplitter.removeTabFromSplit(container);
+    },
+    isAvailable: (window) => {
+      return (
+        // This command is hidden if split has only 2 tabs, just use 'Unsplit Tabs'
+        window.gZenViewSplitter.splitViewActive &&
+        window.gZenViewSplitter._data[window.gZenViewSplitter.currentView].tabs.length > 2
+      );
     },
   },
 ];

@@ -265,7 +265,12 @@ jobs:
         run: npm run import -- --verbose
 
       - name: Compress
-        run: tar --use-compress-program=zstd -hcf zen.source.tar.zst -C engine .
+        run: |
+          tar \
+            --exclude-vcs \
+            --use-compress-program=zstd \
+            -hcf zen.source.tar.zst \
+            -C engine .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -267,7 +267,7 @@ jobs:
       - name: Compress
         run: |
           tar \
-            --exclude-vcs \
+            --exclude='./.git' \
             --use-compress-program=zstd \
             -hcf zen.source.tar.zst \
             -C engine .

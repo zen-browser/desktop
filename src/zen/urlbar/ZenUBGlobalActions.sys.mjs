@@ -169,6 +169,14 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/trash.svg',
   },
   {
+    label: 'Split Selected Tabs',
+    command: (window) => window.gZenViewSplitter.contextSplitTabs(),
+    icon: 'chrome://browser/skin/zen-icons/manage.svg',
+    isAvailable: (window) => {
+      return window.gZenViewSplitter.contextCanSplitTabs();
+    },
+  },
+  {
     label: 'Unsplit Tabs',
     command: 'cmd_zenSplitViewUnsplit',
     icon: 'chrome://browser/skin/zen-icons/tab.svg',

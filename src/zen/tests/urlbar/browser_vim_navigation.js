@@ -7,7 +7,7 @@ ChromeUtils.defineESModuleGetters(this, {
   UrlbarTestUtils: 'resource://testing-common/UrlbarTestUtils.sys.mjs',
 });
 
-add_task(async function test_Vim_Navigation() {
+add_task(async function test_Vim_Navigation_on() {
   gURLBar.blur();
 
   await SpecialPowers.pushPrefEnv({
@@ -38,4 +38,37 @@ add_task(async function test_Vim_Navigation() {
   EventUtils.synthesizeKey('k', { ctrlKey: true }, window);
   EventUtils.synthesizeKey('VK_UP', {}, window);
   ok(UrlbarTestUtils.getSelectedRowIndex(window) == 1, 'Ctrl+k and up should change the selection');
+});
+
+add_task(async function test_Vim_Navigation_off() {
+  gURLBar.blur();
+
+  await SpecialPowers.pushPrefEnv({
+    set: [['zen.urlbar.vim-navigation.enabled', false]],
+  });
+
+  await SimpleTest.promiseFocus(window);
+  document.getElementById('Browser:OpenLocation').doCommand();
+  await UrlbarTestUtils.promiseAutocompleteResultPopup({
+    window,
+    waitForFocus: SimpleTest.waitForFocus,
+    // This value yields several results in the urlbar
+    value: 'a',
+  });
+
+  // Only down should work to move the selection down
+  EventUtils.synthesizeKey('j', { ctrlKey: true }, window);
+  EventUtils.synthesizeKey('j', { ctrlKey: true }, window);
+  EventUtils.synthesizeKey('VK_DOWN', {}, window);
+  EventUtils.synthesizeKey('VK_DOWN', {}, window);
+
+  ok(
+    UrlbarTestUtils.getSelectedRowIndex(window) == 2,
+    'Only down should change the selection'
+  );
+
+  // Only up should work to move the selection up
+  EventUtils.synthesizeKey('k', { ctrlKey: true }, window);
+  EventUtils.synthesizeKey('VK_UP', {}, window);
+  ok(UrlbarTestUtils.getSelectedRowIndex(window) == 1, 'Only up should change the selection');
 });

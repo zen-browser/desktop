@@ -6,6 +6,11 @@ function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
 
+// Returns true if the current tab is pinned, non-empty, and has been changed
+function isPinnedTabChanged(tab) {
+  return tab.hasAttribute('zen-pinned-changed') && !tab.hasAttribute('zen-empty-tab') && tab.pinned;
+}
+
 const globalActionsTemplate = [
   {
     label: 'Toggle Compact Mode',
@@ -193,11 +198,17 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/reload.svg',
     command: 'cmd_zenPinnedTabReset',
     isAvailable: (window) => {
-      const tab = window.gBrowser.selectedTab;
-      return (
-        // This command only available when the tab is non-empty, pinned, and has been changed
-        tab.hasAttribute('zen-pinned-changed') && !tab.hasAttribute('zen-empty-tab') && tab.pinned
-      );
+      return isPinnedTabChanged(window.gBrowser.selectedTab);
+    },
+  },
+  {
+    label: 'Replace Pinned URL with Current',
+    icon: 'chrome://browser/skin/zen-icons/pin.svg',
+    command: (window) => {
+      window.gZenPinnedTabManager.replacePinnedUrlWithCurrent(window.gBrowser.selectedTab);
+    },
+    isAvailable: (window) => {
+      return isPinnedTabChanged(window.gBrowser.selectedTab);
     },
   },
 ];

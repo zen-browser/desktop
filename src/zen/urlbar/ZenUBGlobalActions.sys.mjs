@@ -229,6 +229,14 @@ const globalActionsTemplate = [
       return isNotEmptyTab(window);
     },
   },
+  {
+    label: 'Copy Current URL Markdown',
+    icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
+    command: 'cmd_zenCopyCurrentURLMarkdown',
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

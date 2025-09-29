@@ -169,11 +169,27 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/trash.svg',
   },
   {
-    label: 'Split Selected Tabs',
-    command: (window) => window.gZenViewSplitter.contextSplitTabs(),
-    icon: 'chrome://browser/skin/zen-icons/manage.svg',
+    label: 'Split View Vertical',
+    command: 'cmd_zenSplitViewVertical',
+    icon: 'chrome://browser/skin/zen-icons/split.svg',
     isAvailable: (window) => {
-      return window.gZenViewSplitter.contextCanSplitTabs();
+      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
+    },
+  },
+  {
+    label: 'Split View Horizontal',
+    command: 'cmd_zenSplitViewHorizontal',
+    icon: 'chrome://browser/skin/zen-icons/split.svg',
+    isAvailable: (window) => {
+      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
+    },
+  },
+  {
+    label: 'Split View Grid',
+    command: 'cmd_zenSplitViewGrid',
+    icon: 'chrome://browser/skin/zen-icons/split.svg',
+    isAvailable: (window) => {
+      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
     },
   },
   {

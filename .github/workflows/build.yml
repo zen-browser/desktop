@@ -264,6 +264,12 @@ jobs:
       - name: Import
         run: npm run import -- --verbose
 
+      - name: Bootstrap
+        run: npm run bootstrap
+
+      - name: Update Language Packs
+        run: python3 ./scripts/update_en_US_packs.py
+
       - name: Compress
         run: |
           tar \

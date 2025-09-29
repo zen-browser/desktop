@@ -219,6 +219,16 @@ const globalActionsTemplate = [
       return isPinnedTabChanged(window.gBrowser.selectedTab);
     },
   },
+  {
+    label: 'Duplicate Tab',
+    icon: 'chrome://browser/skin/zen-icons/duplicate-tab.svg',
+    command: (window) => {
+      window.gBrowser.duplicateTab(window.gBrowser.selectedTab, true);
+    },
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

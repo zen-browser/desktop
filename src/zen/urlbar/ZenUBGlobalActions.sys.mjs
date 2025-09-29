@@ -182,9 +182,21 @@ const globalActionsTemplate = [
     },
     isAvailable: (window) => {
       return (
-        // This command is hidden if split has only 2 tabs, just use 'Unsplit Tabs'
+        // This command is hidden if split view has only 2 tabs; just use 'Unsplit Tabs'
         window.gZenViewSplitter.splitViewActive &&
         window.gZenViewSplitter._data[window.gZenViewSplitter.currentView].tabs.length > 2
+      );
+    },
+  },
+  {
+    label: 'Reset Pinned Tab',
+    icon: 'chrome://browser/skin/zen-icons/reload.svg',
+    command: 'cmd_zenPinnedTabReset',
+    isAvailable: (window) => {
+      const tab = window.gBrowser.selectedTab;
+      return (
+        // This command only available when the tab is non-empty, pinned, and has been changed
+        tab.hasAttribute('zen-pinned-changed') && !tab.hasAttribute('zen-empty-tab') && tab.pinned
       );
     },
   },

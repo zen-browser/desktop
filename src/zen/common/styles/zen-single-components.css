@@ -261,3 +261,82 @@ body > #confetti {
 #customization-container {
   --toolbar-bgcolor: var(--zen-dialog-background);
 }
+
+/* Site Data popup */
+
+#zen-unified-site-data-panel {
+  --panel-padding: 14px;
+  --panel-width: 250px;
+  --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
+  --uei-icon-size: 16px;
+  --arrowpanel-menuitem-border-radius: 10px;
+}
+
+#unified-extensions-messages-container {
+  display: none;
+}
+
+#zen-site-data-addons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .unified-extensions-item-name,
+  .unified-extensions-item-message,
+  .unified-extensions-item-message-hover,
+  .unified-extensions-item-message-hover-menu-button,
+  .unified-extensions-item-menu-button {
+    display: none;
+  }
+
+  #overflowed-extensions-list,
+  #unified-extensions-area,
+  .unified-extensions-list,
+  #zen-site-data-new-addon-button-container {
+    display: contents;
+
+    &:empty {
+      display: none;
+    }
+
+    & > * {
+      background-color: color-mix(in srgb, currentcolor 6%, transparent) !important;
+      width: 48px;
+      height: 32px;
+      margin: 0;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+
+      & .toolbarbutton-badge-stack {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.zen-site-data-section {
+  gap: 8px;
+  padding-bottom: 20px;
+}
+
+.zen-site-data-section-header {
+  font-weight: 600;
+
+  & label {
+    margin: 0;
+  }
+
+  & > label:nth-child(2) {
+    transition: opacity 0.15s ease-in-out;
+    opacity: 0;
+
+    .zen-site-data-section:hover & {
+      opacity: 0.8;
+    }
+  }
+}
+
+#zen-site-data-new-addon-button .toolbarbutton-text {
+  display: none;
+}

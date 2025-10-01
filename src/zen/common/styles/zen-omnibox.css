@@ -224,17 +224,7 @@
     display: none;
   }
 
-  #identity-box:not([pageproxystate='invalid']):not(.notSecure) #identity-icon-box:not([open]) {
-    margin-inline-start: calc(-8px - 2 * var(--urlbar-icon-padding));
-    transform: translateX(100%);
-    opacity: 0;
-
-    :root:not([supress-primary-adjustment]) & {
-      transition: all 0.1s ease;
-    }
-  }
-
-  #identity-permission-box > *:not(#permissions-granted-icon) {
+  #identity-permission-box > *:not(#zen-site-data-icon) {
     visibility: collapse;
   }
 
@@ -242,25 +232,11 @@
     display: none;
   }
 
-  #urlbar[open]
-    :is(#tracking-protection-icon-container, .urlbar-page-action, .identity-box-button):not(
-      [hidden]
-    ):not(#identity-permission-box),
-  #urlbar:hover #identity-icon-box {
-    opacity: 1 !important;
-    margin-inline-start: 0 !important;
-    transform: none !important;
-    display: flex;
-    #urlbar:not(:hover) & {
-      transition: none;
-    }
-  }
-
   #urlbar:not([open]) #userContext-icons {
     margin-inline: 0;
   }
 
-  #urlbar:not([open]) {
+  #urlbar:not([breakout-extend='true']) {
     #identity-box:not([pageproxystate='invalid']) {
       order: 2;
     }

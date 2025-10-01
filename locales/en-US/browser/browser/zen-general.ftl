@@ -64,3 +64,6 @@ zen-icons-picker-svg =
   .label = Icons
 
 urlbar-search-mode-zen_actions = Actions
+zen-site-data-settings = Settings
+
+zen-generic-manage = Manage

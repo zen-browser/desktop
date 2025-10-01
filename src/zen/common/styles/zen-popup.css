@@ -241,12 +241,6 @@ panel {
   margin-inline: 0;
 }
 
-#identity-popup-mainView > toolbarseparator:first-child,
-#unified-extensions-view > toolbarseparator:first-child {
-  display: none;
-  opacity: 0;
-}
-
 menupopup,
 panel {
   box-shadow: none;

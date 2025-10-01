@@ -74,7 +74,8 @@
 }
 
 #appMenu-zoom-controls,
-#PanelUI-zen-gradient-generator-color-add {
+#PanelUI-zen-gradient-generator-color-add,
+#zen-site-data-new-addon-button {
   list-style-image: url('plus.svg') !important;
 }
 
@@ -466,8 +467,14 @@
 }
 
 /* permissions */
-#permissions-granted-icon {
-  list-style-image: url('permissions.svg') !important;
+#identity-permission-box,
+#identity-icon-box {
+  display: none !important;
+}
+
+#zen-site-data-icon {
+  list-style-image: url('permissions.svg');
+  -moz-context-properties: fill, fill-opacity;
 }
 
 .geo-icon {

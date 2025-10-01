@@ -15,7 +15,11 @@
     observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
       const updateState = () => {
         const exists = descendantSelectors.some(({ selector }) => {
-          return element.querySelector(selector);
+          let selected = element.querySelector(selector);
+          if (selected?.tagName?.toLowerCase() === 'menu') {
+            return null;
+          }
+          return selected;
         });
         const { exists: shouldExist = true } = descendantSelectors;
         if (exists === shouldExist) {

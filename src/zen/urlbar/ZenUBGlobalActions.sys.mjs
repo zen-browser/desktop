@@ -96,6 +96,11 @@ const globalActionsTemplate = [
     },
   },
   {
+    label: 'Reopen Closed Tab',
+    command: 'History:UndoCloseTab',
+    icon: 'chrome://browser/skin/zen-icons/open.svg',
+  },
+  {
     label: 'Reload Tab',
     command: 'Browser:Reload',
     icon: 'chrome://browser/skin/zen-icons/reload.svg',

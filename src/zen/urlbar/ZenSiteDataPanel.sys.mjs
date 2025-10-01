@@ -19,11 +19,19 @@ export class nsZenSiteDataPanel {
       </box>
     `);
     this.anchor = button.querySelector('#zen-site-data-icon');
-    this.anchor.addEventListener('click', this);
     this.document.getElementById('identity-icon-box').after(button);
 
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
+
+    this.#initEventListeners();
+  }
+
+  #initEventListeners() {
+    this.anchor.addEventListener('click', this);
+    this.document
+      .getElementById('zen-site-data-new-addon-button')
+      .addEventListener('command', this);
   }
 
   show(event) {
@@ -191,11 +199,24 @@ export class nsZenSiteDataPanel {
     return container;
   }
 
+  #onCommandEvent(event) {
+    const id = event.target.id;
+    switch (id) {
+      case 'zen-site-data-new-addon-button':
+        const { BrowserAddonUI } = this.window;
+        BrowserAddonUI.openAddonsMgr('addons://list/extension');
+        break;
+    }
+  }
+
   handleEvent(event) {
     const type = event.type;
     switch (type) {
       case 'click':
         this.show(event);
+        break;
+      case 'command':
+        this.#onCommandEvent(event);
         break;
     }
   }

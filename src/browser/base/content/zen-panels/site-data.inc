@@ -6,8 +6,7 @@
         role="group"
         type="arrow"
         noautofocus="true"
-        position="bottomright topright"
-        hidden="true">
+        position="bottomright topright">
   <panelmultiview mainViewId="unified-extensions-view">
 # We'll keep the view with this name/id in order to prevent
 # any sort of future issues we may have if firefox decides

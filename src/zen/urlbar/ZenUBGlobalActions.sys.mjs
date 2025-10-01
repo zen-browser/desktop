@@ -38,6 +38,14 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
   },
   {
+    label: 'Copy Current URL Markdown',
+    icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
+    command: 'cmd_zenCopyCurrentURLMarkdown',
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
+  {
     label: 'Settings',
     command: (window) => window.openPreferences(),
     icon: 'chrome://browser/skin/zen-icons/settings.svg',
@@ -251,12 +259,15 @@ const globalActionsTemplate = [
     },
   },
   {
-    label: 'Copy Current URL Markdown',
-    icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
-    command: 'cmd_zenCopyCurrentURLMarkdown',
-    isAvailable: (window) => {
-      return isNotEmptyTab(window);
-    },
+    label: 'Bookmark Tab',
+    icon: 'chrome://browser/skin/zen-icons/bookmark-hollow.svg',
+    command: 'Browser:AddBookmarkAs',
+    isAvailable: (window) => isNotEmptyTab(window),
+  },
+  {
+    label: 'Search Bookmarks',
+    icon: 'chrome://browser/skin/zen-icons/bookmark-star-on-tray.svg',
+    command: 'Browser:SearchBookmarks',
   },
 ];
 

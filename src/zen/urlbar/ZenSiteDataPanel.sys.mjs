@@ -18,15 +18,20 @@ export class nsZenSiteDataPanel {
         <image id="zen-site-data-icon"/>
       </box>
     `);
+    this.anchor = button.querySelector('#zen-site-data-icon');
+    this.anchor.addEventListener('click', this);
     this.document.getElementById('identity-icon-box').after(button);
-    button.addEventListener('command', this);
 
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
   }
 
-  show() {
+  show(event) {
     this.#preparePanel();
+
+    this.window.PanelMultiView.openPopup(this.panel, this.anchor, {
+      triggerEvent: event,
+    });
   }
 
   #preparePanel() {
@@ -150,13 +155,47 @@ export class nsZenSiteDataPanel {
     section.hidden = list.childElementCount == 0;
   }
 
-  #createPermissionItem(id, key, permission) {}
+  #createPermissionItem(id, key, permission) {
+    const { SitePermissions } = this.window;
+
+    // Create a permission item for the site data panel.
+    let container = document.createXULElement('hbox');
+    const idNoSuffix = permission.id;
+    container.classList.add(
+      'permission-popup-permission-item',
+      `permission-popup-permission-item-${idNoSuffix}`
+    );
+    container.setAttribute('align', 'center');
+    container.setAttribute('role', 'group');
+
+    let img = document.createXULElement('image');
+    img.classList.add('permission-popup-permission-icon', idNoSuffix + '-icon');
+    if (
+      permission.state == SitePermissions.BLOCK ||
+      permission.state == SitePermissions.AUTOPLAY_BLOCKED_ALL
+    ) {
+      img.classList.add('blocked-permission-icon');
+    }
+
+    let nameLabel = document.createXULElement('label');
+    nameLabel.setAttribute('flex', '1');
+    nameLabel.setAttribute('class', 'permission-popup-permission-label');
+    let label = SitePermissions.getPermissionLabel(permission.id);
+    if (label === null) {
+      return null;
+    }
+    nameLabel.textContent = label;
+
+    container.appendChild(img);
+    container.appendChild(nameLabel);
+    return container;
+  }
 
   handleEvent(event) {
     const type = event.type;
     switch (type) {
-      case 'command':
-        this.show();
+      case 'click':
+        this.show(event);
         break;
     }
   }

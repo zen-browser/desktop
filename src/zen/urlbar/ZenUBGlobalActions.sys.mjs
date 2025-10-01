@@ -11,6 +11,11 @@ function isPinnedTabChanged(tab) {
   return tab.hasAttribute('zen-pinned-changed') && !tab.hasAttribute('zen-empty-tab') && tab.pinned;
 }
 
+// Returns true if the user has enabled advanced quick actions
+function isAdvancedQuickActionsEnabled() {
+  return Services.prefs.getBoolPref('zen.urlbar.suggestions.quick-actions.advanced', false);
+}
+
 const globalActionsTemplate = [
   {
     label: 'Toggle Compact Mode',
@@ -42,7 +47,7 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
     command: 'cmd_zenCopyCurrentURLMarkdown',
     isAvailable: (window) => {
-      return isNotEmptyTab(window);
+      return isAdvancedQuickActionsEnabled() && isNotEmptyTab(window);
     },
   },
   {
@@ -175,18 +180,24 @@ const globalActionsTemplate = [
     label: 'Create New Workspace',
     command: 'cmd_zenOpenWorkspaceCreation',
     icon: 'chrome://browser/skin/zen-icons/duplicate-tab.svg',
+    isAvailable: () => isAdvancedQuickActionsEnabled(),
   },
   {
     label: 'Delete Current Workspace',
     command: 'cmd_zenCtxDeleteWorkspace',
     icon: 'chrome://browser/skin/zen-icons/trash.svg',
+    isAvailable: () => isAdvancedQuickActionsEnabled(),
   },
   {
     label: 'Split View Vertical',
     command: 'cmd_zenSplitViewVertical',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
     isAvailable: (window) => {
-      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
+      return (
+        isAdvancedQuickActionsEnabled() &&
+        window.gBrowser.tabs.length > 1 &&
+        !(window.gZenViewSplitter.currentView >= 0)
+      );
     },
   },
   {
@@ -194,7 +205,11 @@ const globalActionsTemplate = [
     command: 'cmd_zenSplitViewHorizontal',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
     isAvailable: (window) => {
-      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
+      return (
+        isAdvancedQuickActionsEnabled() &&
+        window.gBrowser.tabs.length > 1 &&
+        !(window.gZenViewSplitter.currentView >= 0)
+      );
     },
   },
   {
@@ -202,7 +217,11 @@ const globalActionsTemplate = [
     command: 'cmd_zenSplitViewGrid',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
     isAvailable: (window) => {
-      return window.gBrowser.tabs.length > 1 && !(window.gZenViewSplitter.currentView >= 0);
+      return (
+        isAdvancedQuickActionsEnabled() &&
+        window.gBrowser.tabs.length > 1 &&
+        !(window.gZenViewSplitter.currentView >= 0)
+      );
     },
   },
   {
@@ -210,7 +229,7 @@ const globalActionsTemplate = [
     command: 'cmd_zenSplitViewUnsplit',
     icon: 'chrome://browser/skin/zen-icons/tab.svg',
     isAvailable: (window) => {
-      return window.gZenViewSplitter.splitViewActive;
+      return isAdvancedQuickActionsEnabled() && window.gZenViewSplitter.splitViewActive;
     },
   },
   {
@@ -225,6 +244,7 @@ const globalActionsTemplate = [
     isAvailable: (window) => {
       return (
         // This command is hidden if split view has only 2 tabs; just use 'Unsplit Tabs'
+        isAdvancedQuickActionsEnabled() &&
         window.gZenViewSplitter.splitViewActive &&
         window.gZenViewSplitter._data[window.gZenViewSplitter.currentView].tabs.length > 2
       );
@@ -268,6 +288,7 @@ const globalActionsTemplate = [
     label: 'Search Bookmarks',
     icon: 'chrome://browser/skin/zen-icons/bookmark-star-on-tray.svg',
     command: 'Browser:SearchBookmarks',
+    isAvailable: () => isAdvancedQuickActionsEnabled(),
   },
 ];
 

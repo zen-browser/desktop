@@ -115,6 +115,7 @@ var gZenCompactModeManager = {
         // We wont do anything with it anyway, so we remove it
         delete this._wasInCompactMode;
       }
+      delete this._ignoreNextHover;
       // We dont want the user to be able to spam the button
       return;
     }
@@ -308,6 +309,9 @@ var gZenCompactModeManager = {
       if (canAnimate) {
         this.sidebar.setAttribute('animate', 'true');
       }
+      if (this._ignoreNextHover) {
+        this.sidebar.removeAttribute('zen-has-hover');
+      }
       this.sidebar.style.removeProperty('margin-right');
       this.sidebar.style.removeProperty('margin-left');
       this.sidebar.style.removeProperty('transform');
@@ -335,20 +339,19 @@ var gZenCompactModeManager = {
           } else {
             sidebarWidth -= elementSeparation;
           }
-          this.sidebar.style.marginRight = '0px';
-          this.sidebar.style.marginLeft = '0px';
+          this.sidebar.removeAttribute('zen-has-hover');
           gZenUIManager.motion
             .animate(
               this.sidebar,
               {
-                marginRight: this.sidebarIsOnRight ? `-${sidebarWidth}px` : 0,
-                marginLeft: this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`,
+                marginRight: [0, this.sidebarIsOnRight ? `-${sidebarWidth}px` : 0],
+                marginLeft: [0, this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`],
               },
               {
                 ease: 'easeIn',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.15,
+                duration: 0.12,
               }
             )
             .then(() => {
@@ -365,6 +368,12 @@ var gZenCompactModeManager = {
                 this._ignoreNextResize = true;
 
                 setTimeout(() => {
+                  if (this._ignoreNextHover) {
+                    setTimeout(() => {
+                      delete this._ignoreNextHover;
+                    });
+                  }
+
                   this.sidebar.style.removeProperty('margin-right');
                   this.sidebar.style.removeProperty('margin-left');
                   this.sidebar.style.removeProperty('transition');
@@ -375,6 +384,7 @@ var gZenCompactModeManager = {
                   titlebar.style.removeProperty('transition');
 
                   gURLBar.textbox.style.removeProperty('visibility');
+
                   resolve();
                 });
               });
@@ -399,7 +409,7 @@ var gZenCompactModeManager = {
                 ease: 'easeOut',
                 type: 'spring',
                 bounce: 0,
-                duration: 0.15,
+                duration: 0.12,
               }
             )
             .then(() => {
@@ -448,7 +458,9 @@ var gZenCompactModeManager = {
     }
   },
 
-  toggle() {
+  toggle(ignoreHover = false) {
+    // Only ignore the next hover when we are enabling compact mode
+    this._ignoreNextHover = ignoreHover && !this.preference;
     return (this.preference = !this.preference);
   },
 
@@ -551,7 +563,8 @@ var gZenCompactModeManager = {
           window.requestAnimationFrame(() => {
             if (
               document.documentElement.getAttribute('supress-primary-adjustment') === 'true' ||
-              this._hasHoveredUrlbar
+              this._hasHoveredUrlbar ||
+              this._ignoreNextHover
             ) {
               return;
             }
@@ -596,7 +609,8 @@ var gZenCompactModeManager = {
             event.explicitOriginalTarget.closest('#urlbar[zen-floating-urlbar]') ||
             (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
-            this._hasHoveredUrlbar
+            this._hasHoveredUrlbar ||
+            this._ignoreNextHover
           ) {
             return;
           }
@@ -699,6 +713,9 @@ var gZenCompactModeManager = {
   },
 
   isSidebarPotentiallyOpen() {
+    if (this._ignoreNextHover) {
+      this.sidebar.removeAttribute('zen-has-hover');
+    }
     return (
       this.sidebar.hasAttribute('zen-user-show') ||
       this.sidebar.hasAttribute('zen-has-hover') ||

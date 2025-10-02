@@ -29,6 +29,9 @@ document.addEventListener(
           case 'cmd_zenCompactModeShowToolbar':
             gZenCompactModeManager.toggleToolbar();
             break;
+          case 'cmd_toggleCompactModeIgnoreHover':
+            gZenCompactModeManager.toggle(true);
+            break;
           case 'cmd_zenWorkspaceForward':
             gZenWorkspaces.changeWorkspaceShortcut();
             break;

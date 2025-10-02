@@ -16,11 +16,17 @@
                 mainview-with-header="true">
       <hbox id="zen-site-data-header">
         <toolbarbutton id="zen-site-data-header-share"
-                        data-l10n-id="zen-site-data-share" />
+                        data-l10n-id="zen-site-data-share"
+                        flex="1" />
         <toolbarbutton id="zen-site-data-header-reader-mode"
-                        command="View:ReaderView" />
+                        command="View:ReaderView"
+                        flex="1" />
         <toolbarbutton id="zen-site-data-header-screenshot"
-                        command="Browser:Screenshot" />
+                        command="Browser:Screenshot"
+                        flex="1" />
+        <toolbarbutton id="zen-site-data-header-bookmark"
+                        command="Browser:AddBookmarkAs"
+                        flex="1" />
       </hbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">

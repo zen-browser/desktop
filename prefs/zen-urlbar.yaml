@@ -8,6 +8,9 @@
 - name: zen.urlbar.show-protections-icon
   value: false
 
+- name: zen.urlbar.show-contextual-id
+  value: false
+
 - name: zen.urlbar.behavior
   value: floating-on-type
 

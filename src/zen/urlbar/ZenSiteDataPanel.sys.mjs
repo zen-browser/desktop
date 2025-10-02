@@ -38,13 +38,19 @@ export class nsZenSiteDataPanel {
 
   #initEventListeners() {
     this.panel.addEventListener('popupshowing', this);
-    this.document
-      .getElementById('zen-site-data-new-addon-button')
-      .addEventListener('command', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
-    this.document.getElementById('zen-site-data-security-info').addEventListener('command', this);
-    this.document.getElementById('zen-site-data-actions').addEventListener('command', this);
+    const kCommandIDs = [
+      'zen-site-data-header-share',
+      'zen-site-data-header-bookmark',
+      'zen-site-data-security-info',
+      'zen-site-data-actions',
+      'zen-site-data-new-addon-button',
+    ];
+
+    for (let id of kCommandIDs) {
+      this.document.getElementById(id).addEventListener('command', this);
+    }
 
     this.#initContextMenuEventListener();
   }
@@ -71,6 +77,47 @@ export class nsZenSiteDataPanel {
   #preparePanel() {
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
+    this.#setSiteHeader();
+  }
+
+  #setSiteHeader() {
+    const { gReaderMode } = this.window;
+
+    {
+      const button = this.document.getElementById('zen-site-data-header-reader-mode');
+      const urlbarButton = this.window.document.getElementById('reader-mode-button');
+      const isActive = gReaderMode?.isActive;
+      const isVisible = (urlbarButton && !urlbarButton.hidden) || isActive;
+
+      button.disabled = !isVisible;
+      if (isActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      this.document.l10n.setAttributes(button, urlbarButton?.getAttribute('data-l10n-id'));
+    }
+    {
+      const button = this.document.getElementById('zen-site-data-header-bookmark');
+      const isPageBookmarked = this.window.BookmarkingUI.star?.hasAttribute('starred');
+
+      if (isPageBookmarked) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+    }
+    {
+      const button = this.document.getElementById('zen-site-data-header-share');
+      if (
+        this.window.gBrowser.currentURI.schemeIs('http') ||
+        this.window.gBrowser.currentURI.schemeIs('https')
+      ) {
+        button.removeAttribute('disabled');
+      } else {
+        button.setAttribute('disabled', 'true');
+      }
+    }
   }
 
   #setSiteSecurityInfo() {
@@ -139,9 +186,7 @@ export class nsZenSiteDataPanel {
 
     if (this._sharingState?.geo) {
       let geoPermission = permissions.find((perm) => perm.id === 'geo');
-      if (geoPermission) {
-        geoPermission.sharingState = true;
-      } else {
+      if (!geoPermission) {
         permissions.push({
           id: 'geo',
           state: SitePermissions.ALLOW,
@@ -153,9 +198,7 @@ export class nsZenSiteDataPanel {
 
     if (this._sharingState?.xr) {
       let xrPermission = permissions.find((perm) => perm.id === 'xr');
-      if (xrPermission) {
-        xrPermission.sharingState = true;
-      } else {
+      if (!xrPermission) {
         permissions.push({
           id: 'xr',
           state: SitePermissions.ALLOW,
@@ -178,7 +221,6 @@ export class nsZenSiteDataPanel {
               continue;
             }
             found = true;
-            permission.sharingState = webrtcState[id];
           }
           if (!found) {
             // If the ALLOW permission item we were looking for doesn't exist,
@@ -311,6 +353,10 @@ export class nsZenSiteDataPanel {
           false,
           this.window.event
         );
+        break;
+      }
+      case 'zen-site-data-header-bookmark': {
+        this.window.BookmarkingUI.onStarCommand(event);
         break;
       }
     }

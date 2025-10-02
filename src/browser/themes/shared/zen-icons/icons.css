@@ -54,7 +54,8 @@
 }
 
 #sidebar-button:-moz-locale-dir(ltr):not([positionend]),
-#sidebar-button:-moz-locale-dir(rtl)[positionend] {
+#sidebar-button:-moz-locale-dir(rtl)[positionend],
+#zen-toggle-compact-mode {
   list-style-image: url('chrome://browser/skin/sidebars.svg') !important;
 }
 
@@ -265,6 +266,7 @@
 }
 
 #bookmarks-menu-button,
+#zen-site-data-header-bookmark,
 #appMenu-bookmarks-button,
 #sidebar-switcher-bookmarks,
 #appMenu-library-bookmarks-button,
@@ -409,7 +411,8 @@
   list-style-image: url('customize.svg') !important;
 }
 
-#zen-copy-current-url-button {
+#zen-copy-current-url-button,
+#zen-site-data-header-share {
   list-style-image: url('share.svg');
 }
 
@@ -469,14 +472,19 @@
 
 /* permissions */
 #identity-permission-box,
-#identity-icon-box {
+#identity-box:not([pageproxystate='invalid']) #identity-icon-box,
+#identity-box[pageproxystate='invalid'] #zen-site-data-icon-button {
   display: none !important;
 }
 
-#zen-site-data-icon-button image {
-  list-style-image: url('permissions.svg');
-  -moz-context-properties: fill, fill-opacity;
-  pointer-events: none;
+#zen-site-data-icon-button {
+  padding: 0 6px;
+
+  & image {
+    list-style-image: url('permissions.svg');
+    -moz-context-properties: fill, fill-opacity;
+    pointer-events: none;
+  }
 }
 
 .geo-icon {
@@ -504,7 +512,8 @@
   list-style-image: url('desktop-notification-blocked.svg') !important;
 }
 
-.camera-icon {
+.camera-icon,
+#zen-site-data-header-screenshot {
   list-style-image: url('camera.svg') !important;
 }
 
@@ -608,7 +617,8 @@
   background-image: url('stop-to-reload.svg') !important;
 }
 
-#reader-mode-button > .urlbar-icon {
+#reader-mode-button > .urlbar-icon,
+#zen-site-data-header-reader-mode {
   list-style-image: url('reader-mode.svg') !important;
 }
 

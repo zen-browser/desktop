@@ -661,7 +661,7 @@ var gZenCompactModeManager = {
           requestAnimationFrame(() => {
             delete this._hasHoveredUrlbar;
           });
-        }, 0);
+        }, 10);
       }, 0);
     });
   },

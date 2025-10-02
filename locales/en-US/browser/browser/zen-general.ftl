@@ -67,3 +67,8 @@ urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = Settings
 
 zen-generic-manage = Manage
+zen-generic-more = More
+
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Allowed
+zen-site-data-setting-block = Blocked

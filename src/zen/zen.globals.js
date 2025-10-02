@@ -7,6 +7,8 @@ export default [
   'nsZenDOMOperatedFeature',
   'nsZenPreloadedFeature',
 
+  'nsZenSiteDataPanel',
+
   'ZenThemeModifier',
   'ZenHasPolyfill',
 

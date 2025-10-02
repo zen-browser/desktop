@@ -14,12 +14,13 @@ export class nsZenSiteDataPanel {
   #init() {
     // Add a new button to the urlbar popup
     const button = this.window.MozXULElement.parseXULToFragment(`
-      <box id="zen-site-data-icon" role="button" align="center" class="identity-box-button">
+      <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button">
         <image id="zen-site-data-icon"/>
       </box>
     `);
-    this.anchor = button.querySelector('#zen-site-data-icon');
+    this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').after(button);
+    this.window.gUnifiedExtensions._button = this.anchor;
 
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
@@ -28,18 +29,12 @@ export class nsZenSiteDataPanel {
   }
 
   #initEventListeners() {
-    this.anchor.addEventListener('click', this);
+    this.panel.addEventListener('popupshowing', this);
     this.document
       .getElementById('zen-site-data-new-addon-button')
       .addEventListener('command', this);
-  }
-
-  show(event) {
-    this.#preparePanel();
-
-    this.window.PanelMultiView.openPopup(this.panel, this.anchor, {
-      triggerEvent: event,
-    });
+    this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
+    this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
   }
 
   #preparePanel() {
@@ -144,13 +139,17 @@ export class nsZenSiteDataPanel {
     }
 
     list.innerHTML = '';
-    let totalBlockedPopups = gBrowser.selectedBrowser.popupBlocker.getBlockedPopupCount();
     for (let permission of permissions) {
       let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
 
       if (id == 'storage-access') {
         // Ignore storage access permissions here, they are made visible inside
         // the Content Blocking UI.
+        continue;
+      }
+
+      if (permission.state == SitePermissions.PROMPT) {
+        // We don't display "ask" permissions in the site data panel.
         continue;
       }
 
@@ -163,11 +162,25 @@ export class nsZenSiteDataPanel {
     section.hidden = list.childElementCount == 0;
   }
 
+  #getPermissionStateLabelId(permission) {
+    const { SitePermissions } = this.window;
+    switch (permission.state) {
+      // There should only be these types being displayed in the panel.
+      case SitePermissions.ALLOW:
+        return 'zen-site-data-setting-allow';
+      case SitePermissions.BLOCK:
+      case SitePermissions.AUTOPLAY_BLOCKED_ALL:
+        return 'zen-site-data-setting-block';
+      default:
+        return null;
+    }
+  }
+
   #createPermissionItem(id, key, permission) {
     const { SitePermissions } = this.window;
 
     // Create a permission item for the site data panel.
-    let container = document.createXULElement('hbox');
+    let container = this.document.createXULElement('hbox');
     const idNoSuffix = permission.id;
     container.classList.add(
       'permission-popup-permission-item',
@@ -176,16 +189,19 @@ export class nsZenSiteDataPanel {
     container.setAttribute('align', 'center');
     container.setAttribute('role', 'group');
 
-    let img = document.createXULElement('image');
-    img.classList.add('permission-popup-permission-icon', idNoSuffix + '-icon');
-    if (
-      permission.state == SitePermissions.BLOCK ||
-      permission.state == SitePermissions.AUTOPLAY_BLOCKED_ALL
-    ) {
-      img.classList.add('blocked-permission-icon');
-    }
+    container.setAttribute('state', permission.state == SitePermissions.ALLOW ? 'allow' : 'block');
 
-    let nameLabel = document.createXULElement('label');
+    let img = this.document.createXULElement('toolbarbutton');
+    img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+
+    let labelContainer = this.document.createXULElement('vbox');
+    labelContainer.setAttribute('flex', '1');
+    labelContainer.setAttribute('align', 'start');
+    labelContainer.classList.add('permission-popup-permission-label-container');
+    labelContainer._permission = permission;
+    labelContainer.addEventListener('click', this);
+
+    let nameLabel = this.document.createXULElement('label');
     nameLabel.setAttribute('flex', '1');
     nameLabel.setAttribute('class', 'permission-popup-permission-label');
     let label = SitePermissions.getPermissionLabel(permission.id);
@@ -193,19 +209,77 @@ export class nsZenSiteDataPanel {
       return null;
     }
     nameLabel.textContent = label;
+    labelContainer.appendChild(nameLabel);
+
+    let stateLabel = this.document.createXULElement('label');
+    stateLabel.setAttribute('class', 'zen-permission-popup-permission-state-label');
+    stateLabel.setAttribute('data-l10n-id', this.#getPermissionStateLabelId(permission));
+    labelContainer.appendChild(stateLabel);
 
     container.appendChild(img);
-    container.appendChild(nameLabel);
+    container.appendChild(labelContainer);
+
     return container;
   }
 
   #onCommandEvent(event) {
     const id = event.target.id;
     switch (id) {
-      case 'zen-site-data-new-addon-button':
+      case 'zen-site-data-new-addon-button': {
+        let amoUrl = Services.urlFormatter.formatURLPref('extensions.getAddons.link.url');
+        const { switchToTabHavingURI } = this.window;
+        switchToTabHavingURI(amoUrl, true);
+        break;
+      }
+    }
+  }
+
+  #onPermissionClick(label) {
+    const { SitePermissions, gBrowser } = this.window;
+    const permission = label._permission;
+
+    let newState;
+    switch (permission.state) {
+      case SitePermissions.ALLOW:
+        newState = SitePermissions.BLOCK;
+        break;
+      case SitePermissions.BLOCK:
+      case SitePermissions.AUTOPLAY_BLOCKED_ALL:
+        newState = SitePermissions.ALLOW;
+        break;
+      default:
+        return;
+    }
+
+    SitePermissions.setForPrincipal(gBrowser.contentPrincipal, permission.id, newState);
+
+    label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
+    label
+      .querySelector('.zen-permission-popup-permission-state-label')
+      .setAttribute('data-l10n-id', this.#getPermissionStateLabelId({ state: newState }));
+    label._permission.state = newState;
+  }
+
+  #onClickEvent(event) {
+    const id = event.target.id;
+    switch (id) {
+      case 'zen-site-data-manage-addons': {
         const { BrowserAddonUI } = this.window;
         BrowserAddonUI.openAddonsMgr('addons://list/extension');
         break;
+      }
+      case 'zen-site-data-settings-more': {
+        const { BrowserCommands } = this.window;
+        BrowserCommands.pageInfo(null, 'permTab');
+        break;
+      }
+      default: {
+        const label = event.target.closest('.permission-popup-permission-label-container');
+        if (label?._permission) {
+          this.#onPermissionClick(label);
+        }
+        break;
+      }
     }
   }
 
@@ -213,10 +287,13 @@ export class nsZenSiteDataPanel {
     const type = event.type;
     switch (type) {
       case 'click':
-        this.show(event);
+        this.#onClickEvent(event);
         break;
       case 'command':
         this.#onCommandEvent(event);
+        break;
+      case 'popupshowing':
+        this.#preparePanel();
         break;
     }
   }

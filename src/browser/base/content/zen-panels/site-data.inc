@@ -17,7 +17,7 @@
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="unified-extensions-header-title" flex="1" />
-          <label data-l10n-id="zen-generic-manage" />
+          <label data-l10n-id="zen-generic-manage" id="zen-site-data-manage-addons" />
         </hbox>
         <hbox class="panel-subview-body" context="unified-extensions-context-menu" id="zen-site-data-addons">
           <html:div id="unified-extensions-messages-container">
@@ -53,11 +53,11 @@
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="zen-site-data-settings" flex="1" />
-          <label data-l10n-id="zen-generic-manage" />
+          <label data-l10n-id="zen-generic-more" id="zen-site-data-settings-more" />
         </hbox>
-        <vstack id="zen-site-data-settings-list">
+        <vbox id="zen-site-data-settings-list">
           <!-- settings will be inserted here -->
-        </vstack>
+        </vbox>
       </vbox>
     </panelview>
   </panelmultiview>

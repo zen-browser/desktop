@@ -266,7 +266,7 @@ body > #confetti {
 
 #zen-unified-site-data-panel {
   --panel-padding: 0px;
-  --panel-width: 250px;
+  --panel-width: 228px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
   --uei-icon-size: 14px;
   --arrowpanel-menuitem-border-radius: 10px;
@@ -279,7 +279,7 @@ body > #confetti {
 #zen-site-data-addons {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   overflow: visible;
 
   .unified-extensions-item-name,
@@ -302,8 +302,8 @@ body > #confetti {
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 42px;
-      height: 28px;
+      width: 46px;
+      height: 34px;
       margin: 0;
       justify-content: center;
       align-items: center;
@@ -311,6 +311,10 @@ body > #confetti {
       transition:
         background-color 0.1s ease-in-out,
         transform 0.12s ease-in-out;
+
+      & toolbarbutton {
+        background: transparent !important;
+      }
 
       & .toolbarbutton-badge-stack {
         margin: 0;
@@ -346,6 +350,7 @@ body > #confetti {
     font-size: smaller;
     transition: opacity 0.15s ease-in-out;
     opacity: 0;
+    padding: 0px 4px;
 
     .zen-site-data-section:hover & {
       opacity: 0.8;
@@ -355,4 +360,72 @@ body > #confetti {
 
 #zen-site-data-new-addon-button .toolbarbutton-text {
   display: none;
+}
+
+.permission-popup-permission-item {
+  gap: 6px;
+}
+
+.permission-popup-permission-label {
+  margin: 0px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.permission-popup-permission-icon {
+  fill: var(--button-primary-color);
+  padding: 8px;
+  width: 34px;
+  height: 34px;
+  overflow: visible;
+  position: relative;
+  appearance: none;
+
+  & label {
+    display: none;
+  }
+
+  & image {
+    -moz-context-properties: fill;
+    z-index: 1;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 99px;
+    width: 32px;
+    height: 32px;
+    background: var(--button-primary-bgcolor);
+    opacity: 0.6;
+    transition:
+      transform 0.12s ease-in-out,
+      opacity 0.12s ease-in-out;
+  }
+
+  .permission-popup-permission-item:hover &::before {
+    transform: scale(1.05);
+  }
+
+  .permission-popup-permission-item:active:hover &::before {
+    transform: scale(0.95);
+  }
+
+  .permission-popup-permission-item[state='allow'] &::before {
+    opacity: 1;
+  }
+}
+
+.zen-permission-popup-permission-state-label {
+  opacity: 0.8;
+  font-size: smaller;
+  font-weight: 400;
+  margin: 0;
+}
+
+#identity-box {
+  opacity: 0.6;
 }

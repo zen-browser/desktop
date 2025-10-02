@@ -120,6 +120,20 @@
       border-radius: 10px !important;
     }
   }
+
+  .identity-box-button {
+    opacity: 0;
+    transition:
+      opacity 0.2s,
+      visibility 0.2s;
+    visibility: collapse;
+
+    #navigator-toolbox:hover &,
+    &[open] {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
 }
 
 .urlbar-page-action,

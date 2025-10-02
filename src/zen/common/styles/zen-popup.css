@@ -31,7 +31,6 @@
   --uc-autocomplete-panel-separator-margin-vertical: 4px;
 
   --uc-permission-itemcontainer-padding-block: 8px;
-  --uc-permission-item-margin-block: 4px;
   --uc-permission-item-padding-inline: 16px;
   --zen-panel-separator-width: 1px;
 }
@@ -228,7 +227,8 @@ panel {
 
 .permission-popup-permission-item,
 #permission-popup-storage-access-permission-list-header {
-  padding-block: var(--uc-permission-item-margin-block);
+  padding-block: 4px;
+  margin-block: 0px;
 }
 
 #editBookmarkPanel > #editBookmarkHeaderSeparator,

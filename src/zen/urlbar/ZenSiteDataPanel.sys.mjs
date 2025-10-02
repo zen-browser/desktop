@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export class nsZenSiteDataPanel {
+  #iconMap = {
+    install: 'extension',
+  };
+
   constructor(window) {
     this.window = window;
     this.document = window.document;
@@ -14,13 +18,17 @@ export class nsZenSiteDataPanel {
   #init() {
     // Add a new button to the urlbar popup
     const button = this.window.MozXULElement.parseXULToFragment(`
-      <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button">
-        <image id="zen-site-data-icon"/>
+      <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button" delegatesanchor="true">
+        <image />
       </box>
     `);
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').after(button);
     this.window.gUnifiedExtensions._button = this.anchor;
+
+    this.document
+      .getElementById('nav-bar')
+      .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
 
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
@@ -35,10 +43,59 @@ export class nsZenSiteDataPanel {
       .addEventListener('command', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
+    this.document.getElementById('zen-site-data-security-info').addEventListener('command', this);
+    this.document.getElementById('zen-site-data-actions').addEventListener('command', this);
+
+    this.#initContextMenuEventListener();
+  }
+
+  #initContextMenuEventListener() {
+    const kCommands = {
+      context_zenClearSiteData: (event) => {
+        this.window.gIdentityHandler.clearSiteData(event);
+      },
+      context_zenOpenGetAddons: () => {
+        this.#openGetAddons();
+      },
+      context_zenOpenSiteSettings: () => {
+        const { BrowserCommands } = this.window;
+        BrowserCommands.pageInfo(null, 'permTab');
+      },
+    };
+
+    for (let [id, handler] of Object.entries(kCommands)) {
+      this.document.getElementById(id).addEventListener('command', handler);
+    }
   }
 
   #preparePanel() {
     this.#setSitePermissions();
+    this.#setSiteSecurityInfo();
+  }
+
+  #setSiteSecurityInfo() {
+    const { gIdentityHandler } = this.window;
+    const button = this.document.getElementById('zen-site-data-security-info');
+
+    if (gIdentityHandler._isSecureInternalUI) {
+      button.parentNode.hidden = true;
+      return;
+    }
+
+    let identity;
+    if (gIdentityHandler._pageExtensionPolicy) {
+      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-extension');
+      identity = 'extension';
+    } else if (gIdentityHandler._uriHasHost && gIdentityHandler._isSecureConnection) {
+      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-secure');
+      identity = 'secure';
+    } else {
+      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-not-secure');
+      identity = 'not-secure';
+    }
+
+    button.parentNode.hidden = false;
+    button.setAttribute('identity', identity);
   }
 
   #setSitePermissions() {
@@ -193,6 +250,9 @@ export class nsZenSiteDataPanel {
 
     let img = this.document.createXULElement('toolbarbutton');
     img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+    if (this.#iconMap[id]) {
+      img.classList.add(`zen-permission-${this.#iconMap[id]}-icon`);
+    }
 
     let labelContainer = this.document.createXULElement('vbox');
     labelContainer.setAttribute('flex', '1');
@@ -222,13 +282,35 @@ export class nsZenSiteDataPanel {
     return container;
   }
 
+  #openGetAddons() {
+    const { switchToTabHavingURI } = this.window;
+    let amoUrl = Services.urlFormatter.formatURLPref('extensions.getAddons.link.url');
+    switchToTabHavingURI(amoUrl, true);
+  }
+
   #onCommandEvent(event) {
     const id = event.target.id;
     switch (id) {
       case 'zen-site-data-new-addon-button': {
-        let amoUrl = Services.urlFormatter.formatURLPref('extensions.getAddons.link.url');
-        const { switchToTabHavingURI } = this.window;
-        switchToTabHavingURI(amoUrl, true);
+        this.#openGetAddons();
+        break;
+      }
+      case 'zen-site-data-security-info': {
+        this.window.displaySecurityInfo();
+        break;
+      }
+      case 'zen-site-data-actions': {
+        const button = this.document.getElementById('zen-site-data-actions');
+        const popup = this.document.getElementById('zenSiteDataActions');
+        popup.openPopup(
+          button,
+          'after_start',
+          0,
+          0,
+          /* context menu */ true,
+          false,
+          this.window.event
+        );
         break;
       }
     }

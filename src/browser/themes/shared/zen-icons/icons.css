@@ -473,7 +473,7 @@
   display: none !important;
 }
 
-#zen-site-data-icon {
+#zen-site-data-icon-button image {
   list-style-image: url('permissions.svg');
   -moz-context-properties: fill, fill-opacity;
   pointer-events: none;
@@ -567,7 +567,8 @@
   list-style-image: url('midi.svg') !important;
 }
 
-.install-icon {
+.install-icon,
+.zen-permission-extension-icon {
   list-style-image: url('extension.svg') !important;
 }
 
@@ -819,4 +820,58 @@
 .zen-workspace-context-icon img {
   -moz-context-properties: fill;
   fill: currentColor;
+}
+
+#zen-site-data-security-info {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  appearance: none;
+  border-radius: 4px;
+  padding: 5px;
+
+  &[identity='secure'] {
+    list-style-image: url('security.svg');
+  }
+
+  &[identity='not-secure'] {
+    list-style-image: url('security-broken.svg');
+  }
+
+  &[identity='extension'] {
+    list-style-image: url('extension.svg');
+  }
+
+  &:not([identity='secure']) * {
+    color: light-dark(var(--color-red-70), var(--color-red-30));
+  }
+
+  & .toolbarbutton-text {
+    padding-inline-start: 4px !important;
+  }
+
+  & .toolbarbutton-icon {
+    width: 16px;
+  }
+
+  & > * {
+    opacity: 0.8;
+  }
+}
+
+#zen-site-data-actions {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  margin-left: auto !important;
+  list-style-image: url('menu.svg');
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  & label {
+    display: none;
+  }
 }

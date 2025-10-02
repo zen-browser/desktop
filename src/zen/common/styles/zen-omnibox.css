@@ -236,12 +236,12 @@
 :root[zen-single-toolbar='true'] {
   --urlbar-icon-border-radius: 10px !important;
 
-  .urlbar-page-action:not([open]):not(#identity-permission-box),
+  .urlbar-page-action:not([open]):not([showing]):not(#identity-permission-box),
   #tracking-protection-icon-container {
     display: none;
   }
 
-  #identity-permission-box > *:not(#zen-site-data-icon) {
+  #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }
 
@@ -672,4 +672,7 @@
 #urlbar-search-mode-indicator-title {
   font-weight: 600;
   padding: 0px;
+}
+
+#reader-mode-button {
 }

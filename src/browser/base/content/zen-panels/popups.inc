@@ -49,3 +49,12 @@
   <menuitem id="context_zenFolderUnpack" data-l10n-id="zen-folders-panel-unpack-folder"/>
   <menuitem id="context_zenFolderDelete" data-l10n-id="zen-folders-panel-delete-folder"/>
 </menupopup>
+
+<menupopup id="zenSiteDataActions">
+  <menuitem id="context_zenClearSiteData" data-l10n-id="identity-clear-site-data"/>
+  <menuseparator />
+  <menuitem command="Tools:Addons" data-l10n-id="zen-site-data-manage-addons"/>
+  <menuitem id="context_zenOpenGetAddons" data-l10n-id="zen-site-data-get-addons"/>
+  <menuseparator />
+  <menuitem id="context_zenOpenSiteSettings" data-l10n-id="zen-site-data-site-settings"/>
+</menupopup>

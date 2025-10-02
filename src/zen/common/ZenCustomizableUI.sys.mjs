@@ -106,12 +106,20 @@ export var ZenCustomizableUI = new (class {
 
   _initCreateNewButton(window) {
     const button = window.document.getElementById('zen-create-new-button');
-    button.addEventListener('command', () => {
+    button.addEventListener('command', (event) => {
       if (button.hasAttribute('open')) {
         return;
       }
       const popup = window.document.getElementById('zenCreateNewPopup');
-      popup.openPopup(button, 'before_start');
+      popup.openPopup(
+        button,
+        'before_start',
+        0,
+        0,
+        true /* isContextMenu */,
+        false /* attributesOverride */,
+        event
+      );
     });
   }
 

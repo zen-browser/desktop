@@ -14,6 +14,14 @@
     <panelview id="unified-extensions-view"
                 class="cui-widget-panelview"
                 mainview-with-header="true">
+      <hbox id="zen-site-data-header">
+        <toolbarbutton id="zen-site-data-header-share"
+                        data-l10n-id="zen-site-data-share" />
+        <toolbarbutton id="zen-site-data-header-reader-mode"
+                        command="View:ReaderView" />
+        <toolbarbutton id="zen-site-data-header-screenshot"
+                        command="Browser:Screenshot" />
+      </hbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="unified-extensions-header-title" flex="1" />
@@ -59,6 +67,14 @@
           <!-- settings will be inserted here -->
         </vbox>
       </vbox>
+      <hbox id="zen-site-data-footer">
+        <toolbarbutton id="zen-site-data-security-info" 
+                       class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-actions"
+                       class="subviewbutton zen-interactive-button"
+                       closemenu="none"
+                       context="zenSiteDataActions" />
+      </hbox>
     </panelview>
   </panelmultiview>
 </panel>

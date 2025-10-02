@@ -978,9 +978,6 @@
     & #PanelUI-button {
       order: -2;
     }
-    & #unified-extensions-button {
-      order: -1;
-    }
   }
 
   & #zen-sidebar-top-buttons-customization-target {

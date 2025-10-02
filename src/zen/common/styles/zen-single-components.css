@@ -189,6 +189,21 @@ body > #confetti {
   }
 }
 
+.zen-interactive-button {
+  background: color-mix(in srgb, currentColor 6%, transparent) !important;
+  transition:
+    background-color 0.12s ease-in-out,
+    transform 0.12s ease-in-out;
+
+  &:hover {
+    background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
+  }
+
+  &:active:hover {
+    transform: scale(0.95);
+  }
+}
+
 /** Update animation */
 
 #zen-update-animation {
@@ -363,7 +378,9 @@ body > #confetti {
 }
 
 .permission-popup-permission-item {
-  gap: 6px;
+  gap: 8px;
+  overflow: hidden;
+  align-items: center;
 }
 
 .permission-popup-permission-label {
@@ -428,4 +445,18 @@ body > #confetti {
 
 #identity-box {
   opacity: 0.6;
+}
+
+#zen-site-data-footer {
+  border-top: 1px solid color-mix(in srgb, currentColor 6%, transparent);
+  padding-top: 8px;
+  margin: 2px 8px 8px 8px;
+
+  & toolbarbutton {
+    margin: 0;
+  }
+}
+
+#unified-extensions-button:not([showing]) {
+  display: none !important;
 }

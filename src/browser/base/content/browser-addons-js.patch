@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index d7542a38a0242dd9c9c6390171d59992d75a0c19..e3bda9bc28aeca7258fcd91fa1a4719b4950e28b 100644
+index d7542a38a0242dd9c9c6390171d59992d75a0c19..baa5d84c26f7e74c779bc7e1a2b83b543b413441 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1064,7 +1064,7 @@ var gXPInstallObserver = {
@@ -20,6 +20,24 @@ index d7542a38a0242dd9c9c6390171d59992d75a0c19..e3bda9bc28aeca7258fcd91fa1a4719b
        },
      };
  
+@@ -2205,7 +2205,7 @@ var gUnifiedExtensions = {
+   // If the new ID is not added in NOTIFICATION_IDS, consider handling the case
+   // in the "PopupNotificationsBeforeAnchor" handler elsewhere in this file.
+   getPopupAnchorID(aBrowser, aWindow) {
+-    const anchorID = "unified-extensions-button";
++    const anchorID = "zen-site-data-icon-button";
+     const attr = anchorID + "popupnotificationanchor";
+ 
+     if (!aBrowser[attr]) {
+@@ -2216,7 +2216,7 @@ var gUnifiedExtensions = {
+         anchorID
+         // Anchor on the toolbar icon to position the popup right below the
+         // button.
+-      ).firstElementChild;
++      );
+     }
+ 
+     return anchorID;
 @@ -2509,11 +2509,7 @@ var gUnifiedExtensions = {
      // Lazy load the unified-extensions-panel panel the first time we need to
      // display it.

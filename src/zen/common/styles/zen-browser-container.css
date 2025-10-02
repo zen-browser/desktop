@@ -17,7 +17,13 @@
       }
 
       & browser[type='content'] {
-        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        &:not([transparent='true']) {
+          background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
+        }
+
+        &[transparent='true'] {
+          background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        }
       }
 
       @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {

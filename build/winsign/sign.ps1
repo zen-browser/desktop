@@ -35,7 +35,9 @@ Start-Job -Name "SurferInit" -ScriptBlock {
     param($PWD)
     cd $PWD
     npm run import -- --verbose
-    npm run surfer -- ci --brand release
+    $surferJson = Get-Content surfer.json | ConvertFrom-Json
+    $version = $surferJson.brands.release.release.displayVersion
+    npm run ci -- $version
 } -Verbose -ArgumentList $PWD -Debug
 
 echo "Downloading artifacts info"

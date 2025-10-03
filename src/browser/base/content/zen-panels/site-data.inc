@@ -17,7 +17,8 @@
       <hbox id="zen-site-data-header">
         <toolbarbutton id="zen-site-data-header-share"
                         data-l10n-id="zen-site-data-share"
-                        flex="1" />
+                        flex="1"
+                        closemenu="none" />
         <toolbarbutton id="zen-site-data-header-reader-mode"
                         command="View:ReaderView"
                         flex="1" />

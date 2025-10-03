@@ -81,13 +81,11 @@ export class nsZenSiteDataPanel {
   }
 
   #setSiteHeader() {
-    const { gReaderMode } = this.window;
-
     {
       const button = this.document.getElementById('zen-site-data-header-reader-mode');
       const urlbarButton = this.window.document.getElementById('reader-mode-button');
-      const isActive = gReaderMode?.isActive;
-      const isVisible = (urlbarButton && !urlbarButton.hidden) || isActive;
+      const isActive = urlbarButton?.hasAttribute('readeractive');
+      const isVisible = !urlbarButton?.hidden || isActive;
 
       button.disabled = !isVisible;
       if (isActive) {

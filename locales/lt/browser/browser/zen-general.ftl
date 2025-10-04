@@ -48,4 +48,4 @@ zen-icons-picker-emoji =
     .label = Jaustukai
 zen-icons-picker-svg = 
     .label = Piktogramos
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Veiksmai

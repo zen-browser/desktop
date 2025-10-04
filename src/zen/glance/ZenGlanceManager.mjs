@@ -121,11 +121,13 @@
         container,
         {
           opacity: [0, 1],
+          x: [gZenVerticalTabsManager._prefsRightSide ? 50 : -50, 0],
         },
         {
-          duration: 0.2,
+          duration: 0.3,
           type: 'spring',
           delay: 0.05,
+          bounce: 0,
         }
       );
       return newButtons;
@@ -182,23 +184,38 @@
               bounce: 0.2,
             }
           );
-          this.overlay.removeAttribute('fade-out');
-          this.browserWrapper.setAttribute('animate', true);
           const top = initialY + initialHeight / 2;
           const left = initialX + initialWidth / 2;
+          let imageDataElement = null;
+          if (data.elementData) {
+            const elementData = data.elementData;
+            imageDataElement = document.createXULElement('image');
+            imageDataElement.setAttribute('src', elementData);
+            imageDataElement.classList.add('zen-glance-element-preview');
+            this.browserWrapper.prepend(imageDataElement);
+            this.#glances.get(this.#currentGlanceID).elementImageData = elementData;
+          }
+          this.overlay.removeAttribute('fade-out');
+          this.browserWrapper.setAttribute('animate', true);
           this.browserWrapper.style.top = `${top}px`;
           this.browserWrapper.style.left = `${left}px`;
           this.browserWrapper.style.width = `${initialWidth}px`;
           this.browserWrapper.style.height = `${initialHeight}px`;
-          this.browserWrapper.style.opacity = 0.8;
           this.#glances.get(this.#currentGlanceID).originalPosition = {
             top: this.browserWrapper.style.top,
             left: this.browserWrapper.style.left,
             width: this.browserWrapper.style.width,
             height: this.browserWrapper.style.height,
           };
-          this.browserWrapper.style.transform = 'translate(-50%, -50%)';
           this.overlay.style.overflow = 'visible';
+          {
+            // Set a minimum width and height to the browser element to avoid resizing
+            const rect = this.browserWrapper.parentElement.getBoundingClientRect();
+            const minWidth = rect.width * 0.85;
+            const minHeight = rect.height * 0.85;
+            browserElement.style.minWidth = `${minWidth}px`;
+            browserElement.style.minHeight = `${minHeight}px`;
+          }
           gZenUIManager.motion
             .animate(
               this.browserWrapper,
@@ -207,15 +224,19 @@
                 left: '50%',
                 width: '85%',
                 height: '100%',
-                opacity: 1,
               },
               {
                 duration: 0.3,
                 type: 'spring',
-                bounce: 0.2,
+                bounce: 0.1,
               }
             )
             .then(() => {
+              if (imageDataElement) {
+                imageDataElement.remove();
+              }
+              browserElement.style.minWidth = '';
+              browserElement.style.minHeight = '';
               gBrowser.tabContainer._invalidateCachedTabs();
               this.overlay.style.removeProperty('overflow');
               this.browserWrapper.removeAttribute('animate');
@@ -239,7 +260,6 @@
       noAnimation = false,
       onTabClose = false,
       setNewID = null,
-      isDifferent = false,
       hasFocused = false,
       skipPermitUnload = false,
     } = {}) {
@@ -335,14 +355,20 @@
         });
       this.browserWrapper.style.opacity = 1;
       return new Promise((resolve) => {
+        const elementImageData = this.#glances.get(this.#currentGlanceID).elementImageData;
+        if (elementImageData) {
+          const imageDataElement = document.createXULElement('image');
+          imageDataElement.setAttribute('src', elementImageData);
+          imageDataElement.classList.add('zen-glance-element-preview');
+          this.browserWrapper.prepend(imageDataElement);
+        }
         gZenUIManager.motion
           .animate(
             this.browserWrapper,
             {
               ...originalPosition,
-              opacity: 0,
             },
-            { type: 'spring', bounce: 0, duration: 0.5, easing: 'ease-in' }
+            { type: 'spring', bounce: 0, duration: 0.3, easing: 'ease-in' }
           )
           .then(() => {
             this.browserWrapper.removeAttribute('animate');
@@ -353,6 +379,7 @@
             if (!onTabClose || quikcCloseZen) {
               this.quickCloseGlance({ clearID: false });
             }
+            this.browserWrapper.style.display = 'none';
             this.overlay.removeAttribute('fade-out');
             this.browserWrapper.removeAttribute('animate');
 
@@ -363,7 +390,7 @@
               ._getSwitcher()
               .setTabStateNoAction(lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
 
-            if (!onTabClose) {
+            if (!this.#currentParentTab.selected) {
               this.#currentParentTab._visuallySelected = false;
             }
 
@@ -382,9 +409,6 @@
             lastCurrentTab.removeAttribute('zen-glance-tab');
             lastCurrentTab._closingGlance = true;
 
-            if (!isDifferent) {
-              gBrowser.selectedTab = this.#currentParentTab;
-            }
             this._ignoreClose = true;
             lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));
             gBrowser.removeTab(lastCurrentTab, { animate: true, skipPermitUnload: true });
@@ -532,7 +556,6 @@
         this.closeGlance({
           onTabClose: true,
           setNewID: isDifferent ? oldGlanceID : null,
-          isDifferent,
         });
         // only keep continueing tab close if we are not on the currently selected tab
         return !isDifferent;
@@ -685,8 +708,6 @@
       } else if (activationMethod === 'shift' && !event.shiftKey) {
         return;
       } else if (activationMethod === 'meta' && !event.metaKey) {
-        return;
-      } else if (activationMethod === 'mantain' || typeof activationMethod === 'undefined') {
         return;
       }
 

@@ -8,12 +8,12 @@
   #tabbrowser-tabpanels[dragging-split='true'] {
     width: -moz-available;
     position: relative;
-    overflow: clip;
 
     &.browserSidebarContainer {
-      :root:not([zen-no-padding='true']) & {
+      :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
         border-radius: var(--zen-native-inner-radius);
         box-shadow: var(--zen-big-shadow);
+        overflow: clip;
       }
 
       & browser[type='content'] {

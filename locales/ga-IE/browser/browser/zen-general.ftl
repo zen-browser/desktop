@@ -48,4 +48,4 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Deilbhíní
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Gníomhartha

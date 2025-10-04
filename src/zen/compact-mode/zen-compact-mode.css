@@ -29,7 +29,7 @@
   &,
   &::before,
   &::after {
-    border-radius: calc(var(--zen-native-inner-radius) + var(--zen-element-separation) / 4 - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+    border-radius: calc(var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px));
   }
 }
 
@@ -97,7 +97,10 @@
           bottom: var(--zen-compact-float);
           padding: 0 var(--zen-compact-float) !important;
           :root[zen-single-toolbar='true'] & {
-            top: calc(var(--zen-compact-float) / 2);
+            /* We add an extra offset since windows users have a border top
+             * in the window in order to compensate how windows renders the
+             * titlebar */ 
+            top: calc(var(--zen-compact-float) / 2 + var(--zen-sidebar-compact-top-offset, 0px));
             height: calc(100% - var(--zen-compact-float));
           }
           :root:not([zen-single-toolbar='true']) & {

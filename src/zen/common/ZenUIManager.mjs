@@ -215,8 +215,10 @@ var gZenUIManager = {
         !el.contains(showEvent.explicitOriginalTarget) ||
         (showEvent.explicitOriginalTarget instanceof Element &&
           showEvent.explicitOriginalTarget?.closest('panel')) ||
-        // See bug #7590: Ignore menupopup elements opening
-        showEvent.explicitOriginalTarget.tagName === 'menupopup'
+        // See bug #7590: Ignore menupopup elements opening.
+        // Also see #10612 for the exclusion of the zen-appcontent-navbar-wrapper
+        (showEvent.explicitOriginalTarget.tagName === 'menupopup' &&
+          el.id !== 'zen-appcontent-navbar-wrapper')
       ) {
         continue;
       }

@@ -31,7 +31,8 @@
     "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
     "lc": "surfer license-check",
     "lc:fix": "surfer license-check --fix",
-    "use-moz-src": "cd engine && ./mach use-moz-src"
+    "use-moz-src": "cd engine && ./mach use-moz-src",
+    "ci": "surfer ci --brand release --display-version"
   },
   "repository": {
     "type": "git",

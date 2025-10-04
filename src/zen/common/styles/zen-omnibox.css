@@ -155,8 +155,11 @@
   order: 2 !important;
 }
 
-#urlbar[breakout-extend='true'] {
+#urlbar[breakout] {
   position: fixed;
+}
+
+#urlbar[breakout-extend='true'] {
   z-index: 2;
 
   & .urlbar-input-container {

@@ -2494,12 +2494,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       }
       for (const workspaceId of workspacesIds) {
         const workspaceElement = this.workspaceElement(workspaceId);
-        if (!workspaceElement) {
+        const workspaceObject = this.getWorkspaceFromId(workspaceId);
+        if (!workspaceElement || !workspaceObject) {
+          console.warn('Workspace element or object not found for id', workspaceId);
           continue;
         }
         const arrowScrollbox = workspaceElement.tabsContainer;
         const pinnedContainer = workspaceElement.pinnedTabsContainer;
-        const workspaceObject = this.getWorkspaceFromId(workspaceId);
         const essentialContainer = this.getEssentialsSection(workspaceObject.containerTabId);
         const essentialNumChildren = essentialContainer.children.length;
         let essentialHackType = 0;

@@ -43,7 +43,8 @@ body > #confetti {
 }
 
 /* Firefox View */
-#firefox-view-button {
+#firefox-view-button,
+#wrapper-firefox-view-button {
   display: none !important;
 }
 

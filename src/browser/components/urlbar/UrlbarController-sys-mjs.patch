@@ -8,10 +8,10 @@ index 36e3ab4a5a153230bb488b66dda7e3e7c763ca23..cc4ea61914a316451fa54b01a5c8c6a3
 
 +    // Handle vim navigation bindings.
 +    if (
-+      Services.prefs.getBoolPref("zen.urlbar.vim-navigation.enabled", false) &&
 +      this.view.isOpen &&
 +      event.ctrlKey &&
-+      (event.key == "j" || event.key == "k")
++      (event.key == "j" || event.key == "k") &&
++      Services.prefs.getBoolPref("zen.urlbar.vim-navigation.enabled", false)
 +    ) {
 +      if (executeAction) {
 +        this.view.selectBy(1, { reverse: event.key == "k" });

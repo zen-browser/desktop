@@ -1479,6 +1479,20 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
+  async unloadWorkspace(event) {
+    const tabs = this.allStoredTabs.filter(tab => 
+        tab.getAttribute('zen-workspace-id') === this.activeWorkspace &&
+        !tab.hasAttribute('zen-empty-tab') &&
+        !tab.hasAttribute('zen-essential')
+      );
+
+    if (tabs.length === 0) {
+        return;
+    }
+
+    await gBrowser.explicitUnloadTabs(tabs);
+  }
+
   moveTabToWorkspace(tab, workspaceID) {
     return this.moveTabsToWorkspace([tab], workspaceID);
   }

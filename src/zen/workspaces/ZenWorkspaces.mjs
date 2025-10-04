@@ -1479,10 +1479,9 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
-  async unloadWorkspace(event) {
-    const tabs = this.allStoredTabs.filter(
+  async unloadWorkspace() {
+    const tabs = gBrowser.tabs.filter(
       (tab) =>
-        tab.getAttribute('zen-workspace-id') === this.activeWorkspace &&
         !tab.hasAttribute('zen-empty-tab') &&
         !tab.hasAttribute('zen-essential')
     );

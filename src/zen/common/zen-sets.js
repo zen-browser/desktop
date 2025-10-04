@@ -132,7 +132,7 @@ document.addEventListener(
             break;
           }
           case 'cmd_zenUnloadWorkspace': {
-            gZenWorkspaces.unloadWorkspace(event);
+            gZenWorkspaces.unloadWorkspace();
             break;
           }
           default:

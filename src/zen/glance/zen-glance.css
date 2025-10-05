@@ -163,7 +163,7 @@
 
   &[fade-out='true'] {
     & browser {
-      transition: opacity 0.2s ease-in-out;
+      transition: opacity 0.25s ease-in-out;
       opacity: 0;
     }
   }

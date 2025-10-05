@@ -24,6 +24,13 @@
     #duringOpening = false;
     #ignoreClose = false;
 
+    // Arc animation configuration
+    #ARC_CONFIG = Object.freeze({
+      ARC_STEPS: 40, // Increased for smoother bounce
+      MAX_ARC_HEIGHT: 40,
+      ARC_HEIGHT_RATIO: 0.3, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+    });
+
     init() {
       this.#setupEventListeners();
       this.#setupPreferences();
@@ -226,7 +233,7 @@
     #animateOverlayButtons(container) {
       container.style.opacity = 0;
 
-      const xOffset = gZenVerticalTabsManager._prefsRightSide ? 50 : -50;
+      const xOffset = gZenVerticalTabsManager._prefsRightSide ? 20 : -20;
 
       gZenUIManager.motion.animate(
         container,
@@ -237,7 +244,7 @@
         {
           duration: 0.3,
           type: 'spring',
-          delay: 0.05,
+          delay: 0.15,
           bounce: 0,
         }
       );
@@ -405,24 +412,163 @@
     #executeGlanceAnimation(data, browserElement, resolve) {
       const imageDataElement = this.#handleElementPreview(data);
 
+      // Create curved animation sequence
+      const arcSequence = this.#createGlanceArcSequence(data, 'opening');
+
       gZenUIManager.motion
-        .animate(
-          this.browserWrapper,
-          {
-            top: '50%',
-            left: '50%',
-            width: '85%',
-            height: '100%',
-          },
-          {
-            duration: 0.3,
-            type: 'spring',
-            bounce: 0.1,
-          }
-        )
+        .animate(this.browserWrapper, arcSequence, {
+          duration: gZenUIManager.testingEnabled ? 0 : 0.25,
+          ease: 'cubic-bezier(0.37, 0, 0.63, 1)',
+        })
         .then(() => {
+          // Remove element preview after opening animation
+          if (imageDataElement) {
+            imageDataElement.remove();
+          }
           this.#finalizeGlanceOpening(imageDataElement, browserElement, resolve);
         });
+    }
+
+    /**
+     * Create arc animation sequence for glance animations
+     * @param {Object} data - Glance data with position and dimensions
+     * @param {string} direction - 'opening' or 'closing'
+     * @returns {Object} Animation sequence object
+     */
+    #createGlanceArcSequence(data, direction) {
+      const { clientX, clientY, width, height } = data;
+
+      // Calculate start and end positions based on direction
+      let startPosition, endPosition;
+
+      const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+
+      const widthPercent = 0.85;
+      if (direction === 'opening') {
+        startPosition = {
+          x: clientX + width / 2,
+          y: clientY + height / 2,
+          width: width,
+          height: height,
+        };
+        endPosition = {
+          x: tabPanelsRect.width / 2,
+          y: tabPanelsRect.height / 2,
+          width: tabPanelsRect.width * widthPercent,
+          height: tabPanelsRect.height,
+        };
+      } else {
+        // closing
+        startPosition = {
+          x: tabPanelsRect.width / 2,
+          y: tabPanelsRect.height / 2,
+          width: tabPanelsRect.width * widthPercent,
+          height: tabPanelsRect.height,
+        };
+        endPosition = {
+          x: clientX + width / 2,
+          y: clientY + height / 2,
+          width: width,
+          height: height,
+        };
+      }
+
+      const distance = this.#calculateDistance(startPosition, endPosition);
+      const { arcHeight, shouldArcDownward } = this.#calculateOptimalArc(
+        startPosition,
+        endPosition,
+        distance
+      );
+
+      const sequence = {
+        top: [],
+        left: [],
+        width: [],
+        height: [],
+        offset: [],
+      };
+
+      const steps = this.#ARC_CONFIG.ARC_STEPS;
+      const arcDirection = shouldArcDownward ? 1 : -1;
+
+      function easeInOutQuad(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      }
+
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      // First, create the main animation steps
+      for (let i = 0; i <= steps; i++) {
+        const progress = i / steps;
+        const eased = direction === 'opening' ? easeInOutQuad(progress) : easeInOutCubic(progress);
+
+        // Calculate size interpolation
+        const currentWidth =
+          startPosition.width + (endPosition.width - startPosition.width) * eased;
+        const currentHeight =
+          startPosition.height + (endPosition.height - startPosition.height) * eased;
+
+        // Calculate position on arc
+        const distanceX = endPosition.x - startPosition.x;
+        const distanceY = endPosition.y - startPosition.y;
+
+        const x = startPosition.x + distanceX * eased;
+        const y =
+          startPosition.y +
+          distanceY * eased +
+          arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
+
+        sequence.offset.push(progress);
+        sequence.top.push(`${y}px`);
+        sequence.left.push(`${x}px`);
+        sequence.width.push(`${currentWidth}px`);
+        sequence.height.push(`${currentHeight}px`);
+      }
+
+      return sequence;
+    }
+
+    /**
+     * Calculate distance between two positions
+     * @param {Object} start - Start position
+     * @param {Object} end - End position
+     * @returns {number} Distance
+     */
+    #calculateDistance(start, end) {
+      const distanceX = end.x - start.x;
+      const distanceY = end.y - start.y;
+      return Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    }
+
+    /**
+     * Calculate optimal arc parameters
+     * @param {Object} startPosition - Start position
+     * @param {Object} endPosition - End position
+     * @param {number} distance - Distance between positions
+     * @returns {Object} Arc parameters
+     */
+    #calculateOptimalArc(startPosition, endPosition, distance) {
+      // Calculate available space for the arc
+      const availableTopSpace = Math.min(startPosition.y, endPosition.y);
+      const viewportHeight = window.innerHeight;
+      const availableBottomSpace = viewportHeight - Math.max(startPosition.y, endPosition.y);
+
+      // Determine if we should arc downward or upward based on available space
+      const shouldArcDownward = availableBottomSpace > availableTopSpace;
+
+      // Use the space in the direction we're arcing
+      const availableSpace = shouldArcDownward ? availableBottomSpace : availableTopSpace;
+
+      // Limit arc height to a percentage of the available space
+      const arcHeight = Math.min(
+        distance * this.#ARC_CONFIG.ARC_HEIGHT_RATIO,
+        this.#ARC_CONFIG.MAX_ARC_HEIGHT,
+        availableSpace * 0.6
+      );
+
+      return { arcHeight, shouldArcDownward };
     }
 
     /**
@@ -624,9 +770,9 @@
             opacity: [0.6, 1],
           },
           {
-            duration: 0.4,
+            duration: 0.3,
             type: 'spring',
-            bounce: 0.2,
+            bounce: 0,
           }
         )
         .then(() => {
@@ -649,16 +795,41 @@
 
         this.#addElementPreview(elementImageData);
 
+        // Create curved closing animation sequence
+        const closingData = this.#createClosingDataFromOriginalPosition(originalPosition);
+        const arcSequence = this.#createGlanceArcSequence(closingData, 'closing');
+
         gZenUIManager.motion
-          .animate(
-            this.browserWrapper,
-            { ...originalPosition },
-            { type: 'spring', bounce: 0, duration: 0.3, easing: 'ease-in' }
-          )
+          .animate(this.browserWrapper, arcSequence, { duration: 0.35, ease: 'easeOut' })
           .then(() => {
+            // Remove element preview after closing animation
+            const elementPreview = this.browserWrapper.querySelector('.zen-glance-element-preview');
+            if (elementPreview) {
+              elementPreview.remove();
+            }
             this.#finalizeGlanceClosing(setNewID, resolve, onTabClose);
           });
       });
+    }
+
+    /**
+     * Create closing data from original position for arc animation
+     * @param {Object} originalPosition - Original position object
+     * @returns {Object} Closing data object
+     */
+    #createClosingDataFromOriginalPosition(originalPosition) {
+      // Parse the original position values
+      const top = parseFloat(originalPosition.top) || 0;
+      const left = parseFloat(originalPosition.left) || 0;
+      const width = parseFloat(originalPosition.width) || 0;
+      const height = parseFloat(originalPosition.height) || 0;
+
+      return {
+        clientX: left - width / 2,
+        clientY: top - height / 2,
+        width: width,
+        height: height,
+      };
     }
 
     /**
@@ -720,6 +891,10 @@
 
       if (!this.#currentParentTab.selected) {
         this.#currentParentTab._visuallySelected = false;
+      }
+
+      if (gBrowser.selectedTab === lastCurrentTab) {
+        gBrowser.selectedTab = this.#currentParentTab;
       }
 
       if (

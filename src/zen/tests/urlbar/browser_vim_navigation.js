@@ -62,10 +62,7 @@ add_task(async function test_Vim_Navigation_off() {
   EventUtils.synthesizeKey('VK_DOWN', {}, window);
   EventUtils.synthesizeKey('VK_DOWN', {}, window);
 
-  ok(
-    UrlbarTestUtils.getSelectedRowIndex(window) == 2,
-    'Only down should change the selection'
-  );
+  ok(UrlbarTestUtils.getSelectedRowIndex(window) == 2, 'Only down should change the selection');
 
   // Only up should work to move the selection up
   EventUtils.synthesizeKey('k', { ctrlKey: true }, window);

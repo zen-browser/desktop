@@ -177,15 +177,16 @@ body > #confetti {
   #zen-sidebar-foot-buttons & {
     --tab-border-radius: 6px;
     --toolbarbutton-border-radius: var(--tab-border-radius);
-    --toolbarbutton-inner-padding: 5px;
+    --toolbarbutton-inner-padding: 6px;
     --toolbarbutton-outer-padding: 2px;
   }
 
   transition:
     background-color 0.1s,
-    scale 0.2s;
-  &:active {
-    transform: scale(0.98);
+    transform 0.2s;
+
+  &:active:hover {
+    transform: scale(0.95);
   }
 }
 

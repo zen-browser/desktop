@@ -3032,7 +3032,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       parent.removeAttribute('icons-overflow');
       return;
     }
-    const maxButtonSize = 26; // IMPORTANT: This should match the CSS size of the icons
+    const maxButtonSize = 28; // IMPORTANT: This should match the CSS size of the icons
     const minButtonSize = 15;
     const separation = 3; // Space between icons
 

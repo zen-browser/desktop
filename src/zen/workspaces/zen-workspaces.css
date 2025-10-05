@@ -33,8 +33,8 @@
 
   & toolbarbutton {
     margin: 0;
-    max-width: 26px;
-    height: 26px;
+    max-width: 28px;
+    height: 28px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -63,7 +63,8 @@
     transition:
       filter 0.2s,
       opacity 0.2s,
-      width 0.1s;
+      width 0.1s,
+      transform 0.2s;
 
     &[active='true'],
     &:hover,

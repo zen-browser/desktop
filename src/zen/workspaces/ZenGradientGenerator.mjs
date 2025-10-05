@@ -1192,7 +1192,7 @@
     }
 
     shouldBeDarkMode(accentColor) {
-      if (Services.prefs.getBoolPref('zen.theme.use-sysyem-colors')) {
+      if (Services.prefs.getBoolPref('zen.theme.use-system-colors')) {
         return this.isDarkMode;
       }
 

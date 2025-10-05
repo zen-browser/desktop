@@ -26,7 +26,7 @@
 - name: zen.theme.disable-lightweight
   value: true
 
-- name: zen.theme.use-sysyem-colors
+- name: zen.theme.use-system-colors
   value: false
 
 - name: zen.theme.hide-tab-throbber

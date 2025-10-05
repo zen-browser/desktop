@@ -7,7 +7,7 @@ base-version: '24.08'
 add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
     directory: lib/ffmpeg
-    version: '24.08'
+    version: '24.08.26'
     add-ld-path: .
   app.zen_browser.zen.systemconfig:
     directory: etc/zen

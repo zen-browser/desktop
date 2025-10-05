@@ -27,8 +27,8 @@
     // Arc animation configuration
     #ARC_CONFIG = Object.freeze({
       ARC_STEPS: 40, // Increased for smoother bounce
-      MAX_ARC_HEIGHT: 40,
-      ARC_HEIGHT_RATIO: 0.3, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
+      MAX_ARC_HEIGHT: 30,
+      ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     });
 
     init() {
@@ -313,7 +313,6 @@
 
       this.#animateParentBackground();
       this.#setupGlancePositioning(data);
-      this.#handleElementPreview(data);
       this.#configureBrowserElement(browserElement);
     }
 
@@ -332,7 +331,7 @@
           opacity: [1, 0.6],
         },
         {
-          duration: 0.4,
+          duration: 0.3,
           type: 'spring',
           bounce: 0.2,
         }
@@ -395,12 +394,31 @@
      * @param {Browser} browserElement - The browser element
      */
     #configureBrowserElement(browserElement) {
-      const rect = this.browserWrapper.parentElement.getBoundingClientRect();
+      const rect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper.parentElement);
       const minWidth = rect.width * 0.85;
       const minHeight = rect.height * 0.85;
 
       browserElement.style.minWidth = `${minWidth}px`;
       browserElement.style.minHeight = `${minHeight}px`;
+    }
+
+    /**
+     * Get the transform origin for the animation
+     * @param {Object} data - Glance data with position and dimensions
+     * @returns {string} The transform origin CSS value
+     */
+    #getTransformOrigin(data) {
+      const { clientX, clientY, width, height } = data;
+      const parentRect = window.windowUtils.getBoundsWithoutFlushing(
+        this.browserWrapper.parentElement
+      );
+      const xPercent = ((clientX + width / 2 - parentRect.left) / parentRect.width) * 100;
+      const yPercent = ((clientY + height / 2 - parentRect.top) / parentRect.height) * 100;
+
+      const xOrigin = xPercent < 33 ? 'left' : xPercent > 66 ? 'right' : 'center';
+      const yOrigin = yPercent < 33 ? 'top' : yPercent > 66 ? 'bottom' : 'center';
+
+      return `${xOrigin} ${yOrigin}`;
     }
 
     /**
@@ -414,17 +432,15 @@
 
       // Create curved animation sequence
       const arcSequence = this.#createGlanceArcSequence(data, 'opening');
+      const transformOrigin = this.#getTransformOrigin(data);
 
+      this.browserWrapper.style.transformOrigin = transformOrigin;
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
-          duration: gZenUIManager.testingEnabled ? 0 : 0.25,
-          ease: 'cubic-bezier(0.37, 0, 0.63, 1)',
+          duration: gZenUIManager.testingEnabled ? 0 : 0.4,
+          ease: 'easeInOut',
         })
         .then(() => {
-          // Remove element preview after opening animation
-          if (imageDataElement) {
-            imageDataElement.remove();
-          }
           this.#finalizeGlanceOpening(imageDataElement, browserElement, resolve);
         });
     }
@@ -441,7 +457,7 @@
       // Calculate start and end positions based on direction
       let startPosition, endPosition;
 
-      const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+      const tabPanelsRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
 
       const widthPercent = 0.85;
       if (direction === 'opening') {
@@ -473,6 +489,7 @@
         };
       }
 
+      // Calculate distance and arc parameters
       const distance = this.#calculateDistance(startPosition, endPosition);
       const { arcHeight, shouldArcDownward } = this.#calculateOptimalArc(
         startPosition,
@@ -485,7 +502,7 @@
         left: [],
         width: [],
         height: [],
-        offset: [],
+        transform: [],
       };
 
       const steps = this.#ARC_CONFIG.ARC_STEPS;
@@ -495,14 +512,14 @@
         return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
       }
 
-      function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 6);
       }
 
       // First, create the main animation steps
       for (let i = 0; i <= steps; i++) {
         const progress = i / steps;
-        const eased = direction === 'opening' ? easeInOutQuad(progress) : easeInOutCubic(progress);
+        const eased = direction === 'opening' ? easeInOutQuad(progress) : easeOutCubic(progress);
 
         // Calculate size interpolation
         const currentWidth =
@@ -520,11 +537,30 @@
           distanceY * eased +
           arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-        sequence.offset.push(progress);
+        sequence.transform.push(`translate(-50%, -50%) scale(1)`);
         sequence.top.push(`${y}px`);
         sequence.left.push(`${x}px`);
         sequence.width.push(`${currentWidth}px`);
         sequence.height.push(`${currentHeight}px`);
+      }
+
+      let scale = 1;
+      const bounceSteps = 40;
+      if (direction === 'opening') {
+        for (let i = 0; i < bounceSteps; i++) {
+          const progress = i / bounceSteps;
+          // Scale up slightly then back to normal
+          scale = 1 + 0.006 * Math.sin(progress * Math.PI);
+          // If we are at the last step, ensure scale is exactly 1
+          if (i === bounceSteps - 1) {
+            scale = 1;
+          }
+          sequence.transform.push(`translate(-50%, -50%) scale(${scale})`);
+          sequence.top.push(sequence.top[sequence.top.length - 1]);
+          sequence.left.push(sequence.left[sequence.left.length - 1]);
+          sequence.width.push(sequence.width[sequence.width.length - 1]);
+          sequence.height.push(sequence.height[sequence.height.length - 1]);
+        }
       }
 
       return sequence;
@@ -581,6 +617,8 @@
       if (imageDataElement) {
         imageDataElement.remove();
       }
+
+      this.browserWrapper.style.transformOrigin = '';
 
       browserElement.style.minWidth = '';
       browserElement.style.minHeight = '';
@@ -800,7 +838,7 @@
         const arcSequence = this.#createGlanceArcSequence(closingData, 'closing');
 
         gZenUIManager.motion
-          .animate(this.browserWrapper, arcSequence, { duration: 0.35, ease: 'easeOut' })
+          .animate(this.browserWrapper, arcSequence, { duration: 0.4, ease: 'easeOut' })
           .then(() => {
             // Remove element preview after closing animation
             const elementPreview = this.browserWrapper.querySelector('.zen-glance-element-preview');
@@ -1236,7 +1274,7 @@
      * @param {Tab} tab - The tab to open glance for
      */
     #openGlanceForTab(tab) {
-      const browserRect = gBrowser.tabbox.getBoundingClientRect();
+      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabbox);
       const clickPosition = gZenUIManager._lastClickPosition || {
         clientX: browserRect.width / 2,
         clientY: browserRect.height / 2,
@@ -1406,7 +1444,7 @@
      * @returns {Object} Glance data object
      */
     #createGlanceDataFromBookmark(event) {
-      const rect = event.target.getBoundingClientRect();
+      const rect = window.windowUtils.getBoundsWithoutFlushing(event.target);
       return {
         url: event.target._placesNode.uri,
         clientX: rect.left,
@@ -1546,7 +1584,7 @@
      * @param {Tab} parentTab - Parent tab
      */
     #openGlanceForSearch(currentTab, parentTab) {
-      const browserRect = gBrowser.tabbox.getBoundingClientRect();
+      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabbox);
       const clickPosition = gZenUIManager._lastClickPosition || {
         clientX: browserRect.width / 2,
         clientY: browserRect.height / 2,

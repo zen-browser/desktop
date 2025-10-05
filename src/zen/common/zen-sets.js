@@ -17,18 +17,6 @@ document.addEventListener(
           case 'cmd_zenCompactModeShowSidebar':
             gZenCompactModeManager.toggleSidebar();
             break;
-          case 'cmd_zenCompactModeHideSidebar':
-            gZenCompactModeManager.hideSidebar();
-            break;
-          case 'cmd_zenCompactModeHideToolbar':
-            gZenCompactModeManager.hideToolbar();
-            break;
-          case 'cmd_zenCompactModeHideBoth':
-            gZenCompactModeManager.hideBoth();
-            break;
-          case 'cmd_zenCompactModeShowToolbar':
-            gZenCompactModeManager.toggleToolbar();
-            break;
           case 'cmd_toggleCompactModeIgnoreHover':
             gZenCompactModeManager.toggle(true);
             break;

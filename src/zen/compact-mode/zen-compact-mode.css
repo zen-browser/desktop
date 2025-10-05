@@ -20,7 +20,7 @@
 
   &::before,
   &::after {
-    outline: 1px solid rgba(255, 255, 255, .15);
+    outline: 1px solid rgba(255, 255, 255, 0.15);
     outline-offset: -1px;
     background-attachment: fixed !important;
     background-size: 100vw 100vh !important;
@@ -29,7 +29,9 @@
   &,
   &::before,
   &::after {
-    border-radius: calc(var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+    border-radius: calc(
+      var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px)
+    );
   }
 }
 
@@ -40,366 +42,272 @@
     visibility: visible;
   }
 
-  @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
-    &:not([zen-compact-animating]) {
-      & #zen-sidebar-splitter {
-        display: none !important;
+  &:not([zen-compact-animating]) {
+    & #zen-sidebar-splitter {
+      display: none !important;
+    }
+
+    #zen-tabbox-wrapper {
+      /* Remove extra 1px of margine we have to add to the tabbox */
+      margin-left: var(--zen-element-separation) !important;
+      margin-right: var(--zen-element-separation) !important;
+    }
+
+    #zen-appcontent-wrapper {
+      & #tabbrowser-tabbox {
+        margin-left: 0 !important;
+      }
+    }
+
+    #zen-sidebar-splitter {
+      display: none !important;
+    }
+
+    #zen-sidebar-top-buttons-customization-target {
+      padding-inline-start: calc(
+        var(--zen-toolbox-padding) - var(--toolbarbutton-outer-padding)
+      ) !important;
+    }
+
+    &:not([zen-window-buttons-reversed='true']) #zen-appcontent-navbar-wrapper #nav-bar {
+      margin-left: var(--zen-element-separation) !important;
+    }
+
+    &[zen-window-buttons-reversed='true'] #zen-appcontent-navbar-wrapper #nav-bar {
+      margin-right: var(--zen-element-separation) !important;
+      margin-left: calc(var(--zen-element-separation) - 3px) !important;
+    }
+
+    #navigator-toolbox {
+      --zen-toolbox-max-width: 74px !important;
+      --zen-compact-float: var(--zen-element-separation);
+      :root[zen-no-padding='true'] & {
+        --zen-compact-float: 10px;
+        --zen-compact-mode-no-padding-radius-fix: 2px;
       }
 
-      #zen-tabbox-wrapper {
-        /* Remove extra 1px of margine we have to add to the tabbox */
-        margin-left: var(--zen-element-separation) !important;
-        margin-right: var(--zen-element-separation) !important;
-      }
+      /* Initial padding for when we are animating */
+      padding: 0 0 0 var(--zen-toolbox-padding) !important;
 
-      #zen-appcontent-wrapper {
-        & #tabbrowser-tabbox {
-          margin-left: 0 !important;
+      &:not([animate='true']) {
+        position: fixed;
+        z-index: 10;
+        transition:
+          left 0.15s ease,
+          right 0.15s ease,
+          visibility 0.15s ease;
+        bottom: var(--zen-compact-float);
+        padding: 0 var(--zen-compact-float) !important;
+
+        :root[zen-single-toolbar='true'] & {
+          /* We add an extra offset since windows users have a border top
+            * in the window in order to compensate how windows renders the
+            * titlebar */
+          top: calc(var(--zen-compact-float) / 2 + var(--zen-sidebar-compact-top-offset, 0px));
+          height: calc(100% - var(--zen-compact-float));
+        }
+
+        :root:not([zen-single-toolbar='true']) & {
+          bottom: calc(var(--zen-compact-float) / 2);
+          height: calc(100% - var(--zen-toolbar-height));
+        }
+
+        & #zen-sidebar-top-buttons {
+          margin: 0 0 calc(var(--zen-toolbox-padding) / 2) 0;
         }
       }
 
-      #zen-sidebar-splitter {
-        display: none !important;
+      &:not([zen-right-side='true']) #nav-bar {
+        margin-left: 0 !important;
+      }
+    }
+
+    &:not([zen-right-side='true']) #navigator-toolbox {
+      left: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
+    }
+
+    &:not([zen-sidebar-expanded='true']) .zen-essentials-container {
+      padding: 0;
+    }
+
+    &[zen-right-side='true'] {
+      & #navigator-toolbox:not([animate='true']) {
+        right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
       }
 
-      #zen-sidebar-top-buttons-customization-target {
-        padding-inline-start: calc(var(--zen-toolbox-padding) - var(--toolbarbutton-outer-padding)) !important;
+      & .browserSidebarContainer {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+    }
+
+    #navigator-toolbox:not([animate='true']) #titlebar {
+      padding: var(--zen-toolbox-padding) !important;
+      :root:not([zen-sidebar-expanded='true']) & {
+        padding: var(--zen-toolbox-padding) 0 !important;
+        max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding) * 2);
+        width: var(--zen-sidebar-width);
+      }
+      position: relative;
+      min-width: var(--zen-toolbox-min-width);
+      transition: visibility 0.15s; /* Same as the toolbox */
+      visibility: hidden;
+
+      :root[zen-sidebar-expanded='true'] & {
+        width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
       }
 
-      &:not([zen-window-buttons-reversed='true']) #zen-appcontent-navbar-wrapper #nav-bar {
-        margin-left: var(--zen-element-separation) !important;
+      & .zen-toolbar-background {
+        display: flex;
       }
+    }
 
-      &[zen-window-buttons-reversed='true'] #zen-appcontent-navbar-wrapper #nav-bar {
-        margin-right: var(--zen-element-separation) !important;
-        margin-left: calc(var(--zen-element-separation) - 3px) !important;
-      }
+    #navigator-toolbox[zen-has-hover]:not(:has(#urlbar[zen-floating-urlbar='true']:hover)),
+    #navigator-toolbox[zen-user-show],
+    #navigator-toolbox[zen-has-empty-tab],
+    #navigator-toolbox[flash-popup],
+    #navigator-toolbox[has-popup-menu],
+    #navigator-toolbox[movingtab],
+    &[zen-renaming-tab='true'] #navigator-toolbox,
+    #navigator-toolbox[zen-compact-mode-active] {
+      &:not([animate='true']) {
+        --zen-compact-mode-func: linear(
+          0 0%,
+          0.002748 1%,
+          0.010544 2%,
+          0.022757 3%,
+          0.038804 4%,
+          0.058151 5%,
+          0.080308 6%,
+          0.104828 7.000000000000001%,
+          0.131301 8%,
+          0.159358 9%,
+          0.188662 10%,
+          0.21891 11%,
+          0.249828 12%,
+          0.281172 13%,
+          0.312724 14.000000000000002%,
+          0.344288 15%,
+          0.375693 16%,
+          0.40679 17%,
+          0.437447 18%,
+          0.467549 19%,
+          0.497 20%,
+          0.525718 21%,
+          0.553633 22%,
+          0.580688 23%,
+          0.60684 24%,
+          0.632052 25%,
+          0.656298 26%,
+          0.679562 27%,
+          0.701831 28.000000000000004%,
+          0.723104 28.999999999999996%,
+          0.743381 30%,
+          0.76267 31%,
+          0.780983 32%,
+          0.798335 33%,
+          0.814744 34%,
+          0.830233 35%,
+          0.844826 36%,
+          0.858549 37%,
+          0.87143 38%,
+          0.883498 39%,
+          0.894782 40%,
+          0.905314 41%,
+          0.915125 42%,
+          0.924247 43%,
+          0.93271 44%,
+          0.940547 45%,
+          0.947787 46%,
+          0.954463 47%,
+          0.960603 48%,
+          0.966239 49%,
+          0.971397 50%,
+          0.976106 51%,
+          0.980394 52%,
+          0.984286 53%,
+          0.987808 54%,
+          0.990984 55.00000000000001%,
+          0.993837 56.00000000000001%,
+          0.99639 56.99999999999999%,
+          0.998664 57.99999999999999%,
+          1.000679 59%,
+          1.002456 60%,
+          1.004011 61%,
+          1.005363 62%,
+          1.006528 63%,
+          1.007522 64%,
+          1.008359 65%,
+          1.009054 66%,
+          1.009618 67%,
+          1.010065 68%,
+          1.010405 69%,
+          1.010649 70%,
+          1.010808 71%,
+          1.01089 72%,
+          1.010904 73%,
+          1.010857 74%,
+          1.010757 75%,
+          1.010611 76%,
+          1.010425 77%,
+          1.010205 78%,
+          1.009955 79%,
+          1.009681 80%,
+          1.009387 81%,
+          1.009077 82%,
+          1.008754 83%,
+          1.008422 84%,
+          1.008083 85%,
+          1.00774 86%,
+          1.007396 87%,
+          1.007052 88%,
+          1.00671 89%,
+          1.006372 90%,
+          1.00604 91%,
+          1.005713 92%,
+          1.005394 93%,
+          1.005083 94%,
+          1.004782 95%,
+          1.004489 96%,
+          1.004207 97%,
+          1.003935 98%,
+          1.003674 99%,
+          1.003423 100%
+        );
+        --zen-compact-mode-time: 0.25s;
+        transition:
+          left var(--zen-compact-mode-time) var(--zen-compact-mode-func),
+          right var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
-      #navigator-toolbox {
-        --zen-toolbox-max-width: 74px !important;
-        --zen-compact-float: var(--zen-element-separation);
-        :root[zen-no-padding='true'] & {
-          --zen-compact-float: 10px;
-          --zen-compact-mode-no-padding-radius-fix: 2px;
-        }
-
-        /* Initial padding for when we are animating */
-        padding: 0 0 0 var(--zen-toolbox-padding) !important;
-
-        &:not([animate='true']) {
-          position: fixed;
-          z-index: 10;
-          transition:
-            left 0.15s ease,
-            right 0.15s ease,
-            visibility 0.15s ease;
-          top: 0;
-          bottom: var(--zen-compact-float);
-          padding: 0 var(--zen-compact-float) !important;
-          :root[zen-single-toolbar='true'] & {
-            /* We add an extra offset since windows users have a border top
-             * in the window in order to compensate how windows renders the
-             * titlebar */ 
-            top: calc(var(--zen-compact-float) / 2 + var(--zen-sidebar-compact-top-offset, 0px));
-            height: calc(100% - var(--zen-compact-float));
+        :root:not([supress-primary-adjustment='true']) & {
+          & #titlebar {
+            transition: none;
+            visibility: visible;
           }
-          :root:not([zen-single-toolbar='true']) & {
-            top: calc(var(--zen-compact-float) / -2);
-            height: calc(100% - var(--zen-toolbar-height));
-            @media -moz-pref('zen.view.compact.hide-toolbar') {
-              height: 100%;
-            }
-          }
-          & #zen-sidebar-top-buttons {
-            margin: 0 0 calc(var(--zen-toolbox-padding) / 2) 0;
-          }
-        }
 
-        &:not([zen-right-side='true']) #nav-bar {
-          margin-left: 0 !important;
-        }
-      }
-
-      &:not([zen-right-side='true']) #navigator-toolbox {
-        left: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
-      }
-
-      /* When we have multiple toolbars and the top-toolbar is NOT being hidden,
-       * we need to adjust the top-padding of the toolbox to account for the
-       * extra toolbar height. */
-      @media not -moz-pref('zen.view.compact.hide-toolbar') {
-        &:not([zen-single-toolbar='true']) {
-          #navigator-toolbox:not([animate='true']) {
-            margin-top: var(--zen-toolbar-height) !important;
-          }
-        }
-      }
-
-      &:not([zen-sidebar-expanded='true']) .zen-essentials-container {
-        padding: 0;
-      }
-
-      &[zen-right-side='true'] {
-        & #navigator-toolbox:not([animate='true']) {
-          right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
-        }
-
-        & .browserSidebarContainer {
-          margin-left: 0 !important;
-          margin-right: 0 !important;
-        }
-      }
-
-      #navigator-toolbox:not([animate='true']) #titlebar {
-        padding: var(--zen-toolbox-padding) !important;
-        :root:not([zen-sidebar-expanded='true']) & {
-          padding: var(--zen-toolbox-padding) 0 !important;
-          max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding) * 2);
-          width: var(--zen-sidebar-width);
-        }
-        position: relative;
-        min-width: var(--zen-toolbox-min-width);
-        transition: visibility 0.15s; /* Same as the toolbox */
-        visibility: hidden;
-
-        :root[zen-sidebar-expanded='true'] & {
-          width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
-        }
-
-        & .zen-toolbar-background {
-          display: flex;
-        }
-      }
-
-      #navigator-toolbox[zen-has-hover]:not(:has(#urlbar[zen-floating-urlbar='true']:hover)),
-      #navigator-toolbox[zen-user-show],
-      #navigator-toolbox[zen-has-empty-tab],
-      #navigator-toolbox[flash-popup],
-      #navigator-toolbox[has-popup-menu],
-      #navigator-toolbox[movingtab],
-      &[zen-renaming-tab='true'] #navigator-toolbox,
-      #navigator-toolbox[zen-compact-mode-active] {
-        &:not([animate='true']) {
-          --zen-compact-mode-func: linear(
-            0 0%,
-            0.002748 1%,
-            0.010544 2%,
-            0.022757 3%,
-            0.038804 4%,
-            0.058151 5%,
-            0.080308 6%,
-            0.104828 7.000000000000001%,
-            0.131301 8%,
-            0.159358 9%,
-            0.188662 10%,
-            0.21891 11%,
-            0.249828 12%,
-            0.281172 13%,
-            0.312724 14.000000000000002%,
-            0.344288 15%,
-            0.375693 16%,
-            0.40679 17%,
-            0.437447 18%,
-            0.467549 19%,
-            0.497 20%,
-            0.525718 21%,
-            0.553633 22%,
-            0.580688 23%,
-            0.60684 24%,
-            0.632052 25%,
-            0.656298 26%,
-            0.679562 27%,
-            0.701831 28.000000000000004%,
-            0.723104 28.999999999999996%,
-            0.743381 30%,
-            0.76267 31%,
-            0.780983 32%,
-            0.798335 33%,
-            0.814744 34%,
-            0.830233 35%,
-            0.844826 36%,
-            0.858549 37%,
-            0.87143 38%,
-            0.883498 39%,
-            0.894782 40%,
-            0.905314 41%,
-            0.915125 42%,
-            0.924247 43%,
-            0.93271 44%,
-            0.940547 45%,
-            0.947787 46%,
-            0.954463 47%,
-            0.960603 48%,
-            0.966239 49%,
-            0.971397 50%,
-            0.976106 51%,
-            0.980394 52%,
-            0.984286 53%,
-            0.987808 54%,
-            0.990984 55.00000000000001%,
-            0.993837 56.00000000000001%,
-            0.99639 56.99999999999999%,
-            0.998664 57.99999999999999%,
-            1.000679 59%,
-            1.002456 60%,
-            1.004011 61%,
-            1.005363 62%,
-            1.006528 63%,
-            1.007522 64%,
-            1.008359 65%,
-            1.009054 66%,
-            1.009618 67%,
-            1.010065 68%,
-            1.010405 69%,
-            1.010649 70%,
-            1.010808 71%,
-            1.01089 72%,
-            1.010904 73%,
-            1.010857 74%,
-            1.010757 75%,
-            1.010611 76%,
-            1.010425 77%,
-            1.010205 78%,
-            1.009955 79%,
-            1.009681 80%,
-            1.009387 81%,
-            1.009077 82%,
-            1.008754 83%,
-            1.008422 84%,
-            1.008083 85%,
-            1.00774 86%,
-            1.007396 87%,
-            1.007052 88%,
-            1.00671 89%,
-            1.006372 90%,
-            1.00604 91%,
-            1.005713 92%,
-            1.005394 93%,
-            1.005083 94%,
-            1.004782 95%,
-            1.004489 96%,
-            1.004207 97%,
-            1.003935 98%,
-            1.003674 99%,
-            1.003423 100%
-          );
-          --zen-compact-mode-time: 0.25s;
-          transition:
-            left var(--zen-compact-mode-time) var(--zen-compact-mode-func),
-            right var(--zen-compact-mode-time) var(--zen-compact-mode-func);
-
-          :root:not([supress-primary-adjustment='true']) & {
-            & #titlebar {
-              transition: none;
-              visibility: visible;
-            }
-
-            left: calc(var(--zen-compact-float) / -2);
-            :root[zen-right-side='true'] & {
-              right: calc(var(--zen-compact-float) / -2);
-              left: auto;
-            }          
+          left: calc(var(--zen-compact-float) / -2);
+          :root[zen-right-side='true'] & {
+            right: calc(var(--zen-compact-float) / -2);
+            left: auto;
           }
         }
       }
     }
   }
 
-  @media -moz-pref('zen.view.compact.hide-toolbar') {
-    &:not([zen-single-toolbar='true']) {
-      & #navigator-toolbox {
-        top: 0;
-      }
-
-      & #navigator-toolbox {
-        --zen-toolbox-top-align: var(--zen-element-separation);
-      }
-
-      & #titlebar,
-      & #zen-appcontent-wrapper {
-        margin-top: var(--zen-element-separation) !important;
-      }
-
-      & #zen-appcontent-wrapper {
-        z-index: 3 !important;
-      }
-
-      & #zen-appcontent-navbar-wrapper {
-        & .zen-toolbar-background {
-          display: flex;
-        }
-        --zen-compact-toolbar-offset: 5px;
-        position: absolute;
-        top: calc(-1 * var(--zen-toolbar-height) + 1px);
-        left: 0;
-        z-index: 20;
-        transition: all 0.15s ease;
-        width: 100%;
-
-        max-height: var(--zen-toolbar-height);
-        overflow: hidden;
-
-        & #urlbar:not([breakout-extend='true']) {
-          opacity: 0 !important;
-        }
-
-        & #zen-appcontent-navbar-container {
-          visibility: hidden;
-
-          box-shadow: var(--zen-big-shadow);
-          border-bottom-left-radius: var(--zen-border-radius);
-          border-bottom-right-radius: var(--zen-border-radius);
-          :root:not([sizemode='maximized']) & {
-            border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
-            border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
-          }
-          transition: all 0.15s ease;
-          width: 100%;
-        }
-      }
-
-      & #zen-appcontent-navbar-wrapper[zen-has-hover]:not(:has(#urlbar[zen-floating-urlbar='true']:hover)),
-      & #zen-appcontent-navbar-wrapper[zen-user-show],
-      & #zen-appcontent-navbar-wrapper[has-popup-menu],
-      & #zen-appcontent-navbar-wrapper:has(
-          *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(.zen-compact-mode-ignore)
-        ) {
-        & #zen-appcontent-navbar-container {
-          visibility: visible !important;
-        }
-        border-top-width: 0px;
-
-        top: -1px;
-        overflow: initial;
-        max-height: unset;
-
-        & #urlbar {
-          opacity: 1 !important;
-        }
-
-        & #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
-          top: 2px !important;
-          opacity: 1;
-        }
-      }
+  &:not([zen-single-toolbar='true']) #zen-sidebar-top-buttons {
+    max-width: fit-content;
+    :root[zen-right-side='true'] & {
+      order: 999;
     }
   }
 }
 
 /* Fix for https://github.com/zen-browser/desktop/issues/7615 */
 :root[zen-compact-mode='true']:not([customizing])[inDOMFullscreen='true'] {
-  @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
-    &:not([zen-compact-animating]) {
-      #navigator-toolbox {
-        opacity: 0;
-      }
-    }
-  }
-  @media -moz-pref('zen.view.compact.hide-toolbar') {
-    &:not([zen-single-toolbar='true']) {
-      & #zen-appcontent-navbar-wrapper {
-        opacity: 0;
-      }
+  &:not([zen-compact-animating]) {
+    #navigator-toolbox {
+      opacity: 0;
     }
   }
 }

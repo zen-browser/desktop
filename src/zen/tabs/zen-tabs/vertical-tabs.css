@@ -60,12 +60,6 @@
 
     &:root[zen-right-side='true'] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
       margin-right: calc(-1 * var(--zen-toolbox-padding));
-      margin-top: -10px;
-      height: calc(4px + var(--zen-toolbar-height)) !important;
-
-      & .titlebar-button {
-        align-items: end;
-      }
     }
   }
 
@@ -723,7 +717,6 @@
 
   & #zen-sidebar-top-buttons-customization-target {
     flex-direction: column;
-    padding-top: var(--zen-element-separation);
   }
 
   & #zen-sidebar-foot-buttons {
@@ -972,6 +965,7 @@
   :root[zen-sidebar-expanded='true'] & {
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
   }
+
   :root[zen-single-toolbar='true'] & {
     --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
 

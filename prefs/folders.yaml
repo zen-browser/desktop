@@ -6,7 +6,7 @@
   value: true
 
 - name: zen.folders.search.hover-delay
-  value: 1000 # ms
+  value: 900 # ms
 
 - name: zen.folders.max-subfolders
   value: 5

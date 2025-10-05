@@ -648,8 +648,6 @@ var gZenLooksAndFeel = {
         Services.prefs.removeObserver(pref, this);
       }
     });
-    this.setCompactModeStyle();
-
     this.applySidebarLayout();
   },
 
@@ -693,41 +691,6 @@ var gZenLooksAndFeel = {
           layout.getAttribute('layout') != 'collapsed'
         );
         Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute('layout') == 'single');
-      });
-    }
-  },
-
-  setCompactModeStyle() {
-    const chooser = document.getElementById('zen-compact-mode-styles-form');
-    const radios = [...chooser.querySelectorAll('input')];
-
-    let value = '';
-    if (
-      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar', false) &&
-      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar', false)
-    ) {
-      value = 'both';
-    } else {
-      value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
-    }
-    chooser.querySelector(`[value='${value}']`).checked = true;
-    for (let radio of radios) {
-      radio.addEventListener('change', (e) => {
-        let value = e.target.value;
-        switch (value) {
-          case 'left':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
-            break;
-          case 'top':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-          default:
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-        }
       });
     }
   },
@@ -1075,11 +1038,6 @@ var gZenCKSSettings = {
 };
 
 Preferences.addAll([
-  {
-    id: 'zen.view.compact.hide-toolbar',
-    type: 'bool',
-    default: false,
-  },
   {
     id: 'zen.view.compact.toolbar-flash-popup',
     type: 'bool',

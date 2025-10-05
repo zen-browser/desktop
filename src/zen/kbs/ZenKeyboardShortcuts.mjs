@@ -302,7 +302,6 @@ class KeyShortcut {
   #disabled = false;
   #reserved = false;
   #internal = false;
-  #shouldBeEmpty = false;
 
   constructor(
     id,
@@ -404,14 +403,9 @@ class KeyShortcut {
   }
 
   set shouldBeEmpty(value) {
-    this.#shouldBeEmpty = value;
     if (value) {
       this.clearKeybind();
     }
-  }
-
-  get shouldBeEmpty() {
-    return this.#shouldBeEmpty;
   }
 
   toXHTMLElement(window) {
@@ -691,17 +685,6 @@ class nsZenKeyboardShortcutsLoader {
         'zen-compact-mode-shortcut-show-sidebar'
       )
     );
-    newShortcutList.push(
-      new KeyShortcut(
-        'zen-compact-mode-show-toolbar',
-        'T',
-        '',
-        ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
-        'cmd_zenCompactModeShowToolbar',
-        'zen-compact-mode-shortcut-show-toolbar'
-      )
-    );
 
     // Workspace shortcuts
     for (let i = 10; i > 0; i--) {
@@ -816,7 +799,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 11;
+  static LATEST_KBS_VERSION = 12;
 
   constructor() {}
 
@@ -865,7 +848,7 @@ class nsZenKeyboardShortcutsVersioner {
       return newData;
     }
 
-    console.error('Unknown keyboar shortcuts version');
+    console.error('Unknown keyboard shortcuts version');
     this.version = 0;
     return this.migrateIfNeeded(data);
   }
@@ -883,17 +866,6 @@ class nsZenKeyboardShortcutsVersioner {
   fixedKeyboardShortcuts(data) {
     // Apply migrations and ensure defaults exist
     let out = this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
-
-    // Hard-remove deprecated or conflicting defaults regardless of version
-    // - Remove the built-in "Open File" keybinding; menu item remains available
-    // - Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
-    // - Remove "Stop" keybinding to avoid conflict with Firefox's built-in binding
-    const shouldBeEmptyShortcuts = ['openFileKb', 'bookmarkAllTabsKb', 'key_stop'];
-    for (let shortcut of out) {
-      if (shouldBeEmptyShortcuts.includes(shortcut.getID?.())) {
-        shortcut.shouldBeEmpty = true;
-      }
-    }
 
     return out;
   }
@@ -1024,7 +996,6 @@ class nsZenKeyboardShortcutsVersioner {
           const commandMap = {
             'zen-compact-mode-toggle': 'cmd_zenCompactModeToggle',
             'zen-compact-mode-show-sidebar': 'cmd_zenCompactModeShowSidebar',
-            'zen-compact-mode-show-toolbar': 'cmd_zenCompactModeShowToolbar',
             'zen-workspace-forward': 'cmd_zenWorkspaceForward',
             'zen-workspace-backward': 'cmd_zenWorkspaceBackward',
             'zen-split-view-grid': 'cmd_zenSplitViewGrid',
@@ -1093,6 +1064,23 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
     }
+
+    if (version < 12) {
+      // Hard-remove deprecated or conflicting defaults regardless of version
+      // - Remove the built-in "Open File" keybinding; menu item remains available
+      // - Remove default "Bookmark All Tabs" keybinding (Ctrl+Shift+D) to avoid conflict
+      // - Remove "Stop" keybinding to avoid conflict with Firefox's built-in binding
+      const shouldBeEmptyShortcuts = ['openFileKb', 'bookmarkAllTabsKb', 'key_stop'];
+      for (let shortcut of data) {
+        if (shouldBeEmptyShortcuts.includes(shortcut.getID?.())) {
+          shortcut.shouldBeEmpty = true;
+        }
+      }
+
+      // Also remove zen-compact-mode-show-toolbar
+      data = data.filter((shortcut) => shortcut.getID() != 'zen-compact-mode-show-toolbar');
+    }
+
     return data;
   }
 }

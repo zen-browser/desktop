@@ -6,7 +6,7 @@ const { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppC
 
 class nsZenUIMigration {
   PREF_NAME = 'zen.ui.migration.version';
-  MIGRATION_VERSION = 3;
+  MIGRATION_VERSION = 4;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -76,6 +76,14 @@ class nsZenUIMigration {
     if (Services.prefs.getStringPref('zen.theme.accent-color', '').startsWith('system')) {
       Services.prefs.setStringPref('zen.theme.accent-color', '#ffb787');
     }
+  }
+
+  _migrateV4() {
+    // Fix spelling mistake in preference name
+    Services.prefs.setBoolPref(
+      'zen.theme.use-system-colors',
+      Services.prefs.getBoolPref('zen.theme.use-sysyem-colors', false)
+    );
   }
 }
 

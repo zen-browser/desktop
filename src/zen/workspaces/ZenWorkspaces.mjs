@@ -1480,17 +1480,23 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async unloadWorkspace() {
-    const tabs = gBrowser.tabs.filter(
+    const workspaceId = this.#contextMenuData?.workspaceId || this.activeWorkspace;
+
+    const tabsToUnload = this.allStoredTabs.filter(
       (tab) =>
+        tab.getAttribute('zen-workspace-id') === workspaceId &&
         !tab.hasAttribute('zen-empty-tab') &&
-        !tab.hasAttribute('zen-essential')
+        !tab.hasAttribute('zen-essential') &&
+        !tab.hasAttribute('pending')
     );
 
-    if (tabs.length === 0) {
+    if (tabsToUnload.length === 0) {
       return;
     }
 
-    await gBrowser.explicitUnloadTabs(tabs);
+    this.log('Unloading workspace', workspaceId);
+
+    await gBrowser.explicitUnloadTabs(tabsToUnload);  // TODO: unit test this
   }
 
   moveTabToWorkspace(tab, workspaceID) {

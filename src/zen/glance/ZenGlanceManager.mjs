@@ -1,127 +1,238 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 {
+  /**
+   * Manages the Zen Glance feature - a preview overlay system for tabs
+   * Allows users to preview content without fully opening new tabs
+   */
   class nsZenGlanceManager extends nsZenDOMOperatedFeature {
+    // Animation state
     _animating = false;
     _lazyPref = {};
 
+    // Glance management
     #glances = new Map();
     #currentGlanceID = null;
-
     #confirmationTimeout = null;
 
+    // Animation flags
+    animatingOpen = false;
+    animatingFullOpen = false;
+    closingGlance = false;
+    #duringOpening = false;
+    #ignoreClose = false;
+
     init() {
+      this.#setupEventListeners();
+      this.#setupPreferences();
+      this.#setupObservers();
+    }
+
+    #setupEventListeners() {
       window.addEventListener('TabClose', this.onTabClose.bind(this));
       window.addEventListener('TabSelect', this.onLocationChange.bind(this));
 
+      document
+        .getElementById('tabbrowser-tabpanels')
+        .addEventListener('click', this.onOverlayClick.bind(this));
+    }
+
+    #setupPreferences() {
       XPCOMUtils.defineLazyPreferenceGetter(
         this._lazyPref,
         'SHOULD_OPEN_EXTERNAL_TABS_IN_GLANCE',
         'zen.glance.open-essential-external-links',
         false
       );
+    }
 
-      document
-        .getElementById('tabbrowser-tabpanels')
-        .addEventListener('click', this.onOverlayClick.bind(this));
+    #setupObservers() {
       Services.obs.addObserver(this, 'quit-application-requested');
     }
 
+    /**
+     * Handle main command set events for glance operations
+     * @param {Event} event - The command event
+     */
     handleMainCommandSet(event) {
       const command = event.target;
-      switch (command.id) {
-        case 'cmd_zenGlanceClose':
-          this.closeGlance({ onTabClose: true });
-          break;
-        case 'cmd_zenGlanceExpand':
-          this.fullyOpenGlance();
-          break;
-        case 'cmd_zenGlanceSplit':
-          this.splitGlance();
-          break;
+      const commandHandlers = {
+        cmd_zenGlanceClose: () => this.closeGlance({ onTabClose: true }),
+        cmd_zenGlanceExpand: () => this.fullyOpenGlance(),
+        cmd_zenGlanceSplit: () => this.splitGlance(),
+      };
+
+      const handler = commandHandlers[command.id];
+      if (handler) {
+        handler();
       }
     }
 
+    /**
+     * Get the current glance browser element
+     * @returns {Browser} The current browser or null
+     */
     get #currentBrowser() {
       return this.#glances.get(this.#currentGlanceID)?.browser;
     }
 
+    /**
+     * Get the current glance tab element
+     * @returns {Tab} The current tab or null
+     */
     get #currentTab() {
       return this.#glances.get(this.#currentGlanceID)?.tab;
     }
 
+    /**
+     * Get the current glance parent tab element
+     * @returns {Tab} The parent tab or null
+     */
     get #currentParentTab() {
       return this.#glances.get(this.#currentGlanceID)?.parentTab;
     }
 
+    /**
+     * Handle clicks on the glance overlay
+     * @param {Event} event - The click event
+     */
     onOverlayClick(event) {
-      if (event.target === this.overlay && event.originalTarget !== this.contentWrapper) {
+      const isOverlayClick = event.target === this.overlay;
+      const isNotContentClick = event.originalTarget !== this.contentWrapper;
+
+      if (isOverlayClick && isNotContentClick) {
         this.closeGlance({ onTabClose: true });
       }
     }
 
+    /**
+     * Handle application observer notifications
+     * @param {Object} subject - The subject of the notification
+     * @param {string} topic - The topic of the notification
+     */
     observe(subject, topic) {
-      switch (topic) {
-        case 'quit-application-requested':
-          this.onUnload();
-          break;
+      if (topic === 'quit-application-requested') {
+        this.onUnload();
       }
     }
 
+    /**
+     * Clean up all glances when the application is unloading
+     */
     onUnload() {
-      // clear everything
-      /* eslint-disable no-unused-vars */
-      for (let [id, glance] of this.#glances) {
+      for (const [, glance] of this.#glances) {
         gBrowser.removeTab(glance.tab, { animate: false });
       }
+      this.#glances.clear();
     }
 
+    /**
+     * Create a new browser element for a glance
+     * @param {string} url - The URL to load
+     * @param {Tab} currentTab - The current tab
+     * @param {Tab} existingTab - Optional existing tab to reuse
+     * @returns {Browser} The created browser element
+     */
     createBrowserElement(url, currentTab, existingTab = null) {
-      const newTabOptions = {
+      const newTabOptions = this.#createTabOptions(currentTab);
+      const newUUID = gZenUIManager.generateUuidv4();
+
+      currentTab._selected = true;
+      const newTab =
+        existingTab ?? gBrowser.addTrustedTab(Services.io.newURI(url).spec, newTabOptions);
+
+      this.#configureNewTab(newTab, currentTab, newUUID);
+      this.#registerGlance(newTab, currentTab, newUUID);
+
+      gBrowser.selectedTab = newTab;
+      return this.#currentBrowser;
+    }
+
+    /**
+     * Create tab options for a new glance tab
+     * @param {Tab} currentTab - The current tab
+     * @returns {Object} Tab options
+     */
+    #createTabOptions(currentTab) {
+      return {
         userContextId: currentTab.getAttribute('usercontextid') || '',
         skipBackgroundNotify: true,
         insertTab: true,
         skipLoad: false,
       };
-      currentTab._selected = true;
-      const newUUID = gZenUIManager.generateUuidv4();
-      const newTab =
-        existingTab ?? gBrowser.addTrustedTab(Services.io.newURI(url).spec, newTabOptions);
+    }
+
+    /**
+     * Configure a new tab for glance usage
+     * @param {Tab} newTab - The new tab to configure
+     * @param {Tab} currentTab - The current tab
+     * @param {string} glanceId - The glance ID
+     */
+    #configureNewTab(newTab, currentTab, glanceId) {
       if (currentTab.hasAttribute('zenDefaultUserContextId')) {
         newTab.setAttribute('zenDefaultUserContextId', true);
       }
+
       currentTab.querySelector('.tab-content').appendChild(newTab);
       newTab.setAttribute('zen-glance-tab', true);
-      newTab.setAttribute('glance-id', newUUID);
-      currentTab.setAttribute('glance-id', newUUID);
-      this.#glances.set(newUUID, {
+      newTab.setAttribute('glance-id', glanceId);
+      currentTab.setAttribute('glance-id', glanceId);
+    }
+
+    /**
+     * Register a new glance in the glances map
+     * @param {Tab} newTab - The new tab
+     * @param {Tab} currentTab - The current tab
+     * @param {string} glanceId - The glance ID
+     */
+    #registerGlance(newTab, currentTab, glanceId) {
+      this.#glances.set(glanceId, {
         tab: newTab,
         parentTab: currentTab,
         browser: newTab.linkedBrowser,
       });
-      this.#currentGlanceID = newUUID;
-      gBrowser.selectedTab = newTab;
-      return this.#currentBrowser;
+      this.#currentGlanceID = glanceId;
     }
 
+    /**
+     * Fill overlay references from a browser element
+     * @param {Browser} browser - The browser element
+     */
     fillOverlay(browser) {
       this.overlay = browser.closest('.browserSidebarContainer');
       this.browserWrapper = browser.closest('.browserContainer');
       this.contentWrapper = browser.closest('.browserStack');
     }
 
+    /**
+     * Create new overlay buttons with animation
+     * @returns {DocumentFragment} The cloned button template
+     */
     #createNewOverlayButtons() {
-      const newButtons = document
-        .getElementById('zen-glance-sidebar-template')
-        .content.cloneNode(true);
+      const template = document.getElementById('zen-glance-sidebar-template');
+      const newButtons = template.content.cloneNode(true);
       const container = newButtons.querySelector('.zen-glance-sidebar-container');
+
+      this.#animateOverlayButtons(container);
+      return newButtons;
+    }
+
+    /**
+     * Animate the overlay buttons entrance
+     * @param {Element} container - The button container
+     */
+    #animateOverlayButtons(container) {
       container.style.opacity = 0;
+
+      const xOffset = gZenVerticalTabsManager._prefsRightSide ? 50 : -50;
+
       gZenUIManager.motion.animate(
         container,
         {
           opacity: [0, 1],
-          x: [gZenVerticalTabsManager._prefsRightSide ? 50 : -50, 0],
+          x: [xOffset, 0],
         },
         {
           duration: 0.3,
@@ -130,132 +241,234 @@
           bounce: 0,
         }
       );
-      return newButtons;
     }
 
+    /**
+     * Open a glance overlay with the specified data
+     * @param {Object} data - Glance data including URL, position, and dimensions
+     * @param {Tab} existingTab - Optional existing tab to reuse
+     * @param {Tab} ownerTab - The tab that owns this glance
+     * @returns {Promise<Tab>} Promise that resolves to the glance tab
+     */
     openGlance(data, existingTab = null, ownerTab = null) {
       if (this.#currentBrowser) {
         return;
       }
+
       if (gBrowser.selectedTab === this.#currentParentTab) {
         gBrowser.selectedTab = this.#currentTab;
         return;
       }
-      this.animatingOpen = true;
-      this._animating = true;
 
-      const initialX = data.clientX;
-      const initialY = data.clientY;
-      const initialWidth = data.width;
-      const initialHeight = data.height;
-
-      this.browserWrapper?.removeAttribute('animate');
-      this.browserWrapper?.removeAttribute('has-finished-animation');
-      this.overlay?.removeAttribute('post-fade-out');
-
+      this.#setAnimationState(true);
       const currentTab = ownerTab ?? gBrowser.selectedTab;
-
       const browserElement = this.createBrowserElement(data.url, currentTab, existingTab);
 
       this.fillOverlay(browserElement);
-
       this.overlay.classList.add('zen-glance-overlay');
 
+      return this.#animateGlanceOpening(data, browserElement);
+    }
+
+    /**
+     * Set animation state flags
+     * @param {boolean} isAnimating - Whether animations are active
+     */
+    #setAnimationState(isAnimating) {
+      this.animatingOpen = isAnimating;
+      this._animating = isAnimating;
+    }
+
+    /**
+     * Animate the glance opening process
+     * @param {Object} data - Glance data
+     * @param {Browser} browserElement - The browser element
+     * @returns {Promise<Tab>} Promise that resolves to the glance tab
+     */
+    #animateGlanceOpening(data, browserElement) {
       return new Promise((resolve) => {
         window.requestAnimationFrame(() => {
-          this.quickOpenGlance();
-          const newButtons = this.#createNewOverlayButtons();
-          this.browserWrapper.appendChild(newButtons);
-
-          // Performance: backdrop-filter blur on Windows significantly impacts scroll smoothness
-          // in the Glance preview (particularly for wheel scrolling). Avoid applying it on Windows.
-          const parentSidebarContainer = this.#currentParentTab.linkedBrowser.closest(
-            '.browserSidebarContainer'
-          );
-          gZenUIManager.motion.animate(
-            parentSidebarContainer,
-            {
-              scale: [1, 0.98],
-              opacity: [1, 0.6],
-            },
-            {
-              duration: 0.4,
-              type: 'spring',
-              bounce: 0.2,
-            }
-          );
-          const top = initialY + initialHeight / 2;
-          const left = initialX + initialWidth / 2;
-          let imageDataElement = null;
-          if (data.elementData) {
-            const elementData = data.elementData;
-            imageDataElement = document.createXULElement('image');
-            imageDataElement.setAttribute('src', elementData);
-            imageDataElement.classList.add('zen-glance-element-preview');
-            this.browserWrapper.prepend(imageDataElement);
-            this.#glances.get(this.#currentGlanceID).elementImageData = elementData;
-          }
-          this.overlay.removeAttribute('fade-out');
-          this.browserWrapper.setAttribute('animate', true);
-          this.browserWrapper.style.top = `${top}px`;
-          this.browserWrapper.style.left = `${left}px`;
-          this.browserWrapper.style.width = `${initialWidth}px`;
-          this.browserWrapper.style.height = `${initialHeight}px`;
-          this.#glances.get(this.#currentGlanceID).originalPosition = {
-            top: this.browserWrapper.style.top,
-            left: this.browserWrapper.style.left,
-            width: this.browserWrapper.style.width,
-            height: this.browserWrapper.style.height,
-          };
-          this.overlay.style.overflow = 'visible';
-          {
-            // Set a minimum width and height to the browser element to avoid resizing
-            const rect = this.browserWrapper.parentElement.getBoundingClientRect();
-            const minWidth = rect.width * 0.85;
-            const minHeight = rect.height * 0.85;
-            browserElement.style.minWidth = `${minWidth}px`;
-            browserElement.style.minHeight = `${minHeight}px`;
-          }
-          gZenUIManager.motion
-            .animate(
-              this.browserWrapper,
-              {
-                top: '50%',
-                left: '50%',
-                width: '85%',
-                height: '100%',
-              },
-              {
-                duration: 0.3,
-                type: 'spring',
-                bounce: 0.1,
-              }
-            )
-            .then(() => {
-              if (imageDataElement) {
-                imageDataElement.remove();
-              }
-              browserElement.style.minWidth = '';
-              browserElement.style.minHeight = '';
-              gBrowser.tabContainer._invalidateCachedTabs();
-              this.overlay.style.removeProperty('overflow');
-              this.browserWrapper.removeAttribute('animate');
-              this.browserWrapper.setAttribute('has-finished-animation', true);
-              this._animating = false;
-              this.animatingOpen = false;
-              this.#currentTab.dispatchEvent(new Event('GlanceOpen', { bubbles: true }));
-              resolve(this.#currentTab);
-            });
+          this.#prepareGlanceAnimation(data, browserElement);
+          this.#executeGlanceAnimation(data, browserElement, resolve);
         });
       });
     }
 
-    _clearContainerStyles(container) {
+    /**
+     * Prepare the glance for animation
+     * @param {Object} data - Glance data
+     * @param {Browser} browserElement - The browser element
+     */
+    #prepareGlanceAnimation(data, browserElement) {
+      this.quickOpenGlance();
+      const newButtons = this.#createNewOverlayButtons();
+      this.browserWrapper.appendChild(newButtons);
+
+      this.#animateParentBackground();
+      this.#setupGlancePositioning(data);
+      this.#handleElementPreview(data);
+      this.#configureBrowserElement(browserElement);
+    }
+
+    /**
+     * Animate the parent background
+     */
+    #animateParentBackground() {
+      const parentSidebarContainer = this.#currentParentTab.linkedBrowser.closest(
+        '.browserSidebarContainer'
+      );
+
+      gZenUIManager.motion.animate(
+        parentSidebarContainer,
+        {
+          scale: [1, 0.98],
+          opacity: [1, 0.6],
+        },
+        {
+          duration: 0.4,
+          type: 'spring',
+          bounce: 0.2,
+        }
+      );
+    }
+
+    /**
+     * Set up glance positioning
+     * @param {Object} data - Glance data with position and dimensions
+     */
+    #setupGlancePositioning(data) {
+      const { clientX, clientY, width, height } = data;
+      const top = clientY + height / 2;
+      const left = clientX + width / 2;
+
+      this.overlay.removeAttribute('fade-out');
+      this.browserWrapper.setAttribute('animate', true);
+      this.browserWrapper.style.top = `${top}px`;
+      this.browserWrapper.style.left = `${left}px`;
+      this.browserWrapper.style.width = `${width}px`;
+      this.browserWrapper.style.height = `${height}px`;
+
+      this.#storeOriginalPosition();
+      this.overlay.style.overflow = 'visible';
+    }
+
+    /**
+     * Store the original position for later restoration
+     */
+    #storeOriginalPosition() {
+      this.#glances.get(this.#currentGlanceID).originalPosition = {
+        top: this.browserWrapper.style.top,
+        left: this.browserWrapper.style.left,
+        width: this.browserWrapper.style.width,
+        height: this.browserWrapper.style.height,
+      };
+    }
+
+    /**
+     * Handle element preview if provided
+     * @param {Object} data - Glance data
+     * @returns {Element|null} The preview element or null
+     */
+    #handleElementPreview(data) {
+      if (!data.elementData) {
+        return null;
+      }
+
+      const imageDataElement = document.createXULElement('image');
+      imageDataElement.setAttribute('src', data.elementData);
+      imageDataElement.classList.add('zen-glance-element-preview');
+      this.browserWrapper.prepend(imageDataElement);
+      this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
+
+      return imageDataElement;
+    }
+
+    /**
+     * Configure browser element for animation
+     * @param {Browser} browserElement - The browser element
+     */
+    #configureBrowserElement(browserElement) {
+      const rect = this.browserWrapper.parentElement.getBoundingClientRect();
+      const minWidth = rect.width * 0.85;
+      const minHeight = rect.height * 0.85;
+
+      browserElement.style.minWidth = `${minWidth}px`;
+      browserElement.style.minHeight = `${minHeight}px`;
+    }
+
+    /**
+     * Execute the main glance animation
+     * @param {Object} data - Glance data
+     * @param {Browser} browserElement - The browser element
+     * @param {Function} resolve - Promise resolve function
+     */
+    #executeGlanceAnimation(data, browserElement, resolve) {
+      const imageDataElement = this.#handleElementPreview(data);
+
+      gZenUIManager.motion
+        .animate(
+          this.browserWrapper,
+          {
+            top: '50%',
+            left: '50%',
+            width: '85%',
+            height: '100%',
+          },
+          {
+            duration: 0.3,
+            type: 'spring',
+            bounce: 0.1,
+          }
+        )
+        .then(() => {
+          this.#finalizeGlanceOpening(imageDataElement, browserElement, resolve);
+        });
+    }
+
+    /**
+     * Finalize the glance opening process
+     * @param {Element|null} imageDataElement - The preview element
+     * @param {Browser} browserElement - The browser element
+     * @param {Function} resolve - Promise resolve function
+     */
+    #finalizeGlanceOpening(imageDataElement, browserElement, resolve) {
+      if (imageDataElement) {
+        imageDataElement.remove();
+      }
+
+      browserElement.style.minWidth = '';
+      browserElement.style.minHeight = '';
+
+      gBrowser.tabContainer._invalidateCachedTabs();
+      this.overlay.style.removeProperty('overflow');
+      this.browserWrapper.removeAttribute('animate');
+      this.browserWrapper.setAttribute('has-finished-animation', true);
+
+      this.#setAnimationState(false);
+      this.#currentTab.dispatchEvent(new Event('GlanceOpen', { bubbles: true }));
+      resolve(this.#currentTab);
+    }
+
+    /**
+     * Clear container styles while preserving inset
+     * @param {Element} container - The container element
+     */
+    #clearContainerStyles(container) {
       const inset = container.style.inset;
       container.removeAttribute('style');
       container.style.inset = inset;
     }
 
+    /**
+     * Close the current glance
+     * @param {Object} options - Close options
+     * @param {boolean} options.noAnimation - Skip animation
+     * @param {boolean} options.onTabClose - Called during tab close
+     * @param {string} options.setNewID - Set new glance ID
+     * @param {boolean} options.hasFocused - Has focus confirmation
+     * @param {boolean} options.skipPermitUnload - Skip unload permission check
+     * @returns {Promise|undefined} Promise if animated, undefined if immediate
+     */
     closeGlance({
       noAnimation = false,
       onTabClose = false,
@@ -263,70 +476,129 @@
       hasFocused = false,
       skipPermitUnload = false,
     } = {}) {
-      if (
-        (this._animating && !onTabClose) ||
-        !this.#currentBrowser ||
-        (this.animatingOpen && !onTabClose) ||
-        this._duringOpening
-      ) {
+      if (!this.#canCloseGlance(onTabClose)) {
         return;
       }
 
-      if (!skipPermitUnload) {
-        let { permitUnload } = this.#currentBrowser.permitUnload();
-        if (!permitUnload) {
-          return;
-        }
+      if (!skipPermitUnload && !this.#checkPermitUnload()) {
+        return;
       }
 
       const browserSidebarContainer = this.#currentParentTab?.linkedBrowser?.closest(
         '.browserSidebarContainer'
       );
       const sidebarButtons = this.browserWrapper.querySelector('.zen-glance-sidebar-container');
+
+      if (this.#handleConfirmationTimeout(onTabClose, hasFocused, sidebarButtons)) {
+        return;
+      }
+
+      this.browserWrapper.removeAttribute('has-finished-animation');
+
+      if (noAnimation) {
+        this.#clearContainerStyles(browserSidebarContainer);
+        this.quickCloseGlance({ closeCurrentTab: false });
+        return;
+      }
+
+      return this.#animateGlanceClosing(
+        onTabClose,
+        browserSidebarContainer,
+        sidebarButtons,
+        setNewID
+      );
+    }
+
+    /**
+     * Check if glance can be closed
+     * @param {boolean} onTabClose - Whether this is called during tab close
+     * @returns {boolean} True if can close
+     */
+    #canCloseGlance(onTabClose) {
+      return !(
+        (this._animating && !onTabClose) ||
+        !this.#currentBrowser ||
+        (this.animatingOpen && !onTabClose) ||
+        this._duringOpening
+      );
+    }
+
+    /**
+     * Check if unload is permitted
+     * @returns {boolean} True if unload is permitted
+     */
+    #checkPermitUnload() {
+      const { permitUnload } = this.#currentBrowser.permitUnload();
+      return permitUnload;
+    }
+
+    /**
+     * Handle confirmation timeout for focused close
+     * @param {boolean} onTabClose - Whether this is called during tab close
+     * @param {boolean} hasFocused - Has focus confirmation
+     * @param {Element} sidebarButtons - The sidebar buttons element
+     * @returns {boolean} True if should return early
+     */
+    #handleConfirmationTimeout(onTabClose, hasFocused, sidebarButtons) {
       if (onTabClose && hasFocused && !this.#confirmationTimeout && sidebarButtons) {
-        const cancelButton = sidebarButtons?.querySelector('.zen-glance-sidebar-close');
+        const cancelButton = sidebarButtons.querySelector('.zen-glance-sidebar-close');
         cancelButton.setAttribute('waitconfirmation', true);
         this.#confirmationTimeout = setTimeout(() => {
           cancelButton.removeAttribute('waitconfirmation');
           this.#confirmationTimeout = null;
         }, 3000);
-        return;
+        return true;
       }
+      return false;
+    }
 
-      this.browserWrapper.removeAttribute('has-finished-animation');
-      if (noAnimation) {
-        this._clearContainerStyles(browserSidebarContainer);
-        this.quickCloseGlance({ closeCurrentTab: false });
-        return;
-      }
-
+    /**
+     * Animate the glance closing process
+     * @param {boolean} onTabClose - Whether this is called during tab close
+     * @param {Element} browserSidebarContainer - The sidebar container
+     * @param {Element} sidebarButtons - The sidebar buttons
+     * @param {string} setNewID - New glance ID to set
+     * @returns {Promise} Promise that resolves when closing is complete
+     */
+    #animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID) {
       this.closingGlance = true;
       this._animating = true;
 
       gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
-      let quikcCloseZen = false;
-      if (onTabClose) {
-        // Create new tab if no more ex
-        if (gBrowser.tabs.length === 1) {
-          BrowserCommands.openTab();
-          return;
-        }
+      if (onTabClose && gBrowser.tabs.length === 1) {
+        BrowserCommands.openTab();
+        return;
       }
 
-      // do NOT touch here, I don't know what it does, but it works...
+      this.#prepareGlanceForClosing();
+      this.#animateSidebarButtons(sidebarButtons);
+      this.#animateParentBackgroundClose(browserSidebarContainer);
+
+      return this.#executeClosingAnimation(setNewID, onTabClose);
+    }
+
+    /**
+     * Prepare glance for closing
+     */
+    #prepareGlanceForClosing() {
+      // Critical: This line must not be touched - it works for unknown reasons
       this.#currentTab.style.display = 'none';
       this.overlay.setAttribute('fade-out', true);
       this.overlay.style.pointerEvents = 'none';
       this.quickCloseGlance({ justAnimateParent: true, clearID: false });
-      const originalPosition = this.#glances.get(this.#currentGlanceID).originalPosition;
+    }
+
+    /**
+     * Animate sidebar buttons out
+     * @param {Element} sidebarButtons - The sidebar buttons element
+     */
+    #animateSidebarButtons(sidebarButtons) {
       if (sidebarButtons) {
         gZenUIManager.motion
           .animate(
             sidebarButtons,
-            {
-              opacity: [1, 0],
-            },
+            { opacity: [1, 0] },
             {
               duration: 0.2,
               type: 'spring',
@@ -337,6 +609,13 @@
             sidebarButtons.remove();
           });
       }
+    }
+
+    /**
+     * Animate parent background restoration
+     * @param {Element} browserSidebarContainer - The sidebar container
+     */
+    #animateParentBackgroundClose(browserSidebarContainer) {
       gZenUIManager.motion
         .animate(
           browserSidebarContainer,
@@ -351,100 +630,164 @@
           }
         )
         .then(() => {
-          this._clearContainerStyles(browserSidebarContainer);
+          this.#clearContainerStyles(browserSidebarContainer);
         });
+
       this.browserWrapper.style.opacity = 1;
+    }
+
+    /**
+     * Execute the main closing animation
+     * @param {string} setNewID - New glance ID to set
+     * @param {boolean} onTabClose - Whether this is called during tab close
+     * @returns {Promise} Promise that resolves when complete
+     */
+    #executeClosingAnimation(setNewID, onTabClose) {
       return new Promise((resolve) => {
+        const originalPosition = this.#glances.get(this.#currentGlanceID).originalPosition;
         const elementImageData = this.#glances.get(this.#currentGlanceID).elementImageData;
-        if (elementImageData) {
-          const imageDataElement = document.createXULElement('image');
-          imageDataElement.setAttribute('src', elementImageData);
-          imageDataElement.classList.add('zen-glance-element-preview');
-          this.browserWrapper.prepend(imageDataElement);
-        }
+
+        this.#addElementPreview(elementImageData);
+
         gZenUIManager.motion
           .animate(
             this.browserWrapper,
-            {
-              ...originalPosition,
-            },
+            { ...originalPosition },
             { type: 'spring', bounce: 0, duration: 0.3, easing: 'ease-in' }
           )
           .then(() => {
-            this.browserWrapper.removeAttribute('animate');
-            if (!this.#currentParentTab) {
-              return;
-            }
-
-            if (!onTabClose || quikcCloseZen) {
-              this.quickCloseGlance({ clearID: false });
-            }
-            this.browserWrapper.style.display = 'none';
-            this.overlay.removeAttribute('fade-out');
-            this.browserWrapper.removeAttribute('animate');
-
-            const lastCurrentTab = this.#currentTab;
-
-            this.overlay.classList.remove('zen-glance-overlay');
-            gBrowser
-              ._getSwitcher()
-              .setTabStateNoAction(lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
-
-            if (!this.#currentParentTab.selected) {
-              this.#currentParentTab._visuallySelected = false;
-            }
-
-            if (
-              this.#currentParentTab.linkedBrowser &&
-              !this.#currentParentTab.hasAttribute('split-view')
-            ) {
-              this.#currentParentTab.linkedBrowser.zenModeActive = false;
-            }
-
-            // reset everything
-            this.browserWrapper = null;
-            this.overlay = null;
-            this.contentWrapper = null;
-
-            lastCurrentTab.removeAttribute('zen-glance-tab');
-            lastCurrentTab._closingGlance = true;
-
-            this._ignoreClose = true;
-            lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));
-            gBrowser.removeTab(lastCurrentTab, { animate: true, skipPermitUnload: true });
-            gBrowser.tabContainer._invalidateCachedTabs();
-
-            this.#currentParentTab.removeAttribute('glance-id');
-
-            this.#glances.delete(this.#currentGlanceID);
-            this.#currentGlanceID = setNewID;
-
-            this._duringOpening = false;
-
-            this._animating = false;
-            this.closingGlance = false;
-
-            if (this.#currentGlanceID) {
-              this.quickOpenGlance();
-            }
-
-            resolve();
+            this.#finalizeGlanceClosing(setNewID, resolve, onTabClose);
           });
       });
     }
 
-    quickOpenGlance() {
-      if (!this.#currentBrowser || this._duringOpening) {
+    /**
+     * Add element preview if available
+     * @param {string} elementImageData - The element image data
+     */
+    #addElementPreview(elementImageData) {
+      if (elementImageData) {
+        const imageDataElement = document.createXULElement('image');
+        imageDataElement.setAttribute('src', elementImageData);
+        imageDataElement.classList.add('zen-glance-element-preview');
+        this.browserWrapper.prepend(imageDataElement);
+      }
+    }
+
+    /**
+     * Finalize the glance closing process
+     * @param {string} setNewID - New glance ID to set
+     * @param {Function} resolve - Promise resolve function
+     * @param {boolean} onTabClose - Whether this is called during tab close
+     */
+    #finalizeGlanceClosing(setNewID, resolve, onTabClose) {
+      this.browserWrapper.removeAttribute('animate');
+
+      if (!this.#currentParentTab) {
         return;
       }
-      this._duringOpening = true;
 
+      if (!onTabClose) {
+        this.quickCloseGlance({ clearID: false });
+      }
+      this.browserWrapper.style.display = 'none';
+      this.overlay.removeAttribute('fade-out');
+      this.browserWrapper.removeAttribute('animate');
+
+      const lastCurrentTab = this.#currentTab;
+      this.#cleanupGlanceElements(lastCurrentTab);
+      this.#resetGlanceState(setNewID);
+
+      this.#setAnimationState(false);
+      this.closingGlance = false;
+
+      if (this.#currentGlanceID) {
+        this.quickOpenGlance();
+      }
+
+      resolve();
+    }
+
+    /**
+     * Clean up glance DOM elements
+     * @param {Tab} lastCurrentTab - The tab being closed
+     */
+    #cleanupGlanceElements(lastCurrentTab) {
+      this.overlay.classList.remove('zen-glance-overlay');
+      gBrowser
+        ._getSwitcher()
+        .setTabStateNoAction(lastCurrentTab, gBrowser.AsyncTabSwitcher.STATE_UNLOADED);
+
+      if (!this.#currentParentTab.selected) {
+        this.#currentParentTab._visuallySelected = false;
+      }
+
+      if (
+        this.#currentParentTab.linkedBrowser &&
+        !this.#currentParentTab.hasAttribute('split-view')
+      ) {
+        this.#currentParentTab.linkedBrowser.zenModeActive = false;
+      }
+
+      // Reset overlay references
+      this.browserWrapper = null;
+      this.overlay = null;
+      this.contentWrapper = null;
+
+      lastCurrentTab.removeAttribute('zen-glance-tab');
+      lastCurrentTab._closingGlance = true;
+
+      this.#ignoreClose = true;
+      lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));
+      gBrowser.removeTab(lastCurrentTab, { animate: true, skipPermitUnload: true });
+      gBrowser.tabContainer._invalidateCachedTabs();
+    }
+
+    /**
+     * Reset glance state
+     * @param {string} setNewID - New glance ID to set
+     */
+    #resetGlanceState(setNewID) {
+      this.#currentParentTab.removeAttribute('glance-id');
+      this.#glances.delete(this.#currentGlanceID);
+      this.#currentGlanceID = setNewID;
+      this._duringOpening = false;
+    }
+
+    /**
+     * Quickly open glance without animation
+     */
+    quickOpenGlance() {
+      if (!this.#currentBrowser || this.#duringOpening) {
+        return;
+      }
+
+      this.#duringOpening = true;
+      this.#configureGlanceElements();
+      this.#setGlanceStates();
+      this.#duringOpening = false;
+    }
+
+    /**
+     * Configure glance DOM elements
+     */
+    #configureGlanceElements() {
       const parentBrowserContainer = this.#currentParentTab.linkedBrowser.closest(
         '.browserSidebarContainer'
       );
+
       parentBrowserContainer.classList.add('zen-glance-background');
       parentBrowserContainer.classList.remove('zen-glance-overlay');
       parentBrowserContainer.classList.add('deck-selected');
+
+      this.overlay.classList.add('deck-selected');
+      this.overlay.classList.add('zen-glance-overlay');
+    }
+
+    /**
+     * Set glance browser and tab states
+     */
+    #setGlanceStates() {
       this.#currentParentTab.linkedBrowser.zenModeActive = true;
       this.#currentParentTab.linkedBrowser.docShellIsActive = true;
       this.#currentBrowser.zenModeActive = true;
@@ -452,13 +795,16 @@
       this.#currentBrowser.setAttribute('zen-glance-selected', true);
       this.fillOverlay(this.#currentBrowser);
       this.#currentParentTab._visuallySelected = true;
-
-      this.overlay.classList.add('deck-selected');
-      this.overlay.classList.add('zen-glance-overlay');
-
-      this._duringOpening = false;
     }
 
+    /**
+     * Quickly close glance without animation
+     * @param {Object} options - Close options
+     * @param {boolean} options.closeCurrentTab - Close current tab
+     * @param {boolean} options.closeParentTab - Close parent tab
+     * @param {boolean} options.justAnimateParent - Only animate parent
+     * @param {boolean} options.clearID - Clear current glance ID
+     */
     quickCloseGlance({
       closeCurrentTab = true,
       closeParentTab = true,
@@ -469,126 +815,217 @@
       const browserContainer = this.#currentParentTab.linkedBrowser.closest(
         '.browserSidebarContainer'
       );
-      if (parentHasBrowser) {
-        browserContainer.classList.remove('zen-glance-background');
-      }
+
+      this.#removeParentBackground(parentHasBrowser, browserContainer);
+
       if (!justAnimateParent && this.overlay) {
-        if (parentHasBrowser && !this.#currentParentTab.hasAttribute('split-view')) {
-          if (closeParentTab) {
-            browserContainer.classList.remove('deck-selected');
-          }
-          this.#currentParentTab.linkedBrowser.zenModeActive = false;
-        }
-        this.#currentBrowser.zenModeActive = false;
-        if (closeParentTab && parentHasBrowser) {
-          this.#currentParentTab.linkedBrowser.docShellIsActive = false;
-        }
-        if (closeCurrentTab) {
-          this.#currentBrowser.docShellIsActive = false;
-          this.overlay.classList.remove('deck-selected');
-          this.#currentTab._selected = false;
-        }
-        if (!this.#currentParentTab._visuallySelected && closeParentTab) {
-          this.#currentParentTab._visuallySelected = false;
-        }
-        this.#currentBrowser.removeAttribute('zen-glance-selected');
-        this.overlay.classList.remove('zen-glance-overlay');
+        this.#resetGlanceStates(
+          closeCurrentTab,
+          closeParentTab,
+          parentHasBrowser,
+          browserContainer
+        );
       }
+
       if (clearID) {
         this.#currentGlanceID = null;
       }
     }
 
+    /**
+     * Remove parent background styling
+     * @param {boolean} parentHasBrowser - Whether parent has browser
+     * @param {Element} browserContainer - The browser container
+     */
+    #removeParentBackground(parentHasBrowser, browserContainer) {
+      if (parentHasBrowser) {
+        browserContainer.classList.remove('zen-glance-background');
+      }
+    }
+
+    /**
+     * Reset glance states
+     * @param {boolean} closeCurrentTab - Whether to close current tab
+     * @param {boolean} closeParentTab - Whether to close parent tab
+     * @param {boolean} parentHasBrowser - Whether parent has browser
+     * @param {Element} browserContainer - The browser container
+     */
+    #resetGlanceStates(closeCurrentTab, closeParentTab, parentHasBrowser, browserContainer) {
+      if (parentHasBrowser && !this.#currentParentTab.hasAttribute('split-view')) {
+        if (closeParentTab) {
+          browserContainer.classList.remove('deck-selected');
+        }
+        this.#currentParentTab.linkedBrowser.zenModeActive = false;
+      }
+
+      this.#currentBrowser.zenModeActive = false;
+
+      if (closeParentTab && parentHasBrowser) {
+        this.#currentParentTab.linkedBrowser.docShellIsActive = false;
+      }
+
+      if (closeCurrentTab) {
+        this.#currentBrowser.docShellIsActive = false;
+        this.overlay.classList.remove('deck-selected');
+        this.#currentTab._selected = false;
+      }
+
+      if (!this.#currentParentTab._visuallySelected && closeParentTab) {
+        this.#currentParentTab._visuallySelected = false;
+      }
+
+      this.#currentBrowser.removeAttribute('zen-glance-selected');
+      this.overlay.classList.remove('zen-glance-overlay');
+    }
+
+    /**
+     * Open glance on location change if not animating
+     */
     onLocationChangeOpenGlance() {
       if (!this.animatingOpen) {
         this.quickOpenGlance();
       }
     }
 
-    // note: must be sync to avoid timing issues
+    /**
+     * Handle location change events
+     * Note: Must be sync to avoid timing issues
+     * @param {Event} event - The location change event
+     */
     onLocationChange(event) {
       const tab = event.target;
+
       if (this.animatingFullOpen || this.closingGlance) {
         return;
       }
-      if (this._duringOpening || !tab.hasAttribute('glance-id')) {
-        if (this.#currentGlanceID && !this._duringOpening) {
+
+      if (this.#duringOpening || !tab.hasAttribute('glance-id')) {
+        if (this.#currentGlanceID && !this.#duringOpening) {
           this.quickCloseGlance();
         }
         return;
       }
+
       if (this.#currentGlanceID && this.#currentGlanceID !== tab.getAttribute('glance-id')) {
         this.quickCloseGlance();
       }
+
       this.#currentGlanceID = tab.getAttribute('glance-id');
+
       if (gBrowser.selectedTab === this.#currentParentTab && this.#currentBrowser) {
-        const curTab = this.#currentTab;
-        const prevTab = event.detail.previousTab;
-        setTimeout(() => {
-          gBrowser.selectedTab = curTab;
-          if (prevTab?.linkedBrowser) {
-            prevTab.linkedBrowser
-              .closest('.browserSidebarContainer')
-              .classList.remove('deck-selected');
-          }
-        }, 0);
+        this.#handleParentTabSelection(event);
       } else if (gBrowser.selectedTab === this.#currentTab) {
         setTimeout(this.onLocationChangeOpenGlance.bind(this), 0);
       }
     }
 
+    /**
+     * Handle parent tab selection
+     * @param {Event} event - The location change event
+     */
+    #handleParentTabSelection(event) {
+      const curTab = this.#currentTab;
+      const prevTab = event.detail.previousTab;
+
+      setTimeout(() => {
+        gBrowser.selectedTab = curTab;
+        if (prevTab?.linkedBrowser) {
+          prevTab.linkedBrowser
+            .closest('.browserSidebarContainer')
+            .classList.remove('deck-selected');
+        }
+      }, 0);
+    }
+
+    /**
+     * Handle tab close events
+     * @param {Event} event - The tab close event
+     */
     onTabClose(event) {
       if (event.target === this.#currentParentTab) {
         this.closeGlance({ onTabClose: true });
       }
     }
 
+    /**
+     * Manage tab close for glance tabs
+     * @param {Tab} tab - The tab being closed
+     * @returns {boolean} Whether to continue with tab close
+     */
     manageTabClose(tab) {
-      if (tab.hasAttribute('glance-id')) {
-        const oldGlanceID = this.#currentGlanceID;
-        const newGlanceID = tab.getAttribute('glance-id');
-        this.#currentGlanceID = newGlanceID;
-        const isDifferent = newGlanceID !== oldGlanceID;
-        if (this._ignoreClose) {
-          this._ignoreClose = false;
-          return false;
-        }
-        this.closeGlance({
-          onTabClose: true,
-          setNewID: isDifferent ? oldGlanceID : null,
-        });
-        // only keep continueing tab close if we are not on the currently selected tab
-        return !isDifferent;
+      if (!tab.hasAttribute('glance-id')) {
+        return false;
       }
-      return false;
+
+      const oldGlanceID = this.#currentGlanceID;
+      const newGlanceID = tab.getAttribute('glance-id');
+      this.#currentGlanceID = newGlanceID;
+      const isDifferent = newGlanceID !== oldGlanceID;
+
+      if (this.#ignoreClose) {
+        this.#ignoreClose = false;
+        return false;
+      }
+
+      this.closeGlance({
+        onTabClose: true,
+        setNewID: isDifferent ? oldGlanceID : null,
+      });
+
+      // Only continue tab close if we are not on the currently selected tab
+      return !isDifferent;
     }
 
+    /**
+     * Check if two tabs have different domains
+     * @param {Tab} tab1 - First tab
+     * @param {nsIURI} url2 - Second URL
+     * @returns {boolean} True if domains differ
+     */
     tabDomainsDiffer(tab1, url2) {
       try {
         if (!tab1) {
           return true;
         }
-        let url1 = tab1.linkedBrowser.currentURI.spec;
+
+        const url1 = tab1.linkedBrowser.currentURI.spec;
         if (url1.startsWith('about:')) {
           return true;
         }
-        // https://github.com/zen-browser/desktop/issues/7173: Only glance up links that are http(s) or file
+
+        // Only glance up links that are http(s) or file
+        // https://github.com/zen-browser/desktop/issues/7173
         const url2Spec = url2.spec;
-        if (
-          !url2Spec.startsWith('http') &&
-          !url2Spec.startsWith('https') &&
-          !url2Spec.startsWith('file')
-        ) {
+        if (!this.#isValidGlanceUrl(url2Spec)) {
           return false;
         }
+
         return Services.io.newURI(url1).host !== url2.host;
       } catch {
         return true;
       }
     }
 
+    /**
+     * Check if URL is valid for glance
+     * @param {string} urlSpec - The URL spec
+     * @returns {boolean} True if valid
+     */
+    #isValidGlanceUrl(urlSpec) {
+      return (
+        urlSpec.startsWith('http') || urlSpec.startsWith('https') || urlSpec.startsWith('file')
+      );
+    }
+
+    /**
+     * Check if a tab should be opened in glance
+     * @param {Tab} tab - The tab to check
+     * @param {nsIURI} uri - The URI to check
+     * @returns {boolean} True if should open in glance
+     */
     shouldOpenTabInGlance(tab, uri) {
-      let owner = tab.owner;
+      const owner = tab.owner;
+
       return (
         owner &&
         owner.pinned &&
@@ -599,86 +1036,138 @@
       );
     }
 
+    /**
+     * Handle tab open events
+     * @param {Browser} browser - The browser element
+     * @param {nsIURI} uri - The URI being opened
+     */
     onTabOpen(browser, uri) {
-      let tab = gBrowser.getTabForBrowser(browser);
+      const tab = gBrowser.getTabForBrowser(browser);
       if (!tab) {
         return;
       }
+
       try {
         if (this.shouldOpenTabInGlance(tab, uri)) {
-          const browserRect = gBrowser.tabbox.getBoundingClientRect();
-          this.openGlance(
-            {
-              url: undefined,
-              ...(gZenUIManager._lastClickPosition || {
-                clientX: browserRect.width / 2,
-                clientY: browserRect.height / 2,
-              }),
-              width: 0,
-              height: 0,
-            },
-            tab,
-            tab.owner
-          );
+          this.#openGlanceForTab(tab);
         }
       } catch (e) {
-        console.error(e);
+        console.error('Error opening glance for tab:', e);
       }
     }
 
+    /**
+     * Open glance for a specific tab
+     * @param {Tab} tab - The tab to open glance for
+     */
+    #openGlanceForTab(tab) {
+      const browserRect = gBrowser.tabbox.getBoundingClientRect();
+      const clickPosition = gZenUIManager._lastClickPosition || {
+        clientX: browserRect.width / 2,
+        clientY: browserRect.height / 2,
+      };
+
+      this.openGlance(
+        {
+          url: undefined,
+          ...clickPosition,
+          width: 0,
+          height: 0,
+        },
+        tab,
+        tab.owner
+      );
+    }
+
+    /**
+     * Finish opening glance and clean up
+     */
     finishOpeningGlance() {
       gBrowser.tabContainer._invalidateCachedTabs();
       gZenWorkspaces.updateTabsContainers();
       this.overlay.classList.remove('zen-glance-overlay');
-      this._clearContainerStyles(this.browserWrapper);
+      this.#clearContainerStyles(this.browserWrapper);
       this.animatingFullOpen = false;
       this.closeGlance({ noAnimation: true, skipPermitUnload: true });
       this.#glances.delete(this.#currentGlanceID);
     }
 
+    /**
+     * Fully open glance (convert to regular tab)
+     * @param {Object} options - Options for full opening
+     * @param {boolean} options.forSplit - Whether this is for split view
+     */
     async fullyOpenGlance({ forSplit = false } = {}) {
-      // If there is no active glance, do nothing
       if (!this.#currentGlanceID || !this.#currentTab) {
         return;
       }
+
       this.animatingFullOpen = true;
       this.#currentTab.setAttribute('zen-dont-split-glance', true);
 
+      this.#handleZenFolderPinning();
+      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+
+      const browserRect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper);
+      this.#prepareTabForFullOpen();
+
+      const sidebarButtons = this.browserWrapper.querySelector('.zen-glance-sidebar-container');
+      if (sidebarButtons) {
+        sidebarButtons.remove();
+      }
+
+      if (forSplit) {
+        this.finishOpeningGlance();
+        return;
+      }
+
+      if (gReduceMotion) {
+        gZenViewSplitter.deactivateCurrentSplitView();
+        this.finishOpeningGlance();
+        return;
+      }
+
+      await this.#animateFullOpen(browserRect);
+      this.finishOpeningGlance();
+    }
+
+    /**
+     * Handle Zen folder pinning if applicable
+     */
+    #handleZenFolderPinning() {
       const isZenFolder = this.#currentParentTab?.group?.isZenFolder;
       if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder') && isZenFolder) {
         gBrowser.pinTab(this.#currentTab);
       }
+    }
 
-      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
-
-      const browserRect = window.windowUtils.getBoundsWithoutFlushing(this.browserWrapper);
+    /**
+     * Prepare tab for full opening
+     */
+    #prepareTabForFullOpen() {
       this.#currentTab.removeAttribute('zen-glance-tab');
-      this._clearContainerStyles(this.browserWrapper);
+      this.#clearContainerStyles(this.browserWrapper);
       this.#currentTab.removeAttribute('glance-id');
       this.#currentParentTab.removeAttribute('glance-id');
       gBrowser.selectedTab = this.#currentTab;
+
       this.#currentParentTab.linkedBrowser
         .closest('.browserSidebarContainer')
         .classList.remove('zen-glance-background');
       this.#currentParentTab._visuallySelected = false;
       gBrowser.TabStateFlusher.flush(this.#currentTab.linkedBrowser);
-      const sidebarButtons = this.browserWrapper.querySelector('.zen-glance-sidebar-container');
-      if (sidebarButtons) {
-        sidebarButtons.remove();
-      }
-      if (forSplit) {
-        this.finishOpeningGlance();
-        return;
-      }
-      if (gReduceMotion || forSplit) {
-        gZenViewSplitter.deactivateCurrentSplitView();
-        this.finishOpeningGlance();
-        return;
-      }
-      // Write the styles early to avoid flickering
+    }
+
+    /**
+     * Animate the full opening process
+     * @param {Object} browserRect - The browser rectangle
+     */
+    async #animateFullOpen(browserRect) {
+      // Write styles early to avoid flickering
       this.browserWrapper.style.opacity = 1;
       this.browserWrapper.style.width = `${browserRect.width}px`;
       this.browserWrapper.style.height = `${browserRect.height}px`;
+
       await gZenUIManager.motion.animate(
         this.browserWrapper,
         {
@@ -691,65 +1180,114 @@
           bounce: 0,
         }
       );
+
       this.browserWrapper.style.width = '';
       this.browserWrapper.style.height = '';
       this.browserWrapper.style.opacity = '';
       gZenViewSplitter.deactivateCurrentSplitView({ removeDeckSelected: true });
-      this.finishOpeningGlance();
     }
 
+    /**
+     * Open glance for bookmark activation
+     * @param {Event} event - The bookmark click event
+     * @returns {boolean} False to prevent default behavior
+     */
     openGlanceForBookmark(event) {
       const activationMethod = Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl');
 
-      if (activationMethod === 'ctrl' && !event.ctrlKey) {
-        return;
-      } else if (activationMethod === 'alt' && !event.altKey) {
-        return;
-      } else if (activationMethod === 'shift' && !event.shiftKey) {
-        return;
-      } else if (activationMethod === 'meta' && !event.metaKey) {
+      if (!this.#isActivationKeyPressed(event, activationMethod)) {
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
 
+      const data = this.#createGlanceDataFromBookmark(event);
+      this.openGlance(data);
+
+      return false;
+    }
+
+    /**
+     * Check if the correct activation key is pressed
+     * @param {Event} event - The event
+     * @param {string} activationMethod - The activation method
+     * @returns {boolean} True if key is pressed
+     */
+    #isActivationKeyPressed(event, activationMethod) {
+      const keyMap = {
+        ctrl: event.ctrlKey,
+        alt: event.altKey,
+        shift: event.shiftKey,
+        meta: event.metaKey,
+      };
+
+      return keyMap[activationMethod] || false;
+    }
+
+    /**
+     * Create glance data from bookmark event
+     * @param {Event} event - The bookmark event
+     * @returns {Object} Glance data object
+     */
+    #createGlanceDataFromBookmark(event) {
       const rect = event.target.getBoundingClientRect();
-      const data = {
+      return {
         url: event.target._placesNode.uri,
         clientX: rect.left,
         clientY: rect.top,
         width: rect.width,
         height: rect.height,
       };
-
-      this.openGlance(data);
-
-      return false;
     }
 
+    /**
+     * Get the focused tab based on direction
+     * @param {number} aDir - Direction (-1 for parent, 1 for current)
+     * @returns {Tab} The focused tab
+     */
     getFocusedTab(aDir) {
       return aDir < 0 ? this.#currentParentTab : this.#currentTab;
     }
 
+    /**
+     * Split the current glance into a split view
+     */
     async splitGlance() {
-      if (this.#currentGlanceID) {
-        const currentTab = this.#currentTab;
-        const currentParentTab = this.#currentParentTab;
+      if (!this.#currentGlanceID) {
+        return;
+      }
 
-        const isZenFolder = currentParentTab?.group?.isZenFolder;
-        if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder') && isZenFolder) {
-          gBrowser.pinTab(currentTab);
-        }
-        await this.fullyOpenGlance({ forSplit: true });
-        gZenViewSplitter.splitTabs([currentTab, currentParentTab], 'vsep', 1);
-        const browserContainer = currentTab.linkedBrowser?.closest('.browserSidebarContainer');
-        if (!gReduceMotion && browserContainer) {
-          gZenViewSplitter.animateBrowserDrop(browserContainer);
-        }
+      const currentTab = this.#currentTab;
+      const currentParentTab = this.#currentParentTab;
+
+      this.#handleZenFolderPinningForSplit(currentParentTab);
+      await this.fullyOpenGlance({ forSplit: true });
+
+      gZenViewSplitter.splitTabs([currentTab, currentParentTab], 'vsep', 1);
+
+      const browserContainer = currentTab.linkedBrowser?.closest('.browserSidebarContainer');
+      if (!gReduceMotion && browserContainer) {
+        gZenViewSplitter.animateBrowserDrop(browserContainer);
       }
     }
 
+    /**
+     * Handle Zen folder pinning for split view
+     * @param {Tab} parentTab - The parent tab
+     */
+    #handleZenFolderPinningForSplit(parentTab) {
+      const isZenFolder = parentTab?.group?.isZenFolder;
+      if (Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder') && isZenFolder) {
+        gBrowser.pinTab(this.#currentTab);
+      }
+    }
+
+    /**
+     * Get the tab or its glance parent
+     * @param {Tab} tab - The tab to check
+     * @returns {Tab} The tab or its parent
+     */
     getTabOrGlanceParent(tab) {
       if (tab?.hasAttribute('glance-id') && this.#glances) {
         const parentTab = this.#glances.get(tab.getAttribute('glance-id'))?.parentTab;
@@ -760,52 +1298,89 @@
       return tab;
     }
 
+    /**
+     * Check if deck should remain selected
+     * @param {Element} currentPanel - Current panel
+     * @param {Element} oldPanel - Previous panel
+     * @returns {boolean} True if deck should remain selected
+     */
     shouldShowDeckSelected(currentPanel, oldPanel) {
-      // Dont remove if it's a glance background and current panel corresponds to a glance
       const currentBrowser = currentPanel?.querySelector('browser');
       const oldBrowser = oldPanel?.querySelector('browser');
+
       if (!currentBrowser || !oldBrowser) {
         return false;
       }
+
       const currentTab = gBrowser.getTabForBrowser(currentBrowser);
       const oldTab = gBrowser.getTabForBrowser(oldBrowser);
-      if (currentTab && oldTab) {
-        const currentGlanceID = currentTab.getAttribute('glance-id');
-        const oldGlanceID = oldTab.getAttribute('glance-id');
-        if (currentGlanceID && oldGlanceID) {
-          return (
-            currentGlanceID === oldGlanceID && oldPanel.classList.contains('zen-glance-background')
-          );
-        }
+
+      if (!currentTab || !oldTab) {
+        return false;
       }
+
+      const currentGlanceID = currentTab.getAttribute('glance-id');
+      const oldGlanceID = oldTab.getAttribute('glance-id');
+
+      if (currentGlanceID && oldGlanceID) {
+        return (
+          currentGlanceID === oldGlanceID && oldPanel.classList.contains('zen-glance-background')
+        );
+      }
+
       return false;
     }
 
+    /**
+     * Handle search select command
+     * @param {string} where - Where to open the search result
+     */
     onSearchSelectCommand(where) {
-      // Check if Glance is globally enabled and specifically enabled for contextmenu/search
-      if (
-        !Services.prefs.getBoolPref('zen.glance.enabled', false) ||
-        !Services.prefs.getBoolPref('zen.glance.enable-contextmenu-search', true)
-      ) {
+      if (!this.#isGlanceEnabledForSearch()) {
         return;
       }
+
       if (where !== 'tab') {
         return;
       }
+
       const currentTab = gBrowser.selectedTab;
       const parentTab = currentTab.owner;
+
       if (!parentTab || parentTab.hasAttribute('glance-id')) {
         return;
       }
-      // Open a new glance if the current tab is a glance tab
+
+      this.#openGlanceForSearch(currentTab, parentTab);
+    }
+
+    /**
+     * Check if glance is enabled for search
+     * @returns {boolean} True if enabled
+     */
+    #isGlanceEnabledForSearch() {
+      return (
+        Services.prefs.getBoolPref('zen.glance.enabled', false) &&
+        Services.prefs.getBoolPref('zen.glance.enable-contextmenu-search', true)
+      );
+    }
+
+    /**
+     * Open glance for search result
+     * @param {Tab} currentTab - Current tab
+     * @param {Tab} parentTab - Parent tab
+     */
+    #openGlanceForSearch(currentTab, parentTab) {
       const browserRect = gBrowser.tabbox.getBoundingClientRect();
+      const clickPosition = gZenUIManager._lastClickPosition || {
+        clientX: browserRect.width / 2,
+        clientY: browserRect.height / 2,
+      };
+
       this.openGlance(
         {
           url: undefined,
-          ...(gZenUIManager._lastClickPosition || {
-            clientX: browserRect.width / 2,
-            clientY: browserRect.height / 2,
-          }),
+          ...clickPosition,
           width: 0,
           height: 0,
         },
@@ -817,6 +1392,9 @@
 
   window.gZenGlanceManager = new nsZenGlanceManager();
 
+  /**
+   * Register window actors for glance functionality
+   */
   function registerWindowActors() {
     gZenActorsManager.addJSWindowActor('ZenGlance', {
       parent: {

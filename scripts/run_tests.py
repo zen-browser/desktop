@@ -15,6 +15,15 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
 )
 
 
+class JSONWithCommentsDecoder(json.JSONDecoder):
+  def __init__(self, **kw):
+    super().__init__(**kw)
+
+  def decode(self, s: str) -> any:
+    s = '\n'.join(l for l in s.split('\n') if not l.lstrip(' ').startswith('//'))
+    return super().decode(s)
+
+
 def copy_ignore_prefs():
   print("Copying ignorePrefs.json from src/zen/tests to engine/testing/mochitest...")
   # if there are prefs that dont exist on output file, copy them from input file
@@ -22,7 +31,7 @@ def copy_ignore_prefs():
   with open(IGNORE_PREFS_FILE_OUT, 'r') as f:
     all_prefs = json.load(f)
     with open(IGNORE_PREFS_FILE_IN, 'r') as f_in:
-      new_prefs = json.load(f_in)
+      new_prefs = json.load(f_in, cls=JSONWithCommentsDecoder)
       all_prefs.extend(p for p in new_prefs if p not in all_prefs)
   with open(IGNORE_PREFS_FILE_OUT, 'w') as f_out:
     json.dump(all_prefs, f_out, indent=2)

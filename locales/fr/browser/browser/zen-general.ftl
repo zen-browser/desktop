@@ -37,6 +37,8 @@ zen-library-sidebar-workspaces =
     .label = Espaces
 zen-library-sidebar-mods = 
     .label = Mods
+zen-toggle-compact-mode-button = 
+    .tooltiptext = Activer/Désactiver le mode compact
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -49,3 +51,21 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Icônes
 urlbar-search-mode-zen_actions = Actions
+zen-site-data-settings = Paramètres
+zen-generic-manage = Gérer
+zen-generic-more = Plus
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Autorisé
+zen-site-data-setting-block = Bloqué
+zen-site-data-security-info-extension = 
+    .label = Extension
+zen-site-data-security-info-secure = 
+    .label = Sécurisé
+zen-site-data-security-info-not-secure = 
+    .label = Non sécurisé
+zen-site-data-manage-addons = 
+    .label = Gérer les extensions
+zen-site-data-get-addons = 
+    .label = Ajouter des extensions
+zen-site-data-site-settings = 
+    .label = Tous les paramètres du site

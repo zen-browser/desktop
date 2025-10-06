@@ -37,6 +37,8 @@ zen-library-sidebar-workspaces =
     .label = Ruang
 zen-library-sidebar-mods = 
     .label = Mods
+zen-toggle-compact-mode-button = 
+    .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -49,3 +51,21 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikon
 urlbar-search-mode-zen_actions = Aksi
+zen-site-data-settings = Pengaturan
+zen-generic-manage = Kelola
+zen-generic-more = Selengkapnya
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Diizinkan
+zen-site-data-setting-block = Diblokir
+zen-site-data-security-info-extension = 
+    .label = Ekstensi
+zen-site-data-security-info-secure = 
+    .label = Aman
+zen-site-data-security-info-not-secure = 
+    .label = Tidak Aman
+zen-site-data-manage-addons = 
+    .label = Kelola Ekstensi
+zen-site-data-get-addons = 
+    .label = Tambahkan Ekstensi
+zen-site-data-site-settings = 
+    .label = Semua Pengaturan Situs

@@ -37,6 +37,8 @@ zen-library-sidebar-workspaces =
     .label = 스페이스
 zen-library-sidebar-mods = 
     .label = 모드
+zen-toggle-compact-mode-button = 
+    .tooltiptext = 사이드바 축소 토글
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -49,3 +51,21 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = 아이콘
 urlbar-search-mode-zen_actions = 액션
+zen-site-data-settings = 설정
+zen-generic-manage = 관리
+zen-generic-more = 더 보기
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = 허용됨
+zen-site-data-setting-block = 금지됨
+zen-site-data-security-info-extension = 
+    .label = 확장
+zen-site-data-security-info-secure = 
+    .label = 안전함
+zen-site-data-security-info-not-secure = 
+    .label = 안전하지 않음
+zen-site-data-manage-addons = 
+    .label = 확장 프로그램 관리
+zen-site-data-get-addons = 
+    .label = 확장 프로그램 추가
+zen-site-data-site-settings = 
+    .label = 모든 사이트 설정

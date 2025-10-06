@@ -37,6 +37,8 @@ zen-library-sidebar-workspaces =
     .label = Környezetek
 zen-library-sidebar-mods = 
     .label = Modok
+zen-toggle-compact-mode-button = 
+    .tooltiptext = Kompakt mód ki-/bekapcsolása
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +50,22 @@ zen-icons-picker-emoji =
     .label = Emojik
 zen-icons-picker-svg = 
     .label = Ikonok
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Műveletek
+zen-site-data-settings = Beállítások
+zen-generic-manage = Kezelés
+zen-generic-more = Több
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Engedélyezve
+zen-site-data-setting-block = Letiltva
+zen-site-data-security-info-extension = 
+    .label = Kiegészítő
+zen-site-data-security-info-secure = 
+    .label = Biztonságos
+zen-site-data-security-info-not-secure = 
+    .label = Nem biztonságos
+zen-site-data-manage-addons = 
+    .label = Kiegészítők kezelése
+zen-site-data-get-addons = 
+    .label = Kiegészítő hozzáadása
+zen-site-data-site-settings = 
+    .label = Minden webhelybeállítás

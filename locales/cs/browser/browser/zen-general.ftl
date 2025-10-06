@@ -37,6 +37,8 @@ zen-library-sidebar-workspaces =
     .label = Prostory
 zen-library-sidebar-mods = 
     .label = Módy
+zen-toggle-compact-mode-button = 
+    .tooltiptext = Přepnout kompaktní režim
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +50,22 @@ zen-icons-picker-emoji =
     .label = Emodži
 zen-icons-picker-svg = 
     .label = Ikony
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Akce
+zen-site-data-settings = Nastavení
+zen-generic-manage = Spravovat
+zen-generic-more = Více
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Povoleno
+zen-site-data-setting-block = Blokováno
+zen-site-data-security-info-extension = 
+    .label = Rozšíření
+zen-site-data-security-info-secure = 
+    .label = Bezpečné
+zen-site-data-security-info-not-secure = 
+    .label = Nezabezpečeno
+zen-site-data-manage-addons = 
+    .label = Spravovat rozšíření
+zen-site-data-get-addons = 
+    .label = Přidat rozšíření
+zen-site-data-site-settings = 
+    .label = Nastavení všech stránek

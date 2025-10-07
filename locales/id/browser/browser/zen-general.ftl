@@ -38,6 +38,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods
 zen-toggle-compact-mode-button = 
+    .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
 
 # note: Do not translate the "<br/>" tags in the following string

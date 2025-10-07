@@ -38,6 +38,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = 모드
 zen-toggle-compact-mode-button = 
+    .label = 사이드바 축소 모드
     .tooltiptext = 사이드바 축소 토글
 
 # note: Do not translate the "<br/>" tags in the following string

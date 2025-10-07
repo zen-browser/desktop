@@ -38,7 +38,8 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Modanna
 zen-toggle-compact-mode-button = 
-    .tooltiptext = Toggle Compact Mode
+    .label = Mód Dlúth
+    .tooltiptext = Mód Dlúth a Athrú
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -51,21 +52,21 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Deilbhíní
 urlbar-search-mode-zen_actions = Gníomhartha
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
+zen-site-data-settings = Socruithe
+zen-generic-manage = Bainistigh
+zen-generic-more = Tuilleadh
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
+zen-site-data-setting-allow = Ceadaithe
+zen-site-data-setting-block = Blocáilte
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Síneadh
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Slán
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Ní Slán
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Bainistigh Síneadh
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Cuir Síneadh leis
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Gach Socrú Suímh

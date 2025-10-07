@@ -57,6 +57,10 @@
 #sidebar-button:-moz-locale-dir(rtl)[positionend],
 #zen-toggle-compact-mode {
   list-style-image: url('sidebar.svg') !important;
+
+  :root[zen-right-side='true'] & {
+    list-style-image: url('sidebar-right.svg') !important;
+  }
 }
 
 #downloads-button,

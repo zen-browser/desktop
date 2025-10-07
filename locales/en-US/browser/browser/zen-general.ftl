@@ -50,6 +50,7 @@ zen-library-sidebar-mods =
     .label = Mods
 
 zen-toggle-compact-mode-button =
+    .label = Compact Mode
     .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string

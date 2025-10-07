@@ -8,9 +8,9 @@ zen-warning-language = Changing the default language could make it easier for We
 zen-vertical-tabs-layout-header = Browser Layout
 zen-vertical-tabs-layout-description = Choose the layout that suits you best
 
-zen-layout-single-toolbar = Single toolbar
-zen-layout-multiple-toolbar = Multiple toolbars
-zen-layout-collapsed-toolbar = Collapsed toolbar
+zen-layout-single-toolbar = Only Sidebar
+zen-layout-multiple-toolbar = Sidebar and Top Toolbar
+zen-layout-collapsed-toolbar = Collapsed Sidebar
 
 sync-currently-syncing-workspaces = Workspaces
 sync-engine-workspaces =

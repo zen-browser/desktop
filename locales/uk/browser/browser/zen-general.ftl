@@ -38,6 +38,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Модифікації
 zen-toggle-compact-mode-button = 
+    .label = Compact Mode
     .tooltiptext = Увімк. / Вимк. компактний режим
 
 # note: Do not translate the "<br/>" tags in the following string

@@ -36,6 +36,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = 模组
 zen-toggle-compact-mode-button = 
+    .label = Compact Mode
     .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string
@@ -62,8 +63,8 @@ zen-site-data-security-info-secure =
 zen-site-data-security-info-not-secure = 
     .label = Not Secure
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = 管理扩展
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = 添加扩展
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = 所有站点设置

@@ -1,8 +1,8 @@
 diff --git a/xpfe/appshell/AppWindow.cpp b/xpfe/appshell/AppWindow.cpp
-index 0b7788ec179d1c1021d2e5692c652b367646d33b..f5d48ca47a899b82f9d9cb7823eeb096f542c0ea 100644
+index 64f18c991b0b9a8bf3690a54624b447f347a210e..0b00a29956cd6a750d5feadd4b2a4ceb8338410b 100644
 --- a/xpfe/appshell/AppWindow.cpp
 +++ b/xpfe/appshell/AppWindow.cpp
-@@ -1873,7 +1873,7 @@ nsresult AppWindow::MaybeSaveEarlyWindowPersistentValues(
+@@ -1874,7 +1874,7 @@ nsresult AppWindow::MaybeSaveEarlyWindowPersistentValues(
      }
    }
  

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/components/urlbar/UrlbarController.sys.mjs
-index 36e3ab4a5a153230bb488b66dda7e3e7c763ca23..cc4ea61914a316451fa54b01a5c8c6a305e4038a 100644
+index a1faf7e4278c66865f267283515f22052769928d..d76d19da5a3d4b9739faf3a673bb3ad693765ada 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
-@@ -434,6 +434,8 @@ export class UrlbarController {
+@@ -441,6 +441,8 @@ export class UrlbarController {
              });
            }
            event.preventDefault();

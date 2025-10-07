@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/moz-toggle/moz-toggle.css b/toolkit/content/widgets/moz-toggle/moz-toggle.css
-index 7b9ec91bf0cfd8fda6a161995c9de57270557f6c..b1049bd2b2c03104e5b35978a9b81674d6920d53 100644
+index 49f04a3a8eedf580e9854f04014c637894181300..4e1336b4a58afaba182de87b4e670b0f0b3d607e 100644
 --- a/toolkit/content/widgets/moz-toggle/moz-toggle.css
 +++ b/toolkit/content/widgets/moz-toggle/moz-toggle.css
 @@ -6,8 +6,8 @@

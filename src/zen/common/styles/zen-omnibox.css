@@ -111,6 +111,10 @@
   border-radius: 0px !important;
 }
 
+#urlbar:not([breakout-extend='true']) .urlbar-input-box {
+  font-weight: 500;
+}
+
 :root[zen-single-toolbar='true'] #urlbar:not([breakout-extend='true']) {
   & #urlbar-input {
     cursor: default;

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index 4485369284ee762bc8b35afb84fec0874a831fff..6a1ad15f657437aa4ef98fda63ae921a378f7310 100644
+index e1a79cd22180738d2ca16e9a6c5591499d337325..d36996359bfa4dd7d98c4f5aeb192c7b144339bb 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
 @@ -31,7 +31,6 @@

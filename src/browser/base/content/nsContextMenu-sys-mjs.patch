@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index bc71ba720ef3603e8b90d295fb16d8415ba114c4..99677f70e22258f61cc9bda31e4d8745d7ca9395 100644
+index b4fe996f9685a085c14324a35a1d51e2fed569b7..c83d5e9bf92f8f2e3d96b121ba3b758dd124393b 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
-@@ -1095,6 +1095,8 @@ export class nsContextMenu {
+@@ -1105,6 +1105,8 @@ export class nsContextMenu {
          !this.isSecureAboutPage()
      );
  

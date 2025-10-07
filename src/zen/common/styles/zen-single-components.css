@@ -500,12 +500,12 @@ body > #confetti {
         to bottom,
         color-mix(
           in srgb,
-          light-dark(rgba(255, 255, 255, 1), rgba(0, 0, 0, 0.3)) 15%,
+          light-dark(rgba(255, 255, 255, 1), rgba(0, 0, 0, 0.5)) 15%,
           transparent 100%
         ),
         color-mix(
           in srgb,
-          light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.8)) 100%,
+          light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.9)) 100%,
           transparent 100%
         )
       );
@@ -514,7 +514,7 @@ body > #confetti {
       border-radius: 6px;
       --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
       border: 1px solid;
-      border-top-color: light-dark(var(--base-border-color), rgba(255, 255, 255, 0.12));
+      border-top-color: light-dark(var(--base-border-color), rgba(255, 255, 255, 0.1));
       border-left-color: light-dark(var(--base-border-color), transparent);
       border-right-color: light-dark(var(--base-border-color), transparent);
       border-bottom-color: light-dark(var(--base-border-color), rgba(0, 0, 0, 0.12));

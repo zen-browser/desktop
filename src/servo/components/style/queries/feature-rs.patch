@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/queries/feature.rs b/servo/components/style/queries/feature.rs
-index a9a4decb178234037a6d285ddd3206bd52f214e5..18ea220a14cbb59ef3c9809cb679f8fdb5352f98 100644
+index 1414dd624e0761d269f7e3b1c64ed4bb6576a6e3..f0204c2ee3e8c3527750a26788b5fb7cdf8dfc67 100644
 --- a/servo/components/style/queries/feature.rs
 +++ b/servo/components/style/queries/feature.rs
 @@ -6,6 +6,7 @@

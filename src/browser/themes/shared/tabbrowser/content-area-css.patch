@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index 44f6c942f2e4b08f784b2ff96f785e9beed01ecd..834e174186972c3297a552bbd579f0ea1261c19e 100644
+index e06addf1602dc26ff4e75a8db6251231690f3f80..86e2cd0194bb37fa140a2f93eccfdd61419a9aec 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
 @@ -276,7 +276,7 @@

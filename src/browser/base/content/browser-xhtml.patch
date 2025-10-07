@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index 7c4c05b72845dfb37c11317d011b8e7c6ba07934..856c368e4d6fe7c7d7ab468423348c844cbf1cdf 100644
+index ffddea280e2edffa2531b4b129489c2be0e2c3d2..f03db9e2db0dec06f997740337f28e76a08a3bdb 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -26,6 +26,7 @@
+@@ -19,6 +19,7 @@
          sizemode="normal"
          retargetdocumentfocus="urlbar-input"
          scrolling="false"
@@ -10,7 +10,7 @@ index 7c4c05b72845dfb37c11317d011b8e7c6ba07934..856c368e4d6fe7c7d7ab468423348c84
          persist="screenX screenY width height sizemode"
          data-l10n-sync="true">
  <head>
-@@ -105,8 +106,10 @@
+@@ -98,8 +99,10 @@
  
    <title data-l10n-id="browser-main-window-default-title"></title>
  
@@ -21,7 +21,7 @@ index 7c4c05b72845dfb37c11317d011b8e7c6ba07934..856c368e4d6fe7c7d7ab468423348c84
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -128,9 +131,11 @@
+@@ -132,9 +135,11 @@
      </vbox>
    </html:template>
  

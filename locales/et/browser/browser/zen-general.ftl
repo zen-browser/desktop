@@ -38,7 +38,8 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods-id
 zen-toggle-compact-mode-button = 
-    .tooltiptext = Toggle Compact Mode
+    .label = Compact Mode
+    .tooltiptext = Lülita kompaktne režiim sisse/välja
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -50,22 +51,22 @@ zen-icons-picker-emoji =
     .label = Emojid
 zen-icons-picker-svg = 
     .label = Ikoonid
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
+urlbar-search-mode-zen_actions = Tegevused
+zen-site-data-settings = Sätted
+zen-generic-manage = Halda
+zen-generic-more = Rohkem
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
+zen-site-data-setting-allow = Lubatud
+zen-site-data-setting-block = Keelatud
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Laiendus
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Turvaline
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Ebaturvaline
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Halda laiendusi
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Lisa laiendusi
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Kõik saidi sätted

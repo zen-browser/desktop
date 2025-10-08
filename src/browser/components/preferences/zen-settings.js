@@ -1010,7 +1010,7 @@ var gZenCKSSettings = {
       this._latestValidKey = null;
       return;
     } else if (shortcut == 'Escape' && !modifiersActive) {
-      const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
+      const { hasConflicts, conflictShortcut } = gZenKeyboardShortcutsManager.checkForConflicts(
         this._latestValidKey ? this._latestValidKey : shortcut,
         this._latestModifier ? this._latestModifier : modifiers,
         this._currentActionID
@@ -1023,12 +1023,29 @@ var gZenCKSSettings = {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
-        if (hasConflicts && !input.nextElementSibling) {
-          input.after(
-            window.MozXULElement.parseXULToFragment(`
-            <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
-          `)
-          );
+
+        if (hasConflicts) {
+          const shortcutL10nKey =
+            zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
+            conflictShortcut.getL10NID();
+
+          const [group, shortcut] = await document.l10n.formatValues([
+            { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
+            { id: shortcutL10nKey },
+          ]);
+
+          if (!input.nextElementSibling) {
+            input.after(
+              window.MozXULElement.parseXULToFragment(`
+                <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
+              `)
+            );
+          }
+
+          document.l10n.setAttributes(input.nextElementSibling, 'zen-key-conflict', {
+            group: group ?? '',
+            shortcut: shortcut ?? '',
+          });
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);

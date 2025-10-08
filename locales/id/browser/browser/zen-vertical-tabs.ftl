@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = Tab Di Sisi Kanan
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Mode Ringkas
 zen-toolbar-context-compact-mode-enable = 
     .label = Aktifkan Mode Ringkas
     .accesskey = D

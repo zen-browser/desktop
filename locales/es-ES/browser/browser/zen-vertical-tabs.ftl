@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = Pestañas a la derecha
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Modo compacto
 zen-toolbar-context-compact-mode-enable = 
     .label = Habilitar modo compacto
     .accesskey = D

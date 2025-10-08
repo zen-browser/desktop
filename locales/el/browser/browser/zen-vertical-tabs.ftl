@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Συμπαγής λειτουργία
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Ενεργοποίηση συμπαγούς λειτουργίας
     .accesskey = D

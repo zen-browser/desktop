@@ -1,13 +1,15 @@
 zen-toolbar-context-tabs-right = 
     .label = Onglets à droite
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Mode compact
 zen-toolbar-context-compact-mode-enable = 
     .label = Activer le mode compact
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = Masquer la barre latérale
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Masquer la barre d'outils
+    .label = Masquer la barre d’outils
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Masquer les deux
     .accesskey = H

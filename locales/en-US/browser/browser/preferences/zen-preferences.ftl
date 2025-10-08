@@ -89,7 +89,7 @@ zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
-zen-key-conflict = Conflict with another shortcut
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 
 pane-zen-theme-title = Theme Settings
 

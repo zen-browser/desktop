@@ -6,10 +6,10 @@ tab-zen-split-tabs =
             [few] Разделить { $tabCount } вкладки
            *[other] Разделить { $tabCount } вкладок
         }
-    .accesskey = S
+    .accesskey = Ы
 zen-split-link = 
     .label = Раздельный вид в новой вкладке
-    .accesskey = S
+    .accesskey = Ы
 zen-split-view-modifier-header = Разделение вкладок
 zen-split-view-modifier-activate-reallocation = 
     .label = Активировать перемещение вкладок

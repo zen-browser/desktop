@@ -1358,13 +1358,13 @@ var gZenKeyboardShortcutsManager = {
         return {
           hasConflicts: true,
           conflictShortcut: targetShortcut,
-        }
+        };
       }
     }
 
     return {
       hasConflicts: false,
-    }
+    };
   },
 
   getShortcutFromCommand(command) {

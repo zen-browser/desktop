@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = 탭을 우측으로 놓기
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = 사이드바 축소 모드
 zen-toolbar-context-compact-mode-enable = 
     .label = 사이드바 축소 모드 활성화
     .accesskey = D

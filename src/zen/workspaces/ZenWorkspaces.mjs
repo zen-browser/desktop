@@ -1481,6 +1481,24 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
+  async unpinnedTabsInWorkspace(workspaceID) {
+    return Array.from(this.allStoredTabs).filter(
+      (tab) =>
+        tab.getAttribute('zen-workspace-id') === workspaceID &&
+        !tab.hasAttribute('zen-empty-tab') &&
+        !tab.hasAttribute('zen-essential') &&
+        !tab.pinned
+    );
+  }
+
+  async #deleteAllUnpinnedTabsInWorkspace(tabs) {
+    gBrowser.removeTabs(tabs, {
+      animate: false,
+      skipSessionStore: true,
+      closeWindowWithLastTab: false,
+    });
+  }
+
   async unloadWorkspace() {
     const workspaceId = this.#contextMenuData?.workspaceId || this.activeWorkspace;
 
@@ -2642,6 +2660,25 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     await this._organizeWorkspaceStripLocations(this.getActiveWorkspaceFromCache(), true);
     await this.updateTabsContainers();
     this.tabContainer._invalidateCachedTabs();
+  }
+
+  async closeAllUnpinnedTabs() {
+    const workspaceId = this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    const unpinnedTabs = await this.unpinnedTabsInWorkspace(workspaceId);
+
+    if (!unpinnedTabs.length) return;
+
+    const [title, body] = await document.l10n.formatValues([
+      { id: 'zen-workspaces-close-all-unpinned-tabs-title' },
+      {
+        id: 'zen-workspaces-close-all-unpinned-tabs-body',
+        args: { tabCount: unpinnedTabs.length },
+      },
+    ]);
+
+    if (Services.prompt.confirm(null, title, body)) {
+      await this.#deleteAllUnpinnedTabsInWorkspace(unpinnedTabs);
+    }
   }
 
   async contextDeleteWorkspace() {

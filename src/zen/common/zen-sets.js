@@ -122,6 +122,9 @@ document.addEventListener(
             }
             break;
           }
+          case 'cmd_zenCloseUnpinnedTabs':
+            gZenWorkspaces.closeAllUnpinnedTabs();
+            break;
           case 'cmd_zenUnloadWorkspace': {
             gZenWorkspaces.unloadWorkspace();
             break;

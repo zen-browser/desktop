@@ -73,3 +73,9 @@ zen-workspace-creation-label = Spaces are used to organize your tabs and session
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+
+zen-workspaces-close-all-unpinned-tabs-title = Close Unpinned Tabs?
+zen-workspaces-close-all-unpinned-tabs-body = { $tabCount ->
+    [one] Are you sure you want to close {$tabCount} tab ?
+   *[other]Are you sure you want to close {$tabCount} tabs ?
+}

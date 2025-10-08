@@ -1,15 +1,15 @@
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
-tab-context-zen-reset-pinned-tab = 
+tab-context-zen-reset-pinned-tab =
     .label = Resetovat připnuté karty
     .accesskey = R
-tab-context-zen-add-essential = 
-    .label = Přidat do Essentials ({ $num } / 12 zaplněných slotů)
+tab-context-zen-add-essential =
+    .label = Přidat do Essentials ({ $num } / { $max } zaplněných slotů)
     .accesskey = E
-tab-context-zen-remove-essential = 
+tab-context-zen-remove-essential =
     .label = Odstranit z Essentials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-replace-pinned-url-with-current =
     .label = Nahradit připnutou URL adresu aktuální adresou
     .accesskey = C
 zen-themes-corrupted = Váš { -brand-short-name } mods soubor je poškozen. Byl obnoven na výchozí motiv.
@@ -19,33 +19,33 @@ zen-new-urlbar-notification =
     Nový adresní řádek je nyní zapnutý, takže už není potřeba otevírat nové karty.<br/><br/>
     Zkuste otevřít novou kartu a podívejte se, jak funguje!
 zen-disable = Zavřít
-pictureinpicture-minimize-btn = 
+pictureinpicture-minimize-btn =
     .aria-label = Minimalizovat
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
 zen-panel-ui-gradient-generator-saved-message = Gradient byl úspěšně uložen!
 zen-copy-current-url-confirmation = URL adresa byla zkopírována do schránky.
-zen-general-cancel-label = 
+zen-general-cancel-label =
     .label = Zrušit
-zen-general-confirm = 
+zen-general-confirm =
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nová karta na pozadí byla otevřena!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
-zen-library-sidebar-workspaces = 
+zen-library-sidebar-workspaces =
     .label = Prostory
-zen-library-sidebar-mods = 
+zen-library-sidebar-mods =
     .label = Módy
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = Zjistit více
 zen-close-label = Zavřít
-zen-singletoolbar-urlbar-placeholder-with-name = 
+zen-singletoolbar-urlbar-placeholder-with-name =
     .placeholder = Hledat...
-zen-icons-picker-emoji = 
+zen-icons-picker-emoji =
     .label = Emodži
-zen-icons-picker-svg = 
+zen-icons-picker-svg =
     .label = Ikony
 urlbar-search-mode-zen_actions = Actions

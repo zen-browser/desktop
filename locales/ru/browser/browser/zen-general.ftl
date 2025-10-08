@@ -1,15 +1,15 @@
 zen-panel-ui-current-profile-text = текущий профиль
 unified-extensions-description = Расширения дополняют функционал { -brand-short-name }.
-tab-context-zen-reset-pinned-tab = 
+tab-context-zen-reset-pinned-tab =
     .label = Сбросить закреплённую вкладку
     .accesskey = R
-tab-context-zen-add-essential = 
-    .label = Добавить в важное ({ $num } из 12 слотов заполнено)
+tab-context-zen-add-essential =
+    .label = Добавить в важное ({ $num } из { $num } слотов заполнено)
     .accesskey = E
-tab-context-zen-remove-essential = 
+tab-context-zen-remove-essential =
     .label = Удалить из важного
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-replace-pinned-url-with-current =
     .label = Заменить закреплённый адрес на текущий
     .accesskey = C
 zen-themes-corrupted = Файл дополнения { -brand-short-name } повреждён. Возвращена тема по умолчанию.
@@ -19,33 +19,33 @@ zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>
     Попробуйте открыть новую вкладку, чтобы увидеть новую адресную строку в действии!
 zen-disable = Выключить
-pictureinpicture-minimize-btn = 
+pictureinpicture-minimize-btn =
     .aria-label = Свернуть
     .tooltip = Свернуть
 zen-panel-ui-gradient-generator-custom-color = Пользовательский цвет
 zen-panel-ui-gradient-generator-saved-message = Градиент успешно сохранён!
 zen-copy-current-url-confirmation = Ссылка скопирована в буфер обмена.
-zen-general-cancel-label = 
+zen-general-cancel-label =
     .label = Отменить
-zen-general-confirm = 
+zen-general-confirm =
     .label = Подтвердить
 zen-pinned-tab-replaced = Адрес закреплённой вкладки заменён на текущий адрес!
 zen-tabs-renamed = Вкладка успешно переименована!
 zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
 zen-workspace-renamed-toast = Пространство успешно переименовано!
-zen-library-sidebar-workspaces = 
+zen-library-sidebar-workspaces =
     .label = Пространства
-zen-library-sidebar-mods = 
+zen-library-sidebar-mods =
     .label = Моды
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = Узнать больше
 zen-close-label = Закрыть
-zen-singletoolbar-urlbar-placeholder-with-name = 
+zen-singletoolbar-urlbar-placeholder-with-name =
     .placeholder = Найти...
-zen-icons-picker-emoji = 
+zen-icons-picker-emoji =
     .label = Эмодзи
-zen-icons-picker-svg = 
+zen-icons-picker-svg =
     .label = Иконки
 urlbar-search-mode-zen_actions = Действия

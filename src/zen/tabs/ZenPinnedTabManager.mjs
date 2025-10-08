@@ -38,6 +38,12 @@
         'zen.pinned-tab-manager.close-shortcut-behavior',
         'switch'
       );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        lazy,
+        'zenTabsEssentialsMax',
+        'zen.tabs.essentials.max',
+        12
+      );
       ChromeUtils.defineESModuleGetters(lazy, {
         E10SUtils: 'resource://gre/modules/E10SUtils.sys.mjs',
       });
@@ -68,8 +74,6 @@
   }
 
   class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
-    MAX_ESSENTIALS_TABS = 12;
-
     hasInitializedPins = false;
     promiseInitializedPinned = new Promise((resolve) => {
       this._resolvePinnedInitializedInternal = resolve;
@@ -138,6 +142,10 @@
 
     get enabled() {
       return !gZenWorkspaces.privateWindowOrDisabled;
+    }
+
+    get maxEssentialTabs() {
+      return lazy.zenTabsEssentialsMax;
     }
 
     async refreshPinnedTabs({ init = false } = {}) {
@@ -1055,7 +1063,7 @@
       const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
                       data-l10n-id="tab-context-zen-add-essential"
-                      data-l10n-args='{"num": "0"}'
+                      data-l10n-args='{"num": "0", "max": "12"}'
                       hidden="true"
                       disabled="true"
                       command="cmd_contextZenAddToEssentials"/>
@@ -1081,6 +1089,7 @@
         contextTab.getAttribute('zen-essential') || !!contextTab.group;
       document.l10n.setArgs(document.getElementById('context_zen-add-essential'), {
         num: gBrowser._numZenEssentials,
+        max: this.maxEssentialTabs,
       });
       document
         .getElementById('cmd_contextZenAddToEssentials')
@@ -1404,7 +1413,7 @@
           (tab.getAttribute('usercontextid') || 0) !=
             gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
           gZenWorkspaces.containerSpecificEssentials
-        ) && gBrowser._numZenEssentials < this.MAX_ESSENTIALS_TABS
+        ) && gBrowser._numZenEssentials < this.maxEssentialTabs
       );
     }
 

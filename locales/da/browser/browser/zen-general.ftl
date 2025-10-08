@@ -1,15 +1,15 @@
 zen-panel-ui-current-profile-text = nuværende profil
 unified-extensions-description = Udvidelser bruges til at bringe ekstra funktionalitet ind i { -brand-short-name }.
-tab-context-zen-reset-pinned-tab = 
+tab-context-zen-reset-pinned-tab =
     .label = Nulstil fastgjort fane
     .accesskey = R
-tab-context-zen-add-essential = 
-    .label = Føj til Essentielle ({ $num } / 12 pladser fyldt)
+tab-context-zen-add-essential =
+    .label = Føj til Essentielle ({ $num } / { $max } pladser fyldt)
     .accesskey = E
-tab-context-zen-remove-essential = 
+tab-context-zen-remove-essential =
     .label = Fjern fra Essentielle
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-replace-pinned-url-with-current =
     .label = Erstat fastgjort URL med nuværende
     .accesskey = C
 zen-themes-corrupted = Din { -brand-short-name } mods-fil er beskadiget. De er blevet nulstillet til standardtemaet.
@@ -19,33 +19,33 @@ zen-new-urlbar-notification =
     Den nye URL-linje er aktiveret og fjerner dermed behovet for nye fanesider.<br/><br/>
     Prøv at åbne en ny fane for at se den i aktion!
 zen-disable = Deaktiver
-pictureinpicture-minimize-btn = 
+pictureinpicture-minimize-btn =
     .aria-label = Minimer
     .tooltip = Minimer
 zen-panel-ui-gradient-generator-custom-color = Brugerdefineret Farve
 zen-panel-ui-gradient-generator-saved-message = Gradienten blev gemt!
 zen-copy-current-url-confirmation = URL'en blev kopieret til udklipsholderen.
-zen-general-cancel-label = 
+zen-general-cancel-label =
     .label = Annuller
-zen-general-confirm = 
+zen-general-confirm =
     .label = Bekræft
 zen-pinned-tab-replaced = Den fastgjorte fane-URL blev erstattet med den aktuelle.
 zen-tabs-renamed = Fanen blev omdøbt!
 zen-background-tab-opened-toast = Ny baggrundsfane åbnet!
 zen-workspace-renamed-toast = Arbejdsområde blev omdøbt!
-zen-library-sidebar-workspaces = 
+zen-library-sidebar-workspaces =
     .label = Rum
-zen-library-sidebar-mods = 
+zen-library-sidebar-mods =
     .label = Mods
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = Lær mere
 zen-close-label = Luk
-zen-singletoolbar-urlbar-placeholder-with-name = 
+zen-singletoolbar-urlbar-placeholder-with-name =
     .placeholder = Søg...
-zen-icons-picker-emoji = 
+zen-icons-picker-emoji =
     .label = Emojis
-zen-icons-picker-svg = 
+zen-icons-picker-svg =
     .label = Ikoner
 urlbar-search-mode-zen_actions = Actions

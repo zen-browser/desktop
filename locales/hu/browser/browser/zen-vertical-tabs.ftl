@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = Lapok a jobb oldalon
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Kompakt mód
 zen-toolbar-context-compact-mode-enable = 
     .label = Kompakt mód engedélyezése
     .accesskey = D

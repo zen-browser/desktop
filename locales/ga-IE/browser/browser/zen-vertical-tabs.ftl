@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = Cluaisíní ar an dheis
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Mód dlúth
 zen-toolbar-context-compact-mode-enable = 
     .label = Cumasaigh mód dlúth
     .accesskey = D

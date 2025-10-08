@@ -1,6 +1,8 @@
 zen-toolbar-context-tabs-right = 
     .label = Separadores à direita
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Modo compacto
 zen-toolbar-context-compact-mode-enable = 
     .label = Ativar modo compacto
     .accesskey = D

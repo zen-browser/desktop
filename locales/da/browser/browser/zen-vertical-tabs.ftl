@@ -1,11 +1,13 @@
 zen-toolbar-context-tabs-right = 
     .label = Faner til højre
     .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Kompakt tilstand
 zen-toolbar-context-compact-mode-enable = 
     .label = Aktivér kompakt tilstand
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Skjul sidepanel
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = Skjul værktøjslinje
 zen-toolbar-context-compact-mode-hide-both = 

@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = 简洁模式
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = 启用简洁模式
     .accesskey = D

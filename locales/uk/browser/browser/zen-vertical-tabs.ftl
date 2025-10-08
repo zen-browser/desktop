@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = Р
 zen-toolbar-context-compact-mode = 
     .label = Компактний режим
-    .accesskey = До
 zen-toolbar-context-compact-mode-enable = 
     .label = Увімкнути компактний режим
     .accesskey = Ре

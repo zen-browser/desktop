@@ -282,7 +282,7 @@ body > #confetti {
 
 #zen-unified-site-data-panel {
   --panel-padding: 0px;
-  --panel-width: 228px;
+  --panel-width: 234px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
   --uei-icon-size: 14px;
   --arrowpanel-menuitem-border-radius: 10px;
@@ -318,8 +318,8 @@ body > #confetti {
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 46px;
-      height: 34px;
+      width: 48px;
+      height: 32px;
       margin: 0;
       justify-content: center;
       align-items: center;
@@ -438,7 +438,7 @@ body > #confetti {
 }
 
 .zen-permission-popup-permission-state-label {
-  opacity: 0.8;
+  opacity: 0.6;
   font-size: smaller;
   font-weight: 400;
   margin: 0;
@@ -463,7 +463,7 @@ body > #confetti {
 }
 
 #zen-site-data-header {
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   padding: 8px;
   padding-bottom: 0;
@@ -474,7 +474,8 @@ body > #confetti {
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    padding: 8px 0px;
+    max-width: 48px;
+    height: 32px;
     position: relative;
 
     &[disabled] {
@@ -495,7 +496,8 @@ body > #confetti {
     &::before {
       content: '';
       position: absolute;
-      inset: 1px;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(
         to bottom,
         light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
@@ -506,6 +508,7 @@ body > #confetti {
       border-radius: 6px;
       --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
       border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
+      box-sizing: border-box;
       will-change: transform;
     }
 

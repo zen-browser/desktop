@@ -38,7 +38,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Модифікації
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
+    .label = Компактний режим
     .tooltiptext = Увімк. / Вимк. компактний режим
 
 # note: Do not translate the "<br/>" tags in the following string
@@ -70,6 +70,6 @@ zen-site-data-get-addons =
     .label = Додати розширення
 zen-site-data-site-settings = 
     .label = Усі налаштування сайту
-zen-site-data-setting-site-protection = Site Protection
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-setting-site-protection = Захист сайту
+zen-site-data-panel-feature-callout-title = Новий дім для доповнень, дозволів тощо
+zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.

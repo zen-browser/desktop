@@ -270,7 +270,6 @@
 }
 
 #bookmarks-menu-button,
-#zen-site-data-header-bookmark,
 #appMenu-bookmarks-button,
 #sidebar-switcher-bookmarks,
 #appMenu-library-bookmarks-button,
@@ -425,12 +424,14 @@
   list-style-image: url('folder.svg') !important;
 }
 
+#zen-site-data-header-bookmark,
 #pageAction-panel-bookmark,
 #star-button,
 #zen-bookmark-button {
   list-style-image: url('bookmark-hollow.svg') !important;
 }
 
+#zen-site-data-header-bookmark.active,
 #pageAction-panel-bookmark[starred],
 #star-button[starred] {
   list-style-image: url('bookmark.svg') !important;

@@ -373,10 +373,9 @@
     /**
      * Handle element preview if provided
      * @param {Object} data - Glance data
-     * @param {Object} rect - The rectangle data
      * @returns {Element|null} The preview element or null
      */
-    #handleElementPreview(data, rect) {
+    #handleElementPreview(data) {
       if (!data.elementData) {
         return null;
       }

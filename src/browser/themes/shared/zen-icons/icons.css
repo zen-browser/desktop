@@ -220,7 +220,7 @@
 #appMenu-settings-button,
 #PanelUI-zen-profiles-managePrfs,
 .unified-extensions-item-open-menu.subviewbutton,
-.zen-site-data-permission-icon {
+.permission-popup-permission-item {
   list-style-image: url('settings.svg') !important;
 }
 
@@ -270,7 +270,6 @@
 }
 
 #bookmarks-menu-button,
-#zen-site-data-header-bookmark,
 #appMenu-bookmarks-button,
 #sidebar-switcher-bookmarks,
 #appMenu-library-bookmarks-button,
@@ -425,12 +424,14 @@
   list-style-image: url('folder.svg') !important;
 }
 
+#zen-site-data-header-bookmark,
 #pageAction-panel-bookmark,
 #star-button,
 #zen-bookmark-button {
   list-style-image: url('bookmark-hollow.svg') !important;
 }
 
+#zen-site-data-header-bookmark.active,
 #pageAction-panel-bookmark[starred],
 #star-button[starred] {
   list-style-image: url('bookmark.svg') !important;
@@ -495,8 +496,12 @@
     -moz-context-properties: fill, fill-opacity;
     pointer-events: none;
   }
+  &[open] image {
+    list-style-image: url('permissions-fill.svg');
+  }
 }
 
+.permission-popup-permission-item-geo,
 .geo-icon {
   list-style-image: url('geo.svg') !important;
 }
@@ -505,6 +510,7 @@
   list-style-image: url('geo-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-xr,
 .xr-icon {
   list-style-image: url('xr.svg') !important;
 }
@@ -513,6 +519,7 @@
   list-style-image: url('xr-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-desktop-notification,
 .popup-notification-icon[popupid='web-notifications'],
 .desktop-notification-icon {
   list-style-image: url('desktop-notification.svg') !important;
@@ -522,6 +529,7 @@
   list-style-image: url('desktop-notification-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-camera,
 .camera-icon,
 #zen-site-data-header-screenshot {
   list-style-image: url('camera.svg') !important;
@@ -531,6 +539,7 @@
   list-style-image: url('camera-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-microphone,
 .microphone-icon {
   list-style-image: url('microphone.svg') !important;
 }
@@ -539,6 +548,7 @@
   list-style-image: url('microphone-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-screen,
 .screen-icon {
   list-style-image: url('screen.svg') !important;
 }
@@ -547,6 +557,7 @@
   list-style-image: url('screen-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-persistent-storage,
 .popup-notification-icon[popupid='persistent-storage'],
 .persistent-storage-icon,
 .indexedDB-icon {
@@ -557,10 +568,12 @@
   list-style-image: url('persistent-storage-blocked.svg') !important;
 }
 
+.permission-popup-permission-item-popup,
 .popup-icon {
   list-style-image: url('popup.svg') !important;
 }
 
+.permission-popup-permission-item-autoplay-media,
 .autoplay-media-icon {
   list-style-image: url('autoplay-media.svg') !important;
 }
@@ -596,6 +609,45 @@
 .popup-notification-icon[popupid='addon-install-blocked'],
 .popup-notification-icon[popupid='addon-install-origin-blocked'] {
   list-style-image: url('extension-blocked.svg') !important;
+}
+
+.permission-popup-permission-item[state='allow'] {
+  &.permission-popup-permission-item {
+    list-style-image: url('settings-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-geo {
+    list-style-image: url('geo-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-xr {
+    list-style-image: url('xr-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-desktop-notification {
+    list-style-image: url('desktop-notification-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-camera {
+    list-style-image: url('camera-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-microphone {
+    list-style-image: url('microphone-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-screen {
+    list-style-image: url('screen.svg') !important;
+  }
+  &.permission-popup-permission-item-persistent-storage {
+    list-style-image: url('persistent-storage-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-popup {
+    list-style-image: url('popup-fill.svg') !important;
+  }
+  &.permission-popup-permission-item-autoplay-media {
+    list-style-image: url('autoplay-media-fill.svg') !important;
+  }
+  .zen-permission-shield-icon {
+    list-style-image: url('tracking-protection-fill.svg') !important;
+  }
+  .zen-permission-extension-icon {
+    list-style-image: url('extension-fill.svg') !important;
+  }
 }
 
 /* tab sound icons */
@@ -846,8 +898,8 @@
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
   appearance: none;
-  border-radius: 4px;
-  padding: 5px;
+  border-radius: 6px;
+  padding: 6px 10px 6px 8px;
 
   &[identity='secure'] {
     list-style-image: url('security.svg');
@@ -866,6 +918,7 @@
   }
 
   & .toolbarbutton-text {
+    font-weight: 600;
     padding-inline-start: 4px !important;
   }
 
@@ -882,8 +935,8 @@
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
   appearance: none;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 99px;
   margin-left: auto !important;
   list-style-image: url('menu.svg');

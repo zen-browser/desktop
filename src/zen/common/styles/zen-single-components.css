@@ -282,7 +282,7 @@ body > #confetti {
 
 #zen-unified-site-data-panel {
   --panel-padding: 0px;
-  --panel-width: 228px;
+  --panel-width: 234px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
   --uei-icon-size: 14px;
   --arrowpanel-menuitem-border-radius: 10px;
@@ -318,8 +318,8 @@ body > #confetti {
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 46px;
-      height: 34px;
+      width: 48px;
+      height: 32px;
       margin: 0;
       justify-content: center;
       align-items: center;
@@ -354,22 +354,25 @@ body > #confetti {
 }
 
 .zen-site-data-section-header {
-  font-weight: 500;
-  font-size: small;
+  font-weight: 600;
 
   & label {
     margin: 0;
   }
 
   & > label:nth-child(2) {
-    font-weight: 400;
+    font-weight: 500;
     font-size: smaller;
     transition: opacity 0.15s ease-in-out;
     opacity: 0;
-    padding: 0px 4px;
+    border-radius: 6px;
+    padding: 2px 6px;
 
+    &:hover {
+      background-color: color-mix(in srgb, currentColor 10%, transparent);
+    }
     .zen-site-data-section:hover & {
-      opacity: 0.8;
+      opacity: 0.5;
     }
   }
 }
@@ -438,7 +441,7 @@ body > #confetti {
 }
 
 .zen-permission-popup-permission-state-label {
-  opacity: 0.8;
+  opacity: 0.6;
   font-size: smaller;
   font-weight: 400;
   margin: 0;
@@ -463,7 +466,7 @@ body > #confetti {
 }
 
 #zen-site-data-header {
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   padding: 8px;
   padding-bottom: 0;
@@ -474,7 +477,8 @@ body > #confetti {
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    padding: 8px 0px;
+    max-width: 48px;
+    height: 32px;
     position: relative;
 
     &[disabled] {
@@ -495,29 +499,21 @@ body > #confetti {
     &::before {
       content: '';
       position: absolute;
-      inset: 1px;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(
         to bottom,
-        color-mix(
-          in srgb,
-          light-dark(rgba(255, 255, 255, 1), rgba(0, 0, 0, 0.5)) 15%,
-          transparent 100%
-        ),
-        color-mix(
-          in srgb,
-          light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.9)) 100%,
-          transparent 100%
-        )
+        light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
+        light-dark(rgb(246, 246, 246), rgb(21, 21, 21))
       );
       transition: transform 0.12s ease-in-out;
-      box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.1);
+      box-shadow:
+        0px 2px 4px rgba(0, 0, 0, 0.075),
+        inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
       border-radius: 6px;
-      --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
-      border: 1px solid;
-      border-top-color: light-dark(var(--base-border-color), rgba(255, 255, 255, 0.1));
-      border-left-color: light-dark(var(--base-border-color), transparent);
-      border-right-color: light-dark(var(--base-border-color), transparent);
-      border-bottom-color: light-dark(var(--base-border-color), rgba(0, 0, 0, 0.12));
+      --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
+      border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
+      box-sizing: border-box;
       will-change: transform;
     }
 

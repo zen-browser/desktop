@@ -284,7 +284,7 @@ body > #confetti {
   --panel-padding: 0px;
   --panel-width: 234px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
-  --uei-icon-size: 14px;
+  --uei-icon-size: 16px;
   --arrowpanel-menuitem-border-radius: 10px;
 }
 

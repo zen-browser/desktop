@@ -2667,8 +2667,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     const unpinnedTabs = await this.unpinnedTabsInWorkspace(workspaceId);
 
     if (!unpinnedTabs.length) return;
+
     await this.#deleteAllUnpinnedTabsInWorkspace(unpinnedTabs);
     gZenUIManager.showToast('zen-workspaces-close-all-unpinned-tabs-toast');
+    document.querySelector('#zen-close-all-tabs-target').remove();
   }
 
   async contextDeleteWorkspace() {

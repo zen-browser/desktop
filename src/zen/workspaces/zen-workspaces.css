@@ -333,6 +333,13 @@ zen-workspace {
   &[active] .zen-workspace-empty-space {
     -moz-window-dragging: drag;
   }
+
+  .zen-close-all-tabs-target {
+    display: flex;
+    justify-content: flex-end;
+    opacity: 0.6;
+    font-size: 0.7em;
+  }
 }
 
 /** Customizable UI, this is an auto generated ID */

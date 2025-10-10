@@ -191,7 +191,39 @@
       return this.scrollbox.overflowing;
     }
 
+    get closeAllUnpinnedTabButton() {
+      return this.querySelector('#zen-close-all-tabs-button');
+    }
+
+    async showCloseTabsButtonInWorkspace() {
+      const unpinnedTabs = Array.from(gBrowser.tabs).filter(
+        (tab) =>
+          tab.getAttribute('zen-workspace-id') === this.workspaceUuid &&
+          !tab.hasAttribute('zen-empty-tab') &&
+          !tab.hasAttribute('zen-essential') &&
+          !tab.pinned
+      );
+
+      if (unpinnedTabs.length === 0 || this.closeAllUnpinnedTabButton) {
+        return;
+      }
+
+      const closeAllTabsFragment = window.MozXULElement.parseXULToFragment(`
+        <hbox id="zen-close-all-tabs-target" class="zen-close-all-tabs-target">
+          <menuseparator />
+          <toolbarbutton
+          id="zen-close-all-tabs-button"
+          command="cmd_zenCloseUnpinnedTabs"
+          tooltip="dynamic-shortcut-tooltip"
+          data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title" />
+        </hbox>
+        `);
+
+      this.pinnedTabsContainer.append(closeAllTabsFragment);
+    }
+
     handleEvent(event) {
+      this.showCloseTabsButtonInWorkspace();
       if (this.active) {
         gBrowser.tabContainer.handleEvent(event);
       }
@@ -214,6 +246,7 @@
     }
 
     onActionsCommand(event) {
+      console.warn('Santhosh', 'onactions');
       event.stopPropagation();
       const popup = document.getElementById('zenWorkspaceMoreActions');
       const target = event.target;

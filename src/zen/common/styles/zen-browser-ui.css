@@ -202,15 +202,27 @@
   @media -moz-pref('zen.widget.mac.mono-window-controls') {
     .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);
+
+      --zen-traffic-light-size: 6px;
+
+      @media (-moz-mac-tahoe-theme) {
+        --zen-traffic-light-size: 7px;
+      }
+
       /* Draw 3 dots as background to represent the window controls,
         all with the same cololr as the titlebar */
       background-image: radial-gradient(
         circle,
-        var(--zen-toolbar-element-bg) 6px,
+        var(--zen-toolbar-element-bg) var(--zen-traffic-light-size),
         transparent 0.5px
       );
       background-size: 20px 22px;
       background-position: 53% 50%;
+
+      @media (-moz-mac-tahoe-theme) {
+        background-size: 23px 22px;
+        background-position: 52% 50%;
+      }
 
       &:not([zen-has-hover='true']) > .titlebar-buttonbox {
         opacity: 0;

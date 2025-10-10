@@ -30,8 +30,8 @@ index b0082951254ad592c73caaa16c5b5c57127831a9..9b3566b08aacfcf2cfbf9941b2b3ca91
  /// to support new types in these entries and (2) ensuring that either
  /// nsPresContext::MediaFeatureValuesChanged is called when the value that
  /// would be returned by the evaluator function could change.
--pub static MEDIA_FEATURES: [QueryFeatureDescription; 58] = [
-+pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 60] = [
 +    feature!(
 +        atom!("-moz-bool-pref"),
 +        AllowsRanges::No,

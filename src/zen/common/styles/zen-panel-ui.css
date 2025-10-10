@@ -41,6 +41,7 @@ panel[type='arrow'] {
     --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
     --panel-border-color: transparent !important;
     --panel-shadow-margin: 0px !important;
+    border: none !important;
 
     transition-duration: 0s !important;
 

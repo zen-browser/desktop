@@ -102,10 +102,10 @@
 //
 
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use std::collections::HashMap;
 
 const STATIC_PREFS: &str = "../engine/modules/libpref/init/zen-static-prefs.inc";
 const FIREFOX_PREFS: &str = "../engine/browser/app/profile/firefox.js";
@@ -136,24 +136,33 @@ fn ordered_prefs(mut prefs: Vec<Preference>) -> Vec<Preference> {
     prefs
 }
 
-fn load_preferences() -> Vec<Preference> {
-    let mut prefs = Vec::new();
-    let config_path = get_config_path();
-    // Iterate each file in the prefs directory
-    if let Ok(entries) = fs::read_dir(&config_path) {
+fn get_prefs_files_recursively(dir: &PathBuf, files: &mut Vec<PathBuf>) {
+    if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries {
             if let Ok(entry) = entry {
-                if let Some(ext) = entry.path().extension() {
+                let path = entry.path();
+                if path.is_dir() {
+                    get_prefs_files_recursively(&path, files);
+                } else if let Some(ext) = path.extension() {
                     if ext == "yaml" || ext == "yml" {
-                        let file_path = entry.path();
-                        let content = fs::read_to_string(&file_path).expect("Failed to read file");
-                        let mut parsed_prefs: Vec<Preference> =
-                            serde_yaml::from_str(&content).expect("Failed to parse YAML");
-                        prefs.append(&mut parsed_prefs);
+                        files.push(path);
                     }
                 }
             }
         }
+    }
+}
+
+fn load_preferences() -> Vec<Preference> {
+    let mut prefs = Vec::new();
+    let config_path = get_config_path();
+    let mut pref_files = Vec::new();
+    get_prefs_files_recursively(&config_path, &mut pref_files);
+    for file_path in pref_files {
+        let content = fs::read_to_string(&file_path).expect("Failed to read file");
+        let mut parsed_prefs: Vec<Preference> =
+            serde_yaml::from_str(&content).expect("Failed to parse YAML");
+        prefs.append(&mut parsed_prefs);
     }
     ordered_prefs(prefs)
 }

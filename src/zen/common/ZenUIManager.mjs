@@ -889,6 +889,7 @@ var gZenVerticalTabsManager = {
       if (typeof height !== 'undefined') {
         document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
       }
+      gURLBar.zenFormatURLValue();
     });
   },
 

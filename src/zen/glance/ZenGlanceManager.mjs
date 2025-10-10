@@ -388,6 +388,18 @@
 
       this.browserWrapper.prepend(imageDataElement);
       this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
+
+      gZenUIManager.motion.animate(
+        imageDataElement,
+        {
+          scale: [1, 3],
+        },
+        {
+          duration: 0.3,
+          easing: 'easeInOut',
+        }
+      );
+
       return imageDataElement;
     }
 
@@ -437,6 +449,19 @@
       const transformOrigin = this.#getTransformOrigin(data);
 
       this.browserWrapper.style.transformOrigin = transformOrigin;
+      gZenUIManager.motion
+        .animate(
+          this.contentWrapper,
+          { opacity: [0, 1] },
+          {
+            duration: 0.1,
+            easing: 'easeInOut',
+          }
+        )
+        .then(() => {
+          this.contentWrapper.style.opacity = '';
+        });
+
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
           duration: gZenUIManager.testingEnabled ? 0 : 0.4,
@@ -876,7 +901,7 @@
     }
 
     /**
-     * Add element preview if available
+     * Add element preview if available, used for the closing animation
      * @param {string} elementImageData - The element image data
      * @param {Object} rect - The rectangle data
      */
@@ -888,6 +913,18 @@
         imageDataElement.style.width = rect.width;
         imageDataElement.style.height = rect.height;
         this.browserWrapper.prepend(imageDataElement);
+
+        gZenUIManager.motion.animate(
+          imageDataElement,
+          {
+            scale: [3, 1],
+          },
+          {
+            duration: 0.3,
+            easing: 'easeInOut',
+            bounce: 0.1,
+          }
+        );
       }
     }
 

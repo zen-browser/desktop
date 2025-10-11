@@ -1479,17 +1479,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     });
   }
 
-  async unpinnedTabsInWorkspace(workspaceID) {
+  unpinnedTabsInWorkspace(workspaceID) {
     return Array.from(this.allStoredTabs).filter(
-      (tab) =>
-        tab.getAttribute('zen-workspace-id') === workspaceID &&
-        !tab.hasAttribute('zen-empty-tab') &&
-        !tab.hasAttribute('zen-essential') &&
-        !tab.pinned
+      (tab) => tab.getAttribute('zen-workspace-id') === workspaceID && tab.visible && !tab.pinned
     );
   }
 
-  async #deleteAllUnpinnedTabsInWorkspace(tabs) {
+  #deleteAllUnpinnedTabsInWorkspace(tabs) {
     gBrowser.removeTabs(tabs, {
       animate: false,
       skipSessionStore: true,
@@ -2493,10 +2489,15 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       Array.from(arrowScrollbox.children).filter(
         (child) => !child.hasAttribute('hidden') && !child.hasAttribute('zen-empty-tab')
       ).length <= 1;
+
+    const closeAllTabsFragment = pinnedContainer.querySelector('.zen-close-all-tabs-target');
+
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
+      closeAllTabsFragment.style.display = 'none';
     } else {
       pinnedContainer.removeAttribute('hide-separator');
+      closeAllTabsFragment.style.display = 'flex';
     }
   }
 
@@ -2666,9 +2667,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     if (!unpinnedTabs.length) return;
 
-    await this.#deleteAllUnpinnedTabsInWorkspace(unpinnedTabs);
+    this.#deleteAllUnpinnedTabsInWorkspace(unpinnedTabs);
     gZenUIManager.showToast('zen-workspaces-close-all-unpinned-tabs-toast');
-    document.querySelector('#zen-close-all-tabs-target').remove();
   }
 
   async contextDeleteWorkspace() {

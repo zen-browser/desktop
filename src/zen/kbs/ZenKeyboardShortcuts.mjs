@@ -49,6 +49,7 @@ const defaultKeyboardGroups = {
     'zen-key-enter-full-screen',
     'zen-key-exit-full-screen',
     'zen-quit-app-shortcut',
+    'zen-close-all-unpinned-tabs-shortcut',
     'zen-close-tab-shortcut',
     'zen-close-shortcut',
     'id:key_selectTab1',

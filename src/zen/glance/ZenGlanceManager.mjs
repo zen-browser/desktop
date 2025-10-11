@@ -922,7 +922,7 @@
           {
             duration: 0.3,
             easing: 'easeInOut',
-            bounce: 0.1,
+            bounce: 0,
           }
         );
       }

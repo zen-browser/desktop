@@ -13,7 +13,7 @@ export var ZenCustomizableUI = new (class {
       'zen-sidebar-top-buttons',
       {
         type: this.TYPE_TOOLBAR,
-        defaultPlacements: [],
+        defaultPlacements: ['zen-toggle-compact-mode'],
         defaultCollapsed: null,
         overflowable: true,
       },

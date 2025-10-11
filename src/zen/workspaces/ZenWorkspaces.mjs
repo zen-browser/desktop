@@ -950,8 +950,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     window.addEventListener('TabSelect', this.onLocationChange.bind(this));
 
     window.addEventListener('TabBrowserInserted', this.onTabBrowserInserted.bind(this));
-
-    await this.selectStartPage();
   }
 
   async selectStartPage() {

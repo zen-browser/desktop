@@ -60,6 +60,7 @@ panel[type='arrow']:not(#feature-callout) {
     --panel-shadow-margin: 0px !important;
     --panel-background: transparent !important;
     --panel-border-color: transparent;
+    border: 0 !important;
 
     &::part(content) {
       background-color: transparent !important;

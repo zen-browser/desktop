@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.theme.accent-color
-  value: '#ffb787'
+  value: 'AccentColor'
 
 - name: zen.theme.content-element-separation
   value: 8

@@ -170,7 +170,7 @@ body > #confetti {
   }
 }
 
-.toolbarbutton-1 {
+.toolbarbutton-1:not(#tabs-newtab-button) {
   :root:is([zen-single-toolbar='true'], :not([zen-sidebar-expanded='true']))
     #zen-sidebar-top-buttons-customization-target
     &,

@@ -74,7 +74,7 @@ class nsZenUIMigration {
 
   _migrateV3() {
     if (Services.prefs.getStringPref('zen.theme.accent-color', '').startsWith('system')) {
-      Services.prefs.setStringPref('zen.theme.accent-color', '#ffb787');
+      Services.prefs.setStringPref('zen.theme.accent-color', 'AccentColor');
     }
   }
 

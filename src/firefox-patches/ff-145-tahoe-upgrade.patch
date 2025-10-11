@@ -61,39 +61,6 @@ diff --git a/mfbt/tests/TestUniquePtr.cpp b/mfbt/tests/TestUniquePtr.cpp
      CHECK(DeleteIntFunctionCallCount == 1);
    }
 
-diff --git a/taskcluster/scripts/misc/build-clang.sh b/taskcluster/scripts/misc/build-clang.sh
---- a/taskcluster/scripts/misc/build-clang.sh
-+++ b/taskcluster/scripts/misc/build-clang.sh
-@@ -23,11 +23,11 @@
-   mkdir -p $ORIGPWD/bin
-   echo "#!/bin/sh" > $ORIGPWD/bin/sw_vers
-   echo echo 10.12 >> $ORIGPWD/bin/sw_vers
-   chmod +x $ORIGPWD/bin/sw_vers
-   # these variables are used in build-clang.py
--  export OSX_SYSROOT=$(ls -d $MOZ_FETCHES_DIR/MacOSX1*.sdk)
-+  export OSX_SYSROOT=$(ls -d $MOZ_FETCHES_DIR/MacOSX*.sdk)
-   export PATH=$PATH:$ORIGPWD/bin
-   ;;
- *win64*)
-   case "$(uname -s)" in
-   MINGW*|MSYS*)
-diff --git a/taskcluster/scripts/misc/wr-macos-cross-build-setup.sh b/taskcluster/scripts/misc/wr-macos-cross-build-setup.sh
---- a/taskcluster/scripts/misc/wr-macos-cross-build-setup.sh
-+++ b/taskcluster/scripts/misc/wr-macos-cross-build-setup.sh
-@@ -1,11 +1,11 @@
- #!/bin/bash
- set -x -e -v
- 
- export TARGET_TRIPLE="x86_64-apple-darwin"
- 
--MACOS_SYSROOT=$(ls -d $MOZ_FETCHES_DIR/MacOSX1*.sdk)
-+MACOS_SYSROOT=$(ls -d $MOZ_FETCHES_DIR/MacOSX*.sdk)
- CLANGDIR="${MOZ_FETCHES_DIR}/clang"
- 
- # Deploy the wrench dependencies
- mv ${MOZ_FETCHES_DIR}/wrench-deps/{vendor,.cargo} "${GECKO_PATH}/gfx/wr/"
- 
-
 diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolchain.configure
 --- a/build/moz.configure/toolchain.configure
 +++ b/build/moz.configure/toolchain.configure
@@ -110,53 +77,6 @@ diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolc
          "--with-macos-sdk",
          host,
          bootstrap_path(
-diff --git a/python/mozbuild/mozbuild/test/configure/macos_fake_sdk/SDKSettings.plist b/python/mozbuild/mozbuild/test/configure/macos_fake_sdk/SDKSettings.plist
---- a/python/mozbuild/mozbuild/test/configure/macos_fake_sdk/SDKSettings.plist
-+++ b/python/mozbuild/mozbuild/test/configure/macos_fake_sdk/SDKSettings.plist
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="UTF-8"?>
- <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
- <plist version="1.0">
- <dict>
-         <key>Version</key>
--        <string>15.5</string>
-+        <string>26.0</string>
- </dict>
- </plist>
-diff --git a/taskcluster/kinds/toolchain/macos-sdk.yml b/taskcluster/kinds/toolchain/macos-sdk.yml
-index 71f4de56367d8b68f78c974f36430e6e97dbe79f..aa1917d795f79d100c4e091437cb454807ac7583 100644
---- a/taskcluster/kinds/toolchain/macos-sdk.yml
-+++ b/taskcluster/kinds/toolchain/macos-sdk.yml
-@@ -46,19 +46,20 @@ macosx64-sdk-15.4:
-             - macosx64-sdk-toolchain
-             - MacOSX15.4.sdk
- 
--macosx64-sdk-15.5:
--    description: "MacOSX15.5 SDK"
-+macosx64-sdk-26.0:
-+    description: "macOS 26.0 SDK"
-     treeherder:
--        symbol: TM(sdk15.5)
-+        symbol: TM(sdk26.0)
-     run:
-         arguments:
--            - https://swcdn.apple.com/content/downloads/52/01/082-41241-A_0747ZN8FHV/dectd075r63pppkkzsb75qk61s0lfee22j/CLTools_macOSNMOS_SDK.pkg
--            - fb7c555e823b830279394e52c7d439bd287a9d8b007883fa0595962a240d488b5613f8cc8d1cc9657909de9367417652564f3df66e238a47bbc87244f5205056
--            - Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk
--        toolchain-artifact: project/gecko/mac-sdk/MacOSX15.5.sdk.tar.zst
-+            - https://swcdn.apple.com/content/downloads/27/62/093-35114-A_AAH24ZZQB5/yn87ru9qe9225m8hwq2ic3hjy5yc5vw7h9/CLTools_macOSNMOS_SDK.pkg
-+            - d3286bd6d4dff1b12f1d0dab4816719e605a1bfb76af84575deec37b25fc4462d4fc1258aa43b138a557c4f9304e06740441b101eb367a4b5bd77200b0708c71
-+            - Library/Developer/CommandLineTools/SDKs/MacOSX26.0.sdk
-+        toolchain-artifact: project/gecko/mac-sdk/MacOSX26.0.sdk.tar.zst
-         toolchain-alias:
-             - macosx64-sdk
--            - MacOSX15.5.sdk
-+            - macosx64-sdk-toolchain
-+            - MacOSX26.0.sdk
- 
- ios-sdk-18.4:
-     description: "iPhoneOS18.4 SDK"
-
 diff --git a/browser/themes/osx/places/organizer.css b/browser/themes/osx/places/organizer.css
 index 60e3d65d9ea5..730aa23aed6c 100644
 --- a/browser/themes/osx/places/organizer.css

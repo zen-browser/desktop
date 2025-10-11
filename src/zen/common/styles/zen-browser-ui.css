@@ -37,11 +37,8 @@
 }
 
 .zen-browser-generic-background {
-  width: 100%;
-  height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: clip;
@@ -112,15 +109,27 @@
   }
 }
 
+#zen-browser-background {
+  /* This is conceptually a background, but putting this on a pseudo-element
+    * avoids it from suppressing the chrome-content separator border, etc.
+    *
+    * See bugzilla's 1949528 and bug 1476281 (which would make this unnecessary). */
+  @media (-moz-platform: macos) {
+    -moz-default-appearance: -moz-sidebar;
+    appearance: auto;
+  }
+
+  /*
+   *  Important: We set the color to `AccentColor` so we can
+   *  Compute the stylings and get the native accent color.
+   *  Please, do not remove this.
+   */
+  color: AccentColor;
+}
+
 #sidebar-box {
   /** Sidebar is already hidden in full screen mode */
   border: none;
-}
-
-@media (-moz-platform: macos) {
-  #zen-main-app-wrapper {
-    appearance: -moz-sidebar !important;
-  }
 }
 
 :root:not([zen-single-toolbar='true']) #zen-appcontent-wrapper {

@@ -1513,8 +1513,16 @@
     }
 
     getNativeAccentColor() {
-      const accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
-      const rgb = this.hexToRgb(accentColor);
+      let accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
+      let rgb;
+      if (accentColor === 'AccentColor') {
+        const rawRgb = window.getComputedStyle(document.getElementById('zen-browser-background'))[
+          'color'
+        ];
+        rgb = rawRgb.match(/\d+/g).map(Number);
+      } else {
+        rgb = this.hexToRgb(accentColor);
+      }
       if (this.isDarkMode) {
         // If the theme is dark, we want to use a lighter color
         return this.blendColors(rgb, [0, 0, 0], 40);

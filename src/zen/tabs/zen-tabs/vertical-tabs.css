@@ -1150,7 +1150,10 @@
       --zen-essential-bg-margin: 2px;
 
       &::before {
-        background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
+        background: light-dark(
+          rgba(255, 255, 255, 0.85),
+          color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+        );
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;

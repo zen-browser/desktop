@@ -15,7 +15,7 @@ on:
 jobs:
   mac-build:
     name: Unify macOS (Universal)
-    runs-on: 'macos-15'
+    runs-on: 'macos-26'
 
     strategy:
       fail-fast: false

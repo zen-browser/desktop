@@ -176,5 +176,5 @@
   border-radius: var(--zen-native-inner-radius);
   inset: 50%;
   translate: -50% -50%;
-  will-change: transform;
+  will-change: transform, opacity;
 }

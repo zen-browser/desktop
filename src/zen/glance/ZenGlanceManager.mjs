@@ -383,8 +383,9 @@
       const imageDataElement = document.createXULElement('image');
       imageDataElement.setAttribute('src', data.elementData);
       imageDataElement.classList.add('zen-glance-element-preview');
-      imageDataElement.style.width = `${data.width}px`;
-      imageDataElement.style.height = `${data.height}px`;
+
+      // set an aspect ratio to prevent stretching during animation
+      imageDataElement.style.aspectRatio = `${data.width} / ${data.height}`;
 
       this.browserWrapper.prepend(imageDataElement);
       this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
@@ -392,7 +393,7 @@
       gZenUIManager.motion.animate(
         imageDataElement,
         {
-          scale: [1, 3],
+          opacity: [1, 0],
         },
         {
           duration: 0.3,
@@ -572,12 +573,12 @@
       }
 
       let scale = 1;
-      const bounceSteps = 40;
+      const bounceSteps = 50;
       if (direction === 'opening') {
         for (let i = 0; i < bounceSteps; i++) {
           const progress = i / bounceSteps;
           // Scale up slightly then back to normal
-          scale = 1 + 0.006 * Math.sin(progress * Math.PI);
+          scale = 1 + 0.004 * Math.sin(progress * Math.PI);
           // If we are at the last step, ensure scale is exactly 1
           if (i === bounceSteps - 1) {
             scale = 1;
@@ -910,21 +911,11 @@
         const imageDataElement = document.createXULElement('image');
         imageDataElement.setAttribute('src', elementImageData);
         imageDataElement.classList.add('zen-glance-element-preview');
-        imageDataElement.style.width = rect.width;
-        imageDataElement.style.height = rect.height;
-        this.browserWrapper.prepend(imageDataElement);
 
-        gZenUIManager.motion.animate(
-          imageDataElement,
-          {
-            scale: [3, 1],
-          },
-          {
-            duration: 0.3,
-            easing: 'easeInOut',
-            bounce: 0,
-          }
-        );
+        // set an aspect ratio to prevent stretching during animation
+        imageDataElement.style.aspectRatio = `${parseFloat(rect.width)} / ${parseFloat(rect.height)}`;
+
+        this.browserWrapper.prepend(imageDataElement);
       }
     }
 

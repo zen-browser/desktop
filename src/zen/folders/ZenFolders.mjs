@@ -1708,7 +1708,7 @@
       const groupStart = group.querySelector('.zen-tab-group-start');
       const tabsContainer = group.querySelector('.tab-group-container');
       const heightContainer = expand ? 0 : this.#calculateHeightShift(tabsContainer, []);
-      tabsContainer.style.overflow = expand ? '' : 'clip';
+      tabsContainer.style.overflow = 'clip';
 
       this.#createAnimation(
         groupStart,

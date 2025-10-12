@@ -40,13 +40,16 @@
   list-style-image: url('trash.svg');
 }
 
-.reset-icon {
-  list-style-image: url('reload.svg') !important;
-}
-
-.tab-reset-button,
 #PanelUI-zen-gradient-generator-color-remove {
   list-style-image: url('unpin.svg') !important;
+}
+
+.tab-reset-button {
+  list-style-image: url('unpin.svg');
+
+  @media (-moz-pref('zen.pinned-tab-manager.close-shortcut-behavior', 'close')) {
+    list-style-image: url('close.svg');
+  }
 }
 
 #sidebar-button {

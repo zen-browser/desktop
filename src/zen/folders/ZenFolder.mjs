@@ -244,8 +244,9 @@
     }
 
     async #unloadAllActiveTabs(event, noClose = false) {
-      await gZenPinnedTabManager._onCloseTabShortcut(event, this.tabs, {
+      await gZenPinnedTabManager.onCloseTabShortcut(event, this.tabs, {
         noClose,
+        alwaysUnload: true,
         folderToUnload: this,
       });
       this.activeTabs = [];
@@ -254,7 +255,7 @@
     on_click(event) {
       if (event.target === this.resetButton) {
         event.stopPropagation();
-        this.#unloadAllActiveTabs(event);
+        this.unloadAllTabs(event);
         return;
       }
       super.on_click(event);

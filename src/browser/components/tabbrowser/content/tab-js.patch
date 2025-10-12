@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 425aaf8c8e4adf1507eb0d8ded671f8295544b04..5b0f46642e36fd3e15d13a8dbc633c7a9751f8aa 100644
+index 425aaf8c8e4adf1507eb0d8ded671f8295544b04..12988986c4cf00990c1d1b2e4be362efc001afdd 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -65,7 +65,7 @@ index 425aaf8c8e4adf1507eb0d8ded671f8295544b04..5b0f46642e36fd3e15d13a8dbc633c7a
 +      }
 +
 +      // Selected tabs are always visible
-+      if ((this.selected || this.multiselected || this.hasAttribute("folder-active")) && !this.hasAttribute("was-folder-active")) return true;
++      if (this.selected || this.multiselected || this.hasAttribute("folder-active")) return true;
 +      // Recursively check all parent groups
 +      let currentParent = this.group;
 +      while (currentParent) {
@@ -138,7 +138,7 @@ index 425aaf8c8e4adf1507eb0d8ded671f8295544b04..5b0f46642e36fd3e15d13a8dbc633c7a
 +        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
 +        gBrowser.tabContainer._blockDblClick = true;
 +      } else if (event.target.classList.contains("tab-reset-button")) {
-+        gZenPinnedTabManager._onCloseTabShortcut(event, this);
++        gZenPinnedTabManager.onCloseTabShortcut(event, this);
 +        gBrowser.tabContainer._blockDblClick = true;
 +      }
      }

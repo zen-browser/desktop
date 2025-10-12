@@ -194,6 +194,7 @@
       window.addEventListener('TabGroupExpand', this);
       window.addEventListener('TabGroupCollapse', this);
       window.addEventListener('FolderGrouped', this);
+      window.addEventListener('FolderUngrouped', this);
       window.addEventListener('TabSelect', this);
       window.addEventListener('TabOpen', this);
       const onNewFolder = this.#onNewFolder.bind(this);
@@ -255,6 +256,15 @@
       parentFolder.collapsed = isActiveFolder;
     }
 
+    on_FolderUngrouped(event) {
+      if (this._sessionRestoring) return;
+      const parentFolder = event.target;
+      const folder = event.detail;
+      for (const tab of folder.tabs) {
+        this.animateUnload(parentFolder, tab, true);
+      }
+    }
+
     async on_TabSelect(event) {
       const tab = gZenGlanceManager.getTabOrGlanceParent(event.target);
       let group = tab?.group;
@@ -269,7 +279,7 @@
       }
 
       collapsedRoot.setAttribute('has-active', 'true');
-      await this.expandToSelected(collapsedRoot);
+      await this.animateSelect(collapsedRoot);
       gBrowser.tabContainer._invalidateCachedTabs();
     }
 
@@ -286,26 +296,15 @@
       }
     }
 
-    on_TabUngrouped(event) {
+    async on_TabUngrouped(event) {
       const tab = event.detail;
       const group = event.target;
-      tab.removeAttribute('folder-active');
       if (group.hasAttribute('split-view-group') && tab.hasAttribute('had-zen-pinned-changed')) {
         tab.setAttribute('zen-pinned-changed', true);
         tab.removeAttribute('had-zen-pinned-changed');
       }
 
-      const activeGroup = group.activeGroups;
-      if (activeGroup?.length > 0) {
-        for (const folder of activeGroup) {
-          folder.activeTabs = folder.activeTabs.filter((tab) => tab.hasAttribute('folder-active'));
-          if (!folder.activeTabs.length) {
-            folder.removeAttribute('has-active');
-          }
-          this.collapseVisibleTab(folder, true);
-          this.updateFolderIcon(folder, 'close');
-        }
-      }
+      await this.animateUnload(group, tab, true);
     }
 
     on_TabGroupCreate(event) {
@@ -352,336 +351,14 @@
       const group = event.target;
       if (!group.isZenFolder) return;
 
-      this.cancelPopupTimer();
-      const isForCollapseVisible = event.forCollapseVisible;
-      const canInheritMarginTop = event.canInheritMarginTop;
-
-      const tabsContainer = group.querySelector('.tab-group-container');
-      const animations = [];
-      const groupStart = group.querySelector('.zen-tab-group-start');
-      let selectedItems = [];
-      let selectedGroupIds = new Set();
-      let activeGroupIds = new Set();
-      let itemsToHide = [];
-
-      const items = group.childGroupsAndTabs
-        .filter((item) => !item.hasAttribute('zen-empty-tab'))
-        .map((item) => {
-          const isSplitView = item.group?.hasAttribute?.('split-view-group');
-          const lastActiveGroup = !isSplitView
-            ? item?.group?.activeGroups?.at(-1)
-            : item?.group?.group?.activeGroups?.at(-1);
-          const activeGroupId = lastActiveGroup?.id;
-          const splitGroupId = isSplitView ? item.group.id : null;
-          if (gBrowser.isTabGroupLabel(item) && !isSplitView) item = item.parentNode;
-
-          if (
-            isForCollapseVisible
-              ? group.activeTabs.includes(item)
-              : item.multiselected || item.selected
-          ) {
-            selectedItems.push(item);
-            if (splitGroupId) selectedGroupIds.add(splitGroupId);
-            if (activeGroupId) activeGroupIds.add(activeGroupId);
-          }
-
-          return { item, splitGroupId, activeGroupId };
-        });
-
-      // Calculate the height we need to hide until we reach the selected item.
-      let heightUntilSelected = groupStart.style.marginTop
-        ? Math.abs(parseInt(groupStart.style.marginTop.slice(0, -2)))
-        : 0;
-      if (!isForCollapseVisible) {
-        if (selectedItems.length) {
-          if (!canInheritMarginTop) {
-            heightUntilSelected = 0;
-          }
-          const selectedItem = selectedItems[0];
-          const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
-          const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
-          heightUntilSelected +=
-            window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
-            window.windowUtils.getBoundsWithoutFlushing(groupStart).bottom;
-          if (isSplitView) {
-            heightUntilSelected -= 2;
-          }
-        } else {
-          heightUntilSelected += window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
-        }
-      }
-
-      let selectedIdx = items.length;
-      if (selectedItems.length) {
-        for (let i = 0; i < items.length; i++) {
-          if (selectedItems.includes(items[i].item)) {
-            selectedIdx = i;
-            break;
-          }
-        }
-      }
-
-      for (let i = 0; i < items.length; i++) {
-        const { item, splitGroupId, activeGroupId } = items[i];
-
-        // Dont hide items before the first selected tab
-        if (selectedIdx >= 0 && i < selectedIdx && !isForCollapseVisible) continue;
-
-        // Skip selected items
-        if (selectedItems.includes(item)) continue;
-
-        // Skip items from selected split-view groups
-        if (splitGroupId && selectedGroupIds.has(splitGroupId)) continue;
-
-        // Skip items from selected active groups
-        if (activeGroupId && activeGroupIds.has(activeGroupId)) {
-          // If item is tab-group-label-container we should hide it.
-          // Other items between tab-group-labe-container and folder-active tab should be visible cuz they are hidden by margin-top
-          if (
-            item.parentElement.id !== activeGroupId &&
-            !item.hasAttribute('folder-active') &&
-            !isForCollapseVisible
-          ) {
-            continue;
-          }
-        }
-
-        const itemToHide = splitGroupId ? item.group : item;
-        if (!itemsToHide.includes(itemToHide)) {
-          itemsToHide.push(itemToHide);
-        }
-      }
-
-      if (selectedItems.length) {
-        group.setAttribute('has-active', 'true');
-        group.activeTabs = selectedItems;
-
-        selectedItems.forEach((item) => {
-          this.setFolderIndentation([item], group, /* for collapse = */ true);
-        });
-      }
-
-      itemsToHide.map((item) => {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 0,
-              height: 0,
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-        );
-      });
-
-      animations.push(...this.updateFolderIcon(group));
-      const startMargin = -(heightUntilSelected + 4 * (selectedItems.length === 0 ? 1 : 0));
-      animations.push(
-        gZenUIManager.motion.animate(
-          groupStart,
-          {
-            marginTop: startMargin,
-          },
-          { duration: 0.12, ease: 'easeInOut' }
-        )
-      );
-
-      gBrowser.tabContainer._invalidateCachedVisibleTabs();
-      this.#animationCount += 1;
-      await Promise.all(animations);
-      // Prevent hiding if we spam the group animations
-      this.#animationCount -= 1;
-      if (selectedItems.length === 0 && !this.#animationCount) {
-        tabsContainer.setAttribute('hidden', true);
-      }
+      await this.animateCollapse(group);
     }
 
     async on_TabGroupExpand(event) {
       const group = event.target;
       if (!group.isZenFolder) return;
 
-      this.cancelPopupTimer();
-
-      const tabsContainer = group.querySelector('.tab-group-container');
-      tabsContainer.removeAttribute('hidden');
-
-      const groupStart = group.querySelector('.zen-tab-group-start');
-      const animations = [];
-      tabsContainer.style.overflow = 'hidden';
-
-      const normalizeGroupItems = (items) => {
-        const processed = [];
-        items
-          .filter((item) => !item.hasAttribute('zen-empty-tab'))
-          .forEach((item) => {
-            if (gBrowser.isTabGroupLabel(item)) {
-              if (item?.group?.hasAttribute('split-view-group')) {
-                item = item.group;
-              } else {
-                item = item.parentElement;
-              }
-            }
-            processed.push(item);
-          });
-        return processed;
-      };
-
-      const activeGroups = group.querySelectorAll('zen-folder[has-active]');
-      const groupItems = normalizeGroupItems(group.childGroupsAndTabs);
-      const itemsToHide = [];
-
-      // TODO: It is necessary to correctly set marginTop for groups with has-active
-      for (const activeGroup of activeGroups) {
-        const activeGroupItems = activeGroup.childGroupsAndTabs;
-        let selectedTabs = activeGroup.activeTabs;
-        let selectedGroupIds = new Set();
-
-        selectedTabs.forEach((tab) => {
-          if (tab?.group?.hasAttribute('split-view-group')) {
-            selectedGroupIds.add(tab.group.id);
-          }
-        });
-
-        if (selectedTabs.length) {
-          let selectedIdx = -1;
-          for (let i = 0; i < activeGroupItems.length; i++) {
-            const item = activeGroup.childGroupsAndTabs[i];
-            let selectedTab = item;
-
-            // If the item is in a split view group, we need to get the last tab
-            if (selectedTab?.group?.hasAttribute('split-view-group')) {
-              selectedTab = selectedTab.group.tabs.at(-1);
-            }
-
-            if (selectedTabs.includes(selectedTab) || selectedTabs.includes(item)) {
-              selectedIdx = i;
-              break;
-            }
-          }
-
-          if (selectedIdx >= 0) {
-            for (let i = selectedIdx; i < activeGroupItems.length; i++) {
-              const item = activeGroup.childGroupsAndTabs[i];
-
-              if (selectedTabs.includes(item)) continue;
-
-              const isSplitView = item.group?.hasAttribute?.('split-view-group');
-              const splitGroupId = isSplitView ? item.group.id : null;
-              if (splitGroupId && selectedGroupIds.has(splitGroupId)) continue;
-
-              itemsToHide.push(...normalizeGroupItems([item]));
-            }
-          }
-        }
-      }
-
-      groupItems.map((item) => {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 1,
-              height: '',
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-        );
-      });
-
-      itemsToHide.map((item) => {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 0,
-              height: 0,
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-        );
-      });
-
-      animations.push(...this.updateFolderIcon(group));
-      animations.push(
-        gZenUIManager.motion
-          .animate(
-            groupStart,
-            {
-              marginTop: 0,
-            },
-            {
-              duration: 0.12,
-              ease: 'easeInOut',
-            }
-          )
-          .then(() => {
-            tabsContainer.style.overflow = '';
-            if (group.hasAttribute('has-active')) {
-              const activeTabs = group.activeTabs;
-              const folders = new Map();
-              group.removeAttribute('has-active');
-              for (let tab of activeTabs) {
-                const group = tab?.group?.hasAttribute('split-view-group')
-                  ? tab?.group?.group
-                  : tab?.group;
-                if (!folders.has(group?.id)) {
-                  folders.set(group?.id, group?.activeGroups?.at(-1));
-                }
-                let activeGroup = folders.get(group?.id);
-                // If group has active tabs, we need to update the indentation
-                if (activeGroup) {
-                  const activeGroupStart = activeGroup.querySelector('.zen-tab-group-start');
-                  const selectedTabs = activeGroup.activeTabs;
-                  if (selectedTabs.length > 0) {
-                    const selectedItem = selectedTabs[0];
-                    const isSplitView = selectedItem.group?.hasAttribute('split-view-group');
-                    const selectedContainer = isSplitView ? selectedItem.group : selectedItem;
-
-                    const heightUntilSelected =
-                      window.windowUtils.getBoundsWithoutFlushing(selectedContainer).top -
-                      window.windowUtils.getBoundsWithoutFlushing(activeGroupStart).bottom;
-
-                    const adjustedHeight = isSplitView
-                      ? heightUntilSelected - 2
-                      : heightUntilSelected;
-                    activeGroupStart.style.marginTop =
-                      -(adjustedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)) + 'px';
-                  }
-                  this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
-                } else {
-                  // Since the folder is now expanded, we should remove active attribute
-                  // to the tab that was previously visible
-                  tab.removeAttribute('folder-active');
-                  if (tab.group?.hasAttribute('split-view-group')) {
-                    tab.group.style.removeProperty('--zen-folder-indent');
-                  } else {
-                    tab.style.removeProperty('--zen-folder-indent');
-                  }
-                }
-              }
-
-              folders.clear();
-            }
-            // Folder has been expanded and has no active tabs
-            group.activeTabs = [];
-          })
-      );
-
-      this.#animationCount += 1;
-      await Promise.all(animations);
-      this.#animationCount -= 1;
-      if (this.#animationCount) {
-        return;
-      }
-      groupItems.forEach((item) => {
-        // Cleanup just in case
-        item.style.opacity = '';
-        item.style.height = '';
-      });
-      itemsToHide.forEach((item) => {
-        item.style.opacity = '';
-        item.style.height = '';
-      });
+      await this.animateExpand(group);
     }
 
     #onNewFolder(event) {
@@ -1208,256 +885,6 @@
       }
     }
 
-    collapseVisibleTab(group, onlyIfActive = false, selectedTab = null) {
-      let tabsToCollapse = [selectedTab];
-      if (group?.hasAttribute('split-view-group') && selectedTab && onlyIfActive) {
-        tabsToCollapse = group.tabs;
-        group = group.group;
-      }
-      if (!group?.isZenFolder) return;
-
-      if (selectedTab) {
-        selectedTab.style.removeProperty('--zen-folder-indent');
-      }
-      // We ignore if the flag is set to avoid infinite recursion
-      if (onlyIfActive && group.activeGroups.length && selectedTab) {
-        onlyIfActive = true;
-        group = group.activeGroups[group.activeGroups.length - 1];
-      }
-      // Only continue from here if we have the active tab for this group.
-      // This is important so we dont set the margin to the wrong group.
-      // Example:
-      //   folder1
-      //   ├─ folder2
-      //   └─── tab
-      // When we collapse folder1 ONLY and reset tab since it's `active`, pinned
-      // manager gives originally the direct group of `tab`, which is `folder2`.
-      // But we should be setting the margin only on `folder1`.
-      if (!group.activeTabs.includes(selectedTab) && selectedTab) return;
-      group._prevActiveTabs = group.activeTabs;
-      for (const item of group._prevActiveTabs) {
-        if (selectedTab ? tabsToCollapse.includes(item) : !item.selected || !onlyIfActive) {
-          item.removeAttribute('folder-active');
-          group.activeTabs = group.activeTabs.filter((t) => t !== item);
-          if (!onlyIfActive) {
-            item.setAttribute('was-folder-active', 'true');
-          }
-        }
-      }
-
-      if (group.activeTabs.length === 0) {
-        group.removeAttribute('has-active');
-        this.updateFolderIcon(group, 'close');
-      }
-
-      return this.on_TabGroupCollapse({
-        target: group,
-        forCollapseVisible: true,
-        targetTab: selectedTab,
-      }).then(() => {
-        if (selectedTab) {
-          selectedTab.style.removeProperty('--zen-folder-indent');
-        }
-      });
-    }
-
-    expandVisibleTab(group) {
-      if (!group?.isZenFolder) return;
-
-      group.activeTabs = group._prevActiveTabs || [];
-      for (const tab of group.activeTabs) {
-        if (tab.hasAttribute('was-folder-active')) {
-          tab.setAttribute('folder-active', 'true');
-          tab.removeAttribute('was-folder-active');
-        }
-      }
-
-      if (group.activeTabs.length === 0) {
-        group.removeAttribute('has-active');
-        this.updateFolderIcon(group, 'close');
-      }
-
-      this.on_TabGroupExpand({ target: group, forExpandVisible: true });
-
-      gBrowser.tabContainer._invalidateCachedVisibleTabs();
-    }
-
-    async expandToSelected(group) {
-      if (!group?.isZenFolder) return;
-
-      this.cancelPopupTimer?.();
-
-      const tabsContainer = group.querySelector('.tab-group-container');
-      const groupStart = group.querySelector('.zen-tab-group-start');
-      const animations = [];
-
-      const normalizeGroupItems = (items) => {
-        const processed = [];
-        items
-          .filter((item) => !item.hasAttribute('zen-empty-tab'))
-          .forEach((item) => {
-            if (gBrowser.isTabGroupLabel(item)) {
-              if (item?.group?.hasAttribute('split-view-group')) {
-                item = item.group;
-              } else {
-                item = item.parentElement;
-              }
-            }
-            processed.push(item);
-          });
-        return processed;
-      };
-
-      const selectedItems = [];
-      const groupItems = normalizeGroupItems(group.childGroupsAndTabs);
-
-      for (const item of groupItems) {
-        if (item.hasAttribute('folder-active') || item.selected) {
-          selectedItems.push(item);
-        }
-      }
-
-      for (const tab of selectedItems) {
-        let current = tab?.group?.hasAttribute('split-view-group') ? tab.group.group : tab?.group;
-        while (current) {
-          const activeForGroup = selectedItems.filter((t) => current.contains(t));
-          if (activeForGroup.length) {
-            if (current.collapsed) {
-              if (current.hasAttribute('has-active')) {
-                // It is important to keep the sequence of elements as in the DOM
-                current.activeTabs = [...new Set([...current.activeTabs, ...activeForGroup])].sort(
-                  (a, b) => {
-                    const position = a.compareDocumentPosition(b);
-                    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
-                    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
-                    return 0;
-                  }
-                );
-              } else {
-                current.setAttribute('has-active', 'true');
-                current.activeTabs = activeForGroup;
-              }
-
-              // If selectedItems does not have a tab, it is necessary to add it
-              current.activeTabs.forEach((tab) => {
-                if (!selectedItems.includes(tab)) {
-                  selectedItems.push(tab);
-                }
-              });
-              const tabsContainer = current.querySelector('.tab-group-container');
-              const groupStart = current.querySelector('.zen-tab-group-start');
-              const curMarginTop = parseInt(groupStart.style.marginTop) || 0;
-
-              if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
-
-              animations.push(...this.updateFolderIcon(current, 'close'));
-              animations.push(
-                gZenUIManager.motion.animate(
-                  groupStart,
-                  {
-                    marginTop: [curMarginTop, 0],
-                  },
-                  { duration: 0.12, ease: 'easeInOut' }
-                )
-              );
-              for (const tab of activeForGroup) {
-                this.setFolderIndentation(
-                  [tab],
-                  current,
-                  /* for collapse = */ true,
-                  /* animate = */ false
-                );
-              }
-            }
-          }
-          current = current.group;
-        }
-      }
-
-      const selectedItemsSet = new Set();
-      const selectedGroupIds = new Set();
-      for (const tab of selectedItems) {
-        const isSplit = tab?.group?.hasAttribute?.('split-view-group');
-        if (isSplit) selectedGroupIds.add(tab.group.id);
-        const container = isSplit ? tab.group : tab;
-        selectedItemsSet.add(container);
-      }
-
-      const itemsToHide = [];
-      for (const item of groupItems) {
-        const isSplit = item.group?.hasAttribute?.('split-view-group');
-        const splitId = isSplit ? item.group.id : null;
-        const itemElem = isSplit ? item.group : item;
-
-        if (selectedItemsSet.has(itemElem)) continue;
-        if (splitId && selectedGroupIds.has(splitId)) continue;
-
-        if (!itemElem.hasAttribute?.('folder-active')) {
-          if (!itemsToHide.includes(itemElem)) itemsToHide.push(itemElem);
-        }
-      }
-
-      if (tabsContainer.hasAttribute('hidden')) {
-        tabsContainer.removeAttribute('hidden');
-      }
-
-      for (const item of groupItems) {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 1,
-              height: '',
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-        );
-      }
-
-      for (const item of itemsToHide) {
-        animations.push(
-          gZenUIManager.motion.animate(
-            item,
-            {
-              opacity: 0,
-              height: 0,
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-        );
-      }
-
-      let curMarginTop = parseInt(groupStart.style.marginTop) || 0;
-      animations.push(
-        gZenUIManager.motion
-          .animate(
-            groupStart,
-            {
-              marginTop: [curMarginTop, 0],
-            },
-            { duration: 0.12, ease: 'easeInOut' }
-          )
-          .then(() => {
-            tabsContainer.style.overflow = '';
-          })
-      );
-
-      animations.push(...this.updateFolderIcon(group));
-
-      this.#animationCount = (this.#animationCount || 0) + 1;
-      await Promise.all(animations);
-      this.#animationCount -= 1;
-
-      for (const item of groupItems) {
-        item.style.opacity = '';
-        item.style.height = '';
-      }
-      for (const item of itemsToHide) {
-        item.style.opacity = '';
-        item.style.height = '';
-      }
-    }
-
     #groupInit(group, stateData) {
       // Setup zen-folder icon to the correct position
       this.updateFolderIcon(group, 'auto');
@@ -1759,6 +1186,537 @@
       }
 
       return { dropElement, colorCode, dropBefore };
+    }
+
+    #normalizeGroupItems(items) {
+      return items
+        .filter((item) => !item.hasAttribute('zen-empty-tab'))
+        .map((item) => {
+          if (gBrowser.isTabGroup(item)) {
+            item = item.firstChild;
+          } else if (gBrowser.isTabGroupLabel(item)) {
+            if (item?.group?.hasAttribute('split-view-group')) {
+              item = item.group;
+            } else {
+              item = item.parentElement;
+            }
+          }
+          return item;
+        });
+    }
+
+    #collectGroupItems(group, opts = {}) {
+      const { selectedTabs = [], splitViewIds = new Set(), activeFoldersIds = new Set() } = opts;
+      const folders = new Map();
+      return group.childGroupsAndTabs
+        .filter((item) => !item.hasAttribute('zen-empty-tab'))
+        .map((item) => {
+          const isSplitView = item.group?.hasAttribute?.('split-view-group');
+          const group = isSplitView ? item.group.group : item.group;
+          if (!folders.has(group?.id)) {
+            folders.set(group?.id, group?.activeGroups[0]);
+          }
+          const lastActiveFolder = folders.get(group?.id);
+          const activeFolderId = lastActiveFolder?.id;
+          const splitViewId = isSplitView ? item?.group?.id : null;
+
+          if (item.multiselected || item.selected || item.hasAttribute('folder-active')) {
+            selectedTabs.push(item);
+            if (splitViewId) splitViewIds.add(splitViewId);
+            if (activeFolderId) activeFoldersIds.add(activeFolderId);
+          }
+
+          if (gBrowser.isTabGroupLabel(item)) {
+            if (isSplitView) {
+              item = item.group;
+            } else {
+              item = item.parentElement;
+            }
+          }
+
+          return { item, splitViewId, activeFolderId };
+        });
+    }
+
+    #createAnimation(items, targetState, opts, callback = () => {}) {
+      items = Array.isArray(items) ? items : [items];
+      return items.map((item) =>
+        gZenUIManager.motion.animate(item, targetState, opts).then(callback)
+      );
+    }
+
+    #calculateHeightShift(tabsContainer, selectedTabs) {
+      let heightShift = 0;
+      if (selectedTabs.length) {
+        return heightShift;
+      } else {
+        heightShift += window.windowUtils.getBoundsWithoutFlushing(tabsContainer).height;
+      }
+      return heightShift;
+    }
+
+    async animateCollapse(group) {
+      this.cancelPopupTimer();
+
+      const animations = [];
+      const selectedTabs = [];
+      const splitViewIds = new Set();
+      const activeFoldersIds = new Set();
+      const itemsToHide = [];
+
+      const tabsContainer = group.querySelector('.tab-group-container');
+      const groupStart = group.querySelector('.zen-tab-group-start');
+
+      const groupItems = this.#collectGroupItems(group, {
+        selectedTabs,
+        splitViewIds,
+        activeFoldersIds,
+      });
+      const heightUntilSelected = this.#calculateHeightShift(tabsContainer, selectedTabs);
+
+      if (selectedTabs.length) {
+        for (let i = 0; i < groupItems.length; i++) {
+          const { item, splitViewId, activeFolderId } = groupItems[i];
+
+          // Skip selected items
+          if (selectedTabs.includes(item)) continue;
+
+          // Skip items from selected split-view groups
+          if (splitViewId && splitViewIds.has(splitViewId)) continue;
+
+          // Skip items from selected active groups
+          if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
+            // If item is tab-group-label-container we should hide it.
+            // Other items between tab-group-labe-container and folder-active tab should be visible cuz they are hidden by margin-top
+            if (item.parentElement.id !== activeFolderId && !item.hasAttribute('folder-active')) {
+              continue;
+            }
+          }
+
+          if (!itemsToHide.includes(item)) {
+            itemsToHide.push(item);
+          }
+        }
+
+        group.setAttribute('has-active', 'true');
+        group.activeTabs = selectedTabs;
+
+        selectedTabs.forEach((tab) => {
+          this.setFolderIndentation([tab], group, /* for collapse = */ true);
+        });
+      }
+
+      animations.push(
+        ...this.#createAnimation(
+          itemsToHide,
+          { opacity: 0, height: 0 },
+          { duration: 0.12, ease: 'easeInOut' }
+        ),
+        ...this.updateFolderIcon(group),
+        ...this.#createAnimation(
+          groupStart,
+          {
+            marginTop: -(heightUntilSelected + 4 * (selectedTabs.length === 0 ? 1 : 0)),
+          },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
+      );
+
+      gBrowser.tabContainer._invalidateCachedVisibleTabs();
+      this.#animationCount += 1;
+      await Promise.all(animations);
+      if (this.#animationCount) {
+        this.#animationCount -= 1;
+        return;
+      }
+      // Prevent hiding if we spam the group animations
+      if (!selectedTabs.length && !this.#animationCount) {
+        tabsContainer.setAttribute('hidden', true);
+      }
+
+      this.styleCleanup(itemsToHide);
+    }
+
+    async animateExpand(group) {
+      this.cancelPopupTimer();
+
+      const animations = [];
+      const itemsToHide = [];
+
+      const tabsContainer = group.querySelector('.tab-group-container');
+      tabsContainer.removeAttribute('hidden');
+      tabsContainer.style.overflow = 'hidden';
+
+      const groupStart = group.querySelector('.zen-tab-group-start');
+      const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
+      const activeFolders = group.childActiveGroups;
+
+      for (const folder of activeFolders) {
+        const splitViewIds = new Set();
+        const selectedTabs = folder.activeTabs;
+
+        const activeFoldersIds = new Set();
+        const activeFolderItems = this.#collectGroupItems(folder, {
+          splitViewIds,
+          activeFoldersIds,
+        });
+
+        if (selectedTabs.length) {
+          for (let i = 0; i < activeFolderItems.length; i++) {
+            const { item, splitViewId, activeFolderId } = activeFolderItems[i];
+
+            // Skip selected items
+            if (selectedTabs.includes(item)) continue;
+
+            // Skip items from selected split-view groups
+            if (splitViewId && splitViewIds.has(splitViewId)) continue;
+
+            if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
+              const folder = item.parentElement;
+              if (
+                gBrowser.isTabGroup(folder) &&
+                folder.id !== activeFolderId &&
+                item.hasAttribute('folder-active')
+              ) {
+                continue;
+              }
+            }
+
+            if (!itemsToHide.includes(item)) {
+              itemsToHide.push(item);
+            }
+          }
+        }
+      }
+
+      const afterMarginTop = () => {
+        tabsContainer.style.overflow = '';
+        if (group.hasAttribute('has-active')) {
+          const activeTabs = group.activeTabs;
+          const folders = new Map();
+          group.removeAttribute('has-active');
+          for (let tab of activeTabs) {
+            const group = tab?.group?.hasAttribute('split-view-group')
+              ? tab?.group?.group
+              : tab?.group;
+            if (!folders.has(group?.id)) {
+              folders.set(group?.id, group?.activeGroups?.at(-1));
+            }
+            let activeGroup = folders.get(group?.id);
+            if (activeGroup) {
+              this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
+            } else {
+              // Since the folder is now expanded, we should remove active attribute
+              // to the tab that was previously visible
+              tab.removeAttribute('folder-active');
+              if (tab.group?.hasAttribute('split-view-group')) {
+                tab.group.style.removeProperty('--zen-folder-indent');
+              } else {
+                tab.style.removeProperty('--zen-folder-indent');
+              }
+            }
+          }
+          folders.clear();
+        }
+        // Folder has been expanded and has no active tabs
+        group.activeTabs = [];
+      };
+
+      animations.push(
+        ...this.#createAnimation(
+          itemsToShow,
+          { opacity: '', height: '' },
+          { duration: 0.12, ease: 'easeInOut' }
+        ),
+        ...this.#createAnimation(
+          itemsToHide,
+          { opacity: 0, height: 0 },
+          { duration: 0.12, ease: 'easeInOut' }
+        ),
+        ...this.updateFolderIcon(group),
+        ...this.#createAnimation(
+          groupStart,
+          {
+            marginTop: 0,
+          },
+          { duration: 0.12, ease: 'easeInOut' },
+          afterMarginTop
+        )
+      );
+
+      this.#animationCount += 1;
+      await Promise.all(animations);
+      this.#animationCount -= 1;
+
+      // Cleanup
+      this.styleCleanup(itemsToShow);
+      this.styleCleanup(itemsToHide);
+    }
+
+    async animateUnloadAll(group) {
+      const animations = [];
+
+      const activeGroups = [group, ...group.childActiveGroups];
+      for (const folder of activeGroups) {
+        folder.removeAttribute('has-active');
+        folder.activeTabs = [];
+        const groupItems = this.#normalizeGroupItems(folder.allItems);
+        const tabsContainer = folder.querySelector('.tab-group-container');
+
+        this.styleCleanup(groupItems);
+
+        const groupStart = folder.querySelector('.zen-tab-group-start');
+
+        // Trigger a reflow
+        tabsContainer.offsetHeight;
+
+        const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+
+        // Collect animations for this specific folder becoming inactive
+        animations.push(
+          ...this.updateFolderIcon(folder, 'close', false),
+          ...this.#createAnimation(
+            groupStart,
+            {
+              marginTop: -(heightUntilSelected + 4),
+            },
+            { duration: 0.12, ease: 'easeInOut' }
+          )
+        );
+      }
+
+      this.#animationCount += 1;
+      await Promise.all(animations);
+      this.#animationCount -= 1;
+      gBrowser.tabContainer._invalidateCachedTabs();
+    }
+
+    async animateUnload(group, tabToUnload, ungroup = false) {
+      const isSplitView = tabToUnload.group?.hasAttribute('split-view-group');
+      if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
+        return;
+      const animations = [];
+
+      const activeGroups = group.activeGroups;
+      for (const folder of activeGroups) {
+        folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
+
+        if (folder.activeTabs.length === 0) {
+          animations.push(async () => {
+            folder.removeAttribute('has-active');
+            const groupItems = this.#normalizeGroupItems(folder.allItems);
+            const tabsContainer = folder.querySelector('.tab-group-container');
+
+            this.styleCleanup(groupItems);
+
+            const groupStart = folder.querySelector('.zen-tab-group-start');
+
+            // Trigger a reflow
+            tabsContainer.offsetHeight;
+            tabsContainer.setAttribute('hidden', true);
+
+            const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+
+            // Collect animations for this specific folder becoming inactive
+            const folderAnimation = [
+              ...this.updateFolderIcon(folder, 'close', false),
+              ...this.#createAnimation(
+                groupStart,
+                {
+                  marginTop: -(heightUntilSelected + 4),
+                },
+                { duration: 0.12, ease: 'easeInOut' }
+              ),
+            ];
+            await Promise.all(folderAnimation);
+          });
+        }
+      }
+
+      tabToUnload.removeAttribute('folder-active');
+      if (isSplitView) {
+        tabToUnload = tabToUnload.group;
+      }
+
+      tabToUnload.style.removeProperty('--zen-folder-indent');
+
+      let tabUnloadAnimations = [];
+      if (!ungroup) {
+        tabUnloadAnimations = this.#createAnimation(
+          tabToUnload,
+          {
+            opacity: 0,
+            height: 0,
+          },
+          {
+            duration: 0.12,
+            ease: 'easeInOut',
+          }
+        );
+      }
+
+      // Manage global animation count
+      this.#animationCount += 1;
+
+      // Await the tab unload animation first
+      await Promise.all(tabUnloadAnimations);
+      await Promise.all(animations.map((item) => (typeof item === 'function' ? item() : item)));
+      this.#animationCount -= 1;
+      gBrowser.tabContainer._invalidateCachedTabs();
+    }
+
+    async animateSelect(group) {
+      if (!group?.isZenFolder) return;
+
+      this.cancelPopupTimer();
+
+      const animations = [];
+      const selectedTabs = [];
+      const splitViewIds = new Set();
+      const itemsToHide = [];
+
+      const groupItems = this.#collectGroupItems(group, {
+        selectedTabs,
+        splitViewIds,
+      });
+
+      for (const tab of selectedTabs) {
+        let currentGroup = tab?.group?.hasAttribute('split-view-group')
+          ? tab.group.group
+          : tab?.group;
+        while (currentGroup) {
+          const activeTabs = selectedTabs.filter((t) => currentGroup.tabs.includes(t));
+          if (activeTabs.length) {
+            if (currentGroup.collapsed) {
+              if (currentGroup.hasAttribute('has-active')) {
+                // It is important to keep the sequence of elements as in the DOM
+                currentGroup.activeTabs = [
+                  ...new Set([...currentGroup.activeTabs, ...activeTabs]),
+                ].sort((a, b) => a._tPos > b._tPos);
+              } else {
+                currentGroup.setAttribute('has-active', 'true');
+                currentGroup.activeTabs = activeTabs;
+              }
+
+              const tabsContainer = currentGroup.querySelector('.tab-group-container');
+              const groupStart = currentGroup.querySelector('.zen-tab-group-start');
+              tabsContainer.style.overflow = 'clip';
+
+              if (tabsContainer.hasAttribute('hidden')) tabsContainer.removeAttribute('hidden');
+
+              const afterMarginTop = () => {
+                tabsContainer.style.overflow = '';
+              };
+
+              animations.push(
+                ...this.updateFolderIcon(currentGroup, 'close', false),
+                ...this.#createAnimation(
+                  groupStart,
+                  {
+                    marginTop: 0,
+                  },
+                  { duration: 0.12, ease: 'easeInOut' },
+                  afterMarginTop
+                )
+              );
+              for (const tab of activeTabs) {
+                this.setFolderIndentation(
+                  [tab],
+                  currentGroup,
+                  /* for collapse = */ true,
+                  /* animate = */ false
+                );
+              }
+            }
+          }
+          currentGroup = currentGroup.group;
+        }
+      }
+
+      const itemsToShow = [];
+      if (selectedTabs.length) {
+        for (let i = 0; i < groupItems.length; i++) {
+          const { item, splitViewId } = groupItems[i];
+
+          itemsToShow.push(item);
+
+          // Skip selected items
+          if (selectedTabs.includes(item)) continue;
+
+          // Skip items from selected split-view groups
+          if (splitViewId && splitViewIds.has(splitViewId)) continue;
+
+          if (!item.hasAttribute?.('folder-active')) {
+            if (!itemsToHide.includes(item)) itemsToHide.push(item);
+          }
+        }
+      }
+
+      // FIXME: This is a hack to fix the animations not working properly
+      this.styleCleanup(itemsToShow);
+      itemsToHide.forEach((item) => {
+        item.style.opacity = 0;
+        item.style.height = 0;
+      });
+
+      animations.push(
+        ...this.#createAnimation(
+          itemsToShow,
+          {
+            opacity: '',
+            height: '',
+          },
+          {
+            duration: 0.12,
+            ease: 'easeInOut',
+          }
+        ),
+        ...this.#createAnimation(
+          itemsToHide,
+          {
+            opacity: 0,
+            height: 0,
+          },
+          {
+            duration: 0.12,
+            ease: 'easeInOut',
+          }
+        )
+      );
+
+      this.#animationCount += 1;
+      await Promise.all(animations);
+      this.#animationCount -= 1;
+      if (this.#animationCount) {
+        return;
+      }
+
+      // Cleanup
+      this.styleCleanup(itemsToHide);
+      this.styleCleanup(selectedTabs);
+    }
+
+    animateGroupMove(group, expand = false) {
+      if (!group?.isZenFolder) return;
+      const groupStart = group.querySelector('.zen-tab-group-start');
+      const tabsContainer = group.querySelector('.tab-group-container');
+      const heightContainer = expand ? 0 : this.#calculateHeightShift(tabsContainer, []);
+      tabsContainer.style.overflow = expand ? '' : 'clip';
+
+      this.#createAnimation(
+        groupStart,
+        {
+          marginTop: expand ? 0 : -(heightContainer + 4),
+        },
+        { duration: 0.12, ease: 'easeInOut' }
+      );
+    }
+
+    styleCleanup(items) {
+      items.forEach((item) => {
+        item.style.removeProperty('opacity');
+        item.style.removeProperty('height');
+      });
     }
   }
 

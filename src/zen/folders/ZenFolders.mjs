@@ -1326,10 +1326,10 @@
       this.#animationCount += 1;
       await Promise.all(animations);
       if (this.#animationCount) {
+        this.#animationCount -= 1;
         return;
       }
       // Prevent hiding if we spam the group animations
-      this.#animationCount -= 1;
       if (!selectedTabs.length && !this.#animationCount) {
         tabsContainer.setAttribute('hidden', true);
       }

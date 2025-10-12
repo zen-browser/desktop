@@ -21,7 +21,7 @@
     "update-ff:rc": "python3 scripts/update_ff.py --rc",
     "update-ff:l10n": "python3 scripts/update_ff.py --just-l10n",
     "pretty": "prettier . --write --cache && autopep8 -r --in-place scripts/ src/",
-    "lint": "npx eslint src/ && prettier . --check && autopep8 --diff scripts/ src/",
+    "lint": "npx eslint src/ && prettier . --check --cache",
     "lint:fix": "npm run pretty && npx eslint src/ --fix",
     "prepare": "husky",
     "reset-ff": "surfer reset",

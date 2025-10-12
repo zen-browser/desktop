@@ -648,8 +648,6 @@ var gZenLooksAndFeel = {
         Services.prefs.removeObserver(pref, this);
       }
     });
-    this.setCompactModeStyle();
-
     this.applySidebarLayout();
   },
 
@@ -693,41 +691,6 @@ var gZenLooksAndFeel = {
           layout.getAttribute('layout') != 'collapsed'
         );
         Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute('layout') == 'single');
-      });
-    }
-  },
-
-  setCompactModeStyle() {
-    const chooser = document.getElementById('zen-compact-mode-styles-form');
-    const radios = [...chooser.querySelectorAll('input')];
-
-    let value = '';
-    if (
-      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar', false) &&
-      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar', false)
-    ) {
-      value = 'both';
-    } else {
-      value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
-    }
-    chooser.querySelector(`[value='${value}']`).checked = true;
-    for (let radio of radios) {
-      radio.addEventListener('change', (e) => {
-        let value = e.target.value;
-        switch (value) {
-          case 'left':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
-            break;
-          case 'top':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-          default:
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-        }
       });
     }
   },
@@ -1010,7 +973,7 @@ var gZenCKSSettings = {
       this._latestValidKey = null;
       return;
     } else if (shortcut == 'Escape' && !modifiersActive) {
-      const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
+      const { hasConflicts, conflictShortcut } = gZenKeyboardShortcutsManager.checkForConflicts(
         this._latestValidKey ? this._latestValidKey : shortcut,
         this._latestModifier ? this._latestModifier : modifiers,
         this._currentActionID
@@ -1023,12 +986,29 @@ var gZenCKSSettings = {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
-        if (hasConflicts && !input.nextElementSibling) {
-          input.after(
-            window.MozXULElement.parseXULToFragment(`
-            <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
-          `)
-          );
+
+        if (hasConflicts) {
+          const shortcutL10nKey =
+            zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
+            conflictShortcut.getL10NID();
+
+          const [group, shortcut] = await document.l10n.formatValues([
+            { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
+            { id: shortcutL10nKey },
+          ]);
+
+          if (!input.nextElementSibling) {
+            input.after(
+              window.MozXULElement.parseXULToFragment(`
+                <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
+              `)
+            );
+          }
+
+          document.l10n.setAttributes(input.nextElementSibling, 'zen-key-conflict', {
+            group: group ?? '',
+            shortcut: shortcut ?? '',
+          });
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
@@ -1075,11 +1055,6 @@ var gZenCKSSettings = {
 };
 
 Preferences.addAll([
-  {
-    id: 'zen.view.compact.hide-toolbar',
-    type: 'bool',
-    default: false,
-  },
   {
     id: 'zen.view.compact.toolbar-flash-popup',
     type: 'bool',

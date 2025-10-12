@@ -156,38 +156,6 @@ groupbox h2 {
   margin-bottom: 15px;
 }
 
-#zen-compact-mode-styles-form {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-large);
-  margin-top: 5px;
-
-  & .web-appearance-choice-image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px 0;
-
-    background: color-mix(in srgb, var(--zen-colors-tertiary) 50%, transparent 50%);
-  }
-}
-
-@media -moz-pref('zen.view.use-single-toolbar') {
-  #zen-compact-mode-styles-form {
-    display: none;
-  }
-}
-
-#zen-expand-tabbar-strat {
-  display: flex;
-  flex-direction: column;
-}
-
-#zen-expand-tabbar-strat > hbox {
-  margin-top: 10px;
-}
-
 #category-zen-looks > .category-icon {
   list-style-image: url('chrome://browser/skin/customize.svg');
 }

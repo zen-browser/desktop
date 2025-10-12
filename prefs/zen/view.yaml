@@ -51,3 +51,6 @@
 
 - name: zen.view.context-menu.refresh
   value: false
+
+- name: zen.view.borderless-fullscreen
+  value: true

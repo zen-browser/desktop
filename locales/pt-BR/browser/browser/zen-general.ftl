@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Redefinir Guia Fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Adicionar aos Essenciais ({ $num } / 12 espaços preenchidos)
+    .label = Adicionar aos Essenciais ({ $num } / { $max } espaços preenchidos)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
@@ -35,6 +35,9 @@ zen-library-sidebar-workspaces =
     .label = Espaços
 zen-library-sidebar-mods = 
     .label = Mods
+zen-toggle-compact-mode-button = 
+    .label = Modo Compacto
+    .tooltiptext = Alternar Modo Compacto
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -46,4 +49,25 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ícones
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Ações
+zen-site-data-settings = Configurações
+zen-generic-manage = Gerenciar
+zen-generic-more = Mais
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permitido
+zen-site-data-setting-block = Bloqueado
+zen-site-data-security-info-extension = 
+    .label = Extensão
+zen-site-data-security-info-secure = 
+    .label = Seguro
+zen-site-data-security-info-not-secure = 
+    .label = Não seguro
+zen-site-data-manage-addons = 
+    .label = Gerenciar Extensões
+zen-site-data-get-addons = 
+    .label = Adicionar Extensões
+zen-site-data-site-settings = 
+    .label = Todas as Configurações do Site
+zen-site-data-setting-site-protection = Site Protection
+zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
+zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.

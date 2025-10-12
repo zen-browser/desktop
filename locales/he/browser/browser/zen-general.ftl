@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = אפס כרטיסייה מוצמדת
     .accesskey = ר
 tab-context-zen-add-essential = 
-    .label = הוסף לנחוצים ({ $num } / 12 מקומות מלאים)
+    .label = הוסף לנחוצים ({ $num } / { $max } מקומות מלאים)
     .accesskey = ק
 tab-context-zen-remove-essential = 
     .label = הסר מנחוצים
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = סביבות
 zen-library-sidebar-mods = 
     .label = מודים
+zen-toggle-compact-mode-button = 
+    .label = מצב מכווץ
+    .tooltiptext = הפעל/כבה מצב מכווץ
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,25 @@ zen-icons-picker-emoji =
     .label = אימוג'ים
 zen-icons-picker-svg = 
     .label = סמלים
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = פעולות
+zen-site-data-settings = הגדרות
+zen-generic-manage = ניהול
+zen-generic-more = עוד
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = אושר
+zen-site-data-setting-block = חסום
+zen-site-data-security-info-extension = 
+    .label = תוספים
+zen-site-data-security-info-secure = 
+    .label = מאובטח
+zen-site-data-security-info-not-secure = 
+    .label = לא מאובטח
+zen-site-data-manage-addons = 
+    .label = נהל תוספים
+zen-site-data-get-addons = 
+    .label = הוספת תוספים
+zen-site-data-site-settings = 
+    .label = כל הגדרות אתר
+zen-site-data-setting-site-protection = בטיחות אתר
+zen-site-data-panel-feature-callout-title = בית חדש לתוספים, הרשאות, ועוד
+zen-site-data-panel-feature-callout-subtitle = ניתן ללחוץ על הסמל כדי לנהל הגדרות אתר, לצפות במידע אבטחה, לגשת לתוספים, ולבצע פעולות נפוצות.

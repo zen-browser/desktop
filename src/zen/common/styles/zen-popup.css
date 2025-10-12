@@ -31,7 +31,6 @@
   --uc-autocomplete-panel-separator-margin-vertical: 4px;
 
   --uc-permission-itemcontainer-padding-block: 8px;
-  --uc-permission-item-margin-block: 4px;
   --uc-permission-item-padding-inline: 16px;
   --zen-panel-separator-width: 1px;
 }
@@ -228,23 +227,13 @@ panel {
 
 .permission-popup-permission-item,
 #permission-popup-storage-access-permission-list-header {
-  margin-block: var(--uc-permission-item-margin-block);
-}
-
-.permission-popup-permission-label,
-.permission-popup-permission-header-label {
-  margin-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
+  padding-block: 4px;
+  margin-block: 0px;
 }
 
 #editBookmarkPanel > #editBookmarkHeaderSeparator,
 #editBookmarkPanel > .panel-subview-body > #editBookmarkSeparator {
   margin-inline: 0;
-}
-
-#identity-popup-mainView > toolbarseparator:first-child,
-#unified-extensions-view > toolbarseparator:first-child {
-  display: none;
-  opacity: 0;
 }
 
 menupopup,

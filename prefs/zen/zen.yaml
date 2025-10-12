@@ -11,6 +11,9 @@
 - name: zen.tabs.rename-tabs
   value: true
 
+- name: zen.tabs.essentials.max
+  value: 12
+
 - name: zen.tabs.show-newtab-vertical
   value: true
 

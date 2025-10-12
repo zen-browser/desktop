@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 637e9dda83df5b490d6340367dd63077904ea056..6ffb1dc6ed1d6e58b4e8de1faca887f6b38115cb 100644
+index 74aae01ddcdc4b6460ebbe174355ca129a89010b..52dd4e6aa49929394ed6afa6b25f4ee4954b8b94 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -317,6 +317,10 @@ var BrowserCommands = {

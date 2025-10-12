@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index c5b7ef2616c1dab9f42970605897e862d57ab7d0..77f0731db6c4a8d835cf8733115d27ae7782a987 100644
+index 32b67f846b9942ad3da4276bb8748fee915eb485..f77d5df7c8ef49c0366ada8b3153c5a6c676239b 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index c5b7ef2616c1dab9f42970605897e862d57ab7d0..77f0731db6c4a8d835cf8733115d27ae
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2291,6 +2292,8 @@ var XULBrowserWindow = {
+@@ -2293,6 +2294,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -19,7 +19,7 @@ index c5b7ef2616c1dab9f42970605897e862d57ab7d0..77f0731db6c4a8d835cf8733115d27ae
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -5232,6 +5235,9 @@ var ConfirmationHint = {
+@@ -4782,6 +4785,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

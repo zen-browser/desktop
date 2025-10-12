@@ -31,6 +31,11 @@
     --urlbar-container-padding: 0px;
   }
 
+  :root[inDOMFullscreen] & {
+    /* See issue https://github.com/zen-browser/desktop/issues/5229 */
+    visibility: visible;
+  }
+
   :root[zen-single-toolbar='true'] &[breakout-extend='true'],
   &[zen-floating-urlbar='true'] {
     --urlbar-container-padding: 3px;
@@ -109,6 +114,10 @@
   border-radius: 0px !important;
 }
 
+#urlbar:not([breakout-extend='true']) .urlbar-input-box {
+  font-weight: 500;
+}
+
 :root[zen-single-toolbar='true'] #urlbar:not([breakout-extend='true']) {
   & #urlbar-input {
     cursor: default;
@@ -118,6 +127,21 @@
     margin-inline-end: 0 !important;
     &.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
       border-radius: 10px !important;
+    }
+  }
+
+  .identity-box-button {
+    opacity: 0;
+    transition:
+      opacity 0.2s,
+      visibility 0.2s;
+    visibility: collapse;
+
+    #navigator-toolbox:hover &,
+    &[open],
+    #identity-box[pageproxystate='invalid'] & {
+      opacity: 1;
+      visibility: visible;
     }
   }
 }
@@ -220,24 +244,14 @@
 }
 
 :root[zen-single-toolbar='true'] {
-  --urlbar-icon-border-radius: 10px !important;
+  --urlbar-icon-border-radius: 8px !important;
 
-  .urlbar-page-action:not([open]):not(#identity-permission-box),
+  .urlbar-page-action:not([open]):not([showing]):not(#identity-permission-box),
   #tracking-protection-icon-container {
     display: none;
   }
 
-  #identity-box:not([pageproxystate='invalid']):not(.notSecure) #identity-icon-box:not([open]) {
-    margin-inline-start: calc(-8px - 2 * var(--urlbar-icon-padding));
-    transform: translateX(100%);
-    opacity: 0;
-
-    :root:not([supress-primary-adjustment]) & {
-      transition: all 0.1s ease;
-    }
-  }
-
-  #identity-permission-box > *:not(#permissions-granted-icon) {
+  #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }
 
@@ -245,27 +259,9 @@
     display: none;
   }
 
-  #urlbar[open]
-    :is(#tracking-protection-icon-container, .urlbar-page-action, .identity-box-button):not(
-      [hidden]
-    ):not(#identity-permission-box),
-  #urlbar:hover #identity-icon-box {
-    opacity: 1 !important;
-    margin-inline-start: 0 !important;
-    transform: none !important;
-    display: flex;
-    #urlbar:not(:hover) & {
-      transition: none;
-    }
-  }
-
-  #urlbar:not([open]) #userContext-icons {
-    margin-inline: 0;
-  }
-
-  #urlbar:not([open]) {
+  #urlbar:not([breakout-extend='true']) {
     #identity-box:not([pageproxystate='invalid']) {
-      order: 2;
+      order: 9;
     }
   }
 
@@ -335,22 +331,12 @@
 }
 
 @container urlbar-container (width < 350px) {
-  #userContext-icons {
-    transition: all 0.1s ease;
-  }
-
   #userContext-label {
     display: none;
   }
 
   #userContext-indicator {
     margin-inline-end: 4px;
-  }
-
-  #urlbar:hover:not([breakout-extend='true']) #userContext-icons {
-    margin-inline-end: calc(-16px - 2 * var(--urlbar-icon-padding)) !important;
-    opacity: 0;
-    pointer-events: none;
   }
 }
 
@@ -682,4 +668,19 @@
 #urlbar-search-mode-indicator-title {
   font-weight: 600;
   padding: 0px;
+}
+
+/* These are buttons that we dont need to be
+ * displayed anymore, since now zen displays
+ * them into a single, unified button */
+#reader-mode-button,
+#urlbar-go-button,
+#star-button-box {
+  display: none !important;
+}
+
+@media not -moz-pref('zen.urlbar.show-contextual-id') {
+  #userContext-icons {
+    display: none !important;
+  }
 }

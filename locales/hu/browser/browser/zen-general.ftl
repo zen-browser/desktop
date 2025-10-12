@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Kitűzött lap visszaállítása
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Felvétel az alapvetőkbe ({ $num } / 12 hely foglalt)
+    .label = Felvétel az alapvetőkbe ({ $num } / { $max } hely foglalt)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Környezetek
 zen-library-sidebar-mods = 
     .label = Modok
+zen-toggle-compact-mode-button = 
+    .label = Kompakt mód
+    .tooltiptext = Kompakt mód ki-/bekapcsolása
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,25 @@ zen-icons-picker-emoji =
     .label = Emojik
 zen-icons-picker-svg = 
     .label = Ikonok
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Műveletek
+zen-site-data-settings = Beállítások
+zen-generic-manage = Kezelés
+zen-generic-more = Több
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Engedélyezve
+zen-site-data-setting-block = Letiltva
+zen-site-data-security-info-extension = 
+    .label = Kiegészítő
+zen-site-data-security-info-secure = 
+    .label = Biztonságos
+zen-site-data-security-info-not-secure = 
+    .label = Nem biztonságos
+zen-site-data-manage-addons = 
+    .label = Kiegészítők kezelése
+zen-site-data-get-addons = 
+    .label = Kiegészítő hozzáadása
+zen-site-data-site-settings = 
+    .label = Minden webhelybeállítás
+zen-site-data-setting-site-protection = Oldalvédelem
+zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
+zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.

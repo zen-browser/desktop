@@ -1042,17 +1042,24 @@
           const parentWorkingData = tabFolderWorkingData.get(stateData.parentId);
           if (parentWorkingData && parentWorkingData.node) {
             switch (stateData?.prevSiblingInfo?.type) {
-              case 'group': {
-                const folder = document.getElementById(stateData.prevSiblingInfo.id);
-                folder.after(node);
-                break;
-              }
               case 'tab': {
                 const tab = parentWorkingData.node.querySelector(
                   `[zen-pin-id="${stateData.prevSiblingInfo.id}"]`
                 );
                 tab.after(node);
                 break;
+              }
+              case 'group': {
+                const folder = document.getElementById(stateData.prevSiblingInfo.id);
+                if (folder) {
+                  folder.after(node);
+                  break;
+                }
+                // If we didn't find the group, we should debug it and continue to default case.
+                console.warn(
+                  `Zen Folders: Could not find previous sibling group with id ${stateData.prevSiblingInfo.id} while restoring session.`
+                );
+                // @eslint-disable-next-line no-fallthrough
               }
               default: {
                 // Should insert after zen-empty-tab

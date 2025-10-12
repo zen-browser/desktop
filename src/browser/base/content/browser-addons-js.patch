@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd693f1f1135 100644
+index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..29864ab59819271b7319b273c08bdc2736d40c93 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -1064,7 +1064,7 @@ var gXPInstallObserver = {
+@@ -1071,7 +1071,7 @@ var gXPInstallObserver = {
        persistent: true,
        hideClose: true,
        popupOptions: {
@@ -11,7 +11,7 @@ index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd69
        },
      };
  
-@@ -1273,7 +1273,7 @@ var gXPInstallObserver = {
+@@ -1280,7 +1280,7 @@ var gXPInstallObserver = {
        hideClose: true,
        timeout: Date.now() + 30000,
        popupOptions: {
@@ -20,7 +20,47 @@ index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd69
        },
      };
  
-@@ -2608,7 +2608,7 @@ var gUnifiedExtensions = {
+@@ -2212,7 +2212,7 @@ var gUnifiedExtensions = {
+   // If the new ID is not added in NOTIFICATION_IDS, consider handling the case
+   // in the "PopupNotificationsBeforeAnchor" handler elsewhere in this file.
+   getPopupAnchorID(aBrowser, aWindow) {
+-    const anchorID = "unified-extensions-button";
++    const anchorID = "zen-site-data-icon-button";
+     const attr = anchorID + "popupnotificationanchor";
+ 
+     if (!aBrowser[attr]) {
+@@ -2223,7 +2223,7 @@ var gUnifiedExtensions = {
+         anchorID
+         // Anchor on the toolbar icon to position the popup right below the
+         // button.
+-      ).firstElementChild;
++      );
+     }
+ 
+     return anchorID;
+@@ -2516,11 +2516,7 @@ var gUnifiedExtensions = {
+     // Lazy load the unified-extensions-panel panel the first time we need to
+     // display it.
+     if (!this._panel) {
+-      let template = document.getElementById(
+-        "unified-extensions-panel-template"
+-      );
+-      template.replaceWith(template.content);
+-      this._panel = document.getElementById("unified-extensions-panel");
++      this._panel = document.getElementById("zen-unified-site-data-panel");
+       let customizationArea = this._panel.querySelector(
+         "#unified-extensions-area"
+       );
+@@ -2570,7 +2566,7 @@ var gUnifiedExtensions = {
+ 
+         // The button should directly open `about:addons` when the user does not
+         // have any active extensions listed in the unified extensions panel.
+-        if (!this.hasExtensionsInPanel()) {
++        if (!this.hasExtensionsInPanel() && false) {
+           let viewID;
+           if (
+             Services.prefs.getBoolPref("extensions.getAddons.showPane", true) &&
+@@ -2615,7 +2611,7 @@ var gUnifiedExtensions = {
          this.recordButtonTelemetry(reason || "extensions_panel_showing");
          this.ensureButtonShownBeforeAttachingPanel(panel);
          PanelMultiView.openPopup(panel, this._button, {
@@ -29,7 +69,7 @@ index d7542a38a0242dd9c9c6390171d59992d75a0c19..d20e5a9fa42c88c7ba28fac1ef13dd69
            triggerEvent: aEvent,
          });
        }
-@@ -2795,18 +2795,20 @@ var gUnifiedExtensions = {
+@@ -2802,18 +2798,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

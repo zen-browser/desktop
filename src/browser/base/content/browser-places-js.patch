@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
-index 5ba2b6a58776e2b1d70b80e8cb1533cb20caafc6..65736705968732a185e81561b2866bfbe6f3233a 100644
+index 79b4f6f8fb2f7dd8784920038784e6bb0c967e2d..1f3f4991b3ba7c00516e9708e89e8f95db25a36a 100644
 --- a/browser/base/content/browser-places.js
 +++ b/browser/base/content/browser-places.js
 @@ -252,6 +252,8 @@ var StarUI = {

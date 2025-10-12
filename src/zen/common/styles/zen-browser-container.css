@@ -8,16 +8,22 @@
   #tabbrowser-tabpanels[dragging-split='true'] {
     width: -moz-available;
     position: relative;
-    overflow: clip;
 
     &.browserSidebarContainer {
-      :root:not([zen-no-padding='true']) & {
+      :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
         border-radius: var(--zen-native-inner-radius);
         box-shadow: var(--zen-big-shadow);
+        overflow: clip;
       }
 
       & browser[type='content'] {
-        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        &:not([transparent='true']) {
+          background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
+        }
+
+        &[transparent='true'] {
+          background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        }
       }
 
       @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {

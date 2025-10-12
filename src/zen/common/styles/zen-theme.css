@@ -157,8 +157,6 @@
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-outer-padding: 4px;
 
-  --toolbarbutton-inner-padding: 5px !important;
-
   --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
 
   /* Using a semitransparent background preserves the tinting from the backdrop.
@@ -210,6 +208,10 @@
 
   --zen-workspace-indicator-height: 46px;
 
+  &:not([zen-sidebar-expanded='true']) {
+    --zen-workspace-indicator-height: 38px;
+  }
+
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
@@ -234,6 +236,9 @@
   --zen-native-content-radius: var(--zen-border-radius);
   @media (-moz-platform: linux) {
     --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
+  }
+  @media (-moz-mac-tahoe-theme) {
+    --zen-native-content-radius: 14px;
   }
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

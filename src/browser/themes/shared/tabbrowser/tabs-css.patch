@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f52d78a307 100644
+index 8a7499426a718a56c74daea562a50de20db706e7..7ee8d7e0bd98733341e1da0d2ff965d85fc4c91a 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -21,7 +21,7 @@
@@ -102,7 +102,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1137,7 +1130,7 @@ tab-group {
+@@ -1226,7 +1219,7 @@ tab-group {
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
@@ -111,7 +111,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
    &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -1567,7 +1560,7 @@ tab-group {
+@@ -1685,7 +1678,7 @@ tab-group {
    }
  }
  
@@ -120,7 +120,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -1578,7 +1571,7 @@ tab-group {
+@@ -1696,7 +1689,7 @@ tab-group {
    margin-inline: var(--tab-inner-inline-margin);
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -129,7 +129,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
    }
  
    &:hover {
-@@ -1602,7 +1595,7 @@ tab-group {
+@@ -1720,7 +1713,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -138,7 +138,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
    margin-block: var(--tab-block-margin);
  }
  
-@@ -1793,7 +1786,6 @@ tab-group {
+@@ -1913,7 +1906,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -146,7 +146,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
      }
  
      .tab-background {
-@@ -1833,8 +1825,8 @@ tab-group {
+@@ -1953,8 +1945,8 @@ tab-group {
        display: block;
        position: absolute;
        inset: auto;
@@ -157,7 +157,7 @@ index 07574cdd974f63b90355f069f0fbc3fa6cd61b50..c650da2adf0d1a53b05a09d1b43fa5f5
  
        &:-moz-window-inactive {
          background-image:
-@@ -1953,7 +1945,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2073,7 +2065,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

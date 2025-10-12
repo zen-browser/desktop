@@ -20,7 +20,8 @@
   width: 100%;
 }
 
-#pinned-drop-indicator {
+#pinned-drop-indicator,
+#drag-to-pin-promo-card {
   /* We dont use this firefox feature */
   display: none !important;
 }
@@ -60,17 +61,7 @@
 
     &:root[zen-right-side='true'] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
       margin-right: calc(-1 * var(--zen-toolbox-padding));
-      margin-top: -10px;
-      height: calc(4px + var(--zen-toolbar-height)) !important;
-
-      & .titlebar-button {
-        align-items: end;
-      }
     }
-  }
-
-  #tabbrowser-arrowscrollbox {
-    min-height: fit-content !important;
   }
 }
 
@@ -131,10 +122,6 @@
   & #PanelUI-menu-button {
     padding: 0 !important;
   }
-}
-
-:root:not([zen-single-toolbar='true']) #tabbrowser-tabs {
-  margin-top: -2px;
 }
 
 /* ==========================================================================
@@ -717,13 +704,11 @@
 
   & #titlebar {
     display: grid;
-    grid-template-rows: auto 1fr;
     overflow: clip;
   }
 
   & #zen-sidebar-top-buttons-customization-target {
     flex-direction: column;
-    padding-top: var(--zen-element-separation);
   }
 
   & #zen-sidebar-foot-buttons {
@@ -972,14 +957,12 @@
   :root[zen-sidebar-expanded='true'] & {
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
   }
+
   :root[zen-single-toolbar='true'] & {
     --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
 
     & #PanelUI-button {
       order: -2;
-    }
-    & #unified-extensions-button {
-      order: -1;
     }
   }
 
@@ -987,14 +970,8 @@
     height: 100%;
     align-items: center;
 
-    :root:not([zen-sidebar-expanded='true']):not([zen-right-side='true']) {
-      padding-inline-start: var(--zen-toolbox-padding);
-    }
     #nav-bar & {
-      padding-inline-start: var(--toolbarbutton-outer-padding);
-    }
-    :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) {
-      padding-inline-end: var(--zen-toolbox-padding);
+      padding-inline-end: var(--toolbarbutton-outer-padding);
     }
 
     :root:not([zen-sidebar-expanded='true']) & toolbarspring {
@@ -1173,7 +1150,10 @@
       --zen-essential-bg-margin: 2px;
 
       &::before {
-        background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
+        background: light-dark(
+          rgba(255, 255, 255, 0.85),
+          color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+        );
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;

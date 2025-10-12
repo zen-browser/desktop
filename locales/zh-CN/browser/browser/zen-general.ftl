@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = 重置固定标签页
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 添加到常驻标签页（已使用 { $num } / 12）
+    .label = 添加到常驻标签页（已使用 { $num } / { $max }）
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = 从常驻标签页中移除
@@ -35,6 +35,9 @@ zen-library-sidebar-workspaces =
     .label = 工作区
 zen-library-sidebar-mods = 
     .label = 模组
+zen-toggle-compact-mode-button = 
+    .label = Compact Mode
+    .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -47,3 +50,24 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = 图标集
 urlbar-search-mode-zen_actions = Actions
+zen-site-data-settings = Settings
+zen-generic-manage = Manage
+zen-generic-more = More
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Allowed
+zen-site-data-setting-block = Blocked
+zen-site-data-security-info-extension = 
+    .label = Extension
+zen-site-data-security-info-secure = 
+    .label = Secure
+zen-site-data-security-info-not-secure = 
+    .label = Not Secure
+zen-site-data-manage-addons = 
+    .label = 管理扩展
+zen-site-data-get-addons = 
+    .label = 添加扩展
+zen-site-data-site-settings = 
+    .label = 所有站点设置
+zen-site-data-setting-site-protection = Site Protection
+zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
+zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.

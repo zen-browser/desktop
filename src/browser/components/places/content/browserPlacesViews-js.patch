@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/browserPlacesViews.js b/browser/components/places/content/browserPlacesViews.js
-index 29fb3308dcc98d785a3345dee78050d633927db2..0ae28fa0618def4a146723b19a22280956a25371 100644
+index ee6050d411df009d8b61e49d7fdaba79f1bc5db1..0149528329dad3d48449175a35d96d3ed3a3058e 100644
 --- a/browser/components/places/content/browserPlacesViews.js
 +++ b/browser/components/places/content/browserPlacesViews.js
 @@ -330,12 +330,23 @@ class PlacesViewBase {

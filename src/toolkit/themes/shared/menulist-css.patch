@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/menulist.css b/toolkit/themes/shared/menulist.css
-index e5ac973b1ee2595e8547680465e25d537685a9e7..20f85152d783c81be5e29846353daca9ccd0c67d 100644
+index 8f9c006945e67f668075bd36ce83d5a772a9a796..08d68c015b001233548cd6c7babad17f3a638702 100644
 --- a/toolkit/themes/shared/menulist.css
 +++ b/toolkit/themes/shared/menulist.css
 @@ -53,7 +53,7 @@
@@ -9,5 +9,5 @@ index e5ac973b1ee2595e8547680465e25d537685a9e7..20f85152d783c81be5e29846353daca9
 -  background-color: var(--button-background-color);
 +  background-color: light-dark(rgba(0,0,0,.1), rgba(255,255,255,.1));
    color: var(--button-text-color);
-   border-radius: 4px;
+   border-radius: var(--border-radius-small);
    padding-block: 4px;

@@ -1,8 +1,8 @@
 diff --git a/devtools/server/actors/animation-type-longhand.js b/devtools/server/actors/animation-type-longhand.js
-index 17960549c60ebab9ac7c50a70cb69a6b1f8c37dd..9a9ec4539d39f20dccf449cbdcd066efee145b50 100644
+index ea27f1209ddb9b33ae044186c2b795685a0bde67..6d808a760885f0e26ff307a39d6977228359fe71 100644
 --- a/devtools/server/actors/animation-type-longhand.js
 +++ b/devtools/server/actors/animation-type-longhand.js
-@@ -343,6 +343,7 @@ exports.ANIMATION_TYPE_FOR_LONGHANDS = [
+@@ -344,6 +344,7 @@ exports.ANIMATION_TYPE_FOR_LONGHANDS = [
        "transform-origin",
        "translate",
        "-moz-window-transform",

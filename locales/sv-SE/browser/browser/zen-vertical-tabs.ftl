@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompakt läge
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Aktivera kompakt läge
     .accesskey = D

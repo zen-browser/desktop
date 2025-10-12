@@ -26,7 +26,7 @@ on:
 jobs:
   mac-build:
     name: Build macOS - ${{ matrix.arch }}
-    runs-on: macos-15
+    runs-on: macos-26
 
     strategy:
       fail-fast: false

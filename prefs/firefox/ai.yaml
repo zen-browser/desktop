@@ -17,3 +17,6 @@
 
 - name: browser.ml.enable
   value: false
+
+- name: browser.ml.chat.menu
+  value: false

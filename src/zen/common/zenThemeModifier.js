@@ -96,7 +96,8 @@ var ZenThemeModifier = {
     if (
       window.fullScreen &&
       window.gZenCompactModeManager?.preference &&
-      !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view')
+      !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view') &&
+      Services.prefs.getBoolPref('zen.view.borderless-fullscreen', true)
     ) {
       separation = 0;
     }

@@ -13,7 +13,7 @@ export var ZenCustomizableUI = new (class {
       'zen-sidebar-top-buttons',
       {
         type: this.TYPE_TOOLBAR,
-        defaultPlacements: [],
+        defaultPlacements: ['zen-toggle-compact-mode'],
         defaultCollapsed: null,
         overflowable: true,
       },
@@ -67,6 +67,11 @@ export var ZenCustomizableUI = new (class {
         addon-webext-overflowtarget="overflowed-extensions-list"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
+          <toolbarbutton id="zen-toggle-compact-mode"
+            class="toolbarbutton-1"
+            command="cmd_toggleCompactModeIgnoreHover"
+            data-l10n-id="zen-toggle-compact-mode-button"
+            removable="true" />
           <html:div id="zen-sidebar-top-buttons-separator" skipintoolbarset="true" overflows="false"></html:div>
         </hbox>
       </toolbar>
@@ -106,12 +111,20 @@ export var ZenCustomizableUI = new (class {
 
   _initCreateNewButton(window) {
     const button = window.document.getElementById('zen-create-new-button');
-    button.addEventListener('command', () => {
+    button.addEventListener('command', (event) => {
       if (button.hasAttribute('open')) {
         return;
       }
       const popup = window.document.getElementById('zenCreateNewPopup');
-      popup.openPopup(button, 'before_start');
+      popup.openPopup(
+        button,
+        'before_start',
+        0,
+        0,
+        true /* isContextMenu */,
+        false /* attributesOverride */,
+        event
+      );
     });
   }
 

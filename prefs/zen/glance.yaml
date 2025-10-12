@@ -8,9 +8,6 @@
 - name: zen.glance.enable-contextmenu-search
   value: true
 
-- name: zen.glance.hold-duration
-  value: 300 # in ms
-
 - name: zen.glance.open-essential-external-links
   value: true
 

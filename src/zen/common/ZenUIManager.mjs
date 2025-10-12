@@ -1,6 +1,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ChromeUtils.defineESModuleGetters(this, {
+  nsZenSiteDataPanel: 'resource:///modules/ZenSiteDataPanel.sys.mjs',
+});
+
 var gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
@@ -14,19 +19,6 @@ var gZenUIManager = {
   init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
     document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      'contentElementSeparation',
-      'zen.theme.content-element-separation',
-      0
-    );
-    XPCOMUtils.defineLazyPreferenceGetter(this, 'urlbarWaitToClear', 'zen.urlbar.wait-to-clear', 0);
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      'urlbarShowDomainOnly',
-      'zen.urlbar.show-domain-only-in-sidebar',
-      true
-    );
 
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
@@ -43,6 +35,8 @@ var gZenUIManager = {
     ChromeUtils.defineLazyGetter(this, '_toastContainer', () => {
       return document.getElementById('zen-toast-container');
     });
+
+    window.gZenSiteDataPanel = new nsZenSiteDataPanel(window);
 
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
 
@@ -596,6 +590,26 @@ var gZenUIManager = {
   },
 };
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'contentElementSeparation',
+  'zen.theme.content-element-separation',
+  0
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'urlbarWaitToClear',
+  'zen.urlbar.wait-to-clear',
+  0
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'urlbarShowDomainOnly',
+  'zen.urlbar.show-domain-only-in-sidebar',
+  true
+);
+
 var gZenVerticalTabsManager = {
   init() {
     this._multiWindowFeature = new nsZenMultiWindowFeature();
@@ -875,7 +889,7 @@ var gZenVerticalTabsManager = {
       if (typeof height !== 'undefined') {
         document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
       }
-      gURLBar.valueFormatter._formatURL();
+      gURLBar.zenFormatURLValue();
     });
   },
 
@@ -1034,6 +1048,11 @@ var gZenVerticalTabsManager = {
       ) {
         topButtons.prepend(windowButtons);
       }
+
+      if ((!isSingleToolbar && isCompactMode) || !isSidebarExpanded) {
+        navBar.prepend(topButtons);
+      }
+
       // Case: single toolbar, compact mode, right side and windows styled buttons
       if (isSingleToolbar && isCompactMode && isRightSide && this.isWindowsStyledButtons) {
         topButtons.prepend(windowButtons);

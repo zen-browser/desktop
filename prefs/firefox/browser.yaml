@@ -78,6 +78,7 @@
   value: false
 
 - name: browser.tabs.groups.hoverPreview.enabled
+  locked: true
   value: false
 
 - name: browser.tabs.closeWindowWithLastTab

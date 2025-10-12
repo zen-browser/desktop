@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Athshocraigh an Cluaisín Prionáilte
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Cuir le Bunriachtanais ({ $num } / 12 sliotán líonta)
+    .label = Cuir le Bunriachtanais ({ $num } / { $max } sliotán líonta)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Spásanna
 zen-library-sidebar-mods = 
     .label = Modanna
+zen-toggle-compact-mode-button = 
+    .label = Mód Dlúth
+    .tooltiptext = Mód Dlúth a Athrú
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -49,3 +52,24 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Deilbhíní
 urlbar-search-mode-zen_actions = Gníomhartha
+zen-site-data-settings = Socruithe
+zen-generic-manage = Bainistigh
+zen-generic-more = Tuilleadh
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Ceadaithe
+zen-site-data-setting-block = Blocáilte
+zen-site-data-security-info-extension = 
+    .label = Síneadh
+zen-site-data-security-info-secure = 
+    .label = Slán
+zen-site-data-security-info-not-secure = 
+    .label = Ní Slán
+zen-site-data-manage-addons = 
+    .label = Bainistigh Síneadh
+zen-site-data-get-addons = 
+    .label = Cuir Síneadh leis
+zen-site-data-site-settings = 
+    .label = Gach Socrú Suímh
+zen-site-data-setting-site-protection = Cosaint Láithreáin
+zen-site-data-panel-feature-callout-title = Baile nua do bhreiseáin, ceadanna agus tuilleadh
+zen-site-data-panel-feature-callout-subtitle = Cliceáil an deilbhín chun socruithe suímh a bhainistiú, faisnéis slándála a fheiceáil, rochtain a fháil ar shínteáin, agus gníomhartha coitianta a dhéanamh.

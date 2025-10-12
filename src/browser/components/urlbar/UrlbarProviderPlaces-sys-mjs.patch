@@ -1,13 +1,13 @@
 diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-index ad971f090bdaba2865cf1fac2840b1f553d2630c..a9e676e43d35b617eebd5a67c8653397b7c0c6bf 100644
+index b2c3bfa6fbe83fceb019196c210baaa7b4881372..02f2c8be89f163e16c5fd29f9b7e145e16ea53ed 100644
 --- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
-@@ -40,11 +40,13 @@ function defaultQuery(conditions = "") {
+@@ -44,11 +44,13 @@ function defaultQuery(conditions = "") {
    let query = `
       SELECT h.url, h.title, ${SQL_BOOKMARK_TAGS_FRAGMENT}, h.id, t.open_count,
              ${lazy.PAGES_FRECENCY_FIELD} AS frecency, t.userContextId,
--            h.last_visit_date, t.groupId
-+            h.last_visit_date, t.groupId, zp.url AS pinned_url, zp.title AS pinned_title
+-            h.last_visit_date, NULLIF(t.groupId, '') groupId
++            h.last_visit_date, NULLIF(t.groupId, '') groupId, zp.url AS pinned_url, zp.title AS pinned_title
       FROM moz_places h
       LEFT JOIN moz_openpages_temp t
              ON t.url = h.url
@@ -17,7 +17,7 @@ index ad971f090bdaba2865cf1fac2840b1f553d2630c..a9e676e43d35b617eebd5a67c8653397
       WHERE (
          (:switchTabsEnabled AND t.open_count > 0) OR
          ${lazy.PAGES_FRECENCY_FIELD} <> 0
-@@ -58,7 +60,7 @@ function defaultQuery(conditions = "") {
+@@ -62,7 +64,7 @@ function defaultQuery(conditions = "") {
                                :matchBehavior, :searchBehavior, NULL)
           ELSE
             AUTOCOMPLETE_MATCH(:searchString, h.url,
@@ -26,7 +26,7 @@ index ad971f090bdaba2865cf1fac2840b1f553d2630c..a9e676e43d35b617eebd5a67c8653397
                                h.visit_count, h.typed,
                                0, t.open_count,
                                :matchBehavior, :searchBehavior, NULL)
-@@ -1116,11 +1118,13 @@ Search.prototype = {
+@@ -1120,11 +1122,13 @@ Search.prototype = {
        ? lazy.PlacesUtils.toDate(lastVisitPRTime).getTime()
        : undefined;
      let tabGroup = row.getResultByName("groupId");

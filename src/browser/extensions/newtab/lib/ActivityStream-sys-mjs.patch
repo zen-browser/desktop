@@ -1,8 +1,8 @@
 diff --git a/browser/extensions/newtab/lib/ActivityStream.sys.mjs b/browser/extensions/newtab/lib/ActivityStream.sys.mjs
-index 1a482b6de24468ccfec069586f374937d8ef68dd..8614beda3fdfc038092f31f11b2604d5cfb843a1 100644
+index 6207e6c8aa1e303ec151bc1e5c51c277ef776ee6..d3783a3c459c94880be1c95dc265a7d4887f67a1 100644
 --- a/browser/extensions/newtab/lib/ActivityStream.sys.mjs
 +++ b/browser/extensions/newtab/lib/ActivityStream.sys.mjs
-@@ -248,7 +248,7 @@ export const PREFS_CONFIG = new Map([
+@@ -223,7 +223,7 @@ export const PREFS_CONFIG = new Map([
      "showSponsoredTopSites",
      {
        title: "Show sponsored top sites",

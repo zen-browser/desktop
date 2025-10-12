@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Atkurti prisegtą kortelę
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Įtraukti į būtiniausius ({ $num } / 12 užpildytų vietų)
+    .label = Įtraukti į būtiniausius ({ $num } / { $max } užpildytų vietų)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Šalinti iš būtiniausių
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Erdvės
 zen-library-sidebar-mods = 
     .label = Modifikacijos
+zen-toggle-compact-mode-button = 
+    .label = Kompaktinis režimas
+    .tooltiptext = Perjungti kompaktinį režimą
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,25 @@ zen-icons-picker-emoji =
     .label = Jaustukai
 zen-icons-picker-svg = 
     .label = Piktogramos
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Veiksmai
+zen-site-data-settings = Nustatymai
+zen-generic-manage = Tvarkyti
+zen-generic-more = Daugiau
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Leidžiama
+zen-site-data-setting-block = Užblokuota
+zen-site-data-security-info-extension = 
+    .label = Plėtinys
+zen-site-data-security-info-secure = 
+    .label = Saugi
+zen-site-data-security-info-not-secure = 
+    .label = Nesaugi
+zen-site-data-manage-addons = 
+    .label = Tvarkyti plėtinius
+zen-site-data-get-addons = 
+    .label = Įtraukti plėtinius
+zen-site-data-site-settings = 
+    .label = Visi svetainės nustatymai
+zen-site-data-setting-site-protection = Svetainės apsauga
+zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
+zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.

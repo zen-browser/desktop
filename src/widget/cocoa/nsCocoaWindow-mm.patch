@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index 827dc774a429d0595028314a522722078a202edc..11ba33c2c316c0fc53053f6f8d0feab97c93bc72 100644
+index 6c80f33454503af0840af18cb88af44a006727ee..47b318814ddd57b1e73c66b576884b8e62093906 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -7540,7 +7540,7 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+@@ -7588,7 +7588,7 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
  
  // Returns an autoreleased NSImage.
  static NSImage* GetMenuMaskImage() {

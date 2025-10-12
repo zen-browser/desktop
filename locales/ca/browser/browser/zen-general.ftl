@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Restableix la pestanya fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Afegeix als essentials ({ $num }/12 espais ocupats)
+    .label = Afegeix als essentials ({ $num } / { $max } espais ocupats)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Espais
 zen-library-sidebar-mods = 
     .label = Modificacions
+zen-toggle-compact-mode-button = 
+    .label = Mode compacte
+    .tooltiptext = Commuta el mode compacte
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -49,3 +52,24 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Icones
 urlbar-search-mode-zen_actions = Accions
+zen-site-data-settings = Configuració
+zen-generic-manage = Gestiona
+zen-generic-more = Més
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permès
+zen-site-data-setting-block = Bloquejat
+zen-site-data-security-info-extension = 
+    .label = Extensió
+zen-site-data-security-info-secure = 
+    .label = Segur
+zen-site-data-security-info-not-secure = 
+    .label = No és segur
+zen-site-data-manage-addons = 
+    .label = Gestiona les extensions
+zen-site-data-get-addons = 
+    .label = Afegeix extensions
+zen-site-data-site-settings = 
+    .label = Totes les configuracions del lloc
+zen-site-data-setting-site-protection = Protecció del lloc
+zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
+zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.

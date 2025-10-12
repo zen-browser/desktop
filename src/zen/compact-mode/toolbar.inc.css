@@ -1,0 +1,84 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+&:not([zen-single-toolbar='true']) {
+  & #navigator-toolbox {
+    --zen-toolbox-top-align: var(--zen-element-separation);
+  }
+
+  & #titlebar,
+  & #zen-appcontent-wrapper {
+    margin-top: var(--zen-element-separation) !important;
+  }
+
+  & #zen-appcontent-wrapper {
+    z-index: 3 !important;
+  }
+
+  & #zen-appcontent-navbar-wrapper {
+    & .zen-toolbar-background {
+      display: flex;
+    }
+    --zen-compact-toolbar-offset: 5px;
+    position: absolute;
+    top: calc(-1 * var(--zen-toolbar-height) + 1px);
+    left: 0;
+    z-index: 20;
+    transition: all 0.15s ease;
+    width: 100%;
+
+    max-height: var(--zen-toolbar-height);
+    overflow: hidden;
+
+    & #urlbar:not([breakout-extend='true']) {
+      opacity: 0 !important;
+    }
+
+    & #zen-appcontent-navbar-container {
+      visibility: hidden;
+
+      box-shadow: var(--zen-big-shadow);
+      border-bottom-left-radius: var(--zen-border-radius);
+      border-bottom-right-radius: var(--zen-border-radius);
+      :root:not([sizemode='maximized']) & {
+        border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+        border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+      }
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+  }
+
+  &
+    #zen-appcontent-navbar-wrapper[zen-has-hover]:not(
+      :has(#urlbar[zen-floating-urlbar='true']:hover)
+    ),
+  & #zen-appcontent-navbar-wrapper[has-popup-menu],
+  &
+    #zen-appcontent-navbar-wrapper:has(
+      *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(
+          #urlbar[zen-floating-urlbar='true']
+        ):not(.zen-compact-mode-ignore)
+    ) {
+    & #zen-appcontent-navbar-container {
+      visibility: visible !important;
+    }
+    border-top-width: 0px;
+
+    top: -1px;
+    overflow: initial;
+    max-height: unset;
+
+    & #urlbar {
+      opacity: 1 !important;
+    }
+
+    & #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
+      top: 2px !important;
+      opacity: 1;
+    }
+  }
+}

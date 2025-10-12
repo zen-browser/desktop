@@ -171,15 +171,10 @@ body > #confetti {
 }
 
 .toolbarbutton-1:not(#tabs-newtab-button) {
-  :root:is([zen-single-toolbar='true'], :not([zen-sidebar-expanded='true']))
-    #zen-sidebar-top-buttons-customization-target
-    &,
-  #zen-sidebar-foot-buttons & {
-    --tab-border-radius: 6px;
-    --toolbarbutton-border-radius: var(--tab-border-radius);
-    --toolbarbutton-inner-padding: 7px;
-    --toolbarbutton-outer-padding: 2px;
-  }
+  --tab-border-radius: 6px;
+  --toolbarbutton-border-radius: var(--tab-border-radius);
+  --toolbarbutton-inner-padding: 7px;
+  --toolbarbutton-outer-padding: 2px;
 
   transition:
     background-color 0.1s,
@@ -533,4 +528,26 @@ body > #confetti {
       transform: scale(0.97);
     }
   }
+}
+
+/* Overflow panel */
+#widget-overflow-mainView {
+  --menu-panel-width-wide: 200px;
+
+  & toolbarbutton {
+    scale: 1 !important;
+  }
+
+  & .panel-subview-body {
+    padding: var(--panel-subview-body-padding) !important;
+  }
+}
+
+#widget-overflow-mainView > toolbarseparator,
+#overflowMenu-customize-button {
+  display: none;
+}
+
+#widget-overflow-list {
+  flex-direction: column-reverse;
 }

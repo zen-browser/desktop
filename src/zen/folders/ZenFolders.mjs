@@ -1473,7 +1473,7 @@
           tabsContainer.setAttribute('hidden', true);
           const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
           groupStart.style.marginTop = `${-(collapsedHeight + 4)}px`;
-        }
+        };
 
         const groupStart = folder.querySelector('.zen-tab-group-start');
         const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);

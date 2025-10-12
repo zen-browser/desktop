@@ -1503,25 +1503,32 @@
       if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
         return;
       const animations = [];
+      let lastTab = false;
 
       const activeGroups = group.activeGroups;
       for (const folder of activeGroups) {
         folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
 
         if (folder.activeTabs.length === 0) {
+          lastTab = true;
           animations.push(async () => {
             folder.removeAttribute('has-active');
             const groupItems = this.#normalizeGroupItems(folder.allItems);
             const tabsContainer = folder.querySelector('.tab-group-container');
 
-            this.styleCleanup(groupItems);
+            // Set correct margin-top after animation
+            const afterAnimate = () => {
+              groupStart.style.removeProperty('margin-top');
+              this.styleCleanup(groupItems);
+              // Trigger the recalculation so that zen returns
+              // the correct container size in the DOM
+              tabsContainer.offsetHeight;
+              tabsContainer.setAttribute('hidden', true);
+              const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
+              groupStart.style.marginTop = `${-(collapsedHeight + 4)}px`;
+            };
 
             const groupStart = folder.querySelector('.zen-tab-group-start');
-
-            // Trigger a reflow
-            tabsContainer.offsetHeight;
-            tabsContainer.setAttribute('hidden', true);
-
             const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
 
             // Collect animations for this specific folder becoming inactive
@@ -1532,7 +1539,8 @@
                 {
                   marginTop: -(collapsedHeight + 4),
                 },
-                { duration: 0.12, ease: 'easeInOut' }
+                { duration: 0.12, ease: 'easeInOut' },
+                afterAnimate
               ),
             ];
             await Promise.all(folderAnimation);
@@ -1548,7 +1556,7 @@
       tabToUnload.style.removeProperty('--zen-folder-indent');
 
       let tabUnloadAnimations = [];
-      if (!ungroup) {
+      if (!ungroup && !lastTab) {
         tabUnloadAnimations = this.#createAnimation(
           tabToUnload,
           {

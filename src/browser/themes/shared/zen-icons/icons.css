@@ -105,6 +105,14 @@
 
 #nav-bar-overflow-button {
   list-style-image: url('chevron.svg') !important;
+
+  /* On macos, we don't display the app menu, meaning
+   * we can re-use the menu icon for the overflow button.
+   * Which is more intuitive for users and looks better.
+   */
+  @media (-moz-platform: macos) {
+    list-style-image: url('menu.svg') !important;
+  }
 }
 
 #zen-rice-share-options .options-header,
@@ -411,7 +419,6 @@
   list-style-image: url('arrow-left.svg') !important;
 }
 
-#overflowMenu-customize-button,
 #appmenu-moreTools-button {
   list-style-image: url('customize.svg') !important;
 }

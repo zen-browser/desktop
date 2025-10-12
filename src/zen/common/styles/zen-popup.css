@@ -176,10 +176,6 @@ panel {
   opacity: 0.7;
 }
 
-#widget-overflow-mainView .panel-subview-body {
-  padding-bottom: 0;
-}
-
 .PanelUI-subView > .panel-header + toolbarseparator {
   margin-bottom: 0;
 }

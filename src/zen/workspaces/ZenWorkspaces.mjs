@@ -1488,7 +1488,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   #deleteAllUnpinnedTabsInWorkspace(tabs) {
     gBrowser.removeTabs(tabs, {
       animate: false,
-      skipSessionStore: true,
       closeWindowWithLastTab: false,
     });
   }
@@ -2668,7 +2667,16 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (!unpinnedTabs.length) return;
 
     this.#deleteAllUnpinnedTabsInWorkspace(unpinnedTabs);
-    gZenUIManager.showToast('zen-workspaces-close-all-unpinned-tabs-toast');
+
+    const restoreClosedTabsShortcut = gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+      'History:RestoreLastClosedTabOrWindowOrSession'
+    );
+
+    gZenUIManager.showToast('zen-workspaces-close-all-unpinned-tabs-toast', {
+      l10nArgs: {
+        shortcut: restoreClosedTabsShortcut,
+      },
+    });
   }
 
   async contextDeleteWorkspace() {

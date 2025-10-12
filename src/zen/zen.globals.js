@@ -22,6 +22,7 @@ export default [
   'gZenStartup',
 
   'gZenWorkspaces',
+  'gZenKeyboardShortcutsManager',
   'ZenWorkspacesEngine',
   'ZenWorkspacesStorage',
   'ZenWorkspaceBookmarksStorage',

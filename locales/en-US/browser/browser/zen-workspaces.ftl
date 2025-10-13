@@ -75,5 +75,5 @@ zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
 
 zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! to restore { $shortcut }
-zen-workspaces-close-all-unpinned-tabs-title = Close Tabs
+zen-workspaces-close-all-unpinned-tabs-title = Clear
     .tooltiptext = Close all unpinned tabs

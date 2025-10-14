@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Tum isteach!
 zen-welcome-default-search-title = D'Inneall Cuardaigh Réamhshocraithe
 zen-welcome-default-search-description = Roghnaigh d'inneall cuardaigh réamhshocraithe. Is féidir leat é a athrú níos déanaí!
 zen-welcome-skip-button = Scipeáil
-zen-welcome-next-action = Ar Aghaidh
 zen-welcome-finished = Tá do Zen socraithe i gceart!

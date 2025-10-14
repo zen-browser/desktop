@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--zen-colors-primary);
+  background-color: var(--toolbar-color);
   border-radius: var(--zen-native-content-radius);
   box-shadow: var(--zen-big-shadow);
   pointer-events: none;

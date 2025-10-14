@@ -39,6 +39,7 @@
   #navigator-toolbox {
     --zen-toolbox-max-width: 74px !important;
     --zen-compact-float: var(--zen-element-separation);
+ 
     :root[zen-no-padding='true'] & {
       --zen-compact-float: 10px;
       --zen-compact-mode-no-padding-radius-fix: 2px;

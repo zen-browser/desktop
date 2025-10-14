@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Veiksmai
 zen-site-data-settings = Nustatymai
 zen-generic-manage = Tvarkyti
 zen-generic-more = Daugiau
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Leidžiama
 zen-site-data-setting-block = Užblokuota
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = Įtraukti plėtinius
 zen-site-data-site-settings = 
     .label = Visi svetainės nustatymai
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Svetainės apsauga
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
 zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.

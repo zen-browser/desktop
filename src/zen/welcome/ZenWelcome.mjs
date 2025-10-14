@@ -409,7 +409,7 @@
               document.querySelector('#zen-welcome-page-sidebar-buttons button').remove();
               const newButton = document.querySelector('#zen-welcome-page-sidebar-buttons button');
               newButton.classList.add('primary');
-              document.l10n.setAttributes(newButton, 'zen-welcome-next-action');
+              document.l10n.setAttributes(newButton, 'zen-generic-next');
               return false;
             },
           },
@@ -464,7 +464,7 @@
         ],
         buttons: [
           {
-            l10n: 'zen-welcome-next-action',
+            l10n: 'zen-generic-next',
             onclick: async () => {
               return true;
             },
@@ -533,7 +533,7 @@
         ],
         buttons: [
           {
-            l10n: 'zen-welcome-next-action',
+            l10n: 'zen-generic-next',
             onclick: async () => {
               return true;
             },
@@ -658,7 +658,7 @@
         ],
         buttons: [
           {
-            l10n: 'zen-welcome-next-action',
+            l10n: 'zen-generic-next',
             onclick: async () => {
               return true;
             },

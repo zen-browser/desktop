@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Dive in!
 zen-welcome-default-search-title = Your Default Search Engine
 zen-welcome-default-search-description = Choose your default search engine. You can always change it later!
 zen-welcome-skip-button = Skip
-zen-welcome-next-action = Next
 zen-welcome-finished = Your Zen has been set up correctly!

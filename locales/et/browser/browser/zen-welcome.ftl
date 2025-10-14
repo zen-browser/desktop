@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Hakkame pihta!
 zen-welcome-default-search-title = Sinu vaikimisi otsingumootor
 zen-welcome-default-search-description = Vali oma vaikimisi otsingumootor. Saad seda alati hiljem muuta!
 zen-welcome-skip-button = Jäta vahele
-zen-welcome-next-action = Edasi
 zen-welcome-finished = Zen on edukalt seadistatud!

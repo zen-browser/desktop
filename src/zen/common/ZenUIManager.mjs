@@ -2,10 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ChromeUtils.defineESModuleGetters(this, {
-  nsZenSiteDataPanel: 'resource:///modules/ZenSiteDataPanel.sys.mjs',
-});
-
 var gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
@@ -36,10 +32,6 @@ var gZenUIManager = {
       return document.getElementById('zen-toast-container');
     });
 
-    window.gZenSiteDataPanel = new nsZenSiteDataPanel(window);
-
-    gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
-
     new ResizeObserver(
       gZenCommonActions.throttle(
         gZenCompactModeManager.getAndApplySidebarWidth.bind(gZenCompactModeManager),
@@ -58,21 +50,41 @@ var gZenUIManager = {
       this.onUrlbarSearchModeChanged.bind(this)
     );
 
-    document.getElementById('stop-reload-button').removeAttribute('overflows');
-
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
 
     this._initCreateNewPopup();
     this._debloatContextMenus();
-    this._initOmniboxCommands();
+    this._addNewCustomizableButtonsIfNeeded();
+    this._initOmnibox();
   },
 
-  _initOmniboxCommands() {
+  _addNewCustomizableButtonsIfNeeded() {
+    const kPref = 'zen.ui.migration.compact-mode-button-added';
+    let navbarPlacements = CustomizableUI.getWidgetIdsInArea('zen-sidebar-top-buttons');
+    try {
+      if (!navbarPlacements.length && !Services.prefs.getBoolPref(kPref, false)) {
+        CustomizableUI.addWidgetToArea('zen-toggle-compact-mode', 'zen-sidebar-top-buttons', 0);
+        gZenVerticalTabsManager._topButtonsSeparatorElement.before(
+          document.getElementById('zen-toggle-compact-mode')
+        );
+      }
+    } catch (e) {
+      console.error('Error adding compact mode button to sidebar:', e);
+    }
+    Services.prefs.setBoolPref(kPref, true);
+  },
+
+  _initOmnibox() {
     const { registerZenUrlbarProviders } = ChromeUtils.importESModule(
       'resource:///modules/ZenUBProvider.sys.mjs'
     );
+    const { nsZenSiteDataPanel } = ChromeUtils.importESModule(
+      'resource:///modules/ZenSiteDataPanel.sys.mjs'
+    );
     registerZenUrlbarProviders();
+    window.gZenSiteDataPanel = new nsZenSiteDataPanel(window);
+    gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
   },
 
   _debloatContextMenus() {
@@ -527,6 +539,9 @@ var gZenUIManager = {
     this._toastContainer.removeAttribute('hidden');
     this._toastContainer.appendChild(toast);
     const timeoutFunction = () => {
+      if (Services.prefs.getBoolPref('ui.popup.disable_autohide')) {
+        return;
+      }
       this.motion
         .animate(toast, { opacity: [1, 0], scale: [1, 0.5] }, { duration: 0.2, bounce: 0 })
         .then(() => {

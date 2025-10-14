@@ -23,5 +23,4 @@ zen-welcome-start-browsing = İçeri dal!
 zen-welcome-default-search-title = Varsayılan Arama Motorun
 zen-welcome-default-search-description = Varsayılan arama motorunu seç. Bu seçimi istediğin zaman değiştirebilirsin!
 zen-welcome-skip-button = Geç
-zen-welcome-next-action = Sonraki
 zen-welcome-finished = Zen başarıyla kuruldu ve ayarlandı!

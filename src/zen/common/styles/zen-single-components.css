@@ -180,7 +180,11 @@ body > #confetti {
     background-color 0.1s,
     transform 0.2s;
 
-  &:active:hover {
+  &[open='true'] {
+    transition: background-color 0.1s;
+  }
+
+  &:not([open='true']):active:hover {
     transform: scale(0.95);
   }
 }

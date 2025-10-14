@@ -238,7 +238,7 @@
     --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
   }
   @media (-moz-mac-tahoe-theme) {
-    --zen-native-content-radius: 14px;
+    --zen-native-content-radius: 15px;
   }
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

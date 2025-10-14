@@ -26,7 +26,7 @@
 
     // Arc animation configuration
     #ARC_CONFIG = Object.freeze({
-      ARC_STEPS: 40, // Increased for smoother bounce
+      ARC_STEPS: 60, // Increased for smoother bounce
       MAX_ARC_HEIGHT: 30,
       ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     });
@@ -142,7 +142,7 @@
      * @param {Tab} existingTab - Optional existing tab to reuse
      * @returns {Browser} The created browser element
      */
-    createBrowserElement(url, currentTab, existingTab = null) {
+    #createBrowserElement(url, currentTab, existingTab = null) {
       const newTabOptions = this.#createTabOptions(currentTab);
       const newUUID = gZenUIManager.generateUuidv4();
 
@@ -251,6 +251,28 @@
     }
 
     /**
+     * Get element preview data as a data URL
+     * @param {Object} data - Glance data
+     * @returns {Promise<string|null>} Promise resolving to data URL or null
+     * if not available
+     */
+    async #getElementPreviewData(data) {
+      // Make the rect relative to the tabpanels. We dont do it directly on the
+      // content process since it does not take into account scroll. This way, we can
+      // be sure that the coordinates are correct.
+      const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+      const rect = new DOMRect(
+        data.clientX + tabPanelsRect.left,
+        data.clientY + tabPanelsRect.top,
+        data.width,
+        data.height
+      );
+      return await this.#imageBitmapToBase64(
+        await window.browsingContext.currentWindowGlobal.drawSnapshot(rect, 1, 'transparent', true)
+      );
+    }
+
+    /**
      * Open a glance overlay with the specified data
      * @param {Object} data - Glance data including URL, position, and dimensions
      * @param {Tab} existingTab - Optional existing tab to reuse
@@ -269,7 +291,7 @@
 
       this.#setAnimationState(true);
       const currentTab = ownerTab ?? gBrowser.selectedTab;
-      const browserElement = this.createBrowserElement(data.url, currentTab, existingTab);
+      const browserElement = this.#createBrowserElement(data.url, currentTab, existingTab);
 
       this.fillOverlay(browserElement);
       this.overlay.classList.add('zen-glance-overlay');
@@ -293,9 +315,17 @@
      * @returns {Promise<Tab>} Promise that resolves to the glance tab
      */
     #animateGlanceOpening(data, browserElement) {
-      return new Promise((resolve) => {
+      // FIXME(cheffy): We *must* have the call back async (at least,
+      // until a better solution is found). If we do it inside the requestAnimationFrame,
+      // we see flashing and if we do it directly, the animation does not play at all.
+      // eslint-disable-next-line no-async-promise-executor
+      return new Promise(async (resolve) => {
+        this.#prepareGlanceAnimation(data, browserElement);
+        if (data.width && data.height) {
+          data.elementData = await this.#getElementPreviewData(data);
+        }
+        this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
         window.requestAnimationFrame(() => {
-          this.#prepareGlanceAnimation(data, browserElement);
           this.#executeGlanceAnimation(data, browserElement, resolve);
         });
       });
@@ -328,7 +358,7 @@
         parentSidebarContainer,
         {
           scale: [1, 0.98],
-          opacity: [1, 0.6],
+          opacity: [1, 0.5],
         },
         {
           duration: 0.3,
@@ -450,18 +480,24 @@
       const transformOrigin = this.#getTransformOrigin(data);
 
       this.browserWrapper.style.transformOrigin = transformOrigin;
-      gZenUIManager.motion
-        .animate(
-          this.contentWrapper,
-          { opacity: [0, 1] },
-          {
-            duration: 0.1,
-            easing: 'easeInOut',
-          }
-        )
-        .then(() => {
-          this.contentWrapper.style.opacity = '';
-        });
+
+      // Only animate if there is element data, so we can apply a
+      // nice fade-in effect to the content. But if it doesn't exist,
+      // we just fall back to always showing the browser directly.
+      if (data.elementData) {
+        gZenUIManager.motion
+          .animate(
+            this.contentWrapper,
+            { opacity: [0, 1] },
+            {
+              duration: 0.1,
+              easing: 'easeInOut',
+            }
+          )
+          .then(() => {
+            this.contentWrapper.style.opacity = '';
+          });
+      }
 
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
@@ -573,7 +609,7 @@
       }
 
       let scale = 1;
-      const bounceSteps = 50;
+      const bounceSteps = 60;
       if (direction === 'opening') {
         for (let i = 0; i < bounceSteps; i++) {
           const progress = i / bounceSteps;
@@ -826,6 +862,21 @@
       }
     }
 
+    #imageBitmapToBase64(imageBitmap) {
+      // 1. Create a canvas with the same size as the ImageBitmap
+      const canvas = document.createElement('canvas');
+      canvas.width = imageBitmap.width;
+      canvas.height = imageBitmap.height;
+
+      // 2. Draw the ImageBitmap onto the canvas
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imageBitmap, 0, 0);
+
+      // 3. Convert the canvas content to a Base64 string (PNG by default)
+      const base64String = canvas.toDataURL('image/png');
+      return base64String;
+    }
+
     /**
      * Animate parent background restoration
      * @param {Element} browserSidebarContainer - The sidebar container
@@ -836,7 +887,7 @@
           browserSidebarContainer,
           {
             scale: [0.98, 1],
-            opacity: [0.6, 1],
+            opacity: [0.5, 1],
           },
           {
             duration: 0.3,
@@ -1481,10 +1532,15 @@
      */
     #createGlanceDataFromBookmark(event) {
       const rect = window.windowUtils.getBoundsWithoutFlushing(event.target);
+      const tabPanelRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
+      // the bookmark is most likely outisde the tabpanel, so we need to give a negative number
+      // so it can be corrected later
+      let top = rect.top - tabPanelRect.top;
+      let left = rect.left - tabPanelRect.left;
       return {
         url: event.target._placesNode.uri,
-        clientX: rect.left,
-        clientY: rect.top,
+        clientX: left,
+        clientY: top,
         width: rect.width,
         height: rect.height,
       };

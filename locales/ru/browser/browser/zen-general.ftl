@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Изменить
 zen-generic-more = Ещё
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Разрешено
 zen-site-data-setting-block = Запрещено
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = Добавить расширения
 zen-site-data-site-settings = 
     .label = Все настройки сайта
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Защищённое соединение
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Новый дом для расширений, разрешений и всего остального
 zen-site-data-panel-feature-callout-subtitle = Нажмите на значок для доступа к настройкам сайта, параметрам безопасности, расширениям и прочим действиям.

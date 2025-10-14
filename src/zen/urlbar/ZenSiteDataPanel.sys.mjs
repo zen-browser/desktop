@@ -42,6 +42,7 @@ export class nsZenSiteDataPanel {
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
 
+    this.#initCopyUrlButton();
     this.#initEventListeners();
     this.#maybeShowFeatureCallout();
   }
@@ -63,6 +64,35 @@ export class nsZenSiteDataPanel {
     }
 
     this.#initContextMenuEventListener();
+  }
+
+  #initCopyUrlButton() {
+    // This function is a bit out of place, but it's related enough to the panel
+    // that it's easier to do it here than in a separate module.
+    const container = this.document.getElementById('page-action-buttons');
+    const fragment = this.window.MozXULElement.parseXULToFragment(`
+      <hbox id="zen-copy-url-button"
+            class="urlbar-page-action"
+            role="button"
+            data-l10n-id="zen-urlbar-copy-url-button"
+            hidden="true">
+        <image class="urlbar-icon"/>
+      </hbox>
+    `);
+    container.appendChild(fragment);
+
+    const aElement = this.document.getElementById('zen-copy-url-button');
+    aElement.addEventListener('click', () => {
+      this.document.getElementById('cmd_zenCopyCurrentURL').doCommand();
+    });
+
+    this.window.gBrowser.addProgressListener({
+      onLocationChange: (aWebProgress, aRequest, aLocation) => {
+        if (aWebProgress.isTopLevel) {
+          aElement.hidden = !this.#canCopyUrl(aLocation);
+        }
+      },
+    });
   }
 
   #initContextMenuEventListener() {
@@ -117,15 +147,25 @@ export class nsZenSiteDataPanel {
     }
     {
       const button = this.document.getElementById('zen-site-data-header-share');
-      if (
-        this.window.gBrowser.currentURI.schemeIs('http') ||
-        this.window.gBrowser.currentURI.schemeIs('https')
-      ) {
+      if (this.#canCopyUrl(this.window.gBrowser.currentURI)) {
         button.removeAttribute('disabled');
       } else {
         button.setAttribute('disabled', 'true');
       }
     }
+  }
+
+  /*
+   * Determines whether the copy URL button should be hidden for the given URI.
+   * @param {nsIURI} uri - The URI to check.
+   * @returns {boolean} True if the button should be hidden, false otherwise.
+   */
+  #canCopyUrl(uri) {
+    if (!uri) {
+      return false;
+    }
+
+    return uri.scheme.startsWith('http');
   }
 
   #setSiteSecurityInfo() {
@@ -514,10 +554,10 @@ export class nsZenSiteDataPanel {
           id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
           template: 'multistage',
           backdrop: 'transparent',
-          transitions: false,
+          transitions: true,
           screens: [
             {
-              id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT_HORIZONTAL',
+              id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
               anchors: [
                 {
                   selector: '#zen-site-data-icon-button',
@@ -537,7 +577,6 @@ export class nsZenSiteDataPanel {
               content: {
                 position: 'callout',
                 width: '355px',
-                padding: 16,
                 title: {
                   string_id: 'zen-site-data-panel-feature-callout-title',
                 },

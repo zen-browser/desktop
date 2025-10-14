@@ -130,7 +130,8 @@
     }
   }
 
-  .identity-box-button {
+  .identity-box-button,
+  #zen-copy-url-button {
     opacity: 0;
     transition:
       opacity 0.2s,
@@ -237,6 +238,10 @@
     pointer-events: none;
     animation: zen-urlbar-searchmode ease-out 1s forwards;
   }
+
+  & #zen-copy-url-button {
+    display: none;
+  }
 }
 
 #urlbar-go-button {
@@ -246,7 +251,9 @@
 :root[zen-single-toolbar='true'] {
   --urlbar-icon-border-radius: 8px !important;
 
-  .urlbar-page-action:not([open]):not([showing]):not(#identity-permission-box),
+  .urlbar-page-action:not([open]):not([showing]):not(
+      :is(#zen-copy-url-button, #identity-permission-box)
+    ),
   #tracking-protection-icon-container {
     display: none;
   }

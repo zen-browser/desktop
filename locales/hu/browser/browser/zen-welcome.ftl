@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Merüljön el!
 zen-welcome-default-search-title = Az Ön alapértelmezett keresőmotorja
 zen-welcome-default-search-description = Válassza ki az alapértelmezett keresőmotort. Később bármikor megváltoztathatja!
 zen-welcome-skip-button = Kihagyás
-zen-welcome-next-action = Következő
 zen-welcome-finished = A Zen helyesen lett beállítva!

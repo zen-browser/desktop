@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Akce
 zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
 zen-generic-more = Více
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = Přidat rozšíření
 zen-site-data-site-settings = 
     .label = Nastavení všech stránek
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Site Protection
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
 zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.

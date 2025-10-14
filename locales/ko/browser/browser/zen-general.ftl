@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = 액션
 zen-site-data-settings = 설정
 zen-generic-manage = 관리
 zen-generic-more = 더 보기
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = 확장 프로그램 추가
 zen-site-data-site-settings = 
     .label = 모든 사이트 설정
+zen-urlbar-copy-url-button = 
+    .tooltiptext = URL 복사
 zen-site-data-setting-site-protection = 사이트 보호
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = 애드온, 권한, 그리고 더 많은 것을 위한 새로운 곳
 zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 설정, 보안 정보 조회, 확장 프로그램 접근, 기타 행동을 수행할 수 있습니다.

@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Ξεκινάμε!
 zen-welcome-default-search-title = Η Προεπιλεγμένη Μηχανή Αναζήτησης Σας
 zen-welcome-default-search-description = Επιλέξτε την προεπιλεγμένη μηχανή αναζήτησης. Μπορείτε πάντα να την αλλάξετε αργότερα!
 zen-welcome-skip-button = Παράλειψη
-zen-welcome-next-action = Επόμενο
 zen-welcome-finished = Το Zen σας έχει ρυθμιστεί σωστά!

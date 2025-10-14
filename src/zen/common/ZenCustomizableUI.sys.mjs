@@ -32,11 +32,11 @@ export var ZenCustomizableUI = new (class {
 
   // We do not have access to the window object here
   init(window) {
-    this._addSidebarButtons(window);
-    this._hideToolbarButtons(window);
+    this.#addSidebarButtons(window);
+    this.#modifyToolbarButtons(window);
   }
 
-  _addSidebarButtons(window) {
+  #addSidebarButtons(window) {
     const kDefaultSidebarWidth = '210px';
     const toolbox = window.gNavToolbox;
 
@@ -105,11 +105,11 @@ export var ZenCustomizableUI = new (class {
       elem.setAttribute('removable', 'true');
     }
 
-    this._initCreateNewButton(window);
-    this._moveWindowButtons(window);
+    this.#initCreateNewButton(window);
+    this.#moveWindowButtons(window);
   }
 
-  _initCreateNewButton(window) {
+  #initCreateNewButton(window) {
     const button = window.document.getElementById('zen-create-new-button');
     button.addEventListener('command', (event) => {
       if (button.hasAttribute('open')) {
@@ -128,7 +128,7 @@ export var ZenCustomizableUI = new (class {
     });
   }
 
-  _moveWindowButtons(window) {
+  #moveWindowButtons(window) {
     const windowControls = window.document.getElementsByClassName('titlebar-buttonbox-container');
     const toolboxIcons = window.document.getElementById(
       'zen-sidebar-top-buttons-customization-target'
@@ -147,7 +147,7 @@ export var ZenCustomizableUI = new (class {
     }
   }
 
-  _hideToolbarButtons(window) {
+  #modifyToolbarButtons(window) {
     const wrapper = window.document.getElementById('zen-sidebar-foot-buttons');
     const elementsToHide = ['new-tab-button'];
     for (let id of elementsToHide) {
@@ -156,6 +156,7 @@ export var ZenCustomizableUI = new (class {
         wrapper.prepend(elem);
       }
     }
+    window.document.getElementById('stop-reload-button').removeAttribute('overflows');
   }
 
   _dispatchResizeEvent(window) {

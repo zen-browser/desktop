@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Accions
 zen-site-data-settings = Configuració
 zen-generic-manage = Gestiona
 zen-generic-more = Més
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permès
 zen-site-data-setting-block = Bloquejat
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = Afegeix extensions
 zen-site-data-site-settings = 
     .label = Totes les configuracions del lloc
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Protecció del lloc
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
 zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.

@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Aksi
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
@@ -70,6 +71,11 @@ zen-site-data-get-addons =
     .label = Tambahkan Ekstensi
 zen-site-data-site-settings = 
     .label = Semua Pengaturan Situs
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Salin URL
 zen-site-data-setting-site-protection = Perlindungan Situs
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.

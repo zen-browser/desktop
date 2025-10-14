@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Погрузиться!
 zen-welcome-default-search-title = Ваша поисковая система по умолчанию
 zen-welcome-default-search-description = Выберите поисковую систему по умолчанию. Вы всегда можете изменить её позже!
 zen-welcome-skip-button = Пропустить
-zen-welcome-next-action = Продолжить
 zen-welcome-finished = Zen настроен правильно!

@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Згорнути
 zen-panel-ui-gradient-generator-custom-color = Власний колір
 zen-panel-ui-gradient-generator-saved-message = Градієнт успішно збережено!
-zen-copy-current-url-confirmation = Copied Current URL!
+zen-copy-current-url-confirmation = URL-адресу було скопійовано до буфера обміну.
 zen-general-cancel-label = 
     .label = Скасувати
 zen-general-confirm = 
@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Дії
 zen-site-data-settings = Налаштування
 zen-generic-manage = Керувати
 zen-generic-more = Більше
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Дозволено
 zen-site-data-setting-block = Заблоковано
@@ -73,5 +74,8 @@ zen-site-data-site-settings =
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Захист сайту
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Новий дім для доповнень, дозволів тощо
 zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.

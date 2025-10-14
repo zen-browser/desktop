@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimitza
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
 zen-panel-ui-gradient-generator-saved-message = El degradat s'ha desat correctament!
-zen-copy-current-url-confirmation = Copied Current URL!
+zen-copy-current-url-confirmation = L'URL s'ha copiat al porta-retalls.
 zen-general-cancel-label = 
     .label = Cancel·la
 zen-general-confirm = 
@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Accions
 zen-site-data-settings = Configuració
 zen-generic-manage = Gestiona
 zen-generic-more = Més
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permès
 zen-site-data-setting-block = Bloquejat
@@ -73,5 +74,8 @@ zen-site-data-site-settings =
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Protecció del lloc
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
 zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.

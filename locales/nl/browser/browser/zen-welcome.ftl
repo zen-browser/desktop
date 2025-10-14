@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Duik erin!
 zen-welcome-default-search-title = Je standaard zoekmachine
 zen-welcome-default-search-description = Kies je standaard zoekmachine. Je kunt het altijd later wijzigen!
 zen-welcome-skip-button = Overslaan
-zen-welcome-next-action = Volgende
 zen-welcome-finished = Je Zen is correct ingesteld!

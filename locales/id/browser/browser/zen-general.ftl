@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalkan
 zen-panel-ui-gradient-generator-custom-color = Warna Kustom
 zen-panel-ui-gradient-generator-saved-message = Berhasil menyimpan gradien!
-zen-copy-current-url-confirmation = Copied Current URL!
+zen-copy-current-url-confirmation = URL telah disalin ke clipboard.
 zen-general-cancel-label = 
     .label = Batalkan
 zen-general-confirm = 
@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Aksi
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
@@ -71,7 +72,10 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Semua Pengaturan Situs
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
+    .tooltiptext = Salin URL
 zen-site-data-setting-site-protection = Perlindungan Situs
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.

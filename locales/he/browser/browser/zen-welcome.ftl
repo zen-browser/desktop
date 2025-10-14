@@ -23,5 +23,4 @@ zen-welcome-start-browsing = יאללה בלאגן!
 zen-welcome-default-search-title = מנוע החיפוש ברירת מחדל שלך
 zen-welcome-default-search-description = יש לבחור את מנוע החיפוש ברירת מחדל שלך. תמיד ניתן לשנות אותו!
 zen-welcome-skip-button = דלג
-zen-welcome-next-action = הבא
 zen-welcome-finished = הZen שלך הוגדר בהצלחה!

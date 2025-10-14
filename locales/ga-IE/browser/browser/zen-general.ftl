@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-panel-ui-gradient-generator-saved-message = Sábháladh an grádán go rathúil!
-zen-copy-current-url-confirmation = Copied Current URL!
+zen-copy-current-url-confirmation = Tá an URL cóipeáilte chuig an ghearrthaisce.
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = Gníomhartha
 zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
 zen-generic-more = Tuilleadh
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
@@ -71,7 +72,10 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Gach Socrú Suímh
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
+    .tooltiptext = Cóipeáil URL
 zen-site-data-setting-site-protection = Cosaint Láithreáin
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Baile nua do bhreiseáin, ceadanna agus tuilleadh
 zen-site-data-panel-feature-callout-subtitle = Cliceáil an deilbhín chun socruithe suímh a bhainistiú, faisnéis slándála a fheiceáil, rochtain a fháil ar shínteáin, agus gníomhartha coitianta a dhéanamh.

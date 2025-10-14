@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Pirmyn!
 zen-welcome-default-search-title = Jūsų numatytasis paieškos variklis
 zen-welcome-default-search-description = Pasirinkite numatytąjį paieškos variklį. Vėliau visada galite ją pakeisti!
 zen-welcome-skip-button = Praleisti
-zen-welcome-next-action = Toliau
 zen-welcome-finished = Jūsų „Zen“ nustatytas teisingai!

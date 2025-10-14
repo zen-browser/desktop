@@ -23,5 +23,4 @@ zen-welcome-start-browsing = 立刻开始！
 zen-welcome-default-search-title = 您的默认搜索引擎
 zen-welcome-default-search-description = 选择您的默认搜索引擎。您可以随时更改它！
 zen-welcome-skip-button = 跳过
-zen-welcome-next-action = 下一步
 zen-welcome-finished = 您的 Zen 已正确设置！

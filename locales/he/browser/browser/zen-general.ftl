@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = מזער
 zen-panel-ui-gradient-generator-custom-color = צבע מותאם אישית
 zen-panel-ui-gradient-generator-saved-message = מיזוג הצבעים נשמר בהצלחה!
-zen-copy-current-url-confirmation = Copied Current URL!
+zen-copy-current-url-confirmation = הקישור הועתק ללוח.
 zen-general-cancel-label = 
     .label = ביטול
 zen-general-confirm = 
@@ -55,6 +55,7 @@ urlbar-search-mode-zen_actions = פעולות
 zen-site-data-settings = הגדרות
 zen-generic-manage = ניהול
 zen-generic-more = עוד
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = אושר
 zen-site-data-setting-block = חסום
@@ -73,5 +74,8 @@ zen-site-data-site-settings =
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = בטיחות אתר
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = בית חדש לתוספים, הרשאות, ועוד
 zen-site-data-panel-feature-callout-subtitle = ניתן ללחוץ על הסמל כדי לנהל הגדרות אתר, לצפות במידע אבטחה, לגשת לתוספים, ולבצע פעולות נפוצות.

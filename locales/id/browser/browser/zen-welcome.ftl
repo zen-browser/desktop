@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Penyelaman dimulai!
 zen-welcome-default-search-title = Mesin Pencari Default Anda
 zen-welcome-default-search-description = Pilih mesin pencari default Anda. Anda selalu dapat mengubahnya nanti!
 zen-welcome-skip-button = Lewati
-zen-welcome-next-action = Lanjut
 zen-welcome-finished = Anda berhasil mengatur Zen milik anda!

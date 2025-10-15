@@ -79,7 +79,7 @@ var gZenUIManager = {
   _initBookmarkCollapseListener() {
     const toolbar = document.getElementById('PersonalToolbar');
     if (toolbar.getAttribute('collapsed') !== 'true') {
-      // Set it initially if bookmarks toolbar is visible, customiable ui
+      // Set it initially if bookmarks toolbar is visible, customizable UI
       // is ran before this function.
       document.documentElement.setAttribute('zen-has-bookmarks', 'true');
     }

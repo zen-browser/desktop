@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalizálás
 zen-panel-ui-gradient-generator-custom-color = Egyedi szín
 zen-panel-ui-gradient-generator-saved-message = Színátmenet sikeresen mentve!
-zen-copy-current-url-confirmation = Az URL-cím a vágólapra lett másolva.
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = Mégsem
 zen-general-confirm = 
@@ -55,7 +55,7 @@ urlbar-search-mode-zen_actions = Műveletek
 zen-site-data-settings = Beállítások
 zen-generic-manage = Kezelés
 zen-generic-more = Több
-zen-generic-next = Next
+zen-generic-next = Következő
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Letiltva
@@ -71,8 +71,10 @@ zen-site-data-get-addons =
     .label = Kiegészítő hozzáadása
 zen-site-data-site-settings = 
     .label = Minden webhelybeállítás
+zen-site-data-share = 
+    .label = Share This Page
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
+    .tooltiptext = URL másolása
 zen-site-data-setting-site-protection = Oldalvédelem
 
 # Section: Feature callouts

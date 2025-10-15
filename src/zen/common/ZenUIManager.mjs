@@ -1087,8 +1087,8 @@ var gZenVerticalTabsManager = {
 
       const canHideTabBarPref = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar');
       const captionsShouldStayOnSidebar =
-        (!canHideTabBarPref && !this.isWindowsStyledButtons && !isRightSide) ||
-        (!canHideTabBarPref && this.isWindowsStyledButtons && isRightSide);
+        !canHideTabBarPref &&
+        ((!this.isWindowsStyledButtons && !isRightSide) || (this.isWindowsStyledButtons && isRightSide));
       if (
         (!isSingleToolbar && isCompactMode && !captionsShouldStayOnSidebar) ||
         !isSidebarExpanded

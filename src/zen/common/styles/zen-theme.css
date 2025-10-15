@@ -98,8 +98,8 @@
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
   --in-content-button-background-hover: color-mix(
     in srgb,
-    currentColor 3%,
-    transparent 97%
+    currentColor,
+    transparent 85%
   ) !important;
   --button-bgcolor: var(--in-content-button-background) !important;
   --button-hover-bgcolor: var(--in-content-button-background-hover) !important;

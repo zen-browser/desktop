@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimer
 zen-panel-ui-gradient-generator-custom-color = Brugerdefineret Farve
 zen-panel-ui-gradient-generator-saved-message = Gradienten blev gemt!
-zen-copy-current-url-confirmation = URL'en blev kopieret til udklipsholderen.
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = Annuller
 zen-general-confirm = 
@@ -55,7 +55,7 @@ urlbar-search-mode-zen_actions = Handlinger
 zen-site-data-settings = Indstillinger
 zen-generic-manage = Administrer
 zen-generic-more = Mere
-zen-generic-next = Next
+zen-generic-next = Næste
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Tilladt
 zen-site-data-setting-block = Blokeret
@@ -71,8 +71,10 @@ zen-site-data-get-addons =
     .label = Tilføj udvidelser
 zen-site-data-site-settings = 
     .label = All Site Settings
+zen-site-data-share = 
+    .label = Share This Page
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
+    .tooltiptext = Kopiér URL
 zen-site-data-setting-site-protection = Site Protection
 
 # Section: Feature callouts

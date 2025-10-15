@@ -9,7 +9,7 @@
     --zen-toolbox-top-align: var(--zen-element-separation);
   }
 
-  @media -moz-pref('zen.view.compact.hide-tabbar') { 
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
     & #titlebar {
       margin-top: var(--zen-element-separation) !important;
     }

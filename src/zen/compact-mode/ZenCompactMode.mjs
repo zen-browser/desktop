@@ -405,7 +405,7 @@ var gZenCompactModeManager = {
               });
             });
         } else if (canHideSidebar && !isCompactMode) {
-          // Shoudn't be ever true, but just in case
+          // Shouldn't be ever true, but just in case
           delete this._ignoreNextHover;
           document.getElementById('browser').style.overflow = 'clip';
           if (this.sidebarIsOnRight) {

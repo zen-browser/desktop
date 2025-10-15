@@ -605,14 +605,6 @@ var gZenCompactModeManager = {
           }
         }
 
-        // If it's a child element but not the target, ignore the event
-        if (
-          target.contains(event.explicitOriginalTarget) &&
-          event.explicitOriginalTarget !== target
-        ) {
-          return;
-        }
-
         // See bug https://bugzilla.mozilla.org/show_bug.cgi?id=1979340 and issue https://github.com/zen-browser/desktop/issues/7746.
         // If we want the toolbars to be draggable, we need to make sure to check the hover state after a short delay.
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.

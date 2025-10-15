@@ -9,8 +9,10 @@
     --zen-toolbox-top-align: var(--zen-element-separation);
   }
 
-  & #titlebar {
-    margin-top: var(--zen-element-separation) !important;
+  @media -moz-pref('zen.view.compact.hide-tabbar') { 
+    & #titlebar {
+      margin-top: var(--zen-element-separation) !important;
+    }
   }
 
   & #zen-appcontent-wrapper {
@@ -39,6 +41,11 @@
        * web content */
       transition: visibility 0.15s ease;
     }
+
+    & #zen-appcontent-navbar-container {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
   }
 
   &
@@ -64,6 +71,11 @@
     & #urlbar {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    & #zen-appcontent-navbar-container {
+      opacity: 1;
+      transition: none;
     }
   }
 }

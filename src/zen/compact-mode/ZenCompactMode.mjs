@@ -216,16 +216,23 @@ var gZenCompactModeManager = {
   hideSidebar() {
     Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
     Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+    this.callAllEventListeners();
   },
 
   hideToolbar() {
     Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
     Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
+    this.callAllEventListeners();
   },
 
   hideBoth() {
     Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
     Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
+    this.callAllEventListeners();
+  },
+
+  callAllEventListeners() {
+    this._evenListeners.forEach((callback) => callback());
   },
 
   addEventListener(callback) {
@@ -245,11 +252,11 @@ var gZenCompactModeManager = {
     // once the window buttons are shown
     this.updateContextMenu();
     if (!this.preference) {
-      this._evenListeners.forEach((callback) => callback());
+      this.callAllEventListeners();
       await this.animateCompactMode();
     } else {
       await this.animateCompactMode();
-      this._evenListeners.forEach((callback) => callback());
+      this.callAllEventListeners();
     }
     gZenUIManager.updateTabsToolbar();
     if (isUrlbarFocused) {
@@ -558,7 +565,9 @@ var gZenCompactModeManager = {
       element.setAttribute(attr, 'true');
       if (
         isToolbar &&
-        (element.hasAttribute('should-hide') ||
+        ((gZenVerticalTabsManager._hasSetSingleToolbar &&
+          (element.hasAttribute('should-hide') ||
+            document.documentElement.hasAttribute('zen-has-bookmarks'))) ||
           (this.preference &&
             Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
             !gZenVerticalTabsManager._hasSetSingleToolbar))

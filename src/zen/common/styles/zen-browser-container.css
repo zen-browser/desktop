@@ -43,7 +43,7 @@
     }
   }
 
-  @media not ((-moz-pref('zen.view.experimental-no-window-controls') or not -moz-pref('zen.view.hide-window-controls') ) and -moz-pref('zen.view.use-single-toolbar')) {
+  @media not ((-moz-pref('zen.view.experimental-no-window-controls') or (not -moz-pref('zen.view.hide-window-controls'))) and -moz-pref('zen.view.use-single-toolbar')) {
     .browserSidebarContainer:is(.deck-selected, [zen-split='true']) .browserContainer {
       transition: margin 0.15s ease;
 

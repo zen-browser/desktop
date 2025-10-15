@@ -77,16 +77,20 @@ var gZenUIManager = {
   },
 
   _initBookmarkCollapseListener() {
-    document
-      .getElementById('PersonalToolbar')
-      .addEventListener('toolbarvisibilitychange', (event) => {
-        const visible = event.detail.visible;
-        if (visible) {
-          document.documentElement.setAttribute('zen-has-bookmarks', 'true');
-        } else {
-          document.documentElement.removeAttribute('zen-has-bookmarks');
-        }
-      });
+    const toolbar = document.getElementById('PersonalToolbar');
+    if (toolbar.getAttribute('collapsed') !== 'true') {
+      // Set it initially if bookmarks toolbar is visible, customiable ui
+      // is ran before this function.
+      document.documentElement.setAttribute('zen-has-bookmarks', 'true');
+    }
+    toolbar.addEventListener('toolbarvisibilitychange', (event) => {
+      const visible = event.detail.visible;
+      if (visible) {
+        document.documentElement.setAttribute('zen-has-bookmarks', 'true');
+      } else {
+        document.documentElement.removeAttribute('zen-has-bookmarks');
+      }
+    });
   },
 
   _initOmnibox() {
@@ -1081,7 +1085,14 @@ var gZenVerticalTabsManager = {
         topButtons.prepend(windowButtons);
       }
 
-      if ((!isSingleToolbar && isCompactMode) || !isSidebarExpanded) {
+      const canHideTabBarPref = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar');
+      const captionsShouldStayOnSidebar =
+        (!canHideTabBarPref && !this.isWindowsStyledButtons && !isRightSide) ||
+        (!canHideTabBarPref && this.isWindowsStyledButtons && isRightSide);
+      if (
+        (!isSingleToolbar && isCompactMode && !captionsShouldStayOnSidebar) ||
+        !isSidebarExpanded
+      ) {
         navBar.prepend(topButtons);
       }
 
@@ -1112,7 +1123,11 @@ var gZenVerticalTabsManager = {
           }
         }
       } else if (!isSingleToolbar && isCompactMode) {
-        navBar.appendChild(windowButtons);
+        if (captionsShouldStayOnSidebar) {
+          topButtons.prepend(windowButtons);
+        } else {
+          navBar.appendChild(windowButtons);
+        }
       } else if (isSingleToolbar && isCompactMode) {
         if (!isRightSide && !this.isWindowsStyledButtons) {
           topButtons.prepend(windowButtons);

@@ -30,7 +30,7 @@ ChromeUtils.defineLazyGetter(lazyCompactMode, 'mainAppWrapper', () =>
 
 var gZenCompactModeManager = {
   _flashTimeouts: {},
-  _evenListeners: [],
+  _eventListeners: [],
   _removeHoverFrames: {},
 
   // Delay to avoid flickering when hovering over the sidebar
@@ -232,17 +232,17 @@ var gZenCompactModeManager = {
   },
 
   callAllEventListeners() {
-    this._evenListeners.forEach((callback) => callback());
+    this._eventListeners.forEach((callback) => callback());
   },
 
   addEventListener(callback) {
-    this._evenListeners.push(callback);
+    this._eventListeners.push(callback);
   },
 
   removeEventListener(callback) {
-    const index = this._evenListeners.indexOf(callback);
+    const index = this._eventListeners.indexOf(callback);
     if (index !== -1) {
-      this._evenListeners.splice(index, 1);
+      this._eventListeners.splice(index, 1);
     }
   },
 

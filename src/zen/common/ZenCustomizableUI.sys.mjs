@@ -63,7 +63,7 @@ export var ZenCustomizableUI = new (class {
         default-overflowbutton="nav-bar-overflow-button"
         default-overflowtarget="widget-overflow-list"
         default-overflowpanel="widget-overflow"
-        addon-webext-overflowbutton="unified-extensions-button"
+        addon-webext-overflowbutton="zen-site-data-icon-button"
         addon-webext-overflowtarget="overflowed-extensions-list"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">

@@ -78,7 +78,7 @@ var gZenUIManager = {
 
   _initBookmarkCollapseListener() {
     const toolbar = document.getElementById('PersonalToolbar');
-    if (toolbar.getAttribute('collapsed') !== 'true') {
+    if (!toolbar.hasAttribute('collapsed')) {
       // Set it initially if bookmarks toolbar is visible, customizable UI
       // is ran before this function.
       document.documentElement.setAttribute('zen-has-bookmarks', 'true');
@@ -1091,7 +1091,10 @@ var gZenVerticalTabsManager = {
         ((!this.isWindowsStyledButtons && !isRightSide) ||
           (this.isWindowsStyledButtons && isRightSide));
       if (
-        (!isSingleToolbar && isCompactMode && !captionsShouldStayOnSidebar) ||
+        (!isSingleToolbar &&
+          isCompactMode &&
+          !captionsShouldStayOnSidebar &&
+          this.isWindowsStyledButtons === isRightSide) ||
         !isSidebarExpanded
       ) {
         navBar.prepend(topButtons);

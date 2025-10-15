@@ -12,7 +12,7 @@ z-index: 1;
 }
 
 @media -moz-pref('zen.view.hide-window-controls') {
-  transition: height 0.15s ease, opacity 0.15s ease;
+  transition: height 0.15s ease-in-out, opacity 0.15s ease-in-out;
   will-change: height, opacity;
   transition-delay: 0.2s;
   overflow: clip;

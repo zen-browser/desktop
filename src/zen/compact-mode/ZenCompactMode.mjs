@@ -570,7 +570,8 @@ var gZenCompactModeManager = {
             document.documentElement.hasAttribute('zen-has-bookmarks'))) ||
           (this.preference &&
             Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
-            !gZenVerticalTabsManager._hasSetSingleToolbar))
+            !gZenVerticalTabsManager._hasSetSingleToolbar &&
+            !gURLBar.hasAttribute('breakout-extend')))
       ) {
         gBrowser.tabpanels.setAttribute('has-toolbar-hovered', 'true');
       }

@@ -23,7 +23,7 @@
     & .zen-toolbar-background {
       display: flex;
     }
-    transition: height 0.15s ease;
+    transition: height 0.15s ease-in-out;
 
     height: calc(var(--zen-element-separation) + 0.1px);
     overflow: clip;
@@ -55,9 +55,7 @@
   & #zen-appcontent-navbar-wrapper[has-popup-menu],
   &
     #zen-appcontent-navbar-wrapper:has(
-      *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(
-          #urlbar[zen-floating-urlbar='true']
-        ):not(.zen-compact-mode-ignore)
+      *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)
     ) {
 
     height: var(--zen-toolbar-height-with-bookmarks);

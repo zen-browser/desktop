@@ -29,20 +29,20 @@
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
+@media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
+  &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 :root[zen-single-toolbar='true'] {
   --zen-toolbar-height: 32px;
 
   & #zen-appcontent-navbar-wrapper,
   & #zen-sidebar-top-buttons {
     height: var(--zen-toolbar-height);
-  }
-
-  @media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
-    &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
   }
 
   & #zen-sidebar-top-buttons-separator {

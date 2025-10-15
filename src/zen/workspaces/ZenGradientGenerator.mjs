@@ -126,7 +126,12 @@
         darkModeChange
       );
 
-      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.5);
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        'darkModeBias',
+        'zen.theme.dark-mode-bias',
+        '0.5'
+      );
     }
 
     handleDarkModeChange() {
@@ -1212,7 +1217,7 @@
       let lightText = this.getToolbarColor(false); // e.g. [r, g, b, a]
 
       if (this.canBeTransparent) {
-        lightText[3] -= this.darkModeBias; // Reduce alpha for light text
+        lightText[3] -= parseFloat(this.darkModeBias); // Reduce alpha for light text
       }
 
       // Composite text color over background

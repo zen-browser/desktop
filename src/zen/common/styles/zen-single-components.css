@@ -386,12 +386,17 @@ body > #confetti {
   align-items: center;
 }
 
+.permission-popup-permission-label-container {
+  min-width: 1px;
+}
+
 .permission-popup-permission-label {
   margin: 0px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .permission-popup-permission-icon {
@@ -446,7 +451,8 @@ body > #confetti {
   margin: 0;
 }
 
-#identity-box {
+#identity-box,
+#page-action-buttons {
   opacity: 0.6;
 }
 

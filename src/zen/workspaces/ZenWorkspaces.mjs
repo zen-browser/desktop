@@ -2486,7 +2486,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     const shouldHideSeparator =
       pinnedContainer.children.length === 1 ||
       Array.from(arrowScrollbox.children).filter(
-        (child) => !child.hasAttribute('hidden') && !child.hasAttribute('zen-empty-tab')
+        (child) =>
+          !child.hasAttribute('hidden') &&
+          !child.hasAttribute('bursting') &&
+          !child.hasAttribute('zen-empty-tab')
       ).length <= 1;
 
     const closeAllTabsFragment = pinnedContainer.querySelector('.zen-close-all-tabs-target');
@@ -2516,7 +2519,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     for (const entry of entries) {
       let originalWorkspaceId = entry.target.getAttribute('zen-workspace-id');
       if (!originalWorkspaceId) {
-        originalWorkspaceId = entry.target.closest('zen-workspace')?.id;
+        originalWorkspaceId = entry.target.closest('zen-workspace')?.id || this.activeWorkspace;
       }
       const workspacesIds = [];
       if (entry.target.closest('#zen-essentials')) {

@@ -57,6 +57,7 @@ var gZenUIManager = {
     this._debloatContextMenus();
     this._addNewCustomizableButtonsIfNeeded();
     this._initOmnibox();
+    this._initBookmarkCollapseListener();
   },
 
   _addNewCustomizableButtonsIfNeeded() {
@@ -73,6 +74,19 @@ var gZenUIManager = {
       console.error('Error adding compact mode button to sidebar:', e);
     }
     Services.prefs.setBoolPref(kPref, true);
+  },
+
+  _initBookmarkCollapseListener() {
+    document
+      .getElementById('PersonalToolbar')
+      .addEventListener('toolbarvisibilitychange', (event) => {
+        const visible = event.detail.visible;
+        if (visible) {
+          document.documentElement.setAttribute('zen-has-bookmarks', 'true');
+        } else {
+          document.documentElement.removeAttribute('zen-has-bookmarks');
+        }
+      });
   },
 
   _initOmnibox() {
@@ -231,7 +245,7 @@ var gZenUIManager = {
         continue;
       }
       document.removeEventListener('mousemove', this.__removeHasPopupAttribute);
-      el.setAttribute('has-popup-menu', '');
+      gZenCompactModeManager._setElementExpandAttribute(el, true, 'has-popup-menu');
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
       break;
@@ -244,9 +258,10 @@ var gZenUIManager = {
     }
     const element = this.__currentPopupTrackElement;
     if (document.getElementById('main-window').matches(':hover')) {
-      element.removeAttribute('has-popup-menu');
+      gZenCompactModeManager._setElementExpandAttribute(element, false, 'has-popup-menu');
     } else {
-      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
+      this.__removeHasPopupAttribute = () =>
+        gZenCompactModeManager._setElementExpandAttribute(element, false, 'has-popup-menu');
       document.addEventListener('mousemove', this.__removeHasPopupAttribute, { once: true });
     }
     this.__currentPopup = null;
@@ -978,7 +993,7 @@ var gZenVerticalTabsManager = {
           (isCompactMode && isSingleToolbar && this.isWindowsStyledButtons)) &&
         isSingleToolbar
       ) {
-        appContentNavbarWrapper.setAttribute('should-hide', 'true');
+        appContentNavbarWrapper.setAttribute('should-hide', true);
         shouldHide = true;
       } else {
         appContentNavbarWrapper.removeAttribute('should-hide');

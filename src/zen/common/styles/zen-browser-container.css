@@ -10,10 +10,11 @@
     position: relative;
 
     &.browserSidebarContainer {
+      overflow: clip;
+
       :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
         border-radius: var(--zen-native-inner-radius);
         box-shadow: var(--zen-big-shadow);
-        overflow: clip;
       }
 
       & browser[type='content'] {
@@ -38,6 +39,28 @@
            * is a hacky solution, but it works for now. */
           will-change: transform;
         }
+      }
+    }
+  }
+
+  @media not ((-moz-pref('zen.view.experimental-no-window-controls') or not -moz-pref('zen.view.hide-window-controls') ) and -moz-pref('zen.view.use-single-toolbar')) {
+    .browserSidebarContainer:is(.deck-selected, [zen-split='true']) .browserContainer {
+      transition: margin 0.15s ease;
+
+      :root[zen-single-toolbar='true'] & {
+        transition-delay: 0.2s;
+      }
+
+      #tabbrowser-tabpanels[has-toolbar-hovered] & {
+        --margin-top-fix: calc(-1 * var(--zen-toolbar-height) + var(--zen-element-separation));
+
+        :root:not([zen-single-toolbar='true']) & {
+          --margin-top-fix: calc(
+            -1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation)
+          );
+        }
+
+        margin-top: var(--margin-top-fix);
       }
     }
   }

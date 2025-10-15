@@ -30,9 +30,10 @@
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
+  --zen-toolbar-height: 32px;
+
   & #zen-appcontent-navbar-wrapper,
   & #zen-sidebar-top-buttons {
-    --zen-toolbar-height: 32px;
     height: var(--zen-toolbar-height);
   }
 

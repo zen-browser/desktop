@@ -8,31 +8,22 @@ z-index: 1;
 
 #zen-appcontent-navbar-container {
   display: flex;
+  min-height: var(--zen-toolbar-height);
 }
 
 @media -moz-pref('zen.view.hide-window-controls') {
-  & {
-    transition:
-      height 0.15s ease,
-      opacity 0.1s ease-out;
-    transition-delay: 0.2s;
-
-    & > * {
-      transition: opacity 0.2s ease-out;
-      transition-delay: 0.2s;
-    }
-  }
+  transition: height 0.15s ease, opacity 0.15s ease;
+  will-change: height, opacity;
+  transition-delay: 0.2s;
+  overflow: clip;
 
   &:not([zen-has-hover='true']):not([has-popup-menu]):not(:focus-within):not(
       :has(*:is([panelopen='true'], [open='true']))
     ) {
-    transition-delay: 0.2s;
     /* In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible) */
     height: calc(var(--zen-element-separation) + 0.1px);
-    overflow: hidden;
     opacity: 0;
-    & > * {
-      opacity: 0;
+    & #zen-appcontent-navbar-container {
       pointer-events: none;
     }
 
@@ -43,7 +34,7 @@ z-index: 1;
   }
 
   @media -moz-pref('zen.view.experimental-no-window-controls') {
-    &:has(#PersonalToolbar[collapsed]) {
+    :root:not([zen-has-bookmarks]) & {
       max-height: 0 !important;
       overflow: hidden;
       opacity: 0 !important;

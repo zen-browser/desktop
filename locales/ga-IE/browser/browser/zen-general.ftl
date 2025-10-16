@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-panel-ui-gradient-generator-saved-message = Sábháladh an grádán go rathúil!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -55,10 +55,11 @@ urlbar-search-mode-zen_actions = Gníomhartha
 zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
 zen-generic-more = Tuilleadh
-zen-generic-next = Next
+zen-generic-next = Ar Aghaidh
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Síneadh
 zen-site-data-security-info-secure = 
@@ -72,10 +73,10 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Gach Socrú Suímh
 zen-site-data-share = 
-    .label = Share This Page
+    .label = Comhroinn an Leathanach seo
 zen-urlbar-copy-url-button = 
     .tooltiptext = Cóipeáil URL
-zen-site-data-setting-site-protection = Cosaint Láithreáin
+zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts
 

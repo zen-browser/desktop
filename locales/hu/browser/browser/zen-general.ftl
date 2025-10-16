@@ -59,6 +59,7 @@ zen-generic-next = Következő
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Letiltva
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Kiegészítő
 zen-site-data-security-info-secure = 
@@ -75,7 +76,7 @@ zen-site-data-share =
     .label = Oldal megosztása
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL másolása
-zen-site-data-setting-site-protection = Oldalvédelem
+zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts
 

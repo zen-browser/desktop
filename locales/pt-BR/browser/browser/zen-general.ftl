@@ -57,6 +57,7 @@ zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Extensão
 zen-site-data-security-info-secure = 
@@ -73,7 +74,7 @@ zen-site-data-share =
     .label = Share This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Site Protection
+zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts
 

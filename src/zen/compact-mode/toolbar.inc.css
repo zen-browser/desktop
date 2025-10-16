@@ -9,8 +9,10 @@
     --zen-toolbox-top-align: var(--zen-element-separation);
   }
 
-  & #titlebar {
-    margin-top: var(--zen-element-separation) !important;
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    & #titlebar {
+      margin-top: var(--zen-element-separation) !important;
+    }
   }
 
   & #zen-appcontent-wrapper {
@@ -21,15 +23,15 @@
     & .zen-toolbar-background {
       display: flex;
     }
-    transition: height 0.15s ease-in-out;
+    transition: height 0.1s ease;
 
-    height: calc(var(--zen-element-separation) + 0.1px);
+    height: var(--zen-element-separation);
     overflow: clip;
 
     & #urlbar:not([breakout-extend='true']) {
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.1s ease;
     }
 
     & .titlebar-buttonbox-container {
@@ -37,12 +39,12 @@
       /* We need to hide them since on Windows the native
        * panels when hovering over them can interfere with the
        * web content */
-      transition: visibility 0.15s ease;
+      transition: visibility 0.1s ease;
     }
 
     & #zen-appcontent-navbar-container {
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.1s ease;
     }
   }
 

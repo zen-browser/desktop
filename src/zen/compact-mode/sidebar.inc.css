@@ -66,7 +66,7 @@
       }
       :root:not([zen-single-toolbar='true']) & {
         bottom: calc(var(--zen-compact-float) / 2);
-        height: calc(100% - var(--zen-toolbar-height));
+        height: calc(100% - var(--zen-toolbar-height-with-bookmarks)); 
         @media -moz-pref('zen.view.compact.hide-toolbar') {
           height: 100%;
         }
@@ -86,12 +86,12 @@
   }
 
   /* When we have multiple toolbars and the top-toolbar is NOT being hidden,
-       * we need to adjust the top-padding of the toolbox to account for the
-       * extra toolbar height. */
+   * we need to adjust the top-padding of the toolbox to account for the
+   * extra toolbar height. */
   @media not -moz-pref('zen.view.compact.hide-toolbar') {
     &:not([zen-single-toolbar='true']) {
       #navigator-toolbox:not([animate='true']) {
-        margin-top: var(--zen-toolbar-height) !important;
+        margin-top: var(--zen-toolbar-height-with-bookmarks) !important;
       }
     }
   }

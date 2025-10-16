@@ -915,17 +915,19 @@ var gZenVerticalTabsManager = {
 
   recalculateURLBarHeight() {
     requestAnimationFrame(() => {
-      document.getElementById('urlbar').removeAttribute('--urlbar-height');
-      let height;
-      if (!this._hasSetSingleToolbar) {
-        height = 32;
-      } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
-        height = 40;
-      }
-      if (typeof height !== 'undefined') {
-        document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
-      }
-      gURLBar.zenFormatURLValue();
+      requestAnimationFrame(() => {
+        gURLBar.textbox.removeAttribute('--urlbar-height');
+        let height;
+        if (!this._hasSetSingleToolbar) {
+          height = 32;
+        } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
+          height = 40;
+        }
+        if (typeof height !== 'undefined') {
+          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+        }
+        gURLBar.zenFormatURLValue();
+      });
     });
   },
 
@@ -1140,7 +1142,6 @@ var gZenVerticalTabsManager = {
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);
-      this.recalculateURLBarHeight();
 
       // Always move the splitter next to the sidebar
       const splitter = document.getElementById('zen-sidebar-splitter');

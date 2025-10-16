@@ -12,7 +12,7 @@ z-index: 1;
 }
 
 @media -moz-pref('zen.view.hide-window-controls') {
-  transition: height 0.15s ease-in-out, opacity 0.15s ease-in-out;
+  transition: height 0.1s ease, opacity 0.1s ease;
   will-change: height, opacity;
   transition-delay: 0.2s;
   overflow: clip;
@@ -20,8 +20,7 @@ z-index: 1;
   &:not([zen-has-hover='true']):not([has-popup-menu]):not(:focus-within):not(
       :has(*:is([panelopen='true'], [open='true']))
     ) {
-    /* In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible) */
-    height: calc(var(--zen-element-separation) + 0.1px);
+    height: var(--zen-element-separation);
     opacity: 0;
     & #zen-appcontent-navbar-container {
       pointer-events: none;

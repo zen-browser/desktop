@@ -117,7 +117,7 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: var(--zen-toolbox-padding) 0;
   }
 
   & #PanelUI-menu-button {

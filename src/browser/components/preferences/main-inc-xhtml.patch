@@ -1,12 +1,12 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 891cf7108cf4606c99a902afa420e744b9690b87..80a971b4a3e733e6495a0a11654c209e2aea5d9c 100644
+index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615fad5e0760 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
 @@ -29,6 +29,11 @@
    <vbox id="startupPageBox">
      <checkbox id="browserRestoreSession"
                data-l10n-id="startup-restore-windows-and-tabs"/>
-+    <vbox id="windowsLaunchOnLoginDisabledBox" align="center" class="indent" hidden="true">
++    <vbox class="indent">
 +      <checkbox id="zenWorkspaceContinueWhereLeftOff"
 +              data-l10n-id="zen-workspace-continue-where-left-off"
 +              preference="zen.workspaces.continue-where-left-off"/>

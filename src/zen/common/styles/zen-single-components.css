@@ -546,6 +546,10 @@ body > #confetti {
   }
 }
 
+#zen-site-data-settings-list toolbarseparator {
+  margin: 6px 0;
+}
+
 /* Overflow panel */
 #widget-overflow-mainView {
   --menu-panel-width-wide: 200px;

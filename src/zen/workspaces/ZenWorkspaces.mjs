@@ -2481,9 +2481,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       pinnedContainer.children.length === 1 ||
       Array.from(arrowScrollbox.children).filter(
         (child) =>
-          !child.hasAttribute('hidden') &&
-          !child.hasAttribute('bursting') &&
-          !child.hasAttribute('zen-empty-tab')
+          !child.hasAttribute('hidden') && !child.closing && !child.hasAttribute('zen-empty-tab')
       ).length <= 1;
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');

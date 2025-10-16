@@ -26,7 +26,7 @@
 
     // Arc animation configuration
     #ARC_CONFIG = Object.freeze({
-      ARC_STEPS: 60, // Increased for smoother bounce
+      ARC_STEPS: 70, // Increased for smoother bounce
       MAX_ARC_HEIGHT: 30,
       ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     });

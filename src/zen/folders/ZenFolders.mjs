@@ -1272,7 +1272,7 @@
         splitViewIds,
         activeFoldersIds,
       });
-      const heightUntilSelected = this.#calculateHeightShift(tabsContainer, selectedTabs);
+      const collapsedHeight = this.#calculateHeightShift(tabsContainer, selectedTabs);
 
       if (selectedTabs.length) {
         for (let i = 0; i < groupItems.length; i++) {
@@ -1309,14 +1309,14 @@
       animations.push(
         ...this.#createAnimation(
           itemsToHide,
-          { opacity: 0, height: 0 },
+          { opacity: [1, 0], height: ['auto', 0] },
           { duration: 0.12, ease: 'easeInOut' }
         ),
         ...this.updateFolderIcon(group),
         ...this.#createAnimation(
           groupStart,
           {
-            marginTop: -(heightUntilSelected + 4 * (selectedTabs.length === 0 ? 1 : 0)),
+            marginTop: -(collapsedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)),
           },
           { duration: 0.12, ease: 'easeInOut' }
         )
@@ -1463,14 +1463,20 @@
         const groupItems = this.#normalizeGroupItems(folder.allItems);
         const tabsContainer = folder.querySelector('.tab-group-container');
 
-        this.styleCleanup(groupItems);
+        // Set correct margin-top after animation
+        const afterAnimate = () => {
+          groupStart.style.removeProperty('margin-top');
+          this.styleCleanup(groupItems);
+          // Trigger the recalculation so that zen returns
+          // the correct container size in the DOM
+          tabsContainer.offsetHeight;
+          tabsContainer.setAttribute('hidden', true);
+          const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
+          groupStart.style.marginTop = `${-(collapsedHeight + 4)}px`;
+        };
 
         const groupStart = folder.querySelector('.zen-tab-group-start');
-
-        // Trigger a reflow
-        tabsContainer.offsetHeight;
-
-        const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+        const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
 
         // Collect animations for this specific folder becoming inactive
         animations.push(
@@ -1478,9 +1484,10 @@
           ...this.#createAnimation(
             groupStart,
             {
-              marginTop: -(heightUntilSelected + 4),
+              marginTop: -(collapsedHeight + 4),
             },
-            { duration: 0.12, ease: 'easeInOut' }
+            { duration: 0.12, ease: 'easeInOut' },
+            afterAnimate
           )
         );
       }
@@ -1496,26 +1503,33 @@
       if ((!group?.isZenFolder || !isSplitView) && !tabToUnload.hasAttribute('folder-active'))
         return;
       const animations = [];
+      let lastTab = false;
 
       const activeGroups = group.activeGroups;
       for (const folder of activeGroups) {
         folder.activeTabs = folder.activeTabs.filter((tab) => tab !== tabToUnload);
 
         if (folder.activeTabs.length === 0) {
+          lastTab = true;
           animations.push(async () => {
             folder.removeAttribute('has-active');
             const groupItems = this.#normalizeGroupItems(folder.allItems);
             const tabsContainer = folder.querySelector('.tab-group-container');
 
-            this.styleCleanup(groupItems);
+            // Set correct margin-top after animation
+            const afterAnimate = () => {
+              groupStart.style.removeProperty('margin-top');
+              this.styleCleanup(groupItems);
+              // Trigger the recalculation so that zen returns
+              // the correct container size in the DOM
+              tabsContainer.offsetHeight;
+              tabsContainer.setAttribute('hidden', true);
+              const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
+              groupStart.style.marginTop = `${-(collapsedHeight + 4)}px`;
+            };
 
             const groupStart = folder.querySelector('.zen-tab-group-start');
-
-            // Trigger a reflow
-            tabsContainer.offsetHeight;
-            tabsContainer.setAttribute('hidden', true);
-
-            const heightUntilSelected = this.#calculateHeightShift(tabsContainer, []);
+            const collapsedHeight = this.#calculateHeightShift(tabsContainer, []);
 
             // Collect animations for this specific folder becoming inactive
             const folderAnimation = [
@@ -1523,9 +1537,10 @@
               ...this.#createAnimation(
                 groupStart,
                 {
-                  marginTop: -(heightUntilSelected + 4),
+                  marginTop: -(collapsedHeight + 4),
                 },
-                { duration: 0.12, ease: 'easeInOut' }
+                { duration: 0.12, ease: 'easeInOut' },
+                afterAnimate
               ),
             ];
             await Promise.all(folderAnimation);
@@ -1541,7 +1556,7 @@
       tabToUnload.style.removeProperty('--zen-folder-indent');
 
       let tabUnloadAnimations = [];
-      if (!ungroup) {
+      if (!ungroup && !lastTab) {
         tabUnloadAnimations = this.#createAnimation(
           tabToUnload,
           {
@@ -1701,7 +1716,7 @@
       const groupStart = group.querySelector('.zen-tab-group-start');
       const tabsContainer = group.querySelector('.tab-group-container');
       const heightContainer = expand ? 0 : this.#calculateHeightShift(tabsContainer, []);
-      tabsContainer.style.overflow = expand ? '' : 'clip';
+      tabsContainer.style.overflow = 'clip';
 
       this.#createAnimation(
         groupStart,

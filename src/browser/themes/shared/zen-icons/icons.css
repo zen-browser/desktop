@@ -133,7 +133,8 @@
 
 #sync-button,
 .urlbarView-row[source='tabs'] > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-favicon,
-#urlbar-engine-one-off-item-tabs {
+#urlbar-engine-one-off-item-tabs,
+#zen-open-background-tab-button {
   list-style-image: url('tab.svg') !important;
 }
 
@@ -177,8 +178,7 @@
   list-style-image: url('search-page.svg') !important;
 }
 
-#open-file-button,
-#zen-open-background-tab-button {
+#open-file-button {
   list-style-image: url('open.svg') !important;
 }
 
@@ -640,10 +640,13 @@
   list-style-image: url('autoplay-media-fill.svg') !important;
 }
 .zen-permission-shield-icon {
-  list-style-image: url('tracking-protection-fill.svg') !important;
+  list-style-image: url('tracking-protection-fill.svg');
 }
 .zen-permission-extension-icon {
-  list-style-image: url('extension-fill.svg') !important;
+  list-style-image: url('extension-fill.svg');
+}
+.zen-permission-cookie-icon {
+  list-style-image: url('cookies-fill.svg');
 }
 
 /* tab sound icons */
@@ -943,4 +946,8 @@
   & label {
     display: none;
   }
+}
+
+#zen-copy-url-button image {
+  list-style-image: url('link.svg');
 }

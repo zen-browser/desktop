@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Sumažinti
 zen-panel-ui-gradient-generator-custom-color = Pasirinktinė spalva
 zen-panel-ui-gradient-generator-saved-message = Gradientas sėkmingai įrašytas.
-zen-copy-current-url-confirmation = URL buvo nukopijuotas į iškarpinę.
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = Atšaukti
 zen-general-confirm = 
@@ -55,9 +55,11 @@ urlbar-search-mode-zen_actions = Veiksmai
 zen-site-data-settings = Nustatymai
 zen-generic-manage = Tvarkyti
 zen-generic-more = Daugiau
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Leidžiama
 zen-site-data-setting-block = Užblokuota
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Plėtinys
 zen-site-data-security-info-secure = 
@@ -70,6 +72,13 @@ zen-site-data-get-addons =
     .label = Įtraukti plėtinius
 zen-site-data-site-settings = 
     .label = Visi svetainės nustatymai
-zen-site-data-setting-site-protection = Svetainės apsauga
+zen-site-data-share = 
+    .label = Share This Page
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
+zen-site-data-setting-site-protection = Tracking Protection
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
 zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.

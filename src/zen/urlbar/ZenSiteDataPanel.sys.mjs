@@ -14,6 +14,7 @@ export class nsZenSiteDataPanel {
   #iconMap = {
     install: 'extension',
     'site-protection': 'shield',
+    '3rdPartyStorage': 'cookie',
   };
 
   constructor(window) {
@@ -42,6 +43,7 @@ export class nsZenSiteDataPanel {
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
 
+    this.#initCopyUrlButton();
     this.#initEventListeners();
     this.#maybeShowFeatureCallout();
   }
@@ -63,6 +65,35 @@ export class nsZenSiteDataPanel {
     }
 
     this.#initContextMenuEventListener();
+  }
+
+  #initCopyUrlButton() {
+    // This function is a bit out of place, but it's related enough to the panel
+    // that it's easier to do it here than in a separate module.
+    const container = this.document.getElementById('page-action-buttons');
+    const fragment = this.window.MozXULElement.parseXULToFragment(`
+      <hbox id="zen-copy-url-button"
+            class="urlbar-page-action"
+            role="button"
+            data-l10n-id="zen-urlbar-copy-url-button"
+            hidden="true">
+        <image class="urlbar-icon"/>
+      </hbox>
+    `);
+    container.appendChild(fragment);
+
+    const aElement = this.document.getElementById('zen-copy-url-button');
+    aElement.addEventListener('click', () => {
+      this.document.getElementById('cmd_zenCopyCurrentURL').doCommand();
+    });
+
+    this.window.gBrowser.addProgressListener({
+      onLocationChange: (aWebProgress, aRequest, aLocation) => {
+        if (aWebProgress.isTopLevel) {
+          aElement.hidden = !this.#canCopyUrl(aLocation);
+        }
+      },
+    });
   }
 
   #initContextMenuEventListener() {
@@ -117,15 +148,25 @@ export class nsZenSiteDataPanel {
     }
     {
       const button = this.document.getElementById('zen-site-data-header-share');
-      if (
-        this.window.gBrowser.currentURI.schemeIs('http') ||
-        this.window.gBrowser.currentURI.schemeIs('https')
-      ) {
+      if (this.#canCopyUrl(this.window.gBrowser.currentURI)) {
         button.removeAttribute('disabled');
       } else {
         button.setAttribute('disabled', 'true');
       }
     }
+  }
+
+  /*
+   * Determines whether the copy URL button should be hidden for the given URI.
+   * @param {nsIURI} uri - The URI to check.
+   * @returns {boolean} True if the button should be hidden, false otherwise.
+   */
+  #canCopyUrl(uri) {
+    if (!uri) {
+      return false;
+    }
+
+    return uri.scheme.startsWith('http');
   }
 
   #setSiteSecurityInfo() {
@@ -259,7 +300,11 @@ export class nsZenSiteDataPanel {
       });
     }
 
+    const separator = this.document.createXULElement('toolbarseparator');
     list.innerHTML = '';
+    list.appendChild(separator);
+    const settingElements = [];
+    const crossSiteCookieElements = [];
     for (let permission of permissions) {
       let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
 
@@ -274,12 +319,24 @@ export class nsZenSiteDataPanel {
         continue;
       }
 
-      let item = this.#createPermissionItem(id, key, permission);
+      let [item, isCrossSiteCookie] = this.#createPermissionItem(id, key, permission);
       if (item) {
-        list.appendChild(item);
+        if (isCrossSiteCookie) {
+          crossSiteCookieElements.push(item);
+        } else {
+          settingElements.push(item);
+        }
       }
     }
 
+    for (let elem of settingElements) {
+      separator.before(elem);
+    }
+    for (let elem of crossSiteCookieElements) {
+      separator.after(elem);
+    }
+
+    separator.hidden = !settingElements.length || !crossSiteCookieElements.length;
     section.hidden = list.childElementCount == 0;
   }
 
@@ -299,6 +356,7 @@ export class nsZenSiteDataPanel {
 
   #createPermissionItem(id, key, permission) {
     const { SitePermissions } = this.window;
+    const isCrossSiteCookie = id === '3rdPartyStorage';
 
     // Create a permission item for the site data panel.
     let container = this.document.createXULElement('hbox');
@@ -328,23 +386,32 @@ export class nsZenSiteDataPanel {
     let nameLabel = this.document.createXULElement('label');
     nameLabel.setAttribute('flex', '1');
     nameLabel.setAttribute('class', 'permission-popup-permission-label');
-    let label = SitePermissions.getPermissionLabel(permission.id);
-    if (label) {
-      nameLabel.textContent = label;
+    if (isCrossSiteCookie) {
+      this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-cross-site');
     } else {
-      this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-' + idNoSuffix);
+      let label = SitePermissions.getPermissionLabel(permission.id);
+      if (label) {
+        nameLabel.textContent = label;
+      } else {
+        this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-' + idNoSuffix);
+      }
     }
     labelContainer.appendChild(nameLabel);
 
     let stateLabel = this.document.createXULElement('label');
     stateLabel.setAttribute('class', 'zen-permission-popup-permission-state-label');
-    stateLabel.setAttribute('data-l10n-id', this.#getPermissionStateLabelId(permission));
+    if (isCrossSiteCookie) {
+      // The key should be the site for cross-site cookies.
+      stateLabel.textContent = key;
+    } else {
+      stateLabel.setAttribute('data-l10n-id', this.#getPermissionStateLabelId(permission));
+    }
     labelContainer.appendChild(stateLabel);
 
     container.appendChild(img);
     container.appendChild(labelContainer);
 
-    return container;
+    return [container, isCrossSiteCookie];
   }
 
   #openGetAddons() {
@@ -433,10 +500,13 @@ export class nsZenSiteDataPanel {
       SitePermissions.setForPrincipal(gBrowser.contentPrincipal, permission.id, newState);
     }
 
+    const isCrossSiteCookie = permission.id.startsWith('3rdPartyStorage');
     label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
-    label
-      .querySelector('.zen-permission-popup-permission-state-label')
-      .setAttribute('data-l10n-id', this.#getPermissionStateLabelId({ state: newState }));
+    if (!isCrossSiteCookie) {
+      label
+        .querySelector('.zen-permission-popup-permission-state-label')
+        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId({ state: newState }));
+    }
     label._permission.state = newState;
   }
 
@@ -514,10 +584,10 @@ export class nsZenSiteDataPanel {
           id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
           template: 'multistage',
           backdrop: 'transparent',
-          transitions: false,
+          transitions: true,
           screens: [
             {
-              id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT_HORIZONTAL',
+              id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
               anchors: [
                 {
                   selector: '#zen-site-data-icon-button',
@@ -537,7 +607,6 @@ export class nsZenSiteDataPanel {
               content: {
                 position: 'callout',
                 width: '355px',
-                padding: 16,
                 title: {
                   string_id: 'zen-site-data-panel-feature-callout-title',
                 },

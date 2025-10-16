@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Los geht's!
 zen-welcome-default-search-title = Ihre Standard-Suchmaschine
 zen-welcome-default-search-description = Wählen Sie Ihre Standard-Suchmaschine. Sie können diese später jederzeit ändern!
 zen-welcome-skip-button = Überspringen
-zen-welcome-next-action = Weiter
 zen-welcome-finished = Ihr Zen wurde erfolgreich eingerichtet!

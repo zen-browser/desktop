@@ -126,7 +126,12 @@
         darkModeChange
       );
 
-      XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', 0.5);
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        'darkModeBias',
+        'zen.theme.dark-mode-bias',
+        '0.5'
+      );
     }
 
     handleDarkModeChange() {
@@ -1212,7 +1217,7 @@
       let lightText = this.getToolbarColor(false); // e.g. [r, g, b, a]
 
       if (this.canBeTransparent) {
-        lightText[3] -= this.darkModeBias; // Reduce alpha for light text
+        lightText[3] -= parseFloat(this.darkModeBias); // Reduce alpha for light text
       }
 
       // Composite text color over background
@@ -1465,9 +1470,15 @@
           gradient
         );
         const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
+        const docElement = browser.document.documentElement;
+        if (isDefaultTheme) {
+          docElement.setAttribute('zen-default-theme', 'true');
+        } else {
+          docElement.removeAttribute('zen-default-theme');
+        }
         if (dominantColor) {
           const primaryColor = this.getAccentColorForUI(dominantColor);
-          browser.document.documentElement.style.setProperty('--zen-primary-color', primaryColor);
+          docElement.style.setProperty('--zen-primary-color', primaryColor);
 
           // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
           // so instead get the pref value directly.
@@ -1478,10 +1489,10 @@
           if (!isDefaultTheme && !this.isLegacyVersion) {
             // Check for the primary color
             isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
-            browser.document.documentElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
+            docElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
             browser.gZenThemePicker.panel.removeAttribute('invalidate-controls');
           } else {
-            browser.document.documentElement.removeAttribute('zen-should-be-dark-mode');
+            docElement.removeAttribute('zen-should-be-dark-mode');
             if (!this.isLegacyVersion) {
               browser.gZenThemePicker.panel.setAttribute('invalidate-controls', 'true');
             }
@@ -1520,6 +1531,13 @@
           'color'
         ];
         rgb = rawRgb.match(/\d+/g).map(Number);
+        // Match our theme a bit more, since we can't always expect the OS
+        // to give us a color matching our theme scheme
+        rgb = this.blendColors(
+          rgb,
+          this.getToolbarModifiedBaseRaw().slice(0, 3),
+          this.isDarkMode ? 80 : 50
+        );
       } else {
         rgb = this.hexToRgb(accentColor);
       }

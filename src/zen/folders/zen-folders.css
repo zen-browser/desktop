@@ -335,13 +335,13 @@ zen-folder {
   }
 
   &:last-child {
-    border-bottom-left-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
-    border-bottom-right-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
+    border-bottom-left-radius: max(calc(var(--panel-border-radius) - 2px), 4px);
+    border-bottom-right-radius: max(calc(var(--panel-border-radius) - 2px), 4px);
   }
 
   &:first-child {
-    border-top-left-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
-    border-top-right-radius: max(calc(var(--panel-border-radius) - 6px), 4px);
+    border-top-left-radius: max(calc(var(--panel-border-radius) - 2px), 4px);
+    border-top-right-radius: max(calc(var(--panel-border-radius) - 2px), 4px);
   }
 }
 

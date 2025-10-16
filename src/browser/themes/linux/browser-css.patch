@@ -1,8 +1,16 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index b0ec88f361399cea255ef8fb6c7f2b87779a8e04..c7ca01c2033f9a300caa1a1e3de9d5517d438796 100644
+index b0ec88f361399cea255ef8fb6c7f2b87779a8e04..5b0d0bd663c309be3ddd0e946e1681b66938ee4d 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
-@@ -43,7 +43,8 @@
+@@ -14,7 +14,6 @@
+     @media (-moz-gtk-theme-family) {
+       --tabs-navbar-separator-style: none;
+       @media (prefers-color-scheme: light) {
+-        --urlbar-box-bgcolor: #fafafa;
+       }
+     }
+   }
+@@ -43,7 +42,8 @@
        -moz-default-appearance: -moz-window-decorations;
        appearance: auto;
  
@@ -12,7 +20,7 @@ index b0ec88f361399cea255ef8fb6c7f2b87779a8e04..c7ca01c2033f9a300caa1a1e3de9d551
        dialog::backdrop {
          border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
          border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
-@@ -51,13 +52,11 @@
+@@ -51,13 +51,11 @@
  
        /* stylelint-disable-next-line media-query-no-invalid */
        @media -moz-pref("widget.gtk.rounded-bottom-corners.enabled") {

@@ -3,20 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-@keyframes zen-jello-animation {
-  0% {
-    transform: scale3d(0.8, 0.8, 0.8);
-  }
-
-  60% {
-    transform: scale3d(1.02, 1.02, 1.02);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-  }
-}
 
 @keyframes zen-jello-animation-macos {
   0% {
@@ -27,21 +13,6 @@
   100% {
     -moz-window-opacity: 1;
     -moz-window-transform: scale(1);
-  }
-}
-
-@keyframes zen-jello-animation-large {
-  0% {
-    transform: scale3d(0.8, 0.8, 0.8);
-  }
-
-  60% {
-    transform: scale3d(1.02, 1.02, 1.02);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
   }
 }
 

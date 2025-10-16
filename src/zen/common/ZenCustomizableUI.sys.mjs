@@ -32,12 +32,12 @@ export var ZenCustomizableUI = new (class {
 
   // We do not have access to the window object here
   init(window) {
-    this._addSidebarButtons(window);
-    this._hideToolbarButtons(window);
+    this.#addSidebarButtons(window);
+    this.#modifyToolbarButtons(window);
   }
 
-  _addSidebarButtons(window) {
-    const kDefaultSidebarWidth = '210px';
+  #addSidebarButtons(window) {
+    const kDefaultSidebarWidth = '215px';
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox
@@ -63,15 +63,16 @@ export var ZenCustomizableUI = new (class {
         default-overflowbutton="nav-bar-overflow-button"
         default-overflowtarget="widget-overflow-list"
         default-overflowpanel="widget-overflow"
-        addon-webext-overflowbutton="unified-extensions-button"
+        addon-webext-overflowbutton="zen-site-data-icon-button"
         addon-webext-overflowtarget="overflowed-extensions-list"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
-          <toolbarbutton id="zen-toggle-compact-mode"
-            class="toolbarbutton-1"
-            command="cmd_toggleCompactModeIgnoreHover"
-            data-l10n-id="zen-toggle-compact-mode-button"
-            removable="true" />
+          <toolbaritem id="zen-toggle-compact-mode" removable="true">
+            <toolbarbutton
+              class="toolbarbutton-1"
+              command="cmd_toggleCompactModeIgnoreHover"
+              data-l10n-id="zen-toggle-compact-mode-button" />
+          </toolbaritem>
           <html:div id="zen-sidebar-top-buttons-separator" skipintoolbarset="true" overflows="false"></html:div>
         </hbox>
       </toolbar>
@@ -105,11 +106,11 @@ export var ZenCustomizableUI = new (class {
       elem.setAttribute('removable', 'true');
     }
 
-    this._initCreateNewButton(window);
-    this._moveWindowButtons(window);
+    this.#initCreateNewButton(window);
+    this.#moveWindowButtons(window);
   }
 
-  _initCreateNewButton(window) {
+  #initCreateNewButton(window) {
     const button = window.document.getElementById('zen-create-new-button');
     button.addEventListener('command', (event) => {
       if (button.hasAttribute('open')) {
@@ -128,7 +129,7 @@ export var ZenCustomizableUI = new (class {
     });
   }
 
-  _moveWindowButtons(window) {
+  #moveWindowButtons(window) {
     const windowControls = window.document.getElementsByClassName('titlebar-buttonbox-container');
     const toolboxIcons = window.document.getElementById(
       'zen-sidebar-top-buttons-customization-target'
@@ -147,7 +148,7 @@ export var ZenCustomizableUI = new (class {
     }
   }
 
-  _hideToolbarButtons(window) {
+  #modifyToolbarButtons(window) {
     const wrapper = window.document.getElementById('zen-sidebar-foot-buttons');
     const elementsToHide = ['new-tab-button'];
     for (let id of elementsToHide) {
@@ -156,6 +157,7 @@ export var ZenCustomizableUI = new (class {
         wrapper.prepend(elem);
       }
     }
+    window.document.getElementById('stop-reload-button').removeAttribute('overflows');
   }
 
   _dispatchResizeEvent(window) {

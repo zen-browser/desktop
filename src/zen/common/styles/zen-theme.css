@@ -98,8 +98,8 @@
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
   --in-content-button-background-hover: color-mix(
     in srgb,
-    currentColor 3%,
-    transparent 97%
+    currentColor,
+    transparent 85%
   ) !important;
   --button-bgcolor: var(--in-content-button-background) !important;
   --button-hover-bgcolor: var(--in-content-button-background-hover) !important;
@@ -156,6 +156,11 @@
   --zen-toolbar-height: 38px;
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-outer-padding: 4px;
+  --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
+  &[zen-has-bookmarks='true'] {
+    /* Make sure `30px` matches the bookmarks toolbar height */
+    --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
+  }
 
   --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
 
@@ -187,6 +192,7 @@
 
   /* Transitions */
   --zen-tabbox-element-indent-transition: margin-inline-start 0.1s ease-in-out;
+  --zen-hidden-toolbar-transition: 0.15s ease-in-out;
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
@@ -238,7 +244,7 @@
     --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
   }
   @media (-moz-mac-tahoe-theme) {
-    --zen-native-content-radius: 14px;
+    --zen-native-content-radius: 15px;
   }
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

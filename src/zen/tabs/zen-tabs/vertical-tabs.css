@@ -30,11 +30,7 @@
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
-  & #zen-appcontent-navbar-wrapper,
-  & #zen-sidebar-top-buttons {
-    --zen-toolbar-height: 32px;
-    height: var(--zen-toolbar-height);
-  }
+  --zen-toolbar-height: 32px;
 
   @media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
@@ -42,6 +38,11 @@
       opacity: 0;
       pointer-events: none;
     }
+  }
+
+  & #zen-appcontent-navbar-wrapper,
+  & #zen-sidebar-top-buttons {
+    height: var(--zen-toolbar-height);
   }
 
   & #zen-sidebar-top-buttons-separator {
@@ -116,7 +117,7 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: var(--zen-toolbox-padding) 0;
   }
 
   & #PanelUI-menu-button {
@@ -1149,11 +1150,28 @@
       position: relative;
       --zen-essential-bg-margin: 2px;
 
-      &::before {
-        background: light-dark(
+      --zen-essential-tab-selected-bg: light-dark(
+        rgba(255, 255, 255, 0.85),
+        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 40%)
+      );
+      --zen-essential-tab-selected-bg-hover: light-dark(
+        rgba(255, 255, 255, 0.8),
+        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+      );
+
+      :root[zen-default-theme='true'] & {
+        --zen-essential-tab-selected-bg: light-dark(
           rgba(255, 255, 255, 0.85),
-          color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+          rgba(68, 64, 64, 0.85)
         );
+        --zen-essential-tab-selected-bg-hover: light-dark(
+          rgba(255, 255, 255, 0.8),
+          rgba(68, 64, 64, 0.75)
+        );
+      }
+
+      &::before {
+        background: var(--zen-essential-tab-selected-bg);
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;
@@ -1165,7 +1183,7 @@
     }
 
     &[visuallyselected]:hover .tab-background::before {
-      background: light-dark(rgba(255, 255, 255, 0.8), rgba(68, 64, 64, 0.75));
+      background: var(--zen-essential-tab-selected-bg-hover);
     }
   }
 }

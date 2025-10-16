@@ -35,6 +35,9 @@
 - name: zen.theme.styled-status-panel
   value: '@IS_TWILIGHT@'
 
+- name: zen.theme.hide-unified-extensions-button
+  value: false
+
 # ==== Mark: border radius ====
 
 # macOS border radius

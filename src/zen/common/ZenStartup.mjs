@@ -32,9 +32,6 @@
       toolbarBackground.removeAttribute('id');
       toolbarBackground.classList.add('zen-toolbar-background');
       document.getElementById('titlebar').prepend(toolbarBackground);
-      document
-        .getElementById('zen-appcontent-navbar-container')
-        .prepend(toolbarBackground.cloneNode(true));
     }
 
     #zenInitBrowserLayout() {

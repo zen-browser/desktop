@@ -5,17 +5,8 @@
 # GTK-specific preferences
 - name: widget.gtk.rounded-bottom-corners.enabled
   value: true
-  condition: 'defined(MOZ_WIDGET_GTK) && defined(UNIX_BUT_NOT_MAC)'
+  condition: 'defined(MOZ_WIDGET_GTK)'
 
 - name: zen.widget.linux.transparency
   value: false
-  condition: 'defined(MOZ_WIDGET_GTK)'
-
-# VAAPI/FFmpeg preferences for Linux
-- name: media.ffmpeg.vaapi.enabled
-  value: true
-  condition: 'defined(MOZ_WIDGET_GTK)'
-
-- name: media.ffmpeg.encoder.enabled
-  value: true
   condition: 'defined(MOZ_WIDGET_GTK)'

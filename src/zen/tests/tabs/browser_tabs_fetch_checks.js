@@ -23,7 +23,7 @@ add_task(async function test_Aria_Focusable_Tabs() {
   }
   Assert.equal(
     gBrowser.tabContainer.ariaFocusableItems.length,
-    2,
-    'There should be 2 focusable tabs (1 empty tab + 1 about:blank tab) at startup'
+    1,
+    'There should be 1 focusable tab (1 about:blank tab) at startup'
   );
 });

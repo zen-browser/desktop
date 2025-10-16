@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..77955d888e70409c83b217e676e1575417018831 100644
+index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2b69f0cf7 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -76,6 +76,13 @@ ChromeUtils.defineLazyGetter(lazy, "logger", () =>
@@ -157,14 +157,14 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..77955d888e70409c83b217e676e15754
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -3407,6 +3475,7 @@ export class UrlbarInput {
-       );
-     }
- 
+@@ -3501,6 +3569,7 @@ export class UrlbarInput {
+     resultDetails = null,
+     browser = this.window.gBrowser.selectedBrowser
+   ) {
 +    openUILinkWhere = this.window.gZenUIManager.getOpenUILinkWhere(url, browser, openUILinkWhere);
-     // No point in setting these because we'll handleRevert() a few rows below.
-     if (openUILinkWhere == "current") {
-       // Make sure URL is formatted properly (don't show punycode).
+     if (this.isAddressbar) {
+       this.#prepareAddressbarLoad(
+         url,
 @@ -3608,6 +3677,10 @@ export class UrlbarInput {
        }
        reuseEmpty = true;

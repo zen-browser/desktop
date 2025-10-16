@@ -22,7 +22,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizza
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-panel-ui-gradient-generator-saved-message = Gradiente salvato con successo!
-zen-copy-current-url-confirmation = L'URL è stato copiato negli appunti.
+zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
@@ -53,9 +53,11 @@ urlbar-search-mode-zen_actions = Azioni
 zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
 zen-generic-more = Altro
+zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Consentito
 zen-site-data-setting-block = Bloccato
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Estensione
 zen-site-data-security-info-secure = 
@@ -68,6 +70,13 @@ zen-site-data-get-addons =
     .label = Aggiungi estensioni
 zen-site-data-site-settings = 
     .label = Tutte le impostazioni del sito
-zen-site-data-setting-site-protection = Site Protection
+zen-site-data-share = 
+    .label = Condividi questa pagina
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copia URL
+zen-site-data-setting-site-protection = Tracking Protection
+
+# Section: Feature callouts
+
 zen-site-data-panel-feature-callout-title = Una nuova casa per componenti aggiuntivi, permessi, e altro ancora
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-subtitle = Clicca l'icona per gestire le impostazioni del sito, visualizzare informazioni di sicurezza, accedere alle estensioni, ed eseguire azioni comuni.

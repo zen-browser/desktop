@@ -165,7 +165,7 @@
   max-width: 100%;
   width: 100%;
   font-size: small;
-  padding-right: 10px;
+  padding-right: 12px;
   -moz-window-dragging: no-drag;
 
   &::before {

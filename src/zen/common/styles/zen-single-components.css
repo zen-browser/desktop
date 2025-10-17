@@ -466,6 +466,12 @@ body > #confetti {
   }
 }
 
+@media (-moz-pref('zen.theme.hide-unified-extensions-button')) {
+  #unified-extensions-button {
+    display: none !important;
+  }
+}
+
 #unified-extensions-button:not([showing]) {
   display: none !important;
 }
@@ -538,6 +544,10 @@ body > #confetti {
       transform: scale(0.97);
     }
   }
+}
+
+#zen-site-data-settings-list toolbarseparator {
+  margin: 6px 0;
 }
 
 /* Overflow panel */

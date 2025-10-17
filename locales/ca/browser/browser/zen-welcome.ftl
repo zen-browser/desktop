@@ -5,7 +5,7 @@
 zen-welcome-title-line1 = Us donem la benvingut
 zen-welcome-title-line2 = a un internet més tranquil
 zen-welcome-import-title = Un nou començament, els mateixos marcadors
-zen-welcome-import-description-1 = Els vostres marcadors, historial i contrasenyes són com un rastre de molles de pa a través d'Internet: no les deixis enrere!
+zen-welcome-import-description-1 = Els vostres marcadors, historial i contrasenyes són com un rastre de molles de pa a través d'Internet: no les deixis enrere
 zen-welcome-import-description-2 = Porteu-los fàcilment des d'un altre navegador i repreneu exactament on ho vau deixar.
 zen-welcome-import-button = Importa ara
 zen-welcome-set-default-browser = Estableix el { -brand-short-name } com a navegador per defecte
@@ -21,6 +21,6 @@ zen-welcome-start-browsing-title =
 zen-welcome-start-browsing-description-1 = Ja esteu llestos i preparats per començar. Feu clic al botó següent per començar a navegar amb el { -brand-short-name }.
 zen-welcome-start-browsing = Som-hi!
 zen-welcome-default-search-title = El vostre motor de cerca per defecte
-zen-welcome-default-search-description = Trieu el vostre motor de cerca per defecte. Sempre el podeu canviar més tard!
+zen-welcome-default-search-description = Trieu el vostre motor de cerca per defecte. Sempre el podeu canviar més tard
 zen-welcome-skip-button = Omet
-zen-welcome-finished = El Zen s'ha configurat correctament!
+zen-welcome-finished = El Zen s'ha configurat correctament

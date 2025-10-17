@@ -2194,6 +2194,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       return true; // Always show glance tabs
     }
 
+    // See https://github.com/zen-browser/desktop/issues/10666, we should never
+    // show closing tabs and consider them as not part of any workspace. This will
+    // invalidate the `lastSelectedTab[previousWorkspaceId]` logic in `_handleTabSelection`
+    if (tab.closing) {
+      return false; // Never show closing tabs
+    }
+
     // Handle essential tabs
     if (isEssential) {
       if (!this.containerSpecificEssentials) {
@@ -2487,9 +2494,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       pinnedContainer.children.length === 1 ||
       Array.from(arrowScrollbox.children).filter(
         (child) =>
-          !child.hasAttribute('hidden') &&
-          !child.hasAttribute('bursting') &&
-          !child.hasAttribute('zen-empty-tab')
+          !child.hasAttribute('hidden') && !child.closing && !child.hasAttribute('zen-empty-tab')
       ).length <= 1;
 
     const closeAllTabsFragment = pinnedContainer.querySelector('.zen-close-all-tabs-target');

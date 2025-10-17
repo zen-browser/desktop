@@ -36,7 +36,7 @@
       * - Bookmarks toolbar is visible OR
       * - The container is explicitly marked to hide controls (e.g., on Linux with reversed controls)
       */
-    &:has(#PersonalToolbar:not([collapsed])) {
+    :root[zen-has-bookmarks] & {
 %include zen-tabs/vertical-tabs-topbar.inc.css
     }
     &[should-hide='true'] {
@@ -107,5 +107,12 @@
     }
     /* Include common fixes for this top-button scenario */
 %include zen-tabs/vertical-tabs-topbuttons-fix.css
+  }
+
+  &:not([zen-right-side='true']):not([zen-sidebar-expanded='true']):not([zen-window-buttons-reversed='true']),
+  &[zen-right-side='true']:not([zen-sidebar-expanded='true'])[zen-window-buttons-reversed='true'] {
+    & #titlebar {
+      padding-top: var(--zen-toolbar-height);
+    }
   }
 }

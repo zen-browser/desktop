@@ -22,7 +22,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
 zen-panel-ui-gradient-generator-saved-message = 渐变保存成功！
-zen-copy-current-url-confirmation = 网址已复制到剪贴板。
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -57,6 +57,7 @@ zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Extension
 zen-site-data-security-info-secure = 
@@ -69,9 +70,11 @@ zen-site-data-get-addons =
     .label = 添加扩展
 zen-site-data-site-settings = 
     .label = 所有站点设置
+zen-site-data-share = 
+    .label = Share This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Site Protection
+zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts
 

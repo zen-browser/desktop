@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index d9a059f608779fea7cd8c595a432f6fe95183e0c..7f6493ced4abb1f6ba54242b8ee213a74f01aea5 100644
+index d9a059f608779fea7cd8c595a432f6fe95183e0c..97fbe5f7ac2c5bf18526528a8f50dcf4466fcafd 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -177,17 +177,20 @@ index d9a059f608779fea7cd8c595a432f6fe95183e0c..7f6493ced4abb1f6ba54242b8ee213a7
      return { isOverflowing, targetContentWidth, totalAvailWidth };
    }
  
-@@ -7970,7 +7971,8 @@ class OverflowableToolbar {
+@@ -7970,7 +7971,11 @@ class OverflowableToolbar {
              return;
            }
          }
 -        if (totalAvailWidth <= minSize) {
-+        let isLastItem = win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'zen-sidebar-top-buttons-customization-target' && this.#overflowedInfo.size == 1;
++        let isLastItem = win.gZenVerticalTabsManager._hasSetSingleToolbar && 
++          this.#target.id == 'zen-sidebar-top-buttons-customization-target' && 
++          this.#overflowedInfo.size == 1 && 
++          !child.classList.contains('unified-extensions-item');
 +        if (totalAvailWidth <= minSize && !isLastItem) {
            lazy.log.debug(
              `Need ${minSize} but width is ${totalAvailWidth} so bailing`
            );
-@@ -8003,7 +8005,7 @@ class OverflowableToolbar {
+@@ -8003,7 +8008,7 @@ class OverflowableToolbar {
          }
        }
        if (!inserted) {
@@ -196,7 +199,7 @@ index d9a059f608779fea7cd8c595a432f6fe95183e0c..7f6493ced4abb1f6ba54242b8ee213a7
        }
        child.removeAttribute("cui-anchorid");
        child.removeAttribute("overflowedItem");
-@@ -8348,7 +8350,7 @@ class OverflowableToolbar {
+@@ -8348,7 +8353,7 @@ class OverflowableToolbar {
          break;
        }
        case "mousedown": {

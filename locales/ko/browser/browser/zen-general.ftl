@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
 zen-panel-ui-gradient-generator-saved-message = 성공적으로 그라데이션을 저장했습니다!
-zen-copy-current-url-confirmation = URL이 복사되었습니다.
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
@@ -59,6 +59,7 @@ zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
+zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = 확장
 zen-site-data-security-info-secure = 
@@ -71,9 +72,11 @@ zen-site-data-get-addons =
     .label = 확장 프로그램 추가
 zen-site-data-site-settings = 
     .label = 모든 사이트 설정
+zen-site-data-share = 
+    .label = Share This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL 복사
-zen-site-data-setting-site-protection = 사이트 보호
+zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts
 

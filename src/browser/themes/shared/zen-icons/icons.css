@@ -640,10 +640,13 @@
   list-style-image: url('autoplay-media-fill.svg') !important;
 }
 .zen-permission-shield-icon {
-  list-style-image: url('tracking-protection-fill.svg') !important;
+  list-style-image: url('tracking-protection-fill.svg');
 }
 .zen-permission-extension-icon {
-  list-style-image: url('extension-fill.svg') !important;
+  list-style-image: url('extension-fill.svg');
+}
+.zen-permission-cookie-icon {
+  list-style-image: url('cookies-fill.svg');
 }
 
 /* tab sound icons */

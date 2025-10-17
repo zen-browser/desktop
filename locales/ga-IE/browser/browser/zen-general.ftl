@@ -59,7 +59,7 @@ zen-generic-next = Ar Aghaidh
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-cross-site = Fianán Tras-Láithreáin
 zen-site-data-security-info-extension = 
     .label = Síneadh
 zen-site-data-security-info-secure = 
@@ -76,7 +76,7 @@ zen-site-data-share =
     .label = Comhroinn an Leathanach seo
 zen-urlbar-copy-url-button = 
     .tooltiptext = Cóipeáil URL
-zen-site-data-setting-site-protection = Tracking Protection
+zen-site-data-setting-site-protection = Cosaint Rianaithe
 
 # Section: Feature callouts
 

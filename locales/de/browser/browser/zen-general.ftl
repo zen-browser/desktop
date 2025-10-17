@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimieren
 zen-panel-ui-gradient-generator-custom-color = Benutzerdefinierte Farbe
 zen-panel-ui-gradient-generator-saved-message = Farbverlauf erfolgreich gespeichert!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Aktuelle URL kopiert!
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
@@ -39,7 +39,7 @@ zen-library-sidebar-mods =
     .label = Mods
 zen-toggle-compact-mode-button = 
     .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .tooltiptext = Compact Mode umschalten
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -52,33 +52,33 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Symbole
 urlbar-search-mode-zen_actions = Aktionen
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+zen-site-data-settings = Einstellungen
+zen-generic-manage = Verwalten
+zen-generic-more = Mehr
+zen-generic-next = Weiter
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Erlaubt
+zen-site-data-setting-block = Blockiert
+zen-site-data-setting-cross-site = Cross-Site-Cookie
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Erweiterung
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Sicher
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Nicht sicher
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Erweiterungen verwalten
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Erweiterungen hinzufügen
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Alle Website-Einstellungen
 zen-site-data-share = 
-    .label = Share This Page
+    .label = Diese Seite teilen
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = URL kopieren
+zen-site-data-setting-site-protection = Tracking-Schutz
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Eine neue Heimat für Add-ons, Berechtigungen und mehr
+zen-site-data-panel-feature-callout-subtitle = Klicken Sie auf das Symbol, um Website-Einstellungen zu verwalten, Sicherheitsinformationen anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.

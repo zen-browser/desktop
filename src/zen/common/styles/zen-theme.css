@@ -12,13 +12,12 @@
 :root {
   /* Default values */
   --zen-border-radius: 7px;
-  --zen-primary-color: #ffb787;
+  --zen-primary-color: AccentColor;
 
   --zen-background-opacity: 1;
 
   /* Branding */
   --zen-branding-dark: #1d1d1d;
-  --zen-branding-coral: #f76f53;
   --zen-branding-paper: #ebebeb;
 
   --zen-branding-bg: light-dark(var(--zen-branding-paper), var(--zen-branding-dark));

@@ -134,9 +134,10 @@
   #zen-copy-url-button {
     opacity: 0;
     transition:
-      opacity 0.2s,
-      visibility 0.2s;
+      opacity 0.15s,
+      visibility 0.15s;
     visibility: collapse;
+    height: 100%; /* To still be able to open popups */
 
     #navigator-toolbox:hover &,
     &[open],

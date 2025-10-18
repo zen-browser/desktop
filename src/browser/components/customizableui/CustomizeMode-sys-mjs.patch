@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index fd3c54a1d80f5800ffd2dcaaf594eed4bd2d300c..259af2688e5a8bca88017e5da0bfdb488ab59f59 100644
+index fd3c54a1d80f5800ffd2dcaaf594eed4bd2d300c..3178bd28affd8bd2e18c347fde6c3ec00068710c 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
 @@ -503,7 +503,7 @@ export class CustomizeMode {
@@ -28,24 +28,3 @@ index fd3c54a1d80f5800ffd2dcaaf594eed4bd2d300c..259af2688e5a8bca88017e5da0bfdb48
        aNode.localName == "toolbarseparator" ||
        aNode.localName == "toolbarspring" ||
        aNode.localName == "toolbarspacer"
-@@ -3128,6 +3129,20 @@ export class CustomizeMode {
-         if (makeSpaceImmediately) {
-           aDraggedOverItem.setAttribute("notransition", "true");
-         }
-+        if (aItem.parentElement.id === "TabsToolbar-customization-target")  {
-+          // We change the border values so we can properly implement the native vertical tabs
-+          // drag and drop behavior.
-+          aItem.style.borderColor = "transparent";
-+          if (aValue == "before") {
-+            prop = "borderTopWidth";
-+            otherProp = "borderBottomWidth";
-+            aItem.style.borderTopStyle = "solid";
-+          } else {
-+            prop = "borderBottomWidth";
-+            otherProp = "borderTopWidth";
-+            aItem.style.borderBottomStyle = "solid";
-+          }
-+        }
-         aDraggedOverItem.style[prop] = borderWidth + "px";
-         aDraggedOverItem.style.removeProperty(otherProp);
-         if (makeSpaceImmediately) {

@@ -1,8 +1,8 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 0baa038232d7e0fd9942f392c48acf7ea5ba50ed..093e1c29c3538d18eb2162b4e4b23ba40c695739 100644
+index 89b0bb3b92c15b89499ffc6cf35dcee7ebb89e48..327afaea3821cdca8d7f58bfaa65c7ce3dbfa7a3 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
-@@ -351,6 +351,7 @@ class TabTracker extends TabTrackerBase {
+@@ -354,6 +354,7 @@ class TabTracker extends TabTrackerBase {
    }
  
    getId(nativeTab) {
@@ -10,7 +10,7 @@ index 0baa038232d7e0fd9942f392c48acf7ea5ba50ed..093e1c29c3538d18eb2162b4e4b23ba4
      let id = this._tabs.get(nativeTab);
      if (id) {
        return id;
-@@ -385,6 +386,7 @@ class TabTracker extends TabTrackerBase {
+@@ -388,6 +389,7 @@ class TabTracker extends TabTrackerBase {
      if (nativeTab.ownerGlobal.closed) {
        throw new Error("Cannot attach ID to a tab in a closed window.");
      }
@@ -18,7 +18,7 @@ index 0baa038232d7e0fd9942f392c48acf7ea5ba50ed..093e1c29c3538d18eb2162b4e4b23ba4
  
      this._tabs.set(nativeTab, id);
      if (nativeTab.linkedBrowser) {
-@@ -1268,6 +1270,10 @@ class TabManager extends TabManagerBase {
+@@ -1271,6 +1273,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {

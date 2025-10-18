@@ -1,0 +1,13 @@
+diff --git a/browser/components/tabbrowser/TabsList.sys.mjs b/browser/components/tabbrowser/TabsList.sys.mjs
+index 20a543dede6bf4428c8af19c5d0589788ddd8eaa..27a378e70f5b280b720c95ba8dac2cc4e88985be 100644
+--- a/browser/components/tabbrowser/TabsList.sys.mjs
++++ b/browser/components/tabbrowser/TabsList.sys.mjs
+@@ -87,7 +87,7 @@ class TabsListBase {
+     /** @type {function(MozTabbrowserTab):boolean} */
+     this.filterFn = onlyHiddenTabs
+       ? tab => filterFn(tab) && tab.hidden
+-      : filterFn;
++      : tab =>  !tab.hasAttribute("zen-empty-tab") && filterFn(tab);
+     /** @type {Element} */
+     this.containerNode = containerNode;
+     /** @type {Element|null} */

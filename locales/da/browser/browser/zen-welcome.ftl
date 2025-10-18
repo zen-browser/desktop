@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Kom i gang!
 zen-welcome-default-search-title = Din standardsøgemaskine
 zen-welcome-default-search-description = Vælg din standardsøgemaskine. Du kan altid ændre det senere!
 zen-welcome-skip-button = Spring over
-zen-welcome-next-action = Næste
 zen-welcome-finished = Din Zen er blevet opsat korrekt!

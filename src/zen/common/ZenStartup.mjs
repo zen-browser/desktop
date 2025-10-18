@@ -32,9 +32,6 @@
       toolbarBackground.removeAttribute('id');
       toolbarBackground.classList.add('zen-toolbar-background');
       document.getElementById('titlebar').prepend(toolbarBackground);
-      document
-        .getElementById('zen-appcontent-navbar-container')
-        .prepend(toolbarBackground.cloneNode(true));
     }
 
     #zenInitBrowserLayout() {
@@ -61,11 +58,6 @@
         setTimeout(() => {
           gZenUIManager.init();
           this.#checkForWelcomePage();
-
-          document.l10n.setAttributes(
-            document.getElementById('tabs-newtab-button'),
-            'tabs-toolbar-new-tab'
-          );
         }, 0);
       } catch (e) {
         console.error('ZenThemeModifier: Error initializing browser layout', e);

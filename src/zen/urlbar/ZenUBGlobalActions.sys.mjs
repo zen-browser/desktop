@@ -38,14 +38,14 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/settings.svg',
   },
   {
-    label: 'Open New Window',
-    command: 'cmd_newNavigator',
-    icon: 'chrome://browser/skin/zen-icons/window.svg',
-  },
-  {
     label: 'Open Private Window',
     command: 'Tools:PrivateBrowsing',
     icon: 'chrome://browser/skin/zen-icons/private-window.svg',
+  },
+  {
+    label: 'Open New Window',
+    command: 'cmd_newNavigator',
+    icon: 'chrome://browser/skin/zen-icons/window.svg',
   },
   {
     label: 'Pin Tab',

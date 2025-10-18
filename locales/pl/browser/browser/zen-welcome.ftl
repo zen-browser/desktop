@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Wskakuj!
 zen-welcome-default-search-title = Twój domyślny silnik wyszukiwania
 zen-welcome-default-search-description = Wybierz swój domyślny silnik wyszukiwania. Możesz to zmienić w przyszłości!
 zen-welcome-skip-button = Pomiń
-zen-welcome-next-action = Dalej
 zen-welcome-finished = Twoja przeglądarka Zen została prawidłowo przygotowana!

@@ -8,6 +8,7 @@ support-files = [
 ]
 
 ["browser_tabs_empty_checks.js"]
+["browser_tabs_fetch_checks.js"]
 ["browser_drag_drop_vertical.js"]
 tags = [
   "drag-drop",

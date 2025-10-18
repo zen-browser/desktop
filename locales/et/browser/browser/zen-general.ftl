@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Lähtesta püsikaart
     .accesskey = p
 tab-context-zen-add-essential = 
-    .label = Märgi oluliseks ({ $num } / 12 täidetud)
+    .label = Märgi oluliseks ({ $num } / { $max } täidetud)
     .accesskey = o
 tab-context-zen-remove-essential = 
     .label = Eemalda olulistest
@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimeeri
 zen-panel-ui-gradient-generator-custom-color = Kohandatud värv
 zen-panel-ui-gradient-generator-saved-message = Värviüleminek on edukalt salvestatud!
-zen-copy-current-url-confirmation = URL kopeeriti lõikelauale.
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = Tühista
 zen-general-confirm = 
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Tööruumid
 zen-library-sidebar-mods = 
     .label = Mods-id
+zen-toggle-compact-mode-button = 
+    .label = Compact Mode
+    .tooltiptext = Lülita kompaktne režiim sisse/välja
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,34 @@ zen-icons-picker-emoji =
     .label = Emojid
 zen-icons-picker-svg = 
     .label = Ikoonid
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Tegevused
+zen-site-data-settings = Sätted
+zen-generic-manage = Halda
+zen-generic-more = Rohkem
+zen-generic-next = Next
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Lubatud
+zen-site-data-setting-block = Keelatud
+zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-security-info-extension = 
+    .label = Laiendus
+zen-site-data-security-info-secure = 
+    .label = Turvaline
+zen-site-data-security-info-not-secure = 
+    .label = Ebaturvaline
+zen-site-data-manage-addons = 
+    .label = Halda laiendusi
+zen-site-data-get-addons = 
+    .label = Lisa laiendusi
+zen-site-data-site-settings = 
+    .label = Kõik saidi sätted
+zen-site-data-share = 
+    .label = Share This Page
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
+zen-site-data-setting-site-protection = Tracking Protection
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
+zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.

@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Mode Ringkas
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Aktifkan Mode Ringkas
     .accesskey = D

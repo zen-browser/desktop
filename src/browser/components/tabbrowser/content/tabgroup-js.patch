@@ -1,24 +1,23 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e8532174e2a7cf 100644
+index 1b4f6bf4ed6556492f84476d33e9103fbb1c74e9..77bd8738db6f2e65c2bfcae8347b424098ba3e7b 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
-@@ -13,10 +13,12 @@
- 
+@@ -14,11 +14,11 @@
    class MozTabbrowserTabGroup extends MozXULElement {
      static markup = `
--      <vbox class="tab-group-label-container" pack="center">
-+      <hbox class="tab-group-label-container" pack="center">
-         <label class="tab-group-label" role="button"/>
--      </vbox>
+       <vbox class="tab-group-label-container" pack="center">
+-        <vbox class="tab-group-label-hover-highlight" pack="center">
+           <label class="tab-group-label" role="button" />
+-        </vbox>
+       </vbox>
 -      <html:slot/>
-+      </hbox>
 +      <html:div class="tab-group-container">
 +        <html:div class="zen-tab-group-start"/>
 +      </html:div>
        <vbox class="tab-group-overflow-count-container" pack="center">
          <label class="tab-group-overflow-count" role="button" />
        </vbox>
-@@ -57,20 +59,36 @@
+@@ -69,20 +69,36 @@
      }
  
      connectedCallback() {
@@ -59,10 +58,10 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
  
        this._initialized = true;
        this.saveOnWindowClose = true;
-@@ -99,11 +117,14 @@
+@@ -114,11 +130,14 @@
  
-       this.#labelElement.addEventListener("mouseover", this);
-       this.#labelElement.addEventListener("mouseout", this);
+       this.#labelContainerElement.addEventListener("mouseover", this);
+       this.#labelContainerElement.addEventListener("mouseout", this);
 -      this.#labelElement.addEventListener("contextmenu", e => {
 -        e.preventDefault();
 -        gBrowser.tabGroupMenu.openEditModal(this);
@@ -79,7 +78,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
  
        this.#updateLabelAriaAttributes();
        this.#updateCollapsedAriaAttributes();
-@@ -129,6 +150,8 @@
+@@ -144,6 +163,8 @@
        // mounts after getting created by `Tabbrowser.adoptTabGroup`.
        this.#wasCreatedByAdoption = false;
      }
@@ -88,7 +87,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
  
      resetDefaultGroupName = () => {
        this.#defaultGroupName = "";
-@@ -213,7 +236,10 @@
+@@ -228,7 +249,10 @@
            }
          });
        }
@@ -100,7 +99,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
      }
  
      get color() {
-@@ -307,6 +333,9 @@
+@@ -322,6 +346,9 @@
      }
  
      set collapsed(val) {
@@ -110,7 +109,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
        if (!!val == this.collapsed) {
          return;
        }
-@@ -364,7 +393,6 @@
+@@ -399,7 +426,6 @@
            tabGroupName,
          })
          .then(result => {
@@ -118,7 +117,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
          });
      }
  
-@@ -383,7 +411,57 @@
+@@ -418,7 +444,57 @@
       * @returns {MozTabbrowserTab[]}
       */
      get tabs() {
@@ -177,7 +176,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
      }
  
      /**
-@@ -442,7 +520,6 @@
+@@ -498,7 +574,6 @@
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {
          if (tab.pinned) {
@@ -185,7 +184,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
          }
          let tabToMove =
            this.ownerGlobal === tab.ownerGlobal
-@@ -505,7 +582,7 @@
+@@ -561,7 +636,7 @@
       */
      on_click(event) {
        let isToggleElement =
@@ -194,7 +193,7 @@ index c0cb11590d6dfbcf6fa49ef5e10c6d3877191d1f..cd98bd2401e4618b003c184108e85321
          event.target === this.#overflowCountLabel;
        if (isToggleElement && event.button === 0) {
          event.preventDefault();
-@@ -570,5 +647,6 @@
+@@ -630,5 +705,6 @@
      }
    }
  

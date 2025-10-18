@@ -21,7 +21,7 @@
     "update-ff:rc": "python3 scripts/update_ff.py --rc",
     "update-ff:l10n": "python3 scripts/update_ff.py --just-l10n",
     "pretty": "prettier . --write --cache && autopep8 -r --in-place scripts/ src/",
-    "lint": "npx eslint src/ && prettier . --check && autopep8 --diff scripts/ src/",
+    "lint": "npx eslint src/ && prettier . --check --cache",
     "lint:fix": "npm run pretty && npx eslint src/ --fix",
     "prepare": "husky",
     "reset-ff": "surfer reset",
@@ -31,7 +31,8 @@
     "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
     "lc": "surfer license-check",
     "lc:fix": "surfer license-check --fix",
-    "use-moz-src": "cd engine && ./mach use-moz-src"
+    "use-moz-src": "cd engine && ./mach use-moz-src",
+    "ci": "surfer ci --brand release --display-version"
   },
   "repository": {
     "type": "git",
@@ -48,7 +49,7 @@
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.11.21"
+    "@zen-browser/surfer": "^1.11.22"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
@@ -60,7 +61,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-json": "^4.0.1",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "formal-git": "^1.1.5",
+    "formal-git": "^1.2.9",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",

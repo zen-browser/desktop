@@ -43,7 +43,6 @@ add_task(async function test_Welcome_Steps() {
   );
 
   for (const child of welcomeContent.children) {
-    console.log(child);
     ok(
       child.querySelector('img').getAttribute('src').includes('blob:'),
       'Welcome page content should have an image with a base64 data URL'
@@ -66,7 +65,7 @@ add_task(async function test_Welcome_Steps() {
     }, 100); // Wait for the transition to complete
   });
 
-  await goNextWelcomePage('zen-welcome-next-action');
+  await goNextWelcomePage('zen-generic-next');
   ok(true, 'Welcome Search Step Test Finished');
 
   await new Promise((resolve) => {
@@ -103,7 +102,7 @@ add_task(async function test_Welcome_Steps() {
         ok(url.startsWith('https://'), `The URL "${url}" should start with "https://"`);
       }
 
-      await goNextWelcomePage('zen-welcome-next-action');
+      await goNextWelcomePage('zen-generic-next');
 
       await new Promise((resolve) => {
         setTimeout(async () => {
@@ -120,7 +119,7 @@ add_task(async function test_Welcome_Steps() {
     }, 1000); // Wait for the transition to complete
   });
 
-  await goNextWelcomePage('zen-welcome-next-action');
+  await goNextWelcomePage('zen-generic-next');
   ok(true, 'Welcome Theme Step Test Finished');
 
   await goNextWelcomePage('zen-welcome-start-browsing');

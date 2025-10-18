@@ -15,7 +15,7 @@ const DYNAMIC_TYPE_NAME = 'zen-actions';
 const MAX_RECENT_ACTIONS = 5;
 
 const MINIMUM_QUERY_SCORE = 92;
-const MINIMUM_PREFIXED_QUERY_SCORE = 50;
+const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: 'resource:///modules/UrlbarResult.sys.mjs',
@@ -242,15 +242,15 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     }
 
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
-    const finalResults = [];
+    let finalResults = [];
     for (const action of actionsResults) {
       const [payload, payloadHighlights] = lazy.UrlbarResult.payloadAndSimpleHighlights([], {
         suggestion: action.label,
         title: action.label,
-        query: queryContext.searchString,
         zenCommand: action.command,
         dynamicType: DYNAMIC_TYPE_NAME,
         zenAction: true,
+        query: isPrefixed ? action.label.trimStart() : queryContext.searchString,
         icon: action.icon,
         shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
           action.command
@@ -265,7 +265,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         payload,
         payloadHighlights
       );
-      if (zenUrlbarResultsLearner.shouldPrioritize(action.commandId)) {
+      if (zenUrlbarResultsLearner.shouldPrioritize(action.commandId) && !isPrefixed) {
         result.heuristic = true;
       } else {
         result.suggestedIndex = zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId);
@@ -278,8 +278,14 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       }
       finalResults.push(result);
     }
+    let i = 0;
     zenUrlbarResultsLearner.sortCommandsByPriority(finalResults).forEach((result) => {
+      if (isPrefixed && i === 0 && query.length > 1) {
+        result.heuristic = true;
+        delete result.suggestedIndex;
+      }
       addCallback(this, result);
+      i++;
     });
   }
 

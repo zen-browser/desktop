@@ -7,7 +7,7 @@ import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
 const lazy = {};
 
 const DEFAULT_DB_DATA = '{}';
-const DEPRIORITIZE_MAX = -4;
+const DEPRIORITIZE_MAX = -5;
 const PRIORITIZE_MAX = 5;
 
 function addDataToLazy(data) {

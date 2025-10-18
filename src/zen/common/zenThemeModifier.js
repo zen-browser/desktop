@@ -92,16 +92,20 @@ var ZenThemeModifier = {
   },
 
   updateElementSeparation() {
+    const kMinElementSeparation = 0.1; // in px
     let separation = this.elementSeparation;
     if (
       window.fullScreen &&
       window.gZenCompactModeManager?.preference &&
-      !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view')
+      !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view') &&
+      Services.prefs.getBoolPref('zen.view.borderless-fullscreen', true)
     ) {
       separation = 0;
     }
+    // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
+    separation = Math.max(kMinElementSeparation, separation);
     document.documentElement.style.setProperty('--zen-element-separation', separation + 'px');
-    if (separation == 0) {
+    if (separation == kMinElementSeparation) {
       document.documentElement.setAttribute('zen-no-padding', true);
     } else {
       document.documentElement.removeAttribute('zen-no-padding');

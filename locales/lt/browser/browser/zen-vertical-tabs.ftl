@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompaktinis režimas
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Įjungti kompaktinį režimą
     .accesskey = D

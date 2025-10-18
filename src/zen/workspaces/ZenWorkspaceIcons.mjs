@@ -99,7 +99,7 @@
 
     #createWorkspaceIcon(workspace) {
       const button = document.createXULElement('toolbarbutton');
-      button.setAttribute('class', 'subviewbutton');
+      button.setAttribute('class', 'subviewbutton toolbarbutton-1');
       button.setAttribute('tooltiptext', workspace.name);
       button.setAttribute('zen-workspace-id', workspace.uuid);
       button.setAttribute('context', 'zenWorkspaceMoreActions');

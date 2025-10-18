@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = ر
 zen-toolbar-context-compact-mode = 
     .label = الوضع المدمج
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = تمكين الوضع المدمج
     .accesskey = D

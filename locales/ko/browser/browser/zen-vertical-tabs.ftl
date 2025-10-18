@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = 사이드바 축소 모드
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = 사이드바 축소 모드 활성화
     .accesskey = D

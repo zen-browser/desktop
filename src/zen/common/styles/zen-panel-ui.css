@@ -23,28 +23,29 @@ panel[type='arrow'] {
       animation: zen-jello-animation-macos 0.2s ease-in-out forwards !important;
     }
   }
-  @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) and (-moz-panel-animations) {
-    /* Mica popups have a weird background while the animation is running */
-    &::part(content) {
-      animation: zen-jello-animation 0.35s ease;
-    }
-  }
 }
 
 menupopup,
-panel[type='arrow'] {
+panel[type='arrow']:not(#feature-callout) {
   @media (-moz-windows-mica-popups) {
     appearance: auto !important;
     -moz-default-appearance: menupopup;
     /* The blur behind doesn't blur all that much, add a semi-transparent
      * background to improve contrast */
     --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
-    --panel-border-color: transparent !important;
+
+    /* The mica rendering already adds a shadow and a border, so we
+     * remove the one we add via CSS */
     --panel-shadow-margin: 0px !important;
+    --panel-border-color: transparent !important;
+    border: none !important;
 
     transition-duration: 0s !important;
 
     &::part(content) {
+      /* Refrain from animating for now as we haven't found a 
+       * way to properly animate the popup without having the mica
+       * backdrop staying still while the popup animates */
       animation: none !important;
     }
   }
@@ -60,7 +61,15 @@ panel[type='arrow'] {
     --panel-background: transparent !important;
     --panel-border-color: transparent;
 
+    /* Remove the shadow for the native panels, as macos already
+     * adds the shadows to the window. This is specially important
+     * on Tahoe, where we *dont* apply an image mask, meaning that 
+     * trying to render a shadow would end up in having weird borders
+     * around the panel */
+    --panel-shadow: none;
+
     &::part(content) {
+      /* This shoudn't really be needed, but just in case */
       background-color: transparent !important;
     }
   }

@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Repor o Separador Fixado
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Adicionar aos Essenciais ({ $num }/12 espaços preenchidos)
+    .label = Adicionar aos Essenciais ({ $num } / { $max } espaços preenchidos)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor personalizada
 zen-panel-ui-gradient-generator-saved-message = Gradiente guardado com sucesso!
-zen-copy-current-url-confirmation = O URL foi copiado para a área de transferência.
+zen-copy-current-url-confirmation = URL atual copiado!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = Espaços
 zen-library-sidebar-mods = 
     .label = Modificações
+zen-toggle-compact-mode-button = 
+    .label = Modo Compacto
+    .tooltiptext = Alternar Modo Compacto
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,34 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ícones
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = Ações
+zen-site-data-settings = Definições
+zen-generic-manage = Gerir
+zen-generic-more = Mais
+zen-generic-next = Seguinte
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permitido
+zen-site-data-setting-block = Bloqueado
+zen-site-data-setting-cross-site = Cookies entre sites
+zen-site-data-security-info-extension = 
+    .label = Extensão
+zen-site-data-security-info-secure = 
+    .label = Seguro
+zen-site-data-security-info-not-secure = 
+    .label = Não Seguro
+zen-site-data-manage-addons = 
+    .label = Gerir Extensões
+zen-site-data-get-addons = 
+    .label = Adicionar Extensões
+zen-site-data-site-settings = 
+    .label = Todas as Definições do Site
+zen-site-data-share = 
+    .label = Partilhar Esta Página
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copiar URL
+zen-site-data-setting-site-protection = Proteção contra rastreio
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Uma nova casa para extensões, permissões e mais
+zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerir definições do site, ver informações de segurança, extensões de acesso e executar ações comuns.

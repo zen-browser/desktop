@@ -2,11 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export class ZenGlanceChild extends JSWindowActorChild {
+  #activationMethod;
+
   constructor() {
     super();
-
-    this.mouseUpListener = this.handleMouseUp.bind(this);
-    this.mouseDownListener = this.handleMouseDown.bind(this);
     this.clickListener = this.handleClick.bind(this);
   }
 
@@ -22,51 +21,34 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  async getActivationMethod() {
-    if (this._activationMethod === undefined) {
-      this._activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
-    }
-    return this._activationMethod;
-  }
-
-  async getHoverActivationDelay() {
-    if (this._hoverActivationDelay === undefined) {
-      this._hoverActivationDelay = await this.sendQuery('ZenGlance:GetHoverActivationDelay');
-    }
-    return this._hoverActivationDelay;
+  async #initActivationMethod() {
+    this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
   }
 
   async initiateGlance() {
     this.mouseIsDown = false;
-    const activationMethod = await this.getActivationMethod();
-    if (activationMethod === 'mantain') {
-      this.contentWindow.addEventListener('mousedown', this.mouseDownListener);
-      this.contentWindow.addEventListener('mouseup', this.mouseUpListener);
-
-      this.contentWindow.document.removeEventListener('click', this.clickListener);
-    } else if (
-      activationMethod === 'ctrl' ||
-      activationMethod === 'alt' ||
-      activationMethod === 'shift'
-    ) {
-      this.contentWindow.document.addEventListener('click', this.clickListener, { capture: true });
-
-      this.contentWindow.removeEventListener('mousedown', this.mouseDownListener);
-      this.contentWindow.removeEventListener('mouseup', this.mouseUpListener);
-    }
+    await this.#initActivationMethod();
+    this.contentWindow.document.addEventListener('click', this.clickListener, { capture: true });
   }
 
   ensureOnlyKeyModifiers(event) {
     return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
   }
 
-  openGlance(target) {
+  openGlance(target, originalTarget) {
     let url = target.href;
     // Add domain to relative URLs
     if (!url.match(/^(?:[a-z]+:)?\/\//i)) {
       url = this.contentWindow.location.origin + url;
     }
-    const rect = target.getBoundingClientRect();
+    // Get the largest element we can get. If the `A` element
+    // is a parent of the original target, use the anchor element,
+    // otherwise use the original target.
+    let rect = originalTarget.getBoundingClientRect();
+    const anchorRect = target.getBoundingClientRect();
+    if (anchorRect.width * anchorRect.height > rect.width * rect.height) {
+      rect = anchorRect;
+    }
     this.sendAsyncMessage('ZenGlance:OpenGlance', {
       url,
       clientX: rect.left,
@@ -76,35 +58,11 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  handleMouseUp(event) {
-    if (this.hasClicked) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.hasClicked = false;
-    }
-    this.mouseIsDown = null;
-  }
-
-  async handleMouseDown(event) {
-    const target = event.target.closest('A');
-    if (!target) {
-      return;
-    }
-    this.mouseIsDown = target;
-    const hoverActivationDelay = await this.getHoverActivationDelay();
-    this.contentWindow.setTimeout(() => {
-      if (this.mouseIsDown === target) {
-        this.hasClicked = true;
-        this.openGlance(target);
-      }
-    }, hoverActivationDelay);
-  }
-
   handleClick(event) {
     if (this.ensureOnlyKeyModifiers(event) || event.button !== 0 || event.defaultPrevented) {
       return;
     }
-    const activationMethod = this._activationMethod;
+    const activationMethod = this.#activationMethod;
     if (activationMethod === 'ctrl' && !event.ctrlKey) {
       return;
     } else if (activationMethod === 'alt' && !event.altKey) {
@@ -113,8 +71,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
-    } else if (activationMethod === 'mantain' || typeof activationMethod === 'undefined') {
-      return;
     }
     // get closest A element
     const target = event.target.closest('A');
@@ -122,7 +78,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
       event.preventDefault();
       event.stopPropagation();
 
-      this.openGlance(target);
+      this.openGlance(target, event.originalTarget || event.target);
     }
   }
 

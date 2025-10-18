@@ -117,6 +117,10 @@
       return activeGroups;
     }
 
+    get childActiveGroups() {
+      return Array.from(this.querySelectorAll('zen-folder[has-active]'));
+    }
+
     rename() {
       if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
         return;
@@ -240,16 +244,18 @@
     }
 
     async #unloadAllActiveTabs(event, noClose = false) {
-      for (const tab of this.tabs) {
-        await gZenPinnedTabManager._onCloseTabShortcut(event, tab, { noClose });
-      }
+      await gZenPinnedTabManager.onCloseTabShortcut(event, this.tabs, {
+        noClose,
+        alwaysUnload: true,
+        folderToUnload: this,
+      });
       this.activeTabs = [];
     }
 
     on_click(event) {
       if (event.target === this.resetButton) {
         event.stopPropagation();
-        this.#unloadAllActiveTabs(event);
+        this.unloadAllTabs(event);
         return;
       }
       super.on_click(event);

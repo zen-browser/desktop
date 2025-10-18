@@ -31,6 +31,11 @@
     --urlbar-container-padding: 0px;
   }
 
+  :root[inDOMFullscreen] & {
+    /* See issue https://github.com/zen-browser/desktop/issues/5229 */
+    visibility: visible;
+  }
+
   :root[zen-single-toolbar='true'] &[breakout-extend='true'],
   &[zen-floating-urlbar='true'] {
     --urlbar-container-padding: 3px;
@@ -109,6 +114,10 @@
   border-radius: 0px !important;
 }
 
+#urlbar .urlbar-input-box {
+  font-weight: 500;
+}
+
 :root[zen-single-toolbar='true'] #urlbar:not([breakout-extend='true']) {
   & #urlbar-input {
     cursor: default;
@@ -119,6 +128,55 @@
     &.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
       border-radius: 10px !important;
     }
+  }
+
+  .identity-box-button,
+  #zen-copy-url-button {
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      visibility 0.15s;
+    visibility: collapse;
+    height: 100%; /* To still be able to open popups */
+
+    #navigator-toolbox:hover &,
+    &[open],
+    #identity-box[pageproxystate='invalid'] & {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+:root:not([zen-single-toolbar='true'])
+  #urlbar:not([breakout-extend='true'])
+  .urlbar-input-container:not([pageproxystate='invalid']) {
+  padding: 2px 3px;
+  gap: 2px;
+
+  & .urlbar-page-action {
+    height: 100%;
+  }
+
+  & #zen-copy-url-button {
+    order: -1;
+  }
+
+  & #identity-box {
+    order: 999;
+    margin: 0px !important;
+  }
+}
+
+#zen-copy-url-button[disabled] {
+  opacity: 0.3;
+  background: transparent !important;
+}
+
+:root[zen-single-toolbar='true'],
+#urlbar:is([breakout-extend='true'], [pageproxystate='invalid']) {
+  #zen-copy-url-button[disabled] {
+    display: none !important;
   }
 }
 
@@ -155,11 +213,15 @@
   order: 2 !important;
 }
 
-#urlbar[breakout-extend='true'] {
+#urlbar[breakout] {
   position: fixed;
+}
+
+#urlbar[breakout-extend='true'] {
   z-index: 2;
 
-  & .urlbar-input-container {
+  :root[zen-single-toolbar='true'] & .urlbar-input-box,
+  &[zen-floating-urlbar='true'] .urlbar-input-box {
     font-weight: 400;
     @media (-moz-platform: windows) {
       font-weight: 500;
@@ -167,13 +229,19 @@
   }
 
   & #identity-box {
-    margin-right: calc(var(--urlbar-margin-inline) - 1px);
+    height: 100%;
+  }
+
+  :root:not([zen-single-toolbar='true'])
+    &:not([zen-floating-urlbar='true'])
+    #identity-box:not([pageproxystate='invalid']) {
+    margin-inline-end: 0;
   }
 
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(
-      white,
-      color-mix(in srgb, hsl(0, 0%, 1%), var(--zen-colors-primary) 25%)
+      #fbfbfb,
+      color-mix(in srgb, hsl(0, 0%, 1%), var(--zen-colors-primary) 30%)
     );
     @media -moz-pref('zen.theme.acrylic-elements') {
       --zen-urlbar-background-transparent: color-mix(
@@ -186,7 +254,7 @@
       --zen-urlbar-background-transparent,
       var(--zen-urlbar-background-base)
     ) !important;
-    box-shadow: 0px 0px 90px -10px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.75)) !important;
+    box-shadow: 0px 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
     outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
@@ -208,7 +276,11 @@
     height: 100%;
     border-radius: inherit;
     pointer-events: none;
-    animation: zen-urlbar-searchmode ease-out 0.7s forwards;
+    animation: zen-urlbar-searchmode ease-out 1s forwards;
+  }
+
+  & #zen-copy-url-button {
+    display: none;
   }
 }
 
@@ -217,24 +289,16 @@
 }
 
 :root[zen-single-toolbar='true'] {
-  --urlbar-icon-border-radius: 10px !important;
+  --urlbar-icon-border-radius: 8px !important;
 
-  .urlbar-page-action:not([open]):not(#identity-permission-box),
+  .urlbar-page-action:not([open]):not([showing]):not(
+      :is(#zen-copy-url-button, #identity-permission-box)
+    ),
   #tracking-protection-icon-container {
     display: none;
   }
 
-  #identity-box:not([pageproxystate='invalid']):not(.notSecure) #identity-icon-box:not([open]) {
-    margin-inline-start: calc(-8px - 2 * var(--urlbar-icon-padding));
-    transform: translateX(100%);
-    opacity: 0;
-
-    :root:not([supress-primary-adjustment]) & {
-      transition: all 0.1s ease;
-    }
-  }
-
-  #identity-permission-box > *:not(#permissions-granted-icon) {
+  #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }
 
@@ -242,27 +306,9 @@
     display: none;
   }
 
-  #urlbar[open]
-    :is(#tracking-protection-icon-container, .urlbar-page-action, .identity-box-button):not(
-      [hidden]
-    ):not(#identity-permission-box),
-  #urlbar:hover #identity-icon-box {
-    opacity: 1 !important;
-    margin-inline-start: 0 !important;
-    transform: none !important;
-    display: flex;
-    #urlbar:not(:hover) & {
-      transition: none;
-    }
-  }
-
-  #urlbar:not([open]) #userContext-icons {
-    margin-inline: 0;
-  }
-
-  #urlbar:not([open]) {
+  #urlbar:not([breakout-extend='true']) {
     #identity-box:not([pageproxystate='invalid']) {
-      order: 2;
+      order: 9;
     }
   }
 
@@ -332,22 +378,12 @@
 }
 
 @container urlbar-container (width < 350px) {
-  #userContext-icons {
-    transition: all 0.1s ease;
-  }
-
   #userContext-label {
     display: none;
   }
 
   #userContext-indicator {
     margin-inline-end: 4px;
-  }
-
-  #urlbar:hover:not([breakout-extend='true']) #userContext-icons {
-    margin-inline-end: calc(-16px - 2 * var(--urlbar-icon-padding)) !important;
-    opacity: 0;
-    pointer-events: none;
   }
 }
 
@@ -678,4 +714,20 @@
 
 #urlbar-search-mode-indicator-title {
   font-weight: 600;
+  padding: 0px;
+}
+
+/* These are buttons that we dont need to be
+ * displayed anymore, since now zen displays
+ * them into a single, unified button */
+#reader-mode-button,
+#urlbar-go-button,
+#star-button-box {
+  display: none !important;
+}
+
+@media not -moz-pref('zen.urlbar.show-contextual-id') {
+  #userContext-icons {
+    display: none !important;
+  }
 }

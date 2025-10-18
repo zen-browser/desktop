@@ -1,8 +1,8 @@
 diff --git a/toolkit/themes/shared/aboutReader.css b/toolkit/themes/shared/aboutReader.css
-index bf425379af81f442fb0b4ad7d2921c3f06196f26..6c2cc0faade92de995b675eea2696f061dfda571 100644
+index 1eb2c44694bb4970134fb5d290e32c7053103461..8d8237029976960048cb9aceede918c9e20c523b 100644
 --- a/toolkit/themes/shared/aboutReader.css
 +++ b/toolkit/themes/shared/aboutReader.css
-@@ -1189,3 +1189,43 @@ pre code {
+@@ -1181,3 +1181,43 @@ pre code {
    display: block;
    overflow: auto;
  }

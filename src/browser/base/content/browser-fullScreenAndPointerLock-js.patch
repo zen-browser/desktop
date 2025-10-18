@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
-index d477ac782e0cb921203f8cd38da70a003ac41b39..648d0b4066b630a9b31da0bb8490f29da701dd3d 100644
+index b41449d4c4bc373a4c9cf449c0bb370bfdbc20d6..f1166929397dd39b7f44bd9cb0d62a45d67f0e1d 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
 @@ -427,10 +427,10 @@ var FullScreen = {

@@ -31,7 +31,6 @@
   --uc-autocomplete-panel-separator-margin-vertical: 4px;
 
   --uc-permission-itemcontainer-padding-block: 8px;
-  --uc-permission-item-margin-block: 4px;
   --uc-permission-item-padding-inline: 16px;
   --zen-panel-separator-width: 1px;
 }
@@ -42,9 +41,13 @@ panel {
   --menuitem-padding: 6px !important;
   --panel-shadow-margin: 10px;
 
-  /* This should match GetMenuMaskImage() on macOS, or be overridden below */
+  /* This should match GetMenuCornerRadius() on macOS, or be overridden below */
   @media (-moz-platform: macos) {
     --panel-border-radius: 10px;
+
+    @media (-moz-mac-tahoe-theme) {
+      --panel-border-radius: 12px;
+    }
   }
 }
 
@@ -177,10 +180,6 @@ panel {
   opacity: 0.7;
 }
 
-#widget-overflow-mainView .panel-subview-body {
-  padding-bottom: 0;
-}
-
 .PanelUI-subView > .panel-header + toolbarseparator {
   margin-bottom: 0;
 }
@@ -228,23 +227,13 @@ panel {
 
 .permission-popup-permission-item,
 #permission-popup-storage-access-permission-list-header {
-  margin-block: var(--uc-permission-item-margin-block);
-}
-
-.permission-popup-permission-label,
-.permission-popup-permission-header-label {
-  margin-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
+  padding-block: 4px;
+  margin-block: 0px;
 }
 
 #editBookmarkPanel > #editBookmarkHeaderSeparator,
 #editBookmarkPanel > .panel-subview-body > #editBookmarkSeparator {
   margin-inline: 0;
-}
-
-#identity-popup-mainView > toolbarseparator:first-child,
-#unified-extensions-view > toolbarseparator:first-child {
-  display: none;
-  opacity: 0;
 }
 
 menupopup,
@@ -358,23 +347,23 @@ menuseparator {
     }
 
     --zen-toast-padding: 6px;
-    --zen-toast-max-height: 46px;
+    --zen-toast-max-height: 42px;
     @media (-moz-platform: macos) {
-      --zen-toast-padding: 10px;
-      --zen-toast-max-height: 52px;
+      --zen-toast-padding: 8px;
+      --zen-toast-max-height: 48px;
     }
 
-    gap: 10px;
+    gap: 8px;
     z-index: 1000;
     padding: var(--zen-toast-padding);
-    border-radius: calc(var(--zen-native-inner-radius) + 6px);
+    border-radius: 10px;
     background: linear-gradient(
-      170deg,
+      to bottom,
       var(--zen-primary-color) -40%,
-      color-mix(in srgb, var(--zen-primary-color) 85%, #0f0f0f 15%)
+      color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%)
     );
-    box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0px 0px 22px 2px;
+    border: none;
     display: flex;
     font-weight: 600;
     align-items: center;
@@ -391,22 +380,34 @@ menuseparator {
     }
 
     & label {
-      margin-top: 0;
-      margin-bottom: 0;
+      margin: 0 4px;
     }
 
     & button {
       width: min-content;
-      padding: 0 10px !important;
+      padding: 0px 8px !important;
       min-width: unset !important;
+      min-height: 28px;
       margin: 0px !important;
-      border-radius: calc(var(--zen-native-inner-radius) + 2px) !important;
-      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
-      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) !important;
+      border-radius: 6px !important;
+      background: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) !important;
+      border-top: 2px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
       color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
+
+      outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.02));
+      outline-offset: -0.5px;
 
       :root[zen-right-side='true'] & {
         order: -1;
+      }
+
+      & .button-text {
+        display: none;
+      }
+
+      & .button-icon {
+        width: 14px;
+        opacity: 0.6;
       }
     }
   }

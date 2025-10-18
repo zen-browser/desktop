@@ -12,13 +12,12 @@
 :root {
   /* Default values */
   --zen-border-radius: 7px;
-  --zen-primary-color: #ffb787;
+  --zen-primary-color: AccentColor;
 
   --zen-background-opacity: 1;
 
   /* Branding */
   --zen-branding-dark: #1d1d1d;
-  --zen-branding-coral: #f76f53;
   --zen-branding-paper: #ebebeb;
 
   --zen-branding-bg: light-dark(var(--zen-branding-paper), var(--zen-branding-dark));
@@ -98,8 +97,8 @@
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
   --in-content-button-background-hover: color-mix(
     in srgb,
-    currentColor 3%,
-    transparent 97%
+    currentColor,
+    transparent 85%
   ) !important;
   --button-bgcolor: var(--in-content-button-background) !important;
   --button-hover-bgcolor: var(--in-content-button-background-hover) !important;
@@ -156,8 +155,11 @@
   --zen-toolbar-height: 38px;
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-outer-padding: 4px;
-
-  --toolbarbutton-inner-padding: 5px !important;
+  --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
+  &[zen-has-bookmarks='true'] {
+    /* Make sure `30px` matches the bookmarks toolbar height */
+    --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
+  }
 
   --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
 
@@ -189,6 +191,7 @@
 
   /* Transitions */
   --zen-tabbox-element-indent-transition: margin-inline-start 0.1s ease-in-out;
+  --zen-hidden-toolbar-transition: 0.15s ease-in-out;
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);
@@ -209,6 +212,10 @@
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
   --zen-workspace-indicator-height: 46px;
+
+  &:not([zen-sidebar-expanded='true']) {
+    --zen-workspace-indicator-height: 38px;
+  }
 
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
@@ -234,6 +241,9 @@
   --zen-native-content-radius: var(--zen-border-radius);
   @media (-moz-platform: linux) {
     --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
+  }
+  @media (-moz-mac-tahoe-theme) {
+    --zen-native-content-radius: 15px;
   }
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

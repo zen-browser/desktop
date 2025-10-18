@@ -13,3 +13,4 @@ support-files = [
 ["browser_glance_next_tab.js"]
 ["browser_glance_prev_tab.js"]
 ["browser_glance_select_parent.js"]
+["browser_glance_close_select.js"]

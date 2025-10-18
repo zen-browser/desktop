@@ -1,5 +1,5 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index 11217c210dd8dc5f7c4bdc6043df9aeb361529c6..18c3c4d658170d0646483cd289fe8ad1f21ffae0 100644
+index 979c6a0960cb8c490b612649d0fac55cd7b7d0f7..f149f248f705484b3572ca462660932dd792e312 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
 @@ -440,11 +440,11 @@ Tester.prototype = {

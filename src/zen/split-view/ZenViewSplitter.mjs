@@ -958,10 +958,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {Element} The tab browser panel.
    */
   get tabBrowserPanel() {
-    if (!this._tabBrowserPanel) {
-      this._tabBrowserPanel = document.getElementById('tabbrowser-tabpanels');
-    }
-    return this._tabBrowserPanel;
+    return gBrowser.tabpanels;
   }
 
   get splitViewActive() {

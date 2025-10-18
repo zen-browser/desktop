@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Chế độ thu gọn
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Bật chế độ thu gọn
     .accesskey = D

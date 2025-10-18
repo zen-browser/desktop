@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = コンパクトモード
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = コンパクトモードを有効にする
     .accesskey = D

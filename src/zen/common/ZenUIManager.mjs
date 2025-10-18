@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 var gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
@@ -14,19 +15,6 @@ var gZenUIManager = {
   init() {
     document.addEventListener('popupshowing', this.onPopupShowing.bind(this));
     document.addEventListener('popuphidden', this.onPopupHidden.bind(this));
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      'contentElementSeparation',
-      'zen.theme.content-element-separation',
-      0
-    );
-    XPCOMUtils.defineLazyPreferenceGetter(this, 'urlbarWaitToClear', 'zen.urlbar.wait-to-clear', 0);
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
-      'urlbarShowDomainOnly',
-      'zen.urlbar.show-domain-only-in-sidebar',
-      true
-    );
 
     document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
 
@@ -43,8 +31,6 @@ var gZenUIManager = {
     ChromeUtils.defineLazyGetter(this, '_toastContainer', () => {
       return document.getElementById('zen-toast-container');
     });
-
-    gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
 
     new ResizeObserver(
       gZenCommonActions.throttle(
@@ -69,14 +55,54 @@ var gZenUIManager = {
 
     this._initCreateNewPopup();
     this._debloatContextMenus();
-    this._initOmniboxCommands();
+    this._addNewCustomizableButtonsIfNeeded();
+    this._initOmnibox();
+    this._initBookmarkCollapseListener();
   },
 
-  _initOmniboxCommands() {
+  _addNewCustomizableButtonsIfNeeded() {
+    const kPref = 'zen.ui.migration.compact-mode-button-added';
+    let navbarPlacements = CustomizableUI.getWidgetIdsInArea('zen-sidebar-top-buttons');
+    try {
+      if (!navbarPlacements.length && !Services.prefs.getBoolPref(kPref, false)) {
+        CustomizableUI.addWidgetToArea('zen-toggle-compact-mode', 'zen-sidebar-top-buttons', 0);
+        gZenVerticalTabsManager._topButtonsSeparatorElement.before(
+          document.getElementById('zen-toggle-compact-mode')
+        );
+      }
+    } catch (e) {
+      console.error('Error adding compact mode button to sidebar:', e);
+    }
+    Services.prefs.setBoolPref(kPref, true);
+  },
+
+  _initBookmarkCollapseListener() {
+    const toolbar = document.getElementById('PersonalToolbar');
+    if (!toolbar.hasAttribute('collapsed')) {
+      // Set it initially if bookmarks toolbar is visible, customizable UI
+      // is ran before this function.
+      document.documentElement.setAttribute('zen-has-bookmarks', 'true');
+    }
+    toolbar.addEventListener('toolbarvisibilitychange', (event) => {
+      const visible = event.detail.visible;
+      if (visible) {
+        document.documentElement.setAttribute('zen-has-bookmarks', 'true');
+      } else {
+        document.documentElement.removeAttribute('zen-has-bookmarks');
+      }
+    });
+  },
+
+  _initOmnibox() {
     const { registerZenUrlbarProviders } = ChromeUtils.importESModule(
       'resource:///modules/ZenUBProvider.sys.mjs'
     );
+    const { nsZenSiteDataPanel } = ChromeUtils.importESModule(
+      'resource:///modules/ZenSiteDataPanel.sys.mjs'
+    );
     registerZenUrlbarProviders();
+    window.gZenSiteDataPanel = new nsZenSiteDataPanel(window);
+    gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
   },
 
   _debloatContextMenus() {
@@ -215,13 +241,15 @@ var gZenUIManager = {
         !el.contains(showEvent.explicitOriginalTarget) ||
         (showEvent.explicitOriginalTarget instanceof Element &&
           showEvent.explicitOriginalTarget?.closest('panel')) ||
-        // See bug #7590: Ignore menupopup elements opening
-        showEvent.explicitOriginalTarget.tagName === 'menupopup'
+        // See bug #7590: Ignore menupopup elements opening.
+        // Also see #10612 for the exclusion of the zen-appcontent-navbar-wrapper
+        (showEvent.explicitOriginalTarget.tagName === 'menupopup' &&
+          el.id !== 'zen-appcontent-navbar-wrapper')
       ) {
         continue;
       }
       document.removeEventListener('mousemove', this.__removeHasPopupAttribute);
-      el.setAttribute('has-popup-menu', '');
+      gZenCompactModeManager._setElementExpandAttribute(el, true, 'has-popup-menu');
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
       break;
@@ -234,9 +262,10 @@ var gZenUIManager = {
     }
     const element = this.__currentPopupTrackElement;
     if (document.getElementById('main-window').matches(':hover')) {
-      element.removeAttribute('has-popup-menu');
+      gZenCompactModeManager._setElementExpandAttribute(element, false, 'has-popup-menu');
     } else {
-      this.__removeHasPopupAttribute = () => element.removeAttribute('has-popup-menu');
+      this.__removeHasPopupAttribute = () =>
+        gZenCompactModeManager._setElementExpandAttribute(element, false, 'has-popup-menu');
       document.addEventListener('mousemove', this.__removeHasPopupAttribute, { once: true });
     }
     this.__currentPopup = null;
@@ -260,7 +289,7 @@ var gZenUIManager = {
             gURLBar.removeAttribute('animate-searchmode');
             delete this._animatingSearchModeTimeout;
           });
-        }, 700);
+        }, 1000);
       }
     }
   },
@@ -529,6 +558,9 @@ var gZenUIManager = {
     this._toastContainer.removeAttribute('hidden');
     this._toastContainer.appendChild(toast);
     const timeoutFunction = () => {
+      if (Services.prefs.getBoolPref('ui.popup.disable_autohide')) {
+        return;
+      }
       this.motion
         .animate(toast, { opacity: [1, 0], scale: [1, 0.5] }, { duration: 0.2, bounce: 0 })
         .then(() => {
@@ -593,6 +625,26 @@ var gZenUIManager = {
     return openUILinkWhere;
   },
 };
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'contentElementSeparation',
+  'zen.theme.content-element-separation',
+  0
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'urlbarWaitToClear',
+  'zen.urlbar.wait-to-clear',
+  0
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  gZenUIManager,
+  'urlbarShowDomainOnly',
+  'zen.urlbar.show-domain-only-in-sidebar',
+  true
+);
 
 var gZenVerticalTabsManager = {
   init() {
@@ -863,17 +915,19 @@ var gZenVerticalTabsManager = {
 
   recalculateURLBarHeight() {
     requestAnimationFrame(() => {
-      document.getElementById('urlbar').removeAttribute('--urlbar-height');
-      let height;
-      if (!this._hasSetSingleToolbar) {
-        height = 32;
-      } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
-        height = 40;
-      }
-      if (typeof height !== 'undefined') {
-        document.getElementById('urlbar').style.setProperty('--urlbar-height', `${height}px`);
-      }
-      gURLBar.valueFormatter._formatURL();
+      requestAnimationFrame(() => {
+        gURLBar.textbox.removeAttribute('--urlbar-height');
+        let height;
+        if (!this._hasSetSingleToolbar) {
+          height = 32;
+        } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
+          height = 40;
+        }
+        if (typeof height !== 'undefined') {
+          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+        }
+        gURLBar.zenFormatURLValue();
+      });
     });
   },
 
@@ -945,7 +999,7 @@ var gZenVerticalTabsManager = {
           (isCompactMode && isSingleToolbar && this.isWindowsStyledButtons)) &&
         isSingleToolbar
       ) {
-        appContentNavbarWrapper.setAttribute('should-hide', 'true');
+        appContentNavbarWrapper.setAttribute('should-hide', true);
         shouldHide = true;
       } else {
         appContentNavbarWrapper.removeAttribute('should-hide');
@@ -1032,6 +1086,19 @@ var gZenVerticalTabsManager = {
       ) {
         topButtons.prepend(windowButtons);
       }
+
+      const canHideTabBarPref = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar');
+      const captionsShouldStayOnSidebar =
+        !canHideTabBarPref &&
+        ((!this.isWindowsStyledButtons && !isRightSide) ||
+          (this.isWindowsStyledButtons && isRightSide));
+      if (
+        (!isSingleToolbar && isCompactMode && !captionsShouldStayOnSidebar) ||
+        !isSidebarExpanded
+      ) {
+        navBar.prepend(topButtons);
+      }
+
       // Case: single toolbar, compact mode, right side and windows styled buttons
       if (isSingleToolbar && isCompactMode && isRightSide && this.isWindowsStyledButtons) {
         topButtons.prepend(windowButtons);
@@ -1059,7 +1126,11 @@ var gZenVerticalTabsManager = {
           }
         }
       } else if (!isSingleToolbar && isCompactMode) {
-        navBar.appendChild(windowButtons);
+        if (captionsShouldStayOnSidebar) {
+          topButtons.prepend(windowButtons);
+        } else {
+          navBar.appendChild(windowButtons);
+        }
       } else if (isSingleToolbar && isCompactMode) {
         if (!isRightSide && !this.isWindowsStyledButtons) {
           topButtons.prepend(windowButtons);
@@ -1071,7 +1142,6 @@ var gZenVerticalTabsManager = {
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);
-      this.recalculateURLBarHeight();
 
       // Always move the splitter next to the sidebar
       const splitter = document.getElementById('zen-sidebar-splitter');

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index fc219ea3dc901fe2ed351161240700113efb8799..f25bdbf886733e2081a4dff55614809056e9885e 100644
+index 69b83857f40bab6a7298c1416989df2d929d78c1..4ac9f02eb31f58a72d4c58c239ebeadcb66d1e16 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
 @@ -208,6 +208,10 @@
@@ -21,7 +21,7 @@ index fc219ea3dc901fe2ed351161240700113efb8799..f25bdbf886733e2081a4dff556148090
      </panel>
    </html:template>
  
-@@ -613,6 +618,8 @@
+@@ -615,6 +620,8 @@
  
  #include popup-notifications.inc.xhtml
  

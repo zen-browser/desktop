@@ -8,16 +8,23 @@
   #tabbrowser-tabpanels[dragging-split='true'] {
     width: -moz-available;
     position: relative;
-    overflow: clip;
 
     &.browserSidebarContainer {
-      :root:not([zen-no-padding='true']) & {
+      overflow: clip;
+
+      :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
         border-radius: var(--zen-native-inner-radius);
         box-shadow: var(--zen-big-shadow);
       }
 
       & browser[type='content'] {
-        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        &:not([transparent='true']) {
+          background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
+        }
+
+        &[transparent='true'] {
+          background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        }
       }
 
       @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
@@ -32,6 +39,29 @@
            * is a hacky solution, but it works for now. */
           will-change: transform;
         }
+      }
+    }
+  }
+
+  @media not ((-moz-pref('zen.view.experimental-no-window-controls') or (not -moz-pref('zen.view.hide-window-controls'))) and -moz-pref('zen.view.use-single-toolbar')) {
+    .browserSidebarContainer:is(.deck-selected, [zen-split='true']) .browserContainer {
+      transition: margin var(--zen-hidden-toolbar-transition);
+
+      :root[zen-single-toolbar='true'] & {
+        transition-delay: 0.2s;
+        --zen-toolbar-height: 34px;
+      }
+
+      #tabbrowser-tabpanels[has-toolbar-hovered] & {
+        --margin-top-fix: calc(-1 * var(--zen-toolbar-height) + var(--zen-element-separation));
+
+        :root:not([zen-single-toolbar='true']) & {
+          --margin-top-fix: calc(
+            -1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation)
+          );
+        }
+
+        margin-top: var(--margin-top-fix);
       }
     }
   }

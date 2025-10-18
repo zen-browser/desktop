@@ -4,7 +4,7 @@ tab-context-zen-reset-pinned-tab =
     .label = 고정된 탭 초기화
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 에센셜에 추가 ({ $num } / 12 개 추가됨)
+    .label = 에센셜에 추가 ({ $num } / { $max } 개 추가됨)
     .accesskey = E
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
@@ -24,7 +24,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
 zen-panel-ui-gradient-generator-saved-message = 성공적으로 그라데이션을 저장했습니다!
-zen-copy-current-url-confirmation = URL이 복사되었습니다.
+zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
@@ -37,6 +37,9 @@ zen-library-sidebar-workspaces =
     .label = 스페이스
 zen-library-sidebar-mods = 
     .label = 모드
+zen-toggle-compact-mode-button = 
+    .label = 사이드바 축소 모드
+    .tooltiptext = 사이드바 축소 토글
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,4 +51,34 @@ zen-icons-picker-emoji =
     .label = 이모티콘
 zen-icons-picker-svg = 
     .label = 아이콘
-urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-zen_actions = 액션
+zen-site-data-settings = 설정
+zen-generic-manage = 관리
+zen-generic-more = 더 보기
+zen-generic-next = 다음
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = 허용됨
+zen-site-data-setting-block = 금지됨
+zen-site-data-setting-cross-site = 사이트 간 공유 쿠키
+zen-site-data-security-info-extension = 
+    .label = 확장
+zen-site-data-security-info-secure = 
+    .label = 안전함
+zen-site-data-security-info-not-secure = 
+    .label = 안전하지 않음
+zen-site-data-manage-addons = 
+    .label = 확장 프로그램 관리
+zen-site-data-get-addons = 
+    .label = 확장 프로그램 추가
+zen-site-data-site-settings = 
+    .label = 모든 사이트 설정
+zen-site-data-share = 
+    .label = 이 페이지 공유
+zen-urlbar-copy-url-button = 
+    .tooltiptext = URL 복사
+zen-site-data-setting-site-protection = 추적 보호
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = 애드온, 권한, 그리고 더 많은 것을 위한 새로운 곳
+zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 설정, 보안 정보 조회, 확장 프로그램 접근, 기타 행동을 수행할 수 있습니다.

@@ -3,7 +3,6 @@ zen-toolbar-context-tabs-right =
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Mód dlúth
-    .accesskey = D’Athraigh Chluaisíní(s) go Spás Oibre
 zen-toolbar-context-compact-mode-enable = 
     .label = Cumasaigh mód dlúth
     .accesskey = D

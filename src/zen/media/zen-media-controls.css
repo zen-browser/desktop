@@ -108,6 +108,10 @@
       transform: translateY(0) !important;
       pointer-events: auto;
     }
+
+    & #zen-media-info-vbox label[overflow] {
+      animation: zen-back-and-forth-text 10s infinite ease-in-out;
+    }
   }
 
   & #zen-media-focus-button::after {
@@ -255,10 +259,6 @@
     margin-left: 0;
     font-weight: 500;
     position: relative; /* For the animation */
-
-    &[overflow] {
-      animation: zen-back-and-forth-text 10s infinite ease-in-out;
-    }
   }
 }
 

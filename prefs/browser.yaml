@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: browser.startup.page
-  value: 0
-  locked: true
+  value: 3
 
 - name: browser.sessionstore.restore_pinned_tabs_on_demand
   value: true

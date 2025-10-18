@@ -320,6 +320,9 @@
       // we see flashing and if we do it directly, the animation does not play at all.
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
+        // Recalculate location. When opening from pinned tabs,
+        // view splitter doesn't catch if the tab is a glance tab or not.
+        gZenViewSplitter.onLocationChange(browserElement);
         this.#prepareGlanceAnimation(data, browserElement);
         if (data.width && data.height) {
           data.elementData = await this.#getElementPreviewData(data);

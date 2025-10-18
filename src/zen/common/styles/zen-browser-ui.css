@@ -26,6 +26,10 @@
   }
 }
 
+:root:not([zen-single-toolbar='true']) #zen-navigator-toolbox #zen-sidebar-top-buttons {
+  --zen-toolbar-height: 42px;
+}
+
 :root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),
 :root[zen-before-loaded='true'] #urlbar {
   opacity: 0 !important;

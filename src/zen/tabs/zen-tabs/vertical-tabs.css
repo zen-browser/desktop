@@ -115,7 +115,7 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: calc(var(--zen-toolbox-padding) / 2) 0;
     :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) & {
       margin-top: 0;
     }
@@ -961,7 +961,10 @@
   }
 
   :root[zen-single-toolbar='true'] & {
-    --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
+    --zen-toolbar-height: 36px;
+    @media (-moz-platform: macos) {
+      --zen-toolbar-height: 42px;
+    }
 
     & #PanelUI-button {
       order: -2;

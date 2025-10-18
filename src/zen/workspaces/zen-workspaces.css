@@ -239,7 +239,7 @@
     --toolbarbutton-inner-padding: 6px;
 
     & image {
-      border-radius: calc(var(--border-radius-medium) - 4px) !important;
+      border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
       width: 26px;
       height: 26px;
       margin-right: -1px;

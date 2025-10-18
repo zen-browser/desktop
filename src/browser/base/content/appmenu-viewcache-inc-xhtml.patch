@@ -1,0 +1,13 @@
+diff --git a/browser/base/content/appmenu-viewcache.inc.xhtml b/browser/base/content/appmenu-viewcache.inc.xhtml
+index 9f15f0a7aa5087b707497a042ab9843e914e7384..a85371615cf08dff19ea4669578247fc0b67810d 100644
+--- a/browser/base/content/appmenu-viewcache.inc.xhtml
++++ b/browser/base/content/appmenu-viewcache.inc.xhtml
+@@ -686,7 +686,7 @@
+       <!-- updateCTAPanel will control if we show this panel -->
+       <vbox id="PanelUI-fxa-cta-menu" hidden="true">
+         <toolbarseparator id="PanelUI-products-separator" />
+-        <label id="fxa-menu-other-protection-tools-header" crop="end" class="PanelUI-fxa-menu-section-title" data-l10n-id="appmenu-other-protection-header" />
++        <label id="fxa-menu-other-protection-tools-header" crop="end" class="PanelUI-fxa-menu-section-title" data-l10n-id="zen-appmenu-other-protection-header" />
+         <toolbarbutton id="PanelUI-fxa-menu-monitor-button" class="fxa-cta-button subviewbutton subviewbutton-iconic">
+           <vbox flex="1">
+             <hbox align="center">

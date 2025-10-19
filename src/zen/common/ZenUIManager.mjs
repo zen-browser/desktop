@@ -931,7 +931,7 @@ var gZenVerticalTabsManager = {
         gURLBar.textbox.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
-          height = 34;
+          height = AppConstants.platform == 'macosx' ? 34 : 32;
         } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
           height = 40;
         }

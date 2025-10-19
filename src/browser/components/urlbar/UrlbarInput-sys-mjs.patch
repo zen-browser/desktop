@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..3caefebf0123bf09c051e15412b538a83750b8ce 100644
+index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..b286fc5b40a6e32a3af0bb0f209e58c64ab7bed9 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -76,6 +76,13 @@ ChromeUtils.defineLazyGetter(lazy, "logger", () =>
@@ -157,7 +157,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..3caefebf0123bf09c051e15412b538a8
          ignoreTransforms: true,
          flush: false,
        })[0].p1.y
-+      : -2
++      : (AppConstants.platform == "macosx" ? -2 : -5)
      );
    }
  

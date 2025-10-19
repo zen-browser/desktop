@@ -40,7 +40,10 @@
   &[zen-floating-urlbar='true'] {
     --urlbar-container-padding: 3px;
     --urlbar-margin-inline: 11px;
-    --urlbar-container-height: 52px !important;
+
+    &:not([zen-floating-urlbar='true']) {
+      --urlbar-container-height: 52px !important;
+    }
   }
 }
 
@@ -711,7 +714,7 @@
 :root:not([zen-single-toolbar='true'])
   #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
   & .urlbar-background {
-    border-radius: 8px !important;
+    border-radius: 10px !important;
   }
 
   #urlbar-results {

@@ -934,7 +934,9 @@ var gZenVerticalTabsManager = {
         } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
           height = 40;
         }
-        gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+        if (typeof height !== 'undefined') {
+          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+        }
         gURLBar.zenFormatURLValue();
       });
     });

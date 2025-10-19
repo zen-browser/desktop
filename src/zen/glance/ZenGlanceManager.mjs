@@ -1067,8 +1067,8 @@
       }
 
       this.#duringOpening = true;
-      this.#configureGlanceElements();
       this.#setGlanceStates();
+      this.#configureGlanceElements();
       this.#duringOpening = false;
     }
 

@@ -18,6 +18,7 @@
   flex: 0;
   margin: 0;
 }
+
 #zen-splitview-dropzone {
   border-radius: var(--zen-native-inner-radius);
   transition: inset ease-out 0.08s;
@@ -31,15 +32,25 @@
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split='true'],
 #zen-splitview-dropzone {
   flex: 1;
-  margin: var(--zen-split-column-gap) var(--zen-split-row-gap) !important;
-  margin-bottom: 0 !important;
-  margin-left: 0 !important;
-  position: absolute !important;
   overflow: hidden;
 
   & .dialogStack {
     /* Fix for issue https://github.com/zen-browser/desktop/issues/7564 */
     position: absolute;
+  }
+}
+
+.browserSidebarContainer[is-zen-split='true'],
+#zen-splitview-dropzone {
+  position: absolute !important;
+
+  margin: var(--zen-split-column-gap) var(--zen-split-row-gap) !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+
+  &.browserSidebarContainer:not([zen-split='true']) {
+    margin-top: 0 !important;
+    visibility: hidden;
   }
 }
 
@@ -66,13 +77,15 @@
   }
 }
 
+#tabbrowser-tabbox {
+  --zen-split-row-gap: var(--zen-element-separation);
+  --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
+}
+
 #tabbrowser-tabbox[zen-split-view='true'] {
   :root[zen-no-padding='true'] & {
     --zen-element-separation: 8px;
   }
-
-  --zen-split-row-gap: var(--zen-element-separation);
-  --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
   margin-right: calc(-1 * var(--zen-split-column-gap));
 }
 

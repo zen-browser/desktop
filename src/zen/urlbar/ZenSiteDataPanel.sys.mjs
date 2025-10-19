@@ -380,6 +380,7 @@ export class nsZenSiteDataPanel {
 
     let img = this.document.createXULElement('toolbarbutton');
     img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+    img.setAttribute('closemenu', 'none');
     if (this.#iconMap[id]) {
       img.classList.add(`zen-permission-${this.#iconMap[id]}-icon`);
     }
@@ -389,7 +390,6 @@ export class nsZenSiteDataPanel {
     labelContainer.setAttribute('align', 'start');
     labelContainer.classList.add('permission-popup-permission-label-container');
     labelContainer._permission = permission;
-    labelContainer.addEventListener('click', this);
 
     let nameLabel = this.document.createXULElement('label');
     nameLabel.setAttribute('flex', '1');
@@ -419,6 +419,7 @@ export class nsZenSiteDataPanel {
     container.appendChild(img);
     container.appendChild(labelContainer);
 
+    container.addEventListener('click', this);
     return [container, isCrossSiteCookie];
   }
 

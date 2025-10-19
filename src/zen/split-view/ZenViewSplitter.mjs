@@ -883,6 +883,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     tab.removeAttribute('split-view');
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest('.browserSidebarContainer');
+    container.removeAttribute('is-zen-split');
+    container.style.inset = '';
     this._removeHeader(container);
     this.resetContainerStyle(container);
     container.removeEventListener('mousedown', this.handleTabEvent);
@@ -1012,7 +1014,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {Browser} browser - The browser instance.
    */
-  async onLocationChange(browser) {
+  onLocationChange(browser) {
     this.disableTabRearrangeView();
     let tab = window.gBrowser.getTabForBrowser(browser);
     const ignoreSplit = tab.hasAttribute('zen-dont-split-glance');
@@ -1256,6 +1258,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       tab.splitViewValue = this.currentView;
       tab.setAttribute('split-view', 'true');
       const container = tab.linkedBrowser?.closest('.browserSidebarContainer');
+      container.setAttribute('is-zen-split', 'true');
       if (!container?.querySelector('.zen-tab-rearrange-button')) {
         // insert a header into the container
         const header = this._createHeader(container);
@@ -1308,9 +1311,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const nodeRootPosition = splitNode.positionToRoot;
     if (!splitNode.children) {
       const browserContainer = splitNode.tab.linkedBrowser.closest('.browserSidebarContainer');
-      window.requestAnimationFrame(() => {
-        browserContainer.style.inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
-      });
+      browserContainer.style.inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
       this._tabToSplitNode.set(splitNode.tab, splitNode);
       return;
     }
@@ -1341,13 +1342,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       if (i < splittersNeeded) {
         const splitter = currentSplitters[i];
-        window.requestAnimationFrame(() => {
-          if (splitNode.direction === 'column') {
-            splitter.style.inset = `${100 - childRootPosition.bottom}% ${childRootPosition.right}% 0% ${childRootPosition.left}%`;
-          } else {
-            splitter.style.inset = `${childRootPosition.top}% 0% ${childRootPosition.bottom}% ${100 - childRootPosition.right}%`;
-          }
-        });
+        if (splitNode.direction === 'column') {
+          splitter.style.inset = `${100 - childRootPosition.bottom}% ${childRootPosition.right}% 0% ${childRootPosition.left}%`;
+        } else {
+          splitter.style.inset = `${childRootPosition.top}% 0% ${childRootPosition.bottom}% ${100 - childRootPosition.right}%`;
+        }
       }
     });
     this.maybeDisableOpeningTabOnSplitView();
@@ -1539,7 +1538,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetContainerStyle(container, removeDeckSelected = false) {
     container.removeAttribute('zen-split');
-    container.style.inset = '';
     if (removeDeckSelected) {
       container.classList.remove('deck-selected');
     }

@@ -1592,7 +1592,7 @@
       return tab;
     }
 
-    /*
+    /**
      * Get the tab or its glance child
      * @param {Tab} tab - The tab to check
      * @returns {Tab} The tab or its child

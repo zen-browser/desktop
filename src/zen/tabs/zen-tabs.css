@@ -36,9 +36,7 @@
       * - Bookmarks toolbar is visible OR
       * - The container is explicitly marked to hide controls (e.g., on Linux with reversed controls)
       */
-    :root[zen-has-bookmarks] & {
-%include zen-tabs/vertical-tabs-topbar.inc.css
-    }
+    :root[zen-has-bookmarks] &,
     &[should-hide='true'] {
 %include zen-tabs/vertical-tabs-topbar.inc.css
     }

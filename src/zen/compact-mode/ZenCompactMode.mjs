@@ -202,6 +202,7 @@ var gZenCompactModeManager = {
   },
 
   updateCompactModeContext(isSingleToolbar) {
+    isSingleToolbar ||= this.checkIfIllegalState();
     const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
     const menu = document.getElementById('zen-context-menu-compact-mode');
     if (isSingleToolbar) {
@@ -229,6 +230,37 @@ var gZenCompactModeManager = {
     Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
     Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
     this.callAllEventListeners();
+  },
+
+  /* Check for illegal states and fix them
+   * @returns {boolean} If the context menu should just show the "toggle" item
+   *    instead of a submenu with hide options
+   */
+  checkIfIllegalState() {
+    // Due to how we layout the sidebar and toolbar, there are some states
+    // that are not allowed mainly due to the caption buttons not being accessible
+    // at the top left/right of the window.
+    const isSidebarExpanded = gZenVerticalTabsManager._prefsSidebarExpanded;
+    if (isSidebarExpanded) {
+      // Fast exit if the sidebar is expanded, as we dont have illegal states then
+      return false;
+    }
+    const canHideSidebar = this.canHideSidebar;
+    const canHideToolbar = this.canHideToolbar;
+    const isLeftSideButtons = !gZenVerticalTabsManager.isWindowsStyledButtons;
+    const isRightSidebar = gZenVerticalTabsManager._prefsRightSide;
+    // on macos: collapsed + left side + only toolbar
+    // on windows: collapsed + right side + only toolbar
+    const closelyIllegalState =
+      (isLeftSideButtons && !isRightSidebar) || (!isLeftSideButtons && isRightSidebar);
+    if (closelyIllegalState && canHideToolbar && !canHideSidebar) {
+      // This state is illegal
+      Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
+      Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+      this.callAllEventListeners();
+      return true;
+    }
+    return closelyIllegalState;
   },
 
   callAllEventListeners() {
@@ -306,6 +338,13 @@ var gZenCompactModeManager = {
     return (
       Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ||
       gZenVerticalTabsManager._hasSetSingleToolbar
+    );
+  },
+
+  get canHideToolbar() {
+    return (
+      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
+      !gZenVerticalTabsManager._hasSetSingleToolbar
     );
   },
 
@@ -464,14 +503,17 @@ var gZenCompactModeManager = {
       .getElementById('zen-context-menu-compact-mode-toggle')
       .setAttribute('checked', this.preference);
 
-    const hideTabBar = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar', false);
-    const hideToolbar = Services.prefs.getBoolPref('zen.view.compact.hide-toolbar', false);
+    const hideTabBar = this.canHideSidebar;
+    const hideToolbar = this.canHideToolbar;
     const hideBoth = hideTabBar && hideToolbar;
 
     const idName = 'zen-context-menu-compact-mode-hide-';
-    document.getElementById(idName + 'sidebar').setAttribute('checked', !hideBoth && hideTabBar);
-    document.getElementById(idName + 'toolbar').setAttribute('checked', !hideBoth && hideToolbar);
-    document.getElementById(idName + 'both').setAttribute('checked', hideBoth);
+    const sidebarItem = document.getElementById(idName + 'sidebar');
+    const toolbarItem = document.getElementById(idName + 'toolbar');
+    const bothItem = document.getElementById(idName + 'both');
+    sidebarItem.setAttribute('checked', !hideBoth && hideTabBar);
+    toolbarItem.setAttribute('checked', !hideBoth && hideToolbar);
+    bothItem.setAttribute('checked', hideBoth);
   },
 
   _removeOpenStateOnUnifiedExtensions() {

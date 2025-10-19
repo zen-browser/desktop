@@ -264,6 +264,9 @@ jobs:
       - name: Import
         run: npm run import -- --verbose
 
+      - name: Build language packs
+        run: sh scripts/download-language-packs.sh
+
       - name: Compress
         run: |
           tar \

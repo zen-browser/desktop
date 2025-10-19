@@ -274,6 +274,18 @@ var gZenUIManager = {
 
   // Section: URL bar
 
+  onUrlbarOpen() {
+    gURLBar.setAttribute('had-proxystate', gURLBar.getAttribute('pageproxystate'));
+    gURLBar.setPageProxyState('invalid', false);
+  },
+
+  onUrlbarClose() {
+    if (gURLBar.hasAttribute('had-proxystate')) {
+      gURLBar.setURI();
+      gURLBar.removeAttribute('had-proxystate');
+    }
+  },
+
   onUrlbarSearchModeChanged(event) {
     const { searchMode } = event.detail;
     const input = gURLBar.textbox;
@@ -919,7 +931,7 @@ var gZenVerticalTabsManager = {
         gURLBar.textbox.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
-          height = 32;
+          height = AppConstants.platform == 'macosx' ? 34 : 32;
         } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
           height = 40;
         }

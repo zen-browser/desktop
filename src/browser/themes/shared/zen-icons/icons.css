@@ -662,22 +662,6 @@
   list-style-image: url('tab-audio-blocked-small.svg') !important;
 }
 
-/* reload/stop animation */
-#stop-reload-button[animate]
-  > #reload-button[displaystop]
-  + #stop-button
-  > .toolbarbutton-animatable-box
-  > .toolbarbutton-animatable-image {
-  background-image: url('reload-to-stop.svg') !important;
-}
-
-#stop-reload-button[animate]
-  > #reload-button
-  > .toolbarbutton-animatable-box
-  > .toolbarbutton-animatable-image {
-  background-image: url('stop-to-reload.svg') !important;
-}
-
 #reader-mode-button > .urlbar-icon,
 #zen-site-data-header-reader-mode {
   list-style-image: url('reader-mode.svg') !important;
@@ -950,4 +934,5 @@
 
 #zen-copy-url-button image {
   list-style-image: url('link.svg');
+  fill-opacity: 0.7;
 }

@@ -48,10 +48,7 @@
     }
   }
 
-  &
-    #zen-appcontent-navbar-wrapper[zen-has-hover]:not(
-      :has(#urlbar[zen-floating-urlbar='true']:hover)
-    ),
+  & #zen-appcontent-navbar-wrapper[zen-has-hover],
   & #zen-appcontent-navbar-wrapper[has-popup-menu],
   &
     #zen-appcontent-navbar-wrapper:has(

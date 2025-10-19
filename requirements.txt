@@ -9,3 +9,4 @@ packaging==24.2
 pathspec==0.12.1
 platformdirs==4.3.6
 pycodestyle==2.12.1
+requests==2.32.5

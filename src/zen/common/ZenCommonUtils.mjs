@@ -68,58 +68,36 @@ class nsZenPreloadedFeature {
 
 var gZenCommonActions = {
   copyCurrentURLToClipboard() {
-    const currentUrl = gBrowser.currentURI.spec;
-    if (currentUrl) {
-      let str = Cc['@mozilla.org/supports-string;1'].createInstance(Ci.nsISupportsString);
-      str.data = currentUrl;
-      let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
-        Ci.nsITransferable
-      );
-      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
-      transferable.addDataFlavor('text/plain');
-      transferable.setTransferData('text/plain', str);
-      Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
-      let button;
-      if (
-        Services.zen.canShare() &&
-        (currentUrl.startsWith('http://') || currentUrl.startsWith('https://'))
-      ) {
-        button = {
-          id: 'zen-copy-current-url-button',
-          command: (event) => {
-            const buttonRect = event.target.getBoundingClientRect();
-            Services.zen.share(
-              Services.io.newURI(currentUrl),
-              '',
-              '',
-              buttonRect.left,
-              window.innerHeight - buttonRect.bottom,
-              buttonRect.width,
-              buttonRect.height
-            );
-          },
-        };
-      }
-      gZenUIManager.showToast('zen-copy-current-url-confirmation', { button, timeout: 3000 });
+    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    const displaySpec = currentUrl.displaySpec;
+    ClipboardHelper.copyString(displaySpec);
+    let button;
+    if (Services.zen.canShare() && displaySpec.startsWith('http')) {
+      button = {
+        id: 'zen-copy-current-url-button',
+        command: (event) => {
+          const buttonRect = event.target.getBoundingClientRect();
+          Services.zen.share(
+            currentUrl,
+            '',
+            '',
+            buttonRect.left,
+            window.innerHeight - buttonRect.bottom,
+            buttonRect.width,
+            buttonRect.height
+          );
+        },
+      };
     }
+    gZenUIManager.showToast('zen-copy-current-url-confirmation', { button, timeout: 3000 });
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const currentUrl = gBrowser.currentURI.spec;
+    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const tabTitle = gBrowser.selectedTab.label;
-    if (currentUrl && tabTitle) {
-      const markdownLink = `[${tabTitle}](${currentUrl})`;
-      let str = Cc['@mozilla.org/supports-string;1'].createInstance(Ci.nsISupportsString);
-      str.data = markdownLink;
-      let transferable = Cc['@mozilla.org/widget/transferable;1'].createInstance(
-        Ci.nsITransferable
-      );
-      transferable.init(window.docShell.QueryInterface(Ci.nsILoadContext));
-      transferable.addDataFlavor('text/plain');
-      transferable.setTransferData('text/plain', str);
-      Services.clipboard.setData(transferable, null, Ci.nsIClipboard.kGlobalClipboard);
-      gZenUIManager.showToast('zen-copy-current-url-confirmation');
-    }
+    const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
+    ClipboardHelper.copyString(markdownLink);
+    gZenUIManager.showToast('zen-copy-current-url-confirmation', { timeout: 3000 });
   },
 
   throttle(f, delay) {

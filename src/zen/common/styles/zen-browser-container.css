@@ -49,6 +49,7 @@
 
       :root[zen-single-toolbar='true'] & {
         transition-delay: 0.2s;
+        --zen-toolbar-height: 34px;
       }
 
       #tabbrowser-tabpanels[has-toolbar-hovered] & {

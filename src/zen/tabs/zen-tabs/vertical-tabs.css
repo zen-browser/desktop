@@ -115,7 +115,10 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: calc(var(--zen-toolbox-padding) / 2) 0;
+    :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) & {
+      margin-top: 0;
+    }
   }
 
   & #PanelUI-menu-button {
@@ -958,7 +961,10 @@
   }
 
   :root[zen-single-toolbar='true'] & {
-    --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
+    --zen-toolbar-height: 36px;
+    @media (-moz-platform: macos) {
+      --zen-toolbar-height: 42px;
+    }
 
     & #PanelUI-button {
       order: -2;
@@ -1150,11 +1156,11 @@
 
       --zen-essential-tab-selected-bg: light-dark(
         rgba(255, 255, 255, 0.85),
-        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 40%)
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 40%)
       );
       --zen-essential-tab-selected-bg-hover: light-dark(
         rgba(255, 255, 255, 0.8),
-        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 30%)
       );
 
       :root[zen-default-theme='true'] & {

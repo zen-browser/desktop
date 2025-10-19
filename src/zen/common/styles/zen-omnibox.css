@@ -39,6 +39,11 @@
   :root[zen-single-toolbar='true'] &[breakout-extend='true'],
   &[zen-floating-urlbar='true'] {
     --urlbar-container-padding: 3px;
+    --urlbar-margin-inline: 11px;
+
+    &:not([zen-floating-urlbar='true']) {
+      --urlbar-container-height: 52px !important;
+    }
   }
 }
 
@@ -114,7 +119,7 @@
   border-radius: 0px !important;
 }
 
-#urlbar:not([breakout-extend='true']) .urlbar-input-box {
+#urlbar .urlbar-input-box {
   font-weight: 500;
 }
 
@@ -134,9 +139,10 @@
   #zen-copy-url-button {
     opacity: 0;
     transition:
-      opacity 0.2s,
-      visibility 0.2s;
+      opacity 0.15s,
+      visibility 0.15s;
     visibility: collapse;
+    height: 100%; /* To still be able to open popups */
 
     #navigator-toolbox:hover &,
     &[open],
@@ -144,6 +150,38 @@
       opacity: 1;
       visibility: visible;
     }
+  }
+}
+
+:root:not([zen-single-toolbar='true'])
+  #urlbar:not([breakout-extend='true'])
+  .urlbar-input-container:not([pageproxystate='invalid']) {
+  padding: 2px 3px;
+  gap: 2px;
+
+  & .urlbar-page-action {
+    height: 100%;
+  }
+
+  & #zen-copy-url-button {
+    order: -1;
+  }
+
+  & #identity-box {
+    order: 999;
+    margin: 0px !important;
+  }
+}
+
+#zen-copy-url-button[disabled] {
+  opacity: 0.3;
+  background: transparent !important;
+}
+
+:root[zen-single-toolbar='true'],
+#urlbar[pageproxystate='invalid'] {
+  #zen-copy-url-button[disabled] {
+    display: none !important;
   }
 }
 
@@ -187,7 +225,8 @@
 #urlbar[breakout-extend='true'] {
   z-index: 2;
 
-  & .urlbar-input-container {
+  :root[zen-single-toolbar='true'] & .urlbar-input-box,
+  &[zen-floating-urlbar='true'] .urlbar-input-box {
     font-weight: 400;
     @media (-moz-platform: windows) {
       font-weight: 500;
@@ -195,7 +234,13 @@
   }
 
   & #identity-box {
-    margin-right: calc(var(--urlbar-margin-inline) - 1px);
+    height: 100%;
+  }
+
+  :root:not([zen-single-toolbar='true'])
+    &:not([zen-floating-urlbar='true'])
+    #identity-box:not([pageproxystate='invalid']) {
+    margin-inline-end: 0;
   }
 
   & .urlbar-background {
@@ -663,6 +708,21 @@
 
   & .action-contextualidentity {
     display: none;
+  }
+}
+
+:root:not([zen-single-toolbar='true'])
+  #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
+  & .urlbar-background {
+    border-radius: 10px !important;
+  }
+
+  #urlbar-results {
+    margin-block: calc(var(--urlbarView-results-padding) - 2px);
+  }
+
+  #identity-box {
+    margin-inline-end: 0px;
   }
 }
 

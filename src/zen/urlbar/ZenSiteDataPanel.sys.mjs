@@ -76,21 +76,29 @@ export class nsZenSiteDataPanel {
             class="urlbar-page-action"
             role="button"
             data-l10n-id="zen-urlbar-copy-url-button"
-            hidden="true">
+            disabled="true">
         <image class="urlbar-icon"/>
       </hbox>
     `);
-    container.appendChild(fragment);
+    container.after(fragment);
 
     const aElement = this.document.getElementById('zen-copy-url-button');
     aElement.addEventListener('click', () => {
+      if (aElement.hasAttribute('disabled')) {
+        return;
+      }
       this.document.getElementById('cmd_zenCopyCurrentURL').doCommand();
     });
 
     this.window.gBrowser.addProgressListener({
       onLocationChange: (aWebProgress, aRequest, aLocation) => {
         if (aWebProgress.isTopLevel) {
-          aElement.hidden = !this.#canCopyUrl(aLocation);
+          const disabled = !this.#canCopyUrl(aLocation);
+          if (disabled) {
+            aElement.setAttribute('disabled', true);
+          } else {
+            aElement.removeAttribute('disabled');
+          }
         }
       },
     });
@@ -337,7 +345,7 @@ export class nsZenSiteDataPanel {
     }
 
     separator.hidden = !settingElements.length || !crossSiteCookieElements.length;
-    section.hidden = list.childElementCount == 0;
+    section.hidden = list.childElementCount < 2; // only the separator
   }
 
   #getPermissionStateLabelId(permission) {
@@ -372,6 +380,7 @@ export class nsZenSiteDataPanel {
 
     let img = this.document.createXULElement('toolbarbutton');
     img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+    img.setAttribute('closemenu', 'none');
     if (this.#iconMap[id]) {
       img.classList.add(`zen-permission-${this.#iconMap[id]}-icon`);
     }
@@ -381,7 +390,6 @@ export class nsZenSiteDataPanel {
     labelContainer.setAttribute('align', 'start');
     labelContainer.classList.add('permission-popup-permission-label-container');
     labelContainer._permission = permission;
-    labelContainer.addEventListener('click', this);
 
     let nameLabel = this.document.createXULElement('label');
     nameLabel.setAttribute('flex', '1');
@@ -411,6 +419,7 @@ export class nsZenSiteDataPanel {
     container.appendChild(img);
     container.appendChild(labelContainer);
 
+    container.addEventListener('click', this);
     return [container, isCrossSiteCookie];
   }
 
@@ -524,7 +533,11 @@ export class nsZenSiteDataPanel {
         break;
       }
       default: {
-        const label = event.target.closest('.permission-popup-permission-label-container');
+        const item = event.target.closest('.permission-popup-permission-item');
+        if (!item) {
+          break;
+        }
+        const label = item.querySelector('.permission-popup-permission-label-container');
         if (label?._permission) {
           this.#onPermissionClick(label);
         }

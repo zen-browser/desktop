@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+
 export var ZenCustomizableUI = new (class {
   constructor() {}
 
@@ -37,7 +39,7 @@ export var ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = '215px';
+    const kDefaultSidebarWidth = AppConstants.platform === 'macosx' ? '230px' : '186px';
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox
@@ -71,6 +73,7 @@ export var ZenCustomizableUI = new (class {
             <toolbarbutton
               class="toolbarbutton-1"
               command="cmd_toggleCompactModeIgnoreHover"
+              flex="1"
               data-l10n-id="zen-toggle-compact-mode-button" />
           </toolbaritem>
           <html:div id="zen-sidebar-top-buttons-separator" skipintoolbarset="true" overflows="false"></html:div>

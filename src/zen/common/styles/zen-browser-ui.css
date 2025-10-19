@@ -136,9 +136,9 @@
   z-index: 2;
 }
 
-#nav-bar {
-  /* For some reason, Firefox adds a really small border to the top of the nav-bar */
+:root[zen-single-toolbar='true'] #nav-bar {
   border-top: none !important;
+  --zen-toolbar-height: 37px;
 }
 
 #zen-main-app-wrapper {
@@ -333,9 +333,16 @@
   }
 }
 
-#zen-appcontent-navbar-wrapper #zen-sidebar-top-buttons {
-  max-width: fit-content;
-  :root[zen-right-side='true'] & {
-    order: 999;
+#zen-appcontent-navbar-wrapper {
+  z-index: 1;
+  & #zen-sidebar-top-buttons {
+    max-width: fit-content;
+    :root[zen-right-side='true'] & {
+      order: 1;
+    }
   }
+}
+
+:root[zen-right-side='true'] #zen-appcontent-navbar-wrapper #PanelUI-button {
+  order: 2;
 }

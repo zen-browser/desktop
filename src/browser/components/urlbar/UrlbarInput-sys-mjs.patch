@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarInput.sys.mjs b/browser/components/urlbar/UrlbarInput.sys.mjs
-index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2b69f0cf7 100644
+index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..b286fc5b40a6e32a3af0bb0f209e58c64ab7bed9 100644
 --- a/browser/components/urlbar/UrlbarInput.sys.mjs
 +++ b/browser/components/urlbar/UrlbarInput.sys.mjs
 @@ -76,6 +76,13 @@ ChromeUtils.defineLazyGetter(lazy, "logger", () =>
@@ -75,7 +75,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      }
  
      if (isCanonized) {
-@@ -2298,6 +2330,17 @@ export class UrlbarInput {
+@@ -2298,6 +2330,32 @@ export class UrlbarInput {
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -90,13 +90,29 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
 +    return lazy.ZEN_URLBAR_BEHAVIOR;
 +  }
 +
++  get zenStrippedURI() {
++    let strippedURI = null;
++
++    // Error check occurs during isClipboardURIValid
++    let uri = this.window.gBrowser.currentURI;
++    try {
++      strippedURI = lazy.QueryStringStripper.stripForCopyOrShare(uri);
++    } catch (e) {
++      console.warn(`stripForCopyOrShare: ${e.message}`);
++      return [uri, lazy.ClipboardHelper];
++    }
++
++    return [strippedURI ? this.makeURIReadable(strippedURI) : uri, lazy.ClipboardHelper];
++  }
++
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -2312,6 +2355,12 @@ export class UrlbarInput {
+@@ -2312,6 +2370,13 @@ export class UrlbarInput {
  
      this.setAttribute("breakout-extend", "true");
  
++    this.window.gZenUIManager.onUrlbarOpen();
 +    if (this.zenUrlbarBehavior == 'float' || (this.zenUrlbarBehavior == 'floating-on-type' && !this.focusedViaMousedown)) {
 +      this.setAttribute("zen-floating-urlbar", "true");
 +      this.window.gZenUIManager.onFloatingURLBarOpen();
@@ -106,13 +122,14 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -2331,6 +2380,24 @@ export class UrlbarInput {
+@@ -2331,6 +2396,25 @@ export class UrlbarInput {
        return;
      }
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
 +    }
++    this.window.gZenUIManager.onUrlbarClose();
 +    
 +    // Arc like URLbar: Blur the input on exit
 +    const zenToolbox = this.document.getElementById("navigator-toolbox");
@@ -131,8 +148,24 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2660,7 +2727,7 @@ export class UrlbarInput {
+@@ -2595,10 +2679,12 @@ export class UrlbarInput {
+       return;
+     }
+     this.textbox.style.top = px(
++      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
+       this.textbox.parentNode.getBoxQuads({
+         ignoreTransforms: true,
+         flush: false,
+       })[0].p1.y
++      : (AppConstants.platform == "macosx" ? -2 : -5)
+     );
+   }
  
+@@ -2658,9 +2744,10 @@ export class UrlbarInput {
+           return;
+         }
+ 
++        this.window.gZenVerticalTabsManager.recalculateURLBarHeight();
          this.textbox.parentNode.style.setProperty(
            "--urlbar-container-height",
 -          px(getBoundsWithoutFlushing(this.textbox.parentNode).height)
@@ -140,7 +173,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
          );
          this.textbox.style.setProperty(
            "--urlbar-height",
-@@ -3093,6 +3160,7 @@ export class UrlbarInput {
+@@ -3093,6 +3180,7 @@ export class UrlbarInput {
    }
  
    _toggleActionOverride(event) {
@@ -148,7 +181,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -3197,7 +3265,7 @@ export class UrlbarInput {
+@@ -3197,7 +3285,7 @@ export class UrlbarInput {
        return val;
      }
      let trimmedValue = lazy.UrlbarPrefs.get("trimURLs")
@@ -157,7 +190,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -3501,6 +3569,7 @@ export class UrlbarInput {
+@@ -3501,6 +3589,7 @@ export class UrlbarInput {
      resultDetails = null,
      browser = this.window.gBrowser.selectedBrowser
    ) {
@@ -165,7 +198,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      if (this.isAddressbar) {
        this.#prepareAddressbarLoad(
          url,
-@@ -3608,6 +3677,10 @@ export class UrlbarInput {
+@@ -3608,6 +3697,10 @@ export class UrlbarInput {
        }
        reuseEmpty = true;
      }
@@ -176,7 +209,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      if (
        where == "tab" &&
        reuseEmpty &&
-@@ -3615,6 +3688,9 @@ export class UrlbarInput {
+@@ -3615,6 +3708,9 @@ export class UrlbarInput {
      ) {
        where = "current";
      }
@@ -186,7 +219,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      return where;
    }
  
-@@ -3872,6 +3948,7 @@ export class UrlbarInput {
+@@ -3872,6 +3968,7 @@ export class UrlbarInput {
        this.setResultForCurrentValue(null);
        this.handleCommand();
        this.controller.clearLastQueryContextCache();
@@ -194,7 +227,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
  
        this._suppressStartQuery = false;
      });
-@@ -3879,7 +3956,6 @@ export class UrlbarInput {
+@@ -3879,7 +3976,6 @@ export class UrlbarInput {
      contextMenu.addEventListener("popupshowing", () => {
        // Close the results pane when the input field contextual menu is open,
        // because paste and go doesn't want a result selection.
@@ -202,7 +235,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -3991,7 +4067,11 @@ export class UrlbarInput {
+@@ -3991,7 +4087,11 @@ export class UrlbarInput {
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -215,7 +248,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -4302,6 +4382,7 @@ export class UrlbarInput {
+@@ -4302,6 +4402,7 @@ export class UrlbarInput {
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -223,7 +256,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
        l10nId,
        l10nId == "urlbar-placeholder-with-name" ? { name } : undefined
      );
-@@ -4413,6 +4494,11 @@ export class UrlbarInput {
+@@ -4413,6 +4514,11 @@ export class UrlbarInput {
    }
  
    _on_click(event) {
@@ -235,7 +268,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
      if (
        event.target == this.inputField ||
        event.target == this._inputContainer
-@@ -4485,7 +4571,7 @@ export class UrlbarInput {
+@@ -4485,7 +4591,7 @@ export class UrlbarInput {
        }
      }
  
@@ -244,7 +277,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -4525,9 +4611,16 @@ export class UrlbarInput {
+@@ -4525,9 +4631,16 @@ export class UrlbarInput {
    }
  
    _on_mousedown(event) {
@@ -262,7 +295,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
  
          if (
            event.target != this.inputField &&
-@@ -4538,6 +4631,10 @@ export class UrlbarInput {
+@@ -4538,6 +4651,10 @@ export class UrlbarInput {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -273,7 +306,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -4573,7 +4670,7 @@ export class UrlbarInput {
+@@ -4573,7 +4690,7 @@ export class UrlbarInput {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -282,7 +315,7 @@ index afc7a6c6ddbf4cf5a5b27c0bd60577b833c63093..a2494f2c0f3e4fc50cbe2fe3bf6e2bd2
            break;
          }
  
-@@ -4890,7 +4987,7 @@ export class UrlbarInput {
+@@ -4890,7 +5007,7 @@ export class UrlbarInput {
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

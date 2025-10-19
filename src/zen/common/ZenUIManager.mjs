@@ -282,6 +282,7 @@ var gZenUIManager = {
   onUrlbarClose() {
     if (gURLBar.hasAttribute('had-proxystate')) {
       gURLBar.setURI();
+      gURLBar.removeAttribute('had-proxystate');
     }
   },
 

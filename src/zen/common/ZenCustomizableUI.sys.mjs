@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+
 export var ZenCustomizableUI = new (class {
   constructor() {}
 
@@ -37,7 +39,7 @@ export var ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = '230px';
+    const kDefaultSidebarWidth = AppConstants.platform === 'macosx' ? '230px' : '186px';
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox

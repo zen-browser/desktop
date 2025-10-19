@@ -59,7 +59,7 @@ zen-generic-next = Suivant
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Autorisé
 zen-site-data-setting-block = Bloqué
-zen-site-data-setting-cross-site = cookie intersite
+zen-site-data-setting-cross-site = Cookie intersite
 zen-site-data-security-info-extension = 
     .label = Extension
 zen-site-data-security-info-secure = 

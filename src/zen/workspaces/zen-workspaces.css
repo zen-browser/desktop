@@ -236,7 +236,7 @@
     visibility: collapse;
     transition: opacity 0.1s;
     order: 5;
-    --toolbarbutton-inner-padding: 6px;
+    --toolbarbutton-inner-padding: 6px !important;
 
     & image {
       border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;

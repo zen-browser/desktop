@@ -868,6 +868,7 @@
                       }
                     }, 3000);
                   });
+                  return;
                 }
                 const isSpltView = tab.group?.hasAttribute('split-view-group');
                 const group = isSpltView ? tab.group.group : tab.group;

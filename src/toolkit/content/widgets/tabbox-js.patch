@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2f767296db8043318fab2aeb39bfc5eee090b258 100644
+index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163b914adec 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -213,7 +213,7 @@
@@ -20,7 +20,15 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2f767296db8043318fab2aeb39bfc5ee
          if (otherTab != tab && otherTab.selected) {
            otherTab._selected = false;
          }
-@@ -823,7 +823,7 @@
+@@ -646,6 +646,7 @@
+      * @param {MozTab|null} [val]
+      */
+     set selectedItem(val) {
++      val = window.gZenGlanceManager?.getTabOrGlanceChild(val) || val;
+       if (val && !val.selected) {
+         // The selectedIndex setter ignores invalid values
+         // such as -1 if |val| isn't one of our child nodes.
+@@ -823,7 +824,7 @@
          if (tab == startTab) {
            return null;
          }
@@ -29,7 +37,11 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2f767296db8043318fab2aeb39bfc5ee
            return tab;
          }
        }
-@@ -888,7 +888,7 @@
+@@ -885,10 +886,11 @@
+      * @param {boolean} [aWrap]
+      */
+     advanceSelectedTab(aDir, aWrap) {
++      if (window?.gZenGlanceManager?._animating) return;
        let { ariaFocusedItem } = this;
        let startTab = ariaFocusedItem;
        if (!ariaFocusedItem || !this.allTabs.includes(ariaFocusedItem)) {

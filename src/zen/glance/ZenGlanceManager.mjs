@@ -774,7 +774,7 @@
         (this._animating && !onTabClose) ||
         !this.#currentBrowser ||
         (this.animatingOpen && !onTabClose) ||
-        this._duringOpening
+        this.#duringOpening
       );
     }
 
@@ -1055,7 +1055,7 @@
       this.#currentParentTab.removeAttribute('glance-id');
       this.#glances.delete(this.#currentGlanceID);
       this.#currentGlanceID = setNewID;
-      this._duringOpening = false;
+      this.#duringOpening = false;
     }
 
     /**
@@ -1067,8 +1067,11 @@
       }
 
       this.#duringOpening = true;
-      this.#configureGlanceElements();
+      // IMPORTANT: #setGlanceStates() must be called before #configureGlanceElements()
+      // to ensure that the glance state is fully set up before configuring the DOM elements.
+      // This order is required to avoid timing/state issues. Do not reorder without understanding the dependencies.
       this.#setGlanceStates();
+      this.#configureGlanceElements();
       this.#duringOpening = false;
     }
 
@@ -1184,10 +1187,17 @@
 
     /**
      * Open glance on location change if not animating
+     * @param {Tab} prevTab - The previous tab
      */
-    onLocationChangeOpenGlance() {
+    #onLocationChangeOpenGlance(prevTab) {
       if (!this.animatingOpen) {
         this.quickOpenGlance();
+        if (prevTab && prevTab.linkedBrowser) {
+          prevTab.linkedBrowser.docShellIsActive = false;
+          prevTab.linkedBrowser
+            .closest('.browserSidebarContainer')
+            .classList.remove('deck-selected');
+        }
       }
     }
 
@@ -1198,6 +1208,7 @@
      */
     onLocationChange(event) {
       const tab = event.target;
+      const prevTab = event.detail.previousTab;
 
       if (this.animatingFullOpen || this.closingGlance) {
         return;
@@ -1215,30 +1226,11 @@
       }
 
       this.#currentGlanceID = tab.getAttribute('glance-id');
-
-      if (gBrowser.selectedTab === this.#currentParentTab && this.#currentBrowser) {
-        this.#handleParentTabSelection(event);
-      } else if (gBrowser.selectedTab === this.#currentTab) {
-        setTimeout(this.onLocationChangeOpenGlance.bind(this), 0);
+      if (gBrowser.selectedTab === this.#currentTab) {
+        this.#onLocationChangeOpenGlance(prevTab);
+        return;
       }
-    }
-
-    /**
-     * Handle parent tab selection
-     * @param {Event} event - The location change event
-     */
-    #handleParentTabSelection(event) {
-      const curTab = this.#currentTab;
-      const prevTab = event.detail.previousTab;
-
-      setTimeout(() => {
-        gBrowser.selectedTab = curTab;
-        if (prevTab?.linkedBrowser) {
-          prevTab.linkedBrowser
-            .closest('.browserSidebarContainer')
-            .classList.remove('deck-selected');
-        }
-      }, 0);
+      this.#currentGlanceID = null;
     }
 
     /**
@@ -1605,6 +1597,15 @@
         }
       }
       return tab;
+    }
+
+    /**
+     * Get the tab or its glance child
+     * @param {Tab} tab - The tab to check
+     * @returns {Tab} The tab or its child
+     */
+    getTabOrGlanceChild(tab) {
+      return tab?.glanceTab || tab;
     }
 
     /**

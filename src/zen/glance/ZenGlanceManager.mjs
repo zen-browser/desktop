@@ -1189,8 +1189,12 @@
     #onLocationChangeOpenGlance(prevTab) {
       if (!this.animatingOpen) {
         this.quickOpenGlance();
-        prevTab.linkedBrowser.docShellIsActive = false;
-        prevTab.linkedBrowser.closest('.browserSidebarContainer').classList.remove('deck-selected');
+        if (prevTab && prevTab.linkedBrowser) {
+          prevTab.linkedBrowser.docShellIsActive = false;
+          prevTab.linkedBrowser
+            .closest('.browserSidebarContainer')
+            .classList.remove('deck-selected');
+        }
       }
     }
 

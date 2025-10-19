@@ -136,13 +136,9 @@
   z-index: 2;
 }
 
-#nav-bar {
-  /* For some reason, Firefox adds a really small border to the top of the nav-bar */
+:root[zen-single-toolbar='true'] #nav-bar {
   border-top: none !important;
-
-  :root[zen-single-toolbar='true'] & {
-    --zen-toolbar-height: 38px;
-  }
+  --zen-toolbar-height: 38px;
 }
 
 #zen-main-app-wrapper {

@@ -274,6 +274,17 @@ var gZenUIManager = {
 
   // Section: URL bar
 
+  onUrlbarOpen() {
+    gURLBar.setAttribute('had-proxystate', gURLBar.getAttribute('pageproxystate'));
+    gURLBar.setPageProxyState('invalid', false);
+  },
+
+  onUrlbarClose() {
+    if (gURLBar.hasAttribute('had-proxystate')) {
+      gURLBar.setURI();
+    }
+  },
+
   onUrlbarSearchModeChanged(event) {
     const { searchMode } = event.detail;
     const input = gURLBar.textbox;
@@ -919,13 +930,11 @@ var gZenVerticalTabsManager = {
         gURLBar.textbox.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
-          height = 32;
+          height = 34;
         } else if (gURLBar.getAttribute('breakout-extend') !== 'true') {
           height = 40;
         }
-        if (typeof height !== 'undefined') {
-          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
-        }
+        gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
         gURLBar.zenFormatURLValue();
       });
     });

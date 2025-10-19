@@ -26,10 +26,6 @@
   }
 }
 
-:root:not([zen-single-toolbar='true']) #zen-navigator-toolbox #zen-sidebar-top-buttons {
-  --zen-toolbar-height: 42px;
-}
-
 :root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),
 :root[zen-before-loaded='true'] #urlbar {
   opacity: 0 !important;
@@ -143,6 +139,10 @@
 #nav-bar {
   /* For some reason, Firefox adds a really small border to the top of the nav-bar */
   border-top: none !important;
+
+  :root[zen-single-toolbar='true'] & {
+    --zen-toolbar-height: 38px;
+  }
 }
 
 #zen-main-app-wrapper {

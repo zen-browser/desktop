@@ -152,7 +152,7 @@
   --tab-selected-color-scheme: inherit;
   --tabstrip-inner-border: transparent;
 
-  --zen-toolbar-height: 38px;
+  --zen-toolbar-height: 42px;
   --zen-toolbar-button-inner-padding: 6px;
   --toolbarbutton-outer-padding: 4px;
   --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);

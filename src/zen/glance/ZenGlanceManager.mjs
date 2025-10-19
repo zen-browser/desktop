@@ -1067,6 +1067,9 @@
       }
 
       this.#duringOpening = true;
+      // IMPORTANT: #setGlanceStates() must be called before #configureGlanceElements()
+      // to ensure that the glance state is fully set up before configuring the DOM elements.
+      // This order is required to avoid timing/state issues. Do not reorder without understanding the dependencies.
       this.#setGlanceStates();
       this.#configureGlanceElements();
       this.#duringOpening = false;

@@ -390,9 +390,9 @@ menuseparator {
       min-height: 28px;
       margin: 0px !important;
       border-radius: 6px !important;
-      background: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) !important;
       border-top: 2px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
       color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.05);
 
       outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.02));
       outline-offset: -0.5px;

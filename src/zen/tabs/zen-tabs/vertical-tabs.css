@@ -1156,11 +1156,11 @@
 
       --zen-essential-tab-selected-bg: light-dark(
         rgba(255, 255, 255, 0.85),
-        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 40%)
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 40%)
       );
       --zen-essential-tab-selected-bg-hover: light-dark(
         rgba(255, 255, 255, 0.8),
-        color-mix(in srgb, var(--zen-primary-color), rgba(68, 64, 64, 0.85) 50%)
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 30%)
       );
 
       :root[zen-default-theme='true'] & {

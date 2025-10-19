@@ -37,7 +37,7 @@ export var ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = '215px';
+    const kDefaultSidebarWidth = '230px';
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox

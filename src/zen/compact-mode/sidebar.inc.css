@@ -132,14 +132,13 @@
     }
   }
 
-  #navigator-toolbox[zen-has-hover]:not(:has(#urlbar[zen-floating-urlbar='true']:hover)),
-  #navigator-toolbox[zen-user-show],
-  #navigator-toolbox[zen-has-empty-tab],
-  #navigator-toolbox[flash-popup],
-  #navigator-toolbox[has-popup-menu],
-  #navigator-toolbox[movingtab],
-  &[zen-renaming-tab='true'] #navigator-toolbox,
-  #navigator-toolbox[zen-compact-mode-active] {
+  #navigator-toolbox:is(
+    [zen-has-hover], [zen-user-show], 
+    [zen-has-empty-tab], [flash-popup],
+    [has-popup-menu], [movingtab], 
+    [zen-compact-mode-active]
+  ),
+  &[zen-renaming-tab='true'] #navigator-toolbox {
     &:not([animate='true']) {
       --zen-compact-mode-func: linear(
         0 0%,

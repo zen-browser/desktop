@@ -963,7 +963,7 @@
   :root[zen-single-toolbar='true'] & {
     --zen-toolbar-height: 36px;
     @media (-moz-platform: macos) {
-      --zen-toolbar-height: 42px;
+      --zen-toolbar-height: 38px;
     }
 
     & #PanelUI-button {

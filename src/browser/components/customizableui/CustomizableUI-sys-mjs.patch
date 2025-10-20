@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index d9a059f608779fea7cd8c595a432f6fe95183e0c..09a7c4045afd0b96027d0bbbad22e02e52fd7b22 100644
+index d9a059f608779fea7cd8c595a432f6fe95183e0c..31c43bc3d5b05713299c1b822b9774909445e862 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
 @@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -158,7 +158,7 @@ index d9a059f608779fea7cd8c595a432f6fe95183e0c..09a7c4045afd0b96027d0bbbad22e02e
            continue;
          }
 -        sum += parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-+        sum += parseFloat(style.marginLeft) + Math.max(0, parseFloat(style.marginRight));
++        sum += parseFloat(style.marginLeft) + (win.gZenVerticalTabsManager._hasSetSingleToolbar ? Math.max(0, parseFloat(style.marginRight)) : parseFloat(style.marginRight));
          if (child != aExceptChild) {
            sum += getInlineSize(child);
          }

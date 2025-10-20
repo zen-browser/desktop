@@ -988,7 +988,7 @@
       if (!onTabClose) {
         this.quickCloseGlance({ clearID: false });
       }
-      this.browserWrapper.style.display = 'none';
+      this.overlay.style.display = 'none';
       this.overlay.removeAttribute('fade-out');
       this.browserWrapper.removeAttribute('animate');
 

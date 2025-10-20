@@ -35,7 +35,8 @@
     overflow: clip;
 
     & #urlbar:not([breakout-extend='true']) {
-      opacity: 0;
+      /* Sometimes, "opacity: 1" is forced elsewhere */
+      opacity: 0 !important;
       pointer-events: none;
       transition: opacity var(--zen-hidden-toolbar-transition);
     }
@@ -59,7 +60,7 @@
 %include windows-captions-fix-active.inc.css
 
     & #urlbar {
-      opacity: 1;
+      opacity: 1 !important;
       pointer-events: auto;
     }
 

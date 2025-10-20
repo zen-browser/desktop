@@ -1305,12 +1305,13 @@
 
         // Do not rebuild if the workspace is not the same as the current one
         const windowWorkspace = await browser.gZenWorkspaces.getActiveWorkspace();
-        if (windowWorkspace.uuid !== uuid && theme !== null) {
+        if (windowWorkspace.uuid !== uuid) {
           return;
         }
 
         // get the theme from the window
         workspaceTheme = this.fixTheme(theme || windowWorkspace.theme);
+        const docElement = browser.document.documentElement;
 
         if (!skipUpdate) {
           for (const dot of browser.gZenThemePicker.panel.querySelectorAll(
@@ -1328,17 +1329,15 @@
         }
 
         if (!skipUpdate) {
-          browser.document.documentElement.style.setProperty(
+          docElement.style.setProperty(
             '--zen-main-browser-background-old',
-            browser.document.documentElement.style.getPropertyValue('--zen-main-browser-background')
+            docElement.style.getPropertyValue('--zen-main-browser-background')
           );
-          browser.document.documentElement.style.setProperty(
+          docElement.style.setProperty(
             '--zen-main-browser-background-toolbar-old',
-            browser.document.documentElement.style.getPropertyValue(
-              '--zen-main-browser-background-toolbar'
-            )
+            docElement.style.getPropertyValue('--zen-main-browser-background-toolbar')
           );
-          browser.document.documentElement.style.setProperty(
+          docElement.style.setProperty(
             '--zen-background-opacity',
             browser.gZenThemePicker.previousBackgroundOpacity ?? 1
           );
@@ -1461,16 +1460,9 @@
           }
         }
 
-        browser.document.documentElement.style.setProperty(
-          '--zen-main-browser-background-toolbar',
-          gradientToolbar
-        );
-        browser.document.documentElement.style.setProperty(
-          '--zen-main-browser-background',
-          gradient
-        );
+        docElement.style.setProperty('--zen-main-browser-background-toolbar', gradientToolbar);
+        docElement.style.setProperty('--zen-main-browser-background', gradient);
         const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
-        const docElement = browser.document.documentElement;
         if (isDefaultTheme) {
           docElement.setAttribute('zen-default-theme', 'true');
         } else {
@@ -1499,7 +1491,7 @@
           }
           // Set `--toolbox-textcolor` to have a contrast with the primary color
           const textColor = this.getToolbarColor(isDarkMode);
-          document.documentElement.style.setProperty(
+          docElement.style.setProperty(
             '--toolbox-textcolor',
             `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
           );

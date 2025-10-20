@@ -24,11 +24,11 @@
         const { exists: shouldExist = true } = descendantSelectors;
         if (exists === shouldExist) {
           if (!element.hasAttribute(stateAttribute)) {
-            element.setAttribute(stateAttribute, 'true');
+            gZenCompactModeManager._setElementExpandAttribute(element, true, stateAttribute);
           }
         } else {
           if (element.hasAttribute(stateAttribute)) {
-            element.removeAttribute(stateAttribute);
+            gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
           }
         }
       };

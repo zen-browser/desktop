@@ -143,6 +143,7 @@ var gZenCompactModeManager = {
   },
 
   addHasPolyfillObserver() {
+    const attributes = ['panelopen', 'open', 'breakout-extend', 'zen-floating-urlbar'];
     this.sidebarObserverId = ZenHasPolyfill.observeSelectorExistence(
       this.sidebar,
       [
@@ -152,8 +153,21 @@ var gZenCompactModeManager = {
         },
       ],
       'zen-compact-mode-active',
-      ['panelopen', 'open', 'breakout-extend', 'zen-floating-urlbar']
+      attributes
     );
+    this.toolbarObserverId = ZenHasPolyfill.observeSelectorExistence(
+      document.getElementById('zen-appcontent-navbar-wrapper'),
+      [
+        {
+          selector:
+            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
+        },
+      ],
+      'zen-compact-mode-active',
+      attributes
+    );
+    // Always connect this observer, we need it even if compact mode is disabled
+    ZenHasPolyfill.connectObserver(this.toolbarObserverId);
   },
 
   flashSidebarIfNecessary(aInstant = false) {
@@ -601,7 +615,7 @@ var gZenCompactModeManager = {
   },
 
   _setElementExpandAttribute(element, value, attr = 'zen-has-hover') {
-    const kVerifiedAttributes = ['zen-has-hover', 'has-popup-menu'];
+    const kVerifiedAttributes = ['zen-has-hover', 'has-popup-menu', 'zen-compact-mode-active'];
     const isToolbar = element.id === 'zen-appcontent-navbar-wrapper';
     if (value) {
       element.setAttribute(attr, 'true');
@@ -612,8 +626,7 @@ var gZenCompactModeManager = {
             document.documentElement.hasAttribute('zen-has-bookmarks'))) ||
           (this.preference &&
             Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
-            !gZenVerticalTabsManager._hasSetSingleToolbar &&
-            !gURLBar.hasAttribute('breakout-extend')))
+            !gZenVerticalTabsManager._hasSetSingleToolbar))
       ) {
         gBrowser.tabpanels.setAttribute('has-toolbar-hovered', 'true');
       }

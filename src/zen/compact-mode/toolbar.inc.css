@@ -48,13 +48,11 @@
     }
   }
 
-  & #zen-appcontent-navbar-wrapper[zen-has-hover],
-  & #zen-appcontent-navbar-wrapper[has-popup-menu],
-  &
-    #zen-appcontent-navbar-wrapper:has(
-      *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)
-    ) {
-
+  & #zen-appcontent-navbar-wrapper:is(
+    [zen-has-hover],
+    [has-popup-menu],
+    [zen-compact-mode-active]
+  ) {
     height: var(--zen-toolbar-height-with-bookmarks);
     overflow: inherit;
 

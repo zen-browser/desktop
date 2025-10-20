@@ -216,7 +216,7 @@ var gZenCompactModeManager = {
   },
 
   updateCompactModeContext(isSingleToolbar) {
-    isSingleToolbar ||= this.checkIfIllegalState();
+    const isIllegalState = this.checkIfIllegalState();
     const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
     const menu = document.getElementById('zen-context-menu-compact-mode');
     if (isSingleToolbar) {
@@ -225,6 +225,14 @@ var gZenCompactModeManager = {
     } else {
       menu.removeAttribute('hidden');
       menu.querySelector('menupopup').prepend(menuitem);
+    }
+    const hideToolbarMenuItem = document.getElementById(
+      'zen-context-menu-compact-mode-hide-toolbar'
+    );
+    if (isIllegalState) {
+      hideToolbarMenuItem.setAttribute('disabled', 'true');
+    } else {
+      hideToolbarMenuItem.removeAttribute('disabled');
     }
   },
 

@@ -73,8 +73,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // get closest A element
     const target = event.target.closest('A');
     const elementToRecord = event.originalTarget || event.target;
-    // We record the link data anyway, even if the glance may result
-    // invoked or not. We have some cases where glance would open, for example,
+    // We record the link data anyway, even if the glance may be invoked
+    // or not. We have some cases where glance would open, for example,
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.

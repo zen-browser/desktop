@@ -706,7 +706,6 @@
 
   & #titlebar {
     display: grid;
-    overflow: clip;
   }
 
   & #zen-sidebar-top-buttons-customization-target {

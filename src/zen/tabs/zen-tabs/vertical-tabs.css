@@ -618,12 +618,6 @@
   --tab-min-width: 48px !important;
   --zen-toolbox-padding: 6px !important;
   --zen-toolbox-max-width: calc(var(--tab-min-width) + var(--zen-toolbox-padding) * 2);
-
-  /* We can't show the rename input properly in collapsed state,
-     so hide the workspace edit input */
-  #context_zenEditWorkspace {
-    display: none;
-  }
 }
 
 #navigator-toolbox:not([zen-sidebar-expanded='true']) {

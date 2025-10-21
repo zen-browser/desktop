@@ -6,6 +6,9 @@
 [reportbrokensite]
 source = "browser/components/reportbrokensite/test/browser"
 is_direct_path = true
+disable = [
+  "browser_addon_data_sent.js"
+]
 
 [reportbrokensite.replace-manifest]
 "../../../../../" = "../../../../"

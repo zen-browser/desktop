@@ -1225,9 +1225,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     };
     const workspaceName = document.getElementById('context_zenEditWorkspace');
     const themePicker = document.getElementById('context_zenChangeWorkspaceTheme');
-    workspaceName.hidden =
-      this.#contextMenuData.workspaceId &&
-      this.#contextMenuData.workspaceId !== this.activeWorkspace;
+    const isCollapsed = !Services.prefs.getBoolPref('zen.view.sidebar-expanded');
+    workspaceName.hidden = isCollapsed ||
+    (this.#contextMenuData.workspaceId &&
+      this.#contextMenuData.workspaceId !== this.activeWorkspace);
     themePicker.hidden =
       this.#contextMenuData.workspaceId &&
       this.#contextMenuData.workspaceId !== this.activeWorkspace;

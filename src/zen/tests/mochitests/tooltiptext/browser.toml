@@ -1,0 +1,17 @@
+[DEFAULT]
+
+["browser_bug329212.js"]
+support-files = ["title_test.svg"]
+
+["browser_bug331772_xul_tooltiptext_in_html.js"]
+support-files = ["xul_tooltiptext.xhtml"]
+
+["browser_bug561623.js"]
+
+["browser_bug581947.js"]
+
+["browser_input_file_tooltips.js"]
+
+["browser_nac_tooltip.js"]
+
+["browser_shadow_dom_tooltip.js"]

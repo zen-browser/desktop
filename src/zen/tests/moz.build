@@ -15,3 +15,7 @@ BROWSER_CHROME_MANIFESTS += [
     "welcome/browser.toml",
     "workspaces/browser.toml",
 ]
+
+DIRS += [
+    "mochitests",
+]

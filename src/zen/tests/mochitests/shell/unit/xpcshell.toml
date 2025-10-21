@@ -1,0 +1,6 @@
+[DEFAULT]
+firefox-appdir = "browser"
+tags = "os_integration"
+
+["test_macOS_showSecurityPreferences.js"]
+run-if = ["os == 'mac'"]

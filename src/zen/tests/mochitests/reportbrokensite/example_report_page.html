@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html dir="ltr" xml:lang="en-US" lang="en-US">
+  <head>
+    <meta charset="utf8">
+    <script>
+      window.marfeel = 1;
+      window.Mobify = { Tag: 1 };
+      window.FastClick = 1;
+    </script>
+  </head>
+  <body>
+    <!-- blocked tracking content -->
+    <iframe src="https://trackertest.org/"></iframe>
+    <!-- mixed active content -->
+    <iframe src="http://tracking.example.org/browser/browser/base/content/test/protectionsUI/benignPage.html"></iframe>
+    <!-- mixed display content -->
+    <img src="http://example.com/tests/image/test/mochitest/blue.png"></img>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+[DEFAULT]
+
+["browser_1119088.js"]
+support-files = ["mac_desktop_image.py"]
+run-if = ["os == 'mac'"]
+tags = "os_integration"
+skip-if = ["os == 'mac' && os_version == '14.70' && processor == 'x86_64'"] # Bug 1869703
+
+["browser_420786.js"]
+run-if = ["os == 'linux'"]
+
+["browser_633221.js"]
+run-if = ["os == 'linux'"]
+
+["browser_createWindowsShortcut.js"]
+run-if = ["os == 'win'"]
+
+["browser_doesAppNeedPin.js"]
+
+["browser_headless_screenshot_1.js"]
+support-files = [
+  "head.js",
+  "headless.html",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+tags = "os_integration"
+
+["browser_headless_screenshot_2.js"]
+support-files = [
+  "head.js",
+  "headless.html",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+
+["browser_headless_screenshot_3.js"]
+support-files = [
+  "head.js",
+  "headless.html",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+
+["browser_headless_screenshot_4.js"]
+support-files = [
+  "head.js",
+  "headless.html",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+
+["browser_headless_screenshot_cross_origin.js"]
+support-files = [
+  "head.js",
+  "headless_cross_origin.html",
+  "headless_iframe.html",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+
+["browser_headless_screenshot_redirect.js"]
+support-files = [
+  "head.js",
+  "headless.html",
+  "headless_redirect.html",
+  "headless_redirect.html^headers^",
+]
+skip-if = [
+  "os == 'win'",
+  "ccov",
+  "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
+]
+
+["browser_processAUMID.js"]
+run-if = ["os == 'win'"]
+
+["browser_setDefaultBrowser.js"]
+tags = "os_integration"
+
+["browser_setDefaultPDFHandler.js"]
+run-if = ["os == 'win'"]
+tags = "os_integration"
+
+["browser_setDesktopBackgroundPreview.js"]
+tags = "os_integration"

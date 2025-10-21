@@ -46,8 +46,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  #sendClickDataToParent(element) {
-    if (!element) {
+  #sendClickDataToParent(target, element) {
+    if (!element || !target) {
       return;
     }
     // Get the largest element we can get. If the `A` element
@@ -78,7 +78,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
-    this.#sendClickDataToParent(elementToRecord);
+    this.#sendClickDataToParent(target, elementToRecord);
     if (this.ensureOnlyKeyModifiers(event)) {
       return;
     }

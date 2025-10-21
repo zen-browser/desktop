@@ -1225,9 +1225,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     };
     const workspaceName = document.getElementById('context_zenEditWorkspace');
     const themePicker = document.getElementById('context_zenChangeWorkspaceTheme');
+    /* We can't show the rename input properly in collapsed state,
+    so hide the workspace edit input */
+    const isCollapsed = !Services.prefs.getBoolPref('zen.view.sidebar-expanded');
     workspaceName.hidden =
-      this.#contextMenuData.workspaceId &&
-      this.#contextMenuData.workspaceId !== this.activeWorkspace;
+      isCollapsed ||
+      (this.#contextMenuData.workspaceId &&
+        this.#contextMenuData.workspaceId !== this.activeWorkspace);
     themePicker.hidden =
       this.#contextMenuData.workspaceId &&
       this.#contextMenuData.workspaceId !== this.activeWorkspace;

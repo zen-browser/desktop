@@ -1098,7 +1098,7 @@
       const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
                       data-l10n-id="tab-context-zen-add-essential"
-                      data-l10n-args='{"num": "0", "max": "12"}'
+                      data-l10n-args='{"num": "0", "max": "${this.maxEssentialTabs}"}'
                       hidden="true"
                       disabled="true"
                       command="cmd_contextZenAddToEssentials"/>

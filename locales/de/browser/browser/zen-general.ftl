@@ -38,7 +38,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
+    .label = Kompakter Modus
     .tooltiptext = Compact Mode umschalten
 
 # note: Do not translate the "<br/>" tags in the following string

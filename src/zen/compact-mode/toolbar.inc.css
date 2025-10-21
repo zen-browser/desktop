@@ -35,7 +35,8 @@
     overflow: clip;
 
     & #urlbar:not([breakout-extend='true']) {
-      opacity: 0;
+      /* Sometimes, "opacity: 1" is forced elsewhere */
+      opacity: 0 !important;
       pointer-events: none;
       transition: opacity var(--zen-hidden-toolbar-transition);
     }
@@ -48,20 +49,18 @@
     }
   }
 
-  & #zen-appcontent-navbar-wrapper[zen-has-hover],
-  & #zen-appcontent-navbar-wrapper[has-popup-menu],
-  &
-    #zen-appcontent-navbar-wrapper:has(
-      *:is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)
-    ) {
-
+  & #zen-appcontent-navbar-wrapper:is(
+    [zen-has-hover],
+    [has-popup-menu],
+    [zen-compact-mode-active]
+  ) {
     height: var(--zen-toolbar-height-with-bookmarks);
     overflow: inherit;
 
 %include windows-captions-fix-active.inc.css
 
     & #urlbar {
-      opacity: 1;
+      opacity: 1 !important;
       pointer-events: auto;
     }
 

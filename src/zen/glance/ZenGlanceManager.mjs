@@ -328,9 +328,7 @@
           data.elementData = await this.#getElementPreviewData(data);
         }
         this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
-        window.requestAnimationFrame(() => {
-          this.#executeGlanceAnimation(data, browserElement, resolve);
-        });
+        this.#executeGlanceAnimation(data, browserElement, resolve);
       });
     }
 
@@ -990,7 +988,7 @@
       if (!onTabClose) {
         this.quickCloseGlance({ clearID: false });
       }
-      this.browserWrapper.style.display = 'none';
+      this.overlay.style.display = 'none';
       this.overlay.removeAttribute('fade-out');
       this.browserWrapper.removeAttribute('animate');
 
@@ -1357,11 +1355,15 @@
      * @param {Tab} tab - The tab to open glance for
      */
     #openGlanceForTab(tab) {
-      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabbox);
+      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
       const clickPosition = gZenUIManager._lastClickPosition || {
         clientX: browserRect.width / 2,
         clientY: browserRect.height / 2,
       };
+
+      // Make it relative to the tabpanels
+      clickPosition.clientX -= browserRect.left;
+      clickPosition.clientY -= browserRect.top;
 
       this.openGlance(
         {

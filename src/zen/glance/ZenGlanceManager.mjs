@@ -24,6 +24,9 @@
     #duringOpening = false;
     #ignoreClose = false;
 
+    // Click handling
+    #lastLinkClickData = { clientX: 0, clientY: 0, height: 0, width: 0 };
+
     // Arc animation configuration
     #ARC_CONFIG = Object.freeze({
       ARC_STEPS: 70, // Increased for smoother bounce
@@ -268,8 +271,29 @@
         data.height
       );
       return await this.#imageBitmapToBase64(
-        await window.browsingContext.currentWindowGlobal.drawSnapshot(rect, 1, 'transparent', true)
+        await window.browsingContext.currentWindowGlobal.drawSnapshot(
+          rect,
+          1,
+          'transparent',
+          undefined
+        )
       );
+    }
+
+    /**
+     * Set the last link click data
+     * @param {Object} data - The link click data
+     */
+    set lastLinkClickData(data) {
+      this.#lastLinkClickData = data;
+    }
+
+    /**
+     * Get the last link click data
+     * @returns {Object} The last link click data
+     */
+    get lastLinkClickData() {
+      return this.#lastLinkClickData;
     }
 
     /**
@@ -287,6 +311,13 @@
       if (gBrowser.selectedTab === this.#currentParentTab) {
         gBrowser.selectedTab = this.#currentTab;
         return;
+      }
+
+      if (!data.height || !data.width) {
+        data = {
+          ...data,
+          ...this.lastLinkClickData,
+        };
       }
 
       this.#setAnimationState(true);
@@ -325,6 +356,9 @@
         gZenViewSplitter.onLocationChange(browserElement);
         this.#prepareGlanceAnimation(data, browserElement);
         if (data.width && data.height) {
+          // It is guaranteed that we will animate this opacity later on
+          // when we start animating the glance.
+          this.contentWrapper.style.opacity = 0;
           data.elementData = await this.#getElementPreviewData(data);
         }
         this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
@@ -342,7 +376,6 @@
       const newButtons = this.#createNewOverlayButtons();
       this.browserWrapper.appendChild(newButtons);
 
-      this.#animateParentBackground();
       this.#setupGlancePositioning(data);
       this.#configureBrowserElement(browserElement);
     }
@@ -486,7 +519,6 @@
       // nice fade-in effect to the content. But if it doesn't exist,
       // we just fall back to always showing the browser directly.
       if (data.elementData) {
-        this.contentWrapper.style.opacity = 0;
         gZenUIManager.motion
           .animate(
             this.contentWrapper,
@@ -501,6 +533,7 @@
           });
       }
 
+      this.#animateParentBackground();
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
           duration: gZenUIManager.testingEnabled ? 0 : 0.4,
@@ -1355,22 +1388,9 @@
      * @param {Tab} tab - The tab to open glance for
      */
     #openGlanceForTab(tab) {
-      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
-      const clickPosition = gZenUIManager._lastClickPosition || {
-        clientX: browserRect.width / 2,
-        clientY: browserRect.height / 2,
-      };
-
-      // Make it relative to the tabpanels
-      clickPosition.clientX -= browserRect.left;
-      clickPosition.clientY -= browserRect.top;
-
       this.openGlance(
         {
           url: undefined,
-          ...clickPosition,
-          width: 0,
-          height: 0,
         },
         tab,
         tab.owner

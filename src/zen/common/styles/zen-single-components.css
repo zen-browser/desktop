@@ -33,6 +33,12 @@
   display: none !important;
 }
 
+/* hide Mozilla services from the app menu */
+#PanelUI-fxa-menu-services,
+#PanelUI-fxa-cta-menu {
+  display: none !important;
+}
+
 body > #confetti {
   z-index: 1;
 }

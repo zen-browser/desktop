@@ -91,8 +91,16 @@ zen-site-data-get-addons =
     .label = Add Extensions
 zen-site-data-site-settings =
     .label = All Site Settings
-zen-site-data-share =
-    .label = Share This Page
+
+
+zen-site-data-header-share =
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode =
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot =
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark =
+    .tooltiptext = Bookmark This Page
 
 zen-urlbar-copy-url-button =
   .tooltiptext = Copy URL

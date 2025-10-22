@@ -127,6 +127,16 @@ export class nsZenSiteDataPanel {
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
+    this.#setAddonsOverflow();
+  }
+
+  #setAddonsOverflow() {
+    const addons = this.document.getElementById('zen-site-data-addons');
+    if (addons.getBoundingClientRect().height > 420) {
+      addons.setAttribute('overflowing', 'true');
+    } else {
+      addons.removeAttribute('overflowing');
+    }
   }
 
   #setSiteHeader() {
@@ -580,7 +590,6 @@ export class nsZenSiteDataPanel {
       };
       checkEmptyTab();
     });
-    this.anchor.setAttribute('open', 'true');
     const callout = new FeatureCallout({
       win: this.window,
       location: 'chrome',

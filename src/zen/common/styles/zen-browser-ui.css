@@ -136,9 +136,13 @@
   z-index: 2;
 }
 
-:root[zen-single-toolbar='true'] #nav-bar {
-  border-top: none !important;
-  --zen-toolbar-height: 37px;
+#nav-bar {
+  border-top-color: transparent !important;
+
+  :root[zen-single-toolbar='true'] & {
+    border-top: none !important;
+    --zen-toolbar-height: 37px;
+  }
 }
 
 #zen-main-app-wrapper {

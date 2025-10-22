@@ -176,5 +176,6 @@
   top: 0%;
   left: 50%;
   translate: -50% 0%;
+  max-height: 100%;
   will-change: transform, opacity;
 }

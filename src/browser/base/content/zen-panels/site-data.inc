@@ -35,10 +35,6 @@
           <label data-l10n-id="zen-generic-manage" id="zen-site-data-manage-addons" />
         </hbox>
         <hbox class="panel-subview-body" context="unified-extensions-context-menu" id="zen-site-data-addons">
-          <html:div id="unified-extensions-messages-container">
-            <!-- messages will be inserted here -->
-          </html:div>
-
           <vbox id="overflowed-extensions-list">
             <!-- overflowed extension buttons from the nav-bar will go here -->
           </vbox>
@@ -82,6 +78,9 @@
                        closemenu="none"
                        context="zenSiteDataActions" />
       </hbox>
+      <html:div id="unified-extensions-messages-container">
+        <!-- messages will be inserted here -->
+      </html:div>
     </panelview>
   </panelmultiview>
 </panel>

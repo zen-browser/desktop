@@ -23,6 +23,10 @@ export class ZenGlanceParent extends JSWindowActorParent {
         this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(params);
         break;
       }
+      case 'ZenGlance:RecordLinkClickData': {
+        this.browsingContext.topChromeWindow.gZenGlanceManager.lastLinkClickData = message.data;
+        break;
+      }
       default:
         console.warn(`[glance]: Unknown message: ${message.name}`);
     }

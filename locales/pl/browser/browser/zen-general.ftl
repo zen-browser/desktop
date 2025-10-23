@@ -1,5 +1,5 @@
 zen-panel-ui-current-profile-text = Aktualny profil
-unified-extensions-description = Rozszerzenia są używane do zapewnienia większej liczby dodatkowych funkcji w { -brand-short-name }.
+unified-extensions-description = Rozszerzenia są używane do dodatkowej funkcjonalności { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Resetuj przypiętą kartę
     .accesskey = R
@@ -12,24 +12,24 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Zastąp przypięty adres URL aktualnym
     .accesskey = C
-zen-themes-corrupted = Twój plik modów { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
+zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
 zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest popsuty. Skróty zostały zresetowane do domyślnych.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Nowy pasek adresu został aktywowany, a tym samym strona nowej karty nie jest już potrzebna.<br/><br/>
-    Spróbuj otworzyć nową kartę i wypróbuj nowy pasek adresu w akcji!
+    Nowy pasek adresu został aktywowany, strona nowej karty nie jest już potrzebna.<br/><br/>
+    Wypróbuj nowy pasek URL otwierając nową kartę!
 zen-disable = Deaktywuj
 pictureinpicture-minimize-btn = 
     .aria-label = Zminimalizuj
     .tooltip = Zminimalizuj
 zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
 zen-panel-ui-gradient-generator-saved-message = Pomyślnie zapisano gradient!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Skopiowano bieżący URL
 zen-general-cancel-label = 
     .label = Anuluj
 zen-general-confirm = 
     .label = Potwierdź
-zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem.
+zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
 zen-tabs-renamed = Nazwa karty została z powodzeniem zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
 zen-workspace-renamed-toast = Zmieniono nazwę Przestrzeni roboczej!
@@ -38,8 +38,8 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Modyfikacje
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Tryb kompaktowy
+    .tooltiptext = Przełącz tryb kompaktowy
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,45 +48,45 @@ zen-close-label = Zamknij
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Szukaj...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emotikony
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+    .label = Ikony
+urlbar-search-mode-zen_actions = Akcje
+zen-site-data-settings = Ustawienia
+zen-generic-manage = Zarządzaj
+zen-generic-more = Więcej
+zen-generic-next = Następne
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Dozwolone
+zen-site-data-setting-block = Zablokowane
+zen-site-data-protections-enabled = Włączone
+zen-site-data-protections-disabled = Wyłączone
+zen-site-data-setting-cross-site = Ciasteczka międzydomenowe
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Rozszerzenie
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Zabezpieczone
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Nie zabezpieczone
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Zarządzaj rozszerzeniami
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Dodaj rozszerzenia
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Wszystkie ustawienia strony
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Udostępnij tę stronę
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Wejdź do trybu czytnika
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Zrzut ekranu
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Dodaj tę stronę do zakładek
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopiuj URL
+zen-site-data-setting-site-protection = Ochrona przed śledzeniem
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Nowy dom dla dodatków, uprawnień i więcej
+zen-site-data-panel-feature-callout-subtitle = Kliknij ikonę, aby zarządzać ustawieniami witryny, wyświetlić informacje o zabezpieczeniach, rozszerzeniach i wykonać akcje.

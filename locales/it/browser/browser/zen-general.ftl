@@ -53,13 +53,13 @@ urlbar-search-mode-zen_actions = Azioni
 zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
 zen-generic-more = Altro
-zen-generic-next = Next
+zen-generic-next = Successivo
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Consentito
 zen-site-data-setting-block = Bloccato
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-protections-enabled = Attivato
+zen-site-data-protections-disabled = Disattivato
+zen-site-data-setting-cross-site = Cookie Cross-Site
 zen-site-data-security-info-extension = 
     .label = Estensione
 zen-site-data-security-info-secure = 
@@ -73,16 +73,16 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Tutte le impostazioni del sito
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Condividi questa pagina
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Entra nella Modalità Lettura
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Cattura schermata
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Aggiungi questa pagina ai segnalibri
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copia URL
-zen-site-data-setting-site-protection = Tracking Protection
+zen-site-data-setting-site-protection = Protezione Tracciamento
 
 # Section: Feature callouts
 

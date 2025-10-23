@@ -544,6 +544,12 @@ groupbox h2 {
   }
 }
 
+@media (max-width: 1320px) {
+  #zenLayoutList {
+    flex-wrap: wrap;
+  }
+}
+
 /* Disable mozilla's settings */
 
 #dataCollectionCategory,

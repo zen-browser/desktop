@@ -30,6 +30,20 @@
       if (tabData.zenPinnedEntry) {
         tab.setAttribute('zen-pinned-entry', tabData.zenPinnedEntry);
       }
+      // Restore tab label data
+      if (tabData.zenTabLabelId) {
+        tab.setAttribute('zen-tab-label-id', tabData.zenTabLabelId);
+      }
+      if (tabData.zenTabLabelText) {
+        tab.setAttribute('zen-tab-label-text', tabData.zenTabLabelText);
+      }
+      if (tabData.zenTabLabelColor) {
+        tab.setAttribute('zen-tab-label-color', tabData.zenTabLabelColor);
+      }
+      // Trigger label restoration in ZenTabLabels
+      if (tabData.zenTabLabelId && window.gZenTabLabels) {
+        window.gZenTabLabels.restoreTabLabel(tab);
+      }
     }
 
     async #waitAndCleanup() {

@@ -1,0 +1,178 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Tab Label Display */
+.zen-tab-label-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  padding: 2px 0;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.zen-tab-label-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.zen-tab-label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Context menu quick label items */
+.zen-quick-label-item {
+  position: relative;
+  padding-inline-start: 24px !important;
+}
+
+.zen-quick-label-item::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--label-color, #999);
+}
+
+/* Tab Label Dialog */
+#zenTabLabelDialog {
+  --dialog-bg: var(--zen-dialog-background, var(--arrowpanel-background));
+  --dialog-border: var(--zen-dialog-border, var(--arrowpanel-border-color));
+  --input-bg: var(--zen-input-background, Field);
+  --input-border: var(--zen-input-border, var(--input-border-color));
+  --input-text: var(--zen-input-text, FieldText);
+  --button-primary-bg: var(--zen-primary-color, var(--button-primary-bgcolor));
+  --button-primary-text: var(--zen-primary-text-color, var(--button-primary-color));
+  --button-secondary-bg: var(--zen-secondary-color, var(--button-bgcolor));
+  --button-secondary-text: var(--zen-text-color, var(--button-color));
+}
+
+.zen-tab-label-dialog-container {
+  background: var(--dialog-bg);
+  border: 1px solid var(--dialog-border);
+  border-radius: 8px;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.zen-tab-label-dialog-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--input-text);
+}
+
+.zen-tab-label-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.zen-tab-label-input-group,
+.zen-tab-label-color-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zen-tab-label-input-group label,
+.zen-tab-label-color-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--input-text);
+}
+
+.zen-tab-label-input {
+  padding: 8px 10px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.zen-tab-label-input:focus {
+  outline: 2px solid var(--button-primary-bg);
+  outline-offset: -1px;
+}
+
+.zen-tab-label-color-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zen-tab-label-color-picker {
+  width: 50px;
+  height: 32px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.zen-tab-label-color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--input-border);
+}
+
+.zen-tab-label-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.zen-tab-label-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.zen-tab-label-button:hover {
+  opacity: 0.85;
+}
+
+.zen-tab-label-button:active {
+  opacity: 0.7;
+}
+
+.zen-tab-label-button-primary {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+.zen-tab-label-button-secondary {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border: 1px solid var(--input-border);
+}
+
+/* Hide label display on pinned tabs to save space */
+.tabbrowser-tab[pinned] .zen-tab-label-display {
+  display: none;
+}
+
+/* Ensure label is visible in vertical tabs */
+#tabbrowser-tabs[orient="vertical"] .zen-tab-label-display {
+  display: flex;
+}

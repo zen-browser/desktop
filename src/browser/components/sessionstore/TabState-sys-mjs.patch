@@ -2,7 +2,7 @@ diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/componen
 index 82721356d191055bec0d4b0ca49e481221988801..1ea5c394c704da295149443d7794961a12f2060b 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -85,7 +85,22 @@ class _TabState {
+@@ -85,7 +85,25 @@ class _TabState {
        tabData.groupId = tab.group.id;
      }
  
@@ -15,6 +15,9 @@ index 82721356d191055bec0d4b0ca49e481221988801..1ea5c394c704da295149443d7794961a
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
 +    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
 +    tabData.zenHasStaticLabel = tab.hasAttribute("zen-has-static-label");
++    tabData.zenTabLabelId = tab.getAttribute("zen-tab-label-id");
++    tabData.zenTabLabelText = tab.getAttribute("zen-tab-label-text");
++    tabData.zenTabLabelColor = tab.getAttribute("zen-tab-label-color");
 +    tabData.zenGlanceId = tab.getAttribute("glance-id");
 +    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
 +

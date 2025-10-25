@@ -754,15 +754,18 @@ var gZenCompactModeManager = {
       target.addEventListener('mouseleave', onLeave);
       target.addEventListener('dragleave', onLeave);
 
-      // Clean up drag state when drag operation completes
-      target.addEventListener('drop', () => {
+      // Create a shared cleanup function for drag operations
+      const cleanupDragState = () => {
         this._isDragging = false;
         clearTimeout(this._dragDebounceTimer);
-      });
-      target.addEventListener('dragend', () => {
-        this._isDragging = false;
-        clearTimeout(this._dragDebounceTimer);
-      });
+      };
+
+      target.addEventListener('drop', cleanupDragState);
+      target.addEventListener('dragend', cleanupDragState);
+      // Track these listeners for cleanup
+      if (!this._eventListeners) this._eventListeners = [];
+      this._eventListeners.push({ target, type: 'drop', handler: cleanupDragState });
+      this._eventListeners.push({ target, type: 'dragend', handler: cleanupDragState });
     }
 
     document.documentElement.addEventListener('mouseleave', (event) => {

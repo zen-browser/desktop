@@ -32,6 +32,8 @@ var gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
   _removeHoverFrames: {},
+  _isDragging: false,
+  _dragDebounceTimer: null,
 
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref('zen.view.compact.hover-hack-delay', 0),
@@ -670,6 +672,10 @@ var gZenCompactModeManager = {
         setTimeout(() => {
           if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
           if (event.target.closest('panel')) return;
+          if (event.type === 'dragover') {
+            this._isDragging = true;
+            clearTimeout(this._dragDebounceTimer);
+          }
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout('has-hover' + target.id);
           window.requestAnimationFrame(() => {
@@ -687,6 +693,13 @@ var gZenCompactModeManager = {
       };
 
       const onLeave = (event) => {
+        if (event.type === 'dragleave' && this._isDragging) {
+          clearTimeout(this._dragDebounceTimer);
+          this._dragDebounceTimer = setTimeout(() => {
+            this._isDragging = false;
+          }, 150);
+          return;
+        }
         if (AppConstants.platform == 'macosx') {
           const buttonRect = gZenVerticalTabsManager.actualWindowButtons.getBoundingClientRect();
           const MAC_WINDOW_BUTTONS_X_BORDER = buttonRect.width + buttonRect.x;
@@ -740,6 +753,16 @@ var gZenCompactModeManager = {
 
       target.addEventListener('mouseleave', onLeave);
       target.addEventListener('dragleave', onLeave);
+
+      // Clean up drag state when drag operation completes
+      target.addEventListener('drop', () => {
+        this._isDragging = false;
+        clearTimeout(this._dragDebounceTimer);
+      });
+      target.addEventListener('dragend', () => {
+        this._isDragging = false;
+        clearTimeout(this._dragDebounceTimer);
+      });
     }
 
     document.documentElement.addEventListener('mouseleave', (event) => {

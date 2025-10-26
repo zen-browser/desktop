@@ -133,7 +133,7 @@
 }
 
 :root:not([zen-single-toolbar='true']) #zen-appcontent-wrapper {
-  z-index: 2;
+  z-index: 3;
 }
 
 #nav-bar {
@@ -247,6 +247,7 @@
 @media (-moz-platform: macos) {
   :root[zen-window-buttons-reversed='true'][zen-right-side='true'] .titlebar-buttonbox-container {
     margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    margin-block: auto;
   }
 }
 

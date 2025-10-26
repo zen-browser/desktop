@@ -30,11 +30,6 @@ z-index: 1;
     }
 
 %include ../../compact-mode/windows-captions-fix-default.inc.css
-
-    & .titlebar-button {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-    }
   }
 
   @media -moz-pref('zen.view.experimental-no-window-controls') {

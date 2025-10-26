@@ -195,7 +195,8 @@
 
   /* Transitions */
   --zen-tabbox-element-indent-transition: margin-inline-start 0.1s ease-in-out;
-  --zen-hidden-toolbar-transition: 0.15s ease-in-out;
+  --zen-hidden-toolbar-transition-duration: 0.15s;
+  --zen-hidden-toolbar-transition: var(--zen-hidden-toolbar-transition-duration) ease-in-out;
 
   /* XUL */
   --zen-main-browser-background: light-dark(rgb(235, 235, 235), #1b1b1b);

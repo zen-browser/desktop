@@ -883,7 +883,7 @@
               );
               for (const tab of pinnedTabs) {
                 if (allAreUnloaded && closeIfPending) {
-                  return await this._onCloseTabShortcut(event, tab, { behavior: 'close' });
+                  return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
                 }
               }
               await gBrowser.explicitUnloadTabs(pinnedTabs);

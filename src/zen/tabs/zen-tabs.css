@@ -112,5 +112,17 @@
     & #titlebar {
       padding-top: var(--zen-toolbar-height);
     }
+
+    & #nav-bar {
+      width: calc(100% + var(--zen-toolbox-max-width) - var(--zen-element-separation));
+
+      /**
+       * We only want it when the window buttons are on the left side, in other
+       * words, the first of the two selectors above.
+       */
+      :root:not([zen-window-buttons-reversed='true']) & {
+        margin-left: calc(-1 * var(--zen-toolbox-max-width) + var(--zen-element-separation) + 4px);
+      }
+    }
   }
 }

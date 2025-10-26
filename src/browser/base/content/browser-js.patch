@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 32b67f846b9942ad3da4276bb8748fee915eb485..f77d5df7c8ef49c0366ada8b3153c5a6c676239b 100644
+index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64225e42b0 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -19,6 +19,33 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..f77d5df7c8ef49c0366ada8b3153c5a6
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
+@@ -3795,7 +3798,7 @@ function warnAboutClosingWindow() {
+ 
+   if (!isPBWindow && !toolbar.visible) {
+     return gBrowser.warnAboutClosingTabs(
+-      gBrowser.openTabs.length,
++      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
+       gBrowser.closingTabsEnum.ALL
+     );
+   }
+@@ -3835,7 +3838,7 @@ function warnAboutClosingWindow() {
+     return (
+       isPBWindow ||
+       gBrowser.warnAboutClosingTabs(
+-        gBrowser.openTabs.length,
++        gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
+         gBrowser.closingTabsEnum.ALL
+       )
+     );
+@@ -3860,7 +3863,7 @@ function warnAboutClosingWindow() {
+     AppConstants.platform != "macosx" ||
+     isPBWindow ||
+     gBrowser.warnAboutClosingTabs(
+-      gBrowser.openTabs.length,
++      gBrowser.visibleTabs.filter(t => t.getAttribute("pending")!=="true").length,
+       gBrowser.closingTabsEnum.ALL
+     )
+   );
 @@ -4782,6 +4785,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");

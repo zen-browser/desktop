@@ -30,7 +30,7 @@ const globalActionsTemplate = [
   {
     label: 'Copy Current URL',
     command: 'cmd_zenCopyCurrentURL',
-    icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
+    icon: 'chrome://browser/skin/zen-icons/link.svg',
   },
   {
     label: 'Settings',

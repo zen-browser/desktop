@@ -247,7 +247,7 @@
         {
           duration: 0.3,
           type: 'spring',
-          delay: 0.15,
+          delay: 0.2,
           bounce: 0,
         }
       );
@@ -434,6 +434,16 @@
       };
     }
 
+    #createGlancePreviewElement(src) {
+      const imageDataElement = document.createXULElement('image');
+      imageDataElement.setAttribute('src', src);
+
+      const parent = document.createElement('div');
+      parent.classList.add('zen-glance-element-preview');
+      parent.appendChild(imageDataElement);
+      return parent;
+    }
+
     /**
      * Handle element preview if provided
      * @param {Object} data - Glance data
@@ -444,10 +454,7 @@
         return null;
       }
 
-      const imageDataElement = document.createXULElement('image');
-      imageDataElement.setAttribute('src', data.elementData);
-      imageDataElement.classList.add('zen-glance-element-preview');
-
+      const imageDataElement = this.#createGlancePreviewElement(data.elementData);
       this.browserWrapper.prepend(imageDataElement);
       this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
 
@@ -990,10 +997,7 @@
      */
     #addElementPreview(elementImageData) {
       if (elementImageData) {
-        const imageDataElement = document.createXULElement('image');
-        imageDataElement.setAttribute('src', elementImageData);
-        imageDataElement.classList.add('zen-glance-element-preview');
-
+        const imageDataElement = this.#createGlancePreviewElement(elementImageData);
         this.browserWrapper.prepend(imageDataElement);
       }
     }

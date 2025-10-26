@@ -16,16 +16,20 @@
                 mainview-with-header="true">
       <hbox id="zen-site-data-header">
         <toolbarbutton id="zen-site-data-header-share"
-                        data-l10n-id="zen-site-data-share"
+                        data-l10n-id="zen-site-data-header-share"
                         flex="1"
                         closemenu="none" />
         <toolbarbutton id="zen-site-data-header-reader-mode"
+                        data-l10n-id="zen-site-data-header-reader-mode"
                         command="View:ReaderView"
+                        tooltip="dynamic-shortcut-tooltip"
                         flex="1" />
         <toolbarbutton id="zen-site-data-header-screenshot"
+                        data-l10n-id="zen-site-data-header-screenshot"
                         command="Browser:Screenshot"
                         flex="1" />
         <toolbarbutton id="zen-site-data-header-bookmark"
+                        data-l10n-id="zen-site-data-header-bookmark"
                         command="Browser:AddBookmarkAs"
                         flex="1" />
       </hbox>
@@ -78,9 +82,9 @@
                        closemenu="none"
                        context="zenSiteDataActions" />
       </hbox>
-      <html:div id="unified-extensions-messages-container">
-        <!-- messages will be inserted here -->
-      </html:div>
+# Messages will be inserted here.
+# Dont write anything directly here, even comments, as this may break the layout
+      <html:div id="unified-extensions-messages-container"></html:div>
     </panelview>
   </panelmultiview>
 </panel>

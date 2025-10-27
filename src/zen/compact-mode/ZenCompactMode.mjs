@@ -762,10 +762,6 @@ var gZenCompactModeManager = {
 
       target.addEventListener('drop', cleanupDragState);
       target.addEventListener('dragend', cleanupDragState);
-      // Track these listeners for cleanup
-      if (!this._eventListeners) this._eventListeners = [];
-      this._eventListeners.push({ target, type: 'drop', handler: cleanupDragState });
-      this._eventListeners.push({ target, type: 'dragend', handler: cleanupDragState });
     }
 
     document.documentElement.addEventListener('mouseleave', (event) => {

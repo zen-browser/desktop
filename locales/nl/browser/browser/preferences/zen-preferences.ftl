@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Prestaties togglen
 zen-devtools-toggle-storage-shortcut = Opslag togglen
 zen-devtools-toggle-dom-shortcut = DOM togglen
 zen-devtools-toggle-accessibility-shortcut = Toegankelijkheid togglen
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

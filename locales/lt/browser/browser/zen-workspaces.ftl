@@ -53,3 +53,9 @@ zen-workspace-creation-header = Kurti erdvę
 zen-workspace-creation-label = Erdvės naudojamos tvarkyti jūsų korteles ir seansus.
 zen-workspaces-delete-workspace-title = Ištrinti erdvę?
 zen-workspaces-delete-workspace-body = Ar tikrai norite ištrinti „{ $name }“? Šio veiksmo anuliuoti negalima.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

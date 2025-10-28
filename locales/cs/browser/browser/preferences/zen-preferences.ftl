@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Přepnout výkon
 zen-devtools-toggle-storage-shortcut = Přepnout úložiště
 zen-devtools-toggle-dom-shortcut = Přepnout DOM
 zen-devtools-toggle-accessibility-shortcut = Přepnout přístupnost
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

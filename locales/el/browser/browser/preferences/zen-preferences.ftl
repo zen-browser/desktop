@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Εναλλαγή Επιδόσεων
 zen-devtools-toggle-storage-shortcut = Εναλλαγή Αποθηκευτικού Χώρου
 zen-devtools-toggle-dom-shortcut = Εναλλαγή DOM
 zen-devtools-toggle-accessibility-shortcut = Εναλλαγή Προσβασιμότητας
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

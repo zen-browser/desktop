@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = 성능 탭 전환
 zen-devtools-toggle-storage-shortcut = 저장소 탭 전환
 zen-devtools-toggle-dom-shortcut = DOM 탭 전환
 zen-devtools-toggle-accessibility-shortcut = 접근성 탭 전환
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

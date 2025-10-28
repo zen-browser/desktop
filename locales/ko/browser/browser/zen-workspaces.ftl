@@ -53,3 +53,9 @@ zen-workspace-creation-header = 스페이스 생성
 zen-workspace-creation-label = 스페이스는 탭과 세션을 정리하기 위해 사용됩니다.
 zen-workspaces-delete-workspace-title = 워크스페이스를 삭제하시겠습니까?
 zen-workspaces-delete-workspace-body = 정말 { $name }을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

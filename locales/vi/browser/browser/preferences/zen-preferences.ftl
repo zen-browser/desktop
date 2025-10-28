@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Bật tối ưu Hiệu năng
 zen-devtools-toggle-storage-shortcut = Bật lưu trữ
 zen-devtools-toggle-dom-shortcut = Bật DOM
 zen-devtools-toggle-accessibility-shortcut = Bật trợ năng
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

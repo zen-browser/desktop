@@ -147,7 +147,7 @@
         visibility 0.15s;
     }
 
-    #navigator-toolbox:hover &,
+    #navigator-toolbox[zen-has-hover='true'] &,
     &[open],
     #urlbar[has-popup-open='true'] &,
     #identity-box[pageproxystate='invalid'] & {

@@ -2500,15 +2500,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         (child) =>
           !child.hasAttribute('hidden') && !child.closing && !child.hasAttribute('zen-empty-tab')
       ).length <= 1;
-
-    const closeAllTabsFragment = pinnedContainer.querySelector('.zen-close-all-tabs-target');
-
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
-      closeAllTabsFragment.style.display = 'none';
     } else {
       pinnedContainer.removeAttribute('hide-separator');
-      closeAllTabsFragment.style.display = 'flex';
     }
   }
 

@@ -334,13 +334,6 @@ zen-workspace {
     -moz-window-dragging: drag;
   }
 
-.zen-close-all-tabs-target {
-  display: flex;
-  justify-content: flex-end;
-  opacity: 0.6;
-  font-size: 0.7em;
-}
-
 /** Customizable UI, this is an auto generated ID */
 #wrapper-zen-workspaces-button {
   width: 100%;

@@ -53,3 +53,9 @@ zen-workspace-creation-header = Creació d'un espai
 zen-workspace-creation-label = Els espais s'utilitzen per organitzar les pestanyes i les sessions.
 zen-workspaces-delete-workspace-title = Voleu suprimir l'espai de treball?
 zen-workspaces-delete-workspace-body = Esteu segur que voleu suprimir { $name }? Aquesta acció no es pot desfer.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Scoránaigh Feidhmíochta
 zen-devtools-toggle-storage-shortcut = Scoránaigh Stóráil
 zen-devtools-toggle-dom-shortcut = Scoránaigh DOM
 zen-devtools-toggle-accessibility-shortcut = Scoránaigh Inrochtaineacht
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

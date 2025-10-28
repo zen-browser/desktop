@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Ubah Performance
 zen-devtools-toggle-storage-shortcut = Ubah Penyimpanan
 zen-devtools-toggle-dom-shortcut = Ubah DOM
 zen-devtools-toggle-accessibility-shortcut = Ubah Aksesibilitas
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

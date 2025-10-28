@@ -53,3 +53,9 @@ zen-workspace-creation-header = Tạo không gian làm việc
 zen-workspace-creation-label = Không gian làm việc sẽ là nơi để bạn chứa các trang web và lượt truy cập của bạn.
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = Bạn có chắc là bạn muốn xóa { $name }? Thao tác này sẽ không được hoàn lại.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

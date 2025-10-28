@@ -197,10 +197,6 @@
       return this.scrollbox.overflowing;
     }
 
-    get closeAllUnpinnedTabButton() {
-      return this.querySelector('#zen-close-all-tabs-button');
-    }
-
     handleEvent(event) {
       if (this.active) {
         gBrowser.tabContainer.handleEvent(event);

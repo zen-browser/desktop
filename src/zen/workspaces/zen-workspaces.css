@@ -333,6 +333,7 @@ zen-workspace {
   &[active] .zen-workspace-empty-space {
     -moz-window-dragging: drag;
   }
+}
 
 /** Customizable UI, this is an auto generated ID */
 #wrapper-zen-workspaces-button {

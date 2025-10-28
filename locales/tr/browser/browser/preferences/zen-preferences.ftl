@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Performansı Aç/Kapat
 zen-devtools-toggle-storage-shortcut = Depolamayı Aç/Kapat
 zen-devtools-toggle-dom-shortcut = DOM'u Aç/Kapat
 zen-devtools-toggle-accessibility-shortcut = Erişilebilirliği Aç/Kapat
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

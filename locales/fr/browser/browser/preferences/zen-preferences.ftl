@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Afficher l’onglet Performances
 zen-devtools-toggle-storage-shortcut = Afficher l’onglet Stockage
 zen-devtools-toggle-dom-shortcut = Afficher l’onglet DOM
 zen-devtools-toggle-accessibility-shortcut = Afficher l’onglet Accessibilité
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

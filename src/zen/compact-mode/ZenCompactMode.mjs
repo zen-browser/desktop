@@ -697,7 +697,7 @@ var gZenCompactModeManager = {
           clearTimeout(this._dragDebounceTimer);
           this._dragDebounceTimer = setTimeout(() => {
             this._isDragging = false;
-          }, 150);
+          }, this.HOVER_HACK_DELAY);
           return;
         }
         if (AppConstants.platform == 'macosx') {
@@ -754,14 +754,8 @@ var gZenCompactModeManager = {
       target.addEventListener('mouseleave', onLeave);
       target.addEventListener('dragleave', onLeave);
 
-      // Create a shared cleanup function for drag operations
-      const cleanupDragState = () => {
-        this._isDragging = false;
-        clearTimeout(this._dragDebounceTimer);
-      };
-
-      target.addEventListener('drop', cleanupDragState);
-      target.addEventListener('dragend', cleanupDragState);
+      target.addEventListener('drop', () => this._cleanupDragState());
+      target.addEventListener('dragend', () => this._cleanupDragState());
     }
 
     document.documentElement.addEventListener('mouseleave', (event) => {
@@ -832,6 +826,11 @@ var gZenCompactModeManager = {
         this.clearFlashTimeout('has-hover' + target.id);
       }
     }
+  },
+
+  _cleanupDragState() {
+    this._isDragging = false;
+    clearTimeout(this._dragDebounceTimer);
   },
 
   isSidebarPotentiallyOpen() {

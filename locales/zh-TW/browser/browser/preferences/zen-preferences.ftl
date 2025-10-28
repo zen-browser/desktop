@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = 開啟效能檢測器
 zen-devtools-toggle-storage-shortcut = 開啟儲存空間檢測器
 zen-devtools-toggle-dom-shortcut = 開啟 DOM
 zen-devtools-toggle-accessibility-shortcut = 開啟輔助功能
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

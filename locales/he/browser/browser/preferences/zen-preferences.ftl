@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = הפעל/כבה ביצועים
 zen-devtools-toggle-storage-shortcut = הפעל/כבה אחסון
 zen-devtools-toggle-dom-shortcut = הפעל/כבה DOM
 zen-devtools-toggle-accessibility-shortcut = הפעל/כבה נגישות
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

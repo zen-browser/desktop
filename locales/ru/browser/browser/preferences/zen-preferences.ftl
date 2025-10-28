@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Переключить произво
 zen-devtools-toggle-storage-shortcut = Переключить хранилище
 zen-devtools-toggle-dom-shortcut = Переключить DOM
 zen-devtools-toggle-accessibility-shortcut = Включить/выключить специальные возможности
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

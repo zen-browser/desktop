@@ -53,3 +53,9 @@ zen-workspace-creation-header = Crea uno Spazio
 zen-workspace-creation-label = Gli Spazi sono usati per organizzare le tue schede e sessioni.
 zen-workspaces-delete-workspace-title = Eliminare Spazio?
 zen-workspaces-delete-workspace-body = Sei sicuro di voler cancellare { $name }? Questa azione non può essere annullata.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

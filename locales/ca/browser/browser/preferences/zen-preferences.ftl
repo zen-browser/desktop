@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Commuta el rendiment
 zen-devtools-toggle-storage-shortcut = Commuta l'emmagatzematge
 zen-devtools-toggle-dom-shortcut = Commuta el DOM
 zen-devtools-toggle-accessibility-shortcut = Commuta l'accessibilitat
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

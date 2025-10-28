@@ -53,3 +53,9 @@ zen-workspace-creation-header = Buat sebuah Ruang
 zen-workspace-creation-label = Ruang digunakan untuk mengorganisasikan tab dan sesi Anda.
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus { $name }? Tindakan ini tidak bisa dibatalkan.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

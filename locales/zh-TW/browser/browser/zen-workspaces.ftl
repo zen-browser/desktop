@@ -53,3 +53,9 @@ zen-workspace-creation-header = 建立工作區
 zen-workspace-creation-label = 工作區用於組織您的分頁與工作階段。
 zen-workspaces-delete-workspace-title = 刪除工作區？
 zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操錯無法復原。
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

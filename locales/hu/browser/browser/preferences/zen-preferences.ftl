@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = Teljesítmény kapcsolása
 zen-devtools-toggle-storage-shortcut = Tároló kapcsolása
 zen-devtools-toggle-dom-shortcut = DOM kapcsolása
 zen-devtools-toggle-accessibility-shortcut = Hozzáférhetőség kapcsolása
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

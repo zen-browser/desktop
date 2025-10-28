@@ -300,3 +300,4 @@ zen-devtools-toggle-performance-shortcut = 切换性能
 zen-devtools-toggle-storage-shortcut = 切换存储
 zen-devtools-toggle-dom-shortcut = 切换 DOM
 zen-devtools-toggle-accessibility-shortcut = 切换无障碍环境
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

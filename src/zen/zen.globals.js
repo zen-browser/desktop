@@ -27,7 +27,6 @@ export default [
   'ZenWorkspaceBookmarksStorage',
 
   'gZenPinnedTabManager',
-  'ZenPinnedTabsStorage',
 
   'gZenEmojiPicker',
   'gZenSessionStore',

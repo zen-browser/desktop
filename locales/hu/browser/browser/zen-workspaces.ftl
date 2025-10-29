@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Más munkakörnyezetek
 zen-panel-ui-workspaces-create = 
     .label = Környezet létrehozása
@@ -53,8 +57,8 @@ zen-workspace-creation-header = Környezet létrehozása
 zen-workspace-creation-label = A munkakörnyezetek a lapok és munkamenetek rendszerezésére szolgálnak.
 zen-workspaces-delete-workspace-title = Munkakörnyezet törlése?
 zen-workspaces-delete-workspace-body = Biztosan törölni szeretnéd ezt: { $name }? Ez a művelet visszafordíthatatlan.
-# Note that the html tag MUST not be changed or removed, as it is used to better
-# display the shortcut in the toast notification.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Lapok bezárva! A visszavonáshoz használd a(z) <span>{ $shortcut }</span>.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Törlés

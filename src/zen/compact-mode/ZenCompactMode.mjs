@@ -32,8 +32,6 @@ var gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
   _removeHoverFrames: {},
-  _isDragging: false,
-  _dragDebounceTimer: null,
 
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref('zen.view.compact.hover-hack-delay', 0),
@@ -672,10 +670,6 @@ var gZenCompactModeManager = {
         setTimeout(() => {
           if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
           if (event.target.closest('panel')) return;
-          if (event.type === 'dragover') {
-            this._isDragging = true;
-            clearTimeout(this._dragDebounceTimer);
-          }
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout('has-hover' + target.id);
           window.requestAnimationFrame(() => {
@@ -693,13 +687,6 @@ var gZenCompactModeManager = {
       };
 
       const onLeave = (event) => {
-        if (event.type === 'dragleave' && this._isDragging) {
-          clearTimeout(this._dragDebounceTimer);
-          this._dragDebounceTimer = setTimeout(() => {
-            this._isDragging = false;
-          }, this.HOVER_HACK_DELAY);
-          return;
-        }
         if (AppConstants.platform == 'macosx') {
           const buttonRect = gZenVerticalTabsManager.actualWindowButtons.getBoundingClientRect();
           const MAC_WINDOW_BUTTONS_X_BORDER = buttonRect.width + buttonRect.x;
@@ -728,7 +715,10 @@ var gZenCompactModeManager = {
             (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
             this._hasHoveredUrlbar ||
-            this._ignoreNextHover
+            this._ignoreNextHover ||
+            (event.type === 'dragleave' &&
+              event.explicitOriginalTarget !== target &&
+              target.contains(event.explicitOriginalTarget))
           ) {
             return;
           }
@@ -753,9 +743,6 @@ var gZenCompactModeManager = {
 
       target.addEventListener('mouseleave', onLeave);
       target.addEventListener('dragleave', onLeave);
-
-      target.addEventListener('drop', () => this._cleanupDragState());
-      target.addEventListener('dragend', () => this._cleanupDragState());
     }
 
     document.documentElement.addEventListener('mouseleave', (event) => {
@@ -826,11 +813,6 @@ var gZenCompactModeManager = {
         this.clearFlashTimeout('has-hover' + target.id);
       }
     }
-  },
-
-  _cleanupDragState() {
-    this._isDragging = false;
-    clearTimeout(this._dragDebounceTimer);
   },
 
   isSidebarPotentiallyOpen() {

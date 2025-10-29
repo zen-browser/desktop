@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = 當前設定檔
 unified-extensions-description = 擴充功能可為 { -brand-short-name } 帶來更多額外功能。
 tab-context-zen-reset-pinned-tab = 

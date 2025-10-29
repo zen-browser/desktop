@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = סביבות עבודה
 zen-panel-ui-workspaces-create = 
     .label = צור סביבה
@@ -53,8 +57,8 @@ zen-workspace-creation-header = צור סביבה
 zen-workspace-creation-label = סביבות משומשות לסידור כרטיסיות והפעלות.
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = האם ברצונך למחוק { $name }? פעולה זו לא ניתנת לביטול.
-# Note that the html tag MUST not be changed or removed, as it is used to better
-# display the shortcut in the toast notification.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Clear

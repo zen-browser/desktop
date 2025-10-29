@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Espaces
 zen-panel-ui-workspaces-create = 
     .label = Créer un espace
@@ -53,8 +57,8 @@ zen-workspace-creation-header = Créer un espace
 zen-workspace-creation-label = Les espaces sont utilisés pour organiser vos onglets et sessions.
 zen-workspaces-delete-workspace-title = Supprimer l’espace ?
 zen-workspaces-delete-workspace-body = Êtes-vous sûr de vouloir supprimer { $name } ? Cette action ne peut pas être annulée.
-# Note that the html tag MUST not be changed or removed, as it is used to better
-# display the shortcut in the toast notification.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Onglets fermés ! Utiliser <span>{ $shortcut }</span> pour annuler.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Nettoyer

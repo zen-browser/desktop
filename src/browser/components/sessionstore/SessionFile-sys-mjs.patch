@@ -1,0 +1,21 @@
+diff --git a/browser/components/sessionstore/SessionFile.sys.mjs b/browser/components/sessionstore/SessionFile.sys.mjs
+index 157c55ab24a418b56690d2e26320582909b919e4..14755f57dc450583e69eee94eb11f16980d5e5cb 100644
+--- a/browser/components/sessionstore/SessionFile.sys.mjs
++++ b/browser/components/sessionstore/SessionFile.sys.mjs
+@@ -22,6 +22,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
+   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+   SessionWriter: "resource:///modules/sessionstore/SessionWriter.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+ });
+ 
+ const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
+@@ -364,7 +365,7 @@ var SessionFileInternal = {
+     this._readOrigin = result.origin;
+ 
+     result.noFilesFound = noFilesFound;
+-
++    await lazy.ZenSessionStore.readFile();
+     return result;
+   },
+ 

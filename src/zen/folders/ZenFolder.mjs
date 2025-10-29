@@ -157,6 +157,17 @@ class ZenFolder extends MozTabbrowserTabGroup {
       }
     }
   }
+    async unpackTabs() {
+      this.collapsed = false;
+      for (let tab of this.allItems.reverse()) {
+        tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
+        if (tab.hasAttribute('zen-empty-tab')) {
+          gBrowser.removeTab(tab);
+        } else {
+          gBrowser.ungroupTab(tab);
+        }
+      }
+    }
 
   async delete() {
     for (const tab of this.allItemsRecursive) {
@@ -169,6 +180,16 @@ class ZenFolder extends MozTabbrowserTabGroup {
     }
     await gBrowser.removeTabGroup(this, { isUserTriggered: true });
   }
+    async delete() {
+      for (const tab of this.allItemsRecursive) {
+        if (tab.hasAttribute('zen-empty-tab')) {
+          // Manually remove the empty tabs as removeTabs() inside removeTabGroup
+          // does ignore them.
+          gBrowser.removeTab(tab);
+        }
+      }
+      await gBrowser.removeTabGroup(this, { isUserTriggered: true });
+    }
 
   get allItemsRecursive() {
     const items = [];

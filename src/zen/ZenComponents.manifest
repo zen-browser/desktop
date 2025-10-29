@@ -13,3 +13,4 @@
 category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 
 #include common/Components.manifest
+#include sessionstore/SessionComponents.manifest

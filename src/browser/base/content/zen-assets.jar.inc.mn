@@ -73,6 +73,9 @@
         content/browser/zen-styles/zen-download-arc-animation.css               (../../zen/downloads/zen-download-arc-animation.css)
         content/browser/zen-styles/zen-download-box-animation.css               (../../zen/downloads/zen-download-box-animation.css)
 
+        content/browser/zen-components/ZenBoosts.mjs                            (../../zen/boosts/ZenBoosts.mjs)
+        content/browser/zen-components/ZenBoostsEditor.mjs                      (../../zen/boosts/ZenBoostsEditor.mjs)
+        content/browser/zen-styles/zen-boosts.css                               (../../zen/boosts/zen-boosts.css)
 
         # Images
         content/browser/zen-images/brand-header.svg                             (../../zen/images/brand-header.svg)

@@ -33,7 +33,8 @@
 .close-icon,
 .zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove,
-#appMenu-quit-button2 {
+#appMenu-quit-button2,
+#PanelUI-zen-boost-delete {
   list-style-image: url('close.svg') !important;
 }
 
@@ -944,4 +945,16 @@
 #zen-copy-url-button image {
   list-style-image: url('link.svg');
   fill-opacity: 0.7;
+}
+
+#PanelUI-zen-boost-zap {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/zap.svg') !important;
+}
+
+#PanelUI-zen-boost-invert {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bulb.svg') !important;
+}
+
+#PanelUI-zen-boost-disable {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg') !important;
 }

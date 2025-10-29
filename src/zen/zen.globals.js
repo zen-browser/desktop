@@ -36,6 +36,9 @@ export default [
   'gZenMediaController',
   'gZenGlanceManager',
 
+  'gZenBoostsManager',
+  'gZenBoostsEditor',
+
   'nsZenThemePicker',
   'gZenThemePicker',
 

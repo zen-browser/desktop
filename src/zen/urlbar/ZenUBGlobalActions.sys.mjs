@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { gZenBoostsManager } from "resource:///modules/ZenBoostsManager.sys.mjs";
+
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
@@ -21,6 +23,26 @@ const globalActionsTemplate = [
     label: 'New Split View',
     command: 'cmd_zenNewEmptySplit',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
+  },
+  {
+    label: 'Create New Boost',
+    command: 'cmd_zenOpenBoostEditor',
+    icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
+    isAvailable: (window) => {
+      const tab = window.gBrowser.selectedTab;
+      const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+      return !tab.hasAttribute('zen-empty-tab') && !gZenBoostsManager.registeredBoostForDomain(domain);
+    },
+  },
+  {
+    label: 'Edit Boost',
+    command: 'cmd_zenOpenBoostEditor',
+    icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
+    isAvailable: (window) => {
+      const tab = window.gBrowser.selectedTab;
+      const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+      return !tab.hasAttribute('zen-empty-tab') && gZenBoostsManager.registeredBoostForDomain(domain);
+    },
   },
   {
     label: 'New Folder',

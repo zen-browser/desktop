@@ -6,3 +6,22 @@
 EXTRA_JS_MODULES += [
   "ZenBoostsManager.sys.mjs",
 ]
+
+XPIDL_SOURCES += [
+    "nsIZenBoostsBackend.idl",
+]
+
+EXPORTS.mozilla += [
+    "nsZenBoostsBackend.h",
+]
+
+SOURCES += [
+    "nsZenBoostsBackend.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_boosts"

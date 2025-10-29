@@ -718,7 +718,7 @@ var gZenCompactModeManager = {
             this._ignoreNextHover ||
             (event.type === 'dragleave' &&
               event.explicitOriginalTarget !== target &&
-              target.contains(event.explicitOriginalTarget))
+              target.contains?.(event.explicitOriginalTarget))
           ) {
             return;
           }

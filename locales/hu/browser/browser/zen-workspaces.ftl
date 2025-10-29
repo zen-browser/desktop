@@ -55,7 +55,7 @@ zen-workspaces-delete-workspace-title = Munkakörnyezet törlése?
 zen-workspaces-delete-workspace-body = Biztosan törölni szeretnéd ezt: { $name }? Ez a művelet visszafordíthatatlan.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = Lapok bezárva! A visszavonáshoz használd a(z) <span>{ $shortcut }</span>.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = Törlés
+    .tooltiptext = Összes rögzítetlen lap bezárása

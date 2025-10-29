@@ -55,7 +55,7 @@ zen-workspaces-delete-workspace-title = Voleu suprimir l'espai de treball?
 zen-workspaces-delete-workspace-body = Esteu segur que voleu suprimir { $name }? Aquesta acció no es pot desfer.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = Pestanyes tancades. Feu servir <span>{ $shortcut }</span> per desfer-ho.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = Esborra
+    .tooltiptext = Tanca totes les pestanyes no fixades

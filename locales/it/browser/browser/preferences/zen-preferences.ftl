@@ -300,4 +300,4 @@ zen-devtools-toggle-performance-shortcut = Attiva/disattiva Prestazioni
 zen-devtools-toggle-storage-shortcut = Attiva/Disattiva Archiviazione
 zen-devtools-toggle-dom-shortcut = Attiva/Disattiva DOM
 zen-devtools-toggle-accessibility-shortcut = Attiva/Disattiva Accessibilità
-zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-close-all-unpinned-tabs-shortcut = Chiudi Tutte Le Schede Non Bloccate

@@ -346,6 +346,7 @@
   #notification-popup-box {
     margin: 0 4px 0 0 !important;
     justify-content: center;
+    height: unset !important;
     gap: 8px;
     background: transparent;
 

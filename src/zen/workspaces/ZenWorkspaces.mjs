@@ -597,7 +597,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     const toolbox = gNavToolbox;
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll
-    const scrollThreshold = 2; // Minimum scroll delta to trigger workspace change
+    const scrollThreshold = 1; // Minimum scroll delta to trigger workspace change
 
     toolbox.addEventListener(
       'wheel',

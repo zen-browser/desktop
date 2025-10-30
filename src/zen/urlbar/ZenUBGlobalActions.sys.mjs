@@ -34,7 +34,8 @@ const globalActionsTemplate = [
       const domain = url.hostname;
       const uri = window.gBrowser.currentURI;
       return (
-        !tab.hasAttribute('zen-empty-tab') && !gZenBoostsManager.registeredBoostForDomain(domain && gZenBoostsManager.canBoostSite(uri))
+        !tab.hasAttribute('zen-empty-tab') &&
+        !gZenBoostsManager.registeredBoostForDomain(domain && gZenBoostsManager.canBoostSite(uri))
       );
     },
   },
@@ -48,7 +49,9 @@ const globalActionsTemplate = [
       const domain = url.hostname;
       const uri = window.gBrowser.currentURI;
       return (
-        !tab.hasAttribute('zen-empty-tab') && gZenBoostsManager.registeredBoostForDomain(domain) && gZenBoostsManager.canBoostSite(uri)
+        !tab.hasAttribute('zen-empty-tab') &&
+        gZenBoostsManager.registeredBoostForDomain(domain) &&
+        gZenBoostsManager.canBoostSite(uri)
       );
     },
   },

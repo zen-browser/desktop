@@ -33,7 +33,7 @@
 #PanelUI-zen-boost-head-wrapper {
   margin-top: -10px;
   margin-bottom: -10px;
-  
+
   & input {
     height: 26px !important;
   }
@@ -62,7 +62,7 @@
     outline: none;
 
     & :active {
-      border: solid 1px #FFFFFF99;
+      border: solid 1px #ffffff99;
     }
   }
 
@@ -197,7 +197,7 @@
 
     transform-origin: center center;
     transform: translate(-50%, -50%);
-    
+
     outline: solid 1px white;
     border-radius: 100%;
   }

@@ -1,5 +1,5 @@
 diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
-index e1186f0b9f25f5c78f2cb3dc4d2a607c1ede04a9..7328d1ce3a26955b10e8789d0f46dfeba2281c82 100644
+index e1186f0b9f25f5c78f2cb3dc4d2a607c1ede04a9..63d2ff7975abf0af3316dc5533554633eaf2b2a5 100644
 --- a/layout/base/nsPresContext.h
 +++ b/layout/base/nsPresContext.h
 @@ -45,6 +45,7 @@
@@ -14,7 +14,7 @@ index e1186f0b9f25f5c78f2cb3dc4d2a607c1ede04a9..7328d1ce3a26955b10e8789d0f46dfeb
    void UpdateForcedColors(bool aNotify = true);
  
   public:
-+  nsCOMPtr<zen::ZenBoostsPresContext> mZenBoostsPresContext;
++  nsCOMPtr<zen::ZenBoostsPresContextData> mZenBoostsPresContextData;
    float GetFullZoom() { return mFullZoom; }
    /**
     * Device full zoom differs from full zoom because it gets the zoom from

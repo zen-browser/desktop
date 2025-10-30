@@ -8,20 +8,20 @@
 #include "nsColor.h"
 #include "nsISupports.h"
 
-namespace mozilla {
+namespace zen {
 
-class ZenBoostsPresContext : public nsISupports {
-  ~ZenBoostsPresContext();
+class ZenBoostsPresContextData final : public nsISupports {
+  ~ZenBoostsPresContextData() = default;
 
   public:
   NS_DECL_ISUPPORTS
 
   nscolor mAccentColor;
 
-  explicit ZenBoostsPresContext(nscolor aAccentColor)
+  explicit ZenBoostsPresContextData(nscolor aAccentColor)
       : mAccentColor(aAccentColor) {}
 };
 
-}  // namespace mozilla
+}  // namespace zen
 
 #endif  // mozilla_ZenBoostsPressContext_h__

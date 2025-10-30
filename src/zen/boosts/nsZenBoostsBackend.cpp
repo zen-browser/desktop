@@ -63,8 +63,8 @@ auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
   // Create the Zen boosts data if it doesn't exist yet.
   // TODO: Actually check on the document's href or other properties to
   //  determine what data to store.
-    aPresContext->mZenBoostsPresContextData =
-        new ZenBoostsPresContextData(NS_RGBA(111, 78, 55, 1));
+  aPresContext->mZenBoostsPresContextData =
+      new ZenBoostsPresContextData(NS_RGBA(111, 78, 55, 1));
 }
 
 auto nsZenBoostsBackend::ResolveStyleColor(

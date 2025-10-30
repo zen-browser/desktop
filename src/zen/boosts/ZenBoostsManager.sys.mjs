@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export class nsZenBoostsManager {
-
   initialized = false;
   registeredSheets = new Map();
   registeredBoosts = new Map();
@@ -15,7 +14,7 @@ export class nsZenBoostsManager {
   }
 
   init() {
-    this.readBoostsFromStore(() => initialized = true);
+    this.readBoostsFromStore(() => (initialized = true));
   }
 
   // Store Firefox Style Sheet Service and IO Service for later use
@@ -58,7 +57,7 @@ export class nsZenBoostsManager {
   }
 
   deleteBoost(domain) {
-    if(this.registeredBoosts.has(domain)) {
+    if (this.registeredBoosts.has(domain)) {
       this.unregisterSheet(domain);
       this.registeredBoosts.delete(domain);
     }
@@ -101,51 +100,14 @@ export class nsZenBoostsManager {
         `;
     }
 
-    const invert = boost.smartInvert ? 'invert()' : '';
+    // TODO: Send colors to boosts backend
 
-    let colorFilters = `
-          html {
-            filter: ${invert} !important;
-          }
-
-          img, video, picture {
-            filter: ${invert} !important;
-          }
-      `;
-
-    // TODO: Temporary color theming using mix-blend-mode
-    if (boost.enableColorBoost) {
-      colorFilters += `
-          html, body { position: relative; }
-          body::before {
-            content: "";
-            position: fixed; /* cover everything */
-            pointer-events: none; /* don't block interactions */
-            top: 0; left: 0; right: 0; bottom: 0;
-
-            background-color: hsl(${boost.dotAngleDeg - (boost.smartInvert ? 180 : 0)}deg, ${boost.dotDistance * 100}%, ${10 + boost.dotDistance * 60}%);
-            
-            mix-blend-mode: color;
-            z-index: 1000;
-          }
-          body img,
-          body video,
-          body canvas,
-          body picture {
-            position: relative;
-            isolation: isolate;
-            z-index: 1001;  /* put images above the overlay */
-          }
-
-        `;
-    }
-
-    this.registerCSSForDomain(colorFilters + ' ' + fontFamily, boost.domain);
+    this.registerCSSForDomain(fontFamily, boost.domain);
   }
 
   // Save all boosts to the profile folder
   saveBoostToStore(boostData) {
-    if(boostData != null)
+    if (boostData != null)
       this.registeredBoosts.set(boostData.domain, boostData);
 
     (async () => this.writeToDisk(this.registeredBoosts))();
@@ -153,17 +115,16 @@ export class nsZenBoostsManager {
 
   // Reads all boosts from the profile folder
   readBoostsFromStore(done) {
-    this.readFromDisk()
-      .then((map) => {
-        this.registeredBoosts = map;
+    this.readFromDisk().then((map) => {
+      this.registeredBoosts = map;
 
-        // Load in all boosts
-        for (const [key, value] of this.registeredBoosts) {
-          this.updateBoost(value);
-        }
+      // Load in all boosts
+      for (const [key, value] of this.registeredBoosts) {
+        this.updateBoost(value);
+      }
 
-        done();
-      });
+      done();
+    });
   }
 
   // Helper method, disk => json => map

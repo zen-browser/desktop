@@ -24,9 +24,7 @@ document.addEventListener(
             gZenWorkspaces.changeWorkspaceShortcut();
             break;
           case 'cmd_zenOpenBoostEditor':
-            const currentTab = gBrowser.selectedTab;
-            const domain = new URL(currentTab.linkedBrowser.currentURI.spec).hostname;
-            gZenBoostsEditor.openEditor(event, domain);
+            gZenUIManager.openBoostWindow();
             break;
           case 'cmd_zenWorkspaceBackward':
             gZenWorkspaces.changeWorkspaceShortcut(-1);

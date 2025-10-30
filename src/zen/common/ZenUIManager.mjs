@@ -162,6 +162,83 @@ var gZenUIManager = {
     };
   },
 
+  openBoostWindow() {
+    const screenX = window.screenX;
+    const screenY = window.screenY;
+    const width = window.outerWidth;
+    const height = window.outerHeight;
+
+    // TODO: This needs to be changed to exact values
+    const editorWidth = 175;
+    const editorHeight = 435;
+    const pad = 20;
+
+    const animationTarget = 25;
+
+    let left = screenX + width + pad;
+    let top = screenY + height / 2 - editorHeight / 2;
+
+    if (left + editorWidth > screen.availWidth) {
+      left = screenX + width - (editorWidth + pad);
+    }
+
+    const editor = window.openDialog(
+      'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
+      '',
+      `left=${left},top=${top + animationTarget},chrome,titlebar,alwaysontop`
+    );
+
+    // Close the editor if the tab is switched
+    window.gBrowser.tabContainer.addEventListener(
+      "TabSelect",
+      event => {
+        const tab = event.target;
+        const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+
+        // Close if domain doesn't match
+        if (domain != editor.domain) {
+          editor.close();
+        }
+      },
+      // Remove the event listener after the window closes
+      { once: true } 
+    );
+
+    // Cleaning up on close
+    editor.window.addEventListener("unload", () => this._openBoostEditor = null);
+
+    // Rather inconvenient window animation using moveTo
+    // editor.addEventListener('load', () => {
+    //   const interval = 16;
+    //   let value = animationTarget;
+
+    //   let anim = null;
+    //   anim = setInterval(() => {
+    //       if (window.closed) { clearInterval(anim); return; }
+    //       if (!editor || typeof editor.moveTo !== 'function') { clearInterval(anim); return; }
+
+    //     if ((value - 1) <= 0) {
+    //       clearInterval(anim);
+    //       editor.moveTo(left, top);
+    //       return;
+    //     }
+
+    //     value = value + (0 - value) * 0.25;
+    //     editor.moveTo(left, top + value);
+
+    //   }, interval);
+    // });
+    
+    // Give the domain
+    const tab = window.gBrowser.selectedTab;
+    const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+    editor.domain = domain;
+
+    // Give the animator
+    editor.gZenUIManager = this;
+    return editor;
+  },
+
   updateTabsToolbar() {
     const kUrlbarHeight = 335;
     gURLBar.textbox.style.setProperty(

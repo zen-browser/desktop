@@ -4,6 +4,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+:root {
+  @media (-moz-platform: macos) {
+    --panel-border-radius: 10px;
+
+    @media (-moz-mac-tahoe-theme) {
+      --panel-border-radius: 12px;
+    }
+  }
+}
+
 #PanelUI-zen-boost-font-arial {
   font-family: Arial, sans-serif;
 }
@@ -20,14 +30,45 @@
   gap: 10px;
 }
 
+#PanelUI-zen-boost-head-wrapper {
+  margin-top: -10px;
+  margin-bottom: -10px;
+  
+  & input {
+    height: 26px !important;
+  }
+}
+
+#PanelUI-zen-boost-font-wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0px;
+  width: 100%;
+
+  & button {
+    padding: auto !important;
+    margin: auto !important;
+  }
+}
+
 #PanelUI-zen-boost-filter-wrapper {
   width: 135px;
 
   & input {
-    width: auto;
+    height: 26px;
+
+    border: none;
+    background-color: transparent;
+    outline: none;
+
+    & :active {
+      border: solid 1px #FFFFFF99;
+    }
   }
 
   & button {
+    border-radius: 5px;
+
     padding: 0 !important;
     min-width: fit-content !important;
 
@@ -54,6 +95,10 @@
   }
 }
 
+#zen-boost-editor-root {
+  padding: 15px;
+}
+
 #PanelUI-zen-boost-delete {
   width: auto;
 }
@@ -64,7 +109,7 @@
   pointer-events: none !important;
 }
 
-#PanelUI-zen-boost-toolbar-wrapper{
+#PanelUI-zen-boost-toolbar-wrapper {
   width: auto;
   margin: auto;
   gap: 1.15em;
@@ -85,8 +130,8 @@
   height: 5px !important;
 }
 
-#PanelUI-zen-boost-toolbar-wrapper button:hover{
-  background-color: #FFFFFF11;
+#PanelUI-zen-boost-toolbar-wrapper button:hover {
+  background-color: #ffffff11;
   opacity: 0.9;
 }
 
@@ -108,18 +153,18 @@
   border: 5px solid hsl(100 100% 60%);
   border-image-slice: 1;
   border-image-source: conic-gradient(
-        rgba(255, 0, 0, 1) 0%,
-        rgba(255, 162, 0, 1) 10%,
-        rgba(255, 242, 0, 1) 20%,
-        rgba(89, 255, 0, 1) 30%,
-        rgba(0, 255, 128, 1) 40%,
-        rgba(0, 255, 247, 1) 50%,
-        rgba(0, 89, 255, 1) 60%,
-        rgba(8, 0, 255, 1) 70%,
-        rgba(204, 0, 255, 1) 80%,
-        rgba(255, 0, 144, 1) 90%,
-        rgba(255, 0, 8, 1) 100%
-      );
+    rgba(255, 0, 0, 1) 0%,
+    rgba(255, 162, 0, 1) 10%,
+    rgba(255, 242, 0, 1) 20%,
+    rgba(89, 255, 0, 1) 30%,
+    rgba(0, 255, 128, 1) 40%,
+    rgba(0, 255, 247, 1) 50%,
+    rgba(0, 89, 255, 1) 60%,
+    rgba(8, 0, 255, 1) 70%,
+    rgba(204, 0, 255, 1) 80%,
+    rgba(255, 0, 144, 1) 90%,
+    rgba(255, 0, 8, 1) 100%
+  );
 
   pointer-events: none;
 }
@@ -142,6 +187,20 @@
   );
   background-position: -23px -23px;
   background-size: 6px 6px;
+
+  & .zen-boost-color-picker-circle {
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    width: 100px;
+    height: 100px;
+
+    transform-origin: center center;
+    transform: translate(-50%, -50%);
+    
+    outline: solid 1px white;
+    border-radius: 100%;
+  }
 
   & .zen-boost-color-picker-dot {
     position: absolute;

@@ -30,9 +30,11 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
-      const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+      const url = new URL(tab.linkedBrowser.currentURI.spec);
+      const domain = url.hostname;
+      const uri = window.gBrowser.currentURI;
       return (
-        !tab.hasAttribute('zen-empty-tab') && !gZenBoostsManager.registeredBoostForDomain(domain)
+        !tab.hasAttribute('zen-empty-tab') && !gZenBoostsManager.registeredBoostForDomain(domain && gZenBoostsManager.canBoostSite(uri))
       );
     },
   },
@@ -42,9 +44,11 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
-      const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+      const url = new URL(tab.linkedBrowser.currentURI.spec);
+      const domain = url.hostname;
+      const uri = window.gBrowser.currentURI;
       return (
-        !tab.hasAttribute('zen-empty-tab') && gZenBoostsManager.registeredBoostForDomain(domain)
+        !tab.hasAttribute('zen-empty-tab') && gZenBoostsManager.registeredBoostForDomain(domain) && gZenBoostsManager.canBoostSite(uri)
       );
     },
   },

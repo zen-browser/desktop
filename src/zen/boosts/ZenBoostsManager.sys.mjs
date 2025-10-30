@@ -107,8 +107,7 @@ export class nsZenBoostsManager {
 
   // Save all boosts to the profile folder
   saveBoostToStore(boostData) {
-    if (boostData != null)
-      this.registeredBoosts.set(boostData.domain, boostData);
+    if (boostData != null) this.registeredBoosts.set(boostData.domain, boostData);
 
     (async () => this.writeToDisk(this.registeredBoosts))();
   }
@@ -156,6 +155,11 @@ export class nsZenBoostsManager {
   // Checks if there is a boost registered for the currently open tab
   registeredBoostForDomain(domain) {
     return this.registeredSheets.has(domain);
+  }
+
+  // Checks if a boost can be created
+  canBoostSite(uri) {
+    return uri.schemeIs('http') || uri.schemeIs('https');
   }
 }
 

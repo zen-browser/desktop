@@ -1,0 +1,41 @@
+diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
+index 6c5b38eb3cdb08a8afd670705c75c052b85b6dd9..823df9ef5245dcffcbfaba1fafc6b15ece174676 100644
+--- a/layout/painting/nsDisplayList.cpp
++++ b/layout/painting/nsDisplayList.cpp
+@@ -85,6 +85,7 @@
+ #include "mozilla/layers/WebRenderLayerManager.h"
+ #include "mozilla/layers/WebRenderMessages.h"
+ #include "mozilla/layers/WebRenderScrollData.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsCSSProps.h"
+ #include "nsCSSRendering.h"
+ #include "nsCSSRenderingGradients.h"
+@@ -1046,6 +1047,12 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
+   state->mFirstFrameMarkedForDisplay = mFramesMarkedForDisplay.Length();
+   state->mFirstFrameWithOOFData = mFramesWithOOFData.Length();
+ 
++  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
++      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
++  if (zenBackend) {
++    zenBackend->onPressShellEntered(state->mPresShell->GetPresContext());
++  }
++
+   ScrollContainerFrame* sf = state->mPresShell->GetRootScrollContainerFrame();
+   if (sf && IsInSubdocument()) {
+     // We are forcing a rebuild of nsDisplayCanvasBackgroundColor to make sure
+@@ -1221,6 +1228,15 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
+   ResetMarkedFramesForDisplayList(aReferenceFrame);
+   mPresShellStates.RemoveLastElement();
+ 
++  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
++      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
++  if (zenBackend) {
++    zenBackend->onPressShellExited(
++      mPresShellStates.IsEmpty()
++          ? nullptr
++          : CurrentPresShellState()->mPresShell->GetPresContext());
++  }
++
+   if (!mPresShellStates.IsEmpty()) {
+     nsPresContext* pc = CurrentPresContext();
+     nsIDocShell* docShell = pc->GetDocShell();

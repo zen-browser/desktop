@@ -1,0 +1,20 @@
+diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
+index e1186f0b9f25f5c78f2cb3dc4d2a607c1ede04a9..7328d1ce3a26955b10e8789d0f46dfeba2281c82 100644
+--- a/layout/base/nsPresContext.h
++++ b/layout/base/nsPresContext.h
+@@ -45,6 +45,7 @@
+ #include "nsTHashSet.h"
+ #include "nsTHashtable.h"
+ #include "nsThreadUtils.h"
++#include "mozilla/ZenBoostsPresContext.h"
+ 
+ class nsIPrintSettings;
+ class nsDocShell;
+@@ -560,6 +561,7 @@ class nsPresContext : public nsISupports,
+   void UpdateForcedColors(bool aNotify = true);
+ 
+  public:
++  nsCOMPtr<zen::ZenBoostsPresContext> mZenBoostsPresContext;
+   float GetFullZoom() { return mFullZoom; }
+   /**
+    * Device full zoom differs from full zoom because it gets the zoom from

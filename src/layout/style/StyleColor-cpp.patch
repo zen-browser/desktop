@@ -1,0 +1,30 @@
+diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
+index 5fd5f7efba9bcb2febdc9a6b8f8812df673513d8..200e9bf82aacbf38a50f5b99671e403de5b4f61b 100644
+--- a/layout/style/StyleColor.cpp
++++ b/layout/style/StyleColor.cpp
+@@ -10,6 +10,7 @@
+ #include "mozilla/dom/BindingDeclarations.h"
+ #include "nsIFrame.h"
+ #include "nsStyleStruct.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ 
+ namespace mozilla {
+ 
+@@ -23,6 +24,8 @@ bool StyleColor::MaybeTransparent() const {
+ template <>
+ StyleAbsoluteColor StyleColor::ResolveColor(
+     const StyleAbsoluteColor& aForegroundColor) const {
++  auto ResolveColorInner = [this,
++                            &aForegroundColor]() -> StyleAbsoluteColor {
+   if (IsAbsolute()) {
+     return AsAbsolute();
+   }
+@@ -32,6 +35,8 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+   }
+ 
+   return Servo_ResolveColor(this, &aForegroundColor);
++  };
++  return zen::nsZenBoostsBackend::ResolveStyleColor(ResolveColorInner());
+ }
+ 
+ template <>

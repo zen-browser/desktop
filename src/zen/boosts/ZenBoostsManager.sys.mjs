@@ -126,24 +126,23 @@ export class nsZenBoostsManager {
     });
   }
 
+  get #storePath() {
+    const profilePath = PathUtils.profileDir;
+    return PathUtils.join(profilePath, this.saveFilename);
+  }
+
   // Helper method, disk => json => map
   async readFromDisk() {
-    const profilePath = PathUtils.profileDir;
-    const savePath = PathUtils.join(profilePath, this.saveFilename);
+    const savePath = this.#storePath;
 
     if (!(await IOUtils.exists(savePath))) return new Map();
 
-    const data = await IOUtils.read(savePath);
-    const decoder = new TextDecoder();
-    const json = decoder.decode(data);
-
-    return new Map(JSON.parse(json));
+    return IOUtils.readJSON(savePath);
   }
 
   // Helper method, map => json => disk
   writeToDisk(map) {
-    const json = JSON.stringify([...map]);
-    IOUtils.writeJSON(json, { compress: true });
+    IOUtils.writeJSON(this.#storePath, map, { compress: true });
   }
 
   // Checks if there is a boost registered for the currently open tab

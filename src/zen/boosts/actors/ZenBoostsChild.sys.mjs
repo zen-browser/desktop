@@ -76,10 +76,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     const domain = browsingContext.topWindow.location.host;
 
-    const { gZenBoostsManager } = ChromeUtils.importESModule(
-      'resource:///modules/ZenBoostsManager.sys.mjs'
-    );
-
     if (gZenBoostsManager.registeredBoostForDomain(domain)) {
       const boostData = gZenBoostsManager.loadBoostFromStore(domain);
       browsingContext.prefersColorSchemeOverride = boostData.smartInvert ? "light" : "none";

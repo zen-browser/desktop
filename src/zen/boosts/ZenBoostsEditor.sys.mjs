@@ -26,7 +26,7 @@ export class nsZenBoostEditor {
   }
 
   init() {
-    this.window.addEventListener('unload', () => this.handleClose());
+    this.window.addEventListener('unload', () => this.handleClose(), { once: true });
 
     this.doc
       .getElementById('zen-boost-font-arial')

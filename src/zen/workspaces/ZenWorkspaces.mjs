@@ -932,7 +932,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     await this.workspaceBookmarks();
     await this.initializeTabsStripSections();
     this._initializeEmptyTab();
-    await gZenPinnedTabManager.refreshPinnedTabs({ init: true });
     await this.changeWorkspace(activeWorkspace, { onInit: true });
     this.#fixTabPositions();
     this.onWindowResize();
@@ -1471,11 +1470,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         !tab.hasAttribute('zen-empty-tab') &&
         !tab.hasAttribute('zen-essential')
     );
-    for (const tab of tabs) {
-      if (tab.pinned) {
-        await ZenPinnedTabsStorage.removePin(tab.getAttribute('zen-pin-id'));
-      }
-    }
     gBrowser.removeTabs(tabs, {
       animate: false,
       skipSessionStore: true,

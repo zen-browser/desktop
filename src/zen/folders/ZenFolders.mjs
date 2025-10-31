@@ -508,9 +508,6 @@
       tabs = [emptyTab, ...filteredTabs];
 
       const folder = this._createFolderNode(options);
-      if (options.initialPinId) {
-        folder.setAttribute('zen-pin-id', options.initialPinId);
-      }
 
       if (options.insertAfter) {
         options.insertAfter.after(folder);
@@ -940,7 +937,7 @@
         if (!parentFolder && folder.hasAttribute('split-view-group')) continue;
         const emptyFolderTabs = folder.tabs
           .filter((tab) => tab.hasAttribute('zen-empty-tab'))
-          .map((tab) => tab.getAttribute('zen-pin-id'));
+          .map((tab) => tab.getAttribute('zen-sync-id'));
 
         let prevSiblingInfo = null;
         const prevSibling = folder.previousElementSibling;
@@ -949,8 +946,8 @@
         if (prevSibling) {
           if (gBrowser.isTabGroup(prevSibling)) {
             prevSiblingInfo = { type: 'group', id: prevSibling.id };
-          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-pin-id')) {
-            const zenPinId = prevSibling.getAttribute('zen-pin-id');
+          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-sync-id')) {
+            const zenPinId = prevSibling.getAttribute('zen-sync-id');
             prevSiblingInfo = { type: 'tab', id: zenPinId };
           } else {
             prevSiblingInfo = { type: 'start', id: null };
@@ -969,7 +966,7 @@
           prevSiblingInfo: prevSiblingInfo,
           emptyTabIds: emptyFolderTabs,
           userIcon: userIcon?.getAttribute('href'),
-          pinId: folder.getAttribute('zen-pin-id'),
+          syncId: folder.getAttribute('zen-sync-id'),
           // note: We shouldn't be using the workspace-id anywhere, we are just
           //  remembering it for the pinned tabs manager to use it later.
           workspaceId: folder.getAttribute('zen-workspace-id'),
@@ -996,9 +993,9 @@
         tabFolderWorkingData.set(folderData.id, workingData);
 
         const oldGroup = document.getElementById(folderData.id);
-        folderData.emptyTabIds.forEach((zenPinId) => {
+        folderData.emptyTabIds.forEach((zenSyncId) => {
           oldGroup
-            ?.querySelector(`tab[zen-pin-id="${zenPinId}"]`)
+            ?.querySelector(`tab[zen-sync-id="${zenSyncId}"]`)
             ?.setAttribute('zen-empty-tab', true);
         });
         if (oldGroup) {
@@ -1011,7 +1008,7 @@
               saveOnWindowClose: folderData.saveOnWindowClose,
               workspaceId: folderData.workspaceId,
             });
-            folder.setAttribute('zen-pin-id', folderData.pinId);
+            folder.setAttribute('zen-sync-id', folderData.syncId);
             workingData.node = folder;
             oldGroup.before(folder);
           } else {
@@ -1044,7 +1041,7 @@
             switch (stateData?.prevSiblingInfo?.type) {
               case 'tab': {
                 const tab = parentWorkingData.node.querySelector(
-                  `[zen-pin-id="${stateData.prevSiblingInfo.id}"]`
+                  `[zen-sync-id="${stateData.prevSiblingInfo.id}"]`
                 );
                 tab.after(node);
                 break;

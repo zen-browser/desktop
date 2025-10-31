@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index eb62ff3e733e43fdaa299babddea3ba0125abb06..09567fe1be2af56429b60cbcbb36aa477fa68794 100644
+index eb62ff3e733e43fdaa299babddea3ba0125abb06..1ca2e7327e72824805a93c18cb7e3dfd499c66d7 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -126,6 +126,8 @@ const TAB_EVENTS = [
@@ -33,7 +33,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..09567fe1be2af56429b60cbcbb36aa47
      let isRegularWindow =
        !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible;
 +    if (!aInitialState && isRegularWindow) {
-+      aInitialState = ZenSessionStore.getNewWindowData(this._windows);
++      aInitialState = lazy.ZenSessionStore.getNewWindowData(this._windows);
 +      this.restoreWindows(aWindow, aInitialState, {});
 +    }
  
@@ -171,8 +171,8 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..09567fe1be2af56429b60cbcbb36aa47
 +    if (tabData.zenHasStaticLabel) {
 +      tab.setAttribute("zen-has-static-label", "true");
 +    }
-+    if (tabData.zenPinnedId) {
-+      tab.setAttribute("zen-pin-id", tabData.zenPinnedId);
++    if (tabData.zenSyncId) {
++      tab.setAttribute("zen-sync-id", tabData.zenSyncId);
 +    }
 +    if (tabData.zenDefaultUserContextId) {
 +      tab.setAttribute("zenDefaultUserContextId", true);

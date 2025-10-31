@@ -293,14 +293,14 @@
           targetTab.getAttribute('zen-workspace-id')
         );
       }
-      duplicatedTab.setAttribute('zen-pin-id', targetTab.getAttribute('zen-pin-id'));
       duplicatedTab.setAttribute('zen-sync-id', targetTab.getAttribute('zen-sync-id'));
     }
 
     #onTabGroupCreate(event) {
-      const targetGroup = event.target;
-      const isSplitView = targetGroup.classList.contains('zen-split-view');
-      const isFolder = targetGroup.isZenFolder;
+      void event;
+      //const targetGroup = event.target;
+      //const isSplitView = targetGroup.classList.contains('zen-split-view');
+      //const isFolder = targetGroup.isZenFolder;
     }
   }
 

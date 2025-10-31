@@ -121,14 +121,6 @@ index 425aaf8c8e4adf1507eb0d8ded671f8295544b04..12988986c4cf00990c1d1b2e4be362ef
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -570,6 +592,7 @@
-             )
-           );
-         } else {
-+          gZenPinnedTabManager._removePinnedAttributes(this, true);
-           gBrowser.removeTab(this, {
-             animate: true,
-             triggeringEvent: event,
 @@ -582,6 +605,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;

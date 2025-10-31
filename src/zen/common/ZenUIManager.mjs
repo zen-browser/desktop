@@ -190,8 +190,8 @@ var gZenUIManager = {
 
     // Close the editor if the tab is switched
     window.gBrowser.tabContainer.addEventListener(
-      "TabSelect",
-      event => {
+      'TabSelect',
+      (event) => {
         const tab = event.target;
         const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
 
@@ -201,11 +201,11 @@ var gZenUIManager = {
         }
       },
       // Remove the event listener after the window closes
-      { once: true } 
+      { once: true }
     );
 
     // Cleaning up on close
-    editor.window.addEventListener("unload", () => this._openBoostEditor = null);
+    editor.window.addEventListener('unload', () => (this._openBoostEditor = null));
 
     // Rather inconvenient window animation using moveTo
     // editor.addEventListener('load', () => {
@@ -228,7 +228,7 @@ var gZenUIManager = {
 
     //   }, interval);
     // });
-    
+
     // Give the domain
     const tab = window.gBrowser.selectedTab;
     const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;

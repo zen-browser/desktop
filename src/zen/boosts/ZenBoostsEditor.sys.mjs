@@ -26,7 +26,7 @@ export class nsZenBoostEditor {
   }
 
   init() {
-    this.window.addEventListener("unload", () => this.handleClose());
+    this.window.addEventListener('unload', () => this.handleClose());
 
     this.doc
       .getElementById('PanelUI-zen-boost-font-arial')
@@ -77,22 +77,25 @@ export class nsZenBoostEditor {
 
   uninit() {
     this.uninitColorPicker();
-    Services.obs.removeObserver(this, "zen-boosts-kill-editor");
+    Services.obs.removeObserver(this, 'zen-boosts-kill-editor');
   }
 
   killOtherEditorInstances() {
-    Services.obs.notifyObservers(null, "zen-boosts-kill-editor");
+    Services.obs.notifyObservers(null, 'zen-boosts-kill-editor');
   }
 
-  observe(subject, topic, data) { if (topic === 'zen-boosts-kill-editor') { this.window.close(); } } 
+  observe(subject, topic, data) {
+    if (topic === 'zen-boosts-kill-editor') {
+      this.window.close();
+    }
+  }
 
   registerTabChangedEvent() {
-    this.window.gBrowser.tabContainer.addEventListener("TabSelect", event => {
+    this.window.gBrowser.tabContainer.addEventListener('TabSelect', (event) => {
       const tab = event.target;
       const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
 
-      if(domain != this.currentBoostData.domain)
-        this.window.close();
+      if (domain != this.currentBoostData.domain) this.window.close();
     });
   }
 
@@ -231,8 +234,8 @@ export class nsZenBoostEditor {
     //     }
     //   );
     // } else {
-      dot.style.left = `${relativeX}px`;
-      dot.style.top = `${relativeY}px`;
+    dot.style.left = `${relativeX}px`;
+    dot.style.top = `${relativeY}px`;
     // }
 
     // Enable color boosting again
@@ -302,11 +305,11 @@ export class nsZenBoostEditor {
   }
 
   onDeleteBoost() {
-    this.window.prompt
+    this.window.prompt;
 
     gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
     this.currentBoostData = null;
-    
+
     // Still write modifications to disk
     gZenBoostsManager.saveBoostToStore(null);
     this.window.gZenUIManager.showToast('zen-panel-ui-boosts-deleted-message');
@@ -323,7 +326,7 @@ export class nsZenBoostEditor {
     this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
 
     this.doc.getElementById('PanelUI-zen-boost-name').value = this.currentBoostData.boostName;
-    
+
     const dot = this.doc.querySelector('.zen-boost-color-picker-dot');
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null)
       this.resetDotPosition();

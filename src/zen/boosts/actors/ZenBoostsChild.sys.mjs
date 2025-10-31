@@ -5,8 +5,6 @@
 export class ZenBoostsChild extends JSWindowActorChild {
   constructor() {
     super();
-
-    Services.obs.addObserver(this, 'zen-boosts-update');
   }
 
   observe(subject, topic) {
@@ -67,8 +65,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
       return null;
     }
 
-    const url = new URL(browsingContext.currentWindowGlobal.documentURI.spec);
-    const domain = url.hostname;
+    const domain = browsingContext.topWindow.location.host;
 
     const { gZenBoostsManager } = ChromeUtils.importESModule(
       'resource:///modules/ZenBoostsManager.sys.mjs'
@@ -77,14 +74,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
     if(gZenBoostsManager.registeredBoostForDomain(domain)){
       const boostData = gZenBoostsManager.loadBoostFromStore(domain);
       
-      window.gBrowser.selectedBrowser.browsingContext.prefersColorSchemeOverride = boostData.smartInvert ? "light" : "none";
+      browsingContext.prefersColorSchemeOverride = boostData.smartInvert ? "light" : "none";
       if(boostData.enableColorBoost){
         const hslColor = this.#hslToRgb(boostData.dotAngleDeg, boostData.dotDistance, 60);
         const nsColor = this.#rgbToNSColor(hslColor[0], hslColor[1], hslColor[2]); 
-        window.gBrowser.selectedBrowser.browsingContext.zenBoostsData = nsColor;
+        browsingContext.zenBoostsData = nsColor;
       }
       else
-        window.gBrowser.selectedBrowser.browsingContext.zenBoostsData = null;
+        browsingContext.zenBoostsData = null;
     }
   }
 

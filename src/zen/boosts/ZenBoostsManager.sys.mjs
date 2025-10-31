@@ -2,6 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+});
+
 export class nsZenBoostsManager {
   initialized = false;
   registeredSheets = new Map();
@@ -98,7 +104,7 @@ export class nsZenBoostsManager {
         `;
     }
 
-    Services.obs.notifyObservers(null, 'zen-boosts-update');
+    Services.obs.notifyObservers(lazy.BrowserWindowTracker.getTopWindow(), 'zen-boosts-update');
     this.registerCSSForDomain(fontFamily, boost.domain);
   }
 

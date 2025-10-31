@@ -14,23 +14,23 @@
   }
 }
 
-#PanelUI-zen-boost-font-arial {
+#zen-boost-font-arial {
   font-family: Arial, sans-serif;
 }
 
-#PanelUI-zen-boost-font-serif {
+#zen-boost-font-serif {
   font-family: serif;
 }
 
-#PanelUI-zen-boost-font-mono {
+#zen-boost-font-mono {
   font-family: monospace, monospace;
 }
 
-#PanelUI-zen-boost-editor-view {
+#zen-boost-editor-view {
   gap: 10px;
 }
 
-#PanelUI-zen-boost-head-wrapper {
+#zen-boost-head-wrapper {
   margin-top: -14px;
   margin-bottom: -14px;
 
@@ -39,7 +39,17 @@
   }
 }
 
-#PanelUI-zen-boost-font-wrapper {
+#zen-boost-font-wrapper {
+  filter: drop-shadow(0px 4px 8px #00000055);
+  background-color: #aaaaaa05;
+
+  border-radius: 8px;
+
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#zen-boost-font-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0px;
@@ -51,7 +61,7 @@
   }
 }
 
-#PanelUI-zen-boost-filter-wrapper {
+#zen-boost-filter-wrapper {
   width: 135px;
 
   & input {
@@ -99,30 +109,27 @@
   padding: 15px;
 }
 
-#PanelUI-zen-boost-delete {
+#zen-boost-delete {
   width: auto;
 }
 
-#PanelUI-zen-boost-zap {
+#zen-boost-zap {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
 }
 
-#PanelUI-zen-boost-toolbar-wrapper {
+#zen-boost-toolbar-wrapper {
   width: auto;
   margin: auto;
-  gap: 1.15em;
+  gap: 1em;
 
   & button {
     width: auto;
     height: auto !important;
-
-    padding: 6px 4px 6px 4px;
-
-    background-color: #AAAAAA22;
-
     margin: auto;
+    background-color: #AAAAAA22;
+    padding: 4px 5px 4px 5px !important;
   }
 }
 
@@ -130,17 +137,17 @@
   filter: grayscale(1);
 }
 
-#PanelUI-zen-boost-filter-wrapper separator {
+#zen-boost-filter-wrapper separator {
   height: 5px !important;
 }
 
-#PanelUI-zen-boost-toolbar-wrapper button:hover {
+#zen-boost-toolbar-wrapper button:hover {
   background-color: #ffffff11;
   opacity: 0.9;
 }
 
 .zen-boost-button-active {
-  background-color: white;
+  background-color: white !important;
   color: black !important;
 }
 
@@ -148,27 +155,31 @@
   background-color: white !important;
 }
 
-.zen-boost-color-picker-gradient::after {
+.zen-boost-color-picker-gradient::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
 
-  border: 5px solid hsl(100 100% 60%);
-  border-image-slice: 1;
-  border-image-source: conic-gradient(
-    rgba(255, 0, 0, 1) 0%,
-    rgba(255, 162, 0, 1) 10%,
-    rgba(255, 242, 0, 1) 20%,
-    rgba(89, 255, 0, 1) 30%,
-    rgba(0, 255, 128, 1) 40%,
-    rgba(0, 255, 247, 1) 50%,
-    rgba(0, 89, 255, 1) 60%,
-    rgba(8, 0, 255, 1) 70%,
-    rgba(204, 0, 255, 1) 80%,
-    rgba(255, 0, 144, 1) 90%,
-    rgba(255, 0, 8, 1) 100%
-  );
+  background: conic-gradient(
+      rgba(255, 0, 0, 1) 0%,
+      rgba(255, 162, 0, 1) 10%,
+      rgba(255, 242, 0, 1) 20%,
+      rgba(89, 255, 0, 1) 30%,
+      rgba(0, 255, 128, 1) 40%,
+      rgba(0, 255, 247, 1) 50%,
+      rgba(0, 89, 255, 1) 60%,
+      rgba(8, 0, 255, 1) 70%,
+      rgba(204, 0, 255, 1) 80%,
+      rgba(255, 0, 144, 1) 90%,
+      rgba(255, 0, 8, 1) 100%
+    )
+    border-box;
+
+  /* cut out the middle of the gradient */
+  border: 6px solid transparent;
+  mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
 
   pointer-events: none;
 }
@@ -176,7 +187,9 @@
 .zen-boost-color-picker-gradient {
   position: relative;
   overflow: hidden;
-  border-radius: calc(var(--panel-border-radius) - 4px);
+  border-radius: calc(var(--panel-border-radius) - 2px);
+
+  filter: drop-shadow(0px 4px 8px #00000055);
 
   width: auto;
   height: 135px;
@@ -227,7 +240,6 @@
       width: 26px;
       height: 26px;
       border-width: 3px;
-      z-index: 2;
       pointer-events: all;
       transition: transform 0.2s;
       z-index: 999;

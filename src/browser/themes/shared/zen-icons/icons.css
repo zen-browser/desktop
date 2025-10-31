@@ -50,15 +50,15 @@
 .zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove,
 #appMenu-quit-button2,
-#PanelUI-zen-boost-delete {
+#zen-boost-delete {
   list-style-image: url('close.svg') !important;
 }
 
-#PanelUI-zen-emojis-picker-none {
+#zen-emojis-picker-none {
   list-style-image: url('trash.svg');
 }
 
-#PanelUI-zen-gradient-generator-color-remove {
+#zen-gradient-generator-color-remove {
   list-style-image: url('unpin.svg') !important;
 }
 
@@ -978,14 +978,14 @@
   fill-opacity: 0.7;
 }
 
-#PanelUI-zen-boost-zap {
+#zen-boost-zap {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/zap.svg') !important;
 }
 
-#PanelUI-zen-boost-invert {
+#zen-boost-invert {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/bulb.svg') !important;
 }
 
-#PanelUI-zen-boost-disable {
+#zen-boost-disable {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg') !important;
 }

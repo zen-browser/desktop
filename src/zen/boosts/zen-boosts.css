@@ -128,7 +128,7 @@
     width: auto;
     height: auto !important;
     margin: auto;
-    background-color: #AAAAAA22;
+    background-color: #aaaaaa22;
     padding: 4px 5px 4px 5px !important;
   }
 }
@@ -178,7 +178,9 @@
 
   /* cut out the middle of the gradient */
   border: 6px solid transparent;
-  mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
 
   pointer-events: none;

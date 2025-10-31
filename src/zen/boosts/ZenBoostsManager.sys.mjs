@@ -63,11 +63,9 @@ export class nsZenBoostsManager {
   }
 
   deleteBoost(domain) {
-    if (this.registeredSheets.has(domain))
-      this.unregisterSheet(domain);
+    if (this.registeredSheets.has(domain)) this.unregisterSheet(domain);
 
-    if(this.registeredBoosts.has(domain))
-      this.registeredBoosts.delete(domain);
+    if (this.registeredBoosts.has(domain)) this.registeredBoosts.delete(domain);
   }
 
   // Load a boost from a domain
@@ -111,8 +109,7 @@ export class nsZenBoostsManager {
   // Save all boosts to the profile folder
   saveBoostToStore(boostData) {
     if (boostData != null) this.registeredBoosts.set(boostData.domain, boostData);
-
-    (async () => this.writeToDisk(this.registeredBoosts))();
+    this.writeToDisk(this.registeredBoosts);
   }
 
   // Reads all boosts from the profile folder
@@ -144,15 +141,9 @@ export class nsZenBoostsManager {
   }
 
   // Helper method, map => json => disk
-  async writeToDisk(map) {
-    const encoder = new TextEncoder();
+  writeToDisk(map) {
     const json = JSON.stringify([...map]);
-    const data = encoder.encode(json);
-
-    const profilePath = PathUtils.profileDir;
-    const savePath = PathUtils.join(profilePath, this.saveFilename);
-
-    await IOUtils.write(savePath, new Uint8Array(data));
+    IOUtils.writeJSON(json, { compress: true });
   }
 
   // Checks if there is a boost registered for the currently open tab

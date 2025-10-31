@@ -57,7 +57,7 @@ let JSWINDOWACTORS = {
       events: {
         load: { mozSystemGroup: true, capture: true },
       },
-      observers: ["zen-boosts-update"],
+      observers: ['zen-boosts-update'],
     },
     allFrames: true,
     matches: ['*://*/*'],

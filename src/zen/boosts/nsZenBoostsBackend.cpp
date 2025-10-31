@@ -14,6 +14,7 @@
 #include "mozilla/ServoStyleConstsInlines.h"
 
 #include "mozilla/dom/Document.h"
+#include "mozilla/dom/BrowsingContext.h"
 
 namespace zen {
 
@@ -28,7 +29,6 @@ static __inline int32_t clamp255(int32_t v) {
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
-NS_IMPL_ISUPPORTS(ZenBoostsPresContextData, nsISupports)
 
 nsZenBoostsBackend::nsZenBoostsBackend() {};
 
@@ -50,38 +50,12 @@ auto nsZenBoostsBackend::onPressShellLeave(nsPresContext* aPresContext) -> void 
 }
 
 auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
-    nsPresContext* aPresContext) -> void {
+    nsPresContext* aPresContext, mozilla::dom::BrowsingContext* aBrowsingContext) -> void {
   if (!aPresContext || aPresContext->IsChrome()) {
     return;
   }
 
-  auto document = aPresContext->Document();
-  if (!document) {
-    return;
-  }
-
-  if (aPresContext->mZenBoostsPresContextData) {
-    if (aPresContext->mZenBoostsPresContextData->mShouldBeApplied) {
-      // If the boost data indicates it shouldn't be applied, skip.
-      // Parsing urls and doing checks can be expensive.
-      return;
-    }
-    // We don't have a boost for this domain anymore.
-    aPresContext->mZenBoostsPresContextData = nullptr;
-    return;
-  }
-
-  // Check if we have a boost for this domain
-  nsIURI* baseURI = document->GetBaseURI();
-  nsAutoCString host;
-  if (baseURI) {
-    baseURI->GetHost(host);
-    nsString hostWStr;
-    CopyUTF8toUTF16(host, hostWStr);
-    if (auto boostData = mZenBoostsMap.Get(hostWStr)) {
-      aPresContext->mZenBoostsPresContextData = boostData;
-    }
-  }
+  aPresContext->mZenBoostsPresContextData = aBrowsingContext->ZenBoostsData();
 }
 
 auto nsZenBoostsBackend::ResolveStyleColor(
@@ -91,7 +65,7 @@ auto nsZenBoostsBackend::ResolveStyleColor(
 
   if (zenBoosts) {
     if (auto presContext = zenBoosts->mCurrentPresContext) {
-      if (auto data = presContext->mZenBoostsPresContextData) {
+      if (auto accentNS = presContext->mZenBoostsPresContextData) {
         // Apply a filter-like tint:
         // - Preserve the original color's perceived luminance
         // - Map hue/chroma toward the accent by scaling the accent's RGB
@@ -100,7 +74,6 @@ auto nsZenBoostsBackend::ResolveStyleColor(
 
         // Convert both colors to nscolor to access channels
         nscolor originalNS = aColor.ToColor();
-        nscolor accentNS = data->mAccentColor;
 
         auto r1 = NS_GET_R(originalNS);
         auto g1 = NS_GET_G(originalNS);
@@ -131,30 +104,5 @@ auto nsZenBoostsBackend::ResolveStyleColor(
 
   return aColor;
 }
-
-nsresult nsZenBoostsBackend::RegisterZenBoost(
-    const nsAString& aDomain, const nsTArray<uint8_t >& aAccentColor) {
-  if (aAccentColor.IsEmpty() || aAccentColor.Length() < 3) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  nscolor accentColor = NS_RGB(aAccentColor[0], aAccentColor[1], aAccentColor[2]);
-  RefPtr<ZenBoostsPresContextData> data =
-      new ZenBoostsPresContextData(accentColor);
-  mZenBoostsMap.InsertOrUpdate(aDomain, data);
-  return NS_OK;
-}
-
-nsresult nsZenBoostsBackend::UnregisterZenBoost(const nsAString& aDomain) {
-  // We do need to mark the data as not to be applied, so that
-  // existing prescontexts don't try to re-apply it.
-  if (auto boostData = mZenBoostsMap.Get(aDomain)) {
-    boostData->mShouldBeApplied = false;
-  }
-  mZenBoostsMap.Remove(aDomain);
-  return NS_OK;
-}
-
-ZenBoostsMap nsZenBoostsBackend::mZenBoostsMap{};
 
 } // namespace zen

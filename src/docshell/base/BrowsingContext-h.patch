@@ -1,0 +1,20 @@
+diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
+index 331d7a5a0f0956ff35c8a5a703b1e089b19bd7fe..7db009990170297b5758c47571c72a9a48b78db1 100644
+--- a/docshell/base/BrowsingContext.h
++++ b/docshell/base/BrowsingContext.h
+@@ -256,6 +256,7 @@ struct EmbedderColorSchemes {
+   FIELD(IsInBFCache, bool)                                                    \
+   FIELD(HasRestoreData, bool)                                                 \
+   FIELD(SessionStoreEpoch, uint32_t)                                          \
++  FIELD(ZenBoostsData, nscolor)                                               \
+   /* Whether we can execute scripts in this BrowsingContext. Has no effect    \
+    * unless scripts are also allowed in the parent WindowContext. */          \
+   FIELD(AllowJavascript, bool)                                                \
+@@ -650,6 +651,7 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+ 
+   bool FullscreenAllowed() const;
+ 
++  auto ZenBoostsData() const { return GetZenBoostsData(); }
+   float FullZoom() const { return GetFullZoom(); }
+   float TextZoom() const { return GetTextZoom(); }
+ 

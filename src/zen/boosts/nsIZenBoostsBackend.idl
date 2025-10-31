@@ -4,28 +4,28 @@
 
 #include "nsISupports.idl"
 
-%{C++
-#include "nsColor.h"
-%}
-
-native nscolor(nscolor);
-
 /**
  * @brief Interface for Zen boosts backend.
  */
 [scriptable, uuid(7d46aa4e-7486-4f77-ab47-81125f1a5723)]
 interface nsIZenBoostsBackend : nsISupports {
-  /**
-   * @brief Register a new Zen boost for a given domain.
-   * @param aDomain The domain to register the boost for.
-   * @param aAccentColor The accent color to use for the boost.
-   */
-  void RegisterZenBoost(in AString aDomain,
-                        in Array<uint8_t> aAccentColor);
+  %{C++
+    /*
+     * @brief Called when the presshell is entered. See nsDisplayListBuilder::EnterPresShell
+     * for context.
+     */
+    auto onPressShellEntered(nsPresContext* aPresContext) -> void;
 
-  /**
-   * @brief Unregister a Zen boost for a given domain.
-   * @param aDomain The domain to unregister the boost for.
-   */
-  void UnregisterZenBoost(in AString aDomain);
+    /*
+     * @brief Called when the presshell is exited.
+     */
+    auto onPressShellLeave(nsPresContext* aPresContext) -> void;
+
+    /*
+     * Recomputes the data dependent on the browsing context, like zoom and text
+     * zoom. We use it to store Zen boosts related data too.
+     */
+    void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext,
+                                              mozilla::dom::BrowsingContext* aBrowsingContext);
+  %}
 };

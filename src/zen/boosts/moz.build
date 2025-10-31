@@ -13,7 +13,6 @@ XPIDL_SOURCES += [
 
 EXPORTS.mozilla += [
     "nsZenBoostsBackend.h",
-    "ZenBoostsPresContext.h",
 ]
 
 SOURCES += [

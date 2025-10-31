@@ -8,7 +8,6 @@
 #include "nsColor.h"
 #include "nsPresContext.h"
 #include "nsIZenBoostsBackend.h"
-#include "ZenBoostsPresContext.h"
 
 #include "mozilla/RefPtr.h"
 
@@ -23,23 +22,6 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
  public:
   explicit nsZenBoostsBackend();
 
-  /*
-   * @brief Called when the presshell is entered. See nsDisplayListBuilder::EnterPresShell
-   * for context.
-   */
-  auto onPressShellEntered(nsPresContext* aPresContext) -> void;
-
-  /*
-   * @brief Called when the presshell is exited.
-   */
-  auto onPressShellLeave(nsPresContext* aPresContext) -> void;
-
-  /**
-   * Recomputes the data dependent on the browsing context, like zoom and text
-   * zoom. We use it to store Zen boosts related data too.
-   */
-  void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext);
-
   /**
    * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.
    * @param aColor The color to resolve.
@@ -47,6 +29,11 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    */
   static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor;
 
+  // Overrides
+  auto onPressShellEntered(nsPresContext* aPresContext) -> void;
+  auto onPressShellLeave(nsPresContext* aPresContext) -> void;
+  void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext,
+                                            mozilla::dom::BrowsingContext* aBrowsingContext);
   NS_DECL_NSIZENBOOSTSBACKEND
  private:
   ~nsZenBoostsBackend() = default;
@@ -55,10 +42,6 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * The presshell of the current document being rendered.
    */
   RefPtr<nsPresContext> mCurrentPresContext;
-  /**
-   * A map containing what boosts should be applied to which domains.
-   */
-  static ZenBoostsMap mZenBoostsMap;
 };
 
 } // namespace zen

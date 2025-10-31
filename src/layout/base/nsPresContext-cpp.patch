@@ -1,5 +1,5 @@
 diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
-index c1cc9a6505ffb3f0019ce007c8d17366364bdd86..f83e4ecb6379a3b12edcef152affa7030aa5f9aa 100644
+index c1cc9a6505ffb3f0019ce007c8d17366364bdd86..faf802c4ddef7d9d670242dec5b580c8e9b42111 100644
 --- a/layout/base/nsPresContext.cpp
 +++ b/layout/base/nsPresContext.cpp
 @@ -20,6 +20,7 @@
@@ -10,16 +10,17 @@ index c1cc9a6505ffb3f0019ce007c8d17366364bdd86..f83e4ecb6379a3b12edcef152affa703
  #include "mozilla/AnimationEventDispatcher.h"
  #include "mozilla/ContentBlockingAllowList.h"
  #include "mozilla/CycleCollectedJSContext.h"
-@@ -914,6 +915,12 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
-     SetOverrideDPPX(browsingContext->OverrideDPPX());
+@@ -915,6 +916,13 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
    }
  
+   auto* top = browsingContext->Top();
++
 +  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
 +    do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
 +  if (zenBackend) {
-+    zenBackend->RecomputeBrowsingContextDependentData(this);
++    zenBackend->RecomputeBrowsingContextDependentData(this, top);
 +  }
 +
-   auto* top = browsingContext->Top();
    SetColorSchemeOverride([&] {
      auto overriden = top->PrefersColorSchemeOverride();
+     if (overriden != PrefersColorSchemeOverride::None) {

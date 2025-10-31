@@ -16,8 +16,19 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/BrowsingContext.h"
 
-namespace zen {
+using BrowsingContext = mozilla::dom::BrowsingContext;
+using BoostData = nscolor; // For now, Zen boosts data is just a color.
 
+void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
+                                          BoostData aOldValue) {
+  MOZ_ASSERT(IsTop());
+  if (ZenBoostsData() == aOldValue) {
+    return;
+  }
+  PresContextAffectingFieldChanged();
+}
+
+namespace zen {
 namespace {
 
 // llvm x86 is poor at ternary operator, so use branchless min/max.
@@ -25,11 +36,10 @@ static __inline int32_t clamp255(int32_t v) {
   return (((255 - (v)) >> 31) | (v)) & 255;
 }
 
-}
+} // namespace
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
-
 nsZenBoostsBackend::nsZenBoostsBackend() {};
 
 auto nsZenBoostsBackend::onPressShellEntered(nsPresContext* aPresContext) -> void {

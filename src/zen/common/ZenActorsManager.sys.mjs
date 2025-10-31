@@ -51,6 +51,17 @@ let JSWINDOWACTORS = {
     matches: ['*://*/*'],
     enablePreference: 'zen.glance.enabled',
   },
+  ZenBoosts: {
+    child: {
+      esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
+      events: {
+        load: { mozSystemGroup: true, capture: true },
+      },
+    },
+    allFrames: true,
+    matches: ['*://*/*'],
+    enablePreference: 'zen.boosts.enabled',
+  },
 };
 
 export let gZenActorsManager = {

@@ -1,5 +1,5 @@
 diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
-index 331d7a5a0f0956ff35c8a5a703b1e089b19bd7fe..7db009990170297b5758c47571c72a9a48b78db1 100644
+index 331d7a5a0f0956ff35c8a5a703b1e089b19bd7fe..68bcf7c87e41d08a71b000e4a7e4304814928c75 100644
 --- a/docshell/base/BrowsingContext.h
 +++ b/docshell/base/BrowsingContext.h
 @@ -256,6 +256,7 @@ struct EmbedderColorSchemes {
@@ -17,4 +17,12 @@ index 331d7a5a0f0956ff35c8a5a703b1e089b19bd7fe..7db009990170297b5758c47571c72a9a
 +  auto ZenBoostsData() const { return GetZenBoostsData(); }
    float FullZoom() const { return GetFullZoom(); }
    float TextZoom() const { return GetTextZoom(); }
+ 
+@@ -1167,6 +1169,7 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+   }
+ 
+   void DidSet(FieldIndex<IDX_SessionStoreEpoch>, uint32_t aOldValue);
++  void DidSet(FieldIndex<IDX_ZenBoostsData>, nscolor aOldValue);
+ 
+   using CanSetResult = syncedcontext::CanSetResult;
  

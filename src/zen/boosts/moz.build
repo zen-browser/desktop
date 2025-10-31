@@ -7,6 +7,10 @@ EXTRA_JS_MODULES += [
   "ZenBoostsManager.sys.mjs",
 ]
 
+FINAL_TARGET_FILES.actors += [
+    "actors/ZenBoostsChild.sys.mjs",
+]
+
 XPIDL_SOURCES += [
     "nsIZenBoostsBackend.idl",
 ]

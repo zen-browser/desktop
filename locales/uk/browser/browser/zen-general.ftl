@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = поточний профіль
 unified-extensions-description = Розширення використовуються, щоб додати більше функціональних можливостей до { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,7 +63,9 @@ zen-generic-next = Далі
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Дозволено
 zen-site-data-setting-block = Заблоковано
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-protections-enabled = Увімкнено
+zen-site-data-protections-disabled = Вимкнено
+zen-site-data-setting-cross-site = Міжсайтові cookie
 zen-site-data-security-info-extension = 
     .label = Розширення
 zen-site-data-security-info-secure = 
@@ -72,11 +78,17 @@ zen-site-data-get-addons =
     .label = Додати розширення
 zen-site-data-site-settings = 
     .label = Усі налаштування сайту
-zen-site-data-share = 
-    .label = Поділитися цією сторінкою
+zen-site-data-header-share = 
+    .tooltiptext = Поділитися цією сторінкою
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Увійти у режим читання
+zen-site-data-header-screenshot = 
+    .tooltiptext = Зробити знімок екрана
+zen-site-data-header-bookmark = 
+    .tooltiptext = Додати цю сторінку в закладки
 zen-urlbar-copy-url-button = 
     .tooltiptext = Копіювати URL-адресу
-zen-site-data-setting-site-protection = Tracking Protection
+zen-site-data-setting-site-protection = Захист від відстеження
 
 # Section: Feature callouts
 

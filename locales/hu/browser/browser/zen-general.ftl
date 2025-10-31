@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = jelenlegi profil
 unified-extensions-description = A bővítmények a { -brand-short-name }-t új funkciókkal látják el.
 tab-context-zen-reset-pinned-tab = 
@@ -58,7 +62,9 @@ zen-generic-more = Több
 zen-generic-next = Következő
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
-zen-site-data-setting-block = Letiltva
+zen-site-data-setting-block = Blokkolva
+zen-site-data-protections-enabled = Engedélyezve
+zen-site-data-protections-disabled = Letiltva
 zen-site-data-setting-cross-site = Webhelyek közötti sütik
 zen-site-data-security-info-extension = 
     .label = Kiegészítő
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Kiegészítő hozzáadása
 zen-site-data-site-settings = 
     .label = Minden webhelybeállítás
-zen-site-data-share = 
-    .label = Oldal megosztása
+zen-site-data-header-share = 
+    .tooltiptext = Oldal megosztása
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Olvasó módba lépés
+zen-site-data-header-screenshot = 
+    .tooltiptext = Képernyőkép készítése
+zen-site-data-header-bookmark = 
+    .tooltiptext = Oldal mentése a könyvjelzők közé
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL másolása
 zen-site-data-setting-site-protection = Nyomkövetés védelem

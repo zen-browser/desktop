@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Ilme
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Lülita jõudluse sektsioon sisse/vä
 zen-devtools-toggle-storage-shortcut = Lülita mälu sektsioon sisse/välja
 zen-devtools-toggle-dom-shortcut = Lülita DOM sisse/välja
 zen-devtools-toggle-accessibility-shortcut = Lülita ligipääsetavuse sektsioon sisse/välja
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

@@ -1,10 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Obszary robocze
 zen-panel-ui-workspaces-create = 
     .label = Utwórz Przestrzeń
 zen-panel-ui-folder-create = 
-    .label = Create Folder
+    .label = Utwórz folder
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Nowy podział
 zen-workspaces-panel-context-delete = 
     .label = Usuń obszar roboczy
     .accesskey = D
@@ -15,7 +19,7 @@ zen-workspaces-panel-change-icon =
 zen-workspaces-panel-context-default-profile = 
     .label = Ustaw profil
 zen-workspaces-panel-unload = 
-    .label = Unload Space
+    .label = Wyładuj przestrzeń
 zen-workspaces-how-to-reorder-title = Jak przesuwać Przestrzenie
 zen-workspaces-how-to-reorder-desc = Przesuwaj ikony Przestrzeni na dole paska, żeby je przeorganizować
 zen-workspaces-change-theme = 
@@ -52,4 +56,10 @@ zen-workspace-creation-profile = Profil
 zen-workspace-creation-header = Utwórz Przestrzeń
 zen-workspace-creation-label = Przestrzenie są wykorzystywane do zorganizowania kart i sesji.
 zen-workspaces-delete-workspace-title = Usunąć Przestrzeń roboczą?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Czy na pewno chcesz usunąć { $name }? Tej czynności nie można cofnąć.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

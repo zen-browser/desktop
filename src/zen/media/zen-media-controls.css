@@ -294,7 +294,7 @@
 }
 
 /* Hide #zen-media-focus-button if it doesn't fit in the toolbar */
-@container media-controls (max-width: 150px) {
+@container media-controls (max-width: 165px) {
   #zen-media-focus-button {
     display: none;
   }

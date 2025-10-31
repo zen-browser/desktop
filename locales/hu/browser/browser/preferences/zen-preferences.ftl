@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Megjelenés és hangulat
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Teljesítmény kapcsolása
 zen-devtools-toggle-storage-shortcut = Tároló kapcsolása
 zen-devtools-toggle-dom-shortcut = DOM kapcsolása
 zen-devtools-toggle-accessibility-shortcut = Hozzáférhetőség kapcsolása
+zen-close-all-unpinned-tabs-shortcut = Összes rögzítetlen lap bezárása

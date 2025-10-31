@@ -54,3 +54,6 @@
 
 - name: zen.view.borderless-fullscreen
   value: true
+
+- name: zen.view.shift-down-site-on-hover
+  value: false

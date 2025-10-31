@@ -33,6 +33,12 @@
   display: none !important;
 }
 
+/* hide Mozilla services from the app menu */
+#PanelUI-fxa-menu-services,
+#PanelUI-fxa-cta-menu {
+  display: none !important;
+}
+
 body > #confetti {
   z-index: 1;
 }
@@ -290,15 +296,22 @@ body > #confetti {
   --arrowpanel-menuitem-border-radius: 10px;
 }
 
-#unified-extensions-messages-container {
-  display: none;
-}
-
 #zen-site-data-addons {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   overflow: visible;
+
+  unified-extensions-item-messagebar-wrapper,
+  .unified-extensions-item-contents {
+    display: none !important;
+  }
+
+  &[overflowing='true'] {
+    overflow-x: auto;
+    max-height: 420px;
+    mask-image: linear-gradient(to top, transparent, black 5%);
+  }
 
   .unified-extensions-item-name,
   .unified-extensions-item-message,
@@ -326,6 +339,11 @@ body > #confetti {
       justify-content: center;
       align-items: center;
       border-radius: 6px;
+
+      @media not (-moz-platform: macos) {
+        border-radius: 4px;
+      }
+
       transition:
         background-color 0.1s ease-in-out,
         transform 0.12s ease-in-out;
@@ -485,6 +503,10 @@ body > #confetti {
   padding: 8px;
   padding-bottom: 0;
 
+  :root[zen-single-toolbar='true']:not([zen-right-side='true']) & {
+    flex-direction: row-reverse;
+  }
+
   & toolbarbutton {
     margin: 0;
     appearance: none;
@@ -515,18 +537,27 @@ body > #confetti {
       position: absolute;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        to bottom,
-        light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
-        light-dark(rgb(246, 246, 246), rgb(21, 21, 21))
-      );
+      @media (-moz-platform: macos) {
+        background: linear-gradient(
+          to bottom,
+          light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
+          light-dark(rgb(246, 246, 246), rgb(21, 21, 21))
+        );
+
+        box-shadow:
+          0px 2px 4px rgba(0, 0, 0, 0.075),
+          inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
+        border-radius: 6px;
+        --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
+        border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
+      }
+
+      @media not (-moz-platform: macos) {
+        border-radius: 4px;
+        background-color: color-mix(in srgb, currentcolor 6%, transparent);
+      }
+
       transition: transform 0.12s ease-in-out;
-      box-shadow:
-        0px 2px 4px rgba(0, 0, 0, 0.075),
-        inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
-      border-radius: 6px;
-      --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
-      border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
       box-sizing: border-box;
       will-change: transform;
     }
@@ -551,6 +582,10 @@ body > #confetti {
 
 #zen-site-data-settings-list toolbarseparator {
   margin: 6px 0;
+}
+
+#unified-extensions-messages-container:empty {
+  display: none;
 }
 
 /* Overflow panel */

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = profil saat ini
 unified-extensions-description = Ekstensi digunakan untuk menambahkan lebih banyak fungsi ekstra ke { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,6 +63,8 @@ zen-generic-next = Lanjut
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
+zen-site-data-protections-enabled = Diaktifkan
+zen-site-data-protections-disabled = Dinonaktifkan
 zen-site-data-setting-cross-site = Kuki Lintas Situs
 zen-site-data-security-info-extension = 
     .label = Ekstensi
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Tambahkan Ekstensi
 zen-site-data-site-settings = 
     .label = Semua Pengaturan Situs
-zen-site-data-share = 
-    .label = Bagikan Halaman Ini
+zen-site-data-header-share = 
+    .tooltiptext = Bagikan Halaman Ini
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Masuki Mode Membaca
+zen-site-data-header-screenshot = 
+    .tooltiptext = Ambil Tangkapan Layar
+zen-site-data-header-bookmark = 
+    .tooltiptext = Markahi Laman Ini
 zen-urlbar-copy-url-button = 
     .tooltiptext = Salin URL
 zen-site-data-setting-site-protection = Perlindungan Pelacakan

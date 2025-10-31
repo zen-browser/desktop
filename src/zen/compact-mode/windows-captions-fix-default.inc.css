@@ -5,9 +5,15 @@
  */
 
 & .titlebar-buttonbox-container {
-  display: collapse;
+  max-height: 0px;
   /* We need to hide them since on Windows the native
    * panels when hovering over them can interfere with the
    * web content */
-  transition: visibility var(--zen-hidden-toolbar-transition);
+  transition: max-height 0s;
+  transition-delay: calc(var(--zen-hidden-toolbar-transition-duration) + 0.2s);
+
+  & .titlebar-button {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
 }

@@ -6,7 +6,8 @@
 
 .subviewbutton,
 #zen-welcome-start-button,
-.zen-toast button {
+.zen-toast button,
+.pinned-tabs-container-separator toolbarbutton {
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
 }
@@ -390,6 +391,14 @@
 
 .findbar-find-next {
   list-style-image: url('arrow-down.svg') !important;
+}
+
+.zen-workspace-close-unpinned-tabs-button {
+  list-style-image: url('dart-down.svg');
+
+  &:not([can-close='true']) .toolbarbutton-icon {
+    display: none;
+  }
 }
 
 .zen-workspace-actions-reorder-icon,

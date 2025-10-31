@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Aspetto
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -219,7 +223,7 @@ zen-key-exit-full-screen = Esci Da Schermo Intero
 zen-ai-chatbot-sidebar-shortcut = Attiva/Disattiva La Barra Laterale Chat AI
 zen-key-inspector-mac = Attiva/Disattiva Ispeziona Elemento (Mac)
 zen-toggle-sidebar-shortcut = Attiva/Disattiva La Barra Laterale di Firefox
-zen-toggle-pin-tab-shortcut = Toggle Pin Tab
+zen-toggle-pin-tab-shortcut = Attiva/Disattiva Scheda Pin
 zen-reader-mode-toggle-shortcut-other = Attiva/Disattiva Modalità Lettore
 zen-picture-in-picture-toggle-shortcut = Attiva/Disattiva Immagine
 zen-nav-reload-shortcut-2 = Ricarica Pagina
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Attiva/disattiva Prestazioni
 zen-devtools-toggle-storage-shortcut = Attiva/Disattiva Archiviazione
 zen-devtools-toggle-dom-shortcut = Attiva/Disattiva DOM
 zen-devtools-toggle-accessibility-shortcut = Attiva/Disattiva Accessibilità
+zen-close-all-unpinned-tabs-shortcut = Chiudi Tutte Le Schede Non Bloccate

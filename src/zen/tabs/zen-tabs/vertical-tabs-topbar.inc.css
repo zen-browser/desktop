@@ -22,9 +22,7 @@ z-index: 1;
 
 %include ../../compact-mode/windows-captions-fix-active.inc.css
 
-  &:not([zen-has-hover='true']):not([has-popup-menu]):not(:focus-within):not(
-      :has(*:is([panelopen='true'], [open='true']))
-    ) {
+  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]) {
     height: var(--zen-element-separation);
     opacity: 0;
     & #zen-appcontent-navbar-container {
@@ -32,11 +30,6 @@ z-index: 1;
     }
 
 %include ../../compact-mode/windows-captions-fix-default.inc.css
-
-    & .titlebar-button {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-    }
   }
 
   @media -moz-pref('zen.view.experimental-no-window-controls') {

@@ -174,7 +174,14 @@
   height: 100%;
   z-index: 0;
   border-radius: var(--zen-native-inner-radius);
-  inset: 50%;
-  translate: -50% -50%;
+  top: 0%;
+  left: 50%;
+  translate: -50% 0%;
   will-change: transform, opacity;
+  background: rgba(255, 255, 255, 0.1);
+
+  & image {
+    width: 100%;
+    max-width: 100%;
+  }
 }

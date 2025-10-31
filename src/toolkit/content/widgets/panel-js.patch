@@ -1,0 +1,24 @@
+diff --git a/toolkit/content/widgets/panel.js b/toolkit/content/widgets/panel.js
+index 1dd4fc2a839fc6fde1ce2fc6437625e8d22bbb90..04fcb049225148f1b1f9c4b16cf2d2537887fbec 100644
+--- a/toolkit/content/widgets/panel.js
++++ b/toolkit/content/widgets/panel.js
+@@ -138,6 +138,9 @@
+             this.anchorNode.closest("toolbarbutton, .anchor-root") ||
+             this.anchorNode;
+           anchorRoot.setAttribute("open", "true");
++          if (anchorRoot.closest("#urlbar") && window.gURLBar) {
++            gURLBar.setAttribute("has-popup-open", "true");
++          }
+         }
+ 
+         if (this.getAttribute("animate") != "false") {
+@@ -208,6 +211,9 @@
+             this.anchorNode.closest("toolbarbutton, .anchor-root") ||
+             this.anchorNode;
+           anchorRoot.removeAttribute("open");
++          if (anchorRoot.closest("#urlbar") && window.gURLBar) {
++            gURLBar.removeAttribute("has-popup-open");
++          }
+         }
+       }
+ 

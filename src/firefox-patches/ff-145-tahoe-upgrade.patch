@@ -197,42 +197,6 @@ index fc1e28206ac2..1661476a75f0 100644
      /*
       * AlertNotificationOrigin indicates from which corner of the
       * screen alerts slide in, and from which direction (horizontal/vertical).
-diff --git a/widget/cocoa/nsCocoaFeatures.h b/widget/cocoa/nsCocoaFeatures.h
-index dfad59dfe676..1a2389fda02c 100644
---- a/widget/cocoa/nsCocoaFeatures.h
-+++ b/widget/cocoa/nsCocoaFeatures.h
-@@ -22,6 +22,7 @@ class nsCocoaFeatures {
-   static bool OnMontereyOrLater();
-   static bool OnVenturaOrLater();
-   static bool OnSonomaOrLater();
-+  static bool OnTahoeOrLater();
- 
-   static bool IsAtLeastVersion(int32_t aMajor, int32_t aMinor,
-                                int32_t aBugFix = 0);
-diff --git a/widget/cocoa/nsCocoaFeatures.mm b/widget/cocoa/nsCocoaFeatures.mm
-index 509bdbd3fbe3..b70b9c6bbed3 100644
---- a/widget/cocoa/nsCocoaFeatures.mm
-+++ b/widget/cocoa/nsCocoaFeatures.mm
-@@ -27,6 +27,7 @@
- #define MACOS_VERSION_12_0_HEX 0x000C0000
- #define MACOS_VERSION_13_0_HEX 0x000D0000
- #define MACOS_VERSION_14_0_HEX 0x000E0000
-+#define MACOS_VERSION_26_0_HEX 0x001A0000
- 
- #include "nsCocoaFeatures.h"
- #include "nsCocoaUtils.h"
-@@ -186,6 +187,11 @@ static int intAtStringIndex(NSArray* array, int index) {
-   return (macOSVersion() >= MACOS_VERSION_14_0_HEX);
- }
- 
-+/* static */ bool nsCocoaFeatures::OnTahoeOrLater() {
-+  // See comments above regarding SYSTEM_VERSION_COMPAT.
-+  return (macOSVersion() >= MACOS_VERSION_26_0_HEX);
-+}
-+
- /* static */ bool nsCocoaFeatures::IsAtLeastVersion(int32_t aMajor,
-                                                     int32_t aMinor,
-                                                     int32_t aBugFix) {
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 index 38aca9f32590..9484ef078900 100644
 --- a/widget/cocoa/nsCocoaWindow.h

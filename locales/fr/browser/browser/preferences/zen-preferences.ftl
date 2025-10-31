@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Apparence
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Afficher l’onglet Performances
 zen-devtools-toggle-storage-shortcut = Afficher l’onglet Stockage
 zen-devtools-toggle-dom-shortcut = Afficher l’onglet DOM
 zen-devtools-toggle-accessibility-shortcut = Afficher l’onglet Accessibilité
+zen-close-all-unpinned-tabs-shortcut = Fermer tous les onglets non épinglés

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,6 +63,8 @@ zen-generic-next = Next
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno
+zen-site-data-protections-enabled = Enabled
+zen-site-data-protections-disabled = Disabled
 zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
     .label = Rozšíření
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Přidat rozšíření
 zen-site-data-site-settings = 
     .label = Nastavení všech stránek
-zen-site-data-share = 
-    .label = Share This Page
+zen-site-data-header-share = 
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot = 
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bookmark This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copy URL
 zen-site-data-setting-site-protection = Tracking Protection

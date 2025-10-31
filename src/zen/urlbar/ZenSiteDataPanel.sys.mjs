@@ -127,6 +127,16 @@ export class nsZenSiteDataPanel {
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
+    this.#setAddonsOverflow();
+  }
+
+  #setAddonsOverflow() {
+    const addons = this.document.getElementById('zen-site-data-addons');
+    if (addons.getBoundingClientRect().height > 420) {
+      addons.setAttribute('overflowing', 'true');
+    } else {
+      addons.removeAttribute('overflowing');
+    }
   }
 
   #setSiteHeader() {
@@ -353,9 +363,15 @@ export class nsZenSiteDataPanel {
     switch (permission.state) {
       // There should only be these types being displayed in the panel.
       case SitePermissions.ALLOW:
+        if (permission.id === 'site-protection') {
+          return 'zen-site-data-protections-enabled';
+        }
         return 'zen-site-data-setting-allow';
       case SitePermissions.BLOCK:
       case SitePermissions.AUTOPLAY_BLOCKED_ALL:
+        if (permission.id === 'site-protection') {
+          return 'zen-site-data-protections-disabled';
+        }
         return 'zen-site-data-setting-block';
       default:
         return null;
@@ -511,12 +527,12 @@ export class nsZenSiteDataPanel {
 
     const isCrossSiteCookie = permission.id.startsWith('3rdPartyStorage');
     label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
+    label._permission.state = newState;
     if (!isCrossSiteCookie) {
       label
         .querySelector('.zen-permission-popup-permission-state-label')
-        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId({ state: newState }));
+        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId(label._permission));
     }
-    label._permission.state = newState;
   }
 
   #onClickEvent(event) {
@@ -580,7 +596,6 @@ export class nsZenSiteDataPanel {
       };
       checkEmptyTab();
     });
-    this.anchor.setAttribute('open', 'true');
     const callout = new FeatureCallout({
       win: this.window,
       location: 'chrome',
@@ -604,13 +619,6 @@ export class nsZenSiteDataPanel {
               anchors: [
                 {
                   selector: '#zen-site-data-icon-button',
-                  panel_position: {
-                    anchor_attachment: 'bottomcenter',
-                    callout_attachment: 'topleft',
-                  },
-                },
-                {
-                  selector: '#identity-icon-box',
                   panel_position: {
                     anchor_attachment: 'bottomcenter',
                     callout_attachment: 'topleft',

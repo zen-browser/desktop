@@ -667,20 +667,4 @@
   }
 
   window.gZenMods = new nsZenMods();
-
-  gZenActorsManager.addJSWindowActor('ZenModsMarketplace', {
-    parent: {
-      esModuleURI: 'resource:///actors/ZenModsMarketplaceParent.sys.mjs',
-    },
-    child: {
-      esModuleURI: 'resource:///actors/ZenModsMarketplaceChild.sys.mjs',
-      events: {
-        DOMContentLoaded: {},
-      },
-    },
-    matches: [
-      ...Services.prefs.getStringPref('zen.injections.match-urls').split(','),
-      'about:preferences',
-    ],
-  });
 }

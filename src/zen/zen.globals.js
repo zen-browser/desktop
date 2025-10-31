@@ -22,6 +22,7 @@ export default [
   'gZenStartup',
 
   'gZenWorkspaces',
+  'gZenKeyboardShortcutsManager',
   'ZenWorkspacesEngine',
   'ZenWorkspacesStorage',
   'ZenWorkspaceBookmarksStorage',
@@ -43,7 +44,6 @@ export default [
   'Cu',
   'Cc',
 
-  'gZenActorsManager',
   'JSWindowActorParent',
   'JSWindowActorChild',
 

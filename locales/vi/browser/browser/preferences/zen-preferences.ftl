@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Giao diện
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Bật tối ưu Hiệu năng
 zen-devtools-toggle-storage-shortcut = Bật lưu trữ
 zen-devtools-toggle-dom-shortcut = Bật DOM
 zen-devtools-toggle-accessibility-shortcut = Bật trợ năng
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

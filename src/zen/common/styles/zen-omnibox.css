@@ -136,16 +136,20 @@
   }
 
   .identity-box-button,
-  #zen-copy-url-button {
+  .urlbar-page-action {
     opacity: 0;
-    transition:
-      opacity 0.15s,
-      visibility 0.15s;
-    visibility: collapse;
     height: 100%; /* To still be able to open popups */
+    visibility: collapse;
 
-    #navigator-toolbox:hover &,
+    :root:not([supress-primary-adjustment='true']) & {
+      transition:
+        opacity 0.15s,
+        visibility 0.15s;
+    }
+
+    #navigator-toolbox[zen-has-hover='true'] &,
     &[open],
+    #urlbar[has-popup-open='true'] &,
     #identity-box[pageproxystate='invalid'] & {
       opacity: 1;
       visibility: visible;
@@ -296,13 +300,6 @@
 :root[zen-single-toolbar='true'] {
   --urlbar-icon-border-radius: 8px !important;
 
-  .urlbar-page-action:not([open]):not([showing]):not(
-      :is(#zen-copy-url-button, #identity-permission-box)
-    ),
-  #tracking-protection-icon-container {
-    display: none;
-  }
-
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
   }
@@ -313,7 +310,7 @@
 
   #urlbar:not([breakout-extend='true']) {
     #identity-box:not([pageproxystate='invalid']) {
-      order: 9;
+      order: 2;
     }
   }
 
@@ -349,6 +346,7 @@
   #notification-popup-box {
     margin: 0 4px 0 0 !important;
     justify-content: center;
+    height: unset !important;
     gap: 8px;
     background: transparent;
 
@@ -742,7 +740,8 @@
  * them into a single, unified button */
 #reader-mode-button,
 #urlbar-go-button,
-#star-button-box {
+#star-button-box,
+#pageActionButton:not([open]) {
   display: none !important;
 }
 

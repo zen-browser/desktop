@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = próifíl reatha
 unified-extensions-description = Úsáidtear síntí chun níos mó feidhmiúlachta breise a thabhairt isteach i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,6 +63,8 @@ zen-generic-next = Ar Aghaidh
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
+zen-site-data-protections-enabled = Cumasaithe
+zen-site-data-protections-disabled = Díchumasaithe
 zen-site-data-setting-cross-site = Fianán Tras-Láithreáin
 zen-site-data-security-info-extension = 
     .label = Síneadh
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Cuir Síneadh leis
 zen-site-data-site-settings = 
     .label = Gach Socrú Suímh
-zen-site-data-share = 
-    .label = Comhroinn an Leathanach seo
+zen-site-data-header-share = 
+    .tooltiptext = Comhroinn an Leathanach seo
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Téigh isteach i Mód Léitheora
+zen-site-data-header-screenshot = 
+    .tooltiptext = Glac Seat scáileáin
+zen-site-data-header-bookmark = 
+    .tooltiptext = Leabharmharc an Leathanach seo
 zen-urlbar-copy-url-button = 
     .tooltiptext = Cóipeáil URL
 zen-site-data-setting-site-protection = Cosaint Rianaithe

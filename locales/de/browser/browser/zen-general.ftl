@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = Aktuelles Profil
 unified-extensions-description = Erweiterungen werden verwendet, um { -brand-short-name } zusätzliche Funktionen hinzuzufügen.
 tab-context-zen-reset-pinned-tab = 
@@ -38,7 +42,7 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
+    .label = Kompakter Modus
     .tooltiptext = Compact Mode umschalten
 
 # note: Do not translate the "<br/>" tags in the following string
@@ -59,6 +63,8 @@ zen-generic-next = Weiter
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Erlaubt
 zen-site-data-setting-block = Blockiert
+zen-site-data-protections-enabled = Enabled
+zen-site-data-protections-disabled = Disabled
 zen-site-data-setting-cross-site = Cross-Site-Cookie
 zen-site-data-security-info-extension = 
     .label = Erweiterung
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Erweiterungen hinzufügen
 zen-site-data-site-settings = 
     .label = Alle Website-Einstellungen
-zen-site-data-share = 
-    .label = Diese Seite teilen
+zen-site-data-header-share = 
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot = 
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bookmark This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL kopieren
 zen-site-data-setting-site-protection = Tracking-Schutz

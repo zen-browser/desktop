@@ -24,12 +24,17 @@
     #duringOpening = false;
     #ignoreClose = false;
 
+    // Click handling
+    #lastLinkClickData = { clientX: 0, clientY: 0, height: 0, width: 0 };
+
     // Arc animation configuration
     #ARC_CONFIG = Object.freeze({
       ARC_STEPS: 70, // Increased for smoother bounce
-      MAX_ARC_HEIGHT: 30,
+      MAX_ARC_HEIGHT: 25,
       ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
     });
+
+    #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref('zen.glance.animation-duration') / 1000;
 
     init() {
       this.#setupEventListeners();
@@ -242,9 +247,9 @@
           x: [xOffset, 0],
         },
         {
-          duration: 0.3,
+          duration: 0.2,
           type: 'spring',
-          delay: 0.15,
+          delay: this.#GLANCE_ANIMATION_DURATION - 0.2,
           bounce: 0,
         }
       );
@@ -268,8 +273,29 @@
         data.height
       );
       return await this.#imageBitmapToBase64(
-        await window.browsingContext.currentWindowGlobal.drawSnapshot(rect, 1, 'transparent', true)
+        await window.browsingContext.currentWindowGlobal.drawSnapshot(
+          rect,
+          1,
+          'transparent',
+          undefined
+        )
       );
+    }
+
+    /**
+     * Set the last link click data
+     * @param {Object} data - The link click data
+     */
+    set lastLinkClickData(data) {
+      this.#lastLinkClickData = data;
+    }
+
+    /**
+     * Get the last link click data
+     * @returns {Object} The last link click data
+     */
+    get lastLinkClickData() {
+      return this.#lastLinkClickData;
     }
 
     /**
@@ -287,6 +313,13 @@
       if (gBrowser.selectedTab === this.#currentParentTab) {
         gBrowser.selectedTab = this.#currentTab;
         return;
+      }
+
+      if (!data.height || !data.width) {
+        data = {
+          ...data,
+          ...this.lastLinkClickData,
+        };
       }
 
       this.#setAnimationState(true);
@@ -315,6 +348,7 @@
      * @returns {Promise<Tab>} Promise that resolves to the glance tab
      */
     #animateGlanceOpening(data, browserElement) {
+      this.#prepareGlanceAnimation(data, browserElement);
       // FIXME(cheffy): We *must* have the call back async (at least,
       // until a better solution is found). If we do it inside the requestAnimationFrame,
       // we see flashing and if we do it directly, the animation does not play at all.
@@ -323,14 +357,14 @@
         // Recalculate location. When opening from pinned tabs,
         // view splitter doesn't catch if the tab is a glance tab or not.
         gZenViewSplitter.onLocationChange(browserElement);
-        this.#prepareGlanceAnimation(data, browserElement);
         if (data.width && data.height) {
+          // It is guaranteed that we will animate this opacity later on
+          // when we start animating the glance.
+          this.contentWrapper.style.opacity = 0;
           data.elementData = await this.#getElementPreviewData(data);
         }
         this.#glances.get(this.#currentGlanceID).elementData = data.elementData;
-        window.requestAnimationFrame(() => {
-          this.#executeGlanceAnimation(data, browserElement, resolve);
-        });
+        this.#executeGlanceAnimation(data, browserElement, resolve);
       });
     }
 
@@ -344,7 +378,6 @@
       const newButtons = this.#createNewOverlayButtons();
       this.browserWrapper.appendChild(newButtons);
 
-      this.#animateParentBackground();
       this.#setupGlancePositioning(data);
       this.#configureBrowserElement(browserElement);
     }
@@ -361,10 +394,10 @@
         parentSidebarContainer,
         {
           scale: [1, 0.98],
-          opacity: [1, 0.5],
+          opacity: [1, 0.4],
         },
         {
-          duration: 0.3,
+          duration: this.#GLANCE_ANIMATION_DURATION,
           type: 'spring',
           bounce: 0.2,
         }
@@ -403,6 +436,16 @@
       };
     }
 
+    #createGlancePreviewElement(src) {
+      const imageDataElement = document.createXULElement('image');
+      imageDataElement.setAttribute('src', src);
+
+      const parent = document.createElement('div');
+      parent.classList.add('zen-glance-element-preview');
+      parent.appendChild(imageDataElement);
+      return parent;
+    }
+
     /**
      * Handle element preview if provided
      * @param {Object} data - Glance data
@@ -413,13 +456,7 @@
         return null;
       }
 
-      const imageDataElement = document.createXULElement('image');
-      imageDataElement.setAttribute('src', data.elementData);
-      imageDataElement.classList.add('zen-glance-element-preview');
-
-      // set an aspect ratio to prevent stretching during animation
-      imageDataElement.style.aspectRatio = `${data.width} / ${data.height}`;
-
+      const imageDataElement = this.#createGlancePreviewElement(data.elementData);
       this.browserWrapper.prepend(imageDataElement);
       this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
 
@@ -429,7 +466,7 @@
           opacity: [1, 0],
         },
         {
-          duration: 0.3,
+          duration: this.#GLANCE_ANIMATION_DURATION / 2,
           easing: 'easeInOut',
         }
       );
@@ -456,17 +493,8 @@
      * @returns {string} The transform origin CSS value
      */
     #getTransformOrigin(data) {
-      const { clientX, clientY, width, height } = data;
-      const parentRect = window.windowUtils.getBoundsWithoutFlushing(
-        this.browserWrapper.parentElement
-      );
-      const xPercent = ((clientX + width / 2 - parentRect.left) / parentRect.width) * 100;
-      const yPercent = ((clientY + height / 2 - parentRect.top) / parentRect.height) * 100;
-
-      const xOrigin = xPercent < 33 ? 'left' : xPercent > 66 ? 'right' : 'center';
-      const yOrigin = yPercent < 33 ? 'top' : yPercent > 66 ? 'bottom' : 'center';
-
-      return `${xOrigin} ${yOrigin}`;
+      const { clientX, clientY } = data;
+      return `${clientX}px ${clientY}px`;
     }
 
     /**
@@ -488,13 +516,12 @@
       // nice fade-in effect to the content. But if it doesn't exist,
       // we just fall back to always showing the browser directly.
       if (data.elementData) {
-        this.contentWrapper.style.opacity = 0;
         gZenUIManager.motion
           .animate(
             this.contentWrapper,
             { opacity: [0, 1] },
             {
-              duration: 0.1,
+              duration: this.#GLANCE_ANIMATION_DURATION / 2,
               easing: 'easeInOut',
             }
           )
@@ -503,9 +530,10 @@
           });
       }
 
+      this.#animateParentBackground();
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
-          duration: gZenUIManager.testingEnabled ? 0 : 0.4,
+          duration: gZenUIManager.testingEnabled ? 0 : this.#GLANCE_ANIMATION_DURATION,
           ease: 'easeInOut',
         })
         .then(() => {
@@ -550,8 +578,8 @@
           height: tabPanelsRect.height,
         };
         endPosition = {
-          x: clientX + width / 2,
-          y: clientY + height / 2,
+          x: Math.floor(clientX + width / 2),
+          y: Math.floor(clientY + height / 2),
           width: width,
           height: height,
         };
@@ -618,7 +646,7 @@
         for (let i = 0; i < bounceSteps; i++) {
           const progress = i / bounceSteps;
           // Scale up slightly then back to normal
-          scale = 1 + 0.004 * Math.sin(progress * Math.PI);
+          scale = 1 + 0.003 * Math.sin(progress * Math.PI);
           // If we are at the last step, ensure scale is exactly 1
           if (i === bounceSteps - 1) {
             scale = 1;
@@ -857,7 +885,7 @@
             {
               duration: 0.2,
               type: 'spring',
-              bounce: 0.2,
+              bounce: this.#GLANCE_ANIMATION_DURATION - 0.1,
             }
           )
           .then(() => {
@@ -891,10 +919,10 @@
           browserSidebarContainer,
           {
             scale: [0.98, 1],
-            opacity: [0.5, 1],
+            opacity: [0.4, 1],
           },
           {
-            duration: 0.3,
+            duration: this.#GLANCE_ANIMATION_DURATION,
             type: 'spring',
             bounce: 0,
           }
@@ -917,14 +945,17 @@
         const originalPosition = this.#glances.get(this.#currentGlanceID).originalPosition;
         const elementImageData = this.#glances.get(this.#currentGlanceID).elementImageData;
 
-        this.#addElementPreview(elementImageData, originalPosition);
+        this.#addElementPreview(elementImageData);
 
         // Create curved closing animation sequence
         const closingData = this.#createClosingDataFromOriginalPosition(originalPosition);
         const arcSequence = this.#createGlanceArcSequence(closingData, 'closing');
 
         gZenUIManager.motion
-          .animate(this.browserWrapper, arcSequence, { duration: 0.4, ease: 'easeOut' })
+          .animate(this.browserWrapper, arcSequence, {
+            duration: this.#GLANCE_ANIMATION_DURATION,
+            ease: 'easeOut',
+          })
           .then(() => {
             // Remove element preview after closing animation
             const elementPreview = this.browserWrapper.querySelector('.zen-glance-element-preview');
@@ -959,17 +990,10 @@
     /**
      * Add element preview if available, used for the closing animation
      * @param {string} elementImageData - The element image data
-     * @param {Object} rect - The rectangle data
      */
-    #addElementPreview(elementImageData, rect) {
+    #addElementPreview(elementImageData) {
       if (elementImageData) {
-        const imageDataElement = document.createXULElement('image');
-        imageDataElement.setAttribute('src', elementImageData);
-        imageDataElement.classList.add('zen-glance-element-preview');
-
-        // set an aspect ratio to prevent stretching during animation
-        imageDataElement.style.aspectRatio = `${parseFloat(rect.width)} / ${parseFloat(rect.height)}`;
-
+        const imageDataElement = this.#createGlancePreviewElement(elementImageData);
         this.browserWrapper.prepend(imageDataElement);
       }
     }
@@ -990,7 +1014,7 @@
       if (!onTabClose) {
         this.quickCloseGlance({ clearID: false });
       }
-      this.browserWrapper.style.display = 'none';
+      this.overlay.style.display = 'none';
       this.overlay.removeAttribute('fade-out');
       this.browserWrapper.removeAttribute('animate');
 
@@ -1357,18 +1381,9 @@
      * @param {Tab} tab - The tab to open glance for
      */
     #openGlanceForTab(tab) {
-      const browserRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabbox);
-      const clickPosition = gZenUIManager._lastClickPosition || {
-        clientX: browserRect.width / 2,
-        clientY: browserRect.height / 2,
-      };
-
       this.openGlance(
         {
           url: undefined,
-          ...clickPosition,
-          width: 0,
-          height: 0,
         },
         tab,
         tab.owner
@@ -1471,7 +1486,7 @@
           height: ['100%', '100%'],
         },
         {
-          duration: 0.3,
+          duration: this.#GLANCE_ANIMATION_DURATION,
           type: 'spring',
           bounce: 0,
         }
@@ -1701,29 +1716,4 @@
   }
 
   window.gZenGlanceManager = new nsZenGlanceManager();
-
-  /**
-   * Register window actors for glance functionality
-   */
-  function registerWindowActors() {
-    gZenActorsManager.addJSWindowActor('ZenGlance', {
-      parent: {
-        esModuleURI: 'resource:///actors/ZenGlanceParent.sys.mjs',
-      },
-      child: {
-        esModuleURI: 'resource:///actors/ZenGlanceChild.sys.mjs',
-        events: {
-          DOMContentLoaded: {},
-          keydown: {
-            capture: true,
-          },
-        },
-      },
-      allFrames: true,
-      matches: ['*://*/*'],
-      enablePreference: 'zen.glance.enabled',
-    });
-  }
-
-  registerWindowActors();
 }

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = текущий профиль
 unified-extensions-description = Расширения дополняют функционал { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,7 +63,9 @@ zen-generic-next = Далее
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Разрешено
 zen-site-data-setting-block = Запрещено
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-protections-enabled = Включено
+zen-site-data-protections-disabled = Отключено
+zen-site-data-setting-cross-site = Межсайтовые куки
 zen-site-data-security-info-extension = 
     .label = Расширение
 zen-site-data-security-info-secure = 
@@ -72,11 +78,17 @@ zen-site-data-get-addons =
     .label = Добавить расширения
 zen-site-data-site-settings = 
     .label = Все настройки сайта
-zen-site-data-share = 
-    .label = Поделиться этой страницей
+zen-site-data-header-share = 
+    .tooltiptext = Поделиться страницей
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Режим чтения
+zen-site-data-header-screenshot = 
+    .tooltiptext = Сделать снимок экрана
+zen-site-data-header-bookmark = 
+    .tooltiptext = Добавить в закладки
 zen-urlbar-copy-url-button = 
     .tooltiptext = Скопировать URL
-zen-site-data-setting-site-protection = Tracking Protection
+zen-site-data-setting-site-protection = Защита от отслеживания
 
 # Section: Feature callouts
 

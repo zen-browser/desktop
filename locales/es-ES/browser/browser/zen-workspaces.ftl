@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Espacios de trabajo
 zen-panel-ui-workspaces-create = 
     .label = Crear espacio
@@ -53,3 +57,9 @@ zen-workspace-creation-header = Crear un espacio
 zen-workspace-creation-label = Los espacios se utilizan para organizar sus pestañas y sesiones.
 zen-workspaces-delete-workspace-title = ¿Eliminar espacio de trabajo?
 zen-workspaces-delete-workspace-body = ¿Seguro que quiere eliminar { $name }? Esta acción no se puede deshacer.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = ¡Pestañas cerradas! Use <span>{ $shortcut }</span> para deshacerlo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Limpiar
+    .tooltiptext = Cerrar todas las pestañas sin fijar

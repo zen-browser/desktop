@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = profil actuel
 unified-extensions-description = Les extensions sont utilisées pour ajouter plus de fonctionnalités à { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
@@ -59,6 +63,8 @@ zen-generic-next = Suivant
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Autorisé
 zen-site-data-setting-block = Bloqué
+zen-site-data-protections-enabled = Activé
+zen-site-data-protections-disabled = Désactivé
 zen-site-data-setting-cross-site = Cookie intersite
 zen-site-data-security-info-extension = 
     .label = Extension
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = Ajouter des extensions
 zen-site-data-site-settings = 
     .label = Tous les paramètres du site
-zen-site-data-share = 
-    .label = Partager cette page
+zen-site-data-header-share = 
+    .tooltiptext = Partager cette page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Entrer en mode lecture
+zen-site-data-header-screenshot = 
+    .tooltiptext = Prendre une capture d'écran
+zen-site-data-header-bookmark = 
+    .tooltiptext = Marquer cette page
 zen-urlbar-copy-url-button = 
     .tooltiptext = Copier l'URL
 zen-site-data-setting-site-protection = Protection contre le pistage

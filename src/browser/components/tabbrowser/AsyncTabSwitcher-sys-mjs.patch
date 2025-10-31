@@ -1,0 +1,12 @@
+diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
+index 773f595e89e268578ba153907babec95b58a155a..abe86fc3d243a85c4a8dbee854a2d0130f7270fd 100644
+--- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
++++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
+@@ -937,6 +937,7 @@ export class AsyncTabSwitcher {
+     return !(
+       this.tabbrowser._printPreviewBrowsers.has(browser) ||
+       lazy.PictureInPicture.isOriginatingBrowser(browser)
++      || browser?.hasAttribute('zen-glance-background')
+     );
+   }
+ 

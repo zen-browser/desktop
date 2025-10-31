@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = מראה ותחושה
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = הפעל/כבה ביצועים
 zen-devtools-toggle-storage-shortcut = הפעל/כבה אחסון
 zen-devtools-toggle-dom-shortcut = הפעל/כבה DOM
 zen-devtools-toggle-accessibility-shortcut = הפעל/כבה נגישות
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

@@ -12,7 +12,13 @@
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
-            <html:div class="pinned-tabs-container-separator"></html:div>
+            <hbox class="pinned-tabs-container-separator">
+              <toolbarseparator flex="1" />
+              <toolbarbutton command="cmd_zenCloseUnpinnedTabs"
+                             tooltip="dynamic-shortcut-tooltip"
+                             data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title"
+                             class="zen-workspace-close-unpinned-tabs-button" />
+            </hbox>
           </vbox>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
             <!-- Let it as an ID to mantain compatibility with firefox's tabbrowser -->

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Cuma agus Mothú
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = Scoránaigh Feidhmíochta
 zen-devtools-toggle-storage-shortcut = Scoránaigh Stóráil
 zen-devtools-toggle-dom-shortcut = Scoránaigh DOM
 zen-devtools-toggle-accessibility-shortcut = Scoránaigh Inrochtaineacht
+zen-close-all-unpinned-tabs-shortcut = Dún Gach Cluaisín Gan Phionáil

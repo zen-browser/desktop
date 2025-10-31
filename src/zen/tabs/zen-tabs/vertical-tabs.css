@@ -130,31 +130,85 @@
    Pinned Tabs Separator
    ========================================================================== */
 .pinned-tabs-container-separator {
-  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  margin: 8px auto;
+  height: 22px;
+  padding-bottom: 2px;
   border: none;
-  height: 1px;
-  max-height: 1px;
-  width: 98%;
+  width: 100%;
   transition:
-    margin 0.1s ease-in-out,
-    background 0.1s ease-in-out,
-    max-height 0.1s ease-in-out;
+    height 0.08s ease-in-out,
+    padding 0.08s ease-in-out,
+    opacity 0.06s ease-in-out;
   overflow: hidden;
   position: relative;
   opacity: 1;
+  align-items: center;
+
+  & toolbarseparator {
+    height: 1px;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    padding: 0;
+    margin: auto 4px;
+
+    &::before {
+      border-inline-start: none;
+    }
+  }
 
   #tabbrowser-tabs[movingtab] & {
     transition:
-      margin 0.1s ease-in-out,
-      background 0.1s ease-in-out,
-      max-height 0.1s ease-in-out,
+      height 0.08s ease-in-out,
+      padding 0.08s ease-in-out,
+      opacity 0.06s ease-in-out,
       transform 0.1s ease-in-out;
   }
 
   .zen-workspace-pinned-tabs-section[hide-separator] & {
-    max-height: 0;
-    margin: 0 auto;
+    height: 0px;
+    opacity: 0;
+    padding-bottom: 0px;
+  }
+
+  & toolbarbutton {
+    appearance: none;
+    opacity: 0;
+    visibility: collapse;
+    transition:
+      opacity 0.15s,
+      visibility 0.15s;
+    font-size: 10px;
+    font-weight: 500;
+    gap: 2px;
+
+    #navigator-toolbox[zen-has-hover='true'] & {
+      visibility: visible;
+      opacity: 0.5;
+    }
+
+    &:hover {
+      opacity: 1 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      display: none;
+    }
+
+    & .toolbarbutton-text {
+      display: flex;
+    }
+
+    & .toolbarbutton-icon {
+      width: 10px;
+      transition: transform 0.15s ease-in-out;
+      transform: translateY(0px);
+
+      @starting-style {
+        transform: translateY(-2px);
+      }
+    }
+
+    &:active:hover .toolbarbutton-icon {
+      transform: translateY(2px);
+    }
   }
 }
 
@@ -618,12 +672,6 @@
   --tab-min-width: 48px !important;
   --zen-toolbox-padding: 6px !important;
   --zen-toolbox-max-width: calc(var(--tab-min-width) + var(--zen-toolbox-padding) * 2);
-
-  /* We can't show the rename input properly in collapsed state,
-     so hide the workspace edit input */
-  #context_zenEditWorkspace {
-    display: none;
-  }
 }
 
 #navigator-toolbox:not([zen-sidebar-expanded='true']) {
@@ -706,7 +754,6 @@
 
   & #titlebar {
     display: grid;
-    overflow: clip;
   }
 
   & #zen-sidebar-top-buttons-customization-target {
@@ -963,7 +1010,7 @@
   :root[zen-single-toolbar='true'] & {
     --zen-toolbar-height: 36px;
     @media (-moz-platform: macos) {
-      --zen-toolbar-height: 42px;
+      --zen-toolbar-height: 38px;
     }
 
     & #PanelUI-button {

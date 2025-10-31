@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = 현재 프로필
 unified-extensions-description = 확장 프로그램은 { -brand-short-name }에 더 많은 추가 기능을 제공하는 데 사용됩니다.
 tab-context-zen-reset-pinned-tab = 
@@ -59,6 +63,8 @@ zen-generic-next = 다음
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
+zen-site-data-protections-enabled = Enabled
+zen-site-data-protections-disabled = Disabled
 zen-site-data-setting-cross-site = 사이트 간 공유 쿠키
 zen-site-data-security-info-extension = 
     .label = 확장
@@ -72,8 +78,14 @@ zen-site-data-get-addons =
     .label = 확장 프로그램 추가
 zen-site-data-site-settings = 
     .label = 모든 사이트 설정
-zen-site-data-share = 
-    .label = 이 페이지 공유
+zen-site-data-header-share = 
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot = 
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bookmark This Page
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL 복사
 zen-site-data-setting-site-protection = 추적 보호

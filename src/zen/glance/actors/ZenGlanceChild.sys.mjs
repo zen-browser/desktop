@@ -35,22 +35,30 @@ export class ZenGlanceChild extends JSWindowActorChild {
     return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
   }
 
-  openGlance(target, originalTarget) {
+  #openGlance(target) {
     let url = target.href;
     // Add domain to relative URLs
     if (!url.match(/^(?:[a-z]+:)?\/\//i)) {
       url = this.contentWindow.location.origin + url;
     }
+    this.sendAsyncMessage('ZenGlance:OpenGlance', {
+      url,
+    });
+  }
+
+  #sendClickDataToParent(target, element) {
+    if (!element || !target) {
+      return;
+    }
     // Get the largest element we can get. If the `A` element
     // is a parent of the original target, use the anchor element,
     // otherwise use the original target.
-    let rect = originalTarget.getBoundingClientRect();
+    let rect = element.getBoundingClientRect();
     const anchorRect = target.getBoundingClientRect();
     if (anchorRect.width * anchorRect.height > rect.width * rect.height) {
       rect = anchorRect;
     }
-    this.sendAsyncMessage('ZenGlance:OpenGlance', {
-      url,
+    this.sendAsyncMessage('ZenGlance:RecordLinkClickData', {
       clientX: rect.left,
       clientY: rect.top,
       width: rect.width,
@@ -59,7 +67,19 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   handleClick(event) {
-    if (this.ensureOnlyKeyModifiers(event) || event.button !== 0 || event.defaultPrevented) {
+    if (event.button !== 0 || event.defaultPrevented) {
+      return;
+    }
+    // get closest A element
+    const target = event.target.closest('A');
+    const elementToRecord = event.originalTarget || event.target;
+    // We record the link data anyway, even if the glance may be invoked
+    // or not. We have some cases where glance would open, for example,
+    // when clicking on a link with a different domain where glance would open.
+    // The problem is that at that stage we don't know the rect or even what
+    // element has been clicked, so we send the data here.
+    this.#sendClickDataToParent(target, elementToRecord);
+    if (this.ensureOnlyKeyModifiers(event)) {
       return;
     }
     const activationMethod = this.#activationMethod;
@@ -72,13 +92,11 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
     }
-    // get closest A element
-    const target = event.target.closest('A');
     if (target) {
       event.preventDefault();
       event.stopPropagation();
 
-      this.openGlance(target, event.originalTarget || event.target);
+      this.#openGlance(target);
     }
   }
 

@@ -275,15 +275,18 @@ var gZenUIManager = {
   // Section: URL bar
 
   onUrlbarOpen() {
-    gURLBar.setAttribute('had-proxystate', gURLBar.getAttribute('pageproxystate'));
-    gURLBar.setPageProxyState('invalid', false);
+    setTimeout(() => {
+      const hadValid = gURLBar.getAttribute('pageproxystate') === 'valid';
+      gURLBar.setPageProxyState('invalid', false);
+      gURLBar.setAttribute('had-proxystate', hadValid);
+    }, 0);
   },
 
   onUrlbarClose() {
-    if (gURLBar.hasAttribute('had-proxystate')) {
-      gURLBar.setURI();
-      gURLBar.removeAttribute('had-proxystate');
+    if (gURLBar.getAttribute('had-proxystate') == 'true') {
+      gURLBar.setPageProxyState('valid', false);
     }
+    gURLBar.removeAttribute('had-proxystate');
   },
 
   onUrlbarSearchModeChanged(event) {
@@ -709,6 +712,7 @@ var gZenVerticalTabsManager = {
   toggleExpand() {
     const newVal = !Services.prefs.getBoolPref('zen.view.sidebar-expanded');
     Services.prefs.setBoolPref('zen.view.sidebar-expanded', newVal);
+    Services.prefs.setBoolPref('zen.view.use-single-toolbar', false);
   },
 
   get navigatorToolbox() {

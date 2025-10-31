@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = 界面外观
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -300,3 +304,4 @@ zen-devtools-toggle-performance-shortcut = 切换性能
 zen-devtools-toggle-storage-shortcut = 切换存储
 zen-devtools-toggle-dom-shortcut = 切换 DOM
 zen-devtools-toggle-accessibility-shortcut = 切换无障碍环境
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

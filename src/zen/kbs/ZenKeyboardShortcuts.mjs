@@ -49,6 +49,7 @@ const defaultKeyboardGroups = {
     'zen-key-enter-full-screen',
     'zen-key-exit-full-screen',
     'zen-quit-app-shortcut',
+    'zen-close-all-unpinned-tabs-shortcut',
     'zen-close-tab-shortcut',
     'zen-close-shortcut',
     'id:key_selectTab1',
@@ -799,7 +800,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 12;
+  static LATEST_KBS_VERSION = 13;
 
   constructor() {}
 
@@ -1079,6 +1080,20 @@ class nsZenKeyboardShortcutsVersioner {
 
       // Also remove zen-compact-mode-show-toolbar
       data = data.filter((shortcut) => shortcut.getID() != 'zen-compact-mode-show-toolbar');
+    }
+
+    if (version < 13) {
+      data.push(
+        new KeyShortcut(
+          'zen-close-all-unpinned-tabs',
+          'K',
+          '',
+          ZEN_WORKSPACE_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenCloseUnpinnedTabs',
+          'zen-close-all-unpinned-tabs-shortcut'
+        )
+      );
     }
 
     return data;

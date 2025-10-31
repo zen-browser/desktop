@@ -18,7 +18,7 @@
 }
 
 .zen-boost {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/boost-filled-small.svg') !important;
 }
 
 .zen-boost::after {

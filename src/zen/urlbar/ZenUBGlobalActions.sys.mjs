@@ -25,7 +25,7 @@ const globalActionsTemplate = [
   {
     label: 'Create New Boost',
     command: 'cmd_zenOpenBoostEditor',
-    icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
+    icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
       const url = new URL(tab.linkedBrowser.currentURI.spec);
@@ -46,7 +46,7 @@ const globalActionsTemplate = [
   {
     label: 'Edit Boost',
     command: 'cmd_zenOpenBoostEditor',
-    icon: 'chrome://browser/skin/zen-icons/selectable/paintbrush.svg',
+    icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
       const url = new URL(tab.linkedBrowser.currentURI.spec);

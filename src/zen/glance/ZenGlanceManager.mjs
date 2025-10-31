@@ -1716,29 +1716,4 @@
   }
 
   window.gZenGlanceManager = new nsZenGlanceManager();
-
-  /**
-   * Register window actors for glance functionality
-   */
-  function registerWindowActors() {
-    gZenActorsManager.addJSWindowActor('ZenGlance', {
-      parent: {
-        esModuleURI: 'resource:///actors/ZenGlanceParent.sys.mjs',
-      },
-      child: {
-        esModuleURI: 'resource:///actors/ZenGlanceChild.sys.mjs',
-        events: {
-          DOMContentLoaded: {},
-          keydown: {
-            capture: true,
-          },
-        },
-      },
-      allFrames: true,
-      matches: ['*://*/*'],
-      enablePreference: 'zen.glance.enabled',
-    });
-  }
-
-  registerWindowActors();
 }

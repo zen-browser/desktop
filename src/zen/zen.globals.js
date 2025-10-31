@@ -45,7 +45,6 @@ export default [
   'Cu',
   'Cc',
 
-  'gZenActorsManager',
   'JSWindowActorParent',
   'JSWindowActorChild',
 

@@ -324,7 +324,7 @@ export class nsZenBoostEditor {
 
   loadBoost(domain) {
     this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
-    
+
     // Initial save to register the boost
     gZenBoostsManager.saveBoostToStore(null);
 

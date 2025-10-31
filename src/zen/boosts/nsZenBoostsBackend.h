@@ -19,7 +19,6 @@ namespace zen {
 
 class nsZenBoostsBackend final : public nsIZenBoostsBackend {
   NS_DECL_ISUPPORTS
-  NS_DECL_NSIZENBOOSTSBACKEND
 
  public:
   explicit nsZenBoostsBackend();
@@ -48,6 +47,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    */
   static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor;
 
+  NS_DECL_NSIZENBOOSTSBACKEND
  private:
   ~nsZenBoostsBackend() = default;
 
@@ -55,6 +55,10 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * The presshell of the current document being rendered.
    */
   RefPtr<nsPresContext> mCurrentPresContext;
+  /**
+   * A map containing what boosts should be applied to which domains.
+   */
+  static ZenBoostsMap mZenBoostsMap;
 };
 
 } // namespace zen

@@ -12,6 +12,7 @@
 
 #include "mozilla/ServoStyleConsts.h"
 #include "mozilla/ServoStyleConstsInlines.h"
+#include "mozilla/MediaFeatureChange.h"
 
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/BrowsingContext.h"
@@ -65,7 +66,15 @@ auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
     return;
   }
 
+  auto previousData = aPresContext->mZenBoostsPresContextData;
   aPresContext->mZenBoostsPresContextData = aBrowsingContext->ZenBoostsData();
+  if (previousData != aPresContext->mZenBoostsPresContextData) {
+    // Lets ask the prescontext to restyle the document
+    aPresContext->MediaFeatureValuesChanged(
+      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,
+       mozilla::MediaFeatureChangeReason::PreferenceChange},
+      mozilla::MediaFeatureChangePropagation::JustThisDocument);
+  }
 }
 
 auto nsZenBoostsBackend::ResolveStyleColor(

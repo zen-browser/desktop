@@ -82,10 +82,7 @@ export class nsZenBoostsManager {
 
     if (this.registeredBoosts.has(dom)) {
       boostData = this.registeredBoosts.get(dom);
-      // console.log('Boost found for domain ', dom, boostData);
     }
-    // else
-    //   console.log('Boost not found');
 
     return boostData;
   }
@@ -101,8 +98,7 @@ export class nsZenBoostsManager {
         `;
     }
 
-    // TODO: Send colors to boosts backend
-
+    Services.obs.notifyObservers(null, 'zen-boosts-update');
     this.registerCSSForDomain(fontFamily, boost.domain);
   }
 
@@ -161,35 +157,6 @@ export class nsZenBoostsManager {
   // Checks if a boost can be created
   canBoostSite(uri) {
     return uri.schemeIs('http') || uri.schemeIs('https');
-  }
-
-  /**
-   * From ZenGradientGenerator.mjs
-   * Converts an HSL color value to RGB. Conversion formula
-   * adapted from https://en.wikipedia.org/wiki/HSL_color_space.
-   * Assumes h, s, and l are contained in the set [0, 1] and
-   * returns r, g, and b in the set [0, 255].
-   *
-   * @param   {number}  h       The hue
-   * @param   {number}  s       The saturation
-   * @param   {number}  l       The lightness
-   * @return  {Array}           The RGB representation
-   */
-  hslToRgb(h, s, l) {
-    const { round } = Math;
-    let r, g, b;
-
-    if (s === 0) {
-      r = g = b = l; // achromatic
-    } else {
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p = 2 * l - q;
-      r = this.hueToRgb(p, q, h + 1 / 3);
-      g = this.hueToRgb(p, q, h);
-      b = this.hueToRgb(p, q, h - 1 / 3);
-    }
-
-    return [round(r * 255), round(g * 255), round(b * 255)];
   }
 }
 

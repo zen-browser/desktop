@@ -29,47 +29,47 @@ export class nsZenBoostEditor {
     this.window.addEventListener('unload', () => this.handleClose());
 
     this.doc
-      .getElementById('PanelUI-zen-boost-font-arial')
+      .getElementById('zen-boost-font-arial')
       .addEventListener('click', (event) => this.onFontChange(event, 'Arial, sans-serif'));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-serif')
+      .getElementById('zen-boost-font-serif')
       .addEventListener('click', (event) => this.onFontChange(event, "'Times New Roman', serif"));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-mono')
+      .getElementById('zen-boost-font-mono')
       .addEventListener('click', (event) => this.onFontChange(event, "'Courier New', monospace"));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-georgia')
+      .getElementById('zen-boost-font-georgia')
       .addEventListener('click', (event) => this.onFontChange(event, "'Georgia', serif"));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-tahoma')
+      .getElementById('zen-boost-font-tahoma')
       .addEventListener('click', (event) => this.onFontChange(event, 'Tahoma'));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-verdana')
+      .getElementById('zen-boost-font-verdana')
       .addEventListener('click', (event) => this.onFontChange(event, 'Verdana'));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-comic')
+      .getElementById('zen-boost-font-comic')
       .addEventListener('click', (event) => this.onFontChange(event, "'Comic Sans MS'"));
     this.doc
-      .getElementById('PanelUI-zen-boost-font-corsiva')
+      .getElementById('zen-boost-font-corsiva')
       .addEventListener('click', (event) =>
         this.onFontChange(event, "'Monotype Corsiva, cursive'")
       );
 
     this.doc
-      .getElementById('PanelUI-zen-boost-zap')
+      .getElementById('zen-boost-zap')
       .addEventListener('click', () => console.error('Not implemented'));
     this.doc
-      .getElementById('PanelUI-zen-boost-disable')
+      .getElementById('zen-boost-disable')
       .addEventListener('click', this.onToggleDisable.bind(this));
     this.doc
-      .getElementById('PanelUI-zen-boost-invert')
+      .getElementById('zen-boost-invert')
       .addEventListener('click', this.onToggleInvert.bind(this));
     this.doc
-      .getElementById('PanelUI-zen-boost-delete')
+      .getElementById('zen-boost-delete')
       .addEventListener('click', this.onDeleteBoost.bind(this));
 
     this.doc
-      .getElementById('PanelUI-zen-boost-name')
+      .getElementById('zen-boost-name')
       .addEventListener('input', (e) => (this.currentBoostData.boostName = e.target.value));
 
     this.initialized = true;
@@ -278,8 +278,8 @@ export class nsZenBoostEditor {
   }
 
   updateButtonToggleVisuals() {
-    const invertButton = this.doc.getElementById('PanelUI-zen-boost-invert');
-    const disableButton = this.doc.getElementById('PanelUI-zen-boost-disable');
+    const invertButton = this.doc.getElementById('zen-boost-invert');
+    const disableButton = this.doc.getElementById('zen-boost-disable');
     const gradient = this.doc.querySelector('.zen-boost-color-picker-gradient');
 
     if (this.currentBoostData.smartInvert) invertButton.classList.add('zen-boost-button-active');
@@ -328,7 +328,7 @@ export class nsZenBoostEditor {
     // Initial save to register the boost
     gZenBoostsManager.saveBoostToStore(null);
 
-    this.doc.getElementById('PanelUI-zen-boost-name').value = this.currentBoostData.boostName;
+    this.doc.getElementById('zen-boost-name').value = this.currentBoostData.boostName;
 
     const dot = this.doc.querySelector('.zen-boost-color-picker-dot');
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null)

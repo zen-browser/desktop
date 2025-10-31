@@ -17,10 +17,13 @@ class ZenBoostsPresContextData final : public nsISupports {
   NS_DECL_ISUPPORTS
 
   nscolor mAccentColor;
+  bool mShouldBeApplied = true;
 
   explicit ZenBoostsPresContextData(nscolor aAccentColor)
       : mAccentColor(aAccentColor) {}
 };
+
+using ZenBoostsMap = nsTHashMap</* Domain = */nsString, /* Boost Data = */nsCOMPtr<ZenBoostsPresContextData>>;
 
 }  // namespace zen
 

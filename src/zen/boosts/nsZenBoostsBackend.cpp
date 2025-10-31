@@ -51,7 +51,7 @@ auto nsZenBoostsBackend::onPressShellLeave(nsPresContext* aPresContext) -> void 
 
 auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
     nsPresContext* aPresContext) -> void {
-  if (!aPresContext) {
+  if (!aPresContext || aPresContext->IsChrome()) {
     return;
   }
 
@@ -60,11 +60,28 @@ auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
     return;
   }
 
-  // Create the Zen boosts data if it doesn't exist yet.
-  // TODO: Actually check on the document's href or other properties to
-  //  determine what data to store.
-  aPresContext->mZenBoostsPresContextData =
-      new ZenBoostsPresContextData(NS_RGBA(111, 78, 55, 1));
+  if (aPresContext->mZenBoostsPresContextData) {
+    if (aPresContext->mZenBoostsPresContextData->mShouldBeApplied) {
+      // If the boost data indicates it shouldn't be applied, skip.
+      // Parsing urls and doing checks can be expensive.
+      return;
+    }
+    // We don't have a boost for this domain anymore.
+    aPresContext->mZenBoostsPresContextData = nullptr;
+    return;
+  }
+
+  // Check if we have a boost for this domain
+  nsIURI* baseURI = document->GetBaseURI();
+  nsAutoCString host;
+  if (baseURI) {
+    baseURI->GetHost(host);
+    nsString hostWStr;
+    CopyUTF8toUTF16(host, hostWStr);
+    if (auto boostData = mZenBoostsMap.Get(hostWStr)) {
+      aPresContext->mZenBoostsPresContextData = boostData;
+    }
+  }
 }
 
 auto nsZenBoostsBackend::ResolveStyleColor(
@@ -114,5 +131,30 @@ auto nsZenBoostsBackend::ResolveStyleColor(
 
   return aColor;
 }
+
+nsresult nsZenBoostsBackend::RegisterZenBoost(
+    const nsAString& aDomain, const nsTArray<uint8_t >& aAccentColor) {
+  if (aAccentColor.IsEmpty() || aAccentColor.Length() < 3) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  nscolor accentColor = NS_RGB(aAccentColor[0], aAccentColor[1], aAccentColor[2]);
+  RefPtr<ZenBoostsPresContextData> data =
+      new ZenBoostsPresContextData(accentColor);
+  mZenBoostsMap.InsertOrUpdate(aDomain, data);
+  return NS_OK;
+}
+
+nsresult nsZenBoostsBackend::UnregisterZenBoost(const nsAString& aDomain) {
+  // We do need to mark the data as not to be applied, so that
+  // existing prescontexts don't try to re-apply it.
+  if (auto boostData = mZenBoostsMap.Get(aDomain)) {
+    boostData->mShouldBeApplied = false;
+  }
+  mZenBoostsMap.Remove(aDomain);
+  return NS_OK;
+}
+
+ZenBoostsMap nsZenBoostsBackend::mZenBoostsMap{};
 
 } // namespace zen

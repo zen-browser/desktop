@@ -1310,14 +1310,6 @@ window.gZenVerticalTabsManager = {
         } else {
           gBrowser.setTabTitle(this._tabEdited);
         }
-        if (this._tabEdited.getAttribute('zen-pin-id')) {
-          // Update pin title in storage
-          await gZenPinnedTabManager.updatePinTitle(
-            this._tabEdited,
-            this._tabEdited.label,
-            !!newName
-          );
-        }
 
         // Maybe add some confetti here?!?
         gZenUIManager.motion.animate(

@@ -2,13 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {
-  cancelIdleCallback,
-  clearTimeout,
-  requestIdleCallback,
-  setTimeout,
-} from 'resource://gre/modules/Timer.sys.mjs';
-
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -19,7 +12,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
 });
 
-const TAB_CUSTOM_VALUES = new WeakMap();
 const LAZY_COLLECT_THRESHOLD = 5 * 60 * 1000; // 5 minutes
 const OBSERVING = ['sessionstore-state-write-complete', 'browser-window-before-show'];
 
@@ -76,6 +68,7 @@ class nsZenSessionManager {
   /** Handles the browser-window-before-show observer notification. */
   #onBeforeBrowserWindowShown(aWindow) {
     // TODO: Initialize new window
+    void aWindow;
   }
 
   get #topMostWindow() {
@@ -113,10 +106,8 @@ class nsZenSessionManager {
    * @param forceUpdate
    *        Forces us to recollect data and will bypass and update the
    *        corresponding caches.
-   * @param zIndex
-   *        The z-index of the window.
    */
-  #collectWindowData(window, forceUpdate = false, zIndex = 0) {
+  #collectWindowData(window, forceUpdate = false) {
     let sidebarData = this.#sidebar;
     if (!sidebarData || forceUpdate) {
       sidebarData = {};
@@ -164,7 +155,8 @@ class nsZenSessionManager {
   }
 
   getNewWindowData(aWindows) {
-    return { windows: [Cu.cloneInto(aWindows[Object.keys(aWindows)[0]], {})] };
+    let newWindow = { ...Cu.cloneInto(aWindows[Object.keys(aWindows)[0]], {}), ...this.#sidebar };
+    return { windows: [newWindow] };
   }
 }
 

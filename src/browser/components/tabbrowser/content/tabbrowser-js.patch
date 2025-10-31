@@ -518,17 +518,7 @@ index c0eafd4faf8d57b8486c5bf8917375850ec8147e..cead9e6e52f7354e20b8b64ad06a075e
  
        TabBarVisibility.update();
      }
-@@ -4635,6 +4768,9 @@
-         return;
-       }
- 
-+      for (let tab of selectedTabs) {
-+        gZenPinnedTabManager._removePinnedAttributes(tab, true);
-+      }
-       this.removeTabs(selectedTabs, { isUserTriggered, telemetrySource });
-     }
- 
-@@ -4896,6 +5032,7 @@
+@@ -4814,6 +4944,7 @@
          telemetrySource,
        } = {}
      ) {
@@ -879,11 +869,3 @@ index c0eafd4faf8d57b8486c5bf8917375850ec8147e..cead9e6e52f7354e20b8b64ad06a075e
      // Build Ask Chat items
      TabContextMenu.GenAI.buildTabMenu(
        document.getElementById("context_askChat"),
-@@ -9863,6 +10050,7 @@ var TabContextMenu = {
-         )
-       );
-     } else {
-+      gZenPinnedTabManager._removePinnedAttributes(this.contextTab, true);
-       gBrowser.removeTab(this.contextTab, {
-         animate: true,
-         ...gBrowser.TabMetrics.userTriggeredContext(

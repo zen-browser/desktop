@@ -505,10 +505,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     gBrowser.pinTab(emptyTab);
     tabs = [emptyTab, ...filteredTabs];
 
-    const folder = this._createFolderNode(options);
-    if (options.initialPinId) {
-      folder.setAttribute('zen-pin-id', options.initialPinId);
-    }
+      const folder = this._createFolderNode(options);
 
     if (options.insertAfter) {
       options.insertAfter.after(folder);
@@ -932,49 +929,49 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const storedData = [];
 
-    for (const folder of allData) {
-      const parentFolder = folder.parentElement.closest('zen-folder');
-      // Skip split-view-group if it's not a zen-folder child
-      if (!parentFolder && folder.hasAttribute('split-view-group')) continue;
-      const emptyFolderTabs = folder.tabs
-        .filter((tab) => tab.hasAttribute('zen-empty-tab'))
-        .map((tab) => tab.getAttribute('zen-pin-id'));
+      for (const folder of allData) {
+        const parentFolder = folder.parentElement.closest('zen-folder');
+        // Skip split-view-group if it's not a zen-folder child
+        if (!parentFolder && folder.hasAttribute('split-view-group')) continue;
+        const emptyFolderTabs = folder.tabs
+          .filter((tab) => tab.hasAttribute('zen-empty-tab'))
+          .map((tab) => tab.getAttribute('zen-sync-id'));
 
       let prevSiblingInfo = null;
       const prevSibling = folder.previousElementSibling;
       const userIcon = folder?.icon?.querySelector('svg .icon image');
 
-      if (prevSibling) {
-        if (gBrowser.isTabGroup(prevSibling)) {
-          prevSiblingInfo = { type: 'group', id: prevSibling.id };
-        } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-pin-id')) {
-          const zenPinId = prevSibling.getAttribute('zen-pin-id');
-          prevSiblingInfo = { type: 'tab', id: zenPinId };
-        } else {
-          prevSiblingInfo = { type: 'start', id: null };
+        if (prevSibling) {
+          if (gBrowser.isTabGroup(prevSibling)) {
+            prevSiblingInfo = { type: 'group', id: prevSibling.id };
+          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-sync-id')) {
+            const zenPinId = prevSibling.getAttribute('zen-sync-id');
+            prevSiblingInfo = { type: 'tab', id: zenPinId };
+          } else {
+            prevSiblingInfo = { type: 'start', id: null };
+          }
         }
-      }
 
-      storedData.push({
-        pinned: folder.pinned,
-        essential: folder.essential,
-        splitViewGroup: folder.hasAttribute('split-view-group'),
-        id: folder.id,
-        name: folder.label,
-        collapsed: folder.collapsed,
-        saveOnWindowClose: folder.saveOnWindowClose,
-        parentId: parentFolder ? parentFolder.id : null,
-        prevSiblingInfo: prevSiblingInfo,
-        emptyTabIds: emptyFolderTabs,
-        userIcon: userIcon?.getAttribute('href'),
-        pinId: folder.getAttribute('zen-pin-id'),
-        // note: We shouldn't be using the workspace-id anywhere, we are just
-        //  remembering it for the pinned tabs manager to use it later.
-        workspaceId: folder.getAttribute('zen-workspace-id'),
-      });
+        storedData.push({
+          pinned: folder.pinned,
+          essential: folder.essential,
+          splitViewGroup: folder.hasAttribute('split-view-group'),
+          id: folder.id,
+          name: folder.label,
+          collapsed: folder.collapsed,
+          saveOnWindowClose: folder.saveOnWindowClose,
+          parentId: parentFolder ? parentFolder.id : null,
+          prevSiblingInfo: prevSiblingInfo,
+          emptyTabIds: emptyFolderTabs,
+          userIcon: userIcon?.getAttribute('href'),
+          syncId: folder.getAttribute('zen-sync-id'),
+          // note: We shouldn't be using the workspace-id anywhere, we are just
+          //  remembering it for the pinned tabs manager to use it later.
+          workspaceId: folder.getAttribute('zen-workspace-id'),
+        });
+      }
+      return storedData;
     }
-    return storedData;
-  }
 
   restoreDataFromSessionStore(data) {
     if (!data || this._sessionRestoring) {
@@ -993,40 +990,40 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       };
       tabFolderWorkingData.set(folderData.id, workingData);
 
-      const oldGroup = document.getElementById(folderData.id);
-      folderData.emptyTabIds.forEach((zenPinId) => {
-        oldGroup
-          ?.querySelector(`tab[zen-pin-id="${zenPinId}"]`)
-          ?.setAttribute('zen-empty-tab', true);
-      });
-      if (oldGroup) {
-        if (!folderData.splitViewGroup) {
-          const folder = this._createFolderNode({
-            id: folderData.id,
-            label: folderData.name,
-            collapsed: folderData.collapsed,
-            pinned: folderData.pinned,
-            saveOnWindowClose: folderData.saveOnWindowClose,
-            workspaceId: folderData.workspaceId,
-          });
-          folder.setAttribute('zen-pin-id', folderData.pinId);
-          workingData.node = folder;
-          oldGroup.before(folder);
-        } else {
-          workingData.node = oldGroup;
-        }
-        while (oldGroup.tabs.length > 0) {
-          const tab = oldGroup.tabs[0];
-          if (folderData.workspaceId) {
-            tab.setAttribute('zen-workspace-id', folderData.workspaceId);
+        const oldGroup = document.getElementById(folderData.id);
+        folderData.emptyTabIds.forEach((zenSyncId) => {
+          oldGroup
+            ?.querySelector(`tab[zen-sync-id="${zenSyncId}"]`)
+            ?.setAttribute('zen-empty-tab', true);
+        });
+        if (oldGroup) {
+          if (!folderData.splitViewGroup) {
+            const folder = this._createFolderNode({
+              id: folderData.id,
+              label: folderData.name,
+              collapsed: folderData.collapsed,
+              pinned: folderData.pinned,
+              saveOnWindowClose: folderData.saveOnWindowClose,
+              workspaceId: folderData.workspaceId,
+            });
+            folder.setAttribute('zen-sync-id', folderData.syncId);
+            workingData.node = folder;
+            oldGroup.before(folder);
+          } else {
+            workingData.node = oldGroup;
           }
-          workingData.containingTabsFragment.appendChild(tab);
-        }
-        if (!folderData.splitViewGroup) {
-          oldGroup.remove();
+          while (oldGroup.tabs.length > 0) {
+            const tab = oldGroup.tabs[0];
+            if (folderData.workspaceId) {
+              tab.setAttribute('zen-workspace-id', folderData.workspaceId);
+            }
+            workingData.containingTabsFragment.appendChild(tab);
+          }
+          if (!folderData.splitViewGroup) {
+            oldGroup.remove();
+          }
         }
       }
-    }
 
     for (const { node, containingTabsFragment } of tabFolderWorkingData.values()) {
       if (node) {
@@ -1034,41 +1031,41 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
     }
 
-    // Nesting folders into each other according to parentId.
-    for (const { stateData, node } of tabFolderWorkingData.values()) {
-      if (node && stateData.parentId) {
-        const parentWorkingData = tabFolderWorkingData.get(stateData.parentId);
-        if (parentWorkingData && parentWorkingData.node) {
-          switch (stateData?.prevSiblingInfo?.type) {
-            case 'tab': {
-              const tab = parentWorkingData.node.querySelector(
-                `[zen-pin-id="${stateData.prevSiblingInfo.id}"]`
-              );
-              tab.after(node);
-              break;
-            }
-            case 'group': {
-              const folder = document.getElementById(stateData.prevSiblingInfo.id);
-              if (folder) {
-                folder.after(node);
+      // Nesting folders into each other according to parentId.
+      for (const { stateData, node } of tabFolderWorkingData.values()) {
+        if (node && stateData.parentId) {
+          const parentWorkingData = tabFolderWorkingData.get(stateData.parentId);
+          if (parentWorkingData && parentWorkingData.node) {
+            switch (stateData?.prevSiblingInfo?.type) {
+              case 'tab': {
+                const tab = parentWorkingData.node.querySelector(
+                  `[zen-sync-id="${stateData.prevSiblingInfo.id}"]`
+                );
+                tab.after(node);
                 break;
               }
-              // If we didn't find the group, we should debug it and continue to default case.
-              console.warn(
-                `Zen Folders: Could not find previous sibling group with id ${stateData.prevSiblingInfo.id} while restoring session.`
-              );
-              // @eslint-disable-next-line no-fallthrough
-            }
-            default: {
-              // Should insert after zen-empty-tab
-              const start =
-                parentWorkingData.node.querySelector('.zen-tab-group-start').nextElementSibling;
-              start.after(node);
+              case 'group': {
+                const folder = document.getElementById(stateData.prevSiblingInfo.id);
+                if (folder) {
+                  folder.after(node);
+                  break;
+                }
+                // If we didn't find the group, we should debug it and continue to default case.
+                console.warn(
+                  `Zen Folders: Could not find previous sibling group with id ${stateData.prevSiblingInfo.id} while restoring session.`
+                );
+                // @eslint-disable-next-line no-fallthrough
+              }
+              default: {
+                // Should insert after zen-empty-tab
+                const start =
+                  parentWorkingData.node.querySelector('.zen-tab-group-start').nextElementSibling;
+                start.after(node);
+              }
             }
           }
         }
       }
-    }
 
     // Initialize UI state for all folders.
     for (const { stateData, node } of tabFolderWorkingData.values()) {

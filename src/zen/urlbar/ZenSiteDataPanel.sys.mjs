@@ -124,10 +124,89 @@ export class nsZenSiteDataPanel {
   }
 
   #preparePanel() {
+    this.#resetSiteOptionsList();
+    this.#setSiteBoost();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
     this.#setAddonsOverflow();
+  }
+
+  #setSiteBoost() {
+    const list = this.document.getElementById('zen-site-data-settings-list');
+    const tab = this.window.gBrowser.selectedTab;
+    const url = new URL(tab.linkedBrowser.currentURI.spec);
+    const domain = url.hostname;
+    const uri = this.window.gBrowser.currentURI;
+
+    const { gZenBoostsManager } = ChromeUtils.importESModule(
+      'resource:///modules/ZenBoostsManager.sys.mjs'
+    );
+
+    if (!gZenBoostsManager.canBoostSite(uri)) return;
+
+    if (gZenBoostsManager.registeredBoostForDomain(domain)) {
+      let boostData = gZenBoostsManager.loadBoostFromStore(domain);
+
+      list.appendChild(
+        this.#createGenericPanelItem(
+          'zen-boost',
+          boostData.boostName,
+          'Enabled',
+          'zen-site-data-edit-boost'
+        )
+      );
+    } else {
+      list.appendChild(
+        this.#createGenericPanelItem(
+          'zen-create-new-boost',
+          'Create Boost',
+          'For ' + domain,
+          'zen-site-data-edit-boost'
+        )
+      );
+    }
+  }
+
+  #createGenericPanelItem(iconClass, title, description, actionId) {
+    const container = this.document.createXULElement('hbox');
+    container.classList.add('permission-popup-permission-item');
+    container.id = actionId;
+
+    container.setAttribute('align', 'center');
+    container.setAttribute('role', 'group');
+    container.setAttribute('state', 'custom');
+    container.setAttribute('data-action-id', actionId);
+
+    const img = this.document.createXULElement('toolbarbutton');
+    img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+    img.setAttribute('closemenu', 'none');
+    if (iconClass) {
+      img.classList.add(iconClass);
+    }
+
+    const labelContainer = this.document.createXULElement('vbox');
+    labelContainer.setAttribute('flex', '1');
+    labelContainer.setAttribute('align', 'start');
+    labelContainer.classList.add('permission-popup-permission-label-container');
+
+    const nameLabel = this.document.createXULElement('label');
+    nameLabel.setAttribute('flex', '1');
+    nameLabel.setAttribute('class', 'permission-popup-permission-label');
+    nameLabel.textContent = title || '';
+    labelContainer.appendChild(nameLabel);
+
+    const stateLabel = this.document.createXULElement('label');
+    stateLabel.setAttribute('class', 'zen-permission-popup-permission-state-label');
+    stateLabel.textContent = description || '';
+    labelContainer.appendChild(stateLabel);
+
+    container.appendChild(img);
+    container.appendChild(labelContainer);
+
+    container.addEventListener('click', this);
+
+    return container;
   }
 
   #setAddonsOverflow() {
@@ -185,6 +264,11 @@ export class nsZenSiteDataPanel {
     }
 
     return uri.scheme.startsWith('http');
+  }
+
+  #resetSiteOptionsList() {
+    const list = this.document.getElementById('zen-site-data-settings-list');
+    list.innerHTML = '';
   }
 
   #setSiteSecurityInfo() {
@@ -319,7 +403,6 @@ export class nsZenSiteDataPanel {
     }
 
     const separator = this.document.createXULElement('toolbarseparator');
-    list.innerHTML = '';
     list.appendChild(separator);
     const settingElements = [];
     const crossSiteCookieElements = [];
@@ -535,6 +618,17 @@ export class nsZenSiteDataPanel {
     }
   }
 
+  #onGenericClick(item) {
+    const id = item.id;
+    switch (id) {
+      case 'zen-site-data-edit-boost': {
+        this.window.gZenUIManager.openBoostWindow();
+        this.panel.hidePopup();
+        break;
+      }
+    }
+  }
+
   #onClickEvent(event) {
     const id = event.target.id;
     switch (id) {
@@ -549,13 +643,17 @@ export class nsZenSiteDataPanel {
         break;
       }
       default: {
-        const item = event.target.closest('.permission-popup-permission-item');
+        const item = event.target.closest(
+          '.permission-popup-permission-item, .permission-popup-generic-item'
+        );
         if (!item) {
           break;
         }
         const label = item.querySelector('.permission-popup-permission-label-container');
         if (label?._permission) {
           this.#onPermissionClick(label);
+        } else {
+          this.#onGenericClick(item);
         }
         break;
       }

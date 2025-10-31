@@ -85,6 +85,7 @@
         content/browser/zen-images/layouts/single-toolbar.png                   (../../zen/images/layouts/single-toolbar.png)
         content/browser/zen-images/grain-bg.png                                 (../../zen/images/grain-bg.png)
         content/browser/zen-images/note-indicator.svg                           (../../zen/images/note-indicator.svg)
+        content/browser/zen-images/boost-indicator.svg                          (../../zen/images/boost-indicator.svg)
 
         content/browser/zen-images/downloads/download.svg                       (../../zen/images/downloads/download.svg)
         content/browser/zen-images/downloads/archive.svg                        (../../zen/images/downloads/archive.svg)

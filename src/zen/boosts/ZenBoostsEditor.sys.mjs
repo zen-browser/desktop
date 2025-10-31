@@ -57,7 +57,7 @@ export class nsZenBoostEditor {
 
     this.doc
       .getElementById('PanelUI-zen-boost-zap')
-      .addEventListener('click', (event) => console.error('Not implemented'));
+      .addEventListener('click', () => console.error('Not implemented'));
     this.doc
       .getElementById('PanelUI-zen-boost-disable')
       .addEventListener('click', this.onToggleDisable.bind(this));
@@ -84,7 +84,7 @@ export class nsZenBoostEditor {
     Services.obs.notifyObservers(null, 'zen-boosts-kill-editor');
   }
 
-  observe(subject, topic, data) {
+  observe(subject, topic) {
     if (topic === 'zen-boosts-kill-editor') {
       this.window.close();
     }
@@ -263,14 +263,14 @@ export class nsZenBoostEditor {
   }
 
   // This toggles the color changes
-  onToggleDisable(event) {
+  onToggleDisable() {
     this.currentBoostData.enableColorBoost = !this.currentBoostData.enableColorBoost;
 
     this.updateButtonToggleVisuals();
     this.updateCurrentBoost();
   }
 
-  onToggleInvert(event) {
+  onToggleInvert() {
     this.currentBoostData.smartInvert = !this.currentBoostData.smartInvert;
 
     this.updateButtonToggleVisuals();
@@ -324,6 +324,9 @@ export class nsZenBoostEditor {
 
   loadBoost(domain) {
     this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
+    
+    // Initial save to register the boost
+    gZenBoostsManager.saveBoostToStore(null);
 
     this.doc.getElementById('PanelUI-zen-boost-name').value = this.currentBoostData.boostName;
 

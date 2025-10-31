@@ -14,7 +14,7 @@ export class nsZenBoostsManager {
   }
 
   init() {
-    this.readBoostsFromStore(() => (initialized = true));
+    this.readBoostsFromStore(() => (this.initialized = true));
   }
 
   // Store Firefox Style Sheet Service and IO Service for later use
@@ -57,10 +57,11 @@ export class nsZenBoostsManager {
   }
 
   deleteBoost(domain) {
-    if (this.registeredBoosts.has(domain)) {
+    if (this.registeredSheets.has(domain))
       this.unregisterSheet(domain);
+
+    if(this.registeredBoosts.has(domain))
       this.registeredBoosts.delete(domain);
-    }
   }
 
   // Load a boost from a domain
@@ -154,7 +155,7 @@ export class nsZenBoostsManager {
 
   // Checks if there is a boost registered for the currently open tab
   registeredBoostForDomain(domain) {
-    return this.registeredSheets.has(domain);
+    return this.registeredBoosts.has(domain);
   }
 
   // Checks if a boost can be created

@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { gZenBoostsManager } from 'resource:///modules/ZenBoostsManager.sys.mjs';
-
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
@@ -33,9 +31,15 @@ const globalActionsTemplate = [
       const url = new URL(tab.linkedBrowser.currentURI.spec);
       const domain = url.hostname;
       const uri = window.gBrowser.currentURI;
+
+      const { gZenBoostsManager } = ChromeUtils.importESModule(
+        'resource:///modules/ZenBoostsManager.sys.mjs'
+      );
+
       return (
         !tab.hasAttribute('zen-empty-tab') &&
-        !gZenBoostsManager.registeredBoostForDomain(domain && gZenBoostsManager.canBoostSite(uri))
+        !gZenBoostsManager.registeredBoostForDomain(domain) &&
+        gZenBoostsManager.canBoostSite(uri)
       );
     },
   },
@@ -48,6 +52,11 @@ const globalActionsTemplate = [
       const url = new URL(tab.linkedBrowser.currentURI.spec);
       const domain = url.hostname;
       const uri = window.gBrowser.currentURI;
+
+      const { gZenBoostsManager } = ChromeUtils.importESModule(
+        'resource:///modules/ZenBoostsManager.sys.mjs'
+      );
+
       return (
         !tab.hasAttribute('zen-empty-tab') &&
         gZenBoostsManager.registeredBoostForDomain(domain) &&

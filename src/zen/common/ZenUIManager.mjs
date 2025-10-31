@@ -50,6 +50,14 @@ var gZenUIManager = {
       this.onUrlbarSearchModeChanged.bind(this)
     );
 
+    window.gBrowser.addProgressListener({
+      onLocationChange: (aWebProgress) => {
+        if (aWebProgress.isTopLevel) {
+          this.onShownTabChange();
+        }
+      },
+    });
+
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
 
@@ -205,7 +213,9 @@ var gZenUIManager = {
     );
 
     // Cleaning up on close
-    editor.window.addEventListener('unload', () => (this._openBoostEditor = null));
+    editor.window.addEventListener('unload', () => {
+      this.checkIsTabBoosted();
+    });
 
     // Rather inconvenient window animation using moveTo
     // editor.addEventListener('load', () => {
@@ -236,6 +246,10 @@ var gZenUIManager = {
 
     // Give the animator
     editor.gZenUIManager = this;
+
+    // Update icon
+    this.checkIsTabBoosted();
+
     return editor;
   },
 
@@ -265,6 +279,25 @@ var gZenUIManager = {
     }
     this._tabsWrapper = document.getElementById('zen-tabs-wrapper');
     return this._tabsWrapper;
+  },
+
+  checkIsTabBoosted() {
+    const button = document.getElementById('zen-site-data-icon-button');
+
+    const tab = window.gBrowser.selectedTab;
+    const url = new URL(tab.linkedBrowser.currentURI.spec);
+    const domain = url.hostname;
+
+    const { gZenBoostsManager } = ChromeUtils.importESModule(
+      'resource:///modules/ZenBoostsManager.sys.mjs'
+    );
+
+    if (gZenBoostsManager.registeredBoostForDomain(domain)) button.setAttribute('boosting', 'true');
+    else button.removeAttribute('boosting');
+  },
+
+  onShownTabChange() {
+    this.checkIsTabBoosted();
   },
 
   onTabClose(event = undefined) {

@@ -12,7 +12,7 @@ export class nsZenBoostsManager {
   initialized = false;
   registeredBoosts = new Map();
 
-  saveFilename = 'zen-boosts.json';
+  #saveFilename = 'zen-boosts.jsonlz4';
 
   constructor() {
     this.#init();
@@ -29,12 +29,11 @@ export class nsZenBoostsManager {
 
   // Load a boost from a domain
   loadBoostFromStore(domain) {
-    if (domain == null) console.error('[ZenBoostsManager] Domain expected but got null.');
-    const dom = domain ?? '';
+    if (!domain) console.error('[ZenBoostsManager] Domain expected but got null.');
 
     let boostData = {
+      domain,
       boostName: 'New Boost',
-      domain: dom,
       dotAngleDeg: 0,
       dotPos: { x: null, y: null },
       dotDistance: 0,
@@ -43,10 +42,10 @@ export class nsZenBoostsManager {
       smartInvert: false,
     };
 
-    if (this.registeredBoosts.has(dom)) {
-      boostData = this.registeredBoosts.get(dom);
+    if (this.registeredBoosts.has(domain)) {
+      boostData = this.registeredBoosts.get(domain);
     } else {
-      this.registeredBoosts.set(dom, boostData);
+      this.registeredBoosts.set(domain, boostData);
     }
 
     return boostData;
@@ -73,7 +72,7 @@ export class nsZenBoostsManager {
 
   get #storePath() {
     const profilePath = PathUtils.profileDir;
-    return PathUtils.join(profilePath, this.saveFilename);
+    return PathUtils.join(profilePath, this.#saveFilename);
   }
 
   // Helper method, disk => json => map

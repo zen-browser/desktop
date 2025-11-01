@@ -4,16 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-:root {
-  @media (-moz-platform: macos) {
-    --panel-border-radius: 10px;
-
-    @media (-moz-mac-tahoe-theme) {
-      --panel-border-radius: 12px;
-    }
-  }
-}
-
 #zen-boost-font-arial {
   font-family: Arial, sans-serif;
 }

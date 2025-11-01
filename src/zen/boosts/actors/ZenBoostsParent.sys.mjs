@@ -2,6 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
+});
+
 export class ZenBoostsParent extends JSWindowActorParent {
   canSendUpdate = true;
 
@@ -16,11 +22,9 @@ export class ZenBoostsParent extends JSWindowActorParent {
     Services.obs.removeObserver(this._observe, 'zen-boosts-update');
   }
 
-  observe(subject, topic, data) {
+  observe(subject, topic) {
     if (topic === 'zen-boosts-update') {
-      this.canSendUpdate = false;
-
-      this.sendQuery('ZenBoost:BoostDataUpdated').then((x) => (this.canSendUpdate = true));
+      this.sendQuery('ZenBoost:BoostDataUpdated');
     }
   }
 
@@ -28,13 +32,12 @@ export class ZenBoostsParent extends JSWindowActorParent {
     switch (message.name) {
       case 'ZenBoost:GetBoostForDomain': {
         const domain = message.data;
-        const { gZenBoostsManager } = ChromeUtils.importESModule(
-          'resource:///modules/ZenBoostsManager.sys.mjs'
-        );
-
-        if (!gZenBoostsManager.registeredBoostForDomain(domain)) return Promise.resolve(null);
-
-        return Promise.resolve(gZenBoostsManager.loadBoostFromStore(domain));
+        const embedder = this.browsingContext.top.embedderElement;
+        if (!embedder || !domain) return null;
+        if (!lazy.gZenBoostsManager.registeredBoostForDomain(domain)) return null;
+        const topWindowIsDarkMode =
+          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === 'dark';
+        return { ...lazy.gZenBoostsManager.loadBoostFromStore(domain), topWindowIsDarkMode };
       }
       default:
         console.warn(`[ZenBoostsParent]: Unknown message: ${message.name}`);

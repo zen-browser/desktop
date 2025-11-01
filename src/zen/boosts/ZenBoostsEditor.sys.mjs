@@ -270,6 +270,7 @@ export class nsZenBoostEditor {
   }
 
   onToggleInvert() {
+    this.currentBoostData.enableColorBoost = true;
     this.currentBoostData.smartInvert = !this.currentBoostData.smartInvert;
 
     this.updateButtonToggleVisuals();

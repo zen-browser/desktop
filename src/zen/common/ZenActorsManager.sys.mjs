@@ -58,9 +58,8 @@ let JSWINDOWACTORS = {
     child: {
       esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
       events: {
-        load: { mozSystemGroup: true, capture: true },
+        DOMDocElementInserted: { capture: true },
       },
-      observers: ['zen-boosts-update'],
     },
     allFrames: true,
     matches: ['*://*/*'],

@@ -7,10 +7,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
     super();
   }
 
-  async handleEvent(event) {
+  handleEvent(event) {
     switch (event.type) {
-      case 'load':
-        await this.#onLoad(event);
+      case 'DOMDocElementInserted':
+        this.#onLoad(event);
         break;
       default:
     }
@@ -76,11 +76,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
       return null;
     }
 
-    const domain = browsingContext.topWindow.location.host;
+    const domain = browsingContext.topWindow?.location?.host;
+    if (!domain) {
+      return null;
+    }
 
     this.sendQuery('ZenBoost:GetBoostForDomain', domain).then((boost) => {
-      if (boost != null) {
-        browsingContext.prefersColorSchemeOverride = boost.smartInvert ? 'light' : 'none';
+      if (boost) {
+        let prefersColorSchemeOverride = 'none';
+        if (boost.smartInvert) {
+          prefersColorSchemeOverride = boost.topWindowIsDarkMode ? 'light' : 'dark';
+        }
+        browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
         if (boost.enableColorBoost) {
           const rgbColor = this.#hslToRgb(
             boost.dotAngleDeg / 360,
@@ -97,7 +104,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     });
   }
 
-  async #onLoad(event) {
+  #onLoad() {
     this.#applyBoostForPageIfAvailable();
   }
 }

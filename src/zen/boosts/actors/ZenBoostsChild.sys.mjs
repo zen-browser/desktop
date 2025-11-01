@@ -7,18 +7,20 @@ export class ZenBoostsChild extends JSWindowActorChild {
     super();
   }
 
-  observe(subject, topic) {
-    if (topic === 'zen-boosts-update') {
-      this.#applyBoostForPageIfAvailable();
-    }
-  }
-
   async handleEvent(event) {
     switch (event.type) {
       case 'load':
         await this.#onLoad(event);
         break;
       default:
+    }
+  }
+
+  async receiveMessage(message) {
+    switch (message.name) {
+      case 'ZenBoost:BoostDataUpdated':
+        this.#applyBoostForPageIfAvailable();
+        return Promise.resolve(null);
     }
   }
 
@@ -76,17 +78,23 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     const domain = browsingContext.topWindow.location.host;
 
-    if (gZenBoostsManager.registeredBoostForDomain(domain)) {
-      const boostData = gZenBoostsManager.loadBoostFromStore(domain);
-      browsingContext.prefersColorSchemeOverride = boostData.smartInvert ? "light" : "none";
-      if(boostData.enableColorBoost){
-        const hslColor = this.#hslToRgb(boostData.dotAngleDeg, boostData.dotDistance, 60);
-        const nsColor = this.#rgbToNSColor(hslColor[0], hslColor[1], hslColor[2]); 
-        browsingContext.zenBoostsData = nsColor;
-      }
-      else
+    this.sendQuery('ZenBoost:GetBoostForDomain', domain).then((boost) => {
+      if (boost != null) {
+        browsingContext.prefersColorSchemeOverride = boost.smartInvert ? 'light' : 'none';
+        if (boost.enableColorBoost) {
+          const rgbColor = this.#hslToRgb(
+            boost.dotAngleDeg / 360,
+            boost.dotDistance /* already is [0, 1] */,
+            0.2 + boost.dotDistance * 0.6 /* lightness range from [0.2, 0.8] */
+          );
+          const nsColor = this.#rgbToNSColor(rgbColor);
+          browsingContext.zenBoostsData = nsColor;
+        } else browsingContext.zenBoostsData = 0;
+      } else {
+        browsingContext.prefersColorSchemeOverride = 'none';
         browsingContext.zenBoostsData = 0;
-    }
+      }
+    });
   }
 
   async #onLoad(event) {

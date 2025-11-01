@@ -193,7 +193,6 @@ export class nsZenBoostEditor {
 
       this.currentBoostData.dotAngleDeg = 0;
       this.currentBoostData.dotDistance = 0;
-      this.currentBoostData.dotAngleRad = 0;
     } else {
       let distance = Math.sqrt((pixelX - centerX) ** 2 + (pixelY - centerY) ** 2);
       distance = Math.min(distance, radius); // Clamp distance

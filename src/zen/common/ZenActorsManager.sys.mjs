@@ -52,6 +52,9 @@ let JSWINDOWACTORS = {
     enablePreference: 'zen.glance.enabled',
   },
   ZenBoosts: {
+    parent: {
+      esModuleURI: 'resource:///actors/ZenBoostsParent.sys.mjs',
+    },
     child: {
       esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
       events: {

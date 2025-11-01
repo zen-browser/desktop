@@ -5,67 +5,26 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
 });
 
 export class nsZenBoostsManager {
   initialized = false;
-  registeredSheets = new Map();
   registeredBoosts = new Map();
 
   saveFilename = 'zen-boosts.json';
 
   constructor() {
-    this.init();
+    this.#init();
   }
 
-  init() {
-    this.readBoostsFromStore(() => (this.initialized = true));
-  }
-
-  // Store Firefox Style Sheet Service and IO Service for later use
-  sss = Components.classes['@mozilla.org/content/style-sheet-service;1'].getService(
-    Components.interfaces.nsIStyleSheetService
-  );
-  ioService = Services.io;
-
-  // TODO: Causes flickering when updating often
-  registerCSSForDomain(cssString, domain, sheetType = this.sss.USER_SHEET) {
-    // Make sure existing overrides get overwritten and not added on top
-    if (this.registeredSheets.has(domain)) {
-      this.unregisterSheet(this.registeredSheets.get(domain), sheetType);
-    }
-
-    // Add the @-moz-document wrapper and specific domain attribute
-    const wrapped = `@-moz-document domain("${domain}") { ${cssString} }`;
-    const uri = this.ioService.newURI('data:text/css;charset=utf-8,' + encodeURIComponent(wrapped));
-
-    // Register and store in map
-    this.sss.loadAndRegisterSheet(uri, sheetType);
-    this.registeredSheets.set(domain, uri);
-
-    return uri;
-  }
-
-  // Unregisters a sheet based on either domain or uri
-  unregisterSheet(uriOrDomain, sheetType = this.sss.USER_SHEET) {
-    let uri = uriOrDomain;
-
-    // Check if a uri or domain
-    if (typeof uriOrDomain === 'string' && this.registeredSheets.has(uriOrDomain)) {
-      uri = this.registeredSheets.get(uriOrDomain);
-      this.registeredSheets.delete(uriOrDomain);
-    }
-
-    if (this.sss.sheetRegistered(uri, sheetType)) {
-      this.sss.unregisterSheet(uri, sheetType);
-    }
+  #init() {
+    this.#readBoostsFromStore(() => (this.initialized = true));
   }
 
   deleteBoost(domain) {
-    if (this.registeredSheets.has(domain)) this.unregisterSheet(domain);
-
     if (this.registeredBoosts.has(domain)) this.registeredBoosts.delete(domain);
+    Services.obs.notifyObservers(lazy.BrowserWindowTracker.getTopWindow(), 'zen-boosts-update');
   }
 
   // Load a boost from a domain
@@ -86,42 +45,28 @@ export class nsZenBoostsManager {
 
     if (this.registeredBoosts.has(dom)) {
       boostData = this.registeredBoosts.get(dom);
+    } else {
+      this.registeredBoosts.set(dom, boostData);
     }
 
     return boostData;
   }
 
-  // Injects css based on boost data
-  updateBoost(boost) {
-    let fontFamily = '';
-    if (boost.fontFamily != '') {
-      fontFamily = `
-          body, p, h1, h2, h3, h4, h5, a, span, textarea, input {
-            font-family: ${boost.fontFamily} !important;
-          }
-        `;
-    }
-
+  updateBoost(boostData) {
+    this.registeredBoosts.set(boostData.domain, boostData);
     Services.obs.notifyObservers(lazy.BrowserWindowTracker.getTopWindow(), 'zen-boosts-update');
-    this.registerCSSForDomain(fontFamily, boost.domain);
   }
 
   // Save all boosts to the profile folder
   saveBoostToStore(boostData) {
     if (boostData != null) this.registeredBoosts.set(boostData.domain, boostData);
-    this.writeToDisk(this.registeredBoosts);
+    this.#writeToDisk(this.registeredBoosts);
   }
 
   // Reads all boosts from the profile folder
-  readBoostsFromStore(done) {
-    this.readFromDisk().then((map) => {
+  #readBoostsFromStore(done) {
+    this.#readFromDisk().then((map) => {
       this.registeredBoosts = map;
-
-      // Load in all boosts
-      for (const [key, value] of this.registeredBoosts) {
-        this.updateBoost(value);
-      }
-
       done();
     });
   }
@@ -132,17 +77,19 @@ export class nsZenBoostsManager {
   }
 
   // Helper method, disk => json => map
-  async readFromDisk() {
+  async #readFromDisk() {
     const savePath = this.#storePath;
 
     if (!(await IOUtils.exists(savePath))) return new Map();
 
-    return IOUtils.readJSON(savePath);
+    const array = await IOUtils.readJSON(savePath, { decompress: true });
+    return new Map(array);
   }
 
   // Helper method, map => json => disk
-  writeToDisk(map) {
-    IOUtils.writeJSON(this.#storePath, map, { compress: true });
+  #writeToDisk(map) {
+    const array = Array.from(map.entries());
+    IOUtils.writeJSON(this.#storePath, array, { compress: true });
   }
 
   // Checks if there is a boost registered for the currently open tab

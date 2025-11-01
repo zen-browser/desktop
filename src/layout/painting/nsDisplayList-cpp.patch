@@ -30,7 +30,7 @@ index 6c5b38eb3cdb08a8afd670705c75c052b85b6dd9..823df9ef5245dcffcbfaba1fafc6b15e
 +  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
 +      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
 +  if (zenBackend) {
-+    zenBackend->onPressShellExited(
++    zenBackend->onPressShellLeave(
 +      mPresShellStates.IsEmpty()
 +          ? nullptr
 +          : CurrentPresShellState()->mPresShell->GetPresContext());

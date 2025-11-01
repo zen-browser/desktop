@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index eb62ff3e733e43fdaa299babddea3ba0125abb06..1ca2e7327e72824805a93c18cb7e3dfd499c66d7 100644
+index eb62ff3e733e43fdaa299babddea3ba0125abb06..6a73ee56c067cba2347a552b4152cd03cda47b6f 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -28,18 +28,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..1ca2e7327e72824805a93c18cb7e3dfd
          this.saveStateDelayed(win);
          break;
        case "TabGroupCreate":
-@@ -2041,6 +2046,10 @@ var SessionStoreInternal = {
-     // A regular window is not a private window, taskbar tab window, or popup window
-     let isRegularWindow =
-       !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible;
-+    if (!aInitialState && isRegularWindow) {
-+      aInitialState = lazy.ZenSessionStore.getNewWindowData(this._windows);
-+      this.restoreWindows(aWindow, aInitialState, {});
-+    }
- 
-     // perform additional initialization when the first window is loading
-     if (lazy.RunState.isStopped) {
-@@ -2139,7 +2148,6 @@ var SessionStoreInternal = {
+@@ -2139,7 +2144,6 @@ var SessionStoreInternal = {
        if (closedWindowState) {
          let newWindowState;
          if (
@@ -47,6 +36,17 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..1ca2e7327e72824805a93c18cb7e3dfd
            !lazy.SessionStartup.willRestore()
          ) {
            // We want to split the window up into pinned tabs and unpinned tabs.
+@@ -2203,6 +2207,10 @@ var SessionStoreInternal = {
+       });
+       this._shouldRestoreLastSession = false;
+     }
++    else if (!aInitialState && isRegularWindow) {
++      aInitialState = lazy.ZenSessionStore.getNewWindowData(this._windows);
++      this.restoreWindows(aWindow, aInitialState, {});
++    }
+ 
+     if (this._restoreLastWindow && aWindow.toolbar.visible) {
+       // always reset (if not a popup window)
 @@ -2372,11 +2380,9 @@ var SessionStoreInternal = {
            tabbrowser.selectedTab.label;
        }

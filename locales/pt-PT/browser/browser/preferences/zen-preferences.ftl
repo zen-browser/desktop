@@ -304,4 +304,4 @@ zen-devtools-toggle-performance-shortcut = Alternar Desempenho
 zen-devtools-toggle-storage-shortcut = Alternar Armazenamento
 zen-devtools-toggle-dom-shortcut = Alternar DOM
 zen-devtools-toggle-accessibility-shortcut = Alternar Acessibilidade
-zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-close-all-unpinned-tabs-shortcut = Fechar Todos os Separadores Não Fixados

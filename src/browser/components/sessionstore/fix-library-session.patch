@@ -1,0 +1,16 @@
+diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
+--- a/browser/components/sessionstore/SessionStore.sys.mjs
++++ b/browser/components/sessionstore/SessionStore.sys.mjs
+@@ -2139,6 +2139,12 @@ var SessionStoreInternal = {
+     let closedWindowState = this._collectWindowData(aWindow);
+ 
+     if (closedWindowState) {
++      // Only save session state for actual browser windows (windowtype="navigator:browser")
++      // This prevents non-browser windows like Library (Places:Organizer) from affecting the session
++      if (aWindow.document.documentElement.getAttribute("windowtype") !== "navigator:browser") {
++        return;
++      }
++
+       let newWindowState;
+       if (
+         !lazy.SessionStartup.willRestore()

@@ -129,6 +129,21 @@ document.addEventListener(
             gZenWorkspaces.unloadWorkspace();
             break;
           }
+          case 'cmd_zenSwitchAutomaticAppearance': {
+            Services.prefs.setIntPref('zen.view.window.scheme', 2);
+            Services.prefs.setIntPref('layout.css.prefers-color-scheme.content-override', 2);
+            break;
+          }
+          case 'cmd_zenSwitchLightMode': {
+            Services.prefs.setIntPref('zen.view.window.scheme', 1);
+            Services.prefs.setIntPref('layout.css.prefers-color-scheme.content-override', 1);
+            break;
+          }
+          case 'cmd_zenSwitchDarkMode': {
+            Services.prefs.setIntPref('zen.view.window.scheme', 0);
+            Services.prefs.setIntPref('layout.css.prefers-color-scheme.content-override', 0);
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

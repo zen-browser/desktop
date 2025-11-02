@@ -153,6 +153,30 @@ const globalActionsTemplate = [
     command: 'Tools:Addons',
     icon: 'chrome://browser/skin/zen-icons/extension.svg',
   },
+  {
+    label: 'Switch to Automatic Appearance',
+    command: 'cmd_zenSwitchAutomaticAppearance',
+    icon: 'chrome://browser/skin/zen-icons/sparkles.svg',
+    isAvailable: () => {
+      return Services.prefs.getIntPref('zen.view.window.scheme') !== 2;
+    },
+  },
+  {
+    label: 'Switch to Light Mode',
+    command: 'cmd_zenSwitchLightMode',
+    icon: 'chrome://browser/skin/zen-icons/face-sun.svg',
+    isAvailable: () => {
+      return Services.prefs.getIntPref('zen.view.window.scheme') !== 1;
+    },
+  },
+  {
+    label: 'Switch to Dark Mode',
+    command: 'cmd_zenSwitchDarkMode',
+    icon: 'chrome://browser/skin/zen-icons/moon-stars.svg',
+    isAvailable: () => {
+      return Services.prefs.getIntPref('zen.view.window.scheme') !== 0;
+    },
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

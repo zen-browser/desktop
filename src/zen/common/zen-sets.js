@@ -125,6 +125,9 @@ document.addEventListener(
           case 'cmd_zenCloseUnpinnedTabs':
             gZenWorkspaces.closeAllUnpinnedTabs();
             break;
+          case 'cmd_zenGroupTabs':
+            gZenWorkspaces.groupTabsBySimilarity();
+            break;
           case 'cmd_zenUnloadWorkspace': {
             gZenWorkspaces.unloadWorkspace();
             break;

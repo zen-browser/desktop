@@ -14,6 +14,10 @@
           <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
             <hbox class="pinned-tabs-container-separator">
               <toolbarseparator flex="1" />
+              <toolbarbutton command="cmd_zenGroupTabs"
+                             data-l10n-id="zen-workspaces-group-tabs-title"
+                             label="Group"
+                             class="zen-workspace-group-tabs-button toolbarbutton-1" />
               <toolbarbutton command="cmd_zenCloseUnpinnedTabs"
                              tooltip="dynamic-shortcut-tooltip"
                              data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title"

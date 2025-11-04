@@ -120,6 +120,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.addPopupListeners();
 
+    // Listen for new tabs AND tab moves to keep them above categorized tabs
+    gBrowser.tabContainer.addEventListener('TabOpen', this.#ensureNewTabsAboveCategories.bind(this));
+    gBrowser.tabContainer.addEventListener('TabMove', this.#ensureNewTabsAboveCategories.bind(this));
+
     await this.#waitForPromises();
     await this._workspaces();
 
@@ -2730,6 +2734,228 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         shortcut: restoreClosedTabsShortcut,
       },
     });
+  }
+
+  async groupTabsBySimilarity() {
+    const workspaceId = this.activeWorkspace;
+
+    // Disable the new tab listener during grouping
+    this._groupingInProgress = true;
+
+    // Get all unpinned tabs in the workspace
+    const unpinnedTabs = this.#unpinnedTabsInWorkspace(workspaceId);
+
+    if (unpinnedTabs.length < 2) {
+      this._groupingInProgress = false;
+      return;
+    }
+
+    // Categorize tabs using intelligent keyword matching
+    const categorizedTabs = [];
+
+    for (const tab of unpinnedTabs) {
+      try {
+        const uri = tab.linkedBrowser?.currentURI;
+        if (!uri || uri.scheme === 'about' || uri.scheme === 'chrome') {
+          categorizedTabs.push({ tab, category: 'Other', priority: 999 });
+          continue;
+        }
+
+        const domain = uri.host.replace(/^(www\.|m\.|mobile\.)/, '');
+        const title = tab.label || '';
+
+        // Get category using intelligent keyword matching
+        const { category, priority } = this.#getCategoryFromKeywords(domain, title);
+
+        categorizedTabs.push({ tab, category, priority });
+      } catch (error) {
+        console.error('Error processing tab for grouping:', error);
+        categorizedTabs.push({ tab, category: 'Other', priority: 999 });
+      }
+    }
+
+    // Sort tabs: first by category priority, then alphabetically by category name
+    categorizedTabs.sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
+      return a.category.localeCompare(b.category);
+    });
+
+    // Clear any existing category attributes
+    for (const tab of gBrowser.tabs) {
+      tab.removeAttribute('zen-category');
+      tab.removeAttribute('zen-category-first');
+    }
+
+    // Group tabs by category and mark them
+    let currentPosition = gBrowser._numPinnedTabs;
+    let currentCategory = null;
+    const categoryCount = new Set(categorizedTabs.map(ct => ct.category)).size;
+
+    for (const { tab, category } of categorizedTabs) {
+      // Mark tab with category and check if it's the first in its category
+      tab.setAttribute('zen-category', category);
+      if (category !== currentCategory) {
+        tab.setAttribute('zen-category-first', 'true');
+        currentCategory = category;
+      }
+
+      // Move tab to current position
+      gBrowser.moveTabTo(tab, currentPosition);
+      currentPosition++;
+    }
+
+    // Re-enable the new tab listener after grouping
+    setTimeout(() => {
+      this._groupingInProgress = false;
+    }, 500);
+
+    if (categoryCount > 0) {
+      gZenUIManager.showToast('zen-workspaces-group-tabs-toast', {
+        l10nArgs: {
+          count: categoryCount
+        }
+      });
+    }
+  }
+
+  #getFirstCategorizedTabPosition() {
+    // Find the first tab with a category attribute
+    for (let i = gBrowser._numPinnedTabs; i < gBrowser.tabs.length; i++) {
+      const tab = gBrowser.tabs[i];
+      if (tab.hasAttribute('zen-category')) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  _movingTab = null; // Flag to prevent infinite loops
+  _groupingInProgress = false; // Flag to disable listener during grouping
+
+  #ensureNewTabsAboveCategories(event) {
+    // Skip if we're currently grouping tabs
+    if (this._groupingInProgress) {
+      return;
+    }
+
+    const tab = event.target || event.detail?.tab;
+    if (!tab) {
+      return;
+    }
+
+    const eventType = event.type;
+
+    // Skip if it's a pinned tab or essential tab
+    if (tab.pinned || tab.hasAttribute('zen-essential')) {
+      return;
+    }
+
+    // Skip if we're already moving this tab to prevent infinite loops
+    if (this._movingTab === tab) {
+      return;
+    }
+
+    // Check immediately for TabMove, with delay for TabOpen
+    const checkAndMove = () => {
+      // Skip if tab has a category (was already grouped)
+      if (tab.hasAttribute('zen-category')) {
+        return;
+      }
+
+      // Get position of first categorized tab
+      const firstCategoryPos = this.#getFirstCategorizedTabPosition();
+      if (firstCategoryPos === -1) {
+        return;
+      }
+
+      // Get current tab position
+      const currentPos = tab._tPos;
+
+      // If tab is at or after the first categorized tab, move it before all categories
+      if (currentPos >= firstCategoryPos) {
+        this._movingTab = tab; // Set flag
+        gBrowser.moveTabTo(tab, firstCategoryPos);
+        // Clear flag after a delay
+        setTimeout(() => {
+          this._movingTab = null;
+        }, 300);
+      }
+    };
+
+    if (eventType === 'TabMove') {
+      // For TabMove, check immediately
+      checkAndMove();
+    } else {
+      // For TabOpen, wait longer to ensure tab is fully loaded
+      setTimeout(checkAndMove, 500);
+    }
+  }
+
+  #getCategoryFromKeywords(domain, title) {
+    // Keyword-based categorization system
+    // Each category has keywords and a priority (lower = higher priority)
+    const categories = [
+      // Development & Tech
+      { name: 'Development', priority: 1, keywords: ['github', 'gitlab', 'bitbucket', 'stackoverflow', 'stack overflow', 'codepen', 'jsfiddle', 'replit', 'dev.to', 'hackernews', 'code', 'developer', 'programming', 'api', 'documentation', 'docs', 'npm', 'pypi', 'maven', 'react', 'vue', 'angular', 'svelte', 'nextjs', 'nuxt', 'vite', 'webpack', 'typescript', 'javascript'] },
+
+      // Video & Streaming
+      { name: 'Video', priority: 2, keywords: ['youtube', 'vimeo', 'twitch', 'dailymotion', 'video', 'watch', 'stream', 'streaming'] },
+      { name: 'Streaming', priority: 2, keywords: ['netflix', 'hulu', 'disney', 'primevideo', 'hbomax', 'paramount', 'crunchyroll', 'tv', 'movie', 'series', 'film'] },
+
+      // Social Media
+      { name: 'Social', priority: 3, keywords: ['facebook', 'twitter', 'x.com', 'instagram', 'linkedin', 'reddit', 'tumblr', 'pinterest', 'tiktok', 'snapchat', 'social', 'profile', 'post', 'feed', 'community'] },
+
+      // Shopping & E-commerce
+      { name: 'Shopping', priority: 4, keywords: ['amazon', 'ebay', 'etsy', 'shopify', 'shop', 'store', 'buy', 'cart', 'checkout', 'product', 'price', 'sale', 'deal'] },
+      { name: 'Fashion', priority: 4, keywords: ['nike', 'adidas', 'zara', 'hm', 'uniqlo', 'asos', 'fashion', 'clothing', 'shoes', 'apparel', 'wear', 'outfit'] },
+
+      // Work & Productivity
+      { name: 'Productivity', priority: 5, keywords: ['notion', 'trello', 'asana', 'monday', 'todoist', 'evernote', 'calendar', 'task', 'project', 'workspace', 'board', 'jira', 'confluence'] },
+      { name: 'Email', priority: 5, keywords: ['gmail', 'outlook', 'yahoo', 'mail', 'inbox', 'email', 'protonmail'] },
+      { name: 'Communication', priority: 5, keywords: ['slack', 'discord', 'zoom', 'teams', 'meet', 'skype', 'telegram', 'whatsapp', 'chat', 'message', 'call', 'meeting'] },
+      { name: 'Cloud', priority: 5, keywords: ['drive', 'dropbox', 'onedrive', 'icloud', 'cloud', 'storage', 'file', 'sync'] },
+
+      // News & Media
+      { name: 'News', priority: 6, keywords: ['news', 'cnn', 'bbc', 'nytimes', 'guardian', 'reuters', 'bloomberg', 'wsj', 'forbes', 'article', 'breaking', 'headline'] },
+      { name: 'Articles', priority: 6, keywords: ['medium', 'substack', 'blog', 'article', 'read', 'story', 'publication', 'writer'] },
+      { name: 'Reference', priority: 6, keywords: ['wikipedia', 'wiki', 'encyclopedia', 'dictionary', 'reference', 'learn', 'education'] },
+
+      // Entertainment
+      { name: 'Music', priority: 7, keywords: ['spotify', 'soundcloud', 'applemusic', 'music', 'song', 'artist', 'album', 'playlist', 'audio', 'listen'] },
+      { name: 'Gaming', priority: 7, keywords: ['steam', 'epicgames', 'game', 'gaming', 'play', 'gamer', 'xbox', 'playstation', 'nintendo'] },
+
+      // Automotive & Transportation
+      { name: 'Automotive', priority: 8, keywords: ['tesla', 'car', 'auto', 'vehicle', 'automotive', 'electric car', 'electric vehicle'] },
+      { name: 'Travel', priority: 8, keywords: ['booking', 'airbnb', 'expedia', 'tripadvisor', 'travel', 'hotel', 'flight', 'trip', 'vacation'] },
+
+      // Finance
+      { name: 'Finance', priority: 9, keywords: ['bank', 'paypal', 'stripe', 'venmo', 'finance', 'payment', 'transaction', 'money', 'crypto', 'bitcoin', 'invest', 'trading'] },
+
+      // Local Development - must be checked first with exact matches
+      { name: 'Development (Local)', priority: 0, keywords: ['localhost', '127.0.0.1', '0.0.0.0'] },
+    ];
+
+    const searchText = `${domain} ${title}`.toLowerCase();
+
+    // Check for exact localhost/IP matches first
+    if (domain === 'localhost' || domain === '127.0.0.1' || domain === '0.0.0.0' ||
+        domain.includes('localhost') || domain.startsWith('192.168.') || domain.startsWith('10.')) {
+      return { category: 'Development (Local)', priority: 0 };
+    }
+
+    // Find the first matching category based on keywords
+    for (const category of categories) {
+      for (const keyword of category.keywords) {
+        if (searchText.includes(keyword.toLowerCase())) {
+          return { category: category.name, priority: category.priority };
+        }
+      }
+    }
+
+    // If no match, return "Other"
+    return { category: 'Other', priority: 999 };
   }
 
   async contextDeleteWorkspace() {

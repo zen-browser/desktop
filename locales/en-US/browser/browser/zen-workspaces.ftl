@@ -83,3 +83,11 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcu
 zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clear
     .tooltiptext = Close all unpinned tabs
+
+zen-workspaces-group-tabs-toast = Created { $count } { $count ->
+    [one] group
+   *[other] groups
+  }!
+zen-workspaces-group-tabs-title =
+    .label = Group
+    .tooltiptext = Group tabs by similarity

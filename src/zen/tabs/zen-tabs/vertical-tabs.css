@@ -1357,3 +1357,49 @@
 .tab-group-label-container[zen-dragtarget] {
   z-index: 9 !important;
 }
+
+/* ==========================================================================
+   Tab Category Headers (for Group function)
+   ========================================================================== */
+.tabbrowser-tab[zen-category-first="true"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabbrowser-tab[zen-category-first="true"]::before {
+  content: attr(zen-category);
+  display: block;
+  width: 100%;
+  padding: 8px var(--zen-toolbox-padding);
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sidebar-text-color);
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+  animation: zenCategoryHeaderFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  order: -1;
+}
+
+:root:not([zen-sidebar-expanded='true']) .tabbrowser-tab[zen-category-first="true"]::before {
+  display: none;
+}
+
+:root:not([zen-sidebar-expanded='true']) .tabbrowser-tab[zen-category-first="true"] {
+  display: initial;
+}
+
+@keyframes zenCategoryHeaderFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

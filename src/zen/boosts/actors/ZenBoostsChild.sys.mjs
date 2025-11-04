@@ -7,29 +7,25 @@ export class ZenBoostsChild extends JSWindowActorChild {
     super();
   }
 
-  handleEvent(event) {
-    switch (event.type) {
-      case 'DOMDocElementInserted':
-        this.#onLoad(event);
-        break;
-      default:
-    }
-  }
-
-  async receiveMessage(message) {
-    switch (message.name) {
-      case 'ZenBoost:BoostDataUpdated':
-        this.#applyBoostForPageIfAvailable();
-        return Promise.resolve(null);
-    }
-  }
-
   /**
-   * Inverse of https://searchfox.org/firefox-main/rev/0b21972a78f8915f73ce5579eeee2aa8c9c7d67e/gfx/src/nsColor.h#18-21
-   * Converts [r, g, b] array to NSColor integer
+   * Inverse of https://searchfox.org/firefox-main/rev/1a8c62b86277005f907151bc5389cf5c5091e76f/gfx/src/nsColor.h#23-27
+   *
+   *  > #define NS_RGBA(_r, _g, _b, _a) \
+   *  >  ((nscolor)(((_a) << 24) | ((_b) << 16) | ((_g) << 8) | (_r)))
+   *
+   * Converts [r, g, b] array to NSColor
+   * Make a color out of r,g,b,a values. This assumes that the r,g,b,a
+   * values are properly constrained to 0-255.
+   * @param {Array} rgb - Array of red, green, blue values [0, 255]
+   * @param {number} contrast - Contrast value (default 255)
+   * @returns {number} NSColor integer representation
    */
-  #rgbToNSColor([r, g, b]) {
-    return (b << 16) | (g << 8) | r;
+  #rgbToNSColor([r, g, b], contrast = 255) {
+    // Note will be using the alpha channel for contrast, since the colors will always
+    // be fully opaque and we need an extra byte to store the contrast value. This allows
+    // us to still use an nscolor as parameter instead of having to deal with WebIDL structs
+    // shenanigans.
+    return ((contrast & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff);
   }
 
   /**
@@ -61,6 +57,27 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return [round(r * 255), round(g * 255), round(b * 255)];
   }
 
+  handleEvent(event) {
+    switch (event.type) {
+      case 'DOMDocElementInserted':
+        this.#applyBoostForPageIfAvailable();
+        break;
+      default:
+    }
+  }
+
+  async receiveMessage(message) {
+    switch (message.name) {
+      case 'ZenBoost:BoostDataUpdated':
+        this.#applyBoostForPageIfAvailable();
+        return Promise.resolve(null);
+    }
+  }
+
+  /**
+   * From ZenGradientGenerator.mjs
+   * Helper function for hslToRgb conversion
+   */
   #hueToRgb(p, q, t) {
     if (t < 0) t += 1;
     if (t > 1) t -= 1;
@@ -70,6 +87,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return p;
   }
 
+  /**
+   * Applies the boost settings for the current page if available.
+   * @returns {Promise<void>}
+   */
   async #applyBoostForPageIfAvailable() {
     const browsingContext = this.browsingContext;
     if (!browsingContext) {
@@ -102,9 +123,5 @@ export class ZenBoostsChild extends JSWindowActorChild {
         browsingContext.zenBoostsData = 0;
       }
     });
-  }
-
-  #onLoad() {
-    this.#applyBoostForPageIfAvailable();
   }
 }

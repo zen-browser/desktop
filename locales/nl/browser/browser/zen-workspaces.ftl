@@ -15,11 +15,11 @@ zen-workspaces-panel-context-delete =
 zen-workspaces-panel-change-name = 
     .label = Naam wijzigen
 zen-workspaces-panel-change-icon = 
-    .label = Icon wijzigen
+    .label = Icoon wijzigen
 zen-workspaces-panel-context-default-profile = 
     .label = Profiel instellen
 zen-workspaces-panel-unload = 
-    .label = Unload Space
+    .label = Ruimte ontladen
 zen-workspaces-how-to-reorder-title = Hoe ruimtes te herschikken
 zen-workspaces-how-to-reorder-desc = Sleep het ruimte icoon onderaan de zijbalk om ze te herschikken
 zen-workspaces-change-theme = 
@@ -56,10 +56,10 @@ zen-workspace-creation-profile = Profiel
 zen-workspace-creation-header = Maak een ruimte
 zen-workspace-creation-label = Ruimtes worden gebruikt om je tabbladen en sessies te organiseren.
 zen-workspaces-delete-workspace-title = Ruimte verwijderen?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Weet je zeker dat je { $name } wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabbladen gesloten! Gebruik <span>{ $shortcut }</span> om ongedaan te maken.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Wissen
-    .tooltiptext = Close all unpinned tabs
+    .tooltiptext = Alle niet-vastgezette tabbladen sluiten

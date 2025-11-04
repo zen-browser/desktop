@@ -25,7 +25,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     // be fully opaque and we need an extra byte to store the contrast value. This allows
     // us to still use an nscolor as parameter instead of having to deal with WebIDL structs
     // shenanigans.
-    return ((contrast & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff);
+    return (contrast << 24) | (b << 16) | (g << 8) | r;
   }
 
   /**

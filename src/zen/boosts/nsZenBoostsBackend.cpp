@@ -38,23 +38,21 @@ static __inline int32_t clamp255(int32_t v) {
 }
 
 #define COLOR_CHANNEL_MIDPOINT 128
-#define APPLY_CONTRAST(channel, factor) \
-  ((int32_t)((channel - COLOR_CHANNEL_MIDPOINT) * factor + COLOR_CHANNEL_MIDPOINT))
 
-static nscolor zenFilterColorChannel(nscolor originalNS, nscolor accentNS) {
-  auto r1 = NS_GET_R(originalNS);
-  auto g1 = NS_GET_G(originalNS);
-  auto b1 = NS_GET_B(originalNS);
+static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColor) {
+  auto r1 = NS_GET_R(aOriginalColor);
+  auto g1 = NS_GET_G(aOriginalColor);
+  auto b1 = NS_GET_B(aOriginalColor);
+
+  auto r2 = NS_GET_R(aAccentColor);
+  auto g2 = NS_GET_G(aAccentColor);
+  auto b2 = NS_GET_B(aAccentColor);
 
   // It's a bit of a hacky solution, but instead of using alpha as what it is
   // (opacity), we use it to store contrast information for now.
   // We do this primarily to avoid having to deal with WebIDL structs and
   // serialization/deserialization between parent and content processes.
-  auto contrast = NS_GET_A(originalNS);
-
-  auto r2 = NS_GET_R(accentNS);
-  auto g2 = NS_GET_G(accentNS);
-  auto b2 = NS_GET_B(accentNS);
+  auto contrast = NS_GET_A(aAccentColor);
 
   // Approximate perceived luminance in sRGB space
   // Coefficients per Rec.709; gamma correction ignored for speed
@@ -63,22 +61,40 @@ static nscolor zenFilterColorChannel(nscolor originalNS, nscolor accentNS) {
 
   double scale = accentLum > 0.0 ? (origLum / accentLum) : 1.0;
 
-  uint8_t fr = clamp255(r2 * scale);
-  uint8_t fg = clamp255(g2 * scale);
-  uint8_t fb = clamp255(b2 * scale);
+  double fr = r2 * scale;
+  double fg = g2 * scale;
+  double fb = b2 * scale;
 
-  // Apply contrast adjustment: map contrast from 0-255 to 0.0-2.0
-  // contrast = 0: reduce contrast (factor = 0.0, moves toward middle gray)
-  // contrast = 127.5: no change (factor = 1.0)
-  // contrast = 255: increase contrast (factor = 2.0, lighter/darker extremes)
-  double contrastFactor = contrast / 127.5;
-  
-  // Apply contrast: adjust each channel relative to middle gray
-  fr = clamp255(APPLY_CONTRAST(fr, contrastFactor));
-  fg = clamp255(APPLY_CONTRAST(fg, contrastFactor));
-  fb = clamp255(APPLY_CONTRAST(fb, contrastFactor));
+  // Apply contrast adjustment: map contrast from 0–255 to -1.0–+1.0
+  // contrast = 0: maximum darkening (mix toward black)
+  // contrast = 127.5: no change
+  // contrast = 255: maximum lightening (mix toward white)
+  double contrastFactor = (contrast - 128.0) / 128.0;
 
-  return NS_RGBA(fr, fg, fb, 1);
+  // Compute perceived luminance for the filtered color
+  double lum = 0.2126 * fr + 0.7152 * fg + 0.0722 * fb;
+
+  // If it's bright, mix toward white; if dark, mix toward black
+  if (lum >= COLOR_CHANNEL_MIDPOINT) {
+    double mix = (lum - COLOR_CHANNEL_MIDPOINT) / COLOR_CHANNEL_MIDPOINT;
+    double amount = contrastFactor * mix;
+    fr = fr + (255.0 - fr) * amount;
+    fg = fg + (255.0 - fg) * amount;
+    fb = fb + (255.0 - fb) * amount;
+  } else {
+    double mix = (COLOR_CHANNEL_MIDPOINT - lum) / COLOR_CHANNEL_MIDPOINT;
+    double amount = -contrastFactor * mix;
+    fr = fr * (1.0 - amount);
+    fg = fg * (1.0 - amount);
+    fb = fb * (1.0 - amount);
+  }
+
+  // Clamp to [0,255] using fast branchless clamp
+  uint8_t fr8 = clamp255(fr);
+  uint8_t fg8 = clamp255(fg);
+  uint8_t fb8 = clamp255(fb);
+
+  return NS_RGB(fr8, fg8, fb8);
 }
 
 } // namespace

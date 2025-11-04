@@ -304,4 +304,4 @@ zen-devtools-toggle-performance-shortcut = Performance umschalten
 zen-devtools-toggle-storage-shortcut = Speicher umschalten
 zen-devtools-toggle-dom-shortcut = DOM umschalten
 zen-devtools-toggle-accessibility-shortcut = Barrierefreiheit umschalten
-zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-close-all-unpinned-tabs-shortcut = Alle nicht angehefteten Tabs schließen

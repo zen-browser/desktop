@@ -6,18 +6,12 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   constructor() {
     super();
-    this.clickListener = this.handleClick.bind(this);
   }
 
   async handleEvent(event) {
-    switch (event.type) {
-      case 'DOMContentLoaded':
-        await this.initiateGlance();
-        break;
-      case 'keydown':
-        this.onKeyDown(event);
-        break;
-      default:
+    const handler = this[`on_${event.type}`];
+    if (typeof handler === 'function') {
+      await handler.call(this, event);
     }
   }
 
@@ -25,13 +19,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
   }
 
-  async initiateGlance() {
-    this.mouseIsDown = false;
-    await this.#initActivationMethod();
-    this.contentWindow.document.addEventListener('click', this.clickListener, { capture: true });
-  }
-
-  ensureOnlyKeyModifiers(event) {
+  #ensureOnlyKeyModifiers(event) {
     return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
   }
 
@@ -66,7 +54,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  handleClick(event) {
+  on_click(event) {
     if (event.button !== 0 || event.defaultPrevented) {
       return;
     }
@@ -79,7 +67,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
-    if (this.ensureOnlyKeyModifiers(event)) {
+    if (this.#ensureOnlyKeyModifiers(event)) {
       return;
     }
     const activationMethod = this.#activationMethod;
@@ -100,12 +88,16 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  onKeyDown(event) {
+  on_keydown(event) {
     if (event.defaultPrevented || event.key !== 'Escape') {
       return;
     }
     this.sendAsyncMessage('ZenGlance:CloseGlance', {
       hasFocused: this.contentWindow.document.activeElement !== this.contentWindow.document.body,
     });
+  }
+
+  async on_DOMContentLoaded() {
+    await this.#initActivationMethod();
   }
 }

@@ -30,7 +30,7 @@
   value: true
 
 - name: zen.urlbar.show-pip-button
-  value: true
+  value: false
 
 # Mark: Zen suggestions controls
 

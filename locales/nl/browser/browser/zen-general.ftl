@@ -85,12 +85,12 @@ zen-site-data-header-reader-mode =
 zen-site-data-header-screenshot = 
     .tooltiptext = Maak een schermafbeelding
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bladwijzer toevoegen voor deze pagina
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL kopiëren
 zen-site-data-setting-site-protection = Tracking bescherming
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Een nieuw thuis voor add-ons, machtigingen en meer
+zen-site-data-panel-feature-callout-subtitle = Klik op het icoon om de site-instellingen te beheren, beveiligingsinfo te bekijken, extensies te openen en gemeenschappelijke acties uit te voeren.

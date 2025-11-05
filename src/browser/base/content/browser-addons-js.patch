@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc31266b08 100644
+index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2bd5a757d 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -1071,7 +1071,7 @@ var gXPInstallObserver = {
+@@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
        persistent: true,
        hideClose: true,
        popupOptions: {
@@ -11,7 +11,7 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
        },
      };
  
-@@ -1280,7 +1280,7 @@ var gXPInstallObserver = {
+@@ -1279,7 +1279,7 @@ var gXPInstallObserver = {
        hideClose: true,
        timeout: Date.now() + 30000,
        popupOptions: {
@@ -20,7 +20,7 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
        },
      };
  
-@@ -2212,7 +2212,7 @@ var gUnifiedExtensions = {
+@@ -2211,7 +2211,7 @@ var gUnifiedExtensions = {
    // If the new ID is not added in NOTIFICATION_IDS, consider handling the case
    // in the "PopupNotificationsBeforeAnchor" handler elsewhere in this file.
    getPopupAnchorID(aBrowser, aWindow) {
@@ -29,7 +29,7 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
      const attr = anchorID + "popupnotificationanchor";
  
      if (!aBrowser[attr]) {
-@@ -2223,7 +2223,7 @@ var gUnifiedExtensions = {
+@@ -2222,7 +2222,7 @@ var gUnifiedExtensions = {
          anchorID
          // Anchor on the toolbar icon to position the popup right below the
          // button.
@@ -38,7 +38,7 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
      }
  
      return anchorID;
-@@ -2516,11 +2516,7 @@ var gUnifiedExtensions = {
+@@ -2646,11 +2646,7 @@ var gUnifiedExtensions = {
      // Lazy load the unified-extensions-panel panel the first time we need to
      // display it.
      if (!this._panel) {
@@ -51,16 +51,15 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
        let customizationArea = this._panel.querySelector(
          "#unified-extensions-area"
        );
-@@ -2570,7 +2566,7 @@ var gUnifiedExtensions = {
- 
-         // The button should directly open `about:addons` when the user does not
-         // have any active extensions listed in the unified extensions panel.
--        if (!this.hasExtensionsInPanel()) {
-+        if (!this.hasExtensionsInPanel() && false) {
-           let viewID;
-           if (
-             Services.prefs.getBoolPref("extensions.getAddons.showPane", true) &&
-@@ -2615,7 +2611,7 @@ var gUnifiedExtensions = {
+@@ -2703,6 +2699,7 @@ var gUnifiedExtensions = {
+         // and no alternative content is available for display in the panel.
+         const policies = this.getActivePolicies();
+         if (
++          false &&
+           policies.length &&
+           !this.hasExtensionsInPanel(policies) &&
+           !this.isPrivateWindowMissingExtensionsWithoutPBMAccess() &&
+@@ -2743,7 +2740,7 @@ var gUnifiedExtensions = {
          this.recordButtonTelemetry(reason || "extensions_panel_showing");
          this.ensureButtonShownBeforeAttachingPanel(panel);
          PanelMultiView.openPopup(panel, this._button, {
@@ -69,7 +68,7 @@ index 754ce380ed233eb8764af07af3c8dc95d3f39d5c..ed3062bab0b80db3b456cdad03e7efcc
            triggerEvent: aEvent,
          });
        }
-@@ -2802,18 +2798,20 @@ var gUnifiedExtensions = {
+@@ -2930,18 +2927,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

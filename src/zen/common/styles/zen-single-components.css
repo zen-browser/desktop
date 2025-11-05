@@ -609,3 +609,13 @@ body > #confetti {
 #widget-overflow-list {
   flex-direction: column-reverse;
 }
+
+/* Contextual new tab popup menu */
+#tabs-newtab-button > .new-tab-popup > menuitem {
+  & > :is(.menu-highlightable-text, .menu-accel) {
+    display: none !important;
+  }
+  & > label {
+    opacity: 1 !important;
+  }
+}

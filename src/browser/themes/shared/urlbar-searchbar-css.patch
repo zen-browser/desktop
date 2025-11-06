@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 1744e627bbcfc69ccccb207ad1cbf0c262afb9be..50cc9da2076d946771fb5aca1402f1cbe6a531c8 100644
+index 15dcfbc95afab9f28bd58379da0ef3e24d1b4595..73827cc5cffe47099feea36cbeffb547e955b37e 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -6,7 +6,7 @@
@@ -20,7 +20,7 @@ index 1744e627bbcfc69ccccb207ad1cbf0c262afb9be..50cc9da2076d946771fb5aca1402f1cb
  }
  
  /* When rich suggestions are enabled the urlbar identity icon is given extra padding to
-@@ -321,10 +321,14 @@
+@@ -320,10 +320,14 @@
  
  .urlbar[breakout][breakout-extend] {
    height: auto;

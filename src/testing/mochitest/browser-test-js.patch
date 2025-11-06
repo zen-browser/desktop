@@ -1,37 +1,30 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index 979c6a0960cb8c490b612649d0fac55cd7b7d0f7..f149f248f705484b3572ca462660932dd792e312 100644
+index d5f320c5e97aae9bfd43d28e3d4a274d9bbc0787..24dc32a5bf6ae9abaa8f3fe8c37b031a76fb4d60 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
-@@ -440,11 +440,11 @@ Tester.prototype = {
-       this.currentTest &&
-       window.gBrowser &&
-       AppConstants.MOZ_APP_NAME != "thunderbird" &&
--      gBrowser.tabs.length > 1
-+      gBrowser.tabs.length > 2
-     ) {
-       let lastURI = "";
-       let lastURIcount = 0;
--      while (gBrowser.tabs.length > 1) {
-+      while (gBrowser.tabs.length > 2) {
-         let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
-         if (!lastTab.closing) {
-           // Report the stale tab as an error only when they're not closing.
-@@ -479,12 +479,12 @@ Tester.prototype = {
+@@ -438,10 +438,10 @@ Tester.prototype = {
+     // But not the Thunderbird window, it doesn't have these things!
+     if (AppConstants.MOZ_APP_NAME != "thunderbird") {
+       // Remove stale tabs
+-      if (this.currentTest && window.gBrowser && gBrowser.tabs.length > 1) {
++      if (this.currentTest && window.gBrowser && gBrowser.tabs.length > 2) {
+         let lastURI = "";
+         let lastURIcount = 0;
+-        while (gBrowser.tabs.length > 1) {
++        while (gBrowser.tabs.length > 2) {
+           let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
+           if (!lastTab.closing) {
+             // Report the stale tab as an error only when they're not closing.
+@@ -476,12 +476,6 @@ Tester.prototype = {
  
-     // Replace the last tab with a fresh one
-     if (window.gBrowser && AppConstants.MOZ_APP_NAME != "thunderbird") {
--      gBrowser.addTab("about:blank", {
--        skipAnimation: true,
--        triggeringPrincipal:
--          Services.scriptSecurityManager.getSystemPrincipal(),
--      });
--      gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
-+      // gBrowser.addTab("about:blank", {
-+      //   skipAnimation: true,
-+      //   triggeringPrincipal:
-+      //     Services.scriptSecurityManager.getSystemPrincipal(),
-+      // });
-+      // gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
-       gBrowser.stop();
-     }
+       // Replace the last tab with a fresh one
+       if (window.gBrowser) {
+-        gBrowser.addTab("about:blank", {
+-          skipAnimation: true,
+-          triggeringPrincipal:
+-            Services.scriptSecurityManager.getSystemPrincipal(),
+-        });
+-        gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
+         gBrowser.stop();
+       }
  

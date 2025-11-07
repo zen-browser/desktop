@@ -31,13 +31,13 @@ export class nsZenBoostEditor {
 
     this.doc
       .getElementById('zen-boost-color-contrast')
-      .addEventListener('onchange', this.onColorOptionChange.bind(this));
+      .addEventListener('input', this.onColorOptionChange.bind(this));
     this.doc
       .getElementById('zen-boost-color-brightness')
-      .addEventListener('onchange', this.onColorOptionChange.bind(this));
+      .addEventListener('input', this.onColorOptionChange.bind(this));
     this.doc
       .getElementById('zen-boost-color-saturation')
-      .addEventListener('onchange', this.onColorOptionChange.bind(this));
+      .addEventListener('input', this.onColorOptionChange.bind(this));
 
     this.doc
       .getElementById('zen-boost-text-case-toggle')
@@ -111,7 +111,7 @@ export class nsZenBoostEditor {
       fontButton.classList.add('subviewbutton');
       fontButton.style.fontFamily = fonts[i];
       fontButton.innerHTML = 'Aa';
-      fontButton.addEventListener('click', this.onFontChange.bind(this));
+      fontButton.addEventListener('click', this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
     }
@@ -123,6 +123,8 @@ export class nsZenBoostEditor {
       select.innerHTML = font;
       fontSelect.appendChild(select);
     }
+
+    fontSelect.addEventListener('change', this.onFontDropdownSelect.bind(this));
   }
 
   initColorPicker() {
@@ -200,13 +202,12 @@ export class nsZenBoostEditor {
   onBoostCasePressed(event) {
     const caseButton = this.doc.getElementById('zen-boost-text-case-toggle');
 
-    if(this.currentBoostData.textCaseOverride == 'lower')
+    if (this.currentBoostData.textCaseOverride == 'lower')
       this.currentBoostData.textCaseOverride = 'upper';
-    else if(this.currentBoostData.textCaseOverride == 'upper')
+    else if (this.currentBoostData.textCaseOverride == 'upper')
       this.currentBoostData.textCaseOverride = 'none';
-    else
-      this.currentBoostData.textCaseOverride = 'lower';
-    
+    else this.currentBoostData.textCaseOverride = 'lower';
+
     this.updateCaseButtonVisuals();
     this.updateCurrentBoost();
   }
@@ -381,11 +382,10 @@ export class nsZenBoostEditor {
   updateCaseButtonVisuals() {
     const sizeValue = this.doc.getElementById('zen-boost-text-case-toggle');
 
-    if (this.currentBoostData.textCaseOverride == 'none') 
-      sizeValue.setAttribute('mode', 'none');
-    else if (this.currentBoostData.textCaseOverride == 'upper') 
+    if (this.currentBoostData.textCaseOverride == 'none') sizeValue.setAttribute('mode', 'none');
+    else if (this.currentBoostData.textCaseOverride == 'upper')
       sizeValue.setAttribute('mode', 'upper');
-    else if (this.currentBoostData.textCaseOverride == 'lower') 
+    else if (this.currentBoostData.textCaseOverride == 'lower')
       sizeValue.setAttribute('mode', 'lower');
   }
 
@@ -416,8 +416,17 @@ export class nsZenBoostEditor {
     else gradient.classList.remove('zen-boost-panel-disabled');
   }
 
-  onFontChange(event) {
+  onFontButtonClick(event) {
     const font = event?.target?.getAttribute('font-data') ?? '';
+    this.onFontChange(font);
+  }
+
+  onFontDropdownSelect(event) {
+    const select = event.target;
+    this.onFontChange(select.value);
+  }
+
+  onFontChange(font) {
     if (this.currentBoostData.fontFamily == font) this.currentBoostData.fontFamily = '';
     else this.currentBoostData.fontFamily = font;
     this.updateFontButtonVisuals();
@@ -433,6 +442,15 @@ export class nsZenBoostEditor {
       if (fontButton.getAttribute('font-data') == this.currentBoostData.fontFamily)
         fontButton.classList.add('zen-boost-font-button-active');
       else fontButton.classList.remove('zen-boost-font-button-active');
+    }
+
+    const fontSelect = this.doc.getElementById('zen-boost-font-select');
+    for (let i = 0; i < fontSelect.options.length; i++) {
+      const option = fontSelect.options[i];
+      if (option.value == this.currentBoostData.fontFamily) {
+        fontSelect.value = option.value;
+        break;
+      }
     }
   }
 

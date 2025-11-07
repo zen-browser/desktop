@@ -654,15 +654,16 @@ var gZenUIManager = {
     // behavior where dragging the text-area resizer downward with the mouse actually grows the panel's top edge upward, since
     // the bottom of the panel is anchored in place. We want to disable the resizer if the panel was positioned to be anchored
     // from one of its bottom corners.
-    let block = 'before';
-    let inline = 'end';
+    let block = 'bottomleft';
+    let inline = 'topleft';
     if (anchor?.closest('#zen-sidebar-top-buttons')) {
-      block = 'after';
+      block = 'topleft';
     }
     if (gZenVerticalTabsManager._hasSetSingleToolbar && !gZenVerticalTabsManager._prefsRightSide) {
-      inline = 'start';
+      block = 'bottomright';
+      inline = 'topright';
     }
-    return `${block}_${inline}`;
+    return `${block} ${inline}`;
   },
 
   urlStringsDomainMatch(url1, url2) {

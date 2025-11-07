@@ -16,22 +16,10 @@
   list-style-image: url('account-private.svg') !important;
   border-radius: 100% !important;
 }
-
-.zen-boost {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/boost-filled-small.svg') !important;
-}
-
-.zen-boost::after {
-  content: '';
-  position: absolute;
-  width: 85%;
-  height: 85%;
-  opacity: 1;
-  background: url('chrome://browser/content/zen-images/boost-indicator.svg') no-repeat;
-  z-index: 0;
-  pointer-events: none;
-  filter: invert();
-}
+/* 
+.down-arrow-icon {
+  list-style-image: url('chrome://browser/skin/zen-icons/arrow-down.svg') !important;
+} */
 
 #back-button {
   list-style-image: url('back.svg') !important;
@@ -534,6 +522,9 @@
   &[open] image {
     list-style-image: url('permissions-fill.svg');
   }
+  &[boosting] image {
+    list-style-image: url('permissions-fill.svg');
+  }
 
   position: relative;
 }
@@ -918,6 +909,34 @@
   fill: currentColor;
 }
 
+#zen-site-data-boost {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  border-radius: 6px;
+  appearance: none;
+  padding: 6px 6px 6px 6px;
+
+  position: relative;
+
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush.svg') !important;
+}
+
+#zen-site-data-boost[boosting] {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush-fill.svg') !important;
+}
+
+#zen-site-data-boost[boosting]::after {
+  content: '';
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  opacity: 1;
+  translate: -5px 0px;
+  background: url('chrome://browser/content/zen-images/boost-indicator.svg') no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
 #zen-site-data-security-info {
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
@@ -978,14 +997,46 @@
   fill-opacity: 0.7;
 }
 
+#zen-boost-text-case-toggle {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-title-case.svg') !important;
+}
+
+#zen-boost-text-case-toggle[mode='upper'] {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-uppercase.svg') !important;
+}
+
+#zen-boost-text-case-toggle[mode='lower'] {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-lowercase.svg') !important;
+}
+
+#zen-boost-code {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/brackets-curly.svg') !important;
+}
+
 #zen-boost-zap {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/zap.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bolt.svg') !important;
+}
+
+#zen-boost-controls {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/sliders.svg') !important;
 }
 
 #zen-boost-invert {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bulb.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/lightbulb.svg') !important;
 }
 
 #zen-boost-disable {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg') !important;
+}
+
+#zen-boost-close {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/close-filled-round.svg') !important;
+}
+
+#zen-boost-magic-theme {
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/square-wand-sparkle.svg') !important;
+}
+
+#zen-boost-shuffle {
+list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg') !important;
 }

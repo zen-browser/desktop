@@ -50,14 +50,6 @@ var gZenUIManager = {
       this.onUrlbarSearchModeChanged.bind(this)
     );
 
-    window.gBrowser.addProgressListener({
-      onLocationChange: (aWebProgress) => {
-        if (aWebProgress.isTopLevel) {
-          this.onShownTabChange();
-        }
-      },
-    });
-
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
 
@@ -177,8 +169,8 @@ var gZenUIManager = {
     const height = window.outerHeight;
 
     // TODO: This needs to be changed to exact values
-    const editorWidth = 175;
-    const editorHeight = 435;
+    const editorWidth = 185;
+    const editorHeight = 575;
     const pad = 20;
 
     const animationTarget = 25;
@@ -193,15 +185,16 @@ var gZenUIManager = {
     const editor = window.openDialog(
       'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
       '',
-      `left=${left},top=${top + animationTarget},chrome,titlebar,alwaysontop`
+      `left=${left},top=${top + animationTarget},chrome,alwaysontop,resizable=no`
     );
 
     // Close the editor if the tab is switched
     window.gBrowser.tabContainer.addEventListener(
       'TabSelect',
       (event) => {
-        const tab = event.target;
-        const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+        // This seems to be a safer way than doing currentURI.host
+        const url = new URL(event.target.linkedBrowser.currentURI.spec);
+        const domain = url.hostname;
 
         // Close if domain doesn't match
         if (domain != editor.domain) {
@@ -217,31 +210,8 @@ var gZenUIManager = {
       this.checkIsTabBoosted();
     });
 
-    // Rather inconvenient window animation using moveTo
-    // editor.addEventListener('load', () => {
-    //   const interval = 16;
-    //   let value = animationTarget;
-
-    //   let anim = null;
-    //   anim = setInterval(() => {
-    //       if (window.closed) { clearInterval(anim); return; }
-    //       if (!editor || typeof editor.moveTo !== 'function') { clearInterval(anim); return; }
-
-    //     if ((value - 1) <= 0) {
-    //       clearInterval(anim);
-    //       editor.moveTo(left, top);
-    //       return;
-    //     }
-
-    //     value = value + (0 - value) * 0.25;
-    //     editor.moveTo(left, top + value);
-
-    //   }, interval);
-    // });
-
     // Give the domain
-    const tab = window.gBrowser.selectedTab;
-    const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
+    const domain = window.gBrowser.selectedTab.linkedBrowser.currentURI.host;
     editor.domain = domain;
 
     // Give the animator
@@ -284,8 +254,8 @@ var gZenUIManager = {
   checkIsTabBoosted() {
     const button = document.getElementById('zen-site-data-icon-button');
 
-    const tab = window.gBrowser.selectedTab;
-    const url = new URL(tab.linkedBrowser.currentURI.spec);
+    // This seems to be a safer way than doing currentURI.host
+    const url = new URL(window.gBrowser.selectedTab.linkedBrowser.currentURI.spec);
     const domain = url.hostname;
 
     const { gZenBoostsManager } = ChromeUtils.importESModule(
@@ -294,10 +264,6 @@ var gZenUIManager = {
 
     if (gZenBoostsManager.registeredBoostForDomain(domain)) button.setAttribute('boosting', 'true');
     else button.removeAttribute('boosting');
-  },
-
-  onShownTabChange() {
-    this.checkIsTabBoosted();
   },
 
   onTabClose(event = undefined) {

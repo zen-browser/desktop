@@ -9,8 +9,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
-  canSendUpdate = true;
-
   constructor() {
     super();
 

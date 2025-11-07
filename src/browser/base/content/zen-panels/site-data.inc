@@ -77,6 +77,8 @@
       <hbox id="zen-site-data-footer">
         <toolbarbutton id="zen-site-data-security-info" 
                        class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-boost" 
+                       class="subviewbutton zen-interactive-button" />
         <toolbarbutton id="zen-site-data-actions"
                        class="subviewbutton zen-interactive-button"
                        closemenu="none"

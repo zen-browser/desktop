@@ -28,8 +28,7 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
-      const url = new URL(tab.linkedBrowser.currentURI.spec);
-      const domain = url.hostname;
+      const domain = tab.linkedBrowser.currentURI.host;
       const uri = window.gBrowser.currentURI;
 
       const { gZenBoostsManager } = ChromeUtils.importESModule(
@@ -49,8 +48,7 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
     isAvailable: (window) => {
       const tab = window.gBrowser.selectedTab;
-      const url = new URL(tab.linkedBrowser.currentURI.spec);
-      const domain = url.hostname;
+      const domain = tab.linkedBrowser.currentURI.host;
       const uri = window.gBrowser.currentURI;
 
       const { gZenBoostsManager } = ChromeUtils.importESModule(

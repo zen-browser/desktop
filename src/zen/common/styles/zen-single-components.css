@@ -482,6 +482,8 @@ body > #confetti {
   padding-top: 8px;
   margin: 2px 8px 8px 8px;
 
+  gap: 10px;
+
   & toolbarbutton {
     margin: 0;
   }

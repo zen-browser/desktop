@@ -112,10 +112,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
         if (boost.enableColorBoost) {
           const rgbColor = this.#hslToRgb(
             boost.dotAngleDeg / 360,
-            boost.dotDistance /* already is [0, 1] */,
-            0.2 + boost.dotDistance * 0.6 /* lightness range from [0.2, 0.8] */
+            boost.dotDistance * (boost.saturation / 255).toFixed(4) /* already is [0, 1] */,
+            0.2 + boost.dotDistance * 0.8 * (boost.brightness / 255).toFixed(4)  /* lightness range from [0.2, 0.8] */
           );
-          const nsColor = this.#rgbToNSColor(rgbColor);
+          const nsColor = this.#rgbToNSColor(rgbColor, boost.contrast);
           browsingContext.zenBoostsData = nsColor;
         } else browsingContext.zenBoostsData = 0;
       } else {

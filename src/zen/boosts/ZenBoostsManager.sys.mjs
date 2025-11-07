@@ -2,14 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const lazy = {};
-
-ChromeUtils.defineESModuleGetters(lazy, {
-  BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
-});
-
 export class nsZenBoostsManager {
-  initialized = false;
   registeredBoosts = new Map();
 
   #saveFilename = 'zen-boosts.jsonlz4';
@@ -19,12 +12,13 @@ export class nsZenBoostsManager {
   }
 
   #init() {
-    this.#readBoostsFromStore(() => (this.initialized = true));
+    this.#readBoostsFromStore(this.notify);
   }
 
   deleteBoost(domain) {
     if (this.registeredBoosts.has(domain)) this.registeredBoosts.delete(domain);
-    Services.obs.notifyObservers(lazy.BrowserWindowTracker.getTopWindow(), 'zen-boosts-update');
+    this.#writeToDisk(this.registeredBoosts);
+    this.notify();
   }
 
   // Load a boost from a domain
@@ -33,13 +27,29 @@ export class nsZenBoostsManager {
 
     let boostData = {
       domain,
-      boostName: 'New Boost',
+      boostName: 'My Boost',
+
       dotAngleDeg: 0,
       dotPos: { x: null, y: null },
       dotDistance: 0,
+
+      brightness: 128,
+      contrast: 128,
+      saturation: 128,
+
       fontFamily: '',
+
       enableColorBoost: false,
       smartInvert: false,
+
+      // Choses theme based on Zen's workspace theme
+      autoTheme: false,
+
+      // Default to 100% scale
+      siteSizeOverride: 100,
+      textCaseOverride: 'none',
+
+      changeWasMade: false
     };
 
     if (this.registeredBoosts.has(domain)) {
@@ -53,13 +63,19 @@ export class nsZenBoostsManager {
 
   updateBoost(boostData) {
     this.registeredBoosts.set(boostData.domain, boostData);
-    Services.obs.notifyObservers(lazy.BrowserWindowTracker.getTopWindow(), 'zen-boosts-update');
+    this.notify();
+  }
+
+  notify() {
+    Services.obs.notifyObservers(null, 'zen-boosts-update');
   }
 
   // Save all boosts to the profile folder
-  saveBoostToStore(boostData) {
-    if (boostData != null) this.registeredBoosts.set(boostData.domain, boostData);
+  saveBoostToStore(boostData) {    
+    if (boostData != null)
+       this.registeredBoosts.set(boostData.domain, boostData);
     this.#writeToDisk(this.registeredBoosts);
+    this.notify();
   }
 
   // Reads all boosts from the profile folder

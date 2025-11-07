@@ -54,6 +54,17 @@
             <toolbarbutton id="zen-site-data-new-addon-button"
                   class="subviewbutton toolbarbutton-1" />
           </vbox>
+
+# We don't really use this, but again, to keep firefox happy
+# in case they decide to change something for this specific
+# empty state, we keep it on the DOM
+# https://searchfox.org/firefox-main/rev/e613f4df351a21871cfeadf7d5b4043ffad157b1/browser/components/customizableui/content/panelUI.inc.xhtml#101-106
+          <vbox id="unified-extensions-empty-state" context="">
+            <!-- Shown when no extensions are listed. -->
+            <html:img src="chrome://browser/skin/addons/extensions-panel-empty-illustration.svg" loading="lazy" />
+            <html:h2 class="subview-subheader" />
+            <description />
+          </vbox>
         </hbox>
 
 # Keep this button on the DOM even though we hide it for ever,

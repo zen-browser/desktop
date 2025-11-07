@@ -3,7 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
-import { UrlbarProvider, UrlbarUtils } from 'resource:///modules/UrlbarUtils.sys.mjs';
+import {
+  UrlbarProvider,
+  UrlbarUtils,
+} from 'moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs';
 import { globalActions } from 'resource:///modules/ZenUBGlobalActions.sys.mjs';
 import { zenUrlbarResultsLearner } from './ZenUBResultsLearner.sys.mjs';
 
@@ -18,9 +21,9 @@ const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  UrlbarResult: 'resource:///modules/UrlbarResult.sys.mjs',
-  UrlbarTokenizer: 'resource:///modules/UrlbarTokenizer.sys.mjs',
-  QueryScorer: 'resource:///modules/UrlbarProviderInterventions.sys.mjs',
+  UrlbarResult: 'moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs',
+  UrlbarTokenizer: 'moz-src:///browser/components/urlbar/UrlbarTokenizer.sys.mjs',
+  QueryScorer: 'moz-src:///browser/components/urlbar/UrlbarProviderInterventions.sys.mjs',
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
   zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
@@ -244,7 +247,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
     let finalResults = [];
     for (const action of actionsResults) {
-      const [payload, payloadHighlights] = lazy.UrlbarResult.payloadAndSimpleHighlights([], {
+      const { payload, payloadHighlights } = lazy.UrlbarResult.payloadAndSimpleHighlights([], {
         suggestion: action.label,
         title: action.label,
         zenCommand: action.command,
@@ -259,12 +262,12 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         ...action.extraPayload,
       });
 
-      let result = new lazy.UrlbarResult(
-        UrlbarUtils.RESULT_TYPE.DYNAMIC,
-        UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+      let result = new lazy.UrlbarResult({
+        type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
+        source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
-        payloadHighlights
-      );
+        payloadHighlights,
+      });
       if (zenUrlbarResultsLearner.shouldPrioritize(action.commandId) && !isPrefixed) {
         result.heuristic = true;
       } else {

@@ -239,7 +239,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (!draggedTab || gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
         return;
       }
-      draggedTab.container.finishMoveTogetherSelectedTabs(draggedTab);
+      gBrowser.tabContainer.tabDragAndDrop.finishMoveTogetherSelectedTabs(draggedTab);
     }
     if (
       !draggedTab ||

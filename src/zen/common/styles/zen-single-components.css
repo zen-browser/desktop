@@ -296,6 +296,11 @@ body > #confetti {
   --arrowpanel-menuitem-border-radius: 10px;
 }
 
+#unified-extensions-empty-state,
+#unified-extensions-discover-extensions {
+  display: none !important;
+}
+
 #zen-site-data-addons {
   display: flex;
   flex-wrap: wrap;

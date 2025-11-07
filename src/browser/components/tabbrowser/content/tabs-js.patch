@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d53fbe1155 100644
+index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2a736d9f8 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -411,7 +411,7 @@
@@ -119,7 +119,42 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
      }
  
      /**
-@@ -964,6 +991,7 @@
+@@ -898,17 +925,10 @@
+ 
+       let elementIndex = 0;
+ 
+-      let unpinnedChildren = Array.from(this.arrowScrollbox.children);
+-      let pinnedChildren = Array.from(this.pinnedTabsContainer.children);
++      let children = gZenWorkspaces.tabboxChildrenWithoutEmpty;
+ 
+       let focusableItems = [];
+-      for (let child of pinnedChildren) {
+-        if (isTab(child)) {
+-          child.elementIndex = elementIndex++;
+-          focusableItems.push(child);
+-        }
+-      }
+-      for (let child of unpinnedChildren) {
++      for (let child of [...gZenWorkspaces.getCurrentEssentialsContainer().children, ...this.pinnedTabsContainer.children, ...children]) {
+         if (isTab(child) && child.visible) {
+           child.elementIndex = elementIndex++;
+           focusableItems.push(child);
+@@ -916,11 +936,13 @@
+           child.labelElement.elementIndex = elementIndex++;
+           focusableItems.push(child.labelElement);
+ 
+-          let visibleTabsInGroup = child.tabs.filter(tab => tab.visible);
++        if (!child.hasAttribute("split-view-group")) {
++          let visibleTabsInGroup = child.childGroupsAndTabs.filter(tab => tab.visible);
+           visibleTabsInGroup.forEach(tab => {
+             tab.elementIndex = elementIndex++;
+           });
+           focusableItems.push(...visibleTabsInGroup);
++        }
+         } else if (child.tagName == "tab-split-view-wrapper") {
+           let visibleTabsInSplitView = child.tabs.filter(tab => tab.visible);
+           visibleTabsInSplitView.forEach(tab => {
+@@ -964,6 +986,7 @@
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
@@ -127,7 +162,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
      }
  
      _invalidateCachedVisibleTabs() {
-@@ -1067,7 +1095,7 @@
+@@ -1067,7 +1090,7 @@
  
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
@@ -136,7 +171,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
        }
  
        node.before(tab);
-@@ -1162,7 +1190,7 @@
+@@ -1162,7 +1185,7 @@
            // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
@@ -145,7 +180,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1263,8 +1291,10 @@
+@@ -1263,8 +1286,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -156,7 +191,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1273,7 +1303,7 @@
+@@ -1273,7 +1298,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -165,3 +200,12 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..97badc8daa59b38862706d05ad3db5d5
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
+@@ -1406,7 +1431,7 @@
+     }
+ 
+     _notifyBackgroundTab(aTab) {
+-      if (aTab.pinned || !aTab.visible || !this.overflowing) {
++      if (aTab.hasAttribute("zen-essential") || !aTab.visible || !this.overflowing) {
+         return;
+       }
+ 

@@ -1139,5 +1139,5 @@ Preferences.addAll([
 
 Preferences.addSetting({
   id: 'zenWorkspaceContinueWhereLeftOff',
-  pref: 'browser.safebrowsing.phishing.enabled',
+  pref: 'zen.workspaces.continue-where-left-off',
 });

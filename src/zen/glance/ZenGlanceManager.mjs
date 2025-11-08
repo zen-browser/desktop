@@ -844,6 +844,10 @@
      * @returns {Promise} Promise that resolves when closing is complete
      */
     #animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID) {
+      if (this.closingGlance) {
+        return;
+      }
+
       this.closingGlance = true;
       this._animating = true;
 
@@ -922,7 +926,7 @@
             opacity: [0.4, 1],
           },
           {
-            duration: this.#GLANCE_ANIMATION_DURATION,
+            duration: this.#GLANCE_ANIMATION_DURATION / 1.5,
             type: 'spring',
             bounce: 0,
           }
@@ -1008,6 +1012,7 @@
       this.browserWrapper.removeAttribute('animate');
 
       if (!this.#currentParentTab) {
+        this.closingGlance = false;
         return;
       }
 
@@ -1063,7 +1068,6 @@
       this.contentWrapper = null;
 
       lastCurrentTab.removeAttribute('zen-glance-tab');
-      lastCurrentTab._closingGlance = true;
 
       this.#ignoreClose = true;
       lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));

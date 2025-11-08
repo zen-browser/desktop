@@ -1,15 +1,13 @@
 diff --git a/browser/components/customizableui/ToolbarContextMenu.sys.mjs b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-index 852cf2eee9113753fa0797be6dec80dcb9207703..93bb093e679320033a37b2af14e8e0e3c7621f94 100644
+index 95621ae202378fb1ebceca5623a98b790b9eb5ff..fe6901f53f863bca20a514df0490499402d669ae 100644
 --- a/browser/components/customizableui/ToolbarContextMenu.sys.mjs
 +++ b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-@@ -242,8 +242,8 @@ export var ToolbarContextMenu = {
-     // Show/hide sidebar and vertical tabs menu items
-     let sidebarRevampEnabled = Services.prefs.getBoolPref("sidebar.revamp");
+@@ -244,7 +244,7 @@ export var ToolbarContextMenu = {
      let showSidebarActions =
--      ["tabbrowser-tabs", "sidebar-button"].includes(toolbarItem?.id) ||
--      toolbarItem?.localName == "toolbarspring";
-+      (["tabbrowser-tabs", "sidebar-button"].includes(toolbarItem?.id) ||
-+      toolbarItem?.localName == "toolbarspring") && false;
+       ["tabbrowser-tabs", "sidebar-button"].includes(toolbarItem?.id) ||
+       toolbarItem?.localName == "toolbarspring" ||
+-      isTitlebarSpacer;
++      isTitlebarSpacer && false;
+ 
      let toggleVerticalTabsItem = document.getElementById(
        "toolbar-context-toggle-vertical-tabs"
-     );

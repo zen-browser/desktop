@@ -6,7 +6,7 @@ if test "$ZEN_CROSS_COMPILING"; then
 
   export WINSYSROOT="$(echo ~)/win-cross/vs2022"
 
-  export WINE="$(echo ~)/win-cross/wine/bin/wine64"
+  export WINE="$(echo ~)/win-cross/wine/bin/wine"
   export WINEDEBUG=-all
 
   export MOZ_STUB_INSTALLER=1

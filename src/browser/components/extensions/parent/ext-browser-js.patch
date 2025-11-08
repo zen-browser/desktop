@@ -1,5 +1,5 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 89b0bb3b92c15b89499ffc6cf35dcee7ebb89e48..327afaea3821cdca8d7f58bfaa65c7ce3dbfa7a3 100644
+index 2488267f4be5142bcacf984635d9e9ecdb5f02e9..03127808b3cae28850cc276fac0f1acbca85d326 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
 @@ -354,6 +354,7 @@ class TabTracker extends TabTrackerBase {
@@ -18,7 +18,7 @@ index 89b0bb3b92c15b89499ffc6cf35dcee7ebb89e48..327afaea3821cdca8d7f58bfaa65c7ce
  
      this._tabs.set(nativeTab, id);
      if (nativeTab.linkedBrowser) {
-@@ -1271,6 +1273,10 @@ class TabManager extends TabManagerBase {
+@@ -1273,6 +1275,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {

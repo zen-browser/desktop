@@ -686,10 +686,60 @@ var gZenUIManager = {
     this._toastTimeouts[messageId] = setTimeout(timeoutFunction, options.timeout || 2000);
   },
 
-  get panelUIPosition() {
-    return gZenVerticalTabsManager._hasSetSingleToolbar && !gZenVerticalTabsManager._prefsRightSide
-      ? 'bottomleft topleft'
-      : 'bottomright topright';
+  panelUIPosition(panel, anchor) {
+    void panel;
+    // The alignment position of the panel is determined during the "popuppositioned" event
+    // when the panel opens. The alignment positions help us determine in which orientation
+    // the panel is anchored to the screen space.
+    //
+    // *  "after_start": The panel is anchored at the top-left     corner in LTR locales, top-right    in RTL locales.
+    // *    "after_end": The panel is anchored at the top-right    corner in LTR locales, top-left     in RTL locales.
+    // * "before_start": The panel is anchored at the bottom-left  corner in LTR locales, bottom-right in RTL locales.
+    // *   "before_end": The panel is anchored at the bottom-right corner in LTR locales, bottom-left  in RTL locales.
+    //
+    //   ┌─Anchor(LTR)          ┌─Anchor(RTL)
+    //   │       Anchor(RTL)─┐  │       Anchor(LTR)─┐
+    //   │                   │  │                   │
+    //   x───────────────────x  x───────────────────x
+    //   │                   │  │                   │
+    //   │       Panel       │  │       Panel       │
+    //   │   "after_start"   │  │    "after_end"    │
+    //   │                   │  │                   │
+    //   └───────────────────┘  └───────────────────┘
+    //
+    //   ┌───────────────────┐  ┌───────────────────┐
+    //   │                   │  │                   │
+    //   │       Panel       │  │       Panel       │
+    //   │   "before_start"  │  │    "before_end"   │
+    //   │                   │  │                   │
+    //   x───────────────────x  x───────────────────x
+    //   │                   │  │                   │
+    //   │       Anchor(RTL)─┘  │       Anchor(LTR)─┘
+    //   └─Anchor(LTR)          └─Anchor(RTL)
+    //
+    // The default choice for the panel is "after_start", to match the content context menu's alignment. However, it is
+    // possible to end up with any of the four combinations. Before the panel is opened, the XUL popup manager needs to
+    // make a determination about the size of the panel and whether or not it will fit within the visible screen area with
+    // the intended alignment. The manager may change the panel's alignment before opening to ensure the panel is fully visible.
+    //
+    // For example, if the panel is opened such that the bottom edge would be rendered off screen, then the XUL popup manager
+    // will change the alignment from "after_start" to "before_start", anchoring the panel's bottom corner to the target screen
+    // location instead of its top corner. This transformation ensures that the whole of the panel is visible on the screen.
+    //
+    // When the panel is anchored by one of its bottom corners (the "before_..." options), then it causes unintentionally odd
+    // behavior where dragging the text-area resizer downward with the mouse actually grows the panel's top edge upward, since
+    // the bottom of the panel is anchored in place. We want to disable the resizer if the panel was positioned to be anchored
+    // from one of its bottom corners.
+    let block = 'bottomleft';
+    let inline = 'topleft';
+    if (anchor?.closest('#zen-sidebar-top-buttons')) {
+      block = 'topleft';
+    }
+    if (gZenVerticalTabsManager._hasSetSingleToolbar && !gZenVerticalTabsManager._prefsRightSide) {
+      block = 'bottomright';
+      inline = 'topright';
+    }
+    return `${block} ${inline}`;
   },
 
   urlStringsDomainMatch(url1, url2) {

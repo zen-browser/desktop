@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 0081bb470c9b15b39441ff844680e5e91b05fb86..3e4e7c43cf0e4feffb80623491de6222bb88a64b 100644
+index 4500e3a3a7d54bd7647cd09ab0e11df782fb7a69..9506e860966e974b377b3e2e71c91f9d2c4a0c92 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -45,6 +45,8 @@
@@ -11,7 +11,7 @@ index 0081bb470c9b15b39441ff844680e5e91b05fb86..3e4e7c43cf0e4feffb80623491de6222
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -106,6 +108,11 @@
+@@ -109,6 +111,11 @@
    <hbox flex="1">
  
      <vbox class="navigation">
@@ -23,7 +23,7 @@ index 0081bb470c9b15b39441ff844680e5e91b05fb86..3e4e7c43cf0e4feffb80623491de6222
        <!-- category list -->
        <richlistbox id="categories" data-l10n-id="category-list" data-l10n-attrs="aria-label">
          <richlistitem id="category-general"
-@@ -118,6 +125,50 @@
+@@ -121,6 +128,50 @@
            <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
          </richlistitem>
  
@@ -74,7 +74,7 @@ index 0081bb470c9b15b39441ff844680e5e91b05fb86..3e4e7c43cf0e4feffb80623491de6222
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -229,11 +280,6 @@
+@@ -232,11 +283,6 @@
                  <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
                </hbox>
              </hbox>
@@ -86,7 +86,7 @@ index 0081bb470c9b15b39441ff844680e5e91b05fb86..3e4e7c43cf0e4feffb80623491de6222
            </hbox>
          </hbox>
          <vbox id="mainPrefPane">
-@@ -247,6 +293,10 @@
+@@ -250,6 +296,10 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml

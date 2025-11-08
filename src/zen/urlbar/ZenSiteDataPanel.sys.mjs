@@ -53,6 +53,7 @@ export class nsZenSiteDataPanel {
     this.panel.addEventListener('popupshowing', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
+    this.anchor.addEventListener('click', this);
     const kCommandIDs = [
       'zen-site-data-header-share',
       'zen-site-data-header-bookmark',
@@ -182,6 +183,12 @@ export class nsZenSiteDataPanel {
     }
   }
 
+  get #currentPageIsBookmarked() {
+    // A hacky way to check if the current page is bookmarked, but
+    // it works for our purposes.
+    return this.window.BookmarkingUI.star?.hasAttribute('starred');
+  }
+
   #setSiteHeader() {
     {
       const button = this.document.getElementById('zen-site-data-header-reader-mode');
@@ -199,7 +206,7 @@ export class nsZenSiteDataPanel {
     }
     {
       const button = this.document.getElementById('zen-site-data-header-bookmark');
-      const isPageBookmarked = this.window.BookmarkingUI.star?.hasAttribute('starred');
+      const isPageBookmarked = this.#currentPageIsBookmarked;
 
       if (isPageBookmarked) {
         button.classList.add('active');
@@ -597,6 +604,10 @@ export class nsZenSiteDataPanel {
       case 'zen-site-data-settings-more': {
         const { BrowserCommands } = this.window;
         BrowserCommands.pageInfo(null, 'permTab');
+        break;
+      }
+      case 'zen-site-data-icon-button': {
+        this.window.gUnifiedExtensions.togglePanel(event);
         break;
       }
       default: {

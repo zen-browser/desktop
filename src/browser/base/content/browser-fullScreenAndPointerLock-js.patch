@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
-index b41449d4c4bc373a4c9cf449c0bb370bfdbc20d6..f1166929397dd39b7f44bd9cb0d62a45d67f0e1d 100644
+index bef746dc594ad974c91075cf3657c199f8f8830f..bb671341b6715c42df76f7298ba55e1fac73f33b 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
-@@ -427,10 +427,10 @@ var FullScreen = {
+@@ -424,10 +424,10 @@ var FullScreen = {
      gNavToolbox.classList.toggle("fullscreen-with-menubar", shiftSize > 0);
  
      let transform = shiftSize > 0 ? `translateY(${shiftSize}px)` : "";

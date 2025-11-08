@@ -1,10 +1,11 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index a786155d80a9f1f09d209f2da11437ee2d662739..2e422b48b452698275118d336d1b16af6a221577 100644
+index 65efb0666785cc79e58015e19ec55216bf4ec9c4..95941c52ffd4c9ee36f584413fb96d59721113db 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
-@@ -30,3 +30,5 @@ browser.jar:
-    content/browser/preferences/widgets/setting-control.mjs              (widgets/setting-control/setting-control.mjs)
-    content/browser/preferences/widgets/setting-group.mjs                (widgets/setting-group/setting-group.mjs)
-    content/browser/preferences/widgets/setting-group.css                (widgets/setting-group/setting-group.css)
+@@ -33,3 +33,5 @@ browser.jar:
+    content/browser/preferences/widgets/setting-pane.mjs                 (widgets/setting-pane/setting-pane.mjs)
+    content/browser/preferences/widgets/security-privacy-card.mjs        (widgets/security-privacy/security-privacy-card/security-privacy-card.mjs)
+    content/browser/preferences/widgets/security-privacy-card.css        (widgets/security-privacy/security-privacy-card/security-privacy-card.css)
 +
 +   content/browser/preferences/zen-settings.js
+\ No newline at end of file

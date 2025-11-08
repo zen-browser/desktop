@@ -304,4 +304,4 @@ zen-devtools-toggle-performance-shortcut = Увімк. / Вимк. продук�
 zen-devtools-toggle-storage-shortcut = Увімк. / Вимк. сховище
 zen-devtools-toggle-dom-shortcut = Увімк. / Вимк. DOM
 zen-devtools-toggle-accessibility-shortcut = Увімк. / Вимк. доступ
-zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-close-all-unpinned-tabs-shortcut = Закрити всі відкріплені вкладки

@@ -1,17 +1,17 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d89fb95494 100644
+index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..f13ed1412bb7ae6623aa2605d7691d10540eb659 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
-@@ -126,6 +126,8 @@ const TAB_EVENTS = [
-   "TabUngrouped",
+@@ -127,6 +127,8 @@ const TAB_EVENTS = [
    "TabGroupCollapse",
    "TabGroupExpand",
+   "TabSplitViewActivate",
 +  "TabAddedToEssentials",
 +  "TabRemovedFromEssentials",
  ];
  
  const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-@@ -1904,6 +1906,8 @@ var SessionStoreInternal = {
+@@ -1911,6 +1913,8 @@ var SessionStoreInternal = {
        case "TabPinned":
        case "TabUnpinned":
        case "SwapDocShells":
@@ -20,7 +20,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
          this.saveStateDelayed(win);
          break;
        case "TabGroupCreate":
-@@ -2139,7 +2143,6 @@ var SessionStoreInternal = {
+@@ -2151,7 +2155,6 @@ var SessionStoreInternal = {
        if (closedWindowState) {
          let newWindowState;
          if (
@@ -28,7 +28,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
            !lazy.SessionStartup.willRestore()
          ) {
            // We want to split the window up into pinned tabs and unpinned tabs.
-@@ -2372,11 +2375,9 @@ var SessionStoreInternal = {
+@@ -2384,11 +2387,9 @@ var SessionStoreInternal = {
            tabbrowser.selectedTab.label;
        }
  
@@ -40,7 +40,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
  
        // Store the window's close date to figure out when each individual tab
        // was closed. This timestamp should allow re-arranging data based on how
-@@ -3361,7 +3362,7 @@ var SessionStoreInternal = {
+@@ -3373,7 +3374,7 @@ var SessionStoreInternal = {
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
@@ -49,7 +49,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        return;
      }
  
-@@ -4073,6 +4074,11 @@ var SessionStoreInternal = {
+@@ -4089,6 +4090,11 @@ var SessionStoreInternal = {
          Math.min(tabState.index, tabState.entries.length)
        );
        tabState.pinned = false;
@@ -61,7 +61,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -4509,6 +4515,7 @@ var SessionStoreInternal = {
+@@ -4525,6 +4531,7 @@ var SessionStoreInternal = {
        // Append the tab if we're opening into a different window,
        tabIndex: aSource == aTargetWindow ? pos : Infinity,
        pinned: state.pinned,
@@ -69,7 +69,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        userContextId: state.userContextId,
        skipLoad: true,
        preferredRemoteType,
-@@ -5358,7 +5365,7 @@ var SessionStoreInternal = {
+@@ -5374,7 +5381,7 @@ var SessionStoreInternal = {
  
      for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
        let tab = tabbrowser.tabs[i];
@@ -78,7 +78,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
          removableTabs.push(tab);
        }
      }
-@@ -5418,7 +5425,7 @@ var SessionStoreInternal = {
+@@ -5434,7 +5441,7 @@ var SessionStoreInternal = {
      }
  
      let workspaceID = aWindow.getWorkspaceID();
@@ -87,7 +87,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        winData.workspaceID = workspaceID;
      }
    },
-@@ -5609,11 +5616,12 @@ var SessionStoreInternal = {
+@@ -5625,11 +5632,12 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -101,7 +101,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
-@@ -5624,6 +5632,7 @@ var SessionStoreInternal = {
+@@ -5640,6 +5648,7 @@ var SessionStoreInternal = {
        tabsData.push(tabData);
      }
  
@@ -109,7 +109,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {
-@@ -5636,7 +5645,7 @@ var SessionStoreInternal = {
+@@ -5652,7 +5661,7 @@ var SessionStoreInternal = {
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
      if (aWindow.FirefoxViewHandler.tab?.selected) {
@@ -118,7 +118,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5748,8 +5757,8 @@ var SessionStoreInternal = {
+@@ -5764,8 +5773,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -129,7 +129,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5792,6 +5801,8 @@ var SessionStoreInternal = {
+@@ -5808,6 +5817,8 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
@@ -138,7 +138,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6348,6 +6359,25 @@ var SessionStoreInternal = {
+@@ -6371,6 +6382,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -164,7 +164,7 @@ index eb62ff3e733e43fdaa299babddea3ba0125abb06..8f20ba50b06f5b75d7de08eb4d1b27d8
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -7263,7 +7293,7 @@ var SessionStoreInternal = {
+@@ -7289,7 +7319,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {

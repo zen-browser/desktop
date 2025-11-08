@@ -1,17 +1,17 @@
 diff --git a/browser/themes/shared/urlbarView.css b/browser/themes/shared/urlbarView.css
-index ec849fc792572e75d12b9e7cd7e6b7f32c799fa9..17c7d442854b774817ef5b3b96e732c19bebef9d 100644
+index e0a05846eb0a329fc58b660f806912a1afe7c6c9..0d02e227a84ff4229104dd9cf9cd20f50a8d136c 100644
 --- a/browser/themes/shared/urlbarView.css
 +++ b/browser/themes/shared/urlbarView.css
 @@ -20,7 +20,7 @@
  
    --urlbarView-small-font-size: 0.85em;
  
--  --urlbarView-results-padding: 4px;
+-  --urlbarView-results-padding: 7px;
 +  --urlbarView-results-padding: 8px;
    --urlbarView-row-gutter: 2px;
    --urlbarView-item-inline-padding: var(--urlbar-icon-padding);
    --urlbarView-item-block-padding: 6px;
-@@ -173,7 +173,6 @@
+@@ -171,7 +171,6 @@
        min-height: 32px;
      }
      :root[uidensity="touch"] & {

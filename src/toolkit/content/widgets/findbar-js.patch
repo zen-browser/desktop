@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/findbar.js b/toolkit/content/widgets/findbar.js
-index 8ca512e0b212bb6e25ed37e7edb4f8e2587d5bb0..5abfff92b3a8df5d138082af96419668a2c8a9bb 100644
+index 589d96886b1c9a1bd0e819957978a8968402e98b..4df4be8dbbe67063f0e1920baa2db3f5b909b11b 100644
 --- a/toolkit/content/widgets/findbar.js
 +++ b/toolkit/content/widgets/findbar.js
 @@ -1188,6 +1188,7 @@

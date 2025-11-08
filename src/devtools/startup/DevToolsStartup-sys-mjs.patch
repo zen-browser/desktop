@@ -1,5 +1,5 @@
 diff --git a/devtools/startup/DevToolsStartup.sys.mjs b/devtools/startup/DevToolsStartup.sys.mjs
-index 95de0614e392e00036500a5b3ef9976041f37ec6..2c842055ce1d7ffd94c8f21a82305a3a13d493e0 100644
+index 7d26af162be5620649ff36d7cf7d3835a8ac7a20..c0fbd46c22f1eacc82058919714174d15e8106f1 100644
 --- a/devtools/startup/DevToolsStartup.sys.mjs
 +++ b/devtools/startup/DevToolsStartup.sys.mjs
 @@ -816,6 +816,7 @@ DevToolsStartup.prototype = {

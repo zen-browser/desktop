@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/pictureinpicture/player.css b/toolkit/themes/shared/pictureinpicture/player.css
-index 33b10bebcdfe636d7ff0f61a11d5fa4664a31f78..83b53817c53f43cca3be40b490300109b4949f5b 100644
+index 12dba9ec5eee93476034b1e8b503a301fc18dbcb..b81c9e997d85e78cdf6ab460e14a5128117639bd 100644
 --- a/toolkit/themes/shared/pictureinpicture/player.css
 +++ b/toolkit/themes/shared/pictureinpicture/player.css
 @@ -738,3 +738,17 @@ input:checked + .slider::before {

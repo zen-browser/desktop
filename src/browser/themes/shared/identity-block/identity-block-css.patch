@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 8edca63dc52ec207475ed9965559d28c06e27971..a5a949be1868af5d0bb04747a9f5b737c00ae49c 100644
+index d542e962d42b17140888e299ed43a838047ee48c..5e0b72f147687924c48dfed0318f53b765a4d497 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
 @@ -81,13 +81,6 @@
@@ -11,7 +11,7 @@ index 8edca63dc52ec207475ed9965559d28c06e27971..a5a949be1868af5d0bb04747a9f5b737
 -  background-color: var(--urlbar-box-bgcolor);
 -  color: var(--urlbar-box-text-color);
 -  padding-inline: 8px;
--  border-radius: var(--urlbar-icon-border-radius);
+-  border-radius: var(--urlbar-inner-border-radius);
 -}
  
  #urlbar[focused] {

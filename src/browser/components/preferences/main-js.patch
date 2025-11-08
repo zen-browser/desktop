@@ -1,8 +1,16 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 259bc260328af1b1f2b95866e7cf92dec341a4b0..3cebff51774b2542a8d4d888aa99dc10929c80be 100644
+index 259bc260328af1b1f2b95866e7cf92dec341a4b0..73ac03c90af0ba2b3890036f6293f76bd02dd347 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -443,7 +443,7 @@ function getBundleForLocales(newLocales) {
+@@ -90,6 +90,7 @@ Preferences.addAll([
+   { id: "browser.warnOnQuitShortcut", type: "bool" },
+   { id: "browser.tabs.warnOnOpen", type: "bool" },
+   { id: "browser.ctrlTab.sortByRecentlyUsed", type: "bool" },
++  { id: "browser.ctrlTab.restrictToSection", type: "bool" },
+   { id: "browser.tabs.hoverPreview.enabled", type: "bool" },
+   { id: "browser.tabs.hoverPreview.showThumbnails", type: "bool" },
+   { id: "browser.tabs.groups.smart.userEnabled", type: "bool" },
+@@ -443,7 +444,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(
@@ -11,3 +19,37 @@ index 259bc260328af1b1f2b95866e7cf92dec341a4b0..3cebff51774b2542a8d4d888aa99dc10
      false,
      undefined,
      locales
+@@ -620,6 +621,17 @@ var gMainPane = {
+     setEventListener("ctrlTabRecentlyUsedOrder", "command", function () {
+       Services.prefs.clearUserPref("browser.ctrlTab.migrated");
+     });
++
++    Preferences.get("browser.ctrlTab.sortByRecentlyUsed").on(
++      "change",
++      () => this.updateCtrlTabSectionToggleState()
++    );
++    Preferences.get("browser.ctrlTab.restrictToSection").on(
++      "change",
++      () => this.updateCtrlTabSectionToggleState()
++    );
++    this.updateCtrlTabSectionToggleState();
++
+     setEventListener("manageBrowserLanguagesButton", "command", function () {
+       gMainPane.showBrowserLanguagesSubDialog({ search: false });
+     });
+@@ -1210,6 +1222,15 @@ var gMainPane = {
+     return undefined;
+   },
+ 
++  updateCtrlTabSectionToggleState() {
++    const restrictInfo = document.getElementById("ctrlTabRestrictInfo");
++
++    const cycleRestrict = Preferences.get("browser.ctrlTab.restrictToSection");
++    const cycleRecentlyUsed = Preferences.get("browser.ctrlTab.sortByRecentlyUsed");
++
++    restrictInfo.hidden = !(cycleRestrict.value && cycleRecentlyUsed.value);
++  },
++
+   /**
+    * Hide/show the "Show my windows and tabs from last time" option based
+    * on the value of the browser.privatebrowsing.autostart pref.

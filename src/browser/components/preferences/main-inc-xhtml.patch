@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615fad5e0760 100644
+index 891cf7108cf4606c99a902afa420e744b9690b87..ceda60d9f2c2d26d95606d80303cc32ab8c5160d 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
 @@ -29,6 +29,11 @@
@@ -14,7 +14,22 @@ index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615f
  #ifdef XP_WIN
      <hbox id="windowsLaunchOnLoginBox" align="center" hidden="true">
        <checkbox id="windowsLaunchOnLogin"
-@@ -189,7 +194,8 @@
+@@ -125,6 +130,14 @@
+     <checkbox id="ctrlTabRecentlyUsedOrder" data-l10n-id="ctrl-tab-recently-used-order"
+               preference="browser.ctrlTab.sortByRecentlyUsed"/>
+ 
++    <checkbox id="ctrlTabRestrictToSection" data-l10n-id="ctrl-tab-restrict-to-section"
++              preference="browser.ctrlTab.restrictToSection"/>
++
++    <description id="ctrlTabRestrictInfo"
++                 class="indent description-deemphasized"
++                 data-l10n-id="ctrl-tab-restrict-warning"
++                 hidden="true"/>
++
+     <checkbox id="linkTargeting" data-l10n-id="open-new-link-as-tabs"
+               preference="browser.link.open_newwindow"/>
+ 
+@@ -189,7 +202,8 @@
  <!-- Browser layout -->
  <groupbox data-category="paneGeneral"
            data-subcategory="layout"
@@ -24,7 +39,7 @@ index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615f
    <label><html:h2 data-l10n-id="browser-layout-header"/></label>
    <radiogroup id="browserLayoutRadioGroup" preference="sidebar.verticalTabs">
      <radio id="browserLayoutHorizontalTabs" data-l10n-id="browser-layout-horizontal-tabs" value="false"/>
-@@ -420,6 +426,7 @@
+@@ -420,6 +434,7 @@
                languages-customize-add.label,
              " />
    </hbox>

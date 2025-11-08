@@ -1,5 +1,5 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index 6c5b38eb3cdb08a8afd670705c75c052b85b6dd9..823df9ef5245dcffcbfaba1fafc6b15ece174676 100644
+index 43532357fc9ff86813af8b7bd2ec267b2c23b9c1..da905de5dfcea1c42271dd7c7d0bde52e8704cd7 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
 @@ -85,6 +85,7 @@
@@ -23,7 +23,7 @@ index 6c5b38eb3cdb08a8afd670705c75c052b85b6dd9..823df9ef5245dcffcbfaba1fafc6b15e
    ScrollContainerFrame* sf = state->mPresShell->GetRootScrollContainerFrame();
    if (sf && IsInSubdocument()) {
      // We are forcing a rebuild of nsDisplayCanvasBackgroundColor to make sure
-@@ -1221,6 +1228,15 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
+@@ -1231,6 +1238,15 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
    ResetMarkedFramesForDisplayList(aReferenceFrame);
    mPresShellStates.RemoveLastElement();
  

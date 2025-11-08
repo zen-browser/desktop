@@ -1,5 +1,5 @@
 diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
-index c1cc9a6505ffb3f0019ce007c8d17366364bdd86..faf802c4ddef7d9d670242dec5b580c8e9b42111 100644
+index edae3bacba3a029cfb4038e1de4b36b366488385..40b7b7b66edeeb99a5208d989077e6a39162c7a4 100644
 --- a/layout/base/nsPresContext.cpp
 +++ b/layout/base/nsPresContext.cpp
 @@ -20,6 +20,7 @@
@@ -10,7 +10,7 @@ index c1cc9a6505ffb3f0019ce007c8d17366364bdd86..faf802c4ddef7d9d670242dec5b580c8
  #include "mozilla/AnimationEventDispatcher.h"
  #include "mozilla/ContentBlockingAllowList.h"
  #include "mozilla/CycleCollectedJSContext.h"
-@@ -915,6 +916,13 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
+@@ -917,6 +918,13 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
    }
  
    auto* top = browsingContext->Top();

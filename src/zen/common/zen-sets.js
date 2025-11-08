@@ -23,9 +23,6 @@ document.addEventListener(
           case 'cmd_zenWorkspaceForward':
             gZenWorkspaces.changeWorkspaceShortcut();
             break;
-          case 'cmd_zenOpenBoostEditor':
-            gZenUIManager.openBoostWindow();
-            break;
           case 'cmd_zenWorkspaceBackward':
             gZenWorkspaces.changeWorkspaceShortcut(-1);
             break;

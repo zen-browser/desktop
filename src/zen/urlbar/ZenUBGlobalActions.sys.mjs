@@ -23,46 +23,6 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/split.svg',
   },
   {
-    label: 'Create New Boost',
-    command: 'cmd_zenOpenBoostEditor',
-    icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
-    isAvailable: (window) => {
-      const tab = window.gBrowser.selectedTab;
-      const domain = tab.linkedBrowser.currentURI.host;
-      const uri = window.gBrowser.currentURI;
-
-      const { gZenBoostsManager } = ChromeUtils.importESModule(
-        'resource:///modules/ZenBoostsManager.sys.mjs'
-      );
-
-      return (
-        !tab.hasAttribute('zen-empty-tab') &&
-        !gZenBoostsManager.registeredBoostForDomain(domain) &&
-        gZenBoostsManager.canBoostSite(uri)
-      );
-    },
-  },
-  {
-    label: 'Edit Boost',
-    command: 'cmd_zenOpenBoostEditor',
-    icon: 'chrome://browser/skin/zen-icons/selectable/boost.svg',
-    isAvailable: (window) => {
-      const tab = window.gBrowser.selectedTab;
-      const domain = tab.linkedBrowser.currentURI.host;
-      const uri = window.gBrowser.currentURI;
-
-      const { gZenBoostsManager } = ChromeUtils.importESModule(
-        'resource:///modules/ZenBoostsManager.sys.mjs'
-      );
-
-      return (
-        !tab.hasAttribute('zen-empty-tab') &&
-        gZenBoostsManager.registeredBoostForDomain(domain) &&
-        gZenBoostsManager.canBoostSite(uri)
-      );
-    },
-  },
-  {
     label: 'New Folder',
     command: 'cmd_zenOpenFolderCreation',
     icon: 'chrome://browser/skin/zen-icons/folder.svg',

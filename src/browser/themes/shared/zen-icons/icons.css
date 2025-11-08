@@ -918,15 +918,19 @@
   fill: currentColor;
   border-radius: 6px;
   appearance: none;
-  padding: 6px 6px 6px 6px;
+  padding: 6px 10px 6px 10px;
 
   position: relative;
 
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush.svg');
+
+  & .toolbarbutton-text {
+    display: none;
+  }
 }
 
 #zen-site-data-boost[boosting] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush-fill.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush-fill.svg');
 }
 
 #zen-site-data-boost[boosting]::after {

@@ -1,8 +1,8 @@
 diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
-index e1186f0b9f25f5c78f2cb3dc4d2a607c1ede04a9..03f338d61c0a550407025b6736f80829d6f574de 100644
+index 659c2a237280794c19de2fbb54b3b3070590cc30..b47ef9d53ddcdd904c1383fd136cf13a2224f347 100644
 --- a/layout/base/nsPresContext.h
 +++ b/layout/base/nsPresContext.h
-@@ -560,6 +560,7 @@ class nsPresContext : public nsISupports,
+@@ -566,6 +566,7 @@ class nsPresContext : public nsISupports,
    void UpdateForcedColors(bool aNotify = true);
  
   public:

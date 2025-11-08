@@ -931,6 +931,10 @@
   & .toolbarbutton-text {
     display: none;
   }
+
+  @media not (-moz-pref('zen.boosts.enabled', true)) {
+    display: none;
+  }
 }
 
 #zen-site-data-boost[boosting] {

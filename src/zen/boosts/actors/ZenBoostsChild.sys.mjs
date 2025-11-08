@@ -110,7 +110,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
         }
         browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
         // Has to be a finite value for zoom to work correctly
-        browsingContext.fullZoom = boost.siteSizeOverride;
+        // TODO: Figure out something better for site size override
+        // browsingContext.fullZoom = boost.siteSizeOverride;
         if (boost.enableColorBoost) {
           const rgbColor = this.#hslToRgb(
             boost.dotAngleDeg / 360,

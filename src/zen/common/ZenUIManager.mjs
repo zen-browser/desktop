@@ -182,10 +182,12 @@ var gZenUIManager = {
       left = screenX + width - (editorWidth + pad);
     }
 
-    const editor = window.openDialog(
+    const editor = Services.ww.openWindow(
+      window,
       'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
-      '',
-      `left=${left},top=${top + animationTarget},chrome,alwaysontop,resizable=no`
+      null,
+      `left=${left},top=${top + animationTarget},chrome,alwaysontop,resizable=no`,
+      null
     );
 
     // Close the editor if the tab is switched

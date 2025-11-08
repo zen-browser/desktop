@@ -57,13 +57,20 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById('zen-boost-controls')
       .addEventListener('click', (event) => this.openAdvancedColorOptions(event));
-    this.doc
-      .getElementById('zen-boost-close')
-      .addEventListener('click', this.onClosePressed.bind(this));
 
     this.doc
       .getElementById('zen-boost-name')
       .addEventListener('input', (e) => (this.currentBoostData.boostName = e.target.value));
+
+    this.doc
+      .getElementById('zen-boost-close')
+      .addEventListener('click', this.onClosePressed.bind(this));
+
+    this.doc.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' || (event.key === 'w' && (event.ctrlKey || event.metaKey))) {
+        this.onClosePressed();
+      }
+    });
 
     this.initialized = true;
   }
@@ -178,7 +185,7 @@ export class nsZenBoostEditor {
     this.wasDragging = false;
   }
 
-  onBoostSizePressed(event) {
+  onBoostSizePressed() {
     const sizeValue = this.doc.getElementById('zen-boost-size-value');
 
     if (this.currentBoostData.siteSizeOverride >= 1.5) this.currentBoostData.siteSizeOverride = 0.9;
@@ -198,9 +205,7 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
-  onBoostCasePressed(event) {
-    const caseButton = this.doc.getElementById('zen-boost-text-case-toggle');
-
+  onBoostCasePressed() {
     if (this.currentBoostData.textCaseOverride == 'lower')
       this.currentBoostData.textCaseOverride = 'upper';
     else if (this.currentBoostData.textCaseOverride == 'upper')
@@ -211,7 +216,7 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
-  onColorOptionChange(event) {
+  onColorOptionChange() {
     this.currentBoostData.contrast = this.doc.getElementById('zen-boost-color-contrast').value;
     this.currentBoostData.brightness = this.doc.getElementById('zen-boost-color-brightness').value;
     this.currentBoostData.saturation = this.doc.getElementById('zen-boost-color-saturation').value;
@@ -221,7 +226,7 @@ export class nsZenBoostEditor {
 
   openAdvancedColorOptions(event) {
     const panel = this.doc.getElementById('zen-boost-advanced-color-options-panel');
-    panel.openPopup(event.target, 'bottomcenter topcenter', 0, 5);
+    panel.openPopup(event.target, 'bottomcenter topcenter', 0, 2);
   }
 
   resetDotPosition() {

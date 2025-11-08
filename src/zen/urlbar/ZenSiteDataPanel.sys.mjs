@@ -8,6 +8,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   FeatureCallout: 'resource:///modules/asrouter/FeatureCallout.sys.mjs',
+  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
 });
 
 export class nsZenSiteDataPanel {
@@ -160,16 +161,12 @@ export class nsZenSiteDataPanel {
     const domain = url.hostname;
     const uri = this.window.gBrowser.currentURI;
 
-    const { gZenBoostsManager } = ChromeUtils.importESModule(
-      'resource:///modules/ZenBoostsManager.sys.mjs'
-    );
-
-    if (!gZenBoostsManager.canBoostSite(uri)) {
+    if (!lazy.gZenBoostsManager.canBoostSite(uri)) {
       boostButton.removeAttribute('boosting');
       return;
     }
 
-    if (gZenBoostsManager.registeredBoostForDomain(domain))
+    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain))
       boostButton.setAttribute('boosting', 'true');
     else boostButton.removeAttribute('boosting');
   }

@@ -89,17 +89,19 @@
     </vbox>
   </vbox>
 
-  <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
-    <div id="zen-boost-advanced-color-options-container">
-      <p>Contrast</p>
-      <html:input id="zen-boost-color-contrast" type="range" min="0" max="255" value="128"/>
-      <separator />
-      <p>Brightness</p>
-      <html:input id="zen-boost-color-brightness" type="range" min="0" max="255" value="128"/>
-      <separator />
-      <p>Original Saturation</p>
-      <html:input id="zen-boost-color-saturation" type="range" min="0" max="255" value="128"/>
-    </div>
-  </panel>
+  <popupset id="mainPopupSet">
+    <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
+      <div id="zen-boost-advanced-color-options-container">
+        <p>Contrast</p>
+        <html:input id="zen-boost-color-contrast" type="range" min="0" max="255" value="128"/>
+        <separator />
+        <p>Brightness</p>
+        <html:input id="zen-boost-color-brightness" type="range" min="0" max="255" value="128"/>
+        <separator />
+        <p>Original Saturation</p>
+        <html:input id="zen-boost-color-saturation" type="range" min="0" max="255" value="128"/>
+      </div>
+    </panel>
+  </popupset>
 </html:body>
 </html>

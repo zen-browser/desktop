@@ -62,6 +62,10 @@
   border-radius: var(--border-radius-medium);
   outline: none !important;
 
+  #urlbar:not([breakout-extend='true']) & {
+    margin: 1px;
+  }
+
   border: none !important;
   box-shadow: none !important;
 }

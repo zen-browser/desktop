@@ -107,4 +107,19 @@ var gZenCommonActions = {
       timer = setTimeout(() => f.apply(this, args), delay);
     };
   },
+
+  /**
+   * Determines if a tab should be closed when navigating back with no history.
+   * Only regular unpinned tabs (not pinned, not empty) are eligible.
+   * Respects the user preference zen.tabs.close-on-back-with-no-history.
+   *
+   * @param {Tab} tab - The tab to check
+   * @return {boolean} True if the tab should be closed on back
+   */
+  shouldCloseTabOnBack(tab) {
+    if (!Services.prefs.getBoolPref('zen.tabs.close-on-back-with-no-history', true)) {
+      return false;
+    }
+    return tab && !tab.pinned && !tab.hasAttribute('zen-empty-tab');
+  },
 };

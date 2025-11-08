@@ -56,6 +56,9 @@ pane-settings-workspaces-title = Workspaces
 zen-tabs-unloader-enabled =
     .label = Enable Tab Unloader
 
+zen-tabs-close-on-back-with-no-history =
+    .label = Close tab and switch to recent tab when going back with no history
+
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
 

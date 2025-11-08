@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163b914adec 100644
+index 70afbfc87d543971e6f8a0661a44b682920a7bc4..6ce60db5285be90d2fbd811a68353990feef2e10 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -213,7 +213,7 @@
@@ -37,7 +37,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
            return tab;
          }
        }
-@@ -885,10 +886,11 @@
+@@ -885,26 +886,43 @@
       * @param {boolean} [aWrap]
       */
      advanceSelectedTab(aDir, aWrap) {
@@ -49,4 +49,39 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
 +        startTab = gZenGlanceManager.getFocusedTab(aDir) || this.selectedItem;
        }
        let newTab = null;
+ 
++      const tabFilter = tab => {
++        if (!tab.visible) {
++          return false;
++        }
++        if (
++          !Services.prefs.getBoolPref("browser.ctrlTab.restrictToSection", false) ||
++          Services.prefs.getBoolPref("browser.ctrlTab.sortByRecentlyUsed", false)
++        ) {
++          return true;
++        }
++        if (startTab.hasAttribute("zen-essential")) {
++          return tab.hasAttribute("zen-essential");
++        }
++        return !tab.hasAttribute("zen-essential")
++      };
++
+       // Handle keyboard navigation for a hidden tab that can be selected, like the Firefox View tab,
+       // which has a random placement in this.allTabs.
+       if (startTab.hidden) {
+         if (aDir == 1) {
+-          newTab = this.allTabs.find(tab => tab.visible);
++          newTab = this.allTabs.find(tabFilter);
+         } else {
+-          newTab = this.allTabs.findLast(tab => tab.visible);
++          newTab = this.allTabs.findLast(tabFilter);
+         }
+       } else {
+         newTab = this.findNextTab(startTab, {
+           direction: aDir,
+           wrap: aWrap,
+-          filter: tab => tab.visible,
++          filter: tabFilter,
+         });
+       }
  

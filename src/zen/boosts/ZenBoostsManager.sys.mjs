@@ -46,10 +46,10 @@ export class nsZenBoostsManager {
       autoTheme: false,
 
       // Default to 100% scale
-      siteSizeOverride: 100,
+      siteSizeOverride: 1,
       textCaseOverride: 'none',
 
-      changeWasMade: false
+      changeWasMade: false,
     };
 
     if (this.registeredBoosts.has(domain)) {
@@ -71,9 +71,8 @@ export class nsZenBoostsManager {
   }
 
   // Save all boosts to the profile folder
-  saveBoostToStore(boostData) {    
-    if (boostData != null)
-       this.registeredBoosts.set(boostData.domain, boostData);
+  saveBoostToStore(boostData) {
+    if (boostData != null) this.registeredBoosts.set(boostData.domain, boostData);
     this.#writeToDisk(this.registeredBoosts);
     this.notify();
   }

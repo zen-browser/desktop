@@ -527,22 +527,26 @@
     list-style-image: url('permissions-fill.svg');
   }
   &[boosting] image {
+    color: var(--color-accent-primary);
     list-style-image: url('permissions-fill.svg');
   }
 
   position: relative;
 }
 
-#zen-site-data-icon-button[boosting]::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  background: url('chrome://browser/content/zen-images/boost-indicator.svg') no-repeat;
-  transform: translateX(-20%);
-  z-index: 0;
-  pointer-events: none;
+@media not (prefers-reduced-motion: reduce) {
+  #zen-site-data-icon-button[boosting]::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    color: var(--color-accent-primary);
+    background: url('chrome://browser/content/zen-images/boost-indicator.svg') no-repeat;
+    transform: translateX(-20%);
+    z-index: 0;
+    pointer-events: none;
+  }
 }
 
 .geo-icon {
@@ -1046,5 +1050,5 @@
 }
 
 #zen-boost-shuffle {
-list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg') !important;
 }

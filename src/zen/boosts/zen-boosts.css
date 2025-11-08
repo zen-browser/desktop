@@ -6,13 +6,20 @@
 
 #zenSettingsWindow {
   animation: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) zen-boost-window-in;
-  border-radius: 14px !important;
+}
+
+body {
+  overflow: clip;
+  display: flex;
+  margin: 0;
+  width: 100%;
 }
 
 #zen-boost-editor-root {
   border-radius: 14px !important;
   background-color: #fcfcfe;
   width: 185px;
+  user-select: none;
 
   & button {
     border-radius: 10px !important;
@@ -149,6 +156,11 @@
 
 #zen-boost-filter-wrapper {
   padding: 20px;
+  gap: 14px;
+  -moz-window-dragging: drag;
+  & > * {
+    -moz-window-dragging: no-drag;
+  }
 }
 
 .big-button {
@@ -204,19 +216,19 @@
 .mod-button {
   height: 38px !important;
 
-  transition: 
-    0.35s opacity cubic-bezier(0.075, 0.82, 0.165, 1), 
+  transition:
+    0.35s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
     0.35s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
   background-color: #ebebed;
   &:hover {
     opacity: 0.9;
   }
-  
+
   &:active {
     scale: 1 !important;
     transform: none !important;
-    
+
     opacity: 0.9;
     filter: brightness(0.9);
   }

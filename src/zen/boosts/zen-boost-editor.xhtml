@@ -1,27 +1,35 @@
+#filter substitution
 <?xml version="1.0"?>
-
-<!-- This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-boosts.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-buttons.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-theme.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-animations.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-panel-ui.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/skin/zen-icons/icons.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" type="text/css"?>
+# -*- Mode: HTML -*-
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <!DOCTYPE window>
 
-<window
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<html
   xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml"
   id="zenSettingsWindow"
   alwaysontop="true"
-  customtitlebar="true">
+  customtitlebar="true"
+  sizemode="normal"
+  scrolling="false"
+  macanimationtype="document"
+  data-l10n-sync="true">
+<head>
+  <link rel="stylesheet" href="chrome://browser/skin/" />
+  <link rel="stylesheet" href="chrome://global/skin/global.css" />
+
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-boosts.css" />
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-buttons.css" />
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-theme.css" />
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-animations.css" />
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-panel-ui.css" />
+  <link rel="stylesheet" href="chrome://browser/skin/zen-icons/icons.css" />
+  <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" />
 
   <!-- Loading in the window module -->
   <script>
@@ -30,37 +38,28 @@
       new nsZenBoostEditor(document, window.domain, window);
     });
   </script>
-
+</head>
+<html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox flex="1" id="zen-boost-editor-root">
-    <div id="zen-boost-head-wrapper">
+    <hbox id="zen-boost-head-wrapper">
       <button data-l10n="zen-boost-close" id="zen-boost-close" class="subviewbutton mod-button title-button"></button>
-      <button data-l10n="zen-boost-name" id="zen-boost-name" class="subviewbutton">
-        <p id="zen-boost-name-text">My Boost</p>
+      <button data-l10n="zen-boost-name" id="zen-boost-name" class="subviewbutton" flex="1">
+        <p id="zen-boost-name-text"></p>
       </button>
       <button data-l10n="zen-boost-shuffle" id="zen-boost-shuffle" class="subviewbutton mod-button title-button"></button>
-    </div>
+    </hbox>
     <vbox flex="1" id="zen-boost-filter-wrapper">
-
       <hbox class="zen-boost-color-picker-gradient">
         <button data-l10n="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
         <div class="zen-boost-color-picker-dot"></div>
         <div class="zen-boost-color-picker-circle"></div>
       </hbox>
 
-      <separator />
-
-      <!-- <html:input type="range" max="1" value="1" step="0.05" id="zen-boost-contrast" min="0.5"/>
-        <html:input type="range" max="360" value="0" step="5" id="zen-boost-hue-shift" min="0"/>
-        <html:input type="range" max="1" value="1" step="0.1" id="zen-boost-saturation" min="0"/> -->
-
       <hbox flex="1" id="zen-boost-toolbar-wrapper">
         <button data-l10n="zen-boost-invert" id="zen-boost-invert" class="subviewbutton mod-button small"></button>
         <button data-l10n="zen-boost-controls" id="zen-boost-controls" class="subviewbutton mod-button small"></button>
         <button data-l10n="zen-boost-disable" id="zen-boost-disable" class="subviewbutton mod-button small"></button>
       </hbox>
-
-      <separator />
-      <separator />
 
       <div id="zen-boost-font-wrapper">
         <vbox id="zen-boost-font-grid">
@@ -75,26 +74,17 @@
         </hbox>
       </div>
 
-      <separator />
-      <separator />
-
       <button data-l10n="zen-boost-size" id="zen-boost-size" class="subviewbutton mod-button big-button">
-        <p id="zen-boost-size-text">Size</p>
-        <p id="zen-boost-size-value">100%</p>
+        <html:p flex="1" id="zen-boost-size-text">Size</html:p>
+        <box id="zen-boost-size-value" />
       </button>
-
-      <separator />
-      <separator />
 
       <button data-l10n="zen-boost-zap" id="zen-boost-zap" class="subviewbutton mod-button big-button">
-        <p id="zen-boost-zap-text">Zap</p>
+        <html:p id="zen-boost-zap-text">Zap</html:p>
       </button>
 
-      <separator />
-      <separator />
-      
       <button data-l10n="zen-boost-code" id="zen-boost-code" class="subviewbutton mod-button big-button">
-        <p id="zen-boost-code-text">Code</p>
+        <html:p id="zen-boost-code-text">Code</html:p>
       </button>
     </vbox>
   </vbox>
@@ -111,4 +101,5 @@
       <html:input id="zen-boost-color-saturation" type="range" min="0" max="255" value="128"/>
     </div>
   </panel>
-</window>
+</html:body>
+</html>

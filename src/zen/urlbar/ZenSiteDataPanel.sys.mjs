@@ -82,7 +82,7 @@ export class nsZenSiteDataPanel {
   }
 
   observe(subject, topic) {
-    switch(topic) {
+    switch (topic) {
       case 'zen-boosts-update':
         this.window.gZenUIManager.checkIsTabBoosted();
         break;

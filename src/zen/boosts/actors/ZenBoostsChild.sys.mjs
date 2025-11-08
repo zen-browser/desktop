@@ -109,11 +109,16 @@ export class ZenBoostsChild extends JSWindowActorChild {
           prefersColorSchemeOverride = boost.topWindowIsDarkMode ? 'light' : 'dark';
         }
         browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
+        // Has to be a finite value for zoom to work correctly
+        browsingContext.fullZoom = boost.siteSizeOverride;
         if (boost.enableColorBoost) {
           const rgbColor = this.#hslToRgb(
             boost.dotAngleDeg / 360,
             boost.dotDistance * (boost.saturation / 255).toFixed(4) /* already is [0, 1] */,
-            0.2 + boost.dotDistance * 0.8 * (boost.brightness / 255).toFixed(4)  /* lightness range from [0.2, 0.8] */
+            0.2 +
+              boost.dotDistance *
+                0.8 *
+                (boost.brightness / 255).toFixed(4) /* lightness range from [0.2, 0.8] */
           );
           const nsColor = this.#rgbToNSColor(rgbColor, boost.contrast);
           browsingContext.zenBoostsData = nsColor;

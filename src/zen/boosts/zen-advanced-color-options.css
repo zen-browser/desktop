@@ -30,7 +30,8 @@
 
   @media (-moz-platform: macos) {
     &[animate='open'] {
-      animation: zen-color-options-panel-animation-macos 0.35s cubic-bezier(.29,1.37,.87,1) forwards !important;
+      animation: zen-color-options-panel-animation-macos 0.35s cubic-bezier(0.29, 1.37, 0.87, 1)
+        forwards !important;
     }
   }
 }
@@ -44,7 +45,7 @@
 }
 
 #zen-boost-advanced-color-options-panel input::-moz-range-thumb:active {
-    background-color: #cbcad0;
+  background-color: #cbcad0;
 }
 
 #zen-boost-advanced-color-options-container {

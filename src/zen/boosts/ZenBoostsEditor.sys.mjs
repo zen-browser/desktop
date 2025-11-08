@@ -181,19 +181,18 @@ export class nsZenBoostEditor {
   onBoostSizePressed(event) {
     const sizeValue = this.doc.getElementById('zen-boost-size-value');
 
-    if (this.currentBoostData.siteSizeOverride >= 150) this.currentBoostData.siteSizeOverride = 90;
-    else if (this.currentBoostData.siteSizeOverride >= 125)
-      this.currentBoostData.siteSizeOverride = 150;
-    else if (this.currentBoostData.siteSizeOverride >= 110)
-      this.currentBoostData.siteSizeOverride = 125;
-    else if (this.currentBoostData.siteSizeOverride >= 100)
-      this.currentBoostData.siteSizeOverride = 110;
-    else if (this.currentBoostData.siteSizeOverride >= 90)
-      this.currentBoostData.siteSizeOverride = -1;
-    else this.currentBoostData.siteSizeOverride = 110;
+    if (this.currentBoostData.siteSizeOverride >= 1.5) this.currentBoostData.siteSizeOverride = 0.9;
+    else if (this.currentBoostData.siteSizeOverride >= 1.25)
+      this.currentBoostData.siteSizeOverride = 1.5;
+    else if (this.currentBoostData.siteSizeOverride >= 1.1)
+      this.currentBoostData.siteSizeOverride = 1.25;
+    else if (this.currentBoostData.siteSizeOverride >= 1)
+      this.currentBoostData.siteSizeOverride = 1.1;
+    else if (this.currentBoostData.siteSizeOverride >= 0.9)
+      this.currentBoostData.siteSizeOverride = 1;
+    else this.currentBoostData.siteSizeOverride = 1.1;
 
-    if (this.currentBoostData.siteSizeOverride == -1) sizeValue.innerHTML = ``;
-    else sizeValue.innerHTML = `${this.currentBoostData.siteSizeOverride}%`;
+    sizeValue.innerHTML = `${Math.round(this.currentBoostData.siteSizeOverride * 100)}%`;
 
     this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
@@ -369,13 +368,13 @@ export class nsZenBoostEditor {
   updateSizeButtonVisuals() {
     const sizeValue = this.doc.getElementById('zen-boost-size');
 
-    if (this.currentBoostData.siteSizeOverride >= 150) sizeValue.setAttribute('mode', 'red');
-    else if (this.currentBoostData.siteSizeOverride >= 125)
+    if (this.currentBoostData.siteSizeOverride >= 1.5) sizeValue.setAttribute('mode', 'red');
+    else if (this.currentBoostData.siteSizeOverride >= 1.25)
       sizeValue.setAttribute('mode', 'orange-red');
-    else if (this.currentBoostData.siteSizeOverride >= 110)
+    else if (this.currentBoostData.siteSizeOverride >= 1.1)
       sizeValue.setAttribute('mode', 'orange');
-    else if (this.currentBoostData.siteSizeOverride >= 100) sizeValue.setAttribute('mode', 'none');
-    else if (this.currentBoostData.siteSizeOverride >= 90) sizeValue.setAttribute('mode', 'blue');
+    else if (this.currentBoostData.siteSizeOverride >= 1) sizeValue.setAttribute('mode', 'none');
+    else if (this.currentBoostData.siteSizeOverride >= 0.9) sizeValue.setAttribute('mode', 'blue');
     else sizeValue.setAttribute('mode', 'none');
   }
 

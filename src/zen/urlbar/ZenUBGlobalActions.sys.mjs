@@ -6,6 +6,26 @@ function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
 
+const ThemeCache = {
+  _value: 0,
+
+  init() {
+    this._value = Services.prefs.getIntPref('zen.view.window.scheme', 0);
+    Services.prefs.addObserver('zen.view.window.scheme', this);
+  },
+
+  observe(aSubject, aTopic, aData) {
+    if (aTopic === 'nsPref:changed' && aData === 'zen.view.window.scheme') {
+      this._value = Services.prefs.getIntPref('zen.view.window.scheme', 0);
+    }
+  },
+
+  get value() {
+    return this._value;
+  },
+};
+ThemeCache.init();
+
 const globalActionsTemplate = [
   {
     label: 'Toggle Compact Mode',
@@ -158,7 +178,7 @@ const globalActionsTemplate = [
     command: 'cmd_zenSwitchAutomaticAppearance',
     icon: 'chrome://browser/skin/zen-icons/sparkles.svg',
     isAvailable: () => {
-      return Services.prefs.getIntPref('zen.view.window.scheme') !== 2;
+      return ThemeCache.value !== 2;
     },
   },
   {
@@ -166,7 +186,7 @@ const globalActionsTemplate = [
     command: 'cmd_zenSwitchLightMode',
     icon: 'chrome://browser/skin/zen-icons/face-sun.svg',
     isAvailable: () => {
-      return Services.prefs.getIntPref('zen.view.window.scheme') !== 1;
+      return ThemeCache.value !== 1;
     },
   },
   {
@@ -174,7 +194,7 @@ const globalActionsTemplate = [
     command: 'cmd_zenSwitchDarkMode',
     icon: 'chrome://browser/skin/zen-icons/moon-stars.svg',
     isAvailable: () => {
-      return Services.prefs.getIntPref('zen.view.window.scheme') !== 0;
+      return ThemeCache.value !== 0;
     },
   },
 ];

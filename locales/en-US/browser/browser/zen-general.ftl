@@ -18,6 +18,11 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Replace Pinned URL with Current
     .accesskey = C
 
+ctrl-tab-restrict-to-section =
+    .label = Keep Ctrl+Tab within Essentials or regular tabs
+    .accesskey = K
+ctrl-tab-restrict-warning = This feature won't be active while tabs cycle in recently used order.
+
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
 zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
 

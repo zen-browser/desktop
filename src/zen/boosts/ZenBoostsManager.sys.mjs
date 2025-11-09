@@ -90,8 +90,8 @@ class nsZenBoostsManager {
    * Notifies all observers that boost data has been updated.
    * This triggers a 'zen-boosts-update' notification event.
    */
-  notify() {
-    Services.obs.notifyObservers(null, 'zen-boosts-update');
+  notify(unloadStyles = false) {
+    Services.obs.notifyObservers(null, 'zen-boosts-update', { unloadStyles });
   }
 
   /**
@@ -175,7 +175,7 @@ class nsZenBoostsManager {
    * @returns {nsIStyleSheet} The style sheet corresponding to the boost data.
    */
   getStyleSheetForBoost(boostData) {
-    //return
+    return this.#stylesManager.getStyleForBoost(boostData);
   }
 }
 

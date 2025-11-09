@@ -35,7 +35,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   observe(subject, topic) {
     if (topic === 'zen-boosts-update') {
-      this.sendQuery('ZenBoost:BoostDataUpdated');
+      this.sendQuery('ZenBoost:BoostDataUpdated', { unloadStyles: true });
     }
   }
 
@@ -51,10 +51,15 @@ export class ZenBoostsParent extends JSWindowActorParent {
         const domain = message.data;
         const embedder = this.browsingContext.top.embedderElement;
         if (!embedder || !domain) return null;
-        if (!lazy.gZenBoostsManager.registeredBoostForDomain(domain)) return null;
+        const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
+        if (!exists) return null;
         const topWindowIsDarkMode =
           embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === 'dark';
-        return { ...lazy.gZenBoostsManager.loadBoostFromStore(domain), topWindowIsDarkMode };
+        return {
+          ...lazy.gZenBoostsManager.loadBoostFromStore(domain),
+          topWindowIsDarkMode,
+          styleSheet: await lazy.gZenBoostsManager.getStyleSheetForBoost(domain),
+        };
       }
       default:
         console.warn(`[ZenBoostsParent]: Unknown message: ${message.name}`);

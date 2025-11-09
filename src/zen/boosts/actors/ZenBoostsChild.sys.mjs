@@ -2,7 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
+
 export class ZenBoostsChild extends JSWindowActorChild {
+  #currentSheet = null;
+
   /**
    * Creates a new ZenBoostsChild actor instance.
    */
@@ -77,13 +81,13 @@ export class ZenBoostsChild extends JSWindowActorChild {
   /**
    * Handles messages received from the parent actor.
    * @param {Object} message - The message object containing name and data.
-   * @returns {Promise<null>} A promise that resolves when the message is handled.
    */
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenBoost:BoostDataUpdated':
-        this.#applyBoostForPageIfAvailable();
-        return Promise.resolve(null);
+      case 'ZenBoost:BoostDataUpdated': {
+        const { unloadStyles = false } = message.data || {};
+        this.#applyBoostForPageIfAvailable(unloadStyles);
+      }
     }
   }
 
@@ -102,9 +106,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   /**
    * Applies the boost settings for the current page if available.
-   * @returns {Promise<void>}
+   * @param {boolean} unloadStyles - Indicates whether to unload styles.
    */
-  async #applyBoostForPageIfAvailable() {
+  async #applyBoostForPageIfAvailable(unloadStyles = false) {
     const browsingContext = this.browsingContext;
     if (!browsingContext) {
       return null;
@@ -115,8 +119,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
       return null;
     }
 
-    this.sendQuery('ZenBoost:GetBoostForDomain', domain).then((boost) => {
-      if (boost) {
+    const boost = await this.sendQuery('ZenBoost:GetBoostForDomain', domain);
+
+    if (unloadStyles || !boost?.enableColorBoost) {
+      this.#unloadCurrentStyleSheet();
+    }
+
+    if (boost) {
+      if (boost.enableColorBoost) {
         let prefersColorSchemeOverride = 'none';
         if (boost.smartInvert) {
           prefersColorSchemeOverride = boost.topWindowIsDarkMode ? 'light' : 'dark';
@@ -125,22 +135,37 @@ export class ZenBoostsChild extends JSWindowActorChild {
         // Has to be a finite value for zoom to work correctly
         // TODO: Figure out something better for site size override
         // browsingContext.fullZoom = boost.siteSizeOverride;
-        if (boost.enableColorBoost) {
-          const rgbColor = this.#hslToRgb(
-            boost.dotAngleDeg / 360,
-            boost.dotDistance * (boost.saturation / 255).toFixed(4) /* already is [0, 1] */,
-            0.2 +
-              boost.dotDistance *
-                0.8 *
-                (boost.brightness / 255).toFixed(4) /* lightness range from [0.2, 0.8] */
-          );
-          const nsColor = this.#rgbToNSColor(rgbColor, boost.contrast);
-          browsingContext.zenBoostsData = nsColor;
-        } else browsingContext.zenBoostsData = 0;
-      } else {
-        browsingContext.prefersColorSchemeOverride = 'none';
-        browsingContext.zenBoostsData = 0;
+        if (boost.styleSheet) {
+          const { styleSheet } = boost;
+          styleSheet.uri = Services.io.newURI(styleSheet.uri);
+          if (this.#currentSheet?.uuid !== styleSheet.uuid) {
+            browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
+            this.#currentSheet = styleSheet;
+          }
+        }
+        const rgbColor = this.#hslToRgb(
+          boost.dotAngleDeg / 360,
+          boost.dotDistance * (boost.saturation / 255).toFixed(4) /* already is [0, 1] */,
+          0.2 +
+            boost.dotDistance *
+              0.8 *
+              (boost.brightness / 255).toFixed(4) /* lightness range from [0.2, 0.8] */
+        );
+        const nsColor = this.#rgbToNSColor(rgbColor, boost.contrast);
+        browsingContext.zenBoostsData = nsColor;
+        return;
       }
-    });
+    }
+
+    browsingContext.prefersColorSchemeOverride = 'none';
+    browsingContext.zenBoostsData = 0;
+  }
+
+  #unloadCurrentStyleSheet() {
+    const browsingContext = this.browsingContext;
+    if (this.#currentSheet && browsingContext) {
+      browsingContext.window.windowUtils.removeSheet(this.#currentSheet.uri, AGENT_SHEET);
+      this.#currentSheet = null;
+    }
   }
 }

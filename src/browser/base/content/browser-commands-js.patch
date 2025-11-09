@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 939ca497b882b3f4200141ba1b6764fb5c846f45..77abad7ace109bea5392930d6e7c06568685a46b 100644
+index 939ca497b882b3f4200141ba1b6764fb5c846f45..bdf343698bdf313a519a9c8fc4645aabd21be1cf 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
-@@ -14,6 +14,19 @@ var BrowserCommands = {
+@@ -14,6 +14,17 @@ var BrowserCommands = {
      const where = BrowserUtils.whereToOpenLink(aEvent, false, true);
  
      if (where == "current") {
@@ -10,11 +10,9 @@ index 939ca497b882b3f4200141ba1b6764fb5c846f45..77abad7ace109bea5392930d6e7c0656
 +      const canGoBack = gBrowser.webNavigation?.canGoBack;
 +
 +      if (!canGoBack) {
-+        const currentTab = gBrowser.selectedTab;
-+
-+        if (gZenCommonActions.shouldCloseTabOnBack(currentTab)) {
++        if (gZenCommonActions.shouldCloseTabOnBack()) {
 +          // removeTab handles tab selection (owner or most recent)
-+          gBrowser.removeTab(currentTab);
++          gBrowser.removeTab(gBrowser.selectedTab);
 +          return;
 +        }
 +      }
@@ -22,7 +20,7 @@ index 939ca497b882b3f4200141ba1b6764fb5c846f45..77abad7ace109bea5392930d6e7c0656
        try {
          gBrowser.goBack();
        } catch (ex) {}
-@@ -315,6 +328,10 @@ var BrowserCommands = {
+@@ -315,6 +326,10 @@ var BrowserCommands = {
        }
      }
  
@@ -33,7 +31,7 @@ index 939ca497b882b3f4200141ba1b6764fb5c846f45..77abad7ace109bea5392930d6e7c0656
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -399,6 +416,11 @@ var BrowserCommands = {
+@@ -399,6 +414,11 @@ var BrowserCommands = {
        return;
      }
  
@@ -45,7 +43,7 @@ index 939ca497b882b3f4200141ba1b6764fb5c846f45..77abad7ace109bea5392930d6e7c0656
      // Keyboard shortcuts that would close a tab that is pinned select the first
      // unpinned tab instead.
      if (
-@@ -406,8 +428,8 @@ var BrowserCommands = {
+@@ -406,8 +426,8 @@ var BrowserCommands = {
        (event.ctrlKey || event.metaKey || event.altKey) &&
        gBrowser.selectedTab.pinned
      ) {

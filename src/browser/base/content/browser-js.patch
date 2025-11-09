@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e928d6014 100644
+index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd61ee1828 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,18 +10,21 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -822,7 +823,9 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -822,7 +823,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
 -  if (backDisabled == aWebNavigation.canGoBack) {
++  var canGoBack = aWebNavigation.canGoBack;
++  if (!canGoBack) {
++    canGoBack = gZenCommonActions.shouldCloseTabOnBack();
++  }
 +  
-+  // Check if we can go back OR if we can close tab and go back to owner
-+  if (backDisabled == (aWebNavigation.canGoBack || gZenCommonActions.shouldCloseTabOnBack(gBrowser?.selectedTab))) {
++  if (backDisabled == canGoBack) {
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -2298,6 +2301,8 @@ var XULBrowserWindow = {
+@@ -2298,6 +2304,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -30,7 +33,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -3809,7 +3814,7 @@ function warnAboutClosingWindow() {
+@@ -3809,7 +3817,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -39,7 +42,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3849,7 +3854,7 @@ function warnAboutClosingWindow() {
+@@ -3849,7 +3857,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -48,7 +51,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3874,7 +3879,7 @@ function warnAboutClosingWindow() {
+@@ -3874,7 +3882,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -57,7 +60,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..633952ecae7be210324caef29429c97e
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4796,6 +4801,9 @@ var ConfirmationHint = {
+@@ -4796,6 +4804,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

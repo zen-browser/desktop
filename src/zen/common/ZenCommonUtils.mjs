@@ -113,13 +113,13 @@ var gZenCommonActions = {
    * Only regular unpinned tabs (not pinned, not empty) are eligible.
    * Respects the user preference zen.tabs.close-on-back-with-no-history.
    *
-   * @param {Tab} tab - The tab to check
    * @return {boolean} True if the tab should be closed on back
    */
-  shouldCloseTabOnBack(tab) {
+  shouldCloseTabOnBack() {
     if (!Services.prefs.getBoolPref('zen.tabs.close-on-back-with-no-history', true)) {
       return false;
     }
-    return tab && !tab.pinned && !tab.hasAttribute('zen-empty-tab');
+    const tab = gBrowser.selectedTab;
+    return Boolean(tab.owner && !tab.pinned && !tab.hasAttribute('zen-empty-tab'));
   },
 };

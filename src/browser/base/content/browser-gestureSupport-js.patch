@@ -1,18 +1,13 @@
 diff --git a/browser/base/content/browser-gestureSupport.js b/browser/base/content/browser-gestureSupport.js
-index a28d54bf72c0e6495b9586f220d1859aac794936..740905f1689b65591b02bebf92932b0a414a660e 100644
+index a28d54bf72c0e6495b9586f220d1859aac794936..66154668b9f85ffbaacea1e8351370659260227b 100644
 --- a/browser/base/content/browser-gestureSupport.js
 +++ b/browser/base/content/browser-gestureSupport.js
-@@ -832,7 +832,12 @@ var gHistorySwipeAnimation = {
+@@ -832,7 +832,7 @@ var gHistorySwipeAnimation = {
     * @return true if there is a previous page in history, false otherwise.
     */
    canGoBack: function HSA_canGoBack() {
 -    return gBrowser.webNavigation.canGoBack;
-+    if (gBrowser.webNavigation.canGoBack) {
-+      return true;
-+    }
-+    
-+    // Allow swipe back gesture for regular unpinned tabs (to close them)
-+    return gZenCommonActions.shouldCloseTabOnBack(gBrowser?.selectedTab);
++    return gBrowser.webNavigation.canGoBack || gZenCommonActions.shouldCloseTabOnBack();
    },
  
    /**

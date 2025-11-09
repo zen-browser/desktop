@@ -57,7 +57,7 @@ zen-tabs-unloader-enabled =
     .label = Enable Tab Unloader
 
 zen-tabs-close-on-back-with-no-history =
-    .label = Close tab and switch to recent tab when going back with no history
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar

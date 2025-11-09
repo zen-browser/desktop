@@ -10,7 +10,11 @@ const lazy = XPCOMUtils.declareLazy({
   styleSheetService: {
     service: '@mozilla.org/content/style-sheet-service;1',
     iid: Ci.nsIStyleSheetService,
-  },
+  }
+});
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
 });
 
 const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
@@ -53,7 +57,16 @@ export class nsZenBoostStyles {
    * @private
    */
   #generateStyleString(boostData) {
-    return '* { color: red !important; }'; // Placeholder implementation
+    const boost = lazy.gZenBoostsManager.loadBoostFromStore(boostData);
+    console.log(boost);
+
+    let style = 'body, p, h1, h2, h3, h4, h5, a, span, textarea, input, span {';
+    
+    if(boost.fontFamily != '')
+      style += `font-family: ${boost.fontFamily} !important;`;
+    style += `text-transform: ${boost.textCaseOverride} !important;`;
+
+    return style;
   }
 
   /**

@@ -1015,11 +1015,11 @@
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-title-case.svg');
 }
 
-#zen-boost-text-case-toggle[mode='upper'] {
+#zen-boost-text-case-toggle[mode='uppercase'] {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-uppercase.svg');
 }
 
-#zen-boost-text-case-toggle[mode='lower'] {
+#zen-boost-text-case-toggle[mode='lowercase'] {
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-lowercase.svg');
 }
 

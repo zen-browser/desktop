@@ -397,6 +397,10 @@ body {
   background: linear-gradient(180deg, #5d45ff 0%, #4125ff 100%) border-box;
 }
 
+#zen-boost-text-case-toggle[mode='none'] {
+  opacity: 0.5;
+}
+
 .zen-boost-color-picker-gradient::after {
   content: '';
   position: absolute;

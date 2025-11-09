@@ -83,6 +83,7 @@ class nsZenBoostsManager {
    */
   updateBoost(boostData) {
     this.registeredBoosts.set(boostData.domain, boostData);
+    this.#stylesManager.invalidateStyleForDomain(boostData.domain);
     this.notify();
   }
 

@@ -291,11 +291,13 @@ export class nsZenBoostEditor {
    * (none, lower, upper) and updating the UI accordingly.
    */
   onBoostCasePressed() {
-    if (this.currentBoostData.textCaseOverride == 'lower')
-      this.currentBoostData.textCaseOverride = 'upper';
-    else if (this.currentBoostData.textCaseOverride == 'upper')
+    if (this.currentBoostData.textCaseOverride == 'lowercase')
+      this.currentBoostData.textCaseOverride = 'uppercase';
+    else if (this.currentBoostData.textCaseOverride == 'uppercase')
+      this.currentBoostData.textCaseOverride = 'capitalize';
+    else if (this.currentBoostData.textCaseOverride == 'capitalize')
       this.currentBoostData.textCaseOverride = 'none';
-    else this.currentBoostData.textCaseOverride = 'lower';
+    else this.currentBoostData.textCaseOverride = 'lowercase';
 
     this.updateCaseButtonVisuals();
     this.updateCurrentBoost();
@@ -512,12 +514,7 @@ export class nsZenBoostEditor {
    */
   updateCaseButtonVisuals() {
     const sizeValue = this.doc.getElementById('zen-boost-text-case-toggle');
-
-    if (this.currentBoostData.textCaseOverride == 'none') sizeValue.setAttribute('mode', 'none');
-    else if (this.currentBoostData.textCaseOverride == 'upper')
-      sizeValue.setAttribute('mode', 'upper');
-    else if (this.currentBoostData.textCaseOverride == 'lower')
-      sizeValue.setAttribute('mode', 'lower');
+    sizeValue.setAttribute('mode', this.currentBoostData.textCaseOverride);
   }
 
   /**

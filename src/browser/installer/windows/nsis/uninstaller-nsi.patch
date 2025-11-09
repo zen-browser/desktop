@@ -1,10 +1,10 @@
 diff --git a/browser/installer/windows/nsis/uninstaller.nsi b/browser/installer/windows/nsis/uninstaller.nsi
 old mode 100755
 new mode 100644
-index 559c8b46ee06bc42c91da49b5d9e397fe8ff6126..62094a5d98712a41a607ba01ca2adfa1e4f51ccd
+index fd104f8ab0bd51d6a99c121b60e2695a54b0dfd0..9b117e5a1f5e8adac7d22cd65154529418fd2e5b
 --- a/browser/installer/windows/nsis/uninstaller.nsi
 +++ b/browser/installer/windows/nsis/uninstaller.nsi
-@@ -507,6 +507,7 @@ Section "Uninstall"
+@@ -519,6 +519,7 @@ Section "Uninstall"
    ${un.RegCleanFileHandler}  ".svg"   "FirefoxHTML-$AppUserModelID"
    ${un.RegCleanFileHandler}  ".webp"  "FirefoxHTML-$AppUserModelID"
    ${un.RegCleanFileHandler}  ".avif"  "FirefoxHTML-$AppUserModelID"

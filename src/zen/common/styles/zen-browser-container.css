@@ -4,41 +4,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 :root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
-  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer,
-  #tabbrowser-tabpanels[dragging-split='true'] {
-    width: -moz-available;
-    position: relative;
+  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    overflow: clip;
 
-    &.browserSidebarContainer {
-      overflow: clip;
+    :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
+      border-radius: var(--zen-native-inner-radius);
+      box-shadow: var(--zen-big-shadow);
+    }
 
-      :root:not([zen-no-padding='true']) &:not(.zen-glance-overlay) {
-        border-radius: var(--zen-native-inner-radius);
-        box-shadow: var(--zen-big-shadow);
+    & browser[type='content'] {
+      &:not([transparent='true']) {
+        background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
       }
 
+      &[transparent='true'] {
+        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+      }
+    }
+
+    @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
       & browser[type='content'] {
-        &:not([transparent='true']) {
-          background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
-        }
-
-        &[transparent='true'] {
-          background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-        }
+        color-scheme: env(-moz-content-preferred-color-scheme);
       }
+    }
 
-      @media not -moz-pref('layout.css.prefers-color-scheme.content-override', 2) {
-        & browser[type='content'] {
-          color-scheme: env(-moz-content-preferred-color-scheme);
-        }
-      }
-
-      @media -moz-pref('zen.theme.acrylic-elements') {
-        & browser[type='content'] {
-          /* For the rendering engine to apply layering optimizations. This
+    @media -moz-pref('zen.theme.acrylic-elements') {
+      & browser[type='content'] {
+        /* For the rendering engine to apply layering optimizations. This
            * is a hacky solution, but it works for now. */
-          will-change: transform;
-        }
+        will-change: transform;
       }
     }
   }

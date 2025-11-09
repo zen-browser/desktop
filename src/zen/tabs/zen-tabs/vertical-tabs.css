@@ -347,6 +347,7 @@
 
     & .tab-background {
       overflow: hidden;
+      border-radius: var(--border-radius-medium) !important;
 
       & .tab-context-line {
         margin: 0 0px !important;

@@ -5,8 +5,7 @@
 <panel id="zen-unified-site-data-panel"
         role="group"
         type="arrow"
-        noautofocus="true"
-        position="bottomright topright">
+        noautofocus="true">
   <panelmultiview mainViewId="unified-extensions-view">
 # We'll keep the view with this name/id in order to prevent
 # any sort of future issues we may have if firefox decides
@@ -54,6 +53,17 @@
           <vbox id="zen-site-data-new-addon-button-container">
             <toolbarbutton id="zen-site-data-new-addon-button"
                   class="subviewbutton toolbarbutton-1" />
+          </vbox>
+
+# We don't really use this, but again, to keep firefox happy
+# in case they decide to change something for this specific
+# empty state, we keep it on the DOM
+# https://searchfox.org/firefox-main/rev/e613f4df351a21871cfeadf7d5b4043ffad157b1/browser/components/customizableui/content/panelUI.inc.xhtml#101-106
+          <vbox id="unified-extensions-empty-state" context="">
+            <!-- Shown when no extensions are listed. -->
+            <html:img src="chrome://browser/skin/addons/extensions-panel-empty-illustration.svg" loading="lazy" />
+            <html:h2 class="subview-subheader" />
+            <description />
           </vbox>
         </hbox>
 

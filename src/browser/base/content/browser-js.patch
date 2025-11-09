@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64225e42b0 100644
+index b4b79e7fb3228ba91bd8afa08659be0d88883725..9e1d59b6a736107e55bda73686a4a627e4c0ba7c 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -2293,6 +2294,8 @@ var XULBrowserWindow = {
+@@ -2298,6 +2299,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -19,7 +19,7 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -3795,7 +3798,7 @@ function warnAboutClosingWindow() {
+@@ -3809,7 +3812,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -28,7 +28,7 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3835,7 +3838,7 @@ function warnAboutClosingWindow() {
+@@ -3849,7 +3852,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -37,7 +37,7 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3860,7 +3863,7 @@ function warnAboutClosingWindow() {
+@@ -3874,7 +3877,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -46,7 +46,7 @@ index 32b67f846b9942ad3da4276bb8748fee915eb485..529ef8895d2ab01b4cbebd2992fd3b64
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4782,6 +4785,9 @@ var ConfirmationHint = {
+@@ -4796,6 +4799,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

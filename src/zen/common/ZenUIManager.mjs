@@ -659,7 +659,7 @@ var gZenUIManager = {
     if (anchor?.closest('#zen-sidebar-top-buttons')) {
       block = 'topleft';
     }
-    if (gZenVerticalTabsManager._hasSetSingleToolbar && !gZenVerticalTabsManager._prefsRightSide) {
+    if (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) {
       block = 'bottomright';
       inline = 'topright';
     }

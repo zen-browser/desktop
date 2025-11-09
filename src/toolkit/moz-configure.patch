@@ -1,5 +1,5 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index 2fdcf62bde7805e52737cb06ec67908fa40524c9..b9f9e3abeb5cf770b29e1354615184fce2162ec7 100644
+index f3032042d34766b0e94c56872f91271f307ffc89..8c8540e8bf8d3df5b33e2f0da6b94a32e75684b5 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
 @@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):

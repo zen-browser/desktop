@@ -17,9 +17,16 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/BrowsingContext.h"
 
+#define COLOR_CHANNEL_MIDPOINT 128
+
 using BrowsingContext = mozilla::dom::BrowsingContext;
 using BoostData = nscolor; // For now, Zen boosts data is just a color.
 
+/**
+ * @brief Called when the ZenBoostsData field is set on a browsing context.
+ * Triggers a restyle if the boost data has changed.
+ * @param aOldValue The previous value of the boost data.
+ */
 void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
                                           BoostData aOldValue) {
   MOZ_ASSERT(IsTop());
@@ -32,13 +39,24 @@ void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
 namespace zen {
 namespace {
 
-// llvm x86 is poor at ternary operator, so use branchless min/max.
+/**
+ * @brief Clamps a value to the range [0, 255] using branchless operations.
+ * @param v The value to clamp.
+ * @return The clamped value in the range [0, 255].
+ */
 static __inline int32_t clamp255(int32_t v) {
+  // llvm x86 is poor at ternary operator, so use branchless min/max.
   return (((255 - (v)) >> 31) | (v)) & 255;
 }
 
-#define COLOR_CHANNEL_MIDPOINT 128
-
+/**
+ * @brief Applies a color filter to transform an original color toward an accent color.
+ * Preserves the original color's perceived luminance while shifting hue/chroma toward the accent.
+ * Uses the alpha channel of the accent color to store contrast information.
+ * @param aOriginalColor The original color to filter.
+ * @param aAccentColor The accent color to filter toward (alpha channel contains contrast value).
+ * @return The filtered color with transformations applied.
+ */
 static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColor) {
   auto r1 = NS_GET_R(aOriginalColor);
   auto g1 = NS_GET_G(aOriginalColor);

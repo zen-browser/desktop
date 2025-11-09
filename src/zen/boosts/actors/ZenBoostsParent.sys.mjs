@@ -9,6 +9,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
+  /**
+   * Creates a new ZenBoostsParent actor instance and sets up an observer
+   * for boost update notifications.
+   */
   constructor() {
     super();
 
@@ -16,16 +20,31 @@ export class ZenBoostsParent extends JSWindowActorParent {
     Services.obs.addObserver(this._observe, 'zen-boosts-update');
   }
 
+  /**
+   * Called when the actor is destroyed. Cleans up the observer.
+   */
   didDestroy() {
     Services.obs.removeObserver(this._observe, 'zen-boosts-update');
   }
 
+  /**
+   * Observer callback that handles boost update notifications.
+   * Sends a message to child actors when boosts are updated.
+   * @param {Object} subject - The subject of the notification.
+   * @param {string} topic - The topic of the notification.
+   */
   observe(subject, topic) {
     if (topic === 'zen-boosts-update') {
       this.sendQuery('ZenBoost:BoostDataUpdated');
     }
   }
 
+  /**
+   * Handles messages received from child actors.
+   * Retrieves boost data for a domain when requested.
+   * @param {Object} message - The message object containing name and data.
+   * @returns {Promise<Object|null>} A promise that resolves to the boost data or null.
+   */
   async receiveMessage(message) {
     switch (message.name) {
       case 'ZenBoost:GetBoostForDomain': {

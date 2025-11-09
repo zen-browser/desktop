@@ -16,10 +16,6 @@
   list-style-image: url('account-private.svg') !important;
   border-radius: 100% !important;
 }
-/* 
-.down-arrow-icon {
-  list-style-image: url('chrome://browser/skin/zen-icons/arrow-down.svg') !important;
-} */
 
 #back-button {
   list-style-image: url('back.svg') !important;
@@ -42,10 +38,12 @@
   list-style-image: url('close.svg') !important;
 }
 
+#PanelUI-zen-emojis-picker-none,
 #zen-emojis-picker-none {
   list-style-image: url('trash.svg');
 }
 
+#PanelUI-zen-gradient-generator-color-remove,
 #zen-gradient-generator-color-remove {
   list-style-image: url('unpin.svg') !important;
 }
@@ -1014,45 +1012,45 @@
 }
 
 #zen-boost-text-case-toggle {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-title-case.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-title-case.svg');
 }
 
 #zen-boost-text-case-toggle[mode='upper'] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-uppercase.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-uppercase.svg');
 }
 
 #zen-boost-text-case-toggle[mode='lower'] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-lowercase.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-lowercase.svg');
 }
 
 #zen-boost-code {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/brackets-curly.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/brackets-curly.svg');
 }
 
 #zen-boost-zap {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bolt.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bolt.svg');
 }
 
 #zen-boost-controls {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/sliders.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/sliders.svg');
 }
 
 #zen-boost-invert {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/lightbulb.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/lightbulb.svg');
 }
 
 #zen-boost-disable {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg');
 }
 
 #zen-boost-close {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/close-filled-round.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/close-filled-round.svg');
 }
 
 #zen-boost-magic-theme {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/square-wand-sparkle.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/square-wand-sparkle.svg');
 }
 
 #zen-boost-shuffle {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg') !important;
+  list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg');
 }

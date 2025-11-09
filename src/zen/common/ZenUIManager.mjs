@@ -207,20 +207,12 @@ var gZenUIManager = {
       { once: true }
     );
 
-    // Cleaning up on close
-    editor.window.addEventListener('unload', () => {
-      this.checkIsTabBoosted();
-    });
-
     // Give the domain
     const domain = window.gBrowser.selectedTab.linkedBrowser.currentURI.host;
     editor.domain = domain;
 
     // Give the animator
     editor.gZenUIManager = this;
-
-    // Update icon
-    this.checkIsTabBoosted();
 
     return editor;
   },
@@ -251,21 +243,6 @@ var gZenUIManager = {
     }
     this._tabsWrapper = document.getElementById('zen-tabs-wrapper');
     return this._tabsWrapper;
-  },
-
-  checkIsTabBoosted() {
-    const button = document.getElementById('zen-site-data-icon-button');
-
-    // This seems to be a safer way than doing currentURI.host
-    const url = new URL(window.gBrowser.selectedTab.linkedBrowser.currentURI.spec);
-    const domain = url.hostname;
-
-    const { gZenBoostsManager } = ChromeUtils.importESModule(
-      'resource:///modules/ZenBoostsManager.sys.mjs'
-    );
-
-    if (gZenBoostsManager.registeredBoostForDomain(domain)) button.setAttribute('boosting', 'true');
-    else button.removeAttribute('boosting');
   },
 
   onTabClose(event = undefined) {

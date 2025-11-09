@@ -76,17 +76,42 @@ export class nsZenSiteDataPanel {
     this.window.gBrowser.addProgressListener({
       onLocationChange: (aWebProgress) => {
         if (aWebProgress.isTopLevel) {
-          this.window.gZenUIManager.checkIsTabBoosted();
+          this.checkIfTabIsBoosted();
         }
       },
     });
+    this.window.addEventListener(
+      'unload',
+      () => {
+        Services.obs.removeObserver(this, 'zen-boosts-update');
+      },
+      { once: true }
+    );
   }
 
   observe(subject, topic) {
     switch (topic) {
       case 'zen-boosts-update':
-        this.window.gZenUIManager.checkIsTabBoosted();
+        this.checkIfTabIsBoosted();
         break;
+    }
+  }
+
+  #getCurrentDomain() {
+    try {
+      return this.window.gBrowser.currentURI.host;
+    } catch {
+      return '';
+    }
+  }
+
+  checkIfTabIsBoosted() {
+    const domain = this.#getCurrentDomain();
+    const isBoosted = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
+    if (isBoosted) {
+      this.anchor.setAttribute('boosting', 'true');
+    } else {
+      this.anchor.removeAttribute('boosting');
     }
   }
 
@@ -157,8 +182,7 @@ export class nsZenSiteDataPanel {
 
   #setSiteBoost() {
     const boostButton = this.document.getElementById('zen-site-data-boost');
-    const url = new URL(this.window.gBrowser.selectedTab.linkedBrowser.currentURI.spec);
-    const domain = url.hostname;
+    const domain = this.#getCurrentDomain();
     const uri = this.window.gBrowser.currentURI;
 
     if (!lazy.gZenBoostsManager.canBoostSite(uri)) {

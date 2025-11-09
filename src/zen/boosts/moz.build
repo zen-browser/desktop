@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES += [
   "ZenBoostsEditor.sys.mjs",
   "ZenBoostsManager.sys.mjs",
+  "ZenBoostStyles.sys.mjs",
 ]
 
 FINAL_TARGET_FILES.actors += [

@@ -1,6 +1,6 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { gZenBoostsManager } from './ZenBoostsManager.sys.mjs';
 
@@ -8,6 +8,12 @@ export class nsZenBoostEditor {
   doc = null;
   window = null;
 
+  /**
+   * Creates a new boost editor instance for the specified domain.
+   * @param {Document} doc - The document object for the editor window.
+   * @param {string} domain - The domain for which to edit the boost.
+   * @param {Window} window - The window object for the editor.
+   */
   constructor(doc, domain, window) {
     this.doc = doc;
     this.window = window;
@@ -26,6 +32,9 @@ export class nsZenBoostEditor {
     this.loadBoost(domain);
   }
 
+  /**
+   * Initializes the boost editor by setting up event listeners for all UI controls.
+   */
   init() {
     this.window.addEventListener('unload', () => this.handleClose(), { once: true });
 
@@ -75,21 +84,38 @@ export class nsZenBoostEditor {
     this.initialized = true;
   }
 
+  /**
+   * Uninitializes the boost editor by cleaning up event listeners and observers.
+   */
   uninit() {
     this.uninitColorPicker();
     Services.obs.removeObserver(this, 'zen-boosts-kill-editor');
   }
 
+  /**
+   * Kills other editor instances by sending a notification to close them.
+   * This ensures only one editor instance is open at a time.
+   */
   killOtherEditorInstances() {
     Services.obs.notifyObservers(null, 'zen-boosts-kill-editor');
   }
 
+  /**
+   * Observer callback that handles notifications from the observer service.
+   * Closes the editor window when a 'zen-boosts-kill-editor' notification is received.
+   * @param {Object} subject - The subject of the notification.
+   * @param {string} topic - The topic of the notification.
+   */
   observe(subject, topic) {
     if (topic === 'zen-boosts-kill-editor') {
       this.window.close();
     }
   }
 
+  /**
+   * Registers an event listener to close the editor when the active tab changes
+   * to a different domain than the one being edited.
+   */
   registerTabChangedEvent() {
     this.window.gBrowser.tabContainer.addEventListener('TabSelect', (event) => {
       const tab = event.target;
@@ -99,6 +125,10 @@ export class nsZenBoostEditor {
     });
   }
 
+  /**
+   * Initializes the font selection UI by creating font buttons and dropdown options
+   * for the available font families.
+   */
   initFonts() {
     const fonts = [
       'Arial, sans-serif',
@@ -134,6 +164,10 @@ export class nsZenBoostEditor {
     fontSelect.addEventListener('change', this.onFontDropdownSelect.bind(this));
   }
 
+  /**
+   * Initializes the color picker by setting up mouse event listeners for
+   * interactive color selection on the gradient picker.
+   */
   initColorPicker() {
     const themePicker = this.doc.querySelector('.zen-boost-color-picker-gradient');
     this._onMouseMove = this.onMouseMove.bind(this);
@@ -146,6 +180,9 @@ export class nsZenBoostEditor {
     themePicker.addEventListener('click', this._onThemePickerClick);
   }
 
+  /**
+   * Uninitializes the color picker by removing all mouse event listeners.
+   */
   uninitColorPicker() {
     const themePicker = this.doc.querySelector('.zen-boost-color-picker-gradient');
     this.doc.removeEventListener('mousemove', this._onMouseMove);
@@ -158,6 +195,10 @@ export class nsZenBoostEditor {
     this._onMouseDown = null;
   }
 
+  /**
+   * Handles mouse move events to update the color picker dot position while dragging.
+   * @param {MouseEvent} event - The mouse move event.
+   */
   onMouseMove(event) {
     if (this.isMouseDown) {
       this.wasDragging = true;
@@ -168,6 +209,10 @@ export class nsZenBoostEditor {
     }
   }
 
+  /**
+   * Handles mouse down events to initiate color picker dragging.
+   * @param {MouseEvent} event - The mouse down event.
+   */
   onMouseDown(event) {
     if (event.button === 2) {
       return;
@@ -176,6 +221,10 @@ export class nsZenBoostEditor {
     this.isMouseDown = true;
   }
 
+  /**
+   * Handles mouse up events to end color picker dragging.
+   * @param {MouseEvent} event - The mouse up event.
+   */
   onMouseUp(event) {
     if (event.button === 2) {
       return;
@@ -185,6 +234,10 @@ export class nsZenBoostEditor {
     this.wasDragging = false;
   }
 
+  /**
+   * Handles the boost size button press, cycling through size override values
+   * (0.9, 1.0, 1.1, 1.25, 1.5) and updating the UI accordingly.
+   */
   onBoostSizePressed() {
     const sizeValue = this.doc.getElementById('zen-boost-size-value');
 
@@ -205,6 +258,10 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Handles the text case toggle button press, cycling through case override options
+   * (none, lower, upper) and updating the UI accordingly.
+   */
   onBoostCasePressed() {
     if (this.currentBoostData.textCaseOverride == 'lower')
       this.currentBoostData.textCaseOverride = 'upper';
@@ -216,6 +273,10 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Handles changes to color option sliders (contrast, brightness, saturation)
+   * and updates the current boost data accordingly.
+   */
   onColorOptionChange() {
     this.currentBoostData.contrast = this.doc.getElementById('zen-boost-color-contrast').value;
     this.currentBoostData.brightness = this.doc.getElementById('zen-boost-color-brightness').value;
@@ -224,15 +285,27 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Opens the advanced color options popup panel.
+   * @param {Event} event - The click event that triggered this action.
+   */
   openAdvancedColorOptions(event) {
     const panel = this.doc.getElementById('zen-boost-advanced-color-options-panel');
     panel.openPopup(event.target, 'bottomcenter topcenter', 0, 2);
   }
 
+  /**
+   * Resets the color picker dot to the center position (default state).
+   */
   resetDotPosition() {
     this.setDotPos(null, null);
   }
 
+  /**
+   * Handles clicks on the theme picker gradient or magic theme button.
+   * Updates the dot position or toggles auto-theme mode based on the click target.
+   * @param {MouseEvent} event - The click event.
+   */
   onThemePickerClick(event) {
     event.preventDefault();
 
@@ -246,7 +319,13 @@ export class nsZenBoostEditor {
     this.wasDragging = false;
   }
 
-  // Sets the position of the dot
+  /**
+   * Sets the position of the color picker dot on the gradient and updates
+   * the boost data with the corresponding angle and distance values.
+   * @param {number|null} pixelX - The X coordinate in pixels, or null to center the dot.
+   * @param {number|null} pixelY - The Y coordinate in pixels, or null to center the dot.
+   * @param {boolean} animate - Whether to animate the dot movement (currently not implemented).
+   */
   setDotPos(pixelX, pixelY, animate = true) {
     const gradient = this.doc.querySelector('.zen-boost-color-picker-gradient');
     const dot = this.doc.querySelector('.zen-boost-color-picker-dot');
@@ -333,6 +412,10 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Updates the visual appearance of the color picker dot and circle
+   * based on the current boost data's angle and distance values.
+   */
   updateDot() {
     const dot = this.doc.querySelector('.zen-boost-color-picker-dot');
     dot.style.setProperty(
@@ -350,7 +433,10 @@ export class nsZenBoostEditor {
     circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
   }
 
-  // This toggles the color changes
+  /**
+   * Toggles the color boost enable/disable state.
+   * @param {boolean} userAction - Whether this was triggered by a user action (default: true).
+   */
   onToggleDisable(userAction = true) {
     this.currentBoostData.enableColorBoost = !this.currentBoostData.enableColorBoost;
 
@@ -360,6 +446,11 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Toggles the smart invert feature, which automatically inverts colors
+   * based on the window's color scheme.
+   * @param {boolean} userAction - Whether this was triggered by a user action (default: true).
+   */
   onToggleInvert(userAction = true) {
     this.currentBoostData.enableColorBoost = true;
     this.currentBoostData.smartInvert = !this.currentBoostData.smartInvert;
@@ -370,6 +461,10 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Updates the visual state of the size button based on the current
+   * site size override value, setting appropriate color modes.
+   */
   updateSizeButtonVisuals() {
     const sizeValue = this.doc.getElementById('zen-boost-size');
 
@@ -383,6 +478,10 @@ export class nsZenBoostEditor {
     else sizeValue.setAttribute('mode', 'none');
   }
 
+  /**
+   * Updates the visual state of the text case toggle button based on the current
+   * text case override value (none, upper, or lower).
+   */
   updateCaseButtonVisuals() {
     const sizeValue = this.doc.getElementById('zen-boost-text-case-toggle');
 
@@ -393,6 +492,10 @@ export class nsZenBoostEditor {
       sizeValue.setAttribute('mode', 'lower');
   }
 
+  /**
+   * Updates the visual state of all toggle buttons (invert, disable, auto-theme)
+   * and applies grayscale effect to the gradient when color boosting is disabled.
+   */
   updateButtonToggleVisuals() {
     const invertButton = this.doc.getElementById('zen-boost-invert');
     const disableButton = this.doc.getElementById('zen-boost-disable');
@@ -420,16 +523,29 @@ export class nsZenBoostEditor {
     else gradient.classList.remove('zen-boost-panel-disabled');
   }
 
+  /**
+   * Handles font button clicks to change the selected font family.
+   * @param {Event} event - The click event from a font button.
+   */
   onFontButtonClick(event) {
     const font = event?.target?.getAttribute('font-data') ?? '';
     this.onFontChange(font);
   }
 
+  /**
+   * Handles font dropdown selection changes to change the selected font family.
+   * @param {Event} event - The change event from the font dropdown.
+   */
   onFontDropdownSelect(event) {
     const select = event.target;
     this.onFontChange(select.value);
   }
 
+  /**
+   * Changes the font family for the boost. If the same font is selected again,
+   * it clears the font override (sets to empty string).
+   * @param {string} font - The font family string to apply.
+   */
   onFontChange(font) {
     if (this.currentBoostData.fontFamily == font) this.currentBoostData.fontFamily = '';
     else this.currentBoostData.fontFamily = font;
@@ -439,6 +555,10 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
+  /**
+   * Updates the visual state of font selection buttons and dropdown
+   * to reflect the currently selected font family.
+   */
   updateFontButtonVisuals() {
     const fontButtonGroup = this.doc.getElementById('zen-boost-font-grid');
     for (let i = 0; i < fontButtonGroup.children.length; i++) {
@@ -458,10 +578,17 @@ export class nsZenBoostEditor {
     }
   }
 
+  /**
+   * Updates the boost data in the boosts manager with the current boost data.
+   * This triggers notifications to observers but does not persist to disk.
+   */
   updateCurrentBoost() {
     gZenBoostsManager.updateBoost(this.currentBoostData);
   }
 
+  /**
+   * Deletes the current boost for the domain and closes the editor window.
+   */
   onDeleteBoost() {
     gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
     this.currentBoostData = null;
@@ -470,10 +597,17 @@ export class nsZenBoostEditor {
     this.window.close();
   }
 
+  /**
+   * Handles the close button press by closing the editor window.
+   */
   onClosePressed() {
     this.window.close();
   }
 
+  /**
+   * Handles the editor window close event. Saves the boost if changes were made,
+   * or deletes it if no changes were made (temporary boost).
+   */
   handleClose() {
     this.uninit();
     if (this.currentBoostData != null && this.currentBoostData.changeWasMade) this.saveBoost();
@@ -481,6 +615,11 @@ export class nsZenBoostEditor {
       gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
   }
 
+  /**
+   * Loads boost data for the specified domain and initializes the editor UI
+   * with the boost settings (dot position, sliders, buttons, etc.).
+   * @param {string} domain - The domain for which to load the boost.
+   */
   loadBoost(domain) {
     this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
 
@@ -512,6 +651,10 @@ export class nsZenBoostEditor {
     this.updateButtonToggleVisuals();
   }
 
+  /**
+   * Saves the current boost data to persistent storage if changes were made.
+   * @param {boolean} showToast - Whether to show a toast notification on save (default: true).
+   */
   saveBoost(showToast = true) {
     if (this.currentBoostData == null || !this.currentBoostData.changeWasMade) return;
 

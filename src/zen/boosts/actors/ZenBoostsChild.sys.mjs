@@ -3,6 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export class ZenBoostsChild extends JSWindowActorChild {
+  /**
+   * Creates a new ZenBoostsChild actor instance.
+   */
   constructor() {
     super();
   }
@@ -57,6 +60,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return [round(r * 255), round(g * 255), round(b * 255)];
   }
 
+  /**
+   * Handles DOM events for the actor. Applies boost settings when a document
+   * element is inserted.
+   * @param {Event} event - The DOM event to handle.
+   */
   handleEvent(event) {
     switch (event.type) {
       case 'DOMDocElementInserted':
@@ -66,6 +74,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
   }
 
+  /**
+   * Handles messages received from the parent actor.
+   * @param {Object} message - The message object containing name and data.
+   * @returns {Promise<null>} A promise that resolves when the message is handled.
+   */
   async receiveMessage(message) {
     switch (message.name) {
       case 'ZenBoost:BoostDataUpdated':

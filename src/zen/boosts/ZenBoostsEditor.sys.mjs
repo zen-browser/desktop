@@ -130,38 +130,68 @@ export class nsZenBoostEditor {
    * for the available font families.
    */
   initFonts() {
-    const fonts = [
-      'Arial, sans-serif',
-      "'Times New Roman', serif",
-      "'Courier New', monospace",
-      "'Georgia', serif",
-      "'Comic Sans MS'",
+    const commonFonts = [
+      'Arial',
+      'Times New Roman',
+      'Courier New',
+      'Georgia',
+      'Comic Sans MS',
+      'Verdana',
+      'Trebuchet MS',
+      'Impact',
+      'Palatino Linotype',
+      'Tahoma',
     ];
+    const fonts = this.fetchFontList();
 
     const fontButtonGroup = this.doc.getElementById('zen-boost-font-grid');
-    const fontSelect = this.doc.getElementById('zen-boost-font-select');
+    const fontList = this.doc.getElementById('zen-boost-font-select');
     const buttonCount = 10;
 
-    for (let i = 0; i < Math.min(buttonCount, fonts.length); i++) {
+    for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
+      let font = fonts[i]; // Fallback
+      if(fonts.includes(commonFonts[i])){
+        font = commonFonts[i];
+      }
+
       const fontButton = this.doc.createElement('button');
-      fontButton.setAttribute('font-data', `${fonts[i]}`);
+      fontButton.setAttribute('font-data', `${font}`);
       fontButton.classList.add('subviewbutton');
-      fontButton.style.fontFamily = fonts[i];
+      fontButton.style.fontFamily = `'${font}'`;
       fontButton.innerHTML = 'Aa';
       fontButton.addEventListener('click', this.onFontButtonClick.bind(this));
-
+      
       fontButtonGroup.appendChild(fontButton);
     }
 
+    // Add default value
+    const defaultOption = this.doc.createElement('option');
+    defaultOption.value = ''; // Use default font of site
+    defaultOption.label = "Default";
+    fontList.appendChild(defaultOption);
+
     for (let j = 0; j < fonts.length; j++) {
       const font = fonts[j];
-      const select = this.doc.createElement('option');
-      select.value = font;
-      select.innerHTML = font;
-      fontSelect.appendChild(select);
+      const option = this.doc.createElement('option');
+      option.style.fontFamily = `'${font}'`;
+      option.value = font;
+      option.label = font;
+      fontList.appendChild(option);
     }
 
-    fontSelect.addEventListener('change', this.onFontDropdownSelect.bind(this));
+    fontList.addEventListener('change', this.onFontDropdownSelect.bind(this));
+  }
+
+  /**
+   * Fetches a list of all available system fonts.
+   * @returns {Array<AString>} An array with names of available fonts.
+   */
+  fetchFontList() {
+    const enumerator = Cc["@mozilla.org/gfx/fontenumerator;1"].createInstance(
+      Ci.nsIFontEnumerator
+    );
+
+    return enumerator.EnumerateFonts(null, null);
   }
 
   /**

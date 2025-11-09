@@ -49,9 +49,9 @@ class nsZenBoostsManager {
       dotPos: { x: null, y: null },
       dotDistance: 0,
 
-      brightness: 128,
-      contrast: 128,
-      saturation: 128,
+      brightness: 0.5,
+      saturation: 0.5,
+      contrast: 0.5,
 
       fontFamily: '',
 

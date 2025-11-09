@@ -9,7 +9,6 @@
   max-width: 185px;
   min-width: 185px;
   min-height: 528px;
-  max-height: 528px;
 }
 
 body {
@@ -37,8 +36,8 @@ body {
     appearance: none;
 
     &:active {
-      scale: 1;
-      transform: none;
+      scale: 1 !important;
+      transform: none !important;
     }
   }
 
@@ -153,6 +152,7 @@ body {
   & button {
     padding: auto !important;
     margin: auto !important;
+    background-color: transparent;
   }
 }
 
@@ -189,19 +189,6 @@ body {
     margin: auto;
   }
 }
-
-/* 
-#zen-boost-code {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
-}
-
-#zen-boost-zap {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
-} */
 
 .zen-boost-panel-disabled {
   filter: grayscale(1);

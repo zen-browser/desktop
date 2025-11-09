@@ -110,7 +110,7 @@ var gZenCommonActions = {
 
   /**
    * Determines if a tab should be closed when navigating back with no history.
-   * Only regular unpinned tabs (not pinned, not empty) are eligible.
+   * Only tabs with an owner that are not pinned and not empty are eligible.
    * Respects the user preference zen.tabs.close-on-back-with-no-history.
    *
    * @return {boolean} True if the tab should be closed on back

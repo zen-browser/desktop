@@ -50,7 +50,7 @@ export class nsZenSiteDataPanel {
       ];
       const TRANSLATE_CONTAINER_ID = 'translations-button';
 
-      function ensureCollapsedStub() {.
+      function ensureCollapsedStub() {
         let container = this.document.getElementById(TRANSLATE_CONTAINER_ID);
         if (!container) {
           try {
@@ -71,7 +71,8 @@ export class nsZenSiteDataPanel {
 
             try {
               container.style.setProperty('display', 'none', 'important');
-            } catch (e) {
+            } catch {
+              void 0;
             }
 
             if (typeof container.contains !== 'function') {
@@ -92,14 +93,18 @@ export class nsZenSiteDataPanel {
             try {
               container.classList.remove && container.classList.remove('urlbar-page-action');
               container.classList.remove && container.classList.remove('some-other-urlbar-class');
-            } catch (e) { }
+            } catch {
+              void 0;
+            }
 
             container.setAttribute('collapsed', 'true');
             container.setAttribute('hidden', 'true');
 
             try {
               container.style.setProperty('display', 'none', 'important');
-            } catch (e) { }
+            } catch {
+              void 0;
+            }
 
             if (typeof container.contains !== 'function') {
               container.contains = function () {
@@ -118,11 +123,13 @@ export class nsZenSiteDataPanel {
           if (el) {
             try {
               el.remove();
-            } catch (e) {
+            } catch {
               try {
                 el.setAttribute && el.setAttribute('collapsed', 'true');
                 el.setAttribute && el.setAttribute('hidden', 'true');
-              } catch { }
+              } catch {
+                void 0;
+              }
             }
           }
         }
@@ -132,18 +139,18 @@ export class nsZenSiteDataPanel {
         const cmdTranslateElements = this.document.querySelectorAll('[command="cmd_translate"]');
         for (const el of cmdTranslateElements) {
           if (!el || el.id === 'zen-site-data-header-translate') {
-            continue; 
+            continue;
           }
 
-          const isLegacyId = el.id && (TRANSLATE_IMAGE_IDS.includes(el.id) || el.id === TRANSLATE_CONTAINER_ID);
+          const isLegacyId =
+            el.id && (TRANSLATE_IMAGE_IDS.includes(el.id) || el.id === TRANSLATE_CONTAINER_ID);
 
           const inUrlbar =
-            el.closest && (
-              el.closest('#urlbar') ||
+            el.closest &&
+            (el.closest('#urlbar') ||
               el.closest('#identity-icon-box') ||
               el.closest('#page-action-buttons') ||
-              el.closest('.urlbar-page-action')
-            );
+              el.closest('.urlbar-page-action'));
 
           if (isLegacyId || inUrlbar) {
             try {
@@ -168,15 +175,17 @@ export class nsZenSiteDataPanel {
               continue;
             }
             if (
-              (node.id && (TRANSLATE_IMAGE_IDS.includes(node.id) || node.id === TRANSLATE_CONTAINER_ID)) ||
+              (node.id &&
+                (TRANSLATE_IMAGE_IDS.includes(node.id) || node.id === TRANSLATE_CONTAINER_ID)) ||
               TRANSLATE_IMAGE_IDS.some((tid) => node.querySelector && node.querySelector(`#${tid}`))
             ) {
               try {
                 removeInlineTranslateUI();
-              } finally {
-                observer.disconnect();
-                return;
+              } catch {
+                void 0;
               }
+              observer.disconnect();
+              return;
             }
           }
         }
@@ -199,22 +208,28 @@ export class nsZenSiteDataPanel {
     try {
       const panelTranslateBtn = this.document.getElementById('zen-site-data-header-translate');
       if (panelTranslateBtn) {
-        panelTranslateBtn.addEventListener('command', (event) => {
+        panelTranslateBtn.addEventListener('command', () => {
           try {
             const legacyBtn = this.window.document.getElementById('translations-button');
             if (legacyBtn) {
               try {
-                const cmdEvent = new this.window.Event('command', { bubbles: true, cancelable: true });
+                const cmdEvent = new this.window.Event('command', {
+                  bubbles: true,
+                  cancelable: true,
+                });
                 legacyBtn.dispatchEvent(cmdEvent);
                 return;
-              } catch (e) {
+              } catch {
                 try {
                   legacyBtn.click && legacyBtn.click();
                   return;
-                } catch { }
+                } catch {
+                  void 0;
+                }
               }
             }
-          } catch (e) {
+          } catch {
+            void 0;
           }
 
           try {
@@ -230,29 +245,42 @@ export class nsZenSiteDataPanel {
                 try {
                   g.toggle();
                   return;
-                } catch { }
+                } catch {
+                  void 0;
+                }
               }
               if (g && typeof g.open === 'function') {
                 try {
                   g.open();
                   return;
-                } catch { }
+                } catch {
+                  void 0;
+                }
               }
             }
-          } catch (e) {
+          } catch {
+            void 0;
           }
 
           try {
-            const cmd = this.document.getElementById('cmd_translate') || this.window.document.getElementById('cmd_translate');
+            const cmd =
+              this.document.getElementById('cmd_translate') ||
+              this.window.document.getElementById('cmd_translate');
             if (cmd && typeof cmd.doCommand === 'function') {
               try {
                 cmd.doCommand();
                 return;
-              } catch { }
+              } catch {
+                void 0;
+              }
             }
-          } catch (e) { }
+          } catch {
+            void 0;
+          }
 
-          Cu.reportError?.('zen-site-data: translate button clicked but no translate handler found');
+          Cu.reportError?.(
+            'zen-site-data: translate button clicked but no translate handler found'
+          );
         });
       }
     } catch (e) {
@@ -387,7 +415,7 @@ export class nsZenSiteDataPanel {
   }
 
   /*
-   * Determines whether the copy URL button should be hidden for the given URI.
+                  void 0; // No-op for empty catch
    * @param {nsIURI} uri - The URI to check.
    * @returns {boolean} True if the button should be hidden, false otherwise.
    */

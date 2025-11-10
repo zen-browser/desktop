@@ -42,6 +42,149 @@ export class nsZenSiteDataPanel {
 
     // Remove the old permissions dialog
     this.document.getElementById('unified-extensions-panel-template').remove();
+    try {
+      const TRANSLATE_IMAGE_IDS = [
+        'translations-button-icon',
+        'translations-button-circle-arrows',
+        'translations-button-locale',
+      ];
+      const TRANSLATE_CONTAINER_ID = 'translations-button';
+
+      function ensureCollapsedStub() {.
+        let container = this.document.getElementById(TRANSLATE_CONTAINER_ID);
+        if (!container) {
+          try {
+            const insertAfter =
+              this.document.getElementById('page-action-buttons') ||
+              this.document.getElementById('identity-icon-box') ||
+              this.document.documentElement;
+
+            container = this.document.createXULElement
+              ? this.document.createXULElement('hbox')
+              : this.document.createElement('hbox');
+            container.id = TRANSLATE_CONTAINER_ID;
+
+            container.setAttribute('role', 'button');
+
+            container.setAttribute('collapsed', 'true');
+            container.setAttribute('hidden', 'true');
+
+            try {
+              container.style.setProperty('display', 'none', 'important');
+            } catch (e) {
+            }
+
+            if (typeof container.contains !== 'function') {
+              container.contains = function () {
+                return false;
+              };
+            }
+
+            container.setAttribute('data-zen-legacy-stub', 'true');
+
+            insertAfter.appendChild(container);
+          } catch (e) {
+            Cu.reportError?.(`translations: failed to create stub container: ${e}`);
+            return;
+          }
+        } else {
+          try {
+            try {
+              container.classList.remove && container.classList.remove('urlbar-page-action');
+              container.classList.remove && container.classList.remove('some-other-urlbar-class');
+            } catch (e) { }
+
+            container.setAttribute('collapsed', 'true');
+            container.setAttribute('hidden', 'true');
+
+            try {
+              container.style.setProperty('display', 'none', 'important');
+            } catch (e) { }
+
+            if (typeof container.contains !== 'function') {
+              container.contains = function () {
+                return false;
+              };
+            }
+          } catch (e) {
+            Cu.reportError?.(`translations: failed to collapse existing container: ${e}`);
+          }
+        }
+      }
+
+      const removeInlineTranslateUI = () => {
+        for (const id of TRANSLATE_IMAGE_IDS) {
+          const el = this.document.getElementById(id);
+          if (el) {
+            try {
+              el.remove();
+            } catch (e) {
+              try {
+                el.setAttribute && el.setAttribute('collapsed', 'true');
+                el.setAttribute && el.setAttribute('hidden', 'true');
+              } catch { }
+            }
+          }
+        }
+
+        ensureCollapsedStub.call(this);
+
+        const cmdTranslateElements = this.document.querySelectorAll('[command="cmd_translate"]');
+        for (const el of cmdTranslateElements) {
+          if (!el || el.id === 'zen-site-data-header-translate') {
+            continue; 
+          }
+
+          const isLegacyId = el.id && (TRANSLATE_IMAGE_IDS.includes(el.id) || el.id === TRANSLATE_CONTAINER_ID);
+
+          const inUrlbar =
+            el.closest && (
+              el.closest('#urlbar') ||
+              el.closest('#identity-icon-box') ||
+              el.closest('#page-action-buttons') ||
+              el.closest('.urlbar-page-action')
+            );
+
+          if (isLegacyId || inUrlbar) {
+            try {
+              el.removeAttribute('command');
+            } catch (e) {
+              Cu.reportError?.(`translations: failed to remove cmd_translate from ${el.id}: ${e}`);
+            }
+          }
+        }
+      };
+
+      if (this.document.readyState === 'complete' || this.document.readyState === 'interactive') {
+        removeInlineTranslateUI();
+      } else {
+        this.window.addEventListener('DOMContentLoaded', removeInlineTranslateUI, { once: true });
+      }
+
+      const mo = new this.window.MutationObserver((mutations, observer) => {
+        for (const m of mutations) {
+          for (const node of m.addedNodes) {
+            if (!(node instanceof this.window.Element)) {
+              continue;
+            }
+            if (
+              (node.id && (TRANSLATE_IMAGE_IDS.includes(node.id) || node.id === TRANSLATE_CONTAINER_ID)) ||
+              TRANSLATE_IMAGE_IDS.some((tid) => node.querySelector && node.querySelector(`#${tid}`))
+            ) {
+              try {
+                removeInlineTranslateUI();
+              } finally {
+                observer.disconnect();
+                return;
+              }
+            }
+          }
+        }
+      });
+      mo.observe(this.document, { childList: true, subtree: true });
+    } catch (ex) {
+      Cu.reportError(`Error removing inline translate UI: ${ex}`);
+    }
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
@@ -53,6 +196,68 @@ export class nsZenSiteDataPanel {
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
     this.anchor.addEventListener('click', this);
+    try {
+      const panelTranslateBtn = this.document.getElementById('zen-site-data-header-translate');
+      if (panelTranslateBtn) {
+        panelTranslateBtn.addEventListener('command', (event) => {
+          try {
+            const legacyBtn = this.window.document.getElementById('translations-button');
+            if (legacyBtn) {
+              try {
+                const cmdEvent = new this.window.Event('command', { bubbles: true, cancelable: true });
+                legacyBtn.dispatchEvent(cmdEvent);
+                return;
+              } catch (e) {
+                try {
+                  legacyBtn.click && legacyBtn.click();
+                  return;
+                } catch { }
+              }
+            }
+          } catch (e) {
+          }
+
+          try {
+            const globals = [
+              this.window.FullPageTranslationsPanel,
+              this.window.fullPageTranslationsPanel,
+              this.window.TranslationsPanel,
+              this.window.Translations,
+              this.window.TranslationsPanelShared,
+            ];
+            for (const g of globals) {
+              if (g && typeof g.toggle === 'function') {
+                try {
+                  g.toggle();
+                  return;
+                } catch { }
+              }
+              if (g && typeof g.open === 'function') {
+                try {
+                  g.open();
+                  return;
+                } catch { }
+              }
+            }
+          } catch (e) {
+          }
+
+          try {
+            const cmd = this.document.getElementById('cmd_translate') || this.window.document.getElementById('cmd_translate');
+            if (cmd && typeof cmd.doCommand === 'function') {
+              try {
+                cmd.doCommand();
+                return;
+              } catch { }
+            }
+          } catch (e) { }
+
+          Cu.reportError?.('zen-site-data: translate button clicked but no translate handler found');
+        });
+      }
+    } catch (e) {
+      Cu.reportError?.(`zen-site-data: failed to wire translate forwarder: ${e}`);
+    }
     const kCommandIDs = [
       'zen-site-data-header-share',
       'zen-site-data-header-bookmark',

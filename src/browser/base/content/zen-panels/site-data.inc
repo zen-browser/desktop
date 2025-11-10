@@ -31,6 +31,10 @@
                         data-l10n-id="zen-site-data-header-bookmark"
                         command="Browser:AddBookmarkAs"
                         flex="1" />
+        <toolbarbutton id="zen-site-data-header-translate"
+                        data-l10n-id="zen-site-data-header-translate"
+                        command="cmd_translate"
+                        flex="1" />
       </hbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">

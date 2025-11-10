@@ -1,8 +1,16 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca323682e89e76 100644
+index 46283d3eacfea0f419afa3bdfd2a51e411502a20..730058671fb0cbab0b5b5b1c01cdb912560116a2 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -1117,6 +1117,11 @@ let SETTINGS_CONFIG = {
+@@ -102,6 +102,7 @@ Preferences.addAll([
+   { id: "browser.warnOnQuitShortcut", type: "bool" },
+   { id: "browser.tabs.warnOnOpen", type: "bool" },
+   { id: "browser.ctrlTab.sortByRecentlyUsed", type: "bool" },
++  { id: "browser.ctrlTab.cycleByAttribute", type: "bool" },
+   { id: "browser.tabs.hoverPreview.enabled", type: "bool" },
+   { id: "browser.tabs.hoverPreview.showThumbnails", type: "bool" },
+   { id: "browser.tabs.groups.smart.userEnabled", type: "bool" },
+@@ -1117,6 +1118,11 @@ let SETTINGS_CONFIG = {
          id: "browserRestoreSession",
          l10nId: "startup-restore-windows-and-tabs",
        },
@@ -14,7 +22,7 @@ index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca3236
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
-@@ -1611,7 +1616,7 @@ function getBundleForLocales(newLocales) {
+@@ -1611,7 +1617,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(
@@ -23,3 +31,40 @@ index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca3236
      false,
      undefined,
      locales
+@@ -1746,6 +1752,17 @@ var gMainPane = {
+     setEventListener("ctrlTabRecentlyUsedOrder", "command", function () {
+       Services.prefs.clearUserPref("browser.ctrlTab.migrated");
+     });
++
++    Preferences.get("browser.ctrlTab.sortByRecentlyUsed").on(
++      "change",
++      () => this.toggleCtrlTabFeatureWarning()
++    );
++    Preferences.get("browser.ctrlTab.cycleByAttribute").on(
++      "change",
++      () => this.toggleCtrlTabFeatureWarning()
++    );
++    this.toggleCtrlTabFeatureWarning();
++
+     setEventListener("manageBrowserLanguagesButton", "command", function () {
+       gMainPane.showBrowserLanguagesSubDialog({ search: false });
+     });
+@@ -2932,6 +2949,18 @@ var gMainPane = {
+    *   False - Only the window is to be shown in Windows 7 taskbar.
+    */
+ 
++  /**
++   * Informs the user that Ctrl+Tab will invoke sortByRecentlyUsed behaviour by
++   * default if both sortByRecentlyUsed and cycleByAttribute is true
++   */
++  toggleCtrlTabFeatureWarning() {
++    const warningElement = document.getElementById("ctrlTabCycleByAttributeWarning")
++    warningElement.hidden = !(
++      Preferences.get("browser.ctrlTab.sortByRecentlyUsed").value &&
++      Preferences.get("browser.ctrlTab.cycleByAttribute").value
++    )
++  },
++
+   /**
+    * Determines where a link which opens a new window will open.
+    *

@@ -83,3 +83,6 @@
 
 - name: browser.tabs.closeWindowWithLastTab
   value: false
+
+- name: browser.ctrlTab.cycleByAttribute
+  value: false

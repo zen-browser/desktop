@@ -150,7 +150,7 @@ zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
 pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update =
-   .label = Automatically update installed mods on startup 
+   .label = Automatically update installed mods on startup
 
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
@@ -344,3 +344,8 @@ zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+
+ctrl-tab-cycle-by-attribute =
+  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+  .accesskey = C
+ctrl-tab-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled

@@ -415,7 +415,7 @@ export class nsZenSiteDataPanel {
   }
 
   /*
-                  void 0; // No-op for empty catch
+   * Determines whether the copy URL button should be hidden for the given URI.
    * @param {nsIURI} uri - The URI to check.
    * @returns {boolean} True if the button should be hidden, false otherwise.
    */

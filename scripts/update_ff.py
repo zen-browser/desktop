@@ -29,12 +29,12 @@ def update_rc(last_version: str):
 
 
 def update_ff(is_rc: bool = False, last_version: str = ""):
-  """Runs the npm command to update the 'ff' component."""
+  """Runs the npm command to sync Firefox."""
   if is_rc:
     return update_rc(last_version)
-  result = os.system("npm run update-ff:raw")
+  result = os.system("npm run sync:raw")
   if result != 0:
-    raise RuntimeError("Failed to update 'ff' component.")
+    raise RuntimeError("Failed to sync Firefox.")
 
 
 def get_version_from_file(filename, is_rc):

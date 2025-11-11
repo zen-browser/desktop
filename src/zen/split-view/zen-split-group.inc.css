@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-tab-group[split-view-group] {
+ tab-group[split-view-group] {
   display: block;
 
   @media (prefers-reduced-motion: no-preference) {
@@ -173,9 +173,37 @@ tab-group[split-view-group] .tab-group-label-container {
   margin: 2px 0 0 0 !important;
 }
 
-tab-group[split-view-group] .tab-close-button {
-  display: block;
-  visibility: visible;
+/* Split view tab close button positioning
+   Position close buttons on the left edge to prevent accidental closes when clicking
+   the center area to switch tabs. This ensures all tabs (including the last) have
+   consistent left-edge positioning. */
+tab-group[split-view-group] .tab-group-container > .tabbrowser-tab {
+  position: relative;
+}
+
+tab-group[split-view-group] .tab-group-container > .tabbrowser-tab .tab-close-button {
+  display: block !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: 4px !important;
+  right: auto !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: auto !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  z-index: 10;
+  transform: none !important;
+  order: -1 !important;
+}
+
+tab-group[split-view-group] .tab-group-container > .tabbrowser-tab:last-child .tab-close-button {
+  left: 4px !important;
+  right: auto !important;
+}
+
+tab-group[split-view-group] .tab-group-container > .tabbrowser-tab .tab-content {
+  padding-inline-start: 28px !important;
+  justify-content: flex-start !important;
 }
 
 tab-group[split-view-group] .tab-group-line {

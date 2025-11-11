@@ -67,7 +67,7 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check if pathes got applied
+      - name: Check if patches got applied
         if: steps.git-check.outputs.files_changed == 'true'
         id: check-patches
         continue-on-error: true

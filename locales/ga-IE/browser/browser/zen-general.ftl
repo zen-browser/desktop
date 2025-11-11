@@ -94,3 +94,6 @@ zen-site-data-setting-site-protection = Cosaint Rianaithe
 
 zen-site-data-panel-feature-callout-title = Baile nua do bhreiseáin, ceadanna agus tuilleadh
 zen-site-data-panel-feature-callout-subtitle = Cliceáil an deilbhín chun socruithe suímh a bhainistiú, faisnéis slándála a fheiceáil, rochtain a fháil ar shínteáin, agus gníomhartha coitianta a dhéanamh.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

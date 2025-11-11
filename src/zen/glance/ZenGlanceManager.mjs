@@ -66,23 +66,16 @@
     }
 
     #insertIntoContextMenu() {
-      const sibling = document.getElementById("context-sep-open");
-      if (!sibling) return;
-  
       const menuitem = document.createXULElement("menuitem");
       menuitem.setAttribute("id", "context-zenOpenLinkInGlance");
       menuitem.setAttribute("hidden", "true");
       menuitem.setAttribute("data-l10n-id", "zen-open-link-in-glance");
   
-      // Bind directly to this.openLinkInGlance (no separate command)
-      menuitem.addEventListener("command", this.openLinkInGlance.bind(this));
-  
-      sibling.insertAdjacentElement("beforebegin", menuitem);
-    }
-
-    openLinkInGlance() {
-      const url = gContextMenu.linkURL || gContextMenu.target.ownerDocument.location.href;
-      this.openGlance({ url });
+      menuitem.addEventListener("command", () => this.openGlance({ url: gContextMenu.linkURL }));
+    
+      document
+        .getElementById("context-sep-open")
+        .insertAdjacentElement("beforebegin", menuitem);
     }
 
     /**

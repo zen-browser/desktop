@@ -52,6 +52,8 @@ const defaultKeyboardGroups = {
     'zen-close-all-unpinned-tabs-shortcut',
     'zen-close-tab-shortcut',
     'zen-close-shortcut',
+    'zen-tab-next-shortcut',
+    'zen-tab-previous-shortcut',
     'id:key_selectTab1',
     'id:key_selectTab2',
     'id:key_selectTab3',
@@ -800,7 +802,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 13;
+  static LATEST_KBS_VERSION = 14;
 
   constructor() {}
 
@@ -1094,6 +1096,37 @@ class nsZenKeyboardShortcutsVersioner {
           'zen-close-all-unpinned-tabs-shortcut'
         )
       );
+    }
+
+    if (version < 14) {
+      // Migrate from version 13 to 14
+      // Add customizable tab navigation shortcuts (Next Tab and Previous Tab)
+      if (!data.find(s => s.id === 'zen-tab-next')) {
+        data.push(
+          new KeyShortcut(
+            'zen-tab-next',
+            '',
+            'VK_TAB',
+            'windowAndTabManagement',
+            nsKeyShortcutModifiers.fromObject({ accel: true }),
+            'cmd_zenTabNext',
+            'zen-tab-next-shortcut'
+          )
+        );
+      }
+      if (!data.find(s => s.id === 'zen-tab-previous')) {
+        data.push(
+          new KeyShortcut(
+            'zen-tab-previous',
+            '',
+            'VK_TAB',
+            'windowAndTabManagement',
+            nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+            'cmd_zenTabPrevious',
+            'zen-tab-previous-shortcut'
+          )
+        );
+      }
     }
 
     return data;

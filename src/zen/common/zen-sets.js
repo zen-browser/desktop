@@ -135,6 +135,12 @@ document.addEventListener(
           case 'cmd_zenTabPrevious':
             gBrowser.tabContainer.advanceSelectedTab(-1, true);
             break;
+          case 'cmd_zenMoveTabForward':
+            gBrowser.moveTabForward();
+            break;
+          case 'cmd_zenMoveTabBackward':
+            gBrowser.moveTabBackward();
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

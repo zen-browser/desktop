@@ -352,3 +352,5 @@ zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-tab-next-shortcut = Next Tab
 zen-tab-previous-shortcut = Previous Tab
+zen-move-tab-forward-shortcut = Move Tab Forward
+zen-move-tab-backward-shortcut = Move Tab Backward

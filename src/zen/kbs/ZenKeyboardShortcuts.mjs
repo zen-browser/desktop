@@ -54,6 +54,8 @@ const defaultKeyboardGroups = {
     'zen-close-shortcut',
     'zen-tab-next-shortcut',
     'zen-tab-previous-shortcut',
+    'zen-move-tab-forward-shortcut',
+    'zen-move-tab-backward-shortcut',
     'id:key_selectTab1',
     'id:key_selectTab2',
     'id:key_selectTab3',
@@ -1100,33 +1102,51 @@ class nsZenKeyboardShortcutsVersioner {
 
     if (version < 14) {
       // Migrate from version 13 to 14
-      // Add customizable tab navigation shortcuts (Next Tab and Previous Tab)
-      if (!data.find(s => s.id === 'zen-tab-next')) {
-        data.push(
-          new KeyShortcut(
-            'zen-tab-next',
-            '',
-            'VK_TAB',
-            'windowAndTabManagement',
-            nsKeyShortcutModifiers.fromObject({ accel: true }),
-            'cmd_zenTabNext',
-            'zen-tab-next-shortcut'
-          )
-        );
-      }
-      if (!data.find(s => s.id === 'zen-tab-previous')) {
-        data.push(
-          new KeyShortcut(
-            'zen-tab-previous',
-            '',
-            'VK_TAB',
-            'windowAndTabManagement',
-            nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
-            'cmd_zenTabPrevious',
-            'zen-tab-previous-shortcut'
-          )
-        );
-      }
+      // Add customizable tab navigation and move tab shortcuts
+      data.push(
+        new KeyShortcut(
+          'zen-tab-next',
+          '',
+          'VK_TAB',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          'cmd_zenTabNext',
+          'zen-tab-next-shortcut'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-tab-previous',
+          '',
+          'VK_TAB',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          'cmd_zenTabPrevious',
+          'zen-tab-previous-shortcut'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-move-tab-forward',
+          '',
+          '',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({}),
+          'cmd_zenMoveTabForward',
+          'zen-move-tab-forward-shortcut'
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          'zen-move-tab-backward',
+          '',
+          '',
+          'windowAndTabManagement',
+          nsKeyShortcutModifiers.fromObject({}),
+          'cmd_zenMoveTabBackward',
+          'zen-move-tab-backward-shortcut'
+        )
+      );
     }
 
     return data;

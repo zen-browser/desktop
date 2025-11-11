@@ -94,3 +94,6 @@ zen-site-data-setting-site-protection = Tracking Protection
 
 zen-site-data-panel-feature-callout-title = בית חדש לתוספים, הרשאות, ועוד
 zen-site-data-panel-feature-callout-subtitle = ניתן ללחוץ על הסמל כדי לנהל הגדרות אתר, לצפות במידע אבטחה, לגשת לתוספים, ולבצע פעולות נפוצות.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

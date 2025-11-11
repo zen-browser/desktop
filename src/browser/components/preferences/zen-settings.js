@@ -707,13 +707,29 @@ var gZenWorkspacesSettings = {
         }
       },
     };
+
+    var toggleZenCycleByAttrWarning = {
+      observe() {
+        const warning = document.getElementById('zenTabsCycleByAttributeWarning');
+        warning.hidden = !(
+          Services.prefs.getBoolPref('zen.tabs.cycle-by-attribute', false) &&
+          Services.prefs.getBoolPref('browser.ctrlTab.sortByRecentlyUsed', false)
+        );
+      }
+    }
+    toggleZenCycleByAttrWarning.observe() // call it once on initial load
+
     Services.prefs.addObserver('zen.glance.enabled', tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
     Services.prefs.addObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
+    Services.prefs.addObserver('zen.tabs.cycle-by-attribute', toggleZenCycleByAttrWarning);
+    Services.prefs.addObserver('browser.ctrlTab.sortByRecentlyUsed', toggleZenCycleByAttrWarning);
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.glance.enabled', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
+      Services.prefs.removeObserver('zen.tabs.cycle-by-attribute', toggleZenCycleByAttrWarning);
+      Services.prefs.removeObserver('browser.ctrlTab.sortByRecentlyUsed', toggleZenCycleByAttrWarning);
     });
   },
 };
@@ -1134,6 +1150,16 @@ Preferences.addAll([
     id: 'zen.mods.auto-update',
     type: 'bool',
     default: true,
+  },
+  {
+    id: 'zen.tabs.cycle-by-attribute',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'browser.ctrlTab.sortByRecentlyUsed',
+    type: 'bool',
+    default: false,
   },
 ]);
 

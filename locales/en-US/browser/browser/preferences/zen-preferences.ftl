@@ -59,6 +59,10 @@ zen-tabs-unloader-enabled =
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
+zen-tabs-cycle-by-attribute =
+  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
+
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
 
@@ -344,8 +348,3 @@ zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
-
-ctrl-tab-cycle-by-attribute =
-  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
-  .accesskey = C
-ctrl-tab-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled

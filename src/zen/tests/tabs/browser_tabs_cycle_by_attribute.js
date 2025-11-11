@@ -56,7 +56,7 @@ add_setup(async () => {
 
 add_task(async function cycleTabsByAttribute() {
   await SpecialPowers.pushPrefEnv({
-    set: [['browser.ctrlTab.cycleByAttribute', true]],
+    set: [['zen.tabs.cycle-by-attribute', true]],
   });
 
   const essentialTabs = gBrowser.tabs.filter((tab) => tab.hasAttribute('zen-essential'));

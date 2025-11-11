@@ -37,3 +37,6 @@
 
 - name: zen.tabs.close-on-back-with-no-history
   value: true
+
+- name: zen.tabs.cycle-by-attribute
+  value: false

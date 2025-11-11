@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index cfe2da6e199667bd668f117cc8972212c7f57da2..78581037b9e90a264e46d281bc9d4a3b22050f39 100644
+index cfe2da6e199667bd668f117cc8972212c7f57da2..3a007eaddd7f9de9d1e4f936113baf84df604086 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -11,6 +11,17 @@
@@ -13,7 +13,7 @@ index cfe2da6e199667bd668f117cc8972212c7f57da2..78581037b9e90a264e46d281bc9d4a3b
 +  XPCOMUtils.defineLazyPreferenceGetter(
 +    lazyPrefs,
 +    "cycleByAttribute",
-+    "browser.ctrlTab.cycleByAttribute",
++    "zen.tabs.cycle-by-attribute",
 +    false
 +  );
 +
@@ -55,7 +55,7 @@ index cfe2da6e199667bd668f117cc8972212c7f57da2..78581037b9e90a264e46d281bc9d4a3b
            return tab;
          }
        }
-@@ -972,26 +984,40 @@
+@@ -972,13 +984,27 @@
       * @param {boolean} [aWrap]
       */
      advanceSelectedTab(aDir, aWrap) {
@@ -84,14 +84,7 @@ index cfe2da6e199667bd668f117cc8972212c7f57da2..78581037b9e90a264e46d281bc9d4a3b
        // Handle keyboard navigation for a hidden tab that can be selected, like the Firefox View tab,
        // which has a random placement in this.allTabs.
        if (startTab.hidden) {
-         if (aDir == 1) {
--          newTab = this.allTabs.find(tab => tab.visible);
-+          newTab = this.allTabs.find(tabFilter);
-         } else {
--          newTab = this.allTabs.findLast(tab => tab.visible);
-+          newTab = this.allTabs.findLast(tabFilter);
-         }
-       } else {
+@@ -991,7 +1017,7 @@
          newTab = this.findNextTab(startTab, {
            direction: aDir,
            wrap: aWrap,

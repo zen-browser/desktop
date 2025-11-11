@@ -92,3 +92,6 @@ zen-site-data-setting-site-protection = Protezione Tracciamento
 
 zen-site-data-panel-feature-callout-title = Una nuova casa per componenti aggiuntivi, permessi, e altro ancora
 zen-site-data-panel-feature-callout-subtitle = Clicca l'icona per gestire le impostazioni del sito, visualizzare informazioni di sicurezza, accedere alle estensioni, ed eseguire azioni comuni.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

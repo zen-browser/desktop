@@ -38,5 +38,8 @@
 - name: zen.tabs.close-on-back-with-no-history
   value: true
 
-- name: zen.tabs.cycle-by-attribute
+- name: zen.tabs.ctrl-tab.ignore-essential-tabs
+  value: false
+
+- name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false

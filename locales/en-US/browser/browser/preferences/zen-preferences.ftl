@@ -61,6 +61,8 @@ zen-tabs-close-on-back-with-no-history =
 
 zen-tabs-cycle-by-attribute =
   .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs =
+  .label = Ignore Pending tabs when cycling with Ctrl+Tab
 zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 
 zen-look-and-feel-compact-toolbar-themed =

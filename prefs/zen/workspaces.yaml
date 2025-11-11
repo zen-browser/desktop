@@ -29,6 +29,9 @@
 - name: services.sync.engine.workspaces
   value: false
 
+- name: services.sync.engine.pinnedtabs
+  value: false
+
 - name: zen.workspaces.separate-essentials
   value: true
 

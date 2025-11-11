@@ -91,7 +91,27 @@
 
       this._zenClickEventListener = this._onTabClick.bind(this);
 
+      // Listen for sync finish events
+      Services.obs.addObserver(this, 'weave:engine:sync:finish');
+      window.addEventListener(
+        'unload',
+        () => {
+          Services.obs.removeObserver(this, 'weave:engine:sync:finish');
+        },
+        { once: true }
+      );
+
       gZenWorkspaces._resolvePinnedInitialized();
+    }
+
+    async observe(_subject, topic, data) {
+      if (topic === 'weave:engine:sync:finish' && data === 'pinnedtabs') {
+        try {
+          await this.refreshPinnedTabs({ init: true });
+        } catch (error) {
+          console.error('[ZenPinnedTabManager] Error refreshing pinned tabs after sync:', error);
+        }
+      }
     }
 
     log(message) {
@@ -391,7 +411,7 @@
           gBrowser.tabContainer._invalidateCachedTabs();
           newTab.initialize();
         } catch (ex) {
-          console.error('Failed to initialize pinned tabs:', ex);
+          console.error('[ZenPinnedTabManager] Failed to create pinned tab for:', pin.title, ex);
         }
       }
 

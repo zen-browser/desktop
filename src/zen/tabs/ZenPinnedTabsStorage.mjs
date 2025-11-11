@@ -2,16 +2,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var ZenPinnedTabsStorage = {
+  lazy: {},
   _saveCache: [],
+  _resolveInitialized: null,
 
   async init() {
+    ChromeUtils.defineESModuleGetters(this.lazy, {
+      PlacesUtils: 'resource://gre/modules/PlacesUtils.sys.mjs',
+      Weave: 'resource://services-sync/main.sys.mjs',
+    });
     await this._ensureTable();
   },
 
   async _ensureTable() {
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage._ensureTable', async (db) => {
-      // Create the pins table if it doesn't exist
-      await db.execute(`
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage._ensureTable',
+      async (db) => {
+        // Create the pins table if it doesn't exist
+        await db.execute(`
         CREATE TABLE IF NOT EXISTS zen_pins (
       id INTEGER PRIMARY KEY,
       uuid TEXT UNIQUE NOT NULL,
@@ -27,38 +35,47 @@ var ZenPinnedTabsStorage = {
           )
       `);
 
-      const columns = await db.execute(`PRAGMA table_info(zen_pins)`);
-      const columnNames = columns.map((row) => row.getResultByName('name'));
+        const columns = await db.execute(`PRAGMA table_info(zen_pins)`);
+        const columnNames = columns.map((row) => row.getResultByName('name'));
 
-      // Helper function to add column if it doesn't exist
-      const addColumnIfNotExists = async (columnName, definition) => {
-        if (!columnNames.includes(columnName)) {
-          await db.execute(`ALTER TABLE zen_pins ADD COLUMN ${columnName} ${definition}`);
-        }
-      };
+        // Helper function to add column if it doesn't exist
+        const addColumnIfNotExists = async (columnName, definition) => {
+          if (!columnNames.includes(columnName)) {
+            await db.execute(`ALTER TABLE zen_pins ADD COLUMN ${columnName} ${definition}`);
+          }
+        };
 
-      await addColumnIfNotExists('edited_title', 'BOOLEAN NOT NULL DEFAULT 0');
-      await addColumnIfNotExists('is_folder_collapsed', 'BOOLEAN NOT NULL DEFAULT 0');
-      await addColumnIfNotExists('folder_icon', 'TEXT DEFAULT NULL');
-      await addColumnIfNotExists('folder_parent_uuid', 'TEXT DEFAULT NULL');
+        await addColumnIfNotExists('edited_title', 'BOOLEAN NOT NULL DEFAULT 0');
+        await addColumnIfNotExists('is_folder_collapsed', 'BOOLEAN NOT NULL DEFAULT 0');
+        await addColumnIfNotExists('folder_icon', 'TEXT DEFAULT NULL');
+        await addColumnIfNotExists('folder_parent_uuid', 'TEXT DEFAULT NULL');
 
-      await db.execute(`
+        await db.execute(`
         CREATE INDEX IF NOT EXISTS idx_zen_pins_uuid ON zen_pins(uuid)
       `);
 
-      await db.execute(`
+        await db.execute(`
         CREATE TABLE IF NOT EXISTS zen_pins_changes (
           uuid TEXT PRIMARY KEY,
           timestamp INTEGER NOT NULL
         )
       `);
 
-      await db.execute(`
+        await db.execute(`
         CREATE INDEX IF NOT EXISTS idx_zen_pins_changes_uuid ON zen_pins_changes(uuid)
       `);
 
-      this._resolveInitialized();
-    });
+        if (!this.lazy.Weave.Service.engineManager.get('pinnedtabs')) {
+          try {
+            this.lazy.Weave.Service.engineManager.register(ZenPinnedTabsEngine);
+          } catch (e) {
+            console.error('[ZenPinnedTabsStorage] Registration failed:', e);
+          }
+        }
+
+        this._resolveInitialized();
+      }
+    );
   },
 
   /**
@@ -94,30 +111,32 @@ var ZenPinnedTabsStorage = {
 
     const changedUUIDs = new Set();
 
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.savePin', async (db) => {
-      await db.executeTransaction(async () => {
-        const now = Date.now();
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.savePin',
+      async (db) => {
+        await db.executeTransaction(async () => {
+          const now = Date.now();
 
-        let newPosition;
-        if ('position' in pin && Number.isFinite(pin.position)) {
-          newPosition = pin.position;
-        } else {
-          // Get the maximum position within the same parent group (or null for root level)
-          const maxPositionResult = await db.execute(
-            `
+          let newPosition;
+          if ('position' in pin && Number.isFinite(pin.position)) {
+            newPosition = pin.position;
+          } else {
+            // Get the maximum position within the same parent group (or null for root level)
+            const maxPositionResult = await db.execute(
+              `
             SELECT MAX("position") as max_position
             FROM zen_pins
             WHERE COALESCE(folder_parent_uuid, '') = COALESCE(:folder_parent_uuid, '')
           `,
-            { folder_parent_uuid: pin.parentUuid || null }
-          );
-          const maxPosition = maxPositionResult[0].getResultByName('max_position') || 0;
-          newPosition = maxPosition + 1000;
-        }
+              { folder_parent_uuid: pin.parentUuid || null }
+            );
+            const maxPosition = maxPositionResult[0].getResultByName('max_position') || 0;
+            newPosition = maxPosition + 1000;
+          }
 
-        // Insert or replace the pin
-        await db.executeCached(
-          `
+          // Insert or replace the pin
+          await db.executeCached(
+            `
           INSERT OR REPLACE INTO zen_pins (
             uuid, title, url, container_id, workspace_uuid, position,
             is_essential, is_group, folder_parent_uuid, edited_title, created_at,
@@ -129,38 +148,39 @@ var ZenPinnedTabsStorage = {
             :now, :is_folder_collapsed, :folder_icon
           )
         `,
-          {
-            uuid: pin.uuid,
-            title: pin.title,
-            url: pin.isGroup ? '' : pin.url,
-            container_id: pin.containerTabId || null,
-            workspace_uuid: pin.workspaceUuid || null,
-            position: newPosition,
-            is_essential: pin.isEssential || false,
-            is_group: pin.isGroup || false,
-            folder_parent_uuid: pin.parentUuid || null,
-            edited_title: pin.editedTitle || false,
-            now,
-            folder_icon: pin.folderIcon || null,
-            is_folder_collapsed: pin.isFolderCollapsed || false,
-          }
-        );
+            {
+              uuid: pin.uuid,
+              title: pin.title,
+              url: pin.isGroup ? '' : pin.url,
+              container_id: pin.containerTabId || null,
+              workspace_uuid: pin.workspaceUuid || null,
+              position: newPosition,
+              is_essential: pin.isEssential || false,
+              is_group: pin.isGroup || false,
+              folder_parent_uuid: pin.parentUuid || null,
+              edited_title: pin.editedTitle || false,
+              now,
+              folder_icon: pin.folderIcon || null,
+              is_folder_collapsed: pin.isFolderCollapsed || false,
+            }
+          );
 
-        await db.execute(
-          `
+          await db.execute(
+            `
           INSERT OR REPLACE INTO zen_pins_changes (uuid, timestamp)
           VALUES (:uuid, :timestamp)
         `,
-          {
-            uuid: pin.uuid,
-            timestamp: Math.floor(now / 1000),
-          }
-        );
+            {
+              uuid: pin.uuid,
+              timestamp: Math.floor(now / 1000),
+            }
+          );
 
-        changedUUIDs.add(pin.uuid);
-        await this.updateLastChangeTimestamp(db);
-      });
-    });
+          changedUUIDs.add(pin.uuid);
+          await this.updateLastChangeTimestamp(db);
+        });
+      }
+    );
 
     if (notifyObservers) {
       this._notifyPinsChanged('zen-pin-updated', Array.from(changedUUIDs));
@@ -168,7 +188,7 @@ var ZenPinnedTabsStorage = {
   },
 
   async getPins() {
-    const db = await PlacesUtils.promiseDBConnection();
+    const db = await this.lazy.PlacesUtils.promiseDBConnection();
     const rows = await db.executeCached(`
       SELECT * FROM zen_pins
       ORDER BY position ASC
@@ -244,77 +264,80 @@ var ZenPinnedTabsStorage = {
 
     const changedUUIDs = new Set();
 
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.addTabToGroup', async (db) => {
-      await db.executeTransaction(async () => {
-        // Verify the group exists and is actually a group
-        const groupCheck = await db.execute(
-          `SELECT is_group FROM zen_pins WHERE uuid = :groupUuid`,
-          { groupUuid }
-        );
-
-        if (groupCheck.length === 0) {
-          throw new Error(`Group with UUID ${groupUuid} does not exist`);
-        }
-
-        if (!groupCheck[0].getResultByName('is_group')) {
-          throw new Error(`Pin with UUID ${groupUuid} is not a group`);
-        }
-
-        const tabCheck = await db.execute(`SELECT uuid FROM zen_pins WHERE uuid = :tabUuid`, {
-          tabUuid,
-        });
-
-        if (tabCheck.length === 0) {
-          throw new Error(`Tab with UUID ${tabUuid} does not exist`);
-        }
-
-        const now = Date.now();
-        let newPosition;
-
-        if (position !== null && Number.isFinite(position)) {
-          newPosition = position;
-        } else {
-          // Get the maximum position within the group
-          const maxPositionResult = await db.execute(
-            `SELECT MAX("position") as max_position FROM zen_pins WHERE folder_parent_uuid = :groupUuid`,
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.addTabToGroup',
+      async (db) => {
+        await db.executeTransaction(async () => {
+          // Verify the group exists and is actually a group
+          const groupCheck = await db.execute(
+            `SELECT is_group FROM zen_pins WHERE uuid = :groupUuid`,
             { groupUuid }
           );
-          const maxPosition = maxPositionResult[0].getResultByName('max_position') || 0;
-          newPosition = maxPosition + 1000;
-        }
 
-        await db.execute(
-          `
+          if (groupCheck.length === 0) {
+            throw new Error(`Group with UUID ${groupUuid} does not exist`);
+          }
+
+          if (!groupCheck[0].getResultByName('is_group')) {
+            throw new Error(`Pin with UUID ${groupUuid} is not a group`);
+          }
+
+          const tabCheck = await db.execute(`SELECT uuid FROM zen_pins WHERE uuid = :tabUuid`, {
+            tabUuid,
+          });
+
+          if (tabCheck.length === 0) {
+            throw new Error(`Tab with UUID ${tabUuid} does not exist`);
+          }
+
+          const now = Date.now();
+          let newPosition;
+
+          if (position !== null && Number.isFinite(position)) {
+            newPosition = position;
+          } else {
+            // Get the maximum position within the group
+            const maxPositionResult = await db.execute(
+              `SELECT MAX("position") as max_position FROM zen_pins WHERE folder_parent_uuid = :groupUuid`,
+              { groupUuid }
+            );
+            const maxPosition = maxPositionResult[0].getResultByName('max_position') || 0;
+            newPosition = maxPosition + 1000;
+          }
+
+          await db.execute(
+            `
           UPDATE zen_pins
           SET folder_parent_uuid = :groupUuid,
               position = :newPosition,
               updated_at = :now
           WHERE uuid = :tabUuid
           `,
-          {
-            tabUuid,
-            groupUuid,
-            newPosition,
-            now,
-          }
-        );
+            {
+              tabUuid,
+              groupUuid,
+              newPosition,
+              now,
+            }
+          );
 
-        changedUUIDs.add(tabUuid);
+          changedUUIDs.add(tabUuid);
 
-        await db.execute(
-          `
+          await db.execute(
+            `
           INSERT OR REPLACE INTO zen_pins_changes (uuid, timestamp)
           VALUES (:uuid, :timestamp)
           `,
-          {
-            uuid: tabUuid,
-            timestamp: Math.floor(now / 1000),
-          }
-        );
+            {
+              uuid: tabUuid,
+              timestamp: Math.floor(now / 1000),
+            }
+          );
 
-        await this.updateLastChangeTimestamp(db);
-      });
-    });
+          await this.updateLastChangeTimestamp(db);
+        });
+      }
+    );
 
     if (notifyObservers) {
       this._notifyPinsChanged('zen-pin-updated', Array.from(changedUUIDs));
@@ -334,7 +357,7 @@ var ZenPinnedTabsStorage = {
 
     const changedUUIDs = new Set();
 
-    await PlacesUtils.withConnectionWrapper(
+    await this.lazy.PlacesUtils.withConnectionWrapper(
       'ZenPinnedTabsStorage.removeTabFromGroup',
       async (db) => {
         await db.executeTransaction(async () => {
@@ -412,44 +435,68 @@ var ZenPinnedTabsStorage = {
       this._saveCache.splice(cachedIndex, 1);
     }
 
-    const changedUUIDs = [uuid];
+    const changedUUIDs = [];
 
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.removePin', async (db) => {
-      await db.executeTransaction(async () => {
-        // Get all child UUIDs first for change tracking
-        const children = await db.execute(
-          `SELECT uuid FROM zen_pins WHERE folder_parent_uuid = :uuid`,
-          {
-            uuid,
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.removePin',
+      async (db) => {
+        await db.executeTransaction(async () => {
+          // Recursively collect all descendants (children, grandchildren, etc.)
+          const collectDescendants = async (parentUuid) => {
+            const children = await db.execute(
+              `SELECT uuid FROM zen_pins WHERE folder_parent_uuid = :parentUuid`,
+              { parentUuid }
+            );
+
+            const uuids = [];
+            for (const child of children) {
+              const childUuid = child.getResultByName('uuid');
+              uuids.push(childUuid);
+              // Recursively get descendants of this child
+              const descendants = await collectDescendants(childUuid);
+              uuids.push(...descendants);
+            }
+            return uuids;
+          };
+
+          // Get all descendants recursively
+          const descendants = await collectDescendants(uuid);
+
+          // Add the parent UUID and all descendants to changedUUIDs
+          changedUUIDs.push(uuid, ...descendants);
+
+          // Delete all descendants first (to avoid constraint issues)
+          for (const descendantUuid of descendants) {
+            await db.execute(`DELETE FROM zen_pins WHERE uuid = :uuid`, { uuid: descendantUuid });
+            // Remove from cache
+            const idx = this._saveCache.findIndex((pin) => pin.uuid === descendantUuid);
+            if (idx !== -1) {
+              this._saveCache.splice(idx, 1);
+            }
           }
-        );
 
-        // Add child UUIDs to changedUUIDs array
-        for (const child of children) {
-          changedUUIDs.push(child.getResultByName('uuid'));
-        }
+          // Delete the pin/group itself
+          await db.execute(`DELETE FROM zen_pins WHERE uuid = :uuid`, { uuid });
 
-        // Delete the pin/group itself
-        await db.execute(`DELETE FROM zen_pins WHERE uuid = :uuid`, { uuid });
-
-        // Record the changes
-        const now = Math.floor(Date.now() / 1000);
-        for (const changedUuid of changedUUIDs) {
-          await db.execute(
-            `
+          // Record all deletions for sync
+          const now = Math.floor(Date.now() / 1000);
+          for (const changedUuid of changedUUIDs) {
+            await db.execute(
+              `
             INSERT OR REPLACE INTO zen_pins_changes (uuid, timestamp)
             VALUES (:uuid, :timestamp)
           `,
-            {
-              uuid: changedUuid,
-              timestamp: now,
-            }
-          );
-        }
+              {
+                uuid: changedUuid,
+                timestamp: now,
+              }
+            );
+          }
 
-        await this.updateLastChangeTimestamp(db);
-      });
-    });
+          await this.updateLastChangeTimestamp(db);
+        });
+      }
+    );
 
     if (notifyObservers) {
       this._notifyPinsChanged('zen-pin-removed', changedUUIDs);
@@ -457,31 +504,37 @@ var ZenPinnedTabsStorage = {
   },
 
   async wipeAllPins() {
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.wipeAllPins', async (db) => {
-      await db.execute(`DELETE FROM zen_pins`);
-      await db.execute(`DELETE FROM zen_pins_changes`);
-      await this.updateLastChangeTimestamp(db);
-    });
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.wipeAllPins',
+      async (db) => {
+        await db.execute(`DELETE FROM zen_pins`);
+        await db.execute(`DELETE FROM zen_pins_changes`);
+        await this.updateLastChangeTimestamp(db);
+      }
+    );
   },
 
   async markChanged(uuid) {
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.markChanged', async (db) => {
-      const now = Date.now();
-      await db.execute(
-        `
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.markChanged',
+      async (db) => {
+        const now = Date.now();
+        await db.execute(
+          `
         INSERT OR REPLACE INTO zen_pins_changes (uuid, timestamp)
         VALUES (:uuid, :timestamp)
       `,
-        {
-          uuid,
-          timestamp: Math.floor(now / 1000),
-        }
-      );
-    });
+          {
+            uuid,
+            timestamp: Math.floor(now / 1000),
+          }
+        );
+      }
+    );
   },
 
   async getChangedIDs() {
-    const db = await PlacesUtils.promiseDBConnection();
+    const db = await this.lazy.PlacesUtils.promiseDBConnection();
     const rows = await db.execute(`
       SELECT uuid, timestamp FROM zen_pins_changes
     `);
@@ -493,9 +546,12 @@ var ZenPinnedTabsStorage = {
   },
 
   async clearChangedIDs() {
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.clearChangedIDs', async (db) => {
-      await db.execute(`DELETE FROM zen_pins_changes`);
-    });
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.clearChangedIDs',
+      async (db) => {
+        await db.execute(`DELETE FROM zen_pins_changes`);
+      }
+    );
   },
 
   shouldReorderPins(before, current, after) {
@@ -538,7 +594,7 @@ var ZenPinnedTabsStorage = {
   },
 
   async getLastChangeTimestamp() {
-    const db = await PlacesUtils.promiseDBConnection();
+    const db = await this.lazy.PlacesUtils.promiseDBConnection();
     const result = await db.executeCached(`
       SELECT value FROM moz_meta WHERE key = 'zen_pins_last_change'
     `);
@@ -548,7 +604,7 @@ var ZenPinnedTabsStorage = {
   async updatePinPositions(pins) {
     const changedUUIDs = new Set();
 
-    await PlacesUtils.withConnectionWrapper(
+    await this.lazy.PlacesUtils.withConnectionWrapper(
       'ZenPinnedTabsStorage.updatePinPositions',
       async (db) => {
         await db.executeTransaction(async () => {
@@ -597,47 +653,54 @@ var ZenPinnedTabsStorage = {
 
     const changedUUIDs = new Set();
 
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.updatePinTitle', async (db) => {
-      await db.executeTransaction(async () => {
-        const now = Date.now();
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.updatePinTitle',
+      async (db) => {
+        await db.executeTransaction(async () => {
+          const now = Date.now();
 
-        // Update the pin's title and edited_title flag
-        const result = await db.execute(
-          `
-            UPDATE zen_pins
-            SET title = :newTitle,
-                edited_title = :isEdited,
-                updated_at = :now
-            WHERE uuid = :uuid
-          `,
-          {
+          // First check if the pin exists
+          const existsResult = await db.execute(`SELECT uuid FROM zen_pins WHERE uuid = :uuid`, {
             uuid,
-            newTitle,
-            isEdited,
-            now,
-          }
-        );
+          });
 
-        // Only proceed with change tracking if a row was actually updated
-        if (result.rowsAffected > 0) {
-          changedUUIDs.add(uuid);
+          if (existsResult.length > 0) {
+            // Update the pin's title and edited_title flag
+            await db.execute(
+              `
+              UPDATE zen_pins
+              SET title = :newTitle,
+                  edited_title = :isEdited,
+                  updated_at = :now
+              WHERE uuid = :uuid
+            `,
+              {
+                uuid,
+                newTitle,
+                isEdited,
+                now,
+              }
+            );
 
-          // Record the change
-          await db.execute(
-            `
+            changedUUIDs.add(uuid);
+
+            // Record the change
+            await db.execute(
+              `
               INSERT OR REPLACE INTO zen_pins_changes (uuid, timestamp)
           VALUES (:uuid, :timestamp)
             `,
-            {
-              uuid,
-              timestamp: Math.floor(now / 1000),
-            }
-          );
+              {
+                uuid,
+                timestamp: Math.floor(now / 1000),
+              }
+            );
 
-          await this.updateLastChangeTimestamp(db);
-        }
-      });
-    });
+            await this.updateLastChangeTimestamp(db);
+          }
+        });
+      }
+    );
 
     if (notifyObservers && changedUUIDs.size > 0) {
       this._notifyPinsChanged('zen-pin-updated', Array.from(changedUUIDs));
@@ -645,14 +708,18 @@ var ZenPinnedTabsStorage = {
   },
 
   async __dropTables() {
-    await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.__dropTables', async (db) => {
-      await db.execute(`DROP TABLE IF EXISTS zen_pins`);
-      await db.execute(`DROP TABLE IF EXISTS zen_pins_changes`);
-    });
+    await this.lazy.PlacesUtils.withConnectionWrapper(
+      'ZenPinnedTabsStorage.__dropTables',
+      async (db) => {
+        await db.execute(`DROP TABLE IF EXISTS zen_pins`);
+        await db.execute(`DROP TABLE IF EXISTS zen_pins_changes`);
+      }
+    );
   },
 };
 
 ZenPinnedTabsStorage.promiseInitialized = new Promise((resolve) => {
   ZenPinnedTabsStorage._resolveInitialized = resolve;
-  ZenPinnedTabsStorage.init();
 });
+
+ZenPinnedTabsStorage.init();

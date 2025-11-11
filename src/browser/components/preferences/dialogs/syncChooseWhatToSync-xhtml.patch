@@ -13,7 +13,7 @@ index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d00279
      </linkset>
      <script src="chrome://global/content/preferencesBindings.js" />
      <script src="chrome://browser/content/preferences/dialogs/syncChooseWhatToSync.js" />
-@@ -87,6 +91,12 @@
+@@ -87,6 +91,18 @@
            preference="services.sync.engine.prefs"
          />
        </html:div>
@@ -21,6 +21,12 @@ index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d00279
 +        <checkbox
 +                data-l10n-id="sync-engine-workspaces"
 +                preference="services.sync.engine.workspaces"
++        />
++      </html:div>
++      <html:div class="sync-engine-pinnedtabs">
++        <checkbox
++                data-l10n-id="sync-engine-pinnedtabs"
++                preference="services.sync.engine.pinnedtabs"
 +        />
 +      </html:div>
      </html:div>

@@ -568,6 +568,11 @@ groupbox h2 {
   list-style-image: url('chrome://devtools/skin/images/tool-storage.svg');
 }
 
+.sync-engine-pinnedtabs .checkbox-icon,
+.sync-engine-pinnedtabs.sync-engine-image {
+  list-style-image: url("chrome://browser/skin/tabs.svg");
+}
+
 @media -moz-pref('zen.theme.disable-lightweight') {
   html|div[data-l10n-id='preferences-web-appearance-footer'] {
     display: none;

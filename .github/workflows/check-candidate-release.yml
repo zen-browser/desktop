@@ -22,3 +22,13 @@ jobs:
           DISCORD_PING_IDS: ${{ secrets.DISCORD_PING_IDS }}
         run: |
           python3 scripts/check_rc_response.py
+
+  sync-upstream:
+    name: Sync Upstream
+    uses: ./.github/workflows/sync-upstream.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [check_candidates]
+    with:
+      release_candidate: 'true'

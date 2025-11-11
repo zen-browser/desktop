@@ -1,8 +1,6 @@
 name: Sync Upstream Firefox Releases
 
 on:
-  schedule:
-    - cron: '59 4 * * 2'
   workflow_dispatch:
     inputs:
       release_candidate:
@@ -21,15 +19,27 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Check if upstream branch already exists
+        id: check-upstream-branch
+        run: |
+          if git ls-remote --heads origin chore/upstream-sync | grep -sw "refs/heads/chore/upstream-sync" > /dev/null; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         with:
           node-version-file: '.nvmrc'
 
       - name: Install dependencies
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: npm ci
 
       - name: Sync Upstream Releases
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: |
           if [ "${{ github.event.inputs.release_candidate }}" = "true" ]; then
             npm run sync:rc
@@ -74,7 +84,7 @@ jobs:
         with:
           token: ${{ secrets.DEPLOY_KEY }}
           commit-message: 'chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`'
-          branch: 'chore/sync-upstream-${{ steps.build-data.outputs.version }}'
+          branch: 'chore/upstream-sync'
           title: 'Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}'
           body: |
             This PR syncs the upstream Firefox to version ${{ steps.build-data.outputs.version }}.

@@ -59,6 +59,12 @@ zen-tabs-unloader-enabled =
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
+zen-tabs-cycle-by-attribute =
+  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs =
+  .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
+
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
 
@@ -150,7 +156,7 @@ zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
 pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update =
-   .label = Automatically update installed mods on startup 
+   .label = Automatically update installed mods on startup
 
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs

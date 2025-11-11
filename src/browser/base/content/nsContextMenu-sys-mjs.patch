@@ -1,16 +1,13 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index 259b440375c7e84d373a134fea20cdbc1c1bae4b..f54d4e18e2ab11b3bc21d3b5b4de32df3d832e23 100644
+index 259b440375c7e84d373a134fea20cdbc1c1bae4b..c4a251f0169d22186c2766992ab40366d53582f1 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
-@@ -1104,6 +1104,10 @@ export class nsContextMenu {
+@@ -1103,6 +1103,8 @@ export class nsContextMenu {
+         !this.onMozExtLink &&
          !this.isSecureAboutPage()
      );
- 
-+    // Show Zen Split View link option
 +    this.showItem("context-zenSplitLink", this.onLink && !this.onMailtoLink && !this.onTelLink);
-+
-+    // Show Open Link in Glance option
 +    this.showItem("context-zenOpenLinkInGlance", this.onLink && !this.onMailtoLink && !this.onTelLink);
-+
+ 
      let canNotStrip =
        lazy.STRIP_ON_SHARE_CAN_DISABLE && !this.#canStripParams();

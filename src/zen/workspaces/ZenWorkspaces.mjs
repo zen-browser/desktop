@@ -2738,11 +2738,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
   async groupTabsBySimilarity() {
     const workspaceId = this.activeWorkspace;
-
-    // Disable the new tab listener during grouping
     this._groupingInProgress = true;
-
-    // Get all unpinned tabs in the workspace
     const unpinnedTabs = this.#unpinnedTabsInWorkspace(workspaceId);
 
     if (unpinnedTabs.length < 2) {
@@ -2750,63 +2746,106 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       return;
     }
 
-    // Categorize tabs using intelligent keyword matching
-    const categorizedTabs = [];
+    const tabData = [];
+    const TAB_URLS_TO_EXCLUDE = [
+      'about:newtab',
+      'about:home',
+      'about:privatebrowsing',
+      'chrome://browser/content/blanktab.html',
+      'about:firefoxview',
+    ];
 
     for (const tab of unpinnedTabs) {
       try {
         const uri = tab.linkedBrowser?.currentURI;
-        if (!uri || uri.scheme === 'about' || uri.scheme === 'chrome') {
-          categorizedTabs.push({ tab, category: 'Other', priority: 999 });
+        if (!uri) {
+          continue;
+        }
+
+        const url = uri.spec;
+        if (TAB_URLS_TO_EXCLUDE.includes(url)) {
+          continue;
+        }
+
+        if (uri.scheme === 'about' || uri.scheme === 'chrome') {
           continue;
         }
 
         const domain = uri.host.replace(/^(www\.|m\.|mobile\.)/, '');
-        const title = tab.label || '';
+        const title = this.#preprocessText(tab.label || '');
 
-        // Get category using intelligent keyword matching
-        const { category, priority } = this.#getCategoryFromKeywords(domain, title);
+        let openerInfo = null;
+        if (tab.openerTab && !tab.openerTab.closing) {
+          try {
+            const openerUri = tab.openerTab.linkedBrowser?.currentURI;
+            if (openerUri) {
+              const openerDomain = openerUri.host.replace(/^(www\.|m\.|mobile\.)/, '');
+              const openerTitle = this.#preprocessText(tab.openerTab.label || '');
+              openerInfo = {
+                domain: openerDomain,
+                title: openerTitle,
+                url: openerUri.spec,
+              };
+            }
+          } catch (e) {}
+        }
 
-        categorizedTabs.push({ tab, category, priority });
+        tabData.push({
+          tab,
+          domain,
+          title,
+          url,
+          opener: openerInfo,
+          combinedText: `${domain} ${title}`,
+        });
       } catch (error) {
         console.error('Error processing tab for grouping:', error);
-        categorizedTabs.push({ tab, category: 'Other', priority: 999 });
       }
     }
 
-    // Sort tabs: first by category priority, then alphabetically by category name
-    categorizedTabs.sort((a, b) => {
-      if (a.priority !== b.priority) {
-        return a.priority - b.priority;
-      }
-      return a.category.localeCompare(b.category);
-    });
+    if (tabData.length < 2) {
+      this._groupingInProgress = false;
+      return;
+    }
 
-    // Clear any existing category attributes
+    const clusters = await this.#clusterTabsBySimilarity(tabData);
+
     for (const tab of gBrowser.tabs) {
       tab.removeAttribute('zen-category');
       tab.removeAttribute('zen-category-first');
     }
 
-    // Group tabs by category and mark them
-    let currentPosition = gBrowser._numPinnedTabs;
-    let currentCategory = null;
-    const categoryCount = new Set(categorizedTabs.map(ct => ct.category)).size;
+    clusters.sort((a, b) => {
+      if (b.tabs.length !== a.tabs.length) {
+        return b.tabs.length - a.tabs.length;
+      }
+      return a.label.localeCompare(b.label);
+    });
 
-    for (const { tab, category } of categorizedTabs) {
-      // Mark tab with category and check if it's the first in its category
-      tab.setAttribute('zen-category', category);
-      if (category !== currentCategory) {
-        tab.setAttribute('zen-category-first', 'true');
-        currentCategory = category;
+    let currentPosition = gBrowser._numPinnedTabs;
+    let categoryCount = 0;
+
+    for (const cluster of clusters) {
+      if (cluster.tabs.length === 0) {
+        continue;
       }
 
-      // Move tab to current position
-      gBrowser.moveTabTo(tab, currentPosition);
-      currentPosition++;
+      categoryCount++;
+      const category = cluster.label;
+      let isFirst = true;
+
+      for (const tab of cluster.tabs) {
+        tab.setAttribute('zen-category', category);
+        if (isFirst) {
+          tab.setAttribute('zen-category-first', 'true');
+          isFirst = false;
+        }
+
+        gBrowser.moveTabTo(tab, currentPosition);
+        currentPosition++;
+      }
     }
 
-    // Re-enable the new tab listener after grouping
     setTimeout(() => {
       this._groupingInProgress = false;
     }, 500);
@@ -2821,7 +2860,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   #getFirstCategorizedTabPosition() {
-    // Find the first tab with a category attribute
     for (let i = gBrowser._numPinnedTabs; i < gBrowser.tabs.length; i++) {
       const tab = gBrowser.tabs[i];
       if (tab.hasAttribute('zen-category')) {
@@ -2831,11 +2869,10 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     return -1;
   }
 
-  _movingTab = null; // Flag to prevent infinite loops
-  _groupingInProgress = false; // Flag to disable listener during grouping
+  _movingTab = null;
+  _groupingInProgress = false;
 
   #ensureNewTabsAboveCategories(event) {
-    // Skip if we're currently grouping tabs
     if (this._groupingInProgress) {
       return;
     }
@@ -2847,37 +2884,29 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     const eventType = event.type;
 
-    // Skip if it's a pinned tab or essential tab
     if (tab.pinned || tab.hasAttribute('zen-essential')) {
       return;
     }
 
-    // Skip if we're already moving this tab to prevent infinite loops
     if (this._movingTab === tab) {
       return;
     }
 
-    // Check immediately for TabMove, with delay for TabOpen
     const checkAndMove = () => {
-      // Skip if tab has a category (was already grouped)
       if (tab.hasAttribute('zen-category')) {
         return;
       }
 
-      // Get position of first categorized tab
       const firstCategoryPos = this.#getFirstCategorizedTabPosition();
       if (firstCategoryPos === -1) {
         return;
       }
 
-      // Get current tab position
       const currentPos = tab._tPos;
 
-      // If tab is at or after the first categorized tab, move it before all categories
       if (currentPos >= firstCategoryPos) {
-        this._movingTab = tab; // Set flag
+        this._movingTab = tab;
         gBrowser.moveTabTo(tab, firstCategoryPos);
-        // Clear flag after a delay
         setTimeout(() => {
           this._movingTab = null;
         }, 300);
@@ -2885,77 +2914,453 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     };
 
     if (eventType === 'TabMove') {
-      // For TabMove, check immediately
       checkAndMove();
     } else {
-      // For TabOpen, wait longer to ensure tab is fully loaded
       setTimeout(checkAndMove, 500);
     }
   }
 
-  #getCategoryFromKeywords(domain, title) {
-    // Keyword-based categorization system
-    // Each category has keywords and a priority (lower = higher priority)
-    const categories = [
-      // Development & Tech
-      { name: 'Development', priority: 1, keywords: ['github', 'gitlab', 'bitbucket', 'stackoverflow', 'stack overflow', 'codepen', 'jsfiddle', 'replit', 'dev.to', 'hackernews', 'code', 'developer', 'programming', 'api', 'documentation', 'docs', 'npm', 'pypi', 'maven', 'react', 'vue', 'angular', 'svelte', 'nextjs', 'nuxt', 'vite', 'webpack', 'typescript', 'javascript'] },
-
-      // Video & Streaming
-      { name: 'Video', priority: 2, keywords: ['youtube', 'vimeo', 'twitch', 'dailymotion', 'video', 'watch', 'stream', 'streaming'] },
-      { name: 'Streaming', priority: 2, keywords: ['netflix', 'hulu', 'disney', 'primevideo', 'hbomax', 'paramount', 'crunchyroll', 'tv', 'movie', 'series', 'film'] },
-
-      // Social Media
-      { name: 'Social', priority: 3, keywords: ['facebook', 'twitter', 'x.com', 'instagram', 'linkedin', 'reddit', 'tumblr', 'pinterest', 'tiktok', 'snapchat', 'social', 'profile', 'post', 'feed', 'community'] },
-
-      // Shopping & E-commerce
-      { name: 'Shopping', priority: 4, keywords: ['amazon', 'ebay', 'etsy', 'shopify', 'shop', 'store', 'buy', 'cart', 'checkout', 'product', 'price', 'sale', 'deal'] },
-      { name: 'Fashion', priority: 4, keywords: ['nike', 'adidas', 'zara', 'hm', 'uniqlo', 'asos', 'fashion', 'clothing', 'shoes', 'apparel', 'wear', 'outfit'] },
-
-      // Work & Productivity
-      { name: 'Productivity', priority: 5, keywords: ['notion', 'trello', 'asana', 'monday', 'todoist', 'evernote', 'calendar', 'task', 'project', 'workspace', 'board', 'jira', 'confluence'] },
-      { name: 'Email', priority: 5, keywords: ['gmail', 'outlook', 'yahoo', 'mail', 'inbox', 'email', 'protonmail'] },
-      { name: 'Communication', priority: 5, keywords: ['slack', 'discord', 'zoom', 'teams', 'meet', 'skype', 'telegram', 'whatsapp', 'chat', 'message', 'call', 'meeting'] },
-      { name: 'Cloud', priority: 5, keywords: ['drive', 'dropbox', 'onedrive', 'icloud', 'cloud', 'storage', 'file', 'sync'] },
-
-      // News & Media
-      { name: 'News', priority: 6, keywords: ['news', 'cnn', 'bbc', 'nytimes', 'guardian', 'reuters', 'bloomberg', 'wsj', 'forbes', 'article', 'breaking', 'headline'] },
-      { name: 'Articles', priority: 6, keywords: ['medium', 'substack', 'blog', 'article', 'read', 'story', 'publication', 'writer'] },
-      { name: 'Reference', priority: 6, keywords: ['wikipedia', 'wiki', 'encyclopedia', 'dictionary', 'reference', 'learn', 'education'] },
-
-      // Entertainment
-      { name: 'Music', priority: 7, keywords: ['spotify', 'soundcloud', 'applemusic', 'music', 'song', 'artist', 'album', 'playlist', 'audio', 'listen'] },
-      { name: 'Gaming', priority: 7, keywords: ['steam', 'epicgames', 'game', 'gaming', 'play', 'gamer', 'xbox', 'playstation', 'nintendo'] },
-
-      // Automotive & Transportation
-      { name: 'Automotive', priority: 8, keywords: ['tesla', 'car', 'auto', 'vehicle', 'automotive', 'electric car', 'electric vehicle'] },
-      { name: 'Travel', priority: 8, keywords: ['booking', 'airbnb', 'expedia', 'tripadvisor', 'travel', 'hotel', 'flight', 'trip', 'vacation'] },
-
-      // Finance
-      { name: 'Finance', priority: 9, keywords: ['bank', 'paypal', 'stripe', 'venmo', 'finance', 'payment', 'transaction', 'money', 'crypto', 'bitcoin', 'invest', 'trading'] },
-
-      // Local Development - must be checked first with exact matches
-      { name: 'Development (Local)', priority: 0, keywords: ['localhost', '127.0.0.1', '0.0.0.0'] },
-    ];
-
-    const searchText = `${domain} ${title}`.toLowerCase();
-
-    // Check for exact localhost/IP matches first
-    if (domain === 'localhost' || domain === '127.0.0.1' || domain === '0.0.0.0' ||
-        domain.includes('localhost') || domain.startsWith('192.168.') || domain.startsWith('10.')) {
-      return { category: 'Development (Local)', priority: 0 };
+  /**
+   * Preprocess text by removing trailing domain information
+   * Inspired by Firefox's SmartTabGrouping.preprocessText
+   *
+   * @param {string} text - The text to preprocess
+   * @returns {string} - The preprocessed text
+   */
+  #preprocessText(text) {
+    if (!text) {
+      return '';
     }
 
-    // Find the first matching category based on keywords
-    for (const category of categories) {
-      for (const keyword of category.keywords) {
-        if (searchText.includes(keyword.toLowerCase())) {
-          return { category: category.name, priority: category.priority };
+    const delimiters = /(?<=\s)[|–-]+(?=\s)/;
+    const splitText = text.split(delimiters);
+    const hasEnoughInfo =
+      !!splitText.length && splitText.slice(0, -1).join(' ').length > 5;
+    const isPotentialDomainInfo =
+      splitText.length > 1 && splitText[splitText.length - 1].length < 20;
+
+    if (hasEnoughInfo && isPotentialDomainInfo) {
+      return splitText
+        .slice(0, -1)
+        .map(t => t.trim())
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+    }
+
+    return text.trim();
+  }
+
+  /**
+   * Generate AI embeddings for all tabs using Firefox's ML
+   *
+   * @param {Array} tabData - Array of tab data
+   * @returns {Promise<Array|null>} - Array of embeddings or null if failed
+   */
+  async #generateTabEmbeddings(tabData) {
+    if (!Services.prefs.getBoolPref('browser.ml.enable', false)) {
+      return null;
+    }
+
+    try {
+      const { createEngine } = ChromeUtils.importESModule(
+        'chrome://global/content/ml/EngineProcess.sys.mjs'
+      );
+
+      const engine = await createEngine({
+        taskName: 'feature-extraction',
+        modelId: 'Mozilla/smart-tab-embedding',
+        modelHub: 'huggingface',
+        engineId: 'embedding-engine',
+      });
+
+      console.log('🤖 Generating AI embeddings for tabs...');
+
+      const embeddings = await Promise.all(
+        tabData.map(async (data, index) => {
+          try {
+            const text = `${data.title} ${data.domain}`;
+            const result = await engine.run({ args: [text] });
+
+            let embedding;
+            if (result?.[0]?.embedding && Array.isArray(result[0].embedding)) {
+              embedding = result[0].embedding;
+            } else if (result?.[0] && Array.isArray(result[0])) {
+              embedding = result[0];
+            } else if (Array.isArray(result)) {
+              embedding = result;
+            } else {
+              return null;
+            }
+
+            if (Array.isArray(embedding) && embedding.length > 0) {
+              let pooled;
+              if (typeof embedding[0] === 'number') {
+                pooled = embedding;
+              } else if (Array.isArray(embedding[0])) {
+                const len = embedding[0].length;
+                pooled = new Array(len).fill(0);
+                for (const arr of embedding) {
+                  for (let i = 0; i < len; i++) {
+                    pooled[i] += arr[i];
+                  }
+                }
+                for (let i = 0; i < len; i++) {
+                  pooled[i] /= embedding.length;
+                }
+              } else {
+                return null;
+              }
+
+              const norm = Math.sqrt(pooled.reduce((sum, v) => sum + v * v, 0));
+              return norm === 0 ? pooled : pooled.map(v => v / norm);
+            }
+            return null;
+          } catch (error) {
+            console.warn(`Failed to generate embedding for tab ${index}:`, error);
+            return null;
+          }
+        })
+      );
+
+      const validCount = embeddings.filter(e => e !== null).length;
+      console.log(`✓ Generated ${validCount}/${tabData.length} embeddings`);
+
+      return embeddings;
+    } catch (error) {
+      console.warn('Failed to generate embeddings, falling back to text similarity:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Calculate cosine similarity between two embedding vectors
+   *
+   * @param {Array} vec1 - First embedding vector
+   * @param {Array} vec2 - Second embedding vector
+   * @returns {number} - Similarity score between -1 and 1
+   */
+  #cosineSimilarity(vec1, vec2) {
+    if (!vec1 || !vec2 || vec1.length !== vec2.length) {
+      return 0;
+    }
+
+    let dotProduct = 0;
+    let norm1 = 0;
+    let norm2 = 0;
+
+    for (let i = 0; i < vec1.length; i++) {
+      dotProduct += vec1[i] * vec2[i];
+      norm1 += vec1[i] * vec1[i];
+      norm2 += vec2[i] * vec2[i];
+    }
+
+    const denominator = Math.sqrt(norm1) * Math.sqrt(norm2);
+    return denominator === 0 ? 0 : dotProduct / denominator;
+  }
+
+  /**
+   * Calculate text similarity using Jaccard similarity
+   *
+   * @param {string} text1 - First text
+   * @param {string} text2 - Second text
+   * @returns {number} - Similarity score between 0 and 1
+   */
+  #calculateTextSimilarity(text1, text2) {
+    const words1 = new Set(
+      text1
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(w => w.length > 2)
+    );
+    const words2 = new Set(
+      text2
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(w => w.length > 2)
+    );
+
+    if (words1.size === 0 && words2.size === 0) {
+      return 1.0;
+    }
+    if (words1.size === 0 || words2.size === 0) {
+      return 0.0;
+    }
+
+    const intersection = new Set([...words1].filter(w => words2.has(w)));
+    const union = new Set([...words1, ...words2]);
+    return intersection.size / union.size;
+  }
+
+  /**
+   * Cluster tabs dynamically using AI embeddings + similarity analysis
+   *
+   * @param {Array} tabData - Array of tab data objects
+   * @returns {Promise<Array>} - Array of clusters with labels and tabs
+   */
+  async #clusterTabsBySimilarity(tabData) {
+    const SIMILARITY_THRESHOLD = 0.22;
+
+    console.log('\n========== Smart Tab Clustering (AI-Enhanced) ==========');
+    console.log(`Total tabs to cluster: ${tabData.length}`);
+    console.log(`Similarity threshold: ${SIMILARITY_THRESHOLD}`);
+
+    const embeddings = await this.#generateTabEmbeddings(tabData);
+    const useAI = embeddings !== null;
+    console.log(`Using ${useAI ? 'AI embeddings' : 'text similarity'} for clustering`);
+
+    const similarities = [];
+    for (let i = 0; i < tabData.length; i++) {
+      similarities[i] = [];
+      for (let j = 0; j < tabData.length; j++) {
+        if (i === j) {
+          similarities[i][j] = 1.0;
+        } else if (useAI && embeddings[i] && embeddings[j]) {
+          similarities[i][j] = this.#cosineSimilarity(embeddings[i], embeddings[j]);
+        } else {
+          similarities[i][j] = this.#calculateTextSimilarity(
+            tabData[i].combinedText,
+            tabData[j].combinedText
+          );
         }
       }
     }
 
-    // If no match, return "Other"
-    return { category: 'Other', priority: 999 };
+    const clusters = [];
+    const used = new Array(tabData.length).fill(false);
+
+    for (let i = 0; i < tabData.length; i++) {
+      if (used[i]) continue;
+
+      const clusterIndices = [i];
+      const clusterTabs = [tabData[i].tab];
+      used[i] = true;
+
+      for (let j = 0; j < tabData.length; j++) {
+        if (i !== j && !used[j] && similarities[i][j] > SIMILARITY_THRESHOLD) {
+          clusterIndices.push(j);
+          clusterTabs.push(tabData[j].tab);
+          used[j] = true;
+        }
+      }
+
+      clusters.push({
+        indices: new Set(clusterIndices),
+        tabs: clusterTabs,
+      });
+    }
+
+    for (const cluster of clusters) {
+      cluster.label = await this.#generateDynamicClusterLabel(
+        Array.from(cluster.indices).map(i => tabData[i])
+      );
+    }
+
+    console.log(`✓ Created ${clusters.length} cluster${clusters.length !== 1 ? 's' : ''}`);
+
+    return clusters;
+  }
+
+  /**
+   * Generate AI-powered label from cluster content using local ML
+   *
+   * @param {Array} clusterData - Array of tab data in the cluster
+   * @returns {Promise<string>} - Generated label
+   */
+  async #generateDynamicClusterLabel(clusterData) {
+    if (clusterData.length === 1) {
+      return this.#generateClusterLabel(clusterData[0].domain);
+    }
+
+    try {
+      const label = await this.#generateAIClusterLabel(clusterData);
+      if (label) {
+        return label;
+      }
+    } catch (error) {
+      console.warn('AI label generation failed, using fallback:', error);
+    }
+
+    const wordFreq = new Map();
+
+    for (const data of clusterData) {
+      const text = `${data.domain} ${data.title}`.toLowerCase();
+      const words = text.split(/\s+/).filter(w => w.length > 3);
+
+      for (const word of words) {
+        wordFreq.set(word, (wordFreq.get(word) || 0) + 1);
+      }
+    }
+
+    let bestWord = null;
+    let bestCount = 0;
+
+    for (const [word, count] of wordFreq.entries()) {
+      if (count > 1 && count > bestCount) {
+        bestCount = count;
+        bestWord = word;
+      }
+    }
+
+    if (bestWord) {
+      return bestWord.charAt(0).toUpperCase() + bestWord.slice(1);
+    }
+
+    return this.#generateClusterLabel(clusterData[0].domain);
+  }
+
+  /**
+   * Generate cluster label using local AI/ML
+   *
+   * @param {Array} clusterData - Array of tab data in the cluster
+   * @returns {Promise<string|null>} - AI generated label or null
+   */
+  async #generateAIClusterLabel(clusterData) {
+    if (!Services.prefs.getBoolPref('browser.ml.enable', false)) {
+      return null;
+    }
+
+    try {
+      const { createEngine } = ChromeUtils.importESModule(
+        'chrome://global/content/ml/EngineProcess.sys.mjs'
+      );
+
+      const tabDescriptions = clusterData
+        .map((data, idx) => {
+          let desc = `${idx + 1}. ${data.url}\n   Title: ${data.title}`;
+          if (data.opener) {
+            desc += `\n   ↳ Opened from: ${data.opener.domain} (${data.opener.title})`;
+          }
+          return desc;
+        })
+        .join('\n\n');
+
+      const titles = clusterData.map(data => data.title).filter(t => t.length > 0);
+      const keywords = this.#extractKeywords(titles);
+      const domains = [...new Set(clusterData.map(d => d.domain))].join(', ');
+
+      const prompt = `You are an expert organizer who creates concise, descriptive category names.
+
+I have a group of browser tabs that belong together. Please create a short, descriptive category name (1-3 words) for this group.
+
+Tabs in this group:
+${tabDescriptions}
+
+Common domains: ${domains}
+${keywords.length > 0 ? `Keywords in common: ${keywords.join(', ')}` : ''}
+
+Instructions:
+- Look at the FULL URLs to understand the context (e.g., /shop/, /cars/, /docs/)
+- Use the browsing history (↳ Opened from) to understand the user's intent
+- Choose a GENERAL category name, not a specific brand name
+- If tabs contain multiple brands (Nike, Adidas), use the category (e.g., "Sportswear" or "Athletic Brands")
+- If tabs are car brands/manufacturers (Audi, Mercedes, Tesla), use "Automotive" or "Cars"
+- If tabs are video platforms (YouTube, Vimeo), use "Video Platforms" or "Videos"
+- If tabs are developer tools (GitHub, Jira, GitLab), use "Development" or "Dev Tools"
+- Use the common theme or purpose, not individual site names
+- Keep it 1-3 words maximum
+- Capitalize properly
+
+Category name:`;
+
+      const engine = await createEngine({
+        taskName: 'text2text-generation',
+        modelId: 'Mozilla/smart-tab-topic',
+        modelHub: 'huggingface',
+        engineId: 'group-namer',
+      });
+
+      const aiResult = await engine.run({
+        args: [prompt],
+        options: {
+          max_new_tokens: 10,
+          temperature: 0.5,
+        },
+      });
+
+      let name = (aiResult[0]?.generated_text || '')
+        .split('\n')[0]
+        .trim();
+
+      if (!name || /none|adult content/i.test(name)) {
+        return null;
+      }
+
+      name = this.#toTitleCase(name);
+      name = name
+        .replace(/^['"`]+|['"`]+$/g, '')
+        .replace(/[.?!,:;]+$/, '')
+        .replace(/^(category name:|name:)\s*/i, '')
+        .trim()
+        .slice(0, 30);
+
+      if (name && name.length > 0) {
+        console.log(`✨ AI generated label: "${name}"`);
+        return name;
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('AI label generation failed:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Extract keywords from titles
+   */
+  #extractKeywords(titles) {
+    const allWords = titles
+      .join(' ')
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2);
+
+    const wordCount = new Map();
+    allWords.forEach(word => {
+      wordCount.set(word, (wordCount.get(word) || 0) + 1);
+    });
+
+    const stopWords = new Set([
+      'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can',
+      'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has',
+      'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two',
+      'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she',
+      'too', 'use', 'com', 'www', 'http', 'https', 'org'
+    ]);
+
+    return Array.from(wordCount.entries())
+      .filter(([word]) => !stopWords.has(word))
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([word]) => word);
+  }
+
+  /**
+   * Convert string to title case
+   */
+  #toTitleCase(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.toLowerCase().split(' ').map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  }
+
+  /**
+   * Generate a readable label from domain name
+   *
+   * @param {string} domain - The domain name
+   * @returns {string} - A readable label
+   */
+  #generateClusterLabel(domain) {
+    if (!domain) {
+      return 'Other';
+    }
+
+    let label = domain.split('.')[0];
+    label = label.charAt(0).toUpperCase() + label.slice(1);
+    return label;
   }
 
   async contextDeleteWorkspace() {

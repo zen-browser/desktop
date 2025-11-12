@@ -110,7 +110,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   async #applyBoostForPageIfAvailable(unloadStyles = false) {
     const browsingContext = this.browsingContext;
-    if (!browsingContext) {
+    // Prevent applying boosts to iframes or non-top-level browsing contexts.
+    // It makes the tab crash if we try to load stylesheets into an iframe's
+    if (!browsingContext || browsingContext.parent !== null) {
       return null;
     }
 

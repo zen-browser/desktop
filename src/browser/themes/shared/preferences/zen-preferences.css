@@ -570,7 +570,7 @@ groupbox h2 {
 
 .sync-engine-pinnedtabs .checkbox-icon,
 .sync-engine-pinnedtabs.sync-engine-image {
-  list-style-image: url("chrome://browser/skin/tabs.svg");
+  list-style-image: url('chrome://browser/skin/tabs.svg');
 }
 
 @media -moz-pref('zen.theme.disable-lightweight') {

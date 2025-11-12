@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 939ca497b882b3f4200141ba1b6764fb5c846f45..779cba5ff3df856a246321a36caa3725c054a314 100644
+index 939ca497b882b3f4200141ba1b6764fb5c846f45..09eb945215bb26e18c4414850bc4233ad5bd760c 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -14,6 +14,10 @@ var BrowserCommands = {
@@ -7,7 +7,7 @@ index 939ca497b882b3f4200141ba1b6764fb5c846f45..779cba5ff3df856a246321a36caa3725
  
      if (where == "current") {
 +      if (!gBrowser.webNavigation.canGoBack && gZenCommonActions.shouldCloseTabOnBack()) {
-+        gBrowser.removeTab(gBrowser.selectedTab);
++        gBrowser.removeTab(gBrowser.selectedTab, { animate: true });
 +        return;
 +      }
        try {

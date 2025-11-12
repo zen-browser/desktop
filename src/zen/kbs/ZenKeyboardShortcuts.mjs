@@ -208,7 +208,6 @@ class nsKeyShortcutModifiers {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
       str += separation;
     }
-
     if (this.#alt) {
       str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
       str += separation;

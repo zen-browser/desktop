@@ -443,7 +443,11 @@ var gZenUIManager = {
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
     }
-    gURLBar.removeAttribute('zen-newtab');
+
+    setTimeout(() => {
+      // We use this attribute on Tabbrowser::addTab
+      gURLBar.removeAttribute('zen-newtab');
+    }, 0);
 
     // Safely restore tab visual state with proper validation
     if (

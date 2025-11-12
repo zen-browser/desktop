@@ -95,5 +95,5 @@ zen-site-data-setting-site-protection = Stebėjimo apsauga
 zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
 zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Atverti nuorodą spartiuojame pažiūrėjime
     .accesskey = G

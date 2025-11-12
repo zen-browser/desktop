@@ -95,5 +95,5 @@ zen-site-data-setting-site-protection = Захист від відстеженн
 zen-site-data-panel-feature-callout-title = Новий дім для доповнень, дозволів тощо
 zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Відкрити посилання в передперегляді
     .accesskey = G

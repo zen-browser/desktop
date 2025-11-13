@@ -33,7 +33,7 @@ tabbrowser-unload-tab-button =
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Tab zurücksetzen und anpinnen
-           *[other] { $tabCount } Tabs zurücksetzen und anpinnen
+            [one] Tab zurücksetzen und anheften
+           *[other] { $tabCount } Tabs zurücksetzen und anheften
         }
-tab-reset-pin-label = Zurück zur angepinnten URL
+tab-reset-pin-label = Zurück zur angehefteten URL

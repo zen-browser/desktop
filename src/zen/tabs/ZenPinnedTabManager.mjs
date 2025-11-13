@@ -229,87 +229,86 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         behavior = behavior.contains('reset') ? 'reset-unload-switch' : 'unload-switch';
       }
 
-      switch (behavior) {
-        case 'close': {
-          for (const tab of pinnedTabs) {
-            this._removePinnedAttributes(tab, true);
-            gBrowser.removeTab(tab, { animate: true });
-          }
-          break;
-        }
-        case 'reset-unload-switch':
-        case 'unload-switch':
-        case 'reset-switch':
-        case 'switch':
-          if (behavior.includes('unload')) {
+        switch (behavior) {
+          case 'close': {
             for (const tab of pinnedTabs) {
-              if (tab.hasAttribute('glance-id')) {
-                // We have a glance tab inside the tab we are trying to unload,
-                // before we used to just ignore it but now we need to fully close
-                // it as well.
-                gZenGlanceManager.manageTabClose(tab.glanceTab);
-                await new Promise((resolve) => {
-                  let hasRan = false;
-                  const onGlanceClose = () => {
-                    hasRan = true;
-                    resolve();
-                  };
-                  window.addEventListener('GlanceClose', onGlanceClose, { once: true });
-                  // Set a timeout to resolve the promise if the event doesn't fire.
-                  // We do this to prevent any future issues where glance woudnt close such as
-                  // glance requering to ask for permit unload.
-                  setTimeout(() => {
-                    if (!hasRan) {
-                      console.warn('GlanceClose event did not fire within 3 seconds');
+              gBrowser.removeTab(tab, { animate: true });
+            }
+            break;
+          }
+          case 'reset-unload-switch':
+          case 'unload-switch':
+          case 'reset-switch':
+          case 'switch':
+            if (behavior.includes('unload')) {
+              for (const tab of pinnedTabs) {
+                if (tab.hasAttribute('glance-id')) {
+                  // We have a glance tab inside the tab we are trying to unload,
+                  // before we used to just ignore it but now we need to fully close
+                  // it as well.
+                  gZenGlanceManager.manageTabClose(tab.glanceTab);
+                  await new Promise((resolve) => {
+                    let hasRan = false;
+                    const onGlanceClose = () => {
+                      hasRan = true;
                       resolve();
-                    }
-                  }, 3000);
-                });
-                return;
+                    };
+                    window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                    // Set a timeout to resolve the promise if the event doesn't fire.
+                    // We do this to prevent any future issues where glance woudnt close such as
+                    // glance requering to ask for permit unload.
+                    setTimeout(() => {
+                      if (!hasRan) {
+                        console.warn('GlanceClose event did not fire within 3 seconds');
+                        resolve();
+                      }
+                    }, 3000);
+                  });
+                  return;
+                }
+                const isSpltView = tab.group?.hasAttribute('split-view-group');
+                const group = isSpltView ? tab.group.group : tab.group;
+                if (!folderToUnload && tab.hasAttribute('folder-active')) {
+                  await gZenFolders.animateUnload(group, tab);
+                }
               }
-              const isSpltView = tab.group?.hasAttribute('split-view-group');
-              const group = isSpltView ? tab.group.group : tab.group;
-              if (!folderToUnload && tab.hasAttribute('folder-active')) {
-                await gZenFolders.animateUnload(group, tab);
+              if (folderToUnload) {
+                await gZenFolders.animateUnloadAll(folderToUnload);
+              }
+              const allAreUnloaded = pinnedTabs.every(
+                (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
+              );
+              for (const tab of pinnedTabs) {
+                if (allAreUnloaded && closeIfPending) {
+                  return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
+                }
+              }
+              await gBrowser.explicitUnloadTabs(pinnedTabs);
+              for (const tab of pinnedTabs) {
+                tab.removeAttribute('discarded');
               }
             }
-            if (folderToUnload) {
-              await gZenFolders.animateUnloadAll(folderToUnload);
+            if (selectedTabs.length) {
+              this._handleTabSwitch(selectedTabs[0]);
             }
-            const allAreUnloaded = pinnedTabs.every(
-              (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
-            );
-            for (const tab of pinnedTabs) {
-              if (allAreUnloaded && closeIfPending) {
-                return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
+            if (behavior.includes('reset')) {
+              for (const tab of pinnedTabs) {
+                this._resetTabToStoredState(tab);
               }
             }
-            await gBrowser.explicitUnloadTabs(pinnedTabs);
-            for (const tab of pinnedTabs) {
-              tab.removeAttribute('discarded');
-            }
-          }
-          if (selectedTabs.length) {
-            this._handleTabSwitch(selectedTabs[0]);
-          }
-          if (behavior.includes('reset')) {
+            break;
+          case 'reset':
             for (const tab of pinnedTabs) {
               this._resetTabToStoredState(tab);
             }
-          }
-          break;
-        case 'reset':
-          for (const tab of pinnedTabs) {
-            this._resetTabToStoredState(tab);
-          }
-          break;
-        default:
-          return;
+            break;
+          default:
+            return;
+        }
+      } catch (ex) {
+        console.error('Error handling close tab shortcut for pinned tab:', ex);
       }
-    } catch (ex) {
-      console.error('Error handling close tab shortcut for pinned tab:', ex);
     }
-  }
 
   _handleTabSwitch(selectedTab) {
     if (selectedTab !== gBrowser.selectedTab) {

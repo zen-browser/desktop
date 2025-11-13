@@ -10,6 +10,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   TabGroupState: 'resource:///modules/sessionstore/TabGroupState.sys.mjs',
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
+  SessionSaver: 'resource:///modules/sessionstore/SessionSaver.sys.mjs',
 });
 
 const LAZY_COLLECT_THRESHOLD = 5 * 60 * 1000; // 5 minutes
@@ -86,7 +87,7 @@ class nsZenSessionManager {
     if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
       // Don't save (or even collect) anything in permanent private
       // browsing mode
-      return Promise.resolve();
+      return;
     }
     // Collect an initial snapshot of window data before we do the flush.
     const window = this.#topMostWindow;
@@ -154,8 +155,11 @@ class nsZenSessionManager {
     aWindowData.groups = sidebar.groups;
   }
 
-  getNewWindowData(aWindows) {
-    let newWindow = { ...Cu.cloneInto(aWindows[Object.keys(aWindows)[0]], {}), ...this.#sidebar };
+  getNewWindowData() {
+    lazy.SessionSaver.run();
+    const state = lazy.SessionStore.getCurrentState(forceUpdateAllWindows);
+    const windows = state.windows || {};
+    let newWindow = { ...Cu.cloneInto(windows[Object.keys(windows)[0]], {}), ...this.#sidebar };
     return { windows: [newWindow] };
   }
 }

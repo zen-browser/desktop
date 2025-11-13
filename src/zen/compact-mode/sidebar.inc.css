@@ -42,6 +42,7 @@
  
     :root[zen-no-padding='true'] & {
       --zen-compact-float: 10px;
+      --zen-compact-top-toolbar-hidden-fix: var(--zen-compact-float);
       --zen-compact-mode-no-padding-radius-fix: 2px;
     }
 
@@ -68,7 +69,7 @@
         bottom: calc(var(--zen-compact-float) / 2);
         height: calc(100% - var(--zen-toolbar-height-with-bookmarks)); 
         @media -moz-pref('zen.view.compact.hide-toolbar') {
-          height: 100%;
+          height: calc(100% - var(--zen-compact-top-toolbar-hidden-fix, 0px));
         }
       }
       & #zen-sidebar-top-buttons {

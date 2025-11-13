@@ -399,6 +399,10 @@
   &:not([can-close='true']) .toolbarbutton-icon {
     display: none;
   }
+
+  @media -moz-pref('zen.view.show-clear-tabs-button', false) {
+    display: none;
+  }
 }
 
 .zen-workspace-actions-reorder-icon,
@@ -513,7 +517,7 @@
     -moz-context-properties: fill, fill-opacity;
     pointer-events: none;
   }
-  &[open] image {
+  &:is([open], [starred]) image {
     list-style-image: url('permissions-fill.svg');
   }
 }

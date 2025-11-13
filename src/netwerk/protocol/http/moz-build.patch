@@ -1,8 +1,8 @@
 diff --git a/netwerk/protocol/http/moz.build b/netwerk/protocol/http/moz.build
-index 906a2fcdcc2684ff4326aeb7f22f3441add7e56c..37e16b62d012498c66bc3a38f4ce48972298b6be 100644
+index d2330003caf35c43d6831fb0d356ece513906f78..76c2faf822ddaf645eb03d93380c58b4e3b510c0 100644
 --- a/netwerk/protocol/http/moz.build
 +++ b/netwerk/protocol/http/moz.build
-@@ -225,7 +225,7 @@ LOCAL_INCLUDES += [
+@@ -227,7 +227,7 @@ LOCAL_INCLUDES += [
      "/netwerk/url-classifier",
  ]
  

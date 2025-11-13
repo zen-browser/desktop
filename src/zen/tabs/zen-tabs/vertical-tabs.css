@@ -179,7 +179,7 @@
     font-weight: 500;
     gap: 2px;
 
-    #navigator-toolbox[zen-has-hover='true'] & {
+    #navigator-toolbox[zen-has-implicit-hover='true'] & {
       visibility: visible;
       opacity: 0.5;
     }
@@ -347,6 +347,7 @@
 
     & .tab-background {
       overflow: hidden;
+      border-radius: var(--border-radius-medium) !important;
 
       & .tab-context-line {
         margin: 0 0px !important;
@@ -901,7 +902,8 @@
 }
 
 .tab-reset-button,
-.tab-reset-pin-button {
+.tab-reset-pin-button,
+.tab-close-button {
   display: none;
   -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);

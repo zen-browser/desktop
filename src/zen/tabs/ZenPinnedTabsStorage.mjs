@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 var ZenPinnedTabsStorage = {
+  _saveCache: [],
+
   async init() {
     await this._ensureTable();
   },
@@ -74,6 +76,22 @@ var ZenPinnedTabsStorage = {
   },
 
   async savePin(pin, notifyObservers = true) {
+    // If we find the exact same pin in the cache, skip saving
+    const existingIndex = this._saveCache.findIndex((cachedPin) => cachedPin.uuid === pin.uuid);
+    if (existingIndex !== -1) {
+      const existingPin = this._saveCache[existingIndex];
+      const isSame = Object.keys(pin).every((key) => pin[key] === existingPin[key]);
+      if (isSame) {
+        return; // No changes, skip saving
+      } else {
+        // Update the cached pin
+        this._saveCache[existingIndex] = pin;
+      }
+    } else {
+      // Add to cache
+      this._saveCache.push(pin);
+    }
+
     const changedUUIDs = new Set();
 
     await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.savePin', async (db) => {
@@ -389,6 +407,11 @@ var ZenPinnedTabsStorage = {
   },
 
   async removePin(uuid, notifyObservers = true) {
+    const cachedIndex = this._saveCache.findIndex((cachedPin) => cachedPin.uuid === uuid);
+    if (cachedIndex !== -1) {
+      this._saveCache.splice(cachedIndex, 1);
+    }
+
     const changedUUIDs = [uuid];
 
     await PlacesUtils.withConnectionWrapper('ZenPinnedTabsStorage.removePin', async (db) => {

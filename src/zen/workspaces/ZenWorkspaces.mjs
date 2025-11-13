@@ -563,7 +563,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   get _hoveringSidebar() {
-    return gNavToolbox.hasAttribute('zen-has-hover');
+    return gNavToolbox.hasAttribute('zen-has-implicit-hover');
   }
 
   _handleAppCommand(event) {
@@ -2496,7 +2496,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
     // Only animate if it's from an event
     let animateContainer = target && target.target instanceof EventTarget;
-    if (target?.type === 'TabClose' || target?.type === 'TabOpened') {
+    if (target?.type === 'TabClose' || target?.type === 'TabOpen') {
       animateContainer = target.target.pinned;
     }
     await this.onPinnedTabsResize(
@@ -2508,14 +2508,29 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     );
   }
 
-  updateShouldHideSeparator(arrowScrollbox, pinnedContainer) {
+  updateShouldHideSeparator(arrowScrollbox, pinnedContainer, fromTabSelection = false) {
+    const visibleTabsFound = () => {
+      let count = 0;
+      for (const child of arrowScrollbox.children) {
+        if (
+          !child.hasAttribute('hidden') &&
+          !child.closing &&
+          !child.hasAttribute('zen-empty-tab')
+        ) {
+          count++;
+          if (count > 1) {
+            // Early return
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
     // <= 2 because we have the empty tab and the new tab button
-    const shouldHideSeparator =
-      pinnedContainer.children.length === 1 ||
-      Array.from(arrowScrollbox.children).filter(
-        (child) =>
-          !child.hasAttribute('hidden') && !child.closing && !child.hasAttribute('zen-empty-tab')
-      ).length <= 1;
+    const shouldHideSeparator = fromTabSelection
+      ? pinnedContainer.hasAttribute('hide-separator')
+      : pinnedContainer.children.length === 1 || !visibleTabsFound();
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
     } else {
@@ -2650,7 +2665,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
     const workspaceID = tab.getAttribute('zen-workspace-id');
     const isEssential = tab.getAttribute('zen-essential') === 'true';
-
+    this.updateShouldHideSeparator(this.activeWorkspaceStrip, this.pinnedTabsContainer, true);
     if (tab.hasAttribute('zen-empty-tab')) {
       return;
     }

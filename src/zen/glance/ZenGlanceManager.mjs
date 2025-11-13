@@ -40,6 +40,7 @@
       this.#setupEventListeners();
       this.#setupPreferences();
       this.#setupObservers();
+      this.#insertIntoContextMenu();
     }
 
     #setupEventListeners() {
@@ -62,6 +63,17 @@
 
     #setupObservers() {
       Services.obs.addObserver(this, 'quit-application-requested');
+    }
+
+    #insertIntoContextMenu() {
+      const menuitem = document.createXULElement('menuitem');
+      menuitem.setAttribute('id', 'context-zenOpenLinkInGlance');
+      menuitem.setAttribute('hidden', 'true');
+      menuitem.setAttribute('data-l10n-id', 'zen-open-link-in-glance');
+
+      menuitem.addEventListener('command', () => this.openGlance({ url: gContextMenu.linkURL }));
+
+      document.getElementById('context-sep-open').insertAdjacentElement('beforebegin', menuitem);
     }
 
     /**
@@ -844,6 +856,10 @@
      * @returns {Promise} Promise that resolves when closing is complete
      */
     #animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID) {
+      if (this.closingGlance) {
+        return;
+      }
+
       this.closingGlance = true;
       this._animating = true;
 
@@ -922,7 +938,7 @@
             opacity: [0.4, 1],
           },
           {
-            duration: this.#GLANCE_ANIMATION_DURATION,
+            duration: this.#GLANCE_ANIMATION_DURATION / 1.5,
             type: 'spring',
             bounce: 0,
           }
@@ -1008,6 +1024,7 @@
       this.browserWrapper.removeAttribute('animate');
 
       if (!this.#currentParentTab) {
+        this.closingGlance = false;
         return;
       }
 
@@ -1063,7 +1080,6 @@
       this.contentWrapper = null;
 
       lastCurrentTab.removeAttribute('zen-glance-tab');
-      lastCurrentTab._closingGlance = true;
 
       this.#ignoreClose = true;
       lastCurrentTab.dispatchEvent(new Event('GlanceClose', { bubbles: true }));

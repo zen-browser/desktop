@@ -107,4 +107,19 @@ var gZenCommonActions = {
       timer = setTimeout(() => f.apply(this, args), delay);
     };
   },
+
+  /**
+   * Determines if a tab should be closed when navigating back with no history.
+   * Only tabs with an owner that are not pinned and not empty are eligible.
+   * Respects the user preference zen.tabs.close-on-back-with-no-history.
+   *
+   * @return {boolean} True if the tab should be closed on back
+   */
+  shouldCloseTabOnBack() {
+    if (!Services.prefs.getBoolPref('zen.tabs.close-on-back-with-no-history', true)) {
+      return false;
+    }
+    const tab = gBrowser.selectedTab;
+    return Boolean(tab.owner && !tab.pinned && !tab.hasAttribute('zen-empty-tab'));
+  },
 };

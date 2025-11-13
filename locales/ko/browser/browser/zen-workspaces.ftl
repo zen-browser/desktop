@@ -59,7 +59,7 @@ zen-workspaces-delete-workspace-title = 워크스페이스를 삭제하시겠습
 zen-workspaces-delete-workspace-body = 정말 { $name }을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = 탭을 닫았습니다! 되돌리려면 <span>{ $shortcut }</span>을 사용하세요.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = 탭 정리
+    .tooltiptext = 고정되지 않은 모든 탭을 닫습니다

@@ -200,20 +200,20 @@ class nsKeyShortcutModifiers {
       str += AppConstants.platform == 'macosx' ? '⌃' : 'Ctrl';
       str += separation;
     }
-    if (this.#alt) {
-      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
-      str += separation;
-    }
-    if (this.#shift) {
-      str += '⇧';
-      str += separation;
-    }
     if (this.#meta) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Win';
       str += separation;
     }
     if (this.#accel) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
+      str += separation;
+    }
+    if (this.#alt) {
+      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
+      str += separation;
+    }
+    if (this.#shift) {
+      str += '⇧';
       str += separation;
     }
     return str;

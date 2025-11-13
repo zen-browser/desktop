@@ -57,3 +57,6 @@
 
 - name: zen.view.shift-down-site-on-hover
   value: false
+
+- name: zen.view.show-clear-tabs-button
+  value: true

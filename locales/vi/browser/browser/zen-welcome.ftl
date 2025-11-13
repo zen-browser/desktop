@@ -14,13 +14,13 @@ zen-welcome-initial-essentials-title = Những thẻ quan trọng của bạn, l
 zen-welcome-initial-essentials-description-1 = Cho dù bạn có mở bao nhiêu, những thẻ quan trọng nhất của bạn luôn dễ dàng truy cập, luôn luôn trong tầm tay.
 zen-welcome-initial-essentials-description-2 = Thẻ thường trú sẽ luôn luôn ở đó, trên tất cả không gian làm việc của bạn.
 zen-welcome-workspace-colors-title = Không gian làm việc của bạn, màu sắc của bạn
-zen-welcome-workspace-colors-description = Cá nhân của trình duyệt của bạn, cho mỗi không gian làm việc một màu sắc đặc.
+zen-welcome-workspace-colors-description = Cá nhân hóa trình duyệt của bạn, cho mỗi không gian làm việc một màu sắc đặc trưng.
 zen-welcome-start-browsing-title =
     Sẵn sàng chưa?<br/>
     Bắt đầu thôi nào!
 zen-welcome-start-browsing-description-1 = Mọi thứ đã sẵn sàng. Nhấn nút bên dưới để bắt đầu lướt web với { -brand-short-name }.
 zen-welcome-start-browsing = Bắt đầu nào!
-zen-welcome-default-search-title = Your Default Search Engine
+zen-welcome-default-search-title = Công cụ tìm kiếm mặc định của bạn là?
 zen-welcome-default-search-description = Hãy chọn công cụ tìm kiếm mặc đinh. Bạn luôn có thể đổi nó sau này!
 zen-welcome-skip-button = Bỏ qua
 zen-welcome-finished = Trình duyệt của bạn đã được thiết lập thành công!

@@ -94,3 +94,6 @@ zen-site-data-setting-site-protection = Perlindungan Pelacakan
 
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

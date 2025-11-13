@@ -23,7 +23,8 @@
   value: true
 
 - name: media.videocontrols.picture-in-picture.urlbar-button.enabled
-  value: false
+  value: true
+  locked: true
 
 # Enable private suggestions
 - name: browser.search.suggest.enabled

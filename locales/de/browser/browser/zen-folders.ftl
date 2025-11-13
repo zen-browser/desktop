@@ -22,4 +22,4 @@ zen-folders-unload-all-tooltip =
     .tooltiptext = Aktive Tabs in diesem Ordner entladen
 zen-folders-unload-folder = 
     .label = Alle Tabs entladen
-zen-folders-search-no-results = Keine passenden Tabs gefunden 🤔
+zen-folders-search-no-results = Keine passenden Tabs gefunden

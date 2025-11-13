@@ -232,7 +232,6 @@
         switch (behavior) {
           case 'close': {
             for (const tab of pinnedTabs) {
-              this._removePinnedAttributes(tab, true);
               gBrowser.removeTab(tab, { animate: true });
             }
             break;

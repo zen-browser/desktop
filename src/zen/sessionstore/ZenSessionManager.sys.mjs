@@ -157,9 +157,9 @@ class nsZenSessionManager {
 
   getNewWindowData() {
     lazy.SessionSaver.run();
-    const state = lazy.SessionStore.getCurrentState(forceUpdateAllWindows);
+    const state = lazy.SessionStore.getCurrentState(true);
     const windows = state.windows || {};
-    let newWindow = { ...Cu.cloneInto(windows[Object.keys(windows)[0]], {}), ...this.#sidebar };
+    let newWindow = Cu.cloneInto(windows[0], {});
     return { windows: [newWindow] };
   }
 }

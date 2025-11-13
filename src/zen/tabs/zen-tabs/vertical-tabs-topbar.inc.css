@@ -9,6 +9,10 @@
 height: var(--zen-toolbar-height);
 z-index: 1;
 
+& .zen-toolbar-background {
+  display: flex;
+}
+
 #zen-appcontent-navbar-container {
   display: flex;
   min-height: var(--zen-toolbar-height);
@@ -22,7 +26,8 @@ z-index: 1;
 
 %include ../../compact-mode/windows-captions-fix-active.inc.css
 
-  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]) {
+  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]),
+  :root:not([zen-right-side='true']):not([zen-has-bookmarks]) & {
     height: var(--zen-element-separation);
     opacity: 0;
     & #zen-appcontent-navbar-container {
@@ -39,5 +44,19 @@ z-index: 1;
       opacity: 0 !important;
       pointer-events: none !important;
     }
+  }
+}
+
+/* When sidebar is on left, position contents absolutely to overlay on hover */
+:root:not([zen-right-side='true']) & {
+  /* Keep wrapper in flow to reserve space, but position contents absolutely */
+  position: relative;
+
+  & #zen-appcontent-navbar-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
   }
 }

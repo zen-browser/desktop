@@ -34,10 +34,12 @@
 
     /* Include styles for the top bar under certain conditions:
       * - Bookmarks toolbar is visible OR
-      * - The container is explicitly marked to hide controls (e.g., on Linux with reversed controls)
+      * - The container is explicitly marked to hide controls (e.g., on Linux with reversed controls) OR
+      * - Sidebar is on the left (to prevent flash when toggling bookmarks)
       */
     :root[zen-has-bookmarks] &,
-    &[should-hide='true'] {
+    &[should-hide='true'],
+    :root:not([zen-right-side='true']) & {
 %include zen-tabs/vertical-tabs-topbar.inc.css
     }
 
@@ -49,6 +51,7 @@
       pointer-events: none !important;
     }
   }
+
 }
 
 

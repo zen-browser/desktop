@@ -1,7 +1,16 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index d542e962d42b17140888e299ed43a838047ee48c..5e0b72f147687924c48dfed0318f53b765a4d497 100644
+index d542e962d42b17140888e299ed43a838047ee48c..806bc4f9d7b7557abf316a84858046e04c4f7ff5 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
+@@ -7,7 +7,7 @@
+ #identity-box {
+   margin-inline-end: var(--identity-box-margin-inline);
+ 
+-  &[pageproxystate="invalid"] {
++  :root[zen-has-empty-tab='true'] & {
+     pointer-events: none;
+     -moz-user-focus: ignore;
+   }
 @@ -81,13 +81,6 @@
    }
  }

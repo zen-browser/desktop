@@ -2655,6 +2655,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   #changeToEmptyTab() {
     const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
     gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
+    document.documentElement.setAttribute('zen-has-empty-tab', isEmpty);
   }
 
   async onLocationChange(event) {

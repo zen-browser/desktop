@@ -514,10 +514,8 @@
   & #nav-bar {
     padding-right: 0;
 
-    :root[zen-single-toolbar='true'] & {
-      &
-        #urlbar:not([breakout-extend='true']):not([pageproxystate='invalid'])
-        .urlbar-input-container {
+    :root[zen-single-toolbar='true']:not([zen-has-empty-tab='true']) & {
+      & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }

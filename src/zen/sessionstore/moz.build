@@ -5,4 +5,5 @@
 EXTRA_JS_MODULES.zen += [
   "ZenSessionFile.sys.mjs",
   "ZenSessionManager.sys.mjs",
+  "ZenWindowSync.sys.mjs",
 ]

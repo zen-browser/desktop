@@ -25,7 +25,15 @@ class nsZenSessionManager {
 
   // Called from SessionComponents.manifest on app-startup
   init() {
-    this.#initObservers();
+    for (let topic of OBSERVING) {
+      Services.obs.addObserver(this, topic);
+    }
+  }
+
+  uninit() {
+    for (let topic of OBSERVING) {
+      Services.obs.removeObserver(this, topic);
+    }
   }
 
   async readFile() {
@@ -35,12 +43,6 @@ class nsZenSessionManager {
   onFileRead(initialState) {
     for (const winData of initialState.windows || []) {
       this.restoreWindowData(winData);
-    }
-  }
-
-  #initObservers() {
-    for (let topic of OBSERVING) {
-      Services.obs.addObserver(this, topic);
     }
   }
 

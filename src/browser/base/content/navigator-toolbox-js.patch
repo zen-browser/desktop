@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c625351f6 100644
+index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..4df8419b20b25810bea8b344af84655f16b532c8 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
 @@ -6,7 +6,7 @@
@@ -9,9 +9,24 @@ index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c
 -    const navigatorToolbox = document.getElementById("navigator-toolbox");
 +    const navigatorToolbox = document.getElementById("browser");
      const widgetOverflow = document.getElementById("widget-overflow");
- 
+
      function onPopupShowing(event) {
-@@ -185,6 +185,7 @@ document.addEventListener(
+@@ -137,7 +137,13 @@ document.addEventListener(
+           break;
+
+         case "unified-extensions-button":
+-          gUnifiedExtensions.togglePanel(event);
++          gUnifiedExtensions.togglePanel(
++            event,
++            null,
++            window.gZenSiteDataPanel.extensionsPanel,
++            window.gZenSiteDataPanel.extensionsPanelView,
++            window.gZenSiteDataPanel.extensionsPanelButton,
++          );
+           break;
+
+         case "library-button":
+@@ -185,6 +191,7 @@ document.addEventListener(
          #reload-button ,
          #urlbar-go-button,
          #reader-mode-button,
@@ -19,15 +34,15 @@ index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c
          #picture-in-picture-button,
          #urlbar-zoom-button,
          #star-button-box,
-@@ -206,6 +207,7 @@ document.addEventListener(
+@@ -206,6 +213,7 @@ document.addEventListener(
          case "vertical-tabs-newtab-button":
          case "tabs-newtab-button":
          case "new-tab-button":
 +        case "zen-tabs-wrapper":
            gBrowser.handleNewTabMiddleClick(element, event);
            break;
- 
-@@ -315,7 +317,7 @@ document.addEventListener(
+
+@@ -315,7 +323,7 @@ document.addEventListener(
          #pageActionButton,
          #downloads-button,
          #fxa-toolbar-menu-button,
@@ -36,12 +51,20 @@ index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c
          #library-button
        `);
        if (!element) {
-@@ -394,7 +396,7 @@ document.addEventListener(
+@@ -394,8 +402,14 @@ document.addEventListener(
            gSync.toggleAccountPanel(element, event);
            break;
- 
+
 -        case "unified-extensions-button":
+-          gUnifiedExtensions.togglePanel(event);
 +        case "zen-site-data-icon-button":
-           gUnifiedExtensions.togglePanel(event);
++          gUnifiedExtensions.togglePanel(
++            event,
++            null,
++            window.gZenSiteDataPanel.unifiedPanel,
++            window.gZenSiteDataPanel.unifiedPanelView,
++            window.gZenSiteDataPanel.unifiedPanelButton,
++          );
            break;
- 
+
+         case "library-button":

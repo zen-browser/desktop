@@ -21,7 +21,14 @@ export class nsZenSiteDataPanel {
     this.window = window;
     this.document = window.document;
 
-    this.panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.unifiedPanel = this.#initUnifiedPanel();
+    this.unifiedPanelView = "unified-extensions-view";
+    this.extensionsPanelView = "original-unified-extensions-view";
+
+    if (!Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
+      this.extensionsPanel = this.#initExtensionsPanel();
+    }
+
     this.#init();
   }
 
@@ -34,14 +41,13 @@ export class nsZenSiteDataPanel {
     `);
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').before(button);
-    this.window.gUnifiedExtensions._button = this.anchor;
+
+    this.unifiedPanelButton = this.window.gUnifiedExtensions._button = this.anchor;
+    this.extensionsPanelButton = this.document.getElementById('unified-extensions-button');
 
     this.document
       .getElementById('nav-bar')
       .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
-
-    // Remove the old permissions dialog
-    this.document.getElementById('unified-extensions-panel-template').remove();
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
@@ -49,7 +55,7 @@ export class nsZenSiteDataPanel {
   }
 
   #initEventListeners() {
-    this.panel.addEventListener('popupshowing', this);
+    this.unifiedPanel.addEventListener('popupshowing', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
     this.anchor.addEventListener('click', this);
@@ -122,6 +128,61 @@ export class nsZenSiteDataPanel {
     for (let [id, handler] of Object.entries(kCommands)) {
       this.document.getElementById(id).addEventListener('command', handler);
     }
+  }
+
+  #initExtensionsPanel() {
+    let template = this.document.getElementById(
+      "unified-extensions-panel-template"
+    );
+    template.replaceWith(template.content);
+    const panel = this.document.getElementById('unified-extensions-panel');
+
+    const extensionsView = panel?.querySelector('#unified-extensions-view');
+    extensionsView.setAttribute('id', this.extensionsPanelView);
+
+    const panelMultiView = panel?.querySelector('panelmultiview');
+    panelMultiView.setAttribute('mainViewId', this.extensionsPanelView);
+
+    const customizationArea = panel?.querySelector('#unified-extensions-area');
+    this.#initPanel(panel, customizationArea)
+
+    return panel;
+  }
+
+  // Partial implementation of "get panel()" from engine/browser/base/content/browser-addons.js
+  #initPanel(panel, customizationArea) {
+    const { BrowserAddonUI, CustomizableUI } = this.window;
+
+    CustomizableUI.registerPanelNode(
+      customizationArea,
+      CustomizableUI.AREA_ADDONS
+    );
+    CustomizableUI.addPanelCloseListeners(panel);
+
+    panel
+      .querySelector('#unified-extensions-manage-extensions')
+      .addEventListener('command', () => {
+        BrowserAddonUI.openAddonsMgr("addons://list/extension");
+      });
+
+    // Lazy-load the l10n strings. Those strings are used for the CUI and
+    // non-CUI extensions in the unified extensions panel.
+    this.document
+      .getElementById('unified-extensions-context-menu')
+      .querySelectorAll('[data-lazy-l10n-id]')
+      .forEach(el => {
+        el.setAttribute('data-l10n-id', el.getAttribute('data-lazy-l10n-id'));
+        el.removeAttribute('data-lazy-l10n-id');
+      });
+  }
+
+  #initUnifiedPanel() {
+    const panel = this.document.getElementById('zen-unified-site-data-panel');
+    const customizationArea = panel?.querySelector('#unified-extensions-area');
+
+    this.#initPanel(panel, customizationArea)
+
+    return panel;
   }
 
   #preparePanel() {
@@ -498,7 +559,7 @@ export class nsZenSiteDataPanel {
           this.window.gZenCommonActions.copyCurrentURLToClipboard();
         }
         if (AppConstants.platform !== 'macosx') {
-          this.panel.hidePopup();
+          this.unifiedPanel.hidePopup();
         }
       }
     }
@@ -556,7 +617,25 @@ export class nsZenSiteDataPanel {
         break;
       }
       case 'zen-site-data-icon-button': {
-        this.window.gUnifiedExtensions.togglePanel(event);
+        this.window.gUnifiedExtensions.togglePanel(
+          event,
+          null,
+          this.unifiedPanel,
+          this.unifiedPanelView,
+          this.unifiedPanelButton,
+          !Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true),
+        );
+        break;
+      }
+      case 'unified-extensions-button': {
+        this.window.gUnifiedExtensions.togglePanel(
+          event,
+          null,
+          this.extensionsPanel,
+          this.extensionsPanelView,
+          this.extensionsPanelButton,
+          Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true),
+        );
         break;
       }
       default: {

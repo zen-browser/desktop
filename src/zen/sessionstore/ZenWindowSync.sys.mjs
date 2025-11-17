@@ -18,6 +18,8 @@ class nsZenWindowSync {
       Services.obs.removeObserver(this, topic);
     }
   }
+
+  observe(aSubject, aTopic) {}
 }
 
 export const ZenWindowSync = new nsZenWindowSync();

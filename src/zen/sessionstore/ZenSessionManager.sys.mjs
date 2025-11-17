@@ -157,12 +157,15 @@ class nsZenSessionManager {
     aWindowData.groups = sidebar.groups;
   }
 
-  getNewWindowData() {
-    lazy.SessionSaver.run();
-    const state = lazy.SessionStore.getCurrentState(true);
-    const windows = state.windows || {};
-    let newWindow = Cu.cloneInto(windows[0], {});
-    return { windows: [newWindow] };
+  restoreNewWindow(aWindow, SessionStoreInternal) {
+    lazy.SessionSaver.run().then(() => {
+      const state = lazy.SessionStore.getCurrentState(true);
+      const windows = state.windows || {};
+      let newWindow = Cu.cloneInto(windows[0], {});
+      delete newWindow.selected;
+      const newState = { windows: [newWindow] };
+      SessionStoreInternal.restoreWindows(aWindow, newState, {});
+    });
   }
 }
 

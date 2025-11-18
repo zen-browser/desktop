@@ -1415,8 +1415,9 @@
       this.overlay.classList.remove('zen-glance-overlay');
       this.#clearContainerStyles(this.browserWrapper);
       this.animatingFullOpen = false;
+      const glanceID = this.#currentGlanceID
       this.closeGlance({ noAnimation: true, skipPermitUnload: true });
-      this.#glances.delete(this.#currentGlanceID);
+      this.#glances.delete(glanceID);
     }
 
     /**

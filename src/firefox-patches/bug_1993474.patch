@@ -1,0 +1,107 @@
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+index 2a17159215d107f6e4b09cf3a63ab0fff2c2ee70..15dffb83dbac8c6aa9b3dfa388b66874d5b05a7e 100644
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -2848,6 +2848,25 @@ void nsWindow::SetCustomTitlebar(bool aCustomTitlebar) {
+ 
+   mCustomNonClient = aCustomTitlebar;
+ 
++  // Because of bug 1993474, we want to properly set the WS_BORDER style
++  // when the titlebar is turned on or off.
++  //
++  // The documentation for window styles says that most styles can't be
++  // modified after the window is created. Testing shows that WS_BORDER
++  // seems to be OK, but make sure this is the only style we try to change
++  // here.
++  const LONG_PTR actualStyle = ::GetWindowLongPtrW(mWnd, GWL_STYLE);
++  LONG_PTR newStyle = actualStyle;
++  if (mCustomNonClient) {
++    newStyle &= ~WS_BORDER;
++  } else {
++    newStyle |= WS_BORDER;
++  }
++  if (newStyle != actualStyle) {
++    VERIFY_WINDOW_STYLE(newStyle);
++    ::SetWindowLongPtrW(mWnd, GWL_STYLE, newStyle);
++  }
++
+   // Force a reflow of content based on the new client dimensions.
+   if (mCustomNonClient) {
+     UpdateNonClientMargins();
+@@ -8792,9 +8811,10 @@ void nsWindow::FrameState::CheckInvariant() const {
+              mPreFullscreenSizeMode < nsSizeMode_Invalid);
+   MOZ_ASSERT(mWindow);
+ 
+-  // We should never observe fullscreen sizemode unless fullscreen is enabled
+-  MOZ_ASSERT_IF(mSizeMode == nsSizeMode_Fullscreen, mFullscreenMode);
+-  MOZ_ASSERT_IF(!mFullscreenMode, mSizeMode != nsSizeMode_Fullscreen);
++  // Unfortunately this can happen now with the hack fix in
++  // SetSizeModeInternal()
++  // MOZ_ASSERT_IF(mSizeMode == nsSizeMode_Fullscreen, mFullscreenMode);
++  // MOZ_ASSERT_IF(!mFullscreenMode, mSizeMode != nsSizeMode_Fullscreen);
+ 
+   // Something went wrong if we somehow saved fullscreen mode when we are
+   // changing into fullscreen mode
+@@ -8902,6 +8922,62 @@ void nsWindow::FrameState::SetSizeModeInternal(nsSizeMode aMode,
+       mSizeMode == nsSizeMode_Fullscreen || aMode == nsSizeMode_Fullscreen;
+   const bool maximized = aMode == nsSizeMode_Maximized;
+   const bool fullscreen = aMode == nsSizeMode_Fullscreen;
++  const bool wasMaximized = mSizeMode == nsSizeMode_Maximized;
++  const bool wasFullscreen = mSizeMode == nsSizeMode_Fullscreen;
++
++  // Maximizing a window without the WS_BORDER style set will make Windows
++  // display it over the taskbar, even if we tell it not to. So if we're
++  // becoming maximized, make sure WS_BORDER is set, then clear it after a
++  // short time if necessary (to avoid issues like bug 1993474). Conversely,
++  // for becoming fullscreen make sure WS_BORDER is cleared. Yes, this is a
++  // hack.
++  if ((maximized && !wasMaximized) || (fullscreen && !wasFullscreen)) {
++    const LONG_PTR actualStyle = ::GetWindowLongPtrW(mWindow->mWnd, GWL_STYLE);
++    LONG_PTR newStyle = actualStyle;
++    if (maximized) {
++      newStyle |= WS_BORDER;
++    } else {
++      newStyle &= ~WS_BORDER;
++    }
++    if (newStyle != actualStyle) {
++      VERIFY_WINDOW_STYLE(newStyle);
++      MOZ_LOG(
++          gWindowsLog, LogLevel::Info,
++          ("window style is %d, temporarily fixing up WS_BORDER", mSizeMode));
++      ::SetWindowLongPtrW(mWindow->mWnd, GWL_STYLE, newStyle);
++      ::SetWindowPos(mWindow->mWnd, nullptr, 0, 0, 0, 0,
++                     SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE |
++                         SWP_NOACTIVATE | SWP_NOOWNERZORDER);
++    }
++    NS_DispatchToMainThread(NS_NewRunnableFunction(
++        "nsWindow::FrameState::SetSizeModeInternal",
++        [expectedMode = aMode, window = RefPtr(this->mWindow)]() {
++          // Make sure we're still in the same state (i.e. the user hasn't
++          // un-maximized or un-fullscreened the window in the meantime)
++          if (window->SizeMode() != expectedMode) {
++            return;
++          }
++          const LONG_PTR actualStyle =
++              ::GetWindowLongPtrW(window->mWnd, GWL_STYLE);
++          LONG_PTR newStyle = actualStyle;
++          if (expectedMode == nsSizeMode_Maximized &&
++              window->mCustomNonClient) {
++            newStyle &= ~WS_BORDER;
++          } else {
++            newStyle |= WS_BORDER;
++          }
++          if (newStyle != actualStyle) {
++            VERIFY_WINDOW_STYLE(newStyle);
++            MOZ_LOG(gWindowsLog, LogLevel::Info,
++                    ("window style is %d, after delay restoring WS_BORDER",
++                     expectedMode));
++            ::SetWindowLongPtrW(window->mWnd, GWL_STYLE, newStyle);
++            ::SetWindowPos(window->mWnd, nullptr, 0, 0, 0, 0,
++                           SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE |
++                               SWP_NOACTIVATE | SWP_NOOWNERZORDER);
++          }
++        }));
++  }
+ 
+   mSizeMode = aMode;
+ 

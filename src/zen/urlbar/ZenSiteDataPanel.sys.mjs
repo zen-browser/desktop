@@ -22,8 +22,8 @@ export class nsZenSiteDataPanel {
     this.document = window.document;
 
     this.unifiedPanel = this.#initUnifiedPanel();
-    this.unifiedPanelView = "unified-extensions-view";
-    this.extensionsPanelView = "original-unified-extensions-view";
+    this.unifiedPanelView = 'unified-extensions-view';
+    this.extensionsPanelView = 'original-unified-extensions-view';
 
     if (!Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
       this.extensionsPanel = this.#initExtensionsPanel();
@@ -131,9 +131,7 @@ export class nsZenSiteDataPanel {
   }
 
   #initExtensionsPanel() {
-    let template = this.document.getElementById(
-      "unified-extensions-panel-template"
-    );
+    let template = this.document.getElementById('unified-extensions-panel-template');
     template.replaceWith(template.content);
     const panel = this.document.getElementById('unified-extensions-panel');
 
@@ -144,7 +142,7 @@ export class nsZenSiteDataPanel {
     panelMultiView.setAttribute('mainViewId', this.extensionsPanelView);
 
     const customizationArea = panel?.querySelector('#unified-extensions-area');
-    this.#initPanel(panel, customizationArea)
+    this.#initPanel(panel, customizationArea);
 
     return panel;
   }
@@ -153,24 +151,19 @@ export class nsZenSiteDataPanel {
   #initPanel(panel, customizationArea) {
     const { BrowserAddonUI, CustomizableUI } = this.window;
 
-    CustomizableUI.registerPanelNode(
-      customizationArea,
-      CustomizableUI.AREA_ADDONS
-    );
+    CustomizableUI.registerPanelNode(customizationArea, CustomizableUI.AREA_ADDONS);
     CustomizableUI.addPanelCloseListeners(panel);
 
-    panel
-      .querySelector('#unified-extensions-manage-extensions')
-      .addEventListener('command', () => {
-        BrowserAddonUI.openAddonsMgr("addons://list/extension");
-      });
+    panel.querySelector('#unified-extensions-manage-extensions').addEventListener('command', () => {
+      BrowserAddonUI.openAddonsMgr('addons://list/extension');
+    });
 
     // Lazy-load the l10n strings. Those strings are used for the CUI and
     // non-CUI extensions in the unified extensions panel.
     this.document
       .getElementById('unified-extensions-context-menu')
       .querySelectorAll('[data-lazy-l10n-id]')
-      .forEach(el => {
+      .forEach((el) => {
         el.setAttribute('data-l10n-id', el.getAttribute('data-lazy-l10n-id'));
         el.removeAttribute('data-lazy-l10n-id');
       });
@@ -180,7 +173,7 @@ export class nsZenSiteDataPanel {
     const panel = this.document.getElementById('zen-unified-site-data-panel');
     const customizationArea = panel?.querySelector('#unified-extensions-area');
 
-    this.#initPanel(panel, customizationArea)
+    this.#initPanel(panel, customizationArea);
 
     return panel;
   }
@@ -623,7 +616,7 @@ export class nsZenSiteDataPanel {
           this.unifiedPanel,
           this.unifiedPanelView,
           this.unifiedPanelButton,
-          !Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true),
+          !Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)
         );
         break;
       }
@@ -634,7 +627,7 @@ export class nsZenSiteDataPanel {
           this.extensionsPanel,
           this.extensionsPanelView,
           this.extensionsPanelButton,
-          Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true),
+          Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)
         );
         break;
       }

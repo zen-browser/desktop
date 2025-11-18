@@ -3,6 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
+  #downTime = 0;
+  #downX = 0;
+  #downY = 0;
+  #holdDuration = 300; //ms
+  #moveThreshold = 8; //px
 
   constructor() {
     super();
@@ -58,7 +63,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_mousedown(event) {
-    // get closest A element
     const target = event.target.closest('A');
     const elementToRecord = event.originalTarget || event.target;
     // We record the link data anyway, even if the glance may be invoked
@@ -67,23 +71,48 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
-    if (event.button !== 0 || event.defaultPrevented || this.#ensureOnlyKeyModifiers(event)) {
+
+    if (event.button !== 0 || event.defaultPrevented) {
       return;
     }
+
+    this.#downTime = performance.now();
+    this.#downX = event.clientX;
+    this.#downY = event.clientY;
+  }
+
+  on_mouseup(event) {
+    if (event.button !== 0 || event.defaultPrevented) return;
+
+    const target = event.target.closest('A');
+    if (!target) return;
+
     const activationMethod = this.#activationMethod;
-    if (activationMethod === 'ctrl' && !event.ctrlKey) {
-      return;
-    } else if (activationMethod === 'alt' && !event.altKey) {
-      return;
-    } else if (activationMethod === 'shift' && !event.shiftKey) {
-      return;
-    } else if (activationMethod === 'meta' && !event.metaKey) {
+
+    const movedTooMuch =
+      Math.abs(event.clientX - this.#downX) > this.#moveThreshold ||
+      Math.abs(event.clientY - this.#downY) > this.#moveThreshold;
+
+    if (movedTooMuch) {
       return;
     }
-    if (target) {
+
+    if (
+      (activationMethod === 'ctrl' && event.ctrlKey) ||
+      (activationMethod === 'alt' && event.altKey) ||
+      (activationMethod === 'shift' && event.shiftKey) ||
+      (activationMethod === 'meta' && event.metaKey)
+    ) {
       event.preventDefault();
       event.stopPropagation();
+      this.#openGlance(target);
+      return;
+    }
 
+    const elapsed = performance.now() - this.#downTime;
+    if (activationMethod === 'hold' && elapsed >= this.#holdDuration) {
+      event.preventDefault();
+      event.stopPropagation();
       this.#openGlance(target);
     }
   }

@@ -29,9 +29,11 @@
     return `${month} month${month === 1 ? '' : 's'} ago`;
   }
 
-  const ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref('zen.folders.max-subfolders');
-
   class nsZenFolders extends nsZenDOMOperatedFeature {
+    #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref('zen.folders.max-subfolders', 5);
+    #ZEN_EDGE_ZONE_THRESHOLD =
+      Services.prefs.getIntPref('zen.view.drag-and-drop.edge-zone-threshold', 25) / 100;
+
     #popup = null;
     #popupTimer = null;
     #mouseTimer = null;
@@ -89,7 +91,7 @@
         const newSubfolderItem = document.getElementById('context_zenFolderNewSubfolder');
         newSubfolderItem.setAttribute(
           'disabled',
-          folder.level >= ZEN_MAX_SUBFOLDERS - 1 ? 'true' : 'false'
+          folder.level >= this.#ZEN_MAX_SUBFOLDERS - 1 ? 'true' : 'false'
         );
 
         const changeFolderSpace = document
@@ -470,7 +472,7 @@
     canDropElement(element, targetElement) {
       const isZenFolder = element?.isZenFolder;
       const level = targetElement?.group?.level + 1;
-      if (isZenFolder && level >= ZEN_MAX_SUBFOLDERS) {
+      if (isZenFolder && level >= this.#ZEN_MAX_SUBFOLDERS) {
         return false;
       }
       return true;
@@ -899,7 +901,11 @@
       const labelContainer = group.querySelector('.tab-group-label-container');
       // Setup mouseenter/mouseleave events for the folder
       labelContainer.addEventListener('mouseenter', (event) => {
-        if (!group.collapsed || !Services.prefs.getBoolPref('zen.folders.search.enabled')) {
+        if (
+          !group.collapsed ||
+          !Services.prefs.getBoolPref('zen.folders.search.enabled') ||
+          gBrowser.tabContainer.hasAttribute('movingtab')
+        ) {
           return;
         }
         this.#mouseTimer = setTimeout(() => {
@@ -1104,7 +1110,8 @@
         (!folder.hasAttribute('split-view-group') || !folder.hasAttribute('selected')) &&
         folder !== tab?.group &&
         !(
-          folder.level >= ZEN_MAX_SUBFOLDERS && movingTabs?.some((t) => gBrowser.isTabGroupLabel(t))
+          folder.level >= this.#ZEN_MAX_SUBFOLDERS &&
+          movingTabs?.some((t) => gBrowser.isTabGroupLabel(t))
         )
       ) {
         folder.setAttribute('selected', 'true');
@@ -1151,10 +1158,6 @@
       let dropElement = currentDropElement;
       let dropBefore = currentDropBefore;
       let colorCode = currentColorCode;
-      let dragUpThreshold =
-        Services.prefs.getIntPref('zen.view.drag-and-drop.drop-inside-upper-threshold') / 100;
-      let dragDownThreshold =
-        Services.prefs.getIntPref('zen.view.drag-and-drop.drop-inside-lower-threshold') / 100;
 
       const dropElementGroup = dropElement?.isZenFolder ? dropElement : dropElement?.group;
       const isSplitGroup = dropElement?.group?.hasAttribute('split-view-group');
@@ -1162,26 +1165,17 @@
         dropElementGroup.querySelector('.zen-tab-group-start').nextElementSibling;
       if (gBrowser.isTabGroup(firstGroupElem)) firstGroupElem = firstGroupElem.labelElement;
 
-      const isRestrictedGroup = isSplitGroup || dropElementGroup.collapsed;
-
-      const shouldDropInside =
-        !dropBefore &&
-        overlapPercent >= dragDownThreshold &&
-        overlapPercent <= dragUpThreshold &&
-        !isSplitGroup;
-      const shouldDropNear = overlapPercent < dragUpThreshold || overlapPercent > dragDownThreshold;
+      const isInMiddleZone =
+        overlapPercent >= this.#ZEN_EDGE_ZONE_THRESHOLD &&
+        overlapPercent <= 1 - this.#ZEN_EDGE_ZONE_THRESHOLD;
+      const shouldDropInside = isInMiddleZone && !isSplitGroup;
 
       if (shouldDropInside) {
         dropElement = firstGroupElem;
         dropBefore = true;
         this.highlightGroupOnDragOver(dropElementGroup, movingTabs);
-      } else if (shouldDropNear) {
-        if (dropBefore) {
-          colorCode = undefined;
-        } else if (!isRestrictedGroup) {
-          dropElement = firstGroupElem;
-          dropBefore = true;
-        }
+      } else {
+        colorCode = undefined;
         this.highlightGroupOnDragOver(null);
       }
 

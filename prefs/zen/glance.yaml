@@ -14,5 +14,11 @@
 - name: zen.glance.activation-method
   value: 'alt' # ctrl, alt, shift
 
+- name: zen.glance.activation-hold-duration
+  value: 300 # in milliseconds
+
+- name: zen.glance.activation-move-threshold
+  value: 8 # in pixels
+
 - name: zen.glance.animation-duration
   value: 400 # in milliseconds

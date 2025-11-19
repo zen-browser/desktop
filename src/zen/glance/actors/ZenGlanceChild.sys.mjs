@@ -3,11 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
+  #holdDuration;
+  #moveThreshold;
   #downTime = 0;
   #downX = 0;
   #downY = 0;
-  #holdDuration = 300; //ms
-  #moveThreshold = 8; //px
 
   constructor() {
     super();
@@ -20,12 +20,11 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
-  }
-
-  #ensureOnlyKeyModifiers(event) {
-    return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
+  async #initConfig() {
+    const cfg = await this.sendQuery("ZenGlance:GetConfig");
+    this.#activationMethod = cfg.activationMethod;
+    this.#holdDuration = cfg.holdDuration;
+    this.#moveThreshold = cfg.moveThreshold;
   }
 
   #openGlance(target) {
@@ -87,8 +86,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
     const target = event.target.closest('A');
     if (!target) return;
 
-    const activationMethod = this.#activationMethod;
-
     const movedTooMuch =
       Math.abs(event.clientX - this.#downX) > this.#moveThreshold ||
       Math.abs(event.clientY - this.#downY) > this.#moveThreshold;
@@ -96,6 +93,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     if (movedTooMuch) {
       return;
     }
+
+    const activationMethod = this.#activationMethod;
 
     if (
       (activationMethod === 'ctrl' && event.ctrlKey) ||
@@ -114,6 +113,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
       event.preventDefault();
       event.stopPropagation();
       this.#openGlance(target);
+      return;
     }
   }
 
@@ -127,6 +127,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
+    await this.#initConfig();
   }
 }

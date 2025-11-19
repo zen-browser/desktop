@@ -504,7 +504,7 @@ body > #confetti {
 }
 
 @media not -moz-pref('zen.theme.hide-unified-extensions-button') {
-  .zen-site-data-section:has(#unified-extensions-manage-extensions) {
+  #zen-site-data-section-addons {
     display: none;
   }
 }

@@ -26,7 +26,9 @@ export class nsZenSiteDataPanel {
     this.extensionsPanelView = 'original-unified-extensions-view';
 
     if (!Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
-      this.extensionsPanel = this.#initExtensionsPanel();
+      this.window.gUnifiedExtensions._panel = this.extensionsPanel = this.#initExtensionsPanel();
+    } else {
+      this.window.gUnifiedExtensions._panel = this.unifiedPanel;
     }
 
     this.#init();
@@ -616,7 +618,6 @@ export class nsZenSiteDataPanel {
           this.unifiedPanel,
           this.unifiedPanelView,
           this.unifiedPanelButton,
-          !Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)
         );
         break;
       }
@@ -627,7 +628,6 @@ export class nsZenSiteDataPanel {
           this.extensionsPanel,
           this.extensionsPanelView,
           this.extensionsPanelButton,
-          Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)
         );
         break;
       }

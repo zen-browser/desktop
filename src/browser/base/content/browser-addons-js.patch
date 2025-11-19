@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..7b0c98176edc9cd29b9bb5ec575862025ac24f55 100644
+index f33a300eb0eed74e286da24919ad3e8505f632c3..8a4f3334029ac339990a93f47a1f87e1ffe97313 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -65,31 +65,16 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..7b0c98176edc9cd29b9bb5ec57586202
        "#overflowed-extensions-list"
      );
 
-@@ -2646,11 +2646,7 @@ var gUnifiedExtensions = {
-     // Lazy load the unified-extensions-panel panel the first time we need to
-     // display it.
-     if (!this._panel) {
--      let template = document.getElementById(
--        "unified-extensions-panel-template"
--      );
--      template.replaceWith(template.content);
--      this._panel = document.getElementById("unified-extensions-panel");
-+      this._panel = document.getElementById("zen-unified-site-data-panel");
-       let customizationArea = this._panel.querySelector(
-         "#unified-extensions-area"
-       );
-@@ -2681,7 +2677,9 @@ var gUnifiedExtensions = {
+@@ -2681,7 +2681,7 @@ var gUnifiedExtensions = {
 
    // `aEvent` and `reason` are optional. If `reason` is specified, it should be
    // a valid argument to gUnifiedExtensions.recordButtonTelemetry().
 -  async togglePanel(aEvent, reason) {
-+  async togglePanel(aEvent, reason, panel = this._panel, view, button, setMainPanel = false) {
-+    if (setMainPanel) this._panel = panel;
-+
++  async togglePanel(aEvent, reason, panel = this._panel, view, button) {
      if (!CustomizationHandler.isCustomizing()) {
        if (aEvent) {
          if (
-@@ -2718,32 +2716,30 @@ var gUnifiedExtensions = {
+@@ -2718,32 +2718,30 @@ var gUnifiedExtensions = {
        this.blocklistAttentionInfo =
          await AddonManager.getBlocklistAttentionInfo();
 
@@ -128,7 +113,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..7b0c98176edc9cd29b9bb5ec57586202
            triggerEvent: aEvent,
          });
        }
-@@ -2830,7 +2826,7 @@ var gUnifiedExtensions = {
+@@ -2830,7 +2828,7 @@ var gUnifiedExtensions = {
        if (
          notInPanel ||
          document.querySelector("#unified-extensions-area > :first-child")
@@ -137,7 +122,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..7b0c98176edc9cd29b9bb5ec57586202
        ) {
          moveUp.hidden = true;
        }
-@@ -2930,18 +2926,20 @@ var gUnifiedExtensions = {
+@@ -2930,18 +2928,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
 

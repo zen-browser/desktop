@@ -493,20 +493,26 @@ var gZenUIManager = {
 
     if (gURLBar.focused) {
       setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
-        );
-        gURLBar.view.close({ elementPicked: onElementPicked });
-        gURLBar.updateTextOverflow();
+        setTimeout(() => {
+          window.dispatchEvent(
+            new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
+          );
+          gURLBar.view.close({ elementPicked: onElementPicked });
+          gURLBar.updateTextOverflow();
 
-        // Ensure tab and browser are valid before updating state
-        const selectedTab = gBrowser.selectedTab;
-        if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
-          const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
-          if (browserState) {
-            browserState.urlbarFocused = false;
+          if (onElementPicked && onSwitch) {
+            gURLBar.setURI(null, onSwitch);
           }
-        }
+
+          // Ensure tab and browser are valid before updating state
+          const selectedTab = gBrowser.selectedTab;
+          if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
+            const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
+            if (browserState) {
+              browserState.urlbarFocused = false;
+            }
+          }
+        }, 0);
       }, 0);
     }
   },
@@ -663,7 +669,10 @@ var gZenUIManager = {
     if (anchor?.closest('#zen-sidebar-top-buttons')) {
       block = 'topleft';
     }
-    if (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) {
+    if (
+      (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) ||
+      (panel?.id === 'zen-unified-site-data-panel' && !gZenVerticalTabsManager._hasSetSingleToolbar)
+    ) {
       block = 'bottomright';
       inline = 'topright';
     }

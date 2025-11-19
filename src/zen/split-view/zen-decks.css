@@ -58,7 +58,7 @@
   margin-top: 0 !important;
 }
 
-#tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split='true'] {
+#tabbrowser-tabpanels[zen-split-view='true']:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split='true'] {
   transition: inset 0.09s ease-out !important;
   & browser {
     transition: opacity 0.2s ease-out !important;

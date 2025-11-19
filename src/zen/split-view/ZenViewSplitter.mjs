@@ -1067,86 +1067,88 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {string|undefined} gridType - The type of grid layout.
    */
   splitTabs(tabs, gridType, initialIndex = 0) {
-    // TODO: Add support for splitting essential tabs
-    tabs = tabs.filter((t) => !t.hidden && !t.hasAttribute('zen-empty-tab'));
-    if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
-      return;
-    }
+    this.#withoutSplitViewTransition(() => {
+      // TODO: Add support for splitting essential tabs
+      tabs = tabs.filter((t) => !t.hidden && !t.hasAttribute('zen-empty-tab'));
+      if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
+        return;
+      }
 
-    const existingSplitTab = tabs.find((tab) => tab.splitView);
-    if (existingSplitTab) {
-      this._moveTabsToContainer(tabs, tabs[initialIndex]);
-      const groupIndex = this._data.findIndex((group) => group.tabs.includes(existingSplitTab));
-      const group = this._data[groupIndex];
-      const gridTypeChange = gridType && group.gridType !== gridType;
-      const newTabsAdded = tabs.find((t) => !group.tabs.includes(t));
-      if (gridTypeChange || !newTabsAdded) {
-        // reset layout
-        group.gridType = gridType;
-        group.layoutTree = this.calculateLayoutTree(
-          [...new Set(group.tabs.concat(tabs))],
-          gridType
-        );
-      } else {
-        // Add any tabs that are not already in the group
+      const existingSplitTab = tabs.find((tab) => tab.splitView);
+      if (existingSplitTab) {
+        this._moveTabsToContainer(tabs, tabs[initialIndex]);
+        const groupIndex = this._data.findIndex((group) => group.tabs.includes(existingSplitTab));
+        const group = this._data[groupIndex];
+        const gridTypeChange = gridType && group.gridType !== gridType;
+        const newTabsAdded = tabs.find((t) => !group.tabs.includes(t));
+        if (gridTypeChange || !newTabsAdded) {
+          // reset layout
+          group.gridType = gridType;
+          group.layoutTree = this.calculateLayoutTree(
+            [...new Set(group.tabs.concat(tabs))],
+            gridType
+          );
+        } else {
+          // Add any tabs that are not already in the group
+          for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i];
+            if (!group.tabs.includes(tab)) {
+              gBrowser.moveTabToGroup(tab, this._getSplitViewGroup(tabs));
+              group.tabs.push(tab);
+              this.addTabToSplit(tab, group.layoutTree);
+            }
+          }
+        }
+        if (this._sessionRestoring) {
+          return;
+        }
+        this.activateSplitView(group, true);
+        return;
+      }
+
+      // We are here if none of the tabs have been previously split
+      // If there's ANY pinned tab on the list, we clone the pinned tab
+      // state to all the tabs
+      const allArePinned = tabs.every((tab) => tab.pinned);
+      const thereIsOnePinned = tabs.some((tab) => tab.pinned);
+      const thereIsOneEssential = tabs.some((tab) => tab.hasAttribute('zen-essential'));
+
+      if (thereIsOneEssential || (thereIsOnePinned && !allArePinned)) {
         for (let i = 0; i < tabs.length; i++) {
           const tab = tabs[i];
-          if (!group.tabs.includes(tab)) {
-            gBrowser.moveTabToGroup(tab, this._getSplitViewGroup(tabs));
-            group.tabs.push(tab);
-            this.addTabToSplit(tab, group.layoutTree);
+          if (tab.pinned) {
+            tabs[i] = gBrowser.duplicateTab(tab, true);
           }
         }
       }
+
+      gridType ??= 'grid';
+
+      const splitData = {
+        tabs,
+        gridType,
+        layoutTree: this.calculateLayoutTree(tabs, gridType),
+      };
+      this._data.push(splitData);
+      if (!this._sessionRestoring) {
+        window.gBrowser.selectedTab = tabs[initialIndex] ?? tabs[0];
+      }
+
+      // Add tabs to the split view group
+      let splitGroup = this._getSplitViewGroup(tabs);
+      if (splitGroup) {
+        for (const tab of tabs) {
+          if (!tab.group || tab.group !== splitGroup) {
+            gBrowser.moveTabToGroup(tab, splitGroup);
+          }
+        }
+      }
+
       if (this._sessionRestoring) {
         return;
       }
-      this.activateSplitView(group, true);
-      return;
-    }
-
-    // We are here if none of the tabs have been previously split
-    // If there's ANY pinned tab on the list, we clone the pinned tab
-    // state to all the tabs
-    const allArePinned = tabs.every((tab) => tab.pinned);
-    const thereIsOnePinned = tabs.some((tab) => tab.pinned);
-    const thereIsOneEssential = tabs.some((tab) => tab.hasAttribute('zen-essential'));
-
-    if (thereIsOneEssential || (thereIsOnePinned && !allArePinned)) {
-      for (let i = 0; i < tabs.length; i++) {
-        const tab = tabs[i];
-        if (tab.pinned) {
-          tabs[i] = gBrowser.duplicateTab(tab, true);
-        }
-      }
-    }
-
-    gridType ??= 'grid';
-
-    const splitData = {
-      tabs,
-      gridType,
-      layoutTree: this.calculateLayoutTree(tabs, gridType),
-    };
-    this._data.push(splitData);
-    if (!this._sessionRestoring) {
-      window.gBrowser.selectedTab = tabs[initialIndex] ?? tabs[0];
-    }
-
-    // Add tabs to the split view group
-    let splitGroup = this._getSplitViewGroup(tabs);
-    if (splitGroup) {
-      for (const tab of tabs) {
-        if (!tab.group || tab.group !== splitGroup) {
-          gBrowser.moveTabToGroup(tab, splitGroup);
-        }
-      }
-    }
-
-    if (this._sessionRestoring) {
-      return;
-    }
-    this.activateSplitView(splitData);
+      this.activateSplitView(splitData);
+    });
   }
 
   addTabToSplit(tab, splitNode, prepend = true) {
@@ -1929,6 +1931,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return true;
   }
 
+  #withoutSplitViewTransition(callback) {
+    this.tabBrowserPanel.classList.add('zen-split-view-no-transition');
+    try {
+      callback();
+    } finally {
+      requestAnimationFrame(() => {
+        this.tabBrowserPanel.classList.remove('zen-split-view-no-transition');
+      }, 0);
+    }
+  }
+
   createEmptySplit() {
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
@@ -1974,6 +1987,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     setTimeout(() => {
       gZenUIManager.handleNewTab(false, false, 'tab', true);
     }, 0);
+  }
+
+  get splitViewBrowsers() {
+    if (this.currentView < 0) {
+      return [];
+    }
+    return this._data[this.currentView].tabs.map((tab) => tab.linkedBrowser);
   }
 }
 

@@ -43,11 +43,8 @@
 - name: zen.view.drag-and-drop.move-over-threshold
   value: 70
 
-- name: zen.view.drag-and-drop.drop-inside-upper-threshold
-  value: 80
-
-- name: zen.view.drag-and-drop.drop-inside-lower-threshold
-  value: 30
+- name: zen.view.drag-and-drop.edge-zone-threshold
+  value: 25
 
 - name: zen.view.context-menu.refresh
   value: false

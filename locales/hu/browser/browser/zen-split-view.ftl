@@ -10,7 +10,7 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = Link felosztása új lapban
+    .label = Hivatkozás felosztása új lapban
     .accesskey = S
 zen-split-view-modifier-header = Osztott nézet
 zen-split-view-modifier-activate-reallocation = 

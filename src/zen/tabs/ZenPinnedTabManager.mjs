@@ -103,7 +103,7 @@
 
     async onTabIconChanged(tab, url = null) {
       const iconUrl = url ?? gBrowser.getIcon(tab);
-      
+
       if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
         try {
           setTimeout(async () => {
@@ -191,7 +191,7 @@
               if (pin.isGroup) {
                 return pin;
               }
-              
+
               if (pin.iconUrl && pin.iconUrl.trim().length > 0) {
                 return {
                   ...pin,
@@ -213,7 +213,7 @@
                 ...pin,
                 iconUrl: null,
               };
-            } catch (ex) {
+            } catch {
               return {
                 ...pin,
                 iconUrl: null,
@@ -246,7 +246,7 @@
         return;
       }
       this._migrationScheduled = true;
-      
+
       setTimeout(() => {
         this.#migrateMissingFavicons();
       }, 2000);
@@ -283,7 +283,7 @@
       if (pin.iconUrl && pin.iconUrl.trim().length > 0) {
         return;
       }
-      
+
       if (this._migrationAttempted?.has(pin.uuid)) {
         return;
       }
@@ -292,7 +292,7 @@
 
       try {
         let favicon = await this.getFaviconAsBase64(Services.io.newURI(pin.url));
-        
+
         if (!favicon) {
           favicon = await this.fetchFaviconFromNetwork(pin.url);
         }
@@ -300,10 +300,8 @@
         if (favicon) {
           pin.iconUrl = favicon;
           await this.savePin(pin, false);
-          
-          const tab = gBrowser.tabs.find(
-            (t) => t.getAttribute('zen-pin-id') === pin.uuid
-          );
+
+          const tab = gBrowser.tabs.find((t) => t.getAttribute('zen-pin-id') === pin.uuid);
           if (tab) {
             gBrowser.setIcon(tab, favicon);
           }
@@ -1096,19 +1094,21 @@
         try {
           const tabFavicon = gBrowser.getIcon(tab);
           let faviconDataURI = null;
-          
+
           if (tabFavicon && tabFavicon.startsWith('data:image/')) {
             faviconDataURI = tabFavicon;
           } else {
             faviconDataURI = await this.getFaviconAsBase64(tab.linkedBrowser.currentURI);
-            
+
             if (!faviconDataURI) {
-              faviconDataURI = await this.fetchFaviconFromNetwork(tab.linkedBrowser.currentURI.spec);
+              faviconDataURI = await this.fetchFaviconFromNetwork(
+                tab.linkedBrowser.currentURI.spec
+              );
             }
           }
-          
+
           if (faviconDataURI) {
-            const pin = this._pinsCache?.find(p => p.uuid === pinId);
+            const pin = this._pinsCache?.find((p) => p.uuid === pinId);
             if (pin) {
               pin.iconUrl = faviconDataURI;
               await this.savePin(pin, false);
@@ -1126,28 +1126,32 @@
         if (!faviconData || !faviconData.dataURI) {
           return null;
         }
-        
+
         const dataURI = faviconData.dataURI.spec || null;
-        
+
         if (dataURI && typeof dataURI === 'string' && dataURI.startsWith('data:image/')) {
           return dataURI;
         }
-        
+
         return null;
-      } catch (ex) {
+      } catch {
         return null;
       }
     }
 
     async fetchFaviconFromNetwork(pageUrl) {
       try {
-        if (pageUrl.startsWith('about:') || pageUrl.startsWith('chrome:') || pageUrl.startsWith('moz-extension:')) {
+        if (
+          pageUrl.startsWith('about:') ||
+          pageUrl.startsWith('chrome:') ||
+          pageUrl.startsWith('moz-extension:')
+        ) {
           return null;
         }
 
         const uri = Services.io.newURI(pageUrl);
         const faviconUrl = uri.prePath + '/favicon.ico';
-        
+
         const response = await fetch(faviconUrl, {
           method: 'GET',
           credentials: 'omit',
@@ -1168,7 +1172,7 @@
           reader.onerror = () => reject(new Error('Failed to convert blob to data URI'));
           reader.readAsDataURL(blob);
         });
-      } catch (ex) {
+      } catch {
         return null;
       }
     }
@@ -1203,14 +1207,14 @@
             const pinId = tab.getAttribute('zen-pin-id');
             pin.isEssential = true;
             pin.workspaceUuid = null;
-            
+
             const tabFavicon = gBrowser.getIcon(tab);
             if (tabFavicon && tabFavicon.startsWith('data:image/')) {
               pin.iconUrl = tabFavicon;
             }
-            
+
             this.savePin(pin).catch(console.error);
-            
+
             if (!pin.iconUrl) {
               this.captureFaviconForTab(tab, pinId);
             }
@@ -1462,11 +1466,11 @@
       if (!pin) {
         return;
       }
-      
+
       if (!pin.iconUrl && pin.url && !this._migrationAttempted?.has(pin.uuid)) {
         this.#migratePinFavicon(pin);
       }
-      
+
       const pinUrl = pin.url.split('#')[0];
       const currentUrl = browser.currentURI.spec.split('#')[0];
       if (pinUrl === currentUrl) {

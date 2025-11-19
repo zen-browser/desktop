@@ -117,15 +117,24 @@ var ZenPinnedTabsStorage = {
         }
 
         // Insert or replace the pin
-        const iconData = pin.iconUrl !== undefined ? pin.iconUrl : (pin.iconData !== undefined ? pin.iconData : null);
-        
+        const iconData =
+          pin.iconUrl !== undefined
+            ? pin.iconUrl
+            : pin.iconData !== undefined
+              ? pin.iconData
+              : null;
+
         let iconDataString = null;
         if (iconData !== null && iconData !== undefined) {
-          if (typeof iconData === 'string' && iconData.trim().length > 0 && iconData.startsWith('data:image/')) {
+          if (
+            typeof iconData === 'string' &&
+            iconData.trim().length > 0 &&
+            iconData.startsWith('data:image/')
+          ) {
             iconDataString = iconData;
           }
         }
-        
+
         await db.executeCached(
           `
           INSERT OR REPLACE INTO zen_pins (

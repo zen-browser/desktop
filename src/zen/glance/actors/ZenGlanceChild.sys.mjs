@@ -20,6 +20,12 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
+  #ensureOnlyOneModifierKeyIsPressed(event) {
+    return (
+      [event.ctrlKey, event.altKey, event.shiftKey, event.metaKey].filter(Boolean).length === 1
+    );
+  }
+
   async #initConfig() {
     const cfg = await this.sendQuery('ZenGlance:GetConfig');
     this.#activationMethod = cfg.activationMethod;
@@ -89,27 +95,19 @@ export class ZenGlanceChild extends JSWindowActorChild {
     const movedTooMuch =
       Math.abs(event.clientX - this.#downX) > this.#moveThreshold ||
       Math.abs(event.clientY - this.#downY) > this.#moveThreshold;
-
-    if (movedTooMuch) {
-      return;
-    }
+    if (movedTooMuch) return;
 
     const activationMethod = this.#activationMethod;
+    const elapsed = performance.now() - this.#downTime;
 
     if (
-      (activationMethod === 'ctrl' && event.ctrlKey) ||
-      (activationMethod === 'alt' && event.altKey) ||
-      (activationMethod === 'shift' && event.shiftKey) ||
-      (activationMethod === 'meta' && event.metaKey)
+      (activationMethod === 'hold' && elapsed >= this.#holdDuration) ||
+      (this.#ensureOnlyOneModifierKeyIsPressed(event) &&
+        ((activationMethod === 'ctrl' && event.ctrlKey) ||
+          (activationMethod === 'alt' && event.altKey) ||
+          (activationMethod === 'shift' && event.shiftKey) ||
+          (activationMethod === 'meta' && event.metaKey)))
     ) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.#openGlance(target);
-      return;
-    }
-
-    const elapsed = performance.now() - this.#downTime;
-    if (activationMethod === 'hold' && elapsed >= this.#holdDuration) {
       event.preventDefault();
       event.stopPropagation();
       this.#openGlance(target);

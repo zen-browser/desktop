@@ -444,29 +444,29 @@ var gZenUIManager = {
       gURLBar._zenHandleUrlbarClose = null;
     }
 
+    const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
       // We use this attribute on Tabbrowser::addTab
       gURLBar.removeAttribute('zen-newtab');
-    }, 0);
 
-    // Safely restore tab visual state with proper validation
-    if (
-      this._lastTab &&
-      !this._lastTab.closing &&
-      this._lastTab.ownerGlobal &&
-      !this._lastTab.ownerGlobal.closed
-    ) {
-      this._lastTab._visuallySelected = true;
-      this._lastTab = null;
-    }
+      // Safely restore tab visual state with proper validation
+      if (
+        this._lastTab &&
+        !this._lastTab.closing &&
+        this._lastTab.ownerGlobal &&
+        !this._lastTab.ownerGlobal.closed &&
+        !onSwitch
+      ) {
+        this._lastTab._visuallySelected = true;
+        this._lastTab = null;
+      }
 
-    // Reset newtab buttons
-    for (const button of this.newtabButtons) {
-      button.removeAttribute('in-urlbar');
-    }
+      // Reset newtab buttons
+      for (const button of this.newtabButtons) {
+        button.removeAttribute('in-urlbar');
+      }
 
-    // Handle search data
-    if (!onElementPicked) {
+      // Handle search data
       if (onSwitch) {
         this.clearUrlbarData();
       } else {
@@ -487,12 +487,8 @@ var gZenUIManager = {
       }
 
       gURLBar.handleRevert();
-    } else if (onElementPicked && onSwitch) {
-      this.clearUrlbarData();
-    }
 
-    if (gURLBar.focused) {
-      setTimeout(() => {
+      if (isFocusedBefore) {
         setTimeout(() => {
           window.dispatchEvent(
             new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
@@ -513,8 +509,8 @@ var gZenUIManager = {
             }
           }
         }, 0);
-      }, 0);
-    }
+      }
+    }, 0);
   },
 
   urlbarTrim(aURL) {

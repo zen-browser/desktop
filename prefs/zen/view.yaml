@@ -57,3 +57,6 @@
 
 - name: zen.view.show-clear-tabs-button
   value: true
+
+- name: zen.view.draggable-sidebar
+  value: true

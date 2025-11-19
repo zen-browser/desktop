@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/browser-ctrlTab.js b/browser/components/tabbrowser/content/browser-ctrlTab.js
-index 958728cde19dd7cc24692baa89e11fcab816ab82..92de87cc8461146e0040ca8a59710bf5d46d685f 100644
+index 958728cde19dd7cc24692baa89e11fcab816ab82..89063cca2c26b92e0c8b23960e9cfb43ea59b557 100644
 --- a/browser/components/tabbrowser/content/browser-ctrlTab.js
 +++ b/browser/components/tabbrowser/content/browser-ctrlTab.js
 @@ -249,7 +249,8 @@ var ctrlTab = {
@@ -12,20 +12,18 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..92de87cc8461146e0040ca8a59710bf5
    },
  
    init: function ctrlTab_init() {
-@@ -452,7 +453,22 @@ var ctrlTab = {
+@@ -452,7 +453,20 @@ var ctrlTab = {
  
    remove: function ctrlTab_remove(aPreview) {
      if (aPreview._tab) {
 -      gBrowser.removeTab(aPreview._tab);
 +      const tab = aPreview._tab;
 +      
-+      if (tab.hasAttribute("zen-essential") || tab.pinned) {
-+        // Unload essential/pinned tabs instead of removing them
++      if (tab.pinned) {
 +        gZenPinnedTabManager.onCloseTabShortcut(
 +          new KeyboardEvent('keydown', { key: 'w', ctrlKey: true }),
 +          tab
 +        );
-+        // Manually update UI since unloading doesn't trigger TabClose
 +        this.detachTab(tab);
 +        if (this.isOpen) {
 +          this.removeClosingTabFromUI(tab);
@@ -36,7 +34,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..92de87cc8461146e0040ca8a59710bf5
      }
    },
  
-@@ -460,7 +476,7 @@ var ctrlTab = {
+@@ -460,7 +474,7 @@ var ctrlTab = {
      // If the tab is hidden, don't add it to the list unless it's selected
      // (Normally hidden tabs would be unhidden when selected, but that doesn't
      // happen for Firefox View).
@@ -45,7 +43,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..92de87cc8461146e0040ca8a59710bf5
        return;
      }
  
-@@ -484,7 +500,7 @@ var ctrlTab = {
+@@ -484,7 +498,7 @@ var ctrlTab = {
    },
  
    open: function ctrlTab_open() {
@@ -54,7 +52,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..92de87cc8461146e0040ca8a59710bf5
        return;
      }
  
-@@ -763,7 +779,7 @@ var ctrlTab = {
+@@ -763,7 +777,7 @@ var ctrlTab = {
    _initRecentlyUsedTabs() {
      this._recentlyUsedTabs = Array.prototype.filter.call(
        gBrowser.tabs,

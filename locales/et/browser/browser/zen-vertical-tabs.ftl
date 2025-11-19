@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = Kaardid paremal
     .accesskey = p
 zen-toolbar-context-compact-mode = 
     .label = Kompaktne režiim
-    .accesskey = K
 zen-toolbar-context-compact-mode-enable = 
     .label = Luba kompaktne režiim
     .accesskey = r

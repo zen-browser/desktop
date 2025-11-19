@@ -3,7 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES += [
+  "ZenSiteDataPanel.sys.mjs",
   "ZenUBActionsProvider.sys.mjs",
   "ZenUBGlobalActions.sys.mjs",
   "ZenUBProvider.sys.mjs",
+  "ZenUBResultsLearner.sys.mjs",
 ]

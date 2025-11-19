@@ -1,8 +1,8 @@
 diff --git a/toolkit/actors/PictureInPictureChild.sys.mjs b/toolkit/actors/PictureInPictureChild.sys.mjs
-index 21b6295bf46336a70ed0a3797cf3210c8c0cb545..5a7018f1f923e977f63fae296ffdff1730ad1218 100644
+index ea47bd1029de4571a045c1ee17c313dc9d62cad8..0f8afca693e0fc112839cfb998fd8baa20227f06 100644
 --- a/toolkit/actors/PictureInPictureChild.sys.mjs
 +++ b/toolkit/actors/PictureInPictureChild.sys.mjs
-@@ -292,6 +292,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
+@@ -295,6 +295,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
        if (
          video &&
          PictureInPictureChild.videoIsPlaying(video) &&

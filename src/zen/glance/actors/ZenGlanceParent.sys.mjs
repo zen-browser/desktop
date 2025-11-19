@@ -11,9 +11,6 @@ export class ZenGlanceParent extends JSWindowActorParent {
       case 'ZenGlance:GetActivationMethod': {
         return Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl');
       }
-      case 'ZenGlance:GetHoverActivationDelay': {
-        return Services.prefs.getIntPref('zen.glance.hold-duration', 500);
-      }
       case 'ZenGlance:OpenGlance': {
         this.openGlance(this.browsingContext.topChromeWindow, message.data);
         break;
@@ -26,12 +23,16 @@ export class ZenGlanceParent extends JSWindowActorParent {
         this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(params);
         break;
       }
+      case 'ZenGlance:RecordLinkClickData': {
+        this.browsingContext.topChromeWindow.gZenGlanceManager.lastLinkClickData = message.data;
+        break;
+      }
       default:
         console.warn(`[glance]: Unknown message: ${message.name}`);
     }
   }
 
   openGlance(window, data) {
-    window.gZenGlanceManager.openGlance(data);
+    return window.gZenGlanceManager.openGlance(data);
   }
 }

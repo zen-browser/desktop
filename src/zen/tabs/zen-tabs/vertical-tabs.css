@@ -20,7 +20,8 @@
   width: 100%;
 }
 
-#pinned-drop-indicator {
+#pinned-drop-indicator,
+#drag-to-pin-promo-card {
   /* We dont use this firefox feature */
   display: none !important;
 }
@@ -29,18 +30,17 @@
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
 :root[zen-single-toolbar='true'] {
-  & #zen-appcontent-navbar-wrapper,
-  & #zen-sidebar-top-buttons {
-    --zen-toolbar-height: 32px;
-    height: var(--zen-toolbar-height);
-  }
-
   @media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
       position: absolute;
       opacity: 0;
       pointer-events: none;
     }
+  }
+
+  & #zen-appcontent-navbar-wrapper,
+  & #zen-sidebar-top-buttons {
+    height: var(--zen-toolbar-height);
   }
 
   & #zen-sidebar-top-buttons-separator {
@@ -60,17 +60,7 @@
 
     &:root[zen-right-side='true'] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
       margin-right: calc(-1 * var(--zen-toolbox-padding));
-      margin-top: -10px;
-      height: calc(4px + var(--zen-toolbar-height)) !important;
-
-      & .titlebar-button {
-        align-items: end;
-      }
     }
-  }
-
-  #tabbrowser-arrowscrollbox {
-    min-height: fit-content !important;
   }
 }
 
@@ -125,7 +115,10 @@
   }
 
   & #zen-sidebar-top-buttons {
-    margin: var(--zen-toolbox-padding) 0 calc(var(--zen-toolbox-padding) / 2) 0;
+    margin: calc(var(--zen-toolbox-padding) / 2) 0;
+    :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) & {
+      margin-top: 0;
+    }
   }
 
   & #PanelUI-menu-button {
@@ -133,39 +126,89 @@
   }
 }
 
-:root:not([zen-single-toolbar='true']) #tabbrowser-tabs {
-  margin-top: -2px;
-}
-
 /* ==========================================================================
    Pinned Tabs Separator
    ========================================================================== */
 .pinned-tabs-container-separator {
-  background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  margin: 8px auto;
+  height: 22px;
+  padding-bottom: 2px;
   border: none;
-  height: 1px;
-  max-height: 1px;
-  width: 98%;
+  width: 100%;
   transition:
-    margin 0.1s ease-in-out,
-    background 0.1s ease-in-out,
-    max-height 0.1s ease-in-out;
+    height 0.08s ease-in-out,
+    padding 0.08s ease-in-out,
+    opacity 0.06s ease-in-out;
   overflow: hidden;
   position: relative;
   opacity: 1;
+  align-items: center;
+
+  & toolbarseparator {
+    height: 1px;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    padding: 0;
+    margin: auto 4px;
+
+    &::before {
+      border-inline-start: none;
+    }
+  }
 
   #tabbrowser-tabs[movingtab] & {
     transition:
-      margin 0.1s ease-in-out,
-      background 0.1s ease-in-out,
-      max-height 0.1s ease-in-out,
+      height 0.08s ease-in-out,
+      padding 0.08s ease-in-out,
+      opacity 0.06s ease-in-out,
       transform 0.1s ease-in-out;
   }
 
   .zen-workspace-pinned-tabs-section[hide-separator] & {
-    max-height: 0;
-    margin: 0 auto;
+    height: 0px;
+    opacity: 0;
+    padding-bottom: 0px;
+  }
+
+  & toolbarbutton {
+    appearance: none;
+    opacity: 0;
+    visibility: collapse;
+    transition:
+      opacity 0.15s,
+      visibility 0.15s;
+    font-size: 10px;
+    font-weight: 500;
+    gap: 2px;
+
+    #navigator-toolbox[zen-has-implicit-hover='true'] & {
+      visibility: visible;
+      opacity: 0.5;
+    }
+
+    &:hover {
+      opacity: 1 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      display: none;
+    }
+
+    & .toolbarbutton-text {
+      display: flex;
+    }
+
+    & .toolbarbutton-icon {
+      width: 10px;
+      transition: transform 0.15s ease-in-out;
+      transform: translateY(0px);
+
+      @starting-style {
+        transform: translateY(-2px);
+      }
+    }
+
+    &:active:hover .toolbarbutton-icon {
+      transform: translateY(2px);
+    }
   }
 }
 
@@ -286,6 +329,13 @@
       scale: 0.92;
     }
 
+    &:not(:hover) {
+      .tab-close-button,
+      .tab-reset-button {
+        display: none !important;
+      }
+    }
+
     & .tab-icon-image {
       &:not([src]),
       &:-moz-broken {
@@ -304,6 +354,7 @@
 
     & .tab-background {
       overflow: hidden;
+      border-radius: var(--border-radius-medium) !important;
 
       & .tab-context-line {
         margin: 0 0px !important;
@@ -470,10 +521,8 @@
   & #nav-bar {
     padding-right: 0;
 
-    :root[zen-single-toolbar='true'] & {
-      &
-        #urlbar:not([breakout-extend='true']):not([pageproxystate='invalid'])
-        .urlbar-input-container {
+    :root[zen-single-toolbar='true']:not([zen-has-empty-tab='true']) & {
+      & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }
@@ -629,12 +678,6 @@
   --tab-min-width: 48px !important;
   --zen-toolbox-padding: 6px !important;
   --zen-toolbox-max-width: calc(var(--tab-min-width) + var(--zen-toolbox-padding) * 2);
-
-  /* We can't show the rename input properly in collapsed state,
-     so hide the workspace edit input */
-  #context_zenEditWorkspace {
-    display: none;
-  }
 }
 
 #navigator-toolbox:not([zen-sidebar-expanded='true']) {
@@ -717,13 +760,10 @@
 
   & #titlebar {
     display: grid;
-    grid-template-rows: auto 1fr;
-    overflow: clip;
   }
 
   & #zen-sidebar-top-buttons-customization-target {
     flex-direction: column;
-    padding-top: var(--zen-element-separation);
   }
 
   & #zen-sidebar-foot-buttons {
@@ -867,7 +907,8 @@
 }
 
 .tab-reset-button,
-.tab-reset-pin-button {
+.tab-reset-pin-button,
+.tab-close-button {
   display: none;
   -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);
@@ -972,14 +1013,15 @@
   :root[zen-sidebar-expanded='true'] & {
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
   }
+
   :root[zen-single-toolbar='true'] & {
-    --toolbarbutton-inner-padding: calc(var(--zen-toolbar-button-inner-padding) - 2px) !important;
+    --zen-toolbar-height: 36px;
+    @media (-moz-platform: macos) {
+      --zen-toolbar-height: 38px;
+    }
 
     & #PanelUI-button {
       order: -2;
-    }
-    & #unified-extensions-button {
-      order: -1;
     }
   }
 
@@ -987,14 +1029,8 @@
     height: 100%;
     align-items: center;
 
-    :root:not([zen-sidebar-expanded='true']):not([zen-right-side='true']) {
-      padding-inline-start: var(--zen-toolbox-padding);
-    }
     #nav-bar & {
-      padding-inline-start: var(--toolbarbutton-outer-padding);
-    }
-    :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) {
-      padding-inline-end: var(--zen-toolbox-padding);
+      padding-inline-end: var(--toolbarbutton-outer-padding);
     }
 
     :root:not([zen-sidebar-expanded='true']) & toolbarspring {
@@ -1172,8 +1208,28 @@
       position: relative;
       --zen-essential-bg-margin: 2px;
 
+      --zen-essential-tab-selected-bg: light-dark(
+        rgba(255, 255, 255, 0.85),
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 40%)
+      );
+      --zen-essential-tab-selected-bg-hover: light-dark(
+        rgba(255, 255, 255, 0.8),
+        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 30%)
+      );
+
+      :root[zen-default-theme='true'] & {
+        --zen-essential-tab-selected-bg: light-dark(
+          rgba(255, 255, 255, 0.85),
+          rgba(68, 64, 64, 0.85)
+        );
+        --zen-essential-tab-selected-bg-hover: light-dark(
+          rgba(255, 255, 255, 0.8),
+          rgba(68, 64, 64, 0.75)
+        );
+      }
+
       &::before {
-        background: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
+        background: var(--zen-essential-tab-selected-bg);
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
         position: absolute;
@@ -1185,7 +1241,7 @@
     }
 
     &[visuallyselected]:hover .tab-background::before {
-      background: light-dark(rgba(255, 255, 255, 0.8), rgba(68, 64, 64, 0.75));
+      background: var(--zen-essential-tab-selected-bg-hover);
     }
   }
 }

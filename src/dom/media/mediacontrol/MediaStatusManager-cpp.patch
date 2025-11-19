@@ -1,0 +1,14 @@
+diff --git a/dom/media/mediacontrol/MediaStatusManager.cpp b/dom/media/mediacontrol/MediaStatusManager.cpp
+index 9d62b302fb519df9c00e26e8876dc6adcbc0b448..ece3509d2a99dee1cf7c22749b38959340c85976 100644
+--- a/dom/media/mediacontrol/MediaStatusManager.cpp
++++ b/dom/media/mediacontrol/MediaStatusManager.cpp
+@@ -427,7 +427,8 @@ void MediaStatusManager::UpdateGuessedPositionState(
+     return;
+   }
+ 
+-  mPositionStateChangedEvent.Notify(GetCurrentPositionState());
++  // Workaround to position state getting stuck after seek
++  mPositionStateChangedEvent.Notify(aGuessedState);
+ }
+ 
+ void MediaStatusManager::NotifySupportedKeysChangedIfNeeded(

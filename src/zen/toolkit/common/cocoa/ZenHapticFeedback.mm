@@ -24,9 +24,6 @@ nsresult ZenCommonUtils::PlayHapticFeedbackInternal() {
     id<NSHapticFeedbackPerformer> performer = [NSHapticFeedbackManager defaultPerformer];
     [performer performFeedbackPattern:NSHapticFeedbackPatternAlignment
                       performanceTime:NSHapticFeedbackPerformanceTimeDefault];
-  } else {
-    // Fallback on earlier versions
-    // Note: This is a no-op on older versions of iOS/macOS
   }
   return NS_OK;
   NS_OBJC_END_TRY_BLOCK_RETURN(NS_OK);

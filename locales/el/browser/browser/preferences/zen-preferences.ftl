@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Εμφάνιση και Αίσθηση
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Κλικ
 zen-glance-trigger-meta-click = 
     .label = Meta (Εντολή) + Κλικ
-zen-glance-trigger-mantain-click = 
-    .label = Παρατεταμένο Κλικ (Έρχεται Σύντομα!)
 zen-look-and-feel-compact-view-header = Εμφάνιση σε συμπαγή προβολή
 zen-look-and-feel-compact-view-description = Εμφάνιση μόνο των γραμμών εργαλείων που χρησιμοποιείτε!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,10 +44,17 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Χώροι Εργασίας
 zen-tabs-unloader-enabled = 
     .label = Ενεργοποίηση Εκφορτωτή Καρτέλας
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
-    .label = Use themed background for compact toolbar
+    .label = Χρήση παρασκηνίου με θέμα για συμπαγή γραμμή εργαλειών
 zen-workspace-continue-where-left-off = 
-    .label = Συνεχεία από εκεί που σταματήσατε
+    .label = Συνέχεια από εκεί που σταματήσατε
 pane-zen-pinned-tab-manager-title = Καρφιτσωμένες Καρτέλες
 zen-pinned-tab-manager-header = Γενικές ρυθμίσεις για καρφιτσωμένες καρτέλες
 zen-pinned-tab-manager-description = Διαχείριση πρόσθετης συμπεριφοράς καρφιτσωμένων καρτελών
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Απόκρυψη της προκαθορισμένης ένδειξης περιέκτη στη γραμμή καρτελών
 zen-key-unsaved = Μη αποθηκευμένη συντόμευση! Παρακαλώ αποθηκεύστε την κάνοντας κλικ στο πλήκτρο "Escape" αφού την πληκτρολογήσετε.
-zen-key-conflict = Διένεξη με κάποια άλλη συντόμευση
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = Ρυθμίσεις Θέματος
 zen-vertical-tabs-title = Πλευρική γραμμή και διάταξη καρτελών
 zen-vertical-tabs-header = Κατακόρυφες Καρτέλες
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Εναλλαγή Επιδόσεων
 zen-devtools-toggle-storage-shortcut = Εναλλαγή Αποθηκευτικού Χώρου
 zen-devtools-toggle-dom-shortcut = Εναλλαγή DOM
 zen-devtools-toggle-accessibility-shortcut = Εναλλαγή Προσβασιμότητας
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

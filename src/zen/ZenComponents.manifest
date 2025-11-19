@@ -1,0 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# nsBrowserGlue.js
+
+# This component must restrict its registration for the app-startup category
+# to the specific list of apps that use it so it doesn't get loaded in xpcshell.
+# Thus we restrict it to these apps:
+#
+#   browser:        {ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+
+category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+
+#include common/Components.manifest

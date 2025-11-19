@@ -1,21 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = 搜尋 { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = 重新命名分頁夾
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = 解散分頁夾
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = 新增子分頁夾
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = 刪除分頁夾
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = 將分頁夾轉換為工作區
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = 變更工作區...
 zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = 變更圖示
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = 卸載此分頁夾中所有分頁
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = 沒有找到搜尋的分頁 🤔
+    .label = 卸載所有分頁
+zen-folders-search-no-results = 找不到符合搜尋的分頁 🤔

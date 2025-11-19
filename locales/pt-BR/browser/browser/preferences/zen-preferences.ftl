@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Aparência e Comportamento
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Clique
 zen-glance-trigger-meta-click = 
     .label = Meta (Comando) + Clique
-zen-glance-trigger-mantain-click = 
-    .label = Segurar Clique (Em breve!)
 zen-look-and-feel-compact-view-header = Exibir em modo compacto
 zen-look-and-feel-compact-view-description = Apenas mostre as barras de ferramentas que você usa!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Áreas de Trabalho
 zen-tabs-unloader-enabled = 
     .label = Ativar Descarregador de Guias
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Usar fundo temático na barra de ferramentas compacta
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Ocultar o indicador padrão do contêiner na barra de guias
 zen-key-unsaved = Atalho não salvo! Proteja-o clicando na tecla "Escape" após digitá-lo novamente.
-zen-key-conflict = Conflito com outro atalho
+zen-key-conflict = Conflitos com { $group } -> { $shortcut }
 pane-zen-theme-title = Opções de tema
 zen-vertical-tabs-title = Layout de barra lateral e abas
 zen-vertical-tabs-header = Abas verticais
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Ativar/Desativar Desempenho
 zen-devtools-toggle-storage-shortcut = Ativar/Desativar Armazenamento
 zen-devtools-toggle-dom-shortcut = Ativar/Desativar DOM
 zen-devtools-toggle-accessibility-shortcut = Ativar/Desativar Acessibilidade
+zen-close-all-unpinned-tabs-shortcut = Fechar Todas as Abas Não Fixadas

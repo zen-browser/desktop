@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = 使用中のプロファイル
 unified-extensions-description = 拡張機能は、 { -brand-short-name } に多くの追加機能をもたらすために使用されます。
 tab-context-zen-reset-pinned-tab = 
     .label = ピン留めされたタブをリセット
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials ({ $num } / 12 slots filled)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimize
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
 zen-panel-ui-gradient-generator-saved-message = グラデーションを正常に保存しました！
-zen-copy-current-url-confirmation = URLをクリップボードにコピーしました
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = Cancel
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Spaces
 zen-library-sidebar-mods = 
     .label = Mods
+zen-toggle-compact-mode-button = 
+    .label = Compact Mode
+    .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Icons
+urlbar-search-mode-zen_actions = Actions
+zen-site-data-settings = Settings
+zen-generic-manage = Manage
+zen-generic-more = More
+zen-generic-next = Next
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Allowed
+zen-site-data-setting-block = Blocked
+zen-site-data-protections-enabled = Enabled
+zen-site-data-protections-disabled = Disabled
+zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-security-info-extension = 
+    .label = Extension
+zen-site-data-security-info-secure = 
+    .label = Secure
+zen-site-data-security-info-not-secure = 
+    .label = Not Secure
+zen-site-data-manage-addons = 
+    .label = Manage Extensions
+zen-site-data-get-addons = 
+    .label = Add Extensions
+zen-site-data-site-settings = 
+    .label = All Site Settings
+zen-site-data-header-share = 
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot = 
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bookmark This Page
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
+zen-site-data-setting-site-protection = Tracking Protection
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
+zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

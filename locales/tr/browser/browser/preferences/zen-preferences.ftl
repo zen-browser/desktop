@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Görünüm ve Hissiyat
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Tıklama
 zen-glance-trigger-meta-click = 
     .label = Meta (Komut) + Tıklama
-zen-glance-trigger-mantain-click = 
-    .label = Mantain Click
 zen-look-and-feel-compact-view-header = Kompakt görünümde göster
 zen-look-and-feel-compact-view-description = Sadece kullandığın araç çubuklarını göster!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Çalışma Alanları
 zen-tabs-unloader-enabled = 
     .label = Sekmeler İçin Uyku Modunu Akitf Et
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Sekme çubuğundaki varsayılan konteyner göstergesini gizle
 zen-key-unsaved = Güvenli olmayan kısayol! Lütfen yazdıktan sonra "Escape" tuşuna tıklayarak kaydedin.
-zen-key-conflict = Başka bir kısayol ile karışıyor
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = Tema Ayarları
 zen-vertical-tabs-title = Kenar çubuğu ve sekme düzeni
 zen-vertical-tabs-header = Dikey Sekmeler
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Performansı Aç/Kapat
 zen-devtools-toggle-storage-shortcut = Depolamayı Aç/Kapat
 zen-devtools-toggle-dom-shortcut = DOM'u Aç/Kapat
 zen-devtools-toggle-accessibility-shortcut = Erişilebilirliği Aç/Kapat
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

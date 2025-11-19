@@ -1,0 +1,71 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+&:not([zen-single-toolbar='true']) {
+  & #navigator-toolbox {
+    --zen-toolbox-top-align: var(--zen-element-separation);
+  }
+
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    & #titlebar {
+      margin-top: var(--zen-element-separation) !important;
+    }
+  }
+
+  &[zen-right-side='true'][zen-window-buttons-reversed='true'] #titlebar,
+  &:not([zen-right-side='true']):not([zen-window-buttons-reversed='true']) #titlebar {
+    /* The same as the expression above */
+    margin-top: var(--zen-element-separation) !important;
+  }
+
+  & #zen-appcontent-wrapper {
+    z-index: 3 !important;
+  }
+
+  & #zen-appcontent-navbar-wrapper {
+    & .zen-toolbar-background {
+      display: flex;
+    }
+    transition: height var(--zen-hidden-toolbar-transition);
+    
+    height: var(--zen-element-separation);
+    overflow: clip;
+
+    & #urlbar:not([breakout-extend='true']) {
+      /* Sometimes, "opacity: 1" is forced elsewhere */
+      opacity: 0 !important;
+      pointer-events: none;
+      transition: opacity var(--zen-hidden-toolbar-transition);
+    }
+
+%include windows-captions-fix-default.inc.css
+
+    & #zen-appcontent-navbar-container {
+      opacity: 0;
+      transition: opacity var(--zen-hidden-toolbar-transition);
+    }
+  }
+
+  & #zen-appcontent-navbar-wrapper:is(
+    [zen-has-hover],
+    [has-popup-menu],
+    [zen-compact-mode-active]
+  ) {
+    height: var(--zen-toolbar-height-with-bookmarks);
+    overflow: inherit;
+
+%include windows-captions-fix-active.inc.css
+
+    & #urlbar {
+      opacity: 1 !important;
+      pointer-events: auto;
+    }
+
+    & #zen-appcontent-navbar-container {
+      opacity: 1;
+    }
+  }
+}

@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = 탭을 우측으로 놓기
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = 사이드바 축소 모드
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = 사이드바 축소 모드 활성화
     .accesskey = D

@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
-index 3d4630e2250476729d21cdcb1726a7af93f9fd75..489d1dc624bb1e7b3f7ed22a0073d3ada29846e4 100644
+index ddbcd495260b5bcc4f55ebf7c06fcb6b5dc595c7..c629ac40f4fe3e03ffc765d3b65f3d348f4b05c6 100644
 --- a/servo/components/style/gecko/media_features.rs
 +++ b/servo/components/style/gecko/media_features.rs
 @@ -13,6 +13,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
@@ -24,14 +24,14 @@ index 3d4630e2250476729d21cdcb1726a7af93f9fd75..489d1dc624bb1e7b3f7ed22a0073d3ad
 +    KleeneValue::from(unsafe { bindings::Gecko_EvalMozPrefFeature(pref.as_ptr(), &MozPrefFeatureValue::<i32>::None) })
 +}
  
- fn get_lnf_int(int_id: i32) -> i32 {
-     unsafe { bindings::Gecko_GetLookAndFeelInt(int_id) }
-@@ -641,7 +651,13 @@ macro_rules! lnf_int_feature {
+ fn eval_moz_mac_rtl(context: &Context) -> bool {
+     unsafe { bindings::Gecko_MediaFeatures_MacRTL(context.device().document()) }
+@@ -645,7 +655,13 @@ macro_rules! lnf_int_feature {
  /// to support new types in these entries and (2) ensuring that either
  /// nsPresContext::MediaFeatureValuesChanged is called when the value that
  /// would be returned by the evaluator function could change.
--pub static MEDIA_FEATURES: [QueryFeatureDescription; 58] = [
-+pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 60] = [
 +    feature!(
 +        atom!("-moz-bool-pref"),
 +        AllowsRanges::No,

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Інтерфейс
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Клік
 zen-glance-trigger-meta-click = 
     .label = Meta (Command) + Клац
-zen-glance-trigger-mantain-click = 
-    .label = Затяжний Клік
 zen-look-and-feel-compact-view-header = Показати в компактному вигляді
 zen-look-and-feel-compact-view-description = Показати лише панелі інструментів, які ви використовуєте!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Робочі області
 zen-tabs-unloader-enabled = 
     .label = Увімкнути вивантаження вкладок
+zen-tabs-close-on-back-with-no-history = 
+    .label = Закрити вкладку і перейти до вкладки її власника (або останньої використаної вкладки) при поверненні без історії
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab перемикається лише в межах вкладок із важливого або робочого простору
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ігнорувати очікувальні вкладки під час перемикання за допомогою Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Комбінація Ctrl+Tab буде перемикати в порядку останнього використання
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Використовувати тематичний фон для компактної панелі інструментів
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Приховувати індикатор контейнерів за замовчуванням у панелі вкладок
 zen-key-unsaved = Незбережений ярлик! Захистіть його, натиснувши на кнопку „Escape“ після його введення.
-zen-key-conflict = Конфлікт з іншою клавішею
+zen-key-conflict = Конфліктує з { $group } -> { $shortcut }
 pane-zen-theme-title = Налаштування теми
 zen-vertical-tabs-title = Розташування бічної панелі та вкладок
 zen-vertical-tabs-header = Вертикальні таблиці
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Увімк. / Вимк. продук�
 zen-devtools-toggle-storage-shortcut = Увімк. / Вимк. сховище
 zen-devtools-toggle-dom-shortcut = Увімк. / Вимк. DOM
 zen-devtools-toggle-accessibility-shortcut = Увімк. / Вимк. доступ
+zen-close-all-unpinned-tabs-shortcut = Закрити всі відкріплені вкладки

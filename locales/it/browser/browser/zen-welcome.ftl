@@ -23,5 +23,4 @@ zen-welcome-start-browsing = Andiamo!
 zen-welcome-default-search-title = Il tuo Motore di Ricerca Predefinito
 zen-welcome-default-search-description = Scegli il tuo motore di ricerca predefinito. Puoi sempre cambiarlo più tardi!
 zen-welcome-skip-button = Salta
-zen-welcome-next-action = Prossimo
 zen-welcome-finished = Il tuo Zen è stato configurato correttamente!

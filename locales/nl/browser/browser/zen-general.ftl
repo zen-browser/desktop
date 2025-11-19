@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = huidig profiel
 unified-extensions-description = Extensies worden gebruikt om extra functionaliteit toe te voegen aan { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Vastgezette tabblad resetten
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Toevoegen aan Essentials ({ $num } / 12 plekken gevuld)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Verwijderen uit Essentials
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimaliseren
 zen-panel-ui-gradient-generator-custom-color = Aangepaste kleur
 zen-panel-ui-gradient-generator-saved-message = Verloop is succesvol opgeslagen!
-zen-copy-current-url-confirmation = De URL is gekopieerd naar het klembord.
+zen-copy-current-url-confirmation = Huidige URL gekopieerd!
 zen-general-cancel-label = 
     .label = Annuleren
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Ruimtes
 zen-library-sidebar-mods = 
     .label = Mods
+zen-toggle-compact-mode-button = 
+    .label = Compacte modus
+    .tooltiptext = Compacte modus togglen
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -45,6 +53,48 @@ zen-close-label = Sluiten
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Zoeken…
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emoji's
 zen-icons-picker-svg = 
-    .label = Icons
+    .label = Iconen
+urlbar-search-mode-zen_actions = Acties
+zen-site-data-settings = Instellingen
+zen-generic-manage = Beheren
+zen-generic-more = Meer
+zen-generic-next = Volgende
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Toegestaan
+zen-site-data-setting-block = Geblokkeerd
+zen-site-data-protections-enabled = Ingeschakeld
+zen-site-data-protections-disabled = Uitgeschakeld
+zen-site-data-setting-cross-site = Cross-site cookie
+zen-site-data-security-info-extension = 
+    .label = Extensie
+zen-site-data-security-info-secure = 
+    .label = Beveiligd
+zen-site-data-security-info-not-secure = 
+    .label = Niet beveiligd
+zen-site-data-manage-addons = 
+    .label = Extensies beheren
+zen-site-data-get-addons = 
+    .label = Extensies toevoegen
+zen-site-data-site-settings = 
+    .label = Alle site-instellingen
+zen-site-data-header-share = 
+    .tooltiptext = Deze pagina delen
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Leesmodus openen
+zen-site-data-header-screenshot = 
+    .tooltiptext = Maak een schermafbeelding
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bladwijzer toevoegen voor deze pagina
+zen-urlbar-copy-url-button = 
+    .tooltiptext = URL kopiëren
+zen-site-data-setting-site-protection = Tracking bescherming
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Een nieuw thuis voor add-ons, machtigingen en meer
+zen-site-data-panel-feature-callout-subtitle = Klik op het icoon om de site-instellingen te beheren, beveiligingsinfo te bekijken, extensies te openen en gemeenschappelijke acties uit te voeren.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

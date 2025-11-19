@@ -648,8 +648,6 @@ var gZenLooksAndFeel = {
         Services.prefs.removeObserver(pref, this);
       }
     });
-    this.setCompactModeStyle();
-
     this.applySidebarLayout();
   },
 
@@ -696,41 +694,6 @@ var gZenLooksAndFeel = {
       });
     }
   },
-
-  setCompactModeStyle() {
-    const chooser = document.getElementById('zen-compact-mode-styles-form');
-    const radios = [...chooser.querySelectorAll('input')];
-
-    let value = '';
-    if (
-      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar', false) &&
-      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar', false)
-    ) {
-      value = 'both';
-    } else {
-      value = Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ? 'left' : 'top';
-    }
-    chooser.querySelector(`[value='${value}']`).checked = true;
-    for (let radio of radios) {
-      radio.addEventListener('change', (e) => {
-        let value = e.target.value;
-        switch (value) {
-          case 'left':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
-            break;
-          case 'top':
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-          default:
-            Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-            Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-            break;
-        }
-      });
-    }
-  },
 };
 
 /* eslint-disable no-unused-vars */
@@ -744,13 +707,39 @@ var gZenWorkspacesSettings = {
         }
       },
     };
+
+    let toggleZenCycleByAttrWarning = {
+      observe() {
+        const warning = document.getElementById('zenTabsCycleByAttributeWarning');
+        warning.hidden = !(
+          Services.prefs.getBoolPref('zen.tabs.ctrl-tab.ignore-essential-tabs', false) &&
+          Services.prefs.getBoolPref('browser.ctrlTab.sortByRecentlyUsed', false)
+        );
+      },
+    };
+
+    toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+
     Services.prefs.addObserver('zen.glance.enabled', tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
     Services.prefs.addObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
+    Services.prefs.addObserver(
+      'zen.tabs.ctrl-tab.ignore-essential-tabs',
+      toggleZenCycleByAttrWarning
+    );
+    Services.prefs.addObserver('browser.ctrlTab.sortByRecentlyUsed', toggleZenCycleByAttrWarning);
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.glance.enabled', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
+      Services.prefs.removeObserver(
+        'zen.tabs.ctrl-tab.ignore-essential-tabs',
+        toggleZenCycleByAttrWarning
+      );
+      Services.prefs.removeObserver(
+        'browser.ctrlTab.sortByRecentlyUsed',
+        toggleZenCycleByAttrWarning
+      );
     });
   },
 };
@@ -1014,7 +1003,7 @@ var gZenCKSSettings = {
       this._latestValidKey = null;
       return;
     } else if (shortcut == 'Escape' && !modifiersActive) {
-      const hasConflicts = gZenKeyboardShortcutsManager.checkForConflicts(
+      const { hasConflicts, conflictShortcut } = gZenKeyboardShortcutsManager.checkForConflicts(
         this._latestValidKey ? this._latestValidKey : shortcut,
         this._latestModifier ? this._latestModifier : modifiers,
         this._currentActionID
@@ -1027,12 +1016,29 @@ var gZenCKSSettings = {
           input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
         }
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-unsafed`);
-        if (hasConflicts && !input.nextElementSibling) {
-          input.after(
-            window.MozXULElement.parseXULToFragment(`
-            <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
-          `)
-          );
+
+        if (hasConflicts) {
+          const shortcutL10nKey =
+            zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
+            conflictShortcut.getL10NID();
+
+          const [group, shortcut] = await document.l10n.formatValues([
+            { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
+            { id: shortcutL10nKey },
+          ]);
+
+          if (!input.nextElementSibling) {
+            input.after(
+              window.MozXULElement.parseXULToFragment(`
+                <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
+              `)
+            );
+          }
+
+          document.l10n.setAttributes(input.nextElementSibling, 'zen-key-conflict', {
+            group: group ?? '',
+            shortcut: shortcut ?? '',
+          });
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
@@ -1079,11 +1085,6 @@ var gZenCKSSettings = {
 };
 
 Preferences.addAll([
-  {
-    id: 'zen.view.compact.hide-toolbar',
-    type: 'bool',
-    default: false,
-  },
   {
     id: 'zen.view.compact.toolbar-flash-popup',
     type: 'bool',
@@ -1169,4 +1170,24 @@ Preferences.addAll([
     type: 'string',
     default: 'always',
   },
+  {
+    id: 'zen.tabs.ctrl-tab.ignore-essential-tabs',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'zen.tabs.ctrl-tab.ignore-pending-tabs',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'zen.tabs.close-on-back-with-no-history',
+    type: 'bool',
+    default: false,
+  },
 ]);
+
+Preferences.addSetting({
+  id: 'zenWorkspaceContinueWhereLeftOff',
+  pref: 'zen.workspaces.continue-where-left-off',
+});

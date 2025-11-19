@@ -1,12 +1,12 @@
 diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-index 3c179db3b310c43f8c6c06b1ecbcf5ed59feefe6..693bef15401cd4428c8a0222de57b83b78564194 100644
+index 531cecb9da3465d392ea82248e6ebb3fe6476b47..f3cce2a66bb8465ae022df0c1b9823e7e88cba21 100644
 --- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-@@ -719,6 +719,7 @@ function makeResultGroups({ showSearchSuggestionsFirst }) {
+@@ -731,6 +731,7 @@ function makeResultGroups({ showSearchSuggestionsFirst }) {
     */
    let rootGroup = {
      children: [
-+      { group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION },
++      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
        // heuristic
        {
          maxResultCount: 1,

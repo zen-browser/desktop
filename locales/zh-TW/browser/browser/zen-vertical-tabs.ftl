@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = 右側分頁欄
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = 緊湊模式
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = 開啟緊湊模式
     .accesskey = D
@@ -15,12 +18,12 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = 兩者皆隱藏
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = 新增分頁夾
     .accesskey = N
 sidebar-zen-expand = 
     .label = 展開側邊欄
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = 新增...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

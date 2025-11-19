@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-folders-search-placeholder = 
     .placeholder = חיפוש { $folder-name }...
 zen-folders-panel-rename-folder = 
@@ -15,7 +19,7 @@ zen-folders-panel-change-folder-space =
 zen-folders-panel-change-icon-folder = 
     .label = שינוי סמל
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = פינוי כל הפעילים בתיקייה הזו
 zen-folders-unload-folder = 
     .label = פינוי כל הכרטיסייות
 zen-folders-search-no-results = אין כרטיסיות שתואמות לחיפוש 🤔

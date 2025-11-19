@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = profilo in uso
 unified-extensions-description = Le estensioni sono usate per portare più funzionalità in { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Reimposta Scheda Bloccata
+    .label = Reimposta scheda fissata
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Aggiungi a Essentials ({ $num } / 12 slot riempiti)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Rimuovi dagli Essenziali
     .accesskey = R
@@ -20,9 +25,9 @@ zen-disable = Disabilita
 pictureinpicture-minimize-btn = 
     .aria-label = Minimizza
     .tooltip = Minimizza
-zen-panel-ui-gradient-generator-custom-color = Colore Personalizzato
+zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-panel-ui-gradient-generator-saved-message = Gradiente salvato con successo!
-zen-copy-current-url-confirmation = L'URL è stato copiato negli appunti.
+zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
@@ -35,6 +40,9 @@ zen-library-sidebar-workspaces =
     .label = Spazi
 zen-library-sidebar-mods = 
     .label = Mod
+zen-toggle-compact-mode-button = 
+    .label = Modalità compatta
+    .tooltiptext = Attiva/disattiva Modalità compatta
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -46,3 +54,45 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Icone
+urlbar-search-mode-zen_actions = Azioni
+zen-site-data-settings = Impostazioni
+zen-generic-manage = Gestisci
+zen-generic-more = Altro
+zen-generic-next = Successivo
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Consentito
+zen-site-data-setting-block = Bloccato
+zen-site-data-protections-enabled = Attivato
+zen-site-data-protections-disabled = Disattivato
+zen-site-data-setting-cross-site = Cookie Cross-Site
+zen-site-data-security-info-extension = 
+    .label = Estensione
+zen-site-data-security-info-secure = 
+    .label = Sicuro
+zen-site-data-security-info-not-secure = 
+    .label = Non sicuro
+zen-site-data-manage-addons = 
+    .label = Gestisci estensioni
+zen-site-data-get-addons = 
+    .label = Aggiungi estensioni
+zen-site-data-site-settings = 
+    .label = Tutte le impostazioni del sito
+zen-site-data-header-share = 
+    .tooltiptext = Condividi questa pagina
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Entra nella Modalità Lettura
+zen-site-data-header-screenshot = 
+    .tooltiptext = Cattura schermata
+zen-site-data-header-bookmark = 
+    .tooltiptext = Aggiungi questa pagina ai segnalibri
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copia URL
+zen-site-data-setting-site-protection = Protezione Tracciamento
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Una nuova casa per componenti aggiuntivi, permessi, e altro ancora
+zen-site-data-panel-feature-callout-subtitle = Clicca l'icona per gestire le impostazioni del sito, visualizzare informazioni di sicurezza, accedere alle estensioni, ed eseguire azioni comuni.
+zen-open-link-in-glance = 
+    .label = Apri collegamento in Sguardo
+    .accesskey = G

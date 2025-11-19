@@ -1,22 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = Вкладки справа
     .accesskey = Р
 zen-toolbar-context-compact-mode = 
     .label = Компактный вид
-    .accesskey = С
 zen-toolbar-context-compact-mode-enable = 
     .label = Включить компактный вид
-    .accesskey = D
+    .accesskey = В
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Скрыть боковую панель
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = Скрыть панель инструментов
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Скрыть оба
     .accesskey = Н
 zen-toolbar-context-new-folder = 
-    .label = New Folder
-    .accesskey = N
+    .label = Новая папка
+    .accesskey = Т
 sidebar-zen-expand = 
     .label = Развернуть боковую панель
 sidebar-zen-create-new = 

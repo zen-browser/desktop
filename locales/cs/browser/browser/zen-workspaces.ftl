@@ -1,10 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Prostory
 zen-panel-ui-workspaces-create = 
     .label = Vytvořit prostor
 zen-panel-ui-folder-create = 
     .label = Vytvořit složku
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Nové rozdělení
 zen-workspaces-panel-context-delete = 
     .label = Odstranit pracovní prostor
     .accesskey = D
@@ -14,6 +18,8 @@ zen-workspaces-panel-change-icon =
     .label = Změnit ikonu
 zen-workspaces-panel-context-default-profile = 
     .label = Nastavit profil
+zen-workspaces-panel-unload = 
+    .label = Uspat prostor
 zen-workspaces-how-to-reorder-title = Jak změnit pořadí prostorů
 zen-workspaces-how-to-reorder-desc = Pořadí prostorů změníte přetažením jejich ikon dole v postranním panelu
 zen-workspaces-change-theme = 
@@ -51,3 +57,9 @@ zen-workspace-creation-header = Vytvořte si prostor
 zen-workspace-creation-label = Prostory slouží k organizaci Vašich karet a relací.
 zen-workspaces-delete-workspace-title = Odstranit prostor?
 zen-workspaces-delete-workspace-body = Opravdu chcete smazat { $name }? Tuto akci nelze vrátit zpět.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Karty byly zavřeny! Použijte <span>{ $shortcut }</span> pro zrušení.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Vyčistit
+    .tooltiptext = Zavřít všechny nepřipnuté panely

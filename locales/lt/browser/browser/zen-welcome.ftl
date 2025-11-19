@@ -18,10 +18,9 @@ zen-welcome-workspace-colors-description = Suasmeninkite savo naršyklę, suteik
 zen-welcome-start-browsing-title =
     Viskas parengta?<br/>
     Pradėkime veikti!
-zen-welcome-start-browsing-description-1 = Viskas parengta ir gali veikti. Spustelėkite toliau esantį mygtuką, kad pradėtumėte naršyti su „{ -brand-short-name }“.
+zen-welcome-start-browsing-description-1 = Viskas parengta ir gali veikti. Spustelėkite žemiau esantį mygtuką, kad pradėtumėte naršyti su „{ -brand-short-name }“.
 zen-welcome-start-browsing = Pirmyn!
 zen-welcome-default-search-title = Jūsų numatytasis paieškos variklis
 zen-welcome-default-search-description = Pasirinkite numatytąjį paieškos variklį. Vėliau visada galite ją pakeisti!
 zen-welcome-skip-button = Praleisti
-zen-welcome-next-action = Toliau
 zen-welcome-finished = Jūsų „Zen“ nustatytas teisingai!

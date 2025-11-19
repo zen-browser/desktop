@@ -1,10 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Các không gian làm việc
 zen-panel-ui-workspaces-create = 
     .label = Tạo không gian làm việc
 zen-panel-ui-folder-create = 
     .label = Tạo thư mục thẻ
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Chia không gian
 zen-workspaces-panel-context-delete = 
     .label = Xóa không gian làm việc
     .accesskey = D
@@ -14,6 +18,8 @@ zen-workspaces-panel-change-icon =
     .label = Đổi biểu tượng không gian làm việc
 zen-workspaces-panel-context-default-profile = 
     .label = Cài đặt hồ sơ
+zen-workspaces-panel-unload = 
+    .label = Tắt tất cả các trang web trong không gian làm việc
 zen-workspaces-how-to-reorder-title = Cách sắp xếp thứ tự của các không gian làm việc
 zen-workspaces-how-to-reorder-desc = Kéo và thả các biểu tượng của không gian làm việc ở dưới thanh bên để sắp xếp thứ tự của chúng
 zen-workspaces-change-theme = 
@@ -51,3 +57,9 @@ zen-workspace-creation-header = Tạo không gian làm việc
 zen-workspace-creation-label = Không gian làm việc sẽ là nơi để bạn chứa các trang web và lượt truy cập của bạn.
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = Bạn có chắc là bạn muốn xóa { $name }? Thao tác này sẽ không được hoàn lại.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Thẻ đã đóng! Bấm <span>{ $shortcut }</span> để hoàn .
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Dọn sạch
+    .tooltiptext = Tắt tất cả các thẻ không ghim

@@ -19,6 +19,8 @@
       'TabGrouped',
       'TabUngrouped',
       'ZenFolderChangedWorkspace',
+      'TabAddedToEssentials',
+      'TabRemovedFromEssentials',
     ];
 
     #listeners = [];
@@ -35,6 +37,12 @@
         'zenPinnedTabCloseShortcutBehavior',
         'zen.pinned-tab-manager.close-shortcut-behavior',
         'switch'
+      );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        lazy,
+        'zenTabsEssentialsMax',
+        'zen.tabs.essentials.max',
+        12
       );
       ChromeUtils.defineESModuleGetters(lazy, {
         E10SUtils: 'resource://gre/modules/E10SUtils.sys.mjs',
@@ -66,8 +74,6 @@
   }
 
   class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
-    MAX_ESSENTIALS_TABS = 12;
-
     hasInitializedPins = false;
     promiseInitializedPinned = new Promise((resolve) => {
       this._resolvePinnedInitializedInternal = resolve;
@@ -136,6 +142,10 @@
 
     get enabled() {
       return !gZenWorkspaces.privateWindowOrDisabled;
+    }
+
+    get maxEssentialTabs() {
+      return lazy.zenTabsEssentialsMax;
     }
 
     async refreshPinnedTabs({ init = false } = {}) {
@@ -396,12 +406,23 @@
     _onPinnedTabEvent(action, event) {
       if (!this.enabled) return;
       const tab = event.target;
+      if (this._ignoreNextTabPinnedEvent) {
+        delete this._ignoreNextTabPinnedEvent;
+        return;
+      }
       switch (action) {
         case 'TabPinned':
+        case 'TabAddedToEssentials':
           tab._zenClickEventListener = this._zenClickEventListener;
           tab.addEventListener('click', tab._zenClickEventListener);
           this._setPinnedAttributes(tab);
           break;
+        case 'TabRemovedFromEssentials':
+          if (tab.pinned) {
+            this.#onTabMove(tab);
+            break;
+          }
+        // [Fall through]
         case 'TabUnpinned':
           this._removePinnedAttributes(tab);
           if (tab._zenClickEventListener) {
@@ -426,7 +447,7 @@
         case 'TabGroupCollapse':
         case 'TabGroupExpand':
         case 'ZenFolderChangedWorkspace':
-          this.#updateGroupInfo(event.originalTarget);
+          this.#updateGroupInfo(event.originalTarget, action);
           break;
         case 'TabGrouped':
           this.#onTabGrouped(event);
@@ -502,7 +523,7 @@
       ZenPinnedTabsStorage.removeTabFromGroup(tabPinId, /* position */ tab._pPos);
     }
 
-    async #updateGroupInfo(group) {
+    async #updateGroupInfo(group, action) {
       if (!group?.isZenFolder) {
         return;
       }
@@ -516,12 +537,20 @@
         groupPin.parentUuid = group.group?.getAttribute('zen-pin-id') || null;
         groupPin.workspaceUuid = group.getAttribute('zen-workspace-id') || null;
         await this.savePin(groupPin);
-        for (const item of group.allItems) {
-          if (gBrowser.isTabGroup(item)) {
-            await this.#updateGroupInfo(item);
-          } else {
-            await this.#onTabMove(item);
-          }
+        switch (action) {
+          case 'ZenFolderRenamed':
+          case 'ZenFolderIconChanged':
+          case 'TabGroupCollapse':
+          case 'TabGroupExpand':
+            break;
+          default:
+            for (const item of group.allItems) {
+              if (gBrowser.isTabGroup(item)) {
+                await this.#updateGroupInfo(item, action);
+              } else {
+                await this.#onTabMove(item);
+              }
+            }
         }
       }
     }
@@ -618,7 +647,7 @@
     async _onTabClick(e) {
       const tab = e.target?.closest('tab');
       if (e.button === 1 && tab) {
-        await this._onCloseTabShortcut(e, tab, {
+        await this.onCloseTabShortcut(e, tab, {
           closeIfPending: Services.prefs.getBoolPref(
             'zen.pinned-tab-manager.wheel-close-if-pending'
           ),
@@ -748,7 +777,7 @@
       let cmdClose = document.getElementById('cmd_close');
 
       if (cmdClose) {
-        cmdClose.addEventListener('command', this._onCloseTabShortcut.bind(this));
+        cmdClose.addEventListener('command', this.onCloseTabShortcut.bind(this));
       }
     }
 
@@ -767,19 +796,37 @@
       await ZenPinnedTabsStorage.savePin(pin, notifyObservers);
     }
 
-    async _onCloseTabShortcut(
+    async onCloseTabShortcut(
       event,
       selectedTab = gBrowser.selectedTab,
       {
         behavior = lazy.zenPinnedTabCloseShortcutBehavior,
         noClose = false,
         closeIfPending = false,
+        alwaysUnload = false,
+        folderToUnload = null,
       } = {}
     ) {
       try {
-        if (!selectedTab?.pinned) {
+        const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
+        const pinnedTabs = [
+          ...new Set(
+            tabs
+              .flatMap((tab) => {
+                if (tab.group?.hasAttribute('split-view-group')) {
+                  return tab.group.tabs;
+                }
+                return tab;
+              })
+              .filter((tab) => tab?.pinned)
+          ),
+        ];
+
+        if (!pinnedTabs.length) {
           return;
         }
+
+        const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
 
         event.stopPropagation();
         event.preventDefault();
@@ -788,66 +835,83 @@
           behavior = 'unload-switch';
         }
 
+        if (alwaysUnload && ['close', 'reset', 'switch', 'reset-switch'].includes(behavior)) {
+          behavior = behavior.contains('reset') ? 'reset-unload-switch' : 'unload-switch';
+        }
+
         switch (behavior) {
-          case 'close':
-            this._removePinnedAttributes(selectedTab, true);
-            gBrowser.removeTab(selectedTab, { animate: true });
+          case 'close': {
+            for (const tab of pinnedTabs) {
+              this._removePinnedAttributes(tab, true);
+              gBrowser.removeTab(tab, { animate: true });
+            }
             break;
+          }
           case 'reset-unload-switch':
           case 'unload-switch':
           case 'reset-switch':
           case 'switch':
             if (behavior.includes('unload')) {
-              if (selectedTab.hasAttribute('glance-id')) {
-                // We have a glance tab inside the tab we are trying to unload,
-                // before we used to just ignore it but now we need to fully close
-                // it as well.
-                gZenGlanceManager.manageTabClose(selectedTab.glanceTab);
-                await new Promise((resolve) => {
-                  let hasRan = false;
-                  const onGlanceClose = () => {
-                    hasRan = true;
-                    resolve();
-                  };
-                  window.addEventListener('GlanceClose', onGlanceClose, { once: true });
-                  // Set a timeout to resolve the promise if the event doesn't fire.
-                  // We do this to prevent any future issues where glance woudnt close such as
-                  // glance requering to ask for permit unload.
-                  setTimeout(() => {
-                    if (!hasRan) {
-                      console.warn('GlanceClose event did not fire within 3 seconds');
+              for (const tab of pinnedTabs) {
+                if (tab.hasAttribute('glance-id')) {
+                  // We have a glance tab inside the tab we are trying to unload,
+                  // before we used to just ignore it but now we need to fully close
+                  // it as well.
+                  gZenGlanceManager.manageTabClose(tab.glanceTab);
+                  await new Promise((resolve) => {
+                    let hasRan = false;
+                    const onGlanceClose = () => {
+                      hasRan = true;
                       resolve();
-                    }
-                  }, 3000);
-                });
+                    };
+                    window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                    // Set a timeout to resolve the promise if the event doesn't fire.
+                    // We do this to prevent any future issues where glance woudnt close such as
+                    // glance requering to ask for permit unload.
+                    setTimeout(() => {
+                      if (!hasRan) {
+                        console.warn('GlanceClose event did not fire within 3 seconds');
+                        resolve();
+                      }
+                    }, 3000);
+                  });
+                  return;
+                }
+                const isSpltView = tab.group?.hasAttribute('split-view-group');
+                const group = isSpltView ? tab.group.group : tab.group;
+                if (!folderToUnload && tab.hasAttribute('folder-active')) {
+                  await gZenFolders.animateUnload(group, tab);
+                }
               }
-              await gZenFolders.collapseVisibleTab(
-                selectedTab.group,
-                /* only if active */ true,
-                selectedTab
-              );
-              let tabsToUnload = [selectedTab];
-              if (selectedTab.group?.hasAttribute('split-view-group')) {
-                tabsToUnload = selectedTab.group.tabs;
+              if (folderToUnload) {
+                await gZenFolders.animateUnloadAll(folderToUnload);
               }
-              const allAreUnloaded = tabsToUnload.every(
+              const allAreUnloaded = pinnedTabs.every(
                 (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
               );
-              if (allAreUnloaded && closeIfPending) {
-                return await this._onCloseTabShortcut(event, selectedTab, { behavior: 'close' });
+              for (const tab of pinnedTabs) {
+                if (allAreUnloaded && closeIfPending) {
+                  return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
+                }
               }
-              await gBrowser.explicitUnloadTabs(tabsToUnload);
-              selectedTab.removeAttribute('discarded');
+              await gBrowser.explicitUnloadTabs(pinnedTabs);
+              for (const tab of pinnedTabs) {
+                tab.removeAttribute('discarded');
+              }
             }
-            if (selectedTab.selected) {
-              this._handleTabSwitch(selectedTab);
+            if (selectedTabs.length) {
+              this._handleTabSwitch(selectedTabs[0]);
             }
             if (behavior.includes('reset')) {
-              this._resetTabToStoredState(selectedTab);
+              for (const tab of pinnedTabs) {
+                this._resetTabToStoredState(tab);
+              }
             }
             break;
           case 'reset':
-            this._resetTabToStoredState(selectedTab);
+            for (const tab of pinnedTabs) {
+              this._resetTabToStoredState(tab);
+            }
             break;
           default:
             return;
@@ -957,30 +1021,33 @@
           const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
           if (pin) {
             pin.isEssential = true;
+            pin.workspaceUuid = null;
             this.savePin(pin);
           }
-          if (tab.ownerGlobal !== window) {
-            tab = gBrowser.adoptTab(tab, {
-              selectTab: tab.selected,
-            });
-            tab.setAttribute('zen-essential', 'true');
-          } else {
-            section.appendChild(tab);
-          }
-          gBrowser.tabContainer._invalidateCachedTabs();
+          gBrowser.zenHandleTabMove(tab, () => {
+            if (tab.ownerGlobal !== window) {
+              tab = gBrowser.adoptTab(tab, {
+                selectTab: tab.selected,
+              });
+              tab.setAttribute('zen-essential', 'true');
+            } else {
+              section.appendChild(tab);
+            }
+          });
         } else {
           gBrowser.pinTab(tab);
+          this._ignoreNextTabPinnedEvent = true;
         }
         tab.setAttribute('zenDefaultUserContextId', true);
         if (tab.selected) {
           gZenWorkspaces.switchTabIfNeeded(tab);
         }
-        this.#onTabMove(tab);
         this.onTabIconChanged(tab);
-
         // Dispatch the event to update the UI
         const event = new CustomEvent('TabAddedToEssentials', {
           detail: { tab },
+          bubbles: true,
+          cancelable: false,
         });
         tab.dispatchEvent(event);
       }
@@ -1003,15 +1070,16 @@
         if (unpin) {
           gBrowser.unpinTab(tab);
         } else {
-          const pinContainer = gZenWorkspaces.pinnedTabsContainer;
-          pinContainer.prepend(tab);
-          gBrowser.tabContainer._invalidateCachedTabs();
-          this.#onTabMove(tab);
+          gBrowser.zenHandleTabMove(tab, () => {
+            const pinContainer = gZenWorkspaces.pinnedTabsContainer;
+            pinContainer.prepend(tab);
+          });
         }
-
         // Dispatch the event to update the UI
         const event = new CustomEvent('TabRemovedFromEssentials', {
           detail: { tab },
+          bubbles: true,
+          cancelable: false,
         });
         tab.dispatchEvent(event);
       }
@@ -1038,7 +1106,6 @@
       const element = window.MozXULElement.parseXULToFragment(`
             <menuitem id="context_zen-add-essential"
                       data-l10n-id="tab-context-zen-add-essential"
-                      data-l10n-args='{"num": "0"}'
                       hidden="true"
                       disabled="true"
                       command="cmd_contextZenAddToEssentials"/>
@@ -1051,23 +1118,28 @@
       document.getElementById('context_pinTab')?.before(element);
     }
 
-    updatePinnedTabContextMenu(contextTab) {
+    async updatePinnedTabContextMenu(contextTab) {
       if (!this.enabled) {
         document.getElementById('context_pinTab').hidden = true;
         return;
       }
       const isVisible = contextTab.pinned && !contextTab.multiselected;
+      const zenAddEssential = document.getElementById('context_zen-add-essential');
       document.getElementById('context_zen-reset-pinned-tab').hidden =
         !isVisible || !contextTab.getAttribute('zen-pin-id');
       document.getElementById('context_zen-replace-pinned-url-with-current').hidden = !isVisible;
-      document.getElementById('context_zen-add-essential').hidden =
-        contextTab.getAttribute('zen-essential') || !!contextTab.group;
-      document.l10n.setArgs(document.getElementById('context_zen-add-essential'), {
-        num: gBrowser._numZenEssentials,
-      });
+      zenAddEssential.hidden = contextTab.getAttribute('zen-essential') || !!contextTab.group;
+      zenAddEssential.setAttribute(
+        'badge',
+        await document.l10n.formatValue('tab-context-zen-add-essential-badge', {
+          num: gBrowser._numZenEssentials,
+          max: this.maxEssentialTabs,
+        })
+      );
       document
         .getElementById('cmd_contextZenAddToEssentials')
         .setAttribute('disabled', !this.canEssentialBeAdded(contextTab));
+      document.getElementById('context_closeTab').hidden = contextTab.hasAttribute('zen-essential');
       document.getElementById('context_zen-remove-essential').hidden =
         !contextTab.getAttribute('zen-essential');
       document.getElementById('zen-context-menu-new-folder').hidden =
@@ -1252,7 +1324,7 @@
           let isVisible = true;
           let parent = item.group;
           while (parent) {
-            if (parent.collapsed && !parent.hasAttribute('has-active')) {
+            if (!parent.visible) {
               isVisible = false;
               break;
             }
@@ -1386,7 +1458,7 @@
           (tab.getAttribute('usercontextid') || 0) !=
             gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
           gZenWorkspaces.containerSpecificEssentials
-        ) && gBrowser._numZenEssentials < this.MAX_ESSENTIALS_TABS
+        ) && gBrowser._numZenEssentials < this.maxEssentialTabs
       );
     }
 

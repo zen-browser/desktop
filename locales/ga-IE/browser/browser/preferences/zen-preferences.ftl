@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Cuma agus Mothú
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Cliceáil
 zen-glance-trigger-meta-click = 
     .label = Meta (Ordú) + Cliceáil
-zen-glance-trigger-mantain-click = 
-    .label = Mantain Click
 zen-look-and-feel-compact-view-header = Taispeáin i ndlúth d’amharc
 zen-look-and-feel-compact-view-description = Ná taispeáin ach na barraí uirlisí a úsáideann tú!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Spásanna Oibre Eile
 zen-tabs-unloader-enabled = 
     .label = Cumasaigh Díluchtóir Cluaisíní
+zen-tabs-close-on-back-with-no-history = 
+    .label = Dún an cluaisín agus aistrigh go dtí an cluaisín úinéara (nó an cluaisín is déanaí a úsáideadh) nuair a théann tú ar ais gan aon stair
+zen-tabs-cycle-by-attribute = 
+    .label = Timthriallta Ctrl+Tab laistigh de na cluaisíní Riachtanach nó Spás Oibre amháin
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Déan neamhaird de na cluaisíní atá ar feitheamh agus tú ag rothlú le Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Roghnóidh Ctrl+Tab an t-ord a úsáideadh le déanaí, toisc go bhfuil sé cumasaithe
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Úsáid cúlra téamach don bharra uirlisí dlúth
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Folaigh an táscaire coimeádáin réamhshocraithe sa bharra cluaisíní
 zen-key-unsaved = Aicearra gan sábháil! Sábháil é trí chliceáil ar an eochair "Escape" tar éis é a athchlóscríobh.
-zen-key-conflict = Coimhlint le aicearra eile
+zen-key-conflict = Coimhlintí le { $group } -> { $shortcut }
 pane-zen-theme-title = Socruithe Téama
 zen-vertical-tabs-title = Leagan amach barra taobh agus cluaisíní
 zen-vertical-tabs-header = Cluaisíní Ingearacha
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Scoránaigh Feidhmíochta
 zen-devtools-toggle-storage-shortcut = Scoránaigh Stóráil
 zen-devtools-toggle-dom-shortcut = Scoránaigh DOM
 zen-devtools-toggle-accessibility-shortcut = Scoránaigh Inrochtaineacht
+zen-close-all-unpinned-tabs-shortcut = Dún Gach Cluaisín Gan Phionáil

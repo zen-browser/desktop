@@ -1,8 +1,8 @@
 diff --git a/toolkit/themes/shared/pictureinpicture/player.css b/toolkit/themes/shared/pictureinpicture/player.css
-index 4a4ab15f9801d9443f3dbc131a533823be423bd9..ed487012d172c278f7d5a59ee953de4a05456019 100644
+index 12dba9ec5eee93476034b1e8b503a301fc18dbcb..b81c9e997d85e78cdf6ab460e14a5128117639bd 100644
 --- a/toolkit/themes/shared/pictureinpicture/player.css
 +++ b/toolkit/themes/shared/pictureinpicture/player.css
-@@ -736,3 +736,17 @@ input:checked + .slider::before {
+@@ -738,3 +738,17 @@ input:checked + .slider::before {
      justify-self: center;
    }
  }

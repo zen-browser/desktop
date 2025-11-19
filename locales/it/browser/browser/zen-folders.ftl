@@ -1,21 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-folders-search-placeholder = 
     .placeholder = Cerca { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rinomina Cartella
+    .label = Rinomina cartella
 zen-folders-panel-unpack-folder = 
-    .label = Scompatta Cartella
+    .label = Scompatta cartella
 zen-folders-new-subfolder = 
-    .label = Nuova Sottocartella
+    .label = Nuova sottocartella
 zen-folders-panel-delete-folder = 
-    .label = Cancella Cartella
+    .label = Cancella cartella
 zen-folders-panel-convert-folder-to-space = 
     .label = Converti la cartella in Spazio
 zen-folders-panel-change-folder-space = 
     .label = Cambia Spazio...
 zen-folders-panel-change-icon-folder = 
-    .label = Cambia Icona
+    .label = Cambia icona
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Scarica tutte le schede attive in questa cartella
 zen-folders-unload-folder = 
-    .label = Scarica tutte le Schede
+    .label = Scarica tutte le schede
 zen-folders-search-no-results = Nessuna scheda corrispondente alla ricerca 🤔

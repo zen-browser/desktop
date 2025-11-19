@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Apariencia
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Mayús + Clic
 zen-glance-trigger-meta-click = 
     .label = Meta (Comando) + Clic
-zen-glance-trigger-mantain-click = 
-    .label = Mantener pulsado el clic (¡Próximamente!)
 zen-look-and-feel-compact-view-header = Mostrar en vista compacta
 zen-look-and-feel-compact-view-description = ¡Muestre solo las barras de herramientas que usa!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Espacios de trabajo
 zen-tabs-unloader-enabled = 
     .label = Habilitar suspensión de pestañas
+zen-tabs-close-on-back-with-no-history = 
+    .label = Cerrar pestaña y cambiar a su pestaña propietaria (o la pestaña usada más recientemente) al volver sin historial
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab solo alterna dentro de las pestañas esenciales o de espacio de trabajo
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignorar pestañas pendientes cuando alterna con Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab alternará según el orden de uso reciente, cuando está habilitado
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Usar fondo temático para la barra de herramientas compacta
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Ocultar el indicador de contenedor por defecto en la barra de pestañas
 zen-key-unsaved = ¡Atajo sin guardar! Por favor guárdelo pulsando la tecla "Escape" después de reescribirlo.
-zen-key-conflict = Conflicto con otro atajo de teclado
+zen-key-conflict = Conflicto con { $group } -> { $shortcut }
 pane-zen-theme-title = Ajustes del tema
 zen-vertical-tabs-title = Diseño de la barra lateral y pestañas
 zen-vertical-tabs-header = Pestañas verticales
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Alternar rendimiento
 zen-devtools-toggle-storage-shortcut = Alternar almacenamiento
 zen-devtools-toggle-dom-shortcut = Alternar DOM
 zen-devtools-toggle-accessibility-shortcut = Alternar accesibilidad
+zen-close-all-unpinned-tabs-shortcut = Cerrar todas las pestañas sin fijar

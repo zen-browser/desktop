@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+
+const lazy = {};
+
+XPCOMUtils.defineLazyPreferenceGetter(lazy, 'currentTheme', 'zen.view.window.scheme', 2);
+
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
@@ -11,7 +17,6 @@ const globalActionsTemplate = [
     label: 'Toggle Compact Mode',
     command: 'cmd_zenCompactModeToggle',
     icon: 'chrome://browser/skin/zen-icons/sidebar.svg',
-    suggestedIndex: 0,
   },
   {
     label: 'Open Theme Picker',
@@ -22,7 +27,6 @@ const globalActionsTemplate = [
     label: 'New Split View',
     command: 'cmd_zenNewEmptySplit',
     icon: 'chrome://browser/skin/zen-icons/split.svg',
-    suggestedIndex: 0,
   },
   {
     label: 'New Folder',
@@ -32,8 +36,7 @@ const globalActionsTemplate = [
   {
     label: 'Copy Current URL',
     command: 'cmd_zenCopyCurrentURL',
-    icon: 'chrome://browser/skin/zen-icons/edit-copy.svg',
-    suggestedIndex: 0,
+    icon: 'chrome://browser/skin/zen-icons/link.svg',
   },
   {
     label: 'Settings',
@@ -41,14 +44,14 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/settings.svg',
   },
   {
-    label: 'Open New Window',
-    command: 'cmd_newNavigator',
-    icon: 'chrome://browser/skin/zen-icons/window.svg',
-  },
-  {
     label: 'Open Private Window',
     command: 'Tools:PrivateBrowsing',
     icon: 'chrome://browser/skin/zen-icons/private-window.svg',
+  },
+  {
+    label: 'Open New Window',
+    command: 'cmd_newNavigator',
+    icon: 'chrome://browser/skin/zen-icons/window.svg',
   },
   {
     label: 'Pin Tab',
@@ -89,7 +92,6 @@ const globalActionsTemplate = [
     label: 'Close Tab',
     command: 'cmd_close',
     icon: 'chrome://browser/skin/zen-icons/close.svg',
-    suggestedIndex: 1,
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
@@ -121,13 +123,11 @@ const globalActionsTemplate = [
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
-    suggestedIndex: 1,
   },
   {
     label: 'Toggle Tabs on right',
     command: 'cmd_zenToggleTabsOnRight',
     icon: 'chrome://browser/skin/zen-icons/sidebars-right.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Add to Essentials',
@@ -139,14 +139,12 @@ const globalActionsTemplate = [
       );
     },
     icon: 'chrome://browser/skin/zen-icons/essential-add.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Remove from Essentials',
     command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
     isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute('zen-essential'),
     icon: 'chrome://browser/skin/zen-icons/essential-remove.svg',
-    suggestedIndex: 1,
   },
   {
     label: 'Find in Page',
@@ -155,13 +153,35 @@ const globalActionsTemplate = [
     isAvailable: (window) => {
       return isNotEmptyTab(window);
     },
-    suggestedIndex: 1,
   },
   {
     label: 'Manage Extensions',
     command: 'Tools:Addons',
     icon: 'chrome://browser/skin/zen-icons/extension.svg',
-    suggestedIndex: 1,
+  },
+  {
+    label: 'Switch to Automatic Appearance',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 2),
+    icon: 'chrome://browser/skin/zen-icons/sparkles.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 2;
+    },
+  },
+  {
+    label: 'Switch to Light Mode',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 1),
+    icon: 'chrome://browser/skin/zen-icons/face-sun.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 1;
+    },
+  },
+  {
+    label: 'Switch to Dark Mode',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 0),
+    icon: 'chrome://browser/skin/zen-icons/moon-stars.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 0;
+    },
   },
 ];
 
@@ -169,6 +189,10 @@ export const globalActions = globalActionsTemplate.map((action) => ({
   isAvailable: (window) => {
     return window.document.getElementById(action.command)?.getAttribute('disabled') !== 'true';
   },
+  commandId:
+    typeof action.command === 'string'
+      ? action.command
+      : `zen:global-action-${action.label.toLowerCase().replace(/\s+/g, '-')}`,
   extraPayload: {},
   ...action,
 }));

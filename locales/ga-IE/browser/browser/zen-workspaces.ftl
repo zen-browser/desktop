@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Spásanna
 zen-panel-ui-workspaces-create = 
     .label = Cruthaigh Spás
@@ -14,6 +18,8 @@ zen-workspaces-panel-change-icon =
     .label = Athraigh Deilbhín
 zen-workspaces-panel-context-default-profile = 
     .label = Socraigh Próifíl
+zen-workspaces-panel-unload = 
+    .label = Díluchtaigh Spás
 zen-workspaces-how-to-reorder-title = Conas spásanna a athordú
 zen-workspaces-how-to-reorder-desc = Tarraing na deilbhíní spáis ag bun an bharra taoibh chun iad a athordú
 zen-workspaces-change-theme = 
@@ -51,3 +57,9 @@ zen-workspace-creation-header = Cruthaigh Spás
 zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus do sheisiúin a eagrú.
 zen-workspaces-delete-workspace-title = Scrios an spás?
 zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Cluaisíní Dúnta! Úsáid <span>{ $shortcut }</span> chun é a chealú.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Glan
+    .tooltiptext = Dún gach cluaisín neamhphionáilte

@@ -1,12 +1,16 @@
-zen-panel-ui-workspaces-text = Workspace
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Spazi
 zen-panel-ui-workspaces-create = 
     .label = Crea Spazio
 zen-panel-ui-folder-create = 
     .label = Crea Cartella
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Nuova Divisione
 zen-workspaces-panel-context-delete = 
-    .label = Elimina lo spazio di lavoro
+    .label = Elimina lo Spazio
     .accesskey = D
 zen-workspaces-panel-change-name = 
     .label = Cambia Nome
@@ -14,21 +18,23 @@ zen-workspaces-panel-change-icon =
     .label = Cambia Icona
 zen-workspaces-panel-context-default-profile = 
     .label = Imposta Profilo
+zen-workspaces-panel-unload = 
+    .label = Scarica Spazio
 zen-workspaces-how-to-reorder-title = Come riordinare gli spazi
 zen-workspaces-how-to-reorder-desc = Trascina le icone degli spazi in fondo alla barra laterale per riordinarle
 zen-workspaces-change-theme = 
     .label = Modifica Tema
 zen-workspaces-panel-context-open = 
-    .label = Apri Workspace
+    .label = Apri Spazio
     .accesskey = O
 zen-workspaces-panel-context-edit = 
-    .label = Modifica Workspace
+    .label = Modifica Spazio
     .accesskey = E
 context-zen-change-workspace-tab = 
     .label = Metti scheda/e su uno spazio di lavoro
     .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
-    .value = Spazi di lavoro
+    .value = Spazi
     .accesskey = W
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = Complementare
@@ -49,5 +55,11 @@ zen-workspace-creation-profile = Profilo
     .tooltiptext = I profili vengono usati per separare i cookie e i dati dei siti tra gli spazi.
 zen-workspace-creation-header = Crea uno Spazio
 zen-workspace-creation-label = Gli Spazi sono usati per organizzare le tue schede e sessioni.
-zen-workspaces-delete-workspace-title = Delete Workspace?
+zen-workspaces-delete-workspace-title = Eliminare Spazio?
 zen-workspaces-delete-workspace-body = Sei sicuro di voler cancellare { $name }? Questa azione non può essere annullata.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Scheda chiusa! Usa <span>{ $shortcut }</span> per riaprirla.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Pulisci
+    .tooltiptext = Chiudi tutte le schede non bloccate

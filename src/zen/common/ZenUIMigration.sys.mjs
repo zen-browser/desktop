@@ -1,12 +1,12 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { AppConstants } = ChromeUtils.importESModule('resource://gre/modules/AppConstants.sys.mjs');
+import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
 class nsZenUIMigration {
   PREF_NAME = 'zen.ui.migration.version';
-  MIGRATION_VERSION = 3;
+  MIGRATION_VERSION = 5;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -74,8 +74,20 @@ class nsZenUIMigration {
 
   _migrateV3() {
     if (Services.prefs.getStringPref('zen.theme.accent-color', '').startsWith('system')) {
-      Services.prefs.setStringPref('zen.theme.accent-color', '#ffb787');
+      Services.prefs.setStringPref('zen.theme.accent-color', 'AccentColor');
     }
+  }
+
+  _migrateV4() {
+    // Fix spelling mistake in preference name
+    Services.prefs.setBoolPref(
+      'zen.theme.use-system-colors',
+      Services.prefs.getBoolPref('zen.theme.use-sysyem-colors', false)
+    );
+  }
+
+  _migrateV5() {
+    Services.prefs.setBoolPref('zen.site-data-panel.show-callout', true);
   }
 }
 

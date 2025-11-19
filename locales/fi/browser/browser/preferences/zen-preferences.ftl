@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Katso ja tunne
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + klikkaa
 zen-glance-trigger-meta-click = 
     .label = Meta (komento) + klikkaus
-zen-glance-trigger-mantain-click = 
-    .label = Pidä pohjassa klikkausta
 zen-look-and-feel-compact-view-header = Näytä kompaktissa näkymätilassa
 zen-look-and-feel-compact-view-description = Näytä vain käyttämäsi työkalupalkit!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Työtilat
 zen-tabs-unloader-enabled = 
     .label = Ota Käyttöön välilehden purkaminen
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Piilota säiliön oletusmerkkivalo välilehdessä - palkki
 zen-key-unsaved = Tallentamaton pikakuvake! Ole hyvä ja turvaa se painamalla "Escape" -näppäintä kirjoittamisen jälkeen.
-zen-key-conflict = Ristiriita toisen pikakuvakkeen kanssa
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = Teeman Asetukset
 zen-vertical-tabs-title = Sivupalkin ja välilehtien asettelu
 zen-vertical-tabs-header = Pystysuorat Välilehdet
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Toggle Performance
 zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

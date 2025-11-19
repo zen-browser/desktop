@@ -15,16 +15,20 @@
     observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
       const updateState = () => {
         const exists = descendantSelectors.some(({ selector }) => {
-          return element.querySelector(selector);
+          let selected = element.querySelector(selector);
+          if (selected?.tagName?.toLowerCase() === 'menu') {
+            return null;
+          }
+          return selected;
         });
         const { exists: shouldExist = true } = descendantSelectors;
         if (exists === shouldExist) {
           if (!element.hasAttribute(stateAttribute)) {
-            element.setAttribute(stateAttribute, 'true');
+            gZenCompactModeManager._setElementExpandAttribute(element, true, stateAttribute);
           }
         } else {
           if (element.hasAttribute(stateAttribute)) {
-            element.removeAttribute(stateAttribute);
+            gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
           }
         }
       };

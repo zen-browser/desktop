@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Resetovat připnuté karty
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Přidat do Essentials ({ $num } / 12 zaplněných slotů)
+    .label = Přidat do Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } zaplněných slotů
 tab-context-zen-remove-essential = 
     .label = Odstranit z Essentials
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
 zen-panel-ui-gradient-generator-saved-message = Gradient byl úspěšně uložen!
-zen-copy-current-url-confirmation = URL adresa byla zkopírována do schránky.
+zen-copy-current-url-confirmation = URL adresa byla zkopírována!
 zen-general-cancel-label = 
     .label = Zrušit
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Prostory
 zen-library-sidebar-mods = 
     .label = Módy
+zen-toggle-compact-mode-button = 
+    .label = Kompaktní režim
+    .tooltiptext = Přepnout kompaktní režim
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emodži
 zen-icons-picker-svg = 
     .label = Ikony
+urlbar-search-mode-zen_actions = Akce
+zen-site-data-settings = Nastavení
+zen-generic-manage = Spravovat
+zen-generic-more = Více
+zen-generic-next = Další
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Povoleno
+zen-site-data-setting-block = Blokováno
+zen-site-data-protections-enabled = Zapnuto
+zen-site-data-protections-disabled = Vypnuto
+zen-site-data-setting-cross-site = Mezi stránkové cookies
+zen-site-data-security-info-extension = 
+    .label = Rozšíření
+zen-site-data-security-info-secure = 
+    .label = Bezpečné
+zen-site-data-security-info-not-secure = 
+    .label = Nezabezpečeno
+zen-site-data-manage-addons = 
+    .label = Spravovat rozšíření
+zen-site-data-get-addons = 
+    .label = Přidat rozšíření
+zen-site-data-site-settings = 
+    .label = Nastavení všech stránek
+zen-site-data-header-share = 
+    .tooltiptext = Sdílet tuto stránku
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Zapnout čtecí režim
+zen-site-data-header-screenshot = 
+    .tooltiptext = Pořídit snímek obrazovky
+zen-site-data-header-bookmark = 
+    .tooltiptext = Přidat tuto stránku do záložek
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Kopírovat URL
+zen-site-data-setting-site-protection = Ochrana proti sledování
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Nový domov pro doplňky, oprávnění a další
+zen-site-data-panel-feature-callout-subtitle = Klikněte na ikonu pro správu nastavení webu, zobrazení bezpečnostních informací, přístup k rozšíření a provádění běžných akcí.
+zen-open-link-in-glance = 
+    .label = Otevřít odkaz v Glance
+    .accesskey = G

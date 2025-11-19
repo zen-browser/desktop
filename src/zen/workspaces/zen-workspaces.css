@@ -33,8 +33,8 @@
 
   & toolbarbutton {
     margin: 0;
-    max-width: 26px;
-    height: 26px;
+    max-width: 28px;
+    height: 28px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -43,13 +43,16 @@
     fill-opacity: 0.6;
 
     & .zen-workspace-icon {
-      padding: 6px;
       pointer-events: none;
+      line-height: 0;
+
+      &:is(img) {
+        width: 14px;
+      }
    
       &[no-icon='true'] {
         width: 6px;
         height: 6px;
-        padding: 0;
         background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
         border-radius: 50%;
       }
@@ -60,7 +63,8 @@
     transition:
       filter 0.2s,
       opacity 0.2s,
-      width 0.1s;
+      width 0.1s,
+      transform 0.2s;
 
     &[active='true'],
     &:hover,
@@ -149,6 +153,7 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
+  margin-top: 1px;
   padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
@@ -160,7 +165,7 @@
   max-width: 100%;
   width: 100%;
   font-size: small;
-  padding-right: 10px;
+  padding-right: 12px;
   -moz-window-dragging: no-drag;
 
   &::before {
@@ -231,10 +236,13 @@
     visibility: collapse;
     transition: opacity 0.1s;
     order: 5;
-    --toolbarbutton-inner-padding: 6px;
+    --toolbarbutton-inner-padding: 6px !important;
 
     & image {
-      border-radius: calc(var(--border-radius-medium) - 4px);
+      border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
+      width: 26px;
+      height: 26px;
+      margin-right: -1px;
     }
 
     :root[zen-renaming-tab='true'] & {

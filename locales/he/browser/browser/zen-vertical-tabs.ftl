@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = כרטיסיות בצד ימין
     .accesskey = ר
 zen-toolbar-context-compact-mode = 
     .label = מצב מכווץ
-    .accesskey = ב
 zen-toolbar-context-compact-mode-enable = 
     .label = הפעל מצב מכווץ
     .accesskey = ג
@@ -15,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = הסתרת שניהם
     .accesskey = י
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = תיקייה חדשה
     .accesskey = מ
 sidebar-zen-expand = 
     .label = הרחבת סרגל צדדי

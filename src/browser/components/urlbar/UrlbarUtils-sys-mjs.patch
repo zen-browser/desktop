@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..b69a4d34f700637bd352620c520b989cf00fa39f 100644
+index 079c9f18550b54b2a1cc030174849896fd23234e..605bb3433b61443037659d126ba17b033e5a4394 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -75,6 +75,7 @@ export var UrlbarUtils = {
+@@ -77,6 +77,7 @@ export var UrlbarUtils = {
      RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
@@ -10,12 +10,20 @@ index 0bc15c02f56dd8f46a21fed02b4e21a741f27f41..b69a4d34f700637bd352620c520b989c
    }),
  
    // Defines provider types.
-@@ -576,6 +577,8 @@ export var UrlbarUtils = {
-         return this.RESULT_GROUP.INPUT_HISTORY;
-       case "UrlbarProviderQuickSuggest":
-         return this.RESULT_GROUP.GENERAL_PARENT;
-+      case "ZenUrlbarProviderGlobalActions":
-+        return this.RESULT_GROUP.ZEN_ACTION;
-       default:
-         break;
-     }
+@@ -136,6 +137,7 @@ export var UrlbarUtils = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
+   }),
+ 
+   // Per-result exposure telemetry.
+@@ -547,6 +549,8 @@ export var UrlbarUtils = {
+           return this.RESULT_GROUP.HEURISTIC_FALLBACK;
+         case "UrlbarProviderHistoryUrlHeuristic":
+           return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;
++        case "ZenUrlbarProviderGlobalActions":
++          return this.RESULT_GROUP.ZEN_ACTION;
+         case "UrlbarProviderOmnibox":
+           return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
+         case "UrlbarProviderRestrictKeywordsAutofill":

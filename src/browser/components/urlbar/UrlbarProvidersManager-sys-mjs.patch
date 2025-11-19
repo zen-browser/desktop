@@ -1,0 +1,12 @@
+diff --git a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+index b864cf9a9159d1f4e162ff5e8895a2bc95dee881..b30ee47b4f6d9025648ca5d93ee79f993cb6f4c2 100644
+--- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
++++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+@@ -873,6 +873,7 @@ export class Query {
+     if (
+       result.heuristic &&
+       this.context.searchMode &&
++      !(this.context.searchMode.source === lazy.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS && result.payload?.zenAction) &&
+       (!this.context.trimmedSearchString ||
+         (!this.context.searchMode.engineName && !result.autofill))
+     ) {

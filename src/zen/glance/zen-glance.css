@@ -14,11 +14,11 @@
   gap: 12px;
   max-width: 56px;
 
-  :root[zen-right-side='true'] & {
+  :root:not([zen-right-side='true']) & {
     left: 100%;
   }
 
-  :root:not([zen-right-side='true']) & {
+  :root[zen-right-side='true'] & {
     right: 100%;
   }
 
@@ -98,10 +98,13 @@
   --zen-element-separation: 6px;
 }
 
-.browserSidebarContainer.zen-glance-background,
-.browserSidebarContainer.zen-glance-overlay .browserContainer {
-  border-radius: var(--zen-native-inner-radius);
+.browserSidebarContainer.zen-glance-background {
   box-shadow: var(--zen-big-shadow);
+}
+
+.browserSidebarContainer.zen-glance-background,
+.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out='true']) {
+  border-radius: var(--zen-native-inner-radius);
 }
 
 .browserSidebarContainer.zen-glance-overlay {
@@ -116,14 +119,19 @@
   }
 
   & .browserContainer {
-    background: var(--zen-dialog-background);
+    transform: translate(-50%, -50%);
     position: fixed;
-    opacity: 0;
     top: 0;
     left: 0;
     flex: unset !important;
     /* Promote to its own layer during transitions to reduce jank */
-    will-change: transform, opacity, top, left, width, height;
+    will-change: transform, top, left;
+    width: 85%;
+    height: 100%;
+
+    &:not([has-finished-animation='true']) #statuspanel {
+      display: none;
+    }
 
     &[has-finished-animation='true'] {
       position: relative !important;
@@ -137,13 +145,13 @@
     & .browserStack {
       border-radius: var(--zen-native-inner-radius);
       overflow: hidden;
+      box-shadow: var(--zen-big-shadow);
     }
 
     & browser {
+      background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32)) !important;
       width: 100%;
       height: 100%;
-      opacity: 1;
-      transition: opacity 0.2s ease-in-out;
     }
 
     &[animate='true'] {
@@ -152,9 +160,28 @@
   }
 
   &[fade-out='true'] {
-    & browser {
-      transition: opacity 0.2s ease;
+    & .browserStack {
+      transition: opacity 0.15s ease-in-out;
       opacity: 0;
     }
+  }
+}
+
+.zen-glance-element-preview {
+  position: absolute;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: var(--zen-native-inner-radius);
+  top: 0%;
+  left: 50%;
+  translate: -50% 0%;
+  will-change: transform, opacity;
+  background: rgba(255, 255, 255, 0.1);
+
+  & image {
+    width: 100%;
+    max-width: 100%;
   }
 }

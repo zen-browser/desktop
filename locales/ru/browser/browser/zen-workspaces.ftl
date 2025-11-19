@@ -1,35 +1,41 @@
-zen-panel-ui-workspaces-text = Рабочие пространства
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Пространства
 zen-panel-ui-workspaces-create = 
     .label = Создать пространство
 zen-panel-ui-folder-create = 
-    .label = Create Folder
+    .label = Создать папку
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Новая разделённая вкладка
 zen-workspaces-panel-context-delete = 
     .label = Удалить пространство
-    .accesskey = D
+    .accesskey = В
 zen-workspaces-panel-change-name = 
     .label = Переименовать
 zen-workspaces-panel-change-icon = 
     .label = Изменить значок
 zen-workspaces-panel-context-default-profile = 
     .label = Настроить профиль
+zen-workspaces-panel-unload = 
+    .label = Выгрузить пространство
 zen-workspaces-how-to-reorder-title = Как переупорядочить пространства
 zen-workspaces-how-to-reorder-desc = Перетащите пространства внизу боковой панели, чтобы изменить их порядок
 zen-workspaces-change-theme = 
     .label = Изменить тему
 zen-workspaces-panel-context-open = 
     .label = Открыть пространство
-    .accesskey = O
+    .accesskey = Щ
 zen-workspaces-panel-context-edit = 
     .label = Редактировать пространство
-    .accesskey = E
+    .accesskey = У
 context-zen-change-workspace-tab = 
     .label = Перенести вкладку(-ки) на рабочее пространство
-    .accesskey = C
+    .accesskey = С
 zen-bookmark-edit-panel-workspace-selector = 
     .value = Рабочие пространства
-    .accesskey = W
+    .accesskey = Ц
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = Комплементарное
 zen-panel-ui-gradient-generator-algo-splitComplementary = 
@@ -50,4 +56,10 @@ zen-workspace-creation-profile = Профиль
 zen-workspace-creation-header = Создать пространство
 zen-workspace-creation-label = Пространства используются для организации ваших вкладок и сеансов.
 zen-workspaces-delete-workspace-title = Удалить пространство?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-body = Вы уверены, что хотите удалить { $name }? Это действие необратимо.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Вкладки закрыты! Нажмите <span>{ $shortcut }</span> для отмены.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Очистить
+    .tooltiptext = Закрыть все не закреплённые вкладки

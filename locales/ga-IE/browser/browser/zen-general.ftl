@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = próifíl reatha
 unified-extensions-description = Úsáidtear síntí chun níos mó feidhmiúlachta breise a thabhairt isteach i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Athshocraigh an Cluaisín Prionáilte
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Cuir le Bunriachtanais ({ $num } / 12 sliotán líonta)
+    .label = Cuir leis na Bunriachtanais
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } sliotán líonta
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-panel-ui-gradient-generator-saved-message = Sábháladh an grádán go rathúil!
-zen-copy-current-url-confirmation = Tá an URL cóipeáilte chuig an ghearrthaisce.
+zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Spásanna
 zen-library-sidebar-mods = 
     .label = Modanna
+zen-toggle-compact-mode-button = 
+    .label = Mód Dlúth
+    .tooltiptext = Mód Dlúth a Athrú
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Deilbhíní
+urlbar-search-mode-zen_actions = Gníomhartha
+zen-site-data-settings = Socruithe
+zen-generic-manage = Bainistigh
+zen-generic-more = Tuilleadh
+zen-generic-next = Ar Aghaidh
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Ceadaithe
+zen-site-data-setting-block = Blocáilte
+zen-site-data-protections-enabled = Cumasaithe
+zen-site-data-protections-disabled = Díchumasaithe
+zen-site-data-setting-cross-site = Fianán Tras-Láithreáin
+zen-site-data-security-info-extension = 
+    .label = Síneadh
+zen-site-data-security-info-secure = 
+    .label = Slán
+zen-site-data-security-info-not-secure = 
+    .label = Ní Slán
+zen-site-data-manage-addons = 
+    .label = Bainistigh Síneadh
+zen-site-data-get-addons = 
+    .label = Cuir Síneadh leis
+zen-site-data-site-settings = 
+    .label = Gach Socrú Suímh
+zen-site-data-header-share = 
+    .tooltiptext = Comhroinn an Leathanach seo
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Téigh isteach i Mód Léitheora
+zen-site-data-header-screenshot = 
+    .tooltiptext = Glac Seat scáileáin
+zen-site-data-header-bookmark = 
+    .tooltiptext = Leabharmharc an Leathanach seo
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Cóipeáil URL
+zen-site-data-setting-site-protection = Cosaint Rianaithe
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Baile nua do bhreiseáin, ceadanna agus tuilleadh
+zen-site-data-panel-feature-callout-subtitle = Cliceáil an deilbhín chun socruithe suímh a bhainistiú, faisnéis slándála a fheiceáil, rochtain a fháil ar shínteáin, agus gníomhartha coitianta a dhéanamh.
+zen-open-link-in-glance = 
+    .label = Oscail an Nasc i Glance
+    .accesskey = G

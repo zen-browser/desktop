@@ -1,8 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Espaços
 zen-panel-ui-workspaces-create = 
     .label = Criar Espaço
 zen-panel-ui-folder-create = 
-    .label = Nova Pasta
+    .label = Criar Pasta
 zen-panel-ui-new-empty-split = 
     .label = Nova Divisão
 zen-workspaces-panel-context-delete = 
@@ -14,6 +18,8 @@ zen-workspaces-panel-change-icon =
     .label = Alterar Ícone
 zen-workspaces-panel-context-default-profile = 
     .label = Definir Perfil
+zen-workspaces-panel-unload = 
+    .label = Descarregar Espaço
 zen-workspaces-how-to-reorder-title = Como reordenar os espaços
 zen-workspaces-how-to-reorder-desc = Arraste os ícones dos espaços na parte inferior da barra lateral para reordená-los
 zen-workspaces-change-theme = 
@@ -51,3 +57,9 @@ zen-workspace-creation-header = Crie um Espaço
 zen-workspace-creation-label = Espaços são usados para organizar suas guias e sessões.
 zen-workspaces-delete-workspace-title = Excluir Espaço?
 zen-workspaces-delete-workspace-body = Tem certeza que deseja excluir { $name }? Esta ação não pode ser desfeita.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Abas Fechadas! Use <span>{ $shortcut }</span> para desfazer.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Limpar
+    .tooltiptext = Fechar todas as abas não fixadas

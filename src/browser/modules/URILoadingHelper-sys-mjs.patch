@@ -1,5 +1,5 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index f7a3e8272f1f22286a26bf50d78b23aa82b49df8..a690732012331dfc40cc08fef4453c28c6587a24 100644
+index 04d0b47099648cfd00e72ef260d44628718809ee..49cd0215778a33a80d1f45b8e2701410d016a5a3 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
 @@ -541,7 +541,7 @@ export const URILoadingHelper = {

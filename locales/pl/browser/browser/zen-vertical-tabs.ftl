@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = Zakładki po prawej
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Tryb kompaktowy
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Włącz tryb kompaktowy
     .accesskey = D
@@ -15,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Ukryj oba
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Nowy folder
     .accesskey = N
 sidebar-zen-expand = 
     .label = Rozwiń panel boczny

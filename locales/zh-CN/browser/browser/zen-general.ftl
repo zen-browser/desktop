@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = 当前配置
 unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更多额外功能。
 tab-context-zen-reset-pinned-tab = 
     .label = 重置固定标签页
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 添加到常驻标签页（已使用 { $num } / 12）
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = 从常驻标签页中移除
     .accesskey = R
@@ -22,7 +27,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
 zen-panel-ui-gradient-generator-saved-message = 渐变保存成功！
-zen-copy-current-url-confirmation = 网址已复制到剪贴板。
+zen-copy-current-url-confirmation = Copied current URL!
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -35,6 +40,9 @@ zen-library-sidebar-workspaces =
     .label = 工作区
 zen-library-sidebar-mods = 
     .label = 模组
+zen-toggle-compact-mode-button = 
+    .label = Compact Mode
+    .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -46,3 +54,45 @@ zen-icons-picker-emoji =
     .label = 表情符号
 zen-icons-picker-svg = 
     .label = 图标集
+urlbar-search-mode-zen_actions = Actions
+zen-site-data-settings = Settings
+zen-generic-manage = Manage
+zen-generic-more = More
+zen-generic-next = Next
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Allowed
+zen-site-data-setting-block = Blocked
+zen-site-data-protections-enabled = Enabled
+zen-site-data-protections-disabled = Disabled
+zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-security-info-extension = 
+    .label = Extension
+zen-site-data-security-info-secure = 
+    .label = Secure
+zen-site-data-security-info-not-secure = 
+    .label = Not Secure
+zen-site-data-manage-addons = 
+    .label = 管理扩展
+zen-site-data-get-addons = 
+    .label = 添加扩展
+zen-site-data-site-settings = 
+    .label = 所有站点设置
+zen-site-data-header-share = 
+    .tooltiptext = Share This Page
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Enter Reader Mode
+zen-site-data-header-screenshot = 
+    .tooltiptext = Take a Screenshot
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bookmark This Page
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copy URL
+zen-site-data-setting-site-protection = Tracking Protection
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
+zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

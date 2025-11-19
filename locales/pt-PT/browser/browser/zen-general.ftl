@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer funcionalidades adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Repor o Separador Fixado
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Adicionar aos Essenciais ({ $num }/12 espaços preenchidos)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor personalizada
 zen-panel-ui-gradient-generator-saved-message = Gradiente guardado com sucesso!
-zen-copy-current-url-confirmation = O URL foi copiado para a área de transferência.
+zen-copy-current-url-confirmation = URL atual copiado!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Espaços
 zen-library-sidebar-mods = 
     .label = Modificações
+zen-toggle-compact-mode-button = 
+    .label = Modo Compacto
+    .tooltiptext = Alternar Modo Compacto
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ícones
+urlbar-search-mode-zen_actions = Ações
+zen-site-data-settings = Definições
+zen-generic-manage = Gerir
+zen-generic-more = Mais
+zen-generic-next = Seguinte
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permitido
+zen-site-data-setting-block = Bloqueado
+zen-site-data-protections-enabled = Ativado
+zen-site-data-protections-disabled = Desativado
+zen-site-data-setting-cross-site = Cookies entre sites
+zen-site-data-security-info-extension = 
+    .label = Extensão
+zen-site-data-security-info-secure = 
+    .label = Seguro
+zen-site-data-security-info-not-secure = 
+    .label = Não Seguro
+zen-site-data-manage-addons = 
+    .label = Gerir Extensões
+zen-site-data-get-addons = 
+    .label = Adicionar Extensões
+zen-site-data-site-settings = 
+    .label = Todas as Definições do Site
+zen-site-data-header-share = 
+    .tooltiptext = Partilhar Esta Página
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Entrar no Modo Leitura
+zen-site-data-header-screenshot = 
+    .tooltiptext = Tirar uma Captura de Ecrã
+zen-site-data-header-bookmark = 
+    .tooltiptext = Adicionar esta Página aos Favoritos
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copiar URL
+zen-site-data-setting-site-protection = Proteção contra rastreio
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Uma nova casa para extensões, permissões e mais
+zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerir definições do site, ver informações de segurança, extensões de acesso e executar ações comuns.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

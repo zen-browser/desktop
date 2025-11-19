@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Aparência
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Clique
 zen-glance-trigger-meta-click = 
     .label = Meta (Command) + Clique
-zen-glance-trigger-mantain-click = 
-    .label = Manter Clique (Em Breve!)
 zen-look-and-feel-compact-view-header = Mostrar na vista compacta
 zen-look-and-feel-compact-view-description = Mostrar apenas as barras de ferramentas que usa!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Espaços de Trabalho
 zen-tabs-unloader-enabled = 
     .label = Habilitar a Hibernação de Separadores
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Usar fundo temático para a barra de ferramentas compacta
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Ocultar o indicador padrão do contentor na barra de separadores
 zen-key-unsaved = Atalho não guardado! Por favor, proteja-o clicando na tecla "Escape" depois de o voltar a inserir.
-zen-key-conflict = Conflito com outro atalho
+zen-key-conflict = Conflitua com { $group } -> { $shortcut }
 pane-zen-theme-title = Configurações do Tema
 zen-vertical-tabs-title = Disposição da Barra Lateral e dos Separadores
 zen-vertical-tabs-header = Separadores Verticais
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Alternar Desempenho
 zen-devtools-toggle-storage-shortcut = Alternar Armazenamento
 zen-devtools-toggle-dom-shortcut = Alternar DOM
 zen-devtools-toggle-accessibility-shortcut = Alternar Acessibilidade
+zen-close-all-unpinned-tabs-shortcut = Fechar Todos os Separadores Não Fixados

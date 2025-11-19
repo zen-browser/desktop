@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Vzhled a dojem
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Kliknutí
 zen-glance-trigger-meta-click = 
     .label = Meta (Command) + Kliknutí
-zen-glance-trigger-mantain-click = 
-    .label = Dlouhé kliktnutí (Již Brzy!)
 zen-look-and-feel-compact-view-header = Zobrazit v kompaktním režimu
 zen-look-and-feel-compact-view-description = Zobrazte pouze panely nástrojů, které používáte!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,8 +44,15 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Pracoviště
 zen-tabs-unloader-enabled = 
     .label = Povolit uspání karet
+zen-tabs-close-on-back-with-no-history = 
+    .label = „Zavřít panel a přepnout na jeho nadřazený panel (nebo naposledy použitý panel), když se vracíte zpět bez historie.“
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cykly pouze v Essentials nebo pracovních kartách
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignorovat čekající panely při cyklování s Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab bude cyklovat v nedávno použitém pořadí
 zen-look-and-feel-compact-toolbar-themed = 
-    .label = Use themed background for compact toolbar
+    .label = Použít tématické pozadí pro kompaktní panel karet
 zen-workspace-continue-where-left-off = 
     .label = Pokračovat tam, kde jste skončili
 pane-zen-pinned-tab-manager-title = Připnuté karty
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Skrýt výchozí indikátor kontejneru v panelu záložek
 zen-key-unsaved = Neuložený zástupce! Ubezpečte jej po repsaní kliknutím na klávesu "Escap".
-zen-key-conflict = Konflikt s jinou zkratkou
+zen-key-conflict = Je v konfliktu s { $group } -> { $shortcut }
 pane-zen-theme-title = Nastavení motivu
 zen-vertical-tabs-title = Boční panel a rozložení karet
 zen-vertical-tabs-header = Vertikální karty
@@ -274,7 +283,7 @@ zen-split-view-shortcut-grid = Přepnout rozdělený pohled v mřížce
 zen-split-view-shortcut-vertical = Přepnout rozdělené zobrazení vertikálně
 zen-split-view-shortcut-horizontal = Přepnout horizontální zobrazení rozdělení
 zen-split-view-shortcut-unsplit = Zavřít rozdělené zobrazení
-zen-new-empty-split-view-shortcut = New Empty Split View
+zen-new-empty-split-view-shortcut = Nové prázdné rozdělené zobrazení
 zen-key-select-tab-1 = Vybrat první kartu
 zen-key-select-tab-2 = Vybrat druhou kartu
 zen-key-select-tab-3 = Vybrat třetí kartu
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Přepnout výkon
 zen-devtools-toggle-storage-shortcut = Přepnout úložiště
 zen-devtools-toggle-dom-shortcut = Přepnout DOM
 zen-devtools-toggle-accessibility-shortcut = Přepnout přístupnost
+zen-close-all-unpinned-tabs-shortcut = Zavřít všechny nepřipnuté panely

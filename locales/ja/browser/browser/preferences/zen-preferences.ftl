@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = 外観
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + クリック
 zen-glance-trigger-meta-click = 
     .label = Meta (Command) + クリック
-zen-glance-trigger-mantain-click = 
-    .label = クリックを長押し(近日公開予定)
 zen-look-and-feel-compact-view-header = コンパクトビューで表示
 zen-look-and-feel-compact-view-description = 使用しているツールバーのみを表示します！
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = ワークスペース
 zen-tabs-unloader-enabled = 
     .label = タブのアンローダーを有効にする
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = タブバー内のデフォルトのコンテナインジケーターを非表示にする
 zen-key-unsaved = 未保存のショートカットです！再入力後、「エスケープ」キーをクリックして安全にしてください。
-zen-key-conflict = 他のショートカットと競合します
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = テーマ設定
 zen-vertical-tabs-title = サイドバーとタブのレイアウト
 zen-vertical-tabs-header = 垂直タブ
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Toggle Performance
 zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = perfil actual
 unified-extensions-description = Les extensions aporten funcionalitats addicionals a { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Restableix la pestanya fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Afegeix als essentials ({ $num }/12 espais ocupats)
+    .label = Afegeix als essencials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } espais ocupats
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
     .accesskey = R
@@ -23,20 +28,23 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimitza
     .tooltip = Minimitza
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
-zen-panel-ui-gradient-generator-saved-message = El degradat s'ha desat correctament!
-zen-copy-current-url-confirmation = L'URL s'ha copiat al porta-retalls.
+zen-panel-ui-gradient-generator-saved-message = El degradat s'ha desat correctament
+zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
 zen-general-cancel-label = 
     .label = Cancel·la
 zen-general-confirm = 
     .label = Confirma
 zen-pinned-tab-replaced = L'URL de la pestanya fixada s'ha substituït per l'URL actual.
-zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament!
-zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons!
-zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament!
+zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
+zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
+zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
 zen-library-sidebar-workspaces = 
     .label = Espais
 zen-library-sidebar-mods = 
     .label = Modificacions
+zen-toggle-compact-mode-button = 
+    .label = Mode compacte
+    .tooltiptext = Commuta el mode compacte
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Icones
+urlbar-search-mode-zen_actions = Accions
+zen-site-data-settings = Configuració
+zen-generic-manage = Gestiona
+zen-generic-more = Més
+zen-generic-next = Següent
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permès
+zen-site-data-setting-block = Bloquejat
+zen-site-data-protections-enabled = Habilitat
+zen-site-data-protections-disabled = Deshabilitat
+zen-site-data-setting-cross-site = Galetes entre llocs
+zen-site-data-security-info-extension = 
+    .label = Extensió
+zen-site-data-security-info-secure = 
+    .label = Segur
+zen-site-data-security-info-not-secure = 
+    .label = No és segur
+zen-site-data-manage-addons = 
+    .label = Gestiona les extensions
+zen-site-data-get-addons = 
+    .label = Afegeix extensions
+zen-site-data-site-settings = 
+    .label = Totes les configuracions del lloc
+zen-site-data-header-share = 
+    .tooltiptext = Comparteix aquesta pàgina
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Accedeix al mode lectura
+zen-site-data-header-screenshot = 
+    .tooltiptext = Fes una captura de pantalla
+zen-site-data-header-bookmark = 
+    .tooltiptext = Afegeix la pàgina a les adreces d'interès
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copia l'URL
+zen-site-data-setting-site-protection = Protecció contra el seguiment
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
+zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.
+zen-open-link-in-glance = 
+    .label = Obre l'enllaç en un cop d'ull
+    .accesskey = G

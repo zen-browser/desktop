@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = 界面外观
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + 单击
 zen-glance-trigger-meta-click = 
     .label = Meta (Command) + 单击
-zen-glance-trigger-mantain-click = 
-    .label = 长按（即将上线！）
 zen-look-and-feel-compact-view-header = 以紧凑视图显示
 zen-look-and-feel-compact-view-description = 仅显示您使用的工具栏！
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = 工作区
 zen-tabs-unloader-enabled = 
     .label = 启用标签页卸载器
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = 隐藏在标签页栏中的默认容器指示器
 zen-key-unsaved = 快捷键未保存！请重新输入并按下“Escape”键保存。
-zen-key-conflict = 和其它快捷键冲突
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = 主题设置
 zen-vertical-tabs-title = 侧边栏和标签页布局
 zen-vertical-tabs-header = 垂直标签页
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = 切换性能
 zen-devtools-toggle-storage-shortcut = 切换存储
 zen-devtools-toggle-dom-shortcut = 切换 DOM
 zen-devtools-toggle-accessibility-shortcut = 切换无障碍环境
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

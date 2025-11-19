@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Apparence
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Maj + clic
 zen-glance-trigger-meta-click = 
     .label = Super (Command) + clic
-zen-glance-trigger-mantain-click = 
-    .label = Maintenir le clic (très bientôt !)
 zen-look-and-feel-compact-view-header = Afficher en mode compact
 zen-look-and-feel-compact-view-description = Affichez uniquement les barres d’outils que vous utilisez !
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Espaces de travail
 zen-tabs-unloader-enabled = 
     .label = Activer le déchargement des onglets
+zen-tabs-close-on-back-with-no-history = 
+    .label = Fermer l'onglet et passer à l'onglet parent (ou à l'onglet le plus récemment utilisé) lorsque vous revenez en arrière sans historique
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab permet de passer d'un onglet Essential ou d'un espace de travail à l'autre uniquement
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignorer les onglets déchargés lors du défilement avec Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab permet de passer d'un onglet à l'autre dans l'ordre d'utilisation récente, lorsqu'il est activé
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Utiliser l’arrière-plan du thème pour la barre d’outils en mode compact
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Dans la barre d’onglets, masquer l’indicateur de conteneur par défaut
 zen-key-unsaved = Raccourci non sauvegardé ! Pour l’enregistrer, veuillez le resaisir et en appuyer sur Échap.
-zen-key-conflict = Conflit avec un autre raccourci
+zen-key-conflict = En conflit avec { $group } → { $shortcut }
 pane-zen-theme-title = Paramètres de thème
 zen-vertical-tabs-title = Disposition de la barre latérale et des onglets
 zen-vertical-tabs-header = Onglets verticaux
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Afficher l’onglet Performances
 zen-devtools-toggle-storage-shortcut = Afficher l’onglet Stockage
 zen-devtools-toggle-dom-shortcut = Afficher l’onglet DOM
 zen-devtools-toggle-accessibility-shortcut = Afficher l’onglet Accessibilité
+zen-close-all-unpinned-tabs-shortcut = Fermer tous les onglets non épinglés

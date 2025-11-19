@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/pictureinpicture/content/player.xhtml b/toolkit/components/pictureinpicture/content/player.xhtml
-index b38789882149c97a3263c405b783999bc60a5c71..009b7b7aa2ded0d88247c62171bfff59222a8e28 100644
+index 09c9c5000de96fcd4a9d26328408996540c2cbda..b6d93850bbfe63a4e21756c97415a6c1908dae25 100644
 --- a/toolkit/components/pictureinpicture/content/player.xhtml
 +++ b/toolkit/components/pictureinpicture/content/player.xhtml
 @@ -18,6 +18,7 @@

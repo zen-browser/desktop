@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Udseende
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -26,8 +30,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + klik
 zen-glance-trigger-meta-click = 
     .label = Meta (Kommando) + Klik
-zen-glance-trigger-mantain-click = 
-    .label = Hold klik (kommer snart!)
 zen-look-and-feel-compact-view-header = Vis i kompakt visning
 zen-look-and-feel-compact-view-description = Vis kun de værktøjslinjer, du bruger!
 zen-look-and-feel-compact-view-enabled = 
@@ -42,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Arbejdsområder
 zen-tabs-unloader-enabled = 
     .label = Aktiver fanedeaktivering
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -74,7 +83,7 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator = 
     .label = Skjul standardindikatoren for beholdere i fanelinjen
 zen-key-unsaved = Ikke-gemt genvej! Gem den ved at klikke på "Escape"-tasten efter at have indtastet den igen.
-zen-key-conflict = Konflikt med en anden genvej
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = Temaindstillinger
 zen-vertical-tabs-title = Layout for sidepanel og faner
 zen-vertical-tabs-header = Lodrette Faner
@@ -302,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Vis/skjul Ydeevne
 zen-devtools-toggle-storage-shortcut = Vis/skjul Lager
 zen-devtools-toggle-dom-shortcut = Vis/skjul DOM
 zen-devtools-toggle-accessibility-shortcut = Vis/skjul Tilgængelighed
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

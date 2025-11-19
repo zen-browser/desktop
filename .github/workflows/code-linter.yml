@@ -27,8 +27,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Setup autopep8
-        run: sudo apt install python3-autopep8
+      - name: Setup and run autopep8
+        if: ${{ contains(join(github.event.commits.*.modified, ' '), '.py') || contains(join(github.event.commits.*.added, ' '), '.py') || contains(join(github.event.commits.*.removed, ' '), '.py') }}
+        run: |
+          sudo apt install python3-autopep8
+          autopep8 --diff scripts/ src/
 
       - name: Install dependencies
         run: npm ci

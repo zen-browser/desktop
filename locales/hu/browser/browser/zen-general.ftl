@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = jelenlegi profil
 unified-extensions-description = A bővítmények a { -brand-short-name }-t új funkciókkal látják el.
 tab-context-zen-reset-pinned-tab = 
     .label = Kitűzött lap visszaállítása
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Felvétel az alapvetőkbe ({ $num } / 12 hely foglalt)
+    .label = Felvétel az alapvetőkbe
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } hely foglalt
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
@@ -24,7 +29,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalizálás
 zen-panel-ui-gradient-generator-custom-color = Egyedi szín
 zen-panel-ui-gradient-generator-saved-message = Színátmenet sikeresen mentve!
-zen-copy-current-url-confirmation = Az URL-cím a vágólapra lett másolva.
+zen-copy-current-url-confirmation = Jelenlegi URL másolva!
 zen-general-cancel-label = 
     .label = Mégsem
 zen-general-confirm = 
@@ -37,6 +42,9 @@ zen-library-sidebar-workspaces =
     .label = Környezetek
 zen-library-sidebar-mods = 
     .label = Modok
+zen-toggle-compact-mode-button = 
+    .label = Kompakt mód
+    .tooltiptext = Kompakt mód ki-/bekapcsolása
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -48,3 +56,45 @@ zen-icons-picker-emoji =
     .label = Emojik
 zen-icons-picker-svg = 
     .label = Ikonok
+urlbar-search-mode-zen_actions = Műveletek
+zen-site-data-settings = Beállítások
+zen-generic-manage = Kezelés
+zen-generic-more = Több
+zen-generic-next = Következő
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Engedélyezve
+zen-site-data-setting-block = Blokkolva
+zen-site-data-protections-enabled = Engedélyezve
+zen-site-data-protections-disabled = Letiltva
+zen-site-data-setting-cross-site = Webhelyek közötti sütik
+zen-site-data-security-info-extension = 
+    .label = Kiegészítő
+zen-site-data-security-info-secure = 
+    .label = Biztonságos
+zen-site-data-security-info-not-secure = 
+    .label = Nem biztonságos
+zen-site-data-manage-addons = 
+    .label = Kiegészítők kezelése
+zen-site-data-get-addons = 
+    .label = Kiegészítő hozzáadása
+zen-site-data-site-settings = 
+    .label = Minden webhelybeállítás
+zen-site-data-header-share = 
+    .tooltiptext = Oldal megosztása
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Olvasó módba lépés
+zen-site-data-header-screenshot = 
+    .tooltiptext = Képernyőkép készítése
+zen-site-data-header-bookmark = 
+    .tooltiptext = Oldal mentése a könyvjelzők közé
+zen-urlbar-copy-url-button = 
+    .tooltiptext = URL másolása
+zen-site-data-setting-site-protection = Nyomkövetés védelem
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
+zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
+zen-open-link-in-glance = 
+    .label = Link megnyitása a bepillantóban
+    .accesskey = G

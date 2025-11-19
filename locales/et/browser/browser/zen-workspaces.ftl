@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Tööruumid
 zen-panel-ui-workspaces-create = 
     .label = Uus tööruum
@@ -14,6 +18,8 @@ zen-workspaces-panel-change-icon =
     .label = Muuda ikooni
 zen-workspaces-panel-context-default-profile = 
     .label = Määra profiil
+zen-workspaces-panel-unload = 
+    .label = Tööruumi mälust eemaldamine
 zen-workspaces-how-to-reorder-title = Kuidas vahetada tööruumide järjestust
 zen-workspaces-how-to-reorder-desc = Lohista tööruumide ikoone külgriba alumises servas, et nende järjestust muuta
 zen-workspaces-change-theme = 
@@ -51,3 +57,9 @@ zen-workspace-creation-header = Loo uus tööruum
 zen-workspace-creation-label = Tööruume kasutatakse kaartide ja sessioonide organiseerimiseks.
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = Kas oled kindel, et soovid kustutada tööruumi { $name }? Seda tegevust ei saa tagasi võtta.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs

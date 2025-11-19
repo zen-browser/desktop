@@ -18,6 +18,7 @@
   flex: 0;
   margin: 0;
 }
+
 #zen-splitview-dropzone {
   border-radius: var(--zen-native-inner-radius);
   transition: inset ease-out 0.08s;
@@ -31,10 +32,6 @@
 #tabbrowser-tabpanels[zen-split-view='true'] > [zen-split='true'],
 #zen-splitview-dropzone {
   flex: 1;
-  margin: var(--zen-split-column-gap) var(--zen-split-row-gap) !important;
-  margin-bottom: 0 !important;
-  margin-left: 0 !important;
-  position: absolute !important;
   overflow: hidden;
 
   & .dialogStack {
@@ -43,11 +40,25 @@
   }
 }
 
+.browserSidebarContainer[is-zen-split='true'],
+#zen-splitview-dropzone {
+  position: absolute !important;
+
+  margin: var(--zen-split-column-gap) var(--zen-split-row-gap) !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+
+  &.browserSidebarContainer:not([zen-split='true']) {
+    margin-top: 0 !important;
+    visibility: hidden;
+  }
+}
+
 #zen-splitview-dropzone {
   margin-top: 0 !important;
 }
 
-#tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split='true'] {
+#tabbrowser-tabpanels[zen-split-view='true']:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split='true'] {
   transition: inset 0.09s ease-out !important;
   & browser {
     transition: opacity 0.2s ease-out !important;
@@ -66,13 +77,15 @@
   }
 }
 
+#tabbrowser-tabbox {
+  --zen-split-row-gap: var(--zen-element-separation);
+  --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
+}
+
 #tabbrowser-tabbox[zen-split-view='true'] {
   :root[zen-no-padding='true'] & {
     --zen-element-separation: 8px;
   }
-
-  --zen-split-row-gap: var(--zen-element-separation);
-  --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
   margin-right: calc(-1 * var(--zen-split-column-gap));
 }
 

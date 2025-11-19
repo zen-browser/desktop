@@ -23,5 +23,4 @@ zen-welcome-start-browsing = 시작하기!
 zen-welcome-default-search-title = 기본 검색 엔진
 zen-welcome-default-search-description = 기본 검색 엔진을 선택하세요. 나중에 언제든지 바꿀 수 있습니다!
 zen-welcome-skip-button = 건너뛰기
-zen-welcome-next-action = 다음
 zen-welcome-finished = Zen이 정상적으로 설정되었습니다!

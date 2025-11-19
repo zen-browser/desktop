@@ -1,9 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-toolbar-context-tabs-right = 
     .label = Thẻ ở bên phải
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Chế độ thu gọn
-    .accesskey = C
 zen-toolbar-context-compact-mode-enable = 
     .label = Bật chế độ thu gọn
     .accesskey = D
@@ -15,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Ẩn cả hai
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Thư mục mới
     .accesskey = N
 sidebar-zen-expand = 
     .label = Mở rộng thanh bên
@@ -30,7 +33,7 @@ tabbrowser-unload-tab-button =
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Tải lại và gim thẻ
-           *[other] Tải lại và gim { $tabCount } thẻ
+            [one] Tải lại và ghim thẻ
+           *[other] Tải lại và ghim { $tabCount } thẻ
         }
 tab-reset-pin-label = Quay trở lại đường dẫn đã ghim

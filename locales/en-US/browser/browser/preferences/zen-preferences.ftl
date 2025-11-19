@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 pane-zen-looks-title = Look and Feel
 category-zen-looks =
@@ -8,9 +11,9 @@ zen-warning-language = Changing the default language could make it easier for We
 zen-vertical-tabs-layout-header = Browser Layout
 zen-vertical-tabs-layout-description = Choose the layout that suits you best
 
-zen-layout-single-toolbar = Single toolbar
-zen-layout-multiple-toolbar = Multiple toolbars
-zen-layout-collapsed-toolbar = Collapsed toolbar
+zen-layout-single-toolbar = Only Sidebar
+zen-layout-multiple-toolbar = Sidebar and Top Toolbar
+zen-layout-collapsed-toolbar = Collapsed Sidebar
 
 sync-currently-syncing-workspaces = Workspaces
 sync-engine-workspaces =
@@ -33,8 +36,6 @@ zen-glance-trigger-shift-click =
     .label = Shift + Click
 zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
-zen-glance-trigger-mantain-click =
-    .label = Hold Click (Coming Soon!)
 
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
@@ -54,6 +55,15 @@ pane-settings-workspaces-title = Workspaces
 
 zen-tabs-unloader-enabled =
     .label = Enable Tab Unloader
+
+zen-tabs-close-on-back-with-no-history =
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+
+zen-tabs-cycle-by-attribute =
+  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs =
+  .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
@@ -91,7 +101,7 @@ zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
-zen-key-conflict = Conflict with another shortcut
+zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 
 pane-zen-theme-title = Theme Settings
 
@@ -146,7 +156,7 @@ zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
 pane-zen-marketplace-title = Zen Mods
 zen-themes-auto-update =
-   .label = Automatically update installed mods on startup 
+   .label = Automatically update installed mods on startup
 
 zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
@@ -339,3 +349,4 @@ zen-devtools-toggle-performance-shortcut = Toggle Performance
 zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

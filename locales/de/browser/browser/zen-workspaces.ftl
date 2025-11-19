@@ -1,21 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Arbeitsbereiche
 zen-panel-ui-workspaces-create = 
     .label = Arbeitsbereich erstellen
 zen-panel-ui-folder-create = 
     .label = Ordner erstellen
 zen-panel-ui-new-empty-split = 
-    .label = Split View erstellen
+    .label = Neuen Split erstellen
 zen-workspaces-panel-context-delete = 
     .label = Arbeitsbereich löschen
     .accesskey = D
 zen-workspaces-panel-change-name = 
-    .label = Name ändern
+    .label = Namen ändern
 zen-workspaces-panel-change-icon = 
     .label = Symbol ändern
 zen-workspaces-panel-context-default-profile = 
     .label = Profil festlegen
-zen-workspaces-how-to-reorder-title = Wie Arbeitsbereiche neu angeordnet werden
-zen-workspaces-how-to-reorder-desc = Ziehen Sie die Arbeitsbereich-Symbole am unteren Rand der Seitenleiste, um sie neu anzuordnen
+zen-workspaces-panel-unload = 
+    .label = Arbeitsbereich entladen
+zen-workspaces-how-to-reorder-title = So ordnest du Arbeitsbereiche neu an
+zen-workspaces-how-to-reorder-desc = Ziehe die Arbeitsbereich-Symbole am unteren Rand der Seitenleiste, um sie neu anzuordnen
 zen-workspaces-change-theme = 
     .label = Design bearbeiten
 zen-workspaces-panel-context-open = 
@@ -48,6 +54,12 @@ zen-workspaces-panel-context-reorder =
 zen-workspace-creation-profile = Profil
     .tooltiptext = Profile werden verwendet, um Cookies und Website-Daten zwischen Arbeitsbereichen zu trennen.
 zen-workspace-creation-header = Arbeitsbereich erstellen
-zen-workspace-creation-label = Arbeitsbereiche werden verwendet, um Ihre Tabs und Sitzungen zu organisieren.
+zen-workspace-creation-label = Arbeitsbereiche helfen dir, deine Tabs und Sitzungen zu organisieren.
 zen-workspaces-delete-workspace-title = Arbeitsbereich löschen?
-zen-workspaces-delete-workspace-body = Sind Sie sicher, dass Sie { $name } löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
+zen-workspaces-delete-workspace-body = Möchtest du { $name } wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs geschlossen! Nutze <span>{ $shortcut }</span>, um rückgängig zu machen.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Aufräumen
+    .tooltiptext = Alle nicht angehefteten Tabs schließen

@@ -41,6 +41,7 @@ var ZenPinnedTabsStorage = {
       await addColumnIfNotExists('is_folder_collapsed', 'BOOLEAN NOT NULL DEFAULT 0');
       await addColumnIfNotExists('folder_icon', 'TEXT DEFAULT NULL');
       await addColumnIfNotExists('folder_parent_uuid', 'TEXT DEFAULT NULL');
+      await addColumnIfNotExists('icon_data', 'TEXT DEFAULT NULL');
 
       await db.execute(`
         CREATE INDEX IF NOT EXISTS idx_zen_pins_uuid ON zen_pins(uuid)
@@ -116,17 +117,40 @@ var ZenPinnedTabsStorage = {
         }
 
         // Insert or replace the pin
+        // Map iconUrl to iconData for storage
+        const iconData = pin.iconUrl !== undefined ? pin.iconUrl : (pin.iconData !== undefined ? pin.iconData : null);
+        
+        // Ensure iconData is a valid data URI string, otherwise null
+        // Note: typeof null === "object" in JavaScript, so we check for null explicitly
+        let iconDataString = null;
+        if (iconData !== null && iconData !== undefined) {
+          if (typeof iconData === 'string' && iconData.trim().length > 0 && iconData.startsWith('data:image/')) {
+            iconDataString = iconData;
+          }
+        }
+        
+        // Debug log: Log icon_data before insert
+        console.log('[ZenPinnedTabsStorage.savePin] INSERT/REPLACE pin:', {
+          uuid: pin.uuid,
+          title: pin.title,
+          url: pin.url,
+          iconData_received: iconData === null ? 'null' : (iconData === undefined ? 'undefined' : typeof iconData),
+          iconDataString_to_store: iconDataString === null ? 'null' : 'valid_string',
+          icon_data_length: iconDataString ? iconDataString.length : 0,
+          icon_data_preview: iconDataString ? `${iconDataString.substring(0, 50)}...` : null,
+        });
+        
         await db.executeCached(
           `
           INSERT OR REPLACE INTO zen_pins (
             uuid, title, url, container_id, workspace_uuid, position,
             is_essential, is_group, folder_parent_uuid, edited_title, created_at,
-            updated_at, is_folder_collapsed, folder_icon
+            updated_at, is_folder_collapsed, folder_icon, icon_data
           ) VALUES (
             :uuid, :title, :url, :container_id, :workspace_uuid, :position,
             :is_essential, :is_group, :folder_parent_uuid, :edited_title,
             COALESCE((SELECT created_at FROM zen_pins WHERE uuid = :uuid), :now),
-            :now, :is_folder_collapsed, :folder_icon
+            :now, :is_folder_collapsed, :folder_icon, :icon_data
           )
         `,
           {
@@ -143,8 +167,24 @@ var ZenPinnedTabsStorage = {
             now,
             folder_icon: pin.folderIcon || null,
             is_folder_collapsed: pin.isFolderCollapsed || false,
+            icon_data: iconDataString,
           }
         );
+        
+        // Debug log: Verify what was actually stored
+        const verifyResult = await db.execute(
+          `SELECT icon_data FROM zen_pins WHERE uuid = :uuid`,
+          { uuid: pin.uuid }
+        );
+        if (verifyResult.length > 0) {
+          const storedIconData = verifyResult[0].getResultByName('icon_data');
+          console.log('[ZenPinnedTabsStorage.savePin] Verified stored icon_data:', {
+            uuid: pin.uuid,
+            stored_value: storedIconData === null ? 'null' : (typeof storedIconData === 'string' ? 'string' : typeof storedIconData),
+            stored_length: storedIconData ? storedIconData.length : 0,
+            stored_preview: storedIconData && typeof storedIconData === 'string' ? `${storedIconData.substring(0, 50)}...` : null,
+          });
+        }
 
         await db.execute(
           `
@@ -173,20 +213,33 @@ var ZenPinnedTabsStorage = {
       SELECT * FROM zen_pins
       ORDER BY position ASC
     `);
-    return rows.map((row) => ({
-      uuid: row.getResultByName('uuid'),
-      title: row.getResultByName('title'),
-      url: row.getResultByName('url'),
-      containerTabId: row.getResultByName('container_id'),
-      workspaceUuid: row.getResultByName('workspace_uuid'),
-      position: row.getResultByName('position'),
-      isEssential: Boolean(row.getResultByName('is_essential')),
-      isGroup: Boolean(row.getResultByName('is_group')),
-      parentUuid: row.getResultByName('folder_parent_uuid'),
-      editedTitle: Boolean(row.getResultByName('edited_title')),
-      folderIcon: row.getResultByName('folder_icon'),
-      isFolderCollapsed: Boolean(row.getResultByName('is_folder_collapsed')),
-    }));
+    const pins = rows.map((row) => {
+      const iconData = row.getResultByName('icon_data');
+      // DEBUG_FAVICON: Log what we're retrieving from database
+      console.log('[DEBUG_FAVICON] getPins() retrieved:', {
+        uuid: row.getResultByName('uuid'),
+        icon_data_type: typeof iconData,
+        icon_data_is_null: iconData === null,
+        icon_data_length: iconData?.length || 0,
+        icon_data_preview: iconData ? `${iconData.substring(0, 50)}...` : null
+      });
+      return {
+        uuid: row.getResultByName('uuid'),
+        title: row.getResultByName('title'),
+        url: row.getResultByName('url'),
+        containerTabId: row.getResultByName('container_id'),
+        workspaceUuid: row.getResultByName('workspace_uuid'),
+        position: row.getResultByName('position'),
+        isEssential: Boolean(row.getResultByName('is_essential')),
+        isGroup: Boolean(row.getResultByName('is_group')),
+        parentUuid: row.getResultByName('folder_parent_uuid'),
+        editedTitle: Boolean(row.getResultByName('edited_title')),
+        folderIcon: row.getResultByName('folder_icon'),
+        isFolderCollapsed: Boolean(row.getResultByName('is_folder_collapsed')),
+        iconUrl: iconData,
+      };
+    });
+    return pins;
   },
 
   /**

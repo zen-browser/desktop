@@ -90,6 +90,8 @@
       this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
       this._zenClickEventListener = this._onTabClick.bind(this);
+      // DEBUG_FAVICON: Track pins we've attempted to migrate to avoid duplicate attempts
+      this._migrationAttempted = new Set();
 
       gZenWorkspaces._resolvePinnedInitialized();
     }
@@ -100,14 +102,24 @@
       }
     }
 
-    onTabIconChanged(tab, url = null) {
-      const iconUrl = url ?? tab.iconImage.src;
+    async onTabIconChanged(tab, url = null) {
+      // Get the favicon URL from the browser (already computed by Firefox)
+      const iconUrl = url ?? gBrowser.getIcon(tab);
+      
       if (!iconUrl && tab.hasAttribute('zen-pin-id')) {
+        // No favicon yet, wait and try Places API
         try {
           setTimeout(async () => {
             const favicon = await this.getFaviconAsBase64(tab.linkedBrowser.currentURI);
             if (favicon) {
               gBrowser.setIcon(tab, favicon);
+              const pinId = tab.getAttribute('zen-pin-id');
+              const pin = this._pinsCache?.find((p) => p.uuid === pinId);
+              if (pin) {
+                console.log('[DEBUG_FAVICON] Saving favicon to pin storage from onTabIconChanged', pinId);
+                pin.iconUrl = favicon;
+                await this.savePin(pin, false);
+              }
             }
           });
         } catch {
@@ -116,6 +128,18 @@
       } else {
         if (tab.hasAttribute('zen-essential')) {
           tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
+        }
+        // Save favicon if it's a data URI
+        if (iconUrl && tab.hasAttribute('zen-pin-id')) {
+          const pinId = tab.getAttribute('zen-pin-id');
+          const pin = this._pinsCache?.find((p) => p.uuid === pinId);
+          if (pin && iconUrl.startsWith('data:image/')) {
+            console.log('[DEBUG_FAVICON] Saving favicon to pin storage from onTabIconChanged (data URI)', pinId);
+            pin.iconUrl = iconUrl;
+            this.savePin(pin, false).catch((ex) => {
+              console.log('[DEBUG_FAVICON] Failed to save favicon in onTabIconChanged:', ex);
+            });
+          }
         }
       }
     }
@@ -170,20 +194,65 @@
         // Get pin data
         const pins = await ZenPinnedTabsStorage.getPins();
 
-        // Enhance pins with favicons
+        // DEBUG_FAVICON: Inspect what we got from database
+        console.log('[DEBUG_FAVICON] Raw pins from database:', pins.map(p => ({
+          uuid: p.uuid,
+          hasIconUrl: !!p.iconUrl,
+          iconUrlType: typeof p.iconUrl,
+          iconUrlLength: p.iconUrl?.length || 0,
+          iconUrlPreview: p.iconUrl ? `${p.iconUrl.substring(0, 50)}...` : null
+        })));
+
+        // DEBUG_FAVICON: Track pins with/without stored icons (check for truthy AND non-empty)
+        const pinsWithIcons = pins.filter(p => p.iconUrl && p.iconUrl.trim().length > 0).length;
+        console.log('[DEBUG_FAVICON] Initializing pins cache:', {
+          totalPins: pins.length,
+          pinsWithStoredIcons: pinsWithIcons,
+          pinsNeedingMigration: pins.length - pinsWithIcons
+        });
+
+        // Enhance pins with favicons - use stored iconData first, fall back to Places, then lazy migration
         this._pinsCache = await Promise.all(
           pins.map(async (pin) => {
             try {
               if (pin.isGroup) {
                 return pin; // Skip groups for now
               }
+              
+              // DEBUG_FAVICON: Use stored iconData first (check for truthy AND non-empty)
+              if (pin.iconUrl && pin.iconUrl.trim().length > 0) {
+                console.log('[DEBUG_FAVICON] Using stored iconData for pin', pin.uuid, 'length:', pin.iconUrl.length);
+                return {
+                  ...pin,
+                  iconUrl: pin.iconUrl,
+                };
+              }
+
+              // DEBUG_FAVICON: Fall back to Places API
+              console.log('[DEBUG_FAVICON] No stored iconData, trying Places API for pin', pin.uuid);
               const image = await this.getFaviconAsBase64(Services.io.newURI(pin.url));
+              if (image) {
+                console.log('[DEBUG_FAVICON] Places API returned favicon for pin', pin.uuid);
+                // Save it to storage for future use
+                pin.iconUrl = image;
+                this.savePin(pin, false).catch((ex) => {
+                  console.log('[DEBUG_FAVICON] Failed to save favicon from Places API:', ex);
+                });
+                return {
+                  ...pin,
+                  iconUrl: image,
+                };
+              }
+
+              // DEBUG_FAVICON: No icon found, will be migrated lazily
+              console.log('[DEBUG_FAVICON] No favicon found for pin, will migrate lazily', pin.uuid);
               return {
                 ...pin,
-                iconUrl: image || null,
+                iconUrl: null,
               };
-            } catch {
-              // If favicon fetch fails, continue without icon
+            } catch (ex) {
+              // DEBUG_FAVICON: If favicon fetch fails, continue without icon
+              console.log('[DEBUG_FAVICON] Error loading favicon for pin', pin.uuid, ex);
               return {
                 ...pin,
                 iconUrl: null,
@@ -191,6 +260,9 @@
             }
           })
         );
+
+        // DEBUG_FAVICON: Schedule lazy migration for pins without icons
+        this.#scheduleLazyMigration();
       } catch (ex) {
         console.error('Failed to initialize pins cache:', ex);
         this._pinsCache = [];
@@ -207,6 +279,111 @@
       this._resolvePinnedInitializedInternal();
       delete this._resolvePinnedInitializedInternal;
       this.hasInitializedPins = true;
+    }
+
+    // DEBUG_FAVICON: Schedule lazy migration for pins without favicons
+    #scheduleLazyMigration() {
+      if (this._migrationScheduled) {
+        return;
+      }
+      this._migrationScheduled = true;
+      
+      // Wait a bit after initialization before starting migration
+      setTimeout(() => {
+        this.#migrateMissingFavicons();
+      }, 2000);
+      
+      console.log('[DEBUG_FAVICON] Lazy migration scheduled');
+    }
+
+    // DEBUG_FAVICON: Migrate missing favicons with priority for essential tabs
+    async #migrateMissingFavicons() {
+      if (!this._pinsCache) {
+        return;
+      }
+
+      const pinsNeedingMigration = this._pinsCache.filter(
+        (pin) => !pin.isGroup && !pin.iconUrl && pin.url
+      );
+
+      if (pinsNeedingMigration.length === 0) {
+        console.log('[DEBUG_FAVICON] No pins need favicon migration');
+        return;
+      }
+
+      // Prioritize essential tabs
+      const essentialPins = pinsNeedingMigration.filter((pin) => pin.isEssential);
+      const regularPins = pinsNeedingMigration.filter((pin) => !pin.isEssential);
+
+      console.log('[DEBUG_FAVICON] Starting favicon migration:', {
+        total: pinsNeedingMigration.length,
+        essential: essentialPins.length,
+        regular: regularPins.length,
+      });
+
+      // Migrate essential tabs first
+      for (const pin of essentialPins) {
+        await this.#migratePinFavicon(pin);
+        // Small delay between migrations to avoid overwhelming the system
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      // Then migrate regular pins
+      for (const pin of regularPins) {
+        await this.#migratePinFavicon(pin);
+        // Small delay between migrations
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      console.log('[DEBUG_FAVICON] Favicon migration completed');
+    }
+
+    // DEBUG_FAVICON: Helper method to migrate a single pin's favicon
+    async #migratePinFavicon(pin) {
+      // Skip if already has favicon or already attempted
+      if (pin.iconUrl && pin.iconUrl.trim().length > 0) {
+        console.log('[DEBUG_FAVICON] Pin already has favicon, skipping migration', pin.uuid);
+        return;
+      }
+      
+      if (this._migrationAttempted?.has(pin.uuid)) {
+        console.log('[DEBUG_FAVICON] Migration already attempted for pin, skipping', pin.uuid);
+        return;
+      }
+
+      // Mark as attempted immediately to prevent duplicate attempts
+      this._migrationAttempted?.add(pin.uuid);
+
+      try {
+        console.log('[DEBUG_FAVICON] Migrating favicon for pin', pin.uuid, pin.url);
+
+        // Try Places API first
+        let favicon = await this.getFaviconAsBase64(Services.io.newURI(pin.url));
+        
+        // If Places API fails, try network fetch
+        if (!favicon) {
+          console.log('[DEBUG_FAVICON] Places API failed, trying network fetch for pin', pin.uuid);
+          favicon = await this.fetchFaviconFromNetwork(pin.url);
+        }
+
+        if (favicon) {
+          console.log('[DEBUG_FAVICON] Favicon migration successful for pin', pin.uuid);
+          pin.iconUrl = favicon;
+          await this.savePin(pin, false);
+          
+          // Update the tab if it exists
+          const tab = gBrowser.tabs.find(
+            (t) => t.getAttribute('zen-pin-id') === pin.uuid
+          );
+          if (tab) {
+            gBrowser.setIcon(tab, favicon);
+          }
+        } else {
+          console.log('[DEBUG_FAVICON] Favicon migration failed for pin', pin.uuid);
+        }
+      } catch (ex) {
+        console.log('[DEBUG_FAVICON] Error migrating favicon for pin', pin.uuid, ex);
+      }
     }
 
     async #initializePinnedTabs(init = false) {
@@ -715,6 +892,18 @@
         entry = JSON.parse(tab.getAttribute('zen-pinned-entry'));
       }
 
+      // Get favicon from tab (browser already has it loaded)
+      const tabFavicon = gBrowser.getIcon(tab);
+      const initialIconUrl = tabFavicon && tabFavicon.startsWith('data:image/') ? tabFavicon : null;
+      
+      console.log('[DEBUG_FAVICON] Creating new pin', {
+        uuid,
+        url: browser.currentURI.spec,
+        hasTabFavicon: !!tabFavicon,
+        isDataURI: tabFavicon?.startsWith('data:image/') || false,
+        willCaptureAsync: !initialIconUrl
+      });
+
       await this.savePin({
         uuid,
         title: entry?.title || tab.label || browser.contentTitle,
@@ -724,7 +913,16 @@
         isEssential: tab.getAttribute('zen-essential') === 'true',
         parentUuid: tab.group?.getAttribute('zen-pin-id') || null,
         position: tab._pPos,
+        iconUrl: initialIconUrl, // Save immediately if we have it
       });
+
+      // If we didn't get a data URI, try to capture it async
+      if (!initialIconUrl) {
+        console.log('[DEBUG_FAVICON] Starting async favicon capture for new pin', uuid);
+        this.captureFaviconForTab(tab, uuid);
+      } else {
+        console.log('[DEBUG_FAVICON] Saved pin with immediate favicon', uuid, initialIconUrl.length);
+      }
 
       tab.setAttribute('zen-pin-id', uuid);
       tab.dispatchEvent(
@@ -972,23 +1170,132 @@
         existingEntry.title = pin.title;
         state.entries = [existingEntry];
       }
+      // DEBUG_FAVICON: Prefer stored iconData over iconUrl
       state.image = pin.iconUrl || state.image;
       state.index = 0;
+
+      // DEBUG_FAVICON: Log which icon source was used
+      if (pin.iconUrl) {
+        console.log('[DEBUG_FAVICON] Using stored iconData for tab reset', pin.uuid);
+      } else {
+        console.log('[DEBUG_FAVICON] No stored iconData, using existing tab state image', pin.uuid);
+      }
 
       SessionStore.setTabState(tab, state);
       this.resetPinChangedUrl(tab);
     }
 
+    // Capture favicon for a tab asynchronously
+    captureFaviconForTab(tab, pinId) {
+      setTimeout(async () => {
+        try {
+          // First, check if the tab's favicon loaded (might be a chrome:// URL or other non-data URI)
+          const tabFavicon = gBrowser.getIcon(tab);
+          let faviconDataURI = null;
+          
+          if (tabFavicon && tabFavicon.startsWith('data:image/')) {
+            // Tab now has a data URI favicon
+            faviconDataURI = tabFavicon;
+            console.log('[DEBUG_FAVICON] Tab favicon loaded as data URI', pinId, tabFavicon.length);
+          } else {
+            // Try Places API
+            console.log('[DEBUG_FAVICON] Trying Places API for', pinId);
+            faviconDataURI = await this.getFaviconAsBase64(tab.linkedBrowser.currentURI);
+            
+            // If Places API failed, try network fetch
+            if (!faviconDataURI) {
+              console.log('[DEBUG_FAVICON] Places API failed, trying network fetch for', pinId);
+              faviconDataURI = await this.fetchFaviconFromNetwork(tab.linkedBrowser.currentURI.spec);
+            }
+          }
+          
+          if (faviconDataURI) {
+            console.log('[DEBUG_FAVICON] Favicon captured successfully for', pinId, faviconDataURI.length);
+            const pin = this._pinsCache?.find(p => p.uuid === pinId);
+            if (pin) {
+              pin.iconUrl = faviconDataURI;
+              await this.savePin(pin, false);
+              console.log('[DEBUG_FAVICON] Favicon saved to database for', pinId);
+            }
+          } else {
+            console.log('[DEBUG_FAVICON] No favicon captured for', pinId);
+          }
+        } catch (ex) {
+          console.log('[DEBUG_FAVICON] Favicon capture error for', pinId, ex);
+        }
+      }, 100); // Small delay to let tab finish loading
+    }
+
     async getFaviconAsBase64(pageUrl) {
       try {
         const faviconData = await PlacesUtils.favicons.getFaviconForPage(pageUrl);
-        if (!faviconData) {
-          // empty favicon
+        if (!faviconData || !faviconData.dataURI) {
           return null;
         }
-        return faviconData.dataURI;
+        
+        // getFaviconForPage returns an object with dataURI as an nsIURI object
+        // We need to get the .spec property to extract the data URI string
+        const dataURI = faviconData.dataURI.spec || null;
+        
+        // Validate it's a proper data URI
+        if (dataURI && typeof dataURI === 'string' && dataURI.startsWith('data:image/')) {
+          console.log('[DEBUG_FAVICON] getFaviconAsBase64: Success, length:', dataURI.length);
+          return dataURI;
+        }
+        
+        console.log('[DEBUG_FAVICON] getFaviconAsBase64: Invalid data URI format');
+        return null;
       } catch (ex) {
-        console.error('Failed to get favicon:', ex);
+        console.log('[DEBUG_FAVICON] getFaviconAsBase64: Places API failed:', ex.message);
+        return null;
+      }
+    }
+
+    // DEBUG_FAVICON: Fetch favicon directly from network as fallback
+    async fetchFaviconFromNetwork(pageUrl) {
+      try {
+        // Skip network fetch for special URLs that don't have real favicons
+        if (pageUrl.startsWith('about:') || pageUrl.startsWith('chrome:') || pageUrl.startsWith('moz-extension:')) {
+          console.log('[DEBUG_FAVICON] Skipping network fetch for special URL:', pageUrl);
+          return null;
+        }
+
+        const uri = Services.io.newURI(pageUrl);
+        const faviconUrl = uri.prePath + '/favicon.ico';
+        
+        console.log('[DEBUG_FAVICON] Fetching favicon from network:', faviconUrl);
+        
+        const response = await fetch(faviconUrl, {
+          method: 'GET',
+          credentials: 'omit',
+        });
+
+        if (!response.ok) {
+          console.log('[DEBUG_FAVICON] Network fetch failed:', response.status, faviconUrl);
+          return null;
+        }
+
+        const blob = await response.blob();
+        if (!blob.type.startsWith('image/')) {
+          console.log('[DEBUG_FAVICON] Network fetch returned non-image:', blob.type);
+          return null;
+        }
+
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const dataURI = reader.result;
+            console.log('[DEBUG_FAVICON] Network fetch successful, converted to data URI');
+            resolve(dataURI);
+          };
+          reader.onerror = () => {
+            console.log('[DEBUG_FAVICON] Failed to convert blob to data URI');
+            reject(new Error('Failed to convert blob to data URI'));
+          };
+          reader.readAsDataURL(blob);
+        });
+      } catch (ex) {
+        console.log('[DEBUG_FAVICON] Network fetch error:', ex);
         return null;
       }
     }
@@ -1020,9 +1327,24 @@
         if (tab.pinned && tab.hasAttribute('zen-pin-id')) {
           const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
           if (pin) {
+            const pinId = tab.getAttribute('zen-pin-id');
             pin.isEssential = true;
             pin.workspaceUuid = null;
+            
+            // Get favicon from tab if available
+            const tabFavicon = gBrowser.getIcon(tab);
+            if (tabFavicon && tabFavicon.startsWith('data:image/')) {
+              pin.iconUrl = tabFavicon;
+              console.log('[DEBUG_FAVICON] Essential tab has immediate favicon', pinId, tabFavicon.length);
+            }
+            
             this.savePin(pin);
+            
+            // If no favicon yet, capture it async
+            if (!pin.iconUrl) {
+              console.log('[DEBUG_FAVICON] Starting async favicon capture for essential tab', pinId);
+              this.captureFaviconForTab(tab, pinId);
+            }
           }
           gBrowser.zenHandleTabMove(tab, () => {
             if (tab.ownerGlobal !== window) {
@@ -1271,6 +1593,15 @@
       if (!pin) {
         return;
       }
+      
+      // DEBUG_FAVICON: Trigger migration if pin doesn't have favicon and we haven't tried yet
+      if (!pin.iconUrl && pin.url && !this._migrationAttempted?.has(pin.uuid)) {
+        console.log('[DEBUG_FAVICON] Tab accessed without favicon, triggering migration', pin.uuid);
+        this.#migratePinFavicon(pin);
+      } else if (!pin.iconUrl && pin.url && this._migrationAttempted?.has(pin.uuid)) {
+        console.log('[DEBUG_FAVICON] Migration already attempted for pin, skipping', pin.uuid);
+      }
+      
       // Remove # and ? from the URL
       const pinUrl = pin.url.split('#')[0];
       const currentUrl = browser.currentURI.spec.split('#')[0];

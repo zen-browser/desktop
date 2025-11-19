@@ -140,7 +140,7 @@
       const browser = document.getElementById('browser');
       browser.prepend(gNavToolbox);
 
-      const sidebarPanelWrapper = document.getElementById('tabbrowser-tabbox');
+      const sidebarPanelWrapper = document.getElementById('zen-tabbox-wrapper');
       for (let id of kElementsToAppend) {
         const elem = document.getElementById(id);
         if (elem) {

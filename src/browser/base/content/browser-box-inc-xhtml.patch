@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index afa7f8e7dd74173bf2c696bd96f7e86e8b0126bc..4847c24923f673e91eb7fb65ea6b037f38062405 100644
+index afa7f8e7dd..68aa587863 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
 @@ -25,7 +25,15 @@

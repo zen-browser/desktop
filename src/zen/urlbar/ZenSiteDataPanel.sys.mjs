@@ -617,7 +617,7 @@ export class nsZenSiteDataPanel {
           null,
           this.unifiedPanel,
           this.unifiedPanelView,
-          this.unifiedPanelButton,
+          this.unifiedPanelButton
         );
         break;
       }
@@ -627,7 +627,7 @@ export class nsZenSiteDataPanel {
           null,
           this.extensionsPanel,
           this.extensionsPanelView,
-          this.extensionsPanelButton,
+          this.extensionsPanelButton
         );
         break;
       }

@@ -2,8 +2,4 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-EXTRA_JS_MODULES += [
-  "sys/ZenActorsManager.sys.mjs",
-  "sys/ZenCustomizableUI.sys.mjs",
-  "sys/ZenUIMigration.sys.mjs",
-]
+        content/browser/zen-components/ZenMods.mjs                              (../../zen/mods/ZenMods.mjs)

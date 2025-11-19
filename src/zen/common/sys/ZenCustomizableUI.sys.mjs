@@ -4,7 +4,7 @@
 
 import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
-export var ZenCustomizableUI = new (class {
+export const ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = 'toolbar';

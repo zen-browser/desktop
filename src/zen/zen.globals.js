@@ -3,10 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export default [
-  'nsZenMultiWindowFeature',
-  'nsZenDOMOperatedFeature',
-  'nsZenPreloadedFeature',
-
   'nsZenSiteDataPanel',
 
   'ZenThemeModifier',
@@ -27,6 +23,8 @@ export default [
   'ZenWorkspacesStorage',
   'ZenWorkspaceBookmarksStorage',
 
+  'ZEN_KEYSET_ID',
+
   'gZenPinnedTabManager',
   'ZenPinnedTabsStorage',
 
@@ -36,7 +34,6 @@ export default [
   'gZenMediaController',
   'gZenGlanceManager',
 
-  'nsZenThemePicker',
   'gZenThemePicker',
 
   'gZenViewSplitter',

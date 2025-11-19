@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenUIManager = {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+
+window.gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
   _hasLoadedDOM: false,
@@ -720,7 +722,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-var gZenVerticalTabsManager = {
+window.gZenVerticalTabsManager = {
   init() {
     this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();

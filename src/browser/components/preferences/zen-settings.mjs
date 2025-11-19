@@ -3,7 +3,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenMarketplaceManager = {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+
+window.gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
     const header = document.getElementById('zenMarketplaceHeader');
@@ -634,8 +636,7 @@ var gZenMarketplaceManager = {
 const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
-/* eslint-disable no-unused-vars */
-var gZenLooksAndFeel = {
+window.gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
@@ -696,8 +697,7 @@ var gZenLooksAndFeel = {
   },
 };
 
-/* eslint-disable no-unused-vars */
-var gZenWorkspacesSettings = {
+window.gZenWorkspacesSettings = {
   init() {
     var tabsUnloaderPrefListener = {
       async observe() {
@@ -751,7 +751,7 @@ const ZEN_CKS_WRAPPER_ID = `${ZEN_CKS_CLASS_BASE}-wrapper`;
 const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
-var zenMissingKeyboardShortcutL10n = {
+const zenMissingKeyboardShortcutL10n = {
   key_quickRestart: 'zen-key-quick-restart',
   key_delete: 'zen-key-delete',
   goBackKb: 'zen-key-go-back',
@@ -805,8 +805,7 @@ var zenIgnoreKeyboardShortcutL10n = [
   'zen-full-zoom-reduce-shortcut-alt-a',
 ];
 
-/* eslint-disable no-unused-vars */
-var gZenCKSSettings = {
+window.gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
     if (this.__hasInitialized) return;

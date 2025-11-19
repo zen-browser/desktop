@@ -9,8 +9,8 @@
   --button-spacing: 2px;
 
   display: flex;
-  justify-content: space-between;
   min-width: 0;
+  justify-content: space-between;
   background: transparent;
   container-type: inline-size;
 

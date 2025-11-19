@@ -8,11 +8,11 @@ export class ZenGlanceParent extends JSWindowActorParent {
 
   async receiveMessage(message) {
     switch (message.name) {
-      case "ZenGlance:GetConfig": {
+      case 'ZenGlance:GetConfig': {
         return {
-          activationMethod: Services.prefs.getStringPref("zen.glance.activation-method", "ctrl"),
-          holdDuration: Services.prefs.getIntPref("zen.glance.activation-hold-duration", 300),
-          moveThreshold: Services.prefs.getIntPref("zen.glance.activation-move-threshold", 8),
+          activationMethod: Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl'),
+          holdDuration: Services.prefs.getIntPref('zen.glance.activation-hold-duration', 300),
+          moveThreshold: Services.prefs.getIntPref('zen.glance.activation-move-threshold', 8),
         };
       }
       case 'ZenGlance:OpenGlance': {

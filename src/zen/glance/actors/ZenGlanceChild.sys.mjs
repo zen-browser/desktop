@@ -21,7 +21,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async #initConfig() {
-    const cfg = await this.sendQuery("ZenGlance:GetConfig");
+    const cfg = await this.sendQuery('ZenGlance:GetConfig');
     this.#activationMethod = cfg.activationMethod;
     this.#holdDuration = cfg.holdDuration;
     this.#moveThreshold = cfg.moveThreshold;

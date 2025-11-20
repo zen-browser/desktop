@@ -11,29 +11,29 @@ zen-toolbar-context-compact-mode-enable =
     .label = Ota kompakti tila käyttöön
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Piilota sivupalkki
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = Piilota työkalupalkki
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Piilota molemmat
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Uusi kansio
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = Laajenna sivupalkkia
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Luo uusi...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] Pura ja vaihda välilehteen
+           *[other] Pura { $tabCount } välilehdet ja vaihda ensimmäiseen
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] Nollaa ja kiinnitä välilehti
+           *[other] Nollaa ja kiinnitä { $tabCount } välilehdet
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = Takaisin kiinnitettyyn URL-osoitteeseen

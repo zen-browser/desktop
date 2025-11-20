@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..8a4f3334029ac339990a93f47a1f87e1ffe97313 100644
+index f33a300eb0eed74e286da24919ad3e8505f632c3..b45c1e5f3b93643ece3b8214e33d40b093689671 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -38,21 +38,12 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..8a4f3334029ac339990a93f47a1f87e1
      }
 
      return anchorID;
-@@ -2391,7 +2391,7 @@ var gUnifiedExtensions = {
-         break;
-
-       case "toolbarvisibilitychange":
--        this.onToolbarVisibilityChange(event.target.id, event.detail.visible);
-+        this.onToolbarVisibilityChange(event.target.id, event.detail.visible, panel);
-         break;
-     }
-   },
 @@ -2536,7 +2536,7 @@ var gUnifiedExtensions = {
      requestAnimationFrame(() => this.updateAttention());
    },
 
 -  onToolbarVisibilityChange(toolbarId, isVisible) {
-+  onToolbarVisibilityChange(toolbarId, isVisible, panel) {
++  onToolbarVisibilityChange(toolbarId, isVisible, panel = this.panel) {
      // A list of extension widget IDs (possibly empty).
      let widgetIDs;
 

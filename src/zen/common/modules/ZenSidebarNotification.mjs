@@ -23,10 +23,13 @@ ChromeUtils.defineLazyGetter(lazy, 'siblingElement', () => {
 class ZenSidebarNotification extends MozLitElement {
   static properties = {
     headingL10nId: { type: String, fluent: true },
+    links: { type: Array },
   };
 
-  constructor() {
+  constructor({ headingL10nId = '', links = [] } = {}) {
     super();
+    this.headingL10nId = headingL10nId;
+    this.links = links;
   }
 
   connectedCallback() {
@@ -47,22 +50,55 @@ class ZenSidebarNotification extends MozLitElement {
       <link
         rel="stylesheet"
         href="chrome://browser/content/zen-styles/zen-sidebar-notification.css" />
-      <hbox class="zen-sidebar-notification-header">
+      <div class="zen-sidebar-notification-header">
         <label
           class="zen-sidebar-notification-heading"
+          flex="1"
           data-l10n-id="${this.headingL10nId}"></label>
-      </hbox>
+        <div class="zen-sidebar-notification-close-button" @click=${() => this.remove()}>
+          <img src="chrome://browser/skin/zen-icons/close.svg" />
+        </div>
+      </div>
+      <div class="zen-sidebar-notification-body">
+        ${this.links.map(
+          (link) => html`
+            <div
+              class="zen-sidebar-notification-link-container"
+              data-l10n-id="${link.l10nId}-tooltip"
+              ?special=${link.special}
+              @click=${() => {
+                if (link.action) {
+                  link.action();
+                  return;
+                }
+                window.openLinkIn(link.url, 'tab', {
+                  triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+                  forceForeground: true,
+                });
+                this.remove();
+              }}>
+              <img class="zen-sidebar-notification-link-icon" src="${link.icon}" />
+              <label
+                class="zen-sidebar-notification-link-text"
+                data-l10n-id="${link.l10nId}-label"></label>
+            </div>
+          `
+        )}
+      </div>
     `;
   }
 
   #animateIn() {
+    this.style.opacity = '0';
     return gZenUIManager.motion.animate(
-      this.mediaControlBar,
+      this,
       {
         opacity: [0, 1],
-        y: [10, 0],
+        y: [50, 0],
       },
-      {}
+      {
+        delay: 1,
+      }
     );
   }
 
@@ -73,16 +109,17 @@ class ZenSidebarNotification extends MozLitElement {
         opacity: [1, 0],
         y: [0, 10],
       },
-      {
-        duration: 0.1,
-      }
+      {}
     );
   }
 }
 
-export default function createSidebarNotification({ headingL10nId }) {
-  const notification = new ZenSidebarNotification();
-  notification.setAttribute('heading-l10n-id', headingL10nId);
+export default function createSidebarNotification(args) {
+  if (!gZenVerticalTabsManager._prefsSidebarExpanded) {
+    return null;
+  }
+
+  const notification = new ZenSidebarNotification(args);
 
   lazy.siblingElement.insertAdjacentElement('afterend', notification);
   return notification;

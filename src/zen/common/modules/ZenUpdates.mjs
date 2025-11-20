@@ -6,19 +6,35 @@ import createSidebarNotification from 'chrome://browser/content/zen-components/Z
 
 const ZEN_UPDATE_PREF = 'zen.updates.last-version';
 const ZEN_BUILD_ID_PREF = 'zen.updates.last-build-id';
-
-async function animate(...args) {
-  await gZenUIManager.motion.animate(...args);
-}
+const ZEN_UPDATE_SHOW = 'zen.updates.show-update-notification';
 
 export default function checkForZenUpdates() {
   const version = Services.appinfo.version;
   const lastVersion = Services.prefs.getStringPref(ZEN_UPDATE_PREF, version);
-  Services.prefs.setStringPref(ZEN_UPDATE_PREF, version);
 
-  if (version !== lastVersion && !gZenUIManager.testingEnabled) {
+  if (
+    version !== lastVersion &&
+    !gZenUIManager.testingEnabled &&
+    Services.prefs.getBoolPref(ZEN_UPDATE_SHOW, true)
+  ) {
+    const updateUrl = Services.prefs.getStringPref('app.releaseNotesURL.prompt', '');
     createSidebarNotification({
       headingL10nId: 'zen-sidebar-notification-updated-heading',
+      links: [
+        {
+          url: Services.urlFormatter.formatURL(updateUrl.replace('%VERSION%', version)),
+          l10nId: 'zen-sidebar-notification-updated',
+          special: true,
+          icon: 'chrome://browser/skin/zen-icons/heart-circle-fill.svg',
+        },
+        {
+          action: () => {
+            Services.obs.notifyObservers(window, 'restart-in-safe-mode');
+          },
+          l10nId: 'zen-sidebar-notification-restart-safe-mode',
+          icon: 'chrome://browser/skin/zen-icons/security-broken.svg',
+        },
+      ],
     });
   }
 }
@@ -45,7 +61,7 @@ export async function createWindowUpdateAnimation() {
     appWrapper.appendChild(element);
     appWrapper.appendChild(elementBorder);
     Promise.all([
-      animate(
+      gZenUIManager.motion.animate(
         '#zen-update-animation',
         {
           top: ['100%', '-50%'],
@@ -55,7 +71,7 @@ export async function createWindowUpdateAnimation() {
           duration: 0.35,
         }
       ),
-      animate(
+      gZenUIManager.motion.animate(
         '#zen-update-animation-border',
         {
           '--background-top': ['150%', '-50%'],

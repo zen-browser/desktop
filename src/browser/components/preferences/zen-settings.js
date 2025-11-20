@@ -1,11 +1,14 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, no-unused-vars */
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
+  'chrome://browser/content/zen-components/ZenCommonUtils.mjs',
+  { global: 'current' }
+);
 
-window.gZenMarketplaceManager = {
+var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById('zenThemeMarketplaceCheckForUpdates');
     const header = document.getElementById('zenMarketplaceHeader');
@@ -636,7 +639,7 @@ window.gZenMarketplaceManager = {
 const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
-window.gZenLooksAndFeel = {
+var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) return;
     this.__hasInitialized = true;
@@ -697,7 +700,7 @@ window.gZenLooksAndFeel = {
   },
 };
 
-window.gZenWorkspacesSettings = {
+var gZenWorkspacesSettings = {
   init() {
     var tabsUnloaderPrefListener = {
       async observe() {
@@ -805,7 +808,7 @@ var zenIgnoreKeyboardShortcutL10n = [
   'zen-full-zoom-reduce-shortcut-alt-a',
 ];
 
-window.gZenCKSSettings = {
+var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
     if (this.__hasInitialized) return;

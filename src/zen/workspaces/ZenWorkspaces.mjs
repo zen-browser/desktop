@@ -2536,7 +2536,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     // <= 2 because we have the empty tab and the new tab button
     const shouldHideSeparator = fromTabSelection
       ? pinnedContainer.hasAttribute('hide-separator')
-      : pinnedContainer.children.length === 1 || !visibleTabsFound();
+      : !visibleTabsFound();
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
     } else {

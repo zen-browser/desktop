@@ -935,7 +935,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (!parentFolder && folder.hasAttribute('split-view-group')) continue;
         const emptyFolderTabs = folder.tabs
           .filter((tab) => tab.hasAttribute('zen-empty-tab'))
-          .map((tab) => tab.getAttribute('zen-sync-id'));
+          .map((tab) => tab.getAttribute('id'));
 
       let prevSiblingInfo = null;
       const prevSibling = folder.previousElementSibling;
@@ -944,8 +944,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (prevSibling) {
           if (gBrowser.isTabGroup(prevSibling)) {
             prevSiblingInfo = { type: 'group', id: prevSibling.id };
-          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('zen-sync-id')) {
-            const zenPinId = prevSibling.getAttribute('zen-sync-id');
+          } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('id')) {
+            const zenPinId = prevSibling.getAttribute('id');
             prevSiblingInfo = { type: 'tab', id: zenPinId };
           } else {
             prevSiblingInfo = { type: 'start', id: null };
@@ -964,7 +964,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           prevSiblingInfo: prevSiblingInfo,
           emptyTabIds: emptyFolderTabs,
           userIcon: userIcon?.getAttribute('href'),
-          syncId: folder.getAttribute('zen-sync-id'),
           // note: We shouldn't be using the workspace-id anywhere, we are just
           //  remembering it for the pinned tabs manager to use it later.
           workspaceId: folder.getAttribute('zen-workspace-id'),
@@ -991,9 +990,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       tabFolderWorkingData.set(folderData.id, workingData);
 
         const oldGroup = document.getElementById(folderData.id);
-        folderData.emptyTabIds.forEach((zenSyncId) => {
+        folderData.emptyTabIds.forEach((id) => {
           oldGroup
-            ?.querySelector(`tab[zen-sync-id="${zenSyncId}"]`)
+            ?.querySelector(`tab[id="${id}"]`)
             ?.setAttribute('zen-empty-tab', true);
         });
         if (oldGroup) {
@@ -1006,7 +1005,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               saveOnWindowClose: folderData.saveOnWindowClose,
               workspaceId: folderData.workspaceId,
             });
-            folder.setAttribute('zen-sync-id', folderData.syncId);
+            folder.setAttribute('id', folderData.id);
             workingData.node = folder;
             oldGroup.before(folder);
           } else {
@@ -1038,8 +1037,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           if (parentWorkingData && parentWorkingData.node) {
             switch (stateData?.prevSiblingInfo?.type) {
               case 'tab': {
-                const tab = parentWorkingData.node.querySelector(
-                  `[zen-sync-id="${stateData.prevSiblingInfo.id}"]`
+                const tab = document.getElementById(
+                  stateData.prevSiblingInfo.id
                 );
                 tab.after(node);
                 break;

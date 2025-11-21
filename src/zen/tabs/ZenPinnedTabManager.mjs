@@ -88,7 +88,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
     onTabIconChanged(tab, url = null) {
       tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
+      tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
       const iconUrl = url ?? tab.iconImage.src;
+      if (tab.hasAttribute('zen-essential')) {
+        tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
       if (tab.hasAttribute('zen-essential')) {
         tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
       }
@@ -156,6 +159,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
+    async _onTabClick(e) {
+      const tab = e.target?.closest('tab');
+      if (e.button === 1 && tab) {
+        await this.onCloseTabShortcut(e, tab, {
+          closeIfPending: Services.prefs.getBoolPref(
+            'zen.pinned-tab-manager.wheel-close-if-pending'
+          ),
+        });
+      }
+    }
+
   async resetPinnedTab(tab) {
     if (!tab) {
       tab = TabContextMenu.contextTab;
@@ -180,6 +194,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _initClosePinnedTabShortcut() {
     let cmdClose = document.getElementById('cmd_close');
+
+    _initClosePinnedTabShortcut() {
+      let cmdClose = document.getElementById('cmd_close');
 
       if (cmdClose) {
         cmdClose.addEventListener('command', this.onCloseTabShortcut.bind(this));
@@ -211,6 +228,32 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             .filter((tab) => tab?.pinned)
         ),
       ];
+
+    async onCloseTabShortcut(
+      event,
+      selectedTab = gBrowser.selectedTab,
+      {
+        behavior = lazy.zenPinnedTabCloseShortcutBehavior,
+        noClose = false,
+        closeIfPending = false,
+        alwaysUnload = false,
+        folderToUnload = null,
+      } = {}
+    ) {
+      try {
+        const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
+        const pinnedTabs = [
+          ...new Set(
+            tabs
+              .flatMap((tab) => {
+                if (tab.group?.hasAttribute('split-view-group')) {
+                  return tab.group.tabs;
+                }
+                return tab;
+              })
+              .filter((tab) => tab?.pinned)
+          ),
+        ];
 
       if (!pinnedTabs.length) {
         return;
@@ -944,16 +987,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  async onTabLabelChanged(tab) {
-    tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
-    if (!this._pinsCache) {
-      return;
-    }
-    // If our current pin in the cache point to about:blank, we need to update the entry
-    const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
-    if (!pin) {
-      return;
-    }
+    async onTabLabelChanged(tab) {
+      tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
+      if (!this._pinsCache) {
+        return;
+      }
+      // If our current pin in the cache point to about:blank, we need to update the entry
+      const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
+      if (!pin) {
+        return;
+      }
 
     if (pin.url === 'about:blank' && tab.linkedBrowser.currentURI.spec !== 'about:blank') {
       await this.replacePinnedUrlWithCurrent(tab);

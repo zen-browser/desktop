@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..b45c1e5f3b93643ece3b8214e33d40b093689671 100644
+index f33a300eb0eed74e286da24919ad3e8505f632c3..5b3d8712e5a8a12c0d2021488478269525550acd 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -103,15 +103,6 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..b45c1e5f3b93643ece3b8214e33d40b0
 +          position: gZenUIManager.panelUIPosition(panel, button),
            triggerEvent: aEvent,
          });
-       }
-@@ -2830,7 +2828,7 @@ var gUnifiedExtensions = {
-       if (
-         notInPanel ||
-         document.querySelector("#unified-extensions-area > :first-child")
--          ?.id === widgetId
-+          ?.id === widgetIdz
-       ) {
-         moveUp.hidden = true;
        }
 @@ -2930,18 +2928,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);

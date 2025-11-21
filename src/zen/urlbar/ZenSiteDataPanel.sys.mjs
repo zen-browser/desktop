@@ -25,10 +25,13 @@ export class nsZenSiteDataPanel {
     this.unifiedPanelView = 'unified-extensions-view';
     this.extensionsPanelView = 'original-unified-extensions-view';
 
-    if (!Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
-      this.extensionsPanel = this.#initExtensionsPanel();
-    } else {
+    if (Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
       this.window.gUnifiedExtensions._panel = this.unifiedPanel;
+
+      // Remove the old permissions dialog
+      this.document.getElementById('unified-extensions-panel-template').remove();
+    } else {
+      this.extensionsPanel = this.#initExtensionsPanel();
     }
 
     this.#init();

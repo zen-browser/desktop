@@ -98,3 +98,12 @@ zen-site-data-panel-feature-callout-subtitle = Klikkaa kuvaketta hallitaksesi si
 zen-open-link-in-glance = 
     .label = Avaa linkki vilkaisussa
     .accesskey = G
+zen-sidebar-notification-updated-heading = Päivitys valmis!
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Mitä uutta { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Katso Julkaisutiedot
+zen-sidebar-notification-restart-safe-mode-label = Jotain rikki?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Käynnistä uudelleen vianmääritystilassa

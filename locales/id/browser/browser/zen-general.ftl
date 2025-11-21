@@ -98,3 +98,12 @@ zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengatu
 zen-open-link-in-glance = 
     .label = Buka Tautan di Glance
     .accesskey = G
+zen-sidebar-notification-updated-heading = Update Complete!
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = View Release Notes
+zen-sidebar-notification-restart-safe-mode-label = Something broke?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restart in Safe Mode

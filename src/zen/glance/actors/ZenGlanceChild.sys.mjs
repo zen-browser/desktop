@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
+  #glanceTarget = null;
 
   constructor() {
     super();
@@ -81,10 +82,22 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     }
     if (target) {
+      this.#glanceTarget = target;
+    }
+  }
+
+  on_mouseup(event) {
+    if (this.#glanceTarget) {
       event.preventDefault();
       event.stopPropagation();
+      this.#openGlance(this.#glanceTarget);
+      this.#glanceTarget = null;
+    }
+  }
 
-      this.#openGlance(target);
+  on_mousemove() {
+    if (this.#glanceTarget) {
+      this.#glanceTarget = null;
     }
   }
 
@@ -99,5 +112,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   async on_DOMContentLoaded() {
     await this.#initActivationMethod();
+    this.contentWindow.addEventListener('mousedown', this, true);
+    this.contentWindow.addEventListener('mouseup', this, true);
+    this.contentWindow.addEventListener('mousemove', this, true);
   }
 }

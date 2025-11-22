@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Kembalikan ke URL Awal
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Tambahkan ke Essentials ({ $num } / { $max } slot terisi)
+    .label = Tambahkan ke Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
     .label = Hapus dari Essentials
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Perlindungan Pelacakan
 
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.
+zen-open-link-in-glance = 
+    .label = Buka Tautan di Glance
+    .accesskey = G

@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Resetuj przypiętą kartę
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Dodaj do Niezbędnych ({ $num } / { $max } miejsc wypełnione)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Usuń z Niezbędnych
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Ochrona przed śledzeniem
 
 zen-site-data-panel-feature-callout-title = Nowy dom dla dodatków, uprawnień i więcej
 zen-site-data-panel-feature-callout-subtitle = Kliknij ikonę, aby zarządzać ustawieniami witryny, wyświetlić informacje o zabezpieczeniach, rozszerzeniach i wykonać akcje.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

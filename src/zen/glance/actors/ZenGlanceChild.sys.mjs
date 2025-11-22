@@ -35,8 +35,11 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   #sendClickDataToParent(target, element) {
-    if (!element || !target) {
+    if (!element && !target) {
       return;
+    }
+    if (!target) {
+      target = element;
     }
     // Get the largest element we can get. If the `A` element
     // is a parent of the original target, use the anchor element,
@@ -54,10 +57,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  on_click(event) {
-    if (event.button !== 0 || event.defaultPrevented) {
-      return;
-    }
+  on_mousedown(event) {
     // get closest A element
     const target = event.target.closest('A');
     const elementToRecord = event.originalTarget || event.target;
@@ -67,7 +67,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
-    if (this.#ensureOnlyKeyModifiers(event)) {
+    if (event.button !== 0 || event.defaultPrevented || this.#ensureOnlyKeyModifiers(event)) {
       return;
     }
     const activationMethod = this.#activationMethod;

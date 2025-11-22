@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Скинути прикріплену вкладку
     .accesskey = Р
 tab-context-zen-add-essential = 
-    .label = Додати до Основного ({ $num } / { $max } комірок заповнено)
+    .label = Додати до необхідного
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } комірок заповнено
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Захист від відстеженн
 
 zen-site-data-panel-feature-callout-title = Новий дім для доповнень, дозволів тощо
 zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.
+zen-open-link-in-glance = 
+    .label = Відкрити посилання в передперегляді
+    .accesskey = G

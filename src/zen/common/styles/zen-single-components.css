@@ -296,6 +296,11 @@ body > #confetti {
   --arrowpanel-menuitem-border-radius: 10px;
 }
 
+#unified-extensions-empty-state,
+#unified-extensions-discover-extensions {
+  display: none !important;
+}
+
 #zen-site-data-addons {
   display: flex;
   flex-wrap: wrap;
@@ -369,8 +374,9 @@ body > #confetti {
 }
 
 .zen-site-data-section {
-  gap: 6px;
-  padding: 8px;
+  gap: 2px;
+  padding: 9px;
+  padding-bottom: 8px;
 }
 
 .zen-site-data-section-header {
@@ -487,7 +493,7 @@ body > #confetti {
   }
 }
 
-@media (-moz-pref('zen.theme.hide-unified-extensions-button')) {
+@media -moz-pref('zen.theme.hide-unified-extensions-button') {
   #unified-extensions-button {
     display: none !important;
   }
@@ -545,7 +551,7 @@ body > #confetti {
         );
 
         box-shadow:
-          0px 2px 4px rgba(0, 0, 0, 0.075),
+          0px 2px 4px rgba(0, 0, 0, 0.1),
           inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
         --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
@@ -608,4 +614,11 @@ body > #confetti {
 
 #widget-overflow-list {
   flex-direction: column-reverse;
+}
+
+/* Contextual new tab popup menu */
+#navigator-toolbox #titlebar #TabsToolbar #tabs-newtab-button > .new-tab-popup > menuitem {
+  & > :is(.menu-highlightable-text, .menu-accel) {
+    display: none;
+  }
 }

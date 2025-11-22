@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Сбросить закреплённую вкладку
     .accesskey = К
 tab-context-zen-add-essential = 
-    .label = Добавить в важное ({ $num } из { $max } слотов занято)
+    .label = Add to Essentials
     .accesskey = У
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Удалить из важного
     .accesskey = К
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Защита от отслеживани
 
 zen-site-data-panel-feature-callout-title = Новый дом для расширений, разрешений и всего остального
 zen-site-data-panel-feature-callout-subtitle = Нажмите на значок для доступа к настройкам сайта, параметрам безопасности, расширениям и прочим действиям.
+zen-open-link-in-glance = 
+    .label = Открыть ссылку в предпросмотре
+    .accesskey = П

@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+
+const lazy = {};
+
+XPCOMUtils.defineLazyPreferenceGetter(lazy, 'currentTheme', 'zen.view.window.scheme', 2);
+
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute('zen-empty-tab');
 }
@@ -152,6 +158,30 @@ const globalActionsTemplate = [
     label: 'Manage Extensions',
     command: 'Tools:Addons',
     icon: 'chrome://browser/skin/zen-icons/extension.svg',
+  },
+  {
+    label: 'Switch to Automatic Appearance',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 2),
+    icon: 'chrome://browser/skin/zen-icons/sparkles.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 2;
+    },
+  },
+  {
+    label: 'Switch to Light Mode',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 1),
+    icon: 'chrome://browser/skin/zen-icons/face-sun.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 1;
+    },
+  },
+  {
+    label: 'Switch to Dark Mode',
+    command: () => Services.prefs.setIntPref('zen.view.window.scheme', 0),
+    icon: 'chrome://browser/skin/zen-icons/moon-stars.svg',
+    isAvailable: () => {
+      return lazy.currentTheme !== 0;
+    },
   },
 ];
 

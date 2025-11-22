@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Ailosod Tab wedi'i Binio
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials ({ $num } / { $max } slots filled)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Diddymu o Hanfodion
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Tracking Protection
 
 zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
 zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Réinitialiser l’onglet épinglé
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Ajouter aux Essentials ({ $num } / { $max } emplacements occupés)
+    .label = Ajouter aux Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } emplacements occupés
 tab-context-zen-remove-essential = 
     .label = Retirer des Essentials
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Protection contre le pistage
 
 zen-site-data-panel-feature-callout-title = Un nouvel endroit pour vos extensions, permissions et plus encore
 zen-site-data-panel-feature-callout-subtitle = Cliquez sur l'icône pour gérer les paramètres du site, afficher les infos de sécurité, accéder aux extensions et effectuer d'autres actions.
+zen-open-link-in-glance = 
+    .label = Ouvrir le lien dans Glance
+    .accesskey = G

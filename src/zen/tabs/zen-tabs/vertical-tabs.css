@@ -179,7 +179,7 @@
     font-weight: 500;
     gap: 2px;
 
-    #navigator-toolbox[zen-has-hover='true'] & {
+    #navigator-toolbox[zen-has-implicit-hover='true'] & {
       visibility: visible;
       opacity: 0.5;
     }
@@ -347,6 +347,7 @@
 
     & .tab-background {
       overflow: hidden;
+      border-radius: var(--border-radius-medium) !important;
 
       & .tab-context-line {
         margin: 0 0px !important;
@@ -513,10 +514,8 @@
   & #nav-bar {
     padding-right: 0;
 
-    :root[zen-single-toolbar='true'] & {
-      &
-        #urlbar:not([breakout-extend='true']):not([pageproxystate='invalid'])
-        .urlbar-input-container {
+    :root[zen-single-toolbar='true']:not([zen-has-empty-tab='true']) & {
+      & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }
@@ -650,7 +649,14 @@
         }
       }
 
-      &:is(:hover, [visuallyselected]) .tab-close-button {
+      &:not(:hover) {
+        .tab-close-button,
+        .tab-reset-button {
+          display: none;
+        }
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;
@@ -901,7 +907,8 @@
 }
 
 .tab-reset-button,
-.tab-reset-pin-button {
+.tab-reset-pin-button,
+.tab-close-button {
   display: none;
   -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);

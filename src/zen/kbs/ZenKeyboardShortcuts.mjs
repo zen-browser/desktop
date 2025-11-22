@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+
 const KEYCODE_MAP = {
   F1: 'VK_F1',
   F2: 'VK_F2',
@@ -123,7 +125,7 @@ const fixedL10nIds = {
 
 const ZEN_MAIN_KEYSET_ID = 'mainKeyset';
 const ZEN_DEVTOOLS_KEYSET_ID = 'devtoolsKeyset';
-const ZEN_KEYSET_ID = 'zenKeyset';
+window.ZEN_KEYSET_ID = 'zenKeyset';
 
 const ZEN_COMPACT_MODE_SHORTCUTS_GROUP = 'zen-compact-mode';
 const ZEN_WORKSPACE_SHORTCUTS_GROUP = 'zen-workspace';
@@ -200,20 +202,20 @@ class nsKeyShortcutModifiers {
       str += AppConstants.platform == 'macosx' ? '⌃' : 'Ctrl';
       str += separation;
     }
-    if (this.#alt) {
-      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
-      str += separation;
-    }
-    if (this.#shift) {
-      str += '⇧';
-      str += separation;
-    }
     if (this.#meta) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Win';
       str += separation;
     }
     if (this.#accel) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
+      str += separation;
+    }
+    if (this.#alt) {
+      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
+      str += separation;
+    }
+    if (this.#shift) {
+      str += '⇧';
       str += separation;
     }
     return str;
@@ -1100,7 +1102,7 @@ class nsZenKeyboardShortcutsVersioner {
   }
 }
 
-var gZenKeyboardShortcutsManager = {
+window.gZenKeyboardShortcutsManager = {
   loader: new nsZenKeyboardShortcutsLoader(),
   _hasToLoadDevtools: false,
   _inlineCommands: [],
@@ -1400,7 +1402,7 @@ document.addEventListener(
   'MozBeforeInitialXULLayout',
   () => {
     if (Services.prefs.getBoolPref('zen.keyboard.shortcuts.enabled', false)) {
-      gZenKeyboardShortcutsManager.beforeInit();
+      window.gZenKeyboardShortcutsManager.beforeInit();
     }
   },
   { once: true }

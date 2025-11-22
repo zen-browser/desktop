@@ -1,34 +1,42 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-const lazyCompactMode = {};
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+const lazy = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
-  lazyCompactMode,
+  lazy,
   'COMPACT_MODE_FLASH_DURATION',
   'zen.view.compact.toolbar-flash-popup.duration',
   800
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
-  lazyCompactMode,
+  lazy,
   'COMPACT_MODE_FLASH_ENABLED',
   'zen.view.compact.toolbar-flash-popup',
   true
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
-  lazyCompactMode,
+  lazy,
   'COMPACT_MODE_CAN_ANIMATE_SIDEBAR',
   'zen.view.compact.animate-sidebar',
   true
 );
 
-ChromeUtils.defineLazyGetter(lazyCompactMode, 'mainAppWrapper', () =>
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  'COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER',
+  'zen.view.compact.show-sidebar-and-toolbar-on-hover',
+  true
+);
+
+ChromeUtils.defineLazyGetter(lazy, 'mainAppWrapper', () =>
   document.getElementById('zen-main-app-wrapper')
 );
 
-var gZenCompactModeManager = {
+window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
   _removeHoverFrames: {},
@@ -122,7 +130,7 @@ var gZenCompactModeManager = {
     this.sidebar.removeAttribute('zen-user-show');
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
-    lazyCompactMode.mainAppWrapper.setAttribute('zen-compact-mode', value);
+    lazy.mainAppWrapper.setAttribute('zen-compact-mode', value);
     document.documentElement.setAttribute('zen-compact-mode', value);
     if (typeof this._wasInCompactMode === 'undefined') {
       Services.prefs.setBoolPref('zen.view.compact.enable-at-startup', value);
@@ -179,7 +187,7 @@ var gZenCompactModeManager = {
     if (
       !aInstant &&
       this.preference &&
-      lazyCompactMode.COMPACT_MODE_FLASH_ENABLED &&
+      lazy.COMPACT_MODE_FLASH_ENABLED &&
       !gZenGlanceManager._animating
     ) {
       this.flashSidebar();
@@ -380,8 +388,7 @@ var gZenCompactModeManager = {
         .getBoundingClientRect().width;
       const isCompactMode = this.preference;
       const canHideSidebar = this.canHideSidebar;
-      let canAnimate =
-        lazyCompactMode.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && !this.isSidebarPotentiallyOpen();
+      let canAnimate = lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && !this.isSidebarPotentiallyOpen();
       if (typeof this._wasInCompactMode !== 'undefined') {
         canAnimate = false;
         delete this._wasInCompactMode;
@@ -412,16 +419,16 @@ var gZenCompactModeManager = {
           resolve();
           return;
         }
-        if (canHideSidebar && isCompactMode) {
-          if (document.documentElement.hasAttribute('zen-sidebar-expanded')) {
-            sidebarWidth -= 0.5 * splitterWidth;
-            if (elementSeparation < splitterWidth) {
-              // Subtract from the splitter width to end up with the correct element separation
-              sidebarWidth += 1.5 * splitterWidth - elementSeparation;
-            }
-          } else {
-            sidebarWidth -= elementSeparation;
+        if (document.documentElement.hasAttribute('zen-sidebar-expanded')) {
+          sidebarWidth -= 0.5 * splitterWidth;
+          if (elementSeparation < splitterWidth) {
+            // Subtract from the splitter width to end up with the correct element separation
+            sidebarWidth += 1.5 * splitterWidth - elementSeparation;
           }
+        } else {
+          sidebarWidth -= elementSeparation;
+        }
+        if (canHideSidebar && isCompactMode) {
           this._setElementExpandAttribute(this.sidebar, false);
           gZenUIManager.motion
             .animate(
@@ -570,33 +577,23 @@ var gZenCompactModeManager = {
   },
 
   get hoverableElements() {
-    if (typeof this._showSidebarAndToolbarOnHover === 'undefined') {
-      this._showSidebarAndToolbarOnHover = Services.prefs.getBoolPref(
-        'zen.view.compact.show-sidebar-and-toolbar-on-hover',
-        true
-      );
-    }
     return [
-      ...(!this._showSidebarAndToolbarOnHover
-        ? []
-        : [
-            {
-              element: this.sidebar,
-              screenEdge: this.sidebarIsOnRight ? 'right' : 'left',
-              keepHoverDuration: 100,
-            },
-            {
-              element: document.getElementById('zen-appcontent-navbar-wrapper'),
-              screenEdge: 'top',
-            },
-          ]),
+      {
+        element: this.sidebar,
+        screenEdge: this.sidebarIsOnRight ? 'right' : 'left',
+        keepHoverDuration: 100,
+      },
+      {
+        element: document.getElementById('zen-appcontent-navbar-wrapper'),
+        screenEdge: 'top',
+      },
       {
         element: gZenVerticalTabsManager.actualWindowButtons,
       },
     ];
   },
 
-  flashSidebar(duration = lazyCompactMode.COMPACT_MODE_FLASH_DURATION) {
+  flashSidebar(duration = lazy.COMPACT_MODE_FLASH_DURATION) {
     let tabPanels = document.getElementById('tabbrowser-tabpanels');
     if (!tabPanels.matches("[zen-split-view='true']")) {
       this.flashElement(this.sidebar, duration, this.sidebar.id);
@@ -626,6 +623,12 @@ var gZenCompactModeManager = {
     const kVerifiedAttributes = ['zen-has-hover', 'has-popup-menu', 'zen-compact-mode-active'];
     const isToolbar = element.id === 'zen-appcontent-navbar-wrapper';
     if (value) {
+      if (attr === 'zen-has-hover' && element !== gZenVerticalTabsManager.actualWindowButtons) {
+        element.setAttribute('zen-has-implicit-hover', 'true');
+        if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER) {
+          return;
+        }
+      }
       element.setAttribute(attr, 'true');
       if (
         isToolbar &&
@@ -639,6 +642,9 @@ var gZenCompactModeManager = {
         gBrowser.tabpanels.setAttribute('has-toolbar-hovered', 'true');
       }
     } else {
+      if (attr === 'zen-has-hover') {
+        element.removeAttribute('zen-has-implicit-hover');
+      }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present
       if (isToolbar && !kVerifiedAttributes.some((attr) => element.hasAttribute(attr))) {

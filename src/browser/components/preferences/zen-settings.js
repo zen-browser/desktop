@@ -1,7 +1,12 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, no-unused-vars */
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
+  'chrome://browser/content/zen-components/ZenCommonUtils.mjs',
+  { global: 'current' }
+);
 
 var gZenMarketplaceManager = {
   async init() {
@@ -634,7 +639,6 @@ var gZenMarketplaceManager = {
 const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
-/* eslint-disable no-unused-vars */
 var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) return;
@@ -696,7 +700,6 @@ var gZenLooksAndFeel = {
   },
 };
 
-/* eslint-disable no-unused-vars */
 var gZenWorkspacesSettings = {
   init() {
     var tabsUnloaderPrefListener = {
@@ -707,13 +710,39 @@ var gZenWorkspacesSettings = {
         }
       },
     };
+
+    let toggleZenCycleByAttrWarning = {
+      observe() {
+        const warning = document.getElementById('zenTabsCycleByAttributeWarning');
+        warning.hidden = !(
+          Services.prefs.getBoolPref('zen.tabs.ctrl-tab.ignore-essential-tabs', false) &&
+          Services.prefs.getBoolPref('browser.ctrlTab.sortByRecentlyUsed', false)
+        );
+      },
+    };
+
+    toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+
     Services.prefs.addObserver('zen.glance.enabled', tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
     Services.prefs.addObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
+    Services.prefs.addObserver(
+      'zen.tabs.ctrl-tab.ignore-essential-tabs',
+      toggleZenCycleByAttrWarning
+    );
+    Services.prefs.addObserver('browser.ctrlTab.sortByRecentlyUsed', toggleZenCycleByAttrWarning);
     window.addEventListener('unload', () => {
       Services.prefs.removeObserver('zen.glance.enabled', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.glance.activation-method', tabsUnloaderPrefListener);
       Services.prefs.removeObserver('zen.workspaces.separate-essentials', tabsUnloaderPrefListener);
+      Services.prefs.removeObserver(
+        'zen.tabs.ctrl-tab.ignore-essential-tabs',
+        toggleZenCycleByAttrWarning
+      );
+      Services.prefs.removeObserver(
+        'browser.ctrlTab.sortByRecentlyUsed',
+        toggleZenCycleByAttrWarning
+      );
     });
   },
 };
@@ -725,7 +754,7 @@ const ZEN_CKS_WRAPPER_ID = `${ZEN_CKS_CLASS_BASE}-wrapper`;
 const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
-var zenMissingKeyboardShortcutL10n = {
+const zenMissingKeyboardShortcutL10n = {
   key_quickRestart: 'zen-key-quick-restart',
   key_delete: 'zen-key-delete',
   goBackKb: 'zen-key-go-back',
@@ -779,7 +808,6 @@ var zenIgnoreKeyboardShortcutL10n = [
   'zen-full-zoom-reduce-shortcut-alt-a',
 ];
 
-/* eslint-disable no-unused-vars */
 var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();
@@ -1135,4 +1163,24 @@ Preferences.addAll([
     type: 'bool',
     default: true,
   },
+  {
+    id: 'zen.tabs.ctrl-tab.ignore-essential-tabs',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'zen.tabs.ctrl-tab.ignore-pending-tabs',
+    type: 'bool',
+    default: false,
+  },
+  {
+    id: 'zen.tabs.close-on-back-with-no-history',
+    type: 'bool',
+    default: false,
+  },
 ]);
+
+Preferences.addSetting({
+  id: 'zenWorkspaceContinueWhereLeftOff',
+  pref: 'zen.workspaces.continue-where-left-off',
+});

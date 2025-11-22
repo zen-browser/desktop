@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Kitűzött lap visszaállítása
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Felvétel az alapvetőkbe ({ $num } / { $max } hely foglalt)
+    .label = Felvétel az alapvetőkbe
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } hely foglalt
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Nyomkövetés védelem
 
 zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
 zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
+zen-open-link-in-glance = 
+    .label = Link megnyitása a bepillantóban
+    .accesskey = G

@@ -91,8 +91,8 @@ groupbox button {
 
 groupbox button,
 groupbox menulist {
-  background-color: light-dark(#f1f1f1, #363636) !important;
-  color: light-dark(black, white) !important;
+  background-color: light-dark(#f1f1f1, #363636);
+  color: light-dark(black, white);
 }
 
 groupbox h2 {

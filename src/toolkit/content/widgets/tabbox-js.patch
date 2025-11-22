@@ -1,8 +1,32 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163b914adec 100644
+index cfe2da6e199667bd668f117cc8972212c7f57da2..470033466eae0e853855e21b86a0722627f9ed4b 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
-@@ -213,7 +213,7 @@
+@@ -11,6 +11,23 @@
+     "resource://gre/modules/AppConstants.sys.mjs"
+   );
+ 
++  const { XPCOMUtils } = ChromeUtils.importESModule(
++    "resource://gre/modules/XPCOMUtils.sys.mjs"
++  );
++  const lazyZenPrefs = {};
++  XPCOMUtils.defineLazyPreferenceGetter(
++    lazyZenPrefs,
++    "cycleByAttribute",
++    "zen.tabs.ctrl-tab.ignore-essential-tabs",
++    false
++  );
++  XPCOMUtils.defineLazyPreferenceGetter(
++    lazyZenPrefs,
++    "ignorePendingTabs",
++    "zen.tabs.ctrl-tab.ignore-pending-tabs",
++    false
++  );
++
+   let imports = {};
+   ChromeUtils.defineESModuleGetters(imports, {
+     ShortcutUtils: "resource://gre/modules/ShortcutUtils.sys.mjs",
+@@ -213,7 +230,7 @@
      ) {
        this._inAsyncOperation = false;
        if (oldPanel != this._selectedPanel) {
@@ -11,7 +35,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
          this._selectedPanel?.classList.add("deck-selected");
        }
        this.setAttribute("selectedIndex", val);
-@@ -610,7 +610,7 @@
+@@ -697,7 +714,7 @@
        if (!tab) {
          return;
        }
@@ -20,7 +44,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
          if (otherTab != tab && otherTab.selected) {
            otherTab._selected = false;
          }
-@@ -646,6 +646,7 @@
+@@ -733,6 +750,7 @@
       * @param {MozTab|null} [val]
       */
      set selectedItem(val) {
@@ -28,7 +52,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
        if (val && !val.selected) {
          // The selectedIndex setter ignores invalid values
          // such as -1 if |val| isn't one of our child nodes.
-@@ -823,7 +824,7 @@
+@@ -910,7 +928,7 @@
          if (tab == startTab) {
            return null;
          }
@@ -37,7 +61,7 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
            return tab;
          }
        }
-@@ -885,10 +886,11 @@
+@@ -972,13 +990,30 @@
       * @param {boolean} [aWrap]
       */
      advanceSelectedTab(aDir, aWrap) {
@@ -49,4 +73,32 @@ index 70afbfc87d543971e6f8a0661a44b682920a7bc4..2035222f4680e2eaa27b3072a12a9163
 +        startTab = gZenGlanceManager.getFocusedTab(aDir) || this.selectedItem;
        }
        let newTab = null;
+ 
++      const tabFilter = tab => {
++        if (!tab.visible) {
++          return false
++        }
++        if (lazyZenPrefs.ignorePendingTabs && tab.hasAttribute("pending")) {
++          return false
++        }
++        if (!lazyZenPrefs.cycleByAttribute) {
++          return true
++        }
++        if (startTab.hasAttribute("zen-essential")) {
++          return tab.hasAttribute("zen-essential")
++        }
++        return !tab.hasAttribute("zen-essential")
++      }
++
+       // Handle keyboard navigation for a hidden tab that can be selected, like the Firefox View tab,
+       // which has a random placement in this.allTabs.
+       if (startTab.hidden) {
+@@ -991,7 +1026,7 @@
+         newTab = this.findNextTab(startTab, {
+           direction: aDir,
+           wrap: aWrap,
+-          filter: tab => tab.visible,
++          filter: tabFilter,
+         });
+       }
  

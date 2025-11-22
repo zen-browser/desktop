@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Nulstil fastgjort fane
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Føj til Essentielle ({ $num } / { $max } pladser fyldt)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Fjern fra Essentielle
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Sporingsbeskyttelse
 
 zen-site-data-panel-feature-callout-title = Et nyt hjem for tilføjelser, tilladelser og mere
 zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G

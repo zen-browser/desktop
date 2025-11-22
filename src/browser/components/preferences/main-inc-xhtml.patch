@@ -1,20 +1,8 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615fad5e0760 100644
+index ff577c035ff6128f7ae948bc810082c92b3a624c..40f94fff53c63bdff28eaa68f9b0736d53c5b4f8 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
-@@ -29,6 +29,11 @@
-   <vbox id="startupPageBox">
-     <checkbox id="browserRestoreSession"
-               data-l10n-id="startup-restore-windows-and-tabs"/>
-+    <vbox class="indent">
-+      <checkbox id="zenWorkspaceContinueWhereLeftOff"
-+              data-l10n-id="zen-workspace-continue-where-left-off"
-+              preference="zen.workspaces.continue-where-left-off"/>
-+    </vbox>
- #ifdef XP_WIN
-     <hbox id="windowsLaunchOnLoginBox" align="center" hidden="true">
-       <checkbox id="windowsLaunchOnLogin"
-@@ -189,7 +194,8 @@
+@@ -141,7 +141,8 @@
  <!-- Browser layout -->
  <groupbox data-category="paneGeneral"
            data-subcategory="layout"
@@ -24,7 +12,7 @@ index 891cf7108cf4606c99a902afa420e744b9690b87..2bdbc1f0b6ac2c883dcbd706aed0615f
    <label><html:h2 data-l10n-id="browser-layout-header"/></label>
    <radiogroup id="browserLayoutRadioGroup" preference="sidebar.verticalTabs">
      <radio id="browserLayoutHorizontalTabs" data-l10n-id="browser-layout-horizontal-tabs" value="false"/>
-@@ -420,6 +426,7 @@
+@@ -346,6 +347,7 @@
                languages-customize-add.label,
              " />
    </hbox>

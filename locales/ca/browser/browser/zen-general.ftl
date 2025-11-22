@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Restableix la pestanya fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Afegeix als essentials ({ $num } / { $max } espais ocupats)
+    .label = Afegeix als essencials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } espais ocupats
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Protecció contra el seguiment
 
 zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
 zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.
+zen-open-link-in-glance = 
+    .label = Obre l'enllaç en un cop d'ull
+    .accesskey = G

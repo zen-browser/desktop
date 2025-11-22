@@ -2,7 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenThemePicker } from 'chrome://browser/content/zen-components/ZenGradientGenerator.mjs';
+
+class nsZenWorkspaces extends nsZenMultiWindowFeature {
   /**
    * Stores workspace IDs and their last selected tabs.
    */
@@ -567,7 +570,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   get _hoveringSidebar() {
-    return gNavToolbox.hasAttribute('zen-has-hover');
+    return gNavToolbox.hasAttribute('zen-has-implicit-hover');
   }
 
   _handleAppCommand(event) {
@@ -2540,7 +2543,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     // <= 2 because we have the empty tab and the new tab button
     const shouldHideSeparator = fromTabSelection
       ? pinnedContainer.hasAttribute('hide-separator')
-      : pinnedContainer.children.length === 1 || !visibleTabsFound();
+      : !visibleTabsFound();
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
     } else {
@@ -2559,6 +2562,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
   async onPinnedTabsResize(entries, forAnimation = false, animateContainer = false) {
     if (
+      document.documentElement.hasAttribute('inDOMFullscreen') ||
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute('zen-creating-workspace') ||
@@ -2659,6 +2663,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   #changeToEmptyTab() {
     const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
     gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
+    document.documentElement.setAttribute('zen-has-empty-tab', isEmpty);
   }
 
   async onLocationChange(event) {
@@ -3813,4 +3818,6 @@ Category name:`;
       document.getElementById('cmd_closeWindow').doCommand();
     }
   }
-})();
+}
+
+window.gZenWorkspaces = new nsZenWorkspaces();

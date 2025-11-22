@@ -1,8 +1,8 @@
 diff --git a/browser/components/search/SearchUIUtils.sys.mjs b/browser/components/search/SearchUIUtils.sys.mjs
-index 55f90f4e802480728bbd5ef962b507183e017997..2a83f861fe6edee2b127c8d7946abcdcdbf677f5 100644
+index 15fdb0cd7664c2b49977902d7f4c7a117d82cf15..6aedbc18de6604b63b2586e7d9745a4c4e7e38ae 100644
 --- a/browser/components/search/SearchUIUtils.sys.mjs
 +++ b/browser/components/search/SearchUIUtils.sys.mjs
-@@ -430,7 +430,7 @@ export var SearchUIUtils = {
+@@ -434,7 +434,7 @@ export var SearchUIUtils = {
          triggeringSearchEngine: engine.name,
        },
      });

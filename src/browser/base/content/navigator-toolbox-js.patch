@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 413bad2a62058a1c434d6a44e927e44eb397289d..d28116ffacb0ddb6fdb421db5d6498e455356b4a 100644
+index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c625351f6 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
-@@ -8,7 +8,7 @@
+@@ -6,7 +6,7 @@
  document.addEventListener(
    "DOMContentLoaded",
    () => {
@@ -11,7 +11,7 @@ index 413bad2a62058a1c434d6a44e927e44eb397289d..d28116ffacb0ddb6fdb421db5d6498e4
      const widgetOverflow = document.getElementById("widget-overflow");
  
      function onPopupShowing(event) {
-@@ -187,6 +187,7 @@ document.addEventListener(
+@@ -185,6 +185,7 @@ document.addEventListener(
          #reload-button ,
          #urlbar-go-button,
          #reader-mode-button,
@@ -19,7 +19,7 @@ index 413bad2a62058a1c434d6a44e927e44eb397289d..d28116ffacb0ddb6fdb421db5d6498e4
          #picture-in-picture-button,
          #urlbar-zoom-button,
          #star-button-box,
-@@ -208,6 +209,7 @@ document.addEventListener(
+@@ -206,6 +207,7 @@ document.addEventListener(
          case "vertical-tabs-newtab-button":
          case "tabs-newtab-button":
          case "new-tab-button":
@@ -27,7 +27,7 @@ index 413bad2a62058a1c434d6a44e927e44eb397289d..d28116ffacb0ddb6fdb421db5d6498e4
            gBrowser.handleNewTabMiddleClick(element, event);
            break;
  
-@@ -317,7 +319,7 @@ document.addEventListener(
+@@ -315,7 +317,7 @@ document.addEventListener(
          #pageActionButton,
          #downloads-button,
          #fxa-toolbar-menu-button,
@@ -36,7 +36,7 @@ index 413bad2a62058a1c434d6a44e927e44eb397289d..d28116ffacb0ddb6fdb421db5d6498e4
          #library-button
        `);
        if (!element) {
-@@ -396,7 +398,7 @@ document.addEventListener(
+@@ -394,7 +396,7 @@ document.addEventListener(
            gSync.toggleAccountPanel(element, event);
            break;
  

@@ -59,7 +59,7 @@ zen-workspaces-delete-workspace-title = Usunąć Przestrzeń roboczą?
 zen-workspaces-delete-workspace-body = Czy na pewno chcesz usunąć { $name }? Tej czynności nie można cofnąć.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = Zamknięto karty! Użyj <span>{ $shortcut }</span> aby przywrócić.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = Wyczyść
+    .tooltiptext = Zamknij wszystkie nieprzypięte karty

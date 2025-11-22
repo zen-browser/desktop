@@ -1,8 +1,8 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index 2331ff5733d39e26c0a16301cb83d46ca970f632..777dbd5fb8546466e4a349772ccba254c7ffd691 100644
+index 772a74e7439d87e9c5486abcf003617240190710..522b5459b30b943832369ff7a73755ad4c7d8140 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -224,6 +224,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }
+@@ -227,6 +227,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }
  # Workaround for https://github.com/rust-lang/cargo/issues/11232
  rure = { path = "third_party/rust/rure" }
  

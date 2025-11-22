@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Restablecer pestaña fijada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Añadir a esenciales ({ $num } / { $max } huecos llenos)
+    .label = Añadir a esenciales
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } huecos llenos
 tab-context-zen-remove-essential = 
     .label = Quitar de esenciales
     .accesskey = R
@@ -94,3 +95,6 @@ zen-site-data-setting-site-protection = Protección contra el rastreo
 
 zen-site-data-panel-feature-callout-title = Un nuevo hogar para complementos, permisos y más
 zen-site-data-panel-feature-callout-subtitle = Haga clic en el icono para administrar la configuración del sitio, ver información de seguridad, acceder a extensiones, y realizar acciones comunes.
+zen-open-link-in-glance = 
+    .label = Abrir enlace en Glance
+    .accesskey = G

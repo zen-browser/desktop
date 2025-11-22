@@ -164,7 +164,7 @@ class nsZenSessionManager {
       let newWindow = Cu.cloneInto(windows[0], {});
       delete newWindow.selected;
       const newState = { windows: [newWindow] };
-      SessionStoreInternal.restoreWindows(aWindow, newState, {});
+      //SessionStoreInternal.restoreWindows(aWindow, newState, {});
     });
   }
 }

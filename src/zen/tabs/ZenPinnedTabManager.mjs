@@ -60,7 +60,6 @@ class ZenPinnedTabsObserver {
 }
 
 class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
-  hasInitializedPins = false;
   promiseInitializedPinned = new Promise((resolve) => {
     this._resolvePinnedInitializedInternal = resolve;
   });
@@ -87,7 +86,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   onTabIconChanged(tab, url = null) {
-    tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
     tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
     const iconUrl = url ?? tab.iconImage.src;
     if (tab.hasAttribute('zen-essential')) {
@@ -949,7 +947,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   async onTabLabelChanged(tab) {
-    tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
+    tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { bubbles: true, detail: { tab } }));
     if (!this._pinsCache) {
       return;
     }

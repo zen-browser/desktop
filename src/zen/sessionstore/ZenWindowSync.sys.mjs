@@ -10,17 +10,41 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateFlusher: 'resource:///modules/sessionstore/TabStateFlusher.sys.mjs',
 });
 
-const OBSERVING = ['browser-window-delayed-startup'];
-const EVENTS = ['TabOpen'];
+const OBSERVING = ['browser-window-before-show'];
+const EVENTS = [
+  'TabOpen',
+  'ZenTabIconChanged',
+  'ZenTabLabelChanged',
+  'TabMove',
+  'TabPinned',
+  'TabUnpinned',
+  'TabClose',
+  'TabAddedToEssentials',
+  'TabRemovedFromEssentials',
+];
+
+// Flags acting as an enum for sync types.
+const SYNC_FLAG_LABEL = 1 << 0;
+const SYNC_FLAG_ICON = 1 << 1;
+const SYNC_FLAG_MOVE = 1 << 2;
 
 class nsZenWindowSync {
   constructor() {}
 
   /**
-   * Whether to ignore the next set of events.
-   * This is used to prevent recursive event handling.
+   * Context about the currently handled event.
+   * Used to avoid re-entrancy issues.
+   *
+   * We do still wan't to keep a stack of these in order
+   * to handle consequtive events properly. For example,
+   * loading a webpage will call IconChanged and TitleChanged
+   * events one after another.
    */
-  #ignoreNextEvents = false;
+  #eventHandlingContext = {
+    window: null,
+    eventCount: 0,
+    lastHandlerPromise: Promise.resolve(),
+  };
 
   /**
    * Iterator that yields all currently opened browser windows.
@@ -31,7 +55,7 @@ class nsZenWindowSync {
   #browserWindows = {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
-        if (window.__SSi && !window.closed) {
+        if (window.__SSi && !window.closed && window.gZenStartup.isReady) {
           yield window;
         }
       }
@@ -42,7 +66,7 @@ class nsZenWindowSync {
     for (let topic of OBSERVING) {
       Services.obs.addObserver(this, topic);
     }
-    SessionStore.promiseInitialized.then(() => {
+    lazy.SessionStore.promiseAllWindowsRestored.then(() => {
       this.#onSessionStoreInitialized();
     });
   }
@@ -106,18 +130,16 @@ class nsZenWindowSync {
    * @param {Function} aCallback - The callback function to run on each window.
    */
   #runOnAllWindows(aWindow, aCallback) {
-    this.#ignoreNextEvents = true;
     for (let window of this.#browserWindows) {
       if (window !== aWindow) {
         aCallback(window);
       }
     }
-    this.#ignoreNextEvents = false;
   }
 
   observe(aSubject, aTopic) {
     switch (aTopic) {
-      case 'browser-window-delayed-startup': {
+      case 'browser-window-before-show': {
         this.#onWindowBeforeShow(aSubject);
         break;
       }
@@ -125,9 +147,41 @@ class nsZenWindowSync {
   }
 
   handleEvent(aEvent) {
-    if (this.#ignoreNextEvents) {
+    const window = aEvent.currentTarget.ownerGlobal;
+    if (!window.gZenStartup.isReady) {
       return;
     }
+    if (this.#eventHandlingContext.window && this.#eventHandlingContext.window !== window) {
+      // We're already handling an event for another window.
+      // To avoid re-entrancy issues, we skip this event.
+      return;
+    }
+    const lastHandlerPromise = this.#eventHandlingContext.lastHandlerPromise;
+    this.#eventHandlingContext.eventCount++;
+    this.#eventHandlingContext.window = window;
+    let resolveNewPromise;
+    this.#eventHandlingContext.lastHandlerPromise = new Promise((resolve) => {
+      resolveNewPromise = resolve;
+    });
+    // Wait for the last handler to finish before processing the next event.
+    lastHandlerPromise.then(() => {
+      try {
+        this.#handleNextEvent(aEvent);
+      } finally {
+        if (--this.#eventHandlingContext.eventCount === 0) {
+          this.#eventHandlingContext.window = null;
+        }
+        resolveNewPromise();
+      }
+    });
+  }
+
+  /**
+   * Handles the next event by calling the appropriate handler method.
+   *
+   * @param {Event} aEvent - The event to handle.
+   */
+  #handleNextEvent(aEvent) {
     const handler = `on_${aEvent.type}`;
     if (typeof this[handler] === 'function') {
       this[handler](aEvent);
@@ -137,17 +191,45 @@ class nsZenWindowSync {
   }
 
   /**
+   * Retrieves a tab element from a window by its ID.
+   *
+   * @param {Window} aWindow - The window containing the tab.
+   * @param {string} aTabId - The ID of the tab to retrieve.
+   * @returns {Object|null} The tab element if found, otherwise null.
+   */
+  #getTabFromWindow(aWindow, aTabId) {
+    return aWindow.document.getElementById(aTabId);
+  }
+
+  /**
    * Synchronizes the icon and label of the target tab with the original tab.
    *
    * @param {Object} aOriginalTab - The original tab to copy from.
    * @param {Object} aTargetTab - The target tab to copy to.
    * @param {Window} aWindow - The window containing the tabs.
+   * @param {number} flags - The sync flags indicating what to synchronize.
    */
-  #syncTabWithOriginal(aOriginalTab, aTargetTab, aWindow) {
+  #syncTabWithOriginal(aOriginalTab, aTargetTab, aWindow, flags = 0) {
+    if (!aOriginalTab || !aTargetTab) {
+      return;
+    }
     const { gBrowser } = aWindow;
-    gBrowser.setIcon(aTargetTab, gBrowser.getIcon(aOriginalTab));
-    gBrowser._setTabLabel(aTargetTab, aOriginalTab.label);
-    this.#syncTabPosition(aOriginalTab, aTargetTab, aWindow);
+    if (flags & SYNC_FLAG_ICON) {
+      gBrowser.setIcon(aTargetTab, gBrowser.getIcon(aOriginalTab));
+    }
+    if (flags & SYNC_FLAG_LABEL) {
+      gBrowser._setTabLabel(aTargetTab, aOriginalTab.label);
+    }
+    if (flags & SYNC_FLAG_MOVE && !aTargetTab.hasAttribute('zen-empty-tab')) {
+      const workspaceId = aOriginalTab.getAttribute('zen-workspace-id');
+      if (workspaceId) {
+        aTargetTab.setAttribute('zen-workspace-id', workspaceId);
+      } else {
+        aTargetTab.removeAttribute('zen-workspace-id');
+      }
+      this.#syncTabPosition(aOriginalTab, aTargetTab, aWindow);
+    }
+    lazy.TabStateFlusher.flush(aTargetTab.linkedBrowser);
   }
 
   /**
@@ -177,15 +259,131 @@ class nsZenWindowSync {
         gBrowser.unpinTab(aTargetTab);
       }
     }
+
+    this.#moveTabToMatchOriginal(aOriginalTab, aTargetTab, aWindow, {
+      isEssential: originalIsEssential,
+      isPinned: originalIsPinned,
+    });
   }
+
+  /**
+   * Moves the target tab to match the position of the original tab.
+   *
+   * @param {Object} aOriginalTab - The original tab to match.
+   * @param {Object} aTargetTab - The target tab to move.
+   * @param {Window} aWindow - The window containing the tabs.
+   */
+  #moveTabToMatchOriginal(aOriginalTab, aTargetTab, aWindow, { isEssential, isPinned }) {
+    const { gBrowser, gZenWorkspaces } = aWindow;
+    const originalSibling = aOriginalTab.previousElementSibling;
+    let isFirstTab = true;
+    if (gBrowser.isTabGroup(originalSibling) || gBrowser.isTab(originalSibling)) {
+      isFirstTab = !originalSibling.hasAttribute('id');
+    }
+
+    gBrowser.zenHandleTabMove(aOriginalTab, () => {
+      if (isFirstTab) {
+        let container;
+        if (isEssential) {
+          container = gZenWorkspaces.getEssentialsSection(aTargetTab);
+        } else {
+          const workspaceId = aTargetTab.getAttribute('zen-workspace-id');
+          const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
+          container = isPinned
+            ? workspaceElement.pinnedTabsContainer
+            : workspaceElement.tabsContainer;
+        }
+        if (container) {
+          container.insertBefore(aTargetTab, container.firstChild);
+        }
+        return;
+      }
+      const relativeTab = this.#getTabFromWindow(aWindow, originalSibling.id);
+      if (relativeTab) {
+        relativeTab.after(aTargetTab);
+      }
+    });
+  }
+
+  /**
+   * Synchronizes a tab across all browser windows.
+   *
+   * @param {Object} aTab - The tab to synchronize.
+   * @param {number} flags - The sync flags indicating what to synchronize.
+   */
+  #syncTabForAllWindows(aTab, flags = 0) {
+    const window = aTab.ownerGlobal;
+    this.#runOnAllWindows(window, (win) => {
+      this.#syncTabWithOriginal(aTab, this.#getTabFromWindow(win, aTab.id), win, flags);
+    });
+  }
+
+  /**
+   * Delegates generic sync events to synchronize tabs across windows.
+   *
+   * @param {Event} aEvent - The event to delegate.
+   * @param {number} flags - The sync flags indicating what to synchronize.
+   */
+  #delegateGenericSyncEvent(aEvent, flags = 0) {
+    const tab = aEvent.target;
+    this.#syncTabForAllWindows(tab, flags);
+  }
+
+  /* Mark: Event Handlers */
 
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-
+    tab.id = this.#newTabSyncId;
     this.#runOnAllWindows(window, (win) => {
       const newTab = win.gBrowser.duplicateTab(tab);
-      this.#syncTabWithOriginal(tab, newTab, win);
+      newTab.id = tab.id;
+      this.#syncTabWithOriginal(
+        tab,
+        newTab,
+        win,
+        SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
+      );
+      win.gZenVerticalTabsManager.animateItemOpen(newTab);
+    });
+  }
+
+  on_ZenTabIconChanged(aEvent) {
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
+  }
+
+  on_ZenTabLabelChanged(aEvent) {
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
+  }
+
+  on_TabMove(aEvent) {
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_MOVE);
+  }
+
+  on_TabPinned(aEvent) {
+    return this.on_TabMove(aEvent);
+  }
+
+  on_TabUnpinned(aEvent) {
+    return this.on_TabMove(aEvent);
+  }
+
+  on_TabAddedToEssentials(aEvent) {
+    return this.on_TabMove(aEvent);
+  }
+
+  on_TabRemovedFromEssentials(aEvent) {
+    return this.on_TabMove(aEvent);
+  }
+
+  on_TabClose(aEvent) {
+    const tab = aEvent.target;
+    const window = tab.ownerGlobal;
+    this.#runOnAllWindows(window, (win) => {
+      const targetTab = this.#getTabFromWindow(win, tab.id);
+      if (targetTab) {
+        win.gBrowser.removeTab(targetTab, { animate: true });
+      }
     });
   }
 }

@@ -945,8 +945,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (gBrowser.isTabGroup(prevSibling)) {
           prevSiblingInfo = { type: 'group', id: prevSibling.id };
         } else if (gBrowser.isTab(prevSibling) && prevSibling.hasAttribute('id')) {
-          const zenPinId = prevSibling.getAttribute('id');
-          prevSiblingInfo = { type: 'tab', id: zenPinId };
+          prevSiblingInfo = { type: 'tab', id: prevSibling.getAttribute('id') };
         } else {
           prevSiblingInfo = { type: 'start', id: null };
         }

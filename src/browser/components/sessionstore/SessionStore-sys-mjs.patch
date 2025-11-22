@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..9ef1996a0e8a3ebe55dc25921b8fc8cc0ac8a303 100644
+index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233bd61eb0f 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -72,7 +72,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..9ef1996a0e8a3ebe55dc25921b8fc8cc
        );
        tabState.pinned = false;
 +      tabState.zenEssential = false;
-+      tabState.zenPinnedId = null;
++      tabState.zenSyncId = null;
 +      tabState.zenIsGlance = false;
 +      tabState.zenGlanceId = null;
 +      tabState.zenHasStaticLabel = false;
@@ -172,7 +172,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..9ef1996a0e8a3ebe55dc25921b8fc8cc
 +      tab.setAttribute("zen-has-static-label", "true");
 +    }
 +    if (tabData.zenSyncId) {
-+      tab.setAttribute("id", tabData.zenPinnedId);
++      tab.setAttribute("id", tabData.zenSyncId);
 +    }
 +    if (tabData.zenDefaultUserContextId) {
 +      tab.setAttribute("zenDefaultUserContextId", true);

@@ -811,7 +811,6 @@ window.gZenVerticalTabsManager = {
       !aItem.isConnected ||
       gZenUIManager.testingEnabled ||
       !gZenStartup.isReady ||
-      !gZenPinnedTabManager.hasInitializedPins ||
       aItem.group?.hasAttribute('split-view-group')
     ) {
       return;

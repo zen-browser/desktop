@@ -98,12 +98,12 @@ zen-site-data-panel-feature-callout-subtitle = Натисніть значок, 
 zen-open-link-in-glance = 
     .label = Відкрити посилання в передперегляді
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Оновлення завершено!
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Що нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Переглянути примітки до випуску
+zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Перезапустити в безпечному режимі

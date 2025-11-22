@@ -18,7 +18,7 @@ class ZenSessionStore extends nsZenPreloadedFeature {
       tab.setAttribute('zen-workspace-id', tabData.zenWorkspace);
     }
     if (tabData.zenPinnedId) {
-      tab.setAttribute('zen-pin-id', tabData.zenPinnedId);
+      tab.setAttribute('id', tabData.zenPinnedId);
     }
     if (tabData.zenHasStaticLabel) {
       tab.setAttribute('zen-has-static-label', 'true');

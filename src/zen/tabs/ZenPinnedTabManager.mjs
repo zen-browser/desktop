@@ -6,8 +6,8 @@ import { nsZenDOMOperatedFeature } from 'chrome://browser/content/zen-components
 
 const lazy = {};
 
-  class ZenPinnedTabsObserver {
-    static ALL_EVENTS = ['TabPinned', 'TabUnpinned'];
+class ZenPinnedTabsObserver {
+  static ALL_EVENTS = ['TabPinned', 'TabUnpinned'];
 
   #listeners = [];
 
@@ -86,16 +86,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-    onTabIconChanged(tab, url = null) {
-      tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
-      tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
-      const iconUrl = url ?? tab.iconImage.src;
-      if (tab.hasAttribute('zen-essential')) {
-        tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
+  onTabIconChanged(tab, url = null) {
+    tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
+    tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
+    const iconUrl = url ?? tab.iconImage.src;
+    if (tab.hasAttribute('zen-essential')) {
+      tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
       if (tab.hasAttribute('zen-essential')) {
         tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
       }
     }
+  }
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
@@ -121,34 +122,34 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     return !gZenWorkspaces.privateWindowOrDisabled;
   }
 
-    get maxEssentialTabs() {
-      return lazy.zenTabsEssentialsMax;
-    }
+  get maxEssentialTabs() {
+    return lazy.zenTabsEssentialsMax;
+  }
 
-    _onPinnedTabEvent(action, event) {
-      if (!this.enabled) return;
-      const tab = event.target;
-      if (this._ignoreNextTabPinnedEvent) {
-        delete this._ignoreNextTabPinnedEvent;
-        return;
-      }
-      switch (action) {
-        case 'TabPinned':
-          tab._zenClickEventListener = this._zenClickEventListener;
-          tab.addEventListener('click', tab._zenClickEventListener);
-          break;
-        // [Fall through]
-        case 'TabUnpinned':
-          if (tab._zenClickEventListener) {
-            tab.removeEventListener('click', tab._zenClickEventListener);
-            delete tab._zenClickEventListener;
-          }
-          break;
-        default:
-          console.warn('ZenPinnedTabManager: Unhandled tab event', action);
-          break;
-      }
+  _onPinnedTabEvent(action, event) {
+    if (!this.enabled) return;
+    const tab = event.target;
+    if (this._ignoreNextTabPinnedEvent) {
+      delete this._ignoreNextTabPinnedEvent;
+      return;
     }
+    switch (action) {
+      case 'TabPinned':
+        tab._zenClickEventListener = this._zenClickEventListener;
+        tab.addEventListener('click', tab._zenClickEventListener);
+        break;
+      // [Fall through]
+      case 'TabUnpinned':
+        if (tab._zenClickEventListener) {
+          tab.removeEventListener('click', tab._zenClickEventListener);
+          delete tab._zenClickEventListener;
+        }
+        break;
+      default:
+        console.warn('ZenPinnedTabManager: Unhandled tab event', action);
+        break;
+    }
+  }
 
   async _onTabClick(e) {
     const tab = e.target?.closest('tab');
@@ -158,17 +159,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       });
     }
   }
-
-    async _onTabClick(e) {
-      const tab = e.target?.closest('tab');
-      if (e.button === 1 && tab) {
-        await this.onCloseTabShortcut(e, tab, {
-          closeIfPending: Services.prefs.getBoolPref(
-            'zen.pinned-tab-manager.wheel-close-if-pending'
-          ),
-        });
-      }
-    }
 
   async resetPinnedTab(tab) {
     if (!tab) {
@@ -188,20 +178,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-      this.resetPinChangedUrl(tab);
-      gZenUIManager.showToast('zen-pinned-tab-replaced');
-    }
+    this.resetPinChangedUrl(tab);
+    gZenUIManager.showToast('zen-pinned-tab-replaced');
+  }
 
   _initClosePinnedTabShortcut() {
     let cmdClose = document.getElementById('cmd_close');
 
-    _initClosePinnedTabShortcut() {
-      let cmdClose = document.getElementById('cmd_close');
-
-      if (cmdClose) {
-        cmdClose.addEventListener('command', this.onCloseTabShortcut.bind(this));
-      }
+    if (cmdClose) {
+      cmdClose.addEventListener('command', this.onCloseTabShortcut.bind(this));
     }
+  }
 
   async onCloseTabShortcut(
     event,
@@ -229,32 +216,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         ),
       ];
 
-    async onCloseTabShortcut(
-      event,
-      selectedTab = gBrowser.selectedTab,
-      {
-        behavior = lazy.zenPinnedTabCloseShortcutBehavior,
-        noClose = false,
-        closeIfPending = false,
-        alwaysUnload = false,
-        folderToUnload = null,
-      } = {}
-    ) {
-      try {
-        const tabs = Array.isArray(selectedTab) ? selectedTab : [selectedTab];
-        const pinnedTabs = [
-          ...new Set(
-            tabs
-              .flatMap((tab) => {
-                if (tab.group?.hasAttribute('split-view-group')) {
-                  return tab.group.tabs;
-                }
-                return tab;
-              })
-              .filter((tab) => tab?.pinned)
-          ),
-        ];
-
       if (!pinnedTabs.length) {
         return;
       }
@@ -272,86 +233,86 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         behavior = behavior.contains('reset') ? 'reset-unload-switch' : 'unload-switch';
       }
 
-        switch (behavior) {
-          case 'close': {
-            for (const tab of pinnedTabs) {
-              gBrowser.removeTab(tab, { animate: true });
-            }
-            break;
+      switch (behavior) {
+        case 'close': {
+          for (const tab of pinnedTabs) {
+            gBrowser.removeTab(tab, { animate: true });
           }
-          case 'reset-unload-switch':
-          case 'unload-switch':
-          case 'reset-switch':
-          case 'switch':
-            if (behavior.includes('unload')) {
-              for (const tab of pinnedTabs) {
-                if (tab.hasAttribute('glance-id')) {
-                  // We have a glance tab inside the tab we are trying to unload,
-                  // before we used to just ignore it but now we need to fully close
-                  // it as well.
-                  gZenGlanceManager.manageTabClose(tab.glanceTab);
-                  await new Promise((resolve) => {
-                    let hasRan = false;
-                    const onGlanceClose = () => {
-                      hasRan = true;
+          break;
+        }
+        case 'reset-unload-switch':
+        case 'unload-switch':
+        case 'reset-switch':
+        case 'switch':
+          if (behavior.includes('unload')) {
+            for (const tab of pinnedTabs) {
+              if (tab.hasAttribute('glance-id')) {
+                // We have a glance tab inside the tab we are trying to unload,
+                // before we used to just ignore it but now we need to fully close
+                // it as well.
+                gZenGlanceManager.manageTabClose(tab.glanceTab);
+                await new Promise((resolve) => {
+                  let hasRan = false;
+                  const onGlanceClose = () => {
+                    hasRan = true;
+                    resolve();
+                  };
+                  window.addEventListener('GlanceClose', onGlanceClose, { once: true });
+                  // Set a timeout to resolve the promise if the event doesn't fire.
+                  // We do this to prevent any future issues where glance woudnt close such as
+                  // glance requering to ask for permit unload.
+                  setTimeout(() => {
+                    if (!hasRan) {
+                      console.warn('GlanceClose event did not fire within 3 seconds');
                       resolve();
-                    };
-                    window.addEventListener('GlanceClose', onGlanceClose, { once: true });
-                    // Set a timeout to resolve the promise if the event doesn't fire.
-                    // We do this to prevent any future issues where glance woudnt close such as
-                    // glance requering to ask for permit unload.
-                    setTimeout(() => {
-                      if (!hasRan) {
-                        console.warn('GlanceClose event did not fire within 3 seconds');
-                        resolve();
-                      }
-                    }, 3000);
-                  });
-                  return;
-                }
-                const isSpltView = tab.group?.hasAttribute('split-view-group');
-                const group = isSpltView ? tab.group.group : tab.group;
-                if (!folderToUnload && tab.hasAttribute('folder-active')) {
-                  await gZenFolders.animateUnload(group, tab);
-                }
+                    }
+                  }, 3000);
+                });
+                return;
               }
-              if (folderToUnload) {
-                await gZenFolders.animateUnloadAll(folderToUnload);
-              }
-              const allAreUnloaded = pinnedTabs.every(
-                (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
-              );
-              for (const tab of pinnedTabs) {
-                if (allAreUnloaded && closeIfPending) {
-                  return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
-                }
-              }
-              await gBrowser.explicitUnloadTabs(pinnedTabs);
-              for (const tab of pinnedTabs) {
-                tab.removeAttribute('discarded');
+              const isSpltView = tab.group?.hasAttribute('split-view-group');
+              const group = isSpltView ? tab.group.group : tab.group;
+              if (!folderToUnload && tab.hasAttribute('folder-active')) {
+                await gZenFolders.animateUnload(group, tab);
               }
             }
-            if (selectedTabs.length) {
-              this._handleTabSwitch(selectedTabs[0]);
+            if (folderToUnload) {
+              await gZenFolders.animateUnloadAll(folderToUnload);
             }
-            if (behavior.includes('reset')) {
-              for (const tab of pinnedTabs) {
-                this._resetTabToStoredState(tab);
+            const allAreUnloaded = pinnedTabs.every(
+              (tab) => tab.hasAttribute('pending') && !tab.hasAttribute('zen-essential')
+            );
+            for (const tab of pinnedTabs) {
+              if (allAreUnloaded && closeIfPending) {
+                return await this.onCloseTabShortcut(event, tab, { behavior: 'close' });
               }
             }
-            break;
-          case 'reset':
+            await gBrowser.explicitUnloadTabs(pinnedTabs);
+            for (const tab of pinnedTabs) {
+              tab.removeAttribute('discarded');
+            }
+          }
+          if (selectedTabs.length) {
+            this._handleTabSwitch(selectedTabs[0]);
+          }
+          if (behavior.includes('reset')) {
             for (const tab of pinnedTabs) {
               this._resetTabToStoredState(tab);
             }
-            break;
-          default:
-            return;
-        }
-      } catch (ex) {
-        console.error('Error handling close tab shortcut for pinned tab:', ex);
+          }
+          break;
+        case 'reset':
+          for (const tab of pinnedTabs) {
+            this._resetTabToStoredState(tab);
+          }
+          break;
+        default:
+          return;
       }
+    } catch (ex) {
+      console.error('Error handling close tab shortcut for pinned tab:', ex);
     }
+  }
 
   _handleTabSwitch(selectedTab) {
     if (selectedTab !== gBrowser.selectedTab) {
@@ -425,61 +386,61 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-    addToEssentials(tab) {
-      const tabs = tab
-        ? // if it's already an array, dont make it [tab]
-          tab?.length
-          ? tab
-          : [tab]
-        : TabContextMenu.contextTab.multiselected
-          ? gBrowser.selectedTabs
-          : [TabContextMenu.contextTab];
-      let movedAll = true;
-      for (let i = 0; i < tabs.length; i++) {
-        let tab = tabs[i];
-        const section = gZenWorkspaces.getEssentialsSection(tab);
-        if (!this.canEssentialBeAdded(tab)) {
-          movedAll = false;
-          continue;
-        }
-        if (tab.hasAttribute('zen-essential')) {
-          continue;
-        }
-        tab.setAttribute('zen-essential', 'true');
-        if (tab.hasAttribute('zen-workspace-id')) {
-          tab.removeAttribute('zen-workspace-id');
-        }
-        if (tab.pinned && tab.hasAttribute('zen-pin-id')) {
-          gBrowser.zenHandleTabMove(tab, () => {
-            if (tab.ownerGlobal !== window) {
-              tab = gBrowser.adoptTab(tab, {
-                selectTab: tab.selected,
-              });
-              tab.setAttribute('zen-essential', 'true');
-            } else {
-              section.appendChild(tab);
-            }
-          });
-        } else {
-          gBrowser.pinTab(tab);
-          this._ignoreNextTabPinnedEvent = true;
-        }
-        tab.setAttribute('zenDefaultUserContextId', true);
-        if (tab.selected) {
-          gZenWorkspaces.switchTabIfNeeded(tab);
-        }
-        this.onTabIconChanged(tab);
-        // Dispatch the event to update the UI
-        const event = new CustomEvent('TabAddedToEssentials', {
-          detail: { tab },
-          bubbles: true,
-          cancelable: false,
-        });
-        tab.dispatchEvent(event);
+  addToEssentials(tab) {
+    const tabs = tab
+      ? // if it's already an array, dont make it [tab]
+        tab?.length
+        ? tab
+        : [tab]
+      : TabContextMenu.contextTab.multiselected
+        ? gBrowser.selectedTabs
+        : [TabContextMenu.contextTab];
+    let movedAll = true;
+    for (let i = 0; i < tabs.length; i++) {
+      let tab = tabs[i];
+      const section = gZenWorkspaces.getEssentialsSection(tab);
+      if (!this.canEssentialBeAdded(tab)) {
+        movedAll = false;
+        continue;
       }
-      gZenUIManager.updateTabsToolbar();
-      return movedAll;
+      if (tab.hasAttribute('zen-essential')) {
+        continue;
+      }
+      tab.setAttribute('zen-essential', 'true');
+      if (tab.hasAttribute('zen-workspace-id')) {
+        tab.removeAttribute('zen-workspace-id');
+      }
+      if (tab.pinned && tab.hasAttribute('zen-pin-id')) {
+        gBrowser.zenHandleTabMove(tab, () => {
+          if (tab.ownerGlobal !== window) {
+            tab = gBrowser.adoptTab(tab, {
+              selectTab: tab.selected,
+            });
+            tab.setAttribute('zen-essential', 'true');
+          } else {
+            section.appendChild(tab);
+          }
+        });
+      } else {
+        gBrowser.pinTab(tab);
+        this._ignoreNextTabPinnedEvent = true;
+      }
+      tab.setAttribute('zenDefaultUserContextId', true);
+      if (tab.selected) {
+        gZenWorkspaces.switchTabIfNeeded(tab);
+      }
+      this.onTabIconChanged(tab);
+      // Dispatch the event to update the UI
+      const event = new CustomEvent('TabAddedToEssentials', {
+        detail: { tab },
+        bubbles: true,
+        cancelable: false,
+      });
+      tab.dispatchEvent(event);
     }
+    gZenUIManager.updateTabsToolbar();
+    return movedAll;
+  }
 
   removeEssentials(tab, unpin = true) {
     const tabs = tab
@@ -842,8 +803,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     return document.documentElement.getAttribute('zen-sidebar-expanded') === 'true';
   }
 
-    async updatePinTitle(tab, newTitle, isEdited = true) {
-      const uuid = tab.getAttribute('zen-pin-id');
+  async updatePinTitle(tab, newTitle, isEdited = true) {
+    const uuid = tab.getAttribute('zen-pin-id');
 
     const browsers = Services.wm.getEnumerator('navigator:browser');
 
@@ -987,16 +948,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-    async onTabLabelChanged(tab) {
-      tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
-      if (!this._pinsCache) {
-        return;
-      }
-      // If our current pin in the cache point to about:blank, we need to update the entry
-      const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
-      if (!pin) {
-        return;
-      }
+  async onTabLabelChanged(tab) {
+    tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { detail: { tab } }));
+    if (!this._pinsCache) {
+      return;
+    }
+    // If our current pin in the cache point to about:blank, we need to update the entry
+    const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
+    if (!pin) {
+      return;
+    }
 
     if (pin.url === 'about:blank' && tab.linkedBrowser.currentURI.spec !== 'about:blank') {
       await this.replacePinnedUrlWithCurrent(tab);

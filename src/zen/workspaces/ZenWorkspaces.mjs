@@ -2737,23 +2737,18 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   async groupTabsBySimilarity() {
+    window.dispatchEvent(new CustomEvent('ZenGroupingTabsStart'));
     const workspaceId = this.activeWorkspace;
     this._groupingInProgress = true;
     const unpinnedTabs = this.#unpinnedTabsInWorkspace(workspaceId);
 
     if (unpinnedTabs.length < 2) {
       this._groupingInProgress = false;
+      window.dispatchEvent(new CustomEvent('ZenGroupingTabsEnd'));
       return;
     }
 
     const tabData = [];
-    const TAB_URLS_TO_EXCLUDE = [
-      'about:newtab',
-      'about:home',
-      'about:privatebrowsing',
-      'chrome://browser/content/blanktab.html',
-      'about:firefoxview',
-    ];
 
     for (const tab of unpinnedTabs) {
       try {
@@ -2763,9 +2758,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         }
 
         const url = uri.spec;
-        if (TAB_URLS_TO_EXCLUDE.includes(url)) {
-          continue;
-        }
 
         if (uri.scheme === 'about' || uri.scheme === 'chrome') {
           continue;
@@ -2805,6 +2797,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     if (tabData.length < 2) {
       this._groupingInProgress = false;
+      window.dispatchEvent(new CustomEvent('ZenGroupingTabsEnd'));
       return;
     }
 
@@ -2848,6 +2841,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     setTimeout(() => {
       this._groupingInProgress = false;
+      window.dispatchEvent(new CustomEvent('ZenGroupingTabsEnd'));
     }, 500);
 
     if (categoryCount > 0) {
@@ -2974,8 +2968,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         engineId: 'embedding-engine',
       });
 
-      console.log('🤖 Generating AI embeddings for tabs...');
-
       const embeddings = await Promise.all(
         tabData.map(async (data, index) => {
           try {
@@ -3024,7 +3016,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       );
 
       const validCount = embeddings.filter(e => e !== null).length;
-      console.log(`✓ Generated ${validCount}/${tabData.length} embeddings`);
 
       return embeddings;
     } catch (error) {
@@ -3101,13 +3092,8 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   async #clusterTabsBySimilarity(tabData) {
     const SIMILARITY_THRESHOLD = 0.22;
 
-    console.log('\n========== Smart Tab Clustering (AI-Enhanced) ==========');
-    console.log(`Total tabs to cluster: ${tabData.length}`);
-    console.log(`Similarity threshold: ${SIMILARITY_THRESHOLD}`);
-
     const embeddings = await this.#generateTabEmbeddings(tabData);
     const useAI = embeddings !== null;
-    console.log(`Using ${useAI ? 'AI embeddings' : 'text similarity'} for clustering`);
 
     const similarities = [];
     for (let i = 0; i < tabData.length; i++) {
@@ -3155,8 +3141,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
         Array.from(cluster.indices).map(i => tabData[i])
       );
     }
-
-    console.log(`✓ Created ${clusters.length} cluster${clusters.length !== 1 ? 's' : ''}`);
 
     return clusters;
   }
@@ -3295,7 +3279,6 @@ Category name:`;
         .slice(0, 30);
 
       if (name && name.length > 0) {
-        console.log(`✨ AI generated label: "${name}"`);
         return name;
       }
 

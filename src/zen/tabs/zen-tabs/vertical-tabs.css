@@ -329,13 +329,6 @@
       scale: 0.92;
     }
 
-    &:not(:hover) {
-      .tab-close-button,
-      .tab-reset-button {
-        display: none !important;
-      }
-    }
-
     & .tab-icon-image {
       &:not([src]),
       &:-moz-broken {
@@ -656,7 +649,14 @@
         }
       }
 
-      &:is(:hover, [visuallyselected]) .tab-close-button {
+      &:not(:hover) {
+        .tab-close-button,
+        .tab-reset-button {
+          display: none;
+        }
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;

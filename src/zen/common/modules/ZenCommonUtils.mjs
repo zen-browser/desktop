@@ -15,8 +15,7 @@ window.gZenOperatingSystemCommonUtils = {
   },
 };
 
-/* eslint-disable no-unused-vars */
-class nsZenMultiWindowFeature {
+export class nsZenMultiWindowFeature {
   constructor() {}
 
   static get browsers() {
@@ -50,23 +49,21 @@ class nsZenMultiWindowFeature {
   }
 }
 
-/* eslint-disable no-unused-vars */
-class nsZenDOMOperatedFeature {
+export class nsZenDOMOperatedFeature {
   constructor() {
     var initBound = this.init.bind(this);
     document.addEventListener('DOMContentLoaded', initBound, { once: true });
   }
 }
 
-/* eslint-disable no-unused-vars */
-class nsZenPreloadedFeature {
+export class nsZenPreloadedFeature {
   constructor() {
     var initBound = this.init.bind(this);
     document.addEventListener('MozBeforeInitialXULLayout', initBound, { once: true });
   }
 }
 
-var gZenCommonActions = {
+window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const displaySpec = currentUrl.displaySpec;

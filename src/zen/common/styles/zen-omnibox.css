@@ -355,6 +355,8 @@
 }
 
 :root:not([zen-single-toolbar='true']) {
+  --urlbar-icon-border-radius: 6px !important;
+
   #notification-popup-box {
     margin: 0 4px 0 0 !important;
     justify-content: center;

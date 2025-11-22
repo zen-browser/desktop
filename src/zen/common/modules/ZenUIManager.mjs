@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenUIManager = {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+
+window.gZenUIManager = {
   _popupTrackingElements: [],
   _hoverPausedForExpand: false,
   _hasLoadedDOM: false,
@@ -444,29 +446,29 @@ var gZenUIManager = {
       gURLBar._zenHandleUrlbarClose = null;
     }
 
+    const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
       // We use this attribute on Tabbrowser::addTab
       gURLBar.removeAttribute('zen-newtab');
-    }, 0);
 
-    // Safely restore tab visual state with proper validation
-    if (
-      this._lastTab &&
-      !this._lastTab.closing &&
-      this._lastTab.ownerGlobal &&
-      !this._lastTab.ownerGlobal.closed
-    ) {
-      this._lastTab._visuallySelected = true;
-      this._lastTab = null;
-    }
+      // Safely restore tab visual state with proper validation
+      if (
+        this._lastTab &&
+        !this._lastTab.closing &&
+        this._lastTab.ownerGlobal &&
+        !this._lastTab.ownerGlobal.closed &&
+        !onSwitch
+      ) {
+        this._lastTab._visuallySelected = true;
+        this._lastTab = null;
+      }
 
-    // Reset newtab buttons
-    for (const button of this.newtabButtons) {
-      button.removeAttribute('in-urlbar');
-    }
+      // Reset newtab buttons
+      for (const button of this.newtabButtons) {
+        button.removeAttribute('in-urlbar');
+      }
 
-    // Handle search data
-    if (!onElementPicked) {
+      // Handle search data
       if (onSwitch) {
         this.clearUrlbarData();
       } else {
@@ -487,28 +489,30 @@ var gZenUIManager = {
       }
 
       gURLBar.handleRevert();
-    } else if (onElementPicked && onSwitch) {
-      this.clearUrlbarData();
-    }
 
-    if (gURLBar.focused) {
-      setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
-        );
-        gURLBar.view.close({ elementPicked: onElementPicked });
-        gURLBar.updateTextOverflow();
+      if (isFocusedBefore) {
+        setTimeout(() => {
+          window.dispatchEvent(
+            new CustomEvent('ZenURLBarClosed', { detail: { onSwitch, onElementPicked } })
+          );
+          gURLBar.view.close({ elementPicked: onElementPicked });
+          gURLBar.updateTextOverflow();
 
-        // Ensure tab and browser are valid before updating state
-        const selectedTab = gBrowser.selectedTab;
-        if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
-          const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
-          if (browserState) {
-            browserState.urlbarFocused = false;
+          if (onElementPicked && onSwitch) {
+            gURLBar.setURI(null, onSwitch);
           }
-        }
-      }, 0);
-    }
+
+          // Ensure tab and browser are valid before updating state
+          const selectedTab = gBrowser.selectedTab;
+          if (selectedTab && selectedTab.linkedBrowser && !selectedTab.closing && onSwitch) {
+            const browserState = gURLBar.getBrowserState(selectedTab.linkedBrowser);
+            if (browserState) {
+              browserState.urlbarFocused = false;
+            }
+          }
+        }, 0);
+      }
+    }, 0);
   },
 
   urlbarTrim(aURL) {
@@ -663,7 +667,10 @@ var gZenUIManager = {
     if (anchor?.closest('#zen-sidebar-top-buttons')) {
       block = 'topleft';
     }
-    if (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) {
+    if (
+      (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) ||
+      (panel?.id === 'zen-unified-site-data-panel' && !gZenVerticalTabsManager._hasSetSingleToolbar)
+    ) {
       block = 'bottomright';
       inline = 'topright';
     }
@@ -715,7 +722,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-var gZenVerticalTabsManager = {
+window.gZenVerticalTabsManager = {
   init() {
     this._multiWindowFeature = new nsZenMultiWindowFeature();
     this._initWaitPromise();

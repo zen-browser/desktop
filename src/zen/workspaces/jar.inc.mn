@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zen-components/ZenWorkspaceIcons.mjs                    (../../zen/workspaces/ZenWorkspaceIcons.mjs)
+        content/browser/zen-components/ZenWorkspace.mjs                         (../../zen/workspaces/ZenWorkspace.mjs)
+        content/browser/zen-components/ZenWorkspaces.mjs                        (../../zen/workspaces/ZenWorkspaces.mjs)
+        content/browser/zen-components/ZenWorkspaceCreation.mjs                 (../../zen/workspaces/ZenWorkspaceCreation.mjs)
+        content/browser/zen-components/ZenWorkspacesStorage.mjs                 (../../zen/workspaces/ZenWorkspacesStorage.mjs)
+        content/browser/zen-components/ZenWorkspacesSync.mjs                    (../../zen/workspaces/ZenWorkspacesSync.mjs)
+        content/browser/zen-components/ZenGradientGenerator.mjs                 (../../zen/workspaces/ZenGradientGenerator.mjs)
+*       content/browser/zen-styles/zen-workspaces.css                           (../../zen/workspaces/zen-workspaces.css)
+        content/browser/zen-styles/zen-gradient-generator.css                   (../../zen/workspaces/zen-gradient-generator.css)

@@ -1,7 +1,12 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, no-unused-vars */
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
+  'chrome://browser/content/zen-components/ZenCommonUtils.mjs',
+  { global: 'current' }
+);
 
 var gZenMarketplaceManager = {
   async init() {
@@ -634,7 +639,6 @@ var gZenMarketplaceManager = {
 const kZenExtendedSidebar = 'zen.view.sidebar-expanded';
 const kZenSingleToolbar = 'zen.view.use-single-toolbar';
 
-/* eslint-disable no-unused-vars */
 var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) return;
@@ -696,7 +700,6 @@ var gZenLooksAndFeel = {
   },
 };
 
-/* eslint-disable no-unused-vars */
 var gZenWorkspacesSettings = {
   init() {
     var tabsUnloaderPrefListener = {
@@ -751,7 +754,7 @@ const ZEN_CKS_WRAPPER_ID = `${ZEN_CKS_CLASS_BASE}-wrapper`;
 const ZEN_CKS_GROUP_PREFIX = `${ZEN_CKS_CLASS_BASE}-group`;
 const KEYBIND_ATTRIBUTE_KEY = 'key';
 
-var zenMissingKeyboardShortcutL10n = {
+const zenMissingKeyboardShortcutL10n = {
   key_quickRestart: 'zen-key-quick-restart',
   key_delete: 'zen-key-delete',
   goBackKb: 'zen-key-go-back',
@@ -805,7 +808,6 @@ var zenIgnoreKeyboardShortcutL10n = [
   'zen-full-zoom-reduce-shortcut-alt-a',
 ];
 
-/* eslint-disable no-unused-vars */
 var gZenCKSSettings = {
   async init() {
     await this._initializeCKS();

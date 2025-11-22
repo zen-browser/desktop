@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var ZenWorkspacesStorage = {
+window.ZenWorkspacesStorage = {
   lazy: {},
 
   async init() {
@@ -426,7 +426,7 @@ var ZenWorkspacesStorage = {
 };
 
 // Integration of workspace-specific bookmarks into Places
-var ZenWorkspaceBookmarksStorage = {
+window.ZenWorkspaceBookmarksStorage = {
   async init() {
     await this._ensureTable();
   },

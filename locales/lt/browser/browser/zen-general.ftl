@@ -99,11 +99,12 @@ zen-open-link-in-glance =
     .label = Atverti nuorodą spartiuojame pažiūrėjime
     .accesskey = G
 zen-sidebar-notification-updated-heading = Naujinimas baigtas.
-# See ZenSidebarNotification.mjs to see how these would be used
+
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
 zen-sidebar-notification-updated-tooltip = 
     .title = Peržiūrėti leidimo pastabas
 zen-sidebar-notification-restart-safe-mode-label = Kažkas sugedo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Paleisti iš naujo saugioje režime

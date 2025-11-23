@@ -394,7 +394,7 @@
 }
 
 .zen-workspace-group-tabs-button {
-  list-style-image: none !important;
+  list-style-image: none;
 
   & .toolbarbutton-icon {
     display: none !important;

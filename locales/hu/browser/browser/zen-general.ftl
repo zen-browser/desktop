@@ -99,7 +99,8 @@ zen-open-link-in-glance =
     .label = Link megnyitása a bepillantóban
     .accesskey = G
 zen-sidebar-notification-updated-heading = Frissítés befejezve!
-# See ZenSidebarNotification.mjs to see how these would be used
+
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = { -brand-short-name } újdonságai
 zen-sidebar-notification-updated-tooltip = 

@@ -99,7 +99,8 @@ zen-open-link-in-glance =
     .label = Avaa linkki vilkaisussa
     .accesskey = G
 zen-sidebar-notification-updated-heading = Päivitys valmis!
-# See ZenSidebarNotification.mjs to see how these would be used
+
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Mitä uutta { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 

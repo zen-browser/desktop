@@ -81,9 +81,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
     }
-    if (target) {
-      this.#glanceTarget = target;
-    }
+    this.#glanceTarget = target;
   }
 
   on_mouseup(event) {

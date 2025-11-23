@@ -99,7 +99,8 @@ zen-open-link-in-glance =
     .label = Ouvrir le lien dans Glance
     .accesskey = G
 zen-sidebar-notification-updated-heading = Mise à jour terminée !
-# See ZenSidebarNotification.mjs to see how these would be used
+
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Quoi de neuf dans { -brand-short-name } ?
 zen-sidebar-notification-updated-tooltip = 

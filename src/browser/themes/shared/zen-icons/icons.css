@@ -393,6 +393,18 @@
   list-style-image: url('arrow-down.svg') !important;
 }
 
+.zen-workspace-group-tabs-button {
+  list-style-image: none !important;
+
+  & .toolbarbutton-icon {
+    display: none !important;
+  }
+
+  @media -moz-pref('zen.view.show-clear-tabs-button', false) {
+    display: none;
+  }
+}
+
 .zen-workspace-close-unpinned-tabs-button {
   list-style-image: url('dart-down.svg');
 

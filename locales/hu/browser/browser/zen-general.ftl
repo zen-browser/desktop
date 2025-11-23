@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Kitűzött lap visszaállítása
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Felvétel az alapvetőkbe ({ $num } / { $max } hely foglalt)
+    .label = Felvétel az alapvetőkbe
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } hely foglalt
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
@@ -97,3 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beá
 zen-open-link-in-glance = 
     .label = Link megnyitása a bepillantóban
     .accesskey = G
+zen-sidebar-notification-updated-heading = Frissítés befejezve!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = { -brand-short-name } újdonságai
+zen-sidebar-notification-updated-tooltip = 
+    .title = Változások listájának megtekintése
+zen-sidebar-notification-restart-safe-mode-label = Valami elromlott?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Újraindítás biztonságos módban

@@ -242,6 +242,14 @@
   /* Define tab hover background color */
   --tab-hover-background-color: var(--toolbarbutton-hover-background);
 
+  /* Sidebar Notifications */
+  --zen-sidebar-notification-bg: color-mix(
+    in srgb,
+    var(--zen-primary-color) 15%,
+    light-dark(white, black)
+  );
+  --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+
   /* Nativity */
   --zen-native-content-radius: var(--zen-border-radius);
   @media (-moz-platform: linux) {

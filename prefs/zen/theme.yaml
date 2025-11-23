@@ -36,7 +36,7 @@
   value: '@IS_TWILIGHT@'
 
 - name: zen.theme.hide-unified-extensions-button
-  value: false
+  value: true
 
 # ==== Mark: border radius ====
 

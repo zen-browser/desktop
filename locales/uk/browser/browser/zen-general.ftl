@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Скинути прикріплену вкладку
     .accesskey = Р
 tab-context-zen-add-essential = 
-    .label = Додати до Основного ({ $num } / { $max } комірок заповнено)
+    .label = Додати до необхідного
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } комірок заповнено
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
     .accesskey = R
@@ -97,3 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Натисніть значок, 
 zen-open-link-in-glance = 
     .label = Відкрити посилання в передперегляді
     .accesskey = G
+zen-sidebar-notification-updated-heading = Оновлення завершено!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Що нового в { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Переглянути примітки до випуску
+zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Перезапустити в безпечному режимі

@@ -1,0 +1,122 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@keyframes zen-text-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+:host {
+  background: var(--zen-sidebar-notification-bg);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--zen-sidebar-notification-shadow);
+  font-size: var(--font-size-medium);
+}
+
+.zen-sidebar-notification-header {
+  display: flex;
+  position: relative;
+  flex: 1;
+  padding: 8px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.zen-sidebar-notification-heading {
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  flex: 1;
+}
+
+.zen-sidebar-notification-close-button {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  border-radius: 4px;
+  border-top-right-radius: calc(var(--border-radius-medium) - 2px);
+  z-index: 1;
+  padding: 4px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 15%, transparent);
+  }
+
+  & img {
+    -moz-context-properties: fill, fill-opacity;
+    fill-opacity: 1;
+    fill: currentColor;
+    width: 14px;
+    pointer-events: none;
+  }
+}
+
+.zen-sidebar-notification-body {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  & .zen-sidebar-notification-link-container {
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0.7;
+
+    & .zen-sidebar-notification-link-text {
+      cursor: inherit;
+    }
+
+    &[special] {
+      opacity: 1;
+      --special-color: color-mix(in srgb, var(--zen-primary-color), currentColor 50%);
+      --specia-color-2: color-mix(in srgb, var(--zen-primary-color), currentColor 90%);
+      background: linear-gradient(
+        135deg,
+        var(--specia-color-2),
+        var(--special-color),
+        var(--specia-color-2),
+        var(--special-color)
+      );
+      background-size: 400%;
+      filter: saturate(3);
+      background-clip: text;
+      /* Still works on firefox */
+      -webkit-text-fill-color: transparent;
+      animation: zen-text-gradient 2s linear infinite;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    & .zen-sidebar-notification-link-icon {
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+      -moz-context-properties: fill, fill-opacity;
+      fill: var(--special-color, currentColor);
+    }
+  }
+}

@@ -504,13 +504,17 @@
 }
 
 #identity-permission-box,
-#identity-box:not([pageproxystate='invalid']) #identity-icon-box:not([open]),
-#identity-box[pageproxystate='invalid'] #zen-site-data-icon-button {
+:root:not([zen-has-empty-tab='true'])
+  #urlbar:not([breakout-extend='true'])
+  #identity-icon-box:not([open]),
+:root[zen-has-empty-tab='true'] #zen-site-data-icon-button,
+#urlbar[breakout-extend='true'] #zen-site-data-icon-button {
   display: none !important;
 }
 
 #zen-site-data-icon-button {
-  padding: 0 6px;
+  padding: 0 6px !important;
+  border-radius: var(--urlbar-icon-border-radius) !important;
 
   & image {
     list-style-image: url('permissions.svg');

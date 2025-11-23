@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index c97c661656868bc7faaf7c66c9702eea056aafe1..aa9f0ed071e4898cac2b98a4d81e95df6a41b8dd 100644
+index c97c661656868bc7faaf7c66c9702eea056aafe1..3a2b4bd1a017697539a3b81432199812307b9a04 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -32,6 +32,9 @@
@@ -149,8 +149,8 @@ index c97c661656868bc7faaf7c66c9702eea056aafe1..aa9f0ed071e4898cac2b98a4d81e95df
          this.#tabbrowserTabs.verticalMode &&
 -        tab.pinned &&
 -        this.#tabbrowserTabs.hasAttribute("expanded") &&
-+        (tab.hasAttribute("zen-essential")) &&
-+        (this.hasAttribute("expanded") || document.documentElement.hasAttribute("zen-sidebar-expanded")) &&
++        tab.hasAttribute("zen-essential") &&
++        (this.#tabbrowserTabs.hasAttribute("expanded") || document.documentElement.hasAttribute("zen-sidebar-expanded")) &&
          !this.#tabbrowserTabs.expandOnHover
        );
      }

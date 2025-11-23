@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Restableix la pestanya fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Afegeix als essentials ({ $num } / { $max } espais ocupats)
+    .label = Afegeix als essencials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } espais ocupats
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
     .accesskey = R
@@ -97,3 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar
 zen-open-link-in-glance = 
     .label = Obre l'enllaç en un cop d'ull
     .accesskey = G
+zen-sidebar-notification-updated-heading = Actualització completada!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Novetats a { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Mostra les notes de la versió
+zen-sidebar-notification-restart-safe-mode-label = Alguna cosa no funciona?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Reinici en mode segur

@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Athshocraigh an Cluaisín Prionáilte
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Cuir le Bunriachtanais ({ $num } / { $max } sliotán líonta)
+    .label = Cuir leis na Bunriachtanais
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } sliotán líonta
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
     .accesskey = R
@@ -97,3 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Cliceáil an deilbhín chun socru
 zen-open-link-in-glance = 
     .label = Oscail an Nasc i Glance
     .accesskey = G
+zen-sidebar-notification-updated-heading = Nuashonrú críochnaithe!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Cad atá nua i { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Féach ar Nótaí Eisiúna
+zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Atosaigh i Mód Sábháilte

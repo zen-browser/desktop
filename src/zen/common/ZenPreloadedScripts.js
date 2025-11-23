@@ -5,5 +5,5 @@
 // prettier-ignore
 
 {
-  Services.scriptloader.loadSubScript("chrome://browser/content/ZenStartup.mjs", this);
+  ChromeUtils.importESModule("chrome://browser/content/ZenStartup.mjs", { global: "current" });
 }

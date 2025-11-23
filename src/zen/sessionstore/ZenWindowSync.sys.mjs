@@ -13,14 +13,19 @@ ChromeUtils.defineESModuleGetters(lazy, {
 const OBSERVING = ['browser-window-before-show'];
 const EVENTS = [
   'TabOpen',
+  'TabClose',
+
   'ZenTabIconChanged',
   'ZenTabLabelChanged',
+
   'TabMove',
   'TabPinned',
   'TabUnpinned',
-  'TabClose',
   'TabAddedToEssentials',
   'TabRemovedFromEssentials',
+
+  'focus',
+  'unload',
 ];
 
 // Flags acting as an enum for sync types.
@@ -84,6 +89,7 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The browser window that is about to be shown.
    */
   #onWindowBeforeShow(aWindow) {
+    aWindow.gZenWindowSync = this;
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this);
     }
@@ -319,6 +325,67 @@ class nsZenWindowSync {
   }
 
   /**
+   * Swaps the browser docshells between two tabs.
+   *
+   * @param {Object} aOurTab - The tab in the current window.
+   * @param {Object} aOtherTab - The tab in the other window.
+   */
+  #swapBrowserDocShells(aOurTab, aOtherTab) {
+    try {
+      aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+      const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
+      // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
+      // but we need to manually remove some attributes from the other tab.
+      for (let attr of kAttributesToRemove) {
+        aOtherTab.removeAttribute(attr);
+      }
+      aOtherTab.linkedBrowser.style.opacity = 0;
+      aOurTab.linkedBrowser.style.opacity = '';
+    } catch (e) {
+      // Handle any errors that may occur during the swapBrowsers operation.
+      console.error('Error swapping browsers:', e);
+    }
+  }
+
+  /**
+   * Retrieves the active tab, where the web contents are being viewed
+   * from other windows by its ID.
+   *
+   * @param {Window} aWindow - The window to exclude.
+   * @param {string} aTabId - The ID of the tab to retrieve.
+   * @returns {Object|null} The active tab from other windows if found, otherwise null.
+   */
+  #getActiveTabFromOtherWindows(aWindow, aTabId) {
+    for (let window of this.#browserWindows) {
+      if (window !== aWindow) {
+        const tab = this.#getTabFromWindow(window, aTabId);
+        if (tab?._zenContentsVisible) {
+          return tab;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Handles tab switch or window focus events to synchronize tab contents visibility.
+   *
+   * @param {Window} aWindow - The window that triggered the event.
+   */
+  onTabSwitchOrWindowFocus(aWindow) {
+    const selectedTab = aWindow.gBrowser.selectedTab;
+    if (selectedTab._zenContentsVisible) {
+      return;
+    }
+    const otherSelectedTab = this.#getActiveTabFromOtherWindows(aWindow, selectedTab.id);
+    selectedTab._zenContentsVisible = true;
+    if (otherSelectedTab) {
+      delete otherSelectedTab._zenContentsVisible;
+      this.#swapBrowserDocShells(selectedTab, otherSelectedTab);
+    }
+  }
+
+  /**
    * Delegates generic sync events to synchronize tabs across windows.
    *
    * @param {Event} aEvent - The event to delegate.
@@ -334,9 +401,17 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
+    if (tab.id) {
+      // This tab was opened as part of a sync operation.
+      return;
+    }
     tab.id = this.#newTabSyncId;
+    if (tab.selected) {
+      tab._zenContentsVisible = true;
+    }
     this.#runOnAllWindows(window, (win) => {
-      const newTab = win.gBrowser.duplicateTab(tab);
+      const newTab = win.gBrowser.addTrustedTab('about:blank', { animate: true });
+      newTab.setAttribute('zen-workspace-id', tab.getAttribute('zen-workspace-id') || '');
       newTab.id = tab.id;
       this.#syncTabWithOriginal(
         tab,
@@ -344,7 +419,6 @@ class nsZenWindowSync {
         win,
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
-      win.gZenVerticalTabsManager.animateItemOpen(newTab);
     });
   }
 
@@ -386,6 +460,13 @@ class nsZenWindowSync {
       }
     });
   }
+
+  on_focus(aEvent) {
+    const { ownerGlobal: window } = aEvent.target;
+    this.onTabSwitchOrWindowFocus(window);
+  }
+
+  on_unload() {}
 }
 
 export const ZenWindowSync = new nsZenWindowSync();

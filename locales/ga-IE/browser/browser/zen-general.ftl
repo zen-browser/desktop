@@ -99,7 +99,8 @@ zen-open-link-in-glance =
     .label = Oscail an Nasc i Glance
     .accesskey = G
 zen-sidebar-notification-updated-heading = Nuashonrú críochnaithe!
-# See ZenSidebarNotification.mjs to see how these would be used
+
+# See ZenSidebarNotification.mjs to see how these would be used
 
 zen-sidebar-notification-updated-label = Cad atá nua i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 

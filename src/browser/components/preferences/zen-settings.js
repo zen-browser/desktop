@@ -1182,6 +1182,11 @@ Preferences.addAll([
     type: 'bool',
     default: false,
   },
+  {
+    id: 'zen.tabs.essentials.max',
+    type: 'int',
+    default: 12
+  }
 ]);
 
 Preferences.addSetting({

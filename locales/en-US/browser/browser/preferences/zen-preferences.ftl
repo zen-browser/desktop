@@ -350,3 +350,4 @@ zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-tabs-max-essential-tabs = Max amount of Essential Tabs

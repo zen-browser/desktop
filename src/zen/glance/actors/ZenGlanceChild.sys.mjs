@@ -110,8 +110,5 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   async on_DOMContentLoaded() {
     await this.#initActivationMethod();
-    this.contentWindow.addEventListener('mousedown', this, true);
-    this.contentWindow.addEventListener('mouseup', this, true);
-    this.contentWindow.addEventListener('mousemove', this, true);
   }
 }

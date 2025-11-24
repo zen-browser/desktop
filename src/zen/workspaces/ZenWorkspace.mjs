@@ -18,13 +18,6 @@
                              class="zen-workspace-group-tabs-button toolbarbutton-1">
                 <div class="zen-group-icon-container" style="display: grid; place-items: center; margin-inline-end: 5px;">
                   <image
-                    class="zen-group-loading-icon"
-                    role="presentation"
-                    src="chrome://browser/skin/zen-icons/ZenGroupSpinner.svg"
-                    width="16"
-                    height="16"
-                  />
-                  <image
                     class="zen-group-icon"
                     role="presentation"
                     src="chrome://browser/skin/zen-icons/ZenGroup.svg"
@@ -270,12 +263,14 @@
       if (!this.groupTabsButton) return;
       this.groupTabsButton.setAttribute('disabled', 'true');
       this.groupTabsButton.setAttribute('grouping', 'true');
+      this.querySelector('.pinned-tabs-container-separator')?.setAttribute('data-grouping', 'true');
     }
 
     #onGroupingEnd() {
       if (!this.groupTabsButton) return;
       this.groupTabsButton.removeAttribute('disabled');
       this.groupTabsButton.removeAttribute('grouping');
+      this.querySelector('.pinned-tabs-container-separator')?.removeAttribute('data-grouping');
     }
 
     get newTabButton() {

@@ -146,11 +146,35 @@
   & toolbarseparator {
     height: 1px;
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    color: light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.65));
     padding: 0;
     margin: auto 4px;
+    position: relative;
+    border: none;
+    overflow: visible;
 
     &::before {
       border-inline-start: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 4px;
+      left: 4px;
+      right: 4px;
+      top: 50%;
+      height: 12px;
+      transform: translateY(-50%);
+      background-color: currentColor;
+      mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2012'%20fill='none'%3E%3Cpath%20d='M0%206%20Q6%200%2012%206%20T24%206%20T36%206%20T48%206'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E");
+      mask-size: 48px 12px;
+      mask-repeat: repeat;
+      mask-position: 0 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-in-out;
+      will-change: mask-position;
     }
   }
 
@@ -209,6 +233,24 @@
     &:active:hover .toolbarbutton-icon {
       transform: translateY(2px);
     }
+  }
+
+  &[data-grouping='true'] toolbarseparator {
+    background: transparent;
+  }
+
+  &[data-grouping='true'] toolbarseparator::after {
+    opacity: 0.9;
+    animation: zenWorkspaceSquiggle 1.2s linear infinite;
+  }
+}
+
+@keyframes zenWorkspaceSquiggle {
+  from {
+    mask-position: 0 50%;
+  }
+  to {
+    mask-position: 48px 50%;
   }
 }
 

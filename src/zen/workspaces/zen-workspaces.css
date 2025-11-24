@@ -6,16 +6,6 @@
 @namespace html 'http://www.w3.org/1999/xhtml';
 @namespace xul 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
 
-.zen-group-loading-icon {
-  display: none;
-}
-.zen-workspace-group-tabs-button[grouping="true"] .zen-group-loading-icon {
-  display: block;
-}
-.zen-workspace-group-tabs-button[grouping="true"] .zen-group-icon {
-  display: none;
-}
-.zen-group-loading-icon,
 .zen-group-icon {
   width: 16px;
   height: 16px;

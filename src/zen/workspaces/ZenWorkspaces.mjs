@@ -2808,6 +2808,27 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       tab.removeAttribute('zen-category-first');
     }
 
+    const autoCategoryGroups = Array.from(gBrowser.tabGroups ?? []).filter(
+      (group) =>
+        group &&
+        typeof group.hasAttribute === 'function' &&
+        group.hasAttribute('zen-auto-category-group')
+    );
+    if (typeof gBrowser.ungroupTab === 'function') {
+      for (const group of autoCategoryGroups) {
+        try {
+          const tabsInGroup = Array.from(group.tabs ?? []);
+          for (const tab of tabsInGroup) {
+            if (!tab?.closing && tab.ownerGlobal && !tab.ownerGlobal.closed) {
+              gBrowser.ungroupTab(tab);
+            }
+          }
+        } catch (error) {
+          console.error('Error ungrouping automatic tab group:', error);
+        }
+      }
+    }
+
     clusters.sort((a, b) => {
       if (b.tabs.length !== a.tabs.length) {
         return b.tabs.length - a.tabs.length;
@@ -2815,28 +2836,76 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       return a.label.localeCompare(b.label);
     });
 
-    let currentPosition = gBrowser._numPinnedTabs;
     let categoryCount = 0;
 
     for (const cluster of clusters) {
-      if (cluster.tabs.length === 0) {
+      const clusterTabs = cluster.tabs
+        .filter(
+          (tab) =>
+            tab &&
+            !tab.closing &&
+            !tab.hasAttribute('zen-essential') &&
+            tab.ownerGlobal &&
+            !tab.ownerGlobal.closed
+        )
+        .sort((a, b) => a._tPos - b._tPos);
+
+      if (!clusterTabs.length) {
         continue;
       }
 
-      categoryCount++;
-      const category = cluster.label;
-      let isFirst = true;
-
-      for (const tab of cluster.tabs) {
-        tab.setAttribute('zen-category', category);
-        if (isFirst) {
-          tab.setAttribute('zen-category-first', 'true');
-          isFirst = false;
-        }
-
-        gBrowser.moveTabTo(tab, currentPosition);
-        currentPosition++;
+      const anchorTab = clusterTabs[0];
+      if (!anchorTab?.parentNode) {
+        continue;
       }
+
+      if (typeof gBrowser.ungroupTab === 'function') {
+        for (const tab of clusterTabs) {
+          const tabGroup = tab.group;
+          if (
+            tabGroup &&
+            !tabGroup.isZenFolder &&
+            !tabGroup.hasAttribute?.('split-view-group')
+          ) {
+            try {
+              gBrowser.ungroupTab(tab);
+            } catch (error) {
+              console.error('Error ungrouping tab before regrouping:', error);
+            }
+          }
+        }
+      }
+
+      const groupsBefore = new Set(Array.from(gBrowser.tabGroups ?? []));
+      const category = cluster.label || 'Group';
+      try {
+        gBrowser.addTabGroup(clusterTabs, {
+          label: category,
+          showCreateUI: false,
+          insertBefore: anchorTab,
+        });
+      } catch (error) {
+        console.error('Error creating tab group for category:', error);
+        continue;
+      }
+
+      const createdGroup = Array.from(gBrowser.tabGroups ?? []).find(
+        (group) => !groupsBefore.has(group)
+      );
+      if (createdGroup && typeof createdGroup.setAttribute === 'function') {
+        createdGroup.setAttribute('zen-auto-category-group', 'true');
+      }
+
+      clusterTabs.forEach((tab, index) => {
+        tab.setAttribute('zen-category', category);
+        if (index === 0) {
+          tab.setAttribute('zen-category-first', 'true');
+        } else {
+          tab.removeAttribute('zen-category-first');
+        }
+      });
+
+      categoryCount++;
     }
 
     setTimeout(() => {
@@ -3014,8 +3083,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
           }
         })
       );
-
-      const validCount = embeddings.filter(e => e !== null).length;
 
       return embeddings;
     } catch (error) {
@@ -3262,9 +3329,7 @@ Category name:`;
         },
       });
 
-      let name = (aiResult[0]?.generated_text || '')
-        .split('\n')[0]
-        .trim();
+      let name = (aiResult[0]?.generated_text || '').split('\n')[0].trim();
 
       if (!name || /none|adult content/i.test(name)) {
         return null;

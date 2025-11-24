@@ -154,6 +154,8 @@
 *  skin/classic/browser/zen-icons/xr.svg                      (../shared/zen-icons/lin/xr.svg) 
 *  skin/classic/browser/zen-icons/zoom-control.svg                      (../shared/zen-icons/lin/zoom-control.svg) 
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/lin/zoom-out.svg) 
+*  skin/classic/browser/zen-icons/ZenGroup.svg                      (../shared/zen-icons/lin/ZenGroup.svg) 
+*  skin/classic/browser/zen-icons/ZenGroupSpinner.svg                      (../shared/zen-icons/lin/ZenGroupSpinner.svg) 
 #endif
 #ifdef XP_MACOSX
 *  skin/classic/browser/zen-icons/accessibility.svg                      (../shared/zen-icons/lin/accessibility.svg) 
@@ -307,6 +309,8 @@
 *  skin/classic/browser/zen-icons/xr.svg                      (../shared/zen-icons/lin/xr.svg) 
 *  skin/classic/browser/zen-icons/zoom-control.svg                      (../shared/zen-icons/lin/zoom-control.svg) 
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/lin/zoom-out.svg) 
+*  skin/classic/browser/zen-icons/ZenGroup.svg                      (../shared/zen-icons/lin/ZenGroup.svg) 
+*  skin/classic/browser/zen-icons/ZenGroupSpinner.svg                      (../shared/zen-icons/lin/ZenGroupSpinner.svg) 
 #endif
 #ifdef XP_LINUX
 *  skin/classic/browser/zen-icons/accessibility.svg                      (../shared/zen-icons/lin/accessibility.svg) 
@@ -460,6 +464,8 @@
 *  skin/classic/browser/zen-icons/xr.svg                      (../shared/zen-icons/lin/xr.svg) 
 *  skin/classic/browser/zen-icons/zoom-control.svg                      (../shared/zen-icons/lin/zoom-control.svg) 
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/lin/zoom-out.svg) 
+*  skin/classic/browser/zen-icons/ZenGroup.svg                      (../shared/zen-icons/lin/ZenGroup.svg) 
+*  skin/classic/browser/zen-icons/ZenGroupSpinner.svg                      (../shared/zen-icons/lin/ZenGroupSpinner.svg) 
 #endif
 *  skin/classic/browser/zen-icons/urlbar-arrow.svg                      (../shared/zen-icons/common/urlbar-arrow.svg) 
 *  skin/classic/browser/zen-icons/selectable/airplane.svg          (../shared/zen-icons/common/selectable/airplane.svg) 

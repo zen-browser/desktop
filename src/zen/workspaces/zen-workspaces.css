@@ -15,6 +15,15 @@
 .zen-workspace-group-tabs-button[grouping="true"] .zen-group-icon {
   display: none;
 }
+.zen-group-loading-icon,
+.zen-group-icon {
+  width: 16px;
+  height: 16px;
+  grid-area: 1 / 1;
+  -moz-context-properties: fill, fill-opacity, stroke, stroke-opacity;
+  fill: currentColor;
+  stroke: currentColor;
+}
 
 #zen-workspaces-button {
   justify-content: center;
@@ -59,7 +68,7 @@
       &:is(img) {
         width: 14px;
       }
-   
+
       &[no-icon='true'] {
         width: 6px;
         height: 6px;
@@ -111,14 +120,14 @@
       background: transparent;
     }
 
-    /* Inlcude separately since ther'es a bug in the 
+    /* Inlcude separately since ther'es a bug in the
      * rendering of XUL in firefox */
     & toolbarbutton:not([active='true']) {
 %include overflow-icons.inc.css
     }
 
     &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
-%include overflow-icons.inc.css 
+%include overflow-icons.inc.css
     }
   }
 }

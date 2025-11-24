@@ -82,14 +82,14 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
     }
+    event.preventDefault();
+    event.stopPropagation();
     this.#glanceTarget = target;
     this.contentWindow.addEventListener('mousemove', this.mousemoveCallback, { once: true });
   }
 
-  on_mouseup(event) {
+  on_mouseup() {
     if (this.#glanceTarget) {
-      event.preventDefault();
-      event.stopPropagation();
       this.#openGlance(this.#glanceTarget);
       this.#glanceTarget = null;
     }

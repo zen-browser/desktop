@@ -20,7 +20,7 @@
   min-width: 0;
   border-radius: var(--border-radius-medium);
   box-shadow: var(--zen-sidebar-notification-shadow);
-  font-size: var(--font-size-medium);
+  font-size: 12px;
 }
 
 .zen-sidebar-notification-header {

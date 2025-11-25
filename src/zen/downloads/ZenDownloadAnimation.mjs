@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Downloads } from 'resource://gre/modules/Downloads.sys.mjs';
 import {
   nsZenDOMOperatedFeature,
   nsZenMultiWindowFeature,
@@ -24,6 +23,7 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
 
   async #setupDownloadListeners() {
     try {
+      const Downloads = window.Downloads;
       const list = await Downloads.getList(Downloads.ALL);
       list.addView({
         onDownloadAdded: this.#handleNewDownload.bind(this),

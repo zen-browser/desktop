@@ -56,7 +56,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   async #getTabsTidyModule() {
     if (!this.#tabsTidyModulePromise) {
       this.#tabsTidyModulePromise = ChromeUtils.importESModule(
-        'chrome://browser/content/zen-components/ZenTabsTidy.sys.mjs'
+        'resource:///modules/ZenTabsTidy.sys.mjs'
       );
     }
     return this.#tabsTidyModulePromise;

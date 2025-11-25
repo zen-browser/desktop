@@ -3,6 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { setTimeout } = ChromeUtils.importESModule('resource://gre/modules/Timer.sys.mjs');
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  EngineProcess: 'chrome://global/content/ml/EngineProcess.sys.mjs',
+});
 
 export async function groupTabsBySimilarity({
   window: browserWindow,
@@ -317,9 +322,7 @@ async function generateTabEmbeddings(tabData) {
   }
 
   try {
-    const { createEngine } = ChromeUtils.importESModule(
-      'chrome://global/content/ml/EngineProcess.sys.mjs'
-    );
+    const { createEngine } = lazy.EngineProcess;
 
     const engine = await createEngine({
       taskName: 'feature-extraction',
@@ -475,9 +478,7 @@ async function generateAiClusterLabel(clusterData) {
   }
 
   try {
-    const { createEngine } = ChromeUtils.importESModule(
-      'chrome://global/content/ml/EngineProcess.sys.mjs'
-    );
+    const { createEngine } = lazy.EngineProcess;
 
     const tabDescriptions = clusterData
       .map((data, idx) => {

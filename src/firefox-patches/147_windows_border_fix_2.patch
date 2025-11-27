@@ -1,0 +1,57 @@
+From 418e274c76f9e6b2d1149048cb399f1f6d709553 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Emilio=20Cobos=20=C3=81lvarez?= <emilio@crisal.io>
+Date: Thu, 27 Nov 2025 15:31:40 +0000
+Subject: [PATCH] Bug 1993474 - Remove redundant nsWindow::mPIPWindow.
+ r=win-reviewers,gstoll
+
+nsIWidget already has a member for this.
+
+Differential Revision: https://phabricator.services.mozilla.com/D274282
+---
+ widget/windows/nsWindow.cpp | 4 +---
+ widget/windows/nsWindow.h   | 3 ---
+ 2 files changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+index b357df236cfc..19f5980a106f 100644
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -817,7 +817,6 @@ static bool IsCloaked(HWND hwnd) {
+ nsWindow::nsWindow()
+     : nsBaseWidget(BorderStyle::Default),
+       mFrameState(std::in_place, this),
+-      mPIPWindow(false),
+       mMicaBackdrop(false),
+       mLastPaintEndTime(TimeStamp::Now()),
+       mCachedHitTestTime(TimeStamp::Now()),
+@@ -1028,7 +1027,6 @@ nsresult nsWindow::Create(nsIWidget* aParent, const LayoutDeviceIntRect& aRect,
+       aParent ? (HWND)aParent->GetNativeData(NS_NATIVE_WINDOW) : nullptr;
+
+   mIsRTL = aInitData->mRTL;
+-  mPIPWindow = aInitData->mPIPWindow;
+   mOpeningAnimationSuppressed = aInitData->mIsAnimationSuppressed;
+   mAlwaysOnTop = aInitData->mAlwaysOnTop;
+   mIsAlert = aInitData->mIsAlert;
+@@ -2807,7 +2805,7 @@ bool nsWindow::UpdateNonClientMargins(bool aReflowWindow) {
+     // frame sizes for left, right and bottom since Windows will automagically
+     // position the edges "offscreen" for maximized windows.
+     metrics.mOffset.top = metrics.mCaptionHeight;
+-  } else if (mPIPWindow &&
++  } else if (mIsPIPWindow &&
+              !StaticPrefs::widget_windows_pip_decorations_enabled()) {
+     metrics.mOffset = metrics.DefaultMargins();
+   } else {
+diff --git a/widget/windows/nsWindow.h b/widget/windows/nsWindow.h
+index 2756b248368a..9e6b4d41d721 100644
+--- a/widget/windows/nsWindow.h
++++ b/widget/windows/nsWindow.h
+@@ -852,9 +852,6 @@ class nsWindow final : public nsIWidget {
+   // Whether we're in the process of sending a WM_SETTEXT ourselves
+   bool mSendingSetText = false;
+ 
+-  // Whether we're a PIP window.
+-  bool mPIPWindow : 1;
+-
+   // Whether we are asked to render a mica backdrop.
+   bool mMicaBackdrop : 1;
+ 

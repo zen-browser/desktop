@@ -8,9 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Angehefteten Tab zurücksetzen
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Zu Essentials hinzufügen
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } Plätze belegt
 tab-context-zen-remove-essential = 
     .label = Aus Essentials entfernen
     .accesskey = R
@@ -98,13 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Klicke auf das Symbol, um Website
 zen-open-link-in-glance = 
     .label = Link in Glance öffnen
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Update abgeschlossen!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Was in {-brand-short-name } neu ist
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Versionshinweise anzeigen
+zen-sidebar-notification-restart-safe-mode-label = Ist etwas kaputtgegangen?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Im abgesicherten Modus neu starten

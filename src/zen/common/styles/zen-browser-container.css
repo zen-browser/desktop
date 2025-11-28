@@ -60,3 +60,11 @@
     }
   }
 }
+
+.zen-pseudo-browser-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 2;
+}

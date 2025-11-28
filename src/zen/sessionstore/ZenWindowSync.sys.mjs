@@ -24,6 +24,8 @@ const EVENTS = [
   'TabAddedToEssentials',
   'TabRemovedFromEssentials',
 
+  'TabSelect',
+
   'focus',
   'unload',
 ];
@@ -50,6 +52,19 @@ class nsZenWindowSync {
     eventCount: 0,
     lastHandlerPromise: Promise.resolve(),
   };
+
+  /**
+   * Last focused window.
+   * Used to determine which window to sync tab contents visibility from.
+   */
+  #lastFocusedWindow = null;
+
+  /**
+   * Last selected tab.
+   * Used to determine if we should run another sync operation
+   * when switching browser views.
+   */
+  #lastSelectedTab = null;
 
   /**
    * Iterator that yields all currently opened browser windows.
@@ -330,8 +345,9 @@ class nsZenWindowSync {
    * @param {Object} aOurTab - The tab in the current window.
    * @param {Object} aOtherTab - The tab in the other window.
    */
-  #swapBrowserDocShells(aOurTab, aOtherTab) {
+  async #swapBrowserDocShells(aOurTab, aOtherTab) {
     try {
+      await this.#styleSwapedBrowsers(aOurTab, aOtherTab);
       aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
       const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
       // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
@@ -339,11 +355,82 @@ class nsZenWindowSync {
       for (let attr of kAttributesToRemove) {
         aOtherTab.removeAttribute(attr);
       }
-      aOtherTab.linkedBrowser.style.opacity = 0;
-      aOurTab.linkedBrowser.style.opacity = '';
     } catch (e) {
       // Handle any errors that may occur during the swapBrowsers operation.
       console.error('Error swapping browsers:', e);
+    }
+  }
+
+  /**
+   * Styles the swapped browsers to ensure proper visibility and layout.
+   *
+   * @param {Object} aOurTab - The tab in the current window.
+   * @param {Object} aOtherTab - The tab in the other window.
+   */
+  async #styleSwapedBrowsers(aOurTab, aOtherTab) {
+    const ourBrowser = aOurTab.linkedBrowser;
+    const otherBrowser = aOtherTab.linkedBrowser;
+
+    const browserBlob = await aOtherTab.ownerGlobal.PageThumbs.captureToBlob(
+      aOtherTab.linkedBrowser,
+      {
+        fullScale: true,
+        fullViewport: true,
+      }
+    );
+
+    let mySrc = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(browserBlob);
+      reader.onloadend = function () {
+        // result includes identifier 'data:image/png;base64,' plus the base64 data
+        resolve(reader.result);
+      };
+      reader.onerror = function () {
+        reject(new Error('Failed to read blob as data URL'));
+      };
+    });
+
+    const [img, loadPromise] = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
+    // Run a reflow to ensure the image is rendered before hiding the browser.
+    void img.getBoundingClientRect();
+    await loadPromise;
+    otherBrowser.style.opacity = 0;
+    otherBrowser.style.pointerEvents = 'none';
+
+    this.#maybeRemovePseudoImageForBrowser(ourBrowser);
+    ourBrowser.style.opacity = '';
+    ourBrowser.style.pointerEvents = '';
+  }
+
+  /**
+   * Create and insert a new pseudo image for a browser element.
+   *
+   * @param {Object} aBrowser - The browser element to create the pseudo image for.
+   * @param {string} aSrc - The source URL of the image.
+   * @returns {Object} The created pseudo image element.
+   */
+  #createPseudoImageForBrowser(aBrowser, aSrc) {
+    const doc = aBrowser.ownerDocument;
+    const img = doc.createElement('img');
+    img.className = 'zen-pseudo-browser-image';
+    aBrowser.after(img);
+    const loadPromise = new Promise((resolve) => {
+      img.onload = () => resolve();
+      img.src = aSrc;
+    });
+    return [img, loadPromise];
+  }
+
+  /**
+   * Removes the pseudo image element for a browser if it exists.
+   *
+   * @param {Object} aBrowser - The browser element to remove the pseudo image for.
+   */
+  #maybeRemovePseudoImageForBrowser(aBrowser) {
+    const elements = aBrowser.parentNode?.querySelectorAll('.zen-pseudo-browser-image');
+    if (elements) {
+      elements.forEach((element) => element.remove());
     }
   }
 
@@ -353,13 +440,14 @@ class nsZenWindowSync {
    *
    * @param {Window} aWindow - The window to exclude.
    * @param {string} aTabId - The ID of the tab to retrieve.
+   * @param {Function} filter - A function to filter the tabs.
    * @returns {Object|null} The active tab from other windows if found, otherwise null.
    */
-  #getActiveTabFromOtherWindows(aWindow, aTabId) {
+  #getActiveTabFromOtherWindows(aWindow, aTabId, filter = (tab) => tab?._zenContentsVisible) {
     for (let window of this.#browserWindows) {
       if (window !== aWindow) {
         const tab = this.#getTabFromWindow(window, aTabId);
-        if (tab?._zenContentsVisible) {
+        if (filter(tab)) {
           return tab;
         }
       }
@@ -371,9 +459,22 @@ class nsZenWindowSync {
    * Handles tab switch or window focus events to synchronize tab contents visibility.
    *
    * @param {Window} aWindow - The window that triggered the event.
+   * @param {Object} aPreviousTab - The previously selected tab.
    */
-  onTabSwitchOrWindowFocus(aWindow) {
+  onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     const selectedTab = aWindow.gBrowser.selectedTab;
+    if (aPreviousTab?._zenContentsVisible) {
+      const otherTabToShow = this.#getActiveTabFromOtherWindows(
+        aWindow,
+        aPreviousTab.id,
+        (tab) => tab?.selected
+      );
+      if (otherTabToShow) {
+        otherTabToShow._zenContentsVisible = true;
+        delete aPreviousTab._zenContentsVisible;
+        this.#swapBrowserDocShells(otherTabToShow, aPreviousTab);
+      }
+    }
     if (selectedTab._zenContentsVisible) {
       return;
     }
@@ -463,7 +564,22 @@ class nsZenWindowSync {
 
   on_focus(aEvent) {
     const { ownerGlobal: window } = aEvent.target;
+    if (this.#lastFocusedWindow?.deref() === window) {
+      return;
+    }
+    this.#lastFocusedWindow = new WeakRef(window);
+    this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
     this.onTabSwitchOrWindowFocus(window);
+  }
+
+  on_TabSelect(aEvent) {
+    const tab = aEvent.target;
+    if (this.#lastSelectedTab?.deref() === tab) {
+      return;
+    }
+    this.#lastSelectedTab = new WeakRef(tab);
+    const previousTab = aEvent.detail.previousTab;
+    this.onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
   on_unload() {}

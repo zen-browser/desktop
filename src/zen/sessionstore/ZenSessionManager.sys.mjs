@@ -13,8 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionSaver: 'resource:///modules/sessionstore/SessionSaver.sys.mjs',
 });
 
-const LAZY_COLLECT_THRESHOLD = 5 * 60 * 1000; // 5 minutes
-const OBSERVING = ['sessionstore-state-write-complete', 'browser-window-before-show'];
+const OBSERVING = ['browser-window-before-show'];
 
 class nsZenSessionManager {
   #file;
@@ -56,10 +55,6 @@ class nsZenSessionManager {
 
   observe(aSubject, aTopic) {
     switch (aTopic) {
-      case 'sessionstore-state-write-complete': {
-        this.#saveState(true);
-        break;
-      }
       case 'browser-window-before-show': // catch new windows
         this.#onBeforeBrowserWindowShown(aSubject);
         break;
@@ -74,76 +69,68 @@ class nsZenSessionManager {
     void aWindow;
   }
 
-  get #topMostWindow() {
-    return lazy.BrowserWindowTracker.getTopWindow();
-  }
-
   /**
    * Saves the current session state. Collects data and writes to disk.
    *
-   * @param forceUpdateAllWindows (optional)
-   *        Forces us to recollect data for all windows and will bypass and
-   *        update the corresponding caches.
+   * @param state
+   *        The current session state.
    */
-  async #saveState(forceUpdateAllWindows = false) {
+  saveState(state) {
     if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
       // Don't save (or even collect) anything in permanent private
       // browsing mode
       return;
     }
-    // Collect an initial snapshot of window data before we do the flush.
-    const window = this.#topMostWindow;
-    // We don't have any normal windows or no windows at all
-    if (!window) {
-      return;
-    }
-    this.#collectWindowData(this.#topMostWindow, forceUpdateAllWindows);
+    this.#collectWindowData(state);
     this.#file.store();
   }
 
   /**
    * Collects session data for a given window.
    *
-   * @param window
-   *        The window to collect data for.
-   * @param forceUpdate
-   *        Forces us to recollect data and will bypass and update the
-   *        corresponding caches.
+   * @param state
+   *        The current session state.
    */
-  #collectWindowData(window, forceUpdate = false) {
+  #collectWindowData(state) {
     let sidebarData = this.#sidebar;
-    if (!sidebarData || forceUpdate) {
+    if (!sidebarData) {
       sidebarData = {};
     }
 
-    // If it hasn't changed, don't update.
-    if (
-      !forceUpdate &&
-      sidebarData.lastCollected &&
-      Date.now() - sidebarData.lastCollected < LAZY_COLLECT_THRESHOLD
-    ) {
-      return;
-    }
     sidebarData.lastCollected = Date.now();
-    this.#collectTabsData(window, sidebarData);
+    this.#collectTabsData(sidebarData, state);
     this.#sidebar = sidebarData;
   }
 
   /**
    * Collects session data for all tabs in a given window.
    *
-   * @param aWindow
-   *        The window to collect tab data for.
-   * @param winData
-   *        The window data object to populate.
+   * @param sidebarData
+   *        The sidebar data object to populate.
+   * @param state
+   *        The current session state.
    */
-  #collectTabsData(aWindow, sidebarData) {
-    const winData = lazy.SessionStore.getWindowState(aWindow).windows[0];
-    if (!winData) return;
-    sidebarData.tabs = winData.tabs;
-    sidebarData.folders = winData.folders;
-    sidebarData.splitViewData = winData.splitViewData;
-    sidebarData.groups = winData.groups;
+  #collectTabsData(sidebarData, state) {
+    if (!state?.windows?.length) return;
+
+    const tabIdRelationMap = new Map();
+    for (const window of state.windows) {
+      // Only accept the tabs with `_zenIsActiveTab` set to true from
+      // every window. We do this to avoid collecting tabs with invalid
+      // state when multiple windows are open. Note that if we a tab without
+      // this flag set in any other window, we just add it anyway.
+      for (const tabData of window.tabs) {
+        if (!tabIdRelationMap.has(tabData.zenSyncId) || tabData._zenIsActiveTab) {
+          tabIdRelationMap.set(tabData.zenSyncId, tabData);
+        }
+      }
+    }
+
+    sidebarData.tabs = Array.from(tabIdRelationMap.values());
+
+    sidebarData.folders = state.windows[0].folders;
+    sidebarData.splitViewData = state.windows[0].splitViewData;
+    sidebarData.groups = state.windows[0].groups;
   }
 
   restoreWindowData(aWindowData) {

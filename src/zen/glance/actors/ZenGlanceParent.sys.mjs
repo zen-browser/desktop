@@ -8,8 +8,11 @@ export class ZenGlanceParent extends JSWindowActorParent {
 
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenGlance:GetActivationMethod': {
-        return Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl');
+      case 'ZenGlance:GetConfig': {
+        return {
+          activationMethod: Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl'),
+          holdDuration: Services.prefs.getIntPref('zen.glance.activation-hold-duration', 300),
+        };
       }
       case 'ZenGlance:OpenGlance': {
         this.openGlance(this.browsingContext.topChromeWindow, message.data);

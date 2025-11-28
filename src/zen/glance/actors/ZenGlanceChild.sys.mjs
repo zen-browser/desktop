@@ -3,6 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
+  #holdDuration;
+  #shouldGlanceOpen = false;
 
   constructor() {
     super();
@@ -15,13 +17,18 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
+  async #initConfig() {
+    const cfg = await this.sendQuery('ZenGlance:GetConfig');
+    this.#activationMethod = cfg.activationMethod;
+    this.#holdDuration = cfg.holdDuration;
   }
 
-  #ensureOnlyKeyModifiers(event) {
-    return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
-  }
+  #countModifiers(event) {
+    return Number(event.ctrlKey) +
+           Number(event.altKey) +
+           Number(event.shiftKey) +
+           Number(event.metaKey);
+  }  
 
   #openGlance(target) {
     let url = target.href;
@@ -79,23 +86,31 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
+    this.#shouldGlanceOpen = false;
+    setTimeout(() => {
+      this.#shouldGlanceOpen = true;
+    }, (this.#activationMethod === 'hold') ? this.#holdDuration : 0);
   }
 
   on_click(event) {
+    if (event.button !== 0 || event.defaultPrevented || !this.#shouldGlanceOpen) {
+      return;
+    }
     const { target } = this.#getTargetFromEvent(event);
-    if (event.button !== 0 || event.defaultPrevented || this.#ensureOnlyKeyModifiers(event)) {
+    const modifiers = this.#countModifiers(event);
+    if (modifiers > 1) {
       return;
     }
     const activationMethod = this.#activationMethod;
-    if (activationMethod === 'ctrl' && !event.ctrlKey) {
+    if (
+      (activationMethod === "ctrl"  && !event.ctrlKey)
+      || (activationMethod === "alt"   && !event.altKey)
+      || (activationMethod === "shift" && !event.shiftKey)
+      || (activationMethod === "meta"  && !event.metaKey)
+      || (activationMethod === "hold"  && modifiers !== 0)
+    ) {
       return;
-    } else if (activationMethod === 'alt' && !event.altKey) {
-      return;
-    } else if (activationMethod === 'shift' && !event.shiftKey) {
-      return;
-    } else if (activationMethod === 'meta' && !event.metaKey) {
-      return;
-    }
+    } 
     event.preventDefault();
     event.stopPropagation();
     this.#openGlance(target);
@@ -111,6 +126,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
+    await this.#initConfig();
   }
 }

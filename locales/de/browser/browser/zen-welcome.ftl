@@ -5,8 +5,8 @@
 zen-welcome-title-line1 = Willkommen zu
 zen-welcome-title-line2 = einem ruhigeren Internet
 zen-welcome-import-title = Ein neuer Anfang, dieselben Lesezeichen
-zen-welcome-import-description-1 = Ihre Lesezeichen, Ihr Verlauf und Ihre Passwörter sind wie eine Spur durch das Internet – lassen Sie sie nicht zurück!
-zen-welcome-import-description-2 = Übertrage sie ganz einfach aus einem anderen Browser und mache genau dort weiter, wo du aufgehört hast.
+zen-welcome-import-description-1 = Deine Lesezeichen, dein Verlauf und deine Passwörter sind wie eine Spur durch das Internet – lass sie nicht zurück!
+zen-welcome-import-description-2 = Übertrage sie ganz einfach aus einem anderen Browser und mach genau dort weiter, wo du aufgehört hast..
 zen-welcome-import-button = Jetzt importieren
 zen-welcome-set-default-browser = { -brand-short-name } als Standardbrowser festlegen
 zen-welcome-dont-set-default-browser = { -brand-short-name } NICHT als Standardbrowser festlegen

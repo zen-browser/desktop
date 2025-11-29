@@ -2,42 +2,42 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Aktuelles Profil
-unified-extensions-description = Erweiterungen werden verwendet, um { -brand-short-name } zusätzliche Funktionen hinzuzufügen.
+zen-panel-ui-current-profile-text = Dein aktuelles Profil
+unified-extensions-description = Mit Erweiterungen kannst du { -brand-short-name } um zusätzliche Funktionen erweitern.
 tab-context-zen-reset-pinned-tab = 
     .label = Angehefteten Tab zurücksetzen
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Zu Essentials hinzufügen
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } Plätze belegt
+tab-context-zen-add-essential-badge = { $num } von { $max } Plätzen belegt
 tab-context-zen-remove-essential = 
     .label = Aus Essentials entfernen
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Angeheftete URL durch aktuelle ersetzen
     .accesskey = C
-zen-themes-corrupted = Deine { -brand-short-name } Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
-zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Sie wurde auf die Standard-Tastenkürzel zurückgesetzt.
+zen-themes-corrupted = Deine { -brand-short-name } Mods-Datei ist beschädigt. Wir haben sie auf das Standard-Design zurückgesetzt.
+zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Wir haben sie auf die Standard-Tastenkürzel zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Die neue Adressleiste wurde aktiviert und macht neue Tab-Seiten überflüssig.<br/><br/>
-    Öffne einen neuen Tab, um die neue Adressleiste in Aktion zu sehen!
+    Die neue Adressleiste ist jetzt aktiv! Dadurch brauchst du keine neuen Tab-Seiten mehr.<br/><br/>
+    Öffne einfach einen neuen Tab, um die neue Adressleiste auszuprobieren!
 zen-disable = Deaktivieren
 pictureinpicture-minimize-btn = 
     .aria-label = Minimieren
     .tooltip = Minimieren
-zen-panel-ui-gradient-generator-custom-color = Benutzerdefinierte Farbe
-zen-panel-ui-gradient-generator-saved-message = Farbverlauf erfolgreich gespeichert!
-zen-copy-current-url-confirmation = Aktuelle URL kopiert!
+zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
+zen-panel-ui-gradient-generator-saved-message = Farbverlauf gespeichert!
+zen-copy-current-url-confirmation = URL kopiert!
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
     .label = Bestätigen
-zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde durch die aktuelle URL ersetzt!
-zen-tabs-renamed = Tab wurde erfolgreich umbenannt!
-zen-background-tab-opened-toast = Neuer Hintergrund-Tab geöffnet!
-zen-workspace-renamed-toast = Arbeitsbereich wurde erfolgreich umbenannt!
+zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde aktualisiert!
+zen-tabs-renamed = Tab umbenannt!
+zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
+zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
 zen-library-sidebar-workspaces = 
     .label = Arbeitsbereiche
 zen-library-sidebar-mods = 
@@ -86,15 +86,15 @@ zen-site-data-header-reader-mode =
 zen-site-data-header-screenshot = 
     .tooltiptext = Screenshot erstellen
 zen-site-data-header-bookmark = 
-    .tooltiptext = Diese Seite als Lesezeichen hinzufügen
+    .tooltiptext = Diese Seite als Lesezeichen speichern
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL kopieren
 zen-site-data-setting-site-protection = Tracking-Schutz
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = Ein neuer Ort für Add-ons, Berechtigungen und mehr
-zen-site-data-panel-feature-callout-subtitle = Klicke auf das Symbol, um Website-Einstellungen zu verwalten, Sicherheitsinformationen anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.
+zen-site-data-panel-feature-callout-title = Hier findest du Add-ons, Berechtigungen und mehr
+zen-site-data-panel-feature-callout-subtitle = Klicke auf das Symbol, um Website-Einstellungen anzupassen, Sicherheitsinfos anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.
 zen-open-link-in-glance = 
     .label = Link in Glance öffnen
     .accesskey = G
@@ -102,9 +102,9 @@ zen-sidebar-notification-updated-heading = Update abgeschlossen!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = Was in {-brand-short-name } neu ist
+zen-sidebar-notification-updated-label = Was in { -brand-short-name } neu ist
 zen-sidebar-notification-updated-tooltip = 
     .title = Versionshinweise anzeigen
-zen-sidebar-notification-restart-safe-mode-label = Ist etwas kaputtgegangen?
+zen-sidebar-notification-restart-safe-mode-label = Funktioniert etwas nicht?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Im abgesicherten Modus neu starten

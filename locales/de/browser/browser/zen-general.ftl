@@ -18,10 +18,10 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Angeheftete URL durch aktuelle ersetzen
     .accesskey = C
 zen-themes-corrupted = Deine { -brand-short-name } Mods-Datei ist beschädigt. Wir haben sie auf das Standard-Design zurückgesetzt.
-zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Wir haben sie auf die Standard-Tastenkürzel zurückgesetzt.
+zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkombinationsdatei ist beschädigt. Sie wurde auf die Standard-Tastenkombinationen zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Die neue Adressleiste ist jetzt aktiv! Dadurch brauchst du keine neuen Tab-Seiten mehr.<br/><br/>
+    Die neue Adressleiste wurde aktiviert und macht neue Tab-Seiten überflüssig.<br/><br/>
     Öffne einfach einen neuen Tab, um die neue Adressleiste auszuprobieren!
 zen-disable = Deaktivieren
 pictureinpicture-minimize-btn = 

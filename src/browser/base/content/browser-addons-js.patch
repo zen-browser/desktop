@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..5b3d8712e5a8a12c0d2021488478269525550acd 100644
+index 71287d0bd7509f0b4da4dd4f3697d5ed6bdb5765..8ada005e02209a8f7e9667b0c08d7e468372163b 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -56,7 +56,41 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..5b3d8712e5a8a12c0d20214884782695
        "#overflowed-extensions-list"
      );
 
-@@ -2681,7 +2681,7 @@ var gUnifiedExtensions = {
+@@ -2651,16 +2651,23 @@ get panel() {
+     );
+     template.replaceWith(template.content);
+     this._panel = document.getElementById("unified-extensions-panel");
+-    let customizationArea = this._panel.querySelector(
++    this.initializePanel(this._panel);
++  }
++  return this._panel;
++},
++
++  initializePanel(panel) {
++    let customizationArea = panel.querySelector(
+       "#unified-extensions-area"
+     );
++
+     CustomizableUI.registerPanelNode(
+       customizationArea,
+       CustomizableUI.AREA_ADDONS
+     );
+-    CustomizableUI.addPanelCloseListeners(this._panel);
++    CustomizableUI.addPanelCloseListeners(panel);
+
+-    this._panel
++    panel
+       .querySelector("#unified-extensions-manage-extensions")
+       .addEventListener("command", () => {
+         BrowserAddonUI.openAddonsMgr("addons://list/extension");
+@@ -2675,13 +2682,11 @@ get panel() {
+         el.setAttribute("data-l10n-id", el.getAttribute("data-lazy-l10n-id"));
+         el.removeAttribute("data-lazy-l10n-id");
+       });
+-  }
+-  return this._panel;
+-},
++  },
 
    // `aEvent` and `reason` are optional. If `reason` is specified, it should be
    // a valid argument to gUnifiedExtensions.recordButtonTelemetry().
@@ -65,7 +99,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..5b3d8712e5a8a12c0d20214884782695
      if (!CustomizationHandler.isCustomizing()) {
        if (aEvent) {
          if (
-@@ -2718,32 +2718,30 @@ var gUnifiedExtensions = {
+@@ -2718,32 +2723,30 @@ get panel() {
        this.blocklistAttentionInfo =
          await AddonManager.getBlocklistAttentionInfo();
 
@@ -104,7 +138,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..5b3d8712e5a8a12c0d20214884782695
            triggerEvent: aEvent,
          });
        }
-@@ -2930,18 +2928,20 @@ var gUnifiedExtensions = {
+@@ -2930,18 +2933,20 @@ get panel() {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
 

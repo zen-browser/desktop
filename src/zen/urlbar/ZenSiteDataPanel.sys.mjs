@@ -149,28 +149,7 @@ export class nsZenSiteDataPanel {
 
   #initUnifiedPanel() {
     const panel = this.document.getElementById('zen-unified-site-data-panel');
-    const customizationArea = panel?.querySelector('#unified-extensions-area');
-
-    // Partial implementation of "get panel()" from engine/browser/base/content/browser-addons.js
-    const { BrowserAddonUI, CustomizableUI } = this.window;
-
-    CustomizableUI.registerPanelNode(customizationArea, CustomizableUI.AREA_ADDONS);
-    CustomizableUI.addPanelCloseListeners(panel);
-
-    panel.querySelector('#unified-extensions-manage-extensions').addEventListener('command', () => {
-      BrowserAddonUI.openAddonsMgr('addons://list/extension');
-    });
-
-    // Lazy-load the l10n strings. Those strings are used for the CUI and
-    // non-CUI extensions in the unified extensions panel.
-    this.document
-      .getElementById('unified-extensions-context-menu')
-      .querySelectorAll('[data-lazy-l10n-id]')
-      .forEach((el) => {
-        el.setAttribute('data-l10n-id', el.getAttribute('data-lazy-l10n-id'));
-        el.removeAttribute('data-lazy-l10n-id');
-      });
-
+    this.window.gUnifiedExtensions.initializePanel(panel);
     return panel;
   }
 

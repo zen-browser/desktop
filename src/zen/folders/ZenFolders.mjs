@@ -857,7 +857,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       .open(group.icon, { onlySvgIcons: true })
       .then((icon) => {
         this.setFolderUserIcon(group, icon);
-        group.dispatchEvent(new CustomEvent('ZenFolderIconChanged', { bubbles: true }));
+        group.dispatchEvent(new CustomEvent('TabGroupUpdate', { bubbles: true }));
       })
       .catch((err) => {
         console.error(err);

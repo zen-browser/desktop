@@ -24,6 +24,11 @@ const EVENTS = [
   'TabAddedToEssentials',
   'TabRemovedFromEssentials',
 
+  'TabGroupUpdate',
+  'TabGroupCreate',
+  'TabGroupRemoved',
+  'TabGroupMoved',
+
   'TabSelect',
 
   'focus',
@@ -212,14 +217,14 @@ class nsZenWindowSync {
   }
 
   /**
-   * Retrieves a tab element from a window by its ID.
+   * Retrieves a item element from a window by its ID.
    *
-   * @param {Window} aWindow - The window containing the tab.
-   * @param {string} aTabId - The ID of the tab to retrieve.
-   * @returns {Object|null} The tab element if found, otherwise null.
+   * @param {Window} aWindow - The window containing the item.
+   * @param {string} aItemId - The ID of the item to retrieve.
+   * @returns {MozTabbrowserTab|MozTabbrowserTabGroup|null} The item element if found, otherwise null.
    */
-  #getTabFromWindow(aWindow, aTabId) {
-    return aWindow.document.getElementById(aTabId);
+  #getItemFromWindow(aWindow, aItemId) {
+    return aWindow.document.getElementById(aItemId);
   }
 
   /**
@@ -230,112 +235,142 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The window containing the tabs.
    * @param {number} flags - The sync flags indicating what to synchronize.
    */
-  #syncTabWithOriginal(aOriginalTab, aTargetTab, aWindow, flags = 0) {
-    if (!aOriginalTab || !aTargetTab) {
+  #syncItemWithOriginal(aOriginalItem, aTargetItem, aWindow, flags = 0) {
+    if (!aOriginalItem || !aTargetItem) {
       return;
     }
-    const { gBrowser } = aWindow;
+    const { gBrowser, gZenFolders } = aWindow;
     if (flags & SYNC_FLAG_ICON) {
-      gBrowser.setIcon(aTargetTab, gBrowser.getIcon(aOriginalTab));
+      if (gBrowser.isTab(aOriginalItem)) {
+        gBrowser.setIcon(aTargetItem, gBrowser.getIcon(aOriginalItem));
+      } else if (aOriginalItem.isZenFolder) {
+        // Icons are a zen-only feature for tab groups.
+        gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
+      }
     }
     if (flags & SYNC_FLAG_LABEL) {
-      gBrowser._setTabLabel(aTargetTab, aOriginalTab.label);
-    }
-    if (flags & SYNC_FLAG_MOVE && !aTargetTab.hasAttribute('zen-empty-tab')) {
-      const workspaceId = aOriginalTab.getAttribute('zen-workspace-id');
-      if (workspaceId) {
-        aTargetTab.setAttribute('zen-workspace-id', workspaceId);
-      } else {
-        aTargetTab.removeAttribute('zen-workspace-id');
+      if (gBrowser.isTab(aOriginalItem)) {
+        gBrowser._setTabLabel(aTargetItem, aOriginalItem.label);
+      } else if (gBrowser.isTabGroup(aOriginalItem)) {
+        aTargetItem.label = aOriginalItem.label;
       }
-      this.#syncTabPosition(aOriginalTab, aTargetTab, aWindow);
     }
-    lazy.TabStateFlusher.flush(aTargetTab.linkedBrowser);
+    if (flags & SYNC_FLAG_MOVE && !aTargetItem.hasAttribute('zen-empty-tab')) {
+      const workspaceId = aOriginalItem.getAttribute('zen-workspace-id');
+      if (workspaceId) {
+        aTargetItem.setAttribute('zen-workspace-id', workspaceId);
+      } else {
+        aTargetItem.removeAttribute('zen-workspace-id');
+      }
+      this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
+    }
+    if (gBrowser.isTab(aTargetItem)) {
+      lazy.TabStateFlusher.flush(aTargetItem.linkedBrowser);
+    }
   }
 
   /**
-   * Synchronizes the position of the target tab with the original tab.
+   * Synchronizes the position of the target item with the original item.
    *
-   * @param {Object} aOriginalTab - The original tab to copy from.
-   * @param {Object} aTargetTab - The target tab to copy to.
-   * @param {Window} aWindow - The window containing the tabs.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aOriginalItem - The original item to copy from.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aTargetItem - The target item to copy to.
+   * @param {Window} aWindow - The window containing the items.
    */
-  #syncTabPosition(aOriginalTab, aTargetTab, aWindow) {
+  #syncItemPosition(aOriginalItem, aTargetItem, aWindow) {
     const { gBrowser, gZenPinnedTabManager } = aWindow;
-    const originalIsEssential = aOriginalTab.hasAttribute('zen-essential');
-    const targetIsEssential = aTargetTab.hasAttribute('zen-essential');
-    const originalIsPinned = aOriginalTab.pinned;
-    const targetIsPinned = aTargetTab.pinned;
+    const originalIsEssential = aOriginalItem.hasAttribute('zen-essential');
+    const targetIsEssential = aTargetItem.hasAttribute('zen-essential');
+    const originalIsPinned = aOriginalItem.pinned;
+    const targetIsPinned = aTargetItem.pinned;
 
-    if (originalIsEssential !== targetIsEssential) {
-      if (originalIsEssential) {
-        gZenPinnedTabManager.addToEssentials(aTargetTab);
-      } else {
-        gZenPinnedTabManager.removeEssentials(aTargetTab, /* unpin= */ !targetIsPinned);
-      }
-    } else if (originalIsPinned !== targetIsPinned) {
-      if (originalIsPinned) {
-        gBrowser.pinTab(aTargetTab);
-      } else {
-        gBrowser.unpinTab(aTargetTab);
+    const isGroup = gBrowser.isTabGroup(aOriginalItem);
+    const isTab = !isGroup;
+
+    if (isTab) {
+      if (originalIsEssential !== targetIsEssential) {
+        if (originalIsEssential) {
+          gZenPinnedTabManager.addToEssentials(aTargetItem);
+        } else {
+          gZenPinnedTabManager.removeEssentials(aTargetItem, /* unpin= */ !targetIsPinned);
+        }
+      } else if (originalIsPinned !== targetIsPinned) {
+        if (originalIsPinned) {
+          gBrowser.pinTab(aTargetItem);
+        } else {
+          gBrowser.unpinTab(aTargetItem);
+        }
       }
     }
 
-    this.#moveTabToMatchOriginal(aOriginalTab, aTargetTab, aWindow, {
+    this.#moveItemToMatchOriginal(aOriginalItem, aTargetItem, aWindow, {
       isEssential: originalIsEssential,
       isPinned: originalIsPinned,
     });
   }
 
   /**
-   * Moves the target tab to match the position of the original tab.
+   * Moves the target item to match the position of the original item.
    *
-   * @param {Object} aOriginalTab - The original tab to match.
-   * @param {Object} aTargetTab - The target tab to move.
-   * @param {Window} aWindow - The window containing the tabs.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aOriginalItem - The original item to match.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aTargetItem - The target item to move.
+   * @param {Window} aWindow - The window containing the items.
    */
-  #moveTabToMatchOriginal(aOriginalTab, aTargetTab, aWindow, { isEssential, isPinned }) {
+  #moveItemToMatchOriginal(aOriginalItem, aTargetItem, aWindow, { isEssential, isPinned }) {
     const { gBrowser, gZenWorkspaces } = aWindow;
-    const originalSibling = aOriginalTab.previousElementSibling;
+    const originalSibling = aOriginalItem.previousElementSibling;
     let isFirstTab = true;
     if (gBrowser.isTabGroup(originalSibling) || gBrowser.isTab(originalSibling)) {
-      isFirstTab = !originalSibling.hasAttribute('id');
+      isFirstTab =
+        !originalSibling.hasAttribute('id') || originalSibling.hasAttribute('zen-empty-tab');
     }
 
-    gBrowser.zenHandleTabMove(aOriginalTab, () => {
+    gBrowser.zenHandleTabMove(aOriginalItem, () => {
       if (isFirstTab) {
         let container;
+        const parentGroup = aOriginalItem.group;
+        if (parentGroup?.hasAttribute('id')) {
+          container = this.#getItemFromWindow(aWindow, parentGroup.getAttribute('id'));
+          if (container) {
+            if (container?.tabs?.length) {
+              // First tab in folders is the empty tab placeholder.
+              container.tabs[0].after(aTargetItem);
+            } else {
+              container.appendChild(aTargetItem);
+            }
+            return;
+          }
+        }
         if (isEssential) {
-          container = gZenWorkspaces.getEssentialsSection(aTargetTab);
+          container = gZenWorkspaces.getEssentialsSection(aTargetItem);
         } else {
-          const workspaceId = aTargetTab.getAttribute('zen-workspace-id');
+          const workspaceId = aTargetItem.getAttribute('zen-workspace-id');
           const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
           container = isPinned
-            ? workspaceElement.pinnedTabsContainer
-            : workspaceElement.tabsContainer;
+            ? workspaceElement?.pinnedTabsContainer
+            : workspaceElement?.tabsContainer;
         }
         if (container) {
-          container.insertBefore(aTargetTab, container.firstChild);
+          container.insertBefore(aTargetItem, container.firstChild);
         }
         return;
       }
-      const relativeTab = this.#getTabFromWindow(aWindow, originalSibling.id);
+      const relativeTab = this.#getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
-        relativeTab.after(aTargetTab);
+        relativeTab.after(aTargetItem);
       }
     });
   }
 
   /**
-   * Synchronizes a tab across all browser windows.
+   * Synchronizes a item across all browser windows.
    *
-   * @param {Object} aTab - The tab to synchronize.
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aItem - The item to synchronize.
    * @param {number} flags - The sync flags indicating what to synchronize.
    */
-  #syncTabForAllWindows(aTab, flags = 0) {
-    const window = aTab.ownerGlobal;
+  #syncItemForAllWindows(aItem, flags = 0) {
+    const window = aItem.ownerGlobal;
     this.#runOnAllWindows(window, (win) => {
-      this.#syncTabWithOriginal(aTab, this.#getTabFromWindow(win, aTab.id), win, flags);
+      this.#syncItemWithOriginal(aItem, this.#getItemFromWindow(win, aItem.id), win, flags);
     });
   }
 
@@ -354,7 +389,6 @@ class nsZenWindowSync {
     for (let attr of kAttributesToRemove) {
       aOtherTab.removeAttribute(attr);
     }
-    
     // Recalculate the focus in order to allow the user to continue typing
     // inside the web contentx area without having to click outside and back in.
     aOurTab.linkedBrowser.blur();
@@ -446,7 +480,7 @@ class nsZenWindowSync {
   #getActiveTabFromOtherWindows(aWindow, aTabId, filter = (tab) => tab?._zenContentsVisible) {
     for (let window of this.#browserWindows) {
       if (window !== aWindow) {
-        const tab = this.#getTabFromWindow(window, aTabId);
+        const tab = this.#getItemFromWindow(window, aTabId);
         if (filter(tab)) {
           return tab;
         }
@@ -493,8 +527,8 @@ class nsZenWindowSync {
    * @param {number} flags - The sync flags indicating what to synchronize.
    */
   #delegateGenericSyncEvent(aEvent, flags = 0) {
-    const tab = aEvent.target;
-    this.#syncTabForAllWindows(tab, flags);
+    const item = aEvent.target;
+    this.#syncItemForAllWindows(item, flags);
   }
 
   /* Mark: Event Handlers */
@@ -502,19 +536,22 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
+    if (tab.selected) {
+      tab._zenContentsVisible = true;
+    }
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
     }
     tab.id = this.#newTabSyncId;
-    if (tab.selected) {
-      tab._zenContentsVisible = true;
-    }
     this.#runOnAllWindows(window, (win) => {
       const newTab = win.gBrowser.addTrustedTab('about:blank', { animate: true });
       newTab.setAttribute('zen-workspace-id', tab.getAttribute('zen-workspace-id') || '');
       newTab.id = tab.id;
-      this.#syncTabWithOriginal(
+      if (tab.hasAttribute('zen-empty-tab')) {
+        newTab.setAttribute('zen-empty-tab', 'true');
+      }
+      this.#syncItemWithOriginal(
         tab,
         newTab,
         win,
@@ -555,7 +592,7 @@ class nsZenWindowSync {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
     this.#runOnAllWindows(window, (win) => {
-      const targetTab = this.#getTabFromWindow(win, tab.id);
+      const targetTab = this.#getItemFromWindow(win, tab.id);
       if (targetTab) {
         win.gBrowser.removeTab(targetTab, { animate: true });
       }
@@ -583,6 +620,53 @@ class nsZenWindowSync {
   }
 
   on_unload() {}
+
+  on_TabGroupCreate(aEvent) {
+    const tabGroup = aEvent.target;
+    if (tabGroup.id) {
+      // This tab group was opened as part of a sync operation.
+      console.log('Duplicate!');
+    }
+    const window = tabGroup.ownerGlobal;
+    const isFolder = tabGroup.isZenFolder;
+    const isSplitView = tabGroup.hasAttribute('split-view-group');
+    // Tab groups already have an ID upon creation.
+    this.#runOnAllWindows(window, (win) => {
+      const newGroup = isFolder
+        ? win.gZenFolders.createFolder([], {})
+        : win.gBrowser.addTabGroup({ splitView: isSplitView });
+      newGroup.id = tabGroup.id;
+      this.#syncItemWithOriginal(
+        tabGroup,
+        newGroup,
+        win,
+        SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
+      );
+    });
+  }
+
+  on_TabGroupRemoved(aEvent) {
+    const tabGroup = aEvent.target;
+    const window = tabGroup.ownerGlobal;
+    this.#runOnAllWindows(window, (win) => {
+      const targetGroup = this.#getItemFromWindow(win, tabGroup.id);
+      if (targetGroup) {
+        if (targetGroup.isZenFolder) {
+          targetGroup.delete();
+        } else {
+          win.gBrowser.removeTabGroup(targetGroup, { isUserTriggered: true });
+        }
+      }
+    });
+  }
+
+  on_TabGroupMoved(aEvent) {
+    return this.on_TabMove(aEvent);
+  }
+
+  on_TabGroupUpdate(aEvent) {
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON | SYNC_FLAG_LABEL);
+  }
 }
 
 export const ZenWindowSync = new nsZenWindowSync();

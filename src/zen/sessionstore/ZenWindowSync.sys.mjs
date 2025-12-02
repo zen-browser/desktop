@@ -346,19 +346,19 @@ class nsZenWindowSync {
    * @param {Object} aOtherTab - The tab in the other window.
    */
   async #swapBrowserDocShells(aOurTab, aOtherTab) {
-    try {
-      await this.#styleSwapedBrowsers(aOurTab, aOtherTab);
-      aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
-      const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
-      // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
-      // but we need to manually remove some attributes from the other tab.
-      for (let attr of kAttributesToRemove) {
-        aOtherTab.removeAttribute(attr);
-      }
-    } catch (e) {
-      // Handle any errors that may occur during the swapBrowsers operation.
-      console.error('Error swapping browsers:', e);
+    await this.#styleSwapedBrowsers(aOurTab, aOtherTab);
+    aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+    const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
+    // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
+    // but we need to manually remove some attributes from the other tab.
+    for (let attr of kAttributesToRemove) {
+      aOtherTab.removeAttribute(attr);
     }
+    
+    // Recalculate the focus in order to allow the user to continue typing
+    // inside the web contentx area without having to click outside and back in.
+    aOurTab.linkedBrowser.blur();
+    aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
   }
 
   /**

@@ -145,13 +145,19 @@ class nsZenSessionManager {
   }
 
   restoreNewWindow(aWindow, SessionStoreInternal) {
+    if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
+      return;
+    }
     lazy.SessionSaver.run().then(() => {
       const state = lazy.SessionStore.getCurrentState(true);
       const windows = state.windows || {};
       let newWindow = Cu.cloneInto(windows[0], {});
       delete newWindow.selected;
       const newState = { windows: [newWindow] };
-      //SessionStoreInternal.restoreWindows(aWindow, newState, {});
+      aWindow._zenRestorePromise = new Promise((resolve) => {
+        SessionStoreInternal.restoreWindows(aWindow, newState, {});
+        resolve();
+      });
     });
   }
 }

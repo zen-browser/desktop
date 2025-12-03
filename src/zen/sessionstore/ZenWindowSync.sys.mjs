@@ -80,7 +80,12 @@ class nsZenWindowSync {
   #browserWindows = {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
-        if (window.__SSi && !window.closed && window.gZenStartup.isReady) {
+        if (
+          window.__SSi &&
+          !window.closed &&
+          window.gZenStartup.isReady &&
+          !window.gZenWorkspaces?.privateWindowOrDisabled
+        ) {
           yield window;
         }
       }
@@ -109,9 +114,23 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The browser window that is about to be shown.
    */
   #onWindowBeforeShow(aWindow) {
+    // There are 2 possibilities to know if we are trying to open
+    // a new *unsynced* window:
+    // 1. We are passing `zen-unsynced` in the window arguments.
+    // 2. We are trying to open a link in a new window where other synced
+    //   windows already exist
+    if (
+      aWindow.arguments.some((arg) => arg === 'zen-unsynced') ||
+      (typeof aWindow.arguments[0] === 'string' &&
+        aWindow.arguments.length > 1 &&
+        [...this.#browserWindows].length > 0)
+    ) {
+      aWindow.document.documentElement.setAttribute('zen-unsynced-window', 'true');
+      return;
+    }
     aWindow.gZenWindowSync = this;
     for (let eventName of EVENTS) {
-      aWindow.addEventListener(eventName, this);
+      aWindow.addEventListener(eventName, this, true);
     }
   }
 
@@ -174,7 +193,7 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.ownerGlobal;
-    if (!window.gZenStartup.isReady) {
+    if (!window.gZenStartup.isReady || window.gZenWorkspaces?.privateWindowOrDisabled) {
       return;
     }
     if (this.#eventHandlingContext.window && this.#eventHandlingContext.window !== window) {
@@ -619,7 +638,13 @@ class nsZenWindowSync {
     this.onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
-  on_unload() {}
+  on_unload(aEvent) {
+    const window = aEvent.target.ownerGlobal;
+    for (let eventName of EVENTS) {
+      window.removeEventListener(eventName, this);
+    }
+    delete window.gZenWindowSync;
+  }
 
   on_TabGroupCreate(aEvent) {
     const tabGroup = aEvent.target;

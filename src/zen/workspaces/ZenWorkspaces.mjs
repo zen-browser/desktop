@@ -55,6 +55,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       this.promiseDBInitialized,
       this.promisePinnedInitialized,
       SessionStore.promiseAllWindowsRestored,
+      window._zenRestorePromise,
     ]);
   }
 
@@ -835,8 +836,12 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     return PrivateBrowsingUtils.isWindowPrivate(window);
   }
 
+  get currentWindowIsSyncing() {
+    return !document.documentElement.hasAttribute('zen-unsynced-window') && !this.isPrivateWindow;
+  }
+
   get privateWindowOrDisabled() {
-    return this.isPrivateWindow || !this.shouldHaveWorkspaces;
+    return !this.shouldHaveWorkspaces || !this.currentWindowIsSyncing;
   }
 
   get workspaceEnabled() {
@@ -865,12 +870,12 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       return this._workspaceCache;
     }
 
-    if (this.isPrivateWindow) {
+    if (!this.currentWindowIsSyncing) {
       this._workspaceCache = {
-        workspaces: this._privateWorkspace ? [this._privateWorkspace] : [],
+        workspaces: this._tempWorkspace ? [this._tempWorkspace] : [],
         lastChangeTimestamp: 0,
       };
-      this._activeWorkspace = this._privateWorkspace?.uuid;
+      this._activeWorkspace = this._tempWorkspace?.uuid;
       return this._workspaceCache;
     }
 
@@ -1111,7 +1116,9 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
 
   shouldCloseWindow() {
     return (
-      !window.toolbar.visible || Services.prefs.getBoolPref('browser.tabs.closeWindowWithLastTab')
+      !window.toolbar.visible ||
+      Services.prefs.getBoolPref('browser.tabs.closeWindowWithLastTab') ||
+      this.privateWindowOrDisabled
     );
   }
 
@@ -1388,7 +1395,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async _propagateWorkspaceData({ ignoreStrip = false, clearCache = true, onInit = false } = {}) {
-    const currentWindowIsPrivate = this.isPrivateWindow;
+    const currentWindowIsPrivate = !this.currentWindowIsSyncing;
     if (onInit) {
       if (currentWindowIsPrivate) return;
       return await this._propagateWorkspaceDataForWindow(this.ownerWindow, {
@@ -1401,7 +1408,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       // For example, when the window is in private browsing mode.
       if (
         !browser.gZenWorkspaces.workspaceEnabled ||
-        browser.gZenWorkspaces.isPrivateWindow !== currentWindowIsPrivate
+        !browser.gZenWorkspaces.currentWindowIsSyncing !== currentWindowIsPrivate
       ) {
         return;
       }
@@ -2450,8 +2457,8 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (!this.workspaceEnabled) {
       return;
     }
-    if (this.isPrivateWindow) {
-      name = 'Private ' + name;
+    if (!this.currentWindowIsSyncing) {
+      name = this.isPrivateWindow ? 'Private ' + name : gZenUIManager.generateUuidv4();
     }
     // get extra tabs remaning (e.g. on new profiles) and just move them to the new workspace
     const extraTabs = Array.from(gBrowser.tabContainer.arrowScrollbox.children).filter(
@@ -2468,8 +2475,8 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       !dontChange,
       containerTabId
     );
-    if (this.isPrivateWindow) {
-      this._privateWorkspace = workspaceData;
+    if (!this.currentWindowIsSyncing) {
+      this._tempWorkspace = workspaceData;
     } else {
       await this.saveWorkspace(workspaceData, dontChange);
     }

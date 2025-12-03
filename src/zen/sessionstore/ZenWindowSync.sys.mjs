@@ -399,8 +399,18 @@ class nsZenWindowSync {
    * @param {Object} aOurTab - The tab in the current window.
    * @param {Object} aOtherTab - The tab in the other window.
    */
-  async #swapBrowserDocShells(aOurTab, aOtherTab) {
+  async #swapBrowserDocShellsAsync(aOurTab, aOtherTab) {
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab);
+    this.#swapBrowserDocSheellsInner(aOurTab, aOtherTab);
+  }
+
+  /**
+   * Swaps the browser docshells between two tabs.
+   *
+   * @param {Object} aOurTab - The tab in the current window.
+   * @param {Object} aOtherTab - The tab in the other window.
+   */
+  #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true) {
     aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
     const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
@@ -408,10 +418,12 @@ class nsZenWindowSync {
     for (let attr of kAttributesToRemove) {
       aOtherTab.removeAttribute(attr);
     }
-    // Recalculate the focus in order to allow the user to continue typing
-    // inside the web contentx area without having to click outside and back in.
-    aOurTab.linkedBrowser.blur();
-    aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
+    if (focus) {
+      // Recalculate the focus in order to allow the user to continue typing
+      // inside the web contentx area without having to click outside and back in.
+      aOurTab.linkedBrowser.blur();
+      aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
+    }
   }
 
   /**
@@ -419,37 +431,40 @@ class nsZenWindowSync {
    *
    * @param {Object} aOurTab - The tab in the current window.
    * @param {Object} aOtherTab - The tab in the other window.
+   * @param {boolean} onClose - Indicates if the styling is done during a tab close operation.
    */
-  async #styleSwapedBrowsers(aOurTab, aOtherTab) {
+  async #styleSwapedBrowsers(aOurTab, aOtherTab, onClose = false) {
     const ourBrowser = aOurTab.linkedBrowser;
     const otherBrowser = aOtherTab.linkedBrowser;
 
-    const browserBlob = await aOtherTab.ownerGlobal.PageThumbs.captureToBlob(
-      aOtherTab.linkedBrowser,
-      {
-        fullScale: true,
-        fullViewport: true,
-      }
-    );
+    if (!onClose) {
+      const browserBlob = await aOtherTab.ownerGlobal.PageThumbs.captureToBlob(
+        aOtherTab.linkedBrowser,
+        {
+          fullScale: true,
+          fullViewport: true,
+        }
+      );
 
-    let mySrc = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(browserBlob);
-      reader.onloadend = function () {
-        // result includes identifier 'data:image/png;base64,' plus the base64 data
-        resolve(reader.result);
-      };
-      reader.onerror = function () {
-        reject(new Error('Failed to read blob as data URL'));
-      };
-    });
+      let mySrc = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(browserBlob);
+        reader.onloadend = function () {
+          // result includes identifier 'data:image/png;base64,' plus the base64 data
+          resolve(reader.result);
+        };
+        reader.onerror = function () {
+          reject(new Error('Failed to read blob as data URL'));
+        };
+      });
 
-    const [img, loadPromise] = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
-    // Run a reflow to ensure the image is rendered before hiding the browser.
-    void img.getBoundingClientRect();
-    await loadPromise;
-    otherBrowser.style.opacity = 0;
-    otherBrowser.style.pointerEvents = 'none';
+      const [img, loadPromise] = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
+      // Run a reflow to ensure the image is rendered before hiding the browser.
+      void img.getBoundingClientRect();
+      await loadPromise;
+      otherBrowser.style.opacity = 0;
+      otherBrowser.style.pointerEvents = 'none';
+    }
 
     this.#maybeRemovePseudoImageForBrowser(ourBrowser);
     ourBrowser.style.opacity = '';
@@ -509,6 +524,32 @@ class nsZenWindowSync {
   }
 
   /**
+   * Moves all active tabs from the specified window to other windows.
+   *
+   * @param {Window} aWindow - The window to move active tabs from.
+   */
+  #moveAllActiveTabsToOtherWindows(aWindow) {
+    const mostRecentWindow = [...this.#browserWindows].find((win) => win !== aWindow);
+    if (!mostRecentWindow || !aWindow.gZenWorkspaces) {
+      return;
+    }
+    const activeTabsOnClosedWindow = aWindow.gZenWorkspaces.allStoredTabs.filter(
+      (tab) => tab._zenContentsVisible
+    );
+    for (let tab of activeTabsOnClosedWindow) {
+      const targetTab = this.#getItemFromWindow(mostRecentWindow, tab.id);
+      if (targetTab) {
+        targetTab._zenContentsVisible = true;
+        this.#swapBrowserDocSheellsInner(targetTab, tab, targetTab.selected);
+        // We can animate later, whats important is to always stay on the same
+        // process and avoid async operations here to avoid the closed window
+        // being unloaded before the swap is done.
+        this.#styleSwapedBrowsers(targetTab, tab, /* onClose =*/ true);
+      }
+    }
+  }
+
+  /**
    * Handles tab switch or window focus events to synchronize tab contents visibility.
    *
    * @param {Window} aWindow - The window that triggered the event.
@@ -525,7 +566,7 @@ class nsZenWindowSync {
       if (otherTabToShow) {
         otherTabToShow._zenContentsVisible = true;
         delete aPreviousTab._zenContentsVisible;
-        this.#swapBrowserDocShells(otherTabToShow, aPreviousTab);
+        this.#swapBrowserDocShellsAsync(otherTabToShow, aPreviousTab);
       }
     }
     if (selectedTab._zenContentsVisible) {
@@ -535,7 +576,7 @@ class nsZenWindowSync {
     selectedTab._zenContentsVisible = true;
     if (otherSelectedTab) {
       delete otherSelectedTab._zenContentsVisible;
-      this.#swapBrowserDocShells(selectedTab, otherSelectedTab);
+      this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab);
     }
   }
 
@@ -644,6 +685,7 @@ class nsZenWindowSync {
       window.removeEventListener(eventName, this);
     }
     delete window.gZenWindowSync;
+    this.#moveAllActiveTabsToOtherWindows(window);
   }
 
   on_TabGroupCreate(aEvent) {

@@ -26,7 +26,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
   zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
-  UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
+  UrlUtils: 'resource://gre/modules/UrlUtils.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(

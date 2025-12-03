@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd61ee1828 100644
+index 15ef352c147eff781d34a3e5fa02fa791bdd6188..b0784e817ad25c7a4983e9f1cb08b293de15a99d 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -31,6 +31,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -10,7 +10,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -822,7 +823,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -821,7 +822,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,7 +24,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -2298,6 +2304,8 @@ var XULBrowserWindow = {
+@@ -2297,6 +2303,8 @@ var XULBrowserWindow = {
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
@@ -33,7 +33,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  
      if (!gMultiProcessBrowser) {
-@@ -3809,7 +3817,7 @@ function warnAboutClosingWindow() {
+@@ -3808,7 +3816,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -42,7 +42,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3849,7 +3857,7 @@ function warnAboutClosingWindow() {
+@@ -3848,7 +3856,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -51,7 +51,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3874,7 +3882,7 @@ function warnAboutClosingWindow() {
+@@ -3873,7 +3881,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -60,7 +60,7 @@ index b4b79e7fb3228ba91bd8afa08659be0d88883725..b4801e2a3076139622d58f81943e61cd
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4796,6 +4804,9 @@ var ConfirmationHint = {
+@@ -4795,6 +4803,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

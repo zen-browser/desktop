@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2a736d9f8 100644
+index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac8793422474052f476573 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
-@@ -411,7 +411,7 @@
+@@ -436,7 +436,7 @@
        // and we're not hitting the scroll buttons.
        if (
          event.button != 0 ||
@@ -11,7 +11,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
          event.composedTarget.localName == "toolbarbutton"
        ) {
          return;
-@@ -492,7 +492,6 @@
+@@ -517,7 +517,6 @@
              });
            }
          } else if (isTabGroupLabel(event.target)) {
@@ -19,7 +19,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
          } else if (
            event.originalTarget.closest("scrollbox") &&
            !Services.prefs.getBoolPref(
-@@ -528,6 +527,9 @@
+@@ -553,6 +552,9 @@
      }
  
      on_keydown(event) {
@@ -29,15 +29,15 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
        let { altKey, shiftKey } = event;
        let [accel, nonAccel] =
          AppConstants.platform == "macosx"
-@@ -720,7 +722,6 @@
- 
-       this.toggleAttribute("overflow", true);
+@@ -747,7 +749,6 @@
        this._updateCloseButtons();
--      this._handleTabSelect(true);
+ 
+       if (!this.#animatingGroups.size) {
+-        this._handleTabSelect(true);
+       }
  
        document
-         .getElementById("tab-preview-panel")
-@@ -780,7 +781,7 @@
+@@ -808,7 +809,7 @@
      }
  
      get newTabButton() {
@@ -46,7 +46,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
      }
  
      get verticalMode() {
-@@ -796,6 +797,7 @@
+@@ -824,6 +825,7 @@
      }
  
      get overflowing() {
@@ -54,7 +54,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
        return this.hasAttribute("overflow");
      }
  
-@@ -809,29 +811,54 @@
+@@ -837,29 +839,54 @@
        if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
          pinnedChildren.pop();
        }
@@ -119,7 +119,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
      }
  
      /**
-@@ -898,17 +925,10 @@
+@@ -926,17 +953,10 @@
  
        let elementIndex = 0;
  
@@ -139,7 +139,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
          if (isTab(child) && child.visible) {
            child.elementIndex = elementIndex++;
            focusableItems.push(child);
-@@ -916,11 +936,13 @@
+@@ -944,11 +964,13 @@
            child.labelElement.elementIndex = elementIndex++;
            focusableItems.push(child.labelElement);
  
@@ -154,7 +154,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
          } else if (child.tagName == "tab-split-view-wrapper") {
            let visibleTabsInSplitView = child.tabs.filter(tab => tab.visible);
            visibleTabsInSplitView.forEach(tab => {
-@@ -964,6 +986,7 @@
+@@ -992,6 +1014,7 @@
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
@@ -162,7 +162,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
      }
  
      _invalidateCachedVisibleTabs() {
-@@ -1067,7 +1090,7 @@
+@@ -1095,7 +1118,7 @@
  
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
@@ -171,7 +171,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
        }
  
        node.before(tab);
-@@ -1162,7 +1185,7 @@
+@@ -1193,7 +1216,7 @@
            // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
@@ -180,7 +180,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1263,8 +1286,10 @@
+@@ -1294,8 +1317,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -191,7 +191,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1273,7 +1298,7 @@
+@@ -1304,7 +1329,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -200,7 +200,7 @@ index 258b9627aaa8a1d26e8aeb987a0b4c67bc1b7abc..6d334761033a0654f28fd417193d2ac2
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
-@@ -1406,7 +1431,7 @@
+@@ -1437,7 +1462,7 @@
      }
  
      _notifyBackgroundTab(aTab) {

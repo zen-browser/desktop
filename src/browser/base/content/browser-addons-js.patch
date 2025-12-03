@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2bd5a757d 100644
+index fadcbfca95ee28140579430c0371baad0e2f216a..7454b801b4ad892d6ad122277eb7c7736e976f9f 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -38,7 +38,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2
      }
  
      return anchorID;
-@@ -2646,11 +2646,7 @@ var gUnifiedExtensions = {
+@@ -2657,11 +2657,7 @@ var gUnifiedExtensions = {
      // Lazy load the unified-extensions-panel panel the first time we need to
      // display it.
      if (!this._panel) {
@@ -51,7 +51,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2
        let customizationArea = this._panel.querySelector(
          "#unified-extensions-area"
        );
-@@ -2703,6 +2699,7 @@ var gUnifiedExtensions = {
+@@ -2714,6 +2710,7 @@ var gUnifiedExtensions = {
          // and no alternative content is available for display in the panel.
          const policies = this.getActivePolicies();
          if (
@@ -59,7 +59,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2
            policies.length &&
            !this.hasExtensionsInPanel(policies) &&
            !this.isPrivateWindowMissingExtensionsWithoutPBMAccess() &&
-@@ -2743,7 +2740,7 @@ var gUnifiedExtensions = {
+@@ -2754,7 +2751,7 @@ var gUnifiedExtensions = {
          this.recordButtonTelemetry(reason || "extensions_panel_showing");
          this.ensureButtonShownBeforeAttachingPanel(panel);
          PanelMultiView.openPopup(panel, this._button, {
@@ -68,7 +68,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..9f400e887424693d0ecceb9db79fccf2
            triggerEvent: aEvent,
          });
        }
-@@ -2930,18 +2927,20 @@ var gUnifiedExtensions = {
+@@ -2941,18 +2938,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

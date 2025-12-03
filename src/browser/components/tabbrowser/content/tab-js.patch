@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577b5fad08c 100644
+index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..02d70e9b0261f92917d274759838cfbfd6214f77 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -78,7 +78,7 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
      }
  
      get hidden() {
-@@ -297,7 +310,7 @@
+@@ -305,7 +318,7 @@
          return false;
        }
  
@@ -87,21 +87,21 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
      }
  
      get lastAccessed() {
-@@ -374,8 +387,11 @@
+@@ -382,7 +395,12 @@
      }
  
      get group() {
--      if (this.parentElement?.tagName == "tab-group") {
--        return this.parentElement;
+-      return this.closest("tab-group");
 +      if (typeof gBrowser === "undefined") {
 +        return null;
 +      }
 +      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
 +        return this.parentElement.parentElement;
-       }
-       return null;
++      }
      }
-@@ -470,6 +486,8 @@
+ 
+     get splitview() {
+@@ -473,6 +491,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -110,7 +110,7 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -524,6 +542,10 @@
+@@ -527,6 +547,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -121,7 +121,7 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -572,6 +594,7 @@
+@@ -575,6 +599,7 @@
              )
            );
          } else {
@@ -129,7 +129,7 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
            gBrowser.removeTab(this, {
              animate: true,
              triggeringEvent: event,
-@@ -584,6 +607,14 @@
+@@ -587,6 +612,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -144,7 +144,7 @@ index 4c1a48424316b29d27ae2bc8b64004df41c87bb6..f1ff9bf0947127a8e9115357cedac577
      }
  
      on_dblclick(event) {
-@@ -607,6 +638,8 @@
+@@ -610,6 +643,8 @@
            animate: true,
            triggeringEvent: event,
          });

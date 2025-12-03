@@ -1,5 +1,5 @@
 diff --git a/browser/components/aboutlogins/content/components/login-list.css b/browser/components/aboutlogins/content/components/login-list.css
-index 3c766eaa80c00ef145168f7a2ceced95ce94295e..db7a7da03c8346f97b472b8e561fec79c1036337 100644
+index e8d2077ca425d9a2b924aa6ac6ba8ada36b76615..95a8ab3dcff832f16068b6739526e8e29f0b4e26 100644
 --- a/browser/components/aboutlogins/content/components/login-list.css
 +++ b/browser/components/aboutlogins/content/components/login-list.css
 @@ -3,7 +3,7 @@

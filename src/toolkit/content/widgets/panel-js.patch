@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/widgets/panel.js b/toolkit/content/widgets/panel.js
-index 1dd4fc2a839fc6fde1ce2fc6437625e8d22bbb90..04fcb049225148f1b1f9c4b16cf2d2537887fbec 100644
+index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..8d8e370ca8549d8208669d4fb344fc8abb54fadd 100644
 --- a/toolkit/content/widgets/panel.js
 +++ b/toolkit/content/widgets/panel.js
-@@ -138,6 +138,9 @@
+@@ -137,6 +137,9 @@
              this.anchorNode.closest("toolbarbutton, .anchor-root") ||
              this.anchorNode;
            anchorRoot.setAttribute("open", "true");
@@ -12,7 +12,7 @@ index 1dd4fc2a839fc6fde1ce2fc6437625e8d22bbb90..04fcb049225148f1b1f9c4b16cf2d253
          }
  
          if (this.getAttribute("animate") != "false") {
-@@ -208,6 +211,9 @@
+@@ -183,6 +186,9 @@
              this.anchorNode.closest("toolbarbutton, .anchor-root") ||
              this.anchorNode;
            anchorRoot.removeAttribute("open");

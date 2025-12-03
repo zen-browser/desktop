@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
-index ddbcd495260b5bcc4f55ebf7c06fcb6b5dc595c7..c629ac40f4fe3e03ffc765d3b65f3d348f4b05c6 100644
+index 26871fb68d4eae54c750b7fcc4db2cf73f9bb9c9..cca3546d0a25aa34be578427ced241856c6a63a7 100644
 --- a/servo/components/style/gecko/media_features.rs
 +++ b/servo/components/style/gecko/media_features.rs
 @@ -13,6 +13,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
@@ -26,12 +26,12 @@ index ddbcd495260b5bcc4f55ebf7c06fcb6b5dc595c7..c629ac40f4fe3e03ffc765d3b65f3d34
  
  fn eval_moz_mac_rtl(context: &Context) -> bool {
      unsafe { bindings::Gecko_MediaFeatures_MacRTL(context.device().document()) }
-@@ -645,7 +655,13 @@ macro_rules! lnf_int_feature {
+@@ -652,7 +662,13 @@ macro_rules! lnf_int_feature {
  /// to support new types in these entries and (2) ensuring that either
  /// nsPresContext::MediaFeatureValuesChanged is called when the value that
  /// would be returned by the evaluator function could change.
--pub static MEDIA_FEATURES: [QueryFeatureDescription; 59] = [
-+pub static MEDIA_FEATURES: [QueryFeatureDescription; 60] = [
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 60] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 61] = [
 +    feature!(
 +        atom!("-moz-bool-pref"),
 +        AllowsRanges::No,

@@ -1,8 +1,8 @@
 diff --git a/browser/themes/osx/browser.css b/browser/themes/osx/browser.css
-index 0a15e3d60d408f119bd03007567d5dd1fa178c36..443901657296d0d15a95e1d39e826b1c008aac4d 100644
+index 79f62b14809196e6ac073b8e560331e96be5d990..dcec04606e78c66673fb602b6a986321d20e1d4c 100644
 --- a/browser/themes/osx/browser.css
 +++ b/browser/themes/osx/browser.css
-@@ -38,7 +38,7 @@
+@@ -37,7 +37,7 @@
  
  .titlebar-buttonbox {
    &:-moz-locale-dir(ltr) {

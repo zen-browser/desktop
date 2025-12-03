@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..02d70e9b0261f92917d274759838cfbfd6214f77 100644
+index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7600f564a 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -121,15 +121,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..02d70e9b0261f92917d274759838cfbf
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -575,6 +599,7 @@
-             )
-           );
-         } else {
-+          gZenPinnedTabManager._removePinnedAttributes(this, true);
-           gBrowser.removeTab(this, {
-             animate: true,
-             triggeringEvent: event,
-@@ -587,6 +612,14 @@
+@@ -587,6 +611,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -144,7 +136,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..02d70e9b0261f92917d274759838cfbf
      }
  
      on_dblclick(event) {
-@@ -610,6 +643,8 @@
+@@ -610,6 +642,8 @@
            animate: true,
            triggeringEvent: event,
          });

@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233bd61eb0f 100644
+index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..c4a1d14b1eb4e2b26dd903c462fb5cf4d5afeafa 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -137,7 +137,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5764,8 +5778,8 @@ var SessionStoreInternal = {
+@@ -5765,8 +5779,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -148,7 +148,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5808,6 +5822,8 @@ var SessionStoreInternal = {
+@@ -5809,6 +5823,8 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
@@ -157,7 +157,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6371,6 +6387,25 @@ var SessionStoreInternal = {
+@@ -6372,6 +6388,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -183,7 +183,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -7289,7 +7324,7 @@ var SessionStoreInternal = {
+@@ -7290,7 +7325,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {
@@ -192,7 +192,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..a7ae5953037bbdab8844c9e400caf233
            // Adjust window.selected
            if (tIndex + 1 < window.selected) {
              window.selected -= 1;
-@@ -7305,7 +7337,7 @@ var SessionStoreInternal = {
+@@ -7305,7 +7340,7 @@ var SessionStoreInternal = {
            );
            // We don't want to increment tIndex here.
            continue;

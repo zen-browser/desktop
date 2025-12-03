@@ -1,5 +1,5 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index f3032042d34766b0e94c56872f91271f307ffc89..8c8540e8bf8d3df5b33e2f0da6b94a32e75684b5 100644
+index 52bca068f90cd8e214900e8f3159e1f7e37fb3e8..bfb5a38258141ed28def7c9a340a61253b0e3274 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
 @@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):
@@ -46,7 +46,7 @@ index f3032042d34766b0e94c56872f91271f307ffc89..8c8540e8bf8d3df5b33e2f0da6b94a32
          return True
  
  
-@@ -2064,7 +2069,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
+@@ -2070,7 +2075,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
  # ==============================================================
  @depends(milestone)
  def require_signing(milestone):

@@ -54,29 +54,27 @@
     pointer-events: none;
   }
 
-  @media -moz-pref('zen.theme.gradient') {
+  &::after {
+    background: var(--zen-main-browser-background);
+    opacity: var(--zen-background-opacity);
+    transition: 0s;
+  }
+
+  &:is(.zen-toolbar-background) {
     &::after {
-      background: var(--zen-main-browser-background);
-      opacity: var(--zen-background-opacity);
-      transition: 0s;
+      background: var(--zen-main-browser-background-toolbar);
     }
+  }
 
-    &:is(.zen-toolbar-background) {
-      &::after {
-        background: var(--zen-main-browser-background-toolbar);
-      }
-    }
+  &::before {
+    background: var(--zen-main-browser-background-old);
+    opacity: calc(1 - var(--zen-background-opacity));
+    transition: 0s;
+  }
 
+  &:is(.zen-toolbar-background) {
     &::before {
-      background: var(--zen-main-browser-background-old);
-      opacity: calc(1 - var(--zen-background-opacity));
-      transition: 0s;
-    }
-
-    &:is(.zen-toolbar-background) {
-      &::before {
-        background: var(--zen-main-browser-background-toolbar-old);
-      }
+      background: var(--zen-main-browser-background-toolbar-old);
     }
   }
 

@@ -227,6 +227,9 @@ window.gZenCompactModeManager = {
     const isIllegalState = this.checkIfIllegalState();
     const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
     const menu = document.getElementById('zen-context-menu-compact-mode');
+    if (!menu) {
+      return;
+    }
     if (isSingleToolbar) {
       menu.setAttribute('hidden', 'true');
       menu.before(menuitem);
@@ -528,9 +531,11 @@ window.gZenCompactModeManager = {
   },
 
   updateContextMenu() {
-    document
-      .getElementById('zen-context-menu-compact-mode-toggle')
-      .setAttribute('checked', this.preference);
+    const toggle = document.getElementById('zen-context-menu-compact-mode-toggle');
+    if (!toggle) {
+      return;
+    }
+    toggle.setAttribute('checked', this.preference);
 
     const hideTabBar = this.canHideSidebar;
     const hideToolbar = this.canHideToolbar;

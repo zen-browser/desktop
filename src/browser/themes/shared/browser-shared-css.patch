@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 2b013ee77bb50db11e73152bd0265dd86e40b726..dc0ba2c8651470bcd81439953adbaca26a4a5b8c 100644
+index 3cecc295f3ac764ed07094021372d35107df78ed..760f8bdcff87a6b803b115b249269438a27f8d80 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
 @@ -102,7 +102,7 @@ body {
@@ -20,7 +20,7 @@ index 2b013ee77bb50db11e73152bd0265dd86e40b726..dc0ba2c8651470bcd81439953adbaca2
    }
  
    /* Themes define a set of toolbox foreground and background colors which we
-@@ -282,13 +280,13 @@ body {
+@@ -281,13 +279,13 @@ body {
  
    @media (-moz-platform: macos) and (not (-moz-mac-rtl)) {
      &:-moz-locale-dir(ltr) {

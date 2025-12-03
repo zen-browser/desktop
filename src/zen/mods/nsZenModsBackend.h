@@ -24,7 +24,7 @@ class nsZenModsBackend final : public nsIZenModsBackend {
   /**
    * @brief Check for the preference and see if the app is on safe mode.
    */
-  auto CheckEnabled() -> bool;
+  auto CheckEnabled() -> void;
 
  private:
   ~nsZenModsBackend() = default;

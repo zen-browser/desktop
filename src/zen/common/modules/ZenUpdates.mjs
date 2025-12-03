@@ -10,8 +10,8 @@ const ZEN_UPDATE_SHOW = 'zen.updates.show-update-notification';
 
 export default function checkForZenUpdates() {
   const version = Services.appinfo.version;
-  const lastVersion = Services.prefs.getStringPref(ZEN_UPDATE_PREF, version);
-
+  const lastVersion = Services.prefs.getStringPref(ZEN_UPDATE_PREF, '');
+  Services.prefs.setStringPref(ZEN_UPDATE_PREF, version);
   if (
     version !== lastVersion &&
     !gZenUIManager.testingEnabled &&

@@ -22,11 +22,11 @@ const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: 'moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs',
-  UrlbarTokenizer: 'moz-src:///browser/components/urlbar/UrlbarTokenizer.sys.mjs',
   QueryScorer: 'moz-src:///browser/components/urlbar/UrlbarProviderInterventions.sys.mjs',
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
   zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
+  UrlUtils: 'resource://gre/modules/UrlUtils.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -72,7 +72,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
         queryContext.searchString.length > 2 &&
-        !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
+        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
     );
   }
 

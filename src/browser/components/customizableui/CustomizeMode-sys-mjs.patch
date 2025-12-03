@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/CustomizeMode.sys.mjs b/browser/components/customizableui/CustomizeMode.sys.mjs
-index fd3c54a1d80f5800ffd2dcaaf594eed4bd2d300c..3178bd28affd8bd2e18c347fde6c3ec00068710c 100644
+index 52e93e9d9d77f6e410d72bee707fccf26f728004..1142f096e1221213195453d60507ba1bd2f7aed9 100644
 --- a/browser/components/customizableui/CustomizeMode.sys.mjs
 +++ b/browser/components/customizableui/CustomizeMode.sys.mjs
 @@ -503,7 +503,7 @@ export class CustomizeMode {

@@ -55,10 +55,10 @@ export interface Modules {
   'chrome://mochitests/content/browser/accessible/tests/browser/Common.sys.mjs': typeof import('chrome://mochitests/content/browser/accessible/tests/browser/Common.sys.mjs');
   'chrome://mochitests/content/browser/accessible/tests/browser/Layout.sys.mjs': typeof import('chrome://mochitests/content/browser/accessible/tests/browser/Layout.sys.mjs');
   'chrome://mochitests/content/browser/devtools/client/debugger/test/mochitest/examples/worker-esm-dep.mjs': typeof import('chrome://mochitests/content/browser/devtools/client/debugger/test/mochitest/examples/worker-esm-dep.mjs');
+  'chrome://mochitests/content/browser/devtools/shared/test-helpers/trace-objects.sys.mjs': typeof import('chrome://mochitests/content/browser/devtools/shared/test-helpers/trace-objects.sys.mjs');
   'chrome://mochitests/content/browser/js/xpconnect/tests/browser/worker_source.mjs': typeof import('chrome://mochitests/content/browser/js/xpconnect/tests/browser/worker_source.mjs');
   'chrome://mochitests/content/browser/remote/shared/messagehandler/test/browser/resources/modules/ModuleRegistry.sys.mjs': typeof import('chrome://mochitests/content/browser/remote/shared/messagehandler/test/browser/resources/modules/ModuleRegistry.sys.mjs');
   'chrome://mochitests/content/browser/toolkit/components/translations/tests/browser/translations-test.mjs': typeof import('chrome://mochitests/content/browser/toolkit/components/translations/tests/browser/translations-test.mjs');
-  'chrome://mochitests/content/browser/tools/profiler/tests/browser/value_summary_reader.mjs': typeof import('chrome://mochitests/content/browser/tools/profiler/tests/browser/value_summary_reader.mjs');
   'chrome://mochitests/content/chrome/dom/network/tests/tcpsocket_test.sys.mjs': typeof import('chrome://mochitests/content/chrome/dom/network/tests/tcpsocket_test.sys.mjs');
   'chrome://mochitests/content/chrome/dom/url/tests/file_worker_url.sys.mjs': typeof import('chrome://mochitests/content/chrome/dom/url/tests/file_worker_url.sys.mjs');
   'chrome://mochitests/content/chrome/dom/url/tests/test_bug883784.sys.mjs': typeof import('chrome://mochitests/content/chrome/dom/url/tests/test_bug883784.sys.mjs');
@@ -99,6 +99,7 @@ export interface Modules {
   'chrome://remote/content/shared/Format.sys.mjs': typeof import('chrome://remote/content/shared/Format.sys.mjs');
   'chrome://remote/content/shared/Log.sys.mjs': typeof import('chrome://remote/content/shared/Log.sys.mjs');
   'chrome://remote/content/shared/MobileTabBrowser.sys.mjs': typeof import('chrome://remote/content/shared/MobileTabBrowser.sys.mjs');
+  'chrome://remote/content/shared/NavigableManager.sys.mjs': typeof import('chrome://remote/content/shared/NavigableManager.sys.mjs');
   'chrome://remote/content/shared/Navigate.sys.mjs': typeof import('chrome://remote/content/shared/Navigate.sys.mjs');
   'chrome://remote/content/shared/NavigationManager.sys.mjs': typeof import('chrome://remote/content/shared/NavigationManager.sys.mjs');
   'chrome://remote/content/shared/NetworkCacheManager.sys.mjs': typeof import('chrome://remote/content/shared/NetworkCacheManager.sys.mjs');
@@ -254,7 +255,6 @@ export interface Modules {
   'moz-src:///browser/components/urlbar/MerinoClient.sys.mjs': typeof import('moz-src:///browser/components/urlbar/MerinoClient.sys.mjs');
   'moz-src:///browser/components/urlbar/QuickActionsLoaderDefault.sys.mjs': typeof import('moz-src:///browser/components/urlbar/QuickActionsLoaderDefault.sys.mjs');
   'moz-src:///browser/components/urlbar/QuickSuggest.sys.mjs': typeof import('moz-src:///browser/components/urlbar/QuickSuggest.sys.mjs');
-  'moz-src:///browser/components/urlbar/SearchModeSwitcher.sys.mjs': typeof import('moz-src:///browser/components/urlbar/SearchModeSwitcher.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarController.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarController.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarEventBufferer.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarEventBufferer.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarInput.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarInput.sys.mjs');
@@ -280,7 +280,6 @@ export interface Modules {
   'moz-src:///browser/components/urlbar/UrlbarSearchUtils.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarSearchUtils.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarTokenizer.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarTokenizer.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs');
-  'moz-src:///browser/components/urlbar/UrlbarValueFormatter.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarValueFormatter.sys.mjs');
   'moz-src:///browser/components/urlbar/UrlbarView.sys.mjs': typeof import('moz-src:///browser/components/urlbar/UrlbarView.sys.mjs');
   'moz-src:///browser/components/urlbar/private/AmpSuggestions.sys.mjs': typeof import('moz-src:///browser/components/urlbar/private/AmpSuggestions.sys.mjs');
   'moz-src:///browser/components/urlbar/private/GeolocationUtils.sys.mjs': typeof import('moz-src:///browser/components/urlbar/private/GeolocationUtils.sys.mjs');
@@ -301,6 +300,7 @@ export interface Modules {
   'moz-src:///toolkit/components/doh/DoHController.sys.mjs': typeof import('moz-src:///toolkit/components/doh/DoHController.sys.mjs');
   'moz-src:///toolkit/components/doh/DoHHeuristics.sys.mjs': typeof import('moz-src:///toolkit/components/doh/DoHHeuristics.sys.mjs');
   'moz-src:///toolkit/components/doh/TRRPerformance.sys.mjs': typeof import('moz-src:///toolkit/components/doh/TRRPerformance.sys.mjs');
+  'moz-src:///toolkit/components/pageextractor/DOMExtractor.sys.mjs': typeof import('moz-src:///toolkit/components/pageextractor/DOMExtractor.sys.mjs');
   'moz-src:///toolkit/components/reader/AboutReader.sys.mjs': typeof import('moz-src:///toolkit/components/reader/AboutReader.sys.mjs');
   'moz-src:///toolkit/components/reader/ReaderMode.sys.mjs': typeof import('moz-src:///toolkit/components/reader/ReaderMode.sys.mjs');
   'moz-src:///toolkit/components/reader/ReaderWorker.sys.mjs': typeof import('moz-src:///toolkit/components/reader/ReaderWorker.sys.mjs');
@@ -325,6 +325,7 @@ export interface Modules {
   'moz-src:///toolkit/components/uniffi-bindgen-gecko-js/components/generated/RustWebextstorage.sys.mjs': typeof import('moz-src:///toolkit/components/uniffi-bindgen-gecko-js/components/generated/RustWebextstorage.sys.mjs');
   'moz-src:///toolkit/components/uniffi-bindgen-gecko-js/tests/generated/RustUniffiBindingsTests.sys.mjs': typeof import('moz-src:///toolkit/components/uniffi-bindgen-gecko-js/tests/generated/RustUniffiBindingsTests.sys.mjs');
   'moz-src:///toolkit/components/uniffi-bindgen-gecko-js/tests/generated/RustUniffiBindingsTestsExternalTypes.sys.mjs': typeof import('moz-src:///toolkit/components/uniffi-bindgen-gecko-js/tests/generated/RustUniffiBindingsTestsExternalTypes.sys.mjs');
+  'moz-src:///toolkit/modules/PrefUtils.sys.mjs': typeof import('moz-src:///toolkit/modules/PrefUtils.sys.mjs');
   'moz-src:///toolkit/profile/ProfilesDatastoreService.sys.mjs': typeof import('moz-src:///toolkit/profile/ProfilesDatastoreService.sys.mjs');
   'resource:///actors/AboutLoginsParent.sys.mjs': typeof import('resource:///actors/AboutLoginsParent.sys.mjs');
   'resource:///actors/AboutNewTabParent.sys.mjs': typeof import('resource:///actors/AboutNewTabParent.sys.mjs');
@@ -462,9 +463,14 @@ export interface Modules {
   'resource:///modules/firefox-view-tabs-setup-manager.sys.mjs': typeof import('resource:///modules/firefox-view-tabs-setup-manager.sys.mjs');
   'resource:///modules/ipprotection/GuardianClient.sys.mjs': typeof import('resource:///modules/ipprotection/GuardianClient.sys.mjs');
   'resource:///modules/ipprotection/IPPChannelFilter.sys.mjs': typeof import('resource:///modules/ipprotection/IPPChannelFilter.sys.mjs');
+  'resource:///modules/ipprotection/IPPExceptionsManager.sys.mjs': typeof import('resource:///modules/ipprotection/IPPExceptionsManager.sys.mjs');
   'resource:///modules/ipprotection/IPPNetworkErrorObserver.sys.mjs': typeof import('resource:///modules/ipprotection/IPPNetworkErrorObserver.sys.mjs');
+  'resource:///modules/ipprotection/IPPNimbusHelper.sys.mjs': typeof import('resource:///modules/ipprotection/IPPNimbusHelper.sys.mjs');
   'resource:///modules/ipprotection/IPPProxyManager.sys.mjs': typeof import('resource:///modules/ipprotection/IPPProxyManager.sys.mjs');
+  'resource:///modules/ipprotection/IPPSignInWatcher.sys.mjs': typeof import('resource:///modules/ipprotection/IPPSignInWatcher.sys.mjs');
+  'resource:///modules/ipprotection/IPPStartupCache.sys.mjs': typeof import('resource:///modules/ipprotection/IPPStartupCache.sys.mjs');
   'resource:///modules/ipprotection/IPProtection.sys.mjs': typeof import('resource:///modules/ipprotection/IPProtection.sys.mjs');
+  'resource:///modules/ipprotection/IPProtectionHelpers.sys.mjs': typeof import('resource:///modules/ipprotection/IPProtectionHelpers.sys.mjs');
   'resource:///modules/ipprotection/IPProtectionPanel.sys.mjs': typeof import('resource:///modules/ipprotection/IPProtectionPanel.sys.mjs');
   'resource:///modules/ipprotection/IPProtectionServerlist.sys.mjs': typeof import('resource:///modules/ipprotection/IPProtectionServerlist.sys.mjs');
   'resource:///modules/ipprotection/IPProtectionService.sys.mjs': typeof import('resource:///modules/ipprotection/IPProtectionService.sys.mjs');
@@ -538,6 +544,7 @@ export interface Modules {
   'resource://devtools/client/shared/components/reps/reps/rep.mjs': typeof import('resource://devtools/client/shared/components/reps/reps/rep.mjs');
   'resource://devtools/client/shared/components/reps/reps/string.mjs': typeof import('resource://devtools/client/shared/components/reps/reps/string.mjs');
   'resource://devtools/client/shared/components/reps/reps/text-node.mjs': typeof import('resource://devtools/client/shared/components/reps/reps/text-node.mjs');
+  'resource://devtools/client/shared/components/reps/reps/value-summary-reader.mjs': typeof import('resource://devtools/client/shared/components/reps/reps/value-summary-reader.mjs');
   'resource://devtools/client/shared/components/tabs/Tabs.mjs': typeof import('resource://devtools/client/shared/components/tabs/Tabs.mjs');
   'resource://devtools/client/shared/components/tree/LabelCell.mjs': typeof import('resource://devtools/client/shared/components/tree/LabelCell.mjs');
   'resource://devtools/client/shared/components/tree/ObjectProvider.mjs': typeof import('resource://devtools/client/shared/components/tree/ObjectProvider.mjs');
@@ -888,6 +895,7 @@ export interface Modules {
   'resource://gre/modules/UpdateTimerManager.sys.mjs': typeof import('resource://gre/modules/UpdateTimerManager.sys.mjs');
   'resource://gre/modules/UpdateUtils.sys.mjs': typeof import('resource://gre/modules/UpdateUtils.sys.mjs');
   'resource://gre/modules/UrlClassifierRemoteSettingsService.sys.mjs': typeof import('resource://gre/modules/UrlClassifierRemoteSettingsService.sys.mjs');
+  'resource://gre/modules/UrlUtils.sys.mjs': typeof import('resource://gre/modules/UrlUtils.sys.mjs');
   'resource://gre/modules/UsageReporting.sys.mjs': typeof import('resource://gre/modules/UsageReporting.sys.mjs');
   'resource://gre/modules/WPTEventsParent.sys.mjs': typeof import('resource://gre/modules/WPTEventsParent.sys.mjs');
   'resource://gre/modules/WebAuthnFeature.sys.mjs': typeof import('resource://gre/modules/WebAuthnFeature.sys.mjs');
@@ -949,6 +957,7 @@ export interface Modules {
   'resource://gre/modules/shared/AddressMetaDataExtension.sys.mjs': typeof import('resource://gre/modules/shared/AddressMetaDataExtension.sys.mjs');
   'resource://gre/modules/shared/AddressMetaDataLoader.sys.mjs': typeof import('resource://gre/modules/shared/AddressMetaDataLoader.sys.mjs');
   'resource://gre/modules/shared/AddressParser.sys.mjs': typeof import('resource://gre/modules/shared/AddressParser.sys.mjs');
+  'resource://gre/modules/shared/AddressRecord.sys.mjs': typeof import('resource://gre/modules/shared/AddressRecord.sys.mjs');
   'resource://gre/modules/shared/AutofillFormFactory.sys.mjs': typeof import('resource://gre/modules/shared/AutofillFormFactory.sys.mjs');
   'resource://gre/modules/shared/AutofillTelemetry.sys.mjs': typeof import('resource://gre/modules/shared/AutofillTelemetry.sys.mjs');
   'resource://gre/modules/shared/CreditCardRecord.sys.mjs': typeof import('resource://gre/modules/shared/CreditCardRecord.sys.mjs');
@@ -962,10 +971,12 @@ export interface Modules {
   'resource://gre/modules/shared/FormStateManager.sys.mjs': typeof import('resource://gre/modules/shared/FormStateManager.sys.mjs');
   'resource://gre/modules/shared/LabelUtils.sys.mjs': typeof import('resource://gre/modules/shared/LabelUtils.sys.mjs');
   'resource://gre/modules/shared/LoginFormFactory.sys.mjs': typeof import('resource://gre/modules/shared/LoginFormFactory.sys.mjs');
+  'resource://gre/modules/shared/NewPasswordModel.sys.mjs': typeof import('resource://gre/modules/shared/NewPasswordModel.sys.mjs');
   'resource://gre/modules/shared/PasswordGenerator.sys.mjs': typeof import('resource://gre/modules/shared/PasswordGenerator.sys.mjs');
   'resource://gre/modules/shared/PasswordRulesParser.sys.mjs': typeof import('resource://gre/modules/shared/PasswordRulesParser.sys.mjs');
   'resource://gre/modules/shared/PhoneNumber.sys.mjs': typeof import('resource://gre/modules/shared/PhoneNumber.sys.mjs');
   'resource://gre/modules/shared/PhoneNumberNormalizer.sys.mjs': typeof import('resource://gre/modules/shared/PhoneNumberNormalizer.sys.mjs');
+  'resource://gre/modules/storage-rust.sys.mjs': typeof import('resource://gre/modules/storage-rust.sys.mjs');
   'resource://gre/modules/subprocess/subprocess_unix.sys.mjs': typeof import('resource://gre/modules/subprocess/subprocess_unix.sys.mjs');
   'resource://gre/modules/subprocess/subprocess_win.sys.mjs': typeof import('resource://gre/modules/subprocess/subprocess_win.sys.mjs');
   'resource://gre/modules/third_party/jsesc/jsesc.mjs': typeof import('resource://gre/modules/third_party/jsesc/jsesc.mjs');
@@ -993,6 +1004,8 @@ export interface Modules {
   'resource://newtab/lib/InferredModel/FeatureModel.sys.mjs': typeof import('resource://newtab/lib/InferredModel/FeatureModel.sys.mjs');
   'resource://newtab/lib/InferredModel/GreedyContentRanker.mjs': typeof import('resource://newtab/lib/InferredModel/GreedyContentRanker.mjs');
   'resource://newtab/lib/InferredPersonalizationFeed.sys.mjs': typeof import('resource://newtab/lib/InferredPersonalizationFeed.sys.mjs');
+  'resource://newtab/lib/NewTabAttributionFeed.sys.mjs': typeof import('resource://newtab/lib/NewTabAttributionFeed.sys.mjs');
+  'resource://newtab/lib/NewTabAttributionService.sys.mjs': typeof import('resource://newtab/lib/NewTabAttributionService.sys.mjs');
   'resource://newtab/lib/NewTabContentPing.sys.mjs': typeof import('resource://newtab/lib/NewTabContentPing.sys.mjs');
   'resource://newtab/lib/NewTabGleanUtils.sys.mjs': typeof import('resource://newtab/lib/NewTabGleanUtils.sys.mjs');
   'resource://newtab/lib/NewTabInit.sys.mjs': typeof import('resource://newtab/lib/NewTabInit.sys.mjs');
@@ -1057,7 +1070,6 @@ export interface Modules {
   'resource://normandy/lib/NormandyAddonManager.sys.mjs': typeof import('resource://normandy/lib/NormandyAddonManager.sys.mjs');
   'resource://normandy/lib/NormandyApi.sys.mjs': typeof import('resource://normandy/lib/NormandyApi.sys.mjs');
   'resource://normandy/lib/NormandyUtils.sys.mjs': typeof import('resource://normandy/lib/NormandyUtils.sys.mjs');
-  'resource://normandy/lib/PrefUtils.sys.mjs': typeof import('resource://normandy/lib/PrefUtils.sys.mjs');
   'resource://normandy/lib/PreferenceExperiments.sys.mjs': typeof import('resource://normandy/lib/PreferenceExperiments.sys.mjs');
   'resource://normandy/lib/PreferenceRollouts.sys.mjs': typeof import('resource://normandy/lib/PreferenceRollouts.sys.mjs');
   'resource://normandy/lib/RecipeRunner.sys.mjs': typeof import('resource://normandy/lib/RecipeRunner.sys.mjs');

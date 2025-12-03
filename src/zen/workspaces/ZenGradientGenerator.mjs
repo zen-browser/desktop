@@ -66,11 +66,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   constructor() {
     super();
-    if (
-      !Services.prefs.getBoolPref('zen.theme.gradient', true) ||
-      !gZenWorkspaces.shouldHaveWorkspaces ||
-      gZenWorkspaces.privateWindowOrDisabled
-    ) {
+    if (!gZenWorkspaces.shouldHaveWorkspaces || gZenWorkspaces.privateWindowOrDisabled) {
       return;
     }
     this.promiseInitialized = new Promise((resolve) => {

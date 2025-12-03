@@ -97,7 +97,6 @@ class ZenStartup {
       // Just in case we didn't get the right size.
       gZenUIManager.updateTabsToolbar();
       this.closeWatermark();
-      checkForZenUpdates();
       this.isReady = true;
     });
   }
@@ -163,6 +162,7 @@ class ZenStartup {
     if (!Services.prefs.getBoolPref('zen.welcome-screen.seen', false)) {
       Services.prefs.setBoolPref('zen.welcome-screen.seen', true);
       Services.prefs.setStringPref('zen.updates.last-build-id', Services.appinfo.appBuildID);
+      Services.prefs.setStringPref('zen.updates.last-version', Services.appinfo.version);
       Services.scriptloader.loadSubScript(
         'chrome://browser/content/zen-components/ZenWelcome.mjs',
         window
@@ -173,6 +173,7 @@ class ZenStartup {
   }
 
   async #createUpdateAnimation() {
+    checkForZenUpdates();
     return await createWindowUpdateAnimation();
   }
 }

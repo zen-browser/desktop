@@ -313,7 +313,7 @@
         var(--zen-tabbox-element-indent-transition);
     }
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded='true'] &:not([zen-glance-tab]) {
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 

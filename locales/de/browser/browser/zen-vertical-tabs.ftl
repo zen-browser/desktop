@@ -3,31 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Tabs rechts
+    .label = Tabs rechts anzeigen
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompaktmodus
 zen-toolbar-context-compact-mode-enable = 
-    .label = Kompaktmodus aktivieren
+    .label = Kompaktmodus einschalten
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Seitenleiste ausblenden
+    .label = Nur Seitenleiste ausblenden
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Symbolleiste ausblenden
+    .label = Nur Symbolleiste ausblenden
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Beide ausblenden
+    .label = Beides ausblenden
     .accesskey = H
 zen-toolbar-context-new-folder = 
     .label = Neuer Ordner
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Seitenleiste erweitern
+    .label = Seitenleiste ausklappen
 sidebar-zen-create-new = 
     .label = Neu erstellen...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Tab entladen und dorthin wechseln
+            [one] Tab entladen und öffnen
            *[other] { $tabCount } Tabs entladen und zum ersten wechseln
         }
 tabbrowser-reset-pin-button = 
@@ -36,4 +36,4 @@ tabbrowser-reset-pin-button =
             [one] Tab zurücksetzen und anheften
            *[other] { $tabCount } Tabs zurücksetzen und anheften
         }
-tab-reset-pin-label = Zurück zur angehefteten URL
+tab-reset-pin-label = Zur ursprünglichen URL zurückkehren

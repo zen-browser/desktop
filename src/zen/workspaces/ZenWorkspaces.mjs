@@ -51,7 +51,11 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    await Promise.all([this.promiseDBInitialized, this.promisePinnedInitialized]);
+    await Promise.all([
+      this.promiseDBInitialized,
+      this.promisePinnedInitialized,
+      SessionStore.promiseAllWindowsRestored,
+    ]);
   }
 
   async init() {

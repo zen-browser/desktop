@@ -132,7 +132,7 @@ const ZEN_WORKSPACE_SHORTCUTS_GROUP = 'zen-workspace';
 const ZEN_OTHER_SHORTCUTS_GROUP = 'zen-other';
 const ZEN_SPLIT_VIEW_SHORTCUTS_GROUP = 'zen-split-view';
 const FIREFOX_SHORTCUTS_GROUP = 'zen-kbs-invalid';
-const VALID_SHORTCUT_GROUPS = [
+window.VALID_SHORTCUT_GROUPS = [
   ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
   ZEN_WORKSPACE_SHORTCUTS_GROUP,
   ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
@@ -141,7 +141,7 @@ const VALID_SHORTCUT_GROUPS = [
   'other',
 ];
 
-class nsKeyShortcutModifiers {
+export class nsKeyShortcutModifiers {
   #control = false;
   #alt = false;
   #shift = false;
@@ -322,7 +322,7 @@ class KeyShortcut {
     this.#key = key?.toLowerCase();
     this.#keycode = keycode;
 
-    if (!VALID_SHORTCUT_GROUPS.includes(group)) {
+    if (!window.VALID_SHORTCUT_GROUPS.includes(group)) {
       throw new Error('Illegal group value: ' + group);
     }
 

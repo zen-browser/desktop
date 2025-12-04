@@ -2,13 +2,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
   TabStateFlusher: 'resource:///modules/sessionstore/TabStateFlusher.sys.mjs',
+  ZenSessionStore: 'resource:///modules/zen/ZenSessionManager.sys.mjs',
 });
+
+XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gWindowSyncEnabled', 'zen.window-sync.enabled');
 
 const OBSERVING = ['browser-window-before-show'];
 const EVENTS = [
@@ -93,6 +98,9 @@ class nsZenWindowSync {
   };
 
   init() {
+    if (!lazy.gWindowSyncEnabled) {
+      return;
+    }
     for (let topic of OBSERVING) {
       Services.obs.addObserver(this, topic);
     }
@@ -173,13 +181,18 @@ class nsZenWindowSync {
    *
    * @param {Window} aWindow - The browser window to exclude.
    * @param {Function} aCallback - The callback function to run on each window.
+   * @returns {any} The value returned by the callback function, if any.
    */
   #runOnAllWindows(aWindow, aCallback) {
     for (let window of this.#browserWindows) {
       if (window !== aWindow) {
-        aCallback(window);
+        let value = aCallback(window);
+        if (value) {
+          return value;
+        }
       }
     }
+    return null;
   }
 
   observe(aSubject, aTopic) {
@@ -411,6 +424,12 @@ class nsZenWindowSync {
    * @param {Object} aOtherTab - The tab in the other window.
    */
   #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true) {
+    // Load about:blank
+    if (aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
+      aOurTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+    }
     aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
     const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
@@ -423,6 +442,10 @@ class nsZenWindowSync {
       // inside the web contentx area without having to click outside and back in.
       aOurTab.linkedBrowser.blur();
       aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
+    }
+    for (const tab of [aOurTab, aOtherTab]) {
+      // Ensure the tab's state is flushed after the swap.
+      lazy.TabStateFlusher.flush(tab.linkedBrowser);
     }
   }
 
@@ -462,13 +485,11 @@ class nsZenWindowSync {
       // Run a reflow to ensure the image is rendered before hiding the browser.
       void img.getBoundingClientRect();
       await loadPromise;
-      otherBrowser.style.opacity = 0;
-      otherBrowser.style.pointerEvents = 'none';
+      otherBrowser.setAttribute('zen-pseudo-hidden', 'true');
     }
 
     this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-    ourBrowser.style.opacity = '';
-    ourBrowser.style.pointerEvents = '';
+    ourBrowser.removeAttribute('zen-pseudo-hidden');
   }
 
   /**
@@ -512,15 +533,12 @@ class nsZenWindowSync {
    * @returns {Object|null} The active tab from other windows if found, otherwise null.
    */
   #getActiveTabFromOtherWindows(aWindow, aTabId, filter = (tab) => tab?._zenContentsVisible) {
-    for (let window of this.#browserWindows) {
-      if (window !== aWindow) {
-        const tab = this.#getItemFromWindow(window, aTabId);
-        if (filter(tab)) {
-          return tab;
-        }
+    return this.#runOnAllWindows(aWindow, (win) => {
+      const tab = this.#getItemFromWindow(win, aTabId);
+      if (filter(tab)) {
+        return tab;
       }
-    }
-    return null;
+    });
   }
 
   /**
@@ -555,7 +573,7 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The window that triggered the event.
    * @param {Object} aPreviousTab - The previously selected tab.
    */
-  onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
+  #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     const selectedTab = aWindow.gBrowser.selectedTab;
     if (aPreviousTab?._zenContentsVisible) {
       const otherTabToShow = this.#getActiveTabFromOtherWindows(
@@ -589,6 +607,26 @@ class nsZenWindowSync {
   #delegateGenericSyncEvent(aEvent, flags = 0) {
     const item = aEvent.target;
     this.#syncItemForAllWindows(item, flags);
+  }
+
+  /* Mark: Public API */
+
+  shouldLoadTab(aTab) {
+    if (!lazy.gWindowSyncEnabled) {
+      // Since we are never going to sync the tab, we can always load it.
+      return true;
+    }
+    if (aTab._zenContentsVisible) {
+      // This tab is already active in this window.
+      return true;
+    }
+    // We don't want to trigger a new browser kick-off if there's
+    // another window where this tab is already active.
+    return !this.#getActiveTabFromOtherWindows(
+      aTab.ownerGlobal,
+      aTab.id,
+      (tab) => tab?._zenContentsVisible
+    );
   }
 
   /* Mark: Event Handlers */
@@ -661,12 +699,12 @@ class nsZenWindowSync {
 
   on_focus(aEvent) {
     const { ownerGlobal: window } = aEvent.target;
-    if (this.#lastFocusedWindow?.deref() === window) {
+    if (!window.gBrowser || this.#lastFocusedWindow?.deref() === window) {
       return;
     }
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    this.onTabSwitchOrWindowFocus(window);
+    this.#onTabSwitchOrWindowFocus(window);
   }
 
   on_TabSelect(aEvent) {
@@ -676,7 +714,7 @@ class nsZenWindowSync {
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    this.onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
+    this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
   on_unload(aEvent) {

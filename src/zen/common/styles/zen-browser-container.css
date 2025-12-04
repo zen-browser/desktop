@@ -68,3 +68,7 @@
   pointer-events: none;
   z-index: 2;
 }
+
+browser[zen-pseudo-hidden='true'] {
+  -moz-subtree-hidden-only-visually: 1 !important;
+}

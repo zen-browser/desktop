@@ -6,9 +6,9 @@ zen-toolbar-context-tabs-right =
     .label = 右侧标签页
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = 简洁模式
+    .label = 紧凑模式
 zen-toolbar-context-compact-mode-enable = 
-    .label = 启用简洁模式
+    .label = 启用紧凑模式
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = 隐藏侧边栏
@@ -28,12 +28,12 @@ tabbrowser-unload-tab-button =
     .tooltiptext =
         { $tabCount ->
             [one] 卸载并切换到标签页
-           *[other] 卸载 { $tabCount } 个标签页并切换到首个
+           *[other] 卸载 { $tabCount } 个标签页并切换到第一个
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] 重置并置顶标签页
-           *[other] 重置并置顶 { $tabCount } 个标签页
+            [one] 重置并固定标签页
+           *[other] 重置并固定 { $tabCount } 个标签页
         }
 tab-reset-pin-label = 返回置顶网址

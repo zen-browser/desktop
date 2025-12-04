@@ -173,8 +173,6 @@ var gZenUIManager = {
     const editorHeight = 575;
     const pad = 20;
 
-    const animationTarget = 25;
-
     let left = screenX + width + pad;
     let top = screenY + height / 2 - editorHeight / 2;
 
@@ -186,7 +184,7 @@ var gZenUIManager = {
       window,
       'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
       null,
-      `left=${left},top=${top + animationTarget},chrome,alwaysontop,resizable=no`,
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no`,
       null
     );
 

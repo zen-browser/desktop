@@ -18,6 +18,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
 
     this._observe = this.observe.bind(this);
     Services.obs.addObserver(this._observe, 'zen-boosts-update');
+    Services.obs.addObserver(this._observe, 'zen-boosts-toggle-zap');
   }
 
   /**
@@ -25,6 +26,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   didDestroy() {
     Services.obs.removeObserver(this._observe, 'zen-boosts-update');
+    Services.obs.removeObserver(this._observe, 'zen-boosts-toggle-zap');
   }
 
   /**
@@ -34,8 +36,13 @@ export class ZenBoostsParent extends JSWindowActorParent {
    * @param {string} topic - The topic of the notification.
    */
   observe(subject, topic) {
-    if (topic === 'zen-boosts-update') {
-      this.sendQuery('ZenBoost:BoostDataUpdated', { unloadStyles: true });
+    switch (topic) {
+      case 'zen-boosts-update':
+        this.sendQuery('ZenBoost:BoostDataUpdated', { unloadStyles: true });
+        break;
+      case 'zen-boosts-toggle-zap':
+        this.sendQuery('ZenBoost:ToggleZapMode');
+        break;
     }
   }
 
@@ -47,6 +54,18 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   async receiveMessage(message) {
     switch (message.name) {
+      case 'ZenBoost:ZapSelector': {
+        const data = message.data;
+        
+        if (!data.action) return;
+        if (!data.selector) return;
+        if (!data.domain) return;
+
+        if (data.action == 'add') lazy.gZenBoostsManager.addZapSelector(data.selector, data.domain);
+        else if (data.action == 'remove')
+          lazy.gZenBoostsManager.removeZapSelector(data.selector, data.domain);
+        else if (data.action == 'clear') lazy.gZenBoostsManager.clearZapSelectors(data.domain);
+      }
       case 'ZenBoost:GetBoostForDomain': {
         const domain = message.data;
         const embedder = this.browsingContext.top.embedderElement;
@@ -55,10 +74,17 @@ export class ZenBoostsParent extends JSWindowActorParent {
         if (!exists) return null;
         const topWindowIsDarkMode =
           embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === 'dark';
+        const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
+        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
         return {
-          ...lazy.gZenBoostsManager.loadBoostFromStore(domain),
+          ...boostData,
           topWindowIsDarkMode,
-          styleSheet: await lazy.gZenBoostsManager.getStyleSheetForBoost(domain),
+          styleSheet: styleData
+            ? {
+                uuid: styleData.uuid,
+                uri: styleData.uri.spec,
+              }
+            : null,
         };
       }
       default:

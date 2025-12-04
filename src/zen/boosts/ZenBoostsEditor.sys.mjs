@@ -56,7 +56,7 @@ export class nsZenBoostEditor {
       .addEventListener('click', this.onBoostSizePressed.bind(this));
     this.doc
       .getElementById('zen-boost-zap')
-      .addEventListener('click', () => console.error('Not implemented'));
+      .addEventListener('click', () => this.onZapButtonPressed.bind(this));
     this.doc
       .getElementById('zen-boost-disable')
       .addEventListener('click', this.onToggleDisable.bind(this));
@@ -190,6 +190,10 @@ export class nsZenBoostEditor {
     const enumerator = Cc['@mozilla.org/gfx/fontenumerator;1'].createInstance(Ci.nsIFontEnumerator);
 
     return enumerator.EnumerateFonts(null, null);
+  }
+
+  onZapButtonPressed() {
+    
   }
 
   /**

@@ -4,14 +4,65 @@
 
 const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZapOverlay: 'resource:///modules/ZenZapOverlayChild.sys.mjs',
+});
+
 export class ZenBoostsChild extends JSWindowActorChild {
   #currentSheet = null;
+  #currentState = ZenBoostsChild.STATES.NONE;
+  #preventableEventsAdded = false;
+
+  #overlay = null;
+
+  static STATES = {
+    NONE: 'none',
+    ZAP: 'zap',
+  };
+
+  static OVERLAY_EVENTS = ['click', 'pointerdown', 'pointermove', 'pointerup', 'scroll', 'resize'];
+
+  // A list of events that will be prevented from
+  // reaching the document
+  static PREVENTABLE_EVENTS = [
+    'click', 
+    'pointerdown', 
+    'pointermove', 
+    'pointerup',
+    'mousemove',
+    'mousedown',
+    'mouseup',
+    'mouseenter',
+    'mouseover',
+    'mouseout',
+    'mouseleave',
+    'touchstart',
+    'touchmove',
+    'touchend',
+    'dblclick',
+    'auxclick',
+    'keypress',
+    'contextmenu',
+    'pointerenter',
+    'pointerover',
+    'pointerout',
+    'pointerleave',
+  ];
 
   /**
    * Creates a new ZenBoostsChild actor instance.
    */
   constructor() {
     super();
+  }
+
+  /**
+   * Called when the actor is destroyed. Cleans up the events.
+   */
+  didDestroy() {
+    this.#removeEventListeners();
   }
 
   /**
@@ -75,7 +126,49 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.#applyBoostForPageIfAvailable();
         break;
       default:
+        break;
     }
+  }
+
+  handleZapEvent(event) {
+    if (
+      [...ZenBoostsChild.OVERLAY_EVENTS, ...ZenBoostsChild.PREVENTABLE_EVENTS].includes(event.type)
+    ) {
+      this.#overlay.handleEvent(event, ZenBoostsChild.PREVENTABLE_EVENTS.includes(event.type));
+    }
+  }
+
+  /**
+   * Adds necessary event listeners to the document
+   * to prevent content interactions
+   */
+  #addEventListeners() {
+    this._handleZapEvent = this.handleZapEvent.bind(this);
+
+    for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
+      this.document.addEventListener(event, this._handleZapEvent, true);
+    }
+
+    for (let event of ZenBoostsChild.PREVENTABLE_EVENTS) {
+      this.document.addEventListener(event, this._handleZapEvent, true);
+    }
+    this.#preventableEventsAdded = true;
+  }
+
+  /**
+   * Removes the event listeners from the document
+   */
+  #removeEventListeners() {
+    for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
+      this.document.removeEventListener(event, this._handleZapEvent, true);
+    }
+
+    if (this.#preventableEventsAdded) {
+      for (let event of ZenBoostsChild.PREVENTABLE_EVENTS) {
+        this.document.removeEventListener(event, this._handleZapEvent, true);
+      }
+    }
+    this.#preventableEventsAdded = false;
   }
 
   /**
@@ -84,10 +177,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenBoost:BoostDataUpdated': {
+      case 'ZenBoost:BoostDataUpdated':
         const { unloadStyles = false } = message.data || {};
         this.#applyBoostForPageIfAvailable(unloadStyles);
-      }
+        break;
+      case 'ZenBoost:ToggleZapMode':
+        if (this.#currentState === ZenBoostsChild.STATES.NONE) this.#startZappingOverlay();
+        else if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
+        break;
     }
   }
 
@@ -123,7 +220,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     const boost = await this.sendQuery('ZenBoost:GetBoostForDomain', domain);
 
-    if (unloadStyles || !boost?.enableColorBoost) {
+    if (unloadStyles) {
       this.#unloadCurrentStyleSheet();
     }
 
@@ -168,5 +265,74 @@ export class ZenBoostsChild extends JSWindowActorChild {
       browsingContext.window.windowUtils.removeSheet(this.#currentSheet.uri, AGENT_SHEET);
       this.#currentSheet = null;
     }
+  }
+
+  async #startZappingOverlay() {
+    if (this.#currentState === ZenBoostsChild.STATES.ZAP) return;
+
+    try {
+      await this.documentIsReady();
+    } catch (ex) {
+      console.warn(`ScreenshotsComponentChild: ${ex.message}`);
+      return false;
+    }
+    await this.documentIsReady();
+
+    this.#currentState = ZenBoostsChild.STATES.ZAP;
+    
+    this.#overlay = new lazy.ZapOverlay(this.document, this);
+    this.#overlay.initialize();
+
+    this.#addEventListeners();
+  }
+
+  addZapSelector(selector) {
+    const domain = this.browsingContext.topWindow?.location?.host;
+    this.sendQuery('ZenBoost:ZapSelector', { action: 'add', selector: selector, domain: domain });
+  }
+
+  #disableZapMode() {
+    if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
+    this.#currentState = ZenBoostsChild.STATES.NONE;
+    
+    this.#overlay?.tearDown();
+    this.#overlay = null;
+
+    this.#removeEventListeners();
+  }
+
+  /**
+   * From: ScreenshotsComponentChild.sys.mjs:227
+   * Resolves when the document is ready to have an overlay injected into it.
+   *
+   * @returns {Promise}
+   * @resolves {Boolean} true when document is ready or rejects
+   */
+  documentIsReady() {
+    const document = this.document;
+    // Some pages take ages to finish loading - if at all.
+    // We want to respond to enable the screenshots UI as soon that is possible
+    function readyEnough() {
+      return document.readyState !== 'uninitialized' && document.documentElement;
+    }
+
+    if (readyEnough()) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      function onChange(event) {
+        if (event.type === 'pagehide') {
+          document.removeEventListener('readystatechange', onChange);
+          this.contentWindow.removeEventListener('pagehide', onChange);
+          reject(new Error('document unloaded before it was ready'));
+        } else if (readyEnough()) {
+          document.removeEventListener('readystatechange', onChange);
+          this.contentWindow.removeEventListener('pagehide', onChange);
+          resolve();
+        }
+      }
+      document.addEventListener('readystatechange', onChange);
+      this.contentWindow.addEventListener('pagehide', onChange, { once: true });
+    });
   }
 }

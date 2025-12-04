@@ -65,6 +65,8 @@ class nsZenBoostsManager {
       siteSizeOverride: 1,
       textCaseOverride: 'none',
 
+      zapSelectors: [],
+
       changeWasMade: false,
     };
 
@@ -75,6 +77,51 @@ class nsZenBoostsManager {
     }
 
     return boostData;
+  }
+
+  /**
+   * Adds the zap selector to the selectors list and updates the website.
+   * This method fails if the domain has no boost
+   * @param {*} selector Selector which will hide the elements
+   * @param {*} domain Domain of the targeted boost
+   */
+  addZapSelector(selector, domain) {
+    const boostData = this.loadBoostFromStore(domain);
+
+    if(!boostData.zapSelectors) boostData.zapSelectors = [];
+    if(!boostData.zapSelectors.includes(selector)) 
+      boostData.zapSelectors.push(selector);
+
+    this.updateBoost(boostData);
+  }
+
+  /**
+   * Removes the zap selector to the selectors list and updates the website.
+   * This method fails if the domain has no boost
+   * @param {*} selector Selector which will no longer hide the elements
+   * @param {*} domain Domain of the targeted boost
+   */
+  removeZapSelector(selector, domain) {
+    if (this.registeredBoosts.has(domain)) {
+      let boostData = this.registeredBoosts.get(domain);
+
+      if (boostData.zapSelectors && boost.zapSelectors.includes(selector))
+        boostData.zapSelectors.remove(selector);
+
+      this.updateBoost(boostData);
+    }
+  }
+
+  /**
+   * Clears all zap selectors from a boost
+   * @param {*} domain Domain of targeted boost
+   */
+  clearZapSelectors(domain) {
+    if (this.registeredBoosts.has(domain)) {
+      let boostData = this.registeredBoosts.get(domain);
+      boostData.zapSelectors = [];
+      this.updateBoost(boostData);
+    }
   }
 
   /**

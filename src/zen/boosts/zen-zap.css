@@ -1,0 +1,187 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zap-component {
+  width: 407px;
+  height: 98px;
+
+  pointer-events: auto !important;
+
+  transform-origin: top;
+  overflow: hidden;
+
+  @media (-moz-platform: macos) {
+    --spring-easing: linear(
+      0,
+      0.0015 0.53%,
+      0.0069,
+      0.0158,
+      0.0279 2.4%,
+      0.0631 3.74%,
+      0.1119 5.16%,
+      0.2201 7.74%,
+      0.4761 13.17%,
+      0.5914 15.75%,
+      0.6983 18.43%,
+      0.7872,
+      0.861,
+      0.9199 26.17%,
+      0.9449 27.5%,
+      0.9678,
+      0.987,
+      1.0028 31.78%,
+      1.0223 34.09%,
+      1.0358 36.58%,
+      1.0435 39.25%,
+      1.046 42.28%,
+      1.0446 44.68%,
+      1.0407 47.44%,
+      1.0118 61.86%,
+      1.0027 69.52%,
+      0.9981 80.46%,
+      0.9991 99.96%
+    );
+    --spring-duration: 0.6s;
+    animation: var(--spring-duration) zap-component-in var(--spring-easing);
+  }
+
+  position: fixed;
+  z-index: 9999;
+
+  background-color: #f5f7fb;
+  border: 1px solid #dad9e2;
+  border-radius: 24px;
+
+  box-shadow: 0px 0px 20px#00000020;
+
+  & input {
+    width: 75px;
+    height: 40px;
+    border-radius: 12px;
+
+    font-size: 11pt;
+    transition:
+      0.1s filter ease-in-out,
+      scale 0.35s cubic-bezier(0.11, 1.6, 0.63, 1);
+
+    &:hover {
+      filter: brightness(1.3);
+    }
+
+    &:active {
+      scale: 0.95;
+    }
+  }
+}
+
+@keyframes zap-component-in {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+#highlight-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  content: '';
+
+  & .highlight {
+    position: fixed;
+    background-color: #ffffff11;
+    border-radius: 12px;
+    content: '';
+
+    border: 1px solid #ffffff22;
+  }
+}
+
+#zap-controls {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+}
+
+#zap-related {
+  appearance: none;
+  text-align: left;
+  text-indent: 10px;
+
+  width: 250px !important;
+  --related-elements-value: 100%;
+
+  background: linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+
+  border: none;
+  color: #dadada;
+  box-shadow: 0px 0px 15px #00000052;
+
+  &:hover {
+    background:
+      linear-gradient(
+        to right,
+        transparent var(--related-elements-value),
+        gray var(--related-elements-value)
+      ),
+      linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+    box-shadow: 0px 0px 20px #00000077;
+  }
+}
+
+#zap-this {
+  appearance: none;
+
+  background: linear-gradient(0deg, rgba(246, 27, 25, 1) 0%, rgba(254, 67, 59, 1) 100%);
+  border: none;
+  color: #dadada;
+
+  box-shadow: 0px 0px 15px #00000052;
+}
+
+#zap-cancel {
+  appearance: none;
+
+  background: linear-gradient(0deg, rgba(81, 83, 85, 1) 0%, rgba(108, 110, 112, 1) 100%);
+  border: none;
+  color: #dadada;
+
+  box-shadow: 0px 0px 15px #00000052;
+}
+
+#zap-preview {
+  background-color: #e0e2e63d;
+  outline: 1px solid #e0e2e6ae;
+  width: 100%;
+  height: 34px;
+  text-indent: 18px;
+
+  display: flex;
+  align-items: center;
+}
+
+#zap-element-preview-text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt;
+  color: #797b7f;
+}
+
+#hover-div {
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+  position: fixed;
+  z-index: 9999;
+
+  content: '';
+  outline: 2px solid white;
+  border-radius: 12px;
+
+  background-color: #aaaaaa22;
+}

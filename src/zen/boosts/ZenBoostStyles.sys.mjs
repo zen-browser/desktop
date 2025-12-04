@@ -11,9 +11,6 @@ const lazy = XPCOMUtils.declareLazy({
     service: '@mozilla.org/content/style-sheet-service;1',
     iid: Ci.nsIStyleSheetService,
   },
-});
-
-ChromeUtils.defineESModuleGetters(lazy, {
   gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
 });
 
@@ -57,13 +54,28 @@ export class nsZenBoostStyles {
    * @private
    */
   #generateStyleString(boostData) {
-    const boost = lazy.gZenBoostsManager.loadBoostFromStore(boostData);
-    console.log(boost);
+    if (boostData.fontFamily == '' && boostData.textCaseOverride == 'none') return null;
 
-    let style = 'body, p, h1, h2, h3, h4, h5, a, span, textarea, input, span {';
+    const fontFamily = boostData.fontFamily != '' ? `font-family: ${boostData.fontFamily} !important;` : ``;
+    const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
 
-    if (boost.fontFamily != '') style += `font-family: ${boost.fontFamily} !important;`;
-    style += `text-transform: ${boost.textCaseOverride} !important;`;
+    let zapBlocks = '';
+    if (boostData.zapSelectors) {
+      for (const selector of boostData.zapSelectors) {
+        zapBlocks += `${selector} { display: none !important; }\n`;
+      }
+    }
+
+    let style = `
+    /* Zen-Zaps */  
+    ${zapBlocks}
+
+    /* Text Format */
+    body :is(p, h1, h2, h3, h4, h5, a, span, textarea, input) {
+      ${fontFamily}
+      ${fontCase}
+    }
+    `;
 
     return style;
   }
@@ -89,7 +101,7 @@ export class nsZenBoostStyles {
   #cacheStyle(styleUri, domain) {
     this.#stylesCache.set(domain, {
       uuid: Services.uuid.generateUUID().toString(),
-      uri: styleUri.spec,
+      uri: styleUri,
     });
   }
 }

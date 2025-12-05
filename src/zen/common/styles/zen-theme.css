@@ -231,6 +231,13 @@
     --toolbox-textcolor: currentColor !important;
   }
 
+  &[zen-unsynced-window='true'] {
+    --zen-main-browser-background: linear-gradient(130deg, light-dark(rgb(240, 230, 200), rgb(30, 25, 20)) 0%, light-dark(rgb(220, 200, 150), rgb(50, 45, 40)) 100%);
+    --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
+    --zen-primary-color: light-dark(rgb(200, 100, 20), rgb(220, 120, 30)) !important;
+    --toolbox-textcolor: currentColor !important;
+  }
+
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
   --arrowpanel-background: var(--zen-dialog-background) !important;
 

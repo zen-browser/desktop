@@ -884,28 +884,28 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       ZenWorkspacesStorage.getLastChangeTimestamp(),
     ]);
 
-    const workspaceCache = { workspaces, lastChangeTimestamp };
+    this._workspaceCache = { workspaces, lastChangeTimestamp };
     // Get the active workspace ID from preferences
     const activeWorkspaceId = this.activeWorkspace;
 
-    if (activeWorkspaceId) {
-      const activeWorkspace = this.getWorkspaceFromId(activeWorkspaceId);
-      // Set the active workspace ID to the first one if the one with selected id doesn't exist
-      if (!activeWorkspace) {
-        this.activeWorkspace = workspaceCache.workspaces[0]?.uuid;
-      }
-    } else {
-      // Set the active workspace ID to the first one if active workspace doesn't exist
-      this.activeWorkspace = workspaceCache.workspaces[0]?.uuid;
-    }
-    // sort by position
-    workspaceCache.workspaces.sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity));
-
     if (!lieToMe) {
-      // We don't want our cache to remain for the next calls
-      this._workspaceCache = workspaceCache;
+      if (activeWorkspaceId) {
+        const activeWorkspace = this.getWorkspaceFromId(activeWorkspaceId);
+        // Set the active workspace ID to the first one if the one with selected id doesn't exist
+        if (!activeWorkspace) {
+          this.activeWorkspace = this._workspaceCache.workspaces[0]?.uuid;
+        }
+      } else {
+        // Set the active workspace ID to the first one if active workspace doesn't exist
+        this.activeWorkspace = this._workspaceCache.workspaces[0]?.uuid;
+      }
     }
-    return workspaceCache;
+
+    // sort by position
+    this._workspaceCache.workspaces.sort(
+      (a, b) => (a.position ?? Infinity) - (b.position ?? Infinity)
+    );
+    return this._workspaceCache;
   }
 
   async workspaceBookmarks() {
@@ -2465,7 +2465,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       return;
     }
     if (!this.currentWindowIsSyncing) {
-      name = this.isPrivateWindow ? 'Private ' + name : gZenUIManager.generateUuidv4();
+      name = this.isPrivateWindow ? 'Private ' + name : 'Temporary';
     }
     // get extra tabs remaning (e.g. on new profiles) and just move them to the new workspace
     const extraTabs = Array.from(gBrowser.tabContainer.arrowScrollbox.children).filter(

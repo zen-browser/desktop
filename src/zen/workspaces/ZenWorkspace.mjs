@@ -290,7 +290,10 @@ class nsZenWorkspace extends MozXULElement {
       for (const workspace of workspaces.workspaces) {
         const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', async () => {
-          console.log('TODO: Move tab to workspace', workspace);
+          const { ZenWindowSync } = ChromeUtils.importESModule(
+            'resource:///modules/zen/ZenWindowSync.sys.mjs'
+          );
+          ZenWindowSync.moveTabsToSyncedWorkspace(window, workspace.uuid);
         });
         popup.appendChild(item);
       }

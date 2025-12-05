@@ -33,7 +33,7 @@ zen-workspace-creation {
       width: calc(100% - 10px);
       margin: auto;
       gap: 3.2rem;
-      margin-top: 1.2rem;
+      margin-top: 0.6rem;
       height: 100%;
 
       & .zen-workspace-creation-form {

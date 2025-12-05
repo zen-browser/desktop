@@ -127,11 +127,21 @@ class nsZenWindowSync {
     // 1. We are passing `zen-unsynced` in the window arguments.
     // 2. We are trying to open a link in a new window where other synced
     //   windows already exist
+    let forcedSync = false;
+    let hasUnsyncedArg = false;
+    for (let arg of aWindow.arguments) {
+      if (arg === 'zen-synced') {
+        forcedSync = true;
+      } else if (arg === 'zen-unsynced') {
+        hasUnsyncedArg = true;
+      }
+    }
     if (
-      aWindow.arguments.some((arg) => arg === 'zen-unsynced') ||
-      (typeof aWindow.arguments[0] === 'string' &&
-        aWindow.arguments.length > 1 &&
-        [...this.#browserWindows].length > 0)
+      !forcedSync &&
+      (hasUnsyncedArg ||
+        (typeof aWindow.arguments[0] === 'string' &&
+          aWindow.arguments.length > 1 &&
+          [...this.#browserWindows].length > 0))
     ) {
       aWindow.document.documentElement.setAttribute('zen-unsynced-window', 'true');
       return;
@@ -633,26 +643,68 @@ class nsZenWindowSync {
     );
   }
 
+  moveTabsToSyncedWorkspace(aWindow, aWorkspaceId) {
+    const tabsToMove = aWindow.gZenWorkspaces.allStoredTabs.filter(
+      (tab) => !tab.hasAttribute('zen-empty-tab')
+    );
+    const selectedTab = aWindow.gBrowser.selectedTab;
+    let win = [...this.#browserWindows][0];
+    const moveAllTabsToWindow = (allowSelected = false) => {
+      const { gBrowser, gZenWorkspaces } = win;
+      win.focus();
+      let tabIndex = 0;
+      let success = true;
+      for (const tab of tabsToMove) {
+        if (tab !== selectedTab || allowSelected) {
+          const newTab = gBrowser.adoptTab(tab, { tabIndex });
+          if (!newTab) {
+            // The adoption failed. Restore "fadein" and don't increase the index.
+            tab.setAttribute('fadein', 'true');
+            success = false;
+            continue;
+          }
+          gZenWorkspaces.moveTabToWorkspace(newTab, aWorkspaceId);
+          ++tabIndex;
+        }
+      }
+      if (success) {
+        aWindow.close();
+      }
+    };
+    if (!win) {
+      win = this.replaceTabWithWindow(selectedTab, {}, /* zenForceSync = */ true);
+      win.addEventListener(
+        'before-initial-tab-adopted',
+        () => {
+          moveAllTabsToWindow();
+        },
+        { once: true }
+      );
+      return;
+    }
+    moveAllTabsToWindow(true);
+  }
+
   /* Mark: Event Handlers */
 
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-    if (tab.selected) {
-      tab._zenContentsVisible = true;
-    }
+    // TODO: Should we only set this flag if the tab is selected?
+    tab._zenContentsVisible = true;
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
     }
     tab.id = this.#newTabSyncId;
     this.#runOnAllWindows(window, (win) => {
-      const newTab = win.gBrowser.addTrustedTab('about:blank', { animate: true });
-      newTab.setAttribute('zen-workspace-id', tab.getAttribute('zen-workspace-id') || '');
+      const newTab = win.gBrowser.addTrustedTab('about:blank', {
+        animate: true,
+        createLazyBrowser: true,
+        zenWorkspaceId: tab.getAttribute('zen-workspace-id') || '',
+        _forZenEmptyTab: tab.hasAttribute('zen-empty-tab'),
+      });
       newTab.id = tab.id;
-      if (tab.hasAttribute('zen-empty-tab')) {
-        newTab.setAttribute('zen-empty-tab', 'true');
-      }
       this.#syncItemWithOriginal(
         tab,
         newTab,

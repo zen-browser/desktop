@@ -1,0 +1,142 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+zen-import-bookmarks {
+  flex: 1;
+  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding));
+  padding: 3px;
+  visibility: collapse;
+
+  & .zen-import-bookmarks {
+    justify-content: center;
+
+    & .zen-import-bookmarks-title {
+      font-size: large;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    & .zen-import-bookmarks-label {
+      margin: 0;
+      opacity: 0.4;
+      text-align: center;
+    }
+
+    & form {
+      --input-bgcolor: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 10px);
+      margin: auto;
+      gap: 1rem;
+      margin-top: 1.2rem;
+      height: 100%;
+
+      & xul|button {
+        border: none;
+        margin: 0;
+        font-weight: 400 !important;
+      }
+
+      & .zen-import-bookmarks-controls {
+        gap: 0.5rem;
+        justify-content: center;
+
+        & button {
+          padding: 6px 12px !important;
+          border-radius: 6px !important;
+          background-color: var(--input-bgcolor);
+          appearance: none;
+          min-width: unset !important;
+
+          &:hover {
+            background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          }
+        }
+      }
+
+      & .zen-import-bookmarks-list-scrollbox {
+        background-color: var(--input-bgcolor);
+        border-radius: 8px;
+        padding: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      & .zen-import-bookmarks-list {
+        gap: 4px;
+
+        & .zen-import-bookmarks-folder-separator {
+          font-weight: 600;
+          font-size: 0.85em;
+          text-transform: uppercase;
+          opacity: 0.6;
+          margin-top: 8px;
+          margin-bottom: 4px;
+
+          &:first-child {
+            margin-top: 0;
+          }
+        }
+
+        & .zen-import-bookmarks-item {
+          padding: 6px 8px;
+          border-radius: 6px;
+          gap: 8px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+          }
+
+          & .zen-import-bookmarks-checkbox {
+            margin: 0;
+            cursor: pointer;
+          }
+
+          & .zen-import-bookmarks-favicon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+          }
+
+          & .zen-import-bookmarks-item-label {
+            flex: 1;
+            cursor: pointer;
+            margin: 0;
+          }
+        }
+
+        & .zen-import-bookmarks-empty {
+          text-align: center;
+          opacity: 0.6;
+          padding: 20px;
+        }
+      }
+
+      & .zen-import-bookmarks-buttons {
+        gap: 0.5rem;
+        margin-top: auto;
+
+        & .zen-import-bookmarks-import-button {
+          color: var(--button-text-color-primary) !important;
+          background: var(--color-accent-primary) !important;
+          width: 100%;
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        & .zen-import-bookmarks-cancel-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

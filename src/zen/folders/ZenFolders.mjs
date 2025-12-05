@@ -137,6 +137,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     );
 
     folderActionsMenu.addEventListener('command', (event) => {
+      console.log('Folder action command:', event.target.id, 'Last folder:', this.#lastFolderContextMenu);
       if (!this.#lastFolderContextMenu) return;
       switch (event.target.id) {
         case 'context_zenFolderRename':
@@ -159,6 +160,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           break;
         case 'context_zenFolderChangeIcon':
           this.changeFolderUserIcon(this.#lastFolderContextMenu);
+          break;
+        case 'context_zenFolderImportFromBookmarks':
+          console.log('Triggering import bookmarks popup');
+          this.#lastFolderContextMenu.openImportBookmarksPopup();
           break;
       }
     });

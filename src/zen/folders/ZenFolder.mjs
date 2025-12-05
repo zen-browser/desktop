@@ -274,6 +274,24 @@ class ZenFolder extends MozTabbrowserTabGroup {
     } while (current);
     return rootMost;
   }
+
+  /**
+   * Opens the dialogue to import bookmarks into this folder.
+   * @returns void
+   */
+  openImportBookmarksPopup() {
+    console.debug('openImportBookmarksPopup', this);
+
+    const popup = document.createXULElement('zen-import-bookmarks');
+    popup.setAttribute('folder-id', this.id);
+
+    console.debug('Appending import bookmarks popup to sidebar container', popup);
+
+    const sidebarContainer = gZenWorkspaces.workspaceElement(
+      gZenWorkspaces.activeWorkspace
+    ).pinnedTabsContainer.parentElement;
+    sidebarContainer.appendChild(popup);
+  }
 }
 
 customElements.define('zen-folder', ZenFolder);

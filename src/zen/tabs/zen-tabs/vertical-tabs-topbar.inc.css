@@ -22,7 +22,8 @@ z-index: 1;
 
 %include ../../compact-mode/windows-captions-fix-active.inc.css
 
-  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]) {
+  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]),
+  :root:not([zen-right-side='true']):not([zen-has-bookmarks]) &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]) {
     height: var(--zen-element-separation);
     opacity: 0;
     & #zen-appcontent-navbar-container {

@@ -18,7 +18,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
 
     this._observe = this.observe.bind(this);
     Services.obs.addObserver(this._observe, 'zen-boosts-update');
-    Services.obs.addObserver(this._observe, 'zen-boosts-toggle-zap');
   }
 
   /**
@@ -26,7 +25,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   didDestroy() {
     Services.obs.removeObserver(this._observe, 'zen-boosts-update');
-    Services.obs.removeObserver(this._observe, 'zen-boosts-toggle-zap');
   }
 
   /**
@@ -39,9 +37,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
     switch (topic) {
       case 'zen-boosts-update':
         this.sendQuery('ZenBoost:BoostDataUpdated', { unloadStyles: true });
-        break;
-      case 'zen-boosts-toggle-zap':
-        this.sendQuery('ZenBoost:ToggleZapMode');
         break;
     }
   }

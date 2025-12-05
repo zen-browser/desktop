@@ -122,6 +122,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   handleEvent(event) {
     switch (event.type) {
+      case 'unload':
+        if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
       case 'DOMDocElementInserted':
         this.#applyBoostForPageIfAvailable();
         break;
@@ -145,6 +147,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #addEventListeners() {
     this._handleZapEvent = this.handleZapEvent.bind(this);
 
+    this._disableZapMode = this.#disableZapMode.bind();
+    // this.contentWindow.addEventlistener("unload", this._disableZapMode);
+
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.addEventListener(event, this._handleZapEvent, true);
     }
@@ -159,6 +164,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * Removes the event listeners from the document
    */
   #removeEventListeners() {
+    // this.contentWindow.removeEventListener("unload", this._disableZapMode);
+
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.removeEventListener(event, this._handleZapEvent, true);
     }
@@ -180,6 +187,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case 'ZenBoost:BoostDataUpdated':
         const { unloadStyles = false } = message.data || {};
         this.#applyBoostForPageIfAvailable(unloadStyles);
+        break;
+      case 'ZenBoost:DisableZapMode':
+        if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
         break;
       case 'ZenBoost:ToggleZapMode':
         if (this.#currentState === ZenBoostsChild.STATES.NONE) this.#startZappingOverlay();
@@ -273,7 +283,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     try {
       await this.documentIsReady();
     } catch (ex) {
-      console.warn(`ScreenshotsComponentChild: ${ex.message}`);
+      console.warn(`ZenBoostsChild: ${ex.message}`);
       return false;
     }
     await this.documentIsReady();

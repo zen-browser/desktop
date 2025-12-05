@@ -7,16 +7,19 @@ import { gZenBoostsManager } from './ZenBoostsManager.sys.mjs';
 export class nsZenBoostEditor {
   doc = null;
   window = null;
+  openerWindow = null;
 
   /**
    * Creates a new boost editor instance for the specified domain.
    * @param {Document} doc - The document object for the editor window.
    * @param {string} domain - The domain for which to edit the boost.
    * @param {Window} window - The window object for the editor.
+   * @param {Window} openerWindow - The window object which instanced this editor.
    */
-  constructor(doc, domain, window) {
+  constructor(doc, domain, window, openerWindow) {
     this.doc = doc;
     this.window = window;
+    this.openerWindow = openerWindow;
 
     this.isMouseDown = false;
     this.wasDragging = false;
@@ -56,7 +59,10 @@ export class nsZenBoostEditor {
       .addEventListener('click', this.onBoostSizePressed.bind(this));
     this.doc
       .getElementById('zen-boost-zap')
-      .addEventListener('click', () => this.onZapButtonPressed.bind(this));
+      .addEventListener('click', this.onZapButtonPressed.bind(this));
+    this.doc
+      .getElementById('zen-boost-code')
+      .addEventListener('click', this.onCodeButtonPressed.bind(this));
     this.doc
       .getElementById('zen-boost-disable')
       .addEventListener('click', this.onToggleDisable.bind(this));
@@ -192,8 +198,14 @@ export class nsZenBoostEditor {
     return enumerator.EnumerateFonts(null, null);
   }
 
-  onZapButtonPressed() {
+  onCodeButtonPressed() {
     
+  }
+
+  onZapButtonPressed() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:ToggleZapMode");
   }
 
   /**
@@ -642,6 +654,10 @@ export class nsZenBoostEditor {
     if (this.currentBoostData != null && this.currentBoostData.changeWasMade) this.saveBoost();
     else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade)
       gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
+
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:DisableZapMode");
   }
 
   /**

@@ -208,9 +208,7 @@ var gZenUIManager = {
     // Give the domain
     const domain = window.gBrowser.selectedTab.linkedBrowser.currentURI.host;
     editor.domain = domain;
-
-    // Give the animator
-    editor.gZenUIManager = this;
+    editor.openerWindow = window;
 
     return editor;
   },

@@ -62,6 +62,7 @@ let JSWINDOWACTORS = {
       esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
       events: {
         DOMDocElementInserted: { capture: true },
+        unload: {}
       },
     },
     allFrames: true,

@@ -21,7 +21,7 @@ class nsZenBoostsManager {
   #init() {
     this.#readBoostsFromStore(this.notify);
   }
-
+  
   /**
    * Deletes a boost for the specified domain and persists the change to disk.
    * @param {string} domain - The domain for which to delete the boost.

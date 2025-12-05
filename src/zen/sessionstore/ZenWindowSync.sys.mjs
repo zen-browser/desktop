@@ -428,9 +428,11 @@ class nsZenWindowSync {
     if (aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
       aOurTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+        loadFlags: Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY,
       });
     }
     aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+    aOtherTab.permanentKey = aOurTab.permanentKey;
     const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
     // but we need to manually remove some attributes from the other tab.
@@ -443,10 +445,12 @@ class nsZenWindowSync {
       aOurTab.linkedBrowser.blur();
       aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
     }
-    for (const tab of [aOurTab, aOtherTab]) {
-      // Ensure the tab's state is flushed after the swap.
-      lazy.TabStateFlusher.flush(tab.linkedBrowser);
-    }
+    // Ensure the tab's state is flushed after the swap. By doing this,
+    // we can re-schedule another session store delayed process to fire.
+    // It's also important to note that if we don't flush the state here,
+    // we would start recieving invalid history changes from the the incorrect
+    // browser view that was just swapped out.
+    lazy.TabStateFlusher.flush(aOurTab.linkedBrowser);
   }
 
   /**

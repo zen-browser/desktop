@@ -181,13 +181,8 @@
     height: calc(100% - var(--zen-toolbox-padding) * 2);
   }
 
-  :root:not([zen-private-window]) & {
-    &:hover,
-    &[open='true'] {
-      &::before {
-        background: var(--tab-hover-background-color);
-      }
-    }
+  :root[zen-private-window] & {
+    pointer-events: none;
   }
 
   & .zen-current-workspace-indicator-icon {
@@ -228,15 +223,22 @@
     font-weight: 600;
     align-items: center;
     margin: 0;
+
+    :root[zen-unsynced-window] & {
+      pointer-events: none;
+    }
   }
 
   .zen-workspaces-actions {
     margin-left: auto !important;
-    opacity: 0;
-    visibility: collapse;
     transition: opacity 0.1s;
     order: 5;
     --toolbarbutton-inner-padding: 6px !important;
+
+    :root:not([zen-unsynced-window]) & { 
+      opacity: 0;
+      visibility: collapse;
+    }
 
     & image {
       border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
@@ -248,9 +250,19 @@
     :root[zen-renaming-tab='true'] & {
       display: none;
     }
+
+    :root[zen-unsynced-window] & {
+      .toolbarbutton-text {
+        display: flex;
+      }
+
+      .toolbarbutton-icon {
+        display: none;
+      }
+    }
   }
 
-  :root:not([zen-private-window]) &:hover .zen-workspaces-actions,
+  :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
   & .zen-workspaces-actions[open='true'] {
     visibility: visible;
     pointer-events: auto;

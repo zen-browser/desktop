@@ -37,6 +37,14 @@ class nsZenWorkspace extends MozXULElement {
       `;
   }
 
+  static get moveTabToButtonMarkup() {
+    return `
+      <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions"
+                     tooltip="dynamic-shortcut-tooltip"
+                     data-l10n-id="zen-move-tab-to-workspace-button" />
+    `;
+  }
+
   static get inheritedAttributes() {
     return {
       '.zen-workspace-tabs-section': 'zen-workspace-id=id',
@@ -87,6 +95,20 @@ class nsZenWorkspace extends MozXULElement {
         event.stopPropagation();
         gZenWorkspaces.changeWorkspaceIcon();
       });
+
+    if (!gZenWorkspaces.currentWindowIsSyncing) {
+      let actionsButton = this.indicator.querySelector('.zen-workspaces-actions');
+      const moveTabToFragment = window.MozXULElement.parseXULToFragment(
+        nsZenWorkspace.moveTabToButtonMarkup
+      );
+      actionsButton.after(moveTabToFragment);
+      actionsButton.setAttribute('hidden', 'true');
+      actionsButton = actionsButton.nextElementSibling;
+      actionsButton.addEventListener('command', (event) => {
+        event.stopPropagation();
+        this.#openMoveTabsToWorkspacePanel(event.target);
+      });
+    }
 
     this.scrollbox._getScrollableElements = () => {
       const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
@@ -209,7 +231,7 @@ class nsZenWorkspace extends MozXULElement {
     if (newName === '') {
       return;
     }
-    let workspaces = (await gZenWorkspaces._workspaces()).workspaces;
+    let workspaces = (await gZenWorkspaces.getWorkspaces()).workspaces;
     let workspaceData = workspaces.find((workspace) => workspace.uuid === this.workspaceUuid);
     workspaceData.name = newName;
     await gZenWorkspaces.saveWorkspace(workspaceData);
@@ -255,6 +277,34 @@ class nsZenWorkspace extends MozXULElement {
     this.style.colorScheme = '';
     this.style.removeProperty('--toolbox-textcolor');
     this.style.removeProperty('--zen-primary-color');
+  }
+
+  #openMoveTabsToWorkspacePanel(button) {
+    button = button.closest('toolbarbutton');
+    if (!button) return;
+
+    const popup = document.getElementById('zenMoveTabsToSyncedWorkspacePopup');
+    popup.innerHTML = '';
+
+    gZenWorkspaces.getWorkspaces(true).then((workspaces) => {
+      for (const workspace of workspaces.workspaces) {
+        const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
+        item.addEventListener('command', async () => {
+          console.log('TODO: Move tab to workspace', workspace);
+        });
+        popup.appendChild(item);
+      }
+
+      button.setAttribute('open', 'true');
+      popup.addEventListener(
+        'popuphidden',
+        () => {
+          button.removeAttribute('open');
+        },
+        { once: true }
+      );
+      popup.openPopup(button, 'after_start', 0, 0, true /* isContextMenu */);
+    });
   }
 }
 

@@ -101,20 +101,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         .querySelector('menupopup');
       changeFolderSpace.innerHTML = '';
       for (const workspace of [...gZenWorkspaces._workspaceCache.workspaces].reverse()) {
-        const item = document.createXULElement('menuitem');
-        item.className = 'zen-workspace-context-menu-item';
-        item.setAttribute('zen-workspace-id', workspace.uuid);
-        item.setAttribute('disabled', workspace.uuid === gZenWorkspaces.activeWorkspace);
-        let name = workspace.name;
-        const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
-        if (workspace.icon && workspace.icon !== '' && !iconIsSvg) {
-          name = `${workspace.icon}  ${name}`;
-        }
-        item.setAttribute('label', name);
-        if (iconIsSvg) {
-          item.setAttribute('image', workspace.icon);
-          item.classList.add('zen-workspace-context-icon');
-        }
+        const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', (event) => {
           if (!this.#lastFolderContextMenu) return;
           this.changeFolderToSpace(

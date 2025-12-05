@@ -59,3 +59,8 @@
   <menuseparator />
   <menuitem id="context_zenOpenSiteSettings" data-l10n-id="zen-site-data-site-settings"/>
 </menupopup>
+
+<menupopup id="zenMoveTabsToSyncedWorkspacePopup">
+# Popup to move tabs to a synced workspace.
+# This would be automatically populated with the list of available synced workspaces.
+</menupopup>

@@ -126,7 +126,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
   }
 
   async #updateIcons() {
-    const workspaces = await gZenWorkspaces._workspaces();
+    const workspaces = await gZenWorkspaces.getWorkspaces();
     this.innerHTML = '';
     for (const workspace of workspaces.workspaces) {
       const button = this.#createWorkspaceIcon(workspace);

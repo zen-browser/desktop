@@ -129,7 +129,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     this.addPopupListeners();
 
     await this.#waitForPromises();
-    await this._workspaces();
+    await this.getWorkspaces();
 
     await this.afterLoadInit();
   }
@@ -319,7 +319,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async _createDefaultWorkspaceIfNeeded() {
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     if (!workspaces.workspaces.length) {
       await this.createAndSaveWorkspace('Space', null, true);
       this._workspaceCache = null;
@@ -414,7 +414,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     await new Promise((resolve) => {
       setTimeout(async () => {
         const tabs = gBrowser.tabContainer.allTabs;
-        const workspaces = await this._workspaces();
+        const workspaces = await this.getWorkspaces();
         for (const workspace of workspaces.workspaces) {
           await this._createWorkspaceTabsSection(workspace, tabs);
         }
@@ -865,12 +865,12 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     }
   }
 
-  async _workspaces() {
-    if (this._workspaceCache) {
+  async getWorkspaces(lieToMe = false) {
+    if (this._workspaceCache && !lieToMe) {
       return this._workspaceCache;
     }
 
-    if (!this.currentWindowIsSyncing) {
+    if (!this.currentWindowIsSyncing && !lieToMe) {
       this._workspaceCache = {
         workspaces: this._tempWorkspace ? [this._tempWorkspace] : [],
         lastChangeTimestamp: 0,
@@ -884,7 +884,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       ZenWorkspacesStorage.getLastChangeTimestamp(),
     ]);
 
-    this._workspaceCache = { workspaces, lastChangeTimestamp };
+    const workspaceCache = { workspaces, lastChangeTimestamp };
     // Get the active workspace ID from preferences
     const activeWorkspaceId = this.activeWorkspace;
 
@@ -892,18 +892,20 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       const activeWorkspace = this.getWorkspaceFromId(activeWorkspaceId);
       // Set the active workspace ID to the first one if the one with selected id doesn't exist
       if (!activeWorkspace) {
-        this.activeWorkspace = this._workspaceCache.workspaces[0]?.uuid;
+        this.activeWorkspace = workspaceCache.workspaces[0]?.uuid;
       }
     } else {
       // Set the active workspace ID to the first one if active workspace doesn't exist
-      this.activeWorkspace = this._workspaceCache.workspaces[0]?.uuid;
+      this.activeWorkspace = workspaceCache.workspaces[0]?.uuid;
     }
     // sort by position
-    this._workspaceCache.workspaces.sort(
-      (a, b) => (a.position ?? Infinity) - (b.position ?? Infinity)
-    );
+    workspaceCache.workspaces.sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity));
 
-    return this._workspaceCache;
+    if (!lieToMe) {
+      // We don't want our cache to remain for the next calls
+      this._workspaceCache = workspaceCache;
+    }
+    return workspaceCache;
   }
 
   async workspaceBookmarks() {
@@ -1124,7 +1126,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
 
   async #clearAnyZombieTabs() {
     const tabs = this.allStoredTabs;
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     for (let tab of tabs) {
       const workspaceID = tab.getAttribute('zen-workspace-id');
       if (
@@ -1212,6 +1214,24 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     );
   }
 
+  generateMenuItemForWorkspace(workspace) {
+    const item = document.createXULElement('menuitem');
+    item.className = 'zen-workspace-context-menu-item';
+    item.setAttribute('zen-workspace-id', workspace.uuid);
+    item.setAttribute('disabled', workspace.uuid === this.activeWorkspace);
+    let name = workspace.name;
+    const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
+    if (workspace.icon && workspace.icon !== '' && !iconIsSvg) {
+      name = `${workspace.icon}  ${name}`;
+    }
+    item.setAttribute('label', name);
+    if (iconIsSvg) {
+      item.setAttribute('image', workspace.icon);
+      item.classList.add('zen-workspace-context-icon');
+    }
+    return item;
+  }
+
   #contextMenuData = null;
   updateWorkspaceActionsMenu(event) {
     if (event.target.id !== 'zenWorkspaceMoreActions') {
@@ -1255,20 +1275,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (!this.#contextMenuData.workspaceId) {
       separator.hidden = false;
       for (const workspace of [...this._workspaceCache.workspaces].reverse()) {
-        const item = document.createXULElement('menuitem');
-        item.className = 'zen-workspace-context-menu-item';
-        item.setAttribute('zen-workspace-id', workspace.uuid);
-        item.setAttribute('disabled', workspace.uuid === this.activeWorkspace);
-        let name = workspace.name;
-        const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
-        if (workspace.icon && workspace.icon !== '' && !iconIsSvg) {
-          name = `${workspace.icon}  ${name}`;
-        }
-        item.setAttribute('label', name);
-        if (iconIsSvg) {
-          item.setAttribute('image', workspace.icon);
-          item.classList.add('zen-workspace-context-icon');
-        }
+        const item = this.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', (e) => {
           this.changeWorkspaceWithID(e.target.closest('menuitem').getAttribute('zen-workspace-id'));
         });
@@ -1313,7 +1320,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async removeWorkspace(windowID) {
-    let workspacesData = await this._workspaces();
+    let workspacesData = await this.getWorkspaces();
     await this.changeWorkspace(
       workspacesData.workspaces.find((workspace) => workspace.uuid !== windowID)
     );
@@ -1336,7 +1343,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async getActiveWorkspace() {
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     return (
       workspaces.workspaces.find((workspace) => workspace.uuid === this.activeWorkspace) ??
       workspaces.workspaces[0]
@@ -1370,7 +1377,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       browser.gZenWorkspaces._workspaceCache = null;
       browser.gZenWorkspaces._workspaceBookmarksCache = null;
     }
-    let workspaces = await browser.gZenWorkspaces._workspaces();
+    let workspaces = await browser.gZenWorkspaces.getWorkspaces();
     browser.document
       .getElementById('cmd_zenCtxDeleteWorkspace')
       .setAttribute('disabled', workspaces.workspaces.length <= 1);
@@ -1423,7 +1430,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = (await this._workspaces()).workspaces;
+    const workspaces = (await this.getWorkspaces()).workspaces;
     const workspace = workspaces.find((w) => w.uuid === id);
     if (!workspace) {
       console.warn(`Workspace with ID ${id} not found for reordering.`);
@@ -1449,7 +1456,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async moveWorkspace(draggedWorkspaceId, targetWorkspaceId) {
-    const workspaces = (await this._workspaces()).workspaces;
+    const workspaces = (await this.getWorkspaces()).workspaces;
     const draggedIndex = workspaces.findIndex((w) => w.uuid === draggedWorkspaceId);
     const draggedWorkspace = workspaces.splice(draggedIndex, 1)[0];
     const targetIndex = workspaces.findIndex((w) => w.uuid === targetWorkspaceId);
@@ -1662,7 +1669,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       return;
     }
 
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     gZenFolders.cancelPopupTimer();
 
     // Refresh tab cache
@@ -1778,7 +1785,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       return;
     }
     this._organizingWorkspaceStrip = true;
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     let workspaceIndex = workspaces.workspaces.findIndex((w) => w.uuid === workspace.uuid);
     if (!justMove) {
       this._fixIndicatorsNames(workspaces);
@@ -1912,7 +1919,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     const kGlobalAnimationDuration = 0.2;
     this._animatingChange = true;
     const animations = [];
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     const newWorkspaceIndex = workspaces.workspaces.findIndex((w) => w.uuid === newWorkspace.uuid);
     const isGoingLeft = newWorkspaceIndex <= previousWorkspaceIndex;
     const clonedEssentials = [];
@@ -2215,7 +2222,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       tab,
       currentWorkspace.uuid,
       currentWorkspace.containerTabId,
-      await this._workspaces()
+      await this.getWorkspaces()
     );
   }
 
@@ -2274,7 +2281,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     const lastSelectedTab = this._lastSelectedWorkspaceTabs[workspace.uuid];
 
     const containerId = workspace.containerTabId?.toString();
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
 
     // Save current tab as last selected for old workspace if it shouldn't be visible in new workspace
     if (oldWorkspaceId && oldWorkspaceId !== workspace.uuid) {
@@ -2407,7 +2414,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
 
   async _updateWorkspacesChangeContextMenu() {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
 
     const menuPopup = document.getElementById('context-zen-change-workspace-tab-menu-popup');
     if (!menuPopup) {
@@ -2711,7 +2718,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   // Context menu management
   async contextChangeContainerTab(event) {
     this._organizingWorkspaceStrip = true;
-    let workspaces = await this._workspaces();
+    let workspaces = await this.getWorkspaces();
     let workspace = workspaces.workspaces.find(
       (workspace) => workspace.uuid === (this.#contextMenuData?.workspaceId || this.activeWorkspace)
     );
@@ -2765,7 +2772,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
 
   async changeWorkspaceShortcut(offset = 1, whileScrolling = false) {
     // Cycle through workspaces
-    let workspaces = await this._workspaces();
+    let workspaces = await this.getWorkspaces();
     let activeWorkspace = await this.getActiveWorkspace();
     let workspaceIndex = workspaces.workspaces.indexOf(activeWorkspace);
 
@@ -2829,7 +2836,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     this._lastSelectedWorkspaceTabs[workspaceID] = gZenGlanceManager.getTabOrGlanceParent(
       tabs[tabs.length - 1]
     );
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     await this.changeWorkspace(
       workspaces.workspaces.find((workspace) => workspace.uuid === workspaceID)
     );
@@ -2888,7 +2895,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   async shortcutSwitchTo(index) {
-    const workspaces = await this._workspaces();
+    const workspaces = await this.getWorkspaces();
     // The index may be out of bounds, if it doesnt exist, don't do anything
     if (index >= workspaces.workspaces.length || index < 0) {
       return;

@@ -428,20 +428,62 @@ class nsZenWindowSync {
   }
 
   /**
+   * Restores the tab progress listener for a given tab.
+   *
+   * @param {Object} aTab - The tab to restore the progress listener for.
+   * @param {Function} callback - The callback function to execute while the listener is removed.
+   * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
+   */
+  #withRestoreTabProgressListener(aTab, callback, onClose = false) {
+    const otherTabBrowser = aTab.ownerGlobal.gBrowser;
+    const otherBrowser = aTab.linkedBrowser;
+
+    // We aren't closing the other tab so, we also need to swap its tablisteners.
+    let filter = otherTabBrowser._tabFilters.get(aTab);
+    let tabListener = otherTabBrowser._tabListeners.get(aTab);
+    otherBrowser.webProgress.removeProgressListener(filter);
+    filter.removeProgressListener(tabListener);
+
+    try {
+      callback();
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Restore the listeners for the swapped in tab.
+    if (!onClose) {
+      tabListener = new otherTabBrowser.zenTabProgressListener(aTab, otherBrowser, false, false);
+      otherTabBrowser._tabListeners.set(aTab, tabListener);
+
+      const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
+      filter.addProgressListener(tabListener, notifyAll);
+      otherBrowser.webProgress.addProgressListener(filter, notifyAll);
+    }
+  }
+
+  /**
    * Swaps the browser docshells between two tabs.
    *
    * @param {Object} aOurTab - The tab in the current window.
    * @param {Object} aOtherTab - The tab in the other window.
+   * @param {boolean} focus - Indicates if the tab should be focused after the swap.
+   * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
    */
-  #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true) {
+  #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true, onClose = false) {
     // Load about:blank
-    if (aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
+    if (!onClose && aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
       aOurTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
         loadFlags: Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY,
       });
     }
-    aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+    this.#withRestoreTabProgressListener(
+      aOtherTab,
+      () => {
+        aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+      },
+      onClose
+    );
     aOtherTab.permanentKey = aOurTab.permanentKey;
     const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
@@ -572,7 +614,7 @@ class nsZenWindowSync {
       const targetTab = this.#getItemFromWindow(mostRecentWindow, tab.id);
       if (targetTab) {
         targetTab._zenContentsVisible = true;
-        this.#swapBrowserDocSheellsInner(targetTab, tab, targetTab.selected);
+        this.#swapBrowserDocSheellsInner(targetTab, tab, targetTab.selected, /* onClose =*/ true);
         // We can animate later, whats important is to always stay on the same
         // process and avoid async operations here to avoid the closed window
         // being unloaded before the swap is done.
@@ -672,14 +714,10 @@ class nsZenWindowSync {
       }
     };
     if (!win) {
-      win = this.replaceTabWithWindow(selectedTab, {}, /* zenForceSync = */ true);
-      win.addEventListener(
-        'before-initial-tab-adopted',
-        () => {
-          moveAllTabsToWindow();
-        },
-        { once: true }
-      );
+      win = aWindow.gBrowser.replaceTabWithWindow(selectedTab, {}, /* zenForceSync = */ true);
+      win.gZenWorkspaces.promiseInitialized.then(() => {
+        moveAllTabsToWindow();
+      });
       return;
     }
     moveAllTabsToWindow(true);
@@ -690,8 +728,9 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-    // TODO: Should we only set this flag if the tab is selected?
-    tab._zenContentsVisible = true;
+    if (tab.selected) {
+      tab._zenContentsVisible = true;
+    }
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
@@ -715,10 +754,18 @@ class nsZenWindowSync {
   }
 
   on_ZenTabIconChanged(aEvent) {
+    if (!aEvent.target?._zenContentsVisible) {
+      // No need to sync icon changes for tabs that aren't active in this window.
+      return;
+    }
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
   }
 
   on_ZenTabLabelChanged(aEvent) {
+    if (!aEvent.target?._zenContentsVisible) {
+      // No need to sync label changes for tabs that aren't active in this window.
+      return;
+    }
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
   }
 

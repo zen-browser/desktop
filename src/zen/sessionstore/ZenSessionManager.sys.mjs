@@ -11,8 +11,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabGroupState: 'resource:///modules/sessionstore/TabGroupState.sys.mjs',
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
   SessionSaver: 'resource:///modules/sessionstore/SessionSaver.sys.mjs',
+  setTimeout: 'resource://gre/modules/Timer.sys.mjs',
 });
 
+const MIGRATION_PREF = 'zen.ui.migration.session-manager-restore';
 const OBSERVING = ['browser-window-before-show'];
 
 class nsZenSessionManager {
@@ -40,6 +42,17 @@ class nsZenSessionManager {
   }
 
   onFileRead(initialState) {
+    // For the first time after migration, we restore the tabs
+    // That where going to be restored by SessionStore. The sidebar
+    // object will always be empty after migration because we haven't
+    // gotten the opportunity to save the session yet.
+    if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
+      Services.prefs.setBoolPref(MIGRATION_PREF, true);
+      return;
+    }
+    // Restore all windows with the same sidebar object, this will
+    // guarantee that all tabs, groups, folders and split view data
+    // are properly synced across all windows.
     for (const winData of initialState.windows || []) {
       this.restoreWindowData(winData);
     }
@@ -76,9 +89,9 @@ class nsZenSessionManager {
    *        The current session state.
    */
   saveState(state) {
-    if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
+    if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing || !state?.windows?.length) {
       // Don't save (or even collect) anything in permanent private
-      // browsing mode
+      // browsing mode. We also don't want to save if there are no windows.
       return;
     }
     this.#collectWindowData(state);
@@ -111,8 +124,6 @@ class nsZenSessionManager {
    *        The current session state.
    */
   #collectTabsData(sidebarData, state) {
-    if (!state?.windows?.length) return;
-
     const tabIdRelationMap = new Map();
     for (const window of state.windows) {
       // Only accept the tabs with `_zenIsActiveTab` set to true from
@@ -149,14 +160,19 @@ class nsZenSessionManager {
       return;
     }
     lazy.SessionSaver.run().then(() => {
-      const state = lazy.SessionStore.getCurrentState(true);
-      const windows = state.windows || {};
-      let newWindow = Cu.cloneInto(windows[0], {});
-      delete newWindow.selected;
-      const newState = { windows: [newWindow] };
-      aWindow._zenRestorePromise = new Promise((resolve) => {
-        SessionStoreInternal.restoreWindows(aWindow, newState, {});
-        resolve();
+      lazy.setTimeout(() => {
+        const state = lazy.SessionStore.getCurrentState(true);
+        const windows = state.windows || [];
+        let windowToClone = windows[0];
+        if (!windowToClone) {
+          this.restoreWindowData((windowToClone = {}));
+        }
+        let newWindow = Cu.cloneInto(windowToClone, {});
+        delete newWindow.selected;
+        const newState = { windows: [newWindow] };
+        SessionStoreInternal.restoreWindows(aWindow, newState, {
+          firstWindow: true,
+        });
       });
     });
   }

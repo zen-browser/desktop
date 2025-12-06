@@ -55,7 +55,6 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       this.promiseDBInitialized,
       this.promisePinnedInitialized,
       SessionStore.promiseAllWindowsRestored,
-      window._zenRestorePromise,
     ]);
   }
 

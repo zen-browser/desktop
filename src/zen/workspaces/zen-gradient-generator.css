@@ -5,7 +5,7 @@
  */
 
 #PanelUI-zen-gradient-generator {
-  --panel-width: 360px;
+  --panel-width: 380px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
 }
@@ -102,15 +102,16 @@
   overflow: auto;
   scrollbar-width: none;
   scroll-behavior: smooth;
-  mask-image: linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%);
 
   & > hbox {
-    justify-content: space-around;
+    justify-content: space-between;
     min-width: 100%;
+    padding: 0 1px;
 
     & > box {
-      width: 22px;
-      height: 22px;
+      width: 26px;
+      height: 26px;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       cursor: pointer;
       position: relative;
@@ -251,17 +252,17 @@
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
   background-image: radial-gradient(
-    light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 1px,
+    light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 0.5px,
     transparent 0
   );
   background-position: -23px -23px;
   background-size: 6px 6px;
 
   & .zen-theme-picker-dot {
-    position: absolute;
+    position: fixed;
     z-index: 2;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--zen-theme-picker-dot-color);
     @media (-prefers-color-scheme: dark) {
@@ -270,25 +271,25 @@
     cursor: pointer;
     border: 3px solid #ffffff;
     animation: zen-theme-picker-dot-animation 0.5s;
-    transform: translate(-50%, -50%);
+    transform: translate(-25%, -25%);
     pointer-events: none;
     transform-origin: center center;
 
     &:first-of-type {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-width: 4px;
       z-index: 2;
       pointer-events: all;
       transition: transform 0.2s;
       z-index: 999;
       &:hover {
-        transform: scale(1.05) translate(-50%, -50%);
+        transform: scale(1.05) translate(-25%, -25%);
       }
     }
 
     &[dragging='true'] {
-      transform: scale(1.2) translate(-50%, -50%) !important;
+      transform: scale(1.2) translate(-25%, -25%) !important;
     }
   }
 }
@@ -329,10 +330,10 @@
     min-width: fit-content !important;
     transition: background 0.2s;
     appearance: none;
-    max-height: 26px;
-    max-width: 26px;
-    min-height: 26px;
-    min-width: 26px !important;
+    max-height: 30px;
+    max-width: 30px;
+    min-height: 30px;
+    min-width: 30px !important;
     color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.9));
 
     & .button-box {

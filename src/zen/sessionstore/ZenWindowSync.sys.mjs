@@ -441,8 +441,12 @@ class nsZenWindowSync {
     // We aren't closing the other tab so, we also need to swap its tablisteners.
     let filter = otherTabBrowser._tabFilters.get(aTab);
     let tabListener = otherTabBrowser._tabListeners.get(aTab);
-    otherBrowser.webProgress.removeProgressListener(filter);
-    filter.removeProgressListener(tabListener);
+    try {
+      otherBrowser.webProgress.removeProgressListener(filter);
+      filter.removeProgressListener(tabListener);
+    } catch {
+      /* ignore errors, we might have already removed them */
+    }
 
     try {
       callback();
@@ -470,13 +474,21 @@ class nsZenWindowSync {
    * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
    */
   #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true, onClose = false) {
-    // Load about:blank
+    // Load about:blank if by any chance we loaded the previous tab's URL.
+    // TODO: We should maybe start using a singular about:blank preloaded view
+    //  to avoid loading a full blank page each time and wasting resources.
+    // We do need to do this though instead of just unloading the browser because
+    // firefox doesn't expect an unloaded + selected tab, so we need to get
+    // around this limitation somehow.
     if (!onClose && aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
       aOurTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
         loadFlags: Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY,
       });
     }
+    // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
+    // the operation, so it doesn't really care about cleaning up the other tab.
+    // We need to make a new tab progress listener for the other tab after the swap.
     this.#withRestoreTabProgressListener(
       aOtherTab,
       () => {
@@ -484,7 +496,6 @@ class nsZenWindowSync {
       },
       onClose
     );
-    aOtherTab.permanentKey = aOurTab.permanentKey;
     const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
     // but we need to manually remove some attributes from the other tab.

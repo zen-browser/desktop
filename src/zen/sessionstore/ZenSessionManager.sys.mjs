@@ -115,6 +115,14 @@ class nsZenSessionManager {
     this.#sidebar = sidebarData;
   }
 
+  #filterUnusedTabs(tabs) {
+    return tabs.filter((tab) => {
+      // We need to ignore empty tabs with no group association
+      // as they are not useful to restore.
+      return !(tab.zenIsEmpty && !tab.groupId);
+    });
+  }
+
   /**
    * Collects session data for all tabs in a given window.
    *
@@ -137,7 +145,7 @@ class nsZenSessionManager {
       }
     }
 
-    sidebarData.tabs = Array.from(tabIdRelationMap.values());
+    sidebarData.tabs = this.#filterUnusedTabs(Array.from(tabIdRelationMap.values()));
 
     sidebarData.folders = state.windows[0].folders;
     sidebarData.splitViewData = state.windows[0].splitViewData;
@@ -159,19 +167,24 @@ class nsZenSessionManager {
     if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
       return;
     }
-    lazy.SessionSaver.run().then(() => {
-      lazy.setTimeout(() => {
-        const state = lazy.SessionStore.getCurrentState(true);
-        const windows = state.windows || [];
-        let windowToClone = windows[0];
-        if (!windowToClone) {
-          this.restoreWindowData((windowToClone = {}));
-        }
-        let newWindow = Cu.cloneInto(windowToClone, {});
-        delete newWindow.selected;
-        const newState = { windows: [newWindow] };
-        SessionStoreInternal.restoreWindows(aWindow, newState, {
-          firstWindow: true,
+    aWindow._zenPromiseNewWindowRestored = new Promise((resolve) => {
+      lazy.SessionSaver.run().then(() => {
+        lazy.setTimeout(() => {
+          const state = lazy.SessionStore.getCurrentState(true);
+          const windows = state.windows || [];
+          let windowToClone =
+            windows.find(
+              (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
+            ) || {};
+          let newWindow = Cu.cloneInto(windowToClone, {});
+          this.restoreWindowData(newWindow);
+          newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
+          delete newWindow.selected;
+          const newState = { windows: [newWindow] };
+          SessionStoreInternal.restoreWindows(aWindow, newState, {
+            firstWindow: true,
+          });
+          resolve();
         });
       });
     });

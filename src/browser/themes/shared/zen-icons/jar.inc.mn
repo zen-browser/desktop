@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifdef XP_WIN
+*  skin/classic/browser/zen-icons/algorithm.svg                      (../shared/zen-icons/lin/algorithm.svg) 
 *  skin/classic/browser/zen-icons/arrow-down.svg                      (../shared/zen-icons/lin/arrow-down.svg) 
 *  skin/classic/browser/zen-icons/arrow-left.svg                      (../shared/zen-icons/lin/arrow-left.svg) 
 *  skin/classic/browser/zen-icons/arrow-right.svg                      (../shared/zen-icons/lin/arrow-right.svg) 
@@ -131,6 +132,7 @@
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/lin/zoom-out.svg) 
 #endif
 #ifdef XP_MACOSX
+*  skin/classic/browser/zen-icons/algorithm.svg                      (../shared/zen-icons/lin/algorithm.svg) 
 *  skin/classic/browser/zen-icons/arrow-down.svg                      (../shared/zen-icons/lin/arrow-down.svg) 
 *  skin/classic/browser/zen-icons/arrow-left.svg                      (../shared/zen-icons/lin/arrow-left.svg) 
 *  skin/classic/browser/zen-icons/arrow-right.svg                      (../shared/zen-icons/lin/arrow-right.svg) 
@@ -259,6 +261,7 @@
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/lin/zoom-out.svg) 
 #endif
 #ifdef XP_LINUX
+*  skin/classic/browser/zen-icons/algorithm.svg                      (../shared/zen-icons/lin/algorithm.svg) 
 *  skin/classic/browser/zen-icons/arrow-down.svg                      (../shared/zen-icons/lin/arrow-down.svg) 
 *  skin/classic/browser/zen-icons/arrow-left.svg                      (../shared/zen-icons/lin/arrow-left.svg) 
 *  skin/classic/browser/zen-icons/arrow-right.svg                      (../shared/zen-icons/lin/arrow-right.svg) 

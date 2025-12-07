@@ -45,6 +45,7 @@ const MAX_OPACITY = 0.9;
 const MIN_OPACITY = AppConstants.platform === 'macosx' ? 0.25 : 0.35;
 
 const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
+const EXPLICIT_BLACKWHITE_TYPE = 'explicit-black-white';
 
 export class nsZenThemePicker extends nsZenMultiWindowFeature {
   static MAX_DOTS = 3;
@@ -146,6 +147,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   get colorHarmonies() {
     return [
       { type: 'complementary', angles: [180] },
+      { type: 'singleAnalogous', angles: [310] },
       { type: 'splitComplementary', angles: [150, 210] },
       { type: 'analogous', angles: [50, 310] },
       { type: 'triadic', angles: [120, 240] },
@@ -198,6 +200,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           }
           this.dots = this.dots.slice(0, numDots);
         }
+        const type = target.getAttribute('data-type') || EXPLICIT_LIGHTNESS_TYPE;
         // Generate new gradient from the single color given
         const [x, y] = rawPosition.split(',').map((pos) => parseInt(pos));
         let dots = [
@@ -205,18 +208,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             ID: 0,
             position: { x, y },
             isPrimary: true,
-            type: EXPLICIT_LIGHTNESS_TYPE,
+            type,
           },
         ];
         for (let i = 1; i < numDots; i++) {
           dots.push({
             ID: i,
             position: { x: 0, y: 0 },
-            type: EXPLICIT_LIGHTNESS_TYPE,
+            type,
           });
         }
         this.useAlgo = algo;
-        this.#currentLightness = lightness;
+        if (lightness !== null) this.#currentLightness = lightness;
         dots = this.calculateCompliments(dots, 'update', this.useAlgo);
         this.handleColorPositions(dots, true);
         this.updateCurrentWorkspace();
@@ -416,10 +419,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   calculateInitialPosition([r, g, b]) {
     // This function is called before the picker is even rendered, so we hard code the dimensions
     // important: If any sort of sizing is changed, make sure changes are reflected here
-    const padding = 30;
+    const padding = 0;
     const rect = {
-      width: 338,
-      height: 338,
+      width: 380 + padding * 2,
+      height: 380 + padding * 2,
     };
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
@@ -437,7 +440,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
     const rect = gradient.getBoundingClientRect();
     const padding = 30; // each side
-    const dotHalfSize = 36 / 2; // half the size of the dot
+    const dotHalfSize = 38 / 2; // half the size of the dot
     x += dotHalfSize;
     y += dotHalfSize;
     rect.width += padding * 2; // Adjust width and height for padding
@@ -452,7 +455,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       angle += 360; // Normalize to [0, 360)
     }
     const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
-    const hue = (angle / 360) * 360; // Normalize angle to [0, 360)
+    let hue = (angle / 360) * 360; // Normalize angle to [0, 360)
     let saturation = normalizedDistance * 100; // stays high even in center
     if (type !== EXPLICIT_LIGHTNESS_TYPE) {
       saturation = 80 + (1 - normalizedDistance) * 20;
@@ -460,7 +463,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       // For example, moving the dot outside will have higher lightness, while moving it inside will have lower lightness
       this.#currentLightness = Math.round((1 - normalizedDistance) * 100);
     }
-    const lightness = this.#currentLightness; // Fixed lightness for simplicity
+    let lightness = this.#currentLightness; // Fixed lightness for simplicity
+    if (type === EXPLICIT_BLACKWHITE_TYPE) {
+      // We can only get grayscales from white to black
+      saturation = 0;
+      lightness = Math.round((1 - normalizedDistance) * 100);
+    }
     const [r, g, b] = this.hslToRgb(hue / 360, saturation / 100, lightness / 100);
     return [
       Math.min(255, Math.max(0, r)),
@@ -675,7 +683,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       if (action === 'remove') {
-        return colorHarmonies.find((harmony) => harmony.angles.length === numDots);
+        let harmony = colorHarmonies.find((harmony) => harmony.angles.length === numDots);
+        // If we are coming from 3 analogous dots, we should now go to singleAnalogous if
+        // there are 2 dots left
+        if (harmony.type === 'analogous' && numDots === 1) {
+          harmony = colorHarmonies.find((harmony) => harmony.type === 'singleAnalogous');
+        }
+        return harmony;
       }
       if (action === 'add') {
         return colorHarmonies.find((harmony) => harmony.angles.length + 1 === numDots);
@@ -700,7 +714,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
     const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
     const rect = dotPad.getBoundingClientRect();
-    const padding = 30;
+    const padding = 0;
 
     let updatedDots = [...dots];
     const centerPosition = { x: rect.width / 2, y: rect.height / 2 };
@@ -843,16 +857,30 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.handleColorPositions(colorPositions);
       this.updateCurrentWorkspace();
       return;
+    } else if (target.id === 'PanelUI-zen-gradient-generator-color-toggle-algo') {
+      const applicableHarmonies = this.colorHarmonies.filter(
+        (harmony) => harmony.angles.length + 1 === this.dots.length
+      );
+
+      let currentIndex = applicableHarmonies.findIndex((harmony) => harmony.type === this.useAlgo);
+
+      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % applicableHarmonies.length;
+      this.useAlgo = applicableHarmonies[nextIndex].type;
+
+      let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+      this.handleColorPositions(colorPositions);
+      this.updateCurrentWorkspace();
+      return;
     }
 
     if (event.button !== 0 || this.dragging || this.recentlyDragged) return;
 
     const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
     const rect = gradient.getBoundingClientRect();
-    const padding = 30;
+    const padding = 0;
 
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    const centerX = rect.left + rect.width / 2 - padding;
+    const centerY = rect.top + rect.height / 2 - padding;
     const radius = (rect.width - padding) / 2;
     let pixelX = event.clientX;
     let pixelY = event.clientY;
@@ -982,7 +1010,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (this.dragging) {
       event.preventDefault();
       const rect = this.panel.querySelector('.zen-theme-picker-gradient').getBoundingClientRect();
-      const padding = 30; // each side
+      const padding = 0; // each side
       // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
       // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
       // should be placed on the edge of the circle. If it's inside the circle, then the ball just follows the mouse
@@ -1164,7 +1192,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         if (!forToolbar) {
           return [
             `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-            `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 80%)`,
+            `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
           ]
             .reverse()
             .join(', ');
@@ -1175,8 +1203,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
         let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
         return [
+          `radial-gradient(circle at 0% 0%, ${color2} -10%, transparent 100%)`,
           `linear-gradient(to top, ${color1} -50%, transparent 125%)`,
-          `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 80%)`,
           `radial-gradient(circle at 100% -100%, ${color3} -100%, transparent 400%)`,
         ].join(', ');
       }
@@ -1389,6 +1417,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           workspaceTheme.gradientColors.length === 0 ||
           (button.id === 'PanelUI-zen-gradient-generator-color-add'
             ? workspaceTheme.gradientColors.length >= nsZenThemePicker.MAX_DOTS
+            : false) ||
+          (button.id === 'PanelUI-zen-gradient-generator-color-toggle-algo'
+            ? workspaceTheme.gradientColors.length < 2
             : false);
       }
       const clickToAdd = browser.document.getElementById(

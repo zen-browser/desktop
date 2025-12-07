@@ -1,0 +1,58 @@
+diff --git a/widget/windows/nsWindow.h b/widget/windows/nsWindow.h
+--- a/widget/windows/nsWindow.h
++++ b/widget/windows/nsWindow.h
+@@ -850,13 +850,10 @@
+   bool mHasTaskbarIconBeenCreated = false;
+ 
+   // Whether we're in the process of sending a WM_SETTEXT ourselves
+   bool mSendingSetText = false;
+ 
+-  // Whether we're a PIP window.
+-  bool mPIPWindow : 1;
+-
+   // Whether we are asked to render a mica backdrop.
+   bool mMicaBackdrop : 1;
+ 
+   int32_t mCachedHitTestResult = 0;
+ 
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -815,11 +815,10 @@
+  **************************************************************/
+ 
+ nsWindow::nsWindow()
+     : nsIWidget(BorderStyle::Default),
+       mFrameState(std::in_place, this),
+-      mPIPWindow(false),
+       mMicaBackdrop(false),
+       mLastPaintEndTime(TimeStamp::Now()),
+       mCachedHitTestTime(TimeStamp::Now()),
+       mSizeConstraintsScale(GetDefaultScale().scale) {
+   if (!gInitializedVirtualDesktopManager) {
+@@ -1026,11 +1025,10 @@
+ 
+   HWND parent =
+       aParent ? (HWND)aParent->GetNativeData(NS_NATIVE_WINDOW) : nullptr;
+ 
+   mIsRTL = aInitData.mRTL;
+-  mPIPWindow = aInitData.mPIPWindow;
+   mOpeningAnimationSuppressed = aInitData.mIsAnimationSuppressed;
+   mAlwaysOnTop = aInitData.mAlwaysOnTop;
+   mIsAlert = aInitData.mIsAlert;
+   mResizable = aInitData.mResizable;
+ 
+@@ -2805,11 +2803,11 @@
+   } else if (sizeMode == nsSizeMode_Maximized) {
+     // We make the entire frame part of the client area. We leave the default
+     // frame sizes for left, right and bottom since Windows will automagically
+     // position the edges "offscreen" for maximized windows.
+     metrics.mOffset.top = metrics.mCaptionHeight;
+-  } else if (mPIPWindow &&
++  } else if (mIsPIPWindow &&
+              !StaticPrefs::widget_windows_pip_decorations_enabled()) {
+     metrics.mOffset = metrics.DefaultMargins();
+   } else {
+     metrics.mOffset = NormalWindowNonClientOffset();
+   }
+

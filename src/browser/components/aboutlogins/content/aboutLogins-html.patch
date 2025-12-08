@@ -1,5 +1,5 @@
 diff --git a/browser/components/aboutlogins/content/aboutLogins.html b/browser/components/aboutlogins/content/aboutLogins.html
-index a2b9a3c3bd60b7c679fc4babf2cc085f79ba84f5..3acd8da43d31cf8e9eb25d74421f522fdbd41094 100644
+index ca69defe40c57704ab6ec331ce11c95a98b03e8f..bc5be4555adbe3389bceee0f01730ee57f1e69ef 100644
 --- a/browser/components/aboutlogins/content/aboutLogins.html
 +++ b/browser/components/aboutlogins/content/aboutLogins.html
 @@ -6,7 +6,7 @@

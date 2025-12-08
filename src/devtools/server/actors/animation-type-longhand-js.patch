@@ -1,5 +1,5 @@
 diff --git a/devtools/server/actors/animation-type-longhand.js b/devtools/server/actors/animation-type-longhand.js
-index a0026f953e8383741221d60ed5c02d0c12740f09..fd5c49d0b8997f29d3dee8dc23e2c373341eb972 100644
+index 76c58a23422b923e191870f27090c7fc6d63884e..b19f47d31195774cec2c7e67903c892aa1329f3d 100644
 --- a/devtools/server/actors/animation-type-longhand.js
 +++ b/devtools/server/actors/animation-type-longhand.js
 @@ -342,6 +342,7 @@ exports.ANIMATION_TYPE_FOR_LONGHANDS = [

@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/jar.inc.mn b/browser/themes/shared/jar.inc.mn
-index 6085ce0614c9ea7d650c9526b295953f46b30cb6..06b4af758d9ae033dd0b7436f08e6748047c8bbe 100644
+index ff198352720d7935b497e43f3e6b8ca04905e885..63e09db981a7ae35b1bb2c610133f624e8f61b74 100644
 --- a/browser/themes/shared/jar.inc.mn
 +++ b/browser/themes/shared/jar.inc.mn
-@@ -317,3 +317,5 @@
+@@ -323,3 +323,5 @@
  
    skin/classic/browser/illustrations/market-opt-in.svg         (../shared/illustrations/market-opt-in.svg)
    skin/classic/browser/illustrations/yelpRealtime-opt-in.svg   (../shared/illustrations/yelpRealtime-opt-in.svg)

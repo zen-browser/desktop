@@ -313,7 +313,7 @@
         var(--zen-tabbox-element-indent-transition);
     }
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded='true'] &:not([zen-glance-tab]) {
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 
@@ -327,13 +327,6 @@
 
     #tabbrowser-tabs:not([movingtab]) & .tab-content > image:active {
       scale: 0.92;
-    }
-
-    &:not(:hover) {
-      .tab-close-button,
-      .tab-reset-button {
-        display: none !important;
-      }
     }
 
     & .tab-icon-image {
@@ -656,7 +649,14 @@
         }
       }
 
-      &:is(:hover, [visuallyselected]) .tab-close-button {
+      &:not(:hover) {
+        .tab-close-button,
+        .tab-reset-button {
+          display: none;
+        }
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;

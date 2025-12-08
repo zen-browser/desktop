@@ -9,8 +9,8 @@
   --button-spacing: 2px;
 
   display: flex;
-  justify-content: space-between;
   min-width: 0;
+  justify-content: space-between;
   background: transparent;
   container-type: inline-size;
 
@@ -151,11 +151,6 @@
   }
 
   & > toolbaritem {
-    --zen-media-control-bg: color-mix(
-      in srgb,
-      var(--zen-primary-color) 15%,
-      light-dark(white, black)
-    );
     flex-grow: 1;
     padding: 0;
     transition: padding 0.3s ease-out;
@@ -164,8 +159,8 @@
     bottom: 0;
     padding: 4px 6px;
     border-radius: var(--border-radius-medium);
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: var(--zen-media-control-bg);
+    box-shadow: var(--zen-sidebar-notification-shadow);
+    background-color: var(--zen-sidebar-notification-bg);
     width: 100%;
   }
 
@@ -239,14 +234,14 @@
   overflow-x: visible;
   white-space: nowrap;
   /* Overflow inner box shadow from the left to simulate overflow */
-  mask-image: linear-gradient(to left, transparent, var(--zen-media-control-bg) 0.6em);
+  mask-image: linear-gradient(to left, transparent, var(--zen-sidebar-notification-bg) 0.6em);
   min-width: 1px;
 
   &::before {
     content: '';
     position: absolute;
     width: 0.6em;
-    background: linear-gradient(to right, var(--zen-media-control-bg) 0%, transparent 100%);
+    background: linear-gradient(to right, var(--zen-sidebar-notification-bg) 0%, transparent 100%);
     pointer-events: none;
     top: 6px;
     left: 0;

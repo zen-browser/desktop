@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Etsi { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Nimeä kansio uudelleen
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Pura Kansio
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Uusi Alikansio
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Poista kansio
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Muunna kansio työtilaksi
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Muuta Työtilaa...
 zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = Vaihda kuvake
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Poista käytöstä aktiivinen kansio
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Tyhjennä Kaikki Välilehdet
+zen-folders-search-no-results = Ei hakua vastaavia välilehtiä 🤔

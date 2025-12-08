@@ -1,0 +1,36 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zenThemeModifier.js                                     (../../zen/common/zenThemeModifier.js)
+        content/browser/ZenPreloadedScripts.js                                  (../../zen/common/ZenPreloadedScripts.js)
+        content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
+
+        content/browser/ZenStartup.mjs                                          (../../zen/common/modules/ZenStartup.mjs)
+        content/browser/ZenUpdates.mjs                                          (../../zen/common/modules/ZenUpdates.mjs)
+        content/browser/ZenUIManager.mjs                                        (../../zen/common/modules/ZenUIManager.mjs)
+        content/browser/zen-components/ZenCommonUtils.mjs                       (../../zen/common/modules/ZenCommonUtils.mjs)
+        content/browser/zen-components/ZenSessionStore.mjs                      (../../zen/common/modules/ZenSessionStore.mjs)
+        content/browser/zen-components/ZenHasPolyfill.mjs                       (../../zen/common/modules/ZenHasPolyfill.mjs)
+        content/browser/zen-components/ZenSidebarNotification.mjs               (../../zen/common/modules/ZenSidebarNotification.mjs)
+
+        content/browser/zen-components/ZenEmojisData.min.mjs                    (../../zen/common/emojis/ZenEmojisData.min.mjs)
+        content/browser/zen-components/ZenEmojiPicker.mjs                       (../../zen/common/emojis/ZenEmojiPicker.mjs)
+
+*       content/browser/zen-styles/zen-theme.css                                (../../zen/common/styles/zen-theme.css)
+        content/browser/zen-styles/zen-buttons.css                              (../../zen/common/styles/zen-buttons.css)
+        content/browser/zen-styles/zen-browser-ui.css                           (../../zen/common/styles/zen-browser-ui.css)
+        content/browser/zen-styles/zen-animations.css                           (../../zen/common/styles/zen-animations.css)
+        content/browser/zen-styles/zen-panel-ui.css                             (../../zen/common/styles/zen-panel-ui.css)
+        content/browser/zen-styles/zen-single-components.css                    (../../zen/common/styles/zen-single-components.css)
+        content/browser/zen-styles/zen-sidebar.css                              (../../zen/common/styles/zen-sidebar.css)
+        content/browser/zen-styles/zen-toolbar.css                              (../../zen/common/styles/zen-toolbar.css)
+        content/browser/zen-styles/zen-browser-container.css                    (../../zen/common/styles/zen-browser-container.css)
+        content/browser/zen-styles/zen-omnibox.css                              (../../zen/common/styles/zen-omnibox.css)
+        content/browser/zen-styles/zen-popup.css                                (../../zen/common/styles/zen-popup.css)
+        content/browser/zen-styles/zen-branding.css                             (../../zen/common/styles/zen-branding.css)
+        content/browser/zen-styles/zen-sidebar-notification.css                 (../../zen/common/styles/zen-sidebar-notification.css)
+
+        content/browser/zen-styles/zen-panels/bookmarks.css                     (../../zen/common/styles/zen-panels/bookmarks.css)
+        content/browser/zen-styles/zen-panels/print.css                         (../../zen/common/styles/zen-panels/print.css)
+        content/browser/zen-styles/zen-panels/dialog.css                        (../../zen/common/styles/zen-panels/dialog.css)

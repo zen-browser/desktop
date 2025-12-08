@@ -1,8 +1,8 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index 04d0b47099648cfd00e72ef260d44628718809ee..49cd0215778a33a80d1f45b8e2701410d016a5a3 100644
+index a3a84f96e54e5b74ad15f3825b380c30c117695f..ca702841c1df404a6f270ac08f962c8a225549d8 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
-@@ -541,7 +541,7 @@ export const URILoadingHelper = {
+@@ -542,7 +542,7 @@ export const URILoadingHelper = {
        // page. If a load request bounces off for the currently selected tab,
        // we'll open a new tab instead.
        let tab = w.gBrowser.getTabForBrowser(targetBrowser);
@@ -11,7 +11,7 @@ index 04d0b47099648cfd00e72ef260d44628718809ee..49cd0215778a33a80d1f45b8e2701410
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -971,7 +971,7 @@ export const URILoadingHelper = {
+@@ -972,7 +972,7 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -20,7 +20,7 @@ index 04d0b47099648cfd00e72ef260d44628718809ee..49cd0215778a33a80d1f45b8e2701410
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1017,7 +1017,7 @@ export const URILoadingHelper = {
+@@ -1018,7 +1018,7 @@ export const URILoadingHelper = {
            }
  
            if (!doAdopt) {

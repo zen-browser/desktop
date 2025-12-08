@@ -799,8 +799,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           gZenUIManager.motion.animate(
             existingDot.element,
             {
-              left: `${dotPosition.position.x}px`,
-              top: `${dotPosition.position.y}px`,
+              left: existingDot.element.style.left
+                ? [existingDot.element.style.left, `${dotPosition.position.x}px`]
+                : `${dotPosition.position.x}px`,
+              top: existingDot.element.style.top
+                ? [existingDot.element.style.top, `${dotPosition.position.y}px`]
+                : `${dotPosition.position.y}px`,
             },
             {
               duration: 0.4,

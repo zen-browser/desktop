@@ -252,7 +252,7 @@
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
   background-image: radial-gradient(
-    light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.1)) 0.5px,
+    light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05)) 1px,
     transparent 0
   );
   background-position: -23px -23px;
@@ -271,9 +271,10 @@
     cursor: pointer;
     border: 3px solid #ffffff;
     animation: zen-theme-picker-dot-animation 0.5s;
-    transform: translate(-25%, -25%);
+    transform: translate(-50%, -50%);
     pointer-events: none;
-    transform-origin: center center;
+    transform-origin: left top;
+    margin: 10px 0 0 10px;
 
     &:first-of-type {
       width: 38px;
@@ -284,7 +285,7 @@
       transition: transform 0.2s;
       z-index: 999;
       &:hover {
-        transform: scale(1.05) translate(-25%, -25%);
+        transform: scale(1.05) translate(-50%, -50%);
       }
     }
 

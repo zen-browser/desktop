@@ -403,6 +403,10 @@
   @media -moz-pref('zen.view.show-clear-tabs-button', false) {
     display: none;
   }
+
+  @media -moz-pref('browser.ml.enable', false) {
+    display: none;
+  }
 }
 
 .zen-workspace-close-unpinned-tabs-button {

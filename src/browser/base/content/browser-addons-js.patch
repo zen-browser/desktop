@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c0c59c774 100644
+index fadcbfca95ee28140579430c0371baad0e2f216a..546af74c2d758699980b6234ba272a8b7da64870 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
@@ -38,7 +38,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c
      }
 
      return anchorID;
-@@ -2536,7 +2536,7 @@ var gUnifiedExtensions = {
+@@ -2547,7 +2547,7 @@ var gUnifiedExtensions = {
      requestAnimationFrame(() => this.updateAttention());
    },
 
@@ -47,7 +47,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c
      // A list of extension widget IDs (possibly empty).
      let widgetIDs;
 
-@@ -2550,7 +2550,7 @@ var gUnifiedExtensions = {
+@@ -2561,7 +2561,7 @@ var gUnifiedExtensions = {
      }
 
      // The list of overflowed extensions in the extensions panel.
@@ -56,7 +56,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c
        "#overflowed-extensions-list"
      );
 
-@@ -2651,37 +2651,41 @@ var gUnifiedExtensions = {
+@@ -2662,37 +2662,41 @@ var gUnifiedExtensions = {
        );
        template.replaceWith(template.content);
        this._panel = document.getElementById("unified-extensions-panel");
@@ -123,7 +123,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c
      if (!CustomizationHandler.isCustomizing()) {
        if (aEvent) {
          if (
-@@ -2718,32 +2722,30 @@ var gUnifiedExtensions = {
+@@ -2729,32 +2733,30 @@ var gUnifiedExtensions = {
        this.blocklistAttentionInfo =
          await AddonManager.getBlocklistAttentionInfo();
 
@@ -162,7 +162,7 @@ index f33a300eb0eed74e286da24919ad3e8505f632c3..2390238eda57fae1ac25bf95eec3453c
            triggerEvent: aEvent,
          });
        }
-@@ -2930,18 +2932,20 @@ var gUnifiedExtensions = {
+@@ -2941,18 +2943,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
 

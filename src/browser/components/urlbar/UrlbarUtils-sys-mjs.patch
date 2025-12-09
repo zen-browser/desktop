@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 079c9f18550b54b2a1cc030174849896fd23234e..605bb3433b61443037659d126ba17b033e5a4394 100644
+index 7e9ede3dae5c2099c45e0221ad1cb8ebd622fc39..f82db27dbd07961ad6af7dbe2cb5d79e5f7a9828 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -77,6 +77,7 @@ export var UrlbarUtils = {
+@@ -79,6 +79,7 @@ export var UrlbarUtils = {
      RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
@@ -10,7 +10,7 @@ index 079c9f18550b54b2a1cc030174849896fd23234e..605bb3433b61443037659d126ba17b03
    }),
  
    // Defines provider types.
-@@ -136,6 +137,7 @@ export var UrlbarUtils = {
+@@ -138,6 +139,7 @@ export var UrlbarUtils = {
      OTHER_NETWORK: 6,
      ADDON: 7,
      ACTIONS: 8,
@@ -18,7 +18,7 @@ index 079c9f18550b54b2a1cc030174849896fd23234e..605bb3433b61443037659d126ba17b03
    }),
  
    // Per-result exposure telemetry.
-@@ -547,6 +549,8 @@ export var UrlbarUtils = {
+@@ -549,6 +551,8 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;

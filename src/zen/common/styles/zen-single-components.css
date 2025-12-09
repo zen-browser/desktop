@@ -628,3 +628,8 @@ body > #confetti {
     display: none;
   }
 }
+
+/* Sidebar notification */
+:root:not([zen-sidebar-expanded='true']) zen-sidebar-notification {
+  display: none;
+}

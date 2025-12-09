@@ -98,3 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Klikněte na ikonu pro správu na
 zen-open-link-in-glance = 
     .label = Otevřít odkaz v Glance
     .accesskey = G
+zen-sidebar-notification-updated-heading = Aktualizace byla dokončena!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Co je nového v prohlížeči { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Zobrazit změny
+zen-sidebar-notification-restart-safe-mode-label = Něco se rozbilo?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restartovat v Nouzovém Režimu

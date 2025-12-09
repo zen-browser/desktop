@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 2d068aa3472887e089254834d92f75b9f6d9894b..1a6d5b87fdcfb338222475bb6362820e3915955d 100644
+index 41f65a1f2c3065631780b02d820f632abdf542af..c01c2957367da968d106c83117e45800bb6b15e5 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
 @@ -4,7 +4,7 @@
@@ -11,7 +11,7 @@ index 2d068aa3472887e089254834d92f75b9f6d9894b..1a6d5b87fdcfb338222475bb6362820e
  @namespace html "http://www.w3.org/1999/xhtml";
  @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
  
-@@ -68,7 +68,7 @@
+@@ -66,7 +66,7 @@
     * this in forced colors mode, as we should be using system colours then.
     */
    :root[dialogroot] {
@@ -20,7 +20,7 @@ index 2d068aa3472887e089254834d92f75b9f6d9894b..1a6d5b87fdcfb338222475bb6362820e
    }
  }
  
-@@ -706,7 +706,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
+@@ -702,7 +702,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
    fill-opacity: 1;
  }
  
@@ -29,7 +29,7 @@ index 2d068aa3472887e089254834d92f75b9f6d9894b..1a6d5b87fdcfb338222475bb6362820e
    :root {
      --in-content-sidebar-width: 118px;
    }
-@@ -1096,7 +1096,7 @@ xul|*.sidebar-footer-link {
+@@ -1092,7 +1092,7 @@ xul|*.sidebar-footer-link {
    user-select: none;
  }
  

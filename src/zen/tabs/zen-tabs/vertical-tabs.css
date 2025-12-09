@@ -131,7 +131,6 @@
    ========================================================================== */
 .pinned-tabs-container-separator {
   height: 22px;
-  padding-bottom: 2px;
   border: none;
   width: 100%;
   transition:
@@ -142,6 +141,7 @@
   position: relative;
   opacity: 1;
   align-items: center;
+  padding: 0 5px;
 
   & toolbarseparator {
     height: 1px;
@@ -313,7 +313,7 @@
         var(--zen-tabbox-element-indent-transition);
     }
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded='true'] &:not([zen-glance-tab]) {
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 
@@ -327,13 +327,6 @@
 
     #tabbrowser-tabs:not([movingtab]) & .tab-content > image:active {
       scale: 0.92;
-    }
-
-    &:not(:hover) {
-      .tab-close-button,
-      .tab-reset-button {
-        display: none !important;
-      }
     }
 
     & .tab-icon-image {
@@ -495,7 +488,6 @@
 #navigator-toolbox[zen-sidebar-expanded='true'] {
   --zen-toolbox-min-width: fit-content;
 
-  --tab-icon-end-margin: 8.5px;
   padding: var(--zen-toolbox-padding);
   padding-left: 0;
   padding-top: 0;
@@ -573,8 +565,8 @@
     & #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
       width: 100% !important;
       border-radius: var(--border-radius-medium) !important;
-      padding-left: var(--toolbarbutton-inner-padding) !important;
-      padding-right: var(--toolbarbutton-inner-padding) !important;
+      padding-left: var(--tab-inline-padding) !important;
+      padding-right: var(--tab-inline-padding) !important;
 
       & label {
         display: flex;
@@ -607,6 +599,7 @@
 
   & #tabbrowser-tabs {
     --tab-inline-padding: 8px;
+    --tab-icon-end-margin: 8.5px;
 
     & .tabbrowser-tab {
       & .tab-label-container {
@@ -656,7 +649,14 @@
         }
       }
 
-      &:is(:hover, [visuallyselected]) .tab-close-button {
+      &:not(:hover) {
+        .tab-close-button,
+        .tab-reset-button {
+          display: none;
+        }
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;
@@ -667,8 +667,8 @@
       .tab-icon-image,
       .tab-sharing-icon-overlay,
       .tab-icon-overlay {
-        margin-inline-end: var(--toolbarbutton-inner-padding) !important;
-        margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;
+        margin-inline-end: calc(var(--toolbarbutton-inner-padding) * 1.5) !important;
+        margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 2) !important;
       }
     }
   }
@@ -1110,14 +1110,22 @@
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
   opacity: 1;
-  grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
+  --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr)
+  );
   &[data-hack-type='1'] {
-    grid-template-columns: repeat(auto-fit, minmax(max(30%, 48px), auto));
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(30%, var(--min-essentials-width-wrap)), auto)
+    );
   }
   &[data-hack-type='2'] {
     grid-template-columns: repeat(
       auto-fit,
-      minmax(max(23%, 48px), 1fr) minmax(max(23%, 48px), 1fr)
+      minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
+        minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
     );
   }
   &[data-hack-type='3'] {
@@ -1160,7 +1168,6 @@
 
   & .tab-background {
     border-radius: var(--border-radius-medium) !important;
-    transition: background 0.1s ease-in-out;
   }
 
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));

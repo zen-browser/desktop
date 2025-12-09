@@ -570,6 +570,20 @@ interface nsIXPCComponents_Results {
   /** The PKCS#7 information is not signed. */
   NS_ERROR_CMS_VERIFY_NOT_SIGNED: 0x805a0400;
 
+  // Codes related to pdf signature verification
+
+  /** The PKCS#7 parsing has failed. */
+  NS_ERROR_CMS_VERIFY_ERROR_PROCESSING: 0x805a0408;
+
+  /** The PKCS#7 certificate verification was cancelled. */
+  NS_ERROR_CMS_VERIFY_NOT_YET_ATTEMPTED: 0x805a040f;
+
+  /** Invalid signature. */
+  NS_ERROR_CMS_VERIFY_BAD_SIGNATURE: 0x805a0409;
+
+  /** No certificate was found. */
+  NS_ERROR_CMS_VERIFY_NOCERT: 0x805a0404;
+
   // Codes related to signed manifests
 
   /** The signed app manifest or signature file is invalid. */

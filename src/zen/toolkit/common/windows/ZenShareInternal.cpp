@@ -27,7 +27,6 @@ auto nsZenNativeShareInternal::ShowNativeDialog(
   if (aUrl) {
     nsresult rv = aUrl->GetSpec(urlString);
     MOZ_ASSERT(NS_SUCCEEDED(rv));
-    mozilla::Unused << rv;
   } else {
     urlString.SetIsVoid(true);
   }

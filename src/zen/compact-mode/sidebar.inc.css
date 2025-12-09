@@ -106,7 +106,7 @@
       right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
     }
 
-    & .browserSidebarContainer {
+    & .browserSidebarContainer:not([is-zen-split='true']) {
       margin-left: 0 !important;
       margin-right: 0 !important;
     }

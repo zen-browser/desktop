@@ -1,8 +1,8 @@
 diff --git a/layout/generic/nsIFrame.cpp b/layout/generic/nsIFrame.cpp
-index a7b60e40e6947754374dcda2fc69cdb329c337ac..c7e025109c4c43865205cbd445d9d20305974974 100644
+index 794d02a892eaa180cb2aa4fdc46428e37aee2e1e..40daffbb32a2ec43ae2364bcadadbdb9813a3186 100644
 --- a/layout/generic/nsIFrame.cpp
 +++ b/layout/generic/nsIFrame.cpp
-@@ -11899,6 +11899,11 @@ gfx::Matrix nsIFrame::ComputeWidgetTransform() const {
+@@ -11918,6 +11918,11 @@ gfx::Matrix nsIFrame::ComputeWidgetTransform() const {
    gfx::Matrix4x4 matrix = nsStyleTransformMatrix::ReadTransforms(
        uiReset->mMozWindowTransform, refBox, float(appUnitsPerDevPixel));
  

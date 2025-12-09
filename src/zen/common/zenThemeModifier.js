@@ -95,7 +95,7 @@ var ZenThemeModifier = {
     const kMinElementSeparation = 0.1; // in px
     let separation = this.elementSeparation;
     if (
-      window.fullScreen &&
+      document.documentElement.hasAttribute('inFullscreen') &&
       window.gZenCompactModeManager?.preference &&
       !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view') &&
       Services.prefs.getBoolPref('zen.view.borderless-fullscreen', true)

@@ -330,8 +330,10 @@ zen-workspace {
     }
   }
 
-  &[active] .zen-workspace-empty-space {
-    -moz-window-dragging: drag;
+  @media -moz-pref('zen.view.draggable-sidebar') {
+    &[active] .zen-workspace-empty-space {
+      -moz-window-dragging: drag;
+    }
   }
 }
 

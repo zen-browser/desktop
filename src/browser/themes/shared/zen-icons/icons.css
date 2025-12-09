@@ -692,6 +692,10 @@
   list-style-image: url('container-tab.svg') !important;
 }
 
+#PanelUI-zen-gradient-generator-color-toggle-algo {
+  list-style-image: url('algorithm.svg');
+}
+
 #appMenuClearRecentHistory {
   list-style-image: url('edit-delete.svg') !important;
 }

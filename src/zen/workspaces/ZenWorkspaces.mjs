@@ -2,7 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenThemePicker } from 'chrome://browser/content/zen-components/ZenGradientGenerator.mjs';
+
+class nsZenWorkspaces extends nsZenMultiWindowFeature {
   /**
    * Stores workspace IDs and their last selected tabs.
    */
@@ -48,7 +51,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    await Promise.all([this.promiseDBInitialized, this.promisePinnedInitialized]);
+    await Promise.all([
+      this.promiseDBInitialized,
+      this.promisePinnedInitialized,
+      SessionStore.promiseAllWindowsRestored,
+    ]);
   }
 
   async init() {
@@ -2536,7 +2543,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     // <= 2 because we have the empty tab and the new tab button
     const shouldHideSeparator = fromTabSelection
       ? pinnedContainer.hasAttribute('hide-separator')
-      : pinnedContainer.children.length === 1 || !visibleTabsFound();
+      : !visibleTabsFound();
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
     } else {
@@ -3201,4 +3208,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       document.getElementById('cmd_closeWindow').doCommand();
     }
   }
-})();
+}
+
+window.gZenWorkspaces = new nsZenWorkspaces();

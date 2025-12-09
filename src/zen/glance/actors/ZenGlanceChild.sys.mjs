@@ -57,16 +57,32 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  on_mousedown(event) {
+  /**
+   * Returns the closest A element from the event target
+   * and the element to record (originalTarget or target)
+   */
+  #getTargetFromEvent(event) {
     // get closest A element
     const target = event.target.closest('A');
     const elementToRecord = event.originalTarget || event.target;
+    return {
+      target,
+      elementToRecord,
+    };
+  }
+
+  on_mousedown(event) {
+    const { target, elementToRecord } = this.#getTargetFromEvent(event);
     // We record the link data anyway, even if the glance may be invoked
     // or not. We have some cases where glance would open, for example,
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
+  }
+
+  on_click(event) {
+    const { target } = this.#getTargetFromEvent(event);
     if (event.button !== 0 || event.defaultPrevented || this.#ensureOnlyKeyModifiers(event)) {
       return;
     }
@@ -80,12 +96,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
     }
-    if (target) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      this.#openGlance(target);
-    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.#openGlance(target);
   }
 
   on_keydown(event) {

@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/queries/feature_expression.rs b/servo/components/style/queries/feature_expression.rs
-index 91e1d1572cbd3682ec977f21751e067968ed8884..6e618ac765f698bf3d9ce120167a6906ae3ce5ff 100644
+index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d916820e6f 100644
 --- a/servo/components/style/queries/feature_expression.rs
 +++ b/servo/components/style/queries/feature_expression.rs
 @@ -11,7 +11,7 @@ use crate::parser::{Parse, ParserContext};
@@ -11,7 +11,7 @@ index 91e1d1572cbd3682ec977f21751e067968ed8884..6e618ac765f698bf3d9ce120167a6906
  use crate::{Atom, Zero};
  use cssparser::{Parser, Token};
  use selectors::kleene_value::KleeneValue;
-@@ -639,6 +639,10 @@ impl QueryFeatureExpression {
+@@ -623,6 +623,10 @@ impl QueryFeatureExpression {
                      .map(|v| *expect!(Enumerated, v));
                  return evaluator(context, computed);
              },
@@ -22,7 +22,7 @@ index 91e1d1572cbd3682ec977f21751e067968ed8884..6e618ac765f698bf3d9ce120167a6906
              Evaluator::BoolInteger(eval) => {
                  let computed = self
                      .kind
-@@ -677,6 +681,7 @@ pub enum QueryExpressionValue {
+@@ -661,6 +665,7 @@ pub enum QueryExpressionValue {
      /// An enumerated value, defined by the variant keyword table in the
      /// feature's `mData` member.
      Enumerated(KeywordDiscriminant),
@@ -30,7 +30,7 @@ index 91e1d1572cbd3682ec977f21751e067968ed8884..6e618ac765f698bf3d9ce120167a6906
  }
  
  impl QueryExpressionValue {
-@@ -695,6 +700,7 @@ impl QueryExpressionValue {
+@@ -679,6 +684,7 @@ impl QueryExpressionValue {
                  Evaluator::Enumerated { serializer, .. } => dest.write_str(&*serializer(value)),
                  _ => unreachable!(),
              },
@@ -38,7 +38,7 @@ index 91e1d1572cbd3682ec977f21751e067968ed8884..6e618ac765f698bf3d9ce120167a6906
          }
      }
  
-@@ -732,6 +738,9 @@ impl QueryExpressionValue {
+@@ -716,6 +722,9 @@ impl QueryExpressionValue {
              Evaluator::Resolution(..) => {
                  QueryExpressionValue::Resolution(Resolution::parse(context, input)?)
              },

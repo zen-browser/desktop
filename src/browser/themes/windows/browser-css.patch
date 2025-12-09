@@ -1,8 +1,8 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index e1a79cd22180738d2ca16e9a6c5591499d337325..d36996359bfa4dd7d98c4f5aeb192c7b144339bb 100644
+index b114781254018a27cd559c28d5d469fbab8673b5..79e6e21dd6e0a63237850bd315558540f050793c 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
-@@ -31,7 +31,6 @@
+@@ -39,7 +39,6 @@
      /* stylelint-disable-next-line media-query-no-invalid */
      @media -moz-pref("widget.windows.mica.toplevel-backdrop", 2) {
        /* For acrylic, do the same we do for popups to guarantee some contrast */
@@ -10,7 +10,7 @@ index e1a79cd22180738d2ca16e9a6c5591499d337325..d36996359bfa4dd7d98c4f5aeb192c7b
      }
  
      /* Using a semitransparent background preserves the tinting from the backdrop.
-@@ -60,14 +59,13 @@
+@@ -68,14 +67,13 @@
  }
  
  /* This is needed for Windows 10, see bug 1961257 */

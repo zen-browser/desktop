@@ -29,10 +29,10 @@ static auto GetZenStyleSheetCache() -> ZenStyleSheetCache* {
 NS_IMPL_ISUPPORTS(nsZenModsBackend, nsIZenModsBackend)
 
 nsZenModsBackend::nsZenModsBackend() {
-  mozilla::Unused << CheckEnabled();
+  (void)CheckEnabled();
 }
 
-auto nsZenModsBackend::CheckEnabled() -> bool {
+auto nsZenModsBackend::CheckEnabled() -> void {
   // Check if the mods backend is enabled based on the preference.
   nsCOMPtr<nsIXULRuntime> appInfo =
       do_GetService("@mozilla.org/xre/app-info;1");
@@ -42,7 +42,6 @@ auto nsZenModsBackend::CheckEnabled() -> bool {
   }
   mEnabled = !inSafeMode &&
              !mozilla::Preferences::GetBool("zen.themes.disable-all", false);
-  return mEnabled; 
 }
 
 auto nsZenModsBackend::RebuildModsStyles(const nsACString& aContents) -> nsresult {

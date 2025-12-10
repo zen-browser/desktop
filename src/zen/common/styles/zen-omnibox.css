@@ -263,7 +263,7 @@
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(
       #fbfbfb,
-      color-mix(in srgb, hsl(0, 0%, 1%), var(--zen-colors-primary) 30%)
+      color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%)
     );
     @media -moz-pref('zen.theme.acrylic-elements') {
       --zen-urlbar-background-transparent: color-mix(
@@ -505,8 +505,8 @@
   --urlbar-container-height: 62px !important;
   --urlbar-margin-inline: 10px !important;
 
-  min-width: min(90%, 50rem) !important;
-  width: var(--zen-urlbar-width, min(90%, 50rem)) !important;
+  min-width: min(90%, 62rem) !important;
+  width: var(--zen-urlbar-width, min(90%, 62rem)) !important;
   font-size: 1.15em !important;
   @media (-moz-platform: macos) {
     font-size: 1.5em !important;

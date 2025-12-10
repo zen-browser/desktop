@@ -16,8 +16,6 @@ class nsZenImportBookmarks extends MozXULElement {
   #targetFolder = null;
   #selectedBookmarks = new Set();
   #bookmarksData = [];
-  #wasInCollapsedMode = false;
-  #hiddenElements = [];
 
   promiseInitialized = new Promise((resolve) => {
     this.resolveInitialized = resolve;
@@ -37,30 +35,33 @@ class nsZenImportBookmarks extends MozXULElement {
 
   static get markup() {
     return `
-        <vbox class="zen-import-bookmarks" flex="1">
-          <form>
-            <vbox>
-              <html:h1 data-l10n-id="zen-import-bookmarks-header" class="zen-import-bookmarks-title" />
-              <html:div>
-                <label data-l10n-id="zen-import-bookmarks-label" class="zen-import-bookmarks-label" />
-              </html:div>
-            </vbox>
-            <hbox class="zen-import-bookmarks-controls">
-              <button class="zen-import-bookmarks-select-all" data-l10n-id="zen-import-bookmarks-select-all" />
-              <button class="zen-import-bookmarks-select-none" data-l10n-id="zen-import-bookmarks-select-none" />
-            </hbox>
-            <scrollbox class="zen-import-bookmarks-list-scrollbox" flex="1">
-              <vbox class="zen-import-bookmarks-list" />
-            </scrollbox>
-            <vbox class="zen-import-bookmarks-buttons">
-              <html:div>
-                <button class="zen-import-bookmarks-import-button footer-button primary"
-                  data-l10n-id="zen-import-bookmarks-import" disabled="true" />
-              </html:div>
-              <button class="zen-import-bookmarks-cancel-button footer-button"
-                data-l10n-id="zen-general-cancel-label" />
-            </vbox>
-          </form>
+        <html:div class="zen-import-bookmarks-backdrop"></html:div>
+        <vbox class="zen-import-bookmarks-modal">
+          <vbox class="zen-import-bookmarks" flex="1">
+            <form>
+              <vbox>
+                <html:h1 data-l10n-id="zen-import-bookmarks-header" class="zen-import-bookmarks-title" />
+                <html:div>
+                  <label data-l10n-id="zen-import-bookmarks-label" class="zen-import-bookmarks-label" />
+                </html:div>
+              </vbox>
+              <hbox class="zen-import-bookmarks-controls">
+                <button class="zen-import-bookmarks-select-all" data-l10n-id="zen-import-bookmarks-select-all" />
+                <button class="zen-import-bookmarks-select-none" data-l10n-id="zen-import-bookmarks-select-none" />
+              </hbox>
+              <scrollbox class="zen-import-bookmarks-list-scrollbox" flex="1">
+                <vbox class="zen-import-bookmarks-list" />
+              </scrollbox>
+              <vbox class="zen-import-bookmarks-buttons">
+                <html:div>
+                  <button class="zen-import-bookmarks-import-button footer-button primary"
+                    data-l10n-id="zen-import-bookmarks-import" disabled="true" />
+                </html:div>
+                <button class="zen-import-bookmarks-cancel-button footer-button"
+                  data-l10n-id="zen-general-cancel-label" />
+              </vbox>
+            </form>
+          </vbox>
         </vbox>
       `;
   }
@@ -71,12 +72,7 @@ class nsZenImportBookmarks extends MozXULElement {
 
   get elementsToAnimate() {
     return [
-      this.querySelector('.zen-import-bookmarks-title'),
-      this.querySelector('.zen-import-bookmarks-label').parentElement,
-      this.querySelector('.zen-import-bookmarks-controls'),
-      this.querySelector('.zen-import-bookmarks-list-scrollbox'),
-      this.importButton.parentNode,
-      this.cancelButton,
+      this.querySelector('.zen-import-bookmarks-modal'),
     ];
   }
 
@@ -117,33 +113,27 @@ class nsZenImportBookmarks extends MozXULElement {
     }
     console.log('Target folder found:', this.#targetFolder);
 
-    console.log('Setting opacity for elements to animate');
-    for (const element of this.elementsToAnimate) {
-      if (!element) {
-        console.warn('Element to animate is null/undefined');
-        continue;
-      }
-      element.style.opacity = 0;
+    // Set initial opacity for animation and get elements
+    const modal = this.querySelector('.zen-import-bookmarks-modal');
+    const backdrop = this.querySelector('.zen-import-bookmarks-backdrop');
+
+    if (modal) {
+      modal.style.opacity = 0;
+      modal.style.transform = 'scale(0.95)';
     }
-    console.log('Opacity set for all elements');
-
-    this.#wasInCollapsedMode =
-      document.documentElement.getAttribute('zen-sidebar-expanded') !== 'true';
-
-    gNavToolbox.setAttribute('zen-sidebar-expanded', 'true');
-    document.documentElement.setAttribute('zen-sidebar-expanded', 'true');
+    if (backdrop) {
+      backdrop.style.opacity = 0;
+      // Close modal when clicking backdrop
+      backdrop.addEventListener('click', this.#onCancelButtonCommand.bind(this));
+    }
 
     window.docShell.treeOwner
       .QueryInterface(Ci.nsIInterfaceRequestor)
       .getInterface(Ci.nsIAppWindow)
       .rollupAllPopups();
 
-    for (const element of this.parentElement.children) {
-      if (element !== this) {
-        element.hidden = true;
-        this.#hiddenElements.push(element);
-      }
-    }
+    // Make this element visible
+    this.style.setProperty('visibility', 'visible', 'important');
 
     for (const element of nsZenImportBookmarks.elementsToDisable) {
       const el = document.getElementById(element);
@@ -159,27 +149,16 @@ class nsZenImportBookmarks extends MozXULElement {
 
     document.getElementById('zen-sidebar-splitter').style.pointerEvents = 'none';
 
-    console.log('Starting animation');
-    gZenUIManager.motion
-      .animate(
-        [gBrowser.tabContainer, gURLBar.textbox],
-        {
-          opacity: [1, 0],
-        },
-        {
-          duration: 0.3,
-          type: 'spring',
-          bounce: 0,
+    console.log('Starting modal animation');
+    (async () => {
+        // Animate backdrop in
+        if (backdrop) {
+          await gZenUIManager.motion.animate(
+            backdrop,
+            { opacity: [0, 1] },
+            { duration: 0.2 }
+          );
         }
-      )
-      .then(async () => {
-        console.log('Animation complete, hiding elements');
-        gBrowser.tabContainer.style.visibility = 'collapse';
-        if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-          document.getElementById('nav-bar').style.visibility = 'collapse';
-        }
-        this.style.visibility = 'visible';
-        gZenCompactModeManager.getAndApplySidebarWidth();
 
         // Load bookmarks
         console.log('Loading bookmarks');
@@ -189,30 +168,49 @@ class nsZenImportBookmarks extends MozXULElement {
         console.log('Bookmarks rendered');
 
         this.resolveInitialized();
-        console.log('Starting final animation');
-        gZenUIManager.motion
-          .animate(
-            this.elementsToAnimate,
+
+        // Animate modal in
+        if (modal) {
+          await gZenUIManager.motion.animate(
+            modal,
             {
-              y: [20, 0],
               opacity: [0, 1],
-              filter: ['blur(2px)', 'blur(0)'],
+              scale: [0.95, 1],
             },
             {
-              duration: 0.6,
+              duration: 0.3,
               type: 'spring',
-              bounce: 0,
-              delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
+              bounce: 0.1,
             }
           );
-      })
-      .catch(err => {
+        }
+        console.log('Modal animation complete!');
+      })().catch(err => {
         console.error('Animation or loading error:', err);
       });
   }
 
+  // Helper function to recursively collect bookmarks from a tree node
+  #collectBookmarksFromTree(node, bookmarks = []) {
+    if (node.type === lazy.PlacesUtils.TYPE_X_MOZ_PLACE) {
+      // This is a bookmark
+      if (node.uri) {
+        bookmarks.push({
+          guid: node.guid,
+          title: node.title || node.uri,
+          url: node.uri,
+        });
+      }
+    } else if (node.children) {
+      // This is a folder with children, recurse into it
+      for (const child of node.children) {
+        this.#collectBookmarksFromTree(child, bookmarks);
+      }
+    }
+    return bookmarks;
+  }
+
   async #loadBookmarks() {
-    console.log('#loadBookmarks: Starting');
     this.#bookmarksData = [];
 
     const rootFolders = [
@@ -220,27 +218,19 @@ class nsZenImportBookmarks extends MozXULElement {
       { guid: lazy.PlacesUtils.bookmarks.menuGuid, name: 'zen-import-bookmarks-folder-menu' },
       { guid: lazy.PlacesUtils.bookmarks.unfiledGuid, name: 'zen-import-bookmarks-folder-other' },
     ];
-    console.log('#loadBookmarks: Root folders:', rootFolders);
 
     for (const folder of rootFolders) {
-      console.log('#loadBookmarks: Processing folder:', folder.name);
-      const bookmarks = [];
+      // Get the full bookmark tree for this folder
+      const tree = await lazy.PlacesUtils.promiseBookmarksTree(folder.guid);
 
-      await lazy.PlacesUtils.bookmarks.fetch(
-        { parentGuid: folder.guid },
-        async (bookmark) => {
-          if (bookmark.type === lazy.PlacesUtils.bookmarks.TYPE_BOOKMARK && bookmark.url) {
-            bookmarks.push({
-              guid: bookmark.guid,
-              title: bookmark.title || bookmark.url.href,
-              url: bookmark.url.href,
-              folderName: folder.name,
-            });
-          }
-        }
-      );
+      // Recursively collect all bookmarks from this tree
+      const bookmarks = this.#collectBookmarksFromTree(tree);
 
-      console.log(`#loadBookmarks: Found ${bookmarks.length} bookmarks in ${folder.name}`);
+      // Add folder name to each bookmark
+      bookmarks.forEach(bookmark => {
+        bookmark.folderName = folder.name;
+      });
+
       if (bookmarks.length > 0) {
         this.#bookmarksData.push({
           folderName: folder.name,
@@ -248,7 +238,7 @@ class nsZenImportBookmarks extends MozXULElement {
         });
       }
     }
-    console.log('#loadBookmarks: Complete, total data:', this.#bookmarksData.length);
+    console.log(`Loaded ${this.#bookmarksData.reduce((sum, group) => sum + group.bookmarks.length, 0)} bookmarks from ${this.#bookmarksData.length} folders`);
   }
 
   #renderBookmarks() {
@@ -277,11 +267,10 @@ class nsZenImportBookmarks extends MozXULElement {
         item.classList.add('zen-import-bookmarks-item');
         item.setAttribute('align', 'center');
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
+        const checkbox = document.createXULElement('checkbox');
         checkbox.classList.add('zen-import-bookmarks-checkbox');
-        checkbox.dataset.guid = bookmark.guid;
-        checkbox.addEventListener('change', () => this.#onCheckboxChange());
+        checkbox.setAttribute('data-guid', bookmark.guid);
+        checkbox.addEventListener('command', () => this.#onCheckboxChange());
 
         const favicon = document.createElement('image');
         favicon.classList.add('zen-import-bookmarks-favicon');
@@ -307,8 +296,8 @@ class nsZenImportBookmarks extends MozXULElement {
     this.#selectedBookmarks.clear();
 
     for (const checkbox of checkboxes) {
-      if (checkbox.checked) {
-        this.#selectedBookmarks.add(checkbox.dataset.guid);
+      if (checkbox.hasAttribute('checked')) {
+        this.#selectedBookmarks.add(checkbox.getAttribute('data-guid'));
       }
     }
 
@@ -318,7 +307,7 @@ class nsZenImportBookmarks extends MozXULElement {
   #onSelectAll() {
     const checkboxes = this.querySelectorAll('.zen-import-bookmarks-checkbox');
     for (const checkbox of checkboxes) {
-      checkbox.checked = true;
+      checkbox.setAttribute('checked', 'true');
     }
     this.#onCheckboxChange();
   }
@@ -326,7 +315,7 @@ class nsZenImportBookmarks extends MozXULElement {
   #onSelectNone() {
     const checkboxes = this.querySelectorAll('.zen-import-bookmarks-checkbox');
     for (const checkbox of checkboxes) {
-      checkbox.checked = false;
+      checkbox.removeAttribute('checked');
     }
     this.#onCheckboxChange();
   }
@@ -404,20 +393,33 @@ class nsZenImportBookmarks extends MozXULElement {
   }
 
   async #cleanup() {
-    await gZenUIManager.motion.animate(
-      this.elementsToAnimate.reverse(),
-      {
-        y: [0, 20],
-        opacity: [1, 0],
-        filter: ['blur(0)', 'blur(2px)'],
-      },
-      {
-        duration: 0.4,
-        type: 'spring',
-        bounce: 0,
-        delay: gZenUIManager.motion.stagger(0.05),
-      }
-    );
+    const modal = this.querySelector('.zen-import-bookmarks-modal');
+    const backdrop = this.querySelector('.zen-import-bookmarks-backdrop');
+
+    // Animate modal out
+    if (modal) {
+      await gZenUIManager.motion.animate(
+        modal,
+        {
+          opacity: [1, 0],
+          scale: [1, 0.95],
+        },
+        {
+          duration: 0.2,
+          type: 'spring',
+          bounce: 0,
+        }
+      );
+    }
+
+    // Animate backdrop out
+    if (backdrop) {
+      await gZenUIManager.motion.animate(
+        backdrop,
+        { opacity: [1, 0] },
+        { duration: 0.15 }
+      );
+    }
 
     document.getElementById('zen-sidebar-splitter').style.pointerEvents = '';
 
@@ -428,43 +430,8 @@ class nsZenImportBookmarks extends MozXULElement {
       }
     }
 
-    if (this.#wasInCollapsedMode) {
-      gNavToolbox.removeAttribute('zen-sidebar-expanded');
-      document.documentElement.removeAttribute('zen-sidebar-expanded');
-    }
-
-    gBrowser.tabContainer.style.visibility = '';
-    gBrowser.tabContainer.style.opacity = 0;
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      document.getElementById('nav-bar').style.visibility = '';
-      gURLBar.textbox.style.opacity = 0;
-    }
-
     this.remove();
     gZenUIManager.updateTabsToolbar();
-
-    await gZenUIManager.motion.animate(
-      [gBrowser.tabContainer, gURLBar.textbox],
-      {
-        opacity: [0, 1],
-      },
-      {
-        duration: 0.3,
-        type: 'spring',
-        bounce: 0,
-      }
-    );
-
-    gBrowser.tabContainer.style.opacity = '';
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      gURLBar.textbox.style.opacity = '';
-    }
-
-    for (const element of this.#hiddenElements) {
-      element.hidden = false;
-    }
-
-    this.#hiddenElements = [];
   }
 }
 

@@ -285,12 +285,10 @@ class ZenFolder extends MozTabbrowserTabGroup {
     const popup = document.createXULElement('zen-import-bookmarks');
     popup.setAttribute('folder-id', this.id);
 
-    console.debug('Appending import bookmarks popup to sidebar container', popup);
+    console.debug('Appending import bookmarks popup as modal', popup);
 
-    const sidebarContainer = gZenWorkspaces.workspaceElement(
-      gZenWorkspaces.activeWorkspace
-    ).pinnedTabsContainer.parentElement;
-    sidebarContainer.appendChild(popup);
+    // Append to main browser as a modal overlay
+    document.getElementById('main-window').appendChild(popup);
   }
 }
 

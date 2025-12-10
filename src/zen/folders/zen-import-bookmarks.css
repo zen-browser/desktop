@@ -5,13 +5,44 @@
  */
 
 zen-import-bookmarks {
-  flex: 1;
-  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding));
-  padding: 3px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
   visibility: collapse;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & .zen-import-bookmarks-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  & .zen-import-bookmarks-modal {
+    position: relative;
+    z-index: 1;
+    background: var(--toolbar-bgcolor);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
 
   & .zen-import-bookmarks {
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
 
     & .zen-import-bookmarks-title {
       font-size: large;
@@ -96,6 +127,8 @@ zen-import-bookmarks {
           & .zen-import-bookmarks-checkbox {
             margin: 0;
             cursor: pointer;
+            min-width: 16px;
+            min-height: 16px;
           }
 
           & .zen-import-bookmarks-favicon {

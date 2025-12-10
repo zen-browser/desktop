@@ -16,9 +16,15 @@ class nsZenImportBookmarks extends MozXULElement {
   #targetFolder = null;
   #selectedBookmarks = new Set();
   #bookmarksData = [];
+  #allBookmarks = [];
+  #displayLimit = 50;
 
   promiseInitialized = new Promise((resolve) => {
     this.resolveInitialized = resolve;
+  });
+
+  promiseRendered = new Promise((resolve) => {
+    this.resolveRendered = resolve;
   });
 
   static get elementsToDisable() {
@@ -35,33 +41,29 @@ class nsZenImportBookmarks extends MozXULElement {
 
   static get markup() {
     return `
-        <html:div class="zen-import-bookmarks-backdrop"></html:div>
-        <vbox class="zen-import-bookmarks-modal">
-          <vbox class="zen-import-bookmarks" flex="1">
-            <form>
-              <vbox>
-                <html:h1 data-l10n-id="zen-import-bookmarks-header" class="zen-import-bookmarks-title" />
-                <html:div>
-                  <label data-l10n-id="zen-import-bookmarks-label" class="zen-import-bookmarks-label" />
-                </html:div>
-              </vbox>
-              <hbox class="zen-import-bookmarks-controls">
-                <button class="zen-import-bookmarks-select-all" data-l10n-id="zen-import-bookmarks-select-all" />
-                <button class="zen-import-bookmarks-select-none" data-l10n-id="zen-import-bookmarks-select-none" />
-              </hbox>
-              <scrollbox class="zen-import-bookmarks-list-scrollbox" flex="1">
-                <vbox class="zen-import-bookmarks-list" />
-              </scrollbox>
-              <vbox class="zen-import-bookmarks-buttons">
-                <html:div>
-                  <button class="zen-import-bookmarks-import-button footer-button primary"
-                    data-l10n-id="zen-import-bookmarks-import" disabled="true" />
-                </html:div>
-                <button class="zen-import-bookmarks-cancel-button footer-button"
-                  data-l10n-id="zen-general-cancel-label" />
-              </vbox>
-            </form>
-          </vbox>
+        <vbox class="zen-import-bookmarks" flex="1">
+          <form>
+            <vbox>
+              <html:h1 data-l10n-id="zen-import-bookmarks-header" class="zen-import-bookmarks-title" />
+              <html:div>
+                <label data-l10n-id="zen-import-bookmarks-label" class="zen-import-bookmarks-label" />
+              </html:div>
+            </vbox>
+            <html:input type="search" class="zen-import-bookmarks-search" placeholder="Search bookmarks..." />
+            <hbox class="zen-import-bookmarks-controls">
+              <button class="zen-import-bookmarks-select-all" data-l10n-id="zen-import-bookmarks-select-all" />
+              <button class="zen-import-bookmarks-select-none" data-l10n-id="zen-import-bookmarks-select-none" />
+            </hbox>
+            <scrollbox class="zen-import-bookmarks-list-scrollbox" flex="1">
+              <vbox class="zen-import-bookmarks-list" />
+            </scrollbox>
+            <hbox class="zen-import-bookmarks-buttons">
+              <button class="zen-import-bookmarks-import-button footer-button primary"
+                data-l10n-id="zen-import-bookmarks-import" disabled="true" />
+              <button class="zen-import-bookmarks-cancel-button footer-button"
+                data-l10n-id="zen-general-cancel-label" />
+            </hbox>
+          </form>
         </vbox>
       `;
   }
@@ -72,7 +74,13 @@ class nsZenImportBookmarks extends MozXULElement {
 
   get elementsToAnimate() {
     return [
-      this.querySelector('.zen-import-bookmarks-modal'),
+      this.querySelector('.zen-import-bookmarks-title'),
+      this.querySelector('.zen-import-bookmarks-label').parentElement,
+      this.searchInput,
+      this.querySelector('.zen-import-bookmarks-controls'),
+      this.querySelector('.zen-import-bookmarks-list-scrollbox'),
+      this.importButton.parentNode,
+      this.cancelButton,
     ];
   }
 
@@ -83,6 +91,17 @@ class nsZenImportBookmarks extends MozXULElement {
       return;
     }
 
+    // Reset promises for each connection
+    this.promiseInitialized = new Promise((resolve) => {
+      this.resolveInitialized = resolve;
+    });
+    this.promiseRendered = new Promise((resolve) => {
+      this.resolveRendered = resolve;
+    });
+
+    // Clear any existing content first
+    this.innerHTML = '';
+
     console.log('Appending fragment');
     this.appendChild(this.constructor.fragment);
     console.log('Initializing attribute inheritance');
@@ -91,12 +110,14 @@ class nsZenImportBookmarks extends MozXULElement {
 
     console.log('Querying elements');
     this.bookmarksList = this.querySelector('.zen-import-bookmarks-list');
+    this.searchInput = this.querySelector('.zen-import-bookmarks-search');
     this.selectAllButton = this.querySelector('.zen-import-bookmarks-select-all');
     this.selectNoneButton = this.querySelector('.zen-import-bookmarks-select-none');
     this.importButton = this.querySelector('.zen-import-bookmarks-import-button');
     this.cancelButton = this.querySelector('.zen-import-bookmarks-cancel-button');
     console.log('Elements found:', {
       bookmarksList: !!this.bookmarksList,
+      searchInput: !!this.searchInput,
       selectAllButton: !!this.selectAllButton,
       selectNoneButton: !!this.selectNoneButton,
       importButton: !!this.importButton,
@@ -113,27 +134,14 @@ class nsZenImportBookmarks extends MozXULElement {
     }
     console.log('Target folder found:', this.#targetFolder);
 
-    // Set initial opacity for animation and get elements
-    const modal = this.querySelector('.zen-import-bookmarks-modal');
-    const backdrop = this.querySelector('.zen-import-bookmarks-backdrop');
-
-    if (modal) {
-      modal.style.opacity = 0;
-      modal.style.transform = 'scale(0.95)';
+    // Set initial opacity for animation
+    for (const element of this.elementsToAnimate) {
+      if (!element) {
+        console.warn('Element to animate is null/undefined');
+        continue;
+      }
+      element.style.opacity = 0;
     }
-    if (backdrop) {
-      backdrop.style.opacity = 0;
-      // Close modal when clicking backdrop
-      backdrop.addEventListener('click', this.#onCancelButtonCommand.bind(this));
-    }
-
-    window.docShell.treeOwner
-      .QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIAppWindow)
-      .rollupAllPopups();
-
-    // Make this element visible
-    this.style.setProperty('visibility', 'visible', 'important');
 
     for (const element of nsZenImportBookmarks.elementsToDisable) {
       const el = document.getElementById(element);
@@ -146,20 +154,12 @@ class nsZenImportBookmarks extends MozXULElement {
     this.selectNoneButton.addEventListener('command', this.#onSelectNone.bind(this));
     this.importButton.addEventListener('command', this.#onImportButtonCommand.bind(this));
     this.cancelButton.addEventListener('command', this.#onCancelButtonCommand.bind(this));
+    this.searchInput.addEventListener('input', this.#onSearchInput.bind(this));
 
     document.getElementById('zen-sidebar-splitter').style.pointerEvents = 'none';
 
-    console.log('Starting modal animation');
+    console.log('Starting initialization');
     (async () => {
-        // Animate backdrop in
-        if (backdrop) {
-          await gZenUIManager.motion.animate(
-            backdrop,
-            { opacity: [0, 1] },
-            { duration: 0.2 }
-          );
-        }
-
         // Load bookmarks
         console.log('Loading bookmarks');
         await this.#loadBookmarks();
@@ -169,22 +169,27 @@ class nsZenImportBookmarks extends MozXULElement {
 
         this.resolveInitialized();
 
-        // Animate modal in
-        if (modal) {
-          await gZenUIManager.motion.animate(
-            modal,
-            {
-              opacity: [0, 1],
-              scale: [0.95, 1],
-            },
-            {
-              duration: 0.3,
-              type: 'spring',
-              bounce: 0.1,
-            }
-          );
-        }
-        console.log('Modal animation complete!');
+        // Wait a frame for layout
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        this.resolveRendered();
+        console.log('Content ready for display');
+
+        // Animate elements in
+        await gZenUIManager.motion.animate(
+          this.elementsToAnimate,
+          {
+            y: [20, 0],
+            opacity: [0, 1],
+            filter: ['blur(2px)', 'blur(0)'],
+          },
+          {
+            duration: 0.6,
+            type: 'spring',
+            bounce: 0,
+            delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
+          }
+        );
+        console.log('Animation complete!');
       })().catch(err => {
         console.error('Animation or loading error:', err);
       });
@@ -212,6 +217,7 @@ class nsZenImportBookmarks extends MozXULElement {
 
   async #loadBookmarks() {
     this.#bookmarksData = [];
+    this.#allBookmarks = [];
 
     const rootFolders = [
       { guid: lazy.PlacesUtils.bookmarks.toolbarGuid, name: 'zen-import-bookmarks-folder-toolbar' },
@@ -236,15 +242,33 @@ class nsZenImportBookmarks extends MozXULElement {
           folderName: folder.name,
           bookmarks: bookmarks,
         });
+        this.#allBookmarks.push(...bookmarks);
       }
     }
     console.log(`Loaded ${this.#bookmarksData.reduce((sum, group) => sum + group.bookmarks.length, 0)} bookmarks from ${this.#bookmarksData.length} folders`);
   }
 
-  #renderBookmarks() {
-    if (this.#bookmarksData.length === 0) {
+  #renderBookmarks(searchQuery = '') {
+    // Clear existing content
+    this.bookmarksList.innerHTML = '';
+
+    let bookmarksToDisplay = this.#allBookmarks;
+
+    // Filter by search query if provided
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      bookmarksToDisplay = this.#allBookmarks.filter(bookmark =>
+        bookmark.title.toLowerCase().includes(query) ||
+        bookmark.url.toLowerCase().includes(query)
+      );
+    }
+
+    // Limit to displayLimit
+    bookmarksToDisplay = bookmarksToDisplay.slice(0, this.#displayLimit);
+
+    if (bookmarksToDisplay.length === 0) {
       const emptyLabel = document.createElement('label');
-      emptyLabel.setAttribute('data-l10n-id', 'zen-import-bookmarks-empty');
+      emptyLabel.textContent = searchQuery ? 'No bookmarks found' : 'No bookmarks available';
       emptyLabel.classList.add('zen-import-bookmarks-empty');
       this.bookmarksList.appendChild(emptyLabel);
       // Disable import and select buttons when there are no bookmarks
@@ -254,15 +278,25 @@ class nsZenImportBookmarks extends MozXULElement {
       return;
     }
 
-    for (const group of this.#bookmarksData) {
+    // Group bookmarks by folder for display
+    const groupedByFolder = new Map();
+    for (const bookmark of bookmarksToDisplay) {
+      if (!groupedByFolder.has(bookmark.folderName)) {
+        groupedByFolder.set(bookmark.folderName, []);
+      }
+      groupedByFolder.get(bookmark.folderName).push(bookmark);
+    }
+
+    // Render grouped bookmarks
+    for (const [folderName, bookmarks] of groupedByFolder) {
       // Folder separator
       const separator = document.createElement('label');
-      separator.setAttribute('data-l10n-id', group.folderName);
+      separator.setAttribute('data-l10n-id', folderName);
       separator.classList.add('zen-import-bookmarks-folder-separator');
       this.bookmarksList.appendChild(separator);
 
       // Bookmark items
-      for (const bookmark of group.bookmarks) {
+      for (const bookmark of bookmarks) {
         const item = document.createXULElement('hbox');
         item.classList.add('zen-import-bookmarks-item');
         item.setAttribute('align', 'center');
@@ -289,6 +323,20 @@ class nsZenImportBookmarks extends MozXULElement {
         this.bookmarksList.appendChild(item);
       }
     }
+
+    // Show count if limited
+    if (this.#allBookmarks.length > this.#displayLimit && !searchQuery) {
+      const countLabel = document.createElement('label');
+      countLabel.textContent = `Showing ${bookmarksToDisplay.length} of ${this.#allBookmarks.length} bookmarks. Use search to find more.`;
+      countLabel.classList.add('zen-import-bookmarks-count');
+      countLabel.style.cssText = 'opacity: 0.6; text-align: center; padding: 10px; font-size: 0.9em;';
+      this.bookmarksList.appendChild(countLabel);
+    }
+  }
+
+  #onSearchInput(event) {
+    const searchQuery = event.target.value.trim();
+    this.#renderBookmarks(searchQuery);
   }
 
   #onCheckboxChange() {
@@ -393,33 +441,21 @@ class nsZenImportBookmarks extends MozXULElement {
   }
 
   async #cleanup() {
-    const modal = this.querySelector('.zen-import-bookmarks-modal');
-    const backdrop = this.querySelector('.zen-import-bookmarks-backdrop');
-
-    // Animate modal out
-    if (modal) {
-      await gZenUIManager.motion.animate(
-        modal,
-        {
-          opacity: [1, 0],
-          scale: [1, 0.95],
-        },
-        {
-          duration: 0.2,
-          type: 'spring',
-          bounce: 0,
-        }
-      );
-    }
-
-    // Animate backdrop out
-    if (backdrop) {
-      await gZenUIManager.motion.animate(
-        backdrop,
-        { opacity: [1, 0] },
-        { duration: 0.15 }
-      );
-    }
+    // Animate elements out
+    await gZenUIManager.motion.animate(
+      this.elementsToAnimate.reverse(),
+      {
+        y: [0, 20],
+        opacity: [1, 0],
+        filter: ['blur(0)', 'blur(2px)'],
+      },
+      {
+        duration: 0.4,
+        type: 'spring',
+        bounce: 0,
+        delay: gZenUIManager.motion.stagger(0.05),
+      }
+    );
 
     document.getElementById('zen-sidebar-splitter').style.pointerEvents = '';
 
@@ -430,8 +466,11 @@ class nsZenImportBookmarks extends MozXULElement {
       }
     }
 
-    this.remove();
-    gZenUIManager.updateTabsToolbar();
+    // Close the panel
+    const panel = document.getElementById('PanelUI-zen-import-bookmarks');
+    if (panel) {
+      PanelMultiView.hidePopup(panel);
+    }
   }
 }
 

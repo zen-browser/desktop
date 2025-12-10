@@ -279,16 +279,67 @@ class ZenFolder extends MozTabbrowserTabGroup {
    * Opens the dialogue to import bookmarks into this folder.
    * @returns void
    */
-  openImportBookmarksPopup() {
+  async openImportBookmarksPopup(event) {
     console.debug('openImportBookmarksPopup', this);
 
-    const popup = document.createXULElement('zen-import-bookmarks');
-    popup.setAttribute('folder-id', this.id);
+    // Find or create the panel
+    let panel = document.getElementById('PanelUI-zen-import-bookmarks');
+    let importBookmarks;
 
-    console.debug('Appending import bookmarks popup as modal', popup);
+    if (!panel) {
+      panel = document.createXULElement('panel');
+      panel.id = 'PanelUI-zen-import-bookmarks';
+      panel.setAttribute('flip', 'side');
+      panel.setAttribute('type', 'arrow');
+      panel.setAttribute('popupalign', 'center');
+      panel.setAttribute('orient', 'vertical');
+      panel.setAttribute('position', 'bottomright topright');
+      panel.setAttribute('mainview', 'true');
+      panel.setAttribute('side', 'left');
 
-    // Append to main browser as a modal overlay
-    document.getElementById('main-window').appendChild(popup);
+      const panelMultiView = document.createXULElement('panelmultiview');
+      panelMultiView.id = 'PanelUI-zen-import-bookmarks-multiview';
+      panelMultiView.setAttribute('mainViewId', 'PanelUI-zen-import-bookmarks-view');
+
+      const panelView = document.createXULElement('panelview');
+      panelView.id = 'PanelUI-zen-import-bookmarks-view';
+      panelView.classList.add('PanelUI-subView');
+      panelView.setAttribute('flex', '1');
+
+      importBookmarks = document.createXULElement('zen-import-bookmarks');
+      importBookmarks.setAttribute('folder-id', this.id);
+
+      panelView.appendChild(importBookmarks);
+      panelMultiView.appendChild(panelView);
+      panel.appendChild(panelMultiView);
+      document.getElementById('mainPopupSet').appendChild(panel);
+
+      console.debug('Created new panel with import bookmarks', importBookmarks);
+    } else {
+      // Update folder ID for existing panel and reset it
+      importBookmarks = panel.querySelector('zen-import-bookmarks');
+      if (importBookmarks) {
+        // Remove and recreate to trigger connectedCallback
+        const panelView = panel.querySelector('panelview');
+        importBookmarks.remove();
+        importBookmarks = document.createXULElement('zen-import-bookmarks');
+        importBookmarks.setAttribute('folder-id', this.id);
+        panelView.appendChild(importBookmarks);
+        console.debug('Recreated import bookmarks for panel', importBookmarks);
+      }
+    }
+
+    // Wait for the component to render before opening the panel
+    console.debug('Waiting for import bookmarks to render');
+    await importBookmarks.promiseRendered;
+    console.debug('Import bookmarks rendered, opening panel');
+
+    // Open the panel next to the sidebar (use TabsToolbar as anchor)
+    const anchor = document.getElementById('TabsToolbar');
+    PanelMultiView.openPopup(panel, anchor, {
+      position: 'topright topleft',
+      triggerEvent: event,
+    });
   }
 }
 

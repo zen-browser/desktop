@@ -4,45 +4,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-zen-import-bookmarks {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10000;
-  visibility: collapse;
+#PanelUI-zen-import-bookmarks {
+  --panel-width: 400px;
+  --panel-padding: 10px;
+  min-width: var(--panel-width);
+}
+
+#PanelUI-zen-import-bookmarks .panel-viewcontainer,
+#PanelUI-zen-import-bookmarks .panel-viewstack {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
 
-  & .zen-import-bookmarks-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-  }
+#PanelUI-zen-import-bookmarks-view {
+  max-height: 600px;
+}
 
-  & .zen-import-bookmarks-modal {
-    position: relative;
-    z-index: 1;
-    background: var(--toolbar-bgcolor);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-  }
+zen-import-bookmarks {
+  flex: 1;
+  padding: var(--panel-padding);
+  display: flex;
+  flex-direction: column;
 
   & .zen-import-bookmarks {
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    height: 100%;
 
     & .zen-import-bookmarks-title {
       font-size: large;
@@ -63,9 +51,8 @@ zen-import-bookmarks {
       flex-direction: column;
       width: calc(100% - 10px);
       margin: auto;
-      gap: 1rem;
+      gap: 0.6rem;
       margin-top: 1.2rem;
-      height: 100%;
 
       & xul|button {
         border: none;
@@ -73,16 +60,38 @@ zen-import-bookmarks {
         font-weight: 400 !important;
       }
 
+      & .zen-import-bookmarks-search {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        background-color: var(--input-bgcolor);
+        color: inherit;
+        font-size: inherit;
+        outline: none;
+
+        &:focus {
+          background-color: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+        }
+
+        &::placeholder {
+          opacity: 0.5;
+        }
+      }
+
       & .zen-import-bookmarks-controls {
         gap: 0.5rem;
-        justify-content: center;
+        justify-content: space-between;
+        padding: 4px;
+        border-radius: 8px !important;
+        background-color: var(--input-bgcolor);
 
         & button {
           padding: 6px 12px !important;
           border-radius: 6px !important;
-          background-color: var(--input-bgcolor);
+          background-color: transparent;
           appearance: none;
           min-width: unset !important;
+          flex: 1;
 
           &:hover {
             background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -94,7 +103,8 @@ zen-import-bookmarks {
         background-color: var(--input-bgcolor);
         border-radius: 8px;
         padding: 8px;
-        max-height: 400px;
+        max-height: 350px;
+        min-height: 200px;
         overflow-y: auto;
       }
 
@@ -153,12 +163,11 @@ zen-import-bookmarks {
 
       & .zen-import-bookmarks-buttons {
         gap: 0.5rem;
-        margin-top: auto;
 
         & .zen-import-bookmarks-import-button {
           color: var(--button-text-color-primary) !important;
           background: var(--color-accent-primary) !important;
-          width: 100%;
+          flex: 1;
 
           &:disabled {
             opacity: 0.5;
@@ -167,7 +176,7 @@ zen-import-bookmarks {
         }
 
         & .zen-import-bookmarks-cancel-button {
-          width: 100%;
+          flex: 1;
         }
       }
     }

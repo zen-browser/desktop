@@ -1,6 +1,6 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
 
@@ -14,8 +14,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gWindowSyncEnabled', 'zen.window-sync.enabled');
+XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gShouldLog', 'zen.window-sync.log', true);
 
 const OBSERVING = ['browser-window-before-show'];
+const INSTANT_EVENTS = ['unload'];
 const EVENTS = [
   'TabOpen',
   'TabClose',
@@ -37,7 +39,7 @@ const EVENTS = [
   'TabSelect',
 
   'focus',
-  'unload',
+  ...INSTANT_EVENTS,
 ];
 
 // Flags acting as an enum for sync types.
@@ -115,6 +117,12 @@ class nsZenWindowSync {
     }
   }
 
+  log(...args) {
+    if (lazy.gShouldLog) {
+      console.info('ZenWindowSync:', ...args);
+    }
+  }
+
   /**
    * Called when a browser window is about to be shown.
    * Adds event listeners for the specified events.
@@ -143,6 +151,7 @@ class nsZenWindowSync {
           aWindow.arguments.length > 1 &&
           [...this.#browserWindows].length > 0))
     ) {
+      this.log('Not syncing new window due to unsynced argument or existing synced windows');
       aWindow.document.documentElement.setAttribute('zen-unsynced-window', 'true');
       return;
     }
@@ -218,6 +227,9 @@ class nsZenWindowSync {
     const window = aEvent.currentTarget.ownerGlobal;
     if (!window.gZenStartup.isReady || window.gZenWorkspaces?.privateWindowOrDisabled) {
       return;
+    }
+    if (INSTANT_EVENTS.includes(aEvent.type)) {
+      return this.#handleNextEvent(aEvent);
     }
     if (this.#eventHandlingContext.window && this.#eventHandlingContext.window !== window) {
       // We're already handling an event for another window.
@@ -813,7 +825,12 @@ class nsZenWindowSync {
 
   on_focus(aEvent) {
     const { ownerGlobal: window } = aEvent.target;
-    if (!window.gBrowser || this.#lastFocusedWindow?.deref() === window) {
+    if (
+      !window.gBrowser ||
+      this.#lastFocusedWindow?.deref() === window ||
+      window.closing ||
+      !window.toolbar.visible
+    ) {
       return;
     }
     this.#lastFocusedWindow = new WeakRef(window);

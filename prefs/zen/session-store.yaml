@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.window-sync.enabled
+- name: zen.session-store.backup-file
   value: true
 
-- name: zen.window-sync.log
+- name: zen.session-store.log
   value: true

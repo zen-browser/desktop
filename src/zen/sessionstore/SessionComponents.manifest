@@ -7,5 +7,4 @@ category browser-before-ui-startup resource:///modules/zen/ZenSessionManager.sys
 category browser-before-ui-startup resource:///modules/zen/ZenWindowSync.sys.mjs ZenWindowSync.init
 
 # App shutdown consumers
-category browser-quit-application-granted resource:///modules/zen/ZenSessionManager.sys.mjs ZenSessionStore.uninit
 category browser-quit-application-granted resource:///modules/zen/ZenWindowSync.sys.mjs ZenWindowSync.uninit

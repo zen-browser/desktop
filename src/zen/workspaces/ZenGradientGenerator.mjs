@@ -1110,6 +1110,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         opacity + lazy.MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
       );
       baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
+      if (AppConstants.platform !== 'macosx') {
+        opacity += colorToBlendOpacity * (1 - opacity);
+      }
     }
     return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
   }

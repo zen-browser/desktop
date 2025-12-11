@@ -4,6 +4,7 @@
 
 import os
 import json
+from json_with_comments import JSONWithCommentsDecoder
 
 DUMPS_FOLDER = os.path.join(
     'configs', 'dumps'
@@ -39,12 +40,8 @@ def main():
   for filename in os.listdir(DUMPS_FOLDER):
     if filename.endswith('.json'):
       #  parse json with comments
-      with open(os.path.join(DUMPS_FOLDER, filename), 'r', encoding='utf-8') as f:
-        content = f.read()
-        content = '\n'.join(
-            line for line in content.split('\n') if not line.lstrip(' ').startswith('//')
-        )
-        data = json.loads(content)
+      with open(os.path.join(DUMPS_FOLDER, filename), 'r') as f:
+        data = json.load(f, cls=JSONWithCommentsDecoder)
       original_path = os.path.join(ENGINE_DUMPS_FOLDER, filename)
       if os.path.exists(original_path):
         with open(original_path, 'r') as f:

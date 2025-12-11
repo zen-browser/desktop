@@ -15,7 +15,7 @@ ENGINE_DUMPS_FOLDER = os.path.join(
 
 
 def merge_dumps(original, updates):
-  """Merges two dumps by removing entries specified in updates from original."""
+  """Filters entries from the original dump, removing those whose identifiers are specified in the updates removal list."""
   remove_ids = updates.get('remove', {"identifiers": []}).get('identifiers', [])
 
   # Filter out entries in original that are in remove_ids.
@@ -44,7 +44,7 @@ def main():
         data = json.load(f, cls=JSONWithCommentsDecoder)
       original_path = os.path.join(ENGINE_DUMPS_FOLDER, filename)
       if os.path.exists(original_path):
-        with open(original_path, 'r') as f:
+        with open(original_path, 'r', encoding='utf-8') as f:
           original_content = f.read()
           original_content = '\n'.join(
               line for line in original_content.split('\n') if not line.lstrip(' ').startswith('//')

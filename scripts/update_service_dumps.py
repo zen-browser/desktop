@@ -31,11 +31,11 @@ def merge_dumps(original, updates):
   return {
       'data': merged_data,
       **{k: v for k, v in original.items() if k != 'data'},
+      'timestamp': updates.get('timestamp', original.get('timestamp'))
   }
 
 
 def main():
-  print("Updating service dumps...")
   for filename in os.listdir(DUMPS_FOLDER):
     if filename.endswith('.json'):
       #  parse json with comments
@@ -55,7 +55,6 @@ def main():
           original_data = json.loads(original_content)
         merged_data = merge_dumps(original_data, data)
         with open(original_path, 'w', encoding='utf-8') as f:
-          #  do not write special symbols as \uXXXX
           json.dump(merged_data, f, indent=2, ensure_ascii=False)
         print(f"Updated dump: {filename}")
       else:

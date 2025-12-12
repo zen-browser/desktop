@@ -6,4 +6,4 @@
   value: true
 
 - name: zen.window-sync.log
-  value: true
+  value: false

@@ -6,4 +6,4 @@
   value: true
 
 - name: zen.session-store.log
-  value: true
+  value: false

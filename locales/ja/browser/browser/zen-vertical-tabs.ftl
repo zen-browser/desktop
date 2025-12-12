@@ -18,22 +18,22 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = 両方隠す
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = 新規フォルダ
     .accesskey = N
 sidebar-zen-expand = 
     .label = サイドバーを展開する
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = 新しく作成...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+        [one] タブをアンロードして切り替える
+        *[other] { $tabCount } 個のタブをアンロードして最初のタブに切り替える
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+        [one] タブをリセットしてピン留め
+        *[other] タブをリセットして { $tabCount } 個ピン留め
         }
 tab-reset-pin-label = ピン留めしたURLに戻る

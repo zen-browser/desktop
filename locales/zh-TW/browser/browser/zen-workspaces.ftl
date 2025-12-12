@@ -8,7 +8,7 @@ zen-panel-ui-workspaces-create =
 zen-panel-ui-folder-create = 
     .label = 建立分頁夾
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = 新分頁分割
 zen-workspaces-panel-context-delete = 
     .label = 刪除工作區
     .accesskey = D
@@ -59,7 +59,7 @@ zen-workspaces-delete-workspace-title = 刪除工作區？
 zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操錯無法復原。
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！按壓 <span>{ $shortcut }</span> 來回復此動作。
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = 清除
+    .tooltiptext = 關閉所有未釘選的分頁

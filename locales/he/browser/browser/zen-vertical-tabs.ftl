@@ -6,9 +6,9 @@ zen-toolbar-context-tabs-right =
     .label = כרטיסיות בצד ימין
     .accesskey = ר
 zen-toolbar-context-compact-mode = 
-    .label = מצב מכווץ
+    .label = מצב חסכוני
 zen-toolbar-context-compact-mode-enable = 
-    .label = הפעל מצב מכווץ
+    .label = הפעלת מצב חסכוני
     .accesskey = ג
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = הסתרת סרגל צידי
@@ -23,7 +23,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = הרחבת סרגל צדדי
 sidebar-zen-create-new = 
-    .label = הוספה...
+    .label = יצירת חדש...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
@@ -36,4 +36,4 @@ tabbrowser-reset-pin-button =
             [one] אפס והצמד לשונית
            *[other] אפס והצמד { $tabCount } לשוניות
         }
-tab-reset-pin-label = חזור לקישור המוצמד
+tab-reset-pin-label = חזרה לכתובת המוצמדת

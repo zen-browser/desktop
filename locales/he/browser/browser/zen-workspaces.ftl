@@ -4,13 +4,13 @@
 
 zen-panel-ui-workspaces-text = סביבות עבודה
 zen-panel-ui-workspaces-create = 
-    .label = צור סביבה
+    .label = יצירת סביבה
 zen-panel-ui-folder-create = 
     .label = יצירת תיקייה
 zen-panel-ui-new-empty-split = 
     .label = פיצול חדש
 zen-workspaces-panel-context-delete = 
-    .label = מחק סיבת עבודה
+    .label = מחיקת סביבה
     .accesskey = ג
 zen-workspaces-panel-change-name = 
     .label = שינוי שם
@@ -19,7 +19,7 @@ zen-workspaces-panel-change-icon =
 zen-workspaces-panel-context-default-profile = 
     .label = הגדרת פרופיל
 zen-workspaces-panel-unload = 
-    .label = פינוי סיבבת עבודה
+    .label = פינוי סביבת עבודה
 zen-workspaces-how-to-reorder-title = איך לסדר מחדש סביבות
 zen-workspaces-how-to-reorder-desc = אפשר לסדר מחדש סביבות על ידי גרירה ושחרור של הסמלים בסרגל התחתון
 zen-workspaces-change-theme = 
@@ -61,5 +61,5 @@ zen-workspaces-delete-workspace-body = האם ברצונך למחוק { $name }?
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = ניקוי
+    .tooltiptext = סגירת כל הלשוניות שאינן מוצמדות

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = {$folder-name} ara...
+    .placeholder = {$folder-name} Ara...
 zen-folders-panel-rename-folder = 
     .label = Klasörü Yeniden Adlandır
 zen-folders-panel-unpack-folder = 
@@ -13,7 +13,7 @@ zen-folders-new-subfolder =
 zen-folders-panel-delete-folder = 
     .label = Klasörü Sil
 zen-folders-panel-convert-folder-to-space = 
-    .label = Klasörü alana Dönüştür
+    .label = Klasörü Alana Dönüştür
 zen-folders-panel-change-folder-space = 
     .label = Alanı Değiştir...
 zen-folders-panel-change-icon-folder = 

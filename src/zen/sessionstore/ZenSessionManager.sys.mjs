@@ -255,7 +255,7 @@ export class nsZenSessionManager {
       const windows = (state.windows || []).filter(
         (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
       );
-      let windowToClone = windows[0] || {};
+      let windowToClone = windows.length > 1 ? windows[windows.length - 2] : {};
       let newWindow = Cu.cloneInto(windowToClone, {});
       if (windows.length < 2) {
         // We only want to restore the sidebar object if we found
@@ -286,7 +286,7 @@ export class nsZenSessionManager {
         firstWindow: true,
       });
 
-      resolvePromise();
+      lazy.setTimeout(resolvePromise);
     });
   }
 }

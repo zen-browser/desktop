@@ -17,7 +17,7 @@ XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gWindowSyncEnabled', 'zen.window-sy
 XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gShouldLog', 'zen.window-sync.log', true);
 
 const OBSERVING = ['browser-window-before-show'];
-const INSTANT_EVENTS = ['unload'];
+const INSTANT_EVENTS = ['SSWindowClosing'];
 const EVENTS = [
   'TabOpen',
   'TabClose',
@@ -203,7 +203,7 @@ class nsZenWindowSync {
    */
   #runOnAllWindows(aWindow, aCallback) {
     for (let window of this.#browserWindows) {
-      if (window !== aWindow) {
+      if (window !== aWindow && !window._zenClosingWindow) {
         let value = aCallback(window);
         if (value) {
           return value;
@@ -224,7 +224,11 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.ownerGlobal;
-    if (!window.gZenStartup.isReady || window.gZenWorkspaces?.privateWindowOrDisabled) {
+    if (
+      !window.gZenStartup.isReady ||
+      window.gZenWorkspaces?.privateWindowOrDisabled ||
+      window._zenClosingWindow
+    ) {
       return;
     }
     if (INSTANT_EVENTS.includes(aEvent.type)) {
@@ -658,6 +662,11 @@ class nsZenWindowSync {
    */
   #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     const selectedTab = aWindow.gBrowser.selectedTab;
+    // On some occasions, such as when closing a window, this
+    // function might be called multiple times for the same tab.
+    if (selectedTab === this.#lastSelectedTab) {
+      return;
+    }
     if (aPreviousTab?._zenContentsVisible) {
       const otherTabToShow = this.#getActiveTabFromOtherWindows(
         aWindow,
@@ -853,8 +862,9 @@ class nsZenWindowSync {
     this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
-  on_unload(aEvent) {
+  on_SSWindowClosing(aEvent) {
     const window = aEvent.target.ownerGlobal;
+    window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
       window.removeEventListener(eventName, this);
     }

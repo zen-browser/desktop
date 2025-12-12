@@ -41,8 +41,15 @@ function parseSinePath(pathStr) {
   return points;
 }
 
-const MAX_OPACITY = 0.9;
-const MIN_OPACITY = AppConstants.platform === 'macosx' ? 0.25 : 0.35;
+const lazy = {};
+
+ChromeUtils.defineLazyGetter(lazy, 'MAX_OPACITY', () => {
+  return parseFloat(document.getElementById('PanelUI-zen-gradient-generator-opacity').max);
+});
+
+ChromeUtils.defineLazyGetter(lazy, 'MIN_OPACITY', () => {
+  return parseFloat(document.getElementById('PanelUI-zen-gradient-generator-opacity').min);
+});
 
 const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
 const EXPLICIT_BLACKWHITE_TYPE = 'explicit-black-white';
@@ -440,7 +447,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
     const rect = gradient.getBoundingClientRect();
     const padding = 30; // each side
-    const dotHalfSize = 38 / 2; // half the size of the dot
+    const dotHalfSize = 29; // half the size of the dot. -11 for correct centering
     x += dotHalfSize;
     y += dotHalfSize;
     rect.width += padding * 2; // Adjust width and height for padding
@@ -1095,15 +1102,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       colorToBlendOpacity = 0.35;
     } else if (AppConstants.platform === 'macosx') {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.3;
+      colorToBlendOpacity = 0.35;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
         1,
-        opacity + MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + MIN_OPACITY))
+        opacity + lazy.MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
       );
       baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
-      opacity += colorToBlendOpacity * (1 - opacity);
+      if (AppConstants.platform !== 'macosx') {
+        opacity += colorToBlendOpacity * (1 - opacity);
+      }
     }
     return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
   }
@@ -1386,13 +1395,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         const [_, secondStop, thirdStop] = document.querySelectorAll(
           '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
         );
-        // Opacity can only be between MIN_OPACITY to MAX_OPACITY. Make opacity relative to that range
-        if (opacity < MIN_OPACITY) {
+        // Opacity can only be between lazy.MIN_OPACITY to lazy.MAX_OPACITY. Make opacity relative to that range
+        if (opacity < lazy.MIN_OPACITY) {
           opacity = 0;
-        } else if (opacity > MAX_OPACITY) {
+        } else if (opacity > lazy.MAX_OPACITY) {
           opacity = 1;
         } else {
-          opacity = (opacity - MIN_OPACITY) / (MAX_OPACITY - MIN_OPACITY);
+          opacity = (opacity - lazy.MIN_OPACITY) / (lazy.MAX_OPACITY - lazy.MIN_OPACITY);
         }
         if (isDefaultTheme) {
           opacity = 1; // If it's the default theme, we want the wave to be

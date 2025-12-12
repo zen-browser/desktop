@@ -94,7 +94,7 @@
 
   &[icons-overflow] {
     gap: 0 !important;
-    justify-content: space-between;
+    justify-content: center;
 
     & toolbarbutton {
       margin: 0;
@@ -108,7 +108,7 @@
     }
 
     &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
-%include overflow-icons.inc.css 
+%include overflow-icons.inc.css
     }
   }
 }

@@ -1,0 +1,20 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this file,
+// You can obtain one at http://mozilla.org/MPL/2.0/.
+{
+  "remove": {
+    "identifiers": [
+      // Firefox adds Perplexity by default, we don't want it as
+      // its not very privacy focused.
+      "perplexity",
+
+      // These are not search engines, Firefox adds them by default
+      // but we don't want them.
+      "wikipedia",
+      "wikipedia-*",
+      "ebay",
+      "ebay-*"
+    ]
+  },
+  "timestamp": 1765455207275
+}

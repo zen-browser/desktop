@@ -261,6 +261,7 @@ body > #confetti {
 }
 
 #TabsToolbar {
+  gap: var(--zen-toolbox-padding);
   -moz-window-dragging: unset;
 }
 

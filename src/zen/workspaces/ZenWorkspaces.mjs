@@ -837,7 +837,11 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
   }
 
   get currentWindowIsSyncing() {
-    return !document.documentElement.hasAttribute('zen-unsynced-window') && !this.isPrivateWindow;
+    return (
+      !document.documentElement.hasAttribute('zen-unsynced-window') &&
+      window._zenStartupSyncFlag !== 'unsynced' &&
+      !this.isPrivateWindow
+    );
   }
 
   get privateWindowOrDisabled() {

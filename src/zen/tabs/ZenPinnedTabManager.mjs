@@ -90,9 +90,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const iconUrl = url ?? tab.iconImage.src;
     if (tab.hasAttribute('zen-essential')) {
       tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
-      if (tab.hasAttribute('zen-essential')) {
-        tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
-      }
     }
   }
 

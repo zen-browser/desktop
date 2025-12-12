@@ -54,8 +54,8 @@ class nsZenWindowSync {
    * Context about the currently handled event.
    * Used to avoid re-entrancy issues.
    *
-   * We do still wan't to keep a stack of these in order
-   * to handle consequtive events properly. For example,
+   * We do still want to keep a stack of these in order
+   * to handle consecutive events properly. For example,
    * loading a webpage will call IconChanged and TitleChanged
    * events one after another.
    */
@@ -137,13 +137,12 @@ class nsZenWindowSync {
     //   windows already exist
     let forcedSync = false;
     let hasUnsyncedArg = false;
-    for (let arg of aWindow.arguments) {
-      if (arg === 'zen-synced') {
-        forcedSync = true;
-      } else if (arg === 'zen-unsynced') {
-        hasUnsyncedArg = true;
-      }
+    if (aWindow._zenStartupSyncFlag === 'synced') {
+      forcedSync = true;
+    } else if (aWindow._zenStartupSyncFlag === 'unsynced') {
+      hasUnsyncedArg = true;
     }
+    delete aWindow._zenStartupSyncFlag;
     if (
       !forcedSync &&
       (hasUnsyncedArg ||
@@ -518,14 +517,14 @@ class nsZenWindowSync {
     }
     if (focus) {
       // Recalculate the focus in order to allow the user to continue typing
-      // inside the web contentx area without having to click outside and back in.
+      // inside the web content area without having to click outside and back in.
       aOurTab.linkedBrowser.blur();
       aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
     }
     // Ensure the tab's state is flushed after the swap. By doing this,
     // we can re-schedule another session store delayed process to fire.
     // It's also important to note that if we don't flush the state here,
-    // we would start recieving invalid history changes from the the incorrect
+    // we would start receiving invalid history changes from the the incorrect
     // browser view that was just swapped out.
     lazy.TabStateFlusher.flush(aOurTab.linkedBrowser);
   }
@@ -863,9 +862,9 @@ class nsZenWindowSync {
 
   on_TabGroupCreate(aEvent) {
     const tabGroup = aEvent.target;
-    if (tabGroup.id) {
+    if (tabGroup.id && tabGroup.alreadySynced) {
       // This tab group was opened as part of a sync operation.
-      console.log('Duplicate!');
+      return;
     }
     const window = tabGroup.ownerGlobal;
     const isFolder = tabGroup.isZenFolder;
@@ -876,6 +875,7 @@ class nsZenWindowSync {
         ? win.gZenFolders.createFolder([], {})
         : win.gBrowser.addTabGroup({ splitView: isSplitView });
       newGroup.id = tabGroup.id;
+      newGroup.alreadySynced = true;
       this.#syncItemWithOriginal(
         tabGroup,
         newGroup,

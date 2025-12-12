@@ -667,8 +667,8 @@
       .tab-icon-image,
       .tab-sharing-icon-overlay,
       .tab-icon-overlay {
-        margin-inline-end: calc(var(--toolbarbutton-inner-padding) * 1.5) !important;
-        margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 2) !important;
+        margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+        margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 4) !important;
       }
     }
   }

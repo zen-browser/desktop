@@ -20,3 +20,6 @@
 
 - name: browser.ml.chat.menu
   value: false
+
+- name: browser.ml.linkPreview.enabled
+  value: false

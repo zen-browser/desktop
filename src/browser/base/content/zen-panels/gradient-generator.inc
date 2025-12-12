@@ -82,21 +82,23 @@
 # They must all go from the middle to the right side. They must always stay verically centered.
 # And reach to 180 on the right side, meaning we must divide the width in 16 segments.
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="180,180" style="background: rgb(0, 0, 0);"></box>
+                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="202.5,180" style="background: rgb(32, 32, 32);"></box>
-            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="225,180" style="background: rgb(64, 64, 64);"></box>
-            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="247.5,180" style="background: rgb(96, 96, 96);"></box>
-            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="270,180" style="background: rgb(128, 128, 128);"></box>
-            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="292.5,180" style="background: rgb(160, 160, 160);"></box>
+                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
                 data-position="315,180" style="background: rgb(192, 192, 192);"></box>
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
+                data-position="292.5,180" style="background: rgb(160, 160, 160);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="270,180" style="background: rgb(128, 128, 128);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="247.5,180" style="background: rgb(96, 96, 96);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="225,180" style="background: rgb(64, 64, 64);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="202.5,180" style="background: rgb(32, 32, 32);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="180,180" style="background: rgb(0, 0, 0);"></box>
           </hbox>
         </hbox>
         <toolbarbutton id="PanelUI-zen-gradient-generator-color-page-right" class="toolbarbutton-1" />
@@ -122,11 +124,11 @@
             </box>
             <html:input type="range" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
 #ifdef XP_MACOSX
-              min="0.15"
-              max="0.8"
-#else
+              max="0.75"
               min="0.35"
+#else
               max="0.9"
+              min="0.35"
 #endif
               />
           </vbox>

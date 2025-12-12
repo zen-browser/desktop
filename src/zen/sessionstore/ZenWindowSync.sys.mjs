@@ -493,6 +493,7 @@ class nsZenWindowSync {
     // firefox doesn't expect an unloaded + selected tab, so we need to get
     // around this limitation somehow.
     if (!onClose && aOurTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
+      this.log(`Loading about:blank in our tab ${aOurTab.id} before swap`);
       aOurTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
         loadFlags: Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY,
@@ -504,6 +505,7 @@ class nsZenWindowSync {
     this.#withRestoreTabProgressListener(
       aOtherTab,
       () => {
+        this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
       },
       onClose
@@ -637,6 +639,7 @@ class nsZenWindowSync {
       const targetTab = this.#getItemFromWindow(mostRecentWindow, tab.id);
       if (targetTab) {
         targetTab._zenContentsVisible = true;
+        this.log(`Moving active tab ${tab.id} to most recent window on close`);
         this.#swapBrowserDocSheellsInner(targetTab, tab, targetTab.selected, /* onClose =*/ true);
         // We can animate later, whats important is to always stay on the same
         // process and avoid async operations here to avoid the closed window
@@ -666,7 +669,7 @@ class nsZenWindowSync {
         this.#swapBrowserDocShellsAsync(otherTabToShow, aPreviousTab);
       }
     }
-    if (selectedTab._zenContentsVisible) {
+    if (selectedTab._zenContentsVisible || selectedTab.hasAttribute('zen-empty-tab')) {
       return;
     }
     const otherSelectedTab = this.#getActiveTabFromOtherWindows(aWindow, selectedTab.id);
@@ -737,6 +740,7 @@ class nsZenWindowSync {
       }
     };
     if (!win) {
+      this.log('No synced window found, creating a new one');
       win = aWindow.gBrowser.replaceTabWithWindow(selectedTab, {}, /* zenForceSync = */ true);
       win.gZenWorkspaces.promiseInitialized.then(() => {
         moveAllTabsToWindow();

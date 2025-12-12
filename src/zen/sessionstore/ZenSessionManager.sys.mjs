@@ -35,17 +35,24 @@ class nsZenSidebarObject {
   #sidebar = {};
 
   get data() {
-    return { ...this.#sidebar };
+    return Cu.cloneInto(this.#sidebar, {});
   }
 
   set data(data) {
-    console.log(data);
     this.#sidebar = data;
   }
 }
 
 export class nsZenSessionManager {
-  #file;
+  /**
+   * The JSON file instance used to read/write session data.
+   * @type {JSONFile}
+   */
+  #file = null;
+  /**
+   * The sidebar object holding tabs, groups, folders and split view data.
+   * @type {nsZenSidebarObject}
+   */
   #sidebarObject = new nsZenSidebarObject();
 
   // Called from SessionComponents.manifest on app-startup
@@ -69,16 +76,27 @@ export class nsZenSessionManager {
     }
   }
 
+  /**
+   * Reads the session file and populates the sidebar object.
+   * This should be only called once at startup.
+   * @see SessionFileInternal.read
+   */
   async readFile() {
-    console.log(await this.#file.load());
     try {
-      this.#sidebar = (await this.#file.load()) || {};
+      await this.#file.load();
     } catch (e) {
       console.error('ZenSessionManager: Failed to read session file', e);
-      this.#sidebar = {};
     }
+    this.#sidebar = this.#file.data || {};
   }
 
+  /**
+   * Called when the session file is read. Restores the sidebar data
+   * into all windows.
+   *
+   * @param initialState
+   *        The initial session state read from the session file.
+   */
   onFileRead(initialState) {
     // For the first time after migration, we restore the tabs
     // That where going to be restored by SessionStore. The sidebar
@@ -88,17 +106,30 @@ export class nsZenSessionManager {
       Services.prefs.setBoolPref(MIGRATION_PREF, true);
       return;
     }
+    // If there's no initial state, nothing to restore. This would
+    // happen if the file is empty or corrupted.
+    if (!initialState) {
+      return;
+    }
+    // If there are no windows, we create an empty one. By default,
+    // firefox would create simply a new empty window, but we want
+    // to make sure that the sidebar object is properly initialized.
+    // This would happen on first run after having a single private window
+    // open when quitting the app, for example.
+    if (!initialState.windows?.length) {
+      initialState.windows = [{}];
+    }
     // Restore all windows with the same sidebar object, this will
     // guarantee that all tabs, groups, folders and split view data
     // are properly synced across all windows.
     this.log(`Restoring Zen session data into ${initialState.windows?.length || 0} windows`);
     for (const winData of initialState.windows || []) {
-      this.restoreWindowData(winData);
+      this.#restoreWindowData(winData);
     }
   }
 
   get #sidebar() {
-    return { ...this.#sidebarObject.data };
+    return this.#sidebarObject.data;
   }
 
   set #sidebar(data) {
@@ -118,7 +149,8 @@ export class nsZenSessionManager {
       return;
     }
     this.#collectWindowData(state);
-    // This would save the data to disk asynchronously.
+    // This would save the data to disk asynchronously or when
+    // quitting the app.
     this.#file.data = this.#sidebar;
     this.#file.saveSoon();
     this.log(`Saving Zen session data with ${this.#sidebar.tabs?.length || 0} tabs`);
@@ -178,9 +210,16 @@ export class nsZenSessionManager {
     sidebarData.groups = state.windows[0].groups;
   }
 
-  restoreWindowData(aWindowData) {
+  /**
+   * Restores the sidebar data into a given window data object.
+   * We do this in order to make sure all new window objects
+   * have the same sidebar data.
+   *
+   * @param aWindowData
+   *        The window data object to restore into.
+   */
+  #restoreWindowData(aWindowData) {
     const sidebar = this.#sidebar;
-    console.log(sidebar);
     if (!sidebar) {
       return;
     }
@@ -190,35 +229,64 @@ export class nsZenSessionManager {
     aWindowData.groups = sidebar.groups;
   }
 
-  restoreNewWindow(aWindow, SessionStoreInternal) {
+  /**
+   * Restores a new window with Zen session data. This should be called
+   * not at startup, but when a new window is opened by the user.
+   *
+   * @param aWindow
+   *        The window to restore.
+   * @param SessionStoreInternal
+   *        The SessionStore module instance.
+   * @param resolvePromise
+   *        The promise resolver to call when done. We use a promise
+   *        here because out workspace manager always waits for SessionStore
+   *        to restore all the windows before initializing, but when opening
+   *        a new window, that promise is always resolved, meaning it may run
+   *        into a race condition if we try to restore the window synchronously
+   *        here.
+   */
+  restoreNewWindow(aWindow, SessionStoreInternal, resolvePromise) {
     if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
       return;
     }
     this.log('Restoring new window with Zen session data');
-    aWindow._zenPromiseNewWindowRestored = new Promise((resolve) => {
-      lazy.setTimeout(() => {
-        const state = lazy.SessionStore.getCurrentState(true);
-        const windows = (state.windows || []).find(
-          (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
-        );
-        let windowToClone = windows[0];
-        let newWindow = Cu.cloneInto(windowToClone, {});
-        if (windows.length < 2) {
-          // We only want to restore the sidebar object if we found
-          // only one normal window to clone from (which is the one
-          // we are opening).
-          this.log('Restoring sidebar data into new window');
-          this.restoreWindowData(newWindow);
-        }
-        newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
-        delete newWindow.selected;
-        const newState = { windows: [newWindow] };
-        this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
-        SessionStoreInternal.restoreWindows(aWindow, newState, {
-          firstWindow: true,
-        });
-        resolve();
+    lazy.setTimeout(() => {
+      const state = lazy.SessionStore.getCurrentState(true);
+      const windows = (state.windows || []).filter(
+        (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
+      );
+      let windowToClone = windows[0] || {};
+      let newWindow = Cu.cloneInto(windowToClone, {});
+      if (windows.length < 2) {
+        // We only want to restore the sidebar object if we found
+        // only one normal window to clone from (which is the one
+        // we are opening).
+        this.log('Restoring sidebar data into new window');
+        this.#restoreWindowData(newWindow);
+      }
+      newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
+
+      // These are window-specific from the previous window state that
+      // we don't want to restore into the new window. Otherwise, new
+      // windows would appear overlapping the previous one, or with
+      // the same size and position, which should be decided by the
+      // window manager.
+      delete newWindow.selected;
+      delete newWindow.screenX;
+      delete newWindow.screenY;
+      delete newWindow.width;
+      delete newWindow.height;
+      delete newWindow.sizemode;
+      delete newWindow.sizemodeBeforeMinimized;
+      delete newWindow.zIndex;
+
+      const newState = { windows: [newWindow] };
+      this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
+      SessionStoreInternal.restoreWindows(aWindow, newState, {
+        firstWindow: true,
       });
+
+      resolvePromise();
     });
   }
 }

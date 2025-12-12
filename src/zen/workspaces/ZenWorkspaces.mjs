@@ -412,6 +412,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     perifery.setAttribute('hidden', 'true');
     await new Promise((resolve) => {
       setTimeout(async () => {
+        await window._zenPromiseNewWindowRestored;
         const tabs = gBrowser.tabContainer.allTabs;
         const workspaces = await this.getWorkspaces();
         for (const workspace of workspaces.workspaces) {
@@ -934,8 +935,6 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     let activeWorkspace = await this.getActiveWorkspace();
     this.activeWorkspace = activeWorkspace?.uuid;
     await gZenSessionStore.promiseInitialized;
-    await window._zenPromiseNewWindowRestored;
-    delete window._zenPromiseNewWindowRestored;
     try {
       if (activeWorkspace) {
         window.gZenThemePicker = new nsZenThemePicker();
@@ -952,6 +951,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     this.onWindowResize();
     this._resolveInitialized();
     this.#clearAnyZombieTabs(); // Dont call with await
+    delete window._zenPromiseNewWindowRestored;
 
     const tabUpdateListener = this.updateTabsContainers.bind(this);
     window.addEventListener('TabOpen', tabUpdateListener);

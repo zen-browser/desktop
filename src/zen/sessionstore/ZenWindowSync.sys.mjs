@@ -303,7 +303,9 @@ class nsZenWindowSync {
     }
     if (flags & SYNC_FLAG_LABEL) {
       if (gBrowser.isTab(aOriginalItem)) {
+        aTargetItem._zenChangeLabelFlag = true;
         gBrowser._setTabLabel(aTargetItem, aOriginalItem.label);
+        delete aTargetItem._zenChangeLabelFlag;
       } else if (gBrowser.isTabGroup(aOriginalItem)) {
         aTargetItem.label = aOriginalItem.label;
       }

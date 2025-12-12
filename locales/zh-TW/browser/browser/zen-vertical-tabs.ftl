@@ -27,13 +27,13 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] 關閉並切換到此分頁
+           *[other] 關閉 { $tabCount } 個分頁並切換到第一個分頁
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] 重設並釘選分頁
+           *[other] 重設並釘選 { $tabCount } 個分頁
         }
 tab-reset-pin-label = 返回釘選網址

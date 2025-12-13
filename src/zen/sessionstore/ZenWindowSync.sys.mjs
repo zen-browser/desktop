@@ -780,19 +780,18 @@ class nsZenWindowSync {
     const moveAllTabsToWindow = (allowSelected = false) => {
       const { gBrowser, gZenWorkspaces } = win;
       win.focus();
-      let tabIndex = 0;
       let success = true;
       for (const tab of tabsToMove) {
         if (tab !== selectedTab || allowSelected) {
-          const newTab = gBrowser.adoptTab(tab, { tabIndex });
+          const newTab = gBrowser.adoptTab(tab, { tabIndex: Infinity });
           if (!newTab) {
             // The adoption failed. Restore "fadein" and don't increase the index.
             tab.setAttribute('fadein', 'true');
             success = false;
             continue;
           }
+          newTab._zenContentsVisible = true;
           gZenWorkspaces.moveTabToWorkspace(newTab, aWorkspaceId);
-          ++tabIndex;
         }
       }
       if (success) {

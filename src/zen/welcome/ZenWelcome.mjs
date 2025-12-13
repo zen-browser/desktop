@@ -292,9 +292,6 @@
       for (const tab of _tabsToPin) {
         tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
         gBrowser.pinTab(tab);
-        await new Promise((resolve) => {
-          tab.addEventListener('ZenPinnedTabCreated', resolve, { once: true });
-        });
       }
       for (const tab of _tabsToPinEssentials) {
         tab.removeAttribute('pending'); // Make it appear loaded

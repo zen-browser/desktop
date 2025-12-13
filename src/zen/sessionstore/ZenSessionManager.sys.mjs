@@ -250,44 +250,42 @@ export class nsZenSessionManager {
       return;
     }
     this.log('Restoring new window with Zen session data');
-    lazy.setTimeout(() => {
-      const state = lazy.SessionStore.getCurrentState(true);
-      const windows = (state.windows || []).filter(
-        (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
-      );
-      let windowToClone = windows.length > 1 ? windows[windows.length - 2] : {};
-      let newWindow = Cu.cloneInto(windowToClone, {});
-      if (windows.length < 2) {
-        // We only want to restore the sidebar object if we found
-        // only one normal window to clone from (which is the one
-        // we are opening).
-        this.log('Restoring sidebar data into new window');
-        this.#restoreWindowData(newWindow);
-      }
-      newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
+    const state = lazy.SessionStore.getCurrentState(true);
+    const windows = (state.windows || []).filter(
+      (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
+    );
+    let windowToClone = windows[0] || {};
+    let newWindow = Cu.cloneInto(windowToClone, {});
+    if (windows.length < 2) {
+      // We only want to restore the sidebar object if we found
+      // only one normal window to clone from (which is the one
+      // we are opening).
+      this.log('Restoring sidebar data into new window');
+      this.#restoreWindowData(newWindow);
+    }
+    newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
 
-      // These are window-specific from the previous window state that
-      // we don't want to restore into the new window. Otherwise, new
-      // windows would appear overlapping the previous one, or with
-      // the same size and position, which should be decided by the
-      // window manager.
-      delete newWindow.selected;
-      delete newWindow.screenX;
-      delete newWindow.screenY;
-      delete newWindow.width;
-      delete newWindow.height;
-      delete newWindow.sizemode;
-      delete newWindow.sizemodeBeforeMinimized;
-      delete newWindow.zIndex;
+    // These are window-specific from the previous window state that
+    // we don't want to restore into the new window. Otherwise, new
+    // windows would appear overlapping the previous one, or with
+    // the same size and position, which should be decided by the
+    // window manager.
+    delete newWindow.selected;
+    delete newWindow.screenX;
+    delete newWindow.screenY;
+    delete newWindow.width;
+    delete newWindow.height;
+    delete newWindow.sizemode;
+    delete newWindow.sizemodeBeforeMinimized;
+    delete newWindow.zIndex;
 
-      const newState = { windows: [newWindow] };
-      this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
-      SessionStoreInternal.restoreWindows(aWindow, newState, {
-        firstWindow: true,
-      });
-
-      lazy.setTimeout(resolvePromise);
+    const newState = { windows: [newWindow] };
+    this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
+    SessionStoreInternal.restoreWindows(aWindow, newState, {
+      firstWindow: true,
     });
+
+    lazy.setTimeout(resolvePromise);
   }
 }
 

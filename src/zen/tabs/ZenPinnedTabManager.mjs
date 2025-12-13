@@ -95,22 +95,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    const pin = this._pinsCache?.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
-    if (!pin) {
-      return;
-    }
-    let userContextId;
-    if (tab.hasAttribute('usercontextid')) {
-      userContextId = tab.getAttribute('usercontextid');
-    }
-    const pinnedUrl = Services.io.newURI(pin.url);
-    const browser = tab.linkedBrowser;
-    browser.loadURI(pinnedUrl, {
-      triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({
-        userContextId,
-      }),
-    });
-    this.resetPinChangedUrl(tab);
+    this._resetTabToStoredState(tab);
   }
 
   get enabled() {
@@ -146,6 +131,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
+  #getTabState(tab) {
+    return JSON.parse(SessionStore.getTabState(tab));
+  }
+
   async _onTabClick(e) {
     const tab = e.target?.closest('tab');
     if (e.button === 1 && tab) {
@@ -169,10 +158,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   async replacePinnedUrlWithCurrent(tab = undefined) {
     tab ??= TabContextMenu.contextTab;
-    if (!tab || !tab.pinned || !tab.getAttribute('zen-pin-id')) {
+    if (!tab || !tab.pinned) {
       return;
     }
 
+    window.gZenWindowSync.setPinnedTabState(tab);
     this.resetPinChangedUrl(tab);
     gZenUIManager.showToast('zen-pinned-tab-replaced');
   }
@@ -332,35 +322,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   _resetTabToStoredState(tab) {
-    const id = tab.getAttribute('zen-pin-id');
-    if (!id) {
-      return;
-    }
+    const state = this.#getTabState(tab);
 
-    const pin = this._pinsCache.find((pin) => pin.uuid === id);
-    if (!pin) {
-      return;
-    }
+    const initialState = tab._zenPinnedInitialState;
 
-    const tabState = SessionStore.getTabState(tab);
-    const state = JSON.parse(tabState);
+    // Remove everything except the entry we want to keep
+    state.entries = [initialState.entry];
 
-    const foundEntryIndex = state.entries?.findIndex((entry) => entry.url === pin.url);
-    if (foundEntryIndex === -1) {
-      state.entries = [
-        {
-          url: pin.url,
-          title: pin.title,
-          triggeringPrincipal_base64: lazy.E10SUtils.SERIALIZED_SYSTEMPRINCIPAL,
-        },
-      ];
-    } else {
-      // Remove everything except the entry we want to keep
-      const existingEntry = state.entries[foundEntryIndex];
-      existingEntry.title = pin.title;
-      state.entries = [existingEntry];
-    }
-    state.image = pin.iconUrl || state.image;
+    state.image = initialState.image;
     state.index = 0;
 
     SessionStore.setTabState(tab, state);
@@ -405,16 +374,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       if (tab.hasAttribute('zen-workspace-id')) {
         tab.removeAttribute('zen-workspace-id');
       }
-      if (tab.pinned && tab.hasAttribute('zen-pin-id')) {
+      if (tab.pinned) {
         gBrowser.zenHandleTabMove(tab, () => {
           if (tab.ownerGlobal !== window) {
             tab = gBrowser.adoptTab(tab, {
               selectTab: tab.selected,
             });
             tab.setAttribute('zen-essential', 'true');
-          } else {
-            section.appendChild(tab);
           }
+          section.appendChild(tab);
         });
       } else {
         gBrowser.pinTab(tab);
@@ -507,8 +475,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
     const zenAddEssential = document.getElementById('context_zen-add-essential');
-    document.getElementById('context_zen-reset-pinned-tab').hidden =
-      !isVisible || !contextTab.getAttribute('zen-pin-id');
+    document.getElementById('context_zen-reset-pinned-tab').hidden = !isVisible;
     document.getElementById('context_zen-replace-pinned-url-with-current').hidden = !isVisible;
     zenAddEssential.hidden = contextTab.getAttribute('zen-essential') || !!contextTab.group;
     zenAddEssential.setAttribute(
@@ -646,22 +613,23 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   async onLocationChange(browser) {
     const tab = gBrowser.getTabForBrowser(browser);
-    if (!tab || !tab.pinned || tab.hasAttribute('zen-essential') || !this._pinsCache) {
-      return;
-    }
-    const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
-    if (!pin) {
+    if (
+      !tab ||
+      !tab.pinned ||
+      tab.hasAttribute('zen-essential') ||
+      !tab._zenPinnedInitialState?.entry
+    ) {
       return;
     }
     // Remove # and ? from the URL
-    const pinUrl = pin.url.split('#')[0];
+    const pinUrl = tab._zenPinnedInitialState.entry.url.split('#')[0];
     const currentUrl = browser.currentURI.spec.split('#')[0];
     // Add an indicator that the pin has been changed
     if (pinUrl === currentUrl) {
       this.resetPinChangedUrl(tab);
       return;
     }
-    this.pinHasChangedUrl(tab, pin);
+    this.pinHasChangedUrl(tab);
   }
 
   resetPinChangedUrl(tab) {
@@ -673,7 +641,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     tab.style.removeProperty('--zen-original-tab-icon');
   }
 
-  pinHasChangedUrl(tab, pin) {
+  pinHasChangedUrl(tab) {
     if (tab.hasAttribute('zen-pinned-changed')) {
       return;
     }
@@ -682,7 +650,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     } else {
       tab.setAttribute('zen-pinned-changed', 'true');
     }
-    tab.style.setProperty('--zen-original-tab-icon', `url(${pin.iconUrl?.spec})`);
+    tab.style.setProperty('--zen-original-tab-icon', `url(${tab._zenPinnedInitialState.image})`);
   }
 
   removeTabContainersDragoverClass(hideIndicator = true) {
@@ -799,35 +767,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   async updatePinTitle(tab, newTitle, isEdited = true) {
-    const uuid = tab.getAttribute('zen-pin-id');
-
-    const browsers = Services.wm.getEnumerator('navigator:browser');
-
-    // update the label for the same pin across all windows
-    for (const browser of browsers) {
-      const tabs = browser.gBrowser.tabs;
-      // Fix pinned cache for the browser
-      const browserCache = browser.gZenPinnedTabManager?._pinsCache;
-      if (browserCache) {
-        const pin = browserCache.find((pin) => pin.uuid === uuid);
-        if (pin) {
-          pin.title = newTitle;
-          pin.editedTitle = isEdited;
-        }
-      }
-      for (let i = 0; i < tabs.length; i++) {
-        const tabToEdit = tabs[i];
-        if (tabToEdit.getAttribute('zen-pin-id') === uuid && tabToEdit !== tab) {
-          tabToEdit.removeAttribute('zen-has-static-label');
-          if (isEdited) {
-            gBrowser._setTabLabel(tabToEdit, newTitle);
-            tabToEdit.setAttribute('zen-has-static-label', 'true');
-          } else {
-            gBrowser.setTabTitle(tabToEdit);
-          }
-          break;
-        }
-      }
+    tab.removeAttribute('zen-has-static-label');
+    if (isEdited) {
+      gBrowser._setTabLabel(tab, newTitle);
+      tab.setAttribute('zen-has-static-label', 'true');
+    } else {
+      gBrowser.setTabTitle(tab);
     }
   }
 
@@ -943,20 +888,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  async onTabLabelChanged(tab) {
+  onTabLabelChanged(tab) {
     tab.dispatchEvent(new CustomEvent('ZenTabLabelChanged', { bubbles: true, detail: { tab } }));
-    if (!this._pinsCache) {
-      return;
-    }
-    // If our current pin in the cache point to about:blank, we need to update the entry
-    const pin = this._pinsCache.find((pin) => pin.uuid === tab.getAttribute('zen-pin-id'));
-    if (!pin) {
-      return;
-    }
-
-    if (pin.url === 'about:blank' && tab.linkedBrowser.currentURI.spec !== 'about:blank') {
-      await this.replacePinnedUrlWithCurrent(tab);
-    }
   }
 }
 

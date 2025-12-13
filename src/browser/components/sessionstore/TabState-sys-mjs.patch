@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..e1d2c5ca0cbe5431df01f8d6411f88e3325e0ee9 100644
+index 82721356d191055bec0d4b0ca49e481221988801..80547ec951f881bef134b637730954eb1525c623 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -85,7 +85,23 @@ class _TabState {
+@@ -85,7 +85,24 @@ class _TabState {
        tabData.groupId = tab.group.id;
      }
  
@@ -17,6 +17,7 @@ index 82721356d191055bec0d4b0ca49e481221988801..e1d2c5ca0cbe5431df01f8d6411f88e3
 +    tabData.zenHasStaticLabel = tab.hasAttribute("zen-has-static-label");
 +    tabData.zenGlanceId = tab.getAttribute("glance-id");
 +    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
++    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;
 +    tabData._zenIsActiveTab = tab._zenContentsVisible;
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
@@ -26,3 +27,12 @@ index 82721356d191055bec0d4b0ca49e481221988801..e1d2c5ca0cbe5431df01f8d6411f88e3
  
      tabData.userContextId = tab.userContextId || 0;
  
+@@ -98,7 +115,7 @@ class _TabState {
+ 
+     // Copy data from the tab state cache only if the tab has fully finished
+     // restoring. We don't want to overwrite data contained in __SS_data.
+-    this.copyFromCache(browser.permanentKey, tabData, options);
++    this.copyFromCache(tab.permanentKey, tabData, options);
+ 
+     // After copyFromCache() was called we check for properties that are kept
+     // in the cache only while the tab is pending or restoring. Once that

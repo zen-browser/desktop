@@ -33,6 +33,9 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenPinnedEntry) {
       tab.setAttribute('zen-pinned-entry', tabData.zenPinnedEntry);
     }
+    if (tabData._zenPinnedInitialState) {
+      tab._zenPinnedInitialState = tabData._zenPinnedInitialState;
+    }
   }
 
   async #waitAndCleanup() {

@@ -396,6 +396,9 @@ class nsZenWindowSync {
    * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aOriginalItem - The original item to match.
    * @param {MozTabbrowserTab|MozTabbrowserTabGroup} aTargetItem - The target item to move.
    * @param {Window} aWindow - The window containing the items.
+   * @param {Object} options - Additional options for moving the item.
+   * @param {boolean} options.isEssential - Indicates if the item is essential.
+   * @param {boolean} options.isPinned - Indicates if the item is pinned.
    */
   #moveItemToMatchOriginal(aOriginalItem, aTargetItem, aWindow, { isEssential, isPinned }) {
     const { gBrowser, gZenWorkspaces } = aWindow;
@@ -425,7 +428,9 @@ class nsZenWindowSync {
         if (isEssential) {
           container = gZenWorkspaces.getEssentialsSection(aTargetItem);
         } else {
-          const workspaceId = aTargetItem.getAttribute('zen-workspace-id');
+          const workspaceId =
+            aTargetItem.getAttribute('zen-workspace-id') ||
+            aOriginalItem.ownerGlobal.gZenWorkspaces.activeWorkspace;
           const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
           container = isPinned
             ? workspaceElement?.pinnedTabsContainer
@@ -515,6 +520,10 @@ class nsZenWindowSync {
    * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
    */
   #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true, onClose = false) {
+    // Can't swap between chrome and content processes.
+    if (aOurTab.linkedBrowser.isRemoteBrowser != aOtherTab.linkedBrowser.isRemoteBrowser) {
+      return false;
+    }
     // Load about:blank if by any chance we loaded the previous tab's URL.
     // TODO: We should maybe start using a singular about:blank preloaded view
     //  to avoid loading a full blank page each time and wasting resources.
@@ -558,6 +567,7 @@ class nsZenWindowSync {
     // we would start receiving invalid history changes from the the incorrect
     // browser view that was just swapped out.
     lazy.TabStateFlusher.flush(aOurTab.linkedBrowser);
+    return true;
   }
 
   /**

@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce81600d3af 100644
+index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..7674939b31ba0bd444659e0f1e8cc7265c687356 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -129,7 +129,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
          // window data is still in _statesToRestore
          continue;
        }
-@@ -5625,11 +5649,12 @@ var SessionStoreInternal = {
+@@ -5625,11 +5649,15 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -139,19 +139,14 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
      let winData = this._windows[aWindow.__SSi];
      let tabsData = (winData.tabs = []);
  
++    winData.activeZenSpace = aWindow.gZenWorkspaces?.activeWorkspace || null;
 +    winData.splitViewData = aWindow.gZenViewSplitter?.storeDataForSessionStore();
++    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
++
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
-@@ -5640,6 +5665,7 @@ var SessionStoreInternal = {
-       tabsData.push(tabData);
-     }
- 
-+    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
-     // update tab group state for this window
-     winData.groups = [];
-     for (let tabGroup of aWindow.gBrowser.tabGroups) {
-@@ -5652,7 +5678,7 @@ var SessionStoreInternal = {
+@@ -5652,7 +5680,7 @@ var SessionStoreInternal = {
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
      if (aWindow.FirefoxViewHandler.tab?.selected) {
@@ -160,7 +155,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5765,8 +5791,8 @@ var SessionStoreInternal = {
+@@ -5765,8 +5793,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -171,16 +166,17 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5809,6 +5835,8 @@ var SessionStoreInternal = {
+@@ -5809,6 +5837,9 @@ var SessionStoreInternal = {
          winData.tabs,
          winData.groups ?? []
        );
 +      aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
 +      aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
++      aWindow.gZenWorkspaces?.activeWorkspace = winData.activeZenSpace || null;
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );
-@@ -6372,6 +6400,25 @@ var SessionStoreInternal = {
+@@ -6372,6 +6403,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -206,7 +202,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -7290,7 +7337,7 @@ var SessionStoreInternal = {
+@@ -7290,7 +7340,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {
@@ -215,7 +211,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..fb0030061a3bd9df2c8a444970b56ce8
            // Adjust window.selected
            if (tIndex + 1 < window.selected) {
              window.selected -= 1;
-@@ -7305,7 +7352,7 @@ var SessionStoreInternal = {
+@@ -7305,7 +7355,7 @@ var SessionStoreInternal = {
            );
            // We don't want to increment tIndex here.
            continue;

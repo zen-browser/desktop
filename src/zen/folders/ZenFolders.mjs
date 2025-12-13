@@ -405,7 +405,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               if (selectedTab) {
                 selectedTab.setAttribute('zen-workspace-id', newWorkspace.uuid);
                 selectedTab.removeAttribute('folder-active');
-                gZenWorkspaces._lastSelectedWorkspaceTabs[newWorkspace.uuid] = selectedTab;
+                gZenWorkspaces.lastSelectedWorkspaceTabs[newWorkspace.uuid] = selectedTab;
               }
               resolve();
             });
@@ -421,10 +421,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         tab.style.height = '';
       }
       gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
-      if (gZenWorkspaces._lastSelectedWorkspaceTabs[currentWorkspace.uuid] === tab) {
+      if (gZenWorkspaces.lastSelectedWorkspaceTabs[currentWorkspace.uuid] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to
         // the current workspace
-        delete gZenWorkspaces._lastSelectedWorkspaceTabs[currentWorkspace.uuid];
+        delete gZenWorkspaces.lastSelectedWorkspaceTabs[currentWorkspace.uuid];
       }
     }
   }
@@ -443,9 +443,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       // we may encounter
       tab.group.setAttribute('zen-workspace-id', workspaceId);
       gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
-      if (gZenWorkspaces._lastSelectedWorkspaceTabs[workspaceId] === tab) {
+      if (gZenWorkspaces.lastSelectedWorkspaceTabs[workspaceId] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to a new workspace
-        delete gZenWorkspaces._lastSelectedWorkspaceTabs[workspaceId];
+        delete gZenWorkspaces.lastSelectedWorkspaceTabs[workspaceId];
       }
     }
     folder.dispatchEvent(new CustomEvent('ZenFolderChangedWorkspace', { bubbles: true }));

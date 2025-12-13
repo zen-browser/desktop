@@ -1318,7 +1318,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // Use theme from workspace object or passed theme
     let workspaceTheme = theme || workspace.theme;
 
-    await this.foreachWindowAsActive(async (browser) => {
+    await this.forEachWindow(async (browser) => {
       if (!browser.gZenThemePicker?.promiseInitialized) {
         return;
       }

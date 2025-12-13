@@ -18,11 +18,11 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Sabitlenen URL'yi Mevcut ile Değiştir
     .accesskey = C
 zen-themes-corrupted = { -brand-short-name } adlı modun dosyaları hatalı. Varsayılan temaya sıfırlandılar.
-zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyasınız bozuldu. Varsayılan kısayollara sıfırlandı.
+zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyanız bozuldu. Varsayılan kısayollara sıfırlandı.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Yeni sekme sayfalarına ihtiyacı kaldıran yeni URL Bar aktifleşti.<br/><br/>
-    Yeni URL çubuğunu çalışırken görmek için yeni bir sekme açmayı dene!
+    Yeni adres çubuğu etkinleştirildi ve yeni sekme sayfalarına olan ihtiyaç ortadan kalktı.<br/><br/>
+    Yeni adres çubuğunu çalışırken görmek için yeni bir sekme açmayı dene!
 zen-disable = Devre dışı bırak
 pictureinpicture-minimize-btn = 
     .aria-label = Küçült
@@ -34,12 +34,12 @@ zen-general-cancel-label =
     .label = İptal
 zen-general-confirm = 
     .label = Onayla
-zen-pinned-tab-replaced = Başa tutturulmuş sekme URL'si, şimdiki URL ile değiştirildi!
+zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
 zen-library-sidebar-workspaces = 
-    .label = Boşluklar
+    .label = Alanlar
 zen-library-sidebar-mods = 
     .label = Modlar
 zen-toggle-compact-mode-button = 

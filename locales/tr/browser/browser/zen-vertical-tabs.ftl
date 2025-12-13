@@ -34,6 +34,6 @@ tabbrowser-reset-pin-button =
     .tooltiptext =
         { $tabCount ->
             [bir] Sıfırlayın ve sabitleyin
-           *[other] { $tabCount } sekmeyi sıfırla ve sabitle
+           *[other] { $tabCount } Sekmeyi sıfırla ve sabitle
         }
 tab-reset-pin-label = Sabitlenen url'ye dön

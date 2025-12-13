@@ -411,43 +411,45 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     const perifery = document.getElementById('tabbrowser-arrowscrollbox-periphery');
     perifery.setAttribute('hidden', 'true');
     await new Promise((resolve) => {
-      setTimeout(async () => {
-        await window._zenPromiseNewWindowRestored;
-        const tabs = gBrowser.tabContainer.allTabs;
-        const workspaces = await this.getWorkspaces();
-        for (const workspace of workspaces.workspaces) {
-          await this._createWorkspaceTabsSection(workspace, tabs);
-        }
-        if (tabs.length) {
-          const defaultSelectedContainer = this.workspaceElement(
-            this.activeWorkspace
-          )?.querySelector('.zen-workspace-normal-tabs-section');
-          const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
-            '.zen-workspace-pinned-tabs-section'
-          );
-          // New profile with no workspaces does not have a default selected container
-          if (defaultSelectedContainer) {
-            for (const tab of tabs) {
-              if (tab.hasAttribute('zen-essential')) {
-                this.getEssentialsSection(tab).appendChild(tab);
-                continue;
-              } else if (tab.pinned) {
-                pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
-                continue;
-              }
-              // before to the last child (perifery)
-              defaultSelectedContainer.insertBefore(tab, defaultSelectedContainer.lastChild);
-            }
+      setTimeout(() => {
+        setTimeout(async () => {
+          await window._zenPromiseNewWindowRestored;
+          const tabs = gBrowser.tabContainer.allTabs;
+          const workspaces = await this.getWorkspaces();
+          for (const workspace of workspaces.workspaces) {
+            await this._createWorkspaceTabsSection(workspace, tabs);
           }
-          gBrowser.tabContainer._invalidateCachedTabs();
-        }
-        perifery.setAttribute('hidden', 'true');
-        this._hasInitializedTabsStrip = true;
-        this.registerPinnedResizeObserver();
-        this._fixIndicatorsNames(workspaces);
-        this._resolveSectionsInitialized();
-        resolve();
-      }, 0);
+          if (tabs.length) {
+            const defaultSelectedContainer = this.workspaceElement(
+              this.activeWorkspace
+            )?.querySelector('.zen-workspace-normal-tabs-section');
+            const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
+              '.zen-workspace-pinned-tabs-section'
+            );
+            // New profile with no workspaces does not have a default selected container
+            if (defaultSelectedContainer) {
+              for (const tab of tabs) {
+                if (tab.hasAttribute('zen-essential')) {
+                  this.getEssentialsSection(tab).appendChild(tab);
+                  continue;
+                } else if (tab.pinned) {
+                  pinnedContainer.insertBefore(tab, pinnedContainer.lastChild);
+                  continue;
+                }
+                // before to the last child (perifery)
+                defaultSelectedContainer.insertBefore(tab, defaultSelectedContainer.lastChild);
+              }
+            }
+            gBrowser.tabContainer._invalidateCachedTabs();
+          }
+          perifery.setAttribute('hidden', 'true');
+          this._hasInitializedTabsStrip = true;
+          this.registerPinnedResizeObserver();
+          this._fixIndicatorsNames(workspaces);
+          this._resolveSectionsInitialized();
+          resolve();
+        });
+      });
     });
   }
 

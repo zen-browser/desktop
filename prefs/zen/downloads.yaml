@@ -7,3 +7,6 @@
 
 - name: zen.downloads.download-animation-duration
   value: 1000 # ms
+
+- name: zen.downloads.icon-popup-position
+  value: "follow-tabs"

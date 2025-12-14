@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Sağdaki sekmeler
+    .label = Sekmeler sağda olsun
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompakt Mod

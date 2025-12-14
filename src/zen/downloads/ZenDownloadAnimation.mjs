@@ -131,9 +131,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #areTabsOnRightSide() {
-    const position = Services.prefs.getStringPref('zen.downloads.icon-popup-position', 'follow-tabs');
-    if (position === 'left') return false;
-    if (position === 'right') return true;
+    const position = Services.prefs.getIntPref('zen.downloads.icon-popup-position', 0);
+    if (position === 1) return false;
+    if (position === 2) return true;
     return Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
   }
 

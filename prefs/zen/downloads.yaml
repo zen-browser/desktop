@@ -9,4 +9,7 @@
   value: 1000 # ms
 
 - name: zen.downloads.icon-popup-position
-  value: "follow-tabs"
+  # 0: Follow tab's position
+  # 1: Left side always
+  # 2: Right side always
+  value: 0

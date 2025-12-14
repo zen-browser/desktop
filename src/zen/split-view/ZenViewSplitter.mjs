@@ -1084,8 +1084,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {Tab[]} tabs - The tabs to split.
    * @param {string|undefined} gridType - The type of grid layout.
+   * @param {number} initialIndex - The index of the initially active tab.
+   *                                use -1 to avoid selecting any tab.
+   * @return {object|undefined} The split view data or undefined if the split was not performed.
    */
   splitTabs(tabs, gridType, initialIndex = 0) {
+    const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
       tabs = tabs.filter((t) => !t.hidden && !t.hasAttribute('zen-empty-tab'));
@@ -1095,7 +1099,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       const existingSplitTab = tabs.find((tab) => tab.splitView);
       if (existingSplitTab) {
-        this._moveTabsToContainer(tabs, tabs[initialIndex]);
+        this._moveTabsToContainer(tabs, tabs[tabIndexToUse]);
         const groupIndex = this._data.findIndex((group) => group.tabs.includes(existingSplitTab));
         const group = this._data[groupIndex];
         const gridTypeChange = gridType && group.gridType !== gridType;
@@ -1150,8 +1154,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         layoutTree: this.calculateLayoutTree(tabs, gridType),
       };
       this._data.push(splitData);
-      if (!this._sessionRestoring) {
-        window.gBrowser.selectedTab = tabs[initialIndex] ?? tabs[0];
+      if (!this._sessionRestoring && initialIndex >= 0) {
+        window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
       }
 
       // Add tabs to the split view group

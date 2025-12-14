@@ -36,8 +36,8 @@ const EVENTS = [
   'TabGroupRemoved',
   'TabGroupMoved',
 
-  //'ZenTabRemovedFromSplit',
-  //'ZenSplitViewTabsSplit',
+  'ZenTabRemovedFromSplit',
+  'ZenSplitViewTabsSplit',
 
   'TabSelect',
 
@@ -242,10 +242,14 @@ class nsZenWindowSync {
    */
   #handleNextEvent(aEvent) {
     const handler = `on_${aEvent.type}`;
-    if (typeof this[handler] === 'function') {
-      return this[handler](aEvent) || Promise.resolve();
-    } else {
-      console.warn(`ZenWindowSync: No handler for event type: ${aEvent.type}`);
+    try {
+      if (typeof this[handler] === 'function') {
+        return this[handler](aEvent) || Promise.resolve();
+      } else {
+        throw new Error(`No handler for event type: ${aEvent.type}`);
+      }
+    } catch (e) {
+      return Promise.reject(e);
     }
   }
 
@@ -483,7 +487,7 @@ class nsZenWindowSync {
 
     // Restore the listeners for the swapped in tab.
     if (!onClose) {
-      tabListener = new otherTabBrowser.zenTabProgressListener(aTab, otherBrowser, false, false);
+      tabListener = new otherTabBrowser.zenTabProgressListener(aTab, otherBrowser, true, false);
       otherTabBrowser._tabListeners.set(aTab, tabListener);
 
       const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
@@ -527,10 +531,13 @@ class nsZenWindowSync {
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
         this.#makeSureTabSyncsPermanentKey(aOurTab);
+        if (!aOtherTab.hasAttribute('busy')) {
+          aOurTab.removeAttribute('busy');
+        }
       },
       onClose
     );
-    const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture'];
+    const kAttributesToRemove = ['muted', 'soundplaying', 'sharing', 'pictureinpicture', 'busy'];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
     // but we need to manually remove some attributes from the other tab.
     for (let attr of kAttributesToRemove) {
@@ -676,11 +683,12 @@ class nsZenWindowSync {
    *
    * @param {Window} aWindow - The window that triggered the event.
    * @param {Object} aPreviousTab - The previously selected tab.
+   * @param {boolean} ignoreSameTab - Indicates if the same tab should be ignored.
    */
-  async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
+  async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null, ignoreSameTab = false) {
     // On some occasions, such as when closing a window, this
     // function might be called multiple times for the same tab.
-    if (aWindow.gBrowser.selectedTab === this.#lastSelectedTab) {
+    if (aWindow.gBrowser.selectedTab === this.#lastSelectedTab && !ignoreSameTab) {
       return;
     }
     if (aPreviousTab?._zenContentsVisible) {
@@ -786,11 +794,13 @@ class nsZenWindowSync {
             continue;
           }
           newTab._zenContentsVisible = true;
+          gBrowser.setTabTitle(newTab);
           gZenWorkspaces.moveTabToWorkspace(newTab, aWorkspaceId);
         }
       }
       if (success) {
         aWindow.close();
+        win.gBrowser.selectedTab.linkedBrowser.focus();
       }
     };
     if (!win) {
@@ -809,13 +819,11 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-    if (tab.selected) {
-      tab._zenContentsVisible = true;
-    }
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
     }
+    tab._zenContentsVisible = true;
     tab.id = this.#newTabSyncId;
     this.#runOnAllWindows(window, (win) => {
       const newTab = win.gBrowser.addTrustedTab('about:blank', {
@@ -1002,12 +1010,16 @@ class nsZenWindowSync {
         .map((tab) => this.#getItemFromWindow(win, tab.id))
         .filter(Boolean);
       if (otherWindowTabs.length > 0 && win.gZenViewSplitter) {
-        const group = win.gZenViewSplitter.splitTabs(otherWindowTabs, 'grid');
+        const group = win.gZenViewSplitter.splitTabs(otherWindowTabs, 'grid', -1);
         if (group) {
-          group.id = tabGroup.id;
+          let otherTabGroup = group.tabs[0].group;
+          otherTabGroup.id = tabGroup.id;
+          this.#syncItemWithOriginal(aEvent.target, otherTabGroup, win, SYNC_FLAG_MOVE);
         }
       }
     });
+
+    return this.#onTabSwitchOrWindowFocus(window, null, /* ignoreSameTab = */ true);
   }
 }
 

@@ -247,7 +247,7 @@ export class nsZenSessionManager {
    */
   restoreNewWindow(aWindow, SessionStoreInternal, resolvePromise) {
     if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
-      return;
+      return resolvePromise();
     }
     this.log('Restoring new window with Zen session data');
     const state = lazy.SessionStore.getCurrentState(true);

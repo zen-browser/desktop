@@ -1131,7 +1131,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const dropElementGroup = dropElement?.isZenFolder ? dropElement : dropElement?.group;
     const isSplitGroup = dropElement?.group?.hasAttribute('split-view-group');
-    let firstGroupElem = dropElementGroup.querySelector('.zen-tab-group-start').nextElementSibling;
+    let firstGroupElem =
+      dropElementGroup?.querySelector('.zen-tab-group-start')?.nextElementSibling;
     if (gBrowser.isTabGroup(firstGroupElem)) firstGroupElem = firstGroupElem.labelElement;
 
     const isInMiddleZone =

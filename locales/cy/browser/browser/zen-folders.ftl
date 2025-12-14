@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Chwilio { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Ail-enwi Ffolder
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Dadbacio Ffolder
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Is-ffolder Newydd
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Dileu Ffolder
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Trosi ffolder i Ofod
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Newid Gofod...
 zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = Newid Eicon
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Dadlwytho gweithredol yn y ffolder hon
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Dadlwytho Pob Tab
+zen-folders-search-no-results = Dim tabiau sy'n cyfateb i'r chwiliad hwnnw 🤔

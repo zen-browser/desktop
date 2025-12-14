@@ -62,4 +62,4 @@ zen-workspaces-delete-workspace-body = 你确定要删除 { $name } 吗？这个
 zen-workspaces-close-all-unpinned-tabs-toast = 标签页已关闭！按下 <span>{ $shortcut }</span> 以恢复关闭的标签页。
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = 清除
-    .tooltiptext = 关闭所有未固定的标签页
+    .tooltiptext = 关闭所有未置顶的标签页

@@ -3,37 +3,37 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Tabs on the right
-    .accesskey = R
-zen-toolbar-context-compact-mode = 
-    .label = Compact mode
-zen-toolbar-context-compact-mode-enable = 
-    .label = Enable compact mode
+    .label = Tabiau ar y dde
     .accesskey = D
+zen-toolbar-context-compact-mode = 
+    .label = Modd Cryno
+zen-toolbar-context-compact-mode-enable = 
+    .label = Galluogi modd cryno
+    .accesskey = G
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Cuddio'r bar ochr
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Hide toolbar
+    .label = Cuddio'r bar offer
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Hide both
-    .accesskey = H
+    .label = Cuddio'r ddau
+    .accesskey = C
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Ffolder Newydd
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = Ehangu'r Bar Ochr
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Creu Newydd...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [un] Dadlwytho a newid i dab
+           *[arall] Dadlwytho { $tabCount } tab a newid i'r cyntaf
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [un] Ailosod a phinio tab
+           *[arall] Ailosod a phinio { $tabCount } tab
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = Nôl i'r url wedi'i binio

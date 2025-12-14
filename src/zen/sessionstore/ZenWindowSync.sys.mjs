@@ -36,6 +36,9 @@ const EVENTS = [
   'TabGroupRemoved',
   'TabGroupMoved',
 
+  //'ZenTabRemovedFromSplit',
+  //'ZenSplitViewTabsSplit',
+
   'TabSelect',
 
   'focus',
@@ -358,6 +361,8 @@ class nsZenWindowSync {
           gBrowser.unpinTab(aTargetItem);
         }
       }
+    } else {
+      aTargetItem.pinned = aOriginalItem.pinned;
     }
 
     this.#moveItemToMatchOriginal(aOriginalItem, aTargetItem, aWindow, {
@@ -673,10 +678,9 @@ class nsZenWindowSync {
    * @param {Object} aPreviousTab - The previously selected tab.
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
-    const selectedTab = aWindow.gBrowser.selectedTab;
     // On some occasions, such as when closing a window, this
     // function might be called multiple times for the same tab.
-    if (selectedTab === this.#lastSelectedTab) {
+    if (aWindow.gBrowser.selectedTab === this.#lastSelectedTab) {
       return;
     }
     if (aPreviousTab?._zenContentsVisible) {
@@ -691,15 +695,20 @@ class nsZenWindowSync {
         await this.#swapBrowserDocShellsAsync(otherTabToShow, aPreviousTab);
       }
     }
-    if (selectedTab._zenContentsVisible || selectedTab.hasAttribute('zen-empty-tab')) {
-      return;
+    let promises = [];
+    for (const browserView of aWindow.gBrowser.selectedBrowsers) {
+      const selectedTab = aWindow.gBrowser.getTabForBrowser(browserView);
+      if (selectedTab._zenContentsVisible || selectedTab.hasAttribute('zen-empty-tab')) {
+        continue;
+      }
+      const otherSelectedTab = this.#getActiveTabFromOtherWindows(aWindow, selectedTab.id);
+      selectedTab._zenContentsVisible = true;
+      if (otherSelectedTab) {
+        delete otherSelectedTab._zenContentsVisible;
+        promises.push(this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab));
+      }
     }
-    const otherSelectedTab = this.#getActiveTabFromOtherWindows(aWindow, selectedTab.id);
-    selectedTab._zenContentsVisible = true;
-    if (otherSelectedTab) {
-      delete otherSelectedTab._zenContentsVisible;
-      await this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab);
-    }
+    await Promise.all(promises);
   }
 
   /**
@@ -931,11 +940,14 @@ class nsZenWindowSync {
     const window = tabGroup.ownerGlobal;
     const isFolder = tabGroup.isZenFolder;
     const isSplitView = tabGroup.hasAttribute('split-view-group');
+    if (isSplitView) {
+      return; // Split view groups are synced via ZenSplitViewTabsSplit event.
+    }
     // Tab groups already have an ID upon creation.
     this.#runOnAllWindows(window, (win) => {
       const newGroup = isFolder
         ? win.gZenFolders.createFolder([], {})
-        : win.gBrowser.addTabGroup({ splitView: isSplitView });
+        : win.gBrowser.addTabGroup([]);
       newGroup.id = tabGroup.id;
       newGroup.alreadySynced = true;
       this.#syncItemWithOriginal(
@@ -968,6 +980,34 @@ class nsZenWindowSync {
 
   on_TabGroupUpdate(aEvent) {
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON | SYNC_FLAG_LABEL);
+  }
+
+  on_ZenTabRemovedFromSplit(aEvent) {
+    const tab = aEvent.target;
+    const window = tab.ownerGlobal;
+    this.#runOnAllWindows(window, (win) => {
+      const targetTab = this.#getItemFromWindow(win, tab.id);
+      if (targetTab && win.gZenViewSplitter) {
+        win.gZenViewSplitter.removeTabFromGroup(targetTab);
+      }
+    });
+  }
+
+  on_ZenSplitViewTabsSplit(aEvent) {
+    const tabGroup = aEvent.target;
+    const window = tabGroup.ownerGlobal;
+    const tabs = tabGroup.tabs;
+    this.#runOnAllWindows(window, (win) => {
+      const otherWindowTabs = tabs
+        .map((tab) => this.#getItemFromWindow(win, tab.id))
+        .filter(Boolean);
+      if (otherWindowTabs.length > 0 && win.gZenViewSplitter) {
+        const group = win.gZenViewSplitter.splitTabs(otherWindowTabs, 'grid');
+        if (group) {
+          group.id = tabGroup.id;
+        }
+      }
+    });
   }
 }
 

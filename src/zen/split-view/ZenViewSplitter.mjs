@@ -202,6 +202,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this.resetTabState(tab, forUnsplit);
     if (tab.group && tab.group.hasAttribute('split-view-group')) {
       gBrowser.ungroupTab(tab);
+      this.#dispatchItemEvent('ZenTabRemovedFromSplit', tab);
     }
     if (group.tabs.length < 2) {
       // We need to remove all remaining tabs from the group when unsplitting
@@ -896,6 +897,21 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Dispatches a custom event on a tab.
+   *
+   * @param {string} eventName - The name of the event to dispatch.
+   * @param {HTMLElement} item - The item on which to dispatch the event.
+   */
+  #dispatchItemEvent(eventName, item) {
+    const event = new CustomEvent(eventName, {
+      detail: { item },
+      bubbles: true,
+      cancelable: false,
+    });
+    item.dispatchEvent(event);
+  }
+
+  /**
    * Removes a group.
    *
    * @param {number} groupIndex - The index of the group to remove.
@@ -905,6 +921,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     for (const tab of group.tabs.reverse()) {
       if (tab.group?.hasAttribute('split-view-group')) {
         gBrowser.ungroupTab(tab);
+        this.#dispatchItemEvent('ZenTabRemovedFromSplit', tab);
       }
     }
     if (this.currentView === groupIndex) {
@@ -1069,7 +1086,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {string|undefined} gridType - The type of grid layout.
    */
   splitTabs(tabs, gridType, initialIndex = 0) {
-    this.#withoutSplitViewTransition(() => {
+    return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
       tabs = tabs.filter((t) => !t.hidden && !t.hasAttribute('zen-empty-tab'));
       if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
@@ -1105,7 +1122,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           return;
         }
         this.activateSplitView(group, true);
-        return;
+        this.#dispatchItemEvent('ZenSplitViewTabsSplit', group);
+        return group;
       }
 
       // We are here if none of the tabs have been previously split
@@ -1150,6 +1168,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         return;
       }
       this.activateSplitView(splitData);
+      this.#dispatchItemEvent('ZenSplitViewTabsSplit', splitGroup);
+      return splitData;
     });
   }
 
@@ -1855,9 +1875,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
 
     // We can't create an empty group, so only create if we have tabs
+    let group = null;
     if (tabs?.length) {
       // Create a new group with the initial tabs
-      gBrowser.addTabGroup(tabs, {
+      group = gBrowser.addTabGroup(tabs, {
         label: '',
         showCreateUI: false,
         insertBefore: tabs[0],
@@ -1865,7 +1886,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       });
     }
 
-    return null;
+    return group;
   }
 
   storeDataForSessionStore() {
@@ -1936,7 +1957,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   #withoutSplitViewTransition(callback) {
     this.tabBrowserPanel.classList.add('zen-split-view-no-transition');
     try {
-      callback();
+      return callback();
     } finally {
       requestAnimationFrame(() => {
         this.tabBrowserPanel.classList.remove('zen-split-view-no-transition');

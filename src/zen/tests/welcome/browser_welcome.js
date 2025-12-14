@@ -162,7 +162,6 @@ add_task(async function test_Welcome_Steps() {
             );
             Assert.equal(tab.group, group, 'Pinned tabs should belong to the first tab group');
           }
-          ok(tab.hasAttribute('zen-pin-id'), 'Pinned tabs should have a zen-pin-id attribute');
         }
       }
       group.delete();

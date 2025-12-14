@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..7674939b31ba0bd444659e0f1e8cc7265c687356 100644
+index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..89ae48f816bee85b2870f383723b520bd2b354b8 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -172,7 +172,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..7674939b31ba0bd444659e0f1e8cc726
        );
 +      aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
 +      aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
-+      aWindow.gZenWorkspaces?.activeWorkspace = winData.activeZenSpace || null;
++      aWindow.gZenWorkspaces.activeWorkspace = winData.activeZenSpace || null;
        this._log.debug(
          `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
        );

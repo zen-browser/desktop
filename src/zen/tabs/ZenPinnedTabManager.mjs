@@ -611,7 +611,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  async onLocationChange(browser) {
+  onLocationChange(browser) {
     const tab = gBrowser.getTabForBrowser(browser);
     if (
       !tab ||

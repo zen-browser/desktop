@@ -106,9 +106,6 @@ class nsZenWindowSync {
     for (let topic of OBSERVING) {
       Services.obs.addObserver(this, topic);
     }
-    lazy.SessionStore.promiseAllWindowsRestored.then(() => {
-      this.#onSessionStoreInitialized();
-    });
   }
 
   uninit() {
@@ -170,27 +167,6 @@ class nsZenWindowSync {
     // See: Bug 1960104 - Improve tab group ID generation in addTabGroup
     // This is implemented from gBrowser.addTabGroup.
     return `${Date.now()}-${Math.round(Math.random() * 100)}`;
-  }
-
-  /**
-   * Called when the session store has finished initializing for a window.
-   *
-   * @param {Window} aWindow - The browser window that has initialized session store.
-   */
-  #onSessionStoreInitialized() {
-    // For every tab we have in where there's no sync ID, we need to
-    // assign one and sync it to other windows.
-    // This should only happen really when updating from an older version
-    // that didn't have this feature.
-    this.#runOnAllWindows(null, (aWindow) => {
-      const { gBrowser } = aWindow;
-      for (let tab of gBrowser.tabs) {
-        if (!tab.id) {
-          tab.id = this.#newTabSyncId;
-          lazy.TabStateFlusher.flush(tab.linkedBrowser);
-        }
-      }
-    });
   }
 
   /**
@@ -872,7 +848,12 @@ class nsZenWindowSync {
 
   on_TabPinned(aEvent) {
     const tab = aEvent.target;
-    this.setPinnedTabState(tab);
+    // There are cases where the pinned state is changed but we don't
+    // wan't to override the initial state we stored when the tab was created.
+    // For example, when session restore pins a tab again.
+    if (!tab._zenPinnedInitialState) {
+      this.setPinnedTabState(tab);
+    }
     return this.on_TabMove(aEvent);
   }
 

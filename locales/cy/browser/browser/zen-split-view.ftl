@@ -5,16 +5,16 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Split Tab (multiple selected tabs needed)
-           *[other] Split { $tabCount } Tabs
+        [1] Tab Hollt (angen sawl tab wedi'u dewis)
+        *[other] Hollti { $tabCount } Tab
         }
-    .accesskey = S
+    .accesskey = H
 zen-split-link = 
-    .label = Hollti'r dolyn i tab newydd
-    .accesskey = S
-zen-split-view-modifier-header = Golygfa Hollt
+    .label = Rhannu dolen i dab newydd
+    .accesskey = D
+zen-split-view-modifier-header = Golwg Hollt
 zen-split-view-modifier-activate-reallocation = 
-    .label = Activate reallocation
-zen-split-view-modifier-enabled-toast = Mae aildrefnu golygfa hollt ymlaen.
-zen-split-view-modifier-enabled-toast-description = Llusgwch a gollyngwch yr olygfa i aildrefnu. Pwyswch Esc i gau.
-zen-split-view-modifier-disabled-toast = Split view rearrange is OFF.
+    .label = Galluogi ailddyrannu
+zen-split-view-modifier-enabled-toast = Mae aildrefnu'r olwg hollt YMLAEN
+zen-split-view-modifier-enabled-toast-description = Llusgwch a gollwng y golwg i'w haildrefnu. Pwyswch Esc i adael.
+zen-split-view-modifier-disabled-toast = Mae aildrefnu'r olwg hollt i FFWRDD.

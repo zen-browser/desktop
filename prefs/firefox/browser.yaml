@@ -8,9 +8,6 @@
 - name: browser.sessionstore.restore_pinned_tabs_on_demand
   value: true
 
-- name: browser.tabs.loadBookmarksInTabs
-  value: false
-
 - name: browser.tabs.hoverPreview.enabled
   value: false
 
@@ -22,18 +19,6 @@
 
 - name: browser.toolbars.bookmarks.visibility
   value: 'never'
-
-- name: browser.bookmarks.openInTabClosesMenu
-  value: false
-
-- name: browser.menu.showViewImageInfo
-  value: true
-
-- name: findbar.highlightAll
-  value: true
-
-- name: layout.word_select.eat_space_to_next_word
-  value: false
 
 - name: widget.non-native-theme.scrollbar.style
   value: 2
@@ -57,9 +42,6 @@
 
 - name: browser.download.manager.addToRecentDocs
   value: false
-
-- name: browser.download.open_pdf_attachments_inline
-  value: true
 
 - name: browser.download.alwaysOpenPanel
   value: false

@@ -3140,7 +3140,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
       return;
     }
     const maxButtonSize = 32; // IMPORTANT: This should match the CSS size of the icons
-    const minButtonSize = 15;
+    const minButtonSize = maxButtonSize / 2; // Minimum size for icons when space is limited
     const separation = 3; // Space between icons
 
     // Calculate the total width needed for all icons
@@ -3160,9 +3160,7 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      Math.floor(
-        (parent.clientWidth - separation * (parent.children.length - 1)) / parent.children.length
-      ),
+      (parent.clientWidth - separation * (parent.children.length - 1)) / parent.children.length,
       minButtonSize
     );
     for (const icon of parent.children) {

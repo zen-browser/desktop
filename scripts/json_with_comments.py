@@ -5,6 +5,7 @@
 import json
 from typing import Any
 
+
 class JSONWithCommentsDecoder(json.JSONDecoder):
   def __init__(self, **kw):
     super().__init__(**kw)

@@ -439,7 +439,6 @@
   background: transparent;
   gap: 5px;
   align-items: center;
-  padding-top: var(--zen-element-separation);
 
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;

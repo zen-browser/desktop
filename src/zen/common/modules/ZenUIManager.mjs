@@ -669,7 +669,8 @@ window.gZenUIManager = {
     }
     if (
       (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) ||
-      (panel?.id === 'zen-unified-site-data-panel' && !gZenVerticalTabsManager._hasSetSingleToolbar) ||
+      (panel?.id === 'zen-unified-site-data-panel' &&
+        !gZenVerticalTabsManager._hasSetSingleToolbar) ||
       (panel?.id === 'unified-extensions-panel' && gZenVerticalTabsManager._hasSetSingleToolbar)
     ) {
       block = 'bottomright';

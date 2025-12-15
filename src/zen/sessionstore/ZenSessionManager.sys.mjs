@@ -157,6 +157,24 @@ export class nsZenSessionManager {
   }
 
   /**
+   * Saves the session data for a closed window if it meets the criteria.
+   * See SessionStoreInternal.maybeSaveClosedWindow for more details.
+   *
+   * @param aWinData - The window data object to save.
+   * @param isLastWindow - Whether this is the last saveable window.
+   */
+  maybeSaveClosedWindow(aWinData, isLastWindow) {
+    // We only want to save the *last* normal window that is closed.
+    // If its not the last window, we can still update the sidebar object
+    // based on other open windows.
+    if (aWinData.isPopup || aWinData.isTaskbarTab || aWinData.isZenUnsynced || !isLastWindow) {
+      return;
+    }
+    this.log('Saving closed window session data into Zen session store');
+    this.saveState({ windows: [aWinData] });
+  }
+
+  /**
    * Collects session data for a given window.
    *
    * @param state

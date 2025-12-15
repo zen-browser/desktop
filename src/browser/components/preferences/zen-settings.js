@@ -1111,6 +1111,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: 'zen.tabs.essentials.load-on-startup',
+    type: 'bool',
+    default: false,
+  },
+  {
     id: 'zen.pinned-tab-manager.close-shortcut-behavior',
     type: 'string',
     default: 'switch',

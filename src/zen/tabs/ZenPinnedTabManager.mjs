@@ -46,6 +46,12 @@ class ZenPinnedTabsObserver {
       'zen.tabs.essentials.max',
       12
     );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      lazy,
+      'zenTabsEssentialsLoadOnStartup',
+      'zen.tabs.essentials.load-on-startup',
+      false
+    );
     ChromeUtils.defineESModuleGetters(lazy, {
       E10SUtils: 'resource://gre/modules/E10SUtils.sys.mjs',
     });
@@ -219,6 +225,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     const pinnedTabsByUUID = new Map();
+    const pinsByUUID = new Map(pins.map((pin) => [pin.uuid, pin]));
     const pinsToCreate = new Set(pins.map((p) => p.uuid));
 
     // First pass: identify existing tabs and remove those without pins
@@ -235,6 +242,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
         if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl && init) {
           this._resetTabToStoredState(tab);
+        }
+
+        if (init && lazy.zenTabsEssentialsLoadOnStartup) {
+          const pin = pinsByUUID.get(pinId);
+          if (pin?.isEssential && tab.hasAttribute('pending')) {
+            // This is an unloaded essential tab, we need to load it now
+            gBrowser.reloadTab(tab);
+          }
         }
       } else {
         // This is a pinned tab that no longer has a corresponding pin
@@ -316,6 +331,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           skipLoad: true,
           noInitialLabel: false,
         };
+
+        // If the pin is essential, then eagerly load it
+        if (pin.isEssential && lazy.zenTabsEssentialsLoadOnStartup) {
+          params.createLazyBrowser = false;
+          params.skipLoad = false;
+        }
 
         // Create and initialize the tab
         let newTab = gBrowser.addTrustedTab(pin.url, params);

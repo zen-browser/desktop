@@ -742,24 +742,11 @@ class nsZenWindowSync {
 
   /* Mark: Public API */
 
-  shouldLoadTab(aTab) {
-    if (!lazy.gWindowSyncEnabled) {
-      // Since we are never going to sync the tab, we can always load it.
-      return true;
-    }
-    if (aTab._zenContentsVisible) {
-      // This tab is already active in this window.
-      return true;
-    }
-    // We don't want to trigger a new browser kick-off if there's
-    // another window where this tab is already active.
-    return !this.#getActiveTabFromOtherWindows(
-      aTab.ownerGlobal,
-      aTab.id,
-      (tab) => tab?._zenContentsVisible
-    );
-  }
-
+  /**
+   * Sets the initial pinned state for a tab across all windows.
+   *
+   * @param {Object} aTab - The tab to set the pinned state for.
+   */
   setPinnedTabState(aTab) {
     const state = this.#getTabState(aTab);
     const initialState = {
@@ -774,6 +761,23 @@ class nsZenWindowSync {
     });
   }
 
+  /**
+   * Propagates the workspaces to all windows.
+   * @param {Array} aWorkspaces - The workspaces to propagate.
+   */
+  propagateWorkspacesToAllWindows(aWorkspaces) {
+    this.#runOnAllWindows(null, (win) => {
+      win.gZenWorkspaces.propagateWorkspaces(aWorkspaces);
+    });
+  }
+
+  /**
+   * Moves all tabs from a window to a synced workspace in another window.
+   * If no synced window exists, creates a new one.
+   *
+   * @param {Window} aWindow - The window to move tabs from.
+   * @param {string} aWorkspaceId - The ID of the workspace to move tabs to.
+   */
   moveTabsToSyncedWorkspace(aWindow, aWorkspaceId) {
     const tabsToMove = aWindow.gZenWorkspaces.allStoredTabs.filter(
       (tab) => !tab.hasAttribute('zen-empty-tab')

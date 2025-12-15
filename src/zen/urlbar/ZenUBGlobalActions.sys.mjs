@@ -76,7 +76,7 @@ const globalActionsTemplate = [
     command: 'cmd_zenWorkspaceForward',
     icon: 'chrome://browser/skin/zen-icons/forward.svg',
     isAvailable: (window) => {
-      return window.gZenWorkspaces._workspaceCache.workspaces.length > 1;
+      return window.gZenWorkspaces._workspaceCache.length > 1;
     },
   },
   {
@@ -85,7 +85,7 @@ const globalActionsTemplate = [
     icon: 'chrome://browser/skin/zen-icons/back.svg',
     isAvailable: (window) => {
       // This also covers the case of being in private mode
-      return window.gZenWorkspaces._workspaceCache.workspaces.length > 1;
+      return window.gZenWorkspaces._workspaceCache.length > 1;
     },
   },
   {

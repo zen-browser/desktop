@@ -9,9 +9,9 @@ add_task(async function test_Check_Creation() {
   const currentWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace('Test Workspace 2');
   const workspaces = await gZenWorkspaces._workspaces();
-  ok(workspaces.workspaces.length === 2, 'Two workspaces should exist.');
+  ok(workspaces.length === 2, 'Two workspaces should exist.');
   ok(
-    currentWorkspaceUUID !== workspaces.workspaces[1].uuid,
+    currentWorkspaceUUID !== workspaces[1].uuid,
     'The new workspace should be different from the current one.'
   );
 
@@ -26,7 +26,7 @@ add_task(async function test_Check_Creation() {
   const workspacesAfterRemove = await gZenWorkspaces._workspaces();
   ok(workspacesAfterRemove.workspaces.length === 1, 'One workspace should exist.');
   ok(
-    workspacesAfterRemove.workspaces[0].uuid === currentWorkspaceUUID,
+    workspacesAfterRemove[0].uuid === currentWorkspaceUUID,
     'The workspace should be the one we started with.'
   );
   ok(gBrowser.tabs.length === 2, 'There should be one tab.');

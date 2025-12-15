@@ -231,7 +231,7 @@ class nsZenWorkspace extends MozXULElement {
     if (newName === '') {
       return;
     }
-    let workspaces = (await gZenWorkspaces.getWorkspaces()).workspaces;
+    let workspaces = gZenWorkspaces.getWorkspaces();
     let workspaceData = workspaces.find((workspace) => workspace.uuid === this.workspaceUuid);
     workspaceData.name = newName;
     await gZenWorkspaces.saveWorkspace(workspaceData);
@@ -286,28 +286,27 @@ class nsZenWorkspace extends MozXULElement {
     const popup = document.getElementById('zenMoveTabsToSyncedWorkspacePopup');
     popup.innerHTML = '';
 
-    gZenWorkspaces.getWorkspaces(true).then((workspaces) => {
-      for (const workspace of workspaces.workspaces) {
-        const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
-        item.addEventListener('command', async () => {
-          const { ZenWindowSync } = ChromeUtils.importESModule(
-            'resource:///modules/zen/ZenWindowSync.sys.mjs'
-          );
-          ZenWindowSync.moveTabsToSyncedWorkspace(window, workspace.uuid);
-        });
-        popup.appendChild(item);
-      }
+    const workspaces = gZenWorkspaces.getWorkspaces(true);
+    for (const workspace of workspaces) {
+      const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
+      item.addEventListener('command', async () => {
+        const { ZenWindowSync } = ChromeUtils.importESModule(
+          'resource:///modules/zen/ZenWindowSync.sys.mjs'
+        );
+        ZenWindowSync.moveTabsToSyncedWorkspace(window, workspace.uuid);
+      });
+      popup.appendChild(item);
+    }
 
-      button.setAttribute('open', 'true');
-      popup.addEventListener(
-        'popuphidden',
-        () => {
-          button.removeAttribute('open');
-        },
-        { once: true }
-      );
-      popup.openPopup(button, 'after_start', 0, 0, true /* isContextMenu */);
-    });
+    button.setAttribute('open', 'true');
+    popup.addEventListener(
+      'popuphidden',
+      () => {
+        button.removeAttribute('open');
+      },
+      { once: true }
+    );
+    popup.openPopup(button, 'after_start', 0, 0, true /* isContextMenu */);
   }
 }
 

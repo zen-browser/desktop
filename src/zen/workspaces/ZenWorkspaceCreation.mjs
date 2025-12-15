@@ -199,7 +199,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCreateButtonCommand() {
-    const workspace = await gZenWorkspaces.getActiveWorkspace();
+    const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
     workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
     workspace.containerTabId = this.currentProfile;
@@ -320,8 +320,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.remove();
     gZenUIManager.updateTabsToolbar();
 
-    const workspace = await gZenWorkspaces.getActiveWorkspace();
-    await gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
+    const workspace = gZenWorkspaces.getActiveWorkspace();
+    await gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
     await gZenWorkspaces.updateTabsContainers();
 
     await gZenUIManager.motion.animate(

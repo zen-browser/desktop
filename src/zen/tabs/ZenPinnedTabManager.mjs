@@ -64,7 +64,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this._resolvePinnedInitializedInternal = resolve;
   });
 
-  async init() {
+  init() {
     if (!this.enabled) {
       return;
     }

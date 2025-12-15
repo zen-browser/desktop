@@ -126,13 +126,13 @@ class nsZenWorkspaceIcons extends MozXULElement {
   }
 
   async #updateIcons() {
-    const workspaces = await gZenWorkspaces.getWorkspaces();
+    const workspaces = gZenWorkspaces.getWorkspaces();
     this.innerHTML = '';
-    for (const workspace of workspaces.workspaces) {
+    for (const workspace of workspaces) {
       const button = this.#createWorkspaceIcon(workspace);
       this.appendChild(button);
     }
-    if (workspaces.workspaces.length <= 1) {
+    if (workspaces.length <= 1) {
       this.setAttribute('dont-show', 'true');
     } else {
       this.removeAttribute('dont-show');
@@ -167,6 +167,9 @@ class nsZenWorkspaceIcons extends MozXULElement {
         button.removeAttribute('active');
       }
       i++;
+    }
+    if (selected == -1) {
+      return;
     }
     buttons[selected].setAttribute('active', true);
     this.scrollLeft = buttons[selected].offsetLeft - 10;

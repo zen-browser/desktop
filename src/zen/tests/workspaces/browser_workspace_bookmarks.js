@@ -107,9 +107,9 @@ add_task(async function test_workspace_bookmark() {
   await withBookmarksShowing(async () => {
     await gZenWorkspaces.createAndSaveWorkspace('Test Workspace 2');
     const workspaces = await gZenWorkspaces._workspaces();
-    ok(workspaces.workspaces.length === 2, 'Two workspaces should exist.');
-    const firstWorkspace = workspaces.workspaces[0];
-    const secondWorkspace = workspaces.workspaces[1];
+    ok(workspaces.length === 2, 'Two workspaces should exist.');
+    const firstWorkspace = workspaces[0];
+    const secondWorkspace = workspaces[1];
     ok(
       firstWorkspace.uuid !== secondWorkspace.uuid,
       'The new workspace should be different from the current one.'

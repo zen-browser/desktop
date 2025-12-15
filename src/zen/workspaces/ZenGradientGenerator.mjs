@@ -1332,7 +1332,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       // Do not rebuild if the workspace is not the same as the current one
-      const windowWorkspace = await browser.gZenWorkspaces.getActiveWorkspace();
+      const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
       if (windowWorkspace.uuid !== uuid) {
         return;
       }
@@ -1630,13 +1630,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         };
       });
     const gradient = nsZenThemePicker.getTheme(colors, this.currentOpacity, this.currentTexture);
-    let currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
+    let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
     if (!skipSave) {
-      await ZenWorkspacesStorage.saveWorkspaceTheme(currentWorkspace.uuid, gradient);
-      await gZenWorkspaces._propagateWorkspaceData();
+      currentWorkspace.theme = gradient;
+      gZenWorkspaces.saveWorkspace(currentWorkspace);
       gZenUIManager.showToast('zen-panel-ui-gradient-generator-saved-message');
-      currentWorkspace = await gZenWorkspaces.getActiveWorkspace();
     }
 
     await this.onWorkspaceChange(currentWorkspace, skipSave, skipSave ? gradient : null);
@@ -1691,7 +1690,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   invalidateGradientCache() {
     this.#gradientsCache = {};
-    window.dispatchEvent(new Event('ZenGradientCacheChanged'));
+    window.dispatchEvent(new Event('ZenGradientCacheChanged', { bubbles: true }));
   }
 
   getGradientForWorkspace(workspace) {

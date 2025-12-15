@@ -77,13 +77,51 @@ export class nsZenSessionManager {
   }
 
   /**
+   * Gets the spaces data from the Places database for migration.
+   * This is only called once during the first run after updating
+   * to a version that uses the new session manager.
+   */
+  async #getSpacesFromDBForMigration() {
+    try {
+      const { PlacesUtils } = ChromeUtils.importESModule(
+        'resource://gre/modules/PlacesUtils.sys.mjs'
+      );
+      const db = await PlacesUtils.promiseDBConnection();
+      const rows = await db.executeCached('SELECT * FROM zen_workspaces ORDER BY created_at ASC');
+      this._migrationSpaceData = rows.map((row) => ({
+        uuid: row.getResultByName('uuid'),
+        name: row.getResultByName('name'),
+        icon: row.getResultByName('icon'),
+        containerTabId: row.getResultByName('container_id') ?? 0,
+        position: row.getResultByName('position'),
+        theme: row.getResultByName('theme_type')
+          ? {
+              type: row.getResultByName('theme_type'),
+              gradientColors: JSON.parse(row.getResultByName('theme_colors')),
+              opacity: row.getResultByName('theme_opacity'),
+              rotation: row.getResultByName('theme_rotation'),
+              texture: row.getResultByName('theme_texture'),
+            }
+          : null,
+      }));
+    } catch {
+      /* ignore errors during migration */
+    }
+  }
+
+  /**
    * Reads the session file and populates the sidebar object.
    * This should be only called once at startup.
    * @see SessionFileInternal.read
    */
   async readFile() {
     try {
-      await this.#file.load();
+      let promises = [];
+      promises.push(this.#file.load());
+      if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
+        promises.push(this.#getSpacesFromDBForMigration());
+      }
+      await Promise.all(promises);
     } catch (e) {
       console.error('ZenSessionManager: Failed to read session file', e);
     }
@@ -104,6 +142,10 @@ export class nsZenSessionManager {
     // gotten the opportunity to save the session yet.
     if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
       Services.prefs.setBoolPref(MIGRATION_PREF, true);
+      for (const winData of initialState.windows || []) {
+        winData.spaces = this._migrationSpaceData || [];
+      }
+      delete this._migrationSpaceData;
       return;
     }
     // If there's no initial state, nothing to restore. This would
@@ -226,6 +268,7 @@ export class nsZenSessionManager {
     sidebarData.folders = state.windows[0].folders;
     sidebarData.splitViewData = state.windows[0].splitViewData;
     sidebarData.groups = state.windows[0].groups;
+    sidebarData.spaces = state.windows[0].spaces;
   }
 
   /**
@@ -245,6 +288,7 @@ export class nsZenSessionManager {
     aWindowData.splitViewData = sidebar.splitViewData;
     aWindowData.folders = sidebar.folders;
     aWindowData.groups = sidebar.groups;
+    aWindowData.spaces = sidebar.spaces;
   }
 
   /**
@@ -263,9 +307,9 @@ export class nsZenSessionManager {
    *        into a race condition if we try to restore the window synchronously
    *        here.
    */
-  restoreNewWindow(aWindow, SessionStoreInternal, resolvePromise) {
+  restoreNewWindow(aWindow, SessionStoreInternal) {
     if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
-      return resolvePromise();
+      return;
     }
     this.log('Restoring new window with Zen session data');
     const state = lazy.SessionStore.getCurrentState(true);
@@ -300,16 +344,23 @@ export class nsZenSessionManager {
     const newState = { windows: [newWindow] };
     this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
 
-    aWindow.addEventListener(
-      'SSWindowRestored',
-      () => {
-        lazy.setTimeout(resolvePromise);
-      },
-      { once: true }
-    );
-
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
+  }
+
+  /**
+   * Gets the cloned spaces data from the sidebar object.
+   * This is used during migration to restore spaces into
+   * the initial session state.
+   *
+   * @returns {Array} The cloned spaces data.
+   */
+  getClonedSpaces() {
+    const sidebar = this.#sidebar;
+    if (!sidebar || !sidebar.spaces) {
+      return [];
+    }
+    return Cu.cloneInto(sidebar.spaces, {});
   }
 }
 

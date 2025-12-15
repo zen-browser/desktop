@@ -6,7 +6,7 @@
 add_task(async function test_Container_Essentials_Auto_Swithc() {
   await gZenWorkspaces.createAndSaveWorkspace('Container Profile 1', undefined, false, 1);
   const workspaces = await gZenWorkspaces._workspaces();
-  ok(workspaces.workspaces.length === 2, 'Two workspaces should exist.');
+  ok(workspaces.length === 2, 'Two workspaces should exist.');
 
   let newTab = BrowserTestUtils.addTab(gBrowser, 'about:blank', {
     skipAnimation: true,
@@ -27,11 +27,11 @@ add_task(async function test_Container_Essentials_Auto_Swithc() {
   const newWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   Assert.equal(
     gZenWorkspaces.activeWorkspace,
-    workspaces.workspaces[1].uuid,
+    workspaces[1].uuid,
     'The new workspace should be active.'
   );
 
   // Change to the original workspace, there should be no essential tabs
-  await gZenWorkspaces.changeWorkspace(workspaces.workspaces[0]);
+  await gZenWorkspaces.changeWorkspace(workspaces[0]);
   await gZenWorkspaces.removeWorkspace(newWorkspaceUUID);
 });

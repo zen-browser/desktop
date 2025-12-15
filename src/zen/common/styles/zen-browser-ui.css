@@ -54,34 +54,27 @@
     pointer-events: none;
   }
 
-  @media -moz-pref('zen.theme.gradient') {
+  &::after {
+    background: var(--zen-main-browser-background);
+    opacity: var(--zen-background-opacity);
+    transition: 0s;
+  }
+
+  &:is(.zen-toolbar-background) {
     &::after {
-      background: var(--zen-main-browser-background);
-      opacity: var(--zen-background-opacity);
-      transition: 0s;
+      background: var(--zen-main-browser-background-toolbar);
     }
+  }
 
-    &:is(.zen-toolbar-background) {
-      &::after {
-        background: var(--zen-main-browser-background-toolbar);
-      }
-    }
+  &::before {
+    background: var(--zen-main-browser-background-old);
+    opacity: calc(1 - var(--zen-background-opacity));
+    transition: 0s;
+  }
 
+  &:is(.zen-toolbar-background) {
     &::before {
-      background: var(--zen-main-browser-background-old);
-      opacity: calc(1 - var(--zen-background-opacity));
-      transition: 0s;
-    }
-
-    &:is(.zen-toolbar-background) {
-      &::before {
-        background: var(--zen-main-browser-background-toolbar-old);
-      }
-    }
-
-    &::after,
-    &::before {
-      mix-blend-mode: plus-lighter;
+      background: var(--zen-main-browser-background-toolbar-old);
     }
   }
 
@@ -133,12 +126,16 @@
 }
 
 :root:not([zen-single-toolbar='true']) #zen-appcontent-wrapper {
-  z-index: 2;
+  z-index: 3;
 }
 
-:root[zen-single-toolbar='true'] #nav-bar {
-  border-top: none !important;
-  --zen-toolbar-height: 37px;
+#nav-bar {
+  border-top-color: transparent !important;
+
+  :root[zen-single-toolbar='true'] & {
+    border-top: none !important;
+    --zen-toolbar-height: 37px;
+  }
 }
 
 #zen-main-app-wrapper {
@@ -243,6 +240,7 @@
 @media (-moz-platform: macos) {
   :root[zen-window-buttons-reversed='true'][zen-right-side='true'] .titlebar-buttonbox-container {
     margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    margin-block: auto;
   }
 }
 

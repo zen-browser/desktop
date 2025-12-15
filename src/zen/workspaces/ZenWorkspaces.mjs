@@ -2,7 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenThemePicker } from 'chrome://browser/content/zen-components/ZenGradientGenerator.mjs';
+
+class nsZenWorkspaces extends nsZenMultiWindowFeature {
   /**
    * Stores workspace IDs and their last selected tabs.
    */
@@ -48,7 +51,11 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    await Promise.all([this.promiseDBInitialized, this.promisePinnedInitialized]);
+    await Promise.all([
+      this.promiseDBInitialized,
+      this.promisePinnedInitialized,
+      SessionStore.promiseAllWindowsRestored,
+    ]);
   }
 
   async init() {
@@ -563,7 +570,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   }
 
   get _hoveringSidebar() {
-    return gNavToolbox.hasAttribute('zen-has-hover');
+    return gNavToolbox.hasAttribute('zen-has-implicit-hover');
   }
 
   _handleAppCommand(event) {
@@ -597,7 +604,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     const toolbox = gNavToolbox;
 
     const scrollCooldown = 200; // Milliseconds to wait before allowing another scroll
-    const scrollThreshold = 2; // Minimum scroll delta to trigger workspace change
+    const scrollThreshold = 1; // Minimum scroll delta to trigger workspace change
 
     toolbox.addEventListener(
       'wheel',
@@ -1225,9 +1232,13 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     };
     const workspaceName = document.getElementById('context_zenEditWorkspace');
     const themePicker = document.getElementById('context_zenChangeWorkspaceTheme');
+    /* We can't show the rename input properly in collapsed state,
+    so hide the workspace edit input */
+    const isCollapsed = !Services.prefs.getBoolPref('zen.view.sidebar-expanded');
     workspaceName.hidden =
-      this.#contextMenuData.workspaceId &&
-      this.#contextMenuData.workspaceId !== this.activeWorkspace;
+      isCollapsed ||
+      (this.#contextMenuData.workspaceId &&
+        this.#contextMenuData.workspaceId !== this.activeWorkspace);
     themePicker.hidden =
       this.#contextMenuData.workspaceId &&
       this.#contextMenuData.workspaceId !== this.activeWorkspace;
@@ -1475,6 +1486,41 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     gBrowser.removeTabs(tabs, {
       animate: false,
       skipSessionStore: true,
+      closeWindowWithLastTab: false,
+    });
+  }
+
+  #unpinnedTabsInWorkspace(workspaceID) {
+    return Array.from(this.allStoredTabs).filter(
+      (tab) => tab.getAttribute('zen-workspace-id') === workspaceID && tab.visible && !tab.pinned
+    );
+  }
+
+  #getClosableTabs(tabs) {
+    const remainingTabs = tabs.filter((tab) => {
+      const attributes = ['selected', 'multiselected', 'pictureinpicture', 'soundplaying'];
+      for (const attr of attributes) {
+        if (tab.hasAttribute(attr)) {
+          return false;
+        }
+      }
+      const browser = tab.linkedBrowser;
+      if (
+        window.webrtcUI.browserHasStreams(browser) ||
+        browser?.browsingContext?.currentWindowGlobal?.hasActivePeerConnections()
+      ) {
+        return false;
+      }
+      return true;
+    });
+    if (remainingTabs.length === 0) {
+      return tabs; // If no tabs are safe to close, return all to force close
+    }
+    return remainingTabs;
+  }
+
+  #deleteAllUnpinnedTabsInWorkspace(tabs) {
+    gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
   }
@@ -2463,7 +2509,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
     // Only animate if it's from an event
     let animateContainer = target && target.target instanceof EventTarget;
-    if (target?.type === 'TabClose') {
+    if (target?.type === 'TabClose' || target?.type === 'TabOpen') {
       animateContainer = target.target.pinned;
     }
     await this.onPinnedTabsResize(
@@ -2475,23 +2521,48 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     );
   }
 
-  updateShouldHideSeparator(arrowScrollbox, pinnedContainer) {
+  updateShouldHideSeparator(arrowScrollbox, pinnedContainer, fromTabSelection = false) {
+    const visibleTabsFound = () => {
+      let count = 0;
+      for (const child of arrowScrollbox.children) {
+        if (
+          !child.hasAttribute('hidden') &&
+          !child.closing &&
+          !child.hasAttribute('zen-empty-tab')
+        ) {
+          count++;
+          if (count > 1) {
+            // Early return
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
     // <= 2 because we have the empty tab and the new tab button
-    const shouldHideSeparator =
-      pinnedContainer.children.length === 1 ||
-      Array.from(arrowScrollbox.children).filter(
-        (child) =>
-          !child.hasAttribute('hidden') && !child.closing && !child.hasAttribute('zen-empty-tab')
-      ).length <= 1;
+    const shouldHideSeparator = fromTabSelection
+      ? pinnedContainer.hasAttribute('hide-separator')
+      : !visibleTabsFound();
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute('hide-separator', 'true');
     } else {
+      const workspaceID = pinnedContainer.getAttribute('zen-workspace-id');
+      const tabs = this.#unpinnedTabsInWorkspace(workspaceID);
+      const closableTabs = this.#getClosableTabs(tabs);
+      const button = pinnedContainer.querySelector('.zen-workspace-close-unpinned-tabs-button');
+      if (tabs.length === closableTabs.length) {
+        button.setAttribute('can-close', 'true');
+      } else {
+        button.removeAttribute('can-close');
+      }
       pinnedContainer.removeAttribute('hide-separator');
     }
   }
 
   async onPinnedTabsResize(entries, forAnimation = false, animateContainer = false) {
     if (
+      document.documentElement.hasAttribute('inDOMFullscreen') ||
       !this._hasInitializedTabsStrip ||
       (this._organizingWorkspaceStrip && !forAnimation) ||
       document.documentElement.hasAttribute('zen-creating-workspace') ||
@@ -2592,6 +2663,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
   #changeToEmptyTab() {
     const isEmpty = gBrowser.selectedTab.hasAttribute('zen-empty-tab');
     gZenCompactModeManager.sidebar.toggleAttribute('zen-has-empty-tab', isEmpty);
+    document.documentElement.setAttribute('zen-has-empty-tab', isEmpty);
   }
 
   async onLocationChange(event) {
@@ -2608,7 +2680,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     }
     const workspaceID = tab.getAttribute('zen-workspace-id');
     const isEssential = tab.getAttribute('zen-essential') === 'true';
-
+    this.updateShouldHideSeparator(this.activeWorkspaceStrip, this.pinnedTabsContainer, true);
     if (tab.hasAttribute('zen-empty-tab')) {
       return;
     }
@@ -2648,6 +2720,25 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
     await this._organizeWorkspaceStripLocations(this.getActiveWorkspaceFromCache(), true);
     await this.updateTabsContainers();
     this.tabContainer._invalidateCachedTabs();
+  }
+
+  async closeAllUnpinnedTabs() {
+    const workspaceId = this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    const unpinnedTabs = this.#unpinnedTabsInWorkspace(workspaceId);
+    const closableTabs = this.#getClosableTabs(unpinnedTabs);
+
+    if (!closableTabs.length) return;
+    this.#deleteAllUnpinnedTabsInWorkspace(closableTabs);
+
+    const restoreClosedTabsShortcut = gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+      'History:RestoreLastClosedTabOrWindowOrSession'
+    );
+
+    gZenUIManager.showToast('zen-workspaces-close-all-unpinned-tabs-toast', {
+      l10nArgs: {
+        shortcut: restoreClosedTabsShortcut,
+      },
+    });
   }
 
   async contextDeleteWorkspace() {
@@ -3049,7 +3140,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       return;
     }
     const maxButtonSize = 32; // IMPORTANT: This should match the CSS size of the icons
-    const minButtonSize = 15;
+    const minButtonSize = maxButtonSize / 2; // Minimum size for icons when space is limited
     const separation = 3; // Space between icons
 
     // Calculate the total width needed for all icons
@@ -3069,9 +3160,7 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      Math.floor(
-        (parent.clientWidth - separation * (parent.children.length - 1)) / parent.children.length
-      ),
+      (parent.clientWidth - separation * (parent.children.length - 1)) / parent.children.length,
       minButtonSize
     );
     for (const icon of parent.children) {
@@ -3117,4 +3206,6 @@ var gZenWorkspaces = new (class extends nsZenMultiWindowFeature {
       document.getElementById('cmd_closeWindow').doCommand();
     }
   }
-})();
+}
+
+window.gZenWorkspaces = new nsZenWorkspaces();

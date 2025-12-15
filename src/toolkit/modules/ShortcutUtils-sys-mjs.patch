@@ -1,16 +1,8 @@
 diff --git a/toolkit/modules/ShortcutUtils.sys.mjs b/toolkit/modules/ShortcutUtils.sys.mjs
-index 3e796cb6586ad39257a29c2a6da1d0415f4c2676..98b639c726efee850456a3af8a01f0ce66423ba0 100644
+index e52e88a09a281e69ecf15e7b84b8b98736e1dbdd..f47fbe24e0860195e11fe5231ab27e52aad96d0b 100644
 --- a/toolkit/modules/ShortcutUtils.sys.mjs
 +++ b/toolkit/modules/ShortcutUtils.sys.mjs
-@@ -140,6 +140,7 @@ export var ShortcutUtils = {
-         key = keyCode.replace(/^VK_/, "");
-       }
-     } else {
-+      if (!keyAttribute) return "";
-       key = keyAttribute.toUpperCase();
-     }
- 
-@@ -373,13 +374,11 @@ export var ShortcutUtils = {
+@@ -414,13 +414,11 @@ export var ShortcutUtils = {
          }
          break;
        case event.DOM_VK_UP: // fall through

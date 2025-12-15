@@ -22,7 +22,10 @@
 - name: browser.urlbar.untrimOnUserInteraction.featureGate
   value: true
 
-# Enable private suggestions
+- name: media.videocontrols.picture-in-picture.urlbar-button.enabled
+  value: true
+  locked: true
+
 - name: browser.search.suggest.enabled
   value: false
 

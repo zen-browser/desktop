@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 1fb8a954f61e89736b369f5fa01bb4f89fff16ad..3030c32cb66529f14e575428654778abd312dfd8 100644
+index a0e16b375f0ad7ef58bf68d7574453ef37d4557f..2d5b5a0715b5ed8ebe592eebea0219a6cde17b52 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -117,6 +117,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -118,6 +118,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,7 @@ index 1fb8a954f61e89736b369f5fa01bb4f89fff16ad..3030c32cb66529f14e575428654778ab
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -196,6 +197,10 @@ function init_all() {
+@@ -225,6 +226,10 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);
@@ -19,5 +19,5 @@ index 1fb8a954f61e89736b369f5fa01bb4f89fff16ad..3030c32cb66529f14e575428654778ab
 +  register_module("paneZenCKS", gZenCKSSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
-   if (Services.prefs.getBoolPref("browser.translations.newSettingsUI.enable")) {
-     register_module("paneTranslations", gTranslationsPane);
+   for (let [subPane, config] of Object.entries(CONFIG_PANES)) {
+     subPane = friendlyPrefCategoryNameToInternalName(subPane);

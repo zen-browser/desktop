@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Ilme
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Tööruumid
 zen-tabs-unloader-enabled = 
     .label = Luba kaartide mälust eemaldamine
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Kasuta kompaktsel tööriistaribal teema poolt küljendatud tausta
 zen-workspace-continue-where-left-off = 
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Lülita jõudluse sektsioon sisse/vä
 zen-devtools-toggle-storage-shortcut = Lülita mälu sektsioon sisse/välja
 zen-devtools-toggle-dom-shortcut = Lülita DOM sisse/välja
 zen-devtools-toggle-accessibility-shortcut = Lülita ligipääsetavuse sektsioon sisse/välja
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

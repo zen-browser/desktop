@@ -6,18 +6,12 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   constructor() {
     super();
-    this.clickListener = this.handleClick.bind(this);
   }
 
   async handleEvent(event) {
-    switch (event.type) {
-      case 'DOMContentLoaded':
-        await this.initiateGlance();
-        break;
-      case 'keydown':
-        this.onKeyDown(event);
-        break;
-      default:
+    const handler = this[`on_${event.type}`];
+    if (typeof handler === 'function') {
+      await handler.call(this, event);
     }
   }
 
@@ -25,13 +19,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
   }
 
-  async initiateGlance() {
-    this.mouseIsDown = false;
-    await this.#initActivationMethod();
-    this.contentWindow.document.addEventListener('click', this.clickListener, { capture: true });
-  }
-
-  ensureOnlyKeyModifiers(event) {
+  #ensureOnlyKeyModifiers(event) {
     return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
   }
 
@@ -47,8 +35,11 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   #sendClickDataToParent(target, element) {
-    if (!element || !target) {
+    if (!element && !target) {
       return;
+    }
+    if (!target) {
+      target = element;
     }
     // Get the largest element we can get. If the `A` element
     // is a parent of the original target, use the anchor element,
@@ -66,20 +57,33 @@ export class ZenGlanceChild extends JSWindowActorChild {
     });
   }
 
-  handleClick(event) {
-    if (event.button !== 0 || event.defaultPrevented) {
-      return;
-    }
+  /**
+   * Returns the closest A element from the event target
+   * and the element to record (originalTarget or target)
+   */
+  #getTargetFromEvent(event) {
     // get closest A element
     const target = event.target.closest('A');
     const elementToRecord = event.originalTarget || event.target;
+    return {
+      target,
+      elementToRecord,
+    };
+  }
+
+  on_mousedown(event) {
+    const { target, elementToRecord } = this.#getTargetFromEvent(event);
     // We record the link data anyway, even if the glance may be invoked
     // or not. We have some cases where glance would open, for example,
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(target, elementToRecord);
-    if (this.ensureOnlyKeyModifiers(event)) {
+  }
+
+  on_click(event) {
+    const { target } = this.#getTargetFromEvent(event);
+    if (event.button !== 0 || event.defaultPrevented || this.#ensureOnlyKeyModifiers(event)) {
       return;
     }
     const activationMethod = this.#activationMethod;
@@ -92,20 +96,21 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === 'meta' && !event.metaKey) {
       return;
     }
-    if (target) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      this.#openGlance(target);
-    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.#openGlance(target);
   }
 
-  onKeyDown(event) {
+  on_keydown(event) {
     if (event.defaultPrevented || event.key !== 'Escape') {
       return;
     }
     this.sendAsyncMessage('ZenGlance:CloseGlance', {
       hasFocused: this.contentWindow.document.activeElement !== this.contentWindow.document.body,
     });
+  }
+
+  async on_DOMContentLoaded() {
+    await this.#initActivationMethod();
   }
 }

@@ -1,12 +1,13 @@
 diff --git a/browser/base/content/browser-pageActions.js b/browser/base/content/browser-pageActions.js
-index 00da33bc11189db17b6a2e656acb3a778531197c..9571155baccad9a886cbe9c7bf0bd76a135331c4 100644
+index 00da33bc11189db17b6a2e656acb3a778531197c..bdca62e9ed5513e1e1922f1f9498755f5459e0c2 100644
 --- a/browser/base/content/browser-pageActions.js
 +++ b/browser/base/content/browser-pageActions.js
-@@ -451,6 +451,7 @@ var BrowserPageActions = {
+@@ -449,7 +449,7 @@ var BrowserPageActions = {
+       document.getElementById(
+         action && this.urlbarButtonNodeIDForActionID(action.id)
        ),
-       document.getElementById(this.mainButtonNode.id),
-       document.getElementById("identity-icon"),
+-      document.getElementById(this.mainButtonNode.id),
 +      document.getElementById("zen-site-data-icon-button"),
+       document.getElementById("identity-icon"),
      ];
      for (let node of potentialAnchorNodes) {
-       if (node && !node.hidden) {

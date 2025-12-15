@@ -21,14 +21,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Install Surfer
-        run: npm i -g @zen-browser/surfer
-
       - name: Install dependencies
         run: npm ci
 
       - name: Download Firefox and dependencies
-        run: surfer download
+        run: npm run download
 
       - name: Import patches
-        run: surfer i
+        run: npm run import

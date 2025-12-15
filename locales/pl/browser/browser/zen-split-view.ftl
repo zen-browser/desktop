@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
@@ -12,5 +16,5 @@ zen-split-view-modifier-header = Podziel widok
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktywuj realokację
 zen-split-view-modifier-enabled-toast = Podziel kolejność widoku jest włączona.
-zen-split-view-modifier-enabled-toast-description = Przeciągnij i upuść widok aby zmienić kolejność. Naciśnij Esc, aby wyjść.
-zen-split-view-modifier-disabled-toast = Rozdziel zmianę kolejności widoku jest WYŁĄCZONa.
+zen-split-view-modifier-enabled-toast-description = Przeciągnij i upuść widok, aby zmienić kolejność. Naciśnij Esc, aby wyjść.
+zen-split-view-modifier-disabled-toast = Rearanżacja widoku dzielonego jest wyłączona.

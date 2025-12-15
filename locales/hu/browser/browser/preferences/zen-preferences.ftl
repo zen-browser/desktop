@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Megjelenés és hangulat
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Munkakörnyezetek
 zen-tabs-unloader-enabled = 
     .label = Lap ürítő engedélyezése
+zen-tabs-close-on-back-with-no-history = 
+    .label = A lap bezárása után váltson a tulajdonos lapra (vagy a legutóbb használt lapra), ha nincs előzmény, amihez vissza lehetne lépni
+zen-tabs-cycle-by-attribute = 
+    .label = A Ctrl+Tab csak az alapvető vagy a munkakörnyezetbeli lapok között lehet váltani
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = A Ctrl+Tab-al történő váltáskor a várakozó lapok figyelmen kívül hagyása
+zen-tabs-cycle-by-attribute-warning = A Ctrl+Tab a legutóbb használt sorrendben vált a lapok között, mivel ez a beállítás engedélyezve van
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Tematikus háttér használata a kompakt eszköztárhoz
 zen-workspace-continue-where-left-off = 
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Teljesítmény kapcsolása
 zen-devtools-toggle-storage-shortcut = Tároló kapcsolása
 zen-devtools-toggle-dom-shortcut = DOM kapcsolása
 zen-devtools-toggle-accessibility-shortcut = Hozzáférhetőség kapcsolása
+zen-close-all-unpinned-tabs-shortcut = Összes rögzítetlen lap bezárása

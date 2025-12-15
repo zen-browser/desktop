@@ -12,4 +12,7 @@
   value: true
 
 - name: zen.glance.activation-method
-  value: 'alt' # ctrl, alt, shift, none, hold
+  value: 'alt' # ctrl, alt, shift
+
+- name: zen.glance.animation-duration
+  value: 400 # in milliseconds

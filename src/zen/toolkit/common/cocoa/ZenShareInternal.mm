@@ -50,7 +50,6 @@ auto nsZenNativeShareInternal::ShowNativeDialog(nsCOMPtr<mozIDOMWindowProxy>& aW
   if (aUrl) {
     nsresult rv = aUrl->GetSpec(pageUrlAsStringTemp);
     MOZ_ASSERT(NS_SUCCEEDED(rv));
-    mozilla::Unused << rv;
   } else {
     pageUrlAsStringTemp.SetIsVoid(true);
   }

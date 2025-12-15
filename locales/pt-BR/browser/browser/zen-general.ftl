@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Redefinir Guia Fixada
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Adicionar aos Essenciais ({ $num } / { $max } espaços preenchidos)
+    .label = Add to Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
@@ -22,7 +27,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor Personalizada
 zen-panel-ui-gradient-generator-saved-message = O gradiente foi salvo com sucesso!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = URL atual copiada!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -53,11 +58,13 @@ urlbar-search-mode-zen_actions = Ações
 zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
 zen-generic-more = Mais
-zen-generic-next = Next
+zen-generic-next = Próximo
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-protections-enabled = Habilitado
+zen-site-data-protections-disabled = Desabilitado
+zen-site-data-setting-cross-site = Cookie entre Sites
 zen-site-data-security-info-extension = 
     .label = Extensão
 zen-site-data-security-info-secure = 
@@ -70,13 +77,32 @@ zen-site-data-get-addons =
     .label = Adicionar Extensões
 zen-site-data-site-settings = 
     .label = Todas as Configurações do Site
-zen-site-data-share = 
-    .label = Share This Page
+zen-site-data-header-share = 
+    .tooltiptext = Compartilhar Esta Página
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Entrar no Modo Leitura
+zen-site-data-header-screenshot = 
+    .tooltiptext = Tirar Captura de Tela
+zen-site-data-header-bookmark = 
+    .tooltiptext = Marcar Esta Página
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Copiar URL
+zen-site-data-setting-site-protection = Proteção contra Rastreamento
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Um novo lar para extensões, permissões e mais
+zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerenciar configurações do site, visualizar informações de segurança, acessar extensões e realizar ações comuns.
+zen-open-link-in-glance = 
+    .label = Open Link in Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Update Complete!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = View Release Notes
+zen-sidebar-notification-restart-safe-mode-label = Something broke?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restart in Safe Mode

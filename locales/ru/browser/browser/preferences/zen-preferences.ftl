@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Внешний вид
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Рабочие пространства
 zen-tabs-unloader-enabled = 
     .label = Включить выгрузку вкладок
+zen-tabs-close-on-back-with-no-history = 
+    .label = Закрывать вкладку и переключаться на родительскую (или последнюю использованную) вкладку при возврате на предыдущую страницу
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab переключает вкладки только из важного или только из пространства
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Игнорировать загружающиеся вкладки при переключении через Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = При включении Ctrl+Tab будет переключать вкладки в порядке последнего использования
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Использовать цвета темы для фона компактной панели инструментов
 zen-workspace-continue-where-left-off = 
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Переключить произво
 zen-devtools-toggle-storage-shortcut = Переключить хранилище
 zen-devtools-toggle-dom-shortcut = Переключить DOM
 zen-devtools-toggle-accessibility-shortcut = Включить/выключить специальные возможности
+zen-close-all-unpinned-tabs-shortcut = Закрыть все не закреплённые вкладки

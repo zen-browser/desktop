@@ -91,8 +91,8 @@ groupbox button {
 
 groupbox button,
 groupbox menulist {
-  background-color: light-dark(#f1f1f1, #363636) !important;
-  color: light-dark(black, white) !important;
+  background-color: light-dark(#f1f1f1, #363636);
+  color: light-dark(black, white);
 }
 
 groupbox h2 {
@@ -544,6 +544,12 @@ groupbox h2 {
   }
 }
 
+@media (max-width: 1320px) {
+  #zenLayoutList {
+    flex-wrap: wrap;
+  }
+}
+
 /* Disable mozilla's settings */
 
 #dataCollectionCategory,
@@ -553,6 +559,7 @@ groupbox h2 {
 #helpButton,
 #support-firefox,
 #tabGroupSuggestions,
+#web-appearance-manage-themes-link,
 .mission-message {
   display: none !important;
 }

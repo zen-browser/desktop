@@ -6,7 +6,7 @@ import os
 import sys
 import json
 from pathlib import Path
-from typing import Any
+from json_with_comments import JSONWithCommentsDecoder
 
 IGNORE_PREFS_FILE_IN = os.path.join(
     'src', 'zen', 'tests', 'ignorePrefs.json'
@@ -16,15 +16,6 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
 )
 
 MOCHITEST_NAME = "mochitests"
-
-class JSONWithCommentsDecoder(json.JSONDecoder):
-  def __init__(self, **kw):
-    super().__init__(**kw)
-
-  def decode(self, s: str) -> Any:
-    s = '\n'.join(l for l in s.split('\n') if not l.lstrip(' ').startswith('//'))
-    return super().decode(s)
-
 
 def copy_ignore_prefs():
   print("Copying ignorePrefs.json from src/zen/tests to engine/testing/mochitest...")

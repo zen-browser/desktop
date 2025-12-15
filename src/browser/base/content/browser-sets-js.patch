@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-sets.js b/browser/base/content/browser-sets.js
-index 9cff49a7b86f7697f70c4ef61d3c3561f058dc45..15ac9a8a79e8642b3add2f6df63ed32eb0c8bcb9 100644
+index 0bb581aa34ddeef1e3eb85b0fadd41a539b4b9d6..cbe2df8b1775cb8194007ee995fd91769618b48d 100644
 --- a/browser/base/content/browser-sets.js
 +++ b/browser/base/content/browser-sets.js
-@@ -253,7 +253,7 @@ document.addEventListener(
+@@ -254,7 +254,7 @@ document.addEventListener(
          }
        });
  

@@ -1,17 +1,17 @@
 diff --git a/browser/modules/BrowserDOMWindow.sys.mjs b/browser/modules/BrowserDOMWindow.sys.mjs
-index 534d23b3e66176ea77f3ef577bf9630626948b9d..752e229bbe725ae394b7648adb949635f2bd70e4 100644
+index e951af5edb966718ee20422c8e46d868c177cd1c..cd41305a4da8e675417eca7df5cd4a1ecee90c3d 100644
 --- a/browser/modules/BrowserDOMWindow.sys.mjs
 +++ b/browser/modules/BrowserDOMWindow.sys.mjs
-@@ -374,7 +374,7 @@ export class BrowserDOMWindow {
+@@ -437,7 +437,7 @@ export class BrowserDOMWindow {
      // Passing a null-URI to only create the content window,
      // and pass true for aSkipLoad to prevent loading of
      // about:blank
--    return this.getContentWindowOrOpenURIInFrame(
-+    let res = this.getContentWindowOrOpenURIInFrame(
+-    return this.#getContentWindowOrOpenURIInFrame(
++    let res = this.#getContentWindowOrOpenURIInFrame(
        null,
        aParams,
        aWhere,
-@@ -382,6 +382,10 @@ export class BrowserDOMWindow {
+@@ -445,6 +445,10 @@ export class BrowserDOMWindow {
        aName,
        true
      );
@@ -21,4 +21,4 @@ index 534d23b3e66176ea77f3ef577bf9630626948b9d..752e229bbe725ae394b7648adb949635
 +    return res;
    }
  
-   openURIInFrame(aURI, aParams, aWhere, aFlags, aName) {
+   /**

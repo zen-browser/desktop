@@ -6,7 +6,7 @@ if test "$ZEN_CROSS_COMPILING"; then
 
   export WINSYSROOT="$(echo ~)/win-cross/vs2022"
 
-  export WINE="$(echo ~)/win-cross/wine/bin/wine64"
+  export WINE="$(echo ~)/win-cross/wine/bin/wine"
   export WINEDEBUG=-all
 
   export MOZ_STUB_INSTALLER=1
@@ -21,6 +21,10 @@ if test "$ZEN_CROSS_COMPILING"; then
     export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/x64/Microsoft.VC143.CRT"
   fi
 fi
+
+# We wrongly detect ccache on windows, which leads to build failures.
+# This line should be removed once the detection is fixed.
+ac_add_options --without-ccache
 
 ac_add_options --disable-maintenance-service
 ac_add_options --disable-bits-download

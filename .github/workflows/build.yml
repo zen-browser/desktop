@@ -190,7 +190,7 @@ jobs:
     name: Lint
 
   check-release:
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: [build-data, lint]
     steps:
       - name: Checkout repository
@@ -231,7 +231,7 @@ jobs:
   source:
     permissions:
       contents: write
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: [build-data, check-release]
 
     steps:

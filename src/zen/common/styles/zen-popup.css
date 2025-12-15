@@ -381,6 +381,16 @@ menuseparator {
 
     & label {
       margin: 0 4px;
+
+      & span {
+        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        border-radius: 4px;
+        padding: 5px 7px;
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0 2px;
+        word-spacing: 2px;
+      }
     }
 
     & button {

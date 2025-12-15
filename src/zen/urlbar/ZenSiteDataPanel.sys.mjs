@@ -4,6 +4,11 @@
 
 import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
+const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
+  'zen.theme.hide-unified-extensions-button',
+  true
+);
+
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -21,7 +26,19 @@ export class nsZenSiteDataPanel {
     this.window = window;
     this.document = window.document;
 
-    this.panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.unifiedPanel = this.#initUnifiedPanel();
+    this.unifiedPanelView = 'unified-extensions-view';
+    this.extensionsPanelView = 'original-unified-extensions-view';
+
+    if (ADDONS_BUTTONS_HIDDEN) {
+      this.window.gUnifiedExtensions._panel = this.unifiedPanel;
+
+      // Remove the old permissions dialog
+      this.document.getElementById('unified-extensions-panel-template').remove();
+    } else {
+      this.extensionsPanel = this.#initExtensionsPanel();
+    }
+
     this.#init();
   }
 
@@ -34,14 +51,15 @@ export class nsZenSiteDataPanel {
     `);
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').before(button);
-    this.window.gUnifiedExtensions._button = this.anchor;
+
+    this.extensionsPanelButton = this.document.getElementById('unified-extensions-button');
+    this.window.gUnifiedExtensions._button = ADDONS_BUTTONS_HIDDEN
+      ? this.anchor
+      : this.extensionsPanelButton;
 
     this.document
       .getElementById('nav-bar')
       .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
-
-    // Remove the old permissions dialog
-    this.document.getElementById('unified-extensions-panel-template').remove();
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
@@ -49,9 +67,10 @@ export class nsZenSiteDataPanel {
   }
 
   #initEventListeners() {
-    this.panel.addEventListener('popupshowing', this);
+    this.unifiedPanel.addEventListener('popupshowing', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
+    this.anchor.addEventListener('click', this);
     const kCommandIDs = [
       'zen-site-data-header-share',
       'zen-site-data-header-bookmark',
@@ -123,10 +142,44 @@ export class nsZenSiteDataPanel {
     }
   }
 
+  #initExtensionsPanel() {
+    const panel = this.window.gUnifiedExtensions.panel;
+
+    const extensionsView = panel?.querySelector('#unified-extensions-view');
+    extensionsView.setAttribute('id', this.extensionsPanelView);
+
+    const panelMultiView = panel?.querySelector('panelmultiview');
+    panelMultiView.setAttribute('mainViewId', this.extensionsPanelView);
+
+    return panel;
+  }
+
+  #initUnifiedPanel() {
+    const panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.window.gUnifiedExtensions.initializePanel(panel);
+    return panel;
+  }
+
   #preparePanel() {
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
+    this.#setAddonsOverflow();
+  }
+
+  #setAddonsOverflow() {
+    const addons = this.document.getElementById('zen-site-data-addons');
+    if (addons.getBoundingClientRect().height > 420) {
+      addons.setAttribute('overflowing', 'true');
+    } else {
+      addons.removeAttribute('overflowing');
+    }
+  }
+
+  get #currentPageIsBookmarked() {
+    // A hacky way to check if the current page is bookmarked, but
+    // it works for our purposes.
+    return this.window.BookmarkingUI.star?.hasAttribute('starred');
   }
 
   #setSiteHeader() {
@@ -146,7 +199,7 @@ export class nsZenSiteDataPanel {
     }
     {
       const button = this.document.getElementById('zen-site-data-header-bookmark');
-      const isPageBookmarked = this.window.BookmarkingUI.star?.hasAttribute('starred');
+      const isPageBookmarked = this.#currentPageIsBookmarked;
 
       if (isPageBookmarked) {
         button.classList.add('active');
@@ -353,9 +406,15 @@ export class nsZenSiteDataPanel {
     switch (permission.state) {
       // There should only be these types being displayed in the panel.
       case SitePermissions.ALLOW:
+        if (permission.id === 'site-protection') {
+          return 'zen-site-data-protections-enabled';
+        }
         return 'zen-site-data-setting-allow';
       case SitePermissions.BLOCK:
       case SitePermissions.AUTOPLAY_BLOCKED_ALL:
+        if (permission.id === 'site-protection') {
+          return 'zen-site-data-protections-disabled';
+        }
         return 'zen-site-data-setting-block';
       default:
         return null;
@@ -475,7 +534,7 @@ export class nsZenSiteDataPanel {
           this.window.gZenCommonActions.copyCurrentURLToClipboard();
         }
         if (AppConstants.platform !== 'macosx') {
-          this.panel.hidePopup();
+          this.unifiedPanel.hidePopup();
         }
       }
     }
@@ -511,12 +570,12 @@ export class nsZenSiteDataPanel {
 
     const isCrossSiteCookie = permission.id.startsWith('3rdPartyStorage');
     label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
+    label._permission.state = newState;
     if (!isCrossSiteCookie) {
       label
         .querySelector('.zen-permission-popup-permission-state-label')
-        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId({ state: newState }));
+        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId(label._permission));
     }
-    label._permission.state = newState;
   }
 
   #onClickEvent(event) {
@@ -530,6 +589,16 @@ export class nsZenSiteDataPanel {
       case 'zen-site-data-settings-more': {
         const { BrowserCommands } = this.window;
         BrowserCommands.pageInfo(null, 'permTab');
+        break;
+      }
+      case 'zen-site-data-icon-button': {
+        this.window.gUnifiedExtensions.togglePanel(
+          event,
+          null,
+          this.unifiedPanel,
+          this.unifiedPanelView,
+          this.anchor
+        );
         break;
       }
       default: {
@@ -580,7 +649,6 @@ export class nsZenSiteDataPanel {
       };
       checkEmptyTab();
     });
-    this.anchor.setAttribute('open', 'true');
     const callout = new FeatureCallout({
       win: this.window,
       location: 'chrome',
@@ -604,13 +672,6 @@ export class nsZenSiteDataPanel {
               anchors: [
                 {
                   selector: '#zen-site-data-icon-button',
-                  panel_position: {
-                    anchor_attachment: 'bottomcenter',
-                    callout_attachment: 'topleft',
-                  },
-                },
-                {
-                  selector: '#identity-icon-box',
                   panel_position: {
                     anchor_attachment: 'bottomcenter',
                     callout_attachment: 'topleft',

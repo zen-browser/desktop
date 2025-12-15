@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Aspecte i comportament
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Espais de treball
 zen-tabs-unloader-enabled = 
     .label = Habilita la hibernació de pestanyes
+zen-tabs-close-on-back-with-no-history = 
+    .label = Tanca la pestanya i canvia a la pestanya del propietari (o a la pestanya utilitzada més recentment) quan torneu enrere sense historial
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab permet només canviar entre les pestanyes essencials o de l'espai de treball
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignora les pestanyes pendents mentre es canvia amb Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab anirà canviant per ordre d'ús recent, quan estigui habilitat
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Utilitza un fons temàtic per a la barra d'eines compacta
 zen-workspace-continue-where-left-off = 
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Commuta el rendiment
 zen-devtools-toggle-storage-shortcut = Commuta l'emmagatzematge
 zen-devtools-toggle-dom-shortcut = Commuta el DOM
 zen-devtools-toggle-accessibility-shortcut = Commuta l'accessibilitat
+zen-close-all-unpinned-tabs-shortcut = Tanca totes les pestanyes no fixades

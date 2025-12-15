@@ -12,10 +12,9 @@
           <button id="PanelUI-zen-gradient-generator-scheme-dark" class="subviewbutton"/> 
         </hbox>
         <hbox id="PanelUI-zen-gradient-generator-color-actions">
-          <button id="PanelUI-zen-gradient-generator-color-add" class="subviewbutton">
-          </button>
-          <button id="PanelUI-zen-gradient-generator-color-remove" class="subviewbutton">
-          </button>
+          <button id="PanelUI-zen-gradient-generator-color-add" class="subviewbutton" />
+          <button id="PanelUI-zen-gradient-generator-color-remove" class="subviewbutton" />
+          <button id="PanelUI-zen-gradient-generator-color-toggle-algo" class="subviewbutton" />
         </hbox>
         <label data-l10n-id="zen-panel-ui-gradient-click-to-add" id="PanelUI-zen-gradient-generator-color-click-to-add"></label>
       </hbox>
@@ -78,6 +77,29 @@
             <box data-lightness="20" data-algo="analogous" data-num-dots="3" data-position="118,215"
                 style="--c1: rgb(22, 80, 61); --c2: rgb(26, 60, 76); --c3: rgb(27, 87, 15);" />
           </hbox>
+          <hbox>
+# Start from black to white in a span on 8 steps and.
+# They must all go from the middle to the right side. They must always stay verically centered.
+# And reach to 180 on the right side, meaning we must divide the width in 16 segments.
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="315,180" style="background: rgb(192, 192, 192);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="292.5,180" style="background: rgb(160, 160, 160);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="270,180" style="background: rgb(128, 128, 128);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="247.5,180" style="background: rgb(96, 96, 96);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="225,180" style="background: rgb(64, 64, 64);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="202.5,180" style="background: rgb(32, 32, 32);"></box>
+            <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
+                data-position="180,180" style="background: rgb(0, 0, 0);"></box>
+          </hbox>
         </hbox>
         <toolbarbutton id="PanelUI-zen-gradient-generator-color-page-right" class="toolbarbutton-1" />
       </hbox>
@@ -100,10 +122,12 @@
                 </defs>
               </svg>
             </box>
-            <html:input type="range" max="0.9" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
+            <html:input type="range" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
 #ifdef XP_MACOSX
-              min="0.25"
+              max="0.75"
+              min="0.35"
 #else
+              max="0.9"
               min="0.35"
 #endif
               />

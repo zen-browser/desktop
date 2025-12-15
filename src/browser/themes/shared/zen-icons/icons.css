@@ -6,7 +6,8 @@
 
 .subviewbutton,
 #zen-welcome-start-button,
-.zen-toast button {
+.zen-toast button,
+.pinned-tabs-container-separator toolbarbutton {
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
 }
@@ -392,6 +393,18 @@
   list-style-image: url('arrow-down.svg') !important;
 }
 
+.zen-workspace-close-unpinned-tabs-button {
+  list-style-image: url('dart-down.svg');
+
+  &:not([can-close='true']) .toolbarbutton-icon {
+    display: none;
+  }
+
+  @media -moz-pref('zen.view.show-clear-tabs-button', false) {
+    display: none;
+  }
+}
+
 .zen-workspace-actions-reorder-icon,
 .zen-tab-rearrange-button {
   list-style-image: url('drag-indicator.svg') !important;
@@ -491,20 +504,24 @@
 }
 
 #identity-permission-box,
-#identity-box:not([pageproxystate='invalid']) #identity-icon-box:not([open]),
-#identity-box[pageproxystate='invalid'] #zen-site-data-icon-button {
+:root:not([zen-has-empty-tab='true'])
+  #urlbar:not([breakout-extend='true'])
+  #identity-icon-box:not([open]),
+:root[zen-has-empty-tab='true'] #zen-site-data-icon-button,
+#urlbar[breakout-extend='true'] #zen-site-data-icon-button {
   display: none !important;
 }
 
 #zen-site-data-icon-button {
-  padding: 0 6px;
+  padding: 0 6px !important;
+  border-radius: var(--urlbar-icon-border-radius) !important;
 
   & image {
     list-style-image: url('permissions.svg');
     -moz-context-properties: fill, fill-opacity;
     pointer-events: none;
   }
-  &[open] image {
+  &:is([open], [starred]) image {
     list-style-image: url('permissions-fill.svg');
   }
 }
@@ -673,6 +690,10 @@
 
 #appMenuRecentlyClosedTabs {
   list-style-image: url('container-tab.svg') !important;
+}
+
+#PanelUI-zen-gradient-generator-color-toggle-algo {
+  list-style-image: url('algorithm.svg');
 }
 
 #appMenuClearRecentHistory {

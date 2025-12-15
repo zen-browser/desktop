@@ -10,16 +10,17 @@
     "build": "surfer build",
     "build:ui": "surfer build --ui",
     "start": "cd engine && python3 ./mach run --noprofile",
-    "import": "npm run ffprefs && surfer import",
+    "import": "npm run ffprefs && npm run import:dumps && surfer import",
+    "import:dumps": "python3 scripts/update_service_dumps.py",
     "export": "surfer export",
     "init": "npm run download && npm run import && npm run bootstrap",
     "download": "surfer download",
     "bootstrap": "surfer bootstrap",
     "package": "surfer package",
-    "update-ff": "python3 scripts/update_ff.py",
-    "update-ff:raw": "surfer update",
-    "update-ff:rc": "python3 scripts/update_ff.py --rc",
-    "update-ff:l10n": "python3 scripts/update_ff.py --just-l10n",
+    "sync": "python3 scripts/update_ff.py",
+    "sync:raw": "surfer update",
+    "sync:rc": "python3 scripts/update_ff.py --rc",
+    "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
     "pretty": "prettier . --write --cache && autopep8 -r --in-place scripts/ src/",
     "lint": "npx eslint src/ && prettier . --check --cache",
     "lint:fix": "npm run pretty && npx eslint src/ --fix",
@@ -49,7 +50,7 @@
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "dependencies": {
-    "@zen-browser/surfer": "^1.11.22"
+    "@zen-browser/surfer": "^1.12.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",

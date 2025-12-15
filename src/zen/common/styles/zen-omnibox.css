@@ -21,7 +21,7 @@
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  --urlbarView-results-padding: 6px !important;
+  --urlbarView-results-padding: 8px !important;
   --urlbar-container-height: 48px !important;
 
   --urlbar-margin-inline: 5px;
@@ -62,9 +62,11 @@
   border-radius: var(--border-radius-medium);
   outline: none !important;
 
-  border: none !important;
-  margin: 1px;
+  #urlbar:not([breakout-extend='true']) & {
+    margin: 1px;
+  }
 
+  border: none !important;
   box-shadow: none !important;
 }
 
@@ -136,26 +138,30 @@
   }
 
   .identity-box-button,
-  #zen-copy-url-button {
+  .urlbar-page-action {
     opacity: 0;
-    transition:
-      opacity 0.15s,
-      visibility 0.15s;
-    visibility: collapse;
     height: 100%; /* To still be able to open popups */
+    visibility: collapse;
 
-    #navigator-toolbox:hover &,
+    :root:not([supress-primary-adjustment='true']) & {
+      transition:
+        opacity 0.15s,
+        visibility 0.15s;
+    }
+
+    #navigator-toolbox[zen-has-implicit-hover='true'] &,
     &[open],
-    #identity-box[pageproxystate='invalid'] & {
+    #urlbar[has-popup-open='true'] &,
+    :root[zen-has-empty-tab='true'] & {
       opacity: 1;
       visibility: visible;
     }
   }
 }
 
-:root:not([zen-single-toolbar='true'])
+:root:not([zen-single-toolbar='true']):not([zen-has-empty-tab='true'])
   #urlbar:not([breakout-extend='true'])
-  .urlbar-input-container:not([pageproxystate='invalid']) {
+  .urlbar-input-container {
   padding: 2px 3px;
   gap: 2px;
 
@@ -178,9 +184,20 @@
   background: transparent !important;
 }
 
-:root[zen-single-toolbar='true'],
-#urlbar[pageproxystate='invalid'] {
+:root:is([zen-single-toolbar='true'], [zen-has-empty-tab='true']) {
   #zen-copy-url-button[disabled] {
+    display: none !important;
+  }
+}
+
+@media -moz-pref('zen.urlbar.single-toolbar-show-copy-url', false) {
+  :root[zen-single-toolbar='true'] #zen-copy-url-button {
+    display: none !important;
+  }
+}
+
+@media not -moz-pref('zen.urlbar.show-pip-button') {
+  #picture-in-picture-button {
     display: none !important;
   }
 }
@@ -246,7 +263,7 @@
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(
       #fbfbfb,
-      color-mix(in srgb, hsl(0, 0%, 1%), var(--zen-colors-primary) 30%)
+      color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%)
     );
     @media -moz-pref('zen.theme.acrylic-elements') {
       --zen-urlbar-background-transparent: color-mix(
@@ -295,13 +312,7 @@
 
 :root[zen-single-toolbar='true'] {
   --urlbar-icon-border-radius: 8px !important;
-
-  .urlbar-page-action:not([open]):not([showing]):not(
-      :is(#zen-copy-url-button, #identity-permission-box)
-    ),
-  #tracking-protection-icon-container {
-    display: none;
-  }
+  --urlbar-inner-border-radius: var(--toolbarbutton-border-radius) !important;
 
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
@@ -311,10 +322,8 @@
     display: none;
   }
 
-  #urlbar:not([breakout-extend='true']) {
-    #identity-box:not([pageproxystate='invalid']) {
-      order: 9;
-    }
+  &:not([zen-has-empty-tab='true']) #urlbar:not([breakout-extend='true']) #identity-box {
+    order: 2;
   }
 
   #notification-popup-box:not([open]) {
@@ -346,9 +355,12 @@
 }
 
 :root:not([zen-single-toolbar='true']) {
+  --urlbar-icon-border-radius: 6px !important;
+
   #notification-popup-box {
     margin: 0 4px 0 0 !important;
     justify-content: center;
+    height: unset !important;
     gap: 8px;
     background: transparent;
 
@@ -493,8 +505,8 @@
   --urlbar-container-height: 62px !important;
   --urlbar-margin-inline: 10px !important;
 
-  min-width: min(90%, 50rem) !important;
-  width: var(--zen-urlbar-width, min(90%, 50rem)) !important;
+  min-width: min(90%, 62rem) !important;
+  width: var(--zen-urlbar-width, min(90%, 62rem)) !important;
   font-size: 1.15em !important;
   @media (-moz-platform: macos) {
     font-size: 1.5em !important;
@@ -702,8 +714,8 @@
   max-height: 260px;
   overflow-y: auto;
   scrollbar-width: none;
-  margin-block-start: var(--urlbarView-results-padding);
-  margin-block-end: calc(var(--urlbarView-results-padding) + 2px);
+  margin-block-start: calc(var(--urlbarView-results-padding) - 2px);
+  margin-block-end: var(--urlbarView-results-padding);
   padding-block: 0 !important;
 
   & .action-contextualidentity {
@@ -742,7 +754,8 @@
  * them into a single, unified button */
 #reader-mode-button,
 #urlbar-go-button,
-#star-button-box {
+#star-button-box,
+#pageActionButton:not([open]) {
   display: none !important;
 }
 

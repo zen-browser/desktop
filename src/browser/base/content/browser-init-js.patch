@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index 8e63654b343e8518aa0e366a3fd3bf7e0856eafb..3cebc9bb057f51cea639130fecd7576e1c9db79c 100644
+index 02f601d859ea32557af572d2499ad8be75b684b5..b1a6f66a74f75150d7e2fbc50528965bb16cb4d9 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
 @@ -198,6 +198,7 @@ var gBrowserInit = {

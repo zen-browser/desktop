@@ -5,6 +5,6 @@
  */
 
 & .titlebar-buttonbox-container {
-  visibility: visible;
+  max-height: 100%;
   transition: none;
 }

@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Tampilan dan Nuansa
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Ruang Kerja
 zen-tabs-unloader-enabled = 
     .label = Aktifkan Pelepas Tab
+zen-tabs-close-on-back-with-no-history = 
+    .label = Tutup tab dan beralih ke tab pemiliknya (atau tab yang terakhir digunakan) saat kembali tanpa riwayat
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab berputar hanya dalam tab Esensial atau Ruang Kerja
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Gunakan latar belakang bertema untuk bilah atas dalam mode ringkas
 zen-workspace-continue-where-left-off = 
@@ -272,7 +283,7 @@ zen-split-view-shortcut-grid = Beralih ke Panel terbagi
 zen-split-view-shortcut-vertical = Beralih ke Panel vertikal
 zen-split-view-shortcut-horizontal = Beralih ke Panel horizontal
 zen-split-view-shortcut-unsplit = Tutup Tampilan Belah
-zen-new-empty-split-view-shortcut = New Empty Split View
+zen-new-empty-split-view-shortcut = Tampilan Split Kosong Baru
 zen-key-select-tab-1 = Pilih tab #1
 zen-key-select-tab-2 = Pilih tab #2
 zen-key-select-tab-3 = Pilih tab #3
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Ubah Performance
 zen-devtools-toggle-storage-shortcut = Ubah Penyimpanan
 zen-devtools-toggle-dom-shortcut = Ubah DOM
 zen-devtools-toggle-accessibility-shortcut = Ubah Aksesibilitas
+zen-close-all-unpinned-tabs-shortcut = Tutup Semua Tab yang Tidak Disematkan

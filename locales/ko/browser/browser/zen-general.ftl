@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = 현재 프로필
 unified-extensions-description = 확장 프로그램은 { -brand-short-name }에 더 많은 추가 기능을 제공하는 데 사용됩니다.
 tab-context-zen-reset-pinned-tab = 
     .label = 고정된 탭 초기화
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 에센셜에 추가 ({ $num } / { $max } 개 추가됨)
+    .label = 에센셜에 추가
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
@@ -59,6 +64,8 @@ zen-generic-next = 다음
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
+zen-site-data-protections-enabled = 활성화됨
+zen-site-data-protections-disabled = 비활성화됨
 zen-site-data-setting-cross-site = 사이트 간 공유 쿠키
 zen-site-data-security-info-extension = 
     .label = 확장
@@ -72,8 +79,14 @@ zen-site-data-get-addons =
     .label = 확장 프로그램 추가
 zen-site-data-site-settings = 
     .label = 모든 사이트 설정
-zen-site-data-share = 
-    .label = 이 페이지 공유
+zen-site-data-header-share = 
+    .tooltiptext = 이 페이지 공유
+zen-site-data-header-reader-mode = 
+    .tooltiptext = 읽기 모드 켜기
+zen-site-data-header-screenshot = 
+    .tooltiptext = 화면 캡쳐
+zen-site-data-header-bookmark = 
+    .tooltiptext = 이 페이지 북마크
 zen-urlbar-copy-url-button = 
     .tooltiptext = URL 복사
 zen-site-data-setting-site-protection = 추적 보호
@@ -82,3 +95,16 @@ zen-site-data-setting-site-protection = 추적 보호
 
 zen-site-data-panel-feature-callout-title = 애드온, 권한, 그리고 더 많은 것을 위한 새로운 곳
 zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 설정, 보안 정보 조회, 확장 프로그램 접근, 기타 행동을 수행할 수 있습니다.
+zen-open-link-in-glance = 
+    .label = 글랜스로 링크 열기
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Update Complete!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = View Release Notes
+zen-sidebar-notification-restart-safe-mode-label = Something broke?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restart in Safe Mode

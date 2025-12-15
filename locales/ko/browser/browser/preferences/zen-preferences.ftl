@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = 모양
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = 워크스페이스
 zen-tabs-unloader-enabled = 
     .label = 탭 언로더 활성화
+zen-tabs-close-on-back-with-no-history = 
+    .label = 뒤로 가기 시 이전 기록이 없으면 탭을 닫고 원래 탭(또는 가장 최근에 쓰인 탭)으로 전환
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab에 에센셜 또는 워크스페이스 탭만 사용
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ctrl+Tab 시 보류중인 탭 무시
+zen-tabs-cycle-by-attribute-warning = 활성화됨에 따라 Ctrl+Tab이 최근에 사용된 순서로 정렬됩니다
 zen-look-and-feel-compact-toolbar-themed = 
     .label = 축소된 툴바에 테마 배경 사용
 zen-workspace-continue-where-left-off = 
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = 성능 탭 전환
 zen-devtools-toggle-storage-shortcut = 저장소 탭 전환
 zen-devtools-toggle-dom-shortcut = DOM 탭 전환
 zen-devtools-toggle-accessibility-shortcut = 접근성 탭 전환
+zen-close-all-unpinned-tabs-shortcut = 모든 고정되지 않은 탭 닫기

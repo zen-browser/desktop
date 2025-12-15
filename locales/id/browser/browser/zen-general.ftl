@@ -1,11 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-current-profile-text = profil saat ini
 unified-extensions-description = Ekstensi digunakan untuk menambahkan lebih banyak fungsi ekstra ke { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Kembalikan ke URL Awal
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Tambahkan ke Essentials ({ $num } / { $max } slot terisi)
+    .label = Tambahkan ke Essentials
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
     .label = Hapus dari Essentials
     .accesskey = R
@@ -59,6 +64,8 @@ zen-generic-next = Lanjut
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
 zen-site-data-setting-block = Diblokir
+zen-site-data-protections-enabled = Diaktifkan
+zen-site-data-protections-disabled = Dinonaktifkan
 zen-site-data-setting-cross-site = Kuki Lintas Situs
 zen-site-data-security-info-extension = 
     .label = Ekstensi
@@ -72,8 +79,14 @@ zen-site-data-get-addons =
     .label = Tambahkan Ekstensi
 zen-site-data-site-settings = 
     .label = Semua Pengaturan Situs
-zen-site-data-share = 
-    .label = Bagikan Halaman Ini
+zen-site-data-header-share = 
+    .tooltiptext = Bagikan Halaman Ini
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Masuki Mode Membaca
+zen-site-data-header-screenshot = 
+    .tooltiptext = Ambil Tangkapan Layar
+zen-site-data-header-bookmark = 
+    .tooltiptext = Markahi Laman Ini
 zen-urlbar-copy-url-button = 
     .tooltiptext = Salin URL
 zen-site-data-setting-site-protection = Perlindungan Pelacakan
@@ -82,3 +95,16 @@ zen-site-data-setting-site-protection = Perlindungan Pelacakan
 
 zen-site-data-panel-feature-callout-title = Rumah baru untuk add-on, izin, dan lainnya
 zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengaturan situs, melihat info keamanan, mengakses ekstensi, dan melakukan tindakan umum.
+zen-open-link-in-glance = 
+    .label = Buka Tautan di Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Update Complete!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = View Release Notes
+zen-sidebar-notification-restart-safe-mode-label = Something broke?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Restart in Safe Mode

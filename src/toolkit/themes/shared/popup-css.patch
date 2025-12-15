@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index 9533f5e0fee5fb0805ae4b65e56307986ee26417..a3a06dce50142354b78561ecfb70ba45fe10b9c1 100644
+index c2618b86d7e8bb71f9f7f71ef9916c8140ca1ead..9e2006015e22f1ac043c46066c4c9a85fe053a21 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
 @@ -22,8 +22,8 @@ panel {

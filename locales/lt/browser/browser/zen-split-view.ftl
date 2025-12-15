@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
@@ -15,5 +19,5 @@ zen-split-view-modifier-header = Skaidymo rodinys
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktyvuoti perskyrimą
 zen-split-view-modifier-enabled-toast = Skaidymo rodinio pertvarkymas įjungtas.
-zen-split-view-modifier-enabled-toast-description = Nutempkite rodinį, kad jį pertvarkytumėte. Paspauskite Gr, kad išeitumėte.
+zen-split-view-modifier-enabled-toast-description = Nutempkite rodinį, kad pertvarkytumėte. Paspauskite Gr, kad išeitumėte.
 zen-split-view-modifier-disabled-toast = Skaidymo rodinio pertvarkymas išjungtas.

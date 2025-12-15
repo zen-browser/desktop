@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Giao diện
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Không gian làm việc
 zen-tabs-unloader-enabled = 
     .label = Mở giải phóng thẻ
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Use themed background for compact toolbar
 zen-workspace-continue-where-left-off = 
@@ -70,7 +81,7 @@ zen-settings-workspaces-description = Với các không gian làm việc, bạn 
 zen-settings-workspaces-enabled = 
     .label = Bật không gian làm việc
 zen-settings-workspaces-hide-default-container-indicator = 
-    .label = Ẩn chỉ báo vùng chứa mặc định trên thanh thẻ
+    .label = Ẩn container mặc định trên thanh công cụ
 zen-key-unsaved = Lối tắt không an toàn! Xin hãy làm an toàn nó bằng cách ấn nút "Escape/Esc" sau khi nhập lại nó.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 pane-zen-theme-title = Cài đặt chủ đề
@@ -141,7 +152,7 @@ zen-urlbar-behavior-label = Hành vi thanh đường dẫn
 zen-urlbar-behavior-normal = 
     .label = Bình thường
 zen-urlbar-behavior-floating-on-type = 
-    .label = Tách ra khi nhập
+    .label = Tách ra khi nhập chữ
 zen-urlbar-behavior-float = 
     .label = Luôn luôn tách
 pane-zen-CKS-title = Phím tắt
@@ -170,7 +181,7 @@ zenCKSOption-group-zen-split-view = Chế độ xem chia đôi
 zenCKSOption-group-devTools = Công cụ nhà phát triển
 zen-key-quick-restart = Khởi động lại nhanh
 zen-window-new-shortcut = Cửa sổ mới
-zen-tab-new-shortcut = Tab mới
+zen-tab-new-shortcut = Thẻ mới
 zen-key-redo = Hoàn tác
 zen-restore-last-closed-tab-shortcut = Khôi phục lại thẻ gần nhất đã đóng
 zen-location-open-shortcut = Mở đường dẫn
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Bật tối ưu Hiệu năng
 zen-devtools-toggle-storage-shortcut = Bật lưu trữ
 zen-devtools-toggle-dom-shortcut = Bật DOM
 zen-devtools-toggle-accessibility-shortcut = Bật trợ năng
+zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs

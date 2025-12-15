@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 pane-zen-looks-title = Aspetto
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
@@ -40,6 +44,13 @@ category-zen-workspaces =
 pane-settings-workspaces-title = Workspace
 zen-tabs-unloader-enabled = 
     .label = Abilita Scaricamento Scheda
+zen-tabs-close-on-back-with-no-history = 
+    .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+zen-tabs-cycle-by-attribute = 
+    .label = Ctrl+Tab cicla solo tra le schede Essenziali o Spazi
+zen-tabs-cycle-ignore-pending-tabs = 
+    .label = Ignora le schede in sospeso quando si cicla con Ctrl+Tab
+zen-tabs-cycle-by-attribute-warning = Se abilitato, Ctrl+Tab ciclarà in ordine di utilizzo recente
 zen-look-and-feel-compact-toolbar-themed = 
     .label = Utilizza lo sfondo a tema per la barra degli strumenti compatta
 zen-workspace-continue-where-left-off = 
@@ -219,7 +230,7 @@ zen-key-exit-full-screen = Esci Da Schermo Intero
 zen-ai-chatbot-sidebar-shortcut = Attiva/Disattiva La Barra Laterale Chat AI
 zen-key-inspector-mac = Attiva/Disattiva Ispeziona Elemento (Mac)
 zen-toggle-sidebar-shortcut = Attiva/Disattiva La Barra Laterale di Firefox
-zen-toggle-pin-tab-shortcut = Toggle Pin Tab
+zen-toggle-pin-tab-shortcut = Attiva/Disattiva Scheda Pin
 zen-reader-mode-toggle-shortcut-other = Attiva/Disattiva Modalità Lettore
 zen-picture-in-picture-toggle-shortcut = Attiva/Disattiva Immagine
 zen-nav-reload-shortcut-2 = Ricarica Pagina
@@ -300,3 +311,4 @@ zen-devtools-toggle-performance-shortcut = Attiva/disattiva Prestazioni
 zen-devtools-toggle-storage-shortcut = Attiva/Disattiva Archiviazione
 zen-devtools-toggle-dom-shortcut = Attiva/Disattiva DOM
 zen-devtools-toggle-accessibility-shortcut = Attiva/Disattiva Accessibilità
+zen-close-all-unpinned-tabs-shortcut = Chiudi Tutte Le Schede Non Bloccate

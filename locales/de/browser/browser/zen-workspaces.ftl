@@ -1,25 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 zen-panel-ui-workspaces-text = Arbeitsbereiche
 zen-panel-ui-workspaces-create = 
     .label = Arbeitsbereich erstellen
 zen-panel-ui-folder-create = 
     .label = Ordner erstellen
 zen-panel-ui-new-empty-split = 
-    .label = Split View erstellen
+    .label = Neuen Split erstellen
 zen-workspaces-panel-context-delete = 
     .label = Arbeitsbereich löschen
     .accesskey = D
 zen-workspaces-panel-change-name = 
-    .label = Name ändern
+    .label = Namen ändern
 zen-workspaces-panel-change-icon = 
     .label = Symbol ändern
 zen-workspaces-panel-context-default-profile = 
     .label = Profil festlegen
 zen-workspaces-panel-unload = 
     .label = Arbeitsbereich entladen
-zen-workspaces-how-to-reorder-title = Wie Arbeitsbereiche neu angeordnet werden
-zen-workspaces-how-to-reorder-desc = Ziehen Sie die Arbeitsbereich-Symbole am unteren Rand der Seitenleiste, um sie neu anzuordnen
+zen-workspaces-how-to-reorder-title = So ordnest du Arbeitsbereiche neu an
+zen-workspaces-how-to-reorder-desc = Zieh die Arbeitsbereich-Symbole am unteren Rand der Seitenleiste, um sie neu anzuordnen
 zen-workspaces-change-theme = 
-    .label = Design bearbeiten
+    .label = Design anpassen
 zen-workspaces-panel-context-open = 
     .label = Arbeitsbereich öffnen
     .accesskey = O
@@ -27,7 +31,7 @@ zen-workspaces-panel-context-edit =
     .label = Arbeitsbereich bearbeiten
     .accesskey = E
 context-zen-change-workspace-tab = 
-    .label = Tab(s) zu Arbeitsbereich verschieben
+    .label = Tabs zu Arbeitsbereich verschieben
     .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
     .value = Arbeitsbereiche
@@ -42,14 +46,20 @@ zen-panel-ui-gradient-generator-algo-triadic =
     .label = Triadisch
 zen-panel-ui-gradient-generator-algo-floating = 
     .label = Fließend
-zen-panel-ui-gradient-click-to-add = Klicken Sie, um eine Farbe hinzuzufügen
+zen-panel-ui-gradient-click-to-add = Klick hier, um eine Farbe hinzuzufügen
 zen-workspace-creation-name = 
     .placeholder = Name des Arbeitsbereichs
 zen-workspaces-panel-context-reorder = 
     .label = Arbeitsbereiche neu anordnen
 zen-workspace-creation-profile = Profil
-    .tooltiptext = Profile werden verwendet, um Cookies und Website-Daten zwischen Arbeitsbereichen zu trennen.
+    .tooltiptext = Profile trennen Cookies und Website-Daten zwischen verschiedenen Arbeitsbereichen.
 zen-workspace-creation-header = Arbeitsbereich erstellen
-zen-workspace-creation-label = Arbeitsbereiche werden verwendet, um Ihre Tabs und Sitzungen zu organisieren.
+zen-workspace-creation-label = Arbeitsbereiche helfen dir, deine Tabs und Sitzungen zu organisieren.
 zen-workspaces-delete-workspace-title = Arbeitsbereich löschen?
-zen-workspaces-delete-workspace-body = Sind Sie sicher, dass Sie { $name } löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
+zen-workspaces-delete-workspace-body = Möchtest du { $name } wirklich löschen? Das lässt sich nicht rückgängig machen.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs geschlossen! Nutze <span>{ $shortcut }</span>, um das rückgängig zu machen.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Aufräumen
+    .tooltiptext = Alle nicht angehefteten Tabs schließen

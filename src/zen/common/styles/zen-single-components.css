@@ -495,10 +495,6 @@ body > #confetti {
 }
 
 @media -moz-pref('zen.theme.hide-unified-extensions-button') {
-  #unified-extensions-button {
-    display: none !important;
-  }
-
   #unified-extensions-button:not([showing]) {
     display: none !important;
   }

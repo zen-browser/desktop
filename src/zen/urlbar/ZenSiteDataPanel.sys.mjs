@@ -4,6 +4,11 @@
 
 import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
+const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
+  'zen.theme.hide-unified-extensions-button',
+  true
+);
+
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -25,7 +30,7 @@ export class nsZenSiteDataPanel {
     this.unifiedPanelView = 'unified-extensions-view';
     this.extensionsPanelView = 'original-unified-extensions-view';
 
-    if (Services.prefs.getBoolPref('zen.theme.hide-unified-extensions-button', true)) {
+    if (ADDONS_BUTTONS_HIDDEN) {
       this.window.gUnifiedExtensions._panel = this.unifiedPanel;
 
       // Remove the old permissions dialog
@@ -47,8 +52,10 @@ export class nsZenSiteDataPanel {
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').before(button);
 
-    this.unifiedPanelButton = this.window.gUnifiedExtensions._button = this.anchor;
     this.extensionsPanelButton = this.document.getElementById('unified-extensions-button');
+    this.window.gUnifiedExtensions._button = ADDONS_BUTTONS_HIDDEN
+      ? this.anchor
+      : this.extensionsPanelButton;
 
     this.document
       .getElementById('nav-bar')
@@ -590,17 +597,7 @@ export class nsZenSiteDataPanel {
           null,
           this.unifiedPanel,
           this.unifiedPanelView,
-          this.unifiedPanelButton
-        );
-        break;
-      }
-      case 'unified-extensions-button': {
-        this.window.gUnifiedExtensions.togglePanel(
-          event,
-          null,
-          this.extensionsPanel,
-          this.extensionsPanelView,
-          this.extensionsPanelButton
+          this.anchor
         );
         break;
       }

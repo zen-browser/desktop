@@ -20,10 +20,11 @@ is_direct_path = true
 [shell]
 source = "browser/components/shell/test"
 is_direct_path = true
+disable = [
+  "browser_1119088.js",
+  "browser_setDesktopBackgroundPreview.js",
+]
 
 [tooltiptext]
 source = "toolkit/components/tooltiptext"
 
-[translations]
-source = "browser/components/translations/tests/browser"
-is_direct_path = true

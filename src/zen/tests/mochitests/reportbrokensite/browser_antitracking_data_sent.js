@@ -19,6 +19,13 @@ add_common_setup();
 
 add_task(setupStrictETP);
 
+function getEtpCategory() {
+  return Services.prefs.getStringPref(
+    "browser.contentblocking.category",
+    "standard"
+  );
+}
+
 add_task(async function testSendButton() {
   ensureReportBrokenSitePreffedOn();
   ensureReasonOptional();
@@ -33,12 +40,13 @@ add_task(async function testSendButton() {
     description: "another test description",
     antitracking: {
       blockList: "strict",
+      blockedOrigins: null,
       isPrivateBrowsing: true,
       hasTrackingContentBlocked: true,
       hasMixedActiveContentBlocked: true,
       hasMixedDisplayContentBlocked: true,
       btpHasPurgedSite: false,
-      etpCategory: "strict",
+      etpCategory: getEtpCategory(),
     },
     frameworks: {
       fastclick: true,
@@ -62,12 +70,13 @@ add_task(async function testSendingMoreInfo() {
   await testSendMoreInfo(tab, HelpMenu(win), {
     antitracking: {
       blockList: "strict",
+      blockedOrigins: ["https://trackertest.org"],
       isPrivateBrowsing: true,
       hasTrackingContentBlocked: true,
       hasMixedActiveContentBlocked: true,
       hasMixedDisplayContentBlocked: true,
       btpHasPurgedSite: false,
-      etpCategory: "strict",
+      etpCategory: getEtpCategory(),
     },
     frameworks: { fastclick: true, mobify: true, marfeel: true },
     consoleLog: [

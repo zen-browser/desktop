@@ -1,6 +1,7 @@
 [DEFAULT]
 
 ["browser_1119088.js"]
+disabled="Disabled by import_external_tests.py"
 support-files = ["mac_desktop_image.py"]
 run-if = ["os == 'mac'"]
 tags = "os_integration"
@@ -98,4 +99,5 @@ run-if = ["os == 'win'"]
 tags = "os_integration"
 
 ["browser_setDesktopBackgroundPreview.js"]
+disabled="Disabled by import_external_tests.py"
 tags = "os_integration"

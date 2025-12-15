@@ -23,13 +23,16 @@ BROWSER_CHROME_MANIFESTS += [
 
 FILE_SUFFIX = "]"
 
+
 def get_tests_manifest():
   with open(EXTERNAL_TESTS_MANIFEST, "rb") as f:
     return tomllib.load(f)
 
+
 def die_with_error(message):
   print(f"ERROR: {message}")
   exit(1)
+
 
 def validate_tests_path(path, files, ignore_list):
   for ignore in ignore_list:
@@ -37,6 +40,7 @@ def validate_tests_path(path, files, ignore_list):
       die_with_error(f"Ignore file '{ignore}' not found in tests folder '{path}'")
   if "browser.toml" not in files or "browser.js" in ignore_list:
     die_with_error(f"'browser.toml' not found in tests folder '{path}'")
+
 
 def disable_and_replace_manifest(manifest, output_path):
   toml_file = os.path.join(output_path, "browser.toml")
@@ -55,6 +59,7 @@ def disable_and_replace_manifest(manifest, output_path):
     data = data.replace(replacement, manifest["replace-manifest"][replacement])
   with open(toml_file, "w") as f:
     f.write(data)
+
 
 def import_test_suite(test_suite, source_path, output_path, ignore_list, manifest, is_direct_path=False):
   print(f"Importing test suite '{test_suite}' from '{source_path}'")
@@ -79,6 +84,7 @@ def import_test_suite(test_suite, source_path, output_path, ignore_list, manifes
       shutil.copy2(s, d)
   disable_and_replace_manifest(manifest[test_suite], output_path)
 
+
 def write_moz_build_file(manifest):
   moz_build_path = os.path.join(EXTERNAL_TESTS_OUTPUT, "moz.build")
   print(f"Writing moz.build file to '{moz_build_path}'")
@@ -88,10 +94,12 @@ def write_moz_build_file(manifest):
       f.write(f'\t"{test_suite}/browser.toml",\n')
     f.write(FILE_SUFFIX)
 
+
 def make_sure_ordered_tests(manifest):
   ordered_tests = sorted(manifest.keys())
   if list(manifest.keys()) != ordered_tests:
     die_with_error("Test suites in manifest.toml are not in alphabetical order.")
+
 
 def main():
   manifest = get_tests_manifest()
@@ -102,14 +110,15 @@ def main():
   make_sure_ordered_tests(manifest)
   for test_suite, config in manifest.items():
     import_test_suite(
-      test_suite=test_suite,
-      source_path=config["source"],
-      output_path=os.path.join(EXTERNAL_TESTS_OUTPUT, test_suite),
-      ignore_list=config.get("ignore", []),
-      is_direct_path=config.get("is_direct_path", False),
-      manifest=manifest
+        test_suite=test_suite,
+        source_path=config["source"],
+        output_path=os.path.join(EXTERNAL_TESTS_OUTPUT, test_suite),
+        ignore_list=config.get("ignore", []),
+        is_direct_path=config.get("is_direct_path", False),
+        manifest=manifest
     )
   write_moz_build_file(manifest)
+
 
 if __name__ == "__main__":
   main()

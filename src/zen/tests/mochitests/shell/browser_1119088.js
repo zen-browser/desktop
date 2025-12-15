@@ -13,9 +13,7 @@ if (AppConstants.isPlatformAndVersionAtLeast("macosx", 23.0)) {
 
 const kDesktopCheckerScriptPath =
   "browser/browser/components/shell/test/mac_desktop_image.py";
-const kDefaultBackgroundImage_10_14 =
-  "/Library/Desktop Pictures/Solid Colors/Teal.png";
-const kDefaultBackgroundImage_10_15 =
+const kDefaultBackgroundImage =
   "/System/Library/Desktop Pictures/Solid Colors/Teal.png";
 
 ChromeUtils.defineESModuleGetters(this, {
@@ -81,11 +79,7 @@ function setAndCheckDesktopBackgroundCLI(imagePath) {
 // in the automated test environment, not the OS default.
 function restoreDefaultBackground() {
   let defaultBackgroundPath;
-  if (AppConstants.isPlatformAndVersionAtLeast("macosx", 19)) {
-    defaultBackgroundPath = kDefaultBackgroundImage_10_15;
-  } else {
-    defaultBackgroundPath = kDefaultBackgroundImage_10_14;
-  }
+  defaultBackgroundPath = kDefaultBackgroundImage;
   setAndCheckDesktopBackgroundCLI(defaultBackgroundPath);
 }
 

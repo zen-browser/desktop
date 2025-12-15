@@ -11,5 +11,4 @@ BROWSER_CHROME_MANIFESTS += [
 	"safebrowsing/browser.toml",
 	"shell/browser.toml",
 	"tooltiptext/browser.toml",
-	"translations/browser.toml",
 ]

@@ -17,6 +17,7 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
 
 MOCHITEST_NAME = "mochitests"
 
+
 def copy_ignore_prefs():
   print("Copying ignorePrefs.json from src/zen/tests to engine/testing/mochitest...")
   # if there are prefs that dont exist on output file, copy them from input file

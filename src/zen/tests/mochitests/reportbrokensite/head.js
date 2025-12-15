@@ -27,6 +27,11 @@ const REPORTABLE_PAGE_URL2 = REPORTABLE_PAGE_URL.replace(".com", ".org");
 
 const REPORTABLE_PAGE_URL3 = `${BASE_URL}example_report_page.html`;
 
+const SUMO_BASE_URL = Services.urlFormatter.formatURLPref(
+  "app.support.baseURL"
+);
+const LEARN_MORE_TEST_URL = `${SUMO_BASE_URL}report-broken-site`;
+
 const NEW_REPORT_ENDPOINT_TEST_URL = `${BASE_URL}sendMoreInfoTestEndpoint.html`;
 
 const PREFS = {
@@ -54,6 +59,8 @@ function add_common_setup() {
       for (const prefName of Object.values(PREFS)) {
         Services.prefs.clearUserPref(prefName);
       }
+      Services.telemetry.clearEvents();
+      Services.fog.testResetFOG();
     });
   });
 }
@@ -399,12 +406,26 @@ class ReportBrokenSiteHelper {
     return this.getViewNode("report-broken-site-popup-description");
   }
 
+  get learnMoreLink() {
+    return this.getViewNode("report-broken-site-popup-learn-more-link");
+  }
+
   get sendMoreInfoLink() {
     return this.getViewNode("report-broken-site-popup-send-more-info-link");
   }
 
   get backButton() {
     return this.mainView.querySelector(".subviewbutton-back");
+  }
+
+  get blockedTrackersCheckbox() {
+    return this.getViewNode(
+      "report-broken-site-popup-blocked-trackers-checkbox"
+    );
+  }
+
+  set blockedTrackersCheckbox(checked) {
+    this.blockedTrackersCheckbox.checked = checked;
   }
 
   get sendButton() {

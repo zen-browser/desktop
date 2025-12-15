@@ -38,6 +38,8 @@ async function reformatExpectedWebCompatInfo(tab, overrides) {
   const experiments = overrides.experiments || [];
   const atOverrides = overrides.antitracking;
   const blockList = atOverrides?.blockList ?? antitracking.blockList;
+  const blockedOrigins =
+    atOverrides?.blockedOrigins ?? antitracking.blockedOrigins ?? [];
   const hasMixedActiveContentBlocked =
     atOverrides?.hasMixedActiveContentBlocked ??
     antitracking.hasMixedActiveContentBlocked;
@@ -89,6 +91,7 @@ async function reformatExpectedWebCompatInfo(tab, overrides) {
         addons,
         applicationName,
         blockList,
+        blockedOrigins,
         buildId: snapshot.application.buildID,
         devicePixelRatio: parseInt(devicePixelRatio),
         experiments,
@@ -149,7 +152,6 @@ async function reformatExpectedWebCompatInfo(tab, overrides) {
 
   const { gfxData } = reformatted.details.additionalData;
   for (const optional of [
-    "direct2DEnabled",
     "directWriteEnabled",
     "directWriteVersion",
     "clearTypeParameters",

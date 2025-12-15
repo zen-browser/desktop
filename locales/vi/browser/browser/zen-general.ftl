@@ -8,11 +8,11 @@ tab-context-zen-reset-pinned-tab =
     .label = Đặt lại thẻ đã ghim
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Thêm vào Cần thiết
+    .label = Thêm vào thẻ chính
     .accesskey = E
-tab-context-zen-add-essential-badge = Đã lấp đầy các vị trí { $num } / { $max }
+tab-context-zen-add-essential-badge = Đã dùng { $num } / { $max } vị trí
 tab-context-zen-remove-essential = 
-    .label = Loại ra khỏi Cần thiết
+    .label = Gỡ khỏi thẻ chính
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Thay thế đường dường dẫn đã ghim với hiện tại
@@ -22,7 +22,7 @@ zen-shortcuts-corrupted = Tệp phím tắt { -brand-short-name } của bạn đ
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Thanh đường dẫn mới đã được kích hoạt, loại bỏ chức năng của trang "thẻ mới". <br/><br/>
-    Hãy thử tạo một thể để xem cái "mới" của thành đường dẫn!
+    Hãy thử tạo một thẻ để xem cái "mới" của thanh đường dẫn!
 zen-disable = Vô hiệu hóa
 pictureinpicture-minimize-btn = 
     .aria-label = Thu nhỏ
@@ -43,8 +43,8 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods
 zen-toggle-compact-mode-button = 
-    .label = Chế độ tối giản
-    .tooltiptext = Bật chế độ tối giản
+    .label = Chế độ thu gọn
+    .tooltiptext = Bật Chế độ thu gọn
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -105,6 +105,6 @@ zen-sidebar-notification-updated-heading = Cập nhật hoàn tất!
 zen-sidebar-notification-updated-label = Có gì mới trong { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Xem ghi chú phát hành
-zen-sidebar-notification-restart-safe-mode-label = Có gì đó đã bị hỏng?
+zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Khởi động lại ở Chế độ an toàn

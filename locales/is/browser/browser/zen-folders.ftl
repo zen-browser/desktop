@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Leita í { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Endurnefna möppu
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Afpakka möppu
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Ný undirmappa
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Eyða möppu
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Umbreyta möppu í svæði
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Skipta um svæði...
 zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = Breyta tákni
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Senda virkt inn í þessa möppu
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Afhlaða alla flipa
+zen-folders-search-no-results = Engir flipar samsvara þessari leit 🤔

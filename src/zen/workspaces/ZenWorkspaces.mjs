@@ -23,7 +23,7 @@ class nsZenWorkspaces {
     direction: null,
   };
 
-  _workspaceCache = {};
+  _workspaceCache = [];
 
   #lastScrollTime = 0;
 
@@ -806,7 +806,7 @@ class nsZenWorkspaces {
 
   getWorkspaceFromId(id) {
     try {
-      return this._workspaceCache.find((workspace) => workspace.uuid === id);
+      return this.getWorkspaces().find((workspace) => workspace.uuid === id);
     } catch {
       return null;
     }

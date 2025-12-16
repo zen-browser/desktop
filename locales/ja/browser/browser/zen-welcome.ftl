@@ -13,14 +13,14 @@ zen-welcome-dont-set-default-browser = { -brand-short-name }を既定ブラウ�
 zen-welcome-initial-essentials-title = キータブは常に手の届く範囲にあります
 zen-welcome-initial-essentials-description-1 = いくつ開いても、最も重要なタブに簡単にアクセスでき、常に手元にあるようにします。
 zen-welcome-initial-essentials-description-2 = 重要なタブは、ワークスペースに関係なく常に表示されます。
-zen-welcome-workspace-colors-title = ワークスペース、あなたの色
+zen-welcome-workspace-colors-title = あなたのワークスペース、あなたの色
 zen-welcome-workspace-colors-description = 各ワークスペースに独自の色のアイデンティティを与えることで、ブラウザをパーソナライズします。
 zen-welcome-start-browsing-title =
     準備完了？<br/>
-    さあ、始めましょう!
-zen-welcome-start-browsing-description-1 = 準備完了です。下のボタンをクリックして、 { -brand-short-name } でブラウズを開始してください。
+    さあ、始めましょう！
+zen-welcome-start-browsing-description-1 = 準備完了です。下のボタンをクリックして、{ -brand-short-name }でブラウズを開始してください。
 zen-welcome-start-browsing = 飛び込んで！
 zen-welcome-default-search-title = 既定の検索エンジン
 zen-welcome-default-search-description = デフォルトの検索エンジンを選択してください。後でいつでも変更できます！
 zen-welcome-skip-button = スキップ
-zen-welcome-finished = Zen の設定が完了しました！
+zen-welcome-finished = Zenの設定が完了しました！

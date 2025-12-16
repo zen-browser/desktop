@@ -3,22 +3,22 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = 使用中のプロファイル
-unified-extensions-description = 拡張機能は、 { -brand-short-name } に多くの追加機能をもたらすために使用されます。
+unified-extensions-description = 拡張機能は{ -brand-short-name }に多く追加機能をもたらすために使用されます。
 tab-context-zen-reset-pinned-tab = 
-    .label = ピン留めされたタブをリセット
+    .label = 固定したタブをリセット
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Essentialsに追加
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } スロットがいっぱいです
+tab-context-zen-add-essential-badge = { $num } / { $max }スロットがいっぱいです
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = ピン留めされた URL を現在のものに置き換え
+    .label = 固定したURLを現在のURLに置き換える
     .accesskey = C
-zen-themes-corrupted = { -brand-short-name } Modファイルが破損しています。既定のテーマにリセットされました。
-zen-shortcuts-corrupted = { -brand-short-name } ショートカットファイルが破損しています。既定のショートカットにリセットされました。
+zen-themes-corrupted = { -brand-short-name }モッドファイルが文字化けしています。デフォルトのテーマにリセットされました。
+zen-shortcuts-corrupted = { -brand-short-name }ショートカットファイルが文字化けしています。デフォルトのショートカットにリセットされました。
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     新しいURLバーが有効になり、新しいタブページの必要性がなくなりました。<br/><br/>
@@ -28,20 +28,20 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
-zen-panel-ui-gradient-generator-saved-message = グラデーションを正常に保存しました！
-zen-copy-current-url-confirmation = URLをクリップボードにコピーしました
+zen-panel-ui-gradient-generator-saved-message = グラデーションを無事に保存しました！
+zen-copy-current-url-confirmation = URLをクリップボードにコピーしました！
 zen-general-cancel-label = 
     .label = キャンセル
 zen-general-confirm = 
     .label = 確定
-zen-pinned-tab-replaced = ピン留めされたタブのURLが現在のURLに置き換えられました！
-zen-tabs-renamed = タグの名前は正常に変更されました
-zen-background-tab-opened-toast = 新しい背景タブが開きました!
+zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
+zen-tabs-renamed = タグの名前は無事に変更されました！
+zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
 zen-library-sidebar-workspaces = 
     .label = スペース
 zen-library-sidebar-mods = 
-    .label = Mods
+    .label = モッド
 zen-toggle-compact-mode-button = 
     .label = コンパクトモード
     .tooltiptext = コンパクトモードの切り替え
@@ -51,7 +51,7 @@ zen-toggle-compact-mode-button =
 zen-learn-more-text = もっと詳しく知る
 zen-close-label = 閉じる
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = 検索...
+    .placeholder = 検索…
 zen-icons-picker-emoji = 
     .label = 絵文字
 zen-icons-picker-svg = 
@@ -63,16 +63,16 @@ zen-generic-more = その他
 zen-generic-next = 次へ
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 許可済み
-zen-site-data-setting-block = ブロック中
+zen-site-data-setting-block = ブロック済み
 zen-site-data-protections-enabled = 有効
 zen-site-data-protections-disabled = 無効
 zen-site-data-setting-cross-site = クロスサイトクッキー
 zen-site-data-security-info-extension = 
     .label = 拡張機能
 zen-site-data-security-info-secure = 
-    .label = 安全
+    .label = 大丈夫
 zen-site-data-security-info-not-secure = 
-    .label = 保護されていません
+    .label = 大丈夫じゃない
 zen-site-data-manage-addons = 
     .label = 拡張機能の管理
 zen-site-data-get-addons = 
@@ -86,25 +86,25 @@ zen-site-data-header-reader-mode =
 zen-site-data-header-screenshot = 
     .tooltiptext = スクリーンショットを撮る
 zen-site-data-header-bookmark = 
-    .tooltiptext = このページをブックマーク
+    .tooltiptext = このページをブックマークに登録する
 zen-urlbar-copy-url-button = 
-    .tooltiptext = URLをコピー
+    .tooltiptext = URLをコピーする
 zen-site-data-setting-site-protection = トラッキング保護
 
 # Section: Feature callouts
 
 zen-site-data-panel-feature-callout-title = アドオン、権限などの新しいホーム
-zen-site-data-panel-feature-callout-subtitle = アイコンをクリックすると、サイト設定の管理、セキュリティ情報の表示、拡張機能へのアクセス、一般的なアクションの実行が行えます。
+zen-site-data-panel-feature-callout-subtitle = アイコンをクリックすると、サイト設定の管理、セキュリティ情報の表示、拡張機能へのアクセス、一般的なアクションが行えます。
 zen-open-link-in-glance = 
-    .label = Glance でリンクを開く
+    .label = Glanceでリンクを開く
     .accesskey = G
 zen-sidebar-notification-updated-heading = アップデートが完了しました！
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = { -brand-short-name } の新機能
+zen-sidebar-notification-updated-label = { -brand-short-name }の新機能
 zen-sidebar-notification-updated-tooltip = 
-    .title = リリースノートを表示
+    .title = リリースノートを表示する
 zen-sidebar-notification-restart-safe-mode-label = 何か壊れましたか？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = セーフモードで再起動
+    .title = セーフモードで再起動する

@@ -23,6 +23,8 @@ class nsZenWorkspaces {
     direction: null,
   };
 
+  _workspaceCache = {};
+
   #lastScrollTime = 0;
 
   bookmarkMenus = [

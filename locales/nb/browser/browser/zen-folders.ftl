@@ -3,15 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Søk { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Endre mappenavn
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Pakk ut mappe
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Ny undermappe
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Slett mappe
 zen-folders-panel-convert-folder-to-space = 
     .label = Convert folder to Space
 zen-folders-panel-change-folder-space = 

@@ -850,10 +850,10 @@ class nsZenWorkspaces {
     return this._workspaceCache;
   }
 
-  async restoreWorkspacesFromSessionStore(aWinData) {
-    this._workspaceCache = aWinData.spaces || [
-      await this.createAndSaveWorkspace('Space', undefined, true),
-    ];
+  async restoreWorkspacesFromSessionStore(aWinData = {}) {
+    this._workspaceCache = aWinData.spaces?.length
+      ? aWinData.spaces
+      : [await this.createAndSaveWorkspace('Space', undefined, true)];
     this.activeWorkspace = aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     await this.initializeWorkspaces();
     this.#hasInitialized = true;

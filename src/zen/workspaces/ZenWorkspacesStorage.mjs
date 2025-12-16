@@ -26,8 +26,7 @@ window.ZenWorkspaceBookmarksStorage = {
           workspace_uuid TEXT NOT NULL,
           created_at INTEGER NOT NULL,
           updated_at INTEGER NOT NULL,
-          UNIQUE(bookmark_guid, workspace_uuid),
-          FOREIGN KEY(workspace_uuid) REFERENCES zen_workspaces(uuid) ON DELETE CASCADE,
+          UNIQUE(bookmark_guid),
           FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
           )
       `);
@@ -46,8 +45,7 @@ window.ZenWorkspaceBookmarksStorage = {
           workspace_uuid TEXT NOT NULL,
           change_type TEXT NOT NULL,
           timestamp INTEGER NOT NULL,
-          UNIQUE(bookmark_guid, workspace_uuid),
-          FOREIGN KEY(workspace_uuid) REFERENCES zen_workspaces(uuid) ON DELETE CASCADE,
+          UNIQUE(bookmark_guid),
           FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
           )
       `);

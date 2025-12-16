@@ -5,16 +5,16 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] タブを分割(二個以上のタブを選択してください)
-           *[other] 選択したタブを{ $tabCount } 個に分割
+            [1] タブを分割する（２つ以上のタブを選択してください）
+           *[other] 選択したタブを{ $tabCount }つに分割する
         }
     .accesskey = S
 zen-split-link = 
-    .label = リンクを新しいタブに分割
+    .label = リンクを新しいタブに分割する
     .accesskey = S
 zen-split-view-modifier-header = 分割表示
 zen-split-view-modifier-activate-reallocation = 
     .label = 再配置を有効にする
-zen-split-view-modifier-enabled-toast = 分割ビューの再配置はONになっています。
-zen-split-view-modifier-enabled-toast-description = ドラッグアンドドロップでビューを並べ替えます。Escキーを押して操作をキャンセルします。
-zen-split-view-modifier-disabled-toast = 分割ビューの再配置はOFFになっています。
+zen-split-view-modifier-enabled-toast = 分割表示の再配置はONになっています。
+zen-split-view-modifier-enabled-toast-description = ドラッグアンドドロップで表示を並べ替えます。Escキーを押して操作をキャンセルします。
+zen-split-view-modifier-disabled-toast = 分割表示の再配置はOFFになっています。

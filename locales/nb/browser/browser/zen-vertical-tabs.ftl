@@ -3,37 +3,37 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Tabs on the right
+    .label = Faner til høyre
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Compact Mode
+    .label = Kompakt modus
 zen-toolbar-context-compact-mode-enable = 
-    .label = Enable compact mode
+    .label = Aktiver kompakt modus
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Skjul sidepanelet
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Hide toolbar
+    .label = Skjul verktøylinjen
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Hide both
+    .label = Skjul begge
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Ny mappe
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = Utvid sidepanelet
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Opprett ny...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
-        { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+        {$tabCount ->
+            [one] Avlast og bytt til fane
+           *[other] Avlast { $tabCount } faner og bytt til den første
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
-        { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+        {$tabCount ->
+            [one] Tilbakestill og fest fane
+           *[other] Tilbakestill og fest { $tabCount } faner
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = Tilbake til festet nettadresse

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = タブバーを右側に表示
+    .label = タブバーを右側に表示する
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = コンパクトモード
@@ -15,25 +15,25 @@ zen-toolbar-context-compact-mode-just-tabs =
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = ツールバーを隠す
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = 両方隠す
+    .label = サイドバーとツールバーを隠す
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = 新規フォルダ
+    .label = 新しいフォルダ
     .accesskey = N
 sidebar-zen-expand = 
     .label = サイドバーを展開する
 sidebar-zen-create-new = 
-    .label = 新しく作成...
+    .label = 新しく作成する…
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
         [one] タブをアンロードして切り替える
-        *[other] { $tabCount } 個のタブをアンロードして最初のタブに切り替える
+        *[other] { $tabCount }つタブをアンロードして最初タブに切り替える
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-        [one] タブをリセットしてピン留め
-        *[other] タブをリセットして { $tabCount } 個ピン留め
+        [one] タブをリセットして固定する
+        *[other] タブをリセットして{ $tabCount }つタブを固定する
         }
-tab-reset-pin-label = ピン留めしたURLに戻る
+tab-reset-pin-label = 固定したURLに戻る

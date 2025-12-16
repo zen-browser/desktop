@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = fyrirliggjandi notkunarsnið
-unified-extensions-description = Viðaukar eru notaðar til að koma með viðbótarvirkni inn í { -brand-short-name }.
+zen-panel-ui-current-profile-text = núverandi kómenta
+unified-extensions-description = Forritsaukar eru notaðir til að auðga notagildi í { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Endursetja festan flipa
     .accesskey = R
@@ -17,8 +17,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Skipta út festri slóð með núverandi
     .accesskey = P
-zen-themes-corrupted = { -brand-short-name }-mods skráin þín er skemmd. Þetta hefur verið endurstillt á sjálfgefið þema.
-zen-shortcuts-corrupted = { -brand-short-name }-flýtivísaskráin þín er skemmd. Þetta hefur verið endurstillt á sjálfgefnar flýtileiðir.
+zen-themes-corrupted = Viðbrigðisskráin þín { -brand-short-name } er skemmd. Þau notast í staðinn við sjálfgefið þema.
+zen-shortcuts-corrupted = Flýtivísaskráin þín { -brand-short-name } er skemmd. Þeir notast í staðinn við þá sjálfgefnu.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = Nýja vefslóðastikan hefur verið virkjuð sem fjarlægir þörfina á nýjum flipasíðum.<br/><br/>Prófaðu að opna nýjan flipa til að sjá nýju vefslóðastikuna í notkun!
 zen-disable = Gera óvirkt
@@ -39,10 +39,10 @@ zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
 zen-library-sidebar-workspaces = 
     .label = Svæði
 zen-library-sidebar-mods = 
-    .label = Mod-breytingar
+    .label = Viðbrigðissnið
 zen-toggle-compact-mode-button = 
     .label = Þjappað viðmót
-    .tooltiptext = Víxla þjöppuðu viðmóti af/á
+    .tooltiptext = Víxla þjöppuðu viðmóti
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -66,15 +66,15 @@ zen-site-data-protections-enabled = Virkt
 zen-site-data-protections-disabled = Óvirkt
 zen-site-data-setting-cross-site = Millivefja-vefkaka
 zen-site-data-security-info-extension = 
-    .label = Viðauki
+    .label = Forritsauki
 zen-site-data-security-info-secure = 
     .label = Öruggt
 zen-site-data-security-info-not-secure = 
     .label = Ekki öruggt
 zen-site-data-manage-addons = 
-    .label = Sýsla með viðauka
+    .label = Sýsla með forritsauka
 zen-site-data-get-addons = 
-    .label = Bæta við viðauka
+    .label = Bæta við forritsaukum
 zen-site-data-site-settings = 
     .label = Allar vefsvæðastillingar
 zen-site-data-header-share = 
@@ -91,10 +91,10 @@ zen-site-data-setting-site-protection = Vörn gegn rakningu
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = Ný miðstöð fyrir viðauka, aðgangsheimildir og fleira
-zen-site-data-panel-feature-callout-subtitle = Smelltu á táknmyndina til að sýsla með stillingar vefsvæða, skoða öryggisupplýsingar, hafa aðgang að viðaukum og framkvæma ýmsar algengar aðgerðir.
+zen-site-data-panel-feature-callout-title = Ný miðstöð fyrir forritsauka, aðgangsheimildir og fleira
+zen-site-data-panel-feature-callout-subtitle = Smelltu á táknmyndina til að sýsla með stillingar vefsvæða, skoða öryggisupplýsingar, hafa aðgang að forritsaukum og framkvæma ýmsar algengar aðgerðir.
 zen-open-link-in-glance = 
-    .label = Opna tengil í Ágripi
+    .label = Opna tengil í Skyndisýn
     .accesskey = G
 zen-sidebar-notification-updated-heading = Uppfærslu lokið!
 

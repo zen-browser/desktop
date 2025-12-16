@@ -78,33 +78,33 @@ zen-site-data-manage-addons =
 zen-site-data-get-addons = 
     .label = Legg til Utvidelser
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Alle nettstedsinnstillinger
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Del denne siden
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Gå til Lesermodus
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Ta et skjermbilde
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bokmerk denne siden
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopier nettadresse
+zen-site-data-setting-site-protection = Sporingsbeskyttelse
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Et nytt hjem for tillegg, tillatelser, og mer
+zen-site-data-panel-feature-callout-subtitle = Klikk på ikonet for å behandle nettstedsinnstillinger, se sikkerhetsinformasjon, behandle utvidelser, og utføre vanlige handlinger.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Åpne lenke i Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Oppdatering fullført!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Se versjonsnotater
+zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Start på nytt i sikker modus

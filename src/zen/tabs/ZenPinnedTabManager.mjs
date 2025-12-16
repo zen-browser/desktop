@@ -703,56 +703,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       : [separator];
   }
 
-  animateSeparatorMove(movingTabs, dropElement, isPinned) {
-    let draggedTab = movingTabs[0];
-    if (gBrowser.isTabGroupLabel(draggedTab) && draggedTab.group.isZenFolder) {
-      this._isGoingToPinnedTabs = true;
-      return;
-    }
-    if (draggedTab?.group?.hasAttribute('split-view-group')) {
-      draggedTab = draggedTab.group;
-    }
-    const itemsToCheck = this.dragShiftableItems;
-    let translate = movingTabs[isPinned ? movingTabs.length - 1 : 0].getBoundingClientRect().top;
-    if (isPinned) {
-      const rect = draggedTab.getBoundingClientRect();
-      translate += rect.height;
-    }
-    const draggingTabHeight = movingTabs.reduce((acc, item) => {
-      return acc + window.windowUtils.getBoundsWithoutFlushing(item).height;
-    }, 0);
-    if (typeof this._topToNormalTabs === 'undefined') {
-      const rects = itemsToCheck.map((item) => window.windowUtils.getBoundsWithoutFlushing(item));
-      this._topToNormalTabs = rects[0].top + rects.at(-1).height / (isPinned ? 2 : 4);
-    }
-    let topToNormalTabs = this._topToNormalTabs;
-    const isGoingToPinnedTabs =
-      translate < topToNormalTabs && gBrowser.pinnedTabCount - gBrowser._numZenEssentials > 0;
-    const multiplier = isGoingToPinnedTabs !== isPinned ? (isGoingToPinnedTabs ? 1 : -1) : 0;
-    this._isGoingToPinnedTabs = isGoingToPinnedTabs;
-    if (!dropElement) {
-      itemsToCheck.forEach((item) => {
-        item.style.transform = `translateY(${draggingTabHeight * multiplier}px)`;
-      });
-    }
-  }
-
-  getLastTabBound(lastBound, lastTab, isDraggingFolder = false) {
-    if (!lastTab.pinned || isDraggingFolder) {
-      return lastBound;
-    }
-    const shiftedItems = this.dragShiftableItems;
-    let totalHeight = shiftedItems.reduce((acc, item) => {
-      return acc + window.windowUtils.getBoundsWithoutFlushing(item).height;
-    }, 0);
-    if (shiftedItems.length === 1) {
-      // Means the new tab button is not at the top or not visible
-      const lastTabRect = window.windowUtils.getBoundsWithoutFlushing(lastTab);
-      totalHeight += lastTabRect.height;
-    }
-    return lastBound + totalHeight + 6;
-  }
-
   get dragIndicator() {
     if (!this._dragIndicator) {
       this._dragIndicator = document.createElement('div');

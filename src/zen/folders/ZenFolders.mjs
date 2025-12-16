@@ -33,13 +33,10 @@ function formatRelativeTime(timestamp) {
 
 class nsZenFolders extends nsZenDOMOperatedFeature {
   #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref('zen.folders.max-subfolders', 5);
-  #ZEN_EDGE_ZONE_THRESHOLD =
-    Services.prefs.getIntPref('zen.view.drag-and-drop.edge-zone-threshold', 25) / 100;
 
   #popup = null;
   #popupTimer = null;
   #mouseTimer = null;
-  #lastHighlightedGroup = null;
 
   #lastFolderContextMenu = null;
 
@@ -1060,40 +1057,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Highlights the given tab group and removes highlight from any previously highlighted group.
-   * @param {MozTabbrowserTabGroup|undefined|null} folder The folder to highlight, or null to clear highlight.
-   * @param {Array<MozTabbrowserTab>|null} movingTabs The tabs being moved.
-   */
-  highlightGroupOnDragOver(folder, movingTabs) {
-    if (folder === this.#lastHighlightedGroup) return;
-    const tab = movingTabs ? movingTabs[0] : null;
-    if (this.#lastHighlightedGroup && this.#lastHighlightedGroup !== folder) {
-      this.#lastHighlightedGroup.removeAttribute('selected');
-      if (this.#lastHighlightedGroup.collapsed) {
-        this.updateFolderIcon(this.#lastHighlightedGroup, 'close');
-      }
-      this.#lastHighlightedGroup = null;
-    }
-
-    if (
-      folder &&
-      (!folder.hasAttribute('split-view-group') || !folder.hasAttribute('selected')) &&
-      folder !== tab?.group &&
-      !(
-        folder.level >= this.#ZEN_MAX_SUBFOLDERS &&
-        movingTabs?.some((t) => gBrowser.isTabGroupLabel(t))
-      )
-    ) {
-      folder.setAttribute('selected', 'true');
-      folder.style.transform = '';
-      if (folder.collapsed) {
-        this.updateFolderIcon(folder, 'open');
-      }
-      this.#lastHighlightedGroup = folder;
-    }
-  }
-
-  /**
    * Ungroup a tab from all the active groups it belongs to.
    * @param {MozTabbrowserTab[]} tabs The tab to ungroup.
    */
@@ -1101,55 +1064,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     for (const tab of tabs) {
       gBrowser.ungroupTabsUntilNoActive(tab);
     }
-  }
-
-  /**
-   * Handles the dragover logic when dragging a tab or tab group label over another tab group label.
-   * This function determines where the dragged item should be visually dropped (before/after the group, or inside it)
-   * and updates related styling and highlighting.
-   *
-   * @param {MozTabbrowserTabGroupLabel} currentDropElement The tab group label currently being dragged over.
-   * @param {MozTabbrowserTab|MozTabbrowserTabGroupLabel} draggedTab The tab or tab group label being dragged.
-   * @param {number} overlapPercent The percentage of overlap between the dragged item and the drop target.
-   * @param {Array<MozTabbrowserTab>} movingTabs An array of tabs that are currently being dragged together.
-   * @param {boolean} currentDropBefore Indicates if the current drop position is before the middle of the drop element.
-   * @param {string|undefined} currentColorCode The current color code for dragover highlighting.
-   * @returns {{dropElement: MozTabbrowserTabGroup|MozTabbrowserTab|MozTabbrowserTabGroupLabel, colorCode: string|undefined, dropBefore: boolean}}
-   *   An object containing the updated drop element, color code for highlighting, and drop position.
-   */
-  handleDragOverTabGroupLabel(
-    currentDropElement,
-    draggedTab,
-    overlapPercent,
-    movingTabs,
-    currentDropBefore,
-    currentColorCode
-  ) {
-    let dropElement = currentDropElement;
-    let dropBefore = currentDropBefore;
-    let colorCode = currentColorCode;
-
-    const dropElementGroup = dropElement?.isZenFolder ? dropElement : dropElement?.group;
-    const isSplitGroup = dropElement?.group?.hasAttribute('split-view-group');
-    let firstGroupElem =
-      dropElementGroup?.querySelector('.zen-tab-group-start')?.nextElementSibling;
-    if (gBrowser.isTabGroup(firstGroupElem)) firstGroupElem = firstGroupElem.labelElement;
-
-    const isInMiddleZone =
-      overlapPercent >= this.#ZEN_EDGE_ZONE_THRESHOLD &&
-      overlapPercent <= 1 - this.#ZEN_EDGE_ZONE_THRESHOLD;
-    const shouldDropInside = isInMiddleZone && !isSplitGroup;
-
-    if (shouldDropInside) {
-      dropElement = firstGroupElem;
-      dropBefore = true;
-      this.highlightGroupOnDragOver(dropElementGroup, movingTabs);
-    } else {
-      colorCode = undefined;
-      this.highlightGroupOnDragOver(null);
-    }
-
-    return { dropElement, colorCode, dropBefore };
   }
 
   #normalizeGroupItems(items) {

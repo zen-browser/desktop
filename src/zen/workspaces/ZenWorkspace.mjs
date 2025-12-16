@@ -5,7 +5,7 @@
 class nsZenWorkspace extends MozXULElement {
   static get markup() {
     return `
-        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator" flex="1" context="zenWorkspaceMoreActions">
+        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator zen-drop-target" flex="1" context="zenWorkspaceMoreActions">
           <hbox class="zen-current-workspace-indicator-icon" />
           <label class="zen-current-workspace-indicator-name" flex="1" />
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />

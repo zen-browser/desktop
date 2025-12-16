@@ -503,15 +503,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   moveToAnotherTabContainerIfNecessary(event, movingTabs) {
+    movingTabs = [...movingTabs];
     if (!this.enabled) {
       return false;
     }
-    movingTabs = [...movingTabs];
     try {
-      const pinnedTabsTarget =
-        event.target.closest('.zen-current-workspace-indicator') || this._isGoingToPinnedTabs;
+      const pinnedTabsTarget = event.target.closest(
+        ':is(.zen-current-workspace-indicator, .zen-workspace-pinned-tabs-section)'
+      );
       const essentialTabsTarget = event.target.closest('.zen-essentials-container');
-      const tabsTarget = !this._isGoingToPinnedTabs;
+      const tabsTarget = !pinnedTabsTarget;
 
       // TODO: Solve the issue of adding a tab between two groups
       // Remove group labels from the moving tabs and replace it

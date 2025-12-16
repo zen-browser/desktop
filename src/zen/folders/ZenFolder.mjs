@@ -6,7 +6,7 @@ class ZenFolder extends MozTabbrowserTabGroup {
   #initialized = false;
 
   static markup = `
-      <hbox class="tab-group-label-container" pack="center">
+      <hbox class="tab-group-label-container zen-drop-target" pack="center">
         <html:div class="tab-group-folder-icon"/>
         <label class="tab-group-label" role="button"/>
         <image class="tab-reset-button reset-icon" role="button" keyNav="false" data-l10n-id="zen-folders-unload-all-tooltip"/>

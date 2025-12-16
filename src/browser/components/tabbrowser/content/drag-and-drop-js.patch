@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d0e685eb9 100644
+index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4fda535eb 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -32,6 +32,9 @@
@@ -175,16 +175,23 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
          let tabsPerRow = 0;
          let position = RTL_UI
            ? window.windowUtils.getBoundsWithoutFlushing(
-@@ -1055,7 +1091,7 @@
+@@ -1055,7 +1091,6 @@
          // using updateDragImage. On Linux, we can use a panel.
          if (platform == "win" || platform == "macosx") {
            captureListener = function () {
 -            dt.updateDragImage(canvas, dragImageOffset, dragImageOffset);
-+            dt.updateDragImage(tab, dragImageOffset, dragImageOffset);
            };
          } else {
            // Create a panel to use it in setDragImage
-@@ -1112,7 +1148,7 @@
+@@ -1093,7 +1128,6 @@
+         );
+         dragImageOffset = dragImageOffset * scale;
+       }
+-      dt.setDragImage(toDrag, dragImageOffset, dragImageOffset);
+ 
+       // _dragData.offsetX/Y give the coordinates that the mouse should be
+       // positioned relative to the corner of the new window created upon
+@@ -1112,7 +1146,7 @@
        let dropEffect = this.getDropEffectForTabDrag(event);
        let isMovingInTabStrip = !fromTabList && dropEffect == "move";
        let collapseTabGroupDuringDrag =
@@ -193,7 +200,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
  
        tab._dragData = {
          offsetX: this._tabbrowserTabs.verticalMode
-@@ -1122,7 +1158,7 @@
+@@ -1122,7 +1156,7 @@
            ? event.screenY - window.screenY - tabOffset
            : event.screenY - window.screenY,
          scrollPos:
@@ -202,7 +209,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
              ? this._tabbrowserTabs.pinnedTabsContainer.scrollPosition
              : this._tabbrowserTabs.arrowScrollbox.scrollPosition,
          screenX: event.screenX,
-@@ -1149,6 +1185,7 @@
+@@ -1149,6 +1183,7 @@
  
            if (collapseTabGroupDuringDrag) {
              tab.group.collapsed = true;
@@ -210,7 +217,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
            }
          }
        }
-@@ -1173,6 +1210,16 @@
+@@ -1173,6 +1208,16 @@
        if (tabStripItemElement.hasAttribute("dragtarget")) {
          return;
        }
@@ -227,7 +234,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
        let isPinned = tab.pinned;
        let numPinned = gBrowser.pinnedTabCount;
        let allTabs = this._tabbrowserTabs.ariaFocusableItems;
-@@ -1624,10 +1671,7 @@
+@@ -1624,10 +1669,7 @@
          return;
        }
  
@@ -239,7 +246,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
  
        let directionX = screenX > dragData.animLastScreenX;
        let directionY = screenY > dragData.animLastScreenY;
-@@ -1636,6 +1680,8 @@
+@@ -1636,6 +1678,8 @@
  
        let { width: tabWidth, height: tabHeight } =
          draggedTab.getBoundingClientRect();
@@ -248,7 +255,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
        let shiftSizeX = tabWidth * movingTabs.length;
        let shiftSizeY = tabHeight;
        dragData.tabWidth = tabWidth;
-@@ -1672,8 +1718,8 @@
+@@ -1672,8 +1716,8 @@
        let lastBoundX =
          lastTabInRow.screenX +
          lastTabInRow.getBoundingClientRect().width -
@@ -259,7 +266,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
        translateX = Math.min(Math.max(translateX, firstBoundX), lastBoundX);
        translateY = Math.min(Math.max(translateY, firstBoundY), lastBoundY);
  
-@@ -2417,6 +2463,7 @@
+@@ -2417,6 +2461,7 @@
      }
  
      finishAnimateTabMove() {
@@ -267,7 +274,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
        if (!this.#isMovingTab()) {
          return;
        }
-@@ -2457,7 +2504,7 @@
+@@ -2457,7 +2502,7 @@
          tab.style.left = "";
          tab.style.top = "";
          tab.style.maxWidth = "";
@@ -276,7 +283,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..13e872a6c11061b5d7e669476072075d
        }
        for (let label of draggedTabDocument.getElementsByClassName(
          "tab-group-label-container"
-@@ -2467,7 +2514,7 @@
+@@ -2467,7 +2512,7 @@
          label.style.left = "";
          label.style.top = "";
          label.style.maxWidth = "";

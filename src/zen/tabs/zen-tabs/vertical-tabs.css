@@ -1281,9 +1281,9 @@
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
     transition:
-      top 0.1s ease-out,
-      left 0.1s ease-out,
-      width 0.1s ease-out;
+      top 0.05s ease-out,
+      left 0.05s ease-out,
+      width 0.05s ease-out;
 
     &::before {
       left: calc(-2 * var(--zen-drag-indicator-height));
@@ -1369,4 +1369,14 @@
 .tabbrowser-tab[zen-dragtarget],
 .tab-group-label-container[zen-dragtarget] {
   z-index: 9 !important;
+}
+
+#zen-dragover-background {
+  position: absolute;
+  z-index: -1;
+  /* Extra width to cover the sidebar splitter */
+  width: calc(100% + var(--zen-toolbox-padding));
+  left: 0;
+  pointer-events: none;
+  background: var(--zen-primary-color);
 }

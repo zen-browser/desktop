@@ -32,6 +32,9 @@
    * @returns {MozTabbrowserTab|vbox}
    */
   const elementToMove = (element) => {
+    if (element.classList.contains('zen-current-workspace-indicator')) {
+      return element;
+    }
     if (element.group?.hasAttribute('split-view-group')) {
       return element.group;
     }
@@ -45,6 +48,9 @@
   };
 
   window.ZenDragAndDrop = class extends window.TabDragAndDrop {
+    #dragOverBackground = null;
+    #lastDropTarget = null;
+
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
     }
@@ -54,7 +60,6 @@
       let dt = event.dataTransfer;
 
       const { offsetX, offsetY } = this.#getDragImageOffset(tab);
-      dt.updateDragImage(tab, offsetX, offsetY);
     }
 
     _animateTabMove(event) {
@@ -399,7 +404,36 @@
         }
       }
 
-      this.#applyDragoverIndicator(translate, dropElement, draggedTab);
+      this._tabbrowserTabs.removeAttribute('movingtab-group');
+      this._resetGroupTarget(document.querySelector('[dragover-groupTarget]'));
+
+      delete dragData.shouldDropIntoCollapsedTabGroup;
+
+      // Default to dropping into `dropElement`'s tab group, if it exists.
+      let dropElementGroup = dropElement?.group;
+      let colorCode = dropElementGroup?.color;
+
+      let lastUnmovingTabInGroup = dropElementGroup?.tabs.findLast((t) => !movingTabsSet.has(t));
+      if (
+        isTab(dropElement) &&
+        dropElementGroup &&
+        dropElement == lastUnmovingTabInGroup &&
+        !dropBefore
+      ) {
+        // Dragging tab over the last tab of a tab group, but not enough
+        // for it to drop into the tab group. Drop it after the tab group instead.
+        dropElement = dropElementGroup;
+        colorCode = undefined;
+      } else if (isTabGroupLabel(dropElement)) {
+        // Dropping right before the first tab in the tab group.
+        dropElement = dropElementGroup.tabs[0];
+        dropBefore = true;
+      }
+      this._setDragOverGroupColor(colorCode);
+      this._tabbrowserTabs.toggleAttribute('movingtab-addToGroup', colorCode);
+      this._tabbrowserTabs.toggleAttribute('movingtab-ungroup', !colorCode);
+
+      this.#applyDragoverIndicator(event, tabs, movingTabs, overlapPercent);
 
       if (
         newDropElementIndex == oldDropElementIndex &&
@@ -414,30 +448,88 @@
       dragData.animDropElementIndex = newDropElementIndex;
     }
 
-    #applyDragoverIndicator(translate, dropElement, draggedTab) {
-      const separation = 8;
+    handle_dragend(event) {
+      super.handle_dragend(event);
+      this.#removeDragOverBackground();
+      gZenPinnedTabManager.removeTabContainersDragoverClass();
+    }
+
+    #applyDragOverBackground(element) {
+      if (this.#dragOverBackground && this.#lastDropTarget === element) {
+        return false;
+      }
+      const margin = 2;
+      const rect = window.windowUtils.getBoundsWithoutFlushing(element);
+      this.#dragOverBackground = document.createElement('div');
+      this.#dragOverBackground.id = 'zen-dragover-background';
+      this.#dragOverBackground.style.height = `${rect.height - margin * 2}px`;
+      this.#dragOverBackground.style.top = `${rect.top + margin}px`;
+      gNavToolbox.appendChild(this.#dragOverBackground);
+      this.#lastDropTarget = element;
+      return true;
+    }
+
+    #removeDragOverBackground() {
+      if (this.#dragOverBackground) {
+        this.#dragOverBackground.remove();
+        this.#dragOverBackground = null;
+        this.#lastDropTarget = null;
+      }
+    }
+
+    #applyDragoverIndicator(event, tabs, movingTabs, overlapPercent) {
+      const separation = 4;
+      const dropZoneSelector = ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label)';
       let shouldPlayHapticFeedback = false;
+      let dropElement = event.target.closest(dropZoneSelector);
       if (!dropElement) {
-        return;
+        const numEssentials = gBrowser._numZenEssentials;
+        const numPinned = gBrowser.pinnedTabCount - numEssentials;
+        const tabToUse = event.target.closest(dropZoneSelector);
+        if (!tabToUse) {
+          this.#removeDragOverBackground();
+          gZenPinnedTabManager.removeTabContainersDragoverClass();
+          return;
+        }
+        const isPinned = tabToUse.pinned;
+        const relativeTabs = tabs.slice(isPinned ? 0 : numPinned, isPinned ? numPinned : undefined);
+        const draggedTabRect = elementToMove(tabToUse).getBoundingClientRect();
+        dropElement = event.clientY > draggedTabRect.top ? relativeTabs.at(-1) : relativeTabs[0];
       }
-      translate += draggedTab._dragData.screenY;
-      let rect = elementToMove(dropElement).getBoundingClientRect();
-      const indicator = gZenPinnedTabManager.dragIndicator;
-      const halfSize = rect.height / 2;
-      let top = 0;
-      if (translate >= rect.top + halfSize) {
-        top = Math.round(rect.top + rect.height) + 'px';
-      } else {
-        top = Math.round(rect.top) + 'px';
+      dropElement = elementToMove(dropElement);
+      if (this.#lastDropTarget !== dropElement) {
+        shouldPlayHapticFeedback = this.#lastDropTarget !== null;
+        this.#removeDragOverBackground();
       }
-      if (indicator.style.top !== top) {
-        shouldPlayHapticFeedback = true;
+      let canHightlightGroup =
+        gZenFolders.highlightGroupOnDragOver(dropElement.parentElement, movingTabs) ||
+        !dropElement.parentElement?.isZenFolder;
+      if (isTab(dropElement)) {
+        const indicator = gZenPinnedTabManager.dragIndicator;
+        let rect = dropElement.getBoundingClientRect();
+        let top = 0;
+        const threshold =
+          Services.prefs.getIntPref('browser.tabs.dragDrop.moveOverThresholdPercent') / 100;
+        if (overlapPercent > threshold) {
+          top = Math.round(rect.top + rect.height) + 'px';
+        } else {
+          top = Math.round(rect.top) + 'px';
+        }
+        if (indicator.style.top !== top) {
+          shouldPlayHapticFeedback = true;
+        }
+        indicator.setAttribute('orientation', 'horizontal');
+        indicator.style.setProperty('--indicator-left', rect.left + separation / 2 + 'px');
+        indicator.style.setProperty('--indicator-width', rect.width - separation + 'px');
+        indicator.style.top = top;
+        indicator.style.removeProperty('left');
+      } else if (dropElement.classList.contains('zen-drop-target') && canHightlightGroup) {
+        // removeTabContainersDragoverClass Already calls a new haptic feedback
+        shouldPlayHapticFeedback =
+          this.#applyDragOverBackground(dropElement) && !gZenPinnedTabManager._dragIndicator;
+        gZenPinnedTabManager.removeTabContainersDragoverClass();
       }
-      indicator.setAttribute('orientation', 'horizontal');
-      indicator.style.setProperty('--indicator-left', rect.left + separation / 2 + 'px');
-      indicator.style.setProperty('--indicator-width', rect.width - separation + 'px');
-      indicator.style.top = top;
-      indicator.style.removeProperty('left');
+
       if (shouldPlayHapticFeedback) {
         Services.zen.playHapticFeedback();
       }

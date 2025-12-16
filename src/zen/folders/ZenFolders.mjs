@@ -37,6 +37,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   #popup = null;
   #popupTimer = null;
   #mouseTimer = null;
+  #lastHighlightedGroup = null;
 
   #lastFolderContextMenu = null;
 
@@ -97,7 +98,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         .getElementById('context_zenChangeFolderSpace')
         .querySelector('menupopup');
       changeFolderSpace.innerHTML = '';
-      for (const workspace of [...gZenWorkspaces._workspaceCache.workspaces].reverse()) {
+      for (const workspace of [...gZenWorkspaces.getWorkspaces()].reverse()) {
         const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', (event) => {
           if (!this.#lastFolderContextMenu) return;
@@ -1054,6 +1055,38 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     gBrowser.tabContainer._invalidateCachedTabs();
     this._sessionRestoring = false;
+  }
+
+  /**
+   * Highlights the given tab group and removes highlight from any previously highlighted group.
+   * @param {MozTabbrowserTabGroup|undefined|null} folder The folder to highlight, or null to clear highlight.
+   * @param {Array<MozTabbrowserTab>|null} movingTabs The tabs being moved.
+   */
+  highlightGroupOnDragOver(folder, movingTabs) {
+    if (folder === this.#lastHighlightedGroup) return true;
+    const tab = movingTabs ? movingTabs[0] : null;
+    if (this.#lastHighlightedGroup && this.#lastHighlightedGroup !== folder) {
+      if (this.#lastHighlightedGroup.collapsed) {
+        this.updateFolderIcon(this.#lastHighlightedGroup, 'close');
+      }
+      this.#lastHighlightedGroup = null;
+    }
+    if (
+      folder?.isZenFolder &&
+      (!folder.hasAttribute('split-view-group') || !folder.hasAttribute('selected')) &&
+      folder !== tab?.group &&
+      !(
+        folder.level >= this.#ZEN_MAX_SUBFOLDERS &&
+        movingTabs?.some((t) => gBrowser.isTabGroupLabel(t))
+      )
+    ) {
+      if (folder.collapsed) {
+        this.updateFolderIcon(folder, 'open');
+      }
+      this.#lastHighlightedGroup = folder;
+      return true;
+    }
+    return false;
   }
 
   /**

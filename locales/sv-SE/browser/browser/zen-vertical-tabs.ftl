@@ -27,13 +27,13 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] Frigör och växla till flik
+           *[other] Frigör { $tabCount } flikar och byt till den första
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] Återställ och fäst flik
+           *[other] Återställ och fäst { $tabCount } flikar
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = Tillbaka till fäst url

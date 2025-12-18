@@ -748,12 +748,12 @@ class nsZenWorkspaces {
   }
 
   set activeWorkspace(value) {
-    if (value === this.#activeWorkspace) {
-      return;
-    }
     const spaces = this.getWorkspaces();
     if (!spaces.some((ws) => ws.uuid === value)) {
       value = spaces[0]?.uuid || '';
+    }
+    if (value === this.#activeWorkspace) {
+      return;
     }
     this.#activeWorkspace = value;
     if (this.privateWindowOrDisabled) {
@@ -851,6 +851,9 @@ class nsZenWorkspaces {
   }
 
   async restoreWorkspacesFromSessionStore(aWinData = {}) {
+    if (this.#hasInitialized) {
+      return;
+    }
     this._workspaceCache = aWinData.spaces?.length
       ? aWinData.spaces
       : [await this.createAndSaveWorkspace('Space', undefined, true)];

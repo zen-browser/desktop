@@ -132,7 +132,7 @@ export async function groupTabsBySimilarity({
     setTimeout(() => {
       setGroupingInProgress(false);
       browserWindow.dispatchEvent(new CustomEventCtor('ZenGroupingTabsEnd'));
-    }, 500);
+    }, 750);
 
     if (categoryCount > 0 && gZenUIManager?.showToast) {
       gZenUIManager.showToast('zen-workspaces-group-tabs-toast', {

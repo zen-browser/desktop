@@ -46,7 +46,7 @@ zen-panel-ui-gradient-generator-algo-triadic =
     .label = טריאדי
 zen-panel-ui-gradient-generator-algo-floating = 
     .label = מרחף
-zen-panel-ui-gradient-click-to-add = לחיצה להוספת צבע
+zen-panel-ui-gradient-click-to-add = יש ללחוץ כדי להוסיף צבע
 zen-workspace-creation-name = 
     .placeholder = שם סביבה
 zen-workspaces-panel-context-reorder = 
@@ -54,7 +54,7 @@ zen-workspaces-panel-context-reorder =
 zen-workspace-creation-profile = פרופיל
     .tooltiptext = פרופילים משמשים להפרדת קובצי Cookie ונתוני אתר בין סביבות שונות.
 zen-workspace-creation-header = יצירת סביבה
-zen-workspace-creation-label = סביבות משומשות לסידור כרטיסיות והפעלות.
+zen-workspace-creation-label = סביבות משומשות לסידור לשוניות והפעלות.
 zen-workspaces-delete-workspace-title = למחוק את הסביבה?
 zen-workspaces-delete-workspace-body = למחוק את { $name }? לא ניתן לבטל פעולה זו.
 # Note that the html tag MUST not be changed or removed, as it is used to better

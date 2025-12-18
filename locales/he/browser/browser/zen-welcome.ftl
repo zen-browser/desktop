@@ -17,10 +17,10 @@ zen-welcome-workspace-colors-title = סביבות העבודה שלך, בצבע�
 zen-welcome-workspace-colors-description = ניתן להתאים אישית את הדפדפן שלך על ידי הגדרת צבע ייחודי לכל סביבת עבודה.
 zen-welcome-start-browsing-title =
     הכול מוכן?<br/>
-    הגיע הזמן להתחיל!
-zen-welcome-start-browsing-description-1 = הכל מוגדר מוכן להתחלה. לחיצה על הכפתור למטה כדי להתחיל לגלוש עם { -brand-short-name }.
+    יוצאים לדרך!
+zen-welcome-start-browsing-description-1 = הכול מוגדר והדפדפן מוכן לשימוש. יש ללחוץ על הכפתור למטה בשביל להתחיל לגלוש עם { -brand-short-name }.
 zen-welcome-start-browsing = מתחילים!
-zen-welcome-default-search-title = מנוע החיפוש ברירת מחדל שלך
-zen-welcome-default-search-description = יש לבחור את מנוע החיפוש ברירת מחדל שלך. תמיד ניתן לשנות אותו!
+zen-welcome-default-search-title = מנוע חיפוש ברירת מחדל
+zen-welcome-default-search-description = נא לבחור מנוע החיפוש ברירת מחדל. תמיד ניתן לשנות הגדרה זו!
 zen-welcome-skip-button = דילוג
-zen-welcome-finished = דפדפן Zen שלך הוקם בהצלחה!
+zen-welcome-finished = דפדפן Zen שלך הוגדר בהצלחה!

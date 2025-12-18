@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = כרטיסיות בצד ימין
+    .label = לשוניות בצד ימין
     .accesskey = ר
 zen-toolbar-context-compact-mode = 
     .label = מצב חסכוני

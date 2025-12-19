@@ -8,9 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Сбросить закреплённую вкладку
     .accesskey = К
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Добавить в важное
     .accesskey = У
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } мест занято
 tab-context-zen-remove-essential = 
     .label = Удалить из важного
     .accesskey = К
@@ -98,13 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = Нажмите на значок 
 zen-open-link-in-glance = 
     .label = Открыть ссылку в предпросмотре
     .accesskey = П
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Обновление завершено!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Что нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Примечания к выпуску
+zen-sidebar-notification-restart-safe-mode-label = Что-то пошло не так?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Перезапустить в безопасном режиме

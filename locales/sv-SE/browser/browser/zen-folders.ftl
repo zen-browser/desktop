@@ -3,23 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Sök { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Byt namn på mapp
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Packa upp mapp
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Ny undermapp
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Ta bort mapp
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Konvertera mapp till arbetsyta
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Ändra arbetsyta...
 zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = Ändra ikon
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Frigör aktiva i denna mapp
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Frigör alla flikar
+zen-folders-search-no-results = Inga flikar som matchar den sökningen 🤔

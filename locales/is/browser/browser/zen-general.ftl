@@ -2,109 +2,107 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = núverandi prófíl
-unified-extensions-description = Viðbætur eru notaðar til að koma með meiri auka virkni inn í { -brand-short-name }.
+zen-panel-ui-current-profile-text = fyrirliggjandi notkunarsnið
+unified-extensions-description = Forritsaukar eru notaðir til að auðga notagildi í { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Endursetja Festan Flipa
+    .label = Endursetja festan flipa
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
-    .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+    .label = Bæta við aðalflipa
+    .accesskey = F
+tab-context-zen-add-essential-badge = { $num } / { $max } hólf fyllt
 tab-context-zen-remove-essential = 
-    .label = Fjarlægja frá Höfuðatriði
+    .label = Fjarlægja úr aðalflipum
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Setja aftur Fest-URL með Núverandi
-    .accesskey = C
-zen-themes-corrupted = { -brand-short-name } mods skráin þín er skemmd. Þeir hafa verið endurstilltir á sjálfgefið þema.
-zen-shortcuts-corrupted = { -brand-short-name } flýtivísaskráin þín er skemmd. Þeir hafa verið endurstilltir á sjálfgefna flýtileiðir.
+    .label = Skipta út festri slóð með núverandi
+    .accesskey = P
+zen-themes-corrupted = Viðbrigðaskráin þín fyrir { -brand-short-name } er skemmd. Þau notast í staðinn við sjálfgefið þema.
+zen-shortcuts-corrupted = Flýtivísaskráin þín { -brand-short-name } er skemmd. Þeir notast í staðinn við þá sjálfgefnu.
 # note: Do not translate the "<br/>" tags in the following string
-zen-new-urlbar-notification =
-    Nýja vefslóðastikan hefur verið virkjuð og fjarlægir þörfina á nýjum flipasíðum.<br/><br/>
-    Prófaðu að opna nýjan flipa til að sjá nýju vefslóðastikuna í notkun!
-zen-disable = Óvirkja
+zen-new-urlbar-notification = Nýja vefslóðastikan hefur verið virkjuð sem fjarlægir þörfina á nýjum flipasíðum.<br/><br/>Prófaðu að opna nýjan flipa til að sjá nýju vefslóðastikuna í notkun!
+zen-disable = Gera óvirkt
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
+    .aria-label = Lágmarka
+    .tooltip = Lágmarka
 zen-panel-ui-gradient-generator-custom-color = Sérsniðinn litur
-zen-panel-ui-gradient-generator-saved-message = Vistað hallann!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-panel-ui-gradient-generator-saved-message = Tókst að vista litstigulinn!
+zen-copy-current-url-confirmation = Afritaði fyrirliggjandi slóð!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Hætta við
 zen-general-confirm = 
-    .label = Confirm
-zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
+    .label = Staðfesta
+zen-pinned-tab-replaced = URL-slóð festa flipans hefur verið skipt út með fyrirliggjandi slóð!
+zen-tabs-renamed = Tókst að endurnefna flipann!
+zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
+zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
 zen-library-sidebar-workspaces = 
-    .label = Spaces
+    .label = Svæði
 zen-library-sidebar-mods = 
-    .label = Mods
+    .label = Viðbrigðasnið
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Þjappað viðmót
+    .tooltiptext = Víxla þjöppuðu viðmóti
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Læra Meira
+zen-learn-more-text = Frekari upplýsingar
 zen-close-label = Loka
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Leita...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emoji-tjáningartákn
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+    .label = Táknmyndir
+urlbar-search-mode-zen_actions = Aðgerðir
+zen-site-data-settings = Stillingar
+zen-generic-manage = Stýra
+zen-generic-more = Meira
+zen-generic-next = Næsta
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Leyft
+zen-site-data-setting-block = Lokað á
+zen-site-data-protections-enabled = Virkt
+zen-site-data-protections-disabled = Óvirkt
+zen-site-data-setting-cross-site = Millivefja-vefkaka
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Forritsauki
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Öruggt
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Ekki öruggt
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Sýsla með forritsauka
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Bæta við forritsaukum
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Allar vefsvæðastillingar
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Deila þessari síðu
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Fara í lesham
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Taka skjámynd
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bókamerkja þessa síðu
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Afrita slóð
+zen-site-data-setting-site-protection = Vörn gegn rakningu
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Ný miðstöð fyrir forritsauka, aðgangsheimildir og fleira
+zen-site-data-panel-feature-callout-subtitle = Smelltu á táknmyndina til að sýsla með stillingar vefsvæða, skoða öryggisupplýsingar, hafa aðgang að forritsaukum og framkvæma ýmsar algengar aðgerðir.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Opna tengil í Skyndisýn
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Uppfærslu lokið!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Nýtt á döfinni í { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Skoða útgáfuupplýsingar
+zen-sidebar-notification-restart-safe-mode-label = Bilaði eitthvað?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Endurræsa í öruggum ham

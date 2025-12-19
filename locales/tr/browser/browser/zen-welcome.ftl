@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-welcome-title-line1 = Daha sakin bir internete
-zen-welcome-title-line2 = hoş geldiniz
+zen-welcome-title-line2 = daha sakin bir internet
 zen-welcome-import-title = Yeni Bir Başlangıç, Aynı Yer İmleri
 zen-welcome-import-description-1 = Yer imleriniz, geçmişiniz ve parolalarınız internetteki ekmek kırıntıları gibidir; onları geride bırakmayın!
-zen-welcome-import-description-2 = Easily bring them over from another browser and pick up right where you left off..
+zen-welcome-import-description-2 = Onları başka bir tarayıcıdan kolayca aktarın ve tam bıraktığınız yerden devam edin.
 zen-welcome-import-button = Şimdi içe aktar
 zen-welcome-set-default-browser = { -brand-short-name }'i varsayılan tarayıcı olarak ayarlayın
 zen-welcome-dont-set-default-browser = { -brand-short-name }'i varsayılan tarayıcı olarak AYARLAMAYIN

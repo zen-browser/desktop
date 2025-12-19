@@ -21,7 +21,7 @@
     "sync:raw": "surfer update",
     "sync:rc": "python3 scripts/update_ff.py --rc",
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
-    "pretty": "prettier . --write --cache && autopep8 -r --in-place scripts/ src/",
+    "pretty": "prettier . --write --cache && autopep8 -r --in-place scripts/ src/ --exclude */tests/*",
     "lint": "npx eslint src/ && prettier . --check --cache",
     "lint:fix": "npm run pretty && npx eslint src/ --fix",
     "prepare": "husky",

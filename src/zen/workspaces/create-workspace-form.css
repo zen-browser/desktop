@@ -76,6 +76,10 @@ zen-workspace-creation {
             fill: currentColor;
           }
 
+          &[has-svg-icon='true'] image {
+            fill: var(--zen-workspace-icon-color, currentColor);
+          }
+
           &:not([has-svg-icon='true']) image {
             display: none;
           }

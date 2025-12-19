@@ -53,6 +53,7 @@ window.ZenWorkspacesStorage = {
         await addColumnIfNotExists('theme_opacity', 'REAL');
         await addColumnIfNotExists('theme_rotation', 'INTEGER');
         await addColumnIfNotExists('theme_texture', 'REAL');
+        await addColumnIfNotExists('icon_color', 'TEXT');
 
         // Create an index on the uuid column
         await db.execute(`
@@ -140,13 +141,13 @@ window.ZenWorkspacesStorage = {
             `
           INSERT OR REPLACE INTO zen_workspaces (
           uuid, name, icon, container_id, created_at, updated_at, "position",
-          theme_type, theme_colors, theme_opacity, theme_rotation, theme_texture
+          theme_type, theme_colors, theme_opacity, theme_rotation, theme_texture, icon_color
         ) VALUES (
           :uuid, :name, :icon, :container_id,
           COALESCE((SELECT created_at FROM zen_workspaces WHERE uuid = :uuid), :now),
           :now,
           :position,
-          :theme_type, :theme_colors, :theme_opacity, :theme_rotation, :theme_texture
+          :theme_type, :theme_colors, :theme_opacity, :theme_rotation, :theme_texture, :icon_color
         )
         `,
             {
@@ -161,6 +162,7 @@ window.ZenWorkspacesStorage = {
               theme_opacity: workspace.theme?.opacity || null,
               theme_rotation: workspace.theme?.rotation || null,
               theme_texture: workspace.theme?.texture || null,
+              icon_color: workspace.iconColor || null,
             }
           );
 
@@ -197,6 +199,7 @@ window.ZenWorkspacesStorage = {
       uuid: row.getResultByName('uuid'),
       name: row.getResultByName('name'),
       icon: row.getResultByName('icon'),
+      iconColor: row.getResultByName('icon_color'),
       containerTabId: row.getResultByName('container_id') ?? 0,
       position: row.getResultByName('position'),
       theme: row.getResultByName('theme_type')

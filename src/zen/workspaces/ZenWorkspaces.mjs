@@ -1086,20 +1086,21 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (!anchor) {
       return;
     }
+    const workspace = this.getWorkspaceFromId(workspaceId);
     const hasNoIcon = anchor.hasAttribute('no-icon');
     anchor.removeAttribute('no-icon');
     if (hasNoIcon) {
       anchor.textContent = '';
     }
     gZenEmojiPicker
-      .open(anchor)
-      .then(async (emoji) => {
-        const workspace = this.getWorkspaceFromId(workspaceId);
+      .open(anchor, { initialColor: workspace?.iconColor })
+      .then(async (result) => {
         if (!workspace) {
           console.warn('No active workspace found to change icon');
           return;
         }
-        workspace.icon = emoji;
+        workspace.icon = result?.icon;
+        workspace.iconColor = result?.iconColor || null;
         await this.saveWorkspace(workspace);
       })
       .catch((error) => {
@@ -1887,6 +1888,12 @@ class nsZenWorkspaces extends nsZenMultiWindowFeature {
     if (icon?.endsWith('.svg')) {
       const img = document.createElement('img');
       img.src = icon;
+      // Apply icon color if set
+      if (currentWorkspace.iconColor) {
+        img.style.setProperty('--zen-workspace-icon-color', currentWorkspace.iconColor);
+        img.style.setProperty('--zen-workspace-icon-src', `url('${icon}')`);
+        img.setAttribute('has-color', 'true');
+      }
       indicatorIcon.appendChild(img);
     } else {
       indicatorIcon.textContent = icon;

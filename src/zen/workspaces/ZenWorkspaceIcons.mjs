@@ -111,6 +111,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
         const image = document.createElement('img');
         image.src = workspace.icon;
         image.classList.add('zen-workspace-icon');
+        // Apply icon color if set
+        if (workspace.iconColor) {
+          image.style.setProperty('--zen-workspace-icon-color', workspace.iconColor);
+          image.style.setProperty('--zen-workspace-icon-src', `url('${workspace.icon}')`);
+          image.setAttribute('has-color', 'true');
+        }
         button.appendChild(image);
       } else {
         icon.textContent = workspace.icon;

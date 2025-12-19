@@ -18,6 +18,9 @@
       </hbox>
       <hbox id="PanelUI-zen-emojis-picker-list" />
     </vbox>
-    <hbox svgs="true" id="PanelUI-zen-emojis-picker-svgs" />
+    <vbox svgs="true">
+      <hbox id="PanelUI-zen-emojis-picker-colors" />
+      <hbox id="PanelUI-zen-emojis-picker-svgs" />
+    </vbox>
   </hbox>
 </panel>

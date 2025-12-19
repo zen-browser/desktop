@@ -128,6 +128,31 @@ body > #confetti {
     }
   }
 
+  #PanelUI-zen-emojis-picker-colors {
+    padding: 8px 10px;
+    gap: 6px;
+    justify-content: center;
+    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+
+    & .zen-emojis-picker-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.1s, border-color 0.1s;
+      box-sizing: border-box;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+
+      &[selected='true'] {
+        border-color: light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.7));
+      }
+    }
+  }
+
   #PanelUI-zen-emojis-picker-list,
   #PanelUI-zen-emojis-picker-svgs {
     overflow-y: auto;
@@ -151,12 +176,19 @@ body > #confetti {
 
     .zen-emojis-picker-svg {
       padding: 4px !important;
+      -moz-context-properties: fill, fill-opacity;
+      fill: currentColor;
+
       & label {
         display: none;
       }
 
       & .toolbarbutton-icon {
         width: 22px;
+      }
+
+      &[has-color='true'] {
+        fill: var(--zen-icon-color);
       }
     }
   }

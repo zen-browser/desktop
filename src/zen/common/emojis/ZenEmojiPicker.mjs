@@ -6,29 +6,46 @@ import { nsZenDOMOperatedFeature } from 'chrome://browser/content/zen-components
 
 // prettier-ignore
 const SVG_ICONS = [
-    "airplane.svg", "american-football.svg", "baseball.svg", "basket.svg", 
-    "bed.svg", "bell.svg", "bookmark.svg", "book.svg", 
-    "briefcase.svg", "brush.svg", "bug.svg", "build.svg", 
-    "cafe.svg", "call.svg", "card.svg", "chat.svg", 
-    "checkbox.svg", "circle.svg", "cloud.svg", "code.svg", 
-    "coins.svg", "construct.svg", "cutlery.svg", "egg.svg", 
-    "extension-puzzle.svg", "eye.svg", "fast-food.svg", "fish.svg", 
-    "flag.svg", "flame.svg", "flask.svg", "folder.svg", 
-    "game-controller.svg", "globe-1.svg", "globe.svg", "grid-2x2.svg", 
-    "grid-3x3.svg", "heart.svg", "ice-cream.svg", "image.svg", 
-    "inbox.svg", "key.svg", "layers.svg", "leaf.svg", 
-    "lightning.svg", "location.svg", "lock-closed.svg", "logo-rss.svg", 
-    "logo-usd.svg", "mail.svg", "map.svg", "megaphone.svg", 
-    "moon.svg", "music.svg", "navigate.svg", "nuclear.svg", 
-    "page.svg", "palette.svg", "paw.svg", "people.svg", 
-    "pizza.svg", "planet.svg", "present.svg", "rocket.svg", 
-    "school.svg", "shapes.svg", "shirt.svg", "skull.svg", 
-    "squares.svg", "square.svg", "star-1.svg", "star.svg", 
-    "stats-chart.svg", "sun.svg", "tada.svg", "terminal.svg", 
-    "ticket.svg", "time.svg", "trash.svg", "triangle.svg", 
-    "video.svg", "volume-high.svg", "wallet.svg", "warning.svg", 
-    "water.svg", "weight.svg", 
+    "airplane.svg", "american-football.svg", "baseball.svg", "basket.svg",
+    "bed.svg", "bell.svg", "bookmark.svg", "book.svg",
+    "briefcase.svg", "brush.svg", "bug.svg", "build.svg",
+    "cafe.svg", "call.svg", "card.svg", "chat.svg",
+    "checkbox.svg", "circle.svg", "cloud.svg", "code.svg",
+    "coins.svg", "construct.svg", "cutlery.svg", "egg.svg",
+    "extension-puzzle.svg", "eye.svg", "fast-food.svg", "fish.svg",
+    "flag.svg", "flame.svg", "flask.svg", "folder.svg",
+    "game-controller.svg", "globe-1.svg", "globe.svg", "grid-2x2.svg",
+    "grid-3x3.svg", "heart.svg", "ice-cream.svg", "image.svg",
+    "inbox.svg", "key.svg", "layers.svg", "leaf.svg",
+    "lightning.svg", "location.svg", "lock-closed.svg", "logo-rss.svg",
+    "logo-usd.svg", "mail.svg", "map.svg", "megaphone.svg",
+    "moon.svg", "music.svg", "navigate.svg", "nuclear.svg",
+    "page.svg", "palette.svg", "paw.svg", "people.svg",
+    "pizza.svg", "planet.svg", "present.svg", "rocket.svg",
+    "school.svg", "shapes.svg", "shirt.svg", "skull.svg",
+    "squares.svg", "square.svg", "star-1.svg", "star.svg",
+    "stats-chart.svg", "sun.svg", "tada.svg", "terminal.svg",
+    "ticket.svg", "time.svg", "trash.svg", "triangle.svg",
+    "video.svg", "volume-high.svg", "wallet.svg", "warning.svg",
+    "water.svg", "weight.svg",
   ];
+
+// Icon colors for SVG icons
+const ICON_COLORS = [
+  { name: 'default', value: null },
+  { name: 'red', value: '#ef4444' },
+  { name: 'orange', value: '#f97316' },
+  { name: 'amber', value: '#f59e0b' },
+  { name: 'yellow', value: '#eab308' },
+  { name: 'lime', value: '#84cc16' },
+  { name: 'green', value: '#22c55e' },
+  { name: 'teal', value: '#14b8a6' },
+  { name: 'cyan', value: '#06b6d4' },
+  { name: 'blue', value: '#3b82f6' },
+  { name: 'indigo', value: '#6366f1' },
+  { name: 'purple', value: '#a855f7' },
+  { name: 'pink', value: '#ec4899' },
+];
 
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #panel;
@@ -38,6 +55,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #currentPromise = null;
   #currentPromiseResolve = null;
   #currentPromiseReject = null;
+
+  #selectedColor = null;
+  #initialColor = null;
 
   init() {
     this.#panel = document.getElementById('PanelUI-zen-emojis-picker');
@@ -91,6 +111,10 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     return document.getElementById('PanelUI-zen-emojis-picker-svgs');
   }
 
+  get colorList() {
+    return document.getElementById('PanelUI-zen-emojis-picker-colors');
+  }
+
   get searchInput() {
     return document.getElementById('PanelUI-zen-emojis-picker-search');
   }
@@ -139,10 +163,74 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     }
   }
 
+  #createColorButtons() {
+    const colorList = this.colorList;
+    colorList.innerHTML = '';
+
+    for (const color of ICON_COLORS) {
+      const item = document.createElement('div');
+      item.className = 'zen-emojis-picker-color';
+      item.setAttribute('data-color', color.value || 'default');
+      item.setAttribute('title', color.name);
+
+      if (color.value) {
+        item.style.backgroundColor = color.value;
+      } else {
+        // Default color - use a gradient to indicate "no color"
+        item.style.background = 'linear-gradient(135deg, #888 50%, #ccc 50%)';
+      }
+
+      // Mark initially selected color
+      if (this.#selectedColor === color.value) {
+        item.setAttribute('selected', 'true');
+      }
+
+      item.addEventListener('click', () => {
+        this.#selectColor(color.value);
+      });
+
+      colorList.appendChild(item);
+    }
+  }
+
+  #selectColor(color) {
+    this.#selectedColor = color;
+    // Update UI to show selected color
+    const colorButtons = this.colorList.querySelectorAll('.zen-emojis-picker-color');
+    for (const btn of colorButtons) {
+      const btnColor = btn.getAttribute('data-color');
+      if ((btnColor === 'default' && color === null) || btnColor === color) {
+        btn.setAttribute('selected', 'true');
+      } else {
+        btn.removeAttribute('selected');
+      }
+    }
+
+    // Update SVG icons preview with the selected color
+    this.#updateSvgIconsColor();
+  }
+
+  #updateSvgIconsColor() {
+    const svgButtons = this.svgList.querySelectorAll('.zen-emojis-picker-svg');
+    for (const btn of svgButtons) {
+      if (this.#selectedColor) {
+        btn.style.setProperty('--zen-icon-color', this.#selectedColor);
+        btn.setAttribute('has-color', 'true');
+      } else {
+        btn.style.removeProperty('--zen-icon-color');
+        btn.removeAttribute('has-color');
+      }
+    }
+  }
+
   // note: It's async on purpose so we can render the popup before processing the emojis
   async #onPopupShowing(event) {
     if (event.target !== this.#panel) return;
     this.searchInput.value = '';
+
+    // Initialize selected color
+    this.#selectedColor = this.#initialColor;
+
     const allowEmojis = !this.#panel.hasAttribute('only-svg-icons');
     if (allowEmojis) {
       const emojiList = this.emojiList;
@@ -160,6 +248,10 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
         this.searchInput.focus();
       }, 500);
     }
+
+    // Create color buttons
+    this.#createColorButtons();
+
     const svgList = this.svgList;
     for (const icon of SVG_ICONS) {
       const item = document.createXULElement('toolbarbutton');
@@ -173,6 +265,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       });
       svgList.appendChild(item);
     }
+
+    // Apply initial color to SVG icons
+    this.#updateSvgIconsColor();
   }
 
   #onPopupHidden(event) {
@@ -185,6 +280,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     emojiList.innerHTML = '';
 
     this.svgList.innerHTML = '';
+    this.colorList.innerHTML = '';
 
     if (this.#currentPromiseReject) {
       this.#currentPromiseReject(new Error('Emoji picker closed without selection'));
@@ -193,17 +289,25 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#currentPromise = null;
     this.#currentPromiseResolve = null;
     this.#currentPromiseReject = null;
+    this.#selectedColor = null;
+    this.#initialColor = null;
 
     this.#anchor.removeAttribute('zen-emoji-open');
     this.#anchor = null;
   }
 
   #selectEmoji(emoji) {
-    this.#currentPromiseResolve?.(emoji);
+    // Return an object with emoji and color for SVG icons, or just the emoji for regular emojis
+    const isSvg = emoji && emoji.endsWith('.svg');
+    const result = {
+      icon: emoji,
+      iconColor: isSvg ? this.#selectedColor : null,
+    };
+    this.#currentPromiseResolve?.(result);
     this.#panel.hidePopup();
   }
 
-  open(anchor, { onlySvgIcons = false } = {}) {
+  open(anchor, { onlySvgIcons = false, initialColor = null } = {}) {
     if (this.#currentPromise) {
       return null;
     }
@@ -212,6 +316,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       this.#currentPromiseReject = reject;
     });
     this.#anchor = anchor;
+    this.#initialColor = initialColor;
     this.#anchor.setAttribute('zen-emoji-open', 'true');
     if (onlySvgIcons) {
       this.#panel.setAttribute('only-svg-icons', 'true');

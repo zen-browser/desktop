@@ -1,0 +1,57 @@
+[DEFAULT]
+tags = "report-broken-site"
+support-files = [
+  "example_report_page.html",
+  "head.js",
+  "sendMoreInfoTestEndpoint.html",
+]
+
+["browser_addon_data_sent.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = [ "send_more_info.js" ]
+skip-if = ["os == 'win' && os_version == '11.26100' && processor == 'x86_64' && opt"] # Bug 1955805
+
+["browser_antitracking_data_sent.js"]
+support-files = [ "send_more_info.js" ]
+
+["browser_back_buttons.js"]
+
+["browser_error_messages.js"]
+
+["browser_experiment_data_sent.js"]
+support-files = [ "send_more_info.js" ]
+
+["browser_keyboard_navigation.js"]
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && tsan", # Bug 1867132
+  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && asan", # Bug 1867132
+  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && debug", # Bug 1867132
+  "os == 'win' && os_version == '11.26100' && processor == 'x86_64' && asan", # Bug 1867132
+]
+
+["browser_learn_more_link.js"]
+
+["browser_parent_menuitems.js"]
+
+["browser_prefers_contrast.js"]
+
+["browser_reason_dropdown.js"]
+
+["browser_report_send.js"]
+support-files = [ "send.js" ]
+
+["browser_send_more_info.js"]
+support-files = [
+  "send_more_info.js",
+  "../../../../toolkit/components/gfx/content/videotest.mp4",
+]
+
+["browser_tab_key_order.js"]
+
+["browser_tab_switch_handling.js"]
+
+["browser_webcompat.com_fallback.js"]
+support-files = [
+  "send_more_info.js",
+  "../../../../toolkit/components/gfx/content/videotest.mp4",
+]

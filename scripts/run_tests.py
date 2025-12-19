@@ -15,6 +15,8 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
     'engine', 'testing', 'mochitest', 'ignorePrefs.json'
 )
 
+MOCHITEST_NAME = "mochitests"
+
 
 def copy_ignore_prefs():
   print("Copying ignorePrefs.json from src/zen/tests to engine/testing/mochitest...")
@@ -59,7 +61,9 @@ def main():
     os.execvp(command[0], command)
 
   if path in ("", "all"):
-    test_dirs = [p for p in Path("zen/tests").iterdir() if p.is_dir()]
+    test_dirs = [p for p in Path("zen/tests").iterdir() if p.is_dir() and p.name != MOCHITEST_NAME]
+    mochitest_dirs = [p for p in Path(f"zen/tests/{MOCHITEST_NAME}").iterdir() if p.is_dir()]
+    test_dirs.extend(mochitest_dirs)
     test_paths = [str(p) for p in test_dirs]
     run_mach_with_paths(test_paths)
   else:

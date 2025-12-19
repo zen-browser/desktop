@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = mevcut profil
-unified-extensions-description = Uzantılar { -brand-short-name } daha fazla işlevsellik kazandırmak için kullanılır.
+unified-extensions-description = Uzantılar { -brand-short-name }'e daha fazla ek işlevsellik kazandırmak için kullanılır.
 tab-context-zen-reset-pinned-tab = 
     .label = Sabitlenen Sekmeyi Sıfırla
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Temel Ögelere Ekle
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } yuva dolu
 tab-context-zen-remove-essential = 
     .label = Temel Ögelerden Kaldır
     .accesskey = R
@@ -18,93 +18,93 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Sabitlenen URL'yi Mevcut ile Değiştir
     .accesskey = C
 zen-themes-corrupted = { -brand-short-name } adlı modun dosyaları hatalı. Varsayılan temaya sıfırlandılar.
-zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyası bozuldu. Orijinal kısayollara sıfırlandı.
+zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyanız bozuldu. Varsayılan kısayollara sıfırlandı.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Yeni sekme sayfalarına ihtiyacı kaldıran yeni URL Bar aktifleşti.<br/><br/>
-    Yeni URL bar'ı görmek için yeni bir sekme açın!
+    Yeni adres çubuğu etkinleştirildi ve yeni sekme sayfalarına olan ihtiyaç ortadan kalktı.<br/><br/>
+    Yeni adres çubuğunu çalışırken görmek için yeni bir sekme açmayı dene!
 zen-disable = Devre dışı bırak
 pictureinpicture-minimize-btn = 
     .aria-label = Küçült
     .tooltip = Küçült
 zen-panel-ui-gradient-generator-custom-color = Özel Renk
 zen-panel-ui-gradient-generator-saved-message = Renkler başarıyla kaydedildi!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = İptal
 zen-general-confirm = 
     .label = Onayla
-zen-pinned-tab-replaced = Başa tutturulmuş sekme URL'si, şimdiki URL ile değiştirildi.
+zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
+zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
+zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
 zen-library-sidebar-workspaces = 
-    .label = Spaces
+    .label = Alanlar
 zen-library-sidebar-mods = 
-    .label = Mods
+    .label = Modlar
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Kompakt Mod
+    .tooltiptext = Kompakt Modu Aç/Kapat
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = Daha Fazla Bilgi
 zen-close-label = Kapat
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Ara...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emojiler
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+    .label = Simgeler
+urlbar-search-mode-zen_actions = Eylemler
+zen-site-data-settings = Ayarlar
+zen-generic-manage = Yönet
+zen-generic-more = Daha
+zen-generic-next = Sonraki
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = İzin verildi
+zen-site-data-setting-block = Engellendi
+zen-site-data-protections-enabled = Etkinleştirildi
+zen-site-data-protections-disabled = Devre dışı bırakıldı
+zen-site-data-setting-cross-site = Siteler arası çerez
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Uzantı
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Güvenli
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Güvenli Değil
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Uzantıları Yönet
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Uzantı Ekle
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Tüm Site Ayarları
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Bu Sayfayı Paylaş
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Okuyucu Moduna Gir
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Ekran Görüntüsü Al
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bu Sayfayı Yer İmlerine Ekle
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = URL'yi Kopyala
+zen-site-data-setting-site-protection = İzleme Koruması
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Eklentiler, izinler ve daha fazlası için yeni bir alan
+zen-site-data-panel-feature-callout-subtitle = Site ayarlarını yönetmek, güvenlik bilgilerini görüntülemek, uzantılara erişmek ve yaygın işlemleri gerçekleştirmek için simgeye tıklayın.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Bağlantıyı Hızlı Görünümde Aç
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Güncelleme Tamamlandı!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = { -brand-short-name }'de neler yeni
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Sürüm Notlarını Görüntüle
+zen-sidebar-notification-restart-safe-mode-label = Bir şey mi bozuldu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Güvenli Modda Yeniden Başlat

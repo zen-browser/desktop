@@ -27,8 +27,8 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Tắt và chuyển sang thẻ
-           *[other] Tắt { $tabCount } thẻ và chuyển về thẻ đầu tiên
+            [one] Giải phóng và chuyển sang thẻ
+           *[other] Giải phóng { $tabCount } thẻ và chuyển về thẻ đầu tiên
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =

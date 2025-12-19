@@ -495,20 +495,22 @@ body > #confetti {
 }
 
 @media -moz-pref('zen.theme.hide-unified-extensions-button') {
-  #unified-extensions-button {
+  #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
-#unified-extensions-button:not([showing]) {
-  display: none !important;
+@media not -moz-pref('zen.theme.hide-unified-extensions-button') {
+  #zen-site-data-section-addons {
+    display: none;
+  }
 }
 
 #zen-site-data-header {
   gap: 8px;
   align-items: center;
   padding: 10px 9px;
-  padding-bottom: 0;
+  padding-bottom: 8px;
 
   :root[zen-single-toolbar='true']:not([zen-right-side='true']) & {
     flex-direction: row-reverse;
@@ -520,7 +522,7 @@ body > #confetti {
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    max-width: 48px;
+    width: 48px;
     height: 32px;
     position: relative;
 

@@ -4,7 +4,7 @@
 
 import js from '@eslint/js';
 import globals from 'globals';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import zenGlobals from './src/zen/zen.globals.js';
 
 export default defineConfig([
@@ -23,4 +23,5 @@ export default defineConfig([
     },
     ignores: ['**/vendor/**', '**/tests/**'],
   },
+  globalIgnores(['**/mochitests/**']),
 ]);

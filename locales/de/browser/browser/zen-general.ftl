@@ -17,11 +17,11 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Angeheftete URL durch aktuelle ersetzen
     .accesskey = C
-zen-themes-corrupted = Deine { -brand-short-name } Mods-Datei ist beschädigt. Wir haben sie auf das Standard-Design zurückgesetzt.
-zen-shortcuts-corrupted = Deine { -brand-short-name } Tastenkürzel-Datei ist beschädigt. Wir haben sie auf die Standard-Tastenkürzel zurückgesetzt.
+zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Wir haben sie auf das Standard-Design zurückgesetzt.
+zen-shortcuts-corrupted = Deine { -brand-short-name }-Tastenkombinationsdatei ist beschädigt. Sie wurde auf die Standard-Tastenkombinationen zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Die neue Adressleiste ist jetzt aktiv! Dadurch brauchst du keine neuen Tab-Seiten mehr.<br/><br/>
+    Die neue Adressleiste wurde aktiviert und macht neue Tab-Seiten überflüssig.<br/><br/>
     Öffne einfach einen neuen Tab, um die neue Adressleiste auszuprobieren!
 zen-disable = Deaktivieren
 pictureinpicture-minimize-btn = 
@@ -66,7 +66,7 @@ zen-site-data-setting-allow = Erlaubt
 zen-site-data-setting-block = Blockiert
 zen-site-data-protections-enabled = Aktiviert
 zen-site-data-protections-disabled = Deaktiviert
-zen-site-data-setting-cross-site = Cross-Site-Cookie
+zen-site-data-setting-cross-site = Seitenübergreifendes Cookie
 zen-site-data-security-info-extension = 
     .label = Erweiterung
 zen-site-data-security-info-secure = 
@@ -84,7 +84,7 @@ zen-site-data-header-share =
 zen-site-data-header-reader-mode = 
     .tooltiptext = Lesemodus aktivieren
 zen-site-data-header-screenshot = 
-    .tooltiptext = Screenshot erstellen
+    .tooltiptext = Bildschirmfoto erstellen
 zen-site-data-header-bookmark = 
     .tooltiptext = Diese Seite als Lesezeichen speichern
 zen-urlbar-copy-url-button = 

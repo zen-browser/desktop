@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = núverandi kómenta
+zen-panel-ui-current-profile-text = fyrirliggjandi notkunarsnið
 unified-extensions-description = Forritsaukar eru notaðir til að auðga notagildi í { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Endursetja festan flipa

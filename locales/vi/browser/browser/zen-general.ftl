@@ -8,11 +8,11 @@ tab-context-zen-reset-pinned-tab =
     .label = Đặt lại thẻ đã ghim
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Thêm vào thẻ chính
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = Đã dùng { $num } / { $max } vị trí
 tab-context-zen-remove-essential = 
-    .label = Loại ra khỏi thẻ thường trú
+    .label = Gỡ khỏi thẻ chính
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Thay thế đường dường dẫn đã ghim với hiện tại
@@ -22,19 +22,19 @@ zen-shortcuts-corrupted = Tệp phím tắt { -brand-short-name } của bạn đ
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Thanh đường dẫn mới đã được kích hoạt, loại bỏ chức năng của trang "thẻ mới". <br/><br/>
-    Hãy thử tạo một thể để xem cái "mới" của thành đường dẫn!
+    Hãy thử tạo một thẻ để xem cái "mới" của thanh đường dẫn!
 zen-disable = Vô hiệu hóa
 pictureinpicture-minimize-btn = 
     .aria-label = Thu nhỏ
     .tooltip = Thu nhỏ
 zen-panel-ui-gradient-generator-custom-color = Tùy chỉnh màu sắc
 zen-panel-ui-gradient-generator-saved-message = Lưu tùy chỉnh đổ màu thành công!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Đã sao chép URL hiện tại!
 zen-general-cancel-label = 
     .label = Hủy
 zen-general-confirm = 
     .label = Xác nhận
-zen-pinned-tab-replaced = Đường dẫn trên thẻ gim đã được thay thể bởi đường dẫn hiện tại!
+zen-pinned-tab-replaced = Đường dẫn trên thẻ ghim đã được thay thể bởi đường dẫn hiện tại!
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
@@ -43,8 +43,8 @@ zen-library-sidebar-workspaces =
 zen-library-sidebar-mods = 
     .label = Mods
 zen-toggle-compact-mode-button = 
-    .label = Chế độ tối giản
-    .tooltiptext = Bật chế độ tối giản
+    .label = Chế độ thu gọn
+    .tooltiptext = Bật Chế độ thu gọn
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -64,8 +64,8 @@ zen-generic-next = Tiếp
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Đã cho phép
 zen-site-data-setting-block = Đã chặn
-zen-site-data-protections-enabled = Đã tắt
-zen-site-data-protections-disabled = Đã bật
+zen-site-data-protections-enabled = Đã bật
+zen-site-data-protections-disabled = Đã tắt
 zen-site-data-setting-cross-site = Cookie liên trang web
 zen-site-data-security-info-extension = 
     .label = Tiện ích mở rộng (Extensions)
@@ -80,7 +80,7 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Cài đặt tổng quan của trang web
 zen-site-data-header-share = 
-    .tooltiptext = Chia sẻ trang
+    .tooltiptext = Chia sẻ trang này
 zen-site-data-header-reader-mode = 
     .tooltiptext = Bật chế độ đọc
 zen-site-data-header-screenshot = 
@@ -96,15 +96,15 @@ zen-site-data-setting-site-protection = Phòng chống theo dõi
 zen-site-data-panel-feature-callout-title = Diện mạo mới cho add-ons, quyền truy cập và nhiều hơn nữa
 zen-site-data-panel-feature-callout-subtitle = Bấm vào biểu tượng để quản lý các thiết lập của trang web, kiểm tra thông tin bảo mật, quyền truy cập của các tiện ích và thực thiện các tác vụ cơ bản.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Mở liên kết trong Xem nhanh
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Cập nhật hoàn tất!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Có gì mới trong { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Xem ghi chú phát hành
+zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Khởi động lại ở Chế độ an toàn

@@ -8,9 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Resetuj przypiętą kartę
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Dodaj do niezbędnych
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = Wypełnione pola { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Usuń z Niezbędnych
     .accesskey = R
@@ -96,15 +96,15 @@ zen-site-data-setting-site-protection = Ochrona przed śledzeniem
 zen-site-data-panel-feature-callout-title = Nowy dom dla dodatków, uprawnień i więcej
 zen-site-data-panel-feature-callout-subtitle = Kliknij ikonę, aby zarządzać ustawieniami witryny, wyświetlić informacje o zabezpieczeniach, rozszerzeniach i wykonać akcje.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Otwórz link w szybkim podglądzie
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Aktualizacja ukończona!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Co nowego w { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Zobacz informacje o aktualizacji
+zen-sidebar-notification-restart-safe-mode-label = Coś się zepsuło?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Zrestartuj w trybie bezpiecznym

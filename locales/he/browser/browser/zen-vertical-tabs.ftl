@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = לשוניות בצד ימין
+    .label = לשוניות בצד שמאל
     .accesskey = ר
 zen-toolbar-context-compact-mode = 
     .label = מצב חסכוני
@@ -27,13 +27,13 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] פנה ועבור ללשונית
-           *[other] פנה { $tabCount } לשוניות ועבור לראשונה
+            [one] כיבוי לשונית ומעבר ללשונית
+           *[other] כיבוי { $tabCount } לשוניות ומעבר ללשונית הראשונה
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] אפס והצמד לשונית
-           *[other] אפס והצמד { $tabCount } לשוניות
+            [one] איפוס והצמדת לשונית
+           *[other] איפוס והצמדת { $tabCount } לשוניות
         }
 tab-reset-pin-label = חזרה לכתובת המוצמדת

@@ -17,7 +17,7 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = החלפת הכתובת המוצמדת בנוכחית
     .accesskey = ב
-zen-themes-corrupted = קובץ המודים { -brand-short-name } שלך פגום. הם אופסו לנושא ברירת המחדל.
+zen-themes-corrupted = קובץ השפצור { -brand-short-name } שלך פגום. בוצע איפוס לערכת הנושא ברירת המחדל.
 zen-shortcuts-corrupted = קיצורי דרך { -brand-short-name } פגום. הם אופסו לקיצורי דרך ברירת מחדל.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = הופעלה שורת הכתובת החדשה, כך שאין צורך בעמודי לשונית חדשה.<br/><br/>אפשר לפתוח לשונית חדשה ולראות את שורת הכתובת החדשה בפעולה!
@@ -39,7 +39,7 @@ zen-workspace-renamed-toast = שם סביבת העבודה השתנה בהצלח
 zen-library-sidebar-workspaces = 
     .label = סביבות
 zen-library-sidebar-mods = 
-    .label = מודים
+    .label = שפצורים
 zen-toggle-compact-mode-button = 
     .label = מצב חסכוני
     .tooltiptext = הפעלת/כיבוי מצב חסכוני

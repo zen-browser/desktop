@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Karty napravo
+    .label = Panely napravo
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompaktní režim
@@ -27,15 +27,15 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Uspat a přepnout na kartu
-            [few] Uspat { $tabCount } karty a přepnout na první
-           *[other] Uspat { $tabCount } karet a přepnout na první
+            [one] Uspat a přepnout na panel
+            [few] Uspat { $tabCount } panely a přepnout na první
+           *[other] Uspat { $tabCount } panelů a přepnout na první
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
             [one] Resetovat a připnout kartu
-            [few] Resetovat a připnout { $tabCount } karty
-           *[other] Resetovat a připnout { $tabCount } karet
+            [few] Resetovat a připnout { $tabCount } panely
+           *[other] Resetovat a připnout { $tabCount } panelů
         }
 tab-reset-pin-label = Zpět na původní adresu

@@ -66,6 +66,10 @@ zen-panel-ui-gradient-click-to-add = Click to add a color
 zen-workspace-creation-name =
     .placeholder = Space Name
 
+zen-move-tab-to-workspace-button =
+    .label = Move To...
+    .tooltiptext = Move all tabs in this window to a Space
+
 zen-workspaces-panel-context-reorder =
     .label = Reorder Spaces
 

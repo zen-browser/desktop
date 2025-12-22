@@ -912,6 +912,7 @@ class nsZenWorkspaces {
     const cleanup = () => {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
+      delete this._shouldOverrideTabs;
       resolveSelectPromise();
     };
 
@@ -927,7 +928,7 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    if (this._tabToRemoveForEmpty && !removedEmptyTab) {
+    if (this._tabToRemoveForEmpty && !removedEmptyTab && !this._shouldOverrideTabs) {
       const tabs = gBrowser.tabs.filter((tab) => !tab.collapsed);
       if (
         typeof this._tabToSelect === 'number' &&

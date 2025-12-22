@@ -67,7 +67,7 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
-    outline: 2px solid var(--zen-primary-color) !important;
+    outline: 2px solid light-dark(var(--zen-primary-color), var(--button-background-color-primary)) !important;
   }
 
   &.zen-glance-overlay {

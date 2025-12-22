@@ -125,7 +125,7 @@ window.gZenUIManager = {
       }
       menu.setAttribute('hidden', 'true');
     }
-    // The fist separator in the tab context menu is now useless.
+    // The first separator in the tab context menu is now useless.
     document.getElementById('tabContextMenu').querySelector('menuseparator').remove();
   },
 

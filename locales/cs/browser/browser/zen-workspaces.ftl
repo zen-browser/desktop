@@ -49,6 +49,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = Kliknutím přidáte barvu
 zen-workspace-creation-name = 
     .placeholder = Název prostoru
+zen-move-tab-to-workspace-button = 
+    .label = Přesunout do...
+    .tooltiptext = Přesunout všechny panely v tomto okně do pracovního prostoru
 zen-workspaces-panel-context-reorder = 
     .label = Změnit pořadí prostorů
 zen-workspace-creation-profile = Profil
@@ -59,7 +62,7 @@ zen-workspaces-delete-workspace-title = Odstranit prostor?
 zen-workspaces-delete-workspace-body = Opravdu chcete smazat { $name }? Tuto akci nelze vrátit zpět.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Karty byly zavřeny! Použijte <span>{ $shortcut }</span> pro zrušení.
+zen-workspaces-close-all-unpinned-tabs-toast = Panely byly zavřeny! Použijte <span>{ $shortcut }</span> pro zrušení.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Vyčistit
     .tooltiptext = Zavřít všechny nepřipnuté panely

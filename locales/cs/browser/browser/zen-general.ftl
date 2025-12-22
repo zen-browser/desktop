@@ -5,7 +5,7 @@
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetovat připnuté karty
+    .label = Resetovat připnutý prostor
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Přidat do Essentials
@@ -22,7 +22,7 @@ zen-shortcuts-corrupted = Soubor se zkratky prohlížeče { -brand-short-name } 
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Nový adresní řádek je nyní zapnutý, takže už není potřeba otevírat nové karty.<br/><br/>
-    Zkuste otevřít novou kartu a podívejte se, jak funguje!
+    Zkuste otevřít nový panel a podívejte se, jak funguje!
 zen-disable = Zavřít
 pictureinpicture-minimize-btn = 
     .aria-label = Minimalizovat
@@ -36,7 +36,7 @@ zen-general-confirm =
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
-zen-background-tab-opened-toast = Nová karta na pozadí byla otevřena!
+zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
 zen-library-sidebar-workspaces = 
     .label = Prostory

@@ -187,6 +187,9 @@ const globalActionsTemplate = [
     label: 'Print',
     command: 'cmd_print',
     icon: 'chrome://browser/skin/zen-icons/print.svg',
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
   },
 ];
 

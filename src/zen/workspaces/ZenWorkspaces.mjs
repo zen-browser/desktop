@@ -2317,7 +2317,7 @@ class nsZenWorkspaces {
     if (!menuPopup) {
       return;
     }
-    for (const item of menuPopup.querySelector('.zen-workspace-context-menu-item') || []) {
+    for (const item of menuPopup.querySelectorAll('.zen-workspace-context-menu-item')) {
       item.remove();
     }
     const separator = document.createXULElement('menuseparator');

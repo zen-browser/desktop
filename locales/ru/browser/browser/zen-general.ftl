@@ -10,15 +10,15 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential = 
     .label = Добавить в важное
     .accesskey = У
-tab-context-zen-add-essential-badge = { $num } / { $max } мест занято
+tab-context-zen-add-essential-badge = { $num }/{ $max } мест занято
 tab-context-zen-remove-essential = 
     .label = Удалить из важного
     .accesskey = К
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Заменить закреплённый адрес на текущий
     .accesskey = С
-zen-themes-corrupted = Файл дополнения { -brand-short-name } повреждён. Возвращена тема по умолчанию.
-zen-shortcuts-corrupted = Файл комбинаций клавиш { -brand-short-name } повреждён. Возвращены комбинации клавиш по умолчанию.
+zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
+zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Они были сброшены к стандартным.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>

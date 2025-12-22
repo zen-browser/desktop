@@ -57,9 +57,10 @@
 
     startTabDrag(event, tab, ...args) {
       super.startTabDrag(event, tab, ...args);
-      let dt = event.dataTransfer;
+      const dt = event.dataTransfer;
 
-      const { offsetX, offsetY } = this.#getDragImageOffset(tab);
+      const { offsetX, offsetY } = this.#getDragImageOffset(event, tab);
+      dt.setDragImage(tab, offsetX, offsetY);
     }
 
     _animateTabMove(event) {
@@ -409,6 +410,11 @@
 
       delete dragData.shouldDropIntoCollapsedTabGroup;
 
+      [dropBefore, dropElement] = this.#applyDragoverIndicator(event, tabs, movingTabs) ?? [
+        dropBefore,
+        dropElement,
+      ];
+
       // Default to dropping into `dropElement`'s tab group, if it exists.
       let dropElementGroup = dropElement?.group;
       let colorCode = dropElementGroup?.color;
@@ -433,8 +439,6 @@
       this._tabbrowserTabs.toggleAttribute('movingtab-addToGroup', colorCode);
       this._tabbrowserTabs.toggleAttribute('movingtab-ungroup', !colorCode);
 
-      this.#applyDragoverIndicator(event, tabs, movingTabs, overlapPercent);
-
       if (
         newDropElementIndex == oldDropElementIndex &&
         dropBefore == dragData.dropBefore &&
@@ -446,6 +450,13 @@
       dragData.dropElement = dropElement;
       dragData.dropBefore = dropBefore;
       dragData.animDropElementIndex = newDropElementIndex;
+    }
+
+    handle_dragover(event) {
+      super.handle_dragover(event);
+      if (event.target.closest('#tabbrowser-tabbox')) {
+        gZenViewSplitter.onBrowserDragOverToSplit(event);
+      }
     }
 
     handle_dragend(event) {
@@ -477,11 +488,12 @@
       }
     }
 
-    #applyDragoverIndicator(event, tabs, movingTabs, overlapPercent) {
+    #applyDragoverIndicator(event, tabs, movingTabs) {
       const separation = 4;
       const dropZoneSelector = ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label)';
       let shouldPlayHapticFeedback = false;
       let dropElement = event.target.closest(dropZoneSelector);
+      let dropBefore;
       if (!dropElement) {
         const numEssentials = gBrowser._numZenEssentials;
         const numPinned = gBrowser.pinnedTabCount - numEssentials;
@@ -501,19 +513,27 @@
         shouldPlayHapticFeedback = this.#lastDropTarget !== null;
         this.#removeDragOverBackground();
       }
+      let isZenFolder = dropElement.parentElement?.isZenFolder;
       let canHightlightGroup =
-        gZenFolders.highlightGroupOnDragOver(dropElement.parentElement, movingTabs) ||
-        !dropElement.parentElement?.isZenFolder;
-      if (isTab(dropElement)) {
+        gZenFolders.highlightGroupOnDragOver(dropElement.parentElement, movingTabs) || !isZenFolder;
+      let rect = dropElement.getBoundingClientRect();
+      const overlapPercent = (event.clientY - rect.top) / rect.height;
+      // We wan't to leave a small threshold (20% for example) so we can drag tabs below and above
+      // a folder label without dragging into the folder.
+      let threshold = Services.prefs.getIntPref('zen.tabs.folder-dragover-threshold-percent') / 100;
+      let dropIntoFolder =
+        isZenFolder && !(overlapPercent < threshold || overlapPercent > 1 - threshold);
+      if (isTab(dropElement) || !dropIntoFolder) {
         const indicator = gZenPinnedTabManager.dragIndicator;
-        let rect = dropElement.getBoundingClientRect();
         let top = 0;
-        const threshold =
+        threshold =
           Services.prefs.getIntPref('browser.tabs.dragDrop.moveOverThresholdPercent') / 100;
         if (overlapPercent > threshold) {
           top = Math.round(rect.top + rect.height) + 'px';
+          dropBefore = false;
         } else {
           top = Math.round(rect.top) + 'px';
+          dropBefore = true;
         }
         if (indicator.style.top !== top) {
           shouldPlayHapticFeedback = true;
@@ -523,24 +543,28 @@
         indicator.style.setProperty('--indicator-width', rect.width - separation + 'px');
         indicator.style.top = top;
         indicator.style.removeProperty('left');
+        this.#removeDragOverBackground();
+        if (!isTab(dropElement) && dropElement?.parentElement?.isZenFolder) {
+          dropElement = dropElement.parentElement;
+        }
       } else if (dropElement.classList.contains('zen-drop-target') && canHightlightGroup) {
-        // removeTabContainersDragoverClass Already calls a new haptic feedback
         shouldPlayHapticFeedback =
           this.#applyDragOverBackground(dropElement) && !gZenPinnedTabManager._dragIndicator;
         gZenPinnedTabManager.removeTabContainersDragoverClass();
+        dropElement = dropElement.parentElement?.labelElement || dropElement;
       }
 
       if (shouldPlayHapticFeedback) {
         Services.zen.playHapticFeedback();
       }
+      return [dropBefore, dropElement];
     }
 
-    #getDragImageOffset(tab) {
-      const { offsetX, offsetY } = tab._dragData;
+    #getDragImageOffset(event, tab) {
       const rect = tab.getBoundingClientRect();
       return {
-        offsetX: offsetX - rect.left,
-        offsetY: offsetY - rect.top,
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top,
       };
     }
   };

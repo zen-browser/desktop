@@ -20,6 +20,9 @@
 - name: zen.tabs.close-window-with-empty
   value: true
 
+- name: zen.tabs.folder-dragover-threshold-percent
+  value: 20 # Percentage of folder height to trigger dragover
+
 - name: zen.ctrlTab.show-pending-tabs
   value: false
 

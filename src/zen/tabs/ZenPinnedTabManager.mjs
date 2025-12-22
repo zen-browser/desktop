@@ -655,9 +655,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   removeTabContainersDragoverClass(hideIndicator = true) {
-    if (this._dragIndicator) {
-      Services.zen.playHapticFeedback();
-    }
     this.dragIndicator.remove();
     this._dragIndicator = null;
     if (hideIndicator) {

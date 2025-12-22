@@ -100,7 +100,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         .getElementById('context_zenChangeFolderSpace')
         .querySelector('menupopup');
       changeFolderSpace.innerHTML = '';
-      for (const workspace of [...gZenWorkspaces._workspaceCache.workspaces].reverse()) {
+      for (const workspace of [...gZenWorkspaces.getWorkspaces()].reverse()) {
         const item = gZenWorkspaces.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', (event) => {
           if (!this.#lastFolderContextMenu) return;
@@ -189,7 +189,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     window.addEventListener('TabSelect', this);
     window.addEventListener('TabOpen', this);
     const onNewFolder = this.#onNewFolder.bind(this);
-    document.getElementById('zen-context-menu-new-folder').addEventListener('command', onNewFolder);
     document
       .getElementById('zen-context-menu-new-folder-toolbar')
       .addEventListener('command', onNewFolder);

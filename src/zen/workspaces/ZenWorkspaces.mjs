@@ -1152,7 +1152,9 @@ class nsZenWorkspaces {
     const item = document.createXULElement('menuitem');
     item.className = 'zen-workspace-context-menu-item';
     item.setAttribute('zen-workspace-id', workspace.uuid);
-    item.setAttribute('disabled', workspace.uuid === this.activeWorkspace);
+    if (workspace.uuid === this.activeWorkspace) {
+      item.setAttribute('disabled', true);
+    }
     let name = workspace.name;
     const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
     if (workspace.icon && workspace.icon !== '' && !iconIsSvg) {
@@ -2311,25 +2313,20 @@ class nsZenWorkspaces {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = this.getWorkspaces();
 
-    const menuPopup = document.getElementById('context-zen-change-workspace-tab-menu-popup');
+    const menuPopup = document.getElementById('moveTabOptionsMenu');
     if (!menuPopup) {
       return;
     }
-    menuPopup.innerHTML = '';
-
-    const activeWorkspace = this.getActiveWorkspace();
-
-    for (let workspace of workspaces) {
-      const menuItem = document.createXULElement('menuitem');
-      menuItem.setAttribute('label', workspace.name);
-      menuItem.setAttribute('zen-workspace-id', workspace.uuid);
+    for (const item of menuPopup.querySelector('.zen-workspace-context-menu-item') || []) {
+      item.remove();
+    }
+    const separator = document.createXULElement('menuseparator');
+    separator.classList.add('zen-workspace-context-menu-item');
+    menuPopup.prepend(separator);
+    for (let workspace of workspaces.reverse()) {
+      const menuItem = this.generateMenuItemForWorkspace(workspace);
       menuItem.setAttribute('command', 'cmd_zenChangeWorkspaceTab');
-
-      if (workspace.uuid === activeWorkspace.uuid) {
-        menuItem.setAttribute('disabled', 'true');
-      }
-
-      menuPopup.appendChild(menuItem);
+      menuPopup.prepend(menuItem);
     }
   }
 
@@ -2687,7 +2684,6 @@ class nsZenWorkspaces {
       const commandsToDisable = [
         'cmd_zenOpenFolderCreation',
         'cmd_zenOpenWorkspaceCreation',
-        'zen-context-menu-new-folder',
         'zen-context-menu-new-folder-toolbar',
       ];
       commandsToDisable.forEach((cmd) => {
@@ -2698,16 +2694,6 @@ class nsZenWorkspaces {
       });
       return;
     }
-    const menu = document.createXULElement('menu');
-    menu.setAttribute('id', 'context-zen-change-workspace-tab');
-    menu.setAttribute('data-l10n-id', 'context-zen-change-workspace-tab');
-
-    const menuPopup = document.createXULElement('menupopup');
-    menuPopup.setAttribute('id', 'context-zen-change-workspace-tab-menu-popup');
-
-    menu.appendChild(menuPopup);
-
-    document.getElementById('context_moveTabOptions').after(menu);
   }
 
   async changeTabWorkspace(workspaceID) {

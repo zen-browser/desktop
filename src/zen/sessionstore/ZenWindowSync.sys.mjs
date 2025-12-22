@@ -135,7 +135,9 @@ class nsZenWindowSync {
     // 1. We are passing `zen-unsynced` in the window arguments.
     // 2. We are trying to open a link in a new window where other synced
     //   windows already exist
-    let forcedSync = false;
+    // Note, we force syncing if the window is private or workspaces is disabled
+    // to avoid confusing the old private window behavior.
+    let forcedSync = !aWindow.gZenWorkspaces?.privateWindowOrDisabled;
     let hasUnsyncedArg = false;
     if (aWindow._zenStartupSyncFlag === 'synced') {
       forcedSync = true;
@@ -308,12 +310,14 @@ class nsZenWindowSync {
     }
     const { gBrowser, gZenFolders } = aWindow;
     if (flags & SYNC_FLAG_ICON) {
+      aTargetItem.removeAttribute('zen-has-static-icon');
       if (gBrowser.isTab(aOriginalItem)) {
         gBrowser.setIcon(aTargetItem, gBrowser.getIcon(aOriginalItem));
       } else if (aOriginalItem.isZenFolder) {
         // Icons are a zen-only feature for tab groups.
         gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
       }
+      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, 'zen-has-static-icon');
     }
     if (flags & SYNC_FLAG_LABEL) {
       if (gBrowser.isTab(aOriginalItem)) {
@@ -797,8 +801,6 @@ class nsZenWindowSync {
             success = false;
             continue;
           }
-          newTab._zenContentsVisible = true;
-          gBrowser.setTabTitle(newTab);
           gZenWorkspaces.moveTabToWorkspace(newTab, aWorkspaceId);
         }
       }

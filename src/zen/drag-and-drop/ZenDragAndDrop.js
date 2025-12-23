@@ -51,6 +51,7 @@
     #dragOverBackground = null;
     #lastDropTarget = null;
     originalDragImageArgs = [];
+    #isOutOfWindow = false;
 
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
@@ -61,6 +62,12 @@
         '@mozilla.org/zen/drag-and-drop;1',
         Ci.nsIZenDragAndDrop
       );
+    }
+
+    init() {
+      super.init();
+      this.handle_windowDragEnter = this.handle_windowDragEnter.bind(this);
+      window.addEventListener('dragleave', this.handle_windowDragLeave.bind(this), true);
     }
 
     startTabDrag(event, tab, ...args) {
@@ -463,10 +470,51 @@
       dragData.animDropElementIndex = newDropElementIndex;
     }
 
+    #isMovingTab() {
+      return this._tabbrowserTabs.hasAttribute('movingtab');
+    }
+
     handle_dragover(event) {
       super.handle_dragover(event);
       if (event.target.closest('#tabbrowser-tabbox')) {
         gZenViewSplitter.onBrowserDragOverToSplit(event);
+      }
+    }
+
+    handle_windowDragEnter(event) {
+      if (!this.#isMovingTab() || !this.#isOutOfWindow) {
+        return;
+      }
+      this.#isOutOfWindow = false;
+      const dt = event.dataTransfer;
+      dt.updateDragImage(...this.originalDragImageArgs);
+    }
+
+    handle_windowDragLeave(event) {
+      if (!this.#isMovingTab() || !this._tabbrowserTabs._dndCanvas) {
+        return;
+      }
+      let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (!isTab(draggedTab)) {
+        return;
+      }
+      const { clientX, clientY } = event;
+      const { innerWidth, innerHeight } = window;
+      const isOutOfWindow =
+        clientX < 0 || clientX > innerWidth || clientY < 0 || clientY > innerHeight;
+      if (isOutOfWindow && !this.#isOutOfWindow) {
+        this.#isOutOfWindow = true;
+        this.clearDragOverVisuals();
+        const dt = event.dataTransfer;
+        dt.updateDragImage(
+          this._tabbrowserTabs._dndCanvas,
+          this.originalDragImageArgs[1],
+          this.originalDragImageArgs[2]
+        );
+        window.addEventListener('dragover', this.handle_windowDragEnter, {
+          once: true,
+          capture: true,
+        });
       }
     }
 
@@ -476,6 +524,8 @@
       this.#removeDragOverBackground();
       gZenPinnedTabManager.removeTabContainersDragoverClass();
       this.originalDragImageArgs = [];
+      window.removeEventListener('dragover', this.handle_windowDragEnter, { capture: true });
+      this.#isOutOfWindow = false;
     }
 
     #applyDragOverBackground(element) {
@@ -544,6 +594,14 @@
       let threshold = Services.prefs.getIntPref('zen.tabs.folder-dragover-threshold-percent') / 100;
       let dropIntoFolder =
         isZenFolder && (overlapPercent < threshold || overlapPercent > 1 - threshold);
+      if (
+        movingTabs[0].group?.isZenFolder &&
+        isTab(dropElement) &&
+        (!dropElement.pinned || dropElement.hasAttribute('zen-essential'))
+      ) {
+        this.clearDragOverVisuals();
+        return;
+      }
       if (isTab(dropElement) || dropIntoFolder) {
         const indicator = gZenPinnedTabManager.dragIndicator;
         let top = 0;

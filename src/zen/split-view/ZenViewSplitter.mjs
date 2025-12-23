@@ -248,7 +248,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   onBrowserDragOverToSplit(event) {
     if (this.fakeBrowser) {
-      this.onBrowserDragEndToSplit(event);
       return;
     }
     var dt = event.dataTransfer;

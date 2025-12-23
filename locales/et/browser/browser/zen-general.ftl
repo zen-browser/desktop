@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Asenda püsikaardi URL praegusega
     .accesskey = p
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Sinu { -brand-short-name } mods-ide fail on vigane. See on nüüd lähtestatud vaikimisi teemaks.
 zen-shortcuts-corrupted = Sinu { -brand-short-name } otseteede fail on vigane. See on nüüd lähtestatud vaikimisi otseteedeks.
 # note: Do not translate the "<br/>" tags in the following string

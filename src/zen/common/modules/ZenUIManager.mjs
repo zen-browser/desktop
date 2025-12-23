@@ -1408,4 +1408,105 @@ window.gZenVerticalTabsManager = {
 
     this._tabEdited = null;
   },
+
+  // Section: Multi-URL paste detection
+  // Maximum tabs to open from a single paste (prevents DoS)
+  MAX_TABS_FROM_PASTE: 20,
+
+  // Allowed URL schemes for multi-URL paste
+  ALLOWED_URL_SCHEMES: ['http', 'https', 'ftp', 'file'],
+
+  // Extracts multiple URLs from pasted text, handling concatenated URLs,
+  // whitespace-separated URLs, and bare domains
+  extractMultipleUrls(input) {
+    if (!input || typeof input !== 'string') {
+      return [];
+    }
+
+    // Limit input size to prevent regex DoS
+    const maxLength = 100000;
+    if (input.length > maxLength) {
+      input = input.substring(0, maxLength);
+    }
+
+    // Match URLs with protocols, stopping at whitespace or trailing punctuation
+    // Also match bare domains (word.word pattern with optional path)
+    const pattern =
+      /(?:https?|ftp|file):\/\/[^\s<>"']+(?<![.,;:!?)\]])|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(?:\/[^\s<>"']*(?<![.,;:!?)\]]))?/g;
+    const matches = input.match(pattern) || [];
+
+    // Normalize bare domains to https:// and deduplicate
+    const seen = new Set();
+    return matches
+      .map((url) => (/^(https?|ftp|file):\/\//.test(url) ? url : `https://${url}`))
+      .filter((url) => {
+        if (seen.has(url)) {
+          return false;
+        }
+        seen.add(url);
+        return true;
+      });
+  },
+
+  // Validates a URL and checks if its scheme is allowed
+  // Returns true if URL is safe to open, false otherwise
+  isUrlSafeToOpen(url) {
+    try {
+      const uri = Services.io.newURI(url);
+      const scheme = uri.scheme.toLowerCase();
+      return this.ALLOWED_URL_SCHEMES.includes(scheme);
+    } catch {
+      // Invalid URL
+      return false;
+    }
+  },
+
+  // Opens multiple URLs in separate tabs if input contains 2+ URLs
+  // Returns true if handled, false to let normal flow continue
+  maybeOpenMultipleUrls(input) {
+    const urls = this.extractMultipleUrls(input);
+    if (urls.length < 2) {
+      return false;
+    }
+
+    // Validate URLs and filter out dangerous schemes (javascript:, data:, etc.)
+    const safeUrls = urls.filter((url) => this.isUrlSafeToOpen(url));
+    if (safeUrls.length < 2) {
+      return false;
+    }
+
+    // Limit number of tabs to prevent DoS
+    const urlsToOpen = safeUrls.slice(0, this.MAX_TABS_FROM_PASTE);
+
+    // Store reference to original tab BEFORE opening new tabs
+    // (selectedTab changes after addTrustedTab)
+    const originalTab = gBrowser.selectedTab;
+    const wasEmptyTab = originalTab.hasAttribute('zen-empty-tab');
+
+    // Open all URLs as new tabs with error handling
+    let successCount = 0;
+    for (const url of urlsToOpen) {
+      try {
+        gBrowser.addTrustedTab(url);
+        successCount++;
+      } catch (e) {
+        console.error(`[Zen] Failed to open URL: ${url}`, e);
+      }
+    }
+
+    // If no tabs were successfully opened, don't handle
+    if (successCount === 0) {
+      return false;
+    }
+
+    // Cancel URL bar without navigating
+    gURLBar.handleRevert();
+
+    // Clean up the empty tab we came from (use stored reference)
+    if (wasEmptyTab) {
+      gBrowser.removeTab(originalTab);
+    }
+
+    return true;
+  },
 };

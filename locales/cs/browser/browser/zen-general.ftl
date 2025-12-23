@@ -5,7 +5,7 @@
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetovat připnutý prostor
+    .label = Resetovat připnutý panel
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Přidat do Essentials
@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Nahradit připnutou URL adresu aktuální adresou
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Změnit název...
+tab-context-zen-edit-icon = 
+    .label = Změnit ikonu...
 zen-themes-corrupted = Váš { -brand-short-name } mods soubor je poškozen. Byl obnoven na výchozí motiv.
 zen-shortcuts-corrupted = Soubor se zkratky prohlížeče { -brand-short-name } je poškozen. Zkratky byly resetovány na výchozí nastavení.
 # note: Do not translate the "<br/>" tags in the following string

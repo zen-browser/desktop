@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = 將釘選的網址換成目前的網址
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = 你的 { -brand-short-name } 模組文件已損壞，它們已重設為預設主題。
 zen-shortcuts-corrupted = 你的 { -brand-short-name } 快捷文件已損壞。它們已被重設為預設值。
 # note: Do not translate the "<br/>" tags in the following string

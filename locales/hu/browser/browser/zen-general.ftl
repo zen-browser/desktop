@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Kitűzött lap cseréje a jelenlegi URL-el
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Címke módosítása...
+tab-context-zen-edit-icon = 
+    .label = Ikon módosítása...
 zen-themes-corrupted = A te { -brand-short-name } mod fájljaid károsodtak. Vissza lettek állítva az eredeti témára.
 zen-shortcuts-corrupted = A te { -brand-short-name } parancsikonok fájlod károsodott. Vissza lettek állítva az eredeti parancsikonokra.
 # note: Do not translate the "<br/>" tags in the following string

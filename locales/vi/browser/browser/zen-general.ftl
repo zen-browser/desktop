@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Thay thế đường dường dẫn đã ghim với hiện tại
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Đổi tên...
+tab-context-zen-edit-icon = 
+    .label = Đổi biểu tượng...
 zen-themes-corrupted = Thư mục chủ đề { -brand-short-name } của bạn đã bị hư, chúng đã được trả về thiết kế gốc.
 zen-shortcuts-corrupted = Tệp phím tắt { -brand-short-name } của bạn đã bị hư. Chúng đã được trẻ về phím tắt gốc.
 # note: Do not translate the "<br/>" tags in the following string

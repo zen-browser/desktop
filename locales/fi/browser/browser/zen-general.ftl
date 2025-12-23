@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Korvaa kiinnitetty URL-osoite nykyisellä
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = { -brand-short-name } modejasi tiedosto on vioittunut. Ne on palautettu oletusteemaan.
 zen-shortcuts-corrupted = { -brand-short-name } Oikotietä sisältävä tiedosto on korruptoitunut. Ne on palautettu oletus oikoteihin.
 # note: Do not translate the "<br/>" tags in the following string

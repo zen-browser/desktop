@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Ganti URL Sematan ke URL saat ini
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Tidak dapat memuat file tema { -brand-short-name } Anda karena rusak. File tersebut telah diatur ulang ke tema default.
 zen-shortcuts-corrupted = File pintasan { -brand-short-name } Anda rusak. Mereka telah diatur ulang ke pintasan default.
 # note: Do not translate the "<br/>" tags in the following string

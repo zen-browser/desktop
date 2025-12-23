@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Erstat fastgjort URL med nuværende
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Din { -brand-short-name } mods-fil er beskadiget. De er blevet nulstillet til standardtemaet.
 zen-shortcuts-corrupted = Din { -brand-short-name }-genvejsfil er beskadiget. De er blevet nulstillet til standardgenvejene.
 # note: Do not translate the "<br/>" tags in the following string

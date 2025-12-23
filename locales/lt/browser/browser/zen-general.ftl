@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Pakeisti prisegtą URL adresą dabartiniu
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Keisti žymę...
+tab-context-zen-edit-icon = 
+    .label = Keisti piktogramą...
 zen-themes-corrupted = Jūsų „{ -brand-short-name }“ modifikacijos failas sugadintas. Jie buvo atkurti į numatytąją temą.
 zen-shortcuts-corrupted = Jūsų „{ -brand-short-name }“ sparčiųjų klavišų failas sugadintas. Jie buvo atkurti į numatytuosius sparčiuosius klavišus.
 # note: Do not translate the "<br/>" tags in the following string

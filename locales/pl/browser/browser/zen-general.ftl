@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Zastąp przypięty adres URL aktualnym
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
 zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest popsuty. Skróty zostały zresetowane do domyślnych.
 # note: Do not translate the "<br/>" tags in the following string

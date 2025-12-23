@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Substitueix l'URL fixat per l'actual
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Canvia l'etiqueta...
+tab-context-zen-edit-icon = 
+    .label = Canvia la icona...
 zen-themes-corrupted = El vostre fitxer de modificacions { -brand-short-name } està malmès. S'ha restablert al tema per defecte.
 zen-shortcuts-corrupted = El vostre fitxer de dreceres { -brand-short-name } està malmès. S'ha restablert a les dreceres per defecte.
 # note: Do not translate the "<br/>" tags in the following string

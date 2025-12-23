@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4fda535eb 100644
+index 97b931c3c7385a52d20204369fcf6d6999053687..4fa28e4c00b746b34e63b3ece15b79edfecd9117 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -32,6 +32,9 @@
@@ -217,24 +217,15 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
            }
          }
        }
-@@ -1173,6 +1208,16 @@
+@@ -1173,6 +1208,7 @@
        if (tabStripItemElement.hasAttribute("dragtarget")) {
          return;
        }
-+      let { movingTabs: zenMovingTabs } = tab._dragData;
-+      for (let movingTab of zenMovingTabs.slice(zenMovingTabs.findIndex(t => t._tPos == tab._tPos))) {
-+        if (isTabGroupLabel(tab)) {
-+          movingTab = movingTab.parentElement;
-+        }
-+        // "dragtarget" contains the following rules which must only be set AFTER the above
-+        // elements have been adjusted. {z-index: 3 !important, position: absolute !important}
-+        movingTab.setAttribute("zen-dragtarget", "");
-+      }
 +      return;
        let isPinned = tab.pinned;
        let numPinned = gBrowser.pinnedTabCount;
        let allTabs = this._tabbrowserTabs.ariaFocusableItems;
-@@ -1624,10 +1669,7 @@
+@@ -1624,10 +1660,7 @@
          return;
        }
  
@@ -246,7 +237,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
  
        let directionX = screenX > dragData.animLastScreenX;
        let directionY = screenY > dragData.animLastScreenY;
-@@ -1636,6 +1678,8 @@
+@@ -1636,6 +1669,8 @@
  
        let { width: tabWidth, height: tabHeight } =
          draggedTab.getBoundingClientRect();
@@ -255,7 +246,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
        let shiftSizeX = tabWidth * movingTabs.length;
        let shiftSizeY = tabHeight;
        dragData.tabWidth = tabWidth;
-@@ -1672,8 +1716,8 @@
+@@ -1672,8 +1707,8 @@
        let lastBoundX =
          lastTabInRow.screenX +
          lastTabInRow.getBoundingClientRect().width -
@@ -266,7 +257,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
        translateX = Math.min(Math.max(translateX, firstBoundX), lastBoundX);
        translateY = Math.min(Math.max(translateY, firstBoundY), lastBoundY);
  
-@@ -2417,6 +2461,7 @@
+@@ -2417,6 +2452,7 @@
      }
  
      finishAnimateTabMove() {
@@ -274,7 +265,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
        if (!this.#isMovingTab()) {
          return;
        }
-@@ -2457,7 +2502,7 @@
+@@ -2457,7 +2493,7 @@
          tab.style.left = "";
          tab.style.top = "";
          tab.style.maxWidth = "";
@@ -283,7 +274,7 @@ index 97b931c3c7385a52d20204369fcf6d6999053687..b028c923d24adf0e9dbe12f80deb3ad4
        }
        for (let label of draggedTabDocument.getElementsByClassName(
          "tab-group-label-container"
-@@ -2467,7 +2512,7 @@
+@@ -2467,7 +2503,7 @@
          label.style.left = "";
          label.style.top = "";
          label.style.maxWidth = "";

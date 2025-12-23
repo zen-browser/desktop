@@ -1,0 +1,25 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+/**
+ * @brief Interface for Zen's drag and drop functionality.
+ */
+[scriptable, uuid(f8714110-1fb1-4129-abad-887a64e4085e)]
+interface nsIZenDragAndDrop : nsISupports {
+  /**
+   * @brief Indicate that a drag operation has started. Note
+   * that this should only be called for zen's drag and drop
+   * operations for the tabs.
+   * @param opacity The opacity of the drag image.
+   */
+  void onDragStart(in float opacity);
+
+  /**
+   * @brief Indicate that a drag operation has ended.
+   */
+  void onDragEnd();
+};
+

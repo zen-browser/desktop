@@ -228,6 +228,24 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  #getDragImageForSplit(tab) {
+    const element = window.MozXULElement.parseXULToFragment(
+      `
+      <vbox id="zen-split-view-drag-image">
+        <image />
+        <label />
+      </vbox>
+    `
+    ).querySelector('#zen-split-view-drag-image');
+    const image = element.querySelector('image');
+    const label = element.querySelector('label');
+    image.src = tab.getAttribute('image');
+    label.textContent = tab.label;
+    document.documentElement.appendChild(element);
+    this._dndElement = element;
+    return element;
+  }
+
   onBrowserDragOverToSplit(event) {
     if (this.fakeBrowser) {
       this.onBrowserDragEndToSplit(event);
@@ -285,6 +303,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     dt.mozCursor = 'default';
+    if (!this._dndElement) {
+      const originalDNDArgs = gBrowser.tabContainer.tabDragAndDrop.originalDragImageArgs;
+      requestAnimationFrame(() => {
+        dt.updateDragImage(
+          this.#getDragImageForSplit(draggedTab),
+          originalDNDArgs[1],
+          originalDNDArgs[2]
+        );
+      });
+      gBrowser.tabContainer.tabDragAndDrop.clearDragOverVisuals();
+    }
     const oldTab = this._lastOpenedTab;
     this._canDrop = true;
     {
@@ -330,11 +359,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         this.fakeBrowser.setAttribute('has-split-view', 'true');
       }
       gBrowser.tabbox.appendChild(this.fakeBrowser);
-      this.fakeBrowser.style.setProperty(
-        '--zen-split-view-fake-icon',
-        `url(${draggedTab.getAttribute('image')})`
-      );
-      draggedTab._visuallySelected = true;
       this.fakeBrowser.setAttribute('side', side);
       this._finishAllAnimatingPromise = Promise.all([
         gZenUIManager.motion.animate(
@@ -377,7 +401,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
             .classList.remove('deck-selected');
           this.fakeBrowser.addEventListener('dragleave', this.onBrowserDragEndToSplit);
           this._canDrop = true;
-          draggedTab._visuallySelected = true;
         });
       }
     }
@@ -390,12 +413,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const panelsRect = gBrowser.tabbox.getBoundingClientRect();
     const fakeBrowserRect = this.fakeBrowser && this.fakeBrowser.getBoundingClientRect();
     if (
-      ((event.target.closest('#tabbrowser-tabbox') && event.target != this.fakeBrowser) ||
-        (fakeBrowserRect &&
-          event.clientX > fakeBrowserRect.left &&
-          event.clientX < fakeBrowserRect.left + fakeBrowserRect.width &&
-          event.clientY > fakeBrowserRect.top &&
-          event.clientY < fakeBrowserRect.top + fakeBrowserRect.height) ||
+      ((fakeBrowserRect &&
+        event.clientX > fakeBrowserRect.left &&
+        event.clientX < fakeBrowserRect.left + fakeBrowserRect.width &&
+        event.clientY > fakeBrowserRect.top &&
+        event.clientY < fakeBrowserRect.top + fakeBrowserRect.height) ||
         (event.screenX === 0 && event.screenY === 0)) && // It's equivalent to 0 if the event has been dropped
       !cancelled
     ) {
@@ -415,50 +437,47 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (!this.fakeBrowser) {
       return;
     }
-    this.fakeBrowser.classList.add('fade-out');
     const side = this.fakeBrowser.getAttribute('side');
     if (this._draggingTab) this._draggingTab.setAttribute('zen-has-splitted', 'true');
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
-    try {
-      this._canDrop = false;
-      Promise.all([
-        gZenUIManager.motion.animate(
-          gBrowser.tabbox,
-          side === 'left'
+    event.dataTransfer.updateDragImage(
+      ...gBrowser.tabContainer.tabDragAndDrop.originalDragImageArgs
+    );
+    this._canDrop = false;
+    Promise.all([
+      gZenUIManager.motion.animate(
+        gBrowser.tabbox,
+        side === 'left'
+          ? {
+              paddingLeft: [`${halfWidth}px`, 0],
+            }
+          : {
+              paddingRight: [`${halfWidth}px`, 0],
+            },
+        {
+          duration: 0.1,
+          easing: 'ease-out',
+        }
+      ),
+      gZenUIManager.motion.animate(
+        this.fakeBrowser,
+        {
+          width: [`${halfWidth - padding * 2}px`, 0],
+          ...(side === 'left'
             ? {
-                paddingLeft: [`${halfWidth}px`, 0],
+                marginLeft: [`${-halfWidth}px`, 0],
               }
-            : {
-                paddingRight: [`${halfWidth}px`, 0],
-              },
-          {
-            duration: 0.1,
-            easing: 'ease-out',
-          }
-        ),
-        gZenUIManager.motion.animate(
-          this.fakeBrowser,
-          {
-            width: [`${halfWidth - padding * 2}px`, 0],
-            ...(side === 'left'
-              ? {
-                  marginLeft: [`${-halfWidth}px`, 0],
-                }
-              : {}),
-          },
-          {
-            duration: 0.1,
-            easing: 'ease-out',
-          }
-        ),
-      ]).then(() => {
-        this._maybeRemoveFakeBrowser();
-      });
-    } catch {
-      this._canDrop = false;
+            : {}),
+        },
+        {
+          duration: 0.1,
+          easing: 'ease-out',
+        }
+      ),
+    ]).finally(() => {
       this._maybeRemoveFakeBrowser();
-    }
+    });
   }
 
   /**
@@ -1659,11 +1678,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   _maybeRemoveFakeBrowser(select = true) {
     gBrowser.tabbox.removeAttribute('style');
     this.tabBrowserPanel.removeAttribute('dragging-split');
+    if (this._dndElement) {
+      this._dndElement.remove();
+      delete this._dndElement;
+    }
     if (this.fakeBrowser) {
       delete this._hasAnimated;
       this.fakeBrowser.remove();
       this.fakeBrowser = null;
-      if (this._draggingTab) this._draggingTab._visuallySelected = false;
       if (select) {
         gBrowser.selectedTab = this._draggingTab;
         this._draggingTab = null;

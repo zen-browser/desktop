@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 6b6c04599fe80983d13d2069ca62b99d8ad70271..009a9c398e2434b8b6704ed2c75b0f09ecc22ca1 100644
+index 6b6c04599fe80983d13d2069ca62b99d8ad70271..6d5ae983446bc778f3075d79f8ff14748dd7756f 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -235,7 +235,7 @@
@@ -7,7 +7,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..009a9c398e2434b8b6704ed2c75b0f09
        )
          ? new window.TabStacking(this)
 -        : new window.TabDragAndDrop(this);
-+        : new window.ZenDragAndDrop(this);
++        : Services.prefs.getBoolPref("zen.tabs.use-legacy-drag-and-drop") ? new window.TabDragAndDrop(this) : new window.ZenDragAndDrop(this);
        this.tabDragAndDrop.init();
      }
  

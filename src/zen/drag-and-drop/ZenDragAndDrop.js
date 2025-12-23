@@ -32,7 +32,7 @@
    * @returns {MozTabbrowserTab|vbox}
    */
   const elementToMove = (element) => {
-    if (element.classList.contains('zen-current-workspace-indicator')) {
+    if (element.closest('.zen-current-workspace-indicator')) {
       return element;
     }
     if (element.group?.hasAttribute('split-view-group')) {
@@ -50,17 +50,28 @@
   window.ZenDragAndDrop = class extends window.TabDragAndDrop {
     #dragOverBackground = null;
     #lastDropTarget = null;
+    originalDragImageArgs = [];
 
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
+
+      XPCOMUtils.defineLazyServiceGetter(
+        this,
+        'ZenDragAndDropService',
+        '@mozilla.org/zen/drag-and-drop;1',
+        Ci.nsIZenDragAndDrop
+      );
     }
 
     startTabDrag(event, tab, ...args) {
+      this.ZenDragAndDropService.onDragStart(1);
+
       super.startTabDrag(event, tab, ...args);
       const dt = event.dataTransfer;
 
       const { offsetX, offsetY } = this.#getDragImageOffset(event, tab);
-      dt.setDragImage(tab, offsetX, offsetY);
+      this.originalDragImageArgs = [tab, offsetX, offsetY];
+      dt.setDragImage(...this.originalDragImageArgs);
     }
 
     _animateTabMove(event) {
@@ -460,9 +471,11 @@
     }
 
     handle_dragend(event) {
+      this.ZenDragAndDropService.onDragEnd();
       super.handle_dragend(event);
       this.#removeDragOverBackground();
       gZenPinnedTabManager.removeTabContainersDragoverClass();
+      this.originalDragImageArgs = [];
     }
 
     #applyDragOverBackground(element) {
@@ -488,6 +501,11 @@
       }
     }
 
+    clearDragOverVisuals() {
+      this.#removeDragOverBackground();
+      gZenPinnedTabManager.removeTabContainersDragoverClass();
+    }
+
     #applyDragoverIndicator(event, tabs, movingTabs) {
       const separation = 4;
       const dropZoneSelector = ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label)';
@@ -499,8 +517,7 @@
         const numPinned = gBrowser.pinnedTabCount - numEssentials;
         const tabToUse = event.target.closest(dropZoneSelector);
         if (!tabToUse) {
-          this.#removeDragOverBackground();
-          gZenPinnedTabManager.removeTabContainersDragoverClass();
+          this.clearDragOverVisuals();
           return;
         }
         const isPinned = tabToUse.pinned;
@@ -509,6 +526,10 @@
         dropElement = event.clientY > draggedTabRect.top ? relativeTabs.at(-1) : relativeTabs[0];
       }
       dropElement = elementToMove(dropElement);
+      if (this._isContainerVerticalPinnedGrid(dropElement)) {
+        this._animateExpandedPinnedTabMove(event);
+        return;
+      }
       if (this.#lastDropTarget !== dropElement) {
         shouldPlayHapticFeedback = this.#lastDropTarget !== null;
         this.#removeDragOverBackground();
@@ -522,8 +543,8 @@
       // a folder label without dragging into the folder.
       let threshold = Services.prefs.getIntPref('zen.tabs.folder-dragover-threshold-percent') / 100;
       let dropIntoFolder =
-        isZenFolder && !(overlapPercent < threshold || overlapPercent > 1 - threshold);
-      if (isTab(dropElement) || !dropIntoFolder) {
+        isZenFolder && (overlapPercent < threshold || overlapPercent > 1 - threshold);
+      if (isTab(dropElement) || dropIntoFolder) {
         const indicator = gZenPinnedTabManager.dragIndicator;
         let top = 0;
         threshold =

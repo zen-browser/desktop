@@ -1366,11 +1366,6 @@
   }
 }
 
-.tabbrowser-tab[zen-dragtarget],
-.tab-group-label-container[zen-dragtarget] {
-  z-index: 9 !important;
-}
-
 #zen-dragover-background {
   position: absolute;
   z-index: -1;

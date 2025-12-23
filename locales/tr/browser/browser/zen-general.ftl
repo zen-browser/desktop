@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Sabitlenen URL'yi Mevcut ile Değiştir
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Etiketi Değiştir...
+tab-context-zen-edit-icon = 
+    .label = Simgeyi Değiştir...
 zen-themes-corrupted = { -brand-short-name } adlı modun dosyaları hatalı. Varsayılan temaya sıfırlandılar.
 zen-shortcuts-corrupted = { -brand-short-name } kısayol dosyanız bozuldu. Varsayılan kısayollara sıfırlandı.
 # note: Do not translate the "<br/>" tags in the following string

@@ -17,8 +17,12 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Заменить закреплённый адрес на текущий
     .accesskey = С
+tab-context-zen-edit-title = 
+    .label = Переименовать...
+tab-context-zen-edit-icon = 
+    .label = Изменить иконку...
 zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
-zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Они были сброшены к стандартным.
+zen-shortcuts-corrupted = Файл комбинаций клавиш { -brand-short-name } повреждён. Возвращены комбинации клавиш по умолчанию.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>

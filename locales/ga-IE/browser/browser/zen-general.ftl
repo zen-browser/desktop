@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Cuir URL Prionáilte in ionad an URL Reatha
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Athraigh Lipéad...
+tab-context-zen-edit-icon = 
+    .label = Athraigh Deilbhín...
 zen-themes-corrupted = Tá do chomhad mods { -brand-short-name } truaillithe. Tá siad athshocraithe chuig an téama réamhshocraithe.
 zen-shortcuts-corrupted = Tá do chomhad aicearraí { -brand-short-name } truaillithe. Tá siad athshocraithe chuig na haicearraí réamhshocraithe.
 # note: Do not translate the "<br/>" tags in the following string

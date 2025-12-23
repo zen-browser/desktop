@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Skipta út festri slóð með núverandi
     .accesskey = P
+tab-context-zen-edit-title = 
+    .label = Skipta um merkingu...
+tab-context-zen-edit-icon = 
+    .label = Skipta um táknmynd...
 zen-themes-corrupted = Viðbrigðaskráin þín fyrir { -brand-short-name } er skemmd. Þau notast í staðinn við sjálfgefið þema.
 zen-shortcuts-corrupted = Flýtivísaskráin þín { -brand-short-name } er skemmd. Þeir notast í staðinn við þá sjálfgefnu.
 # note: Do not translate the "<br/>" tags in the following string

@@ -474,6 +474,16 @@
       return this._tabbrowserTabs.hasAttribute('movingtab');
     }
 
+    get #dragShiftableItems() {
+      const separator = gZenWorkspaces.pinnedTabsContainer.querySelector(
+        '.pinned-tabs-container-separator'
+      );
+      // Make sure to always return the separator at the start of the array
+      return Services.prefs.getBoolPref('zen.view.show-newtab-button-top')
+        ? [separator, gZenWorkspaces.activeWorkspaceElement.newTabButton]
+        : [separator];
+    }
+
     handle_dragover(event) {
       super.handle_dragover(event);
       if (event.target.closest('#tabbrowser-tabbox')) {
@@ -516,6 +526,74 @@
           capture: true,
         });
       }
+    }
+
+    handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
+      if (
+        gReduceMotion ||
+        dropElement.group !== draggedTab.group ||
+        dropElement.hasAttribute('zen-essential') ||
+        draggedTab.hasAttribute('zen-essential')
+      ) {
+        return;
+      }
+      const animateElement = (ele, translateY) => {
+        ele.style.transform = `translateY(${translateY}px)`;
+        setTimeout(() => {
+          setTimeout(() => {
+            gZenUIManager.motion
+              .animate(
+                ele,
+                {
+                  y: [translateY, 0],
+                },
+                {
+                  duration: 0.1,
+                  bounce: 0,
+                }
+              )
+              .then(() => {
+                ele.style.transform = '';
+              });
+          });
+        });
+      };
+      const items = this._tabbrowserTabs.ariaFocusableItems;
+      let rect = window.windowUtils.getBoundsWithoutFlushing(draggedTab);
+      let tabsInBetween = [];
+      let startIndex = Math.min(draggedTab.elementIndex, dropElement.elementIndex + !dropBefore);
+      let endIndex = Math.max(draggedTab.elementIndex, dropElement.elementIndex - dropBefore);
+      for (let i = startIndex; i <= endIndex; i++) {
+        let tab = items[i];
+        if (!movingTabs.includes(tab) && isTab(tab)) {
+          tabsInBetween.push(tab);
+        }
+      }
+      let extraTranslate = 0;
+      let translateY =
+        draggedTab.elementIndex > dropElement.elementIndex ? -rect.height : rect.height;
+      translateY *= movingTabs.length;
+      if (draggedTab.pinned != dropElement.pinned) {
+        const shiftableItems = this.#dragShiftableItems;
+        for (let item of shiftableItems) {
+          // We also need to animate these shiftable items and add it to the extraTranslate
+          // so the dragged tab ends up in the right position.
+          let itemRect = window.windowUtils.getBoundsWithoutFlushing(item);
+          extraTranslate += itemRect.height;
+          animateElement(item, translateY);
+        }
+      }
+      // Animate tabs in between moving out of the way
+      for (let tab of tabsInBetween) {
+        animateElement(tab, translateY);
+      }
+      let draggedTabTranslateY =
+        draggedTab.elementIndex > dropElement.elementIndex
+          ? rect.height * tabsInBetween.length
+          : -rect.height * tabsInBetween.length;
+      draggedTabTranslateY +=
+        extraTranslate * (draggedTab.elementIndex > dropElement.elementIndex ? 1 : -1);
+      animateElement(draggedTab, draggedTabTranslateY);
     }
 
     handle_dragend(event) {

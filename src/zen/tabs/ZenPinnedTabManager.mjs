@@ -662,45 +662,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onDragFinish() {
-    for (const item of this.dragShiftableItems) {
-      item.style.transform = '';
-    }
-    delete this._topToNormalTabs;
-    for (const item of gBrowser.tabContainer.ariaFocusableItems) {
-      if (gBrowser.isTab(item)) {
-        let isVisible = true;
-        let parent = item.group;
-        while (parent) {
-          if (!parent.visible) {
-            isVisible = false;
-            break;
-          }
-          parent = parent.group;
-        }
-        if (!isVisible) {
-          continue;
-        }
-      }
-      const itemToAnimate =
-        item.group?.hasAttribute('split-view-group') || gBrowser.isTabGroupLabel(item)
-          ? item.group
-          : item;
-      itemToAnimate.style.removeProperty('--zen-folder-indent');
-    }
-    this.removeTabContainersDragoverClass();
-  }
-
-  get dragShiftableItems() {
-    const separator = gZenWorkspaces.pinnedTabsContainer.querySelector(
-      '.pinned-tabs-container-separator'
-    );
-    // Make sure to always return the separator at the start of the array
-    return Services.prefs.getBoolPref('zen.view.show-newtab-button-top')
-      ? [separator, gZenWorkspaces.activeWorkspaceElement.newTabButton]
-      : [separator];
-  }
-
   get dragIndicator() {
     if (!this._dragIndicator) {
       this._dragIndicator = document.createElement('div');

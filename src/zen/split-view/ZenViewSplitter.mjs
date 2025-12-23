@@ -437,7 +437,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     const side = this.fakeBrowser.getAttribute('side');
-    if (this._draggingTab) this._draggingTab.setAttribute('zen-has-splitted', 'true');
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
     event.dataTransfer.updateDragImage(

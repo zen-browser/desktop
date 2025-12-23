@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Ailosod URL wedi'i Binio gyda'r Cyfredol
     .accesskey = P
+tab-context-zen-edit-title = 
+    .label = Newid Label...
+tab-context-zen-edit-icon = 
+    .label = Newid Eicon...
 zen-themes-corrupted = Mae eich ffeil addasiadau { -brand-short-name } wedi'i llygru. Maen nhw wedi cael eu hailosod i'r thema rhagosodedig.
 zen-shortcuts-corrupted = Mae eich ffeil llwybr-byr { -brand-short-name } wedi'i llygru. Maen nhw wedi cael eu hailosod i'r llwybr byr rhagosodedig.
 # note: Do not translate the "<br/>" tags in the following string

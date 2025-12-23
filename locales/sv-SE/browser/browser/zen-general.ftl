@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Ersätt fäst fliks URL med nuvarande
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Ändra etikett...
+tab-context-zen-edit-icon = 
+    .label = Ändra ikon...
 zen-themes-corrupted = Din { -brand-short-name } modds-fil är skadad. De har återställts till standardtemat.
 zen-shortcuts-corrupted = Din { -brand-short-name } Genvägsfil är korrupt. De har återställts till standardgenvägarna.
 # note: Do not translate the "<br/>" tags in the following string

@@ -18,6 +18,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current =
     .label = Replace Pinned URL with Current
     .accesskey = C
+tab-context-zen-edit-title =
+    .label = Change Label...
+tab-context-zen-edit-icon =
+    .label = Change Icon...
 
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
 zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.

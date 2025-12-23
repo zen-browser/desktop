@@ -17,6 +17,10 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Substituir URL da Guia Fixada pela Atual
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Alterar Rótulo...
+tab-context-zen-edit-icon = 
+    .label = Alterar Ícone...
 zen-themes-corrupted = Seu arquivo de modificações { -brand-short-name } está corrompido. Eles foram redefinidos para o tema padrão.
 zen-shortcuts-corrupted = Seu arquivo de atalhos { -brand-short-name } está corrompido. Eles foram redefinidos para os atalhos padrão.
 # note: Do not translate the "<br/>" tags in the following string

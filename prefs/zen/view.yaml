@@ -40,12 +40,6 @@
 - name: zen.view.window.scheme
   value: 2
 
-- name: zen.view.drag-and-drop.move-over-threshold
-  value: 70
-
-- name: zen.view.drag-and-drop.edge-zone-threshold
-  value: 25
-
 - name: zen.view.context-menu.refresh
   value: '@IS_TWILIGHT@'
 

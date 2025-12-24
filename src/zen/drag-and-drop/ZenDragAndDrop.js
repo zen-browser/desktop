@@ -542,6 +542,12 @@
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
+      if (isTabGroupLabel(dropElement)) {
+        dropElement = dropElement.group;
+      }
+      if (isTabGroupLabel(draggedTab)) {
+        draggedTab = draggedTab.group;
+      }
       if (
         gReduceMotion ||
         dropElement.group !== draggedTab.group ||

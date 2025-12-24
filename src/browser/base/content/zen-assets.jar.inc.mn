@@ -4,6 +4,7 @@
 
 #include ../../../zen/common/jar.inc.mn
 #include ../../../zen/compact-mode/jar.inc.mn
+#include ../../../zen/drag-and-drop/jar.inc.mn
 #include ../../../zen/split-view/jar.inc.mn
 #include ../../../zen/mods/jar.inc.mn
 #include ../../../zen/workspaces/jar.inc.mn

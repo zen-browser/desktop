@@ -428,10 +428,12 @@
 
       delete dragData.shouldDropIntoCollapsedTabGroup;
 
-      [dropBefore, dropElement] = this.#applyDragoverIndicator(event, tabs, movingTabs) ?? [
-        dropBefore,
-        dropElement,
-      ];
+      [dropBefore, dropElement] = this.#applyDragoverIndicator(
+        event,
+        tabs,
+        movingTabs,
+        draggedTab
+      ) ?? [dropBefore, dropElement];
 
       // Default to dropping into `dropElement`'s tab group, if it exists.
       let dropElementGroup = dropElement?.group;
@@ -501,7 +503,8 @@
     }
 
     handle_windowDragLeave(event) {
-      if (!this.#isMovingTab() || !this._tabbrowserTabs._dndCanvas) {
+      const canvas = this._tabbrowserTabs._dndCanvas;
+      if (!this.#isMovingTab() || !canvas) {
         return;
       }
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -516,8 +519,18 @@
         this.#isOutOfWindow = true;
         this.clearDragOverVisuals();
         const dt = event.dataTransfer;
+        if (!this._browserDragImageWrapper) {
+          const wrappingDiv = document.createXULElement('vbox');
+          wrappingDiv.style.borderRadius = canvas.style.borderRadius = '8px';
+          wrappingDiv.style.border = '2px solid white';
+          wrappingDiv.style.width = 200 + 'px';
+          wrappingDiv.style.height = 130 + 'px';
+          wrappingDiv.appendChild(canvas);
+          this._browserDragImageWrapper = wrappingDiv;
+          document.documentElement.appendChild(wrappingDiv);
+        }
         dt.updateDragImage(
-          this._tabbrowserTabs._dndCanvas,
+          this._browserDragImageWrapper,
           this.originalDragImageArgs[1],
           this.originalDragImageArgs[2]
         );
@@ -604,6 +617,11 @@
       this.originalDragImageArgs = [];
       window.removeEventListener('dragover', this.handle_windowDragEnter, { capture: true });
       this.#isOutOfWindow = false;
+      this.#clearInvisibleTempTab();
+      if (this._browserDragImageWrapper) {
+        this._browserDragImageWrapper.remove();
+        delete this._browserDragImageWrapper;
+      }
     }
 
     #applyDragOverBackground(element) {
@@ -634,7 +652,15 @@
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 
-    #applyDragoverIndicator(event, tabs, movingTabs) {
+    #clearInvisibleTempTab() {
+      if (this._invisibleTempTab) {
+        this._invisibleTempTab.remove();
+        delete this._invisibleTempTab;
+        this._tabbrowserTabs._invalidateCachedTabs();
+      }
+    }
+
+    #applyDragoverIndicator(event, tabs, movingTabs, draggedTab) {
       const separation = 4;
       const dropZoneSelector = ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label)';
       let shouldPlayHapticFeedback = false;
@@ -654,9 +680,20 @@
         dropElement = event.clientY > draggedTabRect.top ? relativeTabs.at(-1) : relativeTabs[0];
       }
       dropElement = elementToMove(dropElement);
-      if (this._isContainerVerticalPinnedGrid(dropElement)) {
+      if (this._isContainerVerticalPinnedGrid(dropElement) && isTab(draggedTab)) {
+        if (!draggedTab.hasAttribute('zen-essential') && !this._invisibleTempTab) {
+          this._invisibleTempTab = draggedTab.cloneNode(true);
+          this._invisibleTempTab.setAttribute('zen-essential', 'true');
+          //this._invisibleTempTab.style.visibility = 'hidden';
+          this._tabbrowserTabs.ariaFocusableItems[gBrowser._numZenEssentials - 1].after(
+            this._invisibleTempTab
+          );
+          this._tabbrowserTabs._invalidateCachedTabs();
+        }
         this._animateExpandedPinnedTabMove(event);
         return;
+      } else if (this._invisibleTempTab) {
+        this.#clearInvisibleTempTab();
       }
       if (this.#lastDropTarget !== dropElement) {
         shouldPlayHapticFeedback = this.#lastDropTarget !== null;
@@ -673,7 +710,8 @@
       let dropIntoFolder =
         isZenFolder && (overlapPercent < threshold || overlapPercent > 1 - threshold);
       if (
-        movingTabs[0].group?.isZenFolder &&
+        isTabGroupLabel(draggedTab) &&
+        draggedTab.group?.isZenFolder &&
         isTab(dropElement) &&
         (!dropElement.pinned || dropElement.hasAttribute('zen-essential'))
       ) {

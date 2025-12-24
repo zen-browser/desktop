@@ -100,7 +100,7 @@ zen-site-data-setting-site-protection = Phòng chống theo dõi
 zen-site-data-panel-feature-callout-title = Diện mạo mới cho add-ons, quyền truy cập và nhiều hơn nữa
 zen-site-data-panel-feature-callout-subtitle = Bấm vào biểu tượng để quản lý các thiết lập của trang web, kiểm tra thông tin bảo mật, quyền truy cập của các tiện ích và thực thiện các tác vụ cơ bản.
 zen-open-link-in-glance = 
-    .label = Mở liên kết trong Xem nhanh
+    .label = Mở liên kết trong xem nhanh
     .accesskey = G
 zen-sidebar-notification-updated-heading = Cập nhật hoàn tất!
 

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c625351f6 100644
+index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..da23f716c753f5a43f17bb5ed7a3d335891168c2 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
 @@ -6,7 +6,7 @@
@@ -27,21 +27,28 @@ index 7b776b15d52367a008ce6bf53dcfcbbe007b7453..d9a3404905b73db7c8f202ab166d5f3c
            gBrowser.handleNewTabMiddleClick(element, event);
            break;
  
-@@ -315,7 +317,7 @@ document.addEventListener(
-         #pageActionButton,
+@@ -316,6 +318,7 @@ document.addEventListener(
          #downloads-button,
          #fxa-toolbar-menu-button,
--        #unified-extensions-button,
+         #unified-extensions-button,
 +        #zen-site-data-icon-button,
          #library-button
        `);
        if (!element) {
-@@ -394,7 +396,7 @@ document.addEventListener(
-           gSync.toggleAccountPanel(element, event);
-           break;
- 
--        case "unified-extensions-button":
-+        case "zen-site-data-icon-button":
+@@ -398,6 +401,16 @@ document.addEventListener(
            gUnifiedExtensions.togglePanel(event);
            break;
  
++        case "zen-site-data-icon-button":
++          gUnifiedExtensions.togglePanel(
++            event,
++            null,
++            window.gZenSiteDataPanel.unifiedPanel,
++            window.gZenSiteDataPanel.unifiedPanelView,
++            window.gZenSiteDataPanel.anchor,
++          );
++          break;
++
+         case "library-button":
+           PanelUI.showSubView("appMenu-libraryView", element, event);
+           break;

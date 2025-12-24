@@ -23,6 +23,8 @@ class nsZenWorkspaces {
     direction: null,
   };
 
+  _workspaceCache = [];
+
   #lastScrollTime = 0;
 
   bookmarkMenus = [
@@ -746,12 +748,12 @@ class nsZenWorkspaces {
   }
 
   set activeWorkspace(value) {
-    if (value === this.#activeWorkspace) {
-      return;
-    }
     const spaces = this.getWorkspaces();
     if (!spaces.some((ws) => ws.uuid === value)) {
       value = spaces[0]?.uuid || '';
+    }
+    if (value === this.#activeWorkspace) {
+      return;
     }
     this.#activeWorkspace = value;
     if (this.privateWindowOrDisabled) {
@@ -804,7 +806,7 @@ class nsZenWorkspaces {
 
   getWorkspaceFromId(id) {
     try {
-      return this._workspaceCache.find((workspace) => workspace.uuid === id);
+      return this.getWorkspaces().find((workspace) => workspace.uuid === id);
     } catch {
       return null;
     }
@@ -848,10 +850,13 @@ class nsZenWorkspaces {
     return this._workspaceCache;
   }
 
-  async restoreWorkspacesFromSessionStore(aWinData) {
-    this._workspaceCache = aWinData.spaces || [
-      await this.createAndSaveWorkspace('Space', undefined, true),
-    ];
+  async restoreWorkspacesFromSessionStore(aWinData = {}) {
+    if (this.#hasInitialized) {
+      return;
+    }
+    this._workspaceCache = aWinData.spaces?.length
+      ? aWinData.spaces
+      : [await this.createAndSaveWorkspace('Space', undefined, true)];
     this.activeWorkspace = aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     await this.initializeWorkspaces();
     this.#hasInitialized = true;
@@ -907,6 +912,7 @@ class nsZenWorkspaces {
     const cleanup = () => {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
+      delete this._shouldOverrideTabs;
       resolveSelectPromise();
     };
 
@@ -922,7 +928,7 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    if (this._tabToRemoveForEmpty && !removedEmptyTab) {
+    if (this._tabToRemoveForEmpty && !removedEmptyTab && !this._shouldOverrideTabs) {
       const tabs = gBrowser.tabs.filter((tab) => !tab.collapsed);
       if (
         typeof this._tabToSelect === 'number' &&

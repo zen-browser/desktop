@@ -26,7 +26,6 @@
   value: true
   locked: true
 
-# Enable private suggestions
 - name: browser.search.suggest.enabled
   value: false
 

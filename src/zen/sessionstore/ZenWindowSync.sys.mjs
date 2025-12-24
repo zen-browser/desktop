@@ -784,7 +784,7 @@ class nsZenWindowSync {
     );
     const selectedTab = aWindow.gBrowser.selectedTab;
     let win = [...this.#browserWindows][0];
-    const moveAllTabsToWindow = (allowSelected = false) => {
+    const moveAllTabsToWindow = async (allowSelected = false) => {
       const { gBrowser, gZenWorkspaces } = win;
       win.focus();
       let success = true;
@@ -804,7 +804,8 @@ class nsZenWindowSync {
       }
       if (success) {
         aWindow.close();
-        win.gBrowser.selectedTab.linkedBrowser.focus();
+        await gZenWorkspaces.changeWorkspaceWithID(aWorkspaceId);
+        gBrowser.selectedBrowser.focus();
       }
     };
     if (!win) {

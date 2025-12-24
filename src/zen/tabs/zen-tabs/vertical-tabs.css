@@ -141,7 +141,10 @@
   position: relative;
   opacity: 1;
   align-items: center;
-  padding: 0 5px;
+
+  @media (-moz-platform: macos) {
+    padding: 0 5px;
+  }
 
   & toolbarseparator {
     height: 1px;

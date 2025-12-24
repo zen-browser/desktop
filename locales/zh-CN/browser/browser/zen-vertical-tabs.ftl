@@ -33,7 +33,7 @@ tabbrowser-unload-tab-button =
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] 重置并置顶标签页
-           *[other] 重置并置顶 { $tabCount } 个标签页
+            [one] 重置并固定标签页
+           *[other] 重置并固定 { $tabCount } 个标签页
         }
-tab-reset-pin-label = 返回置顶网址
+tab-reset-pin-label = 返回已固定网址

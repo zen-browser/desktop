@@ -98,13 +98,13 @@ zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 
 zen-open-link-in-glance = 
     .label = 글랜스로 링크 열기
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = 업데이트 완료!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = { -brand-short-name }의 새로운 기능
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = 업데이트 기록 보기
+zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = 안전 모드로 다시 시작

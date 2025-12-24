@@ -1,0 +1,30 @@
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[reportbrokensite]
+source = "browser/components/reportbrokensite/test/browser"
+is_direct_path = true
+disable = [
+  "browser_addon_data_sent.js"
+]
+
+[reportbrokensite.replace-manifest]
+"../../../../../" = "../../../../"
+
+[safebrowsing]
+source = "browser/components/safebrowsing/content/test"
+is_direct_path = true
+
+[shell]
+source = "browser/components/shell/test"
+is_direct_path = true
+disable = [
+  "browser_1119088.js",
+  "browser_setDesktopBackgroundPreview.js",
+]
+
+[tooltiptext]
+source = "toolkit/components/tooltiptext"
+

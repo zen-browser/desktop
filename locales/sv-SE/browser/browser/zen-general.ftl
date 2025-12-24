@@ -8,9 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Återställ Fäst flik
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Lägg till i Essentials
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } platser fyllda
 tab-context-zen-remove-essential = 
     .label = Ta bort från Essentials
     .accesskey = R
@@ -18,18 +18,18 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Ersätt fäst fliks URL med nuvarande
     .accesskey = C
 zen-themes-corrupted = Din { -brand-short-name } modds-fil är skadad. De har återställts till standardtemat.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+zen-shortcuts-corrupted = Din { -brand-short-name } Genvägsfil är korrupt. De har återställts till standardgenvägarna.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
+    Det nya adressfältet har aktiverats, vilket eliminerar behovet av nya fliksidor.<br/><br/>
+    Försök att öppna en ny flik för att se det nya adressfältet användas!
 zen-disable = Inaktivera
 pictureinpicture-minimize-btn = 
     .aria-label = Minimera
     .tooltip = Minimera
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
 zen-panel-ui-gradient-generator-saved-message = Lyckades spara gradienten!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Kopierade nuvarande URL!
 zen-general-cancel-label = 
     .label = Avbryt
 zen-general-confirm = 
@@ -41,10 +41,10 @@ zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
 zen-library-sidebar-workspaces = 
     .label = Arbetsytor
 zen-library-sidebar-mods = 
-    .label = Mods
+    .label = Moddar
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Kompakt läge
+    .tooltiptext = Växla kompakt läge
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -56,55 +56,55 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ikoner
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
+urlbar-search-mode-zen_actions = Åtgärder
+zen-site-data-settings = Inställningar
+zen-generic-manage = Hantera
+zen-generic-more = Mer
+zen-generic-next = Nästa
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Tillåtet
+zen-site-data-setting-block = Blockerade
+zen-site-data-protections-enabled = Aktiverad
+zen-site-data-protections-disabled = Inaktiverad
+zen-site-data-setting-cross-site = Globala kakor
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Tillägg
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Säker
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Inte säker
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Hantera tillägg
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Lägg till tillägg
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Alla webbplatsinställningar
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Dela denna sida
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Öppna läsläge
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Ta en skärmdump
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bokmärk denna sida
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopiera URL
+zen-site-data-setting-site-protection = Spårningsskydd
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Ett nytt hem för tillägg, behörigheter och mer
+zen-site-data-panel-feature-callout-subtitle = Klicka på ikonen för att hantera webbplatsinställningar, visa säkerhetsinformation, öppna tillägg och utföra vanliga åtgärder.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Öppna länk i Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Uppdatering slutförd!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Vad är nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Visa versionsfakta
+zen-sidebar-notification-restart-safe-mode-label = Har något gått sönder?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Starta om i felsäkert läge

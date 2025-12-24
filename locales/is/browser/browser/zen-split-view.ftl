@@ -5,16 +5,16 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Split Tab (multiple selected tabs needed)
-           *[other] Split { $tabCount } Tabs
+            [1] Skipta tengli (margir valdir flipar nauðsynlegir)
+           *[other] Skipta { $tabCount } flipum
         }
     .accesskey = S
 zen-split-link = 
-    .label = Split link to new tab
+    .label = Skipta tengli í nýjan flipa
     .accesskey = S
-zen-split-view-modifier-header = Split View
+zen-split-view-modifier-header = Skiptingarsýn
 zen-split-view-modifier-activate-reallocation = 
-    .label = Activate reallocation
-zen-split-view-modifier-enabled-toast = Split view rearrange is ON.
-zen-split-view-modifier-enabled-toast-description = Drag and drop the view to rearrange. Press Esc to exit.
-zen-split-view-modifier-disabled-toast = Split view rearrange is OFF.
+    .label = Virkja umröðun
+zen-split-view-modifier-enabled-toast = Umröðun skiptingarsýnar er VIRK.
+zen-split-view-modifier-enabled-toast-description = Dragðu og slepptu gluggahlutum til að umraða. Ýttu á ESC til að hætta.
+zen-split-view-modifier-disabled-toast = Umröðun skiptingarsýnar er ÓVIRK.

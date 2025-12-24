@@ -47,7 +47,7 @@
   value: 25
 
 - name: zen.view.context-menu.refresh
-  value: false
+  value: '@IS_TWILIGHT@'
 
 - name: zen.view.borderless-fullscreen
   value: true

@@ -99,6 +99,8 @@
     & toolbarbutton {
       margin: 0;
       background: transparent;
+      /* Ignore press state when in overflow, to allow clicks to happen */
+      scale: 1 !important;
     }
 
     /* Inlcude separately since ther'es a bug in the 

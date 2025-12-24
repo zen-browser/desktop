@@ -32,6 +32,7 @@ class ZenPinnedTabsObserver {
     );
     ChromeUtils.defineESModuleGetters(lazy, {
       E10SUtils: 'resource://gre/modules/E10SUtils.sys.mjs',
+      TabStateCache: 'resource:///modules/sessionstore/TabStateCache.sys.mjs',
     });
     this.#listenPinnedTabEvents();
   }
@@ -60,10 +61,6 @@ class ZenPinnedTabsObserver {
 }
 
 class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
-  promiseInitializedPinned = new Promise((resolve) => {
-    this._resolvePinnedInitializedInternal = resolve;
-  });
-
   init() {
     if (!this.enabled) {
       return;
@@ -463,43 +460,73 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       data-lazy-l10n-id="tab-context-zen-remove-essential"
                       hidden="true"
                       command="cmd_contextZenRemoveFromEssentials"/>
+            <menuseparator/>
+            <menuitem id="context_zen-edit-tab-title"
+                      data-lazy-l10n-id="tab-context-zen-edit-title"
+                      hidden="true"/>
+            <menuitem id="context_zen-edit-tab-icon"
+                      data-lazy-l10n-id="tab-context-zen-edit-icon"/>
+            <menuseparator/>
         `);
 
     document.getElementById('context_pinTab')?.before(element);
+    document.getElementById('context_zen-edit-tab-title').addEventListener('command', (event) => {
+      gZenVerticalTabsManager.renameTabStart(event);
+    });
+    document.getElementById('context_zen-edit-tab-icon').addEventListener('command', () => {
+      const tab = TabContextMenu.contextTab;
+      tab.removeAttribute('zen-has-static-icon');
+      gZenEmojiPicker
+        .open(tab.iconImage, { emojiAsSVG: true })
+        .then((icon) => {
+          gBrowser.setIcon(tab, icon);
+          if (icon) {
+            tab.setAttribute('zen-has-static-icon', 'true');
+          }
+          lazy.TabStateCache.update(tab.permanentKey, {
+            image: null,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          return;
+        });
+    });
   }
 
-  async updatePinnedTabContextMenu(contextTab) {
+  updatePinnedTabContextMenu(contextTab) {
     if (!this.enabled) {
       document.getElementById('context_pinTab').hidden = true;
       return;
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
+    const isEssential = contextTab.getAttribute('zen-essential');
     const zenAddEssential = document.getElementById('context_zen-add-essential');
     document.getElementById('context_zen-reset-pinned-tab').hidden = !isVisible;
     document.getElementById('context_zen-replace-pinned-url-with-current').hidden = !isVisible;
-    zenAddEssential.hidden = contextTab.getAttribute('zen-essential') || !!contextTab.group;
-    zenAddEssential.setAttribute(
-      'badge',
-      await document.l10n.formatValue('tab-context-zen-add-essential-badge', {
+    zenAddEssential.hidden = isEssential || !!contextTab.group;
+    document.l10n
+      .formatValue('tab-context-zen-add-essential-badge', {
         num: gBrowser._numZenEssentials,
         max: this.maxEssentialTabs,
       })
-    );
+      .then((badgeText) => {
+        zenAddEssential.setAttribute('badge', badgeText);
+      });
     document
       .getElementById('cmd_contextZenAddToEssentials')
       .setAttribute('disabled', !this.canEssentialBeAdded(contextTab));
     document.getElementById('context_closeTab').hidden = contextTab.hasAttribute('zen-essential');
-    document.getElementById('context_zen-remove-essential').hidden =
-      !contextTab.getAttribute('zen-essential');
-    document.getElementById('zen-context-menu-new-folder').hidden =
-      contextTab.getAttribute('zen-essential');
+    document.getElementById('context_zen-remove-essential').hidden = !isEssential;
     document.getElementById('context_unpinTab').hidden =
-      document.getElementById('context_unpinTab').hidden ||
-      contextTab.getAttribute('zen-essential');
+      document.getElementById('context_unpinTab').hidden || isEssential;
     document.getElementById('context_unpinSelectedTabs').hidden =
-      document.getElementById('context_unpinSelectedTabs').hidden ||
-      contextTab.getAttribute('zen-essential');
+      document.getElementById('context_unpinSelectedTabs').hidden || isEssential;
     document.getElementById('context_zen-pinned-tab-separator').hidden = !isVisible;
+    document.getElementById('context_zen-edit-tab-title').hidden =
+      isEssential ||
+      !Services.prefs.getBoolPref('zen.tabs.rename-tabs') ||
+      gZenVerticalTabsManager._prefsSidebarExpanded;
   }
 
   moveToAnotherTabContainerIfNecessary(event, movingTabs) {
@@ -673,16 +700,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   get expandedSidebarMode() {
     return document.documentElement.getAttribute('zen-sidebar-expanded') === 'true';
-  }
-
-  async updatePinTitle(tab, newTitle, isEdited = true) {
-    tab.removeAttribute('zen-has-static-label');
-    if (isEdited) {
-      gBrowser._setTabLabel(tab, newTitle);
-      tab.setAttribute('zen-has-static-label', 'true');
-    } else {
-      gBrowser.setTabTitle(tab);
-    }
   }
 
   canEssentialBeAdded(tab) {

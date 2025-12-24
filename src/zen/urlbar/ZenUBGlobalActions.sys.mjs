@@ -183,6 +183,14 @@ const globalActionsTemplate = [
       return lazy.currentTheme !== 0;
     },
   },
+  {
+    label: 'Print',
+    command: 'cmd_print',
+    icon: 'chrome://browser/skin/zen-icons/print.svg',
+    isAvailable: (window) => {
+      return isNotEmptyTab(window);
+    },
+  },
 ];
 
 export const globalActions = globalActionsTemplate.map((action) => ({

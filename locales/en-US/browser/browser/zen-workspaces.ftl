@@ -43,12 +43,8 @@ zen-workspaces-panel-context-edit =
     .label = Edit Space
     .accesskey = E
 
-context-zen-change-workspace-tab =
-    .label = Change Tab(s) To Workspace
-    .accesskey = C
-
 zen-bookmark-edit-panel-workspace-selector =
-    .value = Workspaces
+    .value = Spaces
     .accesskey = W
 
 zen-panel-ui-gradient-generator-algo-complementary =
@@ -65,6 +61,10 @@ zen-panel-ui-gradient-click-to-add = Click to add a color
 
 zen-workspace-creation-name =
     .placeholder = Space Name
+
+zen-move-tab-to-workspace-button =
+    .label = Move To...
+    .tooltiptext = Move all tabs in this window to a Space
 
 zen-workspaces-panel-context-reorder =
     .label = Reorder Spaces

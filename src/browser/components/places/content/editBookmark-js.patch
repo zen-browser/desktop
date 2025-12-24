@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/editBookmark.js b/browser/components/places/content/editBookmark.js
-index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4016594b9 100644
+index f562f19741d882d92365da531b55e2810a0e79ea..a68ce8191314845c589f3a9f14b56028e0532628 100644
 --- a/browser/components/places/content/editBookmark.js
 +++ b/browser/components/places/content/editBookmark.js
 @@ -387,6 +387,10 @@ var gEditItemOverlay = {
@@ -31,34 +31,11 @@ index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4
          }
          break;
      }
-@@ -1280,6 +1288,148 @@ var gEditItemOverlay = {
+@@ -1280,6 +1288,128 @@ var gEditItemOverlay = {
    get bookmarkState() {
      return this._bookmarkState;
    },
 +
-+  async _initWorkspaceSelector() {
-+    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
-+      return;
-+    }
-+    this._workspaces = await ZenWorkspacesStorage.getWorkspaces();
-+
-+    const selectElement = this._workspaceSelect;
-+
-+    // Clear any existing options
-+    while (selectElement.firstChild) {
-+      selectElement.removeChild(selectElement.firstChild);
-+    }
-+
-+    // For each workspace, create an option element
-+    for (let workspace of this._workspaces) {
-+      const option = document.createElementNS("http://www.w3.org/1999/xhtml", "option");
-+      option.textContent = workspace.name;
-+      option.value = workspace.uuid;
-+      selectElement.appendChild(option);
-+    }
-+
-+    selectElement.disabled = this.readOnly;
-+  },
 +  async onWorkspaceSelectionChange(event) {
 +    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
@@ -129,7 +106,10 @@ index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4
 +    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
 +    }
-+    this._workspaces = await ZenWorkspacesStorage.getWorkspaces();
++    const { ZenSessionStore } = ChromeUtils.importESModule(
++      "resource:///modules/zen/ZenSessionManager.sys.mjs"
++    );
++    this._workspaces = ZenSessionStore.getClonedSpaces();
 +    const workspaceList = this._workspaceList;
 +    if(aInfo.node?.bookmarkGuid) {
 +      this._selectedWorkspaces = await ZenWorkspaceBookmarksStorage.getBookmarkWorkspaces(aInfo.node.bookmarkGuid);
@@ -180,7 +160,7 @@ index f562f19741d882d92365da531b55e2810a0e79ea..9339e1158b074c41fc19bf91cbfde3c4
  };
  
  ChromeUtils.defineLazyGetter(gEditItemOverlay, "_folderTree", () => {
-@@ -1318,6 +1468,9 @@ for (let elt of [
+@@ -1318,6 +1448,9 @@ for (let elt of [
    "locationField",
    "keywordField",
    "tagsField",

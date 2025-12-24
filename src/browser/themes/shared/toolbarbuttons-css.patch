@@ -1,8 +1,39 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index e2b8a7cae70ed2bd3c80ee4214a09dbdb68a0d01..71320c7268d92aaa06bfa15c74bdbf02f1442745 100644
+index e2b8a7cae70ed2bd3c80ee4214a09dbdb68a0d01..e320faa158125d73876126f9be8847d395e465e3 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
-@@ -279,7 +279,7 @@ toolbar .toolbaritem-combined-buttons {
+@@ -44,20 +44,6 @@
+     --toolbarbutton-inner-padding: 9px;
+     --bookmark-block-padding: 7px;
+   }
+-  @media (width <= 900px) {
+-    --toolbarbutton-outer-padding: 1px;
+-  }
+-  @media (width <= 800px) {
+-    --toolbarbutton-inner-padding: 7px;
+-    &:where([uidensity="touch"]) {
+-      --toolbarbutton-inner-padding: 8px;
+-    }
+-  }
+-  /* 700px is just above half of the popular 1366px screen width, so two browser
+-     windows put next to each other will be below this threshold. */
+-  @media (width <= 700px) {
+-    --toolbarbutton-inner-padding: 6px;
+-  }
+   &:where([uidensity="compact"]) {
+     --toolbarbutton-inner-padding: 6px;
+     --bookmark-block-padding: 1px;
+@@ -67,9 +53,7 @@
+ #TabsToolbar {
+   /* Override the inner padding to ensure the dimensions match the tabs, but also making sure
+      different types of buttons (combined-buttons-dropmarker or text) still look correct. */
+-  @media (width > 900px) {
+     --toolbarbutton-inner-padding: calc((var(--tab-min-height) - 16px) / 2);
+-  }
+ }
+ 
+ /* Primary toolbar buttons */
+@@ -279,7 +263,7 @@ toolbar .toolbaritem-combined-buttons {
  #nav-bar-overflow-button {
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
@@ -11,7 +42,7 @@ index e2b8a7cae70ed2bd3c80ee4214a09dbdb68a0d01..71320c7268d92aaa06bfa15c74bdbf02
      display: none;
    }
  
-@@ -489,7 +489,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+@@ -489,7 +473,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
       */
      align-items: stretch;
      > .toolbarbutton-icon {

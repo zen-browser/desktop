@@ -187,7 +187,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     window.addEventListener('TabSelect', this);
     window.addEventListener('TabOpen', this);
     const onNewFolder = this.#onNewFolder.bind(this);
-    document.getElementById('zen-context-menu-new-folder').addEventListener('command', onNewFolder);
     document
       .getElementById('zen-context-menu-new-folder-toolbar')
       .addEventListener('command', onNewFolder);
@@ -543,9 +542,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     //   that we want it to initially be collapsed.
     setTimeout(
       (folder) => {
-        gZenPinnedTabManager.promiseInitializedPinned.then(() => {
-          folder.collapsed = !!options.collapsed;
-        });
+        folder.collapsed = !!options.collapsed;
       },
       0,
       folder

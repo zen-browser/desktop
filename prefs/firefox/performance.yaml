@@ -8,3 +8,12 @@
 
 - name: network.predictor.enable-hover-on-ssl
   value: true
+
+# See https://github.com/zen-browser/desktop/issues/11599, this pref seems to
+# have disabled itself on macos for some unknown reason.
+# Make sure its in sync with:
+# https://searchfox.org/firefox-main/rev/1477feb9706f4ccc5bd571c1c215832a6fbb7464/modules/libpref/init/StaticPrefList.yaml#7741-7748
+- name: gfx.webrender.compositor
+  condition: 'defined(XP_WIN) || defined(XP_DARWIN)'
+  value: '@cond'
+  mirror: once

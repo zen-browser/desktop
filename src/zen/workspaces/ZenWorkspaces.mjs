@@ -23,6 +23,8 @@ class nsZenWorkspaces {
     direction: null,
   };
 
+  _workspaceCache = [];
+
   #lastScrollTime = 0;
 
   bookmarkMenus = [
@@ -746,12 +748,12 @@ class nsZenWorkspaces {
   }
 
   set activeWorkspace(value) {
-    if (value === this.#activeWorkspace) {
-      return;
-    }
     const spaces = this.getWorkspaces();
     if (!spaces.some((ws) => ws.uuid === value)) {
       value = spaces[0]?.uuid || '';
+    }
+    if (value === this.#activeWorkspace) {
+      return;
     }
     this.#activeWorkspace = value;
     if (this.privateWindowOrDisabled) {
@@ -804,7 +806,7 @@ class nsZenWorkspaces {
 
   getWorkspaceFromId(id) {
     try {
-      return this._workspaceCache.find((workspace) => workspace.uuid === id);
+      return this.getWorkspaces().find((workspace) => workspace.uuid === id);
     } catch {
       return null;
     }
@@ -822,7 +824,7 @@ class nsZenWorkspaces {
       this.#activeWorkspace = this._tempWorkspace?.uuid;
       return this._workspaceCache;
     }
-    return this._workspaceCache;
+    return [...this._workspaceCache];
   }
 
   async workspaceBookmarks() {
@@ -848,10 +850,13 @@ class nsZenWorkspaces {
     return this._workspaceCache;
   }
 
-  async restoreWorkspacesFromSessionStore(aWinData) {
-    this._workspaceCache = aWinData.spaces || [
-      await this.createAndSaveWorkspace('Space', undefined, true),
-    ];
+  async restoreWorkspacesFromSessionStore(aWinData = {}) {
+    if (this.#hasInitialized) {
+      return;
+    }
+    this._workspaceCache = aWinData.spaces?.length
+      ? aWinData.spaces
+      : [await this.createAndSaveWorkspace('Space', undefined, true)];
     this.activeWorkspace = aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     await this.initializeWorkspaces();
     this.#hasInitialized = true;
@@ -907,6 +912,7 @@ class nsZenWorkspaces {
     const cleanup = () => {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
+      delete this._shouldOverrideTabs;
       resolveSelectPromise();
     };
 
@@ -922,7 +928,7 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    if (this._tabToRemoveForEmpty && !removedEmptyTab) {
+    if (this._tabToRemoveForEmpty && !removedEmptyTab && !this._shouldOverrideTabs) {
       const tabs = gBrowser.tabs.filter((tab) => !tab.collapsed);
       if (
         typeof this._tabToSelect === 'number' &&
@@ -1146,7 +1152,9 @@ class nsZenWorkspaces {
     const item = document.createXULElement('menuitem');
     item.className = 'zen-workspace-context-menu-item';
     item.setAttribute('zen-workspace-id', workspace.uuid);
-    item.setAttribute('disabled', workspace.uuid === this.activeWorkspace);
+    if (workspace.uuid === this.activeWorkspace) {
+      item.setAttribute('disabled', true);
+    }
     let name = workspace.name;
     const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
     if (workspace.icon && workspace.icon !== '' && !iconIsSvg) {
@@ -1202,7 +1210,7 @@ class nsZenWorkspaces {
     }
     if (!this.#contextMenuData.workspaceId) {
       separator.hidden = false;
-      for (const workspace of [...this._workspaceCache].reverse()) {
+      for (const workspace of this.getWorkspaces().reverse()) {
         const item = this.generateMenuItemForWorkspace(workspace);
         item.addEventListener('command', (e) => {
           this.changeWorkspaceWithID(e.target.closest('menuitem').getAttribute('zen-workspace-id'));
@@ -1240,7 +1248,7 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    const workspacesData = this.getWorkspaces();
+    const workspacesData = this._workspaceCache;
     const index = workspacesData.findIndex((ws) => ws.uuid === workspaceData.uuid);
     if (index !== -1) {
       workspacesData[index] = workspaceData;
@@ -1355,7 +1363,7 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this.getWorkspaces();
+    const workspaces = this._workspaceCache;
     const workspace = workspaces.find((w) => w.uuid === id);
     if (!workspace) {
       console.warn(`Workspace with ID ${id} not found for reordering.`);
@@ -1374,8 +1382,10 @@ class nsZenWorkspaces {
       return;
     }
     workspaces.splice(newPosition, 0, workspace);
-    // Propagate the changes
-    this.#propagateWorkspaceData();
+    // Propagate the changes if the order has changed
+    if (currentIndex !== newPosition) {
+      this.#propagateWorkspaceData();
+    }
   }
 
   async openWorkspaceCreation() {
@@ -2305,25 +2315,20 @@ class nsZenWorkspaces {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = this.getWorkspaces();
 
-    const menuPopup = document.getElementById('context-zen-change-workspace-tab-menu-popup');
+    const menuPopup = document.getElementById('moveTabOptionsMenu');
     if (!menuPopup) {
       return;
     }
-    menuPopup.innerHTML = '';
-
-    const activeWorkspace = this.getActiveWorkspace();
-
-    for (let workspace of workspaces) {
-      const menuItem = document.createXULElement('menuitem');
-      menuItem.setAttribute('label', workspace.name);
-      menuItem.setAttribute('zen-workspace-id', workspace.uuid);
+    for (const item of menuPopup.querySelectorAll('.zen-workspace-context-menu-item')) {
+      item.remove();
+    }
+    const separator = document.createXULElement('menuseparator');
+    separator.classList.add('zen-workspace-context-menu-item');
+    menuPopup.prepend(separator);
+    for (let workspace of workspaces.reverse()) {
+      const menuItem = this.generateMenuItemForWorkspace(workspace);
       menuItem.setAttribute('command', 'cmd_zenChangeWorkspaceTab');
-
-      if (workspace.uuid === activeWorkspace.uuid) {
-        menuItem.setAttribute('disabled', 'true');
-      }
-
-      menuPopup.appendChild(menuItem);
+      menuPopup.prepend(menuItem);
     }
   }
 
@@ -2681,7 +2686,6 @@ class nsZenWorkspaces {
       const commandsToDisable = [
         'cmd_zenOpenFolderCreation',
         'cmd_zenOpenWorkspaceCreation',
-        'zen-context-menu-new-folder',
         'zen-context-menu-new-folder-toolbar',
       ];
       commandsToDisable.forEach((cmd) => {
@@ -2692,16 +2696,6 @@ class nsZenWorkspaces {
       });
       return;
     }
-    const menu = document.createXULElement('menu');
-    menu.setAttribute('id', 'context-zen-change-workspace-tab');
-    menu.setAttribute('data-l10n-id', 'context-zen-change-workspace-tab');
-
-    const menuPopup = document.createXULElement('menupopup');
-    menuPopup.setAttribute('id', 'context-zen-change-workspace-tab-menu-popup');
-
-    menu.appendChild(menuPopup);
-
-    document.getElementById('context_moveTabOptions').after(menu);
   }
 
   async changeTabWorkspace(workspaceID) {

@@ -23,9 +23,6 @@ zen-folders-panel-convert-folder-to-space =
 zen-folders-panel-change-folder-space =
     .label = Change Space...
 
-zen-folders-panel-change-icon-folder =
-    .label = Change Icon
-
 zen-folders-unload-all-tooltip =
     .tooltiptext = Unload active in this folder
 

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = علامات التبويب على اليمين
+    .label = علامات التبويب على اليسار
     .accesskey = ر
 zen-toolbar-context-compact-mode = 
     .label = الوضع المدمج

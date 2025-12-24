@@ -142,7 +142,11 @@ export class nsZenSessionManager {
     // gotten the opportunity to save the session yet.
     if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
       Services.prefs.setBoolPref(MIGRATION_PREF, true);
-      for (const winData of initialState.windows || []) {
+      this.#sidebar = {
+        ...this.#sidebar,
+        spaces: this._migrationSpaceData || [],
+      };
+      for (const winData of initialState?.windows || []) {
         winData.spaces = this._migrationSpaceData || [];
       }
       delete this._migrationSpaceData;

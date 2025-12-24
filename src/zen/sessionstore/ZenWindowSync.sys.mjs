@@ -109,6 +109,9 @@ class nsZenWindowSync {
     for (let topic of OBSERVING) {
       Services.obs.addObserver(this, topic);
     }
+    lazy.SessionStore.promiseAllWindowsRestored.then(() => {
+      this.#onSessionStoreInitialized();
+    });
   }
 
   uninit() {
@@ -135,7 +138,9 @@ class nsZenWindowSync {
     // 1. We are passing `zen-unsynced` in the window arguments.
     // 2. We are trying to open a link in a new window where other synced
     //   windows already exist
-    let forcedSync = false;
+    // Note, we force syncing if the window is private or workspaces is disabled
+    // to avoid confusing the old private window behavior.
+    let forcedSync = !aWindow.gZenWorkspaces?.privateWindowOrDisabled;
     let hasUnsyncedArg = false;
     if (aWindow._zenStartupSyncFlag === 'synced') {
       forcedSync = true;
@@ -158,6 +163,27 @@ class nsZenWindowSync {
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this, true);
     }
+  }
+
+  /**
+   * Called when the session store has finished initializing for a window.
+   *
+   * @param {Window} aWindow - The browser window that has initialized session store.
+   */
+  #onSessionStoreInitialized() {
+    // For every tab we have in where there's no sync ID, we need to
+    // assign one and sync it to other windows.
+    // This should only happen really when updating from an older version
+    // that didn't have this feature.
+    this.#runOnAllWindows(null, (aWindow) => {
+      const { gBrowser } = aWindow;
+      for (let tab of gBrowser.tabs) {
+        if (!tab.id) {
+          tab.id = this.#newTabSyncId;
+          lazy.TabStateFlusher.flush(tab.linkedBrowser);
+        }
+      }
+    });
   }
 
   /**
@@ -277,6 +303,9 @@ class nsZenWindowSync {
    * @returns {MozTabbrowserTab|MozTabbrowserTabGroup|null} The item element if found, otherwise null.
    */
   #getItemFromWindow(aWindow, aItemId) {
+    if (!aItemId) {
+      return null;
+    }
     return aWindow.document.getElementById(aItemId);
   }
 
@@ -308,19 +337,24 @@ class nsZenWindowSync {
     }
     const { gBrowser, gZenFolders } = aWindow;
     if (flags & SYNC_FLAG_ICON) {
+      aTargetItem.removeAttribute('zen-has-static-icon');
       if (gBrowser.isTab(aOriginalItem)) {
-        gBrowser.setIcon(aTargetItem, gBrowser.getIcon(aOriginalItem));
+        gBrowser.setIcon(
+          aTargetItem,
+          aOriginalItem.getAttribute('image') || gBrowser.getIcon(aOriginalItem)
+        );
       } else if (aOriginalItem.isZenFolder) {
         // Icons are a zen-only feature for tab groups.
         gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
       }
+      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, 'zen-has-static-icon');
     }
     if (flags & SYNC_FLAG_LABEL) {
       if (gBrowser.isTab(aOriginalItem)) {
         aTargetItem._zenChangeLabelFlag = true;
+        aTargetItem.zenStaticLabel = aOriginalItem.zenStaticLabel;
         gBrowser._setTabLabel(aTargetItem, aOriginalItem.label);
         delete aTargetItem._zenChangeLabelFlag;
-        this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, 'zen-has-static-label');
       } else if (gBrowser.isTabGroup(aOriginalItem)) {
         aTargetItem.label = aOriginalItem.label;
       }
@@ -486,7 +520,7 @@ class nsZenWindowSync {
     }
 
     // Restore the listeners for the swapped in tab.
-    if (!onClose) {
+    if (!onClose && filter) {
       tabListener = new otherTabBrowser.zenTabProgressListener(aTab, otherBrowser, true, false);
       otherTabBrowser._tabListeners.set(aTab, tabListener);
 
@@ -746,18 +780,21 @@ class nsZenWindowSync {
    * Sets the initial pinned state for a tab across all windows.
    *
    * @param {Object} aTab - The tab to set the pinned state for.
+   * @returns {Promise} A promise that resolves when the operation is complete.
    */
   setPinnedTabState(aTab) {
-    const state = this.#getTabState(aTab);
-    const initialState = {
-      entry: state.entries[state.index - 1],
-      image: state.image,
-    };
-    this.#runOnAllWindows(null, (win) => {
-      const targetTab = this.#getItemFromWindow(win, aTab.id);
-      if (targetTab) {
-        targetTab._zenPinnedInitialState = initialState;
-      }
+    return lazy.TabStateFlusher.flush(aTab.linkedBrowser).finally(() => {
+      const state = this.#getTabState(aTab);
+      const initialState = {
+        entry: state.entries[state.index - 1],
+        image: state.image,
+      };
+      this.#runOnAllWindows(null, (win) => {
+        const targetTab = this.#getItemFromWindow(win, aTab.id);
+        if (targetTab) {
+          targetTab._zenPinnedInitialState = initialState;
+        }
+      });
     });
   }
 
@@ -784,7 +821,7 @@ class nsZenWindowSync {
     );
     const selectedTab = aWindow.gBrowser.selectedTab;
     let win = [...this.#browserWindows][0];
-    const moveAllTabsToWindow = (allowSelected = false) => {
+    const moveAllTabsToWindow = async (allowSelected = false) => {
       const { gBrowser, gZenWorkspaces } = win;
       win.focus();
       let success = true;
@@ -797,14 +834,13 @@ class nsZenWindowSync {
             success = false;
             continue;
           }
-          newTab._zenContentsVisible = true;
-          gBrowser.setTabTitle(newTab);
           gZenWorkspaces.moveTabToWorkspace(newTab, aWorkspaceId);
         }
       }
       if (success) {
         aWindow.close();
-        win.gBrowser.selectedTab.linkedBrowser.focus();
+        await gZenWorkspaces.changeWorkspaceWithID(aWorkspaceId);
+        gBrowser.selectedBrowser.focus();
       }
     };
     if (!win) {

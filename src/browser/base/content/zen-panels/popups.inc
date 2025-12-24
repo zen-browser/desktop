@@ -36,7 +36,7 @@
 
 <menupopup id="zenFolderActions">
   <menuitem id="context_zenFolderRename" data-l10n-id="zen-folders-panel-rename-folder"/>
-  <menuitem id="context_zenFolderChangeIcon" data-l10n-id="zen-folders-panel-change-icon-folder"/>
+  <menuitem id="context_zenFolderChangeIcon" data-l10n-id="tab-context-zen-edit-icon"/>
   <menuseparator />
   <menuitem id="context_zenFolderUnloadAll" data-l10n-id="zen-folders-unload-folder"/>
   <menuitem id="context_zenFolderNewSubfolder" data-l10n-id="zen-folders-new-subfolder"/>

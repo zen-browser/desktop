@@ -1055,14 +1055,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     let tab = window.gBrowser.getTabForBrowser(browser);
     const ignoreSplit = tab.hasAttribute('zen-dont-split-glance');
     tab.removeAttribute('zen-dont-split-glance');
+    let isGlanceTab = false;
     if (tab.hasAttribute('zen-glance-tab') && !ignoreSplit) {
       // Extract from parent node so we are not selecting the wrong (current) tab
       tab = tab.parentNode.closest('.tabbrowser-tab');
+      isGlanceTab = true;
       console.assert(tab, 'Tab not found for zen-glance-tab');
     }
     if (tab) {
       this.updateSplitView(tab);
       tab.linkedBrowser.docShellIsActive = true;
+      if (isGlanceTab) {
+        // See issues https://github.com/zen-browser/desktop/issues/11641
+        this.removeSplitters();
+      }
     }
     this._maybeRemoveFakeBrowser();
     {
@@ -1209,7 +1215,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const oldView = this.currentView;
     const newView = this._data.findIndex((group) => group.tabs.includes(tab));
 
-    if (oldView === newView) return;
+    if (newView === oldView && oldView < 0) {
+      return;
+    }
     if (newView < 0 && oldView >= 0) {
       this.deactivateCurrentSplitView();
       return;
@@ -2000,40 +2008,43 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._data.push(data);
     this.activateSplitView(data);
     gBrowser.selectedTab = emptyTab;
-    window.addEventListener(
-      'ZenURLBarClosed',
-      (event) => {
-        const { onElementPicked, onSwitch } = event.detail;
-        const groupIndex = this._data.findIndex((group) => group.tabs.includes(emptyTab));
-        const newSelectedTab = gBrowser.selectedTab;
-        const cleanup = () => {
-          this.removeTabFromGroup(emptyTab, groupIndex, { changeTab: !onSwitch, forUnsplit: true });
-          const command = document.getElementById('cmd_zenNewEmptySplit');
-          command.removeAttribute('disabled');
-        };
-        if (onElementPicked) {
-          if (
-            newSelectedTab === emptyTab ||
-            newSelectedTab === selectedTab ||
-            selectedTab.getAttribute('zen-workspace-id') !==
-              newSelectedTab.getAttribute('zen-workspace-id')
-          ) {
-            cleanup();
-            return;
-          }
-          this.removeTabFromGroup(emptyTab, groupIndex, { forUnsplit: true });
-          gBrowser.selectedTab = selectedTab;
-          this.resetTabState(emptyTab, false);
-          this.splitTabs([selectedTab, newSelectedTab], 'grid', 1);
-        } else {
-          cleanup();
-        }
-      },
-      { once: true }
-    );
     setTimeout(() => {
+      window.addEventListener(
+        'ZenURLBarClosed',
+        (event) => {
+          const { onElementPicked, onSwitch } = event.detail;
+          const groupIndex = this._data.findIndex((group) => group.tabs.includes(emptyTab));
+          const newSelectedTab = gBrowser.selectedTab;
+          const cleanup = () => {
+            this.removeTabFromGroup(emptyTab, groupIndex, {
+              changeTab: !onSwitch,
+              forUnsplit: true,
+            });
+            const command = document.getElementById('cmd_zenNewEmptySplit');
+            command.removeAttribute('disabled');
+          };
+          if (onElementPicked) {
+            if (
+              newSelectedTab === emptyTab ||
+              newSelectedTab === selectedTab ||
+              selectedTab.getAttribute('zen-workspace-id') !==
+                newSelectedTab.getAttribute('zen-workspace-id')
+            ) {
+              cleanup();
+              return;
+            }
+            this.removeTabFromGroup(emptyTab, groupIndex, { forUnsplit: true });
+            gBrowser.selectedTab = selectedTab;
+            this.resetTabState(emptyTab, false);
+            this.splitTabs([selectedTab, newSelectedTab], 'grid', 1);
+          } else {
+            cleanup();
+          }
+        },
+        { once: true }
+      );
       gZenUIManager.handleNewTab(false, false, 'tab', true);
-    }, 0);
+    });
   }
 
   get splitViewBrowsers() {

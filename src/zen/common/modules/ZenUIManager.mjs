@@ -125,6 +125,8 @@ window.gZenUIManager = {
       }
       menu.setAttribute('hidden', 'true');
     }
+    // The first separator in the tab context menu is now useless.
+    document.getElementById('tabContextMenu').querySelector('menuseparator').remove();
   },
 
   _initCreateNewPopup() {
@@ -669,7 +671,9 @@ window.gZenUIManager = {
     }
     if (
       (gZenVerticalTabsManager._hasSetSingleToolbar && gZenVerticalTabsManager._prefsRightSide) ||
-      (panel?.id === 'zen-unified-site-data-panel' && !gZenVerticalTabsManager._hasSetSingleToolbar)
+      (panel?.id === 'zen-unified-site-data-panel' &&
+        !gZenVerticalTabsManager._hasSetSingleToolbar) ||
+      (panel?.id === 'unified-extensions-panel' && gZenVerticalTabsManager._hasSetSingleToolbar)
     ) {
       block = 'bottomright';
       inline = 'topright';
@@ -1292,6 +1296,7 @@ window.gZenVerticalTabsManager = {
         : this._tabEdited;
       let input = document.getElementById('tab-label-input');
       let newName = input.value.replace(/\s+/g, ' ').trim();
+      const hasChanged = input.value !== input._originalValue && newName;
 
       document.documentElement.removeAttribute('zen-renaming-tab');
       input.remove();
@@ -1301,12 +1306,12 @@ window.gZenVerticalTabsManager = {
         // Check if name is blank, reset if so
         // Always remove, so we can always rename and if it's empty,
         // it will reset to the original name anyway
-        this._tabEdited.removeAttribute('zen-has-static-label');
-        if (newName) {
+        if (hasChanged) {
+          this._tabEdited.zenStaticLabel = newName;
           gBrowser._setTabLabel(this._tabEdited, newName);
-          this._tabEdited.setAttribute('zen-has-static-label', 'true');
           gZenUIManager.showToast('zen-tabs-renamed');
         } else {
+          delete this._tabEdited.zenStaticLabel;
           gBrowser.setTabTitle(this._tabEdited);
         }
 
@@ -1335,7 +1340,8 @@ window.gZenVerticalTabsManager = {
   },
 
   renameTabStart(event) {
-    const isTab = !!event.target.closest('.tabbrowser-tab');
+    let target = TabContextMenu.contextTab || event.target;
+    const isTab = !!target.closest('.tabbrowser-tab');
     if (
       this._tabEdited ||
       ((!Services.prefs.getBoolPref('zen.tabs.rename-tabs') ||
@@ -1345,13 +1351,10 @@ window.gZenVerticalTabsManager = {
     )
       return;
     this._tabEdited =
-      event.target.closest('.tabbrowser-tab') ||
-      event.target.closest('.zen-current-workspace-indicator-name') ||
-      (event.explicit && event.target.closest('.tab-group-label'));
-    if (
-      !this._tabEdited ||
-      ((!this._tabEdited.pinned || this._tabEdited.hasAttribute('zen-essential')) && isTab)
-    ) {
+      target.closest('.tabbrowser-tab') ||
+      target.closest('.zen-current-workspace-indicator-name') ||
+      (event.explicit && target.closest('.tab-group-label'));
+    if (!this._tabEdited || (this._tabEdited.hasAttribute('zen-essential') && isTab)) {
       this._tabEdited = null;
       return;
     }
@@ -1368,8 +1371,10 @@ window.gZenVerticalTabsManager = {
       label.after(container);
     }
     const input = document.createElement('input');
+    const content = isTab ? this._tabEdited.label : this._tabEdited.textContent;
     input.id = 'tab-label-input';
-    input.value = isTab ? this._tabEdited.label : this._tabEdited.textContent;
+    input._originalValue = content;
+    input.value = content;
     input.addEventListener('keydown', this.renameTabKeydown.bind(this));
 
     if (isTab) {

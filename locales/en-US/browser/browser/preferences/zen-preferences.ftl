@@ -191,6 +191,9 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
 
+category-zen-marketplace =
+    .tooltiptext = Zen Mods
+
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
 

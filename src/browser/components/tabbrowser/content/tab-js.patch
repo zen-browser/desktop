@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7600f564a 100644
+index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..69af8c986add4f74f1c3105ccd6e5804fd33b80f 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -101,6 +101,15 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
      }
  
      get splitview() {
+@@ -446,7 +464,7 @@
+       // to detach tabs. Ensure that we do not show the drag image returning
+       // to its point of origin when this happens, as it makes the drag
+       // finishing feel very slow.
+-      event.dataTransfer.mozShowFailAnimation = false;
++      event.dataTransfer.mozShowFailAnimation = true;
+       if (event.eventPhase == Event.CAPTURING_PHASE) {
+         this.style.MozUserFocus = "";
+       } else if (
 @@ -473,6 +491,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (

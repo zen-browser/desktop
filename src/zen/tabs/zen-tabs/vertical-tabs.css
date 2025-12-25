@@ -1166,7 +1166,7 @@
   }
 }
 
-.zen-essentials-container > .tabbrowser-tab,
+.tabbrowser-tab[zen-essential='true'],
 #zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
   --toolbarbutton-inner-padding: 0;
   max-width: unset;

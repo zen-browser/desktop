@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
-index be23213ae9ec7e59358a17276c6c3764d38d9996..ca5a8ccc916ceeab5140f1278d15233cefbe5815 100644
+index be23213ae9ec7e59358a17276c6c3764d38d9996..b6a4110ee50e5977125feb7bd32e84e5e527adc6 100644
 --- a/browser/components/sessionstore/SessionStartup.sys.mjs
 +++ b/browser/components/sessionstore/SessionStartup.sys.mjs
 @@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -19,3 +19,17 @@ index be23213ae9ec7e59358a17276c6c3764d38d9996..ca5a8ccc916ceeab5140f1278d15233c
      if (this._initialState == null) {
        // No valid session found.
        this._sessionType = this.NO_SESSION;
+@@ -335,12 +338,7 @@ export var SessionStartup = {
+   isAutomaticRestoreEnabled() {
+     if (this._resumeSessionEnabled === null) {
+       this._resumeSessionEnabled =
+-        !lazy.PrivateBrowsingUtils.permanentPrivateBrowsing &&
+-        (Services.prefs.getBoolPref(
+-          "browser.sessionstore.resume_session_once"
+-        ) ||
+-          Services.prefs.getIntPref("browser.startup.page") ==
+-            BROWSER_STARTUP_RESUME_SESSION);
++        !lazy.PrivateBrowsingUtils.permanentPrivateBrowsing;
+     }
+ 
+     return this._resumeSessionEnabled;

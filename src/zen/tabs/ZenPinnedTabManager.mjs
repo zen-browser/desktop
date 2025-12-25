@@ -141,7 +141,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  async resetPinnedTab(tab) {
+  resetPinnedTab(tab) {
     if (!tab) {
       tab = TabContextMenu.contextTab;
     }
@@ -150,7 +150,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    await this._resetTabToStoredState(tab);
+    this._resetTabToStoredState(tab);
   }
 
   async replacePinnedUrlWithCurrent(tab = undefined) {
@@ -326,7 +326,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // Remove everything except the entry we want to keep
     state.entries = [initialState.entry];
 
-    state.image = initialState.image;
+    state.image = tab.hasAttribute('zen-has-static-icon')
+      ? tab.getAttribute('image')
+      : initialState.image;
     state.index = 0;
 
     SessionStore.setTabState(tab, state);

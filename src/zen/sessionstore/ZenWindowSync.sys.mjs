@@ -182,6 +182,9 @@ class nsZenWindowSync {
           tab.id = this.#newTabSyncId;
           lazy.TabStateFlusher.flush(tab.linkedBrowser);
         }
+        if (tab.pinned && !tab._zenPinnedInitialState) {
+          this.setPinnedTabState(tab);
+        }
       }
     });
   }
@@ -947,7 +950,7 @@ class nsZenWindowSync {
   on_focus(aEvent) {
     const { ownerGlobal: window } = aEvent.target;
     if (
-      !window.gBrowser ||
+      !window?.gBrowser ||
       this.#lastFocusedWindow?.deref() === window ||
       window.closing ||
       !window.toolbar.visible

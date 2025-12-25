@@ -262,9 +262,9 @@ index 42027bfa55eab8ea9298a7d425f2ded45188f7f3..a87bcaf4e9b92a9f63e025409efabca9
          UserInteraction.start("browser.tabs.opening", "initting", window);
        }
  
-+      if (!gURLBar.hasAttribute("zen-newtab")) {
        // If we're opening a foreground tab, set the owner by default.
        ownerTab ??= inBackground ? null : this.selectedTab;
++      if (!gURLBar.hasAttribute("zen-newtab")) {
  
 @@ -2944,6 +3030,7 @@
        if (this.selectedTab.owner) {

@@ -1249,7 +1249,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
           // If item is tab-group-label-container we should hide it.
           // Other items between tab-group-labe-container and folder-active tab should be visible cuz they are hidden by margin-top
-          if (item.parentElement.id !== activeFolderId && !item.hasAttribute('folder-active')) {
+          if (
+            item.parentElement.id &&
+            item.parentElement.id !== activeFolderId &&
+            !item.hasAttribute('folder-active')
+          ) {
             continue;
           }
         }

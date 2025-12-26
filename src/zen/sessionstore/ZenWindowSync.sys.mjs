@@ -35,6 +35,8 @@ const EVENTS = [
   'TabGroupCreate',
   'TabGroupRemoved',
   'TabGroupMoved',
+  'TabGroupExpand',
+  'TabGroupCollapse',
 
   'ZenTabRemovedFromSplit',
   'ZenSplitViewTabsSplit',
@@ -1021,6 +1023,32 @@ class nsZenWindowSync {
         } else {
           win.gBrowser.removeTabGroup(targetGroup, { isUserTriggered: true });
         }
+      }
+    });
+  }
+
+  on_TabGroupExpand(aEvent) {
+    const tabGroup = aEvent.target;
+    const window = tabGroup.ownerGlobal;
+    this.#runOnAllWindows(window, (win) => {
+      const targetGroup = this.#getItemFromWindow(win, tabGroup.id);
+      if (targetGroup && targetGroup.isZenFolder) {
+        targetGroup.collapsed = false;
+      }
+    });
+  }
+
+  on_TabGroupCollapse(aEvent) {
+    const tabGroup = aEvent.target;
+    const window = tabGroup.ownerGlobal;
+    const activeTabIds = tabGroup.activeTabs.map((tab) => tab.id);
+
+    this.#runOnAllWindows(window, (win) => {
+      const targetGroup = this.#getItemFromWindow(win, tabGroup.id);
+      if (targetGroup && targetGroup.isZenFolder) {
+        this.#maybeSyncAttributeChange(tabGroup, targetGroup, 'has-active');
+        targetGroup.activeTabs = activeTabIds.map((id) => this.#getItemFromWindow(win, id));
+        targetGroup.collapsed = true;
       }
     });
   }

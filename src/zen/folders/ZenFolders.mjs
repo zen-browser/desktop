@@ -867,6 +867,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       this.setFolderUserIcon(group, stateData.userIcon);
     }
 
+    // Initialize the tab style
+    group.tabs.forEach((tab) => {
+      tab.style.opacity = 1;
+      tab.style.height = '40px';
+    });
+
     if (group.collapsed) {
       this.on_TabGroupCollapse({ target: group });
     }
@@ -1167,7 +1173,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   #collectGroupItems(group, opts = {}) {
-    const { selectedTabs = [], splitViewIds = new Set(), activeFoldersIds = new Set() } = opts;
+    const { selectedTabs = [], splitViewIds = new Set() } = opts;
     const folders = new Map();
     return group.childGroupsAndTabs
       .filter((item) => !item.hasAttribute('zen-empty-tab'))
@@ -1177,14 +1183,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (!folders.has(group?.id)) {
           folders.set(group?.id, group?.activeGroups[0]);
         }
-        const lastActiveFolder = folders.get(group?.id);
-        const activeFolderId = lastActiveFolder?.id;
         const splitViewId = isSplitView ? item?.group?.id : null;
 
         if (item.multiselected || item.selected || item.hasAttribute('folder-active')) {
           selectedTabs.push(item);
           if (splitViewId) splitViewIds.add(splitViewId);
-          if (activeFolderId) activeFoldersIds.add(activeFolderId);
         }
 
         if (gBrowser.isTabGroupLabel(item)) {
@@ -1195,7 +1198,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           }
         }
 
-        return { item, splitViewId, activeFolderId };
+        return { item, splitViewId };
       });
   }
 
@@ -1222,7 +1225,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const animations = [];
     const selectedTabs = [];
     const splitViewIds = new Set();
-    const activeFoldersIds = new Set();
     const itemsToHide = [];
 
     const tabsContainer = group.querySelector('.tab-group-container');
@@ -1231,13 +1233,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const groupItems = this.#collectGroupItems(group, {
       selectedTabs,
       splitViewIds,
-      activeFoldersIds,
     });
     const collapsedHeight = this.#calculateHeightShift(tabsContainer, selectedTabs);
 
     if (selectedTabs.length) {
       for (let i = 0; i < groupItems.length; i++) {
-        const { item, splitViewId, activeFolderId } = groupItems[i];
+        const { item, splitViewId } = groupItems[i];
 
         // Skip selected items
         if (selectedTabs.includes(item)) continue;
@@ -1245,17 +1246,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         // Skip items from selected split-view groups
         if (splitViewId && splitViewIds.has(splitViewId)) continue;
 
-        // Skip items from selected active groups
-        if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
-          // If item is tab-group-label-container we should hide it.
-          // Other items between tab-group-labe-container and folder-active tab should be visible cuz they are hidden by margin-top
-          if (item.parentElement.id !== activeFolderId && !item.hasAttribute('folder-active')) {
-            continue;
-          }
-        }
-
-        if (!itemsToHide.includes(item)) {
-          itemsToHide.push(item);
+        if (!item.hasAttribute?.('folder-active')) {
+          if (!itemsToHide.includes(item)) itemsToHide.push(item);
         }
       }
 
@@ -1268,10 +1260,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     animations.push(
-      ...this.#createAnimation(
-        itemsToHide,
-        { opacity: [1, 0], height: ['auto', 0] },
-        { duration: 0.12, ease: 'easeInOut' }
+      ...itemsToHide.map((item) =>
+        gZenUIManager.motion.animate(
+          item,
+          { opacity: [item.style.opacity, 0], height: [item.style.height, 0] },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1294,8 +1288,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (!selectedTabs.length && !this.#animationCount) {
       tabsContainer.setAttribute('hidden', true);
     }
-
-    this.styleCleanup(itemsToHide);
   }
 
   async animateExpand(group) {
@@ -1316,15 +1308,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       const splitViewIds = new Set();
       const selectedTabs = folder.activeTabs;
 
-      const activeFoldersIds = new Set();
       const activeFolderItems = this.#collectGroupItems(folder, {
         splitViewIds,
-        activeFoldersIds,
       });
 
       if (selectedTabs.length) {
         for (let i = 0; i < activeFolderItems.length; i++) {
-          const { item, splitViewId, activeFolderId } = activeFolderItems[i];
+          const { item, splitViewId } = activeFolderItems[i];
 
           // Skip selected items
           if (selectedTabs.includes(item)) continue;
@@ -1332,16 +1322,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           // Skip items from selected split-view groups
           if (splitViewId && splitViewIds.has(splitViewId)) continue;
 
-          if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
-            const folder = item.parentElement;
-            if (
-              gBrowser.isTabGroup(folder) &&
-              folder.id !== activeFolderId &&
-              item.hasAttribute('folder-active')
-            ) {
-              continue;
-            }
-          }
+          if (item.hasAttribute('folder-active')) continue;
 
           if (!itemsToHide.includes(item)) {
             itemsToHide.push(item);
@@ -1384,15 +1365,19 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     };
 
     animations.push(
-      ...this.#createAnimation(
-        itemsToShow,
-        { opacity: '', height: '' },
-        { duration: 0.12, ease: 'easeInOut' }
+      ...itemsToShow.map((item) =>
+        gZenUIManager.motion.animate(
+          item,
+          { opacity: [item.style.opacity, 1], height: [item.style.height, 40] },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
       ),
-      ...this.#createAnimation(
-        itemsToHide,
-        { opacity: 0, height: 0 },
-        { duration: 0.12, ease: 'easeInOut' }
+      ...itemsToHide.map((item) =>
+        gZenUIManager.motion.animate(
+          item,
+          { opacity: [item.style.opacity, 0], height: [item.style.height, 0] },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1408,10 +1393,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     this.#animationCount += 1;
     await Promise.all(animations);
     this.#animationCount -= 1;
-
-    // Cleanup
-    this.styleCleanup(itemsToShow);
-    this.styleCleanup(itemsToHide);
   }
 
   async animateUnloadAll(group) {
@@ -1520,8 +1501,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       tabUnloadAnimations = this.#createAnimation(
         tabToUnload,
         {
-          opacity: 0,
-          height: 0,
+          opacity: [1, 0],
+          height: [40, 0],
         },
         {
           duration: 0.12,
@@ -1627,35 +1608,20 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
     }
 
-    // FIXME: This is a hack to fix the animations not working properly
-    this.styleCleanup(itemsToShow);
-    itemsToHide.forEach((item) => {
-      item.style.opacity = 0;
-      item.style.height = 0;
-    });
-
     animations.push(
-      ...this.#createAnimation(
-        itemsToShow,
-        {
-          opacity: '',
-          height: '',
-        },
-        {
-          duration: 0.12,
-          ease: 'easeInOut',
-        }
+      ...itemsToShow.map((item) =>
+        gZenUIManager.motion.animate(
+          item,
+          { opacity: [item.style.opacity, 1], height: [item.style.height, 40] },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
       ),
-      ...this.#createAnimation(
-        itemsToHide,
-        {
-          opacity: 0,
-          height: 0,
-        },
-        {
-          duration: 0.12,
-          ease: 'easeInOut',
-        }
+      ...itemsToHide.map((item) =>
+        gZenUIManager.motion.animate(
+          item,
+          { opacity: [item.style.opacity, 0], height: [item.style.height, 0] },
+          { duration: 0.12, ease: 'easeInOut' }
+        )
       )
     );
 
@@ -1665,10 +1631,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (this.#animationCount) {
       return;
     }
-
-    // Cleanup
-    this.styleCleanup(itemsToHide);
-    this.styleCleanup(selectedTabs);
   }
 
   animateGroupMove(group, expand = false) {

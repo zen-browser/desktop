@@ -20,4 +20,4 @@ zen-folders-unload-all-tooltip =
     .tooltiptext = Klasörde aktif olanları boşalt
 zen-folders-unload-folder = 
     .label = Tüm sekmeleri boşalt
-zen-folders-search-no-results = Aramayla uyuşan sekme yok🤔
+zen-folders-search-no-results = Aramayla uyuşan sekme yok 🤔

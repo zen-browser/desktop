@@ -24,7 +24,7 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenStaticLabel) {
       tab.zenStaticLabel = tabData.zenStaticLabel;
     }
-    if (tabData.zenHasStaticIcon) {
+    if (tabData.zenHasStaticIcon && tabData.image) {
       tab.zenStaticIcon = tabData.image;
     }
     if (tabData.zenEssential) {

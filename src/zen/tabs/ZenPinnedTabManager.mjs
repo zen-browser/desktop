@@ -84,10 +84,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   onTabIconChanged(tab, url = null) {
     tab.dispatchEvent(new CustomEvent('ZenTabIconChanged', { bubbles: true, detail: { tab } }));
-    const iconUrl = url ?? tab.iconImage.src;
     if (tab.hasAttribute('zen-essential')) {
-      tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
+      this.setEssentialTabIcon(tab, url);
     }
+  }
+
+  setEssentialTabIcon(tab, url = null) {
+    const iconUrl = url ?? tab.getAttribute('image') ?? '';
+    tab.style.setProperty('--zen-essential-tab-icon', `url(${iconUrl})`);
   }
 
   _onTabResetPinButton(event, tab) {

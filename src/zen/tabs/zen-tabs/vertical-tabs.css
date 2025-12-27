@@ -715,7 +715,6 @@
   }
 
   & .zen-essentials-container {
-    will-change: transform;
     justify-content: center;
     grid-template-columns: 1fr !important;
     padding: 0 !important;
@@ -1108,8 +1107,6 @@
 }
 
 .zen-essentials-container {
-  will-change: transform;
-
   overflow: hidden;
   gap: 4px;
   transition:
@@ -1372,6 +1369,8 @@
     display: flex !important;
   }
 }
+
+/* Drag and drop */
 
 #zen-dragover-background {
   position: absolute;

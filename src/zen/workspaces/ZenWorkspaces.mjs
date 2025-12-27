@@ -2404,7 +2404,7 @@ class nsZenWorkspaces {
     return workspaceData;
   }
 
-  async updateTabsContainers(target = undefined, forAnimation = false) {
+  updateTabsContainers(target = undefined, forAnimation = false) {
     this.makeSureEmptyTabIsFirst();
     if (target && !target.target?.parentNode) {
       target = null;
@@ -2414,7 +2414,7 @@ class nsZenWorkspaces {
     if (target?.type === 'TabClose' || target?.type === 'TabOpen') {
       animateContainer = target.target.pinned;
     }
-    await this.onPinnedTabsResize(
+    this.onPinnedTabsResize(
       // This is what happens when we join a resize observer, an event listener
       // while using it as a method.
       [{ target: (target?.target ? target.target : target) ?? this.pinnedTabsContainer }],
@@ -2462,7 +2462,7 @@ class nsZenWorkspaces {
     }
   }
 
-  async onPinnedTabsResize(entries, forAnimation = false, animateContainer = false) {
+  onPinnedTabsResize(entries, forAnimation = false, animateContainer = false) {
     if (
       document.documentElement.hasAttribute('inDOMFullscreen') ||
       !this._hasInitializedTabsStrip ||
@@ -2486,9 +2486,7 @@ class nsZenWorkspaces {
         // Get all workspaces that have the same userContextId
         const activeWorkspace = this.getActiveWorkspace();
         const userContextId = activeWorkspace.containerTabId;
-        const workspaces = this._workspaceCache.filter(
-          (w) => w.containerTabId === userContextId && w.uuid !== originalWorkspaceId
-        );
+        const workspaces = this.getWorkspaces().filter((w) => w.containerTabId === userContextId);
         workspacesIds.push(...workspaces.map((w) => w.uuid));
       } else {
         workspacesIds.push(originalWorkspaceId);

@@ -326,9 +326,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // Remove everything except the entry we want to keep
     state.entries = [initialState.entry];
 
-    state.image = tab.hasAttribute('zen-has-static-icon')
-      ? tab.getAttribute('image')
-      : initialState.image;
+    state.image = initialState.image;
     state.index = 0;
 
     SessionStore.setTabState(tab, state);
@@ -477,14 +475,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     });
     document.getElementById('context_zen-edit-tab-icon').addEventListener('command', () => {
       const tab = TabContextMenu.contextTab;
-      tab.removeAttribute('zen-has-static-icon');
+      delete tab.zenStaticIcon;
       gZenEmojiPicker
         .open(tab.iconImage, { emojiAsSVG: true })
         .then((icon) => {
-          gBrowser.setIcon(tab, icon);
           if (icon) {
-            tab.setAttribute('zen-has-static-icon', 'true');
+            tab.zenStaticIcon = icon;
           }
+          gBrowser.setIcon(tab, icon);
           lazy.TabStateCache.update(tab.permanentKey, {
             image: null,
           });

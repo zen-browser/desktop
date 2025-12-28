@@ -189,6 +189,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     window.addEventListener('TabSelect', this);
     window.addEventListener('TabOpen', this);
     const onNewFolder = this.#onNewFolder.bind(this);
+    document.getElementById('zen-context-menu-new-folder').addEventListener('command', onNewFolder);
     document
       .getElementById('zen-context-menu-new-folder-toolbar')
       .addEventListener('command', onNewFolder);

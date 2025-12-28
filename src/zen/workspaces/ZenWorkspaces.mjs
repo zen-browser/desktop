@@ -830,13 +830,16 @@ class nsZenWorkspaces {
 
   getWorkspacesForSessionStore() {
     const spaces = this.getWorkspaces();
+    let spacesForSS = [];
     for (const space of spaces) {
+      let newSpace = { ...space };
       const element = this.workspaceElement(space.uuid);
       if (element) {
-        space.hasCollapsedPinnedTabs = element.hasCollapsedPinnedTabs;
+        newSpace.hasCollapsedPinnedTabs = element.hasCollapsedPinnedTabs;
       }
+      spacesForSS.push(newSpace);
     }
-    return spaces;
+    return spacesForSS;
   }
 
   async workspaceBookmarks() {

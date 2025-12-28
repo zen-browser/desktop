@@ -433,6 +433,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const side = this.fakeBrowser.getAttribute('side');
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
+    gBrowser.tabContainer.tabDragAndDrop.clearSpaceSwitchTimer();
     event.dataTransfer.updateDragImage(
       ...gBrowser.tabContainer.tabDragAndDrop.originalDragImageArgs
     );

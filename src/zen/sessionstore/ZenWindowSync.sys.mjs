@@ -465,6 +465,12 @@ class nsZenWindowSync {
       }
       const relativeTab = this.#getItemFromWindow(aWindow, originalSibling.id);
       if (relativeTab) {
+        gBrowser.tabContainer.tabDragAndDrop.handle_drop_transition(
+          relativeTab,
+          aTargetItem,
+          [aTargetItem],
+          false
+        );
         relativeTab.after(aTargetItem);
       }
     });

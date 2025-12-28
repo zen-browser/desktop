@@ -1542,11 +1542,7 @@ class nsZenWorkspaces {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (
-      !this.workspaceEnabled ||
-      this.#inChangingWorkspace ||
-      gNavToolbox.hasAttribute('movingtab')
-    ) {
+    if (!this.workspaceEnabled || this.#inChangingWorkspace) {
       return;
     }
     this.#inChangingWorkspace = true;
@@ -2659,7 +2655,7 @@ class nsZenWorkspaces {
     return tab;
   }
 
-  async changeWorkspaceShortcut(offset = 1, whileScrolling = false) {
+  async changeWorkspaceShortcut(offset = 1, whileScrolling = false, disableWrap = false) {
     // Cycle through workspaces
     let workspaces = this.getWorkspaces();
     let activeWorkspace = this.getActiveWorkspace();
@@ -2667,7 +2663,7 @@ class nsZenWorkspaces {
 
     // note: offset can be negative
     let targetIndex = workspaceIndex + offset;
-    if (this.shouldWrapAroundNavigation) {
+    if (this.shouldWrapAroundNavigation && !disableWrap) {
       // Add length to handle negative indices and loop
       targetIndex = (targetIndex + workspaces.length) % workspaces.length;
     } else {

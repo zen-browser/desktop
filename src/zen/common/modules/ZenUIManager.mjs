@@ -1225,6 +1225,7 @@ window.gZenVerticalTabsManager = {
 
       // Always move the splitter next to the sidebar
       const splitter = document.getElementById('zen-sidebar-splitter');
+      splitter.addEventListener('dragover', gBrowser.tabContainer);
       this.navigatorToolbox.after(splitter);
       window.dispatchEvent(new Event('resize'));
       if (!isCompactMode) {

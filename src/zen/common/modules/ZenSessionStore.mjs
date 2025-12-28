@@ -24,17 +24,14 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenStaticLabel) {
       tab.zenStaticLabel = tabData.zenStaticLabel;
     }
-    if (tabData.zenHasStaticIcon) {
-      tab.setAttribute('zen-has-static-icon', 'true');
+    if (tabData.zenHasStaticIcon && tabData.image) {
+      tab.zenStaticIcon = tabData.image;
     }
     if (tabData.zenEssential) {
       tab.setAttribute('zen-essential', 'true');
     }
     if (tabData.zenDefaultUserContextId) {
       tab.setAttribute('zenDefaultUserContextId', 'true');
-    }
-    if (tabData.zenPinnedEntry) {
-      tab.setAttribute('zen-pinned-entry', tabData.zenPinnedEntry);
     }
     if (tabData._zenPinnedInitialState) {
       tab._zenPinnedInitialState = tabData._zenPinnedInitialState;

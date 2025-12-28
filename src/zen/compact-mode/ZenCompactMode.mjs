@@ -716,8 +716,14 @@ window.gZenCompactModeManager = {
         // If we want the toolbars to be draggable, we need to make sure to check the hover state after a short delay.
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
         setTimeout(() => {
+          let isHovered = event.target.matches(':hover');
+          MousePosTracker._callListener({
+            onMouseEnter: () => (isHovered = true),
+            onMouseLeave: () => {},
+            getMouseTargetRect: () => window.windowUtils.getBoundsWithoutFlushing(target),
+          });
           // Let's double check if the mouse is still hovering over the element, see the bug above.
-          if (event.target.matches(':hover')) {
+          if (isHovered) {
             return;
           }
 

@@ -340,7 +340,7 @@ class nsZenWindowSync {
     }
     const { gBrowser, gZenFolders } = aWindow;
     if (flags & SYNC_FLAG_ICON) {
-      aTargetItem.removeAttribute('zen-has-static-icon');
+      aTargetItem.zenStaticIcon = aOriginalItem.zenStaticIcon;
       if (gBrowser.isTab(aOriginalItem)) {
         gBrowser.setIcon(
           aTargetItem,
@@ -350,7 +350,6 @@ class nsZenWindowSync {
         // Icons are a zen-only feature for tab groups.
         gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
       }
-      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, 'zen-has-static-icon');
     }
     if (flags & SYNC_FLAG_LABEL) {
       if (gBrowser.isTab(aOriginalItem)) {

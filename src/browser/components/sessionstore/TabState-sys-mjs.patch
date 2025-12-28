@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..e0fde4fc475471d170ce46c1207e6e7b67fcaf1d 100644
+index 82721356d191055bec0d4b0ca49e481221988801..ffa95005b96ea384433f18dace63faa35d2d21bf 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -85,7 +85,25 @@ class _TabState {
+@@ -85,7 +85,24 @@ class _TabState {
        tabData.groupId = tab.group.id;
      }
  
@@ -11,11 +11,10 @@ index 82721356d191055bec0d4b0ca49e481221988801..e0fde4fc475471d170ce46c1207e6e7b
 +    tabData.zenEssential = tab.getAttribute("zen-essential");
 +    tabData.pinned = tabData.pinned || tabData.zenEssential;
 +    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
-+    tabData.zenPinnedEntry = tab.getAttribute("zen-pinned-entry");
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
 +    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
 +    tabData.zenStaticLabel = tab.zenStaticLabel;
-+    tabData.zenHasStaticIcon = tab.hasAttribute("zen-has-static-icon");
++    tabData.zenHasStaticIcon = !!tab.zenStaticIcon;
 +    tabData.zenGlanceId = tab.getAttribute("glance-id");
 +    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
 +    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;
@@ -28,7 +27,7 @@ index 82721356d191055bec0d4b0ca49e481221988801..e0fde4fc475471d170ce46c1207e6e7b
  
      tabData.userContextId = tab.userContextId || 0;
  
-@@ -98,7 +116,7 @@ class _TabState {
+@@ -98,7 +115,7 @@ class _TabState {
  
      // Copy data from the tab state cache only if the tab has fully finished
      // restoring. We don't want to overwrite data contained in __SS_data.

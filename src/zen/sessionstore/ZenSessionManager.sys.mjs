@@ -73,7 +73,7 @@ export class nsZenSessionManager {
     });
 
     lazy.SessionStore.promiseAllWindowsRestored.then(() => {
-      delete this._migrationSpaceData;
+      delete this._migrationData;
     });
   }
 
@@ -88,14 +88,15 @@ export class nsZenSessionManager {
    * This is only called once during the first run after updating
    * to a version that uses the new session manager.
    */
-  async #getSpacesFromDBForMigration() {
+  async #getDataFromDBForMigration() {
     try {
       const { PlacesUtils } = ChromeUtils.importESModule(
         'resource://gre/modules/PlacesUtils.sys.mjs'
       );
       const db = await PlacesUtils.promiseDBConnection();
-      const rows = await db.executeCached('SELECT * FROM zen_workspaces ORDER BY created_at ASC');
-      this._migrationSpaceData = rows.map((row) => ({
+      let data = {};
+      let rows = await db.execute('SELECT * FROM zen_workspaces ORDER BY created_at ASC');
+      data.spaces = rows.map((row) => ({
         uuid: row.getResultByName('uuid'),
         name: row.getResultByName('name'),
         icon: row.getResultByName('icon'),
@@ -111,6 +112,22 @@ export class nsZenSessionManager {
             }
           : null,
       }));
+      rows = await db.execute('SELECT * FROM zen_pins ORDER BY position ASC');
+      data.pins = rows.map((row) => ({
+        uuid: row.getResultByName('uuid'),
+        title: row.getResultByName('title'),
+        url: row.getResultByName('url'),
+        containerTabId: row.getResultByName('container_id'),
+        workspaceUuid: row.getResultByName('workspace_uuid'),
+        position: row.getResultByName('position'),
+        isEssential: Boolean(row.getResultByName('is_essential')),
+        isGroup: Boolean(row.getResultByName('is_group')),
+        parentUuid: row.getResultByName('folder_parent_uuid'),
+        editedTitle: Boolean(row.getResultByName('edited_title')),
+        folderIcon: row.getResultByName('folder_icon'),
+        isFolderCollapsed: Boolean(row.getResultByName('is_folder_collapsed')),
+      }));
+      this._migrationData = data;
     } catch {
       /* ignore errors during migration */
     }
@@ -126,7 +143,7 @@ export class nsZenSessionManager {
       let promises = [];
       promises.push(this.#file.load());
       if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
-        promises.push(this.#getSpacesFromDBForMigration());
+        promises.push(this.#getDataFromDBForMigration());
       }
       await Promise.all(promises);
     } catch (e) {
@@ -149,12 +166,58 @@ export class nsZenSessionManager {
     // gotten the opportunity to save the session yet.
     if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
       Services.prefs.setBoolPref(MIGRATION_PREF, true);
+      const pins = this._migrationData?.pins || [];
+      const applyTabsToObject = (obj) => {
+        // Lets add pins that don't exist yet in the sidebar object.
+        obj.tabs = obj.tabs || [];
+        obj.folders = obj.folders || [];
+        for (const pin of pins) {
+          let isGroup = pin.isGroup;
+          let object = {
+            pinned: true,
+            ...(isGroup
+              ? {
+                  workspaceId: pin.workspaceUuid,
+                  userIcon: pin.folderIcon,
+                  name: pin.title,
+                  parentId: pin.parentUuid,
+                  collapsed: pin.isFolderCollapsed,
+                  id: pin.uuid,
+                  emptyTabIds: [],
+                }
+              : {
+                  zenSyncId: pin.uuid,
+                  groupId: pin.parentUuid,
+                  entries: [{ url: pin.url, title: pin.title }],
+                  zenStaticLabel: pin.editedTitle,
+                  zenEssential: pin.isEssential,
+                  userContextId: pin.containerTabId || 0,
+                  zenWorkspace: pin.workspaceUuid,
+                  title: pin.title,
+                }),
+          };
+          let items = isGroup ? obj.folders : obj.tabs;
+          let index = items.findIndex(
+            (tab) =>
+              tab.zenSyncId === pin.uuid || tab.zenPinnedId === pin.uuid || tab.id === pin.uuid
+          );
+          if (index === -1) {
+            // Add to the start of the tabs array to keep the order
+            items.unshift(object);
+          } else {
+            // Update existing tab data
+            items[index] = { ...object, ...items[index] };
+          }
+        }
+      };
       this.#sidebar = {
         ...this.#sidebar,
-        spaces: this._migrationSpaceData || [],
+        spaces: this._migrationData?.spaces || [],
       };
+      applyTabsToObject(this.#sidebar);
       for (const winData of initialState?.windows || []) {
-        winData.spaces = this._migrationSpaceData || [];
+        winData.spaces = this._migrationData?.spaces || [];
+        applyTabsToObject(winData);
       }
       return;
     }

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-welcome-title-line1 = Daha sakin bir internete
+zen-welcome-title-line1 = Zen'e Hoş Geldiniz
 zen-welcome-title-line2 = daha sakin bir internet
 zen-welcome-import-title = Yeni Bir Başlangıç, Aynı Yer İmleri
 zen-welcome-import-description-1 = Yer imleriniz, geçmişiniz ve parolalarınız internetteki ekmek kırıntıları gibidir; onları geride bırakmayın!

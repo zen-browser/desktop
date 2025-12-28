@@ -129,7 +129,7 @@ export class nsZenWorkspace extends MozXULElement {
     indicatorName.onRenameFinished = this.onIndicatorRenameFinished.bind(this);
     indicatorName.addEventListener('dblclick', (event) => {
       if (this.hasPinnedTabs) {
-        // Preevnt renaming when there are pinned tabs
+        // Prevent renaming when there are pinned tabs
         event.stopPropagation();
       }
     });

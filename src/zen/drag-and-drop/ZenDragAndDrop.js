@@ -32,7 +32,10 @@
    * @returns {MozTabbrowserTab|vbox}
    */
   const elementToMove = (element) => {
-    if (element.closest('.zen-current-workspace-indicator')) {
+    if (
+      element.closest('.zen-current-workspace-indicator') ||
+      element.hasAttribute('split-view-group')
+    ) {
       return element;
     }
     if (element.group?.hasAttribute('split-view-group')) {
@@ -85,7 +88,9 @@
 
       super.startTabDrag(event, tab, ...args);
       const dt = event.dataTransfer;
-
+      if (isTabGroupLabel(tab)) {
+        tab = tab.group;
+      }
       const draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
       const { offsetX, offsetY } = this.#getDragImageOffset(event, tab, draggingTabs);
       const dragImage = this.#createDragImageForTabs(draggingTabs);
@@ -145,7 +150,11 @@
 
     _animateTabMove(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (event.target.closest('#zen-essentials') && isTab(draggedTab)) {
+      if (event.target.closest('#zen-essentials')) {
+        if (!isTab(draggedTab)) {
+          this.clearDragOverVisuals();
+          return;
+        }
         return this.#animateVerticalPinnedGridDragOver(event);
       } else if (this._fakeEssentialTab) {
         this.#makeDragImageNonEssential(event);
@@ -585,6 +594,12 @@
 
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      // TODO: Add support for switching spaces when dragging folders and split-view groups.
+      if (!isTab(draggedTab) || draggedTab.hasAttribute('zen-essential')) {
+        this.clearSpaceSwitchTimer();
+        return;
+      }
       const { isNearLeftEdge, isNearRightEdge } = this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
         if (!this.#changeSpaceTimer) {
@@ -658,10 +673,12 @@
     }
 
     handle_drop(event) {
+      this.clearSpaceSwitchTimer();
       super.handle_drop(event);
       const dt = event.dataTransfer;
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (
+        isTab(draggedTab) &&
         !draggedTab.hasAttribute('zen-essential') &&
         draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace
       ) {
@@ -813,7 +830,8 @@
 
     #applyDragoverIndicator(event, tabs, movingTabs, draggedTab) {
       const separation = 4;
-      const dropZoneSelector = ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label)';
+      const dropZoneSelector =
+        ':is(.tabbrowser-tab, .zen-drop-target, .tab-group-label, tab-group[split-view-group])';
       let shouldPlayHapticFeedback = false;
       let showIndicatorUnderNewTabButton = false;
       let dropElement = event.target.closest(dropZoneSelector);
@@ -859,13 +877,18 @@
       if (
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&
-        isTab(dropElement) &&
+        (isTab(dropElement) || dropElement.hasAttribute('split-view-group')) &&
         (!dropElement.pinned || dropElement.hasAttribute('zen-essential'))
       ) {
         this.clearDragOverVisuals();
         return;
       }
-      if (isTab(dropElement) || dropIntoFolder || showIndicatorUnderNewTabButton) {
+      if (
+        isTab(dropElement) ||
+        dropIntoFolder ||
+        showIndicatorUnderNewTabButton ||
+        dropElement.hasAttribute('split-view-group')
+      ) {
         if (showIndicatorUnderNewTabButton) {
           rect = window.windowUtils.getBoundsWithoutFlushing(this.#dragShiftableItems.at(-1));
         }

@@ -256,7 +256,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // tab copy or move
       draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       // not our drop then
-      if (!draggedTab || gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+      if (!gBrowser.isTab(draggedTab) || gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
         return;
       }
       gBrowser.tabContainer.tabDragAndDrop.finishMoveTogetherSelectedTabs(draggedTab);
@@ -1744,7 +1744,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
 
     const droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
-    if (droppedOnTab === gBrowser.selectedTab) {
+    if (droppedOnTab === this._draggingTab) {
       this.createEmptySplit(dropSide == 'right');
       return true;
     }

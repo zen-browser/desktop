@@ -7,6 +7,7 @@
 .subviewbutton,
 #zen-welcome-start-button,
 .zen-toast button,
+.zen-current-workspace-indicator-chevron,
 .pinned-tabs-container-separator toolbarbutton {
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
@@ -116,7 +117,7 @@
   }
 }
 
-#zen-rice-share-options .options-header,
+.zen-current-workspace-indicator-chevron,
 #PanelUI-zen-gradient-generator-color-page-right {
   list-style-image: url('arrow-right.svg');
 }

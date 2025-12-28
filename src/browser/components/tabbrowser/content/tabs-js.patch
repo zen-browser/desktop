@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac8793422474052f476573 100644
+index 6b6c04599fe80983d13d2069ca62b99d8ad70271..04144081560f1678dc9673736ef2bd9d9ca3f478 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -436,7 +436,7 @@
@@ -54,7 +54,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
        return this.hasAttribute("overflow");
      }
  
-@@ -837,29 +839,54 @@
+@@ -837,29 +839,56 @@
        if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
          pinnedChildren.pop();
        }
@@ -81,6 +81,8 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
 +            tabs.splice(i, 1);
 +            // add the tabs in the group to the list
 +            tabs.splice(i, 0, ...tab.tabs);
++          } else if (tab.classList.contains("zen-tab-group-start")) {
++            tabs.splice(i, 1);
 +          }
 +        }
 +      };
@@ -119,7 +121,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
      }
  
      /**
-@@ -926,17 +953,10 @@
+@@ -926,17 +955,10 @@
  
        let elementIndex = 0;
  
@@ -139,7 +141,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
          if (isTab(child) && child.visible) {
            child.elementIndex = elementIndex++;
            focusableItems.push(child);
-@@ -944,11 +964,13 @@
+@@ -944,11 +966,13 @@
            child.labelElement.elementIndex = elementIndex++;
            focusableItems.push(child.labelElement);
  
@@ -154,7 +156,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
          } else if (child.tagName == "tab-split-view-wrapper") {
            let visibleTabsInSplitView = child.tabs.filter(tab => tab.visible);
            visibleTabsInSplitView.forEach(tab => {
-@@ -992,6 +1014,7 @@
+@@ -992,6 +1016,7 @@
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
@@ -162,7 +164,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
      }
  
      _invalidateCachedVisibleTabs() {
-@@ -1095,7 +1118,7 @@
+@@ -1095,7 +1120,7 @@
  
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
@@ -171,7 +173,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
        }
  
        node.before(tab);
-@@ -1193,7 +1216,7 @@
+@@ -1193,7 +1218,7 @@
            // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
@@ -180,7 +182,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1294,8 +1317,10 @@
+@@ -1294,8 +1319,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -191,7 +193,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1304,7 +1329,7 @@
+@@ -1304,7 +1331,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -200,7 +202,7 @@ index 6b6c04599fe80983d13d2069ca62b99d8ad70271..a765f2decc3a565226ac879342247405
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
-@@ -1437,7 +1462,7 @@
+@@ -1437,7 +1464,7 @@
      }
  
      _notifyBackgroundTab(aTab) {

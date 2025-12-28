@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..4439fe5fb3c7002b173415b615892ef356b22959 100644
+index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..697dde4378c43ae6db46a6b7eb2997982201ec27 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,8 @@ const TAB_EVENTS = [
@@ -177,7 +177,7 @@ index 2c2f43bf743ef458b378e85e9ed44a971711e1d9..4439fe5fb3c7002b173415b615892ef3
  
 +    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
 +    winData.activeZenSpace = aWindow.gZenWorkspaces?.activeWorkspace || null;
-+    winData.spaces = aWindow.gZenWorkspaces?.getWorkspaces();
++    winData.spaces = aWindow.gZenWorkspaces?.getWorkspacesForSessionStore();
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {

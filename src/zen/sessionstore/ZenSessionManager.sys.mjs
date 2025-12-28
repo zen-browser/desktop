@@ -224,6 +224,7 @@ export class nsZenSessionManager {
     // If there's no initial state, nothing to restore. This would
     // happen if the file is empty or corrupted.
     if (!initialState) {
+      this.log('No initial state to restore!');
       return;
     }
     // If there are no windows, we create an empty one. By default,
@@ -249,7 +250,7 @@ export class nsZenSessionManager {
     // guarantee that all tabs, groups, folders and split view data
     // are properly synced across all windows.
     this.log(`Restoring Zen session data into ${initialState.windows?.length || 0} windows`);
-    for (const winData of initialState.windows || []) {
+    for (const winData of initialState.windows) {
       this.#restoreWindowData(winData);
     }
   }

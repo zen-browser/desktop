@@ -176,8 +176,8 @@ class nsZenWindowSync {
     // This should only happen really when updating from an older version
     // that didn't have this feature.
     this.#runOnAllWindows(null, (aWindow) => {
-      const { gBrowser } = aWindow;
-      for (let tab of gBrowser.tabs) {
+      const { gZenWorkspaces } = aWindow;
+      for (let tab of gZenWorkspaces.allStoredTabs) {
         if (!tab.id) {
           tab.id = this.#newTabSyncId;
           lazy.TabStateFlusher.flush(tab.linkedBrowser);

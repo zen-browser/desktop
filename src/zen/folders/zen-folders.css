@@ -202,16 +202,6 @@ zen-folder {
     }
   }
 
-  &[collapsed] {
-    & > .tabbrowser-tab:not([hidden]) {
-      display: flex;
-    }
-
-    &:not([has-active]) > .tab-group-container {
-      overflow-y: clip;
-    }
-  }
-
   :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
     & .tab-reset-button {
       display: flex;
@@ -222,6 +212,11 @@ zen-folder {
       opacity: 1;
     }
   }
+}
+
+zen-workspace[collapsedpinnedtabs] .zen-workspace-pinned-tabs-section,
+zen-folder[collapsed]:not([has-active]) > .tab-group-container {
+  overflow-y: clip;
 }
 
 /* Tabs popup */

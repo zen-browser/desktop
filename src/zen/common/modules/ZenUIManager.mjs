@@ -125,8 +125,6 @@ window.gZenUIManager = {
       }
       menu.setAttribute('hidden', 'true');
     }
-    // The first separator in the tab context menu is now useless.
-    document.getElementById('tabContextMenu').querySelector('menuseparator').remove();
   },
 
   _initCreateNewPopup() {

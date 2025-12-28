@@ -1,6 +1,6 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { nsZenThemePicker } from 'chrome://browser/content/zen-components/ZenGradientGenerator.mjs';
 
@@ -465,6 +465,7 @@ class nsZenWorkspaces {
             workspaceWrapper.pinnedTabsContainer,
             tabs
           );
+          workspaceWrapper.checkPinsExistence();
           resolve();
         },
         { once: true }
@@ -827,6 +828,20 @@ class nsZenWorkspaces {
     return [...this._workspaceCache];
   }
 
+  getWorkspacesForSessionStore() {
+    const spaces = this.getWorkspaces();
+    let spacesForSS = [];
+    for (const space of spaces) {
+      let newSpace = { ...space };
+      const element = this.workspaceElement(space.uuid);
+      if (element) {
+        newSpace.hasCollapsedPinnedTabs = element.hasCollapsedPinnedTabs;
+      }
+      spacesForSS.push(newSpace);
+    }
+    return spacesForSS;
+  }
+
   async workspaceBookmarks() {
     if (this.privateWindowOrDisabled) {
       this._workspaceBookmarksCache = {
@@ -854,11 +869,22 @@ class nsZenWorkspaces {
     if (this.#hasInitialized) {
       return;
     }
-    this._workspaceCache = aWinData.spaces?.length
-      ? aWinData.spaces
+    const spacesFromStore = aWinData.spaces || [];
+    this._workspaceCache = spacesFromStore.length
+      ? [...spacesFromStore]
       : [await this.createAndSaveWorkspace('Space', undefined, true)];
+    for (const workspace of this._workspaceCache) {
+      // We don't want to depend on this by mistake
+      delete workspace.hasCollapsedPinnedTabs;
+    }
     this.activeWorkspace = aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     await this.initializeWorkspaces();
+    for (const workspace of spacesFromStore) {
+      const element = this.workspaceElement(workspace.uuid);
+      if (element) {
+        element.collapsiblePins.collapsed = workspace.hasCollapsedPinnedTabs || false;
+      }
+    }
     this.#hasInitialized = true;
   }
 
@@ -1784,11 +1810,14 @@ class nsZenWorkspaces {
     }
     const indicatorName = workspaceIndicator.querySelector('.zen-current-workspace-indicator-name');
     const indicatorIcon = workspaceIndicator.querySelector('.zen-current-workspace-indicator-icon');
+    const iconStack = workspaceIndicator.querySelector('.zen-current-workspace-indicator-stack');
 
     if (this.workspaceHasIcon(currentWorkspace)) {
       indicatorIcon.removeAttribute('no-icon');
+      iconStack.removeAttribute('no-icon');
     } else {
       indicatorIcon.setAttribute('no-icon', 'true');
+      iconStack.setAttribute('no-icon', 'true');
     }
     const icon = this.getWorkspaceIcon(currentWorkspace);
     indicatorIcon.innerHTML = '';

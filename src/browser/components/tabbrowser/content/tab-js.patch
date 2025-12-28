@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7600f564a 100644
+index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..160e277d64eaac8408aed90eaf62606479424001 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -87,7 +87,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
      }
  
      get lastAccessed() {
-@@ -382,7 +395,12 @@
+@@ -382,7 +395,18 @@
      }
  
      get group() {
@@ -98,10 +98,16 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
 +      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
 +        return this.parentElement.parentElement;
 +      }
++      if (this.pinned) {
++        let collapsiblePins = gZenWorkspaces.workspaceElement(this.getAttribute('zen-workspace-id'))?.collapsiblePins;
++        if (collapsiblePins?.collapsed) {
++          return collapsiblePins;
++        }
++      }
      }
  
      get splitview() {
-@@ -473,6 +491,8 @@
+@@ -473,6 +497,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -110,7 +116,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -527,6 +547,10 @@
+@@ -527,6 +553,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -121,7 +127,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -587,6 +611,14 @@
+@@ -587,6 +617,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -136,7 +142,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..23b134a8ba674978182415a8bac926f7
      }
  
      on_dblclick(event) {
-@@ -610,6 +642,8 @@
+@@ -610,6 +648,8 @@
            animate: true,
            triggeringEvent: event,
          });

@@ -155,13 +155,14 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
+  --indicator-gap: 10px;
   margin-top: 1px;
   padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: 10px;
+  gap: var(--indicator-gap);
   align-items: center;
   flex-direction: row !important;
   max-width: 100%;
@@ -368,3 +369,52 @@ zen-workspace {
 }
 
 %include create-workspace-form.css
+
+/* Pinned tabs collapse styles */
+
+.zen-current-workspace-indicator-chevron {
+  display: none;
+}
+
+:root[zen-sidebar-expanded] {
+  .zen-current-workspace-indicator-stack {
+    transition: margin-inline-end 0.1s;
+
+    &[no-icon='true'] {
+      margin-inline-end: calc(-1 * (var(--indicator-gap) + 16px));
+    }
+  }
+
+  .zen-current-workspace-indicator-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s, opacity 0.2s;
+    transform: rotate(90deg);
+    padding: 2px;
+
+    .zen-current-workspace-indicator-stack[no-icon='true'] & {
+      display: flex;
+      opacity: 0;
+    }
+  }
+
+  & zen-workspace[haspinnedtabs] .zen-current-workspace-indicator:hover,
+  & zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator {
+    .zen-current-workspace-indicator-chevron {
+      display: flex;
+      opacity: 1;
+    }
+
+    .zen-current-workspace-indicator-stack {
+      margin-inline-end: 0;
+    }
+
+    .zen-current-workspace-indicator-icon {
+      display: none;
+    }
+  }
+
+  zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator-chevron {
+    transform: rotate(0deg);
+  }
+}

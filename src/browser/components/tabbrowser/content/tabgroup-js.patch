@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057ebc71c2f5f 100644
+index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..e92927612abf12631c384a8f54b6a607fb699424 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -14,11 +14,11 @@
@@ -68,10 +68,10 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
 -        return false;
 -      });
 +      this.appendChild = function (child) {
-+        this.querySelector(".tab-group-container").appendChild(child);
++        this.groupContainer.appendChild(child);
 +        for (let tab of this.tabs) {
 +          if (tab.hasAttribute("zen-empty-tab") && tab.group === this) {
-+            this.querySelector(".zen-tab-group-start").after(tab);
++            this.groupStartElement.after(tab);
 +          }
 +        }
 +      };
@@ -92,7 +92,7 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
          });
        }
 -      this.#tabChangeObserver.observe(this, { childList: true });
-+      const container = this.querySelector(".tab-group-container");
++      const container = this.groupContainer;
 +      if (container) {
 +        this.#tabChangeObserver.observe(container, { childList: true });
 +      }
@@ -117,7 +117,7 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
          });
      }
  
-@@ -466,13 +492,57 @@
+@@ -466,13 +492,65 @@
       * @returns {MozTabbrowserTab[]}
       */
      get tabs() {
@@ -126,20 +126,29 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
 -        if (childrenArray[i].tagName == "tab-split-view-wrapper") {
 -          childrenArray.splice(i, 1, ...childrenArray[i].tabs);
 +      // add other group tabs if they are under this group
-+      let childs = Array.from(this.querySelector(".tab-group-container")?.children ?? []);
++      let childs = Array.from(this.groupContainer?.children ?? []);
 +      const tabsCollect = [];
 +      for (let item of childs) {
 +        tabsCollect.push(item);
 +        if (gBrowser.isTabGroup(item)) {
 +          tabsCollect.push(...item.tabs);
-+        }
-+      }
+         }
+       }
+-      return childrenArray.filter(node => node.matches("tab"));
 +      return tabsCollect.filter(node => node.matches("tab"));
++    }
++
++    get groupContainer() {
++      return this.querySelector(".tab-group-container");
++    }
++
++    get groupStartElement() {
++      return this.querySelector(".zen-tab-group-start");
 +    }
 +
 +    get childGroupsAndTabs() {
 +      const result = [];
-+      const container = this.querySelector(".tab-group-container");
++      const container = this.groupContainer;
 +
 +      for (const item of Array.from(container.children)) {
 +        if (gBrowser.isTab(item)) {
@@ -169,9 +178,8 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
 +        currentGroup = currentGroup?.group;
 +        if (currentGroup.collapsed) {
 +          return false;
-         }
-       }
--      return childrenArray.filter(node => node.matches("tab"));
++        }
++      }
 +      return true;
 +    }
 +
@@ -180,7 +188,7 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
      }
  
      /**
-@@ -553,7 +623,6 @@
+@@ -553,7 +631,6 @@
      addTabs(tabs, metricsContext) {
        for (let tab of tabs) {
          if (tab.pinned) {
@@ -188,7 +196,7 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
          }
          let tabToMove =
            this.ownerGlobal === tab.ownerGlobal
-@@ -616,7 +685,7 @@
+@@ -616,7 +693,7 @@
       */
      on_click(event) {
        let isToggleElement =
@@ -197,7 +205,7 @@ index 394b2af2e187b82bb3e98ebcdc6e66b63036e20d..4757555c7654a14578a5d057323057eb
          event.target === this.#overflowCountLabel;
        if (isToggleElement && event.button === 0) {
          event.preventDefault();
-@@ -687,5 +756,6 @@
+@@ -687,5 +764,6 @@
      }
    }
  

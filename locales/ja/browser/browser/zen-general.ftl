@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
-zen-panel-ui-gradient-generator-saved-message = グラデーションを無事に保存しました！
 zen-copy-current-url-confirmation = URLをクリップボードにコピーしました！
 zen-general-cancel-label = 
     .label = キャンセル

@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Lleihau
     .tooltip = Lleihau
 zen-panel-ui-gradient-generator-custom-color = Lliw Cyfaddas
-zen-panel-ui-gradient-generator-saved-message = Llwyddwyd i gadw'r graddiant!
 zen-copy-current-url-confirmation = Wedi copïo'r URL cyfredol!
 zen-general-cancel-label = 
     .label = Na

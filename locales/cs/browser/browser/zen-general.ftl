@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimalizovat
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
-zen-panel-ui-gradient-generator-saved-message = Gradient byl úspěšně uložen!
 zen-copy-current-url-confirmation = URL adresa byla zkopírována!
 zen-general-cancel-label = 
     .label = Zrušit

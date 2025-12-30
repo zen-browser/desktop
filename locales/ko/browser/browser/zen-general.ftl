@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = 최소화
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
-zen-panel-ui-gradient-generator-saved-message = 성공적으로 그라데이션을 저장했습니다!
 zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
 zen-general-cancel-label = 
     .label = 취소

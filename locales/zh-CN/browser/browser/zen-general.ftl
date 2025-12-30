@@ -30,7 +30,6 @@ pictureinpicture-minimize-btn =
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
-zen-panel-ui-gradient-generator-saved-message = 渐变保存成功！
 zen-copy-current-url-confirmation = 网址已复制到剪贴板！
 zen-general-cancel-label = 
     .label = 取消

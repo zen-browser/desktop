@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = ย่อ
     .tooltip = ย่อ
 zen-panel-ui-gradient-generator-custom-color = เลือกสีเอง
-zen-panel-ui-gradient-generator-saved-message = Successfully saved the gradient!
 zen-copy-current-url-confirmation = คัดลอก URL ปัจจุบันแล้ว!
 zen-general-cancel-label = 
     .label = ยกเลิก

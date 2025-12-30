@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimoi
     .tooltip = Minimoi
 zen-panel-ui-gradient-generator-custom-color = Muokattu Väri
-zen-panel-ui-gradient-generator-saved-message = Kaltevuus tallennettu onnistuneesti!
 zen-copy-current-url-confirmation = Nykyinen URL-osoite kopioitu!
 zen-general-cancel-label = 
     .label = Peruuta

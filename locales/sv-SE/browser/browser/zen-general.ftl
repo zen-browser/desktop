@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimera
     .tooltip = Minimera
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
-zen-panel-ui-gradient-generator-saved-message = Lyckades spara gradienten!
 zen-copy-current-url-confirmation = Kopierade nuvarande URL!
 zen-general-cancel-label = 
     .label = Avbryt

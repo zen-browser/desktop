@@ -30,7 +30,6 @@ pictureinpicture-minimize-btn =
     .aria-label = מזעור
     .tooltip = מזעור
 zen-panel-ui-gradient-generator-custom-color = צבע מותאם אישית
-zen-panel-ui-gradient-generator-saved-message = מיזוג הצבעים נשמר בהצלחה!
 zen-copy-current-url-confirmation = הכתובת הנוכחית הועתקה!
 zen-general-cancel-label = 
     .label = ביטול

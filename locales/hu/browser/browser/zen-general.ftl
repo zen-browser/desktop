@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimalizálás
     .tooltip = Minimalizálás
 zen-panel-ui-gradient-generator-custom-color = Egyedi szín
-zen-panel-ui-gradient-generator-saved-message = Színátmenet sikeresen mentve!
 zen-copy-current-url-confirmation = Jelenlegi URL másolva!
 zen-general-cancel-label = 
     .label = Mégsem

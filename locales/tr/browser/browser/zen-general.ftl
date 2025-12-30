@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Küçült
     .tooltip = Küçült
 zen-panel-ui-gradient-generator-custom-color = Özel Renk
-zen-panel-ui-gradient-generator-saved-message = Renkler başarıyla kaydedildi!
 zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
 zen-general-cancel-label = 
     .label = İptal

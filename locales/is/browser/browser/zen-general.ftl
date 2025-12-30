@@ -30,7 +30,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Lágmarka
     .tooltip = Lágmarka
 zen-panel-ui-gradient-generator-custom-color = Sérsniðinn litur
-zen-panel-ui-gradient-generator-saved-message = Tókst að vista litstigulinn!
 zen-copy-current-url-confirmation = Afritaði fyrirliggjandi slóð!
 zen-general-cancel-label = 
     .label = Hætta við

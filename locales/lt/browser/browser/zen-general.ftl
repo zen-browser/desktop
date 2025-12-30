@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Sumažinti
     .tooltip = Sumažinti
 zen-panel-ui-gradient-generator-custom-color = Pasirinktinė spalva
-zen-panel-ui-gradient-generator-saved-message = Gradientas sėkmingai įrašytas.
 zen-copy-current-url-confirmation = Nukopijuotas dabartinis URL.
 zen-general-cancel-label = 
     .label = Atšaukti

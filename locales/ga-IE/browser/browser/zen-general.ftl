@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Íoslaghdaigh
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
-zen-panel-ui-gradient-generator-saved-message = Sábháladh an grádán go rathúil!
 zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
 zen-general-cancel-label = 
     .label = Cealaigh

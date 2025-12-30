@@ -30,7 +30,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimizza
     .tooltip = Minimizza
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
-zen-panel-ui-gradient-generator-saved-message = Gradiente salvato con successo!
 zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
 zen-general-cancel-label = 
     .label = Annulla

@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimalkan
     .tooltip = Minimalkan
 zen-panel-ui-gradient-generator-custom-color = Warna Kustom
-zen-panel-ui-gradient-generator-saved-message = Berhasil menyimpan gradien!
 zen-copy-current-url-confirmation = URL Disalin!
 zen-general-cancel-label = 
     .label = Batalkan

@@ -32,7 +32,6 @@ pictureinpicture-minimize-btn =
     .aria-label = Свернуть
     .tooltip = Свернуть
 zen-panel-ui-gradient-generator-custom-color = Пользовательский цвет
-zen-panel-ui-gradient-generator-saved-message = Градиент успешно сохранён!
 zen-copy-current-url-confirmation = Адрес скопирован!
 zen-general-cancel-label = 
     .label = Отменить

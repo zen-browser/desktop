@@ -37,7 +37,6 @@ pictureinpicture-minimize-btn =
   .tooltip = Minimize
 
 zen-panel-ui-gradient-generator-custom-color = Custom Color
-zen-panel-ui-gradient-generator-saved-message = Successfully saved the gradient!
 
 zen-copy-current-url-confirmation = Copied current URL!
 

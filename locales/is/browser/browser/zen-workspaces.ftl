@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Svæði
+zen-panel-ui-spaces-label = 
+    .label = Spaces
 zen-panel-ui-workspaces-create = 
     .label = Búa til vinnusvæði
 zen-panel-ui-folder-create = 
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Flipa lokað! Notaðu <span>{ $sh
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Hreinsa
     .tooltiptext = Loka öllum ófestum flipum
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

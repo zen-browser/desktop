@@ -15,7 +15,7 @@ tab-context-zen-remove-essential =
     .label = Gỡ khỏi thẻ chính
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Thay thế đường dường dẫn đã ghim với hiện tại
+    .label = Thay địa chỉ đã ghim bằng hiện tại
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Đổi tên...
@@ -24,9 +24,7 @@ tab-context-zen-edit-icon =
 zen-themes-corrupted = Thư mục chủ đề { -brand-short-name } của bạn đã bị hư, chúng đã được trả về thiết kế gốc.
 zen-shortcuts-corrupted = Tệp phím tắt { -brand-short-name } của bạn đã bị hư. Chúng đã được trẻ về phím tắt gốc.
 # note: Do not translate the "<br/>" tags in the following string
-zen-new-urlbar-notification =
-    Thanh đường dẫn mới đã được kích hoạt, loại bỏ chức năng của trang "thẻ mới". <br/><br/>
-    Hãy thử tạo một thẻ để xem cái "mới" của thanh đường dẫn!
+zen-new-urlbar-notification = Thanh địa chỉ mới đã được bật, giúp bạn không cần đến trang Thẻ mới nữa.<br/><br/>Hãy thử mở một thẻ mới để xem thanh địa chỉ hoạt động thế nào nhé!
 zen-disable = Vô hiệu hóa
 pictureinpicture-minimize-btn = 
     .aria-label = Thu nhỏ
@@ -37,7 +35,7 @@ zen-general-cancel-label =
     .label = Hủy
 zen-general-confirm = 
     .label = Xác nhận
-zen-pinned-tab-replaced = Đường dẫn trên thẻ ghim đã được thay thể bởi đường dẫn hiện tại!
+zen-pinned-tab-replaced = URL của thẻ đã ghim đã được thay thế bằng URL hiện tại!
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
@@ -91,7 +89,7 @@ zen-site-data-header-screenshot =
 zen-site-data-header-bookmark = 
     .tooltiptext = Lưu (bookmark) trang này
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Sao chép đường dẫn (URL)
+    .tooltiptext = Sao chép địa chỉ
 zen-site-data-setting-site-protection = Phòng chống theo dõi
 
 # Section: Feature callouts

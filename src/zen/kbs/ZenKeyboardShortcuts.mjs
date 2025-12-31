@@ -694,7 +694,7 @@ class nsZenKeyboardShortcutsLoader {
       newShortcutList.push(
         new KeyShortcut(
           `zen-workspace-switch-${i}`,
-          AppConstants.platform == 'macosx' ? `${i == 10 ? 0 : i}` : '',
+          AppConstants.platform == 'macosx' ? `${i === 10 ? 0 : i}` : '',
           '',
           ZEN_WORKSPACE_SHORTCUTS_GROUP,
           nsKeyShortcutModifiers.fromObject(

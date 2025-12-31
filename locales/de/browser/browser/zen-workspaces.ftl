@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Arbeitsbereiche
+zen-panel-ui-spaces-label = 
+    .label = Spaces
 zen-panel-ui-workspaces-create = 
     .label = Arbeitsbereich erstellen
 zen-panel-ui-folder-create = 
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tabs geschlossen! Nutze <span>{ $
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Aufräumen
     .tooltiptext = Alle nicht angehefteten Tabs schließen
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

@@ -37,6 +37,10 @@ class nsZenCollapsiblePins extends nsZenFolder {
     super.collapsed = value;
     gBrowser.tabContainer._invalidateCachedVisibleTabs();
   }
+
+  toggle() {
+    this.collapsed = !this.collapsed;
+  }
 }
 
 export class nsZenWorkspace extends MozXULElement {

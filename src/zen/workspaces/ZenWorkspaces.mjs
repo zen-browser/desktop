@@ -920,7 +920,7 @@ class nsZenWorkspaces {
     window.addEventListener('TabSelect', this.onLocationChange.bind(this));
     window.addEventListener('TabBrowserInserted', this.onTabBrowserInserted.bind(this));
 
-    this.#updateWorkspacesChangeContextMenu();
+    this.updateWorkspacesChangeContextMenu();
   }
 
   async selectStartPage() {
@@ -1173,12 +1173,15 @@ class nsZenWorkspaces {
     );
   }
 
-  generateMenuItemForWorkspace(workspace) {
+  generateMenuItemForWorkspace(workspace, disableCurrent = false) {
     const item = document.createXULElement('menuitem');
     item.className = 'zen-workspace-context-menu-item';
     item.setAttribute('zen-workspace-id', workspace.uuid);
+    if (!disableCurrent) {
+      item.setAttribute('type', 'radio');
+    }
     if (workspace.uuid === this.activeWorkspace) {
-      item.setAttribute('disabled', true);
+      item.setAttribute(disableCurrent ? 'disabled' : 'checked', true);
     }
     let name = workspace.name;
     const iconIsSvg = workspace.icon && workspace.icon.endsWith('.svg');
@@ -1381,7 +1384,7 @@ class nsZenWorkspaces {
     this._organizeWorkspaceStripLocations(this.getActiveWorkspaceFromCache()).finally(() => {
       this.updateTabsContainers();
     });
-    this.#updateWorkspacesChangeContextMenu();
+    this.updateWorkspacesChangeContextMenu();
   }
 
   async reorderWorkspace(id, newPosition) {
@@ -2335,24 +2338,49 @@ class nsZenWorkspaces {
     }
   }
 
-  #updateWorkspacesChangeContextMenu() {
+  updateWorkspacesChangeContextMenu() {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = this.getWorkspaces();
 
-    const menuPopup = document.getElementById('moveTabOptionsMenu');
-    if (!menuPopup) {
+    let menuPopupID = 'moveTabOptionsMenu';
+    const menuPopup = document.getElementById(menuPopupID);
+    let menubar = document.getElementById('zen-spaces-menubar');
+    if (!menuPopup || !menubar) {
       return;
     }
-    for (const item of menuPopup.querySelectorAll('.zen-workspace-context-menu-item')) {
-      item.remove();
-    }
-    const separator = document.createXULElement('menuseparator');
-    separator.classList.add('zen-workspace-context-menu-item');
-    menuPopup.prepend(separator);
-    for (let workspace of workspaces.reverse()) {
-      const menuItem = this.generateMenuItemForWorkspace(workspace);
-      menuItem.setAttribute('command', 'cmd_zenChangeWorkspaceTab');
-      menuPopup.prepend(menuItem);
+    let itemsToFill = [menubar.querySelector('menupopup'), menuPopup];
+    for (const popup of itemsToFill) {
+      let isMoveTabPopup = popup.id === menuPopupID;
+      for (const item of popup.querySelectorAll('.zen-workspace-context-menu-item')) {
+        item.remove();
+      }
+      const separator = document.createXULElement('menuseparator');
+      separator.classList.add('zen-workspace-context-menu-item');
+      if (isMoveTabPopup) {
+        popup.prepend(separator);
+      } else {
+        popup.appendChild(separator);
+      }
+      let i = 0;
+      for (let workspace of isMoveTabPopup ? workspaces.reverse() : workspaces) {
+        const menuItem = this.generateMenuItemForWorkspace(
+          workspace,
+          /* disableCurrent = */ isMoveTabPopup
+        );
+        if (isMoveTabPopup) {
+          popup.prepend(menuItem);
+          menuItem.setAttribute('command', 'cmd_zenChangeWorkspaceTab');
+        } else {
+          if (i < 10) {
+            menuItem.setAttribute('key', `zen-workspace-switch-${i + 1}`);
+          }
+          menuItem.addEventListener('command', () => {
+            this.changeWorkspace(workspace);
+          });
+          popup.appendChild(menuItem);
+        }
+        i++;
+      }
     }
   }
 

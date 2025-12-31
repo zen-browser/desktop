@@ -13,6 +13,7 @@
         content/browser/zen-components/ZenSessionStore.mjs                      (../../zen/common/modules/ZenSessionStore.mjs)
         content/browser/zen-components/ZenHasPolyfill.mjs                       (../../zen/common/modules/ZenHasPolyfill.mjs)
         content/browser/zen-components/ZenSidebarNotification.mjs               (../../zen/common/modules/ZenSidebarNotification.mjs)
+        content/browser/zen-components/ZenMenubar.mjs                           (../../zen/common/modules/ZenMenubar.mjs)
 
         content/browser/zen-components/ZenEmojisData.min.mjs                    (../../zen/common/emojis/ZenEmojisData.min.mjs)
         content/browser/zen-components/ZenEmojiPicker.mjs                       (../../zen/common/emojis/ZenEmojiPicker.mjs)

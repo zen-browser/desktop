@@ -196,6 +196,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#currentPromiseReject = null;
 
     this.#anchor.removeAttribute('zen-emoji-open');
+    this.#anchor.parentElement.removeAttribute('zen-emoji-open');
     this.#anchor = null;
   }
 
@@ -222,6 +223,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     });
     this.#anchor = anchor;
     this.#anchor.setAttribute('zen-emoji-open', 'true');
+    this.#anchor.parentElement.setAttribute('zen-emoji-open', 'true');
     if (onlySvgIcons) {
       this.#panel.setAttribute('only-svg-icons', 'true');
     } else {

@@ -175,17 +175,23 @@ class nsZenWindowSync {
     // assign one and sync it to other windows.
     // This should only happen really when updating from an older version
     // that didn't have this feature.
-    this.#runOnAllWindows(null, (aWindow) => {
-      const { gZenWorkspaces } = aWindow;
-      for (let tab of gZenWorkspaces.allStoredTabs) {
-        if (!tab.id) {
-          tab.id = this.#newTabSyncId;
-          lazy.TabStateFlusher.flush(tab.linkedBrowser);
+    let previousWindowPromise = Promise.resolve();
+    this.#runOnAllWindows(null, async (aWindow) => {
+      await previousWindowPromise;
+      previousWindowPromise = new Promise((resolve) => {
+        const { gZenWorkspaces } = aWindow;
+        let allPromises = [];
+        for (let tab of gZenWorkspaces.allStoredTabs) {
+          if (!tab.id) {
+            tab.id = this.#newTabSyncId;
+            lazy.TabStateFlusher.flush(tab.linkedBrowser);
+          }
+          if (tab.pinned && !tab._zenPinnedInitialState) {
+            allPromises.push(this.setPinnedTabState(tab));
+          }
         }
-        if (tab.pinned && !tab._zenPinnedInitialState) {
-          this.setPinnedTabState(tab);
-        }
-      }
+        Promise.all(allPromises).then(resolve);
+      });
     });
   }
 
@@ -793,6 +799,7 @@ class nsZenWindowSync {
    */
   setPinnedTabState(aTab) {
     return lazy.TabStateFlusher.flush(aTab.linkedBrowser).finally(() => {
+      this.log(`Setting pinned initial state for tab ${aTab.id}`);
       const state = this.#getTabState(aTab);
       const initialState = {
         entry: state.entries[state.index - 1],

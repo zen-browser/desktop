@@ -50,12 +50,6 @@ zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
 zen-workspace-renamed-toast = Workspace has been successfully renamed!
 
-zen-library-sidebar-workspaces =
-    .label = Spaces
-
-zen-library-sidebar-mods =
-    .label = Mods
-
 zen-toggle-compact-mode-button =
     .label = Compact Mode
     .tooltiptext = Toggle Compact Mode

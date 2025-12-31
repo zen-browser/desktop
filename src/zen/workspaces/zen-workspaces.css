@@ -387,7 +387,7 @@ zen-workspace {
   .zen-current-workspace-indicator-stack {
     transition: margin-inline-end 0.1s;
 
-    &[no-icon='true'] {
+    &[no-icon='true']:not([zen-emoji-open='true']) {
       margin-inline-end: calc(-1 * (var(--indicator-gap) + 16px));
     }
   }
@@ -399,7 +399,7 @@ zen-workspace {
     transform: rotate(90deg);
     padding: 1px;
 
-    .zen-current-workspace-indicator-stack[no-icon='true'] & {
+    .zen-current-workspace-indicator-stack[no-icon='true']:not([zen-emoji-open='true']) & {
       display: flex;
       opacity: 0;
     }
@@ -407,17 +407,17 @@ zen-workspace {
 
   & zen-workspace[haspinnedtabs] .zen-current-workspace-indicator:hover,
   & zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator {
-    .zen-current-workspace-indicator-chevron {
-      display: flex;
-      opacity: 1;
-    }
-
-    .zen-current-workspace-indicator-stack {
+    .zen-current-workspace-indicator-stack:not([zen-emoji-open='true']) {
       margin-inline-end: 0;
-    }
 
-    .zen-current-workspace-indicator-icon {
-      display: none;
+      .zen-current-workspace-indicator-chevron {
+        display: flex;
+        opacity: 1;
+      }
+
+      .zen-current-workspace-indicator-icon {
+        display: none;
+      }
     }
   }
 

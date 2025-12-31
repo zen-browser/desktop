@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { ZenMenubar } from 'chrome://browser/content/zen-components/ZenMenubar.mjs';
 
 window.gZenUIManager = {
   _popupTrackingElements: [],
@@ -60,6 +61,8 @@ window.gZenUIManager = {
     this._addNewCustomizableButtonsIfNeeded();
     this._initOmnibox();
     this._initBookmarkCollapseListener();
+
+    ZenMenubar.init();
   },
 
   _addNewCustomizableButtonsIfNeeded() {

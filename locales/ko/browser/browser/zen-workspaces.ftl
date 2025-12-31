@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = 다른 워크스페이스
+zen-panel-ui-spaces-label = 
+    .label = Spaces
 zen-panel-ui-workspaces-create = 
     .label = 스페이스 만들기
 zen-panel-ui-folder-create = 
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = 탭을 닫았습니다! 되돌리
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = 탭 정리
     .tooltiptext = 고정되지 않은 모든 탭을 닫습니다
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

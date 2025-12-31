@@ -18,9 +18,9 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Ganti URL Sematan ke URL saat ini
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Ubah Label...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
+    .label = Ubah Ikon...
 zen-themes-corrupted = Tidak dapat memuat file tema { -brand-short-name } Anda karena rusak. File tersebut telah diatur ulang ke tema default.
 zen-shortcuts-corrupted = File pintasan { -brand-short-name } Anda rusak. Mereka telah diatur ulang ke pintasan default.
 # note: Do not translate the "<br/>" tags in the following string
@@ -41,10 +41,6 @@ zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
-zen-library-sidebar-workspaces = 
-    .label = Ruang
-zen-library-sidebar-mods = 
-    .label = Mods
 zen-toggle-compact-mode-button = 
     .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
@@ -101,13 +97,13 @@ zen-site-data-panel-feature-callout-subtitle = Klik ikon untuk mengelola pengatu
 zen-open-link-in-glance = 
     .label = Buka Tautan di Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Pembaruan Selesai!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Apa yang baru di { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Lihat Catatan Rilis
+zen-sidebar-notification-restart-safe-mode-label = Ada yang rusak?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Mulai Ulang dalam Mode Aman

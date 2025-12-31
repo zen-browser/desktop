@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Ruang Kerja Lainnya
+zen-panel-ui-spaces-label = 
+    .label = Spaces
 zen-panel-ui-workspaces-create = 
     .label = Buat Ruang
 zen-panel-ui-folder-create = 
@@ -31,7 +33,7 @@ zen-workspaces-panel-context-edit =
     .label = Edit Ruang
     .accesskey = E
 zen-bookmark-edit-panel-workspace-selector = 
-    .value = Spaces
+    .value = Ruang
     .accesskey = W
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = Komplementer
@@ -47,8 +49,8 @@ zen-panel-ui-gradient-click-to-add = Klik untuk menambahkan warna
 zen-workspace-creation-name = 
     .placeholder = Nama Ruang
 zen-move-tab-to-workspace-button = 
-    .label = Move To...
-    .tooltiptext = Move all tabs in this window to a Space
+    .label = Pindahkan ke...
+    .tooltiptext = Pindahkan semua tab di jendela ini ke sebuah Ruang
 zen-workspaces-panel-context-reorder = 
     .label = Urutkan Ruang
 zen-workspace-creation-profile = Profil
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tab Ditutup! Gunakan <span>{ $sho
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Bersihkan
     .tooltiptext = Tutup semua tab yang tidak disematkan
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

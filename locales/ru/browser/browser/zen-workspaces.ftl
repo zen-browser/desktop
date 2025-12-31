@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Пространства
+zen-panel-ui-spaces-label = 
+    .label = Spaces
 zen-panel-ui-workspaces-create = 
     .label = Создать пространство
 zen-panel-ui-folder-create = 
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Вкладки закрыты! Н
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Очистить
     .tooltiptext = Закрыть все не закреплённые вкладки
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

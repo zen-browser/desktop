@@ -36,4 +36,4 @@ tabbrowser-reset-pin-button =
             [one] Tải lại và ghim thẻ
            *[other] Tải lại và ghim { $tabCount } thẻ
         }
-tab-reset-pin-label = Quay trở lại đường dẫn đã ghim
+tab-reset-pin-label = Quay lại địa chỉ đã ghim

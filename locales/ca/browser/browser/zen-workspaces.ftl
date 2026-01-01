@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Espais de treball
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Espais
 zen-panel-ui-workspaces-create = 
     .label = Crea un espai
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Esborra
     .tooltiptext = Tanca totes les pestanyes no fixades
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Espai següent
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Espai anterior

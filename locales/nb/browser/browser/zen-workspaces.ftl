@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Områder
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Områder
 zen-panel-ui-workspaces-create = 
     .label = Opprett Område
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Tøm
     .tooltiptext = Lukk alle ufestede faner
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Neste område
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Forrige område

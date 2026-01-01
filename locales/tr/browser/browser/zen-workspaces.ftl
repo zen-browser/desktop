@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Alanlar
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Alanlar
 zen-panel-ui-workspaces-create = 
     .label = Alan Oluştur
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Temizle
     .tooltiptext = Sabitlenmemiş tüm sekmeleri kapat
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Sonraki Alan
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Önceki Alan

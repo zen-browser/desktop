@@ -4,6 +4,9 @@
 
 zen-panel-ui-workspaces-text = Spaces
 
+zen-panel-ui-spaces-label =
+    .label = Spaces
+
 zen-panel-ui-workspaces-create =
     .label = Create Space
 
@@ -83,3 +86,9 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcu
 zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clear
     .tooltiptext = Close all unpinned tabs
+
+zen-panel-ui-workspaces-change-forward =
+    .label = Next Space
+
+zen-panel-ui-workspaces-change-back =
+    .label = Previous Space

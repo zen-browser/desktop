@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Développer les onglets épinglés
+           *[false] Réduire les onglets épinglés
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Apparence des sites web
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatique
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Clair
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Sombre

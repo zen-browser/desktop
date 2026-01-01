@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Svæði
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Svæði
 zen-panel-ui-workspaces-create = 
     .label = Búa til vinnusvæði
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Hreinsa
     .tooltiptext = Loka öllum ófestum flipum
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Næsta svæði
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Fyrra svæði

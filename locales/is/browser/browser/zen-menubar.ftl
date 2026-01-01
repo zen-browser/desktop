@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Hámarka festa flipa
+           *[false] Lágmarka festa flipa
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Útlit vefsvæðis
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Sjálfvirkt
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Ljóst
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Dökkt

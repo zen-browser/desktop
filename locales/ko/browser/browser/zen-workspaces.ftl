@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = 다른 워크스페이스
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = 스페이스
 zen-panel-ui-workspaces-create = 
     .label = 스페이스 만들기
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = 탭 정리
     .tooltiptext = 고정되지 않은 모든 탭을 닫습니다
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = 다음 스페이스
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = 이전 스페이스

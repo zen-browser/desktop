@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] 고정된 탭 확장
+           *[false] 고정된 탭 축소
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = 웹사이트 모양
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = 자동
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = 라이트
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = 다크

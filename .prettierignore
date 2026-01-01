@@ -17,6 +17,8 @@ engine/
 
 surfer.json
 
+src/zen/tests/mochitests/*
+
 src/browser/app/profile/*.js
 pnpm-lock.yaml
 

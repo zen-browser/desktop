@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/ctrlTab.css b/browser/themes/shared/tabbrowser/ctrlTab.css
-index 259e11f3c9a761e158dc32a3ecb9ee90c11d27c6..c5e30314090fe8f33b37c809bcf871c7b8c4d3da 100644
+index ffda4922c675f6159c825334cba9d49658d316ba..7b3d4d2b5c6d732a1d0074e05cc48131fe57c630 100644
 --- a/browser/themes/shared/tabbrowser/ctrlTab.css
 +++ b/browser/themes/shared/tabbrowser/ctrlTab.css
 @@ -11,6 +11,7 @@
@@ -8,5 +8,5 @@ index 259e11f3c9a761e158dc32a3ecb9ee90c11d27c6..c5e30314090fe8f33b37c809bcf871c7
    -moz-window-shadow: none;
 +  --panel-shadow-margin: 0;
    @media not (-moz-platform: macos) {
-     font-weight: bold;
+     font-weight: var(--font-weight-bold);
    }

@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/menulist.css b/toolkit/themes/shared/menulist.css
-index 73149025f13e8805774c004820d57755d2bf89a9..f503e6bcd1c466757fc58e033aa0d68343685e28 100644
+index 56e61a11aa1180ed637104838a802d1dd2808e7b..3b44880e1aa194f0ff2f05760fd2f36d5e167738 100644
 --- a/toolkit/themes/shared/menulist.css
 +++ b/toolkit/themes/shared/menulist.css
 @@ -53,7 +53,7 @@

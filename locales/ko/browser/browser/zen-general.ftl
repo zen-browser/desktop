@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = 고정된 탭 초기화
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = 에센셜에 추가 ({ $num } / { $max } 개 추가됨)
+    .label = 에센셜에 추가
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
@@ -94,3 +95,16 @@ zen-site-data-setting-site-protection = 추적 보호
 
 zen-site-data-panel-feature-callout-title = 애드온, 권한, 그리고 더 많은 것을 위한 새로운 곳
 zen-site-data-panel-feature-callout-subtitle = 아이콘을 클릭해 사이트 설정, 보안 정보 조회, 확장 프로그램 접근, 기타 행동을 수행할 수 있습니다.
+zen-open-link-in-glance = 
+    .label = 글랜스로 링크 열기
+    .accesskey = G
+zen-sidebar-notification-updated-heading = 업데이트 완료!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = { -brand-short-name }의 새로운 기능
+zen-sidebar-notification-updated-tooltip = 
+    .title = 업데이트 기록 보기
+zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = 안전 모드로 다시 시작

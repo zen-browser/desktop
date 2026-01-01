@@ -1,0 +1,45 @@
+diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
+index be23213ae9ec7e59358a17276c6c3764d38d9996..c7bb413d7e2d8ce3f9bc38a925d57e59d882111d 100644
+--- a/browser/components/sessionstore/SessionStartup.sys.mjs
++++ b/browser/components/sessionstore/SessionStartup.sys.mjs
+@@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   StartupPerformance:
+     "resource:///modules/sessionstore/StartupPerformance.sys.mjs",
+   sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+ });
+ 
+ const STATE_RUNNING_STR = "running";
+@@ -85,7 +86,7 @@ export var SessionStartup = {
+     }
+ 
+     // do not need to initialize anything in auto-started private browsing sessions
+-    if (lazy.PrivateBrowsingUtils.permanentPrivateBrowsing) {
++    if (false) {
+       this._initialized = true;
+       gOnceInitializedDeferred.resolve();
+       return;
+@@ -179,6 +180,9 @@ export var SessionStartup = {
+       this._initialState = parsed;
+     }
+ 
++    this._initialState ||= {};
++    lazy.ZenSessionStore.onFileRead(this._initialState);
++
+     if (this._initialState == null) {
+       // No valid session found.
+       this._sessionType = this.NO_SESSION;
+@@ -335,12 +339,7 @@ export var SessionStartup = {
+   isAutomaticRestoreEnabled() {
+     if (this._resumeSessionEnabled === null) {
+       this._resumeSessionEnabled =
+-        !lazy.PrivateBrowsingUtils.permanentPrivateBrowsing &&
+-        (Services.prefs.getBoolPref(
+-          "browser.sessionstore.resume_session_once"
+-        ) ||
+-          Services.prefs.getIntPref("browser.startup.page") ==
+-            BROWSER_STARTUP_RESUME_SESSION);
++        true;
+     }
+ 
+     return this._resumeSessionEnabled;

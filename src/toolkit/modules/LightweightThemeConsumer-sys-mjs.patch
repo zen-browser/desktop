@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-index 1d16b3f191a53b6877122086de9bba1fbcaa71f4..64df5577aac095ddd3d9a381bf118496bf279276 100644
+index 57d5bf70c2584359f09b03932852a6e3fafb1008..39a798817f1a3e4a77a95fc04e9697c7b93ee044 100644
 --- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
 +++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-@@ -31,7 +31,7 @@ const toolkitVariableMap = [
+@@ -32,7 +32,7 @@ const toolkitVariableMap = [
        lwtProperty: "accentcolor",
        processColor(rgbaChannels) {
          if (!rgbaChannels || rgbaChannels.a == 0) {
@@ -12,11 +12,11 @@ index 1d16b3f191a53b6877122086de9bba1fbcaa71f4..64df5577aac095ddd3d9a381bf118496
          // Remove the alpha channel
          const { r, g, b } = rgbaChannels;
 @@ -320,7 +320,7 @@ LightweightThemeConsumer.prototype = {
-     }
- 
-     let theme = useDarkTheme ? themeData.darkTheme : themeData.theme;
--    if (!theme) {
-+    if (!theme || Services.prefs.getBoolPref("zen.theme.disable-lightweight")) {
+     let forcedColorsThemeOverride =
+       this.FORCED_COLORS_OVERRIDE_ENABLED &&
+       this.forcedColorsMediaQuery?.matches;
+-    if (!theme || forcedColorsThemeOverride) {
++    if (!theme || forcedColorsThemeOverride || Services.prefs.getBoolPref("zen.theme.disable-lightweight")) {
        theme = { id: DEFAULT_THEME_ID };
      }
-     let hasTheme = theme.id != DEFAULT_THEME_ID;
+     let builtinThemeConfig = lazy.BuiltInThemeConfig.get(theme.id);

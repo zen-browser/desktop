@@ -94,11 +94,13 @@
 
   &[icons-overflow] {
     gap: 0 !important;
-    justify-content: space-between;
+    justify-content: center;
 
     & toolbarbutton {
       margin: 0;
       background: transparent;
+      /* Ignore press state when in overflow, to allow clicks to happen */
+      scale: 1 !important;
     }
 
     /* Inlcude separately since ther'es a bug in the 
@@ -108,7 +110,7 @@
     }
 
     &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
-%include overflow-icons.inc.css 
+%include overflow-icons.inc.css
     }
   }
 }
@@ -153,13 +155,14 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
+  --indicator-gap: 10px;
   margin-top: 1px;
   padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
   min-height: var(--zen-workspace-indicator-height);
-  gap: 10px;
+  gap: var(--indicator-gap);
   align-items: center;
   flex-direction: row !important;
   max-width: 100%;
@@ -181,7 +184,11 @@
     height: calc(100% - var(--zen-toolbox-padding) * 2);
   }
 
-  :root:not([zen-private-window]) & {
+  :root[zen-private-window] & {
+    pointer-events: none;
+  }
+
+  :root:not([zen-unsynced-window]) & {
     &:hover,
     &[open='true'] {
       &::before {
@@ -199,6 +206,7 @@
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
     fill: currentColor;
+    font-size: 18px;
 
     &[zen-emoji-open='true']::before {
       border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
@@ -228,15 +236,24 @@
     font-weight: 600;
     align-items: center;
     margin: 0;
+
+    :root[zen-unsynced-window] & {
+      pointer-events: none;
+      background: color-mix(in srgb, currentColor 20%, transparent);
+      padding: 4px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      margin-inline-start: -6px;
+    }
   }
 
   .zen-workspaces-actions {
     margin-left: auto !important;
-    opacity: 0;
-    visibility: collapse;
     transition: opacity 0.1s;
     order: 5;
     --toolbarbutton-inner-padding: 6px !important;
+    opacity: 0;
+    visibility: collapse;
 
     & image {
       border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
@@ -248,9 +265,25 @@
     :root[zen-renaming-tab='true'] & {
       display: none;
     }
+
+    :root[zen-unsynced-window] & {
+      .toolbarbutton-text {
+        display: flex;
+        font-size: 10px;
+        min-height: 22px;
+        padding: 6px 8px;
+      }
+
+      .toolbarbutton-icon {
+        display: none;
+      }
+    }
   }
 
-  :root:not([zen-private-window]) &:hover .zen-workspaces-actions,
+  :root[zen-unsynced-window='true']
+    #navigator-toolbox[zen-has-implicit-hover='true'] 
+    & .zen-workspaces-actions,
+  :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
   & .zen-workspaces-actions[open='true'] {
     visibility: visible;
     pointer-events: auto;
@@ -330,8 +363,10 @@ zen-workspace {
     }
   }
 
-  &[active] .zen-workspace-empty-space {
-    -moz-window-dragging: drag;
+  @media -moz-pref('zen.view.draggable-sidebar') {
+    &[active] .zen-workspace-empty-space {
+      -moz-window-dragging: drag;
+    }
   }
 }
 
@@ -341,3 +376,52 @@ zen-workspace {
 }
 
 %include create-workspace-form.css
+
+/* Pinned tabs collapse styles */
+
+.zen-current-workspace-indicator-chevron {
+  display: none;
+}
+
+:root[zen-sidebar-expanded] {
+  .zen-current-workspace-indicator-stack {
+    transition: margin-inline-end 0.1s;
+
+    &[no-icon='true']:not([zen-emoji-open='true']) {
+      margin-inline-end: calc(-1 * (var(--indicator-gap) + 16px));
+    }
+  }
+
+  .zen-current-workspace-indicator-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.1s, opacity 0.1s;
+    transform: rotate(90deg);
+    padding: 1px;
+
+    .zen-current-workspace-indicator-stack[no-icon='true']:not([zen-emoji-open='true']) & {
+      display: flex;
+      opacity: 0;
+    }
+  }
+
+  & zen-workspace[haspinnedtabs] .zen-current-workspace-indicator:hover,
+  & zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator {
+    .zen-current-workspace-indicator-stack:not([zen-emoji-open='true']) {
+      margin-inline-end: 0;
+
+      .zen-current-workspace-indicator-chevron {
+        display: flex;
+        opacity: 1;
+      }
+
+      .zen-current-workspace-indicator-icon {
+        display: none;
+      }
+    }
+  }
+
+  zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator-chevron {
+    transform: rotate(0deg);
+  }
+}

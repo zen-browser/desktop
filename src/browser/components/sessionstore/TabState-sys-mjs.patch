@@ -1,22 +1,24 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..1ea5c394c704da295149443d7794961a12f2060b 100644
+index 82721356d191055bec0d4b0ca49e481221988801..ffa95005b96ea384433f18dace63faa35d2d21bf 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -85,7 +85,22 @@ class _TabState {
+@@ -85,7 +85,24 @@ class _TabState {
        tabData.groupId = tab.group.id;
      }
  
 +    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");
-+    tabData.zenPinnedId = tab.getAttribute("zen-pin-id");
++    tabData.zenSyncId = tab.getAttribute("id");
 +    tabData.zenEssential = tab.getAttribute("zen-essential");
 +    tabData.pinned = tabData.pinned || tabData.zenEssential;
 +    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
-+    tabData.zenPinnedEntry = tab.getAttribute("zen-pinned-entry");
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
 +    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
-+    tabData.zenHasStaticLabel = tab.hasAttribute("zen-has-static-label");
++    tabData.zenStaticLabel = tab.zenStaticLabel;
++    tabData.zenHasStaticIcon = !!tab.zenStaticIcon;
 +    tabData.zenGlanceId = tab.getAttribute("glance-id");
 +    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
++    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;
++    tabData._zenIsActiveTab = tab._zenContentsVisible;
 +
      tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
 +    if (tabData.searchMode?.source === tab.ownerGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
@@ -25,3 +27,12 @@ index 82721356d191055bec0d4b0ca49e481221988801..1ea5c394c704da295149443d7794961a
  
      tabData.userContextId = tab.userContextId || 0;
  
+@@ -98,7 +115,7 @@ class _TabState {
+ 
+     // Copy data from the tab state cache only if the tab has fully finished
+     // restoring. We don't want to overwrite data contained in __SS_data.
+-    this.copyFromCache(browser.permanentKey, tabData, options);
++    this.copyFromCache(tab.permanentKey, tabData, options);
+ 
+     // After copyFromCache() was called we check for properties that are kept
+     // in the cache only while the tab is pending or restoring. Once that

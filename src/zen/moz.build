@@ -8,10 +8,12 @@ EXTRA_PP_COMPONENTS += [
 
 DIRS += [
     "common",
+    "drag-and-drop",
     "glance",
     "mods",
     "tests",
     "urlbar",
     "toolkit",
+    "sessionstore",
     "boosts",
 ]

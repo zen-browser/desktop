@@ -6,7 +6,7 @@ import os
 import sys
 import json
 from pathlib import Path
-from typing import Any
+from json_with_comments import JSONWithCommentsDecoder
 
 IGNORE_PREFS_FILE_IN = os.path.join(
     'src', 'zen', 'tests', 'ignorePrefs.json'
@@ -15,14 +15,7 @@ IGNORE_PREFS_FILE_OUT = os.path.join(
     'engine', 'testing', 'mochitest', 'ignorePrefs.json'
 )
 
-
-class JSONWithCommentsDecoder(json.JSONDecoder):
-  def __init__(self, **kw):
-    super().__init__(**kw)
-
-  def decode(self, s: str) -> Any:
-    s = '\n'.join(l for l in s.split('\n') if not l.lstrip(' ').startswith('//'))
-    return super().decode(s)
+MOCHITEST_NAME = "mochitests"
 
 
 def copy_ignore_prefs():
@@ -68,7 +61,9 @@ def main():
     os.execvp(command[0], command)
 
   if path in ("", "all"):
-    test_dirs = [p for p in Path("zen/tests").iterdir() if p.is_dir()]
+    test_dirs = [p for p in Path("zen/tests").iterdir() if p.is_dir() and p.name != MOCHITEST_NAME]
+    mochitest_dirs = [p for p in Path(f"zen/tests/{MOCHITEST_NAME}").iterdir() if p.is_dir()]
+    test_dirs.extend(mochitest_dirs)
     test_paths = [str(p) for p in test_dirs]
     run_mach_with_paths(test_paths)
   else:

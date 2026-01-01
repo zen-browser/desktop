@@ -1,0 +1,47 @@
+diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
+index f1614b823a859ff8fbc74982f205bb1f2ef29beb..897c24846a97c132babe3ad79da12ebfcec90484 100644
+--- a/widget/cocoa/nsDragService.mm
++++ b/widget/cocoa/nsDragService.mm
+@@ -23,6 +23,7 @@
+ #include "mozilla/PresShell.h"
+ #include "mozilla/dom/Document.h"
+ #include "mozilla/dom/DocumentInlines.h"
++#include "mozilla/nsZenDragAndDrop.h"
+ #include "nsIContent.h"
+ #include "nsCocoaUtils.h"
+ #include "mozilla/gfx/2D.h"
+@@ -148,6 +149,10 @@
+                                             bitsPerPixel:32];
+ 
+   uint8_t* dest = [imageRep bitmapData];
++  auto drag_translucency = DRAG_TRANSLUCENCY;
++  if (auto zenDragAndDrop = zen::nsZenDragAndDrop::GetZenDragAndDropInstance()) {
++    drag_translucency = zenDragAndDrop->GetDragImageOpacity();
++  }
+   for (uint32_t i = 0; i < height; ++i) {
+     uint8_t* src = map.mData + i * map.mStride;
+     for (uint32_t j = 0; j < width; ++j) {
+@@ -155,15 +160,15 @@
+       // is premultipled here. Also, Quartz likes RGBA, so do that translation
+       // as well.
+ #ifdef IS_BIG_ENDIAN
+-      dest[0] = uint8_t(src[1] * DRAG_TRANSLUCENCY);
+-      dest[1] = uint8_t(src[2] * DRAG_TRANSLUCENCY);
+-      dest[2] = uint8_t(src[3] * DRAG_TRANSLUCENCY);
+-      dest[3] = uint8_t(src[0] * DRAG_TRANSLUCENCY);
++      dest[0] = uint8_t(src[1] * drag_translucency);
++      dest[1] = uint8_t(src[2] * drag_translucency);
++      dest[2] = uint8_t(src[3] * drag_translucency);
++      dest[3] = uint8_t(src[0] * drag_translucency);
+ #else
+-      dest[0] = uint8_t(src[2] * DRAG_TRANSLUCENCY);
+-      dest[1] = uint8_t(src[1] * DRAG_TRANSLUCENCY);
+-      dest[2] = uint8_t(src[0] * DRAG_TRANSLUCENCY);
+-      dest[3] = uint8_t(src[3] * DRAG_TRANSLUCENCY);
++      dest[0] = uint8_t(src[2] * drag_translucency);
++      dest[1] = uint8_t(src[1] * drag_translucency);
++      dest[2] = uint8_t(src[0] * drag_translucency);
++      dest[3] = uint8_t(src[3] * drag_translucency);
+ #endif
+       src += 4;
+       dest += 4;

@@ -1,0 +1,65 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Områder
+zen-panel-ui-workspaces-create = 
+    .label = Opprett Område
+zen-panel-ui-folder-create = 
+    .label = Opprett Mappe
+zen-panel-ui-new-empty-split = 
+    .label = Ny Splitt
+zen-workspaces-panel-context-delete = 
+    .label = Slett Område
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Endre Navn
+zen-workspaces-panel-change-icon = 
+    .label = Endre Ikon
+zen-workspaces-panel-context-default-profile = 
+    .label = Sett Profil
+zen-workspaces-panel-unload = 
+    .label = Frigjør Område
+zen-workspaces-how-to-reorder-title = Hvordan endre rekkefølge på områder
+zen-workspaces-how-to-reorder-desc = Dra områdeikoner nederst på sidepanelet for å endre rekkefølgen på dem
+zen-workspaces-change-theme = 
+    .label = Rediger Tema
+zen-workspaces-panel-context-open = 
+    .label = Åpne Område
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Rediger Område
+    .accesskey = E
+context-zen-change-workspace-tab = 
+    .label = Endre Fane(r) til Arbeidsområde
+    .accesskey = C
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Arbeidsområder
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Komplimentære
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Splitt
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Analogisk
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triadisk
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Flytende
+zen-panel-ui-gradient-click-to-add = Klikk for å legge til en farge
+zen-workspace-creation-name = 
+    .placeholder = Områdenavn
+zen-workspaces-panel-context-reorder = 
+    .label = Omordne Områder
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profiler er brukt til å separere informasjonskapsler og nettstedsdata mellom områder.
+zen-workspace-creation-header = Opprett et Område
+zen-workspace-creation-label = Områder er brukt til å organisere fanene og øktene dine.
+zen-workspaces-delete-workspace-title = Slett Område?
+zen-workspaces-delete-workspace-body = Er du sikker på at du vil slette { $name }? Denne handlingen kan ikke angres.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Faner lukket! Bruk <span>{ $shortcut }</span> for å angre.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Tøm
+    .tooltiptext = Lukk alle ufestede faner

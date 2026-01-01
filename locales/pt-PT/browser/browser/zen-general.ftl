@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Repor o Separador Fixado
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Adicionar aos Essenciais ({ $num } / { $max } espaços preenchidos)
+    .label = Adicionar aos Essenciais
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } espaços preenchidos
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
@@ -94,3 +95,16 @@ zen-site-data-setting-site-protection = Proteção contra rastreio
 
 zen-site-data-panel-feature-callout-title = Uma nova casa para extensões, permissões e mais
 zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerir definições do site, ver informações de segurança, extensões de acesso e executar ações comuns.
+zen-open-link-in-glance = 
+    .label = Abrir Link no Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Atualização Concluída!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = O que há de novo no { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Ver Notas de Lançamento
+zen-sidebar-notification-restart-safe-mode-label = Falhou alguma coisa?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Reiniciar em Modo de Segurança

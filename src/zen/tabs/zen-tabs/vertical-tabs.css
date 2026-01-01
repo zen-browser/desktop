@@ -131,7 +131,6 @@
    ========================================================================== */
 .pinned-tabs-container-separator {
   height: 22px;
-  padding-bottom: 2px;
   border: none;
   width: 100%;
   transition:
@@ -142,6 +141,10 @@
   position: relative;
   opacity: 1;
   align-items: center;
+
+  @media (-moz-platform: macos) {
+    padding: 0 5px;
+  }
 
   & toolbarseparator {
     height: 1px;
@@ -179,7 +182,7 @@
     font-weight: 500;
     gap: 2px;
 
-    #navigator-toolbox[zen-has-hover='true'] & {
+    #navigator-toolbox[zen-has-implicit-hover='true'] & {
       visibility: visible;
       opacity: 0.5;
     }
@@ -209,6 +212,10 @@
     &:active:hover .toolbarbutton-icon {
       transform: translateY(2px);
     }
+  }
+
+  :root[zen-unsynced-window='true'] & {
+    transform: translateY(-4px);
   }
 }
 
@@ -313,7 +320,7 @@
         var(--zen-tabbox-element-indent-transition);
     }
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded='true'] &:not([zen-glance-tab]) {
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 
@@ -330,6 +337,10 @@
     }
 
     & .tab-icon-image {
+      -moz-context-properties: fill, stroke, fill-opacity;
+      fill-opacity: 0.5;
+      border-radius: 4px;
+
       &:not([src]),
       &:-moz-broken {
         content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
@@ -347,6 +358,7 @@
 
     & .tab-background {
       overflow: hidden;
+      border-radius: var(--border-radius-medium) !important;
 
       & .tab-context-line {
         margin: 0 0px !important;
@@ -438,7 +450,6 @@
   background: transparent;
   gap: 5px;
   align-items: center;
-  padding-top: var(--zen-element-separation);
 
   & > toolbarbutton:not(#zen-workspaces-button) {
     padding: 0 !important;
@@ -487,7 +498,6 @@
 #navigator-toolbox[zen-sidebar-expanded='true'] {
   --zen-toolbox-min-width: fit-content;
 
-  --tab-icon-end-margin: 8.5px;
   padding: var(--zen-toolbox-padding);
   padding-left: 0;
   padding-top: 0;
@@ -513,10 +523,8 @@
   & #nav-bar {
     padding-right: 0;
 
-    :root[zen-single-toolbar='true'] & {
-      &
-        #urlbar:not([breakout-extend='true']):not([pageproxystate='invalid'])
-        .urlbar-input-container {
+    :root[zen-single-toolbar='true']:not([zen-has-empty-tab='true']) & {
+      & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }
@@ -567,8 +575,8 @@
     & #tabbrowser-arrowscrollbox-periphery > toolbarbutton {
       width: 100% !important;
       border-radius: var(--border-radius-medium) !important;
-      padding-left: var(--toolbarbutton-inner-padding) !important;
-      padding-right: var(--toolbarbutton-inner-padding) !important;
+      padding-left: var(--tab-inline-padding) !important;
+      padding-right: var(--tab-inline-padding) !important;
 
       & label {
         display: flex;
@@ -601,6 +609,7 @@
 
   & #tabbrowser-tabs {
     --tab-inline-padding: 8px;
+    --tab-icon-end-margin: 8.5px;
 
     & .tabbrowser-tab {
       & .tab-label-container {
@@ -650,7 +659,14 @@
         }
       }
 
-      &:is(:hover, [visuallyselected]) .tab-close-button {
+      &:not(:hover) {
+        .tab-close-button,
+        .tab-reset-button {
+          display: none;
+        }
+      }
+
+      &:is(:hover, [multiselected][selected]) .tab-close-button {
         display: block;
         --tab-inline-padding: 0;
         margin-inline-end: 0;
@@ -703,7 +719,6 @@
   }
 
   & .zen-essentials-container {
-    will-change: transform;
     justify-content: center;
     grid-template-columns: 1fr !important;
     padding: 0 !important;
@@ -901,7 +916,8 @@
 }
 
 .tab-reset-button,
-.tab-reset-pin-button {
+.tab-reset-pin-button,
+.tab-close-button {
   display: none;
   -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);
@@ -1095,22 +1111,28 @@
 }
 
 .zen-essentials-container {
-  will-change: transform;
-
   overflow: hidden;
   gap: 4px;
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
   opacity: 1;
-  grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
+  --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr)
+  );
   &[data-hack-type='1'] {
-    grid-template-columns: repeat(auto-fit, minmax(max(30%, 48px), auto));
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(30%, var(--min-essentials-width-wrap)), auto)
+    );
   }
   &[data-hack-type='2'] {
     grid-template-columns: repeat(
       auto-fit,
-      minmax(max(23%, 48px), 1fr) minmax(max(23%, 48px), 1fr)
+      minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
+        minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
     );
   }
   &[data-hack-type='3'] {
@@ -1145,7 +1167,7 @@
   }
 }
 
-.zen-essentials-container > .tabbrowser-tab,
+.tabbrowser-tab[zen-essential='true'],
 #zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
   --toolbarbutton-inner-padding: 0;
   max-width: unset;
@@ -1153,7 +1175,6 @@
 
   & .tab-background {
     border-radius: var(--border-radius-medium) !important;
-    transition: background 0.1s ease-in-out;
   }
 
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
@@ -1268,9 +1289,9 @@
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
     transition:
-      top 0.1s ease-out,
-      left 0.1s ease-out,
-      width 0.1s ease-out;
+      top 0.05s ease-out,
+      left 0.05s ease-out,
+      width 0.05s ease-out;
 
     &::before {
       left: calc(-2 * var(--zen-drag-indicator-height));
@@ -1353,7 +1374,14 @@
   }
 }
 
-.tabbrowser-tab[zen-dragtarget],
-.tab-group-label-container[zen-dragtarget] {
-  z-index: 9 !important;
+/* Drag and drop */
+
+#zen-dragover-background {
+  position: absolute;
+  z-index: -1;
+  /* Extra width to cover the sidebar splitter */
+  width: calc(100% + var(--zen-toolbox-padding));
+  left: 0;
+  pointer-events: none;
+  background: var(--zen-primary-color);
 }

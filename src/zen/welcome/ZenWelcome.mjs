@@ -3,8 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 {
-  var _tabsToPin = [];
-  var _tabsToPinEssentials = [];
+  let _tabsToPinEssentials = [];
 
   const kZenElementsToIgnore = ['zen-browser-background', 'zen-toast-container'];
 
@@ -73,56 +72,6 @@
       reader.readAsDataURL(blob);
     });
     return data;
-  }
-
-  async function setCachedFaviconForURL(pageUrl, iconURL) {
-    try {
-      await PlacesUtils.favicons.setFaviconForPage(
-        Services.io.newURI(pageUrl),
-        Services.io.newURI(iconURL),
-        Services.io.newURI(iconURL)
-      );
-    } catch (ex) {
-      console.error(`Failed to set cached favicon for ${pageUrl}: ${ex}`);
-    }
-  }
-
-  async function openInitialPinTab() {
-    const tabs = [
-      [
-        'https://reddit.com/r/zen_browser',
-        'Zen on Reddit',
-        'chrome://browser/content/zen-images/favicons/reddit.svg',
-      ],
-      [
-        'https://x.com/zen_browser',
-        'Zen on Twitter',
-        'chrome://browser/content/zen-images/favicons/x.svg',
-      ],
-    ];
-
-    await PlacesUtils.history.insertMany(
-      tabs.map((site) => ({
-        url: site[0],
-        visits: [
-          {
-            transition: PlacesUtils.history.TRANSITIONS.TYPED,
-          },
-        ],
-      }))
-    );
-
-    for (const site of tabs) {
-      const tab = window.gBrowser.addTrustedTab(site[0], {
-        inBackground: true,
-        createLazyBrowser: true,
-        lazyTabTitle: site[1],
-      });
-      const iconData = await getIconData(site[2]);
-      await setCachedFaviconForURL(site[0], iconData);
-      gBrowser.setIcon(tab, iconData);
-      _tabsToPin.push(tab);
-    }
   }
 
   class nsZenWelcomePages {
@@ -289,18 +238,15 @@
     }
 
     async #pinRemainingTabs() {
-      for (const tab of _tabsToPin) {
-        tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
-        gBrowser.pinTab(tab);
-        await new Promise((resolve) => {
-          tab.addEventListener('ZenPinnedTabCreated', resolve, { once: true });
-        });
-      }
       for (const tab of _tabsToPinEssentials) {
         tab.removeAttribute('pending'); // Make it appear loaded
         gZenPinnedTabManager.addToEssentials(tab);
       }
-      gZenFolders.createFolder(_tabsToPin, {
+      let tabsToGroup = [];
+      if (!gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+        tabsToGroup.push(gBrowser.selectedTab);
+      }
+      gZenFolders.createFolder(tabsToGroup, {
         renameFolder: false,
         label: 'zen basics',
       });
@@ -554,7 +500,7 @@
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.svg');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
@@ -569,17 +515,17 @@
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.svg');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://twitter.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/x.svg');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://app.tuta.com/" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/tuta.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
                   </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" visuallyselected="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.svg');">
+                  <html:div class="tabbrowser-tab" fadein="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.svg');">
                     <stack class="tab-stack">
                       <html:div class="tab-background"></html:div>
                     </stack>
@@ -630,6 +576,9 @@
             );
           }
 
+          const { TabStateCache } = ChromeUtils.importESModule(
+            'resource:///modules/sessionstore/TabStateCache.sys.mjs'
+          );
           for (const tab of selectedTabs) {
             const url = tab.getAttribute('data-url');
             const createdTab = window.gBrowser.addTrustedTab(url, {
@@ -640,11 +589,14 @@
             // Remove url() from the icon URL
             essentialIconUrl = essentialIconUrl.replace(/url\(['"]?/, '').replace(/['"]?\)/, '');
             essentialIconUrl = await getIconData(essentialIconUrl);
-            await setCachedFaviconForURL(url, essentialIconUrl);
+            // Update the persistent tab state cache with |tabData| information.
+            TabStateCache.update(createdTab.linkedBrowser.permanentKey, {
+              history: { entries: [{ url: url }], index: 0 },
+              image: essentialIconUrl,
+            });
             gBrowser.setIcon(createdTab, essentialIconUrl);
             _tabsToPinEssentials.push(createdTab);
           }
-          await openInitialPinTab();
         },
       },
       {

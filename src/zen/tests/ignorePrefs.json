@@ -10,5 +10,9 @@
   "zen.mods.last-update",
   "zen.view.compact.enable-at-startup",
   "zen.urlbar.suggestions-learner",
-  "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine"
+  "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine",
+
+  // From the imported safebrowsing tests
+  "urlclassifier.phishTable",
+  "urlclassifier.malwareTable"
 ]

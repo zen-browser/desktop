@@ -180,9 +180,6 @@ body > #confetti {
   --tab-border-radius: 6px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-inner-padding: 6px;
-  @media (-moz-platform: macos) {
-    --toolbarbutton-inner-padding: 8px;
-  }
   --toolbarbutton-outer-padding: 2px;
 
   transition:
@@ -261,6 +258,7 @@ body > #confetti {
 }
 
 #TabsToolbar {
+  gap: var(--zen-toolbox-padding);
   -moz-window-dragging: unset;
 }
 
@@ -374,8 +372,9 @@ body > #confetti {
 }
 
 .zen-site-data-section {
-  gap: 6px;
-  padding: 8px;
+  gap: 2px;
+  padding: 9px;
+  padding-bottom: 8px;
 }
 
 .zen-site-data-section-header {
@@ -494,21 +493,23 @@ body > #confetti {
   }
 }
 
-@media (-moz-pref('zen.theme.hide-unified-extensions-button')) {
-  #unified-extensions-button {
+@media -moz-pref('zen.theme.hide-unified-extensions-button') {
+  #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
-#unified-extensions-button:not([showing]) {
-  display: none !important;
+@media not -moz-pref('zen.theme.hide-unified-extensions-button') {
+  #zen-site-data-section-addons {
+    display: none;
+  }
 }
 
 #zen-site-data-header {
   gap: 8px;
   align-items: center;
   padding: 10px 9px;
-  padding-bottom: 0;
+  padding-bottom: 8px;
 
   :root[zen-single-toolbar='true']:not([zen-right-side='true']) & {
     flex-direction: row-reverse;
@@ -520,7 +521,7 @@ body > #confetti {
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    max-width: 48px;
+    width: 48px;
     height: 32px;
     position: relative;
 
@@ -552,7 +553,7 @@ body > #confetti {
         );
 
         box-shadow:
-          0px 2px 4px rgba(0, 0, 0, 0.075),
+          0px 2px 4px rgba(0, 0, 0, 0.1),
           inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
         --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
@@ -622,4 +623,9 @@ body > #confetti {
   & > :is(.menu-highlightable-text, .menu-accel) {
     display: none;
   }
+}
+
+/* Sidebar notification */
+:root:not([zen-sidebar-expanded='true']) zen-sidebar-notification {
+  display: none;
 }

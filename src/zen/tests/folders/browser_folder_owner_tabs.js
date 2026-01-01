@@ -31,9 +31,6 @@ add_task(async function test_Duplicate_Tab_Inside_Folder() {
 
   for (const t of folder.tabs) {
     ok(t.pinned, 'All tabs in the folder should be pinned');
-    if (!t.hasAttribute('zen-empty-tab')) {
-      ok(t.hasAttribute('zen-pin-id'), 'All non-empty tabs should have a zen-pinned-id attribute');
-    }
   }
 
   gBrowser.selectedTab = selectedTab;

@@ -166,6 +166,10 @@
   }
 
   --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
+  --zen-toolbar-button-size: 16px;
+  @media (-moz-platform: macos) {
+    --zen-toolbar-button-size: 18px;
+  }
 
   /* Using a semitransparent background preserves the tinting from the backdrop.
     * Note that the toolbar text color from browser-colors.css should be ok,
@@ -180,7 +184,7 @@
     transparent 93%
   ) !important;
 
-  --toolbar-color: light-dark(rgb(21, 20, 26, 0.7), rgb(251, 251, 254, 0.7)) !important;
+  --toolbar-color: var(--toolbox-textcolor) !important;
   --toolbox-textcolor-inactive: var(--toolbox-textcolor) !important;
 
   /* Other colors */
@@ -225,10 +229,21 @@
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
-    --zen-main-browser-background: linear-gradient(130deg, rgb(10, 6, 11) 0%, rgb(19, 7, 22) 100%);
+    --zen-main-browser-background: linear-gradient(130deg, 
+      color-mix(in srgb, rgb(10, 6, 11) 80%, var(--zen-themed-toolbar-bg-transparent)) 0%, 
+      color-mix(in srgb, rgb(19, 7, 22) 80%, var(--zen-themed-toolbar-bg-transparent)) 100%
+    );
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
     --zen-primary-color: light-dark(rgb(93, 42, 107), rgb(110, 48, 125)) !important;
     --toolbox-textcolor: currentColor !important;
+  }
+
+  &[zen-unsynced-window='true'] {
+    --zen-main-browser-background: color-mix(in srgb, light-dark(rgb(196, 202, 229), rgb(8, 9, 40)) 60%, var(--zen-themed-toolbar-bg-transparent));
+    --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
+    --zen-primary-color: light-dark(rgb(100, 115, 255), rgb(80, 90, 200)) !important;
+    --toolbox-textcolor: currentColor !important;
+    --zen-workspace-indicator-height: 42px;
   }
 
   --toolbar-field-background-color: var(--zen-colors-input-bg) !important;
@@ -241,6 +256,14 @@
 
   /* Define tab hover background color */
   --tab-hover-background-color: var(--toolbarbutton-hover-background);
+
+  /* Sidebar Notifications */
+  --zen-sidebar-notification-bg: color-mix(
+    in srgb,
+    var(--zen-primary-color) 15%,
+    light-dark(white, black)
+  );
+  --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 
   /* Nativity */
   --zen-native-content-radius: var(--zen-border-radius);

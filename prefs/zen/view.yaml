@@ -40,17 +40,8 @@
 - name: zen.view.window.scheme
   value: 2
 
-- name: zen.view.drag-and-drop.move-over-threshold
-  value: 70
-
-- name: zen.view.drag-and-drop.drop-inside-upper-threshold
-  value: 80
-
-- name: zen.view.drag-and-drop.drop-inside-lower-threshold
-  value: 30
-
 - name: zen.view.context-menu.refresh
-  value: false
+  value: '@IS_TWILIGHT@'
 
 - name: zen.view.borderless-fullscreen
   value: true
@@ -59,4 +50,7 @@
   value: false
 
 - name: zen.view.show-clear-tabs-button
+  value: true
+
+- name: zen.view.draggable-sidebar
   value: true

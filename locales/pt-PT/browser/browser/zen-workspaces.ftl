@@ -59,7 +59,7 @@ zen-workspaces-delete-workspace-title = Eliminar Espaço de Trabalho?
 zen-workspaces-delete-workspace-body = Tem certeza que deseja eliminar { $name }? Esta ação não pode ser desfeita.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = Separadores Fechados! Use <span>{ $shortcut }</span> para voltar atrás.
 zen-workspaces-close-all-unpinned-tabs-title = 
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = Limpar
+    .tooltiptext = Fechar todos os separadores não fixados

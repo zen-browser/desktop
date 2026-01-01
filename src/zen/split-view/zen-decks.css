@@ -58,7 +58,7 @@
   margin-top: 0 !important;
 }
 
-#tabbrowser-tabpanels[zen-split-view='true']:not([zen-split-resizing]) > [zen-split='true'] {
+#tabbrowser-tabpanels[zen-split-view='true']:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split='true'] {
   transition: inset 0.09s ease-out !important;
   & browser {
     transition: opacity 0.2s ease-out !important;
@@ -67,7 +67,7 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
-    outline: 2px solid var(--zen-primary-color) !important;
+    outline: 2px solid light-dark(var(--zen-primary-color), var(--button-background-color-primary)) !important;
   }
 
   &.zen-glance-overlay {
@@ -210,31 +210,28 @@
       right: var(--zen-element-separation);
     }
   }
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 3.5rem;
-    pointer-events: none;
-    height: 3.5rem;
-    background: var(--zen-split-view-fake-icon);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-    transition-delay: 0.1s;
+#zen-split-view-drag-image {
+  width: 200px;
+  height: 250px;
+  border-radius: 16px;
+  background: black;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 20px;
+  position: relative;
 
-    @starting-style {
-      opacity: 0;
-    }
+  & image {
+    width: 24px;
+    height: 24px;
   }
 
-  &.fade-out::after {
-    opacity: 0;
-    transition-delay: 0s;
+  & label {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
   }
 }

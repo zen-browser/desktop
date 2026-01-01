@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca323682e89e76 100644
+index a184086f10d6a919c8125ab5d7728319256b3b73..7c826000ccdc8a55a12a08bdc2c547d886e5610c 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
 @@ -1117,6 +1117,11 @@ let SETTINGS_CONFIG = {
@@ -14,7 +14,7 @@ index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca3236
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
-@@ -1611,7 +1616,7 @@ function getBundleForLocales(newLocales) {
+@@ -1700,7 +1705,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

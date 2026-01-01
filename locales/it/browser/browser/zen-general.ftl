@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Reimposta scheda fissata
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Aggiungi a Essenziali ({ $num } / { $max } slot riempiti)
+    .label = Aggiungi agli Essenziali
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } slot riempiti
 tab-context-zen-remove-essential = 
     .label = Rimuovi dagli Essenziali
     .accesskey = R
@@ -92,3 +93,16 @@ zen-site-data-setting-site-protection = Protezione Tracciamento
 
 zen-site-data-panel-feature-callout-title = Una nuova casa per componenti aggiuntivi, permessi, e altro ancora
 zen-site-data-panel-feature-callout-subtitle = Clicca l'icona per gestire le impostazioni del sito, visualizzare informazioni di sicurezza, accedere alle estensioni, ed eseguire azioni comuni.
+zen-open-link-in-glance = 
+    .label = Apri collegamento in Sguardo
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Aggiornamento completato!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Cosa c'è di nuovo in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Vedi Note di Rilascio
+zen-sidebar-notification-restart-safe-mode-label = Si è rotto qualcosa?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Riavvia in Modalità Provvisoria

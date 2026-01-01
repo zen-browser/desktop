@@ -2,25 +2,25 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-welcome-title-line1 = Welcome to
-zen-welcome-title-line2 = a calmer internet
-zen-welcome-import-title = A Fresh Start, Same Bookmarks
-zen-welcome-import-description-1 = Your bookmarks, history, and passwords are like a trail of breadcrumbs through the internet—don’t leave them behind!
-zen-welcome-import-description-2 = Easily bring them over from another browser and pick up right where you left off..
-zen-welcome-import-button = Import now
-zen-welcome-set-default-browser = Set { -brand-short-name } as your default browser
-zen-welcome-dont-set-default-browser = DON’T set { -brand-short-name } as your default browser
-zen-welcome-initial-essentials-title = Your Key Tabs, Always Within Reach
-zen-welcome-initial-essentials-description-1 = Keep your most important tabs easily accessible and always at hand, no matter how many you open.
-zen-welcome-initial-essentials-description-2 = Essential tabs are always visible, no matter what workspace you are in.
-zen-welcome-workspace-colors-title = Your Workspaces, Your Colors
-zen-welcome-workspace-colors-description = Personalize your browser by giving each workspace its own unique color identity.
+zen-welcome-title-line1 = Velkomin í
+zen-welcome-title-line2 = rólegra internet
+zen-welcome-import-title = Ný byrjun, sömu bókamerkin
+zen-welcome-import-description-1 = Bókamerkin þín, vafurferillinn þinn og lykilorð eru eins og brauðmolaslóð út um internetið - ekki skilja þá eftir fyrir úlfana!
+zen-welcome-import-description-2 = Flyttu á einfaldan hátt inn gögn frá öðrum vafra og haltu áfram þar sem þú skildir við síðast.
+zen-welcome-import-button = Flytja inn núna
+zen-welcome-set-default-browser = Setja { -brand-short-name } sem sjálfgefna vafrann þinn
+zen-welcome-dont-set-default-browser = EKKI setja { -brand-short-name } sem sjálfgefna vafrann þinn
+zen-welcome-initial-essentials-title = Aðalfliparnir þinir, alltaf innan seilingar
+zen-welcome-initial-essentials-description-1 = Haltu mikilvægustu flipunum þínum við hendina, alveg sama hve þeir eru margir.
+zen-welcome-initial-essentials-description-2 = Aðalfliparnir eru alltaf sjáanlegir, sama hvaða vinnusvæði þú ert á.
+zen-welcome-workspace-colors-title = Vinnusvæðin þín, litirnir þínir
+zen-welcome-workspace-colors-description = Aðlagaðu vafrann að þínum þörfum með því að gefa hverju vinnusvæði sinn einstaka lit.
 zen-welcome-start-browsing-title =
-    All set?<br/>
-    Let’s get rolling!
-zen-welcome-start-browsing-description-1 = You’re all set up and ready to go. Click the button below to start browsing with { -brand-short-name }.
-zen-welcome-start-browsing = Dive in!
-zen-welcome-default-search-title = Your Default Search Engine
-zen-welcome-default-search-description = Choose your default search engine. You can always change it later!
-zen-welcome-skip-button = Skip
-zen-welcome-finished = Your Zen has been set up correctly!
+    Allt klárt?<br/>
+    Hefjumst handa!
+zen-welcome-start-browsing-description-1 = Þú hefur stillt allt sem þarf og getur farið af stað. Smelltu á hnappinn hér fyrir neðan til að fara að vafra með { -brand-short-name }.
+zen-welcome-start-browsing = Dýfðu þér í djúpu laugina!
+zen-welcome-default-search-title = Sjálfgefna leitarvélin þín
+zen-welcome-default-search-description = Veldu þér sjálfgefna leitarvél. Þú getur alltaf breytt þessu síðar.
+zen-welcome-skip-button = Sleppa
+zen-welcome-finished = Zen-vafrinn þinn hefur verið uppsettur með tilhlýðilegum hætti!

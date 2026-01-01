@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Zoek { $folder-name }...
+    .placeholder = { $folder-name } zoeken...
 zen-folders-panel-rename-folder = 
     .label = Map hernoemen
 zen-folders-panel-unpack-folder = 
@@ -19,7 +19,7 @@ zen-folders-panel-change-folder-space =
 zen-folders-panel-change-icon-folder = 
     .label = Wijzig pictogram
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Actieven ontladen in deze map
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Alle tabbladen ontladen
+zen-folders-search-no-results = Geen tabbladen die overeenkomen met die zoekopdracht 🤔

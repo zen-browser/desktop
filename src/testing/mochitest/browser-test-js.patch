@@ -1,8 +1,8 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index d5f320c5e97aae9bfd43d28e3d4a274d9bbc0787..24dc32a5bf6ae9abaa8f3fe8c37b031a76fb4d60 100644
+index 91bd995c2910fae5a3f67a960d15d90de3c997df..a7157331184e099ee468a719d6ec0f2d766dbed1 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
-@@ -438,10 +438,10 @@ Tester.prototype = {
+@@ -442,10 +442,10 @@ Tester.prototype = {
      // But not the Thunderbird window, it doesn't have these things!
      if (AppConstants.MOZ_APP_NAME != "thunderbird") {
        // Remove stale tabs
@@ -15,7 +15,7 @@ index d5f320c5e97aae9bfd43d28e3d4a274d9bbc0787..24dc32a5bf6ae9abaa8f3fe8c37b031a
            let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
            if (!lastTab.closing) {
              // Report the stale tab as an error only when they're not closing.
-@@ -476,12 +476,6 @@ Tester.prototype = {
+@@ -480,12 +480,6 @@ Tester.prototype = {
  
        // Replace the last tab with a fresh one
        if (window.gBrowser) {

@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+
 const KEYCODE_MAP = {
   F1: 'VK_F1',
   F2: 'VK_F2',
@@ -123,14 +125,14 @@ const fixedL10nIds = {
 
 const ZEN_MAIN_KEYSET_ID = 'mainKeyset';
 const ZEN_DEVTOOLS_KEYSET_ID = 'devtoolsKeyset';
-const ZEN_KEYSET_ID = 'zenKeyset';
+window.ZEN_KEYSET_ID = 'zenKeyset';
 
 const ZEN_COMPACT_MODE_SHORTCUTS_GROUP = 'zen-compact-mode';
 const ZEN_WORKSPACE_SHORTCUTS_GROUP = 'zen-workspace';
 const ZEN_OTHER_SHORTCUTS_GROUP = 'zen-other';
 const ZEN_SPLIT_VIEW_SHORTCUTS_GROUP = 'zen-split-view';
 const FIREFOX_SHORTCUTS_GROUP = 'zen-kbs-invalid';
-const VALID_SHORTCUT_GROUPS = [
+window.VALID_SHORTCUT_GROUPS = [
   ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
   ZEN_WORKSPACE_SHORTCUTS_GROUP,
   ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
@@ -139,7 +141,7 @@ const VALID_SHORTCUT_GROUPS = [
   'other',
 ];
 
-class nsKeyShortcutModifiers {
+export class nsKeyShortcutModifiers {
   #control = false;
   #alt = false;
   #shift = false;
@@ -200,20 +202,20 @@ class nsKeyShortcutModifiers {
       str += AppConstants.platform == 'macosx' ? '⌃' : 'Ctrl';
       str += separation;
     }
-    if (this.#alt) {
-      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
-      str += separation;
-    }
-    if (this.#shift) {
-      str += '⇧';
-      str += separation;
-    }
     if (this.#meta) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Win';
       str += separation;
     }
     if (this.#accel) {
       str += AppConstants.platform == 'macosx' ? '⌘' : 'Ctrl';
+      str += separation;
+    }
+    if (this.#alt) {
+      str += AppConstants.platform == 'macosx' ? '⌥' : 'Alt';
+      str += separation;
+    }
+    if (this.#shift) {
+      str += '⇧';
       str += separation;
     }
     return str;
@@ -320,7 +322,7 @@ class KeyShortcut {
     this.#key = key?.toLowerCase();
     this.#keycode = keycode;
 
-    if (!VALID_SHORTCUT_GROUPS.includes(group)) {
+    if (!window.VALID_SHORTCUT_GROUPS.includes(group)) {
       throw new Error('Illegal group value: ' + group);
     }
 
@@ -692,10 +694,12 @@ class nsZenKeyboardShortcutsLoader {
       newShortcutList.push(
         new KeyShortcut(
           `zen-workspace-switch-${i}`,
-          '',
+          AppConstants.platform == 'macosx' ? `${i === 10 ? 0 : i}` : '',
           '',
           ZEN_WORKSPACE_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({}),
+          nsKeyShortcutModifiers.fromObject(
+            AppConstants.platform == 'macosx' ? { ctrl: true } : {}
+          ),
           `cmd_zenWorkspaceSwitch${i}`,
           `zen-workspace-shortcut-switch-${i}`
         )
@@ -1100,7 +1104,7 @@ class nsZenKeyboardShortcutsVersioner {
   }
 }
 
-var gZenKeyboardShortcutsManager = {
+window.gZenKeyboardShortcutsManager = {
   loader: new nsZenKeyboardShortcutsLoader(),
   _hasToLoadDevtools: false,
   _inlineCommands: [],
@@ -1400,7 +1404,7 @@ document.addEventListener(
   'MozBeforeInitialXULLayout',
   () => {
     if (Services.prefs.getBoolPref('zen.keyboard.shortcuts.enabled', false)) {
-      gZenKeyboardShortcutsManager.beforeInit();
+      window.gZenKeyboardShortcutsManager.beforeInit();
     }
   },
   { once: true }

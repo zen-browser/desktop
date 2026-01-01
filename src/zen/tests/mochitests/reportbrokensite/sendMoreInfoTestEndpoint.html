@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html dir="ltr" xml:lang="en-US" lang="en-US">
+  <head>
+    <meta charset="utf8">
+  </head>
+  <body>
+    <script>
+      let ready;
+      window.wrtReady = new Promise(r => ready = r);
+
+      let arrived;
+      window.messageArrived = new Promise(r => arrived = r);
+
+      window.addEventListener("message", e => {
+        window.message = e.data;
+        arrived();
+      });
+
+      window.addEventListener("load", () => {
+        setTimeout(ready, 100);
+      });
+    </script>
+  </body>
+</html>

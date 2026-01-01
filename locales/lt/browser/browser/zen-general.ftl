@@ -8,8 +8,9 @@ tab-context-zen-reset-pinned-tab =
     .label = Atkurti prisegtą kortelę
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Įtraukti į būtiniausius ({ $num } / { $max } užpildytų vietų)
+    .label = Įtraukti į būtiniausius
     .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } užpildytų vietų
 tab-context-zen-remove-essential = 
     .label = Šalinti iš būtiniausių
     .accesskey = R
@@ -94,3 +95,16 @@ zen-site-data-setting-site-protection = Stebėjimo apsauga
 
 zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
 zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.
+zen-open-link-in-glance = 
+    .label = Atverti nuorodą spartiuojame pažiūrėjime
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Naujinimas baigtas.
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
+zen-sidebar-notification-updated-tooltip = 
+    .title = Peržiūrėti leidimo pastabas
+zen-sidebar-notification-restart-safe-mode-label = Kažkas sugedo?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Paleisti iš naujo saugioje režime

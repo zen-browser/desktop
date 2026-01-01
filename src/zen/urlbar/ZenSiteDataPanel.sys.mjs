@@ -4,6 +4,11 @@
 
 import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
+const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
+  'zen.theme.hide-unified-extensions-button',
+  true
+);
+
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -22,7 +27,19 @@ export class nsZenSiteDataPanel {
     this.window = window;
     this.document = window.document;
 
-    this.panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.unifiedPanel = this.#initUnifiedPanel();
+    this.unifiedPanelView = 'unified-extensions-view';
+    this.extensionsPanelView = 'original-unified-extensions-view';
+
+    if (ADDONS_BUTTONS_HIDDEN) {
+      this.window.gUnifiedExtensions._panel = this.unifiedPanel;
+
+      // Remove the old permissions dialog
+      this.document.getElementById('unified-extensions-panel-template').remove();
+    } else {
+      this.extensionsPanel = this.#initExtensionsPanel();
+    }
+
     this.#init();
   }
 
@@ -35,14 +52,15 @@ export class nsZenSiteDataPanel {
     `);
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').before(button);
-    this.window.gUnifiedExtensions._button = this.anchor;
+
+    this.extensionsPanelButton = this.document.getElementById('unified-extensions-button');
+    this.window.gUnifiedExtensions._button = ADDONS_BUTTONS_HIDDEN
+      ? this.anchor
+      : this.extensionsPanelButton;
 
     this.document
       .getElementById('nav-bar')
       .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
-
-    // Remove the old permissions dialog
-    this.document.getElementById('unified-extensions-panel-template').remove();
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
@@ -51,7 +69,7 @@ export class nsZenSiteDataPanel {
   }
 
   #initEventListeners() {
-    this.panel.addEventListener('popupshowing', this);
+    this.unifiedPanel.addEventListener('popupshowing', this);
     this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
     this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
     this.anchor.addEventListener('click', this);
@@ -169,6 +187,24 @@ export class nsZenSiteDataPanel {
     for (let [id, handler] of Object.entries(kCommands)) {
       this.document.getElementById(id).addEventListener('command', handler);
     }
+  }
+
+  #initExtensionsPanel() {
+    const panel = this.window.gUnifiedExtensions.panel;
+
+    const extensionsView = panel?.querySelector('#unified-extensions-view');
+    extensionsView.setAttribute('id', this.extensionsPanelView);
+
+    const panelMultiView = panel?.querySelector('panelmultiview');
+    panelMultiView.setAttribute('mainViewId', this.extensionsPanelView);
+
+    return panel;
+  }
+
+  #initUnifiedPanel() {
+    const panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.window.gUnifiedExtensions.initializePanel(panel);
+    return panel;
   }
 
   #preparePanel() {
@@ -570,7 +606,7 @@ export class nsZenSiteDataPanel {
           this.window.gZenCommonActions.copyCurrentURLToClipboard();
         }
         if (AppConstants.platform !== 'macosx') {
-          this.panel.hidePopup();
+          this.unifiedPanel.hidePopup();
         }
       }
     }
@@ -628,7 +664,13 @@ export class nsZenSiteDataPanel {
         break;
       }
       case 'zen-site-data-icon-button': {
-        this.window.gUnifiedExtensions.togglePanel(event);
+        this.window.gUnifiedExtensions.togglePanel(
+          event,
+          null,
+          this.unifiedPanel,
+          this.unifiedPanelView,
+          this.anchor
+        );
         break;
       }
       default: {

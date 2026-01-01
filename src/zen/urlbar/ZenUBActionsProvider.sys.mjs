@@ -22,11 +22,11 @@ const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: 'moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs',
-  UrlbarTokenizer: 'moz-src:///browser/components/urlbar/UrlbarTokenizer.sys.mjs',
   QueryScorer: 'moz-src:///browser/components/urlbar/UrlbarProviderInterventions.sys.mjs',
   BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
   AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
   zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
+  UrlUtils: 'resource://gre/modules/UrlUtils.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -72,7 +72,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
         queryContext.searchString.length > 2 &&
-        !lazy.UrlbarTokenizer.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
+        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
     );
   }
 
@@ -262,17 +262,18 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         ...action.extraPayload,
       });
 
+      const shouldBePrioritized =
+        zenUrlbarResultsLearner.shouldPrioritize(action.commandId) && !isPrefixed;
       let result = new lazy.UrlbarResult({
         type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
         source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
         payloadHighlights,
+        heuristic: shouldBePrioritized,
+        suggestedIndex: !shouldBePrioritized
+          ? zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId)
+          : undefined,
       });
-      if (zenUrlbarResultsLearner.shouldPrioritize(action.commandId) && !isPrefixed) {
-        result.heuristic = true;
-      } else {
-        result.suggestedIndex = zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId);
-      }
       result.commandId = action.commandId;
       if (!(isPrefixed && query.length < 2)) {
         // We dont want to record prefixed results, as the user explicitly asked for them.

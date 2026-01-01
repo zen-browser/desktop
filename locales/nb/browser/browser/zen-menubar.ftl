@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Utvid festede faner
+           *[false] Minimer festede faner
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Utseende av nettsted
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatisk
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Lys
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Mørk

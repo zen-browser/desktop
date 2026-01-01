@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Más munkakörnyezetek
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Környezetek
 zen-panel-ui-workspaces-create = 
     .label = Környezet létrehozása
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Törlés
     .tooltiptext = Összes rögzítetlen lap bezárása
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Következő környezet
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Előző környezet

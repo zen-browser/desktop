@@ -21,7 +21,7 @@ class nsZenBoostsManager {
   #init() {
     this.#readBoostsFromStore(this.notify);
   }
-  
+
   /**
    * Deletes a boost for the specified domain and persists the change to disk.
    * @param {string} domain - The domain for which to delete the boost.
@@ -88,9 +88,8 @@ class nsZenBoostsManager {
   addZapSelector(selector, domain) {
     const boostData = this.loadBoostFromStore(domain);
 
-    if(!boostData.zapSelectors) boostData.zapSelectors = [];
-    if(!boostData.zapSelectors.includes(selector)) 
-      boostData.zapSelectors.push(selector);
+    if (!boostData.zapSelectors) boostData.zapSelectors = [];
+    if (!boostData.zapSelectors.includes(selector)) boostData.zapSelectors.push(selector);
 
     this.updateBoost(boostData);
   }
@@ -105,7 +104,7 @@ class nsZenBoostsManager {
     if (this.registeredBoosts.has(domain)) {
       let boostData = this.registeredBoosts.get(domain);
 
-      if (boostData.zapSelectors && boost.zapSelectors.includes(selector))
+      if (boostData.zapSelectors && boostData.zapSelectors.includes(selector))
         boostData.zapSelectors.remove(selector);
 
       this.updateBoost(boostData);
@@ -279,7 +278,7 @@ class nsZenBoostsManager {
     const domain = parentWindow.gBrowser.selectedTab.linkedBrowser.currentURI.host;
     editor.domain = domain;
     editor.openerWindow = parentWindow;
-    
+
     return editor;
   }
 }

@@ -56,7 +56,8 @@ export class nsZenBoostStyles {
   #generateStyleString(boostData) {
     if (boostData.fontFamily == '' && boostData.textCaseOverride == 'none') return null;
 
-    const fontFamily = boostData.fontFamily != '' ? `font-family: ${boostData.fontFamily} !important;` : ``;
+    const fontFamily =
+      boostData.fontFamily != '' ? `font-family: ${boostData.fontFamily} !important;` : ``;
     const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
 
     let zapBlocks = '';

@@ -58,6 +58,13 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * The presshell of the current document being rendered.
    */
   RefPtr<nsPresContext> mCurrentPresContext;
+
+ public:
+  /**
+   * @brief Get the singleton instance of the ZenBoostsBackend.
+   * @return The singleton instance.
+   */
+  static auto GetInstance() -> nsZenBoostsBackend*;
 };
 
 } // namespace zen

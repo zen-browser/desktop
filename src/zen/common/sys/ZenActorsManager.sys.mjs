@@ -57,7 +57,10 @@ let JSWINDOWACTORS = {
     matches: ['*://*/*'],
     enablePreference: 'zen.glance.enabled',
   },
-  ZenBoosts: {
+};
+
+if (!Services.appinfo.inSafeMode) {
+  JSWINDOWACTORS.ZenBoosts = {
     parent: {
       esModuleURI: 'resource:///actors/ZenBoostsParent.sys.mjs',
     },
@@ -65,14 +68,14 @@ let JSWINDOWACTORS = {
       esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
       events: {
         DOMDocElementInserted: { capture: true },
-        unload: {}
+        unload: {},
       },
     },
     allFrames: true,
     matches: ['*://*/*'],
     enablePreference: 'zen.boosts.enabled',
-  },
-};
+  };
+}
 
 export let gZenActorsManager = {
   init() {

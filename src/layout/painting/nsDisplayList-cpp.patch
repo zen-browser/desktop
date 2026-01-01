@@ -1,8 +1,8 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index 43532357fc9ff86813af8b7bd2ec267b2c23b9c1..da905de5dfcea1c42271dd7c7d0bde52e8704cd7 100644
+index 4fb8975858a26206753e0f545268f63a7be2c586..d005f9c8f23ffc217b1294aa9b60bcd62143a603 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
-@@ -85,6 +85,7 @@
+@@ -83,6 +83,7 @@
  #include "mozilla/layers/WebRenderLayerManager.h"
  #include "mozilla/layers/WebRenderMessages.h"
  #include "mozilla/layers/WebRenderScrollData.h"
@@ -10,26 +10,24 @@ index 43532357fc9ff86813af8b7bd2ec267b2c23b9c1..da905de5dfcea1c42271dd7c7d0bde52
  #include "nsCSSProps.h"
  #include "nsCSSRendering.h"
  #include "nsCSSRenderingGradients.h"
-@@ -1046,6 +1047,12 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
+@@ -1044,6 +1045,12 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
    state->mFirstFrameMarkedForDisplay = mFramesMarkedForDisplay.Length();
    state->mFirstFrameWithOOFData = mFramesWithOOFData.Length();
  
-+  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
-+      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
-+  if (zenBackend) {
++  // Ignore on anonymous content documents.
++  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance(); zenBackend &&
++      !aReferenceFrame->PresContext()->Document()->IsAnonymousContentDocument()) {
 +    zenBackend->onPressShellEntered(state->mPresShell->GetPresContext());
 +  }
 +
    ScrollContainerFrame* sf = state->mPresShell->GetRootScrollContainerFrame();
    if (sf && IsInSubdocument()) {
      // We are forcing a rebuild of nsDisplayCanvasBackgroundColor to make sure
-@@ -1231,6 +1238,15 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
+@@ -1229,6 +1236,13 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
    ResetMarkedFramesForDisplayList(aReferenceFrame);
    mPresShellStates.RemoveLastElement();
  
-+  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
-+      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
-+  if (zenBackend) {
++  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
 +    zenBackend->onPressShellLeave(
 +      mPresShellStates.IsEmpty()
 +          ? nullptr

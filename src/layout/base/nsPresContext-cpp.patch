@@ -1,8 +1,8 @@
 diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
-index edae3bacba3a029cfb4038e1de4b36b366488385..40b7b7b66edeeb99a5208d989077e6a39162c7a4 100644
+index e7e242d41f2584a5e9238b9a594e9fd9ca25882b..d5a0d017e41c1b7f87ec3675b05a99d3077277d5 100644
 --- a/layout/base/nsPresContext.cpp
 +++ b/layout/base/nsPresContext.cpp
-@@ -20,6 +20,7 @@
+@@ -19,6 +19,7 @@
  #include "base/basictypes.h"
  #include "gfxPlatform.h"
  #include "gfxTextRun.h"
@@ -10,14 +10,12 @@ index edae3bacba3a029cfb4038e1de4b36b366488385..40b7b7b66edeeb99a5208d989077e6a3
  #include "mozilla/AnimationEventDispatcher.h"
  #include "mozilla/ContentBlockingAllowList.h"
  #include "mozilla/CycleCollectedJSContext.h"
-@@ -917,6 +918,13 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
+@@ -917,6 +918,11 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
    }
  
    auto* top = browsingContext->Top();
 +
-+  nsCOMPtr<zen::nsZenBoostsBackend> zenBackend(
-+    do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
-+  if (zenBackend) {
++  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
 +    zenBackend->RecomputeBrowsingContextDependentData(this, top);
 +  }
 +

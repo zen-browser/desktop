@@ -27,28 +27,28 @@ export class ZenBoostsChild extends JSWindowActorChild {
   // A list of events that will be prevented from
   // reaching the document
   static PREVENTABLE_EVENTS = [
-    "click",
-    "pointerdown",
-    "pointermove",
-    "pointerup",
-    "mousemove",
-    "mousedown",
-    "mouseup",
-    "mouseenter",
-    "mouseover",
-    "mouseout",
-    "mouseleave",
-    "touchstart",
-    "touchmove",
-    "touchend",
-    "dblclick",
-    "auxclick",
-    "keypress",
-    "contextmenu",
-    "pointerenter",
-    "pointerover",
-    "pointerout",
-    "pointerleave",
+    'click',
+    'pointerdown',
+    'pointermove',
+    'pointerup',
+    'mousemove',
+    'mousedown',
+    'mouseup',
+    'mouseenter',
+    'mouseover',
+    'mouseout',
+    'mouseleave',
+    'touchstart',
+    'touchmove',
+    'touchend',
+    'dblclick',
+    'auxclick',
+    'keypress',
+    'contextmenu',
+    'pointerenter',
+    'pointerover',
+    'pointerout',
+    'pointerleave',
   ];
 
   /**
@@ -146,7 +146,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
   handleEvent(event) {
     switch (event.type) {
       case 'unload':
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
+        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+          this.#disableZapMode();
+        }
+        break;
       case 'DOMDocElementInserted':
         this.#applyBoostForPageIfAvailable();
         break;
@@ -207,16 +210,22 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenBoost:BoostDataUpdated':
+      case 'ZenBoost:BoostDataUpdated': {
         const { unloadStyles = false } = message.data || {};
         this.#applyBoostForPageIfAvailable(unloadStyles);
         break;
+      }
       case 'ZenBoost:DisableZapMode':
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
+        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+          this.#disableZapMode();
+        }
         break;
       case 'ZenBoost:ToggleZapMode':
-        if (this.#currentState === ZenBoostsChild.STATES.NONE) this.#startZappingOverlay();
-        else if (this.#currentState === ZenBoostsChild.STATES.ZAP) this.#disableZapMode();
+        if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+          this.#startZappingOverlay();
+        } else if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+          this.#disableZapMode();
+        }
         break;
     }
   }
@@ -290,7 +299,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         let primaryGradientColor = boost.workspaceGradient[0].c ?? this.#rgbToHsl([75, 75, 75]);
 
         // Workspace color is converted to the HSL color space
-        boost.workspaceGradient.forEach(color => {
+        boost.workspaceGradient.forEach((color) => {
           if (color.isPrimary)
             primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
         });

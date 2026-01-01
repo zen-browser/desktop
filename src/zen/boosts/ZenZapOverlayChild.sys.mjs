@@ -204,7 +204,9 @@ export class ZapOverlay {
     if (this.#content) {
       try {
         this.document.removeAnonymousContent(this.#content);
-      } catch (e) {} // This might fail but that's not an issue
+      } catch {
+        /* This might fail but that's not an issue */
+      }
     }
     this.#initialized = false;
   }
@@ -294,7 +296,7 @@ export class ZapOverlay {
     }
   }
 
-  handlePageChange(event) {
+  handlePageChange() {
     if (this.#currentState !== ZapOverlay.STATES.SELECTED) return;
 
     this.updateHighlight();
@@ -389,9 +391,10 @@ export class ZapOverlay {
             selectedElement.parentNode.tagName.toLowerCase() !== 'body'
           ) {
             selectedElement = selectedElement.parentNode;
-            const selector = getIdentification(selectedElement, 0);
-
-            if(selectedElement.parentNode && selectedElement.parentNode.tagName.toLowerCase() !== 'body') {
+            if (
+              selectedElement.parentNode &&
+              selectedElement.parentNode.tagName.toLowerCase() !== 'body'
+            ) {
               path.push(' > ');
               path.push(nthChild(selectedElement.parentNode));
               path.push(getIdentification(selectedElement.parentNode, 0));

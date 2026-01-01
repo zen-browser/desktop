@@ -198,14 +198,12 @@ export class nsZenBoostEditor {
     return enumerator.EnumerateFonts(null, null);
   }
 
-  onCodeButtonPressed() {
-    
-  }
+  onCodeButtonPressed() {}
 
   onZapButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:ToggleZapMode");
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor('ZenBoosts');
+    actor.sendQuery('ZenBoost:ToggleZapMode');
   }
 
   /**
@@ -654,8 +652,8 @@ export class nsZenBoostEditor {
       gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
 
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:DisableZapMode");
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor('ZenBoosts');
+    actor.sendQuery('ZenBoost:DisableZapMode');
   }
 
   /**

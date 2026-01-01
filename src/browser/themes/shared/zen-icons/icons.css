@@ -940,7 +940,7 @@
     display: none;
   }
 
-  @media not (-moz-pref('zen.boosts.enabled', true)) {
+  @media -moz-pref('zen.boosts.enabled', false) {
     display: none;
   }
 }

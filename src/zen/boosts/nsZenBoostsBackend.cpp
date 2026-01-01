@@ -121,6 +121,10 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
 NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
 nsZenBoostsBackend::nsZenBoostsBackend() {};
 
+auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
+  return do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID);
+}
+
 auto nsZenBoostsBackend::onPressShellEntered(nsPresContext* aPresContext) -> void {
   if (!aPresContext) {
     return;
@@ -157,8 +161,7 @@ auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
 
 auto nsZenBoostsBackend::ResolveStyleColor(
     mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
-  static nsCOMPtr<zen::nsZenBoostsBackend> zenBoosts(
-      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
+  static nsCOMPtr<zen::nsZenBoostsBackend> zenBoosts(GetInstance());
 
   if (zenBoosts) {
     if (auto presContext = zenBoosts->mCurrentPresContext) {

@@ -56,10 +56,14 @@ export class ZenBoostsParent extends JSWindowActorParent {
         if (!data.selector) return;
         if (!data.domain) return;
 
-        if (data.action == 'add') lazy.gZenBoostsManager.addZapSelector(data.selector, data.domain);
-        else if (data.action == 'remove')
+        if (data.action == 'add') {
+          lazy.gZenBoostsManager.addZapSelector(data.selector, data.domain);
+        } else if (data.action == 'remove') {
           lazy.gZenBoostsManager.removeZapSelector(data.selector, data.domain);
-        else if (data.action == 'clear') lazy.gZenBoostsManager.clearZapSelectors(data.domain);
+        } else if (data.action == 'clear') {
+          lazy.gZenBoostsManager.clearZapSelectors(data.domain);
+        }
+        break;
       }
       case 'ZenBoost:GetBoostForDomain': {
         const domain = message.data;

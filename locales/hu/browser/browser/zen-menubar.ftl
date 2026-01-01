@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Rögzített lapok kibontása
+           *[false] Rögzített lapok összecsukása
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Weboldal megjelenése
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatikus
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Világos
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Sötét

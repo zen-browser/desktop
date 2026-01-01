@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Expandeix les pestanyes fixades
+           *[false] Col·lapsa les pestanyes fixades
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Aspecte del lloc web
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automàtica
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Clara
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Fosca

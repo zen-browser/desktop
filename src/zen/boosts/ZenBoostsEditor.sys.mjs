@@ -633,8 +633,6 @@ export class nsZenBoostEditor {
   onDeleteBoost() {
     gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
     this.currentBoostData = null;
-    this.window.gZenUIManager.showToast('zen-panel-ui-boosts-deleted-message');
-
     this.window.close();
   }
 
@@ -698,12 +696,9 @@ export class nsZenBoostEditor {
 
   /**
    * Saves the current boost data to persistent storage if changes were made.
-   * @param {boolean} showToast - Whether to show a toast notification on save (default: true).
    */
-  saveBoost(showToast = true) {
+  saveBoost() {
     if (this.currentBoostData == null || !this.currentBoostData.changeWasMade) return;
-
     gZenBoostsManager.saveBoostToStore(this.currentBoostData);
-    if (showToast) this.window.gZenUIManager.showToast('zen-panel-ui-boosts-saved-message');
   }
 }

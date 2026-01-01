@@ -269,6 +269,8 @@ body {
   margin-top: 12px;
   padding: 2px;
 
+  box-shadow: 0px 4px 8px #00000015;
+
   z-index: 4;
 
   position: relative;

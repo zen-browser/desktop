@@ -1501,6 +1501,9 @@
           browser.gZenThemePicker.dots = [];
           browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
         }
+
+        // Notify boosts for auto theme
+        Services.obs.notifyObservers(null, 'zen-boosts-update', null);
       });
     }
 

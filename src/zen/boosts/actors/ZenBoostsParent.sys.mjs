@@ -51,7 +51,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
     switch (message.name) {
       case 'ZenBoost:ZapSelector': {
         const data = message.data;
-        
+
         if (!data.action) return;
         if (!data.selector) return;
         if (!data.domain) return;
@@ -71,6 +71,8 @@ export class ZenBoostsParent extends JSWindowActorParent {
           embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === 'dark';
         const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
         const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
+        const currentWorkspace =
+          await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
         return {
           ...boostData,
           topWindowIsDarkMode,
@@ -80,6 +82,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
                 uri: styleData.uri.spec,
               }
             : null,
+          workspaceGradient: currentWorkspace.theme.gradientColors,
         };
       }
       default:

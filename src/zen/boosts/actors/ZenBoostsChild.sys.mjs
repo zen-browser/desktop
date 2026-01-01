@@ -27,9 +27,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   // A list of events that will be prevented from
   // reaching the document
   static PREVENTABLE_EVENTS = [
-    'click', 
-    'pointerdown', 
-    'pointermove', 
+    'click',
+    'pointerdown',
+    'pointermove',
     'pointerup',
     'mousemove',
     'mousedown',
@@ -113,6 +113,36 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     return [round(r * 255), round(g * 255), round(b * 255)];
+  }
+
+  /**
+   * From ZenGradientGenerator.mjs
+   * Inverse of hslToRgb
+   * Converts an RGB color value to HSL. Conversion formula
+   * adapted from https://en.wikipedia.org/wiki/HSL_color_space.
+   * Assumes r, g, and b are contained in the set [0, 255] and
+   * returns h, s, and l in the set [0, 1].
+   *
+   * @param   {number}  r       The red value
+   * @param   {number}  g       The green value
+   * @param   {number}  b       The blue value
+   * @return  {Array}           The HSL representation
+   */
+  #rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    let max = Math.max(r, g, b);
+    let min = Math.min(r, g, b);
+    let d = max - min;
+    let h;
+    if (d === 0) h = 0;
+    else if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else if (max === b) h = (r - g) / d + 4;
+    let l = (min + max) / 2;
+    let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+    return [h * 60, s, l];
   }
 
   /**
@@ -235,30 +265,51 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     if (boost) {
+      if (boost.styleSheet) {
+        const { styleSheet } = boost;
+        styleSheet.uri = Services.io.newURI(styleSheet.uri);
+        if (this.#currentSheet?.uuid !== styleSheet.uuid) {
+          browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
+          this.#currentSheet = styleSheet;
+        }
+      }
+
       if (boost.enableColorBoost) {
         let prefersColorSchemeOverride = 'none';
         if (boost.smartInvert) {
           prefersColorSchemeOverride = boost.topWindowIsDarkMode ? 'light' : 'dark';
         }
+
         browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
+
         // Has to be a finite value for zoom to work correctly
         // TODO: Figure out something better for site size override
         // browsingContext.fullZoom = boost.siteSizeOverride;
-        if (boost.styleSheet) {
-          const { styleSheet } = boost;
-          styleSheet.uri = Services.io.newURI(styleSheet.uri);
-          if (this.#currentSheet?.uuid !== styleSheet.uuid) {
-            browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
-            this.#currentSheet = styleSheet;
-          }
-        }
-        const rgbColor = this.#hslToRgb(
+
+        let colorWheelColor = this.#hslToRgb(
           boost.dotAngleDeg / 360,
           /* already is [0, 1] */
           boost.dotDistance * (1 - boost.saturation),
           /* lightness range from [0.2, 0.6] */
           0.1 + boost.dotDistance * 0.6 * boost.brightness
         );
+
+        let primaryGradientColor = boost.workspaceGradient[0].c ?? this.#rgbToHsl([75, 75, 75]);
+
+        // Workspace color is converted to the HSL color space
+        boost.workspaceGradient.forEach(color => {
+          if (color.isPrimary)
+            primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
+        });
+        // Workspace color is converted back to rgb
+        // using the same modifiers as the color above
+        primaryGradientColor = this.#hslToRgb(
+          primaryGradientColor[0] / 360,
+          primaryGradientColor[1] * (1 - boost.saturation),
+          0.1 + primaryGradientColor[2] * 0.6 * boost.brightness
+        );
+
+        const rgbColor = boost.autoTheme ? primaryGradientColor : colorWheelColor;
         const nsColor = this.#rgbToNSColor(rgbColor, (1 - boost.contrast) * 255);
         browsingContext.zenBoostsData = nsColor;
         return;
@@ -289,7 +340,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     await this.documentIsReady();
 
     this.#currentState = ZenBoostsChild.STATES.ZAP;
-    
+
     this.#overlay = new lazy.ZapOverlay(this.document, this);
     this.#overlay.initialize();
 
@@ -304,7 +355,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #disableZapMode() {
     if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
     this.#currentState = ZenBoostsChild.STATES.NONE;
-    
+
     this.#overlay?.tearDown();
     this.#overlay = null;
 

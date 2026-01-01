@@ -1048,7 +1048,7 @@
 }
 
 #zen-boost-magic-theme {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/square-wand-sparkle.svg');
+  list-style-image: url('sparkles.svg');
 }
 
 #zen-boost-shuffle {

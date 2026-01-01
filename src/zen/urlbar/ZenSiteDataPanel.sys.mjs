@@ -532,7 +532,7 @@ export class nsZenSiteDataPanel {
         break;
       }
       case 'zen-site-data-boost': {
-        this.window.gZenUIManager.openBoostWindow();
+        lazy.gZenBoostsManager.openBoostWindow(this.window);
         break;
       }
       case 'zen-site-data-actions': {

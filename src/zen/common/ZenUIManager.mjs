@@ -162,57 +162,6 @@ var gZenUIManager = {
     };
   },
 
-  openBoostWindow() {
-    const screenX = window.screenX;
-    const screenY = window.screenY;
-    const width = window.outerWidth;
-    const height = window.outerHeight;
-
-    // TODO: This needs to be changed to exact values
-    const editorWidth = 185;
-    const editorHeight = 575;
-    const pad = 20;
-
-    let left = screenX + width + pad;
-    let top = screenY + height / 2 - editorHeight / 2;
-
-    if (left + editorWidth > screen.availWidth) {
-      left = screenX + width - (editorWidth + pad);
-    }
-
-    const editor = Services.ww.openWindow(
-      window,
-      'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
-      null,
-      `left=${left},top=${top},chrome,alwaysontop,resizable=no`,
-      null
-    );
-
-    // Close the editor if the tab is switched
-    window.gBrowser.tabContainer.addEventListener(
-      'TabSelect',
-      (event) => {
-        // This seems to be a safer way than doing currentURI.host
-        const url = new URL(event.target.linkedBrowser.currentURI.spec);
-        const domain = url.hostname;
-
-        // Close if domain doesn't match
-        if (domain != editor.domain) {
-          editor.close();
-        }
-      },
-      // Remove the event listener after the window closes
-      { once: true }
-    );
-
-    // Give the domain
-    const domain = window.gBrowser.selectedTab.linkedBrowser.currentURI.host;
-    editor.domain = domain;
-    editor.openerWindow = window;
-
-    return editor;
-  },
-
   updateTabsToolbar() {
     const kUrlbarHeight = 335;
     gURLBar.textbox.style.setProperty(

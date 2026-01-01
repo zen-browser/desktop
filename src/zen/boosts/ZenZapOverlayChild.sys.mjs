@@ -113,7 +113,7 @@ export class ZapOverlay {
   get markup() {
     return `
     <template>
-      <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-zap.css" />
+      <link rel="stylesheet" href="chrome://browser/content/zen-styles/content/zen-zap.css" />
       <div id="zap-component">
         <div id="zap-controls">
           <input type="button" id="zap-this" value="Zap this"/>

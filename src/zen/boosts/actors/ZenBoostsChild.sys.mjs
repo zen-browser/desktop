@@ -27,36 +27,29 @@ export class ZenBoostsChild extends JSWindowActorChild {
   // A list of events that will be prevented from
   // reaching the document
   static PREVENTABLE_EVENTS = [
-    'click',
-    'pointerdown',
-    'pointermove',
-    'pointerup',
-    'mousemove',
-    'mousedown',
-    'mouseup',
-    'mouseenter',
-    'mouseover',
-    'mouseout',
-    'mouseleave',
-    'touchstart',
-    'touchmove',
-    'touchend',
-    'dblclick',
-    'auxclick',
-    'keypress',
-    'contextmenu',
-    'pointerenter',
-    'pointerover',
-    'pointerout',
-    'pointerleave',
+    "click",
+    "pointerdown",
+    "pointermove",
+    "pointerup",
+    "mousemove",
+    "mousedown",
+    "mouseup",
+    "mouseenter",
+    "mouseover",
+    "mouseout",
+    "mouseleave",
+    "touchstart",
+    "touchmove",
+    "touchend",
+    "dblclick",
+    "auxclick",
+    "keypress",
+    "contextmenu",
+    "pointerenter",
+    "pointerover",
+    "pointerout",
+    "pointerleave",
   ];
-
-  /**
-   * Creates a new ZenBoostsChild actor instance.
-   */
-  constructor() {
-    super();
-  }
 
   /**
    * Called when the actor is destroyed. Cleans up the events.
@@ -330,15 +323,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   async #startZappingOverlay() {
     if (this.#currentState === ZenBoostsChild.STATES.ZAP) return;
-
-    try {
-      await this.documentIsReady();
-    } catch (ex) {
-      console.warn(`ZenBoostsChild: ${ex.message}`);
-      return false;
-    }
-    await this.documentIsReady();
-
     this.#currentState = ZenBoostsChild.STATES.ZAP;
 
     this.#overlay = new lazy.ZapOverlay(this.document, this);
@@ -360,40 +344,5 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.#overlay = null;
 
     this.#removeEventListeners();
-  }
-
-  /**
-   * From: ScreenshotsComponentChild.sys.mjs:227
-   * Resolves when the document is ready to have an overlay injected into it.
-   *
-   * @returns {Promise}
-   * @resolves {Boolean} true when document is ready or rejects
-   */
-  documentIsReady() {
-    const document = this.document;
-    // Some pages take ages to finish loading - if at all.
-    // We want to respond to enable the screenshots UI as soon that is possible
-    function readyEnough() {
-      return document.readyState !== 'uninitialized' && document.documentElement;
-    }
-
-    if (readyEnough()) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      function onChange(event) {
-        if (event.type === 'pagehide') {
-          document.removeEventListener('readystatechange', onChange);
-          this.contentWindow.removeEventListener('pagehide', onChange);
-          reject(new Error('document unloaded before it was ready'));
-        } else if (readyEnough()) {
-          document.removeEventListener('readystatechange', onChange);
-          this.contentWindow.removeEventListener('pagehide', onChange);
-          resolve();
-        }
-      }
-      document.addEventListener('readystatechange', onChange);
-      this.contentWindow.addEventListener('pagehide', onChange, { once: true });
-    });
   }
 }

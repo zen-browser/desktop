@@ -939,18 +939,6 @@
   list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush-fill.svg');
 }
 
-#zen-site-data-boost[boosting]::after {
-  content: '';
-  position: absolute;
-  width: 90%;
-  height: 90%;
-  opacity: 1;
-  translate: -5px 0px;
-  background: url('chrome://browser/content/zen-images/boost-indicator.svg') no-repeat;
-  z-index: 0;
-  pointer-events: none;
-}
-
 #zen-site-data-security-info {
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;

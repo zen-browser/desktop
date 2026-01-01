@@ -225,6 +225,63 @@ class nsZenBoostsManager {
   getStyleSheetForBoost(boostData) {
     return this.#stylesManager.getStyleForBoost(boostData);
   }
+
+  /**
+   * @brief Opens the boost editor in a new popup window.
+   * @param {Window} parentWindow - The parent browser window
+   * @returns {Object} The instanced editor window
+   */
+  openBoostWindow(parentWindow) {
+    const screen = parentWindow.screen;
+    const screenX = parentWindow.screenX;
+    const screenY = parentWindow.screenY;
+    const width = parentWindow.outerWidth;
+    const height = parentWindow.outerHeight;
+
+    // TODO: This needs to be changed to exact values
+    const editorWidth = 185;
+    const editorHeight = 575;
+    const pad = 20;
+
+    let left = screenX + width + pad;
+    let top = screenY + height / 2 - editorHeight / 2;
+
+    if (left + editorWidth > screen.availWidth) {
+      left = screenX + width - (editorWidth + pad);
+    }
+
+    const editor = Services.ww.openWindow(
+      parentWindow,
+      'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
+      null,
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no`,
+      null
+    );
+
+    // Close the editor if the tab is switched
+    parentWindow.gBrowser.tabContainer.addEventListener(
+      'TabSelect',
+      (event) => {
+        // This seems to be a safer way than doing currentURI.host
+        const url = new URL(event.target.linkedBrowser.currentURI.spec);
+        const domain = url.hostname;
+
+        // Close if domain doesn't match
+        if (domain != editor.domain) {
+          editor.close();
+        }
+      },
+      // Remove the event listener after the window closes
+      { once: true }
+    );
+
+    // Give the domain
+    const domain = parentWindow.gBrowser.selectedTab.linkedBrowser.currentURI.host;
+    editor.domain = domain;
+    editor.openerWindow = parentWindow;
+    
+    return editor;
+  }
 }
 
 export const gZenBoostsManager = new nsZenBoostsManager();

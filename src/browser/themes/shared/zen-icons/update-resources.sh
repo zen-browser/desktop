@@ -34,12 +34,13 @@ merge_svg_paths() {
   fill_opacity_attr=$(grep -o 'fill-opacity="[^"]*"' "$file" | head -n 1)
   stroke_attr=$(grep -o 'stroke="[^"]*"' "$file" | head -n 1)
   stroke_width_attr=$(grep -o 'stroke-width="[^"]*"' "$file" | head -n 1)
+  stroke_opacity_attr=$(grep -o 'stroke-opacity="[^"]*"' "$file" | head -n 1)
   # Use inkscape to merge all paths into one
   inkscape "$file" --actions="select-all;object-to-path;select-all;path-combine" --export-plain-svg --export-filename="${temp_file}"
   # optimize the svg
   npx svgo --multipass "${temp_file}" --config=../../../../../svgo.config.js
   # add the attributes to the svg tag
-  sed -i '' "s/<svg /<svg $fill_attr $fill_opacity_attr $stroke_attr $stroke_width_attr /" ${temp_file}
+  sed -i '' "s/<svg /<svg $fill_attr $fill_opacity_attr $stroke_attr $stroke_width_attr $stroke_opacity_attr /" "${temp_file}"
   # Run it one more time
   npx svgo --multipass "${temp_file}" --config=../../../../../svgo.config.js
   mv ${temp_file} "$file"
@@ -85,9 +86,9 @@ do_common_icons() {
   done
 }
 
-do_icons lin WIN
-do_icons lin MACOSX # TODO: use macos icons
-do_icons lin LINUX
+do_icons nucleo WIN    # TODO: use windows icons
+do_icons nucleo MACOSX # TODO: use macos icons
+do_icons nucleo LINUX
 
 do_common_icons
 

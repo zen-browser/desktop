@@ -1003,6 +1003,8 @@ class nsZenWorkspaces {
 
     if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
       BrowserCommands.openTab();
+    } else if (!showed) {
+      gBrowser.selectedBrowser.focus();
     }
 
     if (

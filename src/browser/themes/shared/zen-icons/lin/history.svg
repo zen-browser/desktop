@@ -1,5 +1,0 @@
-#filter dumbComments emptyLines substitution
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg fill="none" stroke="context-fill" stroke-width="1.5" height="18" width="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><path class="nc-icon-wrapper" d="M 9,4.75 V 9 l 3.25,2.25 M 1.88,3.305 2.288,6.25 5.232,5.843 M 1.75,9 c 0,4.004 3.246,7.25 7.25,7.25 4.004,0 7.25,-3.246 7.25,-7.25 0,-4.004 -3.246,-7.25 -7.25,-7.25 -3.031,0 -5.627,1.86 -6.71,4.5"/></svg>

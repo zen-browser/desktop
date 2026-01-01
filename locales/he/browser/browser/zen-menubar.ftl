@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] הרחבת לשוניות מוצמדות
+           *[false] צמצום לשוניות מוצמדות
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = עיצוב האתר
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = אוטומטי
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = בהיר
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = כהה

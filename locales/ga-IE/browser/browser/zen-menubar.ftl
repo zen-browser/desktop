@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+        [true] Leathnaigh Cluaisíní Priontáilte
+        *[false] Laghdaigh Cluaisíní Priontáilte
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Dealramh an tSuímh Ghréasáin
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Uathoibríoch
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Solas
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Dorcha

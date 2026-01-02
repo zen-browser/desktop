@@ -1530,10 +1530,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         browser.gZenThemePicker.dots = [];
         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
       }
-
-      // Notify boosts for auto theme
-      Services.obs.notifyObservers(null, 'zen-boosts-update', null);
     });
+
+    // Notify boosts for auto theme
+    Services.obs.notifyObservers(null, 'zen-boosts-update', null);
   }
 
   fixTheme(theme) {
@@ -1635,8 +1635,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const gradient = nsZenThemePicker.getTheme(colors, this.currentOpacity, this.currentTexture);
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
+    currentWorkspace.theme = gradient;
     if (!skipSave) {
-      currentWorkspace.theme = gradient;
       gZenWorkspaces.saveWorkspace(currentWorkspace);
     }
 

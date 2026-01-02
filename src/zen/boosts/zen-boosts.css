@@ -115,22 +115,17 @@ body {
   }
 
   & #zen-boost-name {
-    height: 24px !important;
-    width: 90px !important;
-    color: black !important;
+    pointer-events: none;
+    transition: color 0.2s ease-in-out;
     background-color: transparent;
     border: none;
     outline: none;
+    appearance: none;
 
     display: flex;
     align-items: center;
 
-    opacity: 0.85;
-
-    &:hover {
-      background-color: #ebebed;
-      opacity: 1;
-    }
+    -moz-window-dragging: drag;
   }
 }
 
@@ -138,7 +133,8 @@ body {
   width: 100%;
   text-align: center;
   justify-content: center;
-  margin: auto;
+  font-size: 100%;
+  font-weight: 600;
 }
 
 #zen-boost-font-grid {
@@ -231,10 +227,6 @@ body {
   color: #3a3a3b !important;
 
   justify-content: center;
-
-  & #zen-boost-name-text {
-    translate: 0px -2px;
-  }
 }
 
 #zen-boost-shuffle {

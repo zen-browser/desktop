@@ -121,7 +121,7 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
 [[nodiscard]]
  inline static auto GetZenBoostsDataFromBrowsingContext() -> BoostData {
   auto zenBoosts = nsZenBoostsBackend::GetInstance();
-  if (!zenBoosts) {
+  if (!zenBoosts || zenBoosts->mCurrentFrameIsAnonymousContent) {
     return 0;
   }
   if (auto presContext = zenBoosts->GetCurrentPresContext()) {

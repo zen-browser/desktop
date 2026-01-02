@@ -21,6 +21,11 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
 
  public:
   explicit nsZenBoostsBackend();
+  
+  /**
+   * Indicates whether the current frame being rendered is for anonymous content.
+   */
+  bool mCurrentFrameIsAnonymousContent = false;
 
   /**
    * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.

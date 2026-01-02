@@ -97,9 +97,7 @@
       const { offsetX, offsetY } = this.#getDragImageOffset(event, tab, draggingTabs);
       const dragImage = this.#createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
-      setTimeout(() => {
-        dt.setDragImage(...this.originalDragImageArgs);
-      }, 0);
+      dt.setDragImage(...this.originalDragImageArgs);
     }
 
     #createDragImageForTabs(movingTabs) {
@@ -520,18 +518,7 @@
       let dropElementGroup = dropElement?.group;
       let colorCode = dropElementGroup?.color;
 
-      let lastUnmovingTabInGroup = dropElementGroup?.tabs.findLast((t) => !movingTabsSet.has(t));
-      if (
-        isTab(dropElement) &&
-        dropElementGroup &&
-        dropElement == lastUnmovingTabInGroup &&
-        !dropBefore
-      ) {
-        // Dragging tab over the last tab of a tab group, but not enough
-        // for it to drop into the tab group. Drop it after the tab group instead.
-        dropElement = dropElementGroup;
-        colorCode = undefined;
-      } else if (isTabGroupLabel(dropElement)) {
+      if (isTabGroupLabel(dropElement)) {
         // Dropping right before the first tab in the tab group.
         dropElement = dropElementGroup.tabs[0];
         dropBefore = true;
@@ -711,7 +698,6 @@
           !gZenStartup.isReady ||
           gReduceMotion ||
           !dropElement ||
-          dropElement.group !== draggedTab.group ||
           dropElement.hasAttribute('zen-essential') ||
           draggedTab.hasAttribute('zen-essential') ||
           draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace
@@ -725,26 +711,24 @@
         }
         const animateElement = (ele, translateY) => {
           ele.style.transform = `translateY(${translateY}px)`;
-          setTimeout(() => {
-            setTimeout(() => {
-              animations.push(
-                gZenUIManager.motion
-                  .animate(
-                    ele,
-                    {
-                      y: [translateY, 0],
-                    },
-                    {
-                      duration: 0.1,
-                      bounce: 0,
-                    }
-                  )
-                  .then(() => {
-                    ele.style.transform = '';
-                  })
-              );
-            });
-          });
+          let animateInternal = (resolve) => {
+            gZenUIManager
+              .elementAnimate(ele, { y: [translateY, 0] }, { duration: 100, easing: 'ease-out' })
+              .then(() => {
+                ele.style.transform = '';
+                ele.style.zIndex = '';
+              })
+              .finally(resolve);
+          };
+          // Wait for the next event loop tick to ensure the initial transform style is applied.
+          // We need to ensure the element has already been moved in the DOM before starting the animation.
+          animations.push(
+            new Promise((resolve) =>
+              setTimeout(() => {
+                setTimeout(() => animateInternal(resolve), 0);
+              })
+            )
+          );
         };
         const items = this._tabbrowserTabs.ariaFocusableItems;
         let rect = window.windowUtils.getBoundsWithoutFlushing(draggedTab);
@@ -781,6 +765,7 @@
             : -rect.height * tabsInBetween.length;
         draggedTabTranslateY +=
           extraTranslate * (draggedTab.elementIndex > dropElement.elementIndex ? 1 : -1);
+        draggedTab.style.zIndex = '9';
         animateElement(draggedTab, draggedTabTranslateY);
       } catch (e) {
         console.error(e);

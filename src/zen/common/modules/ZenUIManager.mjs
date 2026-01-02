@@ -65,6 +65,49 @@ window.gZenUIManager = {
     ZenMenubar.init();
   },
 
+  /**
+   * Animate an element using Element.animate API.
+   * This is not using gZenUIManager.motion, because motion library has some issues
+   * with certain properties and we want to have a simple wrapper for that.
+   */
+  async elementAnimate(element, rawKeyframes, ...args) {
+    rawKeyframes = { ...rawKeyframes };
+    // Convert 'y' property to 'transform' with translateY and 'x' to translateX,
+    // and 'scale' to 'transform' with scale.
+    if ((rawKeyframes.y || rawKeyframes.x || rawKeyframes.scale) && !rawKeyframes.transform) {
+      const yValues = rawKeyframes.y || [];
+      const xValues = rawKeyframes.x || [];
+      const scaleValues = rawKeyframes.scale || [];
+      delete rawKeyframes.y;
+      delete rawKeyframes.x;
+      delete rawKeyframes.scale;
+      rawKeyframes.transform = [];
+      console.assert(
+        yValues.length === 0 || xValues.length === 0 || yValues.length === xValues.length,
+        'y and x keyframes must have the same length'
+      );
+      const length = Math.max(yValues.length, xValues.length, scaleValues.length);
+      for (let i = 0; i < length; i++) {
+        const y = yValues[i] !== undefined ? `translateY(${yValues[i]}px)` : '';
+        const x = xValues[i] !== undefined ? `translateX(${xValues[i]}px)` : '';
+        const scale = scaleValues[i] !== undefined ? `scale(${scaleValues[i]})` : '';
+        rawKeyframes.transform.push(`${x} ${y} ${scale}`.trim());
+      }
+    }
+    let keyframes = [];
+    for (let i = 0; i < Object.values(rawKeyframes)[0].length; i++) {
+      let frame = {};
+      for (const [property, values] of Object.entries(rawKeyframes)) {
+        frame[property] = values[i];
+      }
+      keyframes.push(frame);
+    }
+    return await new Promise((resolve) => {
+      const animation = element.animate(keyframes, ...args);
+      animation.onfinish = () => resolve();
+    });
+  },
+
   _addNewCustomizableButtonsIfNeeded() {
     const kPref = 'zen.ui.migration.compact-mode-button-added';
     let navbarPlacements = CustomizableUI.getWidgetIdsInArea('zen-sidebar-top-buttons');

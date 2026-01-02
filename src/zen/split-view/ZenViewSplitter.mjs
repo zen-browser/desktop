@@ -335,6 +335,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       const side = event.clientX - threshold > halfWidth ? 'right' : 'left';
       for (const browser of gBrowser.browsers) {
+        if (!browser) continue;
         const width = browser.getBoundingClientRect().width;
         // Only apply it to the left side because if we add it to the right side,
         // we wont be able to move the element to the left.

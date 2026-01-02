@@ -146,7 +146,7 @@ export class nsZenSiteDataPanel {
     }
   }
 
-    #initUnifiedExtensionsManageHook() {
+  #initUnifiedExtensionsManageHook() {
     const manageExtensionItem =
       this.document.getElementById(
         'unified-extensions-context-menu-manage-extension'
@@ -603,7 +603,7 @@ export class nsZenSiteDataPanel {
       case 'zen-site-data-manage-addons': {
         const { BrowserAddonUI } = this.window;
         BrowserAddonUI.openAddonsMgr('addons://list/extension');
-        this.unifiedPanel.hidePopup();  
+        this.unifiedPanel.hidePopup();
         break;
       }
       case 'zen-site-data-settings-more': {

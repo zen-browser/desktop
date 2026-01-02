@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Gofodau Gwaith
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Gofodau
 zen-panel-ui-workspaces-create = 
     .label = Creu Gofod
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clirio
     .tooltiptext = Cau pob tab heb ei binio
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Gofod Nesaf
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Gofod Blaenorol

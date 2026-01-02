@@ -5,14 +5,14 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+        [gwir] Ehangu Tabiau wedi'u Pinio
+        *[ffug] Lleihau Tabiau wedi'u Pinio
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Ymddangosiad y Wefan
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Awtomatig
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Golau
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Tywyll

@@ -127,13 +127,16 @@ export class nsZenSiteDataPanel {
     const kCommands = {
       context_zenClearSiteData: (event) => {
         this.window.gIdentityHandler.clearSiteData(event);
+        this.unifiedPanel.hidePopup();
       },
       context_zenOpenGetAddons: () => {
         this.#openGetAddons();
+        this.unifiedPanel.hidePopup();
       },
       context_zenOpenSiteSettings: () => {
         const { BrowserCommands } = this.window;
         BrowserCommands.pageInfo(null, 'permTab');
+        this.unifiedPanel.hidePopup();
       },
     };
 
@@ -584,6 +587,7 @@ export class nsZenSiteDataPanel {
       case 'zen-site-data-manage-addons': {
         const { BrowserAddonUI } = this.window;
         BrowserAddonUI.openAddonsMgr('addons://list/extension');
+        this.unifiedPanel.hidePopup();  
         break;
       }
       case 'zen-site-data-settings-more': {

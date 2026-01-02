@@ -50,6 +50,10 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    */
   void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext,
                                             mozilla::dom::BrowsingContext* aBrowsingContext);
+
+  [[nodiscard]] 
+  auto GetCurrentPresContext() const { return mCurrentPresContext; }
+
   NS_DECL_NSIZENBOOSTSBACKEND
  private:
   ~nsZenBoostsBackend() = default;
@@ -64,7 +68,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * @brief Get the singleton instance of the ZenBoostsBackend.
    * @return The singleton instance.
    */
-  static auto GetInstance() -> nsZenBoostsBackend*;
+  static auto GetInstance() -> nsCOMPtr<nsZenBoostsBackend>;
 };
 
 } // namespace zen

@@ -115,21 +115,37 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
   return NS_RGB(fr8, fg8, fb8);
 }
 
+/**
+ * @brief Retrieves the current boost data from the browsing context.
+ */
+[[nodiscard]]
+ inline static auto GetZenBoostsDataFromBrowsingContext() -> BoostData {
+  auto zenBoosts = nsZenBoostsBackend::GetInstance();
+  if (!zenBoosts) {
+    return 0;
+  }
+  if (auto presContext = zenBoosts->GetCurrentPresContext()) {
+    return presContext->mZenBoostsPresContextData;
+  }
+  return 0;
+}
+
 } // namespace
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
 nsZenBoostsBackend::nsZenBoostsBackend() {};
 
-auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
-  return do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID);
+auto nsZenBoostsBackend::GetInstance() -> nsCOMPtr<nsZenBoostsBackend> {
+  static nsCOMPtr<zen::nsZenBoostsBackend> zenBoosts(
+      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
+  return zenBoosts;
 }
 
 auto nsZenBoostsBackend::onPressShellEntered(nsPresContext* aPresContext) -> void {
-  if (!aPresContext) {
-    return;
-  }
-
+  // Note that aPresContext can be null when entering anonymous content frames.
+  // We explicitly do this to prevent applying boosts to anonymous content, such as
+  // devtools or screenshots.
   mCurrentPresContext = aPresContext;
 }
 
@@ -161,28 +177,21 @@ auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
 
 auto nsZenBoostsBackend::ResolveStyleColor(
     mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
-  static nsCOMPtr<zen::nsZenBoostsBackend> zenBoosts(GetInstance());
+  if (auto accentNS = GetZenBoostsDataFromBrowsingContext()) {
+    // Apply a filter-like tint:
+    // - Preserve the original color's perceived luminance
+    // - Map hue/chroma toward the accent by scaling the accent's RGB
+    //   to match the original luminance
+    // - Keep the original alpha
 
-  if (zenBoosts) {
-    if (auto presContext = zenBoosts->mCurrentPresContext) {
-      if (auto accentNS = presContext->mZenBoostsPresContextData) {
-        // Apply a filter-like tint:
-        // - Preserve the original color's perceived luminance
-        // - Map hue/chroma toward the accent by scaling the accent's RGB
-        //   to match the original luminance
-        // - Keep the original alpha
-
-        // Convert both colors to nscolor to access channels
-        nscolor originalNS = aColor.ToColor();
-        nscolor filteredNS = zenFilterColorChannel(originalNS, accentNS);
-        
-        auto filtered = mozilla::StyleAbsoluteColor::FromColor(filteredNS);
-        filtered.alpha = aColor.alpha;
-        return filtered;
-      }
-    }
+    // Convert both colors to nscolor to access channels
+    nscolor originalNS = aColor.ToColor();
+    nscolor filteredNS = zenFilterColorChannel(originalNS, accentNS);
+    
+    auto filtered = mozilla::StyleAbsoluteColor::FromColor(filteredNS);
+    filtered.alpha = aColor.alpha;
+    return filtered;
   }
-
   return aColor;
 }
 

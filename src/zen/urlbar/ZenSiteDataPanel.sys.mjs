@@ -63,6 +63,7 @@ export class nsZenSiteDataPanel {
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
+    this.#initUnifiedExtensionsManageHook();
     this.#maybeShowFeatureCallout();
   }
 
@@ -143,6 +144,21 @@ export class nsZenSiteDataPanel {
     for (let [id, handler] of Object.entries(kCommands)) {
       this.document.getElementById(id).addEventListener('command', handler);
     }
+  }
+
+    #initUnifiedExtensionsManageHook() {
+    const manageExtensionItem =
+      this.document.getElementById(
+        'unified-extensions-context-menu-manage-extension'
+      );
+
+    if (!manageExtensionItem || !this.unifiedPanel) {
+      return;
+    }
+
+    manageExtensionItem.addEventListener('command', () => {
+      this.unifiedPanel.hidePopup();
+    });
   }
 
   #initExtensionsPanel() {

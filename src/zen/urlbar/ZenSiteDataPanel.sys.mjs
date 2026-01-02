@@ -142,7 +142,6 @@ export class nsZenSiteDataPanel {
       },
       context_zenOpenGetAddons: () => {
         this.#openGetAddons();
-        this.unifiedPanel.hidePopup();
       },
       context_zenOpenSiteSettings: () => {
         const { BrowserCommands } = this.window;

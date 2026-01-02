@@ -34,7 +34,9 @@ export class nsZenSiteDataPanel {
       this.window.gUnifiedExtensions._panel = this.unifiedPanel;
 
       // Remove the old permissions dialog
-      this.document.getElementById('unified-extensions-panel-template').remove();
+      this.document
+        .getElementById('unified-extensions-panel-template')
+        .remove();
     } else {
       this.extensionsPanel = this.#initExtensionsPanel();
     }
@@ -52,14 +54,19 @@ export class nsZenSiteDataPanel {
     this.anchor = button.querySelector('#zen-site-data-icon-button');
     this.document.getElementById('identity-icon-box').before(button);
 
-    this.extensionsPanelButton = this.document.getElementById('unified-extensions-button');
+    this.extensionsPanelButton = this.document.getElementById(
+      'unified-extensions-button'
+    );
     this.window.gUnifiedExtensions._button = ADDONS_BUTTONS_HIDDEN
       ? this.anchor
       : this.extensionsPanelButton;
 
     this.document
       .getElementById('nav-bar')
-      .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
+      .setAttribute(
+        'addon-webext-overflowbutton',
+        'zen-site-data-icon-button'
+      );
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
@@ -69,8 +76,12 @@ export class nsZenSiteDataPanel {
 
   #initEventListeners() {
     this.unifiedPanel.addEventListener('popupshowing', this);
-    this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
-    this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
+    this.document
+      .getElementById('zen-site-data-manage-addons')
+      .addEventListener('click', this);
+    this.document
+      .getElementById('zen-site-data-settings-more')
+      .addEventListener('click', this);
     this.anchor.addEventListener('click', this);
     const kCommandIDs = [
       'zen-site-data-header-share',
@@ -128,7 +139,6 @@ export class nsZenSiteDataPanel {
     const kCommands = {
       context_zenClearSiteData: (event) => {
         this.window.gIdentityHandler.clearSiteData(event);
-        this.unifiedPanel.hidePopup();
       },
       context_zenOpenGetAddons: () => {
         this.#openGetAddons();
@@ -137,7 +147,6 @@ export class nsZenSiteDataPanel {
       context_zenOpenSiteSettings: () => {
         const { BrowserCommands } = this.window;
         BrowserCommands.pageInfo(null, 'permTab');
-        this.unifiedPanel.hidePopup();
       },
     };
 
@@ -147,10 +156,9 @@ export class nsZenSiteDataPanel {
   }
 
   #initUnifiedExtensionsManageHook() {
-    const manageExtensionItem =
-      this.document.getElementById(
-        'unified-extensions-context-menu-manage-extension'
-      );
+    const manageExtensionItem = this.document.getElementById(
+      'unified-extensions-context-menu-manage-extension'
+    );
 
     if (!manageExtensionItem || !this.unifiedPanel) {
       return;
@@ -203,8 +211,11 @@ export class nsZenSiteDataPanel {
 
   #setSiteHeader() {
     {
-      const button = this.document.getElementById('zen-site-data-header-reader-mode');
-      const urlbarButton = this.window.document.getElementById('reader-mode-button');
+      const button = this.document.getElementById(
+        'zen-site-data-header-reader-mode'
+      );
+      const urlbarButton =
+        this.window.document.getElementById('reader-mode-button');
       const isActive = urlbarButton?.hasAttribute('readeractive');
       const isVisible = !urlbarButton?.hidden || isActive;
 
@@ -214,10 +225,15 @@ export class nsZenSiteDataPanel {
       } else {
         button.classList.remove('active');
       }
-      this.document.l10n.setAttributes(button, urlbarButton?.getAttribute('data-l10n-id'));
+      this.document.l10n.setAttributes(
+        button,
+        urlbarButton?.getAttribute('data-l10n-id')
+      );
     }
     {
-      const button = this.document.getElementById('zen-site-data-header-bookmark');
+      const button = this.document.getElementById(
+        'zen-site-data-header-bookmark'
+      );
       const isPageBookmarked = this.#currentPageIsBookmarked;
 
       if (isPageBookmarked) {
@@ -260,13 +276,25 @@ export class nsZenSiteDataPanel {
 
     let identity;
     if (gIdentityHandler._pageExtensionPolicy) {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-extension');
+      this.document.l10n.setAttributes(
+        button,
+        'zen-site-data-security-info-extension'
+      );
       identity = 'extension';
-    } else if (gIdentityHandler._uriHasHost && gIdentityHandler._isSecureConnection) {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-secure');
+    } else if (
+      gIdentityHandler._uriHasHost &&
+      gIdentityHandler._isSecureConnection
+    ) {
+      this.document.l10n.setAttributes(
+        button,
+        'zen-site-data-security-info-secure'
+      );
       identity = 'secure';
     } else {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-not-secure');
+      this.document.l10n.setAttributes(
+        button,
+        'zen-site-data-security-info-not-secure'
+      );
       identity = 'not-secure';
     }
 
@@ -280,7 +308,9 @@ export class nsZenSiteDataPanel {
     const section = list.closest('.zen-site-data-section');
 
     // show permission icons
-    let permissions = SitePermissions.getAllPermissionDetailsForBrowser(gBrowser.selectedBrowser);
+    let permissions = SitePermissions.getAllPermissionDetailsForBrowser(
+      gBrowser.selectedBrowser
+    );
 
     // Don't display origin-keyed 3rdPartyStorage permissions that are covered by
     // site-keyed 3rdPartyFrameStorage permissions.
@@ -345,7 +375,9 @@ export class nsZenSiteDataPanel {
         if (webrtcState[id]) {
           let found = false;
           for (let permission of permissions) {
-            let [permId] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
+            let [permId] = permission.id.split(
+              SitePermissions.PERM_KEY_DELIMITER
+            );
             if (permId != id || permission.state != SitePermissions.ALLOW) {
               continue;
             }
@@ -375,7 +407,9 @@ export class nsZenSiteDataPanel {
     ) {
       permissions.push({
         id: 'site-protection',
-        state: gProtectionsHandler.hasException ? SitePermissions.BLOCK : SitePermissions.ALLOW,
+        state: gProtectionsHandler.hasException
+          ? SitePermissions.BLOCK
+          : SitePermissions.ALLOW,
         scope: SitePermissions.SCOPE_PERSISTENT,
       });
     }
@@ -399,7 +433,11 @@ export class nsZenSiteDataPanel {
         continue;
       }
 
-      let [item, isCrossSiteCookie] = this.#createPermissionItem(id, key, permission);
+      let [item, isCrossSiteCookie] = this.#createPermissionItem(
+        id,
+        key,
+        permission
+      );
       if (item) {
         if (isCrossSiteCookie) {
           crossSiteCookieElements.push(item);
@@ -416,7 +454,8 @@ export class nsZenSiteDataPanel {
       separator.after(elem);
     }
 
-    separator.hidden = !settingElements.length || !crossSiteCookieElements.length;
+    separator.hidden =
+      !settingElements.length || !crossSiteCookieElements.length;
     section.hidden = list.childElementCount < 2; // only the separator
   }
 
@@ -454,10 +493,16 @@ export class nsZenSiteDataPanel {
     container.setAttribute('align', 'center');
     container.setAttribute('role', 'group');
 
-    container.setAttribute('state', permission.state == SitePermissions.ALLOW ? 'allow' : 'block');
+    container.setAttribute(
+      'state',
+      permission.state == SitePermissions.ALLOW ? 'allow' : 'block'
+    );
 
     let img = this.document.createXULElement('toolbarbutton');
-    img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
+    img.classList.add(
+      'permission-popup-permission-icon',
+      'zen-site-data-permission-icon'
+    );
     img.setAttribute('closemenu', 'none');
     if (this.#iconMap[id]) {
       img.classList.add(`zen-permission-${this.#iconMap[id]}-icon`);
@@ -473,24 +518,36 @@ export class nsZenSiteDataPanel {
     nameLabel.setAttribute('flex', '1');
     nameLabel.setAttribute('class', 'permission-popup-permission-label');
     if (isCrossSiteCookie) {
-      this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-cross-site');
+      this.document.l10n.setAttributes(
+        nameLabel,
+        'zen-site-data-setting-cross-site'
+      );
     } else {
       let label = SitePermissions.getPermissionLabel(permission.id);
       if (label) {
         nameLabel.textContent = label;
       } else {
-        this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-' + idNoSuffix);
+        this.document.l10n.setAttributes(
+          nameLabel,
+          'zen-site-data-setting-' + idNoSuffix
+        );
       }
     }
     labelContainer.appendChild(nameLabel);
 
     let stateLabel = this.document.createXULElement('label');
-    stateLabel.setAttribute('class', 'zen-permission-popup-permission-state-label');
+    stateLabel.setAttribute(
+      'class',
+      'zen-permission-popup-permission-state-label'
+    );
     if (isCrossSiteCookie) {
       // The key should be the site for cross-site cookies.
       stateLabel.textContent = key;
     } else {
-      stateLabel.setAttribute('data-l10n-id', this.#getPermissionStateLabelId(permission));
+      stateLabel.setAttribute(
+        'data-l10n-id',
+        this.#getPermissionStateLabelId(permission)
+      );
     }
     labelContainer.appendChild(stateLabel);
 
@@ -503,7 +560,9 @@ export class nsZenSiteDataPanel {
 
   #openGetAddons() {
     const { switchToTabHavingURI } = this.window;
-    let amoUrl = Services.urlFormatter.formatURLPref('extensions.getAddons.link.url');
+    let amoUrl = Services.urlFormatter.formatURLPref(
+      'extensions.getAddons.link.url'
+    );
     switchToTabHavingURI(amoUrl, true);
   }
 
@@ -584,16 +643,26 @@ export class nsZenSiteDataPanel {
         gProtectionsHandler.enableForCurrentPage();
       }
     } else {
-      SitePermissions.setForPrincipal(gBrowser.contentPrincipal, permission.id, newState);
+      SitePermissions.setForPrincipal(
+        gBrowser.contentPrincipal,
+        permission.id,
+        newState
+      );
     }
 
     const isCrossSiteCookie = permission.id.startsWith('3rdPartyStorage');
-    label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
+    label.parentNode.setAttribute(
+      'state',
+      newState == SitePermissions.ALLOW ? 'allow' : 'block'
+    );
     label._permission.state = newState;
     if (!isCrossSiteCookie) {
       label
         .querySelector('.zen-permission-popup-permission-state-label')
-        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId(label._permission));
+        .setAttribute(
+          'data-l10n-id',
+          this.#getPermissionStateLabelId(label._permission)
+        );
     }
   }
 
@@ -626,7 +695,9 @@ export class nsZenSiteDataPanel {
         if (!item) {
           break;
         }
-        const label = item.querySelector('.permission-popup-permission-label-container');
+        const label = item.querySelector(
+          '.permission-popup-permission-label-container'
+        );
         if (label?._permission) {
           this.#onPermissionClick(label);
         }
@@ -665,7 +736,9 @@ export class nsZenSiteDataPanel {
           resolve();
           return;
         }
-        this.window.addEventListener('TabSelect', checkEmptyTab, { once: true });
+        this.window.addEventListener('TabSelect', checkEmptyTab, {
+          once: true,
+        });
       };
       checkEmptyTab();
     });

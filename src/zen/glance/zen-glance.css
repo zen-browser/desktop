@@ -125,7 +125,7 @@
     left: 0;
     flex: unset !important;
     /* Promote to its own layer during transitions to reduce jank */
-    will-change: transform;
+    will-change: transform, top, left;
     width: 85%;
     height: 100%;
 

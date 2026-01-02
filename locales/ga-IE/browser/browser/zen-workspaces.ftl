@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Spásanna
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Spásanna
 zen-panel-ui-workspaces-create = 
     .label = Cruthaigh Spás
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Glan
     .tooltiptext = Dún gach cluaisín neamhphionáilte
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = An Chéad Spás Eile
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Spás Roimhe Seo

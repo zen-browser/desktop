@@ -35,7 +35,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
-  #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref('zen.glance.animation-duration');
+  #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref('zen.glance.animation-duration') / 1000;
 
   init() {
     this.#setupEventListeners();
@@ -253,26 +253,19 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     const xOffset = gZenVerticalTabsManager._prefsRightSide ? 20 : -20;
 
-    // Wait for the container to be added to the DOM
-    setTimeout(() => {
-      gZenUIManager
-        .elementAnimate(
-          container,
-          {
-            opacity: [0, 1],
-            x: [xOffset, 0],
-          },
-          {
-            duration: 200,
-            delay: this.#GLANCE_ANIMATION_DURATION - 200,
-            easing: 'ease-in-out',
-            fill: 'forwards',
-          }
-        )
-        .then(() => {
-          container.style.removeProperty('opacity');
-        });
-    });
+    gZenUIManager.motion.animate(
+      container,
+      {
+        opacity: [0, 1],
+        x: [xOffset, 0],
+      },
+      {
+        duration: 0.2,
+        type: 'spring',
+        delay: this.#GLANCE_ANIMATION_DURATION - 0.2,
+        bounce: 0,
+      }
+    );
   }
 
   /**
@@ -368,7 +361,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {Promise<Tab>} Promise that resolves to the glance tab
    */
   #animateGlanceOpening(data, browserElement) {
-    this.#prepareGlanceAnimation(browserElement);
+    this.#prepareGlanceAnimation(data, browserElement);
     // FIXME(cheffy): We *must* have the call back async (at least,
     // until a better solution is found). If we do it inside the requestAnimationFrame,
     // we see flashing and if we do it directly, the animation does not play at all.
@@ -390,14 +383,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   /**
    * Prepare the glance for animation
+   * @param {Object} data - Glance data
    * @param {Browser} browserElement - The browser element
    */
-  #prepareGlanceAnimation(browserElement) {
+  #prepareGlanceAnimation(data, browserElement) {
     this.quickOpenGlance();
     const newButtons = this.#createNewOverlayButtons();
     this.browserWrapper.appendChild(newButtons);
 
-    this.#setupGlancePositioning();
+    this.#setupGlancePositioning(data);
     this.#configureBrowserElement(browserElement);
   }
 
@@ -409,7 +403,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       '.browserSidebarContainer'
     );
 
-    gZenUIManager.elementAnimate(
+    gZenUIManager.motion.animate(
       parentSidebarContainer,
       {
         scale: [1, 0.98],
@@ -417,18 +411,27 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       },
       {
         duration: this.#GLANCE_ANIMATION_DURATION,
-        easing: 'ease-in-out',
-        fill: 'forwards',
+        type: 'spring',
+        bounce: 0.2,
       }
     );
   }
 
   /**
    * Set up glance positioning
+   * @param {Object} data - Glance data with position and dimensions
    */
-  #setupGlancePositioning() {
+  #setupGlancePositioning(data) {
+    const { clientX, clientY, width, height } = data;
+    const top = clientY + height / 2;
+    const left = clientX + width / 2;
+
     this.overlay.removeAttribute('fade-out');
     this.browserWrapper.setAttribute('animate', true);
+    this.browserWrapper.style.top = `${top}px`;
+    this.browserWrapper.style.left = `${left}px`;
+    this.browserWrapper.style.width = `${width}px`;
+    this.browserWrapper.style.height = `${height}px`;
 
     this.#storeOriginalPosition();
     this.overlay.style.overflow = 'visible';
@@ -470,15 +473,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.browserWrapper.prepend(imageDataElement);
     this.#glances.get(this.#currentGlanceID).elementImageData = data.elementData;
 
-    gZenUIManager.elementAnimate(
+    gZenUIManager.motion.animate(
       imageDataElement,
       {
         opacity: [1, 0],
       },
       {
         duration: this.#GLANCE_ANIMATION_DURATION / 2,
-        easing: 'ease-in-out',
-        fill: 'forwards',
+        easing: 'easeInOut',
       }
     );
 
@@ -527,21 +529,25 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // nice fade-in effect to the content. But if it doesn't exist,
     // we just fall back to always showing the browser directly.
     if (data.elementData) {
-      gZenUIManager.elementAnimate(
-        this.contentWrapper,
-        { opacity: [0, 1] },
-        {
-          duration: this.#GLANCE_ANIMATION_DURATION / 2,
-          easing: 'ease-in-out',
-          fill: 'forwards',
-        }
-      );
+      gZenUIManager.motion
+        .animate(
+          this.contentWrapper,
+          { opacity: [0, 1] },
+          {
+            duration: this.#GLANCE_ANIMATION_DURATION / 2,
+            easing: 'easeInOut',
+          }
+        )
+        .then(() => {
+          this.contentWrapper.style.opacity = '';
+        });
     }
 
     this.#animateParentBackground();
-    gZenUIManager
-      .elementAnimate(this.browserWrapper, arcSequence, {
+    gZenUIManager.motion
+      .animate(this.browserWrapper, arcSequence, {
         duration: gZenUIManager.testingEnabled ? 0 : this.#GLANCE_ANIMATION_DURATION,
+        ease: 'easeInOut',
       })
       .then(() => {
         this.#finalizeGlanceOpening(imageDataElement, browserElement, resolve);
@@ -601,6 +607,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     );
 
     const sequence = {
+      top: [],
+      left: [],
       width: [],
       height: [],
       transform: [],
@@ -609,21 +617,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const steps = this.#ARC_CONFIG.ARC_STEPS;
     const arcDirection = shouldArcDownward ? 1 : -1;
 
-    function easeOutBack(x) {
-      const c1 = 0.4;
-      const c3 = c1 + 1;
-
-      return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2;
+    function easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     }
 
-    function easeInQuint(x) {
-      return x * x * x * x * x;
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 6);
     }
 
     // First, create the main animation steps
     for (let i = 0; i <= steps; i++) {
       const progress = i / steps;
-      const eased = direction === 'opening' ? easeOutBack(progress) : easeInQuint(progress);
+      const eased = direction === 'opening' ? easeInOutQuad(progress) : easeOutCubic(progress);
 
       // Calculate size interpolation
       const currentWidth = startPosition.width + (endPosition.width - startPosition.width) * eased;
@@ -638,9 +643,30 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const y =
         startPosition.y + distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-      sequence.transform.push(`translate(${x - currentWidth / 2}px, ${y - currentHeight / 2}px)`);
+      sequence.transform.push(`translate(-50%, -50%) scale(1)`);
+      sequence.top.push(`${y}px`);
+      sequence.left.push(`${x}px`);
       sequence.width.push(`${currentWidth}px`);
       sequence.height.push(`${currentHeight}px`);
+    }
+
+    let scale = 1;
+    const bounceSteps = 60;
+    if (direction === 'opening') {
+      for (let i = 0; i < bounceSteps; i++) {
+        const progress = i / bounceSteps;
+        // Scale up slightly then back to normal
+        scale = 1 + 0.003 * Math.sin(progress * Math.PI);
+        // If we are at the last step, ensure scale is exactly 1
+        if (i === bounceSteps - 1) {
+          scale = 1;
+        }
+        sequence.transform.push(`translate(-50%, -50%) scale(${scale})`);
+        sequence.top.push(sequence.top[sequence.top.length - 1]);
+        sequence.left.push(sequence.left[sequence.left.length - 1]);
+        sequence.width.push(sequence.width[sequence.width.length - 1]);
+        sequence.height.push(sequence.height[sequence.height.length - 1]);
+      }
     }
 
     return sequence;
@@ -866,14 +892,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #animateSidebarButtons(sidebarButtons) {
     if (sidebarButtons) {
-      gZenUIManager
-        .elementAnimate(
+      gZenUIManager.motion
+        .animate(
           sidebarButtons,
           { opacity: [1, 0] },
           {
-            duration: 100,
-            easing: 'ease-in-out',
-            fill: 'forwards',
+            duration: 0.2,
+            type: 'spring',
+            bounce: this.#GLANCE_ANIMATION_DURATION - 0.1,
           }
         )
         .then(() => {
@@ -902,8 +928,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Element} browserSidebarContainer - The sidebar container
    */
   #animateParentBackgroundClose(browserSidebarContainer) {
-    gZenUIManager
-      .elementAnimate(
+    gZenUIManager.motion
+      .animate(
         browserSidebarContainer,
         {
           scale: [0.98, 1],
@@ -911,8 +937,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         },
         {
           duration: this.#GLANCE_ANIMATION_DURATION / 1.5,
-          easing: 'ease-in-out',
-          fill: 'forwards',
+          type: 'spring',
+          bounce: 0,
         }
       )
       .then(() => {
@@ -939,10 +965,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const closingData = this.#createClosingDataFromOriginalPosition(originalPosition);
       const arcSequence = this.#createGlanceArcSequence(closingData, 'closing');
 
-      gZenUIManager
-        .elementAnimate(this.browserWrapper, arcSequence, {
+      gZenUIManager.motion
+        .animate(this.browserWrapper, arcSequence, {
           duration: this.#GLANCE_ANIMATION_DURATION,
-          fill: 'forwards',
+          ease: 'easeOut',
         })
         .then(() => {
           // Remove element preview after closing animation
@@ -1459,7 +1485,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.browserWrapper.style.width = `${browserRect.width}px`;
     this.browserWrapper.style.height = `${browserRect.height}px`;
 
-    await gZenUIManager.elementAnimate(
+    await gZenUIManager.motion.animate(
       this.browserWrapper,
       {
         width: ['85%', '100%'],
@@ -1467,7 +1493,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       },
       {
         duration: this.#GLANCE_ANIMATION_DURATION,
-        easing: 'ease-in-out',
+        type: 'spring',
+        bounce: 0,
       }
     );
 

@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Vaihda Tallennustilaa
 zen-devtools-toggle-dom-shortcut = Vaihda DOM:ia
 zen-devtools-toggle-accessibility-shortcut = Vaihda Esteettömyystilaan
 zen-close-all-unpinned-tabs-shortcut = Sulje kaikki kiinnittämättömät välilehdet
+zen-new-unsynced-window-shortcut = New Unsynced Window

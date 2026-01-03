@@ -148,10 +148,6 @@ export class nsZenSiteDataPanel {
       'unified-extensions-context-menu-manage-extension'
     );
 
-    if (!manageExtensionItem || !this.unifiedPanel) {
-      return;
-    }
-
     manageExtensionItem.addEventListener('command', () => {
       this.unifiedPanel.hidePopup();
     });

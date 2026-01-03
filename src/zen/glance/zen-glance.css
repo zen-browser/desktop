@@ -125,7 +125,7 @@
     left: 0;
     flex: unset !important;
     /* Promote to its own layer during transitions to reduce jank */
-    will-change: transform, top, left;
+    will-change: transform;
     width: 85%;
     height: 100%;
 
@@ -146,6 +146,10 @@
       border-radius: var(--zen-native-inner-radius);
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
+    }
+
+    &:not([has-finished-animation='true']) .browserStack {
+      transform: translate(-50%, -50%);
     }
 
     & browser {

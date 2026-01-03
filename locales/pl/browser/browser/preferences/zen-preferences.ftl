@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Włącz Pamięć
 zen-devtools-toggle-dom-shortcut = Włącz DOM
 zen-devtools-toggle-accessibility-shortcut = Włącz Dostępność
 zen-close-all-unpinned-tabs-shortcut = Zamknij wszystkie nieprzypięte karty
+zen-new-unsynced-window-shortcut = New Unsynced Window

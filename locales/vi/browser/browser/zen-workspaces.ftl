@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Các không gian làm việc
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Không gian
 zen-panel-ui-workspaces-create = 
     .label = Tạo không gian làm việc
 zen-panel-ui-folder-create = 

@@ -31,6 +31,10 @@ function formatRelativeTime(timestamp) {
   return `${month} month${month === 1 ? '' : 's'} ago`;
 }
 
+function groupIsCollapsiblePins(group) {
+  return group?.tagName.toLowerCase() === 'zen-workspace-collapsible-pins';
+}
+
 class nsZenFolders extends nsZenDOMOperatedFeature {
   #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref('zen.folders.max-subfolders', 5);
 
@@ -208,6 +212,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   on_TabGrouped(event) {
     const tab = event.detail;
     const group = tab.group;
+    if (groupIsCollapsiblePins(group)) {
+      return;
+    }
     group.pinned = tab.pinned;
     const isActiveFolder = group?.activeGroups?.length > 0;
 
@@ -231,6 +238,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (this._sessionRestoring) return;
     const folder = event.detail;
     const parentFolder = event.target;
+    if (groupIsCollapsiblePins(parentFolder)) {
+      return;
+    }
     const isActiveFolder = parentFolder?.activeGroups?.length > 0;
     const isSplitView = folder.hasAttribute('split-view-group');
     if (isActiveFolder && isSplitView) {
@@ -455,10 +465,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   canDropElement(element, targetElement) {
     const isZenFolder = element?.isZenFolder;
     const level = targetElement?.group?.level + 1;
-    if (isZenFolder && level >= this.#ZEN_MAX_SUBFOLDERS) {
-      return false;
-    }
-    return true;
+    return !(isZenFolder && level >= this.#ZEN_MAX_SUBFOLDERS);
   }
 
   createFolder(tabs = [], options = {}) {
@@ -802,7 +809,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (!isTab && !groupElem?.hasAttribute('selected') && !forCollapse) {
       groupElem = null; // Don't indent if the group is not selected
     }
-    if (groupElem?.tagName.toLowerCase() === 'zen-workspace-collapsible-pins') {
+    if (groupIsCollapsiblePins(groupElem)) {
       groupElem = null; // Don't indent if it's inside the collapsible pinned tabs
     }
     let level = groupElem?.level + 1 || 0;

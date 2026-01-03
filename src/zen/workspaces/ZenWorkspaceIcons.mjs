@@ -3,16 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 class nsZenWorkspaceIcons extends MozXULElement {
+  #hasConnected = false;
+
   constructor() {
     super();
   }
 
   connectedCallback() {
-    if (this.delayConnectedCallback() || this._hasConnected) {
+    if (this.delayConnectedCallback() || this.#hasConnected) {
       return;
     }
 
-    this._hasConnected = true;
+    this.#hasConnected = true;
     window.addEventListener('ZenWorkspacesUIUpdate', this, true);
 
     this.initDragAndDrop();

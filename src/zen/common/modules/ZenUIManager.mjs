@@ -853,7 +853,6 @@ window.gZenVerticalTabsManager = {
 
   animateItemOpen(aItem) {
     if (
-      !gZenUIManager.motion ||
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
@@ -872,8 +871,8 @@ window.gZenVerticalTabsManager = {
     try {
       const itemSize = aItem.getBoundingClientRect().height;
       const transform = `-${itemSize}px`;
-      gZenUIManager.motion
-        .animate(
+      gZenUIManager
+        .elementAnimate(
           aItem,
           {
             opacity: [0, 1],
@@ -881,38 +880,30 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? [] : [transform, '0px'],
           },
           {
-            duration: 0.11,
+            duration: 110,
             easing: 'ease-out',
           }
         )
         .then(() => {})
         .catch((err) => {
           console.error(err);
-        })
-        .finally(() => {
-          aItem.style.removeProperty('margin-bottom');
-          aItem.style.removeProperty('transform');
-          aItem.style.removeProperty('opacity');
         });
       const itemLabel =
         aItem.querySelector('.tab-group-label-container') || aItem.querySelector('.tab-content');
-      gZenUIManager.motion
-        .animate(
+      gZenUIManager
+        .elementAnimate(
           itemLabel,
           {
             filter: ['blur(1px)', 'blur(0px)'],
           },
           {
-            duration: 0.11,
+            duration: 110,
             easing: 'ease-out',
           }
         )
         .then(() => {})
         .catch((err) => {
           console.error(err);
-        })
-        .finally(() => {
-          itemLabel.style.removeProperty('filter');
         });
     } catch (e) {
       console.error(e);
@@ -926,7 +917,7 @@ window.gZenVerticalTabsManager = {
     const height = aTab.getBoundingClientRect().height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
-    return gZenUIManager.motion.animate(
+    return gZenUIManager.elementAnimate(
       aTab,
       {
         opacity: [1, 0],
@@ -938,8 +929,9 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 0.075,
+        duration: 75,
         easing: 'ease-out',
+        fill: 'forwards',
       }
     );
   },

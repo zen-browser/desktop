@@ -45,6 +45,7 @@ class nsZenCollapsiblePins extends nsZenFolder {
 
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
+  #hasConnected = false;
 
   static get markup() {
     return `
@@ -103,13 +104,13 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   connectedCallback() {
-    if (this.delayConnectedCallback() || this._hasConnected) {
+    if (this.delayConnectedCallback() || this.#hasConnected) {
       // If we are not ready yet, or if we have already connected, we
       // don't need to do anything.
       return;
     }
 
-    this._hasConnected = true;
+    this.#hasConnected = true;
     this.appendChild(this.constructor.fragment);
 
     this.tabsContainer = this.querySelector('.zen-workspace-normal-tabs-section');

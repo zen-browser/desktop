@@ -1368,13 +1368,13 @@ class nsZenWorkspaces {
       const workspaceElement = this.workspaceElement(workspace.uuid);
       if (workspaceElement) {
         if (previousElement === null) {
-          gZenUIManager.tabsWrapper.insertBefore(
+          gZenUIManager.tabsWrapper.moveBefore(
             workspaceElement,
             gZenUIManager.tabsWrapper.firstChild
           );
           hasChanged = true;
         } else if (previousElement.nextSibling !== workspaceElement) {
-          gZenUIManager.tabsWrapper.insertBefore(workspaceElement, previousElement.nextSibling);
+          gZenUIManager.tabsWrapper.moveBefore(workspaceElement, previousElement.nextSibling);
           hasChanged = true;
         }
         previousElement = workspaceElement;

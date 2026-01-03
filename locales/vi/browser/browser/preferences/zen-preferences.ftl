@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Bật lưu trữ
 zen-devtools-toggle-dom-shortcut = Bật/Tắt DOM
 zen-devtools-toggle-accessibility-shortcut = Bật/Tắt trợ năng
 zen-close-all-unpinned-tabs-shortcut = Đóng tất cả thẻ chưa ghim
+zen-new-unsynced-window-shortcut = New Unsynced Window

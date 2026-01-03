@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Tároló kapcsolása
 zen-devtools-toggle-dom-shortcut = DOM kapcsolása
 zen-devtools-toggle-accessibility-shortcut = Hozzáférhetőség kapcsolása
 zen-close-all-unpinned-tabs-shortcut = Összes rögzítetlen lap bezárása
+zen-new-unsynced-window-shortcut = New Unsynced Window

@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Arbetsytor
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Arbetsytor
 zen-panel-ui-workspaces-create = 
     .label = Skapa arbetsyta
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Rensa
     .tooltiptext = Stäng alla flikar som inte är fästa
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Nästa arbetsyta
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Föregående arbetsyta

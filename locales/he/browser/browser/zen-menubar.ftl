@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] צמצום לשוניות מוצמדות
         }
 zen-menubar-appearance = 
-    .label = עיצוב האתר
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = אוטומטי
 zen-menubar-appearance-light = 

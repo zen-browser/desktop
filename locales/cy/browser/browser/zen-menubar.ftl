@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
         *[ffug] Lleihau Tabiau wedi'u Pinio
         }
 zen-menubar-appearance = 
-    .label = Ymddangosiad y Wefan
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Awtomatig
 zen-menubar-appearance-light = 

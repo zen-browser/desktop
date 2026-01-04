@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Collapse Pinned Tabs
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Automatic
 zen-menubar-appearance-light = 

@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Recolher Abas Fixadas
         }
 zen-menubar-appearance = 
-    .label = Aparência de Sites
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Automático
 zen-menubar-appearance-light = 

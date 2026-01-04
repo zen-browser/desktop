@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Fixierte Tabs einklappen
         }
 zen-menubar-appearance = 
-    .label = Seiten Darstellung
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Automatisch
 zen-menubar-appearance-light = 

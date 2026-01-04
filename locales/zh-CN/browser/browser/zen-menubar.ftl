@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] 折叠固定标签页
         }
 zen-menubar-appearance = 
-    .label = 网站外观
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = 自动
 zen-menubar-appearance-light = 

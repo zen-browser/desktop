@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = 工作區
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = 工作區
 zen-panel-ui-workspaces-create = 
     .label = 建立工作區
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = 清除
     .tooltiptext = 關閉所有未釘選的分頁
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = 下一工作區
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = 上一工作區

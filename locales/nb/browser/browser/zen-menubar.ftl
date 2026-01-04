@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Minimer festede faner
         }
 zen-menubar-appearance = 
-    .label = Utseende av nettsted
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Automatisk
 zen-menubar-appearance-light = 

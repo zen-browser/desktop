@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
         *[false] Laghdaigh Cluaisíní Priontáilte
         }
 zen-menubar-appearance = 
-    .label = Dealramh an tSuímh Ghréasáin
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Uathoibríoch
 zen-menubar-appearance-light = 

@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] 고정된 탭 축소
         }
 zen-menubar-appearance = 
-    .label = 웹사이트 모양
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = 자동
 zen-menubar-appearance-light = 

@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Lágmarka festa flipa
         }
 zen-menubar-appearance = 
-    .label = Útlit vefsvæðis
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Sjálfvirkt
 zen-menubar-appearance-light = 

@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Réduire les onglets épinglés
         }
 zen-menubar-appearance = 
-    .label = Apparence des sites web
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Automatique
 zen-menubar-appearance-light = 

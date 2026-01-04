@@ -5,14 +5,16 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Expandera fästa flikar
+           *[false] Fäll in fästa flikar
         }
 zen-menubar-appearance = 
-    .label = Website Appearance
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatiskt
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Ljust
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Mörkt

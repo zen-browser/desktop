@@ -9,7 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Sabitlenmiş Sekmeleri Daralt
         }
 zen-menubar-appearance = 
-    .label = Site Görünümü
+    .label = Appearance
+zen-menubar-appearance-description = 
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
     .label = Otomatik
 zen-menubar-appearance-light = 

@@ -118,7 +118,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get childActiveGroups() {
-    if (this.tagName === "zen-workspace-collapsible-pins" ) {
+    if (this.tagName === 'zen-workspace-collapsible-pins') {
       return Array.from(this.parentElement.querySelectorAll('zen-folder[has-active]'));
     }
     return Array.from(this.querySelectorAll('zen-folder[has-active]'));

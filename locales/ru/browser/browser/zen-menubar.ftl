@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Свернуть закрепленные вкладки
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Внешний вид
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Сайты будут использовать:
 zen-menubar-appearance-auto = 
     .label = Автоматически
 zen-menubar-appearance-light = 

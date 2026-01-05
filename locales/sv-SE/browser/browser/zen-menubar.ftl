@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Fäll in fästa flikar
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Utseende
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Webbplatser kommer att använda:
 zen-menubar-appearance-auto = 
     .label = Automatiskt
 zen-menubar-appearance-light = 

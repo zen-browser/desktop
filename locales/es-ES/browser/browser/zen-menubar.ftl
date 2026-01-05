@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Colapsar pestañas fijadas
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Apariencia
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Los sitios web usarán:
 zen-menubar-appearance-auto = 
     .label = Automático
 zen-menubar-appearance-light = 

@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Collapse Pinned Tabs
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Ngoại hình
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Trang web sẽ sử dụng:
 zen-menubar-appearance-auto = 
     .label = Automatic
 zen-menubar-appearance-light = 

@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] Rögzített lapok összecsukása
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Megjelenés
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = A weboldalak ezt fogják használni:
 zen-menubar-appearance-auto = 
     .label = Automatikus
 zen-menubar-appearance-light = 

@@ -144,17 +144,11 @@
     },
 
     "spaceItem": {
-      "oneOf": [
-        { "$ref": "#/$defs/tab" },
-        { "$ref": "#/$defs/folder" }
-      ]
+      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
     },
 
     "folderItem": {
-      "oneOf": [
-        { "$ref": "#/$defs/tab" },
-        { "$ref": "#/$defs/folder" }
-      ]
+      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
     }
   }
 }

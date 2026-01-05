@@ -5,7 +5,7 @@
 pane-zen-looks-title = Apparence
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
-zen-warning-language = Si vous changez la langue par défaut, il peut être plus facile pour des sites Internet de vous traquer.
+zen-warning-language = Si vous changez la langue par défaut, il peut être plus facile pour des sites Web de vous traquer.
 zen-vertical-tabs-layout-header = Disposition du navigateur
 zen-vertical-tabs-layout-description = Choisissez la disposition qui vous convient le mieux
 zen-layout-single-toolbar = Barre d’outils unique

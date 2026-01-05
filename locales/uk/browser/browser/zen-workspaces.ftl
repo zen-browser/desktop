@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Простори
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Простори
 zen-panel-ui-workspaces-create = 
     .label = Створити простір
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Очистити
     .tooltiptext = Закрити всі відкріплені вкладки
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Наступний простір
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Попередній простір

@@ -28,14 +28,14 @@ if test "$SURFER_COMPAT" = "x86_64"; then
 
   if test "$ZEN_RELEASE"; then
     ac_add_options --enable-wasm-avx
-    ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O3 -w"
+    ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O2 -w"
   fi
 else
   ac_add_options --enable-clang-plugin
   ac_add_options --target=aarch64-apple-darwin
 
   if test "$ZEN_RELEASE"; then
-    ac_add_options --enable-optimize="-O3 -mcpu=apple-m1"
+    ac_add_options --enable-optimize="-O2 -mcpu=apple-m1"
 
     # As of Clang 13, the default is -mcpu=apple-m1 when using a aarch64-apple-macos target,
     # but we're using apple64-apple-darwin, which defaults to -mcpu=apple-a7, which disables

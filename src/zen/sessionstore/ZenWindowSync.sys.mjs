@@ -96,11 +96,7 @@ class nsZenWindowSync {
   #browserWindows = {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
-        if (
-          window.__SSi &&
-          !window.closed &&
-          !window.gZenWorkspaces?.privateWindowOrDisabled
-        ) {
+        if (window.__SSi && !window.closed && !window.gZenWorkspaces?.privateWindowOrDisabled) {
           yield window;
         }
       }

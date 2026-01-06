@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d83bee7390 100644
+index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c9b8386b3 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -10,18 +10,19 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
            <stack class="tab-icon-stack">
              <hbox class="tab-throbber"/>
              <hbox class="tab-icon-pending"/>
-@@ -37,8 +38,10 @@
+@@ -38,9 +39,11 @@
              <hbox class="tab-secondary-label">
                <label class="tab-icon-sound-label tab-icon-sound-pip-label" data-l10n-id="browser-tab-audio-pip" role="presentation"/>
              </hbox>
 +            <label class="tab-reset-pin-label" data-l10n-id="tab-reset-pin-label" role="presentation"/>
            </vbox>
+           <image class="tab-note-icon" role="presentation"/>
            <image class="tab-close-button close-icon" role="button" data-l10n-id="tabbrowser-close-tabs-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
 +          <image class="tab-reset-button reset-icon" role="button" data-l10n-id="tabbrowser-unload-tab-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
          </hbox>
        </stack>
        `;
-@@ -84,7 +87,7 @@
+@@ -86,7 +89,7 @@
          ".tab-content":
            "pinned,selected=visuallyselected,multiselected,titlechanged,attention",
          ".tab-icon-stack":
@@ -30,7 +31,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
          ".tab-throbber":
            "fadein,pinned,busy,progress,selected=visuallyselected",
          ".tab-icon-pending":
-@@ -93,9 +96,9 @@
+@@ -95,9 +98,9 @@
            "src=image,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
          ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
          ".tab-icon-overlay":
@@ -42,7 +43,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
          ".tab-label-container":
            "pinned,selected=visuallyselected,labeldirection",
          ".tab-label":
-@@ -186,7 +189,7 @@
+@@ -188,7 +191,7 @@
      }
  
      set _visuallySelected(val) {
@@ -51,7 +52,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
          return;
        }
  
-@@ -222,11 +225,21 @@
+@@ -224,11 +227,21 @@
      }
  
      get visible() {
@@ -78,7 +79,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
      }
  
      get hidden() {
-@@ -305,7 +318,7 @@
+@@ -307,7 +320,7 @@
          return false;
        }
  
@@ -87,7 +88,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
      }
  
      get lastAccessed() {
-@@ -382,7 +395,18 @@
+@@ -384,7 +397,18 @@
      }
  
      get group() {
@@ -107,7 +108,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
      }
  
      get splitview() {
-@@ -473,6 +497,8 @@
+@@ -489,6 +513,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -116,7 +117,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -527,6 +553,10 @@
+@@ -543,6 +569,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -127,7 +128,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -587,6 +617,14 @@
+@@ -603,6 +633,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -142,7 +143,7 @@ index 2dacb325190b6ae42ebeb3e9f0e862dc690ecdca..1cc31b04e0165f7ae6ffc377da08f8d8
      }
  
      on_dblclick(event) {
-@@ -610,6 +648,8 @@
+@@ -626,6 +664,8 @@
            animate: true,
            triggeringEvent: event,
          });

@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index afa7f8e7dd74173bf2c696bd96f7e86e8b0126bc..4847c24923f673e91eb7fb65ea6b037f38062405 100644
+index 2faed30e09511c381051bc40910a883d1d7bc10d..6ba2d0d91235ed33e4b4bad281c974b5960beaa2 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -25,7 +25,15 @@
+@@ -25,7 +25,13 @@
      </stack>
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
@@ -15,6 +15,10 @@ index afa7f8e7dd74173bf2c696bd96f7e86e8b0126bc..4847c24923f673e91eb7fb65ea6b037f
 +#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
+   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" hidden="true"/>
+@@ -34,3 +40,5 @@
+     </stack>
+   </vbox>
  </hbox>
 +</vbox>
 +</hbox>

@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
         *[ffug] Lleihau Tabiau wedi'u Pinio
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Gwedd
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Bydd gwefannau’n defnyddio:
 zen-menubar-appearance-auto = 
     .label = Awtomatig
 zen-menubar-appearance-light = 

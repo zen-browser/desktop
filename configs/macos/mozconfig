@@ -14,15 +14,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-lto=cross,thin
 fi
 
-if test "$ZEN_RELEASE"; then
-  if test "$ZEN_GA_DISABLE_PGO"; then
-    export ZEN_DUMMY=1
-  else
-    export MOZ_PGO=1
-    ac_add_options MOZ_PGO=1
-  fi
-fi
-
 if test "$SURFER_COMPAT" = "x86_64"; then
   ac_add_options --target=x86_64-apple-darwin
 
@@ -49,9 +40,18 @@ fi
 # Keep using ld64 on PGO/LTO builds because of performance regressions when using lld.
 # Mozilla sets "MOZ_LD64_KNOWN_GOOD" to true when they do automated builds with PGO/LTO on macOS.
 # See https://searchfox.org/firefox-main/rev/e61d59b5c9a651fd7bf28043f87c0dc669833496/build/moz.configure/lto-pgo.configure#261
-# export MOZ_LD64_KNOWN_GOOD=1
-# ac_add_options --enable-linker=ld64
-# 
-# if test "$ZEN_RELEASE"; then
-#   mk_add_options MOZ_MAKE_FLAGS="-j4"
-# fi
+export MOZ_LD64_KNOWN_GOOD=1
+ac_add_options --enable-linker=ld64
+
+if test "$ZEN_RELEASE"; then
+  if ! test "$ZEN_GA_DISABLE_PGO"; then
+    if test "$ZEN_GENERATE_PGO_DATA"; then
+      mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+      ac_add_options --enable-profile-generate=cross
+    else
+      ac_add_options --enable-profile-use=cross
+      ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
+      ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
+    fi
+  fi
+fi

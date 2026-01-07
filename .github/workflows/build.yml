@@ -336,7 +336,7 @@ jobs:
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
 
-  mac:
+  mac-pgo-generate:
     name: macOS build
     uses: ./.github/workflows/macos-release-build.yml
     permissions:
@@ -348,6 +348,21 @@ jobs:
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
+      generate-pgo-data: true
+
+  mac:
+    name: macOS build
+    uses: ./.github/workflows/macos-release-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [build-data, buildid, mac-pgo-generate]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ inputs.update_branch }}
+      MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
+      use-sccache: ${{ inputs.use-sccache }}
+      generate-pgo-data: false
 
   mac-uni:
     name: macOS build (Universal)

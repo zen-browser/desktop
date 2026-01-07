@@ -22,6 +22,11 @@ on:
         required: true
         type: boolean
         default: false
+      generate-pgo-data:
+        description: 'Generate PGO data'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   mac-build:
@@ -68,8 +73,8 @@ jobs:
 
       - name: Setup Git
         run: |
-          git config --global user.email "mauro-balades@users.noreply.github.com"
-          git config --global user.name "mauro-balades"
+          git config --global user.email "mr-cheffy@users.noreply.github.com"
+          git config --global user.name "mr-cheffy"
 
       - name: Install system dependencies
         run: |
@@ -120,6 +125,18 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
         run: npm run import -- --verbose
 
+      - name: Download PGO data
+        if: ${{ inputs.generate-pgo-data == false }}
+        uses: actions/download-artifact@v4
+        with:
+          name: zen-macos-pgo-data-${{ matrix.arch }}
+
+      - name: Move PGO data
+        if: ${{ inputs.generate-pgo-data == false }}
+        run: |
+          mkdir -p $(echo ~)/artifact
+          mv ./zen-macos-pgo-data-*/ $(echo ~)/artifact
+
       - name: Bootstrap
         run: |
           cd engine
@@ -141,6 +158,7 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GENERATE_PGO_DATA: ${{ inputs.generate-pgo-data && '1' || '0' }}
         run: |
           export SURFER_PLATFORM="darwin"
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
@@ -149,6 +167,7 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Package
+        if: ${{ !inputs.generate-pgo-data }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
@@ -162,6 +181,7 @@ jobs:
           rm -rf ~/.zen-keys
 
       - name: Rename artifacts
+        if: ${{ !inputs.generate-pgo-data }}
         run: |
           echo "Tarballing DMG"
           set -ex
@@ -171,6 +191,7 @@ jobs:
 
       - name: Upload dist dmg
         uses: actions/upload-artifact@v4
+        if: ${{ !inputs.generate-pgo-data }}
         with:
           retention-days: 1
           name: zen-${{ matrix.arch }}-apple-darwin-dist.dmg
@@ -178,7 +199,7 @@ jobs:
 
       - name: Upload host mar
         uses: actions/upload-artifact@v4
-        if: matrix.arch == 'aarch64'
+        if: matrix.arch == 'aarch64' && !inputs.generate-pgo-data
         with:
           retention-days: 1
           name: zen-macos-host-mar
@@ -186,8 +207,16 @@ jobs:
 
       - name: Upload platform.ini
         uses: actions/upload-artifact@v4
-        if: matrix.arch == 'x86_64'
+        if: matrix.arch == 'x86_64' && !inputs.generate-pgo-data
         with:
           retention-days: 1
           name: platform.ini
           path: ./platform.ini
+
+      - name: Upload PGO data
+        uses: actions/upload-artifact@v4
+        if: inputs.generate-pgo-data
+        with:
+          retention-days: 1
+          name: zen-macos-pgo-data-${{ matrix.arch }}
+          path: ./zen-macos-pgo-data

@@ -135,7 +135,9 @@ jobs:
         if: ${{ inputs.generate-pgo-data == false }}
         run: |
           mkdir -p $(echo ~)/artifact
-          mv ./zen-macos-pgo-data-*/ $(echo ~)/artifact
+          mv $GITHUB_WORKSPACE/zen-macos-pgo-data-${{ matrix.arch }}/* $(echo ~)/artifact
+          chmod +x ~/artifact/en-US.log
+          chmod +x ~/artifact/merged.profdata
 
       - name: Bootstrap
         run: |

@@ -212,14 +212,11 @@ window.gZenUIManager = {
 
   updateTabsToolbar() {
     const kUrlbarHeight = 335;
-    gURLBar.textbox.style.setProperty(
+    gURLBar.style.setProperty(
       '--zen-urlbar-top',
-      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
+      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty(
-      '--zen-urlbar-width',
-      `${Math.min(window.innerWidth / 2, 700)}px`
-    );
+    gURLBar.style.setProperty('--zen-urlbar-width', `${Math.min(window.innerWidth / 2, 700)}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -339,7 +336,7 @@ window.gZenUIManager = {
 
   onUrlbarSearchModeChanged(event) {
     const { searchMode } = event.detail;
-    const input = gURLBar.textbox;
+    const input = gURLBar;
     if (gURLBar.hasAttribute('breakout-extend') && !this._animatingSearchMode) {
       this._animatingSearchMode = true;
       this.motion.animate(input, { scale: [1, 0.98, 1] }, { duration: 0.25 }).then(() => {
@@ -1036,7 +1033,7 @@ window.gZenVerticalTabsManager = {
   recalculateURLBarHeight() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        gURLBar.textbox.removeAttribute('--urlbar-height');
+        gURLBar.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == 'macosx' ? 34 : 32;
@@ -1044,7 +1041,7 @@ window.gZenVerticalTabsManager = {
           height = 40;
         }
         if (typeof height !== 'undefined') {
-          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+          gURLBar.style.setProperty('--urlbar-height', `${height}px`);
         }
         gURLBar.zenFormatURLValue();
       });

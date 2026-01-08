@@ -72,14 +72,12 @@ do_icons() {
 do_common_icons() {
   for filename in common/*.svg; do
     # remove the os/ prefix
-    merge_svg_paths $filename
     add_header_to_file $filename
     filename=$(basename $filename)
     echo "*  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/common/$filename) " >> jar.inc.mn
   done
   for filename in common/selectable/*.svg; do
     # remove the os/ prefix
-    merge_svg_paths $filename
     add_header_to_file $filename
     filename=$(basename $filename)
     echo "*  skin/classic/browser/zen-icons/selectable/$filename          (../shared/zen-icons/common/selectable/$filename) " >> jar.inc.mn

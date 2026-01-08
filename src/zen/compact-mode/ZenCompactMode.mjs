@@ -433,16 +433,18 @@ window.gZenCompactModeManager = {
         }
         if (canHideSidebar && isCompactMode) {
           this._setElementExpandAttribute(this.sidebar, false);
-          gZenUIManager
-            .elementAnimate(
+          gZenUIManager.motion
+            .animate(
               this.sidebar,
               {
-                marginRight: ['0px', this.sidebarIsOnRight ? `-${sidebarWidth}px` : '0px'],
-                marginLeft: ['0px', this.sidebarIsOnRight ? '0px' : `-${sidebarWidth}px`],
+                marginRight: [0, this.sidebarIsOnRight ? `-${sidebarWidth}px` : 0],
+                marginLeft: [0, this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`],
               },
               {
-                easing: 'ease-in',
-                duration: 120,
+                ease: 'easeIn',
+                type: 'spring',
+                bounce: 0,
+                duration: 0.12,
               }
             )
             .then(() => {
@@ -472,7 +474,7 @@ window.gZenCompactModeManager = {
                   titlebar.style.removeProperty('visibility');
                   titlebar.style.removeProperty('transition');
 
-                  gURLBar.textbox.style.removeProperty('visibility');
+                  gURLBar.style.removeProperty('visibility');
 
                   resolve();
                 });
@@ -655,7 +657,7 @@ window.gZenCompactModeManager = {
   },
 
   addMouseActions() {
-    gURLBar.textbox.addEventListener('mouseenter', (event) => {
+    gURLBar.addEventListener('mouseenter', (event) => {
       if (event.target.closest('#urlbar[zen-floating-urlbar]')) {
         window.requestAnimationFrame(() => {
           this._setElementExpandAttribute(gZenVerticalTabsManager.actualWindowButtons, false);
@@ -784,7 +786,7 @@ window.gZenCompactModeManager = {
       }, this.HOVER_HACK_DELAY);
     });
 
-    gURLBar.textbox.addEventListener('mouseleave', () => {
+    gURLBar.addEventListener('mouseleave', () => {
       setTimeout(() => {
         setTimeout(() => {
           requestAnimationFrame(() => {

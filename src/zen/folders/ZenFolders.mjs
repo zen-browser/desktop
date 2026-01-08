@@ -789,9 +789,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (!gZenPinnedTabManager.expandedSidebarMode) {
       return;
     }
-    const isSpaceCollapsed = document.querySelector(
-      'zen-workspace[active] zen-workspace-collapsible-pins[has-active]'
-    )?.collapsed;
+    const isSpaceCollapsed = gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs;
 
     let tab = tabs[0];
     let isTab = false;

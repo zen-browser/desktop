@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 34e9206ff45592db2b1b24568f1f6f1bf16b4c3a..6fa3f13dd18f90bcc0c715c4896617fdfce4887e 100644
+index e9f0ea328cde3631ef856f44d47abb9c5cec5ee1..66ec2bc8bb716ad9e87f88f3d93f9516c9eb8052 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
 @@ -7,7 +7,7 @@
@@ -11,7 +11,7 @@ index 34e9206ff45592db2b1b24568f1f6f1bf16b4c3a..6fa3f13dd18f90bcc0c715c4896617fd
      pointer-events: none;
      -moz-user-focus: ignore;
    }
-@@ -81,13 +81,6 @@
+@@ -85,13 +85,6 @@
    }
  }
  
@@ -25,7 +25,7 @@ index 34e9206ff45592db2b1b24568f1f6f1bf16b4c3a..6fa3f13dd18f90bcc0c715c4896617fd
  
  #urlbar[focused] {
    #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button:not(:hover, [open]),
-@@ -178,16 +171,17 @@
+@@ -182,16 +175,17 @@
    }
  
    #identity-icon {

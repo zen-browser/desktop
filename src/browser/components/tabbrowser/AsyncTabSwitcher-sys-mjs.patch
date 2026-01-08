@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
-index bcd7689e9d68ef8b171c327188174334c4271e21..0a95e1137fdf4b63e0d841776ad934da1a513c6f 100644
+index 9c5e92fbd555d328ce09c0cf0ff8078584f68478..2af7a428bc830d8c12b3d3c0af375c97e6942994 100644
 --- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 +++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
-@@ -938,6 +938,7 @@ export class AsyncTabSwitcher {
+@@ -939,6 +939,7 @@ export class AsyncTabSwitcher {
        this.tabbrowser._printPreviewBrowsers.has(browser) ||
        this.tabbrowser.splitViewBrowsers.includes(browser) ||
        lazy.PictureInPicture.isOriginatingBrowser(browser)

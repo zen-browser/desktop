@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 4f5886c6142f8061f40a54aa3a5d99e47fd4d5ea..c57e169f5c73c4bc9b8253dd99ddb7f3c4547364 100644
+index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7cbafb10b2 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -11,6 +11,23 @@

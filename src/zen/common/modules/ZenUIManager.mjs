@@ -531,7 +531,11 @@ window.gZenUIManager = {
 
       // Safely restore URL bar state with proper validation
       if (this._prevUrlbarLabel) {
-        gURLBar.setURI(this._prevUrlbarLabel, onSwitch, false, false, !onSwitch);
+        gURLBar.setURI({
+          uri: this._prevUrlbarLabel,
+          dueToTabSwitch: onSwitch,
+          isSameDocument: !onSwitch,
+        });
       }
 
       gURLBar.handleRevert();
@@ -545,7 +549,7 @@ window.gZenUIManager = {
           gURLBar.updateTextOverflow();
 
           if (onElementPicked && onSwitch) {
-            gURLBar.setURI(null, onSwitch);
+            gURLBar.setURI({ dueToTabSwitch: onSwitch });
           }
 
           // Ensure tab and browser are valid before updating state

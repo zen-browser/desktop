@@ -1,8 +1,8 @@
 diff --git a/testing/profiles/mochitest/user.js b/testing/profiles/mochitest/user.js
-index a4068ac3f61161d014c49d54ae7a3bf886868f1b..b755e8004bc19817c83668603ecf0127000b709f 100644
+index 782258420cdce901f182897b796731a1fdf69ecf..59b2827a7cd8a8580ba5061cabb36a2ba13240ba 100644
 --- a/testing/profiles/mochitest/user.js
 +++ b/testing/profiles/mochitest/user.js
-@@ -41,3 +41,8 @@ user_pref("places.history.floodingPrevention.enabled", false);
+@@ -36,3 +36,8 @@ user_pref("places.history.floodingPrevention.enabled", false);
  // permission, and we can open it and wait for the user to give permission, then
  // don't do that.
  user_pref("geo.prompt.open_system_prefs", false);

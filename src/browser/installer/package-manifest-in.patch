@@ -1,8 +1,8 @@
 diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
-index 6bb2e64906d6fe173c9129dd9c9c80b5323416b1..9f1fb4764c8c13a02cf0d384cfa71cc16e3c8701 100644
+index dbfb287747ed9059cfb46838800421ac9ffe78c1..47279559a7dbea8b08bafb75e968f7b219e1d818 100644
 --- a/browser/installer/package-manifest.in
 +++ b/browser/installer/package-manifest.in
-@@ -373,17 +373,17 @@ bin/libfreebl_64int_3.so
+@@ -374,17 +374,17 @@ bin/libfreebl_64int_3.so
  ; [MaintenanceService]
  ;
  #ifdef MOZ_MAINTENANCE_SERVICE

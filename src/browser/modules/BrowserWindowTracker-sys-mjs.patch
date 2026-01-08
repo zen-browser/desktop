@@ -1,8 +1,8 @@
 diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
-index f2b64cfbdf579c67496b785c8efafc69bf20372a..f3d8755aa7d122d9ee5c449a02cceb629aa6aa00 100644
+index 0cd9e9630fff20d71dc1dd7367ae6af4f7a53f71..7212c5f4745f3c93c1ede932af1b0e85580aa679 100644
 --- a/browser/modules/BrowserWindowTracker.sys.mjs
 +++ b/browser/modules/BrowserWindowTracker.sys.mjs
-@@ -325,6 +325,7 @@ export const BrowserWindowTracker = {
+@@ -326,6 +326,7 @@ export const BrowserWindowTracker = {
      args = null,
      remote = undefined,
      fission = undefined,
@@ -10,7 +10,7 @@ index f2b64cfbdf579c67496b785c8efafc69bf20372a..f3d8755aa7d122d9ee5c449a02cceb62
    } = {}) {
      let windowFeatures = "chrome,dialog=no";
      if (all) {
-@@ -378,6 +379,12 @@ export const BrowserWindowTracker = {
+@@ -382,6 +383,12 @@ export const BrowserWindowTracker = {
        windowFeatures,
        args
      );

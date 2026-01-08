@@ -1141,7 +1141,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           for (let i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
             if (!group.tabs.includes(tab)) {
-              gBrowser.moveTabToGroup(tab, this._getSplitViewGroup(tabs));
+              gBrowser.moveTabToExistingGroup(tab, this._getSplitViewGroup(tabs));
               group.tabs.push(tab);
               this.addTabToSplit(tab, group.layoutTree);
             }
@@ -1188,7 +1188,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (splitGroup) {
         for (const tab of tabs) {
           if (!tab.group || tab.group !== splitGroup) {
-            gBrowser.moveTabToGroup(tab, splitGroup);
+            gBrowser.moveTabToExistingGroup(tab, splitGroup);
           }
         }
       }
@@ -1783,7 +1783,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           let splitGroup = droppedOnTab.group;
           if (splitGroup && (!draggedTab.group || draggedTab.group !== splitGroup)) {
             this._moveTabsToContainer([draggedTab], droppedOnTab);
-            gBrowser.moveTabToGroup(draggedTab, splitGroup);
+            gBrowser.moveTabToExistingGroup(draggedTab, splitGroup);
             if (hoverSide === 'left' || hoverSide === 'top') {
               try {
                 splitGroup.tabs[0].before(draggedTab);

@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index 55f33b3f630ca0eea7e4bde19f9875802c8aec78..f11fdaab05baf85fe2b56fa07442ded3c9641abc 100644
+index b00139d7af878326ff303c08d5ddd47501b8c7db..03b487f50717554db4183d404cc4fffeb14db758 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
-@@ -140,7 +140,6 @@
+@@ -145,7 +145,6 @@
    }
  
    browser:is([blank], [pendingpaint]) {
@@ -10,7 +10,7 @@ index 55f33b3f630ca0eea7e4bde19f9875802c8aec78..f11fdaab05baf85fe2b56fa07442ded3
    }
  
    browser[type="content"] {
-@@ -377,7 +376,7 @@ split-view-footer {
+@@ -392,7 +391,7 @@ split-view-footer {
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);

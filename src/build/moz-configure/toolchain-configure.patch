@@ -1,8 +1,8 @@
 diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolchain.configure
-index 3d8d2ea651fa1320306b32b0f7b1b73e0da1df61..257f75a92a26d7a724353c614365924d230aef83 100644
+index 0fb4faa598072ccad47c376765a9433b40e27a6d..6ab448cc4202e5a3e871dfd753e95d76453758e5 100644
 --- a/build/moz.configure/toolchain.configure
 +++ b/build/moz.configure/toolchain.configure
-@@ -1991,7 +1991,7 @@ def select_linker_tmpl(host_or_target):
+@@ -1995,7 +1995,7 @@ def select_linker_tmpl(host_or_target):
              # ensure consistent output.
              env["LC_ALL"] = "C"
              retcode, stdout, stderr = get_cmd_output(*cmd, env=env)

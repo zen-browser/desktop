@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index c58bc4871fbfb5ca924df822a09d783f21db616a..68fd73055d30ec4f4128fb8639369f07b167955a 100644
+index 6d6cc27e203a5799683a4e6eae1007ff30a69cd0..953c5cd09bcfd832d8ad11016977509f55935eb7 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
-@@ -620,7 +620,7 @@ export class UrlbarView {
+@@ -618,7 +618,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,7 +11,7 @@ index c58bc4871fbfb5ca924df822a09d783f21db616a..68fd73055d30ec4f4128fb8639369f07
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -2855,6 +2855,8 @@ export class UrlbarView {
+@@ -2852,6 +2852,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -24,7 +24,7 @@ index c58bc4871fbfb5ca924df822a09d783f21db616a..68fd73055d30ec4f4128fb8639369f07
    }
  
    #enableOrDisableRowWrap() {
--    let wrap = getBoundsWithoutFlushing(this.input.textbox).width < 650;
+-    let wrap = getBoundsWithoutFlushing(this.input).width < 650;
 +    let wrap = false;
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);

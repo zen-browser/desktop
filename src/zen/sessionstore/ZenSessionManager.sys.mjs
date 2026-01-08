@@ -182,8 +182,9 @@ export class nsZenSessionManager {
     // to make sure that the sidebar object is properly initialized.
     // This would happen on first run after having a single private window
     // open when quitting the app, for example.
-    if (!initialState.windows?.length) {
+    if (!initialState?.windows?.length) {
       this.log('No windows found in initial state, creating an empty one');
+      initialState ||= {};
       initialState.windows = [{}];
     }
     // When we don't have browser.startup.page set to resume session,

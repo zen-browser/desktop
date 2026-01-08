@@ -985,7 +985,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       folderData.emptyTabIds.forEach((id) => {
         oldGroup?.querySelector(`tab[id="${id}"]`)?.setAttribute('zen-empty-tab', true);
       });
-      if (oldGroup) {
+      if (gBrowser.isTabGroup(oldGroup)) {
         if (!folderData.splitViewGroup) {
           const folder = this._createFolderNode({
             id: folderData.id,

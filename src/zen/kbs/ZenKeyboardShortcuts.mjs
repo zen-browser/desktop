@@ -1417,13 +1417,3 @@ window.gZenKeyboardShortcutsManager = {
     return null;
   },
 };
-
-document.addEventListener(
-  'MozBeforeInitialXULLayout',
-  () => {
-    if (Services.prefs.getBoolPref('zen.keyboard.shortcuts.enabled', false)) {
-      window.gZenKeyboardShortcutsManager.beforeInit();
-    }
-  },
-  { once: true }
-);

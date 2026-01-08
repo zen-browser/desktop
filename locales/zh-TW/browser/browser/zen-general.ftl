@@ -22,7 +22,7 @@ tab-context-zen-edit-title =
 tab-context-zen-edit-icon = 
     .label = 變更圖示
 zen-themes-corrupted = 你的 { -brand-short-name } 模組文件已損壞，它們已重設為預設主題。
-zen-shortcuts-corrupted = 你的 { -brand-short-name } 快捷文件已損壞。它們已被重設為預設值。
+zen-shortcuts-corrupted = 你的 { -brand-short-name } 快捷鍵文件已損壞。已被重設為預設值。
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification = 新的 URL 欄已啟用，你不再需要新增新分頁。<br/><br/>馬上打開新分頁來看看新的 URL 欄！
 zen-disable = 停用

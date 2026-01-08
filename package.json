@@ -49,13 +49,11 @@
     "url": "https://github.com/zen-browser/desktop/issues"
   },
   "homepage": "https://github.com/zen-browser/desktop#readme",
-  "dependencies": {
-    "@zen-browser/surfer": "^1.12.1"
-  },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
     "@eslint/js": "^9.32.0",
     "@microsoft/eslint-plugin-sdl": "^1.1.0",
+    "@zen-browser/surfer": "^1.13.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-html": "^8.1.3",

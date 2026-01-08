@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
            *[false] 摺疊釘選分頁
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = 外觀
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = 網站將會使用：
 zen-menubar-appearance-auto = 
     .label = 自動
 zen-menubar-appearance-light = 

@@ -1378,7 +1378,10 @@ window.gZenVerticalTabsManager = {
   },
 
   renameTabStart(event) {
-    let target = TabContextMenu.contextTab || event.target;
+    let target = event.target;
+    if (event.target.id === 'context_zen-edit-tab-title') {
+      target = TabContextMenu.contextTab;
+    }
     const isTab = !!target.closest('.tabbrowser-tab');
     if (
       this._tabEdited ||

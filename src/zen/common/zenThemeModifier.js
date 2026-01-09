@@ -97,7 +97,10 @@ var ZenThemeModifier = {
         document.documentElement.style.setProperty('--zen-border-radius', targetRadius + 'px');
       } else if (AppConstants.platform == 'linux') {
         // Linux uses GTK CSD titlebar radius, default to 8px
-        document.documentElement.style.setProperty('--zen-border-radius', 'env(-moz-gtk-csd-titlebar-radius, 8px)');
+        document.documentElement.style.setProperty(
+          '--zen-border-radius',
+          'env(-moz-gtk-csd-titlebar-radius, 8px)'
+        );
       } else {
         // Windows defaults to 8px
         document.documentElement.style.setProperty('--zen-border-radius', '8px');

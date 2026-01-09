@@ -570,7 +570,7 @@
     }
 
     #shouldSwitchSpace(event) {
-      const padding = 10;
+      const padding = Services.prefs.getIntPref('zen.workspaces.dnd-switch-padding');
       // If we are hovering over the edges of the gNavToolbox or the splitter, we
       // can change the workspace after a short delay.
       const splitter = document.getElementById('zen-sidebar-splitter');
@@ -594,8 +594,7 @@
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      // TODO: Add support for switching spaces when dragging folders and split-view groups.
-      if (!isTab(draggedTab) || draggedTab.hasAttribute('zen-essential')) {
+      if (draggedTab.hasAttribute('zen-essential')) {
         this.clearSpaceSwitchTimer();
         return;
       }
@@ -676,17 +675,32 @@
       this.clearSpaceSwitchTimer();
       super.handle_drop(event);
       const dt = event.dataTransfer;
+      const activeWorkspace = gZenWorkspaces.activeWorkspace;
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (
         isTab(draggedTab) &&
         !draggedTab.hasAttribute('zen-essential') &&
-        draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace
+        draggedTab.getAttribute('zen-workspace-id') != activeWorkspace
       ) {
         const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
         for (let tab of movingTabs) {
-          tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
+          tab.setAttribute('zen-workspace-id', activeWorkspace);
         }
         gBrowser.selectedTab = draggedTab;
+      }
+      if (isTabGroupLabel(draggedTab)) {
+        draggedTab = draggedTab.group;
+        if (draggedTab.getAttribute('zen-workspace-id') != activeWorkspace) {
+          for (let tab of draggedTab.tabs) {
+            tab.setAttribute('zen-workspace-id', activeWorkspace);
+            tab.group.setAttribute('zen-workspace-id', activeWorkspace);
+            gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
+            if (gZenWorkspaces.lastSelectedWorkspaceTabs[activeWorkspace] === tab) {
+              // This tab is no longer the last selected tab in the previous workspace because it's being moved to a new workspace
+              delete gZenWorkspaces.lastSelectedWorkspaceTabs[activeWorkspace];
+            }
+          }
+        }
       }
       gZenWorkspaces.updateTabsContainers();
     }

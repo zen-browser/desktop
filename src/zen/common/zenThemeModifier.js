@@ -88,11 +88,22 @@ var ZenThemeModifier = {
 
   updateBorderRadius() {
     const borderRadius = Services.prefs.getIntPref('zen.theme.border-radius', -1);
+
     // -1 is the default value, will use platform-native values
     // otherwise, use the custom value
     if (borderRadius == -1) {
-      document.documentElement.style.removeProperty('--zen-border-radius');
+      if (AppConstants.platform == 'macosx') {
+        const targetRadius = window.matchMedia('(-moz-mac-tahoe-theme)').matches ? 15 : 10;
+        document.documentElement.style.setProperty('--zen-border-radius', targetRadius + 'px');
+      } else if (AppConstants.platform == 'linux') {
+        // Linux uses GTK CSD titlebar radius, default to 8px
+        document.documentElement.style.setProperty('--zen-border-radius', 'env(-moz-gtk-csd-titlebar-radius, 8px)');
+      } else {
+        // Windows defaults to 8px
+        document.documentElement.style.setProperty('--zen-border-radius', '8px');
+      }
     } else {
+      // Use the overridden value
       document.documentElement.style.setProperty('--zen-border-radius', borderRadius + 'px');
     }
   },

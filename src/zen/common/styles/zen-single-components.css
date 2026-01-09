@@ -232,7 +232,7 @@ body > #confetti {
 
 #zen-update-animation-border {
   position: absolute;
-  border-radius: var(--zen-native-content-radius);
+  border-radius: var(--zen-border-radius);
   width: 100%;
   height: 100%;
 }

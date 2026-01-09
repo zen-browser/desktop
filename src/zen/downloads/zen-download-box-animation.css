@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--toolbar-color);
-  border-radius: var(--zen-native-content-radius);
+  border-radius: var(--zen-border-radius);
   box-shadow: var(--zen-big-shadow);
   pointer-events: none;
   z-index: 1100;

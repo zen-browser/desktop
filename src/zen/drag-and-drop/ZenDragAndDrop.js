@@ -691,15 +691,8 @@
       if (isTabGroupLabel(draggedTab)) {
         draggedTab = draggedTab.group;
         if (draggedTab.getAttribute('zen-workspace-id') != activeWorkspace) {
-          for (let tab of draggedTab.tabs) {
-            tab.setAttribute('zen-workspace-id', activeWorkspace);
-            tab.group.setAttribute('zen-workspace-id', activeWorkspace);
-            gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
-            if (gZenWorkspaces.lastSelectedWorkspaceTabs[activeWorkspace] === tab) {
-              // This tab is no longer the last selected tab in the previous workspace because it's being moved to a new workspace
-              delete gZenWorkspaces.lastSelectedWorkspaceTabs[activeWorkspace];
-            }
-          }
+          draggedTab.setAttribute('dnd-space-switch', true);
+          gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace);
         }
       }
       gZenWorkspaces.updateTabsContainers();

@@ -443,28 +443,44 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   changeFolderToSpace(folder, workspaceId) {
+    const hasDndSwitch = folder.hasAttribute('dnd-space-switch');
     const currentWorkspace = gZenWorkspaces.getActiveWorkspaceFromCache();
-    if (currentWorkspace.uuid === workspaceId) {
+
+    if (currentWorkspace.uuid === workspaceId && !hasDndSwitch) {
       return;
     }
+
     const workspaceElement = gZenWorkspaces.workspaceElement(workspaceId);
-    const pinnedTabsContainer = workspaceElement.pinnedTabsContainer;
-    pinnedTabsContainer.insertBefore(folder, pinnedTabsContainer.lastChild);
+
+    if (!hasDndSwitch) {
+      const pinnedTabsContainer = workspaceElement.pinnedTabsContainer;
+      pinnedTabsContainer.insertBefore(folder, pinnedTabsContainer.lastChild);
+    }
+
+    const { lastSelectedWorkspaceTabs } = gZenWorkspaces;
+
     for (const tab of folder.tabs) {
-      tab.setAttribute('zen-workspace-id', workspaceId);
       // This sets the ID for the current folder and any sub-folder
       // we may encounter
+      tab.setAttribute('zen-workspace-id', workspaceId);
       tab.group.setAttribute('zen-workspace-id', workspaceId);
       gBrowser.TabStateFlusher.flush(tab.linkedBrowser);
-      if (gZenWorkspaces.lastSelectedWorkspaceTabs[workspaceId] === tab) {
+
+      if (lastSelectedWorkspaceTabs[workspaceId] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to a new workspace
-        delete gZenWorkspaces.lastSelectedWorkspaceTabs[workspaceId];
+        delete lastSelectedWorkspaceTabs[workspaceId];
       }
     }
+
     folder.dispatchEvent(new CustomEvent('ZenFolderChangedWorkspace', { bubbles: true }));
-    gZenWorkspaces.changeWorkspaceWithID(workspaceId).then(() => {
-      gBrowser.moveTabTo(folder, { elementIndex: 0, forceUngrouped: true });
-    });
+
+    if (!hasDndSwitch) {
+      gZenWorkspaces.changeWorkspaceWithID(workspaceId).then(() => {
+        gBrowser.moveTabTo(folder, { elementIndex: 0, forceUngrouped: true });
+      });
+    }
+
+    folder.removeAttribute('dnd-space-switch');
   }
 
   canDropElement(element, targetElement) {

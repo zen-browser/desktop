@@ -268,12 +268,21 @@
   );
   --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 
-  /* Nativity */
+  /* Nativity - border radius handling
+   * When zen.theme.border-radius is -1 (default/auto), use platform-native values
+   * Otherwise use the user-defined value
+   */
   --zen-native-content-radius: var(--zen-border-radius);
-  @media (-moz-platform: linux) {
+  @media (-moz-pref('zen.theme.border-radius', -1)) {
+    --zen-native-content-radius: 8px; /* Generic/Windows default */
+  }
+  @media (-moz-platform: macos) and (-moz-pref('zen.theme.border-radius', -1)) {
+    --zen-native-content-radius: 10px;
+  }
+  @media (-moz-platform: linux) and (-moz-pref('zen.theme.border-radius', -1)) {
     --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
   }
-  @media (-moz-mac-tahoe-theme) {
+  @media (-moz-mac-tahoe-theme) and (-moz-pref('zen.theme.border-radius', -1)) {
     --zen-native-content-radius: 15px;
   }
   --zen-native-inner-radius: var(

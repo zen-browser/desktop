@@ -219,7 +219,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const isActiveFolder = group?.activeGroups?.length > 0;
 
     if (isActiveFolder) {
-      group.activeTabs = [...new Set([...group.activeTabs, tab])].sort((a, b) => a._tPos > b._tPos);
+      for (const folder of group.activeGroups) {
+        folder.activeTabs = [...new Set([...folder.activeTabs, tab])].sort(
+          (a, b) => a._tPos > b._tPos
+        );
+        this.setFolderIndentation([tab], folder, /* for collapse = */ true);
+      }
     }
 
     if (group.hasAttribute('split-view-group') && group.hasAttribute('zen-pinned-changed')) {

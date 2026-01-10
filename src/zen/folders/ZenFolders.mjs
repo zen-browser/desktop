@@ -442,8 +442,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
   }
 
-  changeFolderToSpace(folder, workspaceId) {
-    const hasDndSwitch = folder.hasAttribute('dnd-space-switch');
+  changeFolderToSpace(folder, workspaceId, { hasDndSwitch = false } = {}) {
     const currentWorkspace = gZenWorkspaces.getActiveWorkspaceFromCache();
 
     if (currentWorkspace.uuid === workspaceId && !hasDndSwitch) {
@@ -479,8 +478,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         gBrowser.moveTabTo(folder, { elementIndex: 0, forceUngrouped: true });
       });
     }
-
-    folder.removeAttribute('dnd-space-switch');
   }
 
   canDropElement(element, targetElement) {

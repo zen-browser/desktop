@@ -70,7 +70,7 @@ export class nsZenSessionManager {
    */
   #sidebarObject = new nsZenSidebarObject();
   /**
-   * A defferred task to create backups of the session file.
+   * A deferred task to create backups of the session file.
    */
   #deferredBackupTask = null;
 
@@ -94,7 +94,6 @@ export class nsZenSessionManager {
 
   uninit() {
     this.#file = null;
-    this.#sidebarObject = null;
     this.#deferredBackupTask?.disarm();
     this.#deferredBackupTask = null;
   }
@@ -280,7 +279,7 @@ export class nsZenSessionManager {
 
   /**
    * Called when the last known backup should be deleted and a new one
-   * created. This uses the #regenerationDebouncer to debounce clusters of
+   * created. This uses the #deferredBackupTask to debounce clusters of
    * events that might cause such a regeneration to occur.
    */
   #debounceRegeneration() {
@@ -306,7 +305,10 @@ export class nsZenSessionManager {
     try {
       const today = new Date();
       const backupFolder = this.#backupFolderPath;
-      await IOUtils.makeDirectory(backupFolder);
+      await IOUtils.makeDirectory(backupFolder, {
+        ignoreExisting: true,
+        createAncestors: true,
+      });
       const todayFileName = `zen-sessions-${today.getFullYear()}-${(today.getMonth() + 1)
         .toString()
         .padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}.json${

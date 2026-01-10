@@ -5,6 +5,7 @@
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
 } from 'chrome://browser/content/ZenUpdates.mjs';
+import { kDefaultSidebarWidth } from 'resource:///modules/ZenCustomizableUI.sys.mjs';
 
 class ZenStartup {
   #watermarkIgnoreElements = ['zen-toast-container'];
@@ -14,9 +15,11 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#initBrowserBackground();
-    this.#changeSidebarLocation();
-    this.#zenInitBrowserLayout();
+    gZenKeyboardShortcutsManager.beforeInit();
+    gZenWorkspaces.init().then(() => {
+      this.#initBrowserBackground();
+      this.#zenInitBrowserLayout();
+    });
   }
 
   #initBrowserBackground() {
@@ -36,7 +39,7 @@ class ZenStartup {
   #zenInitBrowserLayout() {
     if (this.#hasInitializedLayout) return;
     this.#hasInitializedLayout = true;
-    gZenKeyboardShortcutsManager.beforeInit();
+    this.#changeSidebarLocation();
     try {
       const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
       const kNewContainerId = 'zen-appcontent-navbar-container';
@@ -54,16 +57,13 @@ class ZenStartup {
         document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
       }
 
-      gZenWorkspaces.init();
-      setTimeout(() => {
-        gZenUIManager.init();
-        this.#checkForWelcomePage();
-      }, 0);
+      gZenUIManager.init();
+      this.#checkForWelcomePage();
     } catch (e) {
       console.error('ZenThemeModifier: Error initializing browser layout', e);
     }
     if (gBrowserInit.delayedStartupFinished) {
-      this.delayedStartupFinished();
+      this.#delayedStartupFinished();
     } else {
       Services.obs.addObserver(this, 'browser-delayed-startup-finished');
     }
@@ -74,14 +74,12 @@ class ZenStartup {
     // this window has finished painting and starting up.
     if (aTopic == 'browser-delayed-startup-finished' && aSubject == window) {
       Services.obs.removeObserver(this, 'browser-delayed-startup-finished');
-      this.delayedStartupFinished();
+      this.#delayedStartupFinished();
     }
   }
 
-  delayedStartupFinished() {
-    gZenWorkspaces.promiseInitialized.then(async () => {
-      await delayedStartupPromise;
-      await SessionStore.promiseAllWindowsRestored;
+  #delayedStartupFinished() {
+    gZenWorkspaces.promiseInitialized.then(() => {
       delete gZenUIManager.promiseInitialized;
       this.#initSearchBar();
       gZenCompactModeManager.init();
@@ -141,6 +139,20 @@ class ZenStartup {
     const browser = document.getElementById('browser');
     browser.prepend(gNavToolbox);
 
+    // Set a splitter to navigator-toolbox
+    const splitter = document.createXULElement('splitter');
+    splitter.setAttribute('id', 'zen-sidebar-splitter');
+    splitter.setAttribute('orient', 'horizontal');
+    splitter.setAttribute('resizebefore', 'sibling');
+    splitter.setAttribute('resizeafter', 'none');
+    gNavToolbox.insertAdjacentElement('afterend', splitter);
+
+    splitter.addEventListener('dblclick', (e) => {
+      if (e.button !== 0) return;
+      gNavToolbox.style.width = kDefaultSidebarWidth;
+      gNavToolbox.setAttribute('width', kDefaultSidebarWidth);
+    });
+
     const sidebarPanelWrapper = document.getElementById('tabbrowser-tabbox');
     for (let id of kElementsToAppend) {
       const elem = document.getElementById(id);
@@ -178,7 +190,7 @@ class ZenStartup {
 window.gZenStartup = new ZenStartup();
 
 window.addEventListener(
-  'MozBeforeInitialXULLayout',
+  'load',
   () => {
     gZenStartup.init();
   },

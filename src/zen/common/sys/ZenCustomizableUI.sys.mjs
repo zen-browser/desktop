@@ -4,6 +4,8 @@
 
 import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
 
+export const kDefaultSidebarWidth = AppConstants.platform === 'macosx' ? '230px' : '186px';
+
 export const ZenCustomizableUI = new (class {
   constructor() {}
 
@@ -39,16 +41,7 @@ export const ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = AppConstants.platform === 'macosx' ? '230px' : '186px';
     const toolbox = window.gNavToolbox;
-
-    // Set a splitter to navigator-toolbox
-    const splitter = window.document.createXULElement('splitter');
-    splitter.setAttribute('id', 'zen-sidebar-splitter');
-    splitter.setAttribute('orient', 'horizontal');
-    splitter.setAttribute('resizebefore', 'sibling');
-    splitter.setAttribute('resizeafter', 'none');
-    toolbox.insertAdjacentElement('afterend', splitter);
 
     const sidebarBox = window.MozXULElement.parseXULToFragment(`
       <toolbar id="zen-sidebar-top-buttons"
@@ -93,12 +86,6 @@ export const ZenCustomizableUI = new (class {
     toolbox.removeAttribute('style');
     toolbox.style.width = width;
     toolbox.setAttribute('width', width);
-
-    splitter.addEventListener('dblclick', (e) => {
-      if (e.button !== 0) return;
-      toolbox.style.width = kDefaultSidebarWidth;
-      toolbox.setAttribute('width', kDefaultSidebarWidth);
-    });
 
     const newTab = window.document.getElementById('vertical-tabs-newtab-button');
     newTab.classList.add('zen-sidebar-action-button');

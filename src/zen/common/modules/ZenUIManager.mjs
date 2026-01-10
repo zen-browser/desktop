@@ -1389,8 +1389,12 @@ window.gZenVerticalTabsManager = {
         Services.prefs.getBoolPref('browser.tabs.closeTabByDblclick')) &&
         isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
-    )
+    ) {
       return;
+    }
+    if (isTab && !target.closest('.tab-label-container')) {
+      return;
+    }
     this._tabEdited =
       target.closest('.tabbrowser-tab') ||
       target.closest('.zen-current-workspace-indicator-name') ||

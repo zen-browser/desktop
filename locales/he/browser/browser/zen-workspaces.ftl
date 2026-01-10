@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = מרחבים
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = מרחבים
 zen-panel-ui-workspaces-create = 
     .label = יצירת מרחב
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = ניקוי
     .tooltiptext = סגירת כל הלשוניות שאינן מוצמדות
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = מרחב הבא
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = מרחב קודם

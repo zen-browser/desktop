@@ -11,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
   TabStateFlusher: 'resource:///modules/sessionstore/TabStateFlusher.sys.mjs',
   ZenSessionStore: 'resource:///modules/zen/ZenSessionManager.sys.mjs',
+  TabStateCache: 'resource:///modules/sessionstore/TabStateCache.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gWindowSyncEnabled', 'zen.window-sync.enabled');
@@ -329,24 +330,6 @@ class nsZenWindowSync {
   }
 
   /**
-   * Ensures that all synced tabs with a given ID has the same permanentKey.
-   * @param {Object} aTab - The tab to ensure sync for.
-   */
-  #makeSureTabSyncsPermanentKey(aTab) {
-    if (!aTab.id) {
-      return;
-    }
-    let permanentKey = aTab.linkedBrowser.permanentKey;
-    this.#runOnAllWindows(null, (win) => {
-      const tab = this.getItemFromWindow(win, aTab.id);
-      if (tab) {
-        tab.linkedBrowser.permanentKey = permanentKey;
-        tab.permanentKey = permanentKey;
-      }
-    });
-  }
-
-  /**
    * Retrieves a item element from a window by its ID.
    *
    * @param {Window} aWindow - The window containing the item.
@@ -543,6 +526,7 @@ class nsZenWindowSync {
    * @param {Object} aOtherTab - The tab in the other window.
    */
   async #swapBrowserDocShellsAsync(aOurTab, aOtherTab) {
+    lazy.TabStateFlusher.flush(aOtherTab.linkedBrowser);
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
       this.#swapBrowserDocSheellsInner(aOurTab, aOtherTab);
     });
@@ -591,14 +575,18 @@ class nsZenWindowSync {
    *
    * @param {Object} aOurTab - The tab in the current window.
    * @param {Object} aOtherTab - The tab in the other window.
-   * @param {boolean} focus - Indicates if the tab should be focused after the swap.
-   * @param {boolean} onClose - Indicates if the swap is done during a tab close operation.
+   * @param {boolean} options.focus - Indicates if the tab should be focused after the swap.
+   * @param {boolean} options.onClose - Indicates if the swap is done during a tab close operation.
    */
-  #swapBrowserDocSheellsInner(aOurTab, aOtherTab, focus = true, onClose = false) {
+  #swapBrowserDocSheellsInner(aOurTab, aOtherTab, { focus = true, onClose = false } = {}) {
     // Can't swap between chrome and content processes.
     if (aOurTab.linkedBrowser.isRemoteBrowser != aOtherTab.linkedBrowser.isRemoteBrowser) {
       return false;
     }
+    // See https://github.com/zen-browser/desktop/issues/11851, swapping the browsers
+    // don't seem to update the state's cache properly, leading to issues when restoring
+    // the session later on.
+    let tabState = this.#getTabState(aOtherTab);
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
     // the operation, so it doesn't really care about cleaning up the other tab.
     // We need to make a new tab progress listener for the other tab after the swap.
@@ -607,10 +595,6 @@ class nsZenWindowSync {
       () => {
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
-        // Sometimes, when closing a window for example, when we swap the browsers,
-        // there's a chance that the tab does not have the entries state moved over properly.
-        // To avoid losing history entries, we have to keep the permanentKey in sync.
-        this.#makeSureTabSyncsPermanentKey(aOurTab);
         // Since we are moving progress listeners around, there's a chance that we
         // trigger a load while making the switch, and since we remove the previous
         // tab's listeners, the other browser window will never get the 'finish load' event
@@ -626,7 +610,11 @@ class nsZenWindowSync {
         // We do need to do this though instead of just unloading the browser because
         // firefox doesn't expect an unloaded + selected tab, so we need to get
         // around this limitation somehow.
-        if (!onClose && aOtherTab.linkedBrowser?.currentURI.spec !== 'about:blank') {
+        if (
+          !onClose &&
+          (aOtherTab.linkedBrowser?.currentURI.spec !== 'about:blank' ||
+            aOtherTab.hasAttribute('busy'))
+        ) {
           this.log(`Loading about:blank in our tab ${aOtherTab.id} before swap`);
           aOtherTab.linkedBrowser.loadURI(Services.io.newURI('about:blank'), {
             triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
@@ -653,7 +641,15 @@ class nsZenWindowSync {
     // It's also important to note that if we don't flush the state here,
     // we would start receiving invalid history changes from the the incorrect
     // browser view that was just swapped out.
-    lazy.TabStateFlusher.flush(aOurTab.linkedBrowser);
+    lazy.TabStateFlusher.flush(aOurTab.linkedBrowser).finally(() => {
+      if (!tabState.entries?.length) {
+        this.log(`Error: No tab state entries found for tab ${aOtherTab.id} during swap`);
+        return;
+      }
+      lazy.TabStateCache.update(aOurTab.linkedBrowser.permanentKey, {
+        entries: tabState.entries,
+      });
+    });
     return true;
   }
 
@@ -767,9 +763,12 @@ class nsZenWindowSync {
     for (let tab of activeTabsOnClosedWindow) {
       const targetTab = this.getItemFromWindow(mostRecentWindow, tab.id);
       if (targetTab) {
-        targetTab._zenContentsVisible = true;
         this.log(`Moving active tab ${tab.id} to most recent window on close`);
-        this.#swapBrowserDocSheellsInner(targetTab, tab, targetTab.selected, /* onClose =*/ true);
+        this.#swapBrowserDocSheellsInner(targetTab, tab, {
+          focus: targetTab.selected,
+          onClose: true,
+        });
+        targetTab._zenContentsVisible = true;
         // We can animate later, whats important is to always stay on the same
         // process and avoid async operations here to avoid the closed window
         // being unloaded before the swap is done.
@@ -950,7 +949,6 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
-    this.#makeSureTabSyncsPermanentKey(tab);
     lazy.TabStateFlusher.flush(tab.linkedBrowser);
   }
 

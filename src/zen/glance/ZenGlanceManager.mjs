@@ -617,8 +617,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const steps = this.#ARC_CONFIG.ARC_STEPS;
     const arcDirection = shouldArcDownward ? 1 : -1;
 
-    function easeInOutQuad(t) {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    function easeOutBack(x) {
+      const c1 = 0.4;
+      const c3 = c1 + 1;
+      return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2;
     }
 
     function easeOutCubic(t) {
@@ -628,7 +630,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // First, create the main animation steps
     for (let i = 0; i <= steps; i++) {
       const progress = i / steps;
-      const eased = direction === 'opening' ? easeInOutQuad(progress) : easeOutCubic(progress);
+      const eased = direction === 'opening' ? easeOutBack(progress) : easeOutCubic(progress);
 
       // Calculate size interpolation
       const currentWidth = startPosition.width + (endPosition.width - startPosition.width) * eased;
@@ -643,30 +645,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const y =
         startPosition.y + distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-      sequence.transform.push(`translate(-50%, -50%) scale(1)`);
+      sequence.transform.push(`translate(-50%, -50%)`);
       sequence.top.push(`${y}px`);
       sequence.left.push(`${x}px`);
       sequence.width.push(`${currentWidth}px`);
       sequence.height.push(`${currentHeight}px`);
-    }
-
-    let scale = 1;
-    const bounceSteps = 60;
-    if (direction === 'opening') {
-      for (let i = 0; i < bounceSteps; i++) {
-        const progress = i / bounceSteps;
-        // Scale up slightly then back to normal
-        scale = 1 + 0.003 * Math.sin(progress * Math.PI);
-        // If we are at the last step, ensure scale is exactly 1
-        if (i === bounceSteps - 1) {
-          scale = 1;
-        }
-        sequence.transform.push(`translate(-50%, -50%) scale(${scale})`);
-        sequence.top.push(sequence.top[sequence.top.length - 1]);
-        sequence.left.push(sequence.left[sequence.left.length - 1]);
-        sequence.width.push(sequence.width[sequence.width.length - 1]);
-        sequence.height.push(sequence.height[sequence.height.length - 1]);
-      }
     }
 
     return sequence;

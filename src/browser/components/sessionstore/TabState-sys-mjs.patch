@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..ffa95005b96ea384433f18dace63faa35d2d21bf 100644
+index 82721356d191055bec0d4b0ca49e481221988801..238d6ae1a4261e098d1e986e3c3df813d9d625f3 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
 @@ -85,7 +85,24 @@ class _TabState {
@@ -27,12 +27,3 @@ index 82721356d191055bec0d4b0ca49e481221988801..ffa95005b96ea384433f18dace63faa3
  
      tabData.userContextId = tab.userContextId || 0;
  
-@@ -98,7 +115,7 @@ class _TabState {
- 
-     // Copy data from the tab state cache only if the tab has fully finished
-     // restoring. We don't want to overwrite data contained in __SS_data.
--    this.copyFromCache(browser.permanentKey, tabData, options);
-+    this.copyFromCache(tab.permanentKey, tabData, options);
- 
-     // After copyFromCache() was called we check for properties that are kept
-     // in the cache only while the tab is pending or restoring. Once that

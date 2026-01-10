@@ -19,7 +19,7 @@ const kZenMaxElementSeparation = 12;
 
 /**
  * ZenThemeModifier controls the application of theme data to the browser,
- * for examplem, it injects the accent color to the document. This is used
+ * for example, it injects the accent color to the document. This is used
  * because we need a way to apply the accent color without having to worry about
  * shadow roots not inheriting the accent color.
  *
@@ -87,8 +87,28 @@ var ZenThemeModifier = {
   },
 
   updateBorderRadius() {
-    const borderRadius = Services.prefs.getIntPref('zen.theme.border-radius');
-    document.documentElement.style.setProperty('--zen-border-radius', borderRadius + 'px');
+    const borderRadius = Services.prefs.getIntPref('zen.theme.border-radius', -1);
+
+    // -1 is the default value, will use platform-native values
+    // otherwise, use the custom value
+    if (borderRadius == -1) {
+      if (AppConstants.platform == 'macosx') {
+        const targetRadius = window.matchMedia('(-moz-mac-tahoe-theme)').matches ? 15 : 10;
+        document.documentElement.style.setProperty('--zen-border-radius', targetRadius + 'px');
+      } else if (AppConstants.platform == 'linux') {
+        // Linux uses GTK CSD titlebar radius, default to 8px
+        document.documentElement.style.setProperty(
+          '--zen-border-radius',
+          'env(-moz-gtk-csd-titlebar-radius, 8px)'
+        );
+      } else {
+        // Windows defaults to 8px
+        document.documentElement.style.setProperty('--zen-border-radius', '8px');
+      }
+    } else {
+      // Use the overridden value
+      document.documentElement.style.setProperty('--zen-border-radius', borderRadius + 'px');
+    }
   },
 
   updateElementSeparation() {

@@ -92,6 +92,7 @@ jobs:
       - name: Populate mozconfig
         env:
           SURFER_MOZCONFIG_ONLY: true
+          ZEN_RELEASE: 1
         run: |
           npm run build
           cd engine

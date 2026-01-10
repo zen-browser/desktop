@@ -293,10 +293,8 @@ export class nsZenSessionManager {
   /**
    * Collects session data for all tabs in a given window.
    *
-   * @param sidebarData
-   *        The sidebar data object to populate.
-   * @param state
-   *        The current session state.
+   * @param sidebarData The sidebar data object to populate.
+   * @param state The current session state.
    */
   #collectTabsData(sidebarData, state) {
     const tabIdRelationMap = new Map();

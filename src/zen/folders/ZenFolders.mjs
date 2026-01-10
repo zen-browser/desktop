@@ -443,9 +443,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   changeFolderToSpace(folder, workspaceId, { hasDndSwitch = false } = {}) {
-    const currentWorkspace = gZenWorkspaces.getActiveWorkspaceFromCache();
-
-    if (currentWorkspace.uuid === workspaceId && !hasDndSwitch) {
+    if (folder.getAttribute('zen-workspace-id') == workspaceId) {
       return;
     }
 

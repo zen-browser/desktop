@@ -1177,7 +1177,19 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       gridType ??= 'grid';
 
+      // Add tabs to the split view group
+      let splitGroup = this._getSplitViewGroup(tabs);
+      const groupId = splitGroup?.id;
+      if (splitGroup) {
+        for (const tab of tabs) {
+          if (!tab.group || tab.group !== splitGroup) {
+            gBrowser.moveTabToExistingGroup(tab, splitGroup);
+          }
+        }
+      }
+
       const splitData = {
+        groupId,
         tabs,
         gridType,
         layoutTree: this.calculateLayoutTree(tabs, gridType),
@@ -1187,19 +1199,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
       }
 
-      // Add tabs to the split view group
-      let splitGroup = this._getSplitViewGroup(tabs);
-      if (splitGroup) {
-        for (const tab of tabs) {
-          if (!tab.group || tab.group !== splitGroup) {
-            gBrowser.moveTabToExistingGroup(tab, splitGroup);
-          }
-        }
-      }
-
-      if (this._sessionRestoring) {
-        return;
-      }
       this.activateSplitView(splitData);
       this.#dispatchItemEvent('ZenSplitViewTabsSplit', splitGroup);
       return splitData;
@@ -1937,31 +1936,70 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   storeDataForSessionStore() {
-    // We cant store any tab or browser elements in the session store
-    // so we need to store the tab indexes and group indexes
-    const data = this._data.map((group) => {
+    const serializeNode = (node) => {
+      if (node.tab) {
+        return {
+          type: 'leaf',
+          tabId: node.tab.id,
+          sizeInParent: node.sizeInParent,
+        };
+      }
+
       return {
-        groupId: group.tabs[0].group?.id,
+        type: 'splitter',
+        direction: node.direction,
+        sizeInParent: node.sizeInParent,
+        children: node._children.map((child) => serializeNode(child)),
+      };
+    };
+
+    return this._data.map((group) => {
+      const serializedTree = serializeNode(group.layoutTree);
+      return {
+        groupId: group.groupId,
         gridType: group.gridType,
+        layoutTree: serializedTree,
+        tabs: group.tabs.map((tab) => tab.id),
       };
     });
-    return data;
   }
 
   restoreDataFromSessionStore(data) {
     if (!data) {
       return;
     }
+
     this._sessionRestoring = true;
-    // We can just get the tab group with document.getElementById(group.groupId)
-    // and add the tabs to it
-    for (const group of data) {
-      const groupElement = document.getElementById(group.groupId);
-      if (groupElement) {
-        const tabs = groupElement.tabs;
-        this.splitTabs(tabs, group.gridType);
-      }
+
+    for (const groupData of data) {
+      const group = document.getElementById(groupData.groupId);
+
+      const deserializeNode = (nodeData) => {
+        if (nodeData.type === 'leaf') {
+          const tab = document.getElementById(nodeData.tabId);
+          if (!tab) return null;
+          return new nsSplitLeafNode(tab, nodeData.sizeInParent);
+        }
+
+        const splitter = new nsSplitNode(nodeData.direction, nodeData.sizeInParent);
+        splitter._children = [];
+
+        for (const childData of nodeData.children) {
+          const childNode = deserializeNode(childData);
+          if (childNode) {
+            childNode.parent = splitter;
+            splitter._children.push(childNode);
+          }
+        }
+
+        return splitter;
+      };
+
+      const layout = deserializeNode(groupData.layoutTree);
+      const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+      splitData.layoutTree = layout;
     }
+
     delete this._sessionRestoring;
   }
 

@@ -1974,6 +1974,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     for (const groupData of data) {
       const group = document.getElementById(groupData.groupId);
 
+      // Backwards compatibility
+      if (!groupData?.layoutTree) {
+        this.splitTabs(group.tabs, group.gridType);
+        delete this._sessionRestoring;
+        return; 
+      }
+
       const deserializeNode = (nodeData) => {
         if (nodeData.type === 'leaf') {
           const tab = document.getElementById(nodeData.tabId);

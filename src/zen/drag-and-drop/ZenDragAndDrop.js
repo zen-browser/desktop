@@ -697,9 +697,7 @@
       }
       if (isTabGroupLabel(draggedTab)) {
         draggedTab = draggedTab.group;
-        if (draggedTab.getAttribute('zen-workspace-id') != activeWorkspace) {
-          gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
-        }
+        gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
       }
       gZenWorkspaces.updateTabsContainers();
     }

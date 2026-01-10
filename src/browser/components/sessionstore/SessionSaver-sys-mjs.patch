@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionSaver.sys.mjs b/browser/components/sessionstore/SessionSaver.sys.mjs
-index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..6906fd9be7ae6ca4316133e0d6552b797c54a7ec 100644
+index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..ff50279aa79afe9deee56a009068dd7c1d4af4e4 100644
 --- a/browser/components/sessionstore/SessionSaver.sys.mjs
 +++ b/browser/components/sessionstore/SessionSaver.sys.mjs
 @@ -20,6 +20,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -19,11 +19,20 @@ index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..6906fd9be7ae6ca4316133e0d6552b79
        // Don't save (or even collect) anything in permanent private
        // browsing mode
  
-@@ -305,6 +306,7 @@ var SessionSaverInternal = {
+@@ -305,6 +306,16 @@ var SessionSaverInternal = {
      this._maybeClearCookiesAndStorage(state);
  
      Glean.sessionRestore.collectData.stopAndAccumulate(timerId);
 +    lazy.ZenSessionStore.saveState(state);
++    for (let win of state.windows) {
++      if (!win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced) {
++        delete win.tabs;
++        delete win.folders;
++        delete win.splitViewData;
++        delete win.groups;
++        delete win.spaces;
++      }
++    }
      return this._writeState(state);
    },
  

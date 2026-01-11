@@ -5,16 +5,16 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Išskleisti prisegtas korteles
+           *[false] Suskleisti prisegtas korteles
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Išvaizda
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Svetainės naudosis:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatinį
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Šviesią
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Tamsų

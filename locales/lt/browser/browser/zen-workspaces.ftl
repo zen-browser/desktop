@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Erdvės
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Erdvės
 zen-panel-ui-workspaces-create = 
     .label = Kurti erdvę
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Valyti
     .tooltiptext = Užverti visas neprisegtas korteles
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Tolesnė erdvė
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Ankstesnė erdvė

@@ -777,12 +777,7 @@ class nsZenWorkspaces {
   }
 
   get workspaceEnabled() {
-    if (typeof this._workspaceEnabled === 'undefined') {
-      this._workspaceEnabled =
-        this.shouldHaveWorkspaces &&
-        !Services.prefs.getBoolPref('zen.testing.profiling.enabled', false);
-    }
-    return this._workspaceEnabled && !window.closed;
+    return this.shouldHaveWorkspaces && !window.closed;
   }
 
   getActiveWorkspaceFromCache() {
@@ -2332,6 +2327,12 @@ class nsZenWorkspaces {
   updateWorkspacesChangeContextMenu() {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = this.getWorkspaces();
+    const ctxCommand = document.getElementById('cmd_zenCtxDeleteWorkspace');
+    if (workspaces.length <= 1) {
+      ctxCommand.setAttribute('disabled', 'true');
+    } else {
+      ctxCommand.removeAttribute('disabled');
+    }
 
     let menuPopupID = 'moveTabOptionsMenu';
     const menuPopup = document.getElementById(menuPopupID);

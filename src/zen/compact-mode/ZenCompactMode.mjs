@@ -467,6 +467,8 @@ window.gZenCompactModeManager = {
                     });
                   }
 
+                  this.sidebar.style.removeProperty('margin-right');
+                  this.sidebar.style.removeProperty('margin-left');
                   this.sidebar.style.removeProperty('transition');
                   this.sidebar.style.removeProperty('transform');
                   this.sidebar.style.removeProperty('point-events');

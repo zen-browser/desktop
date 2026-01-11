@@ -1,8 +1,16 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index 9175fa820ad6bb75cd125fbfda2bf07d6dba4c90..f673cfd15289401ae425256016bf51303063e0b2 100644
+index 9175fa820ad6bb75cd125fbfda2bf07d6dba4c90..62a1a62f304ec8c83e859196861025347e79ba46 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
-@@ -542,7 +542,7 @@ export const URILoadingHelper = {
+@@ -225,6 +225,7 @@ function openInWindow(url, params, sourceWindow) {
+     features,
+     sa
+   );
++  win._zenStartupSyncFlag = Services.prefs.getBoolPref('zen.window-sync.open-link-in-new-unsynced-window') ? 'unsynced' : 'synced';
+ }
+ 
+ function openInCurrentTab(targetBrowser, url, uriObj, params) {
+@@ -542,7 +543,7 @@ export const URILoadingHelper = {
        // page. If a load request bounces off for the currently selected tab,
        // we'll open a new tab instead.
        let tab = w.gBrowser.getTabForBrowser(targetBrowser);
@@ -11,7 +19,7 @@ index 9175fa820ad6bb75cd125fbfda2bf07d6dba4c90..f673cfd15289401ae425256016bf5130
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -972,7 +972,7 @@ export const URILoadingHelper = {
+@@ -972,7 +973,7 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -20,7 +28,7 @@ index 9175fa820ad6bb75cd125fbfda2bf07d6dba4c90..f673cfd15289401ae425256016bf5130
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1018,7 +1018,7 @@ export const URILoadingHelper = {
+@@ -1018,7 +1019,7 @@ export const URILoadingHelper = {
            }
  
            if (!doAdopt) {

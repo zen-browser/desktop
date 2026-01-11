@@ -10,6 +10,7 @@ window.gZenUIManager = {
   _hoverPausedForExpand: false,
   _hasLoadedDOM: false,
   testingEnabled: Services.prefs.getBoolPref('zen.testing.enabled', false),
+  profilingEnabled: Services.prefs.getBoolPref('zen.testing.profiling.enabled', false),
 
   _lastClickPosition: null,
 
@@ -857,7 +858,9 @@ window.gZenVerticalTabsManager = {
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
-      gZenUIManager.testingEnabled ||
+      // We do want to do some animations during testing with profiling enabled
+      // so we can capture and improve them.
+      (gZenUIManager.testingEnabled && !gZenUIManager.profilingEnabled) ||
       !gZenStartup.isReady ||
       aItem.group?.hasAttribute('split-view-group')
     ) {

@@ -1,0 +1,12 @@
+diff --git a/build/moz.configure/lto-pgo.configure b/build/moz.configure/lto-pgo.configure
+index 165541b79842672d8bac48722220532f3913556d..6781b84b9c06ff26a41a0e7d8be5a958600fda62 100644
+--- a/build/moz.configure/lto-pgo.configure
++++ b/build/moz.configure/lto-pgo.configure
+@@ -258,7 +258,6 @@ option(
+     help="Indicate that ld64 is free of symbol aliasing bugs",
+ )
+ 
+-imply_option("MOZ_LD64_KNOWN_GOOD", moz_automation)
+ 
+ use_fat_lto = cxx_compiler.try_link(
+     ldflags=depends(stlport_libs)(

@@ -65,3 +65,10 @@
 
 - name: browser.tabs.closeWindowWithLastTab
   value: false
+
+- name: browser.tabs.dragDrop.multiselectStacking
+  value: false
+  locked: true
+
+- name: browser.tabs.notes.enabled
+  value: false

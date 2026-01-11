@@ -58,6 +58,7 @@
     background: var(--zen-main-browser-background);
     opacity: var(--zen-background-opacity);
     transition: 0s;
+    background-blend-mode: screen;
   }
 
   &:is(.zen-toolbar-background) {
@@ -70,6 +71,7 @@
     background: var(--zen-main-browser-background-old);
     opacity: calc(1 - var(--zen-background-opacity));
     transition: 0s;
+    background-blend-mode: screen;
   }
 
   &:is(.zen-toolbar-background) {

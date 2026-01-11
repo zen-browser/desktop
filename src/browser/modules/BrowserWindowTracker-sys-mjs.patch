@@ -1,0 +1,25 @@
+diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
+index 0cd9e9630fff20d71dc1dd7367ae6af4f7a53f71..7212c5f4745f3c93c1ede932af1b0e85580aa679 100644
+--- a/browser/modules/BrowserWindowTracker.sys.mjs
++++ b/browser/modules/BrowserWindowTracker.sys.mjs
+@@ -326,6 +326,7 @@ export const BrowserWindowTracker = {
+     args = null,
+     remote = undefined,
+     fission = undefined,
++    zenSyncedWindow = true,
+   } = {}) {
+     let windowFeatures = "chrome,dialog=no";
+     if (all) {
+@@ -382,6 +383,12 @@ export const BrowserWindowTracker = {
+       windowFeatures,
+       args
+     );
++    win._zenStartupSyncFlag = Services.prefs.getBoolPref("zen.window-sync.prefer-unsynced-windows")
++      ? (zenSyncedWindow ? 'unsynced' : 'synced')
++      : (zenSyncedWindow ? 'synced' : 'unsynced');
++    if (win._zenStartupSyncFlag === 'unsynced' && openerWindow) {
++      win._zenStartupUnsyncedUserContextId = openerWindow.gZenWorkspaces.getCurrentSpaceContainerId();
++    }
+     this.registerOpeningWindow(win, isPrivate);
+ 
+     win.addEventListener(

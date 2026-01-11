@@ -1,17 +1,8 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 41f65a1f2c3065631780b02d820f632abdf542af..c01c2957367da968d106c83117e45800bb6b15e5 100644
+index c1acf2d6ab3c9a260e73d43af027f34a807e01dc..dbef9778a1582881dd83f4a1dde455308719b2be 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -4,7 +4,7 @@
- 
- @import url("chrome://global/skin/design-system/tokens-brand.css");
- @import url("chrome://global/skin/design-system/text-and-typography.css");
--
-+@import url("chrome://browser/content/zen-styles/zen-theme.css");
- @namespace html "http://www.w3.org/1999/xhtml";
- @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
- 
-@@ -66,7 +66,7 @@
+@@ -63,7 +63,7 @@
     * this in forced colors mode, as we should be using system colours then.
     */
    :root[dialogroot] {
@@ -20,7 +11,7 @@ index 41f65a1f2c3065631780b02d820f632abdf542af..c01c2957367da968d106c83117e45800
    }
  }
  
-@@ -702,7 +702,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
+@@ -696,7 +696,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
    fill-opacity: 1;
  }
  
@@ -29,7 +20,7 @@ index 41f65a1f2c3065631780b02d820f632abdf542af..c01c2957367da968d106c83117e45800
    :root {
      --in-content-sidebar-width: 118px;
    }
-@@ -1092,7 +1092,7 @@ xul|*.sidebar-footer-link {
+@@ -1078,7 +1078,7 @@ xul|*.sidebar-footer-link {
    user-select: none;
  }
  

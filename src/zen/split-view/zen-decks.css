@@ -67,7 +67,8 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
-    outline: 2px solid light-dark(var(--zen-primary-color), var(--button-background-color-primary)) !important;
+    --zen-active-split-outline-color: light-dark(var(--zen-primary-color), var(--button-background-color-primary));
+    outline: 2px solid var(--zen-active-split-outline-color) !important;
   }
 
   &.zen-glance-overlay {
@@ -129,7 +130,7 @@
   top: calc(var(--zen-split-column-gap) / -2);
   left: 50%;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.1s;
   z-index: 100;
   transform: translateX(-50%);
   pointer-events: none;
@@ -140,8 +141,8 @@
   align-items: center;
   position: fixed;
   padding: 0.4rem 0.6rem 0.2rem 0.6rem;
-  border-radius: var(--zen-native-content-radius);
-  background-color: light-dark(rgba(255, 255, 255, 1), rgba(0, 0, 0, 1));
+  border-radius: 6px;
+  background-color: var(--zen-active-split-outline-color);
   box-shadow: 0 0 0 1px var(--button-primary-border-color);
   gap: 0.8rem;
   transform: translateX(-50%);
@@ -151,12 +152,12 @@
 }
 
 :root:not([inDOMFullscreen='true'])
-  .browserSidebarContainer:hover
+  .browserSidebarContainer.deck-selected:hover
   .zen-view-splitter-header-container,
 .zen-view-splitter-header-container:hover {
   pointer-events: all;
   opacity: 1;
-  transition-delay: 0.2s;
+  transition-delay: 0.1s;
 }
 
 .zen-view-splitter-header-container toolbarbutton {

@@ -75,7 +75,7 @@
 
     &:hover,
     &[dragged='true']{
-      background-color: var(--toolbarbutton-hover-background);
+      background-color: var(--zen-toolbar-element-bg);
     }
 
     & label {
@@ -188,6 +188,10 @@
     pointer-events: none;
   }
 
+  :root[zen-unsynced-window='true'][zen-sidebar-expanded='true'] & {
+    padding: calc(-2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  }
+
   :root:not([zen-unsynced-window]) & {
     &:hover,
     &[open='true'] {
@@ -239,11 +243,10 @@
 
     :root[zen-unsynced-window] & {
       pointer-events: none;
-      background: color-mix(in srgb, currentColor 20%, transparent);
+      background: var(--zen-toolbar-element-bg);
       padding: 4px 8px;
       border-radius: 99px;
       font-size: 10px;
-      margin-inline-start: -6px;
     }
   }
 

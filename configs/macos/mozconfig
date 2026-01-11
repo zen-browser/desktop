@@ -28,28 +28,31 @@ if test "$SURFER_COMPAT" = "x86_64"; then
 
   if test "$ZEN_RELEASE"; then
     ac_add_options --enable-wasm-avx
-    ac_add_options --enable-optimize="-march=nehalem -mtune=haswell -O3 -w"
-
-    export CFLAGS="-O3 -march=nehalem"
-    export CPPFLAGS="-O3 -march=nehalem"
-    export CXXFLAGS="-O3 -march=nehalem"
-    export LDFLAGS="-Wl,-O3 -march=nehalem"
-    export RUSTFLAGS="-Ctarget-cpu=nehalem"
   fi
 else
   ac_add_options --enable-clang-plugin
   ac_add_options --target=aarch64-apple-darwin
 
   if test "$ZEN_RELEASE"; then
-    ac_add_options --enable-optimize="-O3 -mcpu=apple-m1 -march=armv8.3-a+simd"
-
     # As of Clang 13, the default is -mcpu=apple-m1 when using a aarch64-apple-macos target,
     # but we're using apple64-apple-darwin, which defaults to -mcpu=apple-a7, which disables
     # a bunch of # performance-enabling CPU features.
-    export CFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-    export CPPFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-    export CXXFLAGS="-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-    export LDFLAGS="-Wl,-O3 -march=armv8.3-a+simd -mcpu=apple-m1"
-    export RUSTFLAGS="-C target-feature=+v8.3a -Ctarget-cpu=apple-m1"
+    # TODO: We'll want to switch to aarch64-apple-macos eventually.
+    export CFLAGS="$CFLAGS -mcpu=apple-m1"
+    export CXXFLAGS="$CXXFLAGS -mcpu=apple-m1"
   fi
 fi
+
+if test "$ZEN_RELEASE"; then
+  ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX26.2.sdk
+fi
+
+# Keep using ld64 on PGO/LTO builds because of performance regressions when using lld.
+# Mozilla sets "MOZ_LD64_KNOWN_GOOD" to true when they do automated builds with PGO/LTO on macOS.
+# See https://searchfox.org/firefox-main/rev/e61d59b5c9a651fd7bf28043f87c0dc669833496/build/moz.configure/lto-pgo.configure#261
+# export MOZ_LD64_KNOWN_GOOD=1
+# ac_add_options --enable-linker=ld64
+# 
+# if test "$ZEN_RELEASE"; then
+#   mk_add_options MOZ_MAKE_FLAGS="-j4"
+# fi

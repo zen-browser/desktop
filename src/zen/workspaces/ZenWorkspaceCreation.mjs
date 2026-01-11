@@ -158,7 +158,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     gZenUIManager.motion
       .animate(
-        [gBrowser.tabContainer, gURLBar.textbox],
+        [gBrowser.tabContainer, gURLBar],
         {
           opacity: [1, 0],
         },
@@ -207,8 +207,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     await this.#cleanup();
 
-    await gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
-    await gZenWorkspaces.updateTabsContainers();
+    gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
+    gZenWorkspaces.updateTabsContainers();
 
     gBrowser.tabContainer._invalidateCachedTabs();
   }
@@ -314,18 +314,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
     gBrowser.tabContainer.style.opacity = 0;
     if (gZenVerticalTabsManager._hasSetSingleToolbar) {
       document.getElementById('nav-bar').style.visibility = '';
-      gURLBar.textbox.style.opacity = 0;
+      gURLBar.style.opacity = 0;
     }
 
     this.remove();
     gZenUIManager.updateTabsToolbar();
 
     const workspace = gZenWorkspaces.getActiveWorkspace();
-    await gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
-    await gZenWorkspaces.updateTabsContainers();
+    gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
+    gZenWorkspaces.updateTabsContainers();
 
     await gZenUIManager.motion.animate(
-      [gBrowser.tabContainer, gURLBar.textbox],
+      [gBrowser.tabContainer, gURLBar],
       {
         opacity: [0, 1],
       },
@@ -338,7 +338,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     gBrowser.tabContainer.style.opacity = '';
     if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      gURLBar.textbox.style.opacity = '';
+      gURLBar.style.opacity = '';
     }
 
     for (const element of this.#hiddenElements) {

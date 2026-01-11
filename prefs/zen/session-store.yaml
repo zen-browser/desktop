@@ -7,3 +7,6 @@
 
 - name: zen.session-store.log
   value: '@IS_TWILIGHT@'
+
+- name: zen.session-store.restore-unsynced-windows
+  value: true

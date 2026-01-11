@@ -19,6 +19,7 @@ class nsZenMenuBar {
     let appearanceMenu = window.MozXULElement.parseXULToFragment(`
       <menu data-l10n-id="zen-menubar-appearance">
         <menupopup>
+          <menuitem data-l10n-id="zen-menubar-appearance-description" disabled="true" />
           <menuitem data-l10n-id="zen-menubar-appearance-auto" data-type="auto" type="radio" checked="true" />
           <menuitem data-l10n-id="zen-menubar-appearance-light" data-type="light" type="radio" />
           <menuitem data-l10n-id="zen-menubar-appearance-dark" data-type="dark" type="radio" />

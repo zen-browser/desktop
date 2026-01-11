@@ -126,6 +126,9 @@ document.addEventListener(
           gZenWorkspaces.unloadWorkspace();
           break;
         }
+        case 'cmd_zenNewNavigatorUnsynced':
+          OpenBrowserWindow({ zenSyncedWindow: false });
+          break;
         default:
           gZenGlanceManager.handleMainCommandSet(event);
           if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {

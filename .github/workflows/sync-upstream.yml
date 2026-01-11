@@ -47,6 +47,12 @@ jobs:
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: npm ci
 
+      - name: Install dependencies
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
+        run: |
+          git config --global user.email "mr-cheffy@users.noreply.github.com"
+          git config --global user.name "mr-cheffy"
+
       - name: Setup surfer CI
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: |
@@ -66,6 +72,12 @@ jobs:
           else
             npm run sync
           fi
+
+      - name: Run formatter
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
+        run: |
+          sudo apt install python3-autopep8
+          npm run pretty
 
       - name: Check if any files changed
         id: git-check
@@ -97,7 +109,7 @@ jobs:
 
       - name: Import external tests
         if: steps.git-check.outputs.files_changed == 'true'
-        run: python3 scripts/import_external_tests.py
+        run: python3 scripts/import_external_tests.py || true
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7

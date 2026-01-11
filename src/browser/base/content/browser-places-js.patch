@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
-index 3bd7b8f6025a7df4ce5cfb66916125bce9ef3991..c408ef829b7540aec72b2307e5d4bfa34109d6cd 100644
+index 925d74575827340960706718a29426bdf079b47c..921feb0e4229706b4691a43c9fc1005cbfd90999 100644
 --- a/browser/base/content/browser-places.js
 +++ b/browser/base/content/browser-places.js
 @@ -249,6 +249,8 @@ var StarUI = {
@@ -33,7 +33,7 @@ index 3bd7b8f6025a7df4ce5cfb66916125bce9ef3991..c408ef829b7540aec72b2307e5d4bfa3
    removeBookmarkButtonCommand: function SU_removeBookmarkButtonCommand() {
      this._removeBookmarksOnPopupHidden = true;
      this.panel.hidePopup();
-@@ -1797,6 +1814,7 @@ var BookmarkingUI = {
+@@ -1806,6 +1823,7 @@ var BookmarkingUI = {
        document.getElementById("context-bookmarkpage"),
        PanelMultiView.getViewNode(document, "panelMenuBookmarkThisPage"),
        document.getElementById("pageAction-panel-bookmark"),

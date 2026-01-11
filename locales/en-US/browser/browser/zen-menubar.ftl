@@ -10,7 +10,10 @@ zen-menubar-toggle-pinned-tabs =
         }
 
 zen-menubar-appearance =
-    .label = Website Appearance
+    .label = Appearance
+
+zen-menubar-appearance-description =
+    .label = Websites will use:
 
 zen-menubar-appearance-auto =
     .label = Automatic

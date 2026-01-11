@@ -476,7 +476,7 @@ window.gZenCompactModeManager = {
                   titlebar.style.removeProperty('visibility');
                   titlebar.style.removeProperty('transition');
 
-                  gURLBar.textbox.style.removeProperty('visibility');
+                  gURLBar.style.removeProperty('visibility');
 
                   resolve();
                 });
@@ -659,7 +659,7 @@ window.gZenCompactModeManager = {
   },
 
   addMouseActions() {
-    gURLBar.textbox.addEventListener('mouseenter', (event) => {
+    gURLBar.addEventListener('mouseenter', (event) => {
       if (event.target.closest('#urlbar[zen-floating-urlbar]')) {
         window.requestAnimationFrame(() => {
           this._setElementExpandAttribute(gZenVerticalTabsManager.actualWindowButtons, false);
@@ -716,14 +716,8 @@ window.gZenCompactModeManager = {
         // If we want the toolbars to be draggable, we need to make sure to check the hover state after a short delay.
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
         setTimeout(() => {
-          let isHovered = event.target.matches(':hover');
-          MousePosTracker._callListener({
-            onMouseEnter: () => (isHovered = true),
-            onMouseLeave: () => {},
-            getMouseTargetRect: () => window.windowUtils.getBoundsWithoutFlushing(target),
-          });
           // Let's double check if the mouse is still hovering over the element, see the bug above.
-          if (isHovered) {
+          if (event.target.matches(':hover')) {
             return;
           }
 
@@ -794,7 +788,7 @@ window.gZenCompactModeManager = {
       }, this.HOVER_HACK_DELAY);
     });
 
-    gURLBar.textbox.addEventListener('mouseleave', () => {
+    gURLBar.addEventListener('mouseleave', () => {
       setTimeout(() => {
         setTimeout(() => {
           requestAnimationFrame(() => {

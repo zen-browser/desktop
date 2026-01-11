@@ -3,12 +3,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* Zen Welcome dialog override */
-@media (prefers-color-scheme: dark) {
-  .dialogBox:not(.spotlightBox) {
-    border: 1px solid var(--zen-colors-border);
+.dialogBox {
+  border: none;
+  outline: 1px solid #a8a8a9;
+  animation: zen-dialog-fade-in 0.3s ease-out;
+  border-radius: 12px !important;
+  @media (prefers-color-scheme: dark) {
+    outline-color: #44495a;
+    outline-offset: -2px;
+    border: 1px solid black;
   }
-}
-.dialogBox:not(.spotlightBox) {
-  min-width: min(80vw, 376px);
 }

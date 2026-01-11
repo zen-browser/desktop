@@ -45,6 +45,7 @@ class nsZenCollapsiblePins extends nsZenFolder {
 
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
+  #hasConnected = false;
 
   static get markup() {
     return `
@@ -103,13 +104,13 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   connectedCallback() {
-    if (this.delayConnectedCallback() || this._hasConnected) {
+    if (this.delayConnectedCallback() || this.#hasConnected) {
       // If we are not ready yet, or if we have already connected, we
       // don't need to do anything.
       return;
     }
 
-    this._hasConnected = true;
+    this.#hasConnected = true;
     this.appendChild(this.constructor.fragment);
 
     this.tabsContainer = this.querySelector('.zen-workspace-normal-tabs-section');
@@ -157,9 +158,9 @@ export class nsZenWorkspace extends MozXULElement {
       });
 
     this.indicator.addEventListener('click', (event) => {
-      if (this.hasPinnedTabs) {
+      if (this.hasPinnedTabs && event.button === 0) {
         event.stopPropagation();
-        this.collapsiblePins.collapsed = !this.collapsiblePins.collapsed;
+        this.collapsiblePins.toggle();
       }
     });
 
@@ -244,6 +245,13 @@ export class nsZenWorkspace extends MozXULElement {
     this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
     window.addEventListener('ZenGradientCacheChanged', this.onGradientCacheChanged);
 
+    this.pinnedTabsContainer.addEventListener('TabPinned', () => {
+      // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
+      if (this.collapsiblePins.collapsed) {
+        this.collapsiblePins.collapsed = false;
+      }
+    });
+
     const tabPinCallback = () => {
       this.checkPinsExistence();
     };
@@ -255,14 +263,6 @@ export class nsZenWorkspace extends MozXULElement {
         tabPinCallback();
       }
     });
-
-    this.dispatchEvent(
-      new CustomEvent('ZenWorkspaceAttached', {
-        bubbles: true,
-        composed: true,
-        detail: { workspace: this },
-      })
-    );
   }
 
   disconnectedCallback() {

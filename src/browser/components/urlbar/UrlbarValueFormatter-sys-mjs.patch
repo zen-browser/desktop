@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-index 307b3cac259c05e616cf7d5eb1ce50a146550cd9..72252a6363154b6c5f926bf2acf3282e8396d2ad 100644
+index 3a8c233dd1e05c070e497ec9877e65b9d8a3e87b..dd2a7aac6945331a3a50a0d7f6d62aeda396b560 100644
 --- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 +++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 @@ -76,7 +76,7 @@ export class UrlbarValueFormatter {

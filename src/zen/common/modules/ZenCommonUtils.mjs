@@ -51,6 +51,17 @@ export class nsZenMultiWindowFeature {
       }
     }
   }
+
+  forEachWindowSync(callback) {
+    for (const browser of nsZenMultiWindowFeature.browsers) {
+      try {
+        if (browser.closed) continue;
+        callback(browser);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
 }
 
 export class nsZenDOMOperatedFeature {

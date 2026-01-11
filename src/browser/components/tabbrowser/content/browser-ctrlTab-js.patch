@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/browser-ctrlTab.js b/browser/components/tabbrowser/content/browser-ctrlTab.js
-index 958728cde19dd7cc24692baa89e11fcab816ab82..32e2b6af2536133f170bd5e14c47392ded8440eb 100644
+index 3330dc133c120e7fbeecd2a36c71f9dfba60b3fb..0243cdfe67e5eb3f68fc7cde66bb3809e79bd6c3 100644
 --- a/browser/components/tabbrowser/content/browser-ctrlTab.js
 +++ b/browser/components/tabbrowser/content/browser-ctrlTab.js
-@@ -249,7 +249,8 @@ var ctrlTab = {
+@@ -252,7 +252,8 @@ var ctrlTab = {
    },
  
    get tabList() {
@@ -12,7 +12,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..32e2b6af2536133f170bd5e14c47392d
    },
  
    init: function ctrlTab_init() {
-@@ -460,7 +461,7 @@ var ctrlTab = {
+@@ -457,7 +458,7 @@ var ctrlTab = {
      // If the tab is hidden, don't add it to the list unless it's selected
      // (Normally hidden tabs would be unhidden when selected, but that doesn't
      // happen for Firefox View).
@@ -21,7 +21,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..32e2b6af2536133f170bd5e14c47392d
        return;
      }
  
-@@ -484,7 +485,7 @@ var ctrlTab = {
+@@ -481,7 +482,7 @@ var ctrlTab = {
    },
  
    open: function ctrlTab_open() {
@@ -30,7 +30,7 @@ index 958728cde19dd7cc24692baa89e11fcab816ab82..32e2b6af2536133f170bd5e14c47392d
        return;
      }
  
-@@ -763,7 +764,7 @@ var ctrlTab = {
+@@ -751,7 +752,7 @@ var ctrlTab = {
    _initRecentlyUsedTabs() {
      this._recentlyUsedTabs = Array.prototype.filter.call(
        gBrowser.tabs,

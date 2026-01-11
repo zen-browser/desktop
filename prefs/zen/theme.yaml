@@ -41,12 +41,7 @@
 
 # ==== Mark: border radius ====
 
-# macOS border radius
+# -1 will use platform-native values
+# Set to a positive value to override with a custom radius
 - name: zen.theme.border-radius
-  value: 10
-  condition: 'defined(XP_MACOSX)'
-
-# non-macOS border radius
-- name: zen.theme.border-radius
-  value: 8
-  condition: '!defined(XP_MACOSX)'
+  value: -1

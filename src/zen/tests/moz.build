@@ -13,6 +13,7 @@ BROWSER_CHROME_MANIFESTS += [
     "ub-actions/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
+    "window_sync/browser.toml",
     "workspaces/browser.toml",
 ]
 

@@ -7,15 +7,10 @@
 @namespace html 'http://www.w3.org/1999/xhtml';
 
 :root {
-  --zen-settings-secondary-background: light-dark(
-    #f2f4f4,
-    color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%)
-  );
   --in-content-box-background: var(--zen-colors-tertiary) !important;
 }
 
 .main-content {
-  background: var(--zen-settings-secondary-background);
   padding-top: 60px !important;
 }
 
@@ -41,35 +36,6 @@ description {
 
 html|dialog {
   animation: dialogPopin 0.2s ease-out;
-}
-
-groupbox {
-  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 2%, #1b1b1b 98%));
-  padding-inline: unset !important;
-  padding: 20px 30px !important;
-  margin-bottom: 0 !important;
-  position: relative;
-
-  /* add shadow just to the sides */
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
-}
-
-.subcategory + groupbox,
-#noFxaAccount,
-#hasFxaAccount {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  margin-top: 5px;
-}
-
-groupbox:has(+ script),
-groupbox:last-of-type,
-groupbox#pane-experimental-featureGates,
-groupbox:has(+ .subcategory) {
-  border-bottom-left-radius: 5px !important;
-  border-bottom-right-radius: 5px !important;
-  /* add shadow just to bottom */
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .sticky-inner-container {

@@ -14,9 +14,17 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: 'resource:///modules/sessionstore/SessionStore.sys.mjs',
   SessionSaver: 'resource:///modules/sessionstore/SessionSaver.sys.mjs',
   setTimeout: 'resource://gre/modules/Timer.sys.mjs',
+  gWindowSyncEnabled: 'resource:///modules/zen/ZenWindowSync.sys.mjs',
+  DeferredTask: 'resource://gre/modules/DeferredTask.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gShouldLog', 'zen.session-store.log', true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  'gMaxSessionBackups',
+  'zen.session-store.max-backups',
+  10
+);
 
 // Note that changing this hidden pref will make the previous session file
 // unused, causing a new session file to be created on next write.
@@ -28,6 +36,10 @@ const MIGRATION_PREF = 'zen.ui.migration.session-manager-restore';
 
 // 'browser.startup.page' preference value to resume the previous session.
 const BROWSER_STARTUP_RESUME_SESSION = 3;
+
+// The amount of time (in milliseconds) to wait for our backup regeneration
+// debouncer to kick off a regeneration.
+const REGENERATION_DEBOUNCE_RATE_MS = 20 * 60 * 1000; // 20 minutes
 
 /**
  * Class representing the sidebar object stored in the session file.
@@ -57,13 +69,17 @@ export class nsZenSessionManager {
    * @type {nsZenSidebarObject}
    */
   #sidebarObject = new nsZenSidebarObject();
+  /**
+   * A deferred task to create backups of the session file.
+   */
+  #deferredBackupTask = null;
 
   // Called from SessionComponents.manifest on app-startup
   init() {
     let profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile).path;
     let backupFile = null;
     if (SHOULD_BACKUP_FILE) {
-      backupFile = PathUtils.join(profileDir, 'zen-sessions-backup', FILE_NAME);
+      backupFile = PathUtils.join(this.#backupFolderPath, FILE_NAME);
     }
     let filePath = PathUtils.join(profileDir, FILE_NAME);
     this.#file = new JSONFile({
@@ -71,16 +87,26 @@ export class nsZenSessionManager {
       compression: SHOULD_COMPRESS_FILE ? 'lz4' : undefined,
       backupFile,
     });
+    this.#deferredBackupTask = new lazy.DeferredTask(async () => {
+      await this.#createBackupsIfNeeded();
+    }, REGENERATION_DEBOUNCE_RATE_MS);
+  }
 
-    lazy.SessionStore.promiseAllWindowsRestored.then(() => {
-      delete this._migrationData;
-    });
+  uninit() {
+    this.#file = null;
+    this.#deferredBackupTask?.disarm();
+    this.#deferredBackupTask = null;
   }
 
   log(...args) {
     if (lazy.gShouldLog) {
       console.info('ZenSessionManager:', ...args);
     }
+  }
+
+  get #backupFolderPath() {
+    let profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile).path;
+    return PathUtils.join(profileDir, 'zen-sessions-backup');
   }
 
   /**
@@ -125,6 +151,7 @@ export class nsZenSessionManager {
    */
   async readFile() {
     try {
+      this.log('Reading Zen session file from disk');
       let promises = [];
       promises.push(this.#file.load());
       if (!Services.prefs.getBoolPref(MIGRATION_PREF, false)) {
@@ -145,6 +172,7 @@ export class nsZenSessionManager {
    *        The initial session state read from the session file.
    */
   onFileRead(initialState) {
+    if (!lazy.gWindowSyncEnabled) return;
     // For the first time after migration, we restore the tabs
     // That where going to be restored by SessionStore. The sidebar
     // object will always be empty after migration because we haven't
@@ -160,8 +188,8 @@ export class nsZenSessionManager {
       // initial state, for example if the user had 'restore previous
       // session' disabled before migration. In that case, we try
       // to restore the last closed normal window.
-      if (!initialState.windows?.length) {
-        let normalClosedWindow = initialState._closedWindows?.find(
+      if (!initialState?.windows?.length) {
+        let normalClosedWindow = initialState?._closedWindows?.find(
           (win) => !win.isPopup && !win.isTaskbarTab && !win.isPrivate
         );
         if (normalClosedWindow) {
@@ -169,12 +197,13 @@ export class nsZenSessionManager {
           this.log('Restoring tabs from last closed normal window');
         }
       }
-      for (const winData of initialState.windows || []) {
+      for (const winData of initialState?.windows || []) {
         winData.spaces = this._migrationData?.spaces || [];
       }
       // Save the state to the sidebar object so that it gets written
       // to the session file.
       this.saveState(initialState);
+      delete this._migrationData;
       return;
     }
     // If there are no windows, we create an empty one. By default,
@@ -182,8 +211,9 @@ export class nsZenSessionManager {
     // to make sure that the sidebar object is properly initialized.
     // This would happen on first run after having a single private window
     // open when quitting the app, for example.
-    if (!initialState.windows?.length) {
+    if (!initialState?.windows?.length) {
       this.log('No windows found in initial state, creating an empty one');
+      initialState ||= {};
       initialState.windows = [{}];
     }
     // When we don't have browser.startup.page set to resume session,
@@ -200,13 +230,19 @@ export class nsZenSessionManager {
     // Restore all windows with the same sidebar object, this will
     // guarantee that all tabs, groups, folders and split view data
     // are properly synced across all windows.
+    const allowRestoreUnsynced = Services.prefs.getBoolPref(
+      'zen.session-store.restore-unsynced-windows',
+      true
+    );
     this.log(`Restoring Zen session data into ${initialState.windows?.length || 0} windows`);
     for (let i = 0; i < initialState.windows.length; i++) {
       let winData = initialState.windows[i];
       if (winData.isZenUnsynced) {
-        // We don't wan't to restore any unsynced windows with the sidebar data.
-        this.log('Skipping restore of unsynced window');
-        delete initialState.windows[i];
+        if (!allowRestoreUnsynced) {
+          // We don't wan't to restore any unsynced windows with the sidebar data.
+          this.log('Skipping restore of unsynced window');
+          delete initialState.windows[i];
+        }
         continue;
       }
       this.#restoreWindowData(winData);
@@ -224,11 +260,10 @@ export class nsZenSessionManager {
   /**
    * Saves the current session state. Collects data and writes to disk.
    *
-   * @param state
-   *        The current session state.
+   * @param state The current session state.
    */
   saveState(state) {
-    if (!state?.windows?.length) {
+    if (!state?.windows?.length || !lazy.gWindowSyncEnabled) {
       // Don't save (or even collect) anything in permanent private
       // browsing mode. We also don't want to save if there are no windows.
       return;
@@ -238,7 +273,64 @@ export class nsZenSessionManager {
     // quitting the app.
     this.#file.data = this.#sidebar;
     this.#file.saveSoon();
+    this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${this.#sidebar.tabs?.length || 0} tabs`);
+  }
+
+  /**
+   * Called when the last known backup should be deleted and a new one
+   * created. This uses the #deferredBackupTask to debounce clusters of
+   * events that might cause such a regeneration to occur.
+   */
+  #debounceRegeneration() {
+    this.#deferredBackupTask.disarm();
+    this.#deferredBackupTask.arm();
+  }
+
+  /**
+   * Creates backups of the session file if needed. We only keep
+   * a limited number of backups to avoid using too much disk space.
+   * The way we are doing this is by replacing the file for today's
+   * date if it already exists, otherwise we create a new one.
+   * We then delete the oldest backups if we exceed the maximum
+   * number of backups allowed.
+   *
+   * We run the next backup creation after a delay or when idling,
+   * to avoid blocking the main thread during session saves.
+   */
+  async #createBackupsIfNeeded() {
+    if (!SHOULD_BACKUP_FILE) {
+      return;
+    }
+    try {
+      const today = new Date();
+      const backupFolder = this.#backupFolderPath;
+      await IOUtils.makeDirectory(backupFolder, {
+        ignoreExisting: true,
+        createAncestors: true,
+      });
+      const todayFileName = `zen-sessions-${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}.json${
+        SHOULD_COMPRESS_FILE ? 'lz4' : ''
+      }`;
+      const todayFilePath = PathUtils.join(backupFolder, todayFileName);
+      const sessionFilePath = this.#file.path;
+      this.log(`Backing up session file to ${todayFileName}`);
+      await IOUtils.copy(sessionFilePath, todayFilePath, { noOverwrite: false });
+      // Now we need to check if we have exceeded the maximum
+      // number of backups allowed, and delete the oldest ones
+      // if needed.
+      let files = await IOUtils.getChildren(backupFolder);
+      files = files.filter((file) => file.startsWith('zen-sessions-')).sort();
+      for (let i = 0; i < files.length - lazy.gMaxSessionBackups; i++) {
+        const fileToDelete = PathUtils.join(backupFolder, files[i].name);
+        this.log(`Deleting old backup file ${files[i].name}`);
+        await IOUtils.remove(fileToDelete);
+      }
+    } catch (e) {
+      console.error('ZenSessionManager: Failed to create session file backups', e);
+    }
   }
 
   /**
@@ -287,10 +379,8 @@ export class nsZenSessionManager {
   /**
    * Collects session data for all tabs in a given window.
    *
-   * @param sidebarData
-   *        The sidebar data object to populate.
-   * @param state
-   *        The current session state.
+   * @param sidebarData The sidebar data object to populate.
+   * @param state The current session state.
    */
   #collectTabsData(sidebarData, state) {
     const tabIdRelationMap = new Map();
@@ -345,7 +435,7 @@ export class nsZenSessionManager {
    *        Whether this new window is being restored from a closed window.
    */
   restoreNewWindow(aWindow, SessionStoreInternal, fromClosedWindow = false) {
-    if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
+    if (aWindow.gZenWorkspaces?.privateWindowOrDisabled || !lazy.gWindowSyncEnabled) {
       return;
     }
     this.log('Restoring new window with Zen session data');
@@ -396,6 +486,7 @@ export class nsZenSessionManager {
    * @returns
    */
   onNewEmptySession(aWindow) {
+    this.log('Restoring empty session with Zen session data');
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
       spaces: this.#sidebar.spaces || [],
     });

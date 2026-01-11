@@ -326,7 +326,7 @@ fn is_twilight_build() -> bool {
     if let Ok(content) = fs::read_to_string(&dynamic_config_path) {
         return !content.contains("\"release\"");
     }
-    false
+    true
 }
 
 fn get_env_values() -> HashMap<String, bool> {

@@ -1,5 +1,5 @@
 diff --git a/dom/media/mediaelement/HTMLMediaElement.cpp b/dom/media/mediaelement/HTMLMediaElement.cpp
-index f26c8c26354fd65ebf2c5f4797cb2bd200f764e6..90e0b81b471d8bfa0140fa3c7996f7b796564d50 100644
+index 935c9783ceb66ad8c6c8748ca3113664f5b114d3..a9f256a83b68940c829b24a19c67c56f11a01765 100644
 --- a/dom/media/mediaelement/HTMLMediaElement.cpp
 +++ b/dom/media/mediaelement/HTMLMediaElement.cpp
 @@ -451,6 +451,7 @@ class HTMLMediaElement::MediaControlKeyListener final
@@ -10,7 +10,7 @@ index f26c8c26354fd65ebf2c5f4797cb2bd200f764e6..90e0b81b471d8bfa0140fa3c7996f7b7
        NotifyAudibleStateChanged(mIsOwnerAudible
                                      ? MediaAudibleState::eAudible
                                      : MediaAudibleState::eInaudible);
-@@ -7232,6 +7233,9 @@ void HTMLMediaElement::FireTimeUpdate(TimeupdateType aType) {
+@@ -7247,6 +7248,9 @@ void HTMLMediaElement::FireTimeUpdate(TimeupdateType aType) {
      QueueTask(std::move(runner));
      mQueueTimeUpdateRunnerTime = TimeStamp::Now();
      mLastCurrentTime = CurrentTime();

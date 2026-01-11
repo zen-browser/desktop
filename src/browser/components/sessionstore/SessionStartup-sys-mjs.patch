@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
-index be23213ae9ec7e59358a17276c6c3764d38d9996..c7bb413d7e2d8ce3f9bc38a925d57e59d882111d 100644
+index 86600ffb5178599ab23270a964064ca657a3283f..ffb22990e7d9e1b79f276fe5c1eb38f2b869a57b 100644
 --- a/browser/components/sessionstore/SessionStartup.sys.mjs
 +++ b/browser/components/sessionstore/SessionStartup.sys.mjs
 @@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -19,17 +19,16 @@ index be23213ae9ec7e59358a17276c6c3764d38d9996..c7bb413d7e2d8ce3f9bc38a925d57e59
        this._initialized = true;
        gOnceInitializedDeferred.resolve();
        return;
-@@ -179,6 +180,9 @@ export var SessionStartup = {
+@@ -179,6 +180,8 @@ export var SessionStartup = {
        this._initialState = parsed;
      }
  
-+    this._initialState ||= {};
 +    lazy.ZenSessionStore.onFileRead(this._initialState);
 +
      if (this._initialState == null) {
        // No valid session found.
        this._sessionType = this.NO_SESSION;
-@@ -335,12 +339,7 @@ export var SessionStartup = {
+@@ -336,12 +339,7 @@ export var SessionStartup = {
    isAutomaticRestoreEnabled() {
      if (this._resumeSessionEnabled === null) {
        this._resumeSessionEnabled =

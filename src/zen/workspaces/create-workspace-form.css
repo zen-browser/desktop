@@ -41,9 +41,12 @@ zen-workspace-creation {
       }
 
       & xul|button {
-        border: none;
         margin: 0;
         font-weight: 400 !important;
+
+        &:not(.footer-button.primary) {
+          border: none;
+        }
       }
 
       & .zen-workspace-creation-name-wrapper {

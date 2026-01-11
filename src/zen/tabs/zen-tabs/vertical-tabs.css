@@ -1063,6 +1063,7 @@
 
 @media -moz-pref('zen.tabs.show-newtab-vertical') {
   #tabs-newtab-button {
+    max-height: var(--tab-min-height);
     display: flex !important;
     transition: scale 0.1s ease;
     #tabbrowser-tabs[movingtab] & {
@@ -1215,6 +1216,8 @@
         background-image: var(--zen-essential-tab-icon);
         z-index: -1;
         background-position: center;
+        fill: currentColor;
+        -moz-context-properties: fill, fill-opacity;
       }
 
       background: transparent;

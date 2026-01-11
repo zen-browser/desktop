@@ -65,6 +65,49 @@ window.gZenUIManager = {
     ZenMenubar.init();
   },
 
+  /**
+   * Animate an element using Element.animate API.
+   * This is not using gZenUIManager.motion, because motion library has some issues
+   * with certain properties and we want to have a simple wrapper for that.
+   */
+  async elementAnimate(element, rawKeyframes, ...args) {
+    rawKeyframes = { ...rawKeyframes };
+    // Convert 'y' property to 'transform' with translateY and 'x' to translateX,
+    // and 'scale' to 'transform' with scale.
+    if ((rawKeyframes.y || rawKeyframes.x || rawKeyframes.scale) && !rawKeyframes.transform) {
+      const yValues = rawKeyframes.y || [];
+      const xValues = rawKeyframes.x || [];
+      const scaleValues = rawKeyframes.scale || [];
+      delete rawKeyframes.y;
+      delete rawKeyframes.x;
+      delete rawKeyframes.scale;
+      rawKeyframes.transform = [];
+      console.assert(
+        yValues.length === 0 || xValues.length === 0 || yValues.length === xValues.length,
+        'y and x keyframes must have the same length'
+      );
+      const length = Math.max(yValues.length, xValues.length, scaleValues.length);
+      for (let i = 0; i < length; i++) {
+        const y = yValues[i] !== undefined ? `translateY(${yValues[i]}px)` : '';
+        const x = xValues[i] !== undefined ? `translateX(${xValues[i]}px)` : '';
+        const scale = scaleValues[i] !== undefined ? `scale(${scaleValues[i]})` : '';
+        rawKeyframes.transform.push(`${x} ${y} ${scale}`.trim());
+      }
+    }
+    let keyframes = [];
+    for (let i = 0; i < Object.values(rawKeyframes)[0].length; i++) {
+      let frame = {};
+      for (const [property, values] of Object.entries(rawKeyframes)) {
+        frame[property] = values[i];
+      }
+      keyframes.push(frame);
+    }
+    return await new Promise((resolve) => {
+      const animation = element.animate(keyframes, ...args);
+      animation.onfinish = () => resolve();
+    });
+  },
+
   _addNewCustomizableButtonsIfNeeded() {
     const kPref = 'zen.ui.migration.compact-mode-button-added';
     let navbarPlacements = CustomizableUI.getWidgetIdsInArea('zen-sidebar-top-buttons');
@@ -169,14 +212,11 @@ window.gZenUIManager = {
 
   updateTabsToolbar() {
     const kUrlbarHeight = 335;
-    gURLBar.textbox.style.setProperty(
+    gURLBar.style.setProperty(
       '--zen-urlbar-top',
-      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
+      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty(
-      '--zen-urlbar-width',
-      `${Math.min(window.innerWidth / 2, 700)}px`
-    );
+    gURLBar.style.setProperty('--zen-urlbar-width', `${Math.min(window.innerWidth / 2, 700)}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -296,7 +336,7 @@ window.gZenUIManager = {
 
   onUrlbarSearchModeChanged(event) {
     const { searchMode } = event.detail;
-    const input = gURLBar.textbox;
+    const input = gURLBar;
     if (gURLBar.hasAttribute('breakout-extend') && !this._animatingSearchMode) {
       this._animatingSearchMode = true;
       this.motion.animate(input, { scale: [1, 0.98, 1] }, { duration: 0.25 }).then(() => {
@@ -488,7 +528,11 @@ window.gZenUIManager = {
 
       // Safely restore URL bar state with proper validation
       if (this._prevUrlbarLabel) {
-        gURLBar.setURI(this._prevUrlbarLabel, onSwitch, false, false, !onSwitch);
+        gURLBar.setURI({
+          uri: this._prevUrlbarLabel,
+          dueToTabSwitch: onSwitch,
+          isSameDocument: !onSwitch,
+        });
       }
 
       gURLBar.handleRevert();
@@ -502,7 +546,7 @@ window.gZenUIManager = {
           gURLBar.updateTextOverflow();
 
           if (onElementPicked && onSwitch) {
-            gURLBar.setURI(null, onSwitch);
+            gURLBar.setURI({ dueToTabSwitch: onSwitch });
           }
 
           // Ensure tab and browser are valid before updating state
@@ -810,7 +854,6 @@ window.gZenVerticalTabsManager = {
 
   animateItemOpen(aItem) {
     if (
-      !gZenUIManager.motion ||
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
@@ -829,47 +872,39 @@ window.gZenVerticalTabsManager = {
     try {
       const itemSize = aItem.getBoundingClientRect().height;
       const transform = `-${itemSize}px`;
-      gZenUIManager.motion
-        .animate(
+      gZenUIManager
+        .elementAnimate(
           aItem,
           {
             opacity: [0, 1],
             transform: ['scale(0.95)', 'scale(1)'],
-            marginBottom: isLastItem() ? [] : [transform, '0px'],
+            marginBottom: isLastItem() ? ['0px', '0px'] : [transform, '0px'],
           },
           {
-            duration: 0.11,
+            duration: 110,
             easing: 'ease-out',
           }
         )
         .then(() => {})
         .catch((err) => {
           console.error(err);
-        })
-        .finally(() => {
-          aItem.style.removeProperty('margin-bottom');
-          aItem.style.removeProperty('transform');
-          aItem.style.removeProperty('opacity');
         });
       const itemLabel =
         aItem.querySelector('.tab-group-label-container') || aItem.querySelector('.tab-content');
-      gZenUIManager.motion
-        .animate(
+      gZenUIManager
+        .elementAnimate(
           itemLabel,
           {
             filter: ['blur(1px)', 'blur(0px)'],
           },
           {
-            duration: 0.11,
+            duration: 110,
             easing: 'ease-out',
           }
         )
         .then(() => {})
         .catch((err) => {
           console.error(err);
-        })
-        .finally(() => {
-          itemLabel.style.removeProperty('filter');
         });
     } catch (e) {
       console.error(e);
@@ -883,7 +918,7 @@ window.gZenVerticalTabsManager = {
     const height = aTab.getBoundingClientRect().height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
-    return gZenUIManager.motion.animate(
+    return gZenUIManager.elementAnimate(
       aTab,
       {
         opacity: [1, 0],
@@ -895,8 +930,9 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 0.075,
+        duration: 75,
         easing: 'ease-out',
+        fill: 'forwards',
       }
     );
   },
@@ -997,7 +1033,7 @@ window.gZenVerticalTabsManager = {
   recalculateURLBarHeight() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        gURLBar.textbox.removeAttribute('--urlbar-height');
+        gURLBar.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == 'macosx' ? 34 : 32;
@@ -1005,7 +1041,7 @@ window.gZenVerticalTabsManager = {
           height = 40;
         }
         if (typeof height !== 'undefined') {
-          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+          gURLBar.style.setProperty('--urlbar-height', `${height}px`);
         }
         gURLBar.zenFormatURLValue();
       });
@@ -1342,7 +1378,10 @@ window.gZenVerticalTabsManager = {
   },
 
   renameTabStart(event) {
-    let target = TabContextMenu.contextTab || event.target;
+    let target = event.target;
+    if (event.target.id === 'context_zen-edit-tab-title') {
+      target = TabContextMenu.contextTab;
+    }
     const isTab = !!target.closest('.tabbrowser-tab');
     if (
       this._tabEdited ||
@@ -1350,8 +1389,12 @@ window.gZenVerticalTabsManager = {
         Services.prefs.getBoolPref('browser.tabs.closeTabByDblclick')) &&
         isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
-    )
+    ) {
       return;
+    }
+    if (isTab && !target.closest('.tab-label-container')) {
+      return;
+    }
     this._tabEdited =
       target.closest('.tabbrowser-tab') ||
       target.closest('.zen-current-workspace-indicator-name') ||

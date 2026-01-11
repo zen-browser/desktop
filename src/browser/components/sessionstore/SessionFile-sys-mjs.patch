@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionFile.sys.mjs b/browser/components/sessionstore/SessionFile.sys.mjs
-index 31140cb8be3b529a0952ca8dc55165690b0e2120..605c9e0aa84da0a2d3171a0573e8cd95e27bd0c4 100644
+index 5580838acd72bf0e1189d367984859529d89f5b4..e5fa6076a9cc6ada016ccc4e129cad455010a522 100644
 --- a/browser/components/sessionstore/SessionFile.sys.mjs
 +++ b/browser/components/sessionstore/SessionFile.sys.mjs
 @@ -22,6 +22,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -10,7 +10,7 @@ index 31140cb8be3b529a0952ca8dc55165690b0e2120..605c9e0aa84da0a2d3171a0573e8cd95
  });
  
  const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
-@@ -380,7 +381,7 @@ var SessionFileInternal = {
+@@ -381,7 +382,7 @@ var SessionFileInternal = {
      this._readOrigin = result.origin;
  
      result.noFilesFound = noFilesFound;

@@ -1,5 +1,5 @@
 diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
-index e7e242d41f2584a5e9238b9a594e9fd9ca25882b..d5a0d017e41c1b7f87ec3675b05a99d3077277d5 100644
+index 222015b9617edcbcd349214c1610517a8617fdd9..aa576f37091b354a5c4cb8be307adef09b54a8f4 100644
 --- a/layout/base/nsPresContext.cpp
 +++ b/layout/base/nsPresContext.cpp
 @@ -19,6 +19,7 @@
@@ -10,7 +10,7 @@ index e7e242d41f2584a5e9238b9a594e9fd9ca25882b..d5a0d017e41c1b7f87ec3675b05a99d3
  #include "mozilla/AnimationEventDispatcher.h"
  #include "mozilla/ContentBlockingAllowList.h"
  #include "mozilla/CycleCollectedJSContext.h"
-@@ -917,6 +918,11 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
+@@ -913,6 +914,11 @@ void nsPresContext::RecomputeBrowsingContextDependentData() {
    }
  
    auto* top = browsingContext->Top();
@@ -21,4 +21,4 @@ index e7e242d41f2584a5e9238b9a594e9fd9ca25882b..d5a0d017e41c1b7f87ec3675b05a99d3
 +
    SetColorSchemeOverride([&] {
      auto overriden = top->PrefersColorSchemeOverride();
-     if (overriden != PrefersColorSchemeOverride::None) {
+     if (browsingContext == top &&

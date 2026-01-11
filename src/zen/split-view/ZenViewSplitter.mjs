@@ -1199,7 +1199,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
       }
 
-      this.activateSplitView(splitData);
+      if (!this._sessionRestoring) {
+        this.activateSplitView(splitData);
+      }
+
       this.#dispatchItemEvent('ZenSplitViewTabsSplit', splitGroup);
       return splitData;
     });

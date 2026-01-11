@@ -14,7 +14,6 @@
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenLibrary.mjs", { global: "current" });
-  ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenLibraryDownloads.mjs", { global: "current" });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
 }

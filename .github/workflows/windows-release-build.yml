@@ -279,7 +279,12 @@ jobs:
         run: |
           mv ./zen.win64.zip zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
-          mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          # its zen-twilight.installer.exe for twilight branch
+          if [ "${{ inputs.release-branch }}" = "twilight" ]; then
+            mv ./dist/zen-twilight.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          else
+            mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          fi
 
       - name: Upload artifact (PGO)
         uses: actions/upload-artifact@v4

@@ -54,7 +54,7 @@
     "@eslint/js": "^9.39.2",
     "@eslint/json": "^0.14.0",
     "@microsoft/eslint-plugin-sdl": "^1.1.0",
-    "@zen-browser/surfer": "^1.13.1",
+    "@zen-browser/surfer": "^1.13.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-eslint-plugin": "^7.3.0",

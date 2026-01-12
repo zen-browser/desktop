@@ -35,9 +35,7 @@ function groupIsCollapsiblePins(group) {
   return group?.tagName.toLowerCase() === "zen-workspace-collapsible-pins";
 }
 
-/**
- *
- */
+
 class nsZenFolders extends nsZenDOMOperatedFeature {
   #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref("zen.folders.max-subfolders", 5);
 
@@ -586,8 +584,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     //   we do this to ensure marginBottom is set correctly in the case
     //   that we want it to initially be collapsed.
     setTimeout(
-      (folderNode) => {
-        folderNode.collapsed = !!options.collapsed;
+      // eslint-disable-next-line no-shadow
+      (folder) => {
+        folder.collapsed = !!options.collapsed;
       },
       0,
       folder

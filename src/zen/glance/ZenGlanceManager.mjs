@@ -336,12 +336,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   openGlance(data, existingTab = null, ownerTab = null) {
     if (this.#currentBrowser) {
-      return;
+      return Promise.resolve(this.#currentTab);
     }
 
     if (gBrowser.selectedTab === this.#currentParentTab) {
       gBrowser.selectedTab = this.#currentTab;
-      return;
+      return Promise.resolve(this.#currentTab);
     }
 
     if (!data.height || !data.width) {
@@ -358,7 +358,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.fillOverlay(browserElement);
     this.overlay.classList.add("zen-glance-overlay");
 
-    this.#animateGlanceOpening(data, browserElement);
+    return this.#animateGlanceOpening(data, browserElement);
   }
 
   /**

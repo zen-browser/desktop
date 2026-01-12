@@ -141,9 +141,7 @@ window.VALID_SHORTCUT_GROUPS = [
   "other",
 ];
 
-/**
- *
- */
+
 export class nsKeyShortcutModifiers {
   #control = false;
   #alt = false;
@@ -171,11 +169,11 @@ export class nsKeyShortcutModifiers {
     }
 
     return new nsKeyShortcutModifiers(
-      modifiers.control === true,
-      modifiers.alt === true,
-      modifiers.shift === true,
-      modifiers.meta === true,
-      modifiers.accel === true
+      modifiers.control,
+      modifiers.alt,
+      modifiers.shift,
+      modifiers.meta,
+      modifiers.accel
     );
   }
 
@@ -297,9 +295,7 @@ export class nsKeyShortcutModifiers {
   }
 }
 
-/**
- *
- */
+
 class KeyShortcut {
   #id = "";
   #key = "";
@@ -618,9 +614,7 @@ class KeyShortcut {
   }
 }
 
-/**
- *
- */
+
 class nsZenKeyboardShortcutsLoader {
   constructor() {}
 
@@ -813,9 +807,7 @@ class nsZenKeyboardShortcutsLoader {
   }
 }
 
-/**
- *
- */
+
 class nsZenKeyboardShortcutsVersioner {
   static LATEST_KBS_VERSION = 14;
 

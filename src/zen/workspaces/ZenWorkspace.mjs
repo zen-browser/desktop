@@ -5,9 +5,7 @@
 import { nsZenFolder } from "chrome://browser/content/zen-components/ZenFolder.mjs";
 
 // A helper class to manage collapsible pinned tabs in a workspace.
-/**
- *
- */
+
 class nsZenCollapsiblePins extends nsZenFolder {
   #spaceElement;
 
@@ -46,9 +44,7 @@ class nsZenCollapsiblePins extends nsZenFolder {
   }
 }
 
-/**
- *
- */
+
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
   #hasConnected = false;

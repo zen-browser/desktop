@@ -16,9 +16,7 @@ const CONFIG = Object.freeze({
   },
 });
 
-/**
- *
- */
+
 class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
   async init() {
     await this.#setupDownloadListeners();
@@ -68,9 +66,7 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
   }
 }
 
-/**
- *
- */
+
 class nsZenDownloadAnimationElement extends HTMLElement {
   #boxAnimationElement = null;
   #boxAnimationTimeoutId = null;

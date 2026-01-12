@@ -15,9 +15,7 @@ window.gZenOperatingSystemCommonUtils = {
   },
 };
 
-/**
- *
- */
+
 export class nsZenMultiWindowFeature {
   constructor() {}
 
@@ -71,9 +69,7 @@ export class nsZenMultiWindowFeature {
   }
 }
 
-/**
- *
- */
+
 export class nsZenDOMOperatedFeature {
   constructor() {
     var initBound = this.init.bind(this);
@@ -81,9 +77,7 @@ export class nsZenDOMOperatedFeature {
   }
 }
 
-/**
- *
- */
+
 export class nsZenPreloadedFeature {
   constructor() {
     var initBound = this.init.bind(this);

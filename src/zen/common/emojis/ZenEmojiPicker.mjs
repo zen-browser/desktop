@@ -30,9 +30,7 @@ const SVG_ICONS = [
     "water.svg", "weight.svg", 
   ];
 
-/**
- *
- */
+
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #panel;
 

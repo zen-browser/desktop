@@ -4,9 +4,7 @@
 
 import { nsZenPreloadedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-/**
- *
- */
+
 class ZenSessionStore extends nsZenPreloadedFeature {
   init() {
     this.#waitAndCleanup();

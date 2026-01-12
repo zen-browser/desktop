@@ -8,7 +8,9 @@ import {
 } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 /**
+ * Zen Mods Manager, handles downloading, updating and applying Zen Mods.
  *
+ * @augments nsZenPreloadedFeature
  */
 class nsZenMods extends nsZenPreloadedFeature {
   // private properties start
@@ -95,7 +97,8 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   async #getEnabledMods() {
     if (Services.prefs.getBoolPref("zen.themes.disable-all", false)) {
-      console.warn("[ZenMods]: Mods are disabled by user preference.");
+      /* eslint-disable no-console */
+      console.info("[ZenMods]: Mods are disabled by user preference.");
       return [];
     }
     const modsObject = await this.getMods();

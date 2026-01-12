@@ -4,9 +4,7 @@
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
-/**
- *
- */
+
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
   MIGRATION_VERSION = 5;

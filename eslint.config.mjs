@@ -439,6 +439,11 @@ let config = [
       "mozilla/no-newtab-refs-outside-newtab": "error",
     },
   },
+  {
+    name: "jsdoc/require-jsdoc",
+    ignores: wrapPaths({ paths: ["**"] }),
+    ...mozilla.configs["flat/jsdoc-require-jsdoc"],
+  },
 
   ...wrapPathsInConfig(subdirConfigs),
   ...wrapPathsInConfig(repositoryGlobals),

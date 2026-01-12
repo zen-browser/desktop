@@ -6,9 +6,7 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 
 const lazy = {};
 
-/**
- *
- */
+
 class ZenPinnedTabsObserver {
   static ALL_EVENTS = ["TabPinned", "TabUnpinned"];
 
@@ -65,9 +63,7 @@ class ZenPinnedTabsObserver {
   }
 }
 
-/**
- *
- */
+
 class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   init() {
     if (!this.enabled) {

@@ -11,7 +11,8 @@ XPCOMUtils.defineLazyPreferenceGetter(
 );
 
 /**
- *
+ * Zen Media Controller, handles the small media control bar UI and interactions
+ * located at the bottom of the sidebar.
  */
 class nsZenMediaController {
   _currentMediaController = null;

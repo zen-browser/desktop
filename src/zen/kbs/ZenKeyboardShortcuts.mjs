@@ -412,7 +412,6 @@ class KeyShortcut {
   }
 
   toXHTMLElement(aWindow) {
-    // eslint-disable-next-line no-shadow
     let key = aWindow.document.createXULElement("key");
     return this.replaceWithChild(key);
   }

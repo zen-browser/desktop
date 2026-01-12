@@ -1391,7 +1391,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       {
         let opacity = browser.gZenThemePicker.currentOpacity;
         const svg = browser.gZenThemePicker.sliderWavePath;
-        /* eslint-disable no-unused-vars */
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         const [_, secondStop, thirdStop] = document.querySelectorAll(
           '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
         );

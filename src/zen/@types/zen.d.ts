@@ -18,8 +18,8 @@
 /// <reference types="../lib.gecko.tweaks.d.ts" />
 /// <reference types="../lib.gecko.nsresult.d.ts" />
 
-declare var window: Window;
-declare var Components: nsIXPCComponents;
+declare let window: Window;
+declare let Components: nsIXPCComponents;
 declare var Cu: nsIXPCComponents_Utils;
 declare var Ci: nsIXPCComponents_Interfaces;
 declare var Services: JSServices;
@@ -347,9 +347,9 @@ declare module 'ChromeUtils' {
   export = ChromeUtils;
 }
 
-declare var ChromeUtils: MockedExports.ChromeUtils;
+declare let ChromeUtils: MockedExports.ChromeUtils;
 
-declare var PathUtils: PathUtilsInterface;
+declare let PathUtils: PathUtilsInterface;
 
 // These global objects can be used directly in JSM files only.
 declare var Cu: MockedExports.Cu;

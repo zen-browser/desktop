@@ -688,6 +688,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return [];
     }
 
+    /* eslint-disable no-shadow */
     function getColorHarmonyType(numDots, dots) {
       if (useHarmony !== "") {
         const selectedHarmony = colorHarmonies.find((harmony) => harmony.type === useHarmony);
@@ -1496,6 +1497,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         textureHandler.style.transform = `rotate(${rotation + 90}deg)`;
         // add top and left to center the texture handler in relation with textureWrapperWidth
         // based on the rotation
+        /* eslint-disable no-shadow */
         let top = Math.sin((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 6;
         let left = Math.cos((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 3;
         textureHandler.style.top = `${textureWrapperWidth / 2 + top}px`;
@@ -1666,7 +1668,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           position,
           type,
         };
-      }).filter((color) => Boolean(color)); // remove nulls
+      })
+      .filter((color) => Boolean(color)); // remove nulls
     const gradient = nsZenThemePicker.getTheme(colors, this.currentOpacity, this.currentTexture);
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 

@@ -17,8 +17,6 @@ ChromeUtils.defineLazyGetter(lazy, "siblingElement", () => {
  *
  * Displays and takes care of animations for notifications that
  * appear in the sidebar.
- *
- * @properties {headingL10nId} - The L10n ID for the heading text.
  */
 class ZenSidebarNotification extends MozLitElement {
   static properties = {

@@ -20,7 +20,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         const modId = message.data.modId;
         const mod = await this.modsManager.requestMod(modId);
 
-        console.log(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
+        console.warn(`[ZenModsMarketplaceParent]: Installing mod ${mod.id}`);
 
         mod.enabled = true;
 
@@ -34,7 +34,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
       }
       case "ZenModsMarketplace:UninstallMod": {
         const modId = message.data.modId;
-        console.log(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
+        console.warn(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
 
         const mods = await this.modsManager.getMods();
 
@@ -60,6 +60,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
         return Boolean(themes?.[themeId]);
       }
     }
+    return undefined;
   }
 
   async updateChildProcesses(modId) {

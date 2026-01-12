@@ -34,8 +34,8 @@ class nsZenMenuBar {
       const schemeValue = WINDOW_SCHEME_MAPPING[type];
       Services.prefs.setIntPref(WINDOW_SCHEME_PREF, schemeValue);
     });
-    const parent = document.getElementById("view-menu");
-    const parentPopup = parent.querySelector("menupopup");
+    const viewMenu = document.getElementById("view-menu");
+    const parentPopup = viewMenu.querySelector("menupopup");
     parentPopup.prepend(document.createXULElement("menuseparator"));
     parentPopup.prepend(menu);
 
@@ -69,7 +69,7 @@ class nsZenMenuBar {
   }
 
   #initSpacesMenu() {
-    let menubar = window.MozXULElement.parseXULToFragment(`
+    let spacesMenubar = window.MozXULElement.parseXULToFragment(`
       <menu id="zen-spaces-menubar" data-l10n-id="zen-panel-ui-spaces-label">
         <menupopup>
           <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
@@ -87,7 +87,7 @@ class nsZenMenuBar {
             key="zen-workspace-backward"/>
         </menupopup>
       </menu>`);
-    document.getElementById("view-menu").after(menubar);
+    document.getElementById("view-menu").after(spacesMenubar);
     document.getElementById("zen-spaces-menubar").addEventListener("popupshowing", () => {
       gZenWorkspaces.updateWorkspacesChangeContextMenu();
     });

@@ -171,11 +171,11 @@ export class nsKeyShortcutModifiers {
     }
 
     return new nsKeyShortcutModifiers(
-      modifiers.control == true,
-      modifiers.alt == true,
-      modifiers.shift == true,
-      modifiers.meta == true,
-      modifiers.accel == true
+      modifiers.control === true,
+      modifiers.alt === true,
+      modifiers.shift === true,
+      modifiers.meta === true,
+      modifiers.accel === true
     );
   }
 
@@ -417,8 +417,9 @@ class KeyShortcut {
     }
   }
 
-  toXHTMLElement(window) {
-    let key = window.document.createXULElement("key");
+  toXHTMLElement(aWindow) {
+    // eslint-disable-next-line no-shadow
+    let key = aWindow.document.createXULElement("key");
     return this.replaceWithChild(key);
   }
 
@@ -854,7 +855,7 @@ class nsZenKeyboardShortcutsVersioner {
 
     if (this.isVersionOutdated()) {
       const version = this.version;
-      console.info(
+      console.warn(
         "Zen CKS: Migrating shortcuts from version",
         version,
         "to",
@@ -1248,6 +1249,7 @@ window.gZenKeyboardShortcutsManager = {
     }
 
     // Restore the keyset, https://searchfox.org/mozilla-central/rev/a59018f9ff34170810b43e12bf6f09a1512de7ab/dom/events/GlobalKeyListener.cpp#478
+    // eslint-disable-next-line no-shadow
     const parent = element.parentElement;
     element.remove();
     parent.prepend(element);

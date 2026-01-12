@@ -16,13 +16,13 @@ add_task(async function test_Create_Pinned() {
 
   ok(newTab.pinned, "The tab should be pinned after calling gBrowser.pinTab()");
 
-    const pinObject = newTab._zenPinnedInitialState;
-    ok(pinObject, "The pin object should be created in the tab's _zenPinnedInitialState");
-    Assert.equal(
-      pinObject.entry.url,
-      "https://example.com/",
-      "The pin object should have the correct URL"
-    );
+  const pinObject = newTab._zenPinnedInitialState;
+  ok(pinObject, "The pin object should be created in the tab's _zenPinnedInitialState");
+  Assert.equal(
+    pinObject.entry.url,
+    "https://example.com/",
+    "The pin object should have the correct URL"
+  );
 
   resolvePromise();
 

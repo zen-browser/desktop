@@ -165,6 +165,7 @@
       }
     }
 
+    // eslint-disable-next-line complexity
     _animateTabMove(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (event.target.closest("#zen-essentials")) {
@@ -172,7 +173,8 @@
           this.clearDragOverVisuals();
           return;
         }
-        return this.#animateVerticalPinnedGridDragOver(event);
+        this.#animateVerticalPinnedGridDragOver(event);
+        return;
       } else if (this._fakeEssentialTab) {
         this.#makeDragImageNonEssential(event);
       }
@@ -842,13 +844,13 @@
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 
+    // eslint-disable-next-line complexity
     #applyDragoverIndicator(event, tabs, movingTabs, draggedTab) {
       const separation = 4;
       const dropZoneSelector =
         ":is(.tabbrowser-tab, .zen-drop-target, .tab-group-label, tab-group[split-view-group])";
       let shouldPlayHapticFeedback = false;
       let showIndicatorUnderNewTabButton = false;
-      let dropBefore = false;
       let dropElement = event.target.closest(dropZoneSelector);
       if (!dropElement) {
         if (event.target.classList.contains("zen-workspace-empty-space")) {
@@ -911,10 +913,8 @@
           Services.prefs.getIntPref("browser.tabs.dragDrop.moveOverThresholdPercent") / 100;
         if (overlapPercent > threshold) {
           top = Math.round(rect.top + rect.height) + "px";
-          dropBefore = false;
         } else {
           top = Math.round(rect.top) + "px";
-          dropBefore = true;
         }
         if (indicator.style.top !== top) {
           shouldPlayHapticFeedback = true;
@@ -937,13 +937,12 @@
           dropElement =
             elementToMove(this._tabbrowserTabs.ariaFocusableItems.at(gBrowser._numZenEssentials)) ||
             dropElement;
-          dropBefore = true;
         }
       }
       if (shouldPlayHapticFeedback) {
+        // eslint-disable-next-line mozilla/valid-services
         Services.zen.playHapticFeedback();
       }
-      return [dropBefore, dropElement];
     }
 
     #getDragImageOffset(event, tab, draggingTabs) {
@@ -960,6 +959,7 @@
       };
     }
 
+    // eslint-disable-next-line complexity
     #animateVerticalPinnedGridDragOver(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;

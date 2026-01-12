@@ -333,7 +333,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {object} data - Glance data including URL, position, and dimensions
    * @param {Tab} existingTab - Optional existing tab to reuse
    * @param {Tab} ownerTab - The tab that owns this glance
-   * @returns {Promise<Tab>} Promise that resolves to the glance tab
    */
   openGlance(data, existingTab = null, ownerTab = null) {
     if (this.#currentBrowser) {
@@ -359,7 +358,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.fillOverlay(browserElement);
     this.overlay.classList.add("zen-glance-overlay");
 
-    return this.#animateGlanceOpening(data, browserElement);
+    this.#animateGlanceOpening(data, browserElement);
   }
 
   /**
@@ -444,6 +443,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #setupGlancePositioning(data) {
     const { clientX, clientY, width, height } = data;
+    // eslint-disable-next-line no-shadow
     const top = clientY + height / 2;
     const left = clientX + width / 2;
 
@@ -474,6 +474,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const imageDataElement = document.createXULElement("image");
     imageDataElement.setAttribute("src", src);
 
+    // eslint-disable-next-line no-shadow
     const parent = document.createElement("div");
     parent.classList.add("zen-glance-element-preview");
     parent.appendChild(imageDataElement);
@@ -808,12 +809,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    return this.#animateGlanceClosing(
-      onTabClose,
-      browserSidebarContainer,
-      sidebarButtons,
-      setNewID
-    );
+    this.#animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID);
   }
 
   /**
@@ -869,7 +865,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Element} browserSidebarContainer - The sidebar container
    * @param {Element} sidebarButtons - The sidebar buttons
    * @param {string} setNewID - New glance ID to set
-   * @returns {Promise} Promise that resolves when closing is complete
    */
   #animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID) {
     if (this.closingGlance) {
@@ -890,7 +885,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#animateSidebarButtons(sidebarButtons);
     this.#animateParentBackgroundClose(browserSidebarContainer);
 
-    return this.#executeClosingAnimation(setNewID, onTabClose);
+    this.#executeClosingAnimation(setNewID, onTabClose);
   }
 
   /**
@@ -1010,6 +1005,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #createClosingDataFromOriginalPosition(originalPosition) {
     // Parse the original position values
+    // eslint-disable-next-line no-shadow
     const top = parseFloat(originalPosition.top) || 0;
     const left = parseFloat(originalPosition.left) || 0;
     const width = parseFloat(originalPosition.width) || 0;
@@ -1548,7 +1544,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * Open glance for bookmark activation
    *
    * @param {Event} event - The bookmark click event
-   * @returns {boolean} False to prevent default behavior
    */
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref("zen.glance.activation-method", "ctrl");
@@ -1562,8 +1557,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     const data = this.#createGlanceDataFromBookmark(event);
     this.openGlance(data);
-
-    return false;
   }
 
   /**
@@ -1595,6 +1588,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const tabPanelRect = window.windowUtils.getBoundsWithoutFlushing(gBrowser.tabpanels);
     // the bookmark is most likely outisde the tabpanel, so we need to give a negative number
     // so it can be corrected later
+    // eslint-disable-next-line no-shadow
     let top = rect.top - tabPanelRect.top;
     let left = rect.left - tabPanelRect.left;
     return {

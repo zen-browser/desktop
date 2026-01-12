@@ -64,7 +64,7 @@ class nsZenUIMigration {
     Services.prefs.setIntPref("zen.view.window.scheme", theme);
     if (userChromeFile.exists() || userContentFile.exists()) {
       Services.prefs.setBoolPref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-      console.log("ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.");
+      console.warn("ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.");
       this.shouldRestart = true;
     }
   }

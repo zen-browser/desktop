@@ -71,8 +71,8 @@ window.gZenUIManager = {
    * This is not using gZenUIManager.motion, because motion library has some issues
    * with certain properties and we want to have a simple wrapper for that.
    *
-   * @param element
-   * @param rawKeyframes
+   * @param {Element} element
+   * @param {object} rawKeyframes
    * @param {...any} args
    */
   async elementAnimate(element, rawKeyframes, ...args) {
@@ -87,12 +87,11 @@ window.gZenUIManager = {
       delete rawKeyframes.x;
       delete rawKeyframes.scale;
       rawKeyframes.transform = [];
-      console.assert(
-        yValues.length === 0 || xValues.length === 0 || yValues.length === xValues.length,
-        "y and x keyframes must have the same length"
-      );
-      const length = Math.max(yValues.length, xValues.length, scaleValues.length);
-      for (let i = 0; i < length; i++) {
+      if (yValues.length !== 0 && xValues.length !== 0 && yValues.length !== xValues.length) {
+        console.error("y and x keyframes must have the same length");
+      }
+      const keyframeLength = Math.max(yValues.length, xValues.length, scaleValues.length);
+      for (let i = 0; i < keyframeLength; i++) {
         const y = yValues[i] !== undefined ? `translateY(${yValues[i]}px)` : "";
         const x = xValues[i] !== undefined ? `translateX(${xValues[i]}px)` : "";
         const scale = scaleValues[i] !== undefined ? `scale(${scaleValues[i]})` : "";
@@ -130,13 +129,13 @@ window.gZenUIManager = {
   },
 
   _initBookmarkCollapseListener() {
-    const toolbar = document.getElementById("PersonalToolbar");
-    if (!toolbar.hasAttribute("collapsed")) {
+    const bookmarkToolbar = document.getElementById("PersonalToolbar");
+    if (!bookmarkToolbar.hasAttribute("collapsed")) {
       // Set it initially if bookmarks toolbar is visible, customizable UI
       // is ran before this function.
       document.documentElement.setAttribute("zen-has-bookmarks", "true");
     }
-    toolbar.addEventListener("toolbarvisibilitychange", (event) => {
+    bookmarkToolbar.addEventListener("toolbarvisibilitychange", (event) => {
       const visible = event.detail.visible;
       if (visible) {
         document.documentElement.setAttribute("zen-has-bookmarks", "true");
@@ -150,11 +149,11 @@ window.gZenUIManager = {
     const { registerZenUrlbarProviders } = ChromeUtils.importESModule(
       "resource:///modules/ZenUBProvider.sys.mjs"
     );
-    const { nsZenSiteDataPanel } = ChromeUtils.importESModule(
+    const { nsZenSiteDataPanel: ZenSiteDataPanel } = ChromeUtils.importESModule(
       "resource:///modules/ZenSiteDataPanel.sys.mjs"
     );
     registerZenUrlbarProviders();
-    window.gZenSiteDataPanel = new nsZenSiteDataPanel(window);
+    window.gZenSiteDataPanel = new ZenSiteDataPanel(window);
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
   },
 
@@ -274,7 +273,7 @@ window.gZenUIManager = {
   /**
    * Adds the 'has-popup-menu' attribute to the element when popup is opened on it.
    *
-   * @param element element to track
+   * @param {Element} element element to track
    */
   addPopupTrackingAttribute(element) {
     this._popupTrackingElements.push(element);
@@ -1056,6 +1055,7 @@ window.gZenVerticalTabsManager = {
     });
   },
 
+  // eslint-disable-next-line complexity
   _updateEvent({ forCustomizableMode = false, dontRebuildAreas = false } = {}) {
     if (this._isUpdating) {
       return;
@@ -1240,13 +1240,12 @@ window.gZenVerticalTabsManager = {
           } else {
             navBar.append(windowButtons);
           }
+        }
+        // not windows styled buttons
+        if (isRightSide || !isSidebarExpanded) {
+          navBar.prepend(windowButtons);
         } else {
-          // not windows styled buttons
-          if (isRightSide || !isSidebarExpanded) {
-            navBar.prepend(windowButtons);
-          } else {
-            topButtons.prepend(windowButtons);
-          }
+          topButtons.prepend(windowButtons);
         }
       } else if (!isSingleToolbar && isCompactMode) {
         if (captionsShouldStayOnSidebar) {
@@ -1326,7 +1325,8 @@ window.gZenVerticalTabsManager = {
       this._hasSetSingleToolbar &&
       placements.includes(child.id)
     ) {
-      return this._topButtonsSeparatorElement.before(child);
+      this._topButtonsSeparatorElement.before(child);
+      return;
     }
     target.appendChild(child);
   },

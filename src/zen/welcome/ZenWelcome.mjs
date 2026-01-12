@@ -309,8 +309,8 @@
       }
     }
 
-    getEngineByName(name) {
-      return this._engines.find((engine) => engine.name == name);
+    getEngineByName(aName) {
+      return this._engines.find((engine) => engine.name == aName);
     }
 
     _cloneEngine(aEngine) {

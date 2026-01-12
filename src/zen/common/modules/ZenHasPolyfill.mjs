@@ -12,13 +12,10 @@ class nsHasPolyfill {
   }
 
   /**
-   * @param HTMLElement element
-   * @param element
-   * @param {{selector: string, exists: boolean}} descendantSelectors
-   * @param string stateAttribute
-   * @param Array<string>} attributeFilter
-   * @param stateAttribute
-   * @param attributeFilter
+   * @param {HTMLElement} element
+   * @param {Array<{selector: string, exists: boolean}>} descendantSelectors
+   * @param {string} stateAttribute
+   * @param {Array<string>} attributeFilter
    */
   observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
     const updateState = () => {

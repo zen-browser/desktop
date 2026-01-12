@@ -4,13 +4,16 @@
 "use strict";
 
 function goToRightSideTabs(callback) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     await SpecialPowers.pushPrefEnv({
       set: [["zen.tabs.vertical.right-side", true]],
     });
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(async () => {
       await callback();
       await SpecialPowers.popPrefEnv();
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
         resolve();
       }, 1000); // Wait for new layout
@@ -26,14 +29,16 @@ async function testSidebarWidth() {
 
   let hasRan = false;
   const ogSize = gNavToolbox.getBoundingClientRect().width;
-  const onCompactChanged = (event) => {
+  const onCompactChanged = (_event) => {
     if (hasRan) {
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
         gZenCompactModeManager.removeEventListener(onCompactChanged);
         resolvePromise();
       }, 500);
       return;
     }
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(() => {
       const newSize = gNavToolbox.style.getPropertyValue("--zen-sidebar-width").replace("px", "");
       Assert.equal(

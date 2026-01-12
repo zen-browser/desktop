@@ -100,7 +100,7 @@ window.gZenCompactModeManager = {
 
   log(...args) {
     if (this._canDebugLog) {
-      console.log("[Zen Compact Mode]", ...args);
+      console.warn("[Zen Compact Mode]", ...args);
     }
   },
 
@@ -267,7 +267,9 @@ window.gZenCompactModeManager = {
     this.callAllEventListeners();
   },
 
-  /** Check for illegal states and fix them
+  /**
+   * Check for illegal states and fix them
+   *
    * @returns {boolean} If the context menu should just show the "toggle" item
    *    instead of a submenu with hide options
    */
@@ -366,7 +368,6 @@ window.gZenCompactModeManager = {
       delete gZenVerticalTabsManager._hadSidebarCollapse;
       this.sidebar.style.setProperty("--zen-sidebar-width", `${sidebarWidth}px`);
     }
-    return sidebarWidth;
   },
 
   get canHideSidebar() {
@@ -654,7 +655,10 @@ window.gZenCompactModeManager = {
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present
-      if (isToolbar && !kVerifiedAttributes.some((attr) => element.hasAttribute(attr))) {
+      if (
+        isToolbar &&
+        !kVerifiedAttributes.some((verifiedAttr) => element.hasAttribute(verifiedAttr))
+      ) {
         gBrowser.tabpanels.removeAttribute("has-toolbar-hovered");
       }
     }

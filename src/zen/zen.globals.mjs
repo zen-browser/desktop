@@ -12,7 +12,7 @@ export default [
   "gZenCommonActions",
 
   "gZenCompactModeManager",
-  
+
   "gZenWindowSync",
 
   "gZenUIManager",

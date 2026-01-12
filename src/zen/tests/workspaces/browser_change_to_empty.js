@@ -4,6 +4,7 @@
 "use strict";
 
 add_task(async function test_Change_To_Empty() {
+  // eslint-disable-next-line no-unused-vars
   const currentWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
   const workspaces = await gZenWorkspaces._workspaces();

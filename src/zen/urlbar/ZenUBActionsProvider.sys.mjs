@@ -339,8 +339,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         },
       },
       prettyNameTitle: {
+        /* eslint-disable-next-line no-nested-ternary */
         textContent: result.payload.prettyName
-          /* eslint-disable-next-line no-nested-ternary */
           ? prettyIconIsSvg || !result.payload.prettyIcon
             ? result.payload.prettyName
             : `${result.payload.prettyIcon}  ${result.payload.prettyName}`

@@ -10,6 +10,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+  // eslint-disable-next-line mozilla/valid-lazy
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
 });
@@ -127,7 +128,7 @@ class nsZenWindowSync {
 
   log(...args) {
     if (lazy.gShouldLog) {
-      console.info("ZenWindowSync:", ...args);
+      console.warn("ZenWindowSync:", ...args);
     }
   }
 
@@ -172,8 +173,6 @@ class nsZenWindowSync {
 
   /**
    * Called when the session store has finished initializing for a window.
-   *
-   * @param {Window} aWindow - The browser window that has initialized session store.
    */
   async #onSessionStoreInitialized() {
     // For every tab we have in where there's no sync ID, we need to
@@ -261,7 +260,8 @@ class nsZenWindowSync {
       return;
     }
     if (INSTANT_EVENTS.includes(aEvent.type)) {
-      return this.#handleNextEvent(aEvent);
+      this.#handleNextEvent(aEvent);
+      return;
     }
     if (this.#eventHandlingContext.window && this.#eventHandlingContext.window !== window) {
       // We're already handling an event for another window.
@@ -366,10 +366,8 @@ class nsZenWindowSync {
   /**
    * Synchronizes the icon and label of the target tab with the original tab.
    *
-   * @param {object} aOriginalTab - The original tab to copy from.
-   * @param {object} aTargetTab - The target tab to copy to.
-   * @param aOriginalItem
-   * @param aTargetItem
+   * @param {object} aOriginalItem - The original item to copy from.
+   * @param {object} aTargetItem - The target item to copy to.
    * @param {Window} aWindow - The window containing the tabs.
    * @param {number} flags - The sync flags indicating what to synchronize.
    */
@@ -583,11 +581,9 @@ class nsZenWindowSync {
    *
    * @param {object} aOurTab - The tab in the current window.
    * @param {object} aOtherTab - The tab in the other window.
+   * @param {object} options - Options object.
    * @param {boolean} options.focus - Indicates if the tab should be focused after the swap.
-   * @param root0
-   * @param root0.focus
    * @param {boolean} options.onClose - Indicates if the swap is done during a tab close operation.
-   * @param root0.onClose
    */
   #swapBrowserDocSheellsInner(aOurTab, aOtherTab, { focus = true, onClose = false } = {}) {
     // Can't swap between chrome and content processes.
@@ -754,6 +750,7 @@ class nsZenWindowSync {
       if (filter(tab)) {
         return tab;
       }
+      return undefined;
     });
   }
 
@@ -969,7 +966,7 @@ class nsZenWindowSync {
       // No need to sync icon changes for tabs that aren't active in this window.
       return;
     }
-    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
+    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
   }
 
   on_ZenTabLabelChanged(aEvent) {
@@ -977,7 +974,7 @@ class nsZenWindowSync {
       // No need to sync label changes for tabs that aren't active in this window.
       return;
     }
-    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
+    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
   }
 
   on_TabMove(aEvent) {
@@ -1037,7 +1034,7 @@ class nsZenWindowSync {
     }
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    return this.#onTabSwitchOrWindowFocus(window);
+    this.#onTabSwitchOrWindowFocus(window);
   }
 
   on_TabSelect(aEvent) {
@@ -1047,7 +1044,7 @@ class nsZenWindowSync {
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    return this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
+    this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
   on_SSWindowClosing(aEvent) {
@@ -1078,7 +1075,7 @@ class nsZenWindowSync {
       const existingGroup = this.getItemFromWindow(win, tabGroup.id);
       if (existingGroup) {
         this.log(
-          `Attempted to create group ${tabGroup.id} in window ${win}, ` + `but it already exists.`
+          `Attempted to create group ${tabGroup.id} in window ${win}, but it already exists.`
         );
         return; // Do not proceed with creation.
       }
@@ -1153,5 +1150,6 @@ class nsZenWindowSync {
   }
 }
 
+// eslint-disable-next-line mozilla/valid-lazy
 export const gWindowSyncEnabled = lazy.gWindowSyncEnabled;
 export const ZenWindowSync = new nsZenWindowSync();

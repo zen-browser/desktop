@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
+/* eslint-disable no-shadow */
 
 import { nsZenThemePicker } from "chrome://browser/content/zen-components/ZenGradientGenerator.mjs";
 
@@ -10,7 +10,7 @@ import { nsZenThemePicker } from "chrome://browser/content/zen-components/ZenGra
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
  * the workspaces and their tabs.
- * 
+ *
  * For window sync, please @see ZenWindowSync
  */
 class nsZenWorkspaces {

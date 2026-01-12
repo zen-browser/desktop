@@ -40,6 +40,7 @@ function selectWithMouseDrag(fromX, toX, win = window) {
 }
 
 function goToMultipleLayouts(callback) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     await SpecialPowers.pushPrefEnv({
       set: [["zen.view.use-single-toolbar", false]],

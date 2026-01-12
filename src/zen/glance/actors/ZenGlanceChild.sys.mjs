@@ -64,7 +64,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
    * Returns the closest A element from the event target
    * and the element to record (originalTarget or target)
    *
-   * @param event
+   * @param {Event} event
    */
   #getTargetFromEvent(event) {
     // get closest A element

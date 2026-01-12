@@ -476,11 +476,11 @@ var gZenMarketplaceManager = {
               menupopup.appendChild(defaultItem);
 
               for (const option of options) {
-                let { label, value } = option;
+                let { label: optionLabel, value } = option;
                 let valueType = typeof value;
 
                 if (!["string", "number"].includes(valueType)) {
-                  console.log(
+                  console.warn(
                     `[ZenSettings:ZenMods]: Warning, invalid data type received (${valueType}), skipping.`
                   );
                   continue;
@@ -489,7 +489,7 @@ var gZenMarketplaceManager = {
                 let menuitem = document.createXULElement("menuitem");
 
                 menuitem.setAttribute("value", value.toString());
-                menuitem.setAttribute("label", label);
+                menuitem.setAttribute("label", optionLabel);
 
                 menupopup.appendChild(menuitem);
               }
@@ -626,7 +626,7 @@ var gZenMarketplaceManager = {
             }
 
             default:
-              console.log(
+              console.warn(
                 `[ZenSettings:ZenMods]: Warning, unknown preference type received (${type}), skipping.`
               );
               continue;
@@ -1035,7 +1035,7 @@ var gZenCKSSettings = {
             zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
             conflictShortcut.getL10NID();
 
-          const [group, shortcut] = await document.l10n.formatValues([
+          const [group] = await document.l10n.formatValues([
             { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
             { id: shortcutL10nKey },
           ]);

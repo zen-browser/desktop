@@ -373,7 +373,7 @@ function forgetClosedTabGroups(win) {
  * further if parts of the window's initialization process take more time than
  * expected (e.g. reading a big session state from disk).
  *
- * @param {Object} aOptions
+ * @param {object} aOptions
  * @param {() => void} aCallback
  */
 function whenNewWindowLoaded(aOptions, aCallback) {

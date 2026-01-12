@@ -18,6 +18,7 @@ add_task(async function test_Unload_NoReset_Pinned() {
     gBrowser.pinTab(tab);
 
     document.getElementById("cmd_close").doCommand();
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(() => {
       ok(tab.closing, "The tab should be closing after being closed");
       resolvePromise();

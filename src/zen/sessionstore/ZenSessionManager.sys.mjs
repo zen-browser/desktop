@@ -9,10 +9,14 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  // eslint-disable-next-line mozilla/valid-lazy
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  // eslint-disable-next-line mozilla/valid-lazy
   TabGroupState: "resource:///modules/sessionstore/TabGroupState.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+  // eslint-disable-next-line mozilla/valid-lazy
   SessionSaver: "resource:///modules/sessionstore/SessionSaver.sys.mjs",
+  // eslint-disable-next-line mozilla/valid-lazy
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
@@ -100,7 +104,7 @@ export class nsZenSessionManager {
 
   log(...args) {
     if (lazy.gShouldLog) {
-      console.info("ZenSessionManager:", ...args);
+      console.warn("ZenSessionManager:", ...args);
     }
   }
 
@@ -169,7 +173,7 @@ export class nsZenSessionManager {
    * Called when the session file is read. Restores the sidebar data
    * into all windows.
    *
-   * @param initialState
+   * @param {object} initialState
    *        The initial session state read from the session file.
    */
   onFileRead(initialState) {
@@ -263,7 +267,7 @@ export class nsZenSessionManager {
   /**
    * Saves the current session state. Collects data and writes to disk.
    *
-   * @param state The current session state.
+   * @param {object} state The current session state.
    */
   saveState(state) {
     if (!state?.windows?.length || !lazy.gWindowSyncEnabled) {
@@ -340,8 +344,8 @@ export class nsZenSessionManager {
    * Saves the session data for a closed window if it meets the criteria.
    * See SessionStoreInternal.maybeSaveClosedWindow for more details.
    *
-   * @param aWinData - The window data object to save.
-   * @param isLastWindow - Whether this is the last saveable window.
+   * @param {object} aWinData - The window data object to save.
+   * @param {boolean} isLastWindow - Whether this is the last saveable window.
    */
   maybeSaveClosedWindow(aWinData, isLastWindow) {
     // We only want to save the *last* normal window that is closed.
@@ -357,7 +361,7 @@ export class nsZenSessionManager {
   /**
    * Collects session data for a given window.
    *
-   * @param state
+   * @param {object} state
    *        The current session state.
    */
   #collectWindowData(state) {
@@ -382,8 +386,8 @@ export class nsZenSessionManager {
   /**
    * Collects session data for all tabs in a given window.
    *
-   * @param sidebarData The sidebar data object to populate.
-   * @param state The current session state.
+   * @param {object} sidebarData The sidebar data object to populate.
+   * @param {object} state The current session state.
    */
   #collectTabsData(sidebarData, state) {
     const tabIdRelationMap = new Map();
@@ -412,7 +416,7 @@ export class nsZenSessionManager {
    * We do this in order to make sure all new window objects
    * have the same sidebar data.
    *
-   * @param aWindowData The window data object to restore into.
+   * @param {object} aWindowData The window data object to restore into.
    */
   #restoreWindowData(aWindowData) {
     const sidebar = this.#sidebar;
@@ -430,11 +434,11 @@ export class nsZenSessionManager {
    * Restores a new window with Zen session data. This should be called
    * not at startup, but when a new window is opened by the user.
    *
-   * @param aWindow
+   * @param {Window} aWindow
    *        The window to restore.
-   * @param SessionStoreInternal
+   * @param {object} SessionStoreInternal
    *        The SessionStore module instance.
-   * @param fromClosedWindow
+   * @param {boolean} fromClosedWindow
    *        Whether this new window is being restored from a closed window.
    */
   restoreNewWindow(aWindow, SessionStoreInternal, fromClosedWindow = false) {
@@ -486,8 +490,7 @@ export class nsZenSessionManager {
    * when creating a new profile or when the user installed it for
    * the first time.
    *
-   * @param {*} aWindow
-   * @returns
+   * @param {Window} aWindow
    */
   onNewEmptySession(aWindow) {
     this.log("Restoring empty session with Zen session data");

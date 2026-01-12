@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export function openGlanceOnTab(window, callback, close = true) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     window.gZenGlanceManager
       .openGlance({

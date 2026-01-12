@@ -25,6 +25,7 @@ add_task(async function test_Unload_NoReset_Pinned() {
         "The tab should have a zen-pinned-changed attribute after being pinned"
       );
       document.getElementById("cmd_close").doCommand();
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
         ok(
           !tab.hasAttribute("zen-pinned-changed"),

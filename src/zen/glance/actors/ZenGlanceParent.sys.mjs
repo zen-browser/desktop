@@ -33,6 +33,7 @@ export class ZenGlanceParent extends JSWindowActorParent {
       default:
         console.warn(`[glance]: Unknown message: ${message.name}`);
     }
+    return undefined;
   }
 
   openGlance(window, data) {

@@ -200,7 +200,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {Tab} tab - The tab to remove.
    * @param {number} groupIndex - The index of the group.
    * @param {boolean} [forUnsplit=false] - Whether the removal is for unsplitting.
-   * @param {boolean} [dontRebuildGrid=false] - Whether to skip rebuilding the grid layout.
    */
   removeTabFromGroup(
     tab,
@@ -330,6 +329,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     const oldTab = this._lastOpenedTab;
     this._canDrop = true;
+    // eslint-disable-next-line mozilla/valid-services
     Services.zen.playHapticFeedback();
     {
       this._draggingTab = draggedTab;
@@ -337,6 +337,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this._hasAnimated = true;
       this.tabBrowserPanel.setAttribute("dragging-split", "true");
       // Add a min width to all the browser elements to prevent them from resizing
+      // eslint-disable-next-line no-shadow
       const panelsWidth = gBrowser.tabbox.getBoundingClientRect().width;
       let numOfTabsToDivide = 2;
       if (currentView) {
@@ -506,6 +507,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   removeNode(toRemove) {
     this._removeNodeSplitters(toRemove, true);
+    // eslint-disable-next-line no-shadow
     const parent = toRemove.parent;
     const childIndex = parent.children.indexOf(toRemove);
     parent.children.splice(childIndex, 1);
@@ -543,7 +545,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * @param node
+   * @param {object} node
    * @param {boolean} recursive
    * @private
    */
@@ -762,7 +764,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       dragImageOffset = dragImageOffset * scale;
     }
     event.dataTransfer.setDragImage(toDrag, dragImageOffset, dragImageOffset);
-    return true;
   };
 
   onBrowserDragOver = (event) => {
@@ -842,6 +843,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (side === "right") {
       return "left";
     }
+    return undefined;
   }
 
   calculateHoverSide(x, y, elementRect) {
@@ -896,8 +898,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    *
-   * @param node1
-   * @param node2
+   * @param {object} node1
+   * @param {object} node2
    */
   swapNodes(node1, node2) {
     this._swapField("sizeInParent", node1, node2);
@@ -912,10 +914,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    *
-   * @param node
-   * @param nodeToInsert
-   * @param side
-   * @param sizeOfInsertedNode percentage of node width or height that nodeToInsert will take
+   * @param {object} node
+   * @param {object} nodeToInsert
+   * @param {string} side
+   * @param {number} sizeOfInsertedNode percentage of node width or height that nodeToInsert will take
    */
   splitIntoNode(node, nodeToInsert, side, sizeOfInsertedNode) {
     const splitDirection = side === "left" || side === "right" ? "row" : "column";
@@ -1122,7 +1124,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // Extract from parent node so we are not selecting the wrong (current) tab
       tab = tab.parentNode.closest(".tabbrowser-tab");
       isGlanceTab = true;
-      console.assert(tab, "Tab not found for zen-glance-tab");
+      if (!tab) {
+        console.error("Tab not found for zen-glance-tab");
+      }
     }
     if (tab) {
       this.updateSplitView(tab);
@@ -1145,9 +1149,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * @param {Tab} tab
-   * @param tabs
-   * @param relativeTab
+   * @param {Array} tabs
+   * @param {Tab} relativeTab
    */
   _moveTabsToContainer(tabs, relativeTab) {
     const relativeTabIsPinned = relativeTab.pinned;
@@ -1214,6 +1217,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         }
         this.activateSplitView(group, true);
         this.#dispatchItemEvent("ZenSplitViewTabsSplit", group);
+        // eslint-disable-next-line consistent-return
         return group;
       }
 
@@ -1260,6 +1264,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.activateSplitView(splitData);
       this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+      // eslint-disable-next-line consistent-return
       return splitData;
     });
   }
@@ -1293,8 +1298,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   /**
    * Deactivates the split view.
    *
-   * @param root0
-   * @param root0.removeDeckSelected
+   * @param {object} options - Options object.
+   * @param {boolean} options.removeDeckSelected - Whether to remove deck selected attribute.
    */
   deactivateCurrentSplitView({ removeDeckSelected = false } = {}) {
     if (this.currentView < 0) {
@@ -1318,7 +1323,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Activates the split view.
    *
    * @param {object} splitData - The split data.
-   * @param reset
+   * @param {boolean} reset - Whether to reset the split view.
    */
   activateSplitView(splitData, reset = false) {
     const oldView = this.currentView;
@@ -1377,7 +1382,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Applies the grid layout to the tabs.
    *
    * @param {Tab[]} tabs - The tabs to apply the grid layout to.
-   * @param {Tab} activeTab - The active tab.
    */
   applyGridToTabs(tabs) {
     tabs.forEach((tab) => {
@@ -1398,7 +1402,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   /**
    * Creates a header for the tab.
    *
-   * @param container
+   * @param {Element} container
    * @returns {*|!Element|HTMLElement|HTMLUnknownElement|HTMLDirectoryElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLPreElement|HTMLMarqueeElement|HTMLParamElement}
    * @private
    */
@@ -1747,7 +1751,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    * @description removes the tab from the split
-   * @param container - The container element
+   * @param {Element} container - The container element
    */
   removeTabFromSplit = (container) => {
     const browser = container.querySelector("browser");
@@ -1792,10 +1796,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    * @description moves the tab to the split view if dragged on a browser
-   * @param event - The event
-   * @param draggedTab - The dragged tab
+   * @param {Event} event - The event
+   * @param {Tab} draggedTab - The dragged tab
    * @returns {boolean} true if the tab was moved to the split view
    */
+  // eslint-disable-next-line complexity
   moveTabToSplitView(event, draggedTab) {
     const canDrop = this._canDrop;
     this._canDrop = false;

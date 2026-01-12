@@ -4,8 +4,7 @@
 
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
-const lazy = {
-};
+const lazy = {};
 
 let lazyDatabaseData = {};
 

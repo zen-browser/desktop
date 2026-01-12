@@ -6,6 +6,7 @@ document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
+    // eslint-disable-next-line complexity
     document.getElementById("zenCommandSet").addEventListener("command", (event) => {
       switch (event.target.id) {
         case "cmd_zenCompactModeToggle":

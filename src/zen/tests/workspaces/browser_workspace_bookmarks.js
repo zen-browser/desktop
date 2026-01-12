@@ -2,7 +2,7 @@
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
 /* eslint-disable mozilla/no-arbitrary-setTimeout */
-  
+
 "use strict";
 
 const TEST_URL = "about:buildconfig";

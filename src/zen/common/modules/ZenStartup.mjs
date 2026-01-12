@@ -48,8 +48,8 @@ class ZenStartup {
       let newContainer = document.getElementById(kNewContainerId);
       for (let id of kNavbarItems) {
         const node = document.getElementById(id);
-        console.assert(node, "Could not find node with id: " + id);
         if (!node) {
+          console.error("Could not find node with id: " + id);
           continue;
         }
         newContainer.appendChild(node);

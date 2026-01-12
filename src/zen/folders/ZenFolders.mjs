@@ -586,8 +586,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     //   we do this to ensure marginBottom is set correctly in the case
     //   that we want it to initially be collapsed.
     setTimeout(
-      (folder) => {
-        folder.collapsed = !!options.collapsed;
+      (folderNode) => {
+        folderNode.collapsed = !!options.collapsed;
       },
       0,
       folder
@@ -823,13 +823,19 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     const isCollapsed = group.collapsed;
-    svg.setAttribute("state", state === "auto" ? (isCollapsed ? "close" : "open") : state);
+    let stateValue = state;
+    if (state === "auto") {
+      stateValue = isCollapsed ? "close" : "open";
+    }
+    svg.setAttribute("state", stateValue);
     const hasActive = group.hasAttribute("has-active");
-    svg.setAttribute("active", hasActive && isCollapsed ? "true" : "false");
+    const activeValue = hasActive && isCollapsed ? "true" : "false";
+    svg.setAttribute("active", activeValue);
 
     return [];
   }
 
+  // eslint-disable-next-line complexity
   setFolderIndentation(tabs, groupElem = undefined, forCollapse = true, animate = true) {
     if (!gZenPinnedTabManager.expandedSidebarMode) {
       return;
@@ -872,20 +878,20 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const tabLevel = tabToAnimate?.group?.level || 0;
     const spacing = (level - tabLevel) * baseSpacing;
     if (!animate) {
-      for (const tab of tabs) {
-        tab.style.setProperty("transition", "none", "important");
+      for (const tabItem of tabs) {
+        tabItem.style.setProperty("transition", "none", "important");
       }
     }
-    for (const tab of tabs) {
-      if (gBrowser.isTabGroupLabel(tab) || tab.group?.hasAttribute("split-view-group")) {
-        tab.group.style.setProperty("--zen-folder-indent", `${spacing}px`);
+    for (const tabItem of tabs) {
+      if (gBrowser.isTabGroupLabel(tabItem) || tabItem.group?.hasAttribute("split-view-group")) {
+        tabItem.group.style.setProperty("--zen-folder-indent", `${spacing}px`);
         continue;
       }
-      tab.style.setProperty("--zen-folder-indent", `${spacing}px`);
+      tabItem.style.setProperty("--zen-folder-indent", `${spacing}px`);
     }
     if (!animate) {
-      for (const tab of tabs) {
-        tab.style.removeProperty("transition");
+      for (const tabItem of tabs) {
+        tabItem.style.removeProperty("transition");
       }
     }
   }
@@ -1194,11 +1200,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       .filter((item) => !item.hasAttribute("zen-empty-tab"))
       .map((item) => {
         const isSplitView = item.group?.hasAttribute?.("split-view-group");
-        const group = isSplitView ? item.group.group : item.group;
-        if (!folders.has(group?.id)) {
-          folders.set(group?.id, group?.activeGroups[0]);
+        const itemGroup = isSplitView ? item.group.group : item.group;
+        if (!folders.has(itemGroup?.id)) {
+          folders.set(itemGroup?.id, itemGroup?.activeGroups[0]);
         }
-        const lastActiveFolder = folders.get(group?.id);
+        const lastActiveFolder = folders.get(itemGroup?.id);
         const activeFolderId = lastActiveFolder?.id;
         const splitViewId = isSplitView ? item?.group?.id : null;
 
@@ -1371,10 +1377,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           }
 
           if (activeFolderId && activeFoldersIds.has(activeFolderId)) {
-            const folder = item.parentElement;
+            const parentFolder = item.parentElement;
             if (
-              gBrowser.isTabGroup(folder) &&
-              folder.id !== activeFolderId &&
+              gBrowser.isTabGroup(parentFolder) &&
+              parentFolder.id !== activeFolderId &&
               item.hasAttribute("folder-active")
             ) {
               continue;
@@ -1395,13 +1401,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         const folders = new Map();
         group.removeAttribute("has-active");
         for (let tab of activeTabs) {
-          const group = tab?.group?.hasAttribute("split-view-group")
+          const tabGroup = tab?.group?.hasAttribute("split-view-group")
             ? tab?.group?.group
             : tab?.group;
-          if (!folders.has(group?.id)) {
-            folders.set(group?.id, group?.activeGroups?.at(-1));
+          if (!folders.has(tabGroup?.id)) {
+            folders.set(tabGroup?.id, tabGroup?.activeGroups?.at(-1));
           }
-          let activeGroup = folders.get(group?.id);
+          let activeGroup = folders.get(tabGroup?.id);
           if (activeGroup) {
             this.setFolderIndentation([tab], activeGroup, /* for collapse = */ true);
           } else {
@@ -1638,9 +1644,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
                 afterMarginTop
               )
             );
-            for (const tab of activeTabs) {
+            for (const activeTab of activeTabs) {
               this.setFolderIndentation(
-                [tab],
+                [activeTab],
                 currentGroup,
                 /* for collapse = */ true,
                 /* animate = */ false

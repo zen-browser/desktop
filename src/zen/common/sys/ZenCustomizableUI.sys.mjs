@@ -123,7 +123,8 @@ export const ZenCustomizableUI = new (class {
     const button = window.document.getElementById("zen-create-new-button");
     button.addEventListener("command", (event) => {
       if (window.gZenWorkspaces.privateWindowOrDisabled) {
-        return window.document.getElementById("cmd_newNavigatorTab").doCommand();
+        window.document.getElementById("cmd_newNavigatorTab").doCommand();
+        return;
       }
       if (button.hasAttribute("open")) {
         return;

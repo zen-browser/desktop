@@ -95,7 +95,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   async #getEnabledMods() {
     if (Services.prefs.getBoolPref("zen.themes.disable-all", false)) {
-      console.log("[ZenMods]: Mods are disabled by user preference.");
+      console.warn("[ZenMods]: Mods are disabled by user preference.");
       return [];
     }
     const modsObject = await this.getMods();
@@ -103,6 +103,7 @@ class nsZenMods extends nsZenPreloadedFeature {
       (mod) => mod.enabled === undefined || mod.enabled
     );
 
+    // eslint-disable-next-line no-shadow
     const modList = mods.map(({ name }) => name).join(", ");
 
     const message =
@@ -110,7 +111,7 @@ class nsZenMods extends nsZenPreloadedFeature {
         ? `[ZenMods]: Loading enabled Zen mods: ${modList}.`
         : "[ZenMods]: No enabled Zen mods.";
 
-    console.log(message);
+    console.warn(message);
 
     return mods;
   }
@@ -134,7 +135,7 @@ class nsZenMods extends nsZenPreloadedFeature {
         try {
           getProperty(property);
         } catch {
-          console.debug(
+          console.warn(
             `[ZenMods]: Setting default value for ${property} to ${defaultValue} (${typeof defaultValue})`
           );
 
@@ -160,6 +161,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   #writeToDom(modsWithPreferences) {
     for (const browser of nsZenMultiWindowFeature.browsers) {
+      // eslint-disable-next-line no-shadow
       for (const { enabled, preferences, name } of modsWithPreferences) {
         const sanitizedName = this.sanitizeModName(name);
 
@@ -290,7 +292,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     return `https://zen-browser.github.io/theme-store/themes/${modId}/theme.json`;
   }
 
-  async #downloadUrlToFile(url, path, isStyleSheet = false, maxRetries = 3, retryDelayMs = 500) {
+  async #downloadUrlToFile(url, path, _isStyleSheet = false, maxRetries = 3, retryDelayMs = 500) {
     let attempt = 0;
 
     while (attempt < maxRetries) {
@@ -352,9 +354,10 @@ class nsZenMods extends nsZenPreloadedFeature {
     };
   }
 
-  sanitizeModName(name) {
+  sanitizeModName(aName) {
     // Do not change to "mod-" for backwards compatibility
-    return `theme-${name?.replaceAll(/\s/g, "-")?.replaceAll(/[^A-Za-z_-]+/g, "")}`;
+    // eslint-disable-next-line no-shadow
+    return `theme-${aName?.replaceAll(/\s/g, "-")?.replaceAll(/[^A-Za-z_-]+/g, "")}`;
   }
 
   get updatePref() {
@@ -429,7 +432,7 @@ class nsZenMods extends nsZenPreloadedFeature {
         Services.prefs.getBoolPref("zen.themes.disable-all", false) ||
         Services.appinfo.inSafeMode
       ) {
-        console.log("[ZenMods]: Mods disabled by user or in safe mode.");
+        console.warn("[ZenMods]: Mods disabled by user or in safe mode.");
         return;
       }
 
@@ -510,7 +513,7 @@ class nsZenMods extends nsZenPreloadedFeature {
             !this.#compareVersions(possibleNewModVersion.version, currentMod.version ?? "0.0.0") &&
             possibleNewModVersion.version != currentMod.version
           ) {
-            console.log(
+            console.warn(
               `[ZenMods]: Mod update found for mod ${currentMod.name} (${currentMod.id}), current: ${currentMod.version}, new: ${possibleNewModVersion.version}`
             );
 
@@ -542,7 +545,7 @@ class nsZenMods extends nsZenPreloadedFeature {
   async removeMod(modId, triggerUpdate = true) {
     const modPath = this.getModFolder(modId);
 
-    console.log(`[ZenMods]: Removing mod ${modPath}`);
+    console.warn(`[ZenMods]: Removing mod ${modPath}`);
 
     await IOUtils.remove(modPath, { recursive: true, ignoreAbsent: true });
 
@@ -561,7 +564,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     const mods = await this.getMods();
     const mod = mods[modId];
 
-    console.log(`[ZenMods]: Enabling mod ${mod.name}`);
+    console.warn(`[ZenMods]: Enabling mod ${mod.name}`);
 
     mod.enabled = true;
 
@@ -572,7 +575,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     const mods = await this.getMods();
     const mod = mods[modId];
 
-    console.log(`[ZenMods]: Disabling mod ${mod.name}`);
+    console.warn(`[ZenMods]: Disabling mod ${mod.name}`);
 
     mod.enabled = false;
 
@@ -631,7 +634,7 @@ class nsZenMods extends nsZenPreloadedFeature {
   async requestMod(modId) {
     const url = this.#composeModApiUrl(modId);
 
-    console.debug(`[ZenMods]: Fetching mod ${modId} info from ${url}`);
+    console.warn(`[ZenMods]: Fetching mod ${modId} info from ${url}`);
 
     const data = await fetch(url, {
       mode: "no-cors",

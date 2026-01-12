@@ -15,6 +15,7 @@ class ZenPinnedTabsObserver {
   #listeners = [];
 
   constructor() {
+    // eslint-disable-next-line mozilla/valid-lazy
     XPCOMUtils.defineLazyPreferenceGetter(
       lazy,
       "zenPinnedTabRestorePinnedTabsToPinnedUrl",
@@ -34,6 +35,7 @@ class ZenPinnedTabsObserver {
       12
     );
     ChromeUtils.defineESModuleGetters(lazy, {
+      // eslint-disable-next-line mozilla/valid-lazy
       E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
       TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
     });
@@ -84,6 +86,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   log(message) {
     if (this._canLog) {
+      /* eslint-disable-next-line no-console */
       console.log(`[ZenPinnedTabManager] ${message}`);
     }
   }
@@ -184,6 +187,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
+  // eslint-disable-next-line complexity
   async onCloseTabShortcut(
     event,
     selectedTab = gBrowser.selectedTab,
@@ -276,9 +280,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             const allAreUnloaded = pinnedTabs.every(
               (tab) => tab.hasAttribute("pending") && !tab.hasAttribute("zen-essential")
             );
-            for (const tab of pinnedTabs) {
+            for (const tabItem of pinnedTabs) {
               if (allAreUnloaded && closeIfPending) {
-                return await this.onCloseTabShortcut(event, tab, { behavior: "close" });
+                await this.onCloseTabShortcut(event, tabItem, { behavior: "close" });
+                return;
               }
             }
             await gBrowser.explicitUnloadTabs(pinnedTabs);
@@ -362,6 +367,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   addToEssentials(tab) {
+    // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? // if it's already an array, dont make it [tab]
         tab?.length
@@ -372,6 +378,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         : [TabContextMenu.contextTab];
     let movedAll = true;
     for (let i = 0; i < tabs.length; i++) {
+      // eslint-disable-next-line no-shadow
       let tab = tabs[i];
       const section = gZenWorkspaces.getEssentialsSection(tab);
       if (!this.canEssentialBeAdded(tab)) {
@@ -417,12 +424,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   removeEssentials(tab, unpin = true) {
+    // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? [tab]
       : TabContextMenu.contextTab.multiselected
         ? gBrowser.selectedTabs
         : [TabContextMenu.contextTab];
     for (let i = 0; i < tabs.length; i++) {
+      // eslint-disable-next-line no-shadow
       const tab = tabs[i];
       tab.removeAttribute("zen-essential");
       if (gZenWorkspaces.workspaceEnabled && gZenWorkspaces.getActiveWorkspaceFromCache().uuid) {
@@ -543,6 +552,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       !gZenVerticalTabsManager._prefsSidebarExpanded;
   }
 
+  // eslint-disable-next-line complexity
   moveToAnotherTabContainerIfNecessary(event, movingTabs) {
     movingTabs = [...movingTabs];
     if (!this.enabled) {
@@ -726,6 +736,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     );
   }
 
+  // eslint-disable-next-line complexity
   applyDragoverClass(event, draggedTab) {
     if (!this.enabled) {
       return;
@@ -790,6 +801,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       const separation = 8;
       const middleY = targetTab.screenY + rect.height / 2;
       const indicator = this.dragIndicator;
+      // eslint-disable-next-line no-shadow
       let top = 0;
       if (event.screenY > middleY) {
         top = Math.round(rect.top + rect.height) + "px";
@@ -824,6 +836,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       indicator.style.removeProperty("top");
     }
     if (shouldPlayHapticFeedback) {
+      // eslint-disable-next-line mozilla/valid-services
       Services.zen.playHapticFeedback();
     }
   }

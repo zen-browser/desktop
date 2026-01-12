@@ -237,7 +237,7 @@ class nsZenMediaController {
       return;
     }
 
-    return gZenUIManager.motion
+    gZenUIManager.motion
       .animate(
         this.mediaControlBar,
         {
@@ -265,7 +265,8 @@ class nsZenMediaController {
         return;
       }
       if (this._currentMediaController.isBeingUsedInPIPModeOrFullscreen) {
-        return this.hideMediaControls();
+        this.hideMediaControls();
+        return;
       }
 
       this.updatePipButton();
@@ -296,6 +297,7 @@ class nsZenMediaController {
 
   addLabelOverflows(elements) {
     for (const element of elements) {
+      // eslint-disable-next-line no-shadow
       const parent = element.parentElement;
       if (element.scrollWidth > parent.clientWidth) {
         element.setAttribute("overflow", "");
@@ -538,7 +540,8 @@ class nsZenMediaController {
     }
 
     if (this._currentDuration >= 900_000) {
-      return this.mediaControlBar.setAttribute("media-position-hidden", "true");
+      this.mediaControlBar.setAttribute("media-position-hidden", "true");
+      return;
     }
     this.mediaControlBar.removeAttribute("media-position-hidden");
 

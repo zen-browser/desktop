@@ -879,8 +879,8 @@ window.gZenVerticalTabsManager = {
     try {
       const itemSize = aItem.getBoundingClientRect().height;
       const transform = `-${itemSize}px`;
-      gZenUIManager
-        .elementAnimate(
+      gZenUIManager.motion
+        .animate(
           aItem,
           {
             opacity: [0, 1],
@@ -888,8 +888,8 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 110,
-            easing: "ease-out",
+            duration: 0.11,
+            ease: "easeOut",
           }
         )
         .then(() => {})
@@ -898,15 +898,15 @@ window.gZenVerticalTabsManager = {
         });
       const itemLabel =
         aItem.querySelector(".tab-group-label-container") || aItem.querySelector(".tab-content");
-      gZenUIManager
-        .elementAnimate(
+      gZenUIManager.motion
+        .animate(
           itemLabel,
           {
             filter: ["blur(1px)", "blur(0px)"],
           },
           {
-            duration: 110,
-            easing: "ease-out",
+            duration: 0.11,
+            ease: "easeOut",
           }
         )
         .then(() => {})
@@ -925,7 +925,7 @@ window.gZenVerticalTabsManager = {
     const height = aTab.getBoundingClientRect().height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
-    return gZenUIManager.elementAnimate(
+    return gZenUIManager.motion.animate(
       aTab,
       {
         opacity: [1, 0],
@@ -937,8 +937,8 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 75,
-        easing: "ease-out",
+        duration: 0.75,
+        ease: "easeOut",
         fill: "forwards",
       }
     );

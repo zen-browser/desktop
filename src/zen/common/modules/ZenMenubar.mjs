@@ -9,7 +9,6 @@ const WINDOW_SCHEME_MAPPING = {
   auto: 2,
 };
 
-
 class nsZenMenuBar {
   init() {
     this.#initViewMenu();

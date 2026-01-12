@@ -52,7 +52,6 @@ const SYNC_FLAG_LABEL = 1 << 0;
 const SYNC_FLAG_ICON = 1 << 1;
 const SYNC_FLAG_MOVE = 1 << 2;
 
-
 class nsZenWindowSync {
   constructor() {}
 

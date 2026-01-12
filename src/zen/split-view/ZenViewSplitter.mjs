@@ -4,7 +4,6 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-
 class nsSplitLeafNode {
   /**
    * The percentage of the size of the parent the node takes up, dependent on parent direction this is either
@@ -34,7 +33,6 @@ class nsSplitLeafNode {
     return this.parent.direction === "row" ? this.sizeInParent : 100;
   }
 }
-
 
 class nsSplitNode extends nsSplitLeafNode {
   /**
@@ -69,7 +67,6 @@ class nsSplitNode extends nsSplitLeafNode {
     }
   }
 }
-
 
 class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   currentView = -1;

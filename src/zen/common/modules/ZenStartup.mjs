@@ -6,7 +6,6 @@ import checkForZenUpdates, {
   createWindowUpdateAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
 
-
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container"];
   #hasInitializedLayout = false;

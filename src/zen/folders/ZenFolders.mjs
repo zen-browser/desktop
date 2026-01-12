@@ -35,7 +35,6 @@ function groupIsCollapsiblePins(group) {
   return group?.tagName.toLowerCase() === "zen-workspace-collapsible-pins";
 }
 
-
 class nsZenFolders extends nsZenDOMOperatedFeature {
   #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref("zen.folders.max-subfolders", 5);
 

@@ -62,7 +62,6 @@ class nsZenSidebarObject {
   }
 }
 
-
 export class nsZenSessionManager {
   /**
    * The JSON file instance used to read/write session data.

@@ -44,7 +44,6 @@ class nsZenCollapsiblePins extends nsZenFolder {
   }
 }
 
-
 export class nsZenWorkspace extends MozXULElement {
   #initialPinnedElementChildrenCount;
   #hasConnected = false;

@@ -15,7 +15,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
 
-
 export class nsZenSiteDataPanel {
   #iconMap = {
     install: "extension",

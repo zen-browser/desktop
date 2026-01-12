@@ -141,7 +141,6 @@ window.VALID_SHORTCUT_GROUPS = [
   "other",
 ];
 
-
 export class nsKeyShortcutModifiers {
   #control = false;
   #alt = false;
@@ -294,7 +293,6 @@ export class nsKeyShortcutModifiers {
     return this.#accel;
   }
 }
-
 
 class KeyShortcut {
   #id = "";
@@ -614,7 +612,6 @@ class KeyShortcut {
   }
 }
 
-
 class nsZenKeyboardShortcutsLoader {
   constructor() {}
 
@@ -806,7 +803,6 @@ class nsZenKeyboardShortcutsLoader {
     return newShortcutList;
   }
 }
-
 
 class nsZenKeyboardShortcutsVersioner {
   static LATEST_KBS_VERSION = 14;

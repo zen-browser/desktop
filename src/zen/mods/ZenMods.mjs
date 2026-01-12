@@ -97,7 +97,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   async #getEnabledMods() {
     if (Services.prefs.getBoolPref("zen.themes.disable-all", false)) {
-      /* eslint-disable no-console */
+      // eslint-disable-next-line no-console
       console.info("[ZenMods]: Mods are disabled by user preference.");
       return [];
     }

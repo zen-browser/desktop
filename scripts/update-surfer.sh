@@ -10,4 +10,4 @@ if [ ! -f "package.json" ]; then
 fi
 
 npm update @zen-browser/surfer
-npm i @zen-browser/surfer@latest
+npm i @zen-browser/surfer@latest -D

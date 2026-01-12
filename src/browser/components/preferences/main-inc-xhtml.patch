@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index bfddd91e6b524f2ebced985f5d12a4963e5c6075..7e80c0a293aae6356e53d9c9760017290e97ffa0 100644
+index d218a04e0ab44e6a55e368566c97df95e939565b..59f038e59fe1a8554a8b112c5ac33e700b71c79c 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
-@@ -141,7 +141,8 @@
+@@ -48,7 +48,8 @@
  <!-- Browser layout -->
  <groupbox data-category="paneGeneral"
            data-subcategory="layout"
@@ -12,7 +12,7 @@ index bfddd91e6b524f2ebced985f5d12a4963e5c6075..7e80c0a293aae6356e53d9c976001729
    <label><html:h2 data-l10n-id="browser-layout-header"/></label>
    <radiogroup id="browserLayoutRadioGroup" preference="sidebar.verticalTabs">
      <radio id="browserLayoutHorizontalTabs" data-l10n-id="browser-layout-horizontal-tabs" value="false"/>
-@@ -346,6 +347,7 @@
+@@ -253,6 +254,7 @@
                languages-customize-add.label,
              " />
    </hbox>

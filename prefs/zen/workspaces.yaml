@@ -32,6 +32,9 @@
 - name: zen.workspaces.separate-essentials
   value: true
 
+- name: zen.workspaces.dnd-switch-padding
+  value: 10
+
 - name: zen.workspaces.debug
   value: '@cond'
   condition: '!defined(MOZILLA_OFFICIAL)' # Section: Pinned tabs management

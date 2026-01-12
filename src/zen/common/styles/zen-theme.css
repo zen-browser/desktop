@@ -232,8 +232,8 @@
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
-    --zen-main-browser-background: linear-gradient(130deg, 
-      color-mix(in srgb, rgb(10, 6, 11) 80%, var(--zen-themed-toolbar-bg-transparent)) 0%, 
+    --zen-main-browser-background: linear-gradient(130deg,
+      color-mix(in srgb, rgb(10, 6, 11) 80%, var(--zen-themed-toolbar-bg-transparent)) 0%,
       color-mix(in srgb, rgb(19, 7, 22) 80%, var(--zen-themed-toolbar-bg-transparent)) 100%
     );
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
@@ -268,21 +268,13 @@
   );
   --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 
-  /* Nativity */
-  --zen-native-content-radius: var(--zen-border-radius);
-  @media (-moz-platform: linux) {
-    --zen-native-content-radius: env(-moz-gtk-csd-titlebar-radius);
-  }
-  @media (-moz-mac-tahoe-theme) {
-    --zen-native-content-radius: 15px;
-  }
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,
     /* Inner radius calculation:
        * 1. If the native radius - the separation is less than 4px, use 4px.
        * 2. Otherwise, use the the calculated value (inner radius = outer radius - separation).
      */
-      max(5px, calc(var(--zen-native-content-radius) - var(--zen-element-separation) / 2))
+      max(5px, calc(var(--zen-border-radius) - var(--zen-element-separation) / 2))
   );
 
   /** Other theme-related styles */
@@ -306,7 +298,7 @@
 #main-window:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
-  @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and 
+  @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and
         -moz-pref('zen.widget.linux.transparency')) {
     background: transparent;
     --zen-themed-toolbar-bg-transparent: transparent;

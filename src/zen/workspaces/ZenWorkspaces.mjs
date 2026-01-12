@@ -685,8 +685,11 @@ class nsZenWorkspaces {
 
     const delta = event.delta * 300;
     const stripWidth =
-      document.getElementById('navigator-toolbox').getBoundingClientRect().width +
-      document.getElementById('zen-sidebar-splitter').getBoundingClientRect().width * 2;
+      window.windowUtils.getBoundsWithoutFlushing(document.getElementById('navigator-toolbox'))
+        .width +
+      window.windowUtils.getBoundsWithoutFlushing(document.getElementById('zen-sidebar-splitter'))
+        .width *
+        2;
     let translateX = this._swipeState.lastDelta + delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(1, 1 - Math.abs(translateX) / (stripWidth * 4.5)); // 4.5 instead of 4 to add a bit of a buffer
@@ -774,12 +777,7 @@ class nsZenWorkspaces {
   }
 
   get workspaceEnabled() {
-    if (typeof this._workspaceEnabled === 'undefined') {
-      this._workspaceEnabled =
-        this.shouldHaveWorkspaces &&
-        !Services.prefs.getBoolPref('zen.testing.profiling.enabled', false);
-    }
-    return this._workspaceEnabled && !window.closed;
+    return this.shouldHaveWorkspaces && !window.closed;
   }
 
   getActiveWorkspaceFromCache() {
@@ -1681,7 +1679,8 @@ class nsZenWorkspaces {
       !(this.#inChangingWorkspace && !forAnimation && !this._alwaysAnimatePaddingTop)
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight = essentialContainer.getBoundingClientRect().height;
+      const essentialsHeight =
+        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
       if (!forAnimation && animateContainer && gZenUIManager.motion && gZenStartup.isReady) {
         gZenUIManager.motion.animate(
           workspaceElement,
@@ -2328,6 +2327,12 @@ class nsZenWorkspaces {
   updateWorkspacesChangeContextMenu() {
     if (gZenWorkspaces.privateWindowOrDisabled) return;
     const workspaces = this.getWorkspaces();
+    const ctxCommand = document.getElementById('cmd_zenCtxDeleteWorkspace');
+    if (workspaces.length <= 1) {
+      ctxCommand.setAttribute('disabled', 'true');
+    } else {
+      ctxCommand.removeAttribute('disabled');
+    }
 
     let menuPopupID = 'moveTabOptionsMenu';
     const menuPopup = document.getElementById(menuPopupID);

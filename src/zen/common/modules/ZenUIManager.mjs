@@ -10,6 +10,7 @@ window.gZenUIManager = {
   _hoverPausedForExpand: false,
   _hasLoadedDOM: false,
   testingEnabled: Services.prefs.getBoolPref('zen.testing.enabled', false),
+  profilingEnabled: Services.prefs.getBoolPref('zen.testing.profiling.enabled', false),
 
   _lastClickPosition: null,
 
@@ -212,14 +213,11 @@ window.gZenUIManager = {
 
   updateTabsToolbar() {
     const kUrlbarHeight = 335;
-    gURLBar.textbox.style.setProperty(
+    gURLBar.style.setProperty(
       '--zen-urlbar-top',
-      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.textbox.getBoundingClientRect().height) / 2}px`
+      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.textbox.style.setProperty(
-      '--zen-urlbar-width',
-      `${Math.min(window.innerWidth / 2, 700)}px`
-    );
+    gURLBar.style.setProperty('--zen-urlbar-width', `${Math.min(window.innerWidth / 2, 700)}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute('zen-has-hover');
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -339,7 +337,7 @@ window.gZenUIManager = {
 
   onUrlbarSearchModeChanged(event) {
     const { searchMode } = event.detail;
-    const input = gURLBar.textbox;
+    const input = gURLBar;
     if (gURLBar.hasAttribute('breakout-extend') && !this._animatingSearchMode) {
       this._animatingSearchMode = true;
       this.motion.animate(input, { scale: [1, 0.98, 1] }, { duration: 0.25 }).then(() => {
@@ -531,7 +529,11 @@ window.gZenUIManager = {
 
       // Safely restore URL bar state with proper validation
       if (this._prevUrlbarLabel) {
-        gURLBar.setURI(this._prevUrlbarLabel, onSwitch, false, false, !onSwitch);
+        gURLBar.setURI({
+          uri: this._prevUrlbarLabel,
+          dueToTabSwitch: onSwitch,
+          isSameDocument: !onSwitch,
+        });
       }
 
       gURLBar.handleRevert();
@@ -545,7 +547,7 @@ window.gZenUIManager = {
           gURLBar.updateTextOverflow();
 
           if (onElementPicked && onSwitch) {
-            gURLBar.setURI(null, onSwitch);
+            gURLBar.setURI({ dueToTabSwitch: onSwitch });
           }
 
           // Ensure tab and browser are valid before updating state
@@ -856,7 +858,9 @@ window.gZenVerticalTabsManager = {
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
       !aItem.isConnected ||
-      gZenUIManager.testingEnabled ||
+      // We do want to do some animations during testing with profiling enabled
+      // so we can capture and improve them.
+      (gZenUIManager.testingEnabled && !gZenUIManager.profilingEnabled) ||
       !gZenStartup.isReady ||
       aItem.group?.hasAttribute('split-view-group')
     ) {
@@ -1032,7 +1036,7 @@ window.gZenVerticalTabsManager = {
   recalculateURLBarHeight() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        gURLBar.textbox.removeAttribute('--urlbar-height');
+        gURLBar.removeAttribute('--urlbar-height');
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == 'macosx' ? 34 : 32;
@@ -1040,7 +1044,7 @@ window.gZenVerticalTabsManager = {
           height = 40;
         }
         if (typeof height !== 'undefined') {
-          gURLBar.textbox.style.setProperty('--urlbar-height', `${height}px`);
+          gURLBar.style.setProperty('--urlbar-height', `${height}px`);
         }
         gURLBar.zenFormatURLValue();
       });
@@ -1377,7 +1381,10 @@ window.gZenVerticalTabsManager = {
   },
 
   renameTabStart(event) {
-    let target = TabContextMenu.contextTab || event.target;
+    let target = event.target;
+    if (event.target.id === 'context_zen-edit-tab-title') {
+      target = TabContextMenu.contextTab;
+    }
     const isTab = !!target.closest('.tabbrowser-tab');
     if (
       this._tabEdited ||
@@ -1385,8 +1392,12 @@ window.gZenVerticalTabsManager = {
         Services.prefs.getBoolPref('browser.tabs.closeTabByDblclick')) &&
         isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
-    )
+    ) {
       return;
+    }
+    if (isTab && !target.closest('.tab-label-container')) {
+      return;
+    }
     this._tabEdited =
       target.closest('.tabbrowser-tab') ||
       target.closest('.zen-current-workspace-indicator-name') ||

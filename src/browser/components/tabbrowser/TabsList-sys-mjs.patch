@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/TabsList.sys.mjs b/browser/components/tabbrowser/TabsList.sys.mjs
-index b394a980869d5e5df01b6afdd81e0f41c090e6ec..236c99db0dfa5ebcba50d55c1e4eb6ab7b8110b2 100644
+index 400a69449e6477da754b06530eef7c15ea9ad887..7dd22f481dade16286533acffc2c2321d4c34b41 100644
 --- a/browser/components/tabbrowser/TabsList.sys.mjs
 +++ b/browser/components/tabbrowser/TabsList.sys.mjs
 @@ -87,7 +87,7 @@ class TabsListBase {

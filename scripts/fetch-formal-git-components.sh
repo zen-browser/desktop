@@ -10,7 +10,7 @@ COMPONENT_ROOT=$(pwd)/src/zen
 EXTRA_COMPONENTS=(
   "scripts"
   "workflows"
-  "winsign"
+  "windows"
   "flatpak"
   "configs"
 )

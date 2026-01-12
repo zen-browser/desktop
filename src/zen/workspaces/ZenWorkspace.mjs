@@ -245,6 +245,13 @@ export class nsZenWorkspace extends MozXULElement {
     this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
     window.addEventListener('ZenGradientCacheChanged', this.onGradientCacheChanged);
 
+    this.pinnedTabsContainer.addEventListener('TabPinned', () => {
+      // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
+      if (this.collapsiblePins.collapsed) {
+        this.collapsiblePins.collapsed = false;
+      }
+    });
+
     const tabPinCallback = () => {
       this.checkPinsExistence();
     };

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
-index 15dd29152cf349b5ed23f1bae0a74a8d7dbe4c3d..f44f5dd87f778f432b0028969ca5732305c98915 100644
+index 3a9cb4735185691df021157e42f8b9cc93f14aa1..00d7eaf3177d27df1e0db5303405ce28f3031d34 100644
 --- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
-@@ -883,6 +883,7 @@ export class Query {
+@@ -893,6 +893,7 @@ export class Query {
      if (
        result.heuristic &&
        this.context.searchMode &&

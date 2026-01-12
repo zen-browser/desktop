@@ -15,9 +15,16 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionSaver: 'resource:///modules/sessionstore/SessionSaver.sys.mjs',
   setTimeout: 'resource://gre/modules/Timer.sys.mjs',
   gWindowSyncEnabled: 'resource:///modules/zen/ZenWindowSync.sys.mjs',
+  DeferredTask: 'resource://gre/modules/DeferredTask.sys.mjs',
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, 'gShouldLog', 'zen.session-store.log', true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  'gMaxSessionBackups',
+  'zen.session-store.max-backups',
+  10
+);
 
 // Note that changing this hidden pref will make the previous session file
 // unused, causing a new session file to be created on next write.
@@ -29,6 +36,10 @@ const MIGRATION_PREF = 'zen.ui.migration.session-manager-restore';
 
 // 'browser.startup.page' preference value to resume the previous session.
 const BROWSER_STARTUP_RESUME_SESSION = 3;
+
+// The amount of time (in milliseconds) to wait for our backup regeneration
+// debouncer to kick off a regeneration.
+const REGENERATION_DEBOUNCE_RATE_MS = 20 * 60 * 1000; // 20 minutes
 
 /**
  * Class representing the sidebar object stored in the session file.
@@ -58,13 +69,18 @@ export class nsZenSessionManager {
    * @type {nsZenSidebarObject}
    */
   #sidebarObject = new nsZenSidebarObject();
+  /**
+   * A deferred task to create backups of the session file.
+   */
+  #deferredBackupTask = null;
 
   // Called from SessionComponents.manifest on app-startup
   init() {
+    this.log('Initializing session manager');
     let profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile).path;
     let backupFile = null;
     if (SHOULD_BACKUP_FILE) {
-      backupFile = PathUtils.join(profileDir, 'zen-sessions-backup', FILE_NAME);
+      backupFile = PathUtils.join(this.#backupFolderPath, FILE_NAME);
     }
     let filePath = PathUtils.join(profileDir, FILE_NAME);
     this.#file = new JSONFile({
@@ -72,12 +88,20 @@ export class nsZenSessionManager {
       compression: SHOULD_COMPRESS_FILE ? 'lz4' : undefined,
       backupFile,
     });
+    this.#deferredBackupTask = new lazy.DeferredTask(async () => {
+      await this.#createBackupsIfNeeded();
+    }, REGENERATION_DEBOUNCE_RATE_MS);
   }
 
   log(...args) {
     if (lazy.gShouldLog) {
       console.info('ZenSessionManager:', ...args);
     }
+  }
+
+  get #backupFolderPath() {
+    let profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile).path;
+    return PathUtils.join(profileDir, 'zen-sessions-backup');
   }
 
   /**
@@ -182,8 +206,9 @@ export class nsZenSessionManager {
     // to make sure that the sidebar object is properly initialized.
     // This would happen on first run after having a single private window
     // open when quitting the app, for example.
-    if (!initialState.windows?.length) {
+    if (!initialState?.windows?.length) {
       this.log('No windows found in initial state, creating an empty one');
+      initialState ||= {};
       initialState.windows = [{}];
     }
     // When we don't have browser.startup.page set to resume session,
@@ -243,7 +268,64 @@ export class nsZenSessionManager {
     // quitting the app.
     this.#file.data = this.#sidebar;
     this.#file.saveSoon();
+    this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${this.#sidebar.tabs?.length || 0} tabs`);
+  }
+
+  /**
+   * Called when the last known backup should be deleted and a new one
+   * created. This uses the #deferredBackupTask to debounce clusters of
+   * events that might cause such a regeneration to occur.
+   */
+  #debounceRegeneration() {
+    this.#deferredBackupTask.disarm();
+    this.#deferredBackupTask.arm();
+  }
+
+  /**
+   * Creates backups of the session file if needed. We only keep
+   * a limited number of backups to avoid using too much disk space.
+   * The way we are doing this is by replacing the file for today's
+   * date if it already exists, otherwise we create a new one.
+   * We then delete the oldest backups if we exceed the maximum
+   * number of backups allowed.
+   *
+   * We run the next backup creation after a delay or when idling,
+   * to avoid blocking the main thread during session saves.
+   */
+  async #createBackupsIfNeeded() {
+    if (!SHOULD_BACKUP_FILE) {
+      return;
+    }
+    try {
+      const today = new Date();
+      const backupFolder = this.#backupFolderPath;
+      await IOUtils.makeDirectory(backupFolder, {
+        ignoreExisting: true,
+        createAncestors: true,
+      });
+      const todayFileName = `zen-sessions-${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}.json${
+        SHOULD_COMPRESS_FILE ? 'lz4' : ''
+      }`;
+      const todayFilePath = PathUtils.join(backupFolder, todayFileName);
+      const sessionFilePath = this.#file.path;
+      this.log(`Backing up session file to ${todayFileName}`);
+      await IOUtils.copy(sessionFilePath, todayFilePath, { noOverwrite: false });
+      // Now we need to check if we have exceeded the maximum
+      // number of backups allowed, and delete the oldest ones
+      // if needed.
+      let files = await IOUtils.getChildren(backupFolder);
+      files = files.filter((file) => file.startsWith('zen-sessions-')).sort();
+      for (let i = 0; i < files.length - lazy.gMaxSessionBackups; i++) {
+        const fileToDelete = PathUtils.join(backupFolder, files[i].name);
+        this.log(`Deleting old backup file ${files[i].name}`);
+        await IOUtils.remove(fileToDelete);
+      }
+    } catch (e) {
+      console.error('ZenSessionManager: Failed to create session file backups', e);
+    }
   }
 
   /**
@@ -292,10 +374,8 @@ export class nsZenSessionManager {
   /**
    * Collects session data for all tabs in a given window.
    *
-   * @param sidebarData
-   *        The sidebar data object to populate.
-   * @param state
-   *        The current session state.
+   * @param sidebarData The sidebar data object to populate.
+   * @param state The current session state.
    */
   #collectTabsData(sidebarData, state) {
     const tabIdRelationMap = new Map();

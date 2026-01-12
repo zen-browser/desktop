@@ -1,5 +1,5 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 5a890d76ef8398c1a8dc6d84a6c43ec7e2b7c39e..aa25c68e36010004b95c14b8a8a88ca7e85de84d 100644
+index 7bbbaf6fb936eda9cf87f164f93f4a96a50cf733..b1a50d8b4932f60f882b7f60c7d65ce3a9fde99d 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
 @@ -461,6 +461,7 @@

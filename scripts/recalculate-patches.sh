@@ -16,7 +16,7 @@ IGNORE_FILES=(
 # Recursively find all .patch files in the current directory and its subdirectories
 find src -type f -name "*.patch" | while read -r patch_file; do
   # Get the file from the inside of the file as indicated by the patch
-  target_file=$(grep -m 1 -oP '(?<=\+\+\+ b/).+' "$patch_file")
+  target_file=$(grep -m 1 -E '^\+\+\+ b/' "$patch_file" | sed 's/^\+\+\+ b\///')
   if [[ -z "$target_file" ]]; then
     echo "No target file found in patch: $patch_file"
     continue

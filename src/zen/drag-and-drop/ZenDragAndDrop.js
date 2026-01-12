@@ -105,8 +105,14 @@
         '#tabbrowser-arrowscrollbox-periphery'
       );
       const dragData = draggedTab._dragData;
-      const wrapper = document.createElement('div');
       const tabRect = window.windowUtils.getBoundsWithoutFlushing(movingTabs[0]);
+      const wrapper = document.createElement('div');
+      wrapper.style.width = tabRect.width + 'px';
+      wrapper.style.height = tabRect.height * movingTabs.length + 'px';
+      wrapper.style.overflow = 'clip';
+      wrapper.style.position = 'fixed';
+      wrapper.style.top = '-9999px';
+      periphery.appendChild(wrapper);
       for (let i = 0; i < movingTabs.length; i++) {
         const tab = movingTabs[i];
         const tabClone = tab.cloneNode(true);
@@ -125,15 +131,16 @@
         if (!movingTabs.length > 1) {
           tabClone.style.transform = `translate(${(tabRect.width - dragData.offsetX) / 2}px, ${(tabRect.height - dragData.offsetY) / 2}px)`;
         }
+        tabClone.setAttribute('drag-image', 'true');
         wrapper.appendChild(tabClone);
+        if (isTab(tabClone) && !tabClone.hasAttribute('zen-essential')) {
+          // We need to limit the label content so the drag image doesn't grow too big.
+          const label = tabClone.textLabel;
+          const tabLabelParentWidth = label.parentElement.getBoundingClientRect().width;
+          label.textContent = label.textContent.slice(0, Math.floor(tabLabelParentWidth / 6));
+        }
       }
       this.#maybeCreateDragImageDot(movingTabs, wrapper);
-      wrapper.style.width = tabRect.width + 'px';
-      wrapper.style.height = tabRect.height * movingTabs.length + 'px';
-      wrapper.style.overflow = 'clip';
-      wrapper.style.position = 'fixed';
-      wrapper.style.top = '-9999px';
-      periphery.appendChild(wrapper);
       this._tempDragImageParent = wrapper;
       return wrapper;
     }
@@ -570,7 +577,7 @@
     }
 
     #shouldSwitchSpace(event) {
-      const padding = 10;
+      const padding = Services.prefs.getIntPref('zen.workspaces.dnd-switch-padding');
       // If we are hovering over the edges of the gNavToolbox or the splitter, we
       // can change the workspace after a short delay.
       const splitter = document.getElementById('zen-sidebar-splitter');
@@ -594,8 +601,7 @@
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      // TODO: Add support for switching spaces when dragging folders and split-view groups.
-      if (!isTab(draggedTab) || draggedTab.hasAttribute('zen-essential')) {
+      if (draggedTab.hasAttribute('zen-essential')) {
         this.clearSpaceSwitchTimer();
         return;
       }
@@ -676,17 +682,22 @@
       this.clearSpaceSwitchTimer();
       super.handle_drop(event);
       const dt = event.dataTransfer;
+      const activeWorkspace = gZenWorkspaces.activeWorkspace;
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (
         isTab(draggedTab) &&
         !draggedTab.hasAttribute('zen-essential') &&
-        draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace
+        draggedTab.getAttribute('zen-workspace-id') != activeWorkspace
       ) {
         const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
         for (let tab of movingTabs) {
-          tab.setAttribute('zen-workspace-id', gZenWorkspaces.activeWorkspace);
+          tab.setAttribute('zen-workspace-id', activeWorkspace);
         }
         gBrowser.selectedTab = draggedTab;
+      }
+      if (isTabGroupLabel(draggedTab)) {
+        draggedTab = draggedTab.group;
+        gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
       }
       gZenWorkspaces.updateTabsContainers();
     }
@@ -707,7 +718,9 @@
           !dropElement ||
           dropElement.hasAttribute('zen-essential') ||
           draggedTab.hasAttribute('zen-essential') ||
-          draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace
+          draggedTab.getAttribute('zen-workspace-id') != gZenWorkspaces.activeWorkspace ||
+          !dropElement.visible ||
+          !draggedTab.visible
         ) {
           return;
         }
@@ -847,7 +860,6 @@
           const numPinned = gBrowser.pinnedTabCount - numEssentials;
           const tabToUse = event.target.closest(dropZoneSelector);
           if (!tabToUse) {
-            this.clearDragOverVisuals();
             return;
           }
           const isPinned = tabToUse.pinned;

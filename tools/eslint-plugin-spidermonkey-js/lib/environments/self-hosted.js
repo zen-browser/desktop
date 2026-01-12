@@ -89,11 +89,7 @@ function addGlobalsFrom(dirName, fileName, globals) {
       if (m) {
         globals[m[1]] = "readonly";
       }
-    } else if (
-      line.startsWith("var") ||
-      line.startsWith("let") ||
-      line.startsWith("const")
-    ) {
+    } else if (line.startsWith("var") || line.startsWith("let") || line.startsWith("const")) {
       let m = line.match(/^(?:var|let|const)\s+([\w\$]+)\s*[;=]/);
       if (m) {
         globals[m[1]] = "readonly";

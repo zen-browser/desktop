@@ -2,6 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/**
+ *
+ */
 export class ZenModsMarketplaceParent extends JSWindowActorParent {
   constructor() {
     super();
@@ -13,7 +16,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
 
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenModsMarketplace:InstallMod': {
+      case "ZenModsMarketplace:InstallMod": {
         const modId = message.data.modId;
         const mod = await this.modsManager.requestMod(modId);
 
@@ -29,7 +32,7 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
 
         break;
       }
-      case 'ZenModsMarketplace:UninstallMod': {
+      case "ZenModsMarketplace:UninstallMod": {
         const modId = message.data.modId;
         console.log(`[ZenModsMarketplaceParent]: Uninstalling mod ${modId}`);
 
@@ -44,13 +47,13 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
 
         break;
       }
-      case 'ZenModsMarketplace:CheckForUpdates': {
+      case "ZenModsMarketplace:CheckForUpdates": {
         const updates = await this.modsManager.checkForModsUpdates();
-        this.sendAsyncMessage('ZenModsMarketplace:CheckForUpdatesFinished', { updates });
+        this.sendAsyncMessage("ZenModsMarketplace:CheckForUpdatesFinished", { updates });
         break;
       }
 
-      case 'ZenModsMarketplace:IsModInstalled': {
+      case "ZenModsMarketplace:IsModInstalled": {
         const themeId = message.data.themeId;
         const themes = await this.modsManager.getMods();
 
@@ -60,6 +63,6 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
   }
 
   async updateChildProcesses(modId) {
-    this.sendAsyncMessage('ZenModsMarketplace:ModChanged', { modId });
+    this.sendAsyncMessage("ZenModsMarketplace:ModChanged", { modId });
   }
 }

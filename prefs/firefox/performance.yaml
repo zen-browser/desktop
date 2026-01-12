@@ -4,7 +4,7 @@
 
 - name: browser.lowMemoryResponseMask
   value: 3
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: network.predictor.enable-hover-on-ssl
   value: true
@@ -14,6 +14,6 @@
 # Make sure its in sync with:
 # https://searchfox.org/firefox-main/rev/1477feb9706f4ccc5bd571c1c215832a6fbb7464/modules/libpref/init/StaticPrefList.yaml#7741-7748
 - name: gfx.webrender.compositor
-  condition: 'defined(XP_WIN) || defined(XP_DARWIN)'
-  value: '@cond'
+  condition: "defined(XP_WIN) || defined(XP_DARWIN)"
+  value: "@cond"
   mirror: once

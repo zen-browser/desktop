@@ -19,15 +19,15 @@
   position: inherit;
 }
 
-:root:is([inDOMFullscreen='true'], [chromehidden~='location'], [chromehidden~='toolbar']) {
+:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
   #navigator-toolbox,
   #zen-sidebar-splitter {
     visibility: collapse;
   }
 }
 
-:root[zen-before-loaded='true'] #browser > *:not(#zen-toast-container),
-:root[zen-before-loaded='true'] #urlbar {
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
 
@@ -47,7 +47,7 @@
 
   &::after,
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -80,7 +80,7 @@
     }
   }
 
-  :root:not([animating-background='true']) &::before {
+  :root:not([animating-background="true"]) &::before {
     transition: background-color var(--inactive-window-transition);
   }
 
@@ -88,7 +88,7 @@
     display: none;
   }
 
-  :root[zen-show-grainy-background='true'] & .zen-browser-grain {
+  :root[zen-show-grainy-background="true"] & .zen-browser-grain {
     display: flex;
     width: 100%;
     height: 100%;
@@ -97,7 +97,7 @@
     z-index: 1;
     opacity: var(--zen-grainy-background-opacity, 0);
     mix-blend-mode: overlay;
-    :root:not([swipe-gesture='true']) & {
+    :root:not([swipe-gesture="true"]) & {
       /* note: Keep in sync with kGlobalAnimationDuration */
       transition: opacity 0.2s ease-in-out;
     }
@@ -127,14 +127,14 @@
   border: none;
 }
 
-:root:not([zen-single-toolbar='true']) #zen-appcontent-wrapper {
+:root:not([zen-single-toolbar="true"]) #zen-appcontent-wrapper {
   z-index: 3;
 }
 
 #nav-bar {
   border-top-color: transparent !important;
 
-  :root[zen-single-toolbar='true'] & {
+  :root[zen-single-toolbar="true"] & {
     border-top: none !important;
     --zen-toolbar-height: 37px;
   }
@@ -145,7 +145,7 @@
   /* See bug #8814, don't an overflow here as it causes issues 
    * with firefox's rendering of the tab bar */
 
-  @media (-moz-pref('zen.view.grey-out-inactive-windows')) {
+  @media (-moz-pref("zen.view.grey-out-inactive-windows")) {
     &:-moz-window-inactive {
       background: InactiveCaption;
     }
@@ -155,7 +155,7 @@
     z-index: 1;
   }
 
-  @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref('browser.theme.windows.accent-color-in-tabs.enabled')) {
+  @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref("browser.theme.windows.accent-color-in-tabs.enabled")) {
     background: ActiveCaption;
     color: CaptionText;
   }
@@ -169,17 +169,17 @@
   min-width: 1px;
 }
 
-:root:not([inDOMFullscreen='true']):not([chromehidden~='location']):not([chromehidden~='toolbar']) {
+:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
   & #zen-tabbox-wrapper {
     margin: var(--zen-element-separation);
     margin-top: 0;
   }
 
-  &:not([zen-right-side='true']) #zen-tabbox-wrapper {
+  &:not([zen-right-side="true"]) #zen-tabbox-wrapper {
     margin-left: 0;
   }
 
-  &[zen-right-side='true'] #zen-tabbox-wrapper {
+  &[zen-right-side="true"] #zen-tabbox-wrapper {
     margin-right: 0;
   }
 }
@@ -207,7 +207,7 @@
     }
   }
 
-  @media -moz-pref('zen.widget.mac.mono-window-controls') {
+  @media -moz-pref("zen.widget.mac.mono-window-controls") {
     .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);
 
@@ -219,11 +219,7 @@
 
       /* Draw 3 dots as background to represent the window controls,
         all with the same cololr as the titlebar */
-      background-image: radial-gradient(
-        circle,
-        var(--zen-toolbar-element-bg) var(--zen-traffic-light-size),
-        transparent 0.5px
-      );
+      background-image: radial-gradient(circle, var(--zen-toolbar-element-bg) var(--zen-traffic-light-size), transparent 0.5px);
       background-size: 20px 22px;
       background-position: 53% 50%;
 
@@ -232,7 +228,7 @@
         background-position: 52% 50%;
       }
 
-      &:not([zen-has-hover='true']) > .titlebar-buttonbox {
+      &:not([zen-has-hover="true"]) > .titlebar-buttonbox {
         opacity: 0;
       }
     }
@@ -240,13 +236,13 @@
 }
 
 @media (-moz-platform: macos) {
-  :root[zen-window-buttons-reversed='true'][zen-right-side='true'] .titlebar-buttonbox-container {
+  :root[zen-window-buttons-reversed="true"][zen-right-side="true"] .titlebar-buttonbox-container {
     margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
     margin-block: auto;
   }
 }
 
-.zen-split-view-splitter[orient='vertical'],
+.zen-split-view-splitter[orient="vertical"],
 #zen-sidebar-splitter {
   position: absolute;
   top: 0;
@@ -258,7 +254,7 @@
   cursor: ew-resize;
   z-index: 3;
 
-  &:is(.zen-split-view-splitter[orient='vertical']) {
+  &:is(.zen-split-view-splitter[orient="vertical"]) {
     /* Bit of a hacky solution, but it works */
     width: var(--zen-split-row-gap);
     margin-left: calc(var(--zen-element-separation) * -1 - 1px);
@@ -271,7 +267,7 @@
     width: 2px;
     background: var(--button-primary-bgcolor);
     border-radius: 2px;
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -284,13 +280,13 @@
     opacity: 1;
   }
 }
-.zen-split-view-splitter[orient='horizontal'] {
+.zen-split-view-splitter[orient="horizontal"] {
   &::before {
     height: 2px;
     width: 50px;
     background: var(--button-primary-bgcolor);
     border-radius: 2px;
-    content: '';
+    content: "";
     position: absolute;
     top: 40%;
     left: 50%;
@@ -337,12 +333,12 @@
   z-index: 1;
   & #zen-sidebar-top-buttons {
     max-width: fit-content;
-    :root[zen-right-side='true'] & {
+    :root[zen-right-side="true"] & {
       order: 1;
     }
   }
 }
 
-:root[zen-right-side='true'] #zen-appcontent-navbar-wrapper #PanelUI-button {
+:root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
 }

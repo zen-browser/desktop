@@ -13,23 +13,14 @@ zen-folder {
   flex-direction: column;
   visibility: visible;
 
-  --zen-folder-behind-bgcolor: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 60%, gray),
-    color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1)
-  );
-  --zen-folder-front-bgcolor: light-dark(
-    color-mix(in srgb, var(--zen-primary-color), white 70%),
-    color-mix(in srgb, var(--zen-primary-color), black 40%)
-  );
-  --zen-folder-stroke: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 50%, black),
-    color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb)
-  );
+  --zen-folder-behind-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color) 60%, gray), color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1));
+  --zen-folder-front-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color), white 70%), color-mix(in srgb, var(--zen-primary-color), black 40%));
+  --zen-folder-stroke: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
   -moz-window-dragging: no-drag;
   transition: var(--zen-tabbox-element-indent-transition);
 
-  :root[zen-sidebar-expanded='true'] & {
+  :root[zen-sidebar-expanded="true"] & {
     margin-inline-start: var(--zen-folder-indent) !important;
   }
 
@@ -82,7 +73,7 @@ zen-folder {
     height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
     padding-inline: var(--tab-group-label-padding);
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded="true"] & {
       padding-inline-end: calc(var(--tab-group-label-padding) * 2);
     }
 
@@ -111,7 +102,7 @@ zen-folder {
         :root:not([zen-sidebar-expanded]) & {
           transition: transform 0.1s ease;
 
-          &[state='open'] {
+          &[state="open"] {
             transform: translate(-2px);
           }
         }
@@ -131,11 +122,11 @@ zen-folder {
             opacity 0.3s cubic-bezier(0.42, 0, 0, 1);
         }
 
-        &[state='open'] .back {
+        &[state="open"] .back {
           transform: skewX(16deg) translate(-2px, 3.4px) scale(0.85);
         }
 
-        &[state='open'] :is(.front, .dots, .icon) {
+        &[state="open"] :is(.front, .dots, .icon) {
           transform: skewX(-16deg) translate(11.1px, 3.4px) scale(0.85);
         }
 
@@ -147,18 +138,18 @@ zen-folder {
           opacity: 0;
         }
 
-        &[active='true'] .icon {
+        &[active="true"] .icon {
           opacity: 0;
         }
 
-        &[active='true'] .dots {
+        &[active="true"] .dots {
           opacity: 1;
         }
       }
     }
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 2px;
       left: 2px;

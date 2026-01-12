@@ -12,8 +12,7 @@ const path = require("path");
 const fs = require("fs");
 
 const selfHostedRegex = /js\/src\/builtin\/.*?\.js$/;
-const macroRegex =
-  /\s*\#(if|ifdef|else|elif|endif|include|define|undef|error).*/;
+const macroRegex = /\s*\#(if|ifdef|else|elif|endif|include|define|undef|error).*/;
 
 function isSelfHostedFile(filename) {
   if (path.win32) {

@@ -6,7 +6,7 @@ export function openGlanceOnTab(window, callback, close = true) {
   return new Promise(async (resolve) => {
     window.gZenGlanceManager
       .openGlance({
-        url: 'https://example.com',
+        url: "https://example.com",
         clientX: 0,
         clientY: 0,
         width: 0,

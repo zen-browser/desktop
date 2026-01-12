@@ -5,7 +5,7 @@
 # Enable transparent background for macos
 - name: widget.macos.sidebar-blend-mode.behind-window
   value: true
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 # 1. hudWindow
 # 2. fullScreenUI
@@ -16,7 +16,7 @@
 # 7. underlay
 - name: zen.widget.macos.window-material
   value: 1
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
   cpptype: uint32_t
   mirror: always
   type: static

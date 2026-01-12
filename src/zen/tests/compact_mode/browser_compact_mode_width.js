@@ -1,12 +1,12 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 function goToRightSideTabs(callback) {
   return new Promise(async (resolve) => {
     await SpecialPowers.pushPrefEnv({
-      set: [['zen.tabs.vertical.right-side', true]],
+      set: [["zen.tabs.vertical.right-side", true]],
     });
     setTimeout(async () => {
       await callback();
@@ -35,11 +35,11 @@ async function testSidebarWidth() {
       return;
     }
     setTimeout(() => {
-      const newSize = gNavToolbox.style.getPropertyValue('--zen-sidebar-width').replace('px', '');
+      const newSize = gNavToolbox.style.getPropertyValue("--zen-sidebar-width").replace("px", "");
       Assert.equal(
         newSize,
         ogSize,
-        'The size of the titlebar should be the same as the original size'
+        "The size of the titlebar should be the same as the original size"
       );
       hasRan = true;
       gZenCompactModeManager.preference = false;
@@ -61,7 +61,7 @@ add_task(async function test_Compact_Mode_Width_Right_Side() {
 });
 
 add_task(async function test_Compact_Mode_Hover() {
-  gNavToolbox.setAttribute('zen-has-hover', true);
+  gNavToolbox.setAttribute("zen-has-hover", true);
   await testSidebarWidth();
-  gNavToolbox.removeAttribute('zen-has-hover');
+  gNavToolbox.removeAttribute("zen-has-hover");
 });

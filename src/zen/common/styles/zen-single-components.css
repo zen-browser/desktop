@@ -23,7 +23,7 @@
   display: none !important;
 }
 
-@media -moz-pref('zen.theme.disable-lightweight') {
+@media -moz-pref("zen.theme.disable-lightweight") {
   #customization-lwtheme-link {
     display: none !important;
   }
@@ -76,7 +76,7 @@ body > #confetti {
     }
   }
 
-  &[only-svg-icons='true'] {
+  &[only-svg-icons="true"] {
     & #PanelUI-zen-emojis-picker-change-emojis {
       display: none;
     }
@@ -85,7 +85,7 @@ body > #confetti {
       pointer-events: none;
     }
 
-    & #PanelUI-zen-emojis-picker-pages > vbox[emojis='true'] {
+    & #PanelUI-zen-emojis-picker-pages > vbox[emojis="true"] {
       display: none;
     }
   }
@@ -186,11 +186,11 @@ body > #confetti {
     background-color 0.1s,
     transform 0.2s;
 
-  &[open='true'] {
+  &[open="true"] {
     transition: background-color 0.1s;
   }
 
-  &:not([open='true']):active:hover {
+  &:not([open="true"]):active:hover {
     transform: scale(0.95);
   }
 }
@@ -216,13 +216,7 @@ body > #confetti {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(255, 255, 255, 0.5) 40%,
-    rgba(255, 255, 255, 0.5) 60%,
-    transparent 100%
-  );
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.5) 40%, rgba(255, 255, 255, 0.5) 60%, transparent 100%);
   left: 0;
   z-index: 999;
   opacity: 0;
@@ -238,17 +232,13 @@ body > #confetti {
 }
 
 #zen-update-animation-border::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 2px; /* thickness of border */
 
-  background: radial-gradient(
-    ellipse 100% 50% at center var(--background-top),
-    rgba(255, 255, 255, 0.5) 80%,
-    transparent
-  );
+  background: radial-gradient(ellipse 100% 50% at center var(--background-top), rgba(255, 255, 255, 0.5) 80%, transparent);
 
   /* Punch out the inside once (not animated) */
   mask:
@@ -264,7 +254,7 @@ body > #confetti {
 
 /* Status panel */
 
-@media (-moz-pref('zen.theme.styled-status-panel')) {
+@media (-moz-pref("zen.theme.styled-status-panel")) {
   #statuspanel {
     padding: 6px;
 
@@ -310,7 +300,7 @@ body > #confetti {
     display: none !important;
   }
 
-  &[overflowing='true'] {
+  &[overflowing="true"] {
     overflow-x: auto;
     max-height: 420px;
     mask-image: linear-gradient(to top, transparent, black 5%);
@@ -443,7 +433,7 @@ body > #confetti {
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 1px;
     border-radius: 99px;
@@ -464,7 +454,7 @@ body > #confetti {
     transform: scale(0.95);
   }
 
-  .permission-popup-permission-item[state='allow'] &::before {
+  .permission-popup-permission-item[state="allow"] &::before {
     opacity: 1;
   }
 }
@@ -491,13 +481,13 @@ body > #confetti {
   }
 }
 
-@media -moz-pref('zen.theme.hide-unified-extensions-button') {
+@media -moz-pref("zen.theme.hide-unified-extensions-button") {
   #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
-@media not -moz-pref('zen.theme.hide-unified-extensions-button') {
+@media not -moz-pref("zen.theme.hide-unified-extensions-button") {
   #zen-site-data-section-addons {
     display: none;
   }
@@ -509,7 +499,7 @@ body > #confetti {
   padding: 10px 9px;
   padding-bottom: 8px;
 
-  :root[zen-single-toolbar='true']:not([zen-right-side='true']) & {
+  :root[zen-single-toolbar="true"]:not([zen-right-side="true"]) & {
     flex-direction: row-reverse;
   }
 
@@ -539,16 +529,12 @@ body > #confetti {
     }
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       width: 100%;
       height: 100%;
       @media (-moz-platform: macos) {
-        background: linear-gradient(
-          to bottom,
-          light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
-          light-dark(rgb(246, 246, 246), rgb(21, 21, 21))
-        );
+        background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 
         box-shadow:
           0px 2px 4px rgba(0, 0, 0, 0.1),
@@ -624,6 +610,6 @@ body > #confetti {
 }
 
 /* Sidebar notification */
-:root:not([zen-sidebar-expanded='true']) zen-sidebar-notification {
+:root:not([zen-sidebar-expanded="true"]) zen-sidebar-notification {
   display: none;
 }

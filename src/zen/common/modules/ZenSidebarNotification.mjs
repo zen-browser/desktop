@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { html } from 'chrome://global/content/vendor/lit.all.mjs';
-import { MozLitElement } from 'chrome://global/content/lit-utils.mjs';
+import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 const lazy = {};
 
-ChromeUtils.defineLazyGetter(lazy, 'siblingElement', () => {
+ChromeUtils.defineLazyGetter(lazy, "siblingElement", () => {
   // All our notifications should be attached after the media controls toolbar
-  return document.getElementById('zen-media-controls-toolbar');
+  return document.getElementById("zen-media-controls-toolbar");
 });
 
 /**
@@ -26,7 +26,7 @@ class ZenSidebarNotification extends MozLitElement {
     links: { type: Array },
   };
 
-  constructor({ headingL10nId = '', links = [] } = {}) {
+  constructor({ headingL10nId = "", links = [] } = {}) {
     super();
     this.headingL10nId = headingL10nId;
     this.links = links;
@@ -54,7 +54,7 @@ class ZenSidebarNotification extends MozLitElement {
         <label
           class="zen-sidebar-notification-heading"
           flex="1"
-          data-l10n-id="${this.headingL10nId}"></label>
+          data-l10n-id=${this.headingL10nId}></label>
         <div class="zen-sidebar-notification-close-button" @click=${() => this.remove()}>
           <img src="chrome://browser/skin/zen-icons/close.svg" />
         </div>
@@ -71,13 +71,13 @@ class ZenSidebarNotification extends MozLitElement {
                   link.action();
                   return;
                 }
-                window.openLinkIn(link.url, 'tab', {
+                window.openLinkIn(link.url, "tab", {
                   triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
                   forceForeground: true,
                 });
                 this.remove();
               }}>
-              <img class="zen-sidebar-notification-link-icon" src="${link.icon}" />
+              <img class="zen-sidebar-notification-link-icon" src=${link.icon} />
               <label
                 class="zen-sidebar-notification-link-text"
                 data-l10n-id="${link.l10nId}-label"></label>
@@ -89,7 +89,7 @@ class ZenSidebarNotification extends MozLitElement {
   }
 
   #animateIn() {
-    this.style.opacity = '0';
+    this.style.opacity = "0";
     return gZenUIManager.motion.animate(
       this,
       {
@@ -121,8 +121,8 @@ export default function createSidebarNotification(args) {
 
   const notification = new ZenSidebarNotification(args);
 
-  lazy.siblingElement.insertAdjacentElement('afterend', notification);
+  lazy.siblingElement.insertAdjacentElement("afterend", notification);
   return notification;
 }
 
-customElements.define('zen-sidebar-notification', ZenSidebarNotification);
+customElements.define("zen-sidebar-notification", ZenSidebarNotification);

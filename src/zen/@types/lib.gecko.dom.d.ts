@@ -9169,113 +9169,113 @@ interface Document
     qualifiedName: string,
     options?: string | ElementCreationOptions
   ): Element;
-  createEvent(eventInterface: 'AddonEvent'): AddonEvent;
-  createEvent(eventInterface: 'AnimationEvent'): AnimationEvent;
-  createEvent(eventInterface: 'AnimationPlaybackEvent'): AnimationPlaybackEvent;
-  createEvent(eventInterface: 'AudioProcessingEvent'): AudioProcessingEvent;
-  createEvent(eventInterface: 'BeforeUnloadEvent'): BeforeUnloadEvent;
-  createEvent(eventInterface: 'BlobEvent'): BlobEvent;
-  createEvent(eventInterface: 'CSSCustomPropertyRegisteredEvent'): CSSCustomPropertyRegisteredEvent;
-  createEvent(eventInterface: 'CaretStateChangedEvent'): CaretStateChangedEvent;
-  createEvent(eventInterface: 'ClipboardEvent'): ClipboardEvent;
-  createEvent(eventInterface: 'CloseEvent'): CloseEvent;
-  createEvent(eventInterface: 'CommandEvent'): CommandEvent;
-  createEvent(eventInterface: 'CompositionEvent'): CompositionEvent;
+  createEvent(eventInterface: "AddonEvent"): AddonEvent;
+  createEvent(eventInterface: "AnimationEvent"): AnimationEvent;
+  createEvent(eventInterface: "AnimationPlaybackEvent"): AnimationPlaybackEvent;
+  createEvent(eventInterface: "AudioProcessingEvent"): AudioProcessingEvent;
+  createEvent(eventInterface: "BeforeUnloadEvent"): BeforeUnloadEvent;
+  createEvent(eventInterface: "BlobEvent"): BlobEvent;
+  createEvent(eventInterface: "CSSCustomPropertyRegisteredEvent"): CSSCustomPropertyRegisteredEvent;
+  createEvent(eventInterface: "CaretStateChangedEvent"): CaretStateChangedEvent;
+  createEvent(eventInterface: "ClipboardEvent"): ClipboardEvent;
+  createEvent(eventInterface: "CloseEvent"): CloseEvent;
+  createEvent(eventInterface: "CommandEvent"): CommandEvent;
+  createEvent(eventInterface: "CompositionEvent"): CompositionEvent;
   createEvent(
-    eventInterface: 'ContentVisibilityAutoStateChangeEvent'
+    eventInterface: "ContentVisibilityAutoStateChangeEvent"
   ): ContentVisibilityAutoStateChangeEvent;
-  createEvent(eventInterface: 'CookieChangeEvent'): CookieChangeEvent;
-  createEvent(eventInterface: 'CustomEvent'): CustomEvent;
-  createEvent(eventInterface: 'DeviceLightEvent'): DeviceLightEvent;
-  createEvent(eventInterface: 'DeviceMotionEvent'): DeviceMotionEvent;
-  createEvent(eventInterface: 'DeviceOrientationEvent'): DeviceOrientationEvent;
-  createEvent(eventInterface: 'DragEvent'): DragEvent;
-  createEvent(eventInterface: 'ErrorEvent'): ErrorEvent;
-  createEvent(eventInterface: 'FocusEvent'): FocusEvent;
-  createEvent(eventInterface: 'FontFaceSetLoadEvent'): FontFaceSetLoadEvent;
-  createEvent(eventInterface: 'FormDataEvent'): FormDataEvent;
-  createEvent(eventInterface: 'FrameCrashedEvent'): FrameCrashedEvent;
-  createEvent(eventInterface: 'GPUUncapturedErrorEvent'): GPUUncapturedErrorEvent;
-  createEvent(eventInterface: 'GamepadAxisMoveEvent'): GamepadAxisMoveEvent;
-  createEvent(eventInterface: 'GamepadButtonEvent'): GamepadButtonEvent;
-  createEvent(eventInterface: 'GamepadEvent'): GamepadEvent;
-  createEvent(eventInterface: 'HashChangeEvent'): HashChangeEvent;
-  createEvent(eventInterface: 'IDBVersionChangeEvent'): IDBVersionChangeEvent;
-  createEvent(eventInterface: 'ImageCaptureErrorEvent'): ImageCaptureErrorEvent;
-  createEvent(eventInterface: 'InputEvent'): InputEvent;
-  createEvent(eventInterface: 'KeyboardEvent'): KeyboardEvent;
-  createEvent(eventInterface: 'MIDIConnectionEvent'): MIDIConnectionEvent;
-  createEvent(eventInterface: 'MIDIMessageEvent'): MIDIMessageEvent;
-  createEvent(eventInterface: 'MediaEncryptedEvent'): MediaEncryptedEvent;
-  createEvent(eventInterface: 'MediaKeyMessageEvent'): MediaKeyMessageEvent;
-  createEvent(eventInterface: 'MediaQueryListEvent'): MediaQueryListEvent;
-  createEvent(eventInterface: 'MediaRecorderErrorEvent'): MediaRecorderErrorEvent;
-  createEvent(eventInterface: 'MediaStreamEvent'): MediaStreamEvent;
-  createEvent(eventInterface: 'MediaStreamTrackEvent'): MediaStreamTrackEvent;
-  createEvent(eventInterface: 'MerchantValidationEvent'): MerchantValidationEvent;
-  createEvent(eventInterface: 'MessageEvent'): MessageEvent;
-  createEvent(eventInterface: 'MouseEvent'): MouseEvent;
-  createEvent(eventInterface: 'MouseEvents'): MouseEvent;
-  createEvent(eventInterface: 'MouseScrollEvent'): MouseScrollEvent;
-  createEvent(eventInterface: 'MozSharedMapChangeEvent'): MozSharedMapChangeEvent;
-  createEvent(eventInterface: 'NavigateEvent'): NavigateEvent;
+  createEvent(eventInterface: "CookieChangeEvent"): CookieChangeEvent;
+  createEvent(eventInterface: "CustomEvent"): CustomEvent;
+  createEvent(eventInterface: "DeviceLightEvent"): DeviceLightEvent;
+  createEvent(eventInterface: "DeviceMotionEvent"): DeviceMotionEvent;
+  createEvent(eventInterface: "DeviceOrientationEvent"): DeviceOrientationEvent;
+  createEvent(eventInterface: "DragEvent"): DragEvent;
+  createEvent(eventInterface: "ErrorEvent"): ErrorEvent;
+  createEvent(eventInterface: "FocusEvent"): FocusEvent;
+  createEvent(eventInterface: "FontFaceSetLoadEvent"): FontFaceSetLoadEvent;
+  createEvent(eventInterface: "FormDataEvent"): FormDataEvent;
+  createEvent(eventInterface: "FrameCrashedEvent"): FrameCrashedEvent;
+  createEvent(eventInterface: "GPUUncapturedErrorEvent"): GPUUncapturedErrorEvent;
+  createEvent(eventInterface: "GamepadAxisMoveEvent"): GamepadAxisMoveEvent;
+  createEvent(eventInterface: "GamepadButtonEvent"): GamepadButtonEvent;
+  createEvent(eventInterface: "GamepadEvent"): GamepadEvent;
+  createEvent(eventInterface: "HashChangeEvent"): HashChangeEvent;
+  createEvent(eventInterface: "IDBVersionChangeEvent"): IDBVersionChangeEvent;
+  createEvent(eventInterface: "ImageCaptureErrorEvent"): ImageCaptureErrorEvent;
+  createEvent(eventInterface: "InputEvent"): InputEvent;
+  createEvent(eventInterface: "KeyboardEvent"): KeyboardEvent;
+  createEvent(eventInterface: "MIDIConnectionEvent"): MIDIConnectionEvent;
+  createEvent(eventInterface: "MIDIMessageEvent"): MIDIMessageEvent;
+  createEvent(eventInterface: "MediaEncryptedEvent"): MediaEncryptedEvent;
+  createEvent(eventInterface: "MediaKeyMessageEvent"): MediaKeyMessageEvent;
+  createEvent(eventInterface: "MediaQueryListEvent"): MediaQueryListEvent;
+  createEvent(eventInterface: "MediaRecorderErrorEvent"): MediaRecorderErrorEvent;
+  createEvent(eventInterface: "MediaStreamEvent"): MediaStreamEvent;
+  createEvent(eventInterface: "MediaStreamTrackEvent"): MediaStreamTrackEvent;
+  createEvent(eventInterface: "MerchantValidationEvent"): MerchantValidationEvent;
+  createEvent(eventInterface: "MessageEvent"): MessageEvent;
+  createEvent(eventInterface: "MouseEvent"): MouseEvent;
+  createEvent(eventInterface: "MouseEvents"): MouseEvent;
+  createEvent(eventInterface: "MouseScrollEvent"): MouseScrollEvent;
+  createEvent(eventInterface: "MozSharedMapChangeEvent"): MozSharedMapChangeEvent;
+  createEvent(eventInterface: "NavigateEvent"): NavigateEvent;
   createEvent(
-    eventInterface: 'NavigationCurrentEntryChangeEvent'
+    eventInterface: "NavigationCurrentEntryChangeEvent"
   ): NavigationCurrentEntryChangeEvent;
-  createEvent(eventInterface: 'NotifyPaintEvent'): NotifyPaintEvent;
-  createEvent(eventInterface: 'OfflineAudioCompletionEvent'): OfflineAudioCompletionEvent;
-  createEvent(eventInterface: 'PageTransitionEvent'): PageTransitionEvent;
-  createEvent(eventInterface: 'PaymentMethodChangeEvent'): PaymentMethodChangeEvent;
-  createEvent(eventInterface: 'PaymentRequestUpdateEvent'): PaymentRequestUpdateEvent;
-  createEvent(eventInterface: 'PerformanceEntryEvent'): PerformanceEntryEvent;
-  createEvent(eventInterface: 'PluginCrashedEvent'): PluginCrashedEvent;
-  createEvent(eventInterface: 'PointerEvent'): PointerEvent;
-  createEvent(eventInterface: 'PopStateEvent'): PopStateEvent;
-  createEvent(eventInterface: 'PopupBlockedEvent'): PopupBlockedEvent;
-  createEvent(eventInterface: 'PopupPositionedEvent'): PopupPositionedEvent;
-  createEvent(eventInterface: 'PositionStateEvent'): PositionStateEvent;
-  createEvent(eventInterface: 'ProgressEvent'): ProgressEvent;
-  createEvent(eventInterface: 'PromiseRejectionEvent'): PromiseRejectionEvent;
-  createEvent(eventInterface: 'RTCDTMFToneChangeEvent'): RTCDTMFToneChangeEvent;
-  createEvent(eventInterface: 'RTCDataChannelEvent'): RTCDataChannelEvent;
-  createEvent(eventInterface: 'RTCPeerConnectionIceEvent'): RTCPeerConnectionIceEvent;
-  createEvent(eventInterface: 'RTCTrackEvent'): RTCTrackEvent;
-  createEvent(eventInterface: 'RedirectBlockedEvent'): RedirectBlockedEvent;
-  createEvent(eventInterface: 'ScrollAreaEvent'): ScrollAreaEvent;
-  createEvent(eventInterface: 'SecurityPolicyViolationEvent'): SecurityPolicyViolationEvent;
-  createEvent(eventInterface: 'SimpleGestureEvent'): SimpleGestureEvent;
-  createEvent(eventInterface: 'SpeechRecognitionEvent'): SpeechRecognitionEvent;
-  createEvent(eventInterface: 'SpeechSynthesisErrorEvent'): SpeechSynthesisErrorEvent;
-  createEvent(eventInterface: 'SpeechSynthesisEvent'): SpeechSynthesisEvent;
-  createEvent(eventInterface: 'StorageEvent'): StorageEvent;
-  createEvent(eventInterface: 'StreamFilterDataEvent'): StreamFilterDataEvent;
+  createEvent(eventInterface: "NotifyPaintEvent"): NotifyPaintEvent;
+  createEvent(eventInterface: "OfflineAudioCompletionEvent"): OfflineAudioCompletionEvent;
+  createEvent(eventInterface: "PageTransitionEvent"): PageTransitionEvent;
+  createEvent(eventInterface: "PaymentMethodChangeEvent"): PaymentMethodChangeEvent;
+  createEvent(eventInterface: "PaymentRequestUpdateEvent"): PaymentRequestUpdateEvent;
+  createEvent(eventInterface: "PerformanceEntryEvent"): PerformanceEntryEvent;
+  createEvent(eventInterface: "PluginCrashedEvent"): PluginCrashedEvent;
+  createEvent(eventInterface: "PointerEvent"): PointerEvent;
+  createEvent(eventInterface: "PopStateEvent"): PopStateEvent;
+  createEvent(eventInterface: "PopupBlockedEvent"): PopupBlockedEvent;
+  createEvent(eventInterface: "PopupPositionedEvent"): PopupPositionedEvent;
+  createEvent(eventInterface: "PositionStateEvent"): PositionStateEvent;
+  createEvent(eventInterface: "ProgressEvent"): ProgressEvent;
+  createEvent(eventInterface: "PromiseRejectionEvent"): PromiseRejectionEvent;
+  createEvent(eventInterface: "RTCDTMFToneChangeEvent"): RTCDTMFToneChangeEvent;
+  createEvent(eventInterface: "RTCDataChannelEvent"): RTCDataChannelEvent;
+  createEvent(eventInterface: "RTCPeerConnectionIceEvent"): RTCPeerConnectionIceEvent;
+  createEvent(eventInterface: "RTCTrackEvent"): RTCTrackEvent;
+  createEvent(eventInterface: "RedirectBlockedEvent"): RedirectBlockedEvent;
+  createEvent(eventInterface: "ScrollAreaEvent"): ScrollAreaEvent;
+  createEvent(eventInterface: "SecurityPolicyViolationEvent"): SecurityPolicyViolationEvent;
+  createEvent(eventInterface: "SimpleGestureEvent"): SimpleGestureEvent;
+  createEvent(eventInterface: "SpeechRecognitionEvent"): SpeechRecognitionEvent;
+  createEvent(eventInterface: "SpeechSynthesisErrorEvent"): SpeechSynthesisErrorEvent;
+  createEvent(eventInterface: "SpeechSynthesisEvent"): SpeechSynthesisEvent;
+  createEvent(eventInterface: "StorageEvent"): StorageEvent;
+  createEvent(eventInterface: "StreamFilterDataEvent"): StreamFilterDataEvent;
   createEvent(
-    eventInterface: 'StyleSheetApplicableStateChangeEvent'
+    eventInterface: "StyleSheetApplicableStateChangeEvent"
   ): StyleSheetApplicableStateChangeEvent;
-  createEvent(eventInterface: 'StyleSheetRemovedEvent'): StyleSheetRemovedEvent;
-  createEvent(eventInterface: 'SubmitEvent'): SubmitEvent;
-  createEvent(eventInterface: 'TCPServerSocketEvent'): TCPServerSocketEvent;
-  createEvent(eventInterface: 'TCPSocketErrorEvent'): TCPSocketErrorEvent;
-  createEvent(eventInterface: 'TCPSocketEvent'): TCPSocketEvent;
-  createEvent(eventInterface: 'TaskPriorityChangeEvent'): TaskPriorityChangeEvent;
-  createEvent(eventInterface: 'TextEvent'): TextEvent;
-  createEvent(eventInterface: 'TimeEvent'): TimeEvent;
-  createEvent(eventInterface: 'ToggleEvent'): ToggleEvent;
-  createEvent(eventInterface: 'TouchEvent'): TouchEvent;
-  createEvent(eventInterface: 'TrackEvent'): TrackEvent;
-  createEvent(eventInterface: 'TransitionEvent'): TransitionEvent;
-  createEvent(eventInterface: 'UDPMessageEvent'): UDPMessageEvent;
-  createEvent(eventInterface: 'UIEvent'): UIEvent;
-  createEvent(eventInterface: 'UIEvents'): UIEvent;
-  createEvent(eventInterface: 'UserProximityEvent'): UserProximityEvent;
-  createEvent(eventInterface: 'VRDisplayEvent'): VRDisplayEvent;
-  createEvent(eventInterface: 'WebGLContextEvent'): WebGLContextEvent;
-  createEvent(eventInterface: 'WheelEvent'): WheelEvent;
-  createEvent(eventInterface: 'XRInputSourceEvent'): XRInputSourceEvent;
-  createEvent(eventInterface: 'XRInputSourcesChangeEvent'): XRInputSourcesChangeEvent;
-  createEvent(eventInterface: 'XRReferenceSpaceEvent'): XRReferenceSpaceEvent;
-  createEvent(eventInterface: 'XRSessionEvent'): XRSessionEvent;
-  createEvent(eventInterface: 'XULCommandEvent'): XULCommandEvent;
+  createEvent(eventInterface: "StyleSheetRemovedEvent"): StyleSheetRemovedEvent;
+  createEvent(eventInterface: "SubmitEvent"): SubmitEvent;
+  createEvent(eventInterface: "TCPServerSocketEvent"): TCPServerSocketEvent;
+  createEvent(eventInterface: "TCPSocketErrorEvent"): TCPSocketErrorEvent;
+  createEvent(eventInterface: "TCPSocketEvent"): TCPSocketEvent;
+  createEvent(eventInterface: "TaskPriorityChangeEvent"): TaskPriorityChangeEvent;
+  createEvent(eventInterface: "TextEvent"): TextEvent;
+  createEvent(eventInterface: "TimeEvent"): TimeEvent;
+  createEvent(eventInterface: "ToggleEvent"): ToggleEvent;
+  createEvent(eventInterface: "TouchEvent"): TouchEvent;
+  createEvent(eventInterface: "TrackEvent"): TrackEvent;
+  createEvent(eventInterface: "TransitionEvent"): TransitionEvent;
+  createEvent(eventInterface: "UDPMessageEvent"): UDPMessageEvent;
+  createEvent(eventInterface: "UIEvent"): UIEvent;
+  createEvent(eventInterface: "UIEvents"): UIEvent;
+  createEvent(eventInterface: "UserProximityEvent"): UserProximityEvent;
+  createEvent(eventInterface: "VRDisplayEvent"): VRDisplayEvent;
+  createEvent(eventInterface: "WebGLContextEvent"): WebGLContextEvent;
+  createEvent(eventInterface: "WheelEvent"): WheelEvent;
+  createEvent(eventInterface: "XRInputSourceEvent"): XRInputSourceEvent;
+  createEvent(eventInterface: "XRInputSourcesChangeEvent"): XRInputSourcesChangeEvent;
+  createEvent(eventInterface: "XRReferenceSpaceEvent"): XRReferenceSpaceEvent;
+  createEvent(eventInterface: "XRSessionEvent"): XRSessionEvent;
+  createEvent(eventInterface: "XULCommandEvent"): XULCommandEvent;
   createEvent(eventInterface: string): Event;
   createNodeIterator(root: Node, whatToShow?: number, filter?: NodeFilter | null): NodeIterator;
   createProcessingInstruction(target: string, data: string): ProcessingInstruction;
@@ -33698,932 +33698,932 @@ type XSLTParameterValue = number | boolean | string | Node | Node[] | XPathResul
 type XULCommandDispatcher = nsIDOMXULCommandDispatcher;
 type XULControllers = nsIControllers;
 type nsContentPolicyType = number;
-type AlignSetting = 'center' | 'end' | 'left' | 'right' | 'start';
-type AlphaOption = 'discard' | 'keep';
-type AnimationPlayState = 'finished' | 'idle' | 'paused' | 'running';
-type AnimationReplaceState = 'active' | 'persisted' | 'removed';
-type AudioContextState = 'closed' | 'running' | 'suspended';
+type AlignSetting = "center" | "end" | "left" | "right" | "start";
+type AlphaOption = "discard" | "keep";
+type AnimationPlayState = "finished" | "idle" | "paused" | "running";
+type AnimationReplaceState = "active" | "persisted" | "removed";
+type AudioContextState = "closed" | "running" | "suspended";
 type AudioSampleFormat =
-  | 'f32'
-  | 'f32-planar'
-  | 's16'
-  | 's16-planar'
-  | 's32'
-  | 's32-planar'
-  | 'u8'
-  | 'u8-planar';
-type AutoKeyword = 'auto';
-type AutoplayPolicy = 'allowed' | 'allowed-muted' | 'disallowed';
-type AutoplayPolicyMediaType = 'audiocontext' | 'mediaelement';
-type AvcBitstreamFormat = 'annexb' | 'avc';
-type Base64URLDecodePadding = 'ignore' | 'reject' | 'require';
-type BinaryType = 'arraybuffer' | 'blob';
+  | "f32"
+  | "f32-planar"
+  | "s16"
+  | "s16-planar"
+  | "s32"
+  | "s32-planar"
+  | "u8"
+  | "u8-planar";
+type AutoKeyword = "auto";
+type AutoplayPolicy = "allowed" | "allowed-muted" | "disallowed";
+type AutoplayPolicyMediaType = "audiocontext" | "mediaelement";
+type AvcBitstreamFormat = "annexb" | "avc";
+type Base64URLDecodePadding = "ignore" | "reject" | "require";
+type BinaryType = "arraybuffer" | "blob";
 type BiquadFilterType =
-  | 'allpass'
-  | 'bandpass'
-  | 'highpass'
-  | 'highshelf'
-  | 'lowpass'
-  | 'lowshelf'
-  | 'notch'
-  | 'peaking';
-type BitrateMode = 'constant' | 'variable';
-type CSSBoxType = 'border' | 'content' | 'margin' | 'padding';
-type CSSMathOperator = 'clamp' | 'invert' | 'max' | 'min' | 'negate' | 'product' | 'sum';
+  | "allpass"
+  | "bandpass"
+  | "highpass"
+  | "highshelf"
+  | "lowpass"
+  | "lowshelf"
+  | "notch"
+  | "peaking";
+type BitrateMode = "constant" | "variable";
+type CSSBoxType = "border" | "content" | "margin" | "padding";
+type CSSMathOperator = "clamp" | "invert" | "max" | "min" | "negate" | "product" | "sum";
 type CSSNumericBaseType =
-  | 'angle'
-  | 'flex'
-  | 'frequency'
-  | 'length'
-  | 'percent'
-  | 'resolution'
-  | 'time';
-type CSSStyleSheetParsingMode = 'agent' | 'author' | 'user';
-type CacheStorageNamespace = 'chrome' | 'content';
-type CallbackDebuggerNotificationPhase = 'post' | 'pre';
-type CanvasContextProperties = 'both' | 'fill' | 'none' | 'stroke';
-type CanvasDirection = 'inherit' | 'ltr' | 'rtl';
-type CanvasFontKerning = 'auto' | 'none' | 'normal';
+  | "angle"
+  | "flex"
+  | "frequency"
+  | "length"
+  | "percent"
+  | "resolution"
+  | "time";
+type CSSStyleSheetParsingMode = "agent" | "author" | "user";
+type CacheStorageNamespace = "chrome" | "content";
+type CallbackDebuggerNotificationPhase = "post" | "pre";
+type CanvasContextProperties = "both" | "fill" | "none" | "stroke";
+type CanvasDirection = "inherit" | "ltr" | "rtl";
+type CanvasFontKerning = "auto" | "none" | "normal";
 type CanvasFontStretch =
-  | 'condensed'
-  | 'expanded'
-  | 'extra-condensed'
-  | 'extra-expanded'
-  | 'normal'
-  | 'semi-condensed'
-  | 'semi-expanded'
-  | 'ultra-condensed'
-  | 'ultra-expanded';
+  | "condensed"
+  | "expanded"
+  | "extra-condensed"
+  | "extra-expanded"
+  | "normal"
+  | "semi-condensed"
+  | "semi-expanded"
+  | "ultra-condensed"
+  | "ultra-expanded";
 type CanvasFontVariantCaps =
-  | 'all-petite-caps'
-  | 'all-small-caps'
-  | 'normal'
-  | 'petite-caps'
-  | 'small-caps'
-  | 'titling-caps'
-  | 'unicase';
-type CanvasLineCap = 'butt' | 'round' | 'square';
-type CanvasLineJoin = 'bevel' | 'miter' | 'round';
-type CanvasTextAlign = 'center' | 'end' | 'left' | 'right' | 'start';
-type CanvasTextBaseline = 'alphabetic' | 'bottom' | 'hanging' | 'ideographic' | 'middle' | 'top';
-type CanvasTextRendering = 'auto' | 'geometricPrecision' | 'optimizeLegibility' | 'optimizeSpeed';
-type CanvasWindingRule = 'evenodd' | 'nonzero';
+  | "all-petite-caps"
+  | "all-small-caps"
+  | "normal"
+  | "petite-caps"
+  | "small-caps"
+  | "titling-caps"
+  | "unicase";
+type CanvasLineCap = "butt" | "round" | "square";
+type CanvasLineJoin = "bevel" | "miter" | "round";
+type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
+type CanvasTextBaseline = "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
+type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";
+type CanvasWindingRule = "evenodd" | "nonzero";
 type CaretChangedReason =
-  | 'dragcaret'
-  | 'longpressonemptycontent'
-  | 'presscaret'
-  | 'releasecaret'
-  | 'scroll'
-  | 'taponcaret'
-  | 'updateposition'
-  | 'visibilitychange';
-type ChannelCountMode = 'clamped-max' | 'explicit' | 'max';
-type ChannelInterpretation = 'discrete' | 'speakers';
-type CheckerboardReason = 'recent' | 'severe';
-type CodecState = 'closed' | 'configured' | 'unconfigured';
-type ColorGamut = 'p3' | 'rec2020' | 'srgb';
-type ColorSpaceConversion = 'default' | 'none';
-type CompositeOperation = 'accumulate' | 'add' | 'replace';
-type CompressionFormat = 'deflate' | 'deflate-raw' | 'gzip' | 'zstd';
-type ConnectionType = 'bluetooth' | 'cellular' | 'ethernet' | 'none' | 'other' | 'unknown' | 'wifi';
-type ConsoleLevel = 'error' | 'log' | 'warning';
+  | "dragcaret"
+  | "longpressonemptycontent"
+  | "presscaret"
+  | "releasecaret"
+  | "scroll"
+  | "taponcaret"
+  | "updateposition"
+  | "visibilitychange";
+type ChannelCountMode = "clamped-max" | "explicit" | "max";
+type ChannelInterpretation = "discrete" | "speakers";
+type CheckerboardReason = "recent" | "severe";
+type CodecState = "closed" | "configured" | "unconfigured";
+type ColorGamut = "p3" | "rec2020" | "srgb";
+type ColorSpaceConversion = "default" | "none";
+type CompositeOperation = "accumulate" | "add" | "replace";
+type CompressionFormat = "deflate" | "deflate-raw" | "gzip" | "zstd";
+type ConnectionType = "bluetooth" | "cellular" | "ethernet" | "none" | "other" | "unknown" | "wifi";
+type ConsoleLevel = "error" | "log" | "warning";
 type ConsoleLogLevel =
-  | 'All'
-  | 'Clear'
-  | 'Debug'
-  | 'Dir'
-  | 'Dirxml'
-  | 'Error'
-  | 'Group'
-  | 'GroupEnd'
-  | 'Info'
-  | 'Log'
-  | 'Off'
-  | 'Profile'
-  | 'ProfileEnd'
-  | 'Time'
-  | 'TimeEnd'
-  | 'TimeLog'
-  | 'Trace'
-  | 'Warn';
-type ContentScriptCssOrigin = 'author' | 'user';
-type ContentScriptExecutionWorld = 'ISOLATED' | 'MAIN' | 'USER_SCRIPT';
-type ContentScriptRunAt = 'document_end' | 'document_idle' | 'document_start';
-type CookieSameSite = 'lax' | 'none' | 'strict';
-type CredentialMediationRequirement = 'conditional' | 'optional' | 'required' | 'silent';
+  | "All"
+  | "Clear"
+  | "Debug"
+  | "Dir"
+  | "Dirxml"
+  | "Error"
+  | "Group"
+  | "GroupEnd"
+  | "Info"
+  | "Log"
+  | "Off"
+  | "Profile"
+  | "ProfileEnd"
+  | "Time"
+  | "TimeEnd"
+  | "TimeLog"
+  | "Trace"
+  | "Warn";
+type ContentScriptCssOrigin = "author" | "user";
+type ContentScriptExecutionWorld = "ISOLATED" | "MAIN" | "USER_SCRIPT";
+type ContentScriptRunAt = "document_end" | "document_idle" | "document_start";
+type CookieSameSite = "lax" | "none" | "strict";
+type CredentialMediationRequirement = "conditional" | "optional" | "required" | "silent";
 type CredentialProtectionPolicy =
-  | 'userVerificationOptional'
-  | 'userVerificationOptionalWithCredentialIDList'
-  | 'userVerificationRequired';
+  | "userVerificationOptional"
+  | "userVerificationOptionalWithCredentialIDList"
+  | "userVerificationRequired";
 type DebuggerNotificationType =
-  | 'cancelAnimationFrame'
-  | 'clearInterval'
-  | 'clearTimeout'
-  | 'domEvent'
-  | 'requestAnimationFrame'
-  | 'requestAnimationFrameCallback'
-  | 'setInterval'
-  | 'setIntervalCallback'
-  | 'setTimeout'
-  | 'setTimeoutCallback';
+  | "cancelAnimationFrame"
+  | "clearInterval"
+  | "clearTimeout"
+  | "domEvent"
+  | "requestAnimationFrame"
+  | "requestAnimationFrameCallback"
+  | "setInterval"
+  | "setIntervalCallback"
+  | "setTimeout"
+  | "setTimeoutCallback";
 type DeclarationOrigin =
-  | 'animations'
-  | 'position-fallback'
-  | 'pres-hints'
-  | 'smil'
-  | 'style-attribute'
-  | 'transitions'
-  | 'user'
-  | 'user-agent';
+  | "animations"
+  | "position-fallback"
+  | "pres-hints"
+  | "smil"
+  | "style-attribute"
+  | "transitions"
+  | "user"
+  | "user-agent";
 type DecoderDoctorReportType =
-  | 'mediacannotinitializepulseaudio'
-  | 'mediacannotplaynodecoders'
-  | 'mediadecodeerror'
-  | 'mediadecodewarning'
-  | 'medianodecoders'
-  | 'mediaplatformdecodernotfound'
-  | 'mediaunsupportedlibavcodec'
-  | 'mediawidevinenowmf'
-  | 'mediawmfneeded';
-type DirectionSetting = '' | 'lr' | 'rl';
-type DisplayMode = 'browser' | 'fullscreen' | 'minimal-ui' | 'standalone';
-type DistanceModelType = 'exponential' | 'inverse' | 'linear';
-type EncodedAudioChunkType = 'delta' | 'key';
-type EncodedVideoChunkType = 'delta' | 'key';
-type EndingType = 'native' | 'transparent';
+  | "mediacannotinitializepulseaudio"
+  | "mediacannotplaynodecoders"
+  | "mediadecodeerror"
+  | "mediadecodewarning"
+  | "medianodecoders"
+  | "mediaplatformdecodernotfound"
+  | "mediaunsupportedlibavcodec"
+  | "mediawidevinenowmf"
+  | "mediawmfneeded";
+type DirectionSetting = "" | "lr" | "rl";
+type DisplayMode = "browser" | "fullscreen" | "minimal-ui" | "standalone";
+type DistanceModelType = "exponential" | "inverse" | "linear";
+type EncodedAudioChunkType = "delta" | "key";
+type EncodedVideoChunkType = "delta" | "key";
+type EndingType = "native" | "transparent";
 type EventCallbackDebuggerNotificationType =
-  | 'closewatcher'
-  | 'global'
-  | 'node'
-  | 'websocket'
-  | 'worker'
-  | 'xhr';
-type FetchState = 'aborted' | 'complete' | 'errored' | 'requesting' | 'responding';
-type FileSystemHandleKind = 'directory' | 'file';
-type FileType = 'directory' | 'other' | 'regular';
-type FillMode = 'auto' | 'backwards' | 'both' | 'forwards' | 'none';
-type FlexItemClampState = 'clamped_to_max' | 'clamped_to_min' | 'unclamped';
-type FlexLineGrowthState = 'growing' | 'shrinking';
-type FlexPhysicalDirection = 'horizontal-lr' | 'horizontal-rl' | 'vertical-bt' | 'vertical-tb';
-type FontFaceLoadStatus = 'error' | 'loaded' | 'loading' | 'unloaded';
-type FontFaceSetLoadStatus = 'loaded' | 'loading';
-type ForceMediaDocument = 'image' | 'none' | 'video';
-type ForcedColorsOverride = 'active' | 'none';
-type GPUAddressMode = 'clamp-to-edge' | 'mirror-repeat' | 'repeat';
-type GPUAutoLayoutMode = 'auto';
+  | "closewatcher"
+  | "global"
+  | "node"
+  | "websocket"
+  | "worker"
+  | "xhr";
+type FetchState = "aborted" | "complete" | "errored" | "requesting" | "responding";
+type FileSystemHandleKind = "directory" | "file";
+type FileType = "directory" | "other" | "regular";
+type FillMode = "auto" | "backwards" | "both" | "forwards" | "none";
+type FlexItemClampState = "clamped_to_max" | "clamped_to_min" | "unclamped";
+type FlexLineGrowthState = "growing" | "shrinking";
+type FlexPhysicalDirection = "horizontal-lr" | "horizontal-rl" | "vertical-bt" | "vertical-tb";
+type FontFaceLoadStatus = "error" | "loaded" | "loading" | "unloaded";
+type FontFaceSetLoadStatus = "loaded" | "loading";
+type ForceMediaDocument = "image" | "none" | "video";
+type ForcedColorsOverride = "active" | "none";
+type GPUAddressMode = "clamp-to-edge" | "mirror-repeat" | "repeat";
+type GPUAutoLayoutMode = "auto";
 type GPUBlendFactor =
-  | 'constant'
-  | 'dst'
-  | 'dst-alpha'
-  | 'one'
-  | 'one-minus-constant'
-  | 'one-minus-dst'
-  | 'one-minus-dst-alpha'
-  | 'one-minus-src'
-  | 'one-minus-src-alpha'
-  | 'src'
-  | 'src-alpha'
-  | 'src-alpha-saturated'
-  | 'zero';
-type GPUBlendOperation = 'add' | 'max' | 'min' | 'reverse-subtract' | 'subtract';
-type GPUBufferBindingType = 'read-only-storage' | 'storage' | 'uniform';
-type GPUBufferMapState = 'mapped' | 'pending' | 'unmapped';
-type GPUCanvasAlphaMode = 'opaque' | 'premultiplied';
+  | "constant"
+  | "dst"
+  | "dst-alpha"
+  | "one"
+  | "one-minus-constant"
+  | "one-minus-dst"
+  | "one-minus-dst-alpha"
+  | "one-minus-src"
+  | "one-minus-src-alpha"
+  | "src"
+  | "src-alpha"
+  | "src-alpha-saturated"
+  | "zero";
+type GPUBlendOperation = "add" | "max" | "min" | "reverse-subtract" | "subtract";
+type GPUBufferBindingType = "read-only-storage" | "storage" | "uniform";
+type GPUBufferMapState = "mapped" | "pending" | "unmapped";
+type GPUCanvasAlphaMode = "opaque" | "premultiplied";
 type GPUCompareFunction =
-  | 'always'
-  | 'equal'
-  | 'greater'
-  | 'greater-equal'
-  | 'less'
-  | 'less-equal'
-  | 'never'
-  | 'not-equal';
-type GPUCompilationMessageType = 'error' | 'info' | 'warning';
-type GPUCullMode = 'back' | 'front' | 'none';
-type GPUDeviceLostReason = 'destroyed' | 'unknown';
-type GPUErrorFilter = 'internal' | 'out-of-memory' | 'validation';
+  | "always"
+  | "equal"
+  | "greater"
+  | "greater-equal"
+  | "less"
+  | "less-equal"
+  | "never"
+  | "not-equal";
+type GPUCompilationMessageType = "error" | "info" | "warning";
+type GPUCullMode = "back" | "front" | "none";
+type GPUDeviceLostReason = "destroyed" | "unknown";
+type GPUErrorFilter = "internal" | "out-of-memory" | "validation";
 type GPUFeatureName =
-  | 'bgra8unorm-storage'
-  | 'clip-distances'
-  | 'core-features-and-limits'
-  | 'depth-clip-control'
-  | 'depth32float-stencil8'
-  | 'dual-source-blending'
-  | 'float32-blendable'
-  | 'float32-filterable'
-  | 'indirect-first-instance'
-  | 'primitive-index'
-  | 'rg11b10ufloat-renderable'
-  | 'shader-f16'
-  | 'subgroups'
-  | 'texture-compression-astc'
-  | 'texture-compression-astc-sliced-3d'
-  | 'texture-compression-bc'
-  | 'texture-compression-bc-sliced-3d'
-  | 'texture-compression-etc2'
-  | 'timestamp-query';
-type GPUFilterMode = 'linear' | 'nearest';
-type GPUFrontFace = 'ccw' | 'cw';
-type GPUIndexFormat = 'uint16' | 'uint32';
-type GPULoadOp = 'clear' | 'load';
-type GPUMipmapFilterMode = 'linear' | 'nearest';
-type GPUPipelineErrorReason = 'internal' | 'validation';
-type GPUPowerPreference = 'high-performance' | 'low-power';
+  | "bgra8unorm-storage"
+  | "clip-distances"
+  | "core-features-and-limits"
+  | "depth-clip-control"
+  | "depth32float-stencil8"
+  | "dual-source-blending"
+  | "float32-blendable"
+  | "float32-filterable"
+  | "indirect-first-instance"
+  | "primitive-index"
+  | "rg11b10ufloat-renderable"
+  | "shader-f16"
+  | "subgroups"
+  | "texture-compression-astc"
+  | "texture-compression-astc-sliced-3d"
+  | "texture-compression-bc"
+  | "texture-compression-bc-sliced-3d"
+  | "texture-compression-etc2"
+  | "timestamp-query";
+type GPUFilterMode = "linear" | "nearest";
+type GPUFrontFace = "ccw" | "cw";
+type GPUIndexFormat = "uint16" | "uint32";
+type GPULoadOp = "clear" | "load";
+type GPUMipmapFilterMode = "linear" | "nearest";
+type GPUPipelineErrorReason = "internal" | "validation";
+type GPUPowerPreference = "high-performance" | "low-power";
 type GPUPrimitiveTopology =
-  | 'line-list'
-  | 'line-strip'
-  | 'point-list'
-  | 'triangle-list'
-  | 'triangle-strip';
-type GPUQueryType = 'occlusion' | 'timestamp';
-type GPUSamplerBindingType = 'comparison' | 'filtering' | 'non-filtering';
+  | "line-list"
+  | "line-strip"
+  | "point-list"
+  | "triangle-list"
+  | "triangle-strip";
+type GPUQueryType = "occlusion" | "timestamp";
+type GPUSamplerBindingType = "comparison" | "filtering" | "non-filtering";
 type GPUStencilOperation =
-  | 'decrement-clamp'
-  | 'decrement-wrap'
-  | 'increment-clamp'
-  | 'increment-wrap'
-  | 'invert'
-  | 'keep'
-  | 'replace'
-  | 'zero';
-type GPUStorageTextureAccess = 'read-only' | 'read-write' | 'write-only';
-type GPUStoreOp = 'discard' | 'store';
-type GPUTextureAspect = 'all' | 'depth-only' | 'stencil-only';
-type GPUTextureDimension = '1d' | '2d' | '3d';
+  | "decrement-clamp"
+  | "decrement-wrap"
+  | "increment-clamp"
+  | "increment-wrap"
+  | "invert"
+  | "keep"
+  | "replace"
+  | "zero";
+type GPUStorageTextureAccess = "read-only" | "read-write" | "write-only";
+type GPUStoreOp = "discard" | "store";
+type GPUTextureAspect = "all" | "depth-only" | "stencil-only";
+type GPUTextureDimension = "1d" | "2d" | "3d";
 type GPUTextureFormat =
-  | 'astc-10x10-unorm'
-  | 'astc-10x10-unorm-srgb'
-  | 'astc-10x5-unorm'
-  | 'astc-10x5-unorm-srgb'
-  | 'astc-10x6-unorm'
-  | 'astc-10x6-unorm-srgb'
-  | 'astc-10x8-unorm'
-  | 'astc-10x8-unorm-srgb'
-  | 'astc-12x10-unorm'
-  | 'astc-12x10-unorm-srgb'
-  | 'astc-12x12-unorm'
-  | 'astc-12x12-unorm-srgb'
-  | 'astc-4x4-unorm'
-  | 'astc-4x4-unorm-srgb'
-  | 'astc-5x4-unorm'
-  | 'astc-5x4-unorm-srgb'
-  | 'astc-5x5-unorm'
-  | 'astc-5x5-unorm-srgb'
-  | 'astc-6x5-unorm'
-  | 'astc-6x5-unorm-srgb'
-  | 'astc-6x6-unorm'
-  | 'astc-6x6-unorm-srgb'
-  | 'astc-8x5-unorm'
-  | 'astc-8x5-unorm-srgb'
-  | 'astc-8x6-unorm'
-  | 'astc-8x6-unorm-srgb'
-  | 'astc-8x8-unorm'
-  | 'astc-8x8-unorm-srgb'
-  | 'bc1-rgba-unorm'
-  | 'bc1-rgba-unorm-srgb'
-  | 'bc2-rgba-unorm'
-  | 'bc2-rgba-unorm-srgb'
-  | 'bc3-rgba-unorm'
-  | 'bc3-rgba-unorm-srgb'
-  | 'bc4-r-snorm'
-  | 'bc4-r-unorm'
-  | 'bc5-rg-snorm'
-  | 'bc5-rg-unorm'
-  | 'bc6h-rgb-float'
-  | 'bc6h-rgb-ufloat'
-  | 'bc7-rgba-unorm'
-  | 'bc7-rgba-unorm-srgb'
-  | 'bgra8unorm'
-  | 'bgra8unorm-srgb'
-  | 'depth16unorm'
-  | 'depth24plus'
-  | 'depth24plus-stencil8'
-  | 'depth32float'
-  | 'depth32float-stencil8'
-  | 'eac-r11snorm'
-  | 'eac-r11unorm'
-  | 'eac-rg11snorm'
-  | 'eac-rg11unorm'
-  | 'etc2-rgb8a1unorm'
-  | 'etc2-rgb8a1unorm-srgb'
-  | 'etc2-rgb8unorm'
-  | 'etc2-rgb8unorm-srgb'
-  | 'etc2-rgba8unorm'
-  | 'etc2-rgba8unorm-srgb'
-  | 'r16float'
-  | 'r16sint'
-  | 'r16uint'
-  | 'r32float'
-  | 'r32sint'
-  | 'r32uint'
-  | 'r8sint'
-  | 'r8snorm'
-  | 'r8uint'
-  | 'r8unorm'
-  | 'rg11b10ufloat'
-  | 'rg16float'
-  | 'rg16sint'
-  | 'rg16uint'
-  | 'rg32float'
-  | 'rg32sint'
-  | 'rg32uint'
-  | 'rg8sint'
-  | 'rg8snorm'
-  | 'rg8uint'
-  | 'rg8unorm'
-  | 'rgb10a2uint'
-  | 'rgb10a2unorm'
-  | 'rgb9e5ufloat'
-  | 'rgba16float'
-  | 'rgba16sint'
-  | 'rgba16uint'
-  | 'rgba32float'
-  | 'rgba32sint'
-  | 'rgba32uint'
-  | 'rgba8sint'
-  | 'rgba8snorm'
-  | 'rgba8uint'
-  | 'rgba8unorm'
-  | 'rgba8unorm-srgb'
-  | 'stencil8';
-type GPUTextureSampleType = 'depth' | 'float' | 'sint' | 'uint' | 'unfilterable-float';
-type GPUTextureViewDimension = '1d' | '2d' | '2d-array' | '3d' | 'cube' | 'cube-array';
+  | "astc-10x10-unorm"
+  | "astc-10x10-unorm-srgb"
+  | "astc-10x5-unorm"
+  | "astc-10x5-unorm-srgb"
+  | "astc-10x6-unorm"
+  | "astc-10x6-unorm-srgb"
+  | "astc-10x8-unorm"
+  | "astc-10x8-unorm-srgb"
+  | "astc-12x10-unorm"
+  | "astc-12x10-unorm-srgb"
+  | "astc-12x12-unorm"
+  | "astc-12x12-unorm-srgb"
+  | "astc-4x4-unorm"
+  | "astc-4x4-unorm-srgb"
+  | "astc-5x4-unorm"
+  | "astc-5x4-unorm-srgb"
+  | "astc-5x5-unorm"
+  | "astc-5x5-unorm-srgb"
+  | "astc-6x5-unorm"
+  | "astc-6x5-unorm-srgb"
+  | "astc-6x6-unorm"
+  | "astc-6x6-unorm-srgb"
+  | "astc-8x5-unorm"
+  | "astc-8x5-unorm-srgb"
+  | "astc-8x6-unorm"
+  | "astc-8x6-unorm-srgb"
+  | "astc-8x8-unorm"
+  | "astc-8x8-unorm-srgb"
+  | "bc1-rgba-unorm"
+  | "bc1-rgba-unorm-srgb"
+  | "bc2-rgba-unorm"
+  | "bc2-rgba-unorm-srgb"
+  | "bc3-rgba-unorm"
+  | "bc3-rgba-unorm-srgb"
+  | "bc4-r-snorm"
+  | "bc4-r-unorm"
+  | "bc5-rg-snorm"
+  | "bc5-rg-unorm"
+  | "bc6h-rgb-float"
+  | "bc6h-rgb-ufloat"
+  | "bc7-rgba-unorm"
+  | "bc7-rgba-unorm-srgb"
+  | "bgra8unorm"
+  | "bgra8unorm-srgb"
+  | "depth16unorm"
+  | "depth24plus"
+  | "depth24plus-stencil8"
+  | "depth32float"
+  | "depth32float-stencil8"
+  | "eac-r11snorm"
+  | "eac-r11unorm"
+  | "eac-rg11snorm"
+  | "eac-rg11unorm"
+  | "etc2-rgb8a1unorm"
+  | "etc2-rgb8a1unorm-srgb"
+  | "etc2-rgb8unorm"
+  | "etc2-rgb8unorm-srgb"
+  | "etc2-rgba8unorm"
+  | "etc2-rgba8unorm-srgb"
+  | "r16float"
+  | "r16sint"
+  | "r16uint"
+  | "r32float"
+  | "r32sint"
+  | "r32uint"
+  | "r8sint"
+  | "r8snorm"
+  | "r8uint"
+  | "r8unorm"
+  | "rg11b10ufloat"
+  | "rg16float"
+  | "rg16sint"
+  | "rg16uint"
+  | "rg32float"
+  | "rg32sint"
+  | "rg32uint"
+  | "rg8sint"
+  | "rg8snorm"
+  | "rg8uint"
+  | "rg8unorm"
+  | "rgb10a2uint"
+  | "rgb10a2unorm"
+  | "rgb9e5ufloat"
+  | "rgba16float"
+  | "rgba16sint"
+  | "rgba16uint"
+  | "rgba32float"
+  | "rgba32sint"
+  | "rgba32uint"
+  | "rgba8sint"
+  | "rgba8snorm"
+  | "rgba8uint"
+  | "rgba8unorm"
+  | "rgba8unorm-srgb"
+  | "stencil8";
+type GPUTextureSampleType = "depth" | "float" | "sint" | "uint" | "unfilterable-float";
+type GPUTextureViewDimension = "1d" | "2d" | "2d-array" | "3d" | "cube" | "cube-array";
 type GPUVertexFormat =
-  | 'float16'
-  | 'float16x2'
-  | 'float16x4'
-  | 'float32'
-  | 'float32x2'
-  | 'float32x3'
-  | 'float32x4'
-  | 'sint16'
-  | 'sint16x2'
-  | 'sint16x4'
-  | 'sint32'
-  | 'sint32x2'
-  | 'sint32x3'
-  | 'sint32x4'
-  | 'sint8'
-  | 'sint8x2'
-  | 'sint8x4'
-  | 'snorm16'
-  | 'snorm16x2'
-  | 'snorm16x4'
-  | 'snorm8'
-  | 'snorm8x2'
-  | 'snorm8x4'
-  | 'uint16'
-  | 'uint16x2'
-  | 'uint16x4'
-  | 'uint32'
-  | 'uint32x2'
-  | 'uint32x3'
-  | 'uint32x4'
-  | 'uint8'
-  | 'uint8x2'
-  | 'uint8x4'
-  | 'unorm10-10-10-2'
-  | 'unorm16'
-  | 'unorm16x2'
-  | 'unorm16x4'
-  | 'unorm8'
-  | 'unorm8x2'
-  | 'unorm8x4'
-  | 'unorm8x4-bgra';
-type GPUVertexStepMode = 'instance' | 'vertex';
-type GamepadHand = '' | 'left' | 'right';
-type GamepadHapticActuatorType = 'vibration';
-type GamepadLightIndicatorType = 'on-off' | 'rgb';
-type GamepadMappingType = '' | 'standard' | 'xr-standard';
-type GetUserMediaRequestType = 'getusermedia' | 'recording-device-stopped' | 'selectaudiooutput';
-type GridDeclaration = 'explicit' | 'implicit';
-type GridTrackState = 'removed' | 'repeat' | 'static';
-type HDCPVersion = '1.0' | '1.1' | '1.2' | '1.3' | '1.4' | '2.0' | '2.1' | '2.2' | '2.3';
-type HardwareAcceleration = 'no-preference' | 'prefer-hardware' | 'prefer-software';
-type HashAlgorithm = 'sha256' | 'sha384' | 'sha512';
-type HdrMetadataType = 'smpteSt2086' | 'smpteSt2094-10' | 'smpteSt2094-40';
-type HeadersGuardEnum = 'immutable' | 'none' | 'request' | 'request-no-cors' | 'response';
-type HighlightType = 'grammar-error' | 'highlight' | 'spelling-error';
-type IDBCursorDirection = 'next' | 'nextunique' | 'prev' | 'prevunique';
-type IDBRequestReadyState = 'done' | 'pending';
-type IDBTransactionDurability = 'default' | 'relaxed' | 'strict';
-type IDBTransactionMode = 'cleanup' | 'readonly' | 'readwrite' | 'readwriteflush' | 'versionchange';
-type IdentityCredentialRequestOptionsMode = 'active' | 'passive';
-type ImageOrientation = 'flipY' | 'from-image' | 'none';
-type ImportESModuleTargetGlobal = 'contextual' | 'current' | 'devtools' | 'shared';
-type InspectorPropertyType = 'color' | 'gradient' | 'timing-function';
-type IterationCompositeOperation = 'accumulate' | 'replace';
+  | "float16"
+  | "float16x2"
+  | "float16x4"
+  | "float32"
+  | "float32x2"
+  | "float32x3"
+  | "float32x4"
+  | "sint16"
+  | "sint16x2"
+  | "sint16x4"
+  | "sint32"
+  | "sint32x2"
+  | "sint32x3"
+  | "sint32x4"
+  | "sint8"
+  | "sint8x2"
+  | "sint8x4"
+  | "snorm16"
+  | "snorm16x2"
+  | "snorm16x4"
+  | "snorm8"
+  | "snorm8x2"
+  | "snorm8x4"
+  | "uint16"
+  | "uint16x2"
+  | "uint16x4"
+  | "uint32"
+  | "uint32x2"
+  | "uint32x3"
+  | "uint32x4"
+  | "uint8"
+  | "uint8x2"
+  | "uint8x4"
+  | "unorm10-10-10-2"
+  | "unorm16"
+  | "unorm16x2"
+  | "unorm16x4"
+  | "unorm8"
+  | "unorm8x2"
+  | "unorm8x4"
+  | "unorm8x4-bgra";
+type GPUVertexStepMode = "instance" | "vertex";
+type GamepadHand = "" | "left" | "right";
+type GamepadHapticActuatorType = "vibration";
+type GamepadLightIndicatorType = "on-off" | "rgb";
+type GamepadMappingType = "" | "standard" | "xr-standard";
+type GetUserMediaRequestType = "getusermedia" | "recording-device-stopped" | "selectaudiooutput";
+type GridDeclaration = "explicit" | "implicit";
+type GridTrackState = "removed" | "repeat" | "static";
+type HDCPVersion = "1.0" | "1.1" | "1.2" | "1.3" | "1.4" | "2.0" | "2.1" | "2.2" | "2.3";
+type HardwareAcceleration = "no-preference" | "prefer-hardware" | "prefer-software";
+type HashAlgorithm = "sha256" | "sha384" | "sha512";
+type HdrMetadataType = "smpteSt2086" | "smpteSt2094-10" | "smpteSt2094-40";
+type HeadersGuardEnum = "immutable" | "none" | "request" | "request-no-cors" | "response";
+type HighlightType = "grammar-error" | "highlight" | "spelling-error";
+type IDBCursorDirection = "next" | "nextunique" | "prev" | "prevunique";
+type IDBRequestReadyState = "done" | "pending";
+type IDBTransactionDurability = "default" | "relaxed" | "strict";
+type IDBTransactionMode = "cleanup" | "readonly" | "readwrite" | "readwriteflush" | "versionchange";
+type IdentityCredentialRequestOptionsMode = "active" | "passive";
+type ImageOrientation = "flipY" | "from-image" | "none";
+type ImportESModuleTargetGlobal = "contextual" | "current" | "devtools" | "shared";
+type InspectorPropertyType = "color" | "gradient" | "timing-function";
+type IterationCompositeOperation = "accumulate" | "replace";
 type JSRFPTarget =
-  | 'CSSPrefersColorScheme'
-  | 'HttpUserAgent'
-  | 'JSLocalePrompt'
-  | 'RoundWindowSize'
-  | 'SiteSpecificZoom';
-type L10nFileSourceHasFileStatus = 'missing' | 'present' | 'unknown';
-type LatencyMode = 'quality' | 'realtime';
-type LineAlignSetting = 'center' | 'end' | 'start';
-type LlamaKVCacheDtype = 'f16' | 'f32' | 'q4_0' | 'q4_1' | 'q5_0' | 'q5_1' | 'q8_0';
+  | "CSSPrefersColorScheme"
+  | "HttpUserAgent"
+  | "JSLocalePrompt"
+  | "RoundWindowSize"
+  | "SiteSpecificZoom";
+type L10nFileSourceHasFileStatus = "missing" | "present" | "unknown";
+type LatencyMode = "quality" | "realtime";
+type LineAlignSetting = "center" | "end" | "start";
+type LlamaKVCacheDtype = "f16" | "f32" | "q4_0" | "q4_1" | "q5_0" | "q5_1" | "q8_0";
 type LlamaSamplerType =
-  | 'dist'
-  | 'dry'
-  | 'infill'
-  | 'logit-bias'
-  | 'min-p'
-  | 'mirostat'
-  | 'penalties'
-  | 'temperature'
-  | 'temperature-ext'
-  | 'top-k'
-  | 'top-n-sigma'
-  | 'top-p'
-  | 'typical'
-  | 'xtc';
-type LockMode = 'exclusive' | 'shared';
-type LoginStatus = 'logged-in' | 'logged-out';
-type MIDIPortConnectionState = 'closed' | 'open' | 'pending';
-type MIDIPortDeviceState = 'connected' | 'disconnected';
-type MIDIPortType = 'input' | 'output';
+  | "dist"
+  | "dry"
+  | "infill"
+  | "logit-bias"
+  | "min-p"
+  | "mirostat"
+  | "penalties"
+  | "temperature"
+  | "temperature-ext"
+  | "top-k"
+  | "top-n-sigma"
+  | "top-p"
+  | "typical"
+  | "xtc";
+type LockMode = "exclusive" | "shared";
+type LoginStatus = "logged-in" | "logged-out";
+type MIDIPortConnectionState = "closed" | "open" | "pending";
+type MIDIPortDeviceState = "connected" | "disconnected";
+type MIDIPortType = "input" | "output";
 type MLSObjectType =
-  | 'application-message-ciphertext'
-  | 'application-message-plaintext'
-  | 'client-identifier'
-  | 'commit-output'
-  | 'commit-processed'
-  | 'credential-basic'
-  | 'exporter-context'
-  | 'exporter-label'
-  | 'exporter-output'
-  | 'group-epoch'
-  | 'group-identifier'
-  | 'group-info'
-  | 'key-package'
-  | 'proposal'
-  | 'welcome';
+  | "application-message-ciphertext"
+  | "application-message-plaintext"
+  | "client-identifier"
+  | "commit-output"
+  | "commit-processed"
+  | "credential-basic"
+  | "exporter-context"
+  | "exporter-label"
+  | "exporter-output"
+  | "group-epoch"
+  | "group-identifier"
+  | "group-info"
+  | "key-package"
+  | "proposal"
+  | "welcome";
 type MediaControlKey =
-  | 'focus'
-  | 'nexttrack'
-  | 'pause'
-  | 'play'
-  | 'playpause'
-  | 'previoustrack'
-  | 'seekbackward'
-  | 'seekforward'
-  | 'seekto'
-  | 'skipad'
-  | 'stop';
-type MediaDecodingType = 'file' | 'media-source';
-type MediaDeviceKind = 'audioinput' | 'audiooutput' | 'videoinput';
-type MediaEncodingType = 'record' | 'transmission';
+  | "focus"
+  | "nexttrack"
+  | "pause"
+  | "play"
+  | "playpause"
+  | "previoustrack"
+  | "seekbackward"
+  | "seekforward"
+  | "seekto"
+  | "skipad"
+  | "stop";
+type MediaDecodingType = "file" | "media-source";
+type MediaDeviceKind = "audioinput" | "audiooutput" | "videoinput";
+type MediaEncodingType = "record" | "transmission";
 type MediaKeyMessageType =
-  | 'individualization-request'
-  | 'license-release'
-  | 'license-renewal'
-  | 'license-request';
+  | "individualization-request"
+  | "license-release"
+  | "license-renewal"
+  | "license-request";
 type MediaKeySessionClosedReason =
-  | 'closed-by-application'
-  | 'hardware-context-reset'
-  | 'internal-error'
-  | 'release-acknowledged'
-  | 'resource-evicted';
-type MediaKeySessionType = 'persistent-license' | 'temporary';
+  | "closed-by-application"
+  | "hardware-context-reset"
+  | "internal-error"
+  | "release-acknowledged"
+  | "resource-evicted";
+type MediaKeySessionType = "persistent-license" | "temporary";
 type MediaKeyStatus =
-  | 'expired'
-  | 'internal-error'
-  | 'output-downscaled'
-  | 'output-restricted'
-  | 'released'
-  | 'status-pending'
-  | 'usable';
-type MediaKeysRequirement = 'not-allowed' | 'optional' | 'required';
+  | "expired"
+  | "internal-error"
+  | "output-downscaled"
+  | "output-restricted"
+  | "released"
+  | "status-pending"
+  | "usable";
+type MediaKeysRequirement = "not-allowed" | "optional" | "required";
 type MediaSessionAction =
-  | 'nexttrack'
-  | 'pause'
-  | 'play'
-  | 'previoustrack'
-  | 'seekbackward'
-  | 'seekforward'
-  | 'seekto'
-  | 'skipad'
-  | 'stop';
-type MediaSessionPlaybackState = 'none' | 'paused' | 'playing';
-type MediaSourceEndOfStreamError = 'decode' | 'network';
-type MediaSourceReadyState = 'closed' | 'ended' | 'open';
-type MediaStreamTrackState = 'ended' | 'live';
+  | "nexttrack"
+  | "pause"
+  | "play"
+  | "previoustrack"
+  | "seekbackward"
+  | "seekforward"
+  | "seekto"
+  | "skipad"
+  | "stop";
+type MediaSessionPlaybackState = "none" | "paused" | "playing";
+type MediaSourceEndOfStreamError = "decode" | "network";
+type MediaSourceReadyState = "closed" | "ended" | "open";
+type MediaStreamTrackState = "ended" | "live";
 type MozContentPolicyType =
-  | 'beacon'
-  | 'csp_report'
-  | 'font'
-  | 'image'
-  | 'imageset'
-  | 'json'
-  | 'main_frame'
-  | 'media'
-  | 'object'
-  | 'other'
-  | 'ping'
-  | 'script'
-  | 'speculative'
-  | 'stylesheet'
-  | 'sub_frame'
-  | 'web_manifest'
-  | 'websocket'
-  | 'xml_dtd'
-  | 'xmlhttprequest'
-  | 'xslt';
+  | "beacon"
+  | "csp_report"
+  | "font"
+  | "image"
+  | "imageset"
+  | "json"
+  | "main_frame"
+  | "media"
+  | "object"
+  | "other"
+  | "ping"
+  | "script"
+  | "speculative"
+  | "stylesheet"
+  | "sub_frame"
+  | "web_manifest"
+  | "websocket"
+  | "xml_dtd"
+  | "xmlhttprequest"
+  | "xslt";
 type MozUrlClassificationFlags =
-  | 'antifraud'
-  | 'any_basic_tracking'
-  | 'any_social_tracking'
-  | 'any_strict_tracking'
-  | 'consentmanager'
-  | 'cryptomining'
-  | 'cryptomining_content'
-  | 'emailtracking'
-  | 'emailtracking_content'
-  | 'fingerprinting'
-  | 'fingerprinting_content'
-  | 'socialtracking'
-  | 'socialtracking_facebook'
-  | 'socialtracking_linkedin'
-  | 'socialtracking_twitter'
-  | 'tracking'
-  | 'tracking_ad'
-  | 'tracking_analytics'
-  | 'tracking_content'
-  | 'tracking_social';
-type NavigationFocusReset = 'after-transition' | 'manual';
-type NavigationHistoryBehavior = 'auto' | 'push' | 'replace';
-type NavigationScrollBehavior = 'after-transition' | 'manual';
-type NavigationTimingType = 'back_forward' | 'navigate' | 'prerender' | 'reload';
-type NavigationType = 'push' | 'reload' | 'replace' | 'traverse';
-type NotificationDirection = 'auto' | 'ltr' | 'rtl';
-type NotificationPermission = 'default' | 'denied' | 'granted';
-type OffscreenRenderingContextId = '2d' | 'bitmaprenderer' | 'webgl' | 'webgl2' | 'webgpu';
-type OpusBitstreamFormat = 'ogg' | 'opus';
+  | "antifraud"
+  | "any_basic_tracking"
+  | "any_social_tracking"
+  | "any_strict_tracking"
+  | "consentmanager"
+  | "cryptomining"
+  | "cryptomining_content"
+  | "emailtracking"
+  | "emailtracking_content"
+  | "fingerprinting"
+  | "fingerprinting_content"
+  | "socialtracking"
+  | "socialtracking_facebook"
+  | "socialtracking_linkedin"
+  | "socialtracking_twitter"
+  | "tracking"
+  | "tracking_ad"
+  | "tracking_analytics"
+  | "tracking_content"
+  | "tracking_social";
+type NavigationFocusReset = "after-transition" | "manual";
+type NavigationHistoryBehavior = "auto" | "push" | "replace";
+type NavigationScrollBehavior = "after-transition" | "manual";
+type NavigationTimingType = "back_forward" | "navigate" | "prerender" | "reload";
+type NavigationType = "push" | "reload" | "replace" | "traverse";
+type NotificationDirection = "auto" | "ltr" | "rtl";
+type NotificationPermission = "default" | "denied" | "granted";
+type OffscreenRenderingContextId = "2d" | "bitmaprenderer" | "webgl" | "webgl2" | "webgpu";
+type OpusBitstreamFormat = "ogg" | "opus";
 type OrientationLockType =
-  | 'any'
-  | 'landscape'
-  | 'landscape-primary'
-  | 'landscape-secondary'
-  | 'natural'
-  | 'portrait'
-  | 'portrait-primary'
-  | 'portrait-secondary';
+  | "any"
+  | "landscape"
+  | "landscape-primary"
+  | "landscape-secondary"
+  | "natural"
+  | "portrait"
+  | "portrait-primary"
+  | "portrait-secondary";
 type OrientationType =
-  | 'landscape-primary'
-  | 'landscape-secondary'
-  | 'portrait-primary'
-  | 'portrait-secondary';
-type OscillatorType = 'custom' | 'sawtooth' | 'sine' | 'square' | 'triangle';
-type OverSampleType = '2x' | '4x' | 'none';
+  | "landscape-primary"
+  | "landscape-secondary"
+  | "portrait-primary"
+  | "portrait-secondary";
+type OscillatorType = "custom" | "sawtooth" | "sine" | "square" | "triangle";
+type OverSampleType = "2x" | "4x" | "none";
 type OverridableErrorCategory =
-  | 'domain-mismatch'
-  | 'expired-or-not-yet-valid'
-  | 'trust-error'
-  | 'unset';
+  | "domain-mismatch"
+  | "expired-or-not-yet-valid"
+  | "trust-error"
+  | "unset";
 type PCError =
-  | 'InvalidAccessError'
-  | 'InvalidCharacterError'
-  | 'InvalidModificationError'
-  | 'InvalidStateError'
-  | 'NotReadableError'
-  | 'NotSupportedError'
-  | 'OperationError'
-  | 'RangeError'
-  | 'SyntaxError'
-  | 'TypeError'
-  | 'UnknownError';
+  | "InvalidAccessError"
+  | "InvalidCharacterError"
+  | "InvalidModificationError"
+  | "InvalidStateError"
+  | "NotReadableError"
+  | "NotSupportedError"
+  | "OperationError"
+  | "RangeError"
+  | "SyntaxError"
+  | "TypeError"
+  | "UnknownError";
 type PCObserverStateType =
-  | 'ConnectionState'
-  | 'IceConnectionState'
-  | 'IceGatheringState'
-  | 'None'
-  | 'SignalingState';
-type PanningModelType = 'HRTF' | 'equalpower';
-type PaymentComplete = 'fail' | 'success' | 'unknown';
-type PaymentShippingType = 'delivery' | 'pickup' | 'shipping';
+  | "ConnectionState"
+  | "IceConnectionState"
+  | "IceGatheringState"
+  | "None"
+  | "SignalingState";
+type PanningModelType = "HRTF" | "equalpower";
+type PaymentComplete = "fail" | "success" | "unknown";
+type PaymentShippingType = "delivery" | "pickup" | "shipping";
 type PermissionName =
-  | 'camera'
-  | 'geolocation'
-  | 'microphone'
-  | 'midi'
-  | 'notifications'
-  | 'persistent-storage'
-  | 'push'
-  | 'screen-wake-lock'
-  | 'storage-access';
-type PermissionState = 'denied' | 'granted' | 'prompt';
-type PermitUnloadAction = 'dontUnload' | 'prompt' | 'unload';
+  | "camera"
+  | "geolocation"
+  | "microphone"
+  | "midi"
+  | "notifications"
+  | "persistent-storage"
+  | "push"
+  | "screen-wake-lock"
+  | "storage-access";
+type PermissionState = "denied" | "granted" | "prompt";
+type PermitUnloadAction = "dontUnload" | "prompt" | "unload";
 type PlacesEventType =
-  | 'bookmark-added'
-  | 'bookmark-guid-changed'
-  | 'bookmark-keyword-changed'
-  | 'bookmark-moved'
-  | 'bookmark-removed'
-  | 'bookmark-tags-changed'
-  | 'bookmark-time-changed'
-  | 'bookmark-title-changed'
-  | 'bookmark-url-changed'
-  | 'favicon-changed'
-  | 'history-cleared'
-  | 'none'
-  | 'page-removed'
-  | 'page-title-changed'
-  | 'page-visited'
-  | 'pages-rank-changed'
-  | 'purge-caches';
-type PlaybackDirection = 'alternate' | 'alternate-reverse' | 'normal' | 'reverse';
+  | "bookmark-added"
+  | "bookmark-guid-changed"
+  | "bookmark-keyword-changed"
+  | "bookmark-moved"
+  | "bookmark-removed"
+  | "bookmark-tags-changed"
+  | "bookmark-time-changed"
+  | "bookmark-title-changed"
+  | "bookmark-url-changed"
+  | "favicon-changed"
+  | "history-cleared"
+  | "none"
+  | "page-removed"
+  | "page-title-changed"
+  | "page-visited"
+  | "pages-rank-changed"
+  | "purge-caches";
+type PlaybackDirection = "alternate" | "alternate-reverse" | "normal" | "reverse";
 type PopupBlockerState =
-  | 'openAbused'
-  | 'openAllowed'
-  | 'openBlocked'
-  | 'openControlled'
-  | 'openOverridden';
-type PositionAlignSetting = 'auto' | 'center' | 'line-left' | 'line-right';
-type PredefinedColorSpace = 'display-p3' | 'srgb';
-type PrefersColorSchemeOverride = 'dark' | 'light' | 'none';
-type PremultiplyAlpha = 'default' | 'none' | 'premultiply';
-type PresentationStyle = 'attachment' | 'inline' | 'unspecified';
-type PrivateAttributionImpressionType = 'click' | 'view';
-type PromiseDebuggingState = 'fulfilled' | 'pending' | 'rejected';
-type PushEncryptionKeyName = 'auth' | 'p256dh';
-type RTCBundlePolicy = 'balanced' | 'max-bundle' | 'max-compat';
-type RTCCodecType = 'decode' | 'encode';
-type RTCDataChannelState = 'closed' | 'closing' | 'connecting' | 'open';
-type RTCDataChannelType = 'arraybuffer' | 'blob';
-type RTCDegradationPreference = 'balanced' | 'maintain-framerate' | 'maintain-resolution';
-type RTCDtlsTransportState = 'closed' | 'connected' | 'connecting' | 'failed' | 'new';
-type RTCEncodedVideoFrameType = 'delta' | 'empty' | 'key';
-type RTCIceCandidateType = 'host' | 'prflx' | 'relay' | 'srflx';
-type RTCIceComponent = 'rtcp' | 'rtp';
+  | "openAbused"
+  | "openAllowed"
+  | "openBlocked"
+  | "openControlled"
+  | "openOverridden";
+type PositionAlignSetting = "auto" | "center" | "line-left" | "line-right";
+type PredefinedColorSpace = "display-p3" | "srgb";
+type PrefersColorSchemeOverride = "dark" | "light" | "none";
+type PremultiplyAlpha = "default" | "none" | "premultiply";
+type PresentationStyle = "attachment" | "inline" | "unspecified";
+type PrivateAttributionImpressionType = "click" | "view";
+type PromiseDebuggingState = "fulfilled" | "pending" | "rejected";
+type PushEncryptionKeyName = "auth" | "p256dh";
+type RTCBundlePolicy = "balanced" | "max-bundle" | "max-compat";
+type RTCCodecType = "decode" | "encode";
+type RTCDataChannelState = "closed" | "closing" | "connecting" | "open";
+type RTCDataChannelType = "arraybuffer" | "blob";
+type RTCDegradationPreference = "balanced" | "maintain-framerate" | "maintain-resolution";
+type RTCDtlsTransportState = "closed" | "connected" | "connecting" | "failed" | "new";
+type RTCEncodedVideoFrameType = "delta" | "empty" | "key";
+type RTCIceCandidateType = "host" | "prflx" | "relay" | "srflx";
+type RTCIceComponent = "rtcp" | "rtp";
 type RTCIceConnectionState =
-  | 'checking'
-  | 'closed'
-  | 'completed'
-  | 'connected'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
-type RTCIceCredentialType = 'password';
-type RTCIceGathererState = 'complete' | 'gathering' | 'new';
-type RTCIceGatheringState = 'complete' | 'gathering' | 'new';
-type RTCIceProtocol = 'tcp' | 'udp';
-type RTCIceTcpCandidateType = 'active' | 'passive' | 'so';
-type RTCIceTransportPolicy = 'all' | 'relay';
+  | "checking"
+  | "closed"
+  | "completed"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "new";
+type RTCIceCredentialType = "password";
+type RTCIceGathererState = "complete" | "gathering" | "new";
+type RTCIceGatheringState = "complete" | "gathering" | "new";
+type RTCIceProtocol = "tcp" | "udp";
+type RTCIceTcpCandidateType = "active" | "passive" | "so";
+type RTCIceTransportPolicy = "all" | "relay";
 type RTCIceTransportState =
-  | 'checking'
-  | 'closed'
-  | 'completed'
-  | 'connected'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
+  | "checking"
+  | "closed"
+  | "completed"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "new";
 type RTCLifecycleEvent =
-  | 'connectionstatechange'
-  | 'iceconnectionstatechange'
-  | 'icegatheringstatechange'
-  | 'initialized';
+  | "connectionstatechange"
+  | "iceconnectionstatechange"
+  | "icegatheringstatechange"
+  | "initialized";
 type RTCPeerConnectionState =
-  | 'closed'
-  | 'connected'
-  | 'connecting'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
-type RTCPriorityType = 'high' | 'low' | 'medium' | 'very-low';
-type RTCRtpTransceiverDirection = 'inactive' | 'recvonly' | 'sendonly' | 'sendrecv' | 'stopped';
-type RTCSctpTransportState = 'closed' | 'connected' | 'connecting';
-type RTCSdpType = 'answer' | 'offer' | 'pranswer' | 'rollback';
+  | "closed"
+  | "connected"
+  | "connecting"
+  | "disconnected"
+  | "failed"
+  | "new";
+type RTCPriorityType = "high" | "low" | "medium" | "very-low";
+type RTCRtpTransceiverDirection = "inactive" | "recvonly" | "sendonly" | "sendrecv" | "stopped";
+type RTCSctpTransportState = "closed" | "connected" | "connecting";
+type RTCSdpType = "answer" | "offer" | "pranswer" | "rollback";
 type RTCSignalingState =
-  | 'closed'
-  | 'have-local-offer'
-  | 'have-local-pranswer'
-  | 'have-remote-offer'
-  | 'have-remote-pranswer'
-  | 'stable';
+  | "closed"
+  | "have-local-offer"
+  | "have-local-pranswer"
+  | "have-remote-offer"
+  | "have-remote-pranswer"
+  | "stable";
 type RTCStatsIceCandidatePairState =
-  | 'cancelled'
-  | 'failed'
-  | 'frozen'
-  | 'in-progress'
-  | 'succeeded'
-  | 'waiting';
+  | "cancelled"
+  | "failed"
+  | "frozen"
+  | "in-progress"
+  | "succeeded"
+  | "waiting";
 type RTCStatsType =
-  | 'candidate-pair'
-  | 'codec'
-  | 'csrc'
-  | 'data-channel'
-  | 'inbound-rtp'
-  | 'local-candidate'
-  | 'media-source'
-  | 'outbound-rtp'
-  | 'peer-connection'
-  | 'remote-candidate'
-  | 'remote-inbound-rtp'
-  | 'remote-outbound-rtp'
-  | 'session'
-  | 'track'
-  | 'transport';
-type ReadableStreamReaderMode = 'byob';
-type RecordingState = 'inactive' | 'paused' | 'recording';
+  | "candidate-pair"
+  | "codec"
+  | "csrc"
+  | "data-channel"
+  | "inbound-rtp"
+  | "local-candidate"
+  | "media-source"
+  | "outbound-rtp"
+  | "peer-connection"
+  | "remote-candidate"
+  | "remote-inbound-rtp"
+  | "remote-outbound-rtp"
+  | "session"
+  | "track"
+  | "transport";
+type ReadableStreamReaderMode = "byob";
+type RecordingState = "inactive" | "paused" | "recording";
 type ReferrerPolicy =
-  | ''
-  | 'no-referrer'
-  | 'no-referrer-when-downgrade'
-  | 'origin'
-  | 'origin-when-cross-origin'
-  | 'same-origin'
-  | 'strict-origin'
-  | 'strict-origin-when-cross-origin'
-  | 'unsafe-url';
-type RenderBlockingStatusType = 'blocking' | 'non-blocking';
+  | ""
+  | "no-referrer"
+  | "no-referrer-when-downgrade"
+  | "origin"
+  | "origin-when-cross-origin"
+  | "same-origin"
+  | "strict-origin"
+  | "strict-origin-when-cross-origin"
+  | "unsafe-url";
+type RenderBlockingStatusType = "blocking" | "non-blocking";
 type RequestCache =
-  | 'default'
-  | 'force-cache'
-  | 'no-cache'
-  | 'no-store'
-  | 'only-if-cached'
-  | 'reload';
-type RequestCredentials = 'include' | 'omit' | 'same-origin';
+  | "default"
+  | "force-cache"
+  | "no-cache"
+  | "no-store"
+  | "only-if-cached"
+  | "reload";
+type RequestCredentials = "include" | "omit" | "same-origin";
 type RequestDestination =
-  | ''
-  | 'audio'
-  | 'audioworklet'
-  | 'document'
-  | 'embed'
-  | 'font'
-  | 'frame'
-  | 'iframe'
-  | 'image'
-  | 'json'
-  | 'manifest'
-  | 'object'
-  | 'paintworklet'
-  | 'report'
-  | 'script'
-  | 'sharedworker'
-  | 'style'
-  | 'track'
-  | 'video'
-  | 'worker'
-  | 'xslt';
-type RequestMode = 'cors' | 'navigate' | 'no-cors' | 'same-origin';
-type RequestPriority = 'auto' | 'high' | 'low';
-type RequestRedirect = 'error' | 'follow' | 'manual';
-type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-content-box';
-type ResourceCacheTarget = 'chrome' | 'content';
-type ResourceCacheType = 'image' | 'script' | 'stylesheet';
-type ResponseType = 'basic' | 'cors' | 'default' | 'error' | 'opaque' | 'opaqueredirect';
-type SanitizerPresets = 'default';
-type ScreenColorGamut = 'p3' | 'rec2020' | 'srgb';
-type ScrollBehavior = 'auto' | 'instant' | 'smooth';
-type ScrollLogicalPosition = 'center' | 'end' | 'nearest' | 'start';
-type ScrollRestoration = 'auto' | 'manual';
-type ScrollSetting = '' | 'up';
-type SecurityPolicyViolationEventDisposition = 'enforce' | 'report';
-type SelectionMode = 'end' | 'preserve' | 'select' | 'start';
-type SelectorWarningKind = 'SiblingCombinatorAfterScope' | 'UnconstrainedHas';
+  | ""
+  | "audio"
+  | "audioworklet"
+  | "document"
+  | "embed"
+  | "font"
+  | "frame"
+  | "iframe"
+  | "image"
+  | "json"
+  | "manifest"
+  | "object"
+  | "paintworklet"
+  | "report"
+  | "script"
+  | "sharedworker"
+  | "style"
+  | "track"
+  | "video"
+  | "worker"
+  | "xslt";
+type RequestMode = "cors" | "navigate" | "no-cors" | "same-origin";
+type RequestPriority = "auto" | "high" | "low";
+type RequestRedirect = "error" | "follow" | "manual";
+type ResizeObserverBoxOptions = "border-box" | "content-box" | "device-pixel-content-box";
+type ResourceCacheTarget = "chrome" | "content";
+type ResourceCacheType = "image" | "script" | "stylesheet";
+type ResponseType = "basic" | "cors" | "default" | "error" | "opaque" | "opaqueredirect";
+type SanitizerPresets = "default";
+type ScreenColorGamut = "p3" | "rec2020" | "srgb";
+type ScrollBehavior = "auto" | "instant" | "smooth";
+type ScrollLogicalPosition = "center" | "end" | "nearest" | "start";
+type ScrollRestoration = "auto" | "manual";
+type ScrollSetting = "" | "up";
+type SecurityPolicyViolationEventDisposition = "enforce" | "report";
+type SelectionMode = "end" | "preserve" | "select" | "start";
+type SelectorWarningKind = "SiblingCombinatorAfterScope" | "UnconstrainedHas";
 type ServiceWorkerState =
-  | 'activated'
-  | 'activating'
-  | 'installed'
-  | 'installing'
-  | 'parsed'
-  | 'redundant';
-type ServiceWorkerUpdateViaCache = 'all' | 'imports' | 'none';
-type ShadowRootMode = 'closed' | 'open';
-type SlotAssignmentMode = 'manual' | 'named';
-type SocketReadyState = 'closed' | 'closing' | 'halfclosed' | 'open' | 'opening';
-type SourceBufferAppendMode = 'segments' | 'sequence';
+  | "activated"
+  | "activating"
+  | "installed"
+  | "installing"
+  | "parsed"
+  | "redundant";
+type ServiceWorkerUpdateViaCache = "all" | "imports" | "none";
+type ShadowRootMode = "closed" | "open";
+type SlotAssignmentMode = "manual" | "named";
+type SocketReadyState = "closed" | "closing" | "halfclosed" | "open" | "opening";
+type SourceBufferAppendMode = "segments" | "sequence";
 type SpeechRecognitionErrorCode =
-  | 'aborted'
-  | 'audio-capture'
-  | 'bad-grammar'
-  | 'language-not-supported'
-  | 'network'
-  | 'no-speech'
-  | 'not-allowed'
-  | 'service-not-allowed';
+  | "aborted"
+  | "audio-capture"
+  | "bad-grammar"
+  | "language-not-supported"
+  | "network"
+  | "no-speech"
+  | "not-allowed"
+  | "service-not-allowed";
 type SpeechSynthesisErrorCode =
-  | 'audio-busy'
-  | 'audio-hardware'
-  | 'canceled'
-  | 'interrupted'
-  | 'invalid-argument'
-  | 'language-unavailable'
-  | 'network'
-  | 'synthesis-failed'
-  | 'synthesis-unavailable'
-  | 'text-too-long'
-  | 'voice-unavailable';
+  | "audio-busy"
+  | "audio-hardware"
+  | "canceled"
+  | "interrupted"
+  | "invalid-argument"
+  | "language-unavailable"
+  | "network"
+  | "synthesis-failed"
+  | "synthesis-unavailable"
+  | "text-too-long"
+  | "voice-unavailable";
 type StreamFilterStatus =
-  | 'closed'
-  | 'disconnected'
-  | 'failed'
-  | 'finishedtransferringdata'
-  | 'suspended'
-  | 'transferringdata'
-  | 'uninitialized';
-type StringType = 'inline' | 'literal' | 'other' | 'stringbuffer';
+  | "closed"
+  | "disconnected"
+  | "failed"
+  | "finishedtransferringdata"
+  | "suspended"
+  | "transferringdata"
+  | "uninitialized";
+type StringType = "inline" | "literal" | "other" | "stringbuffer";
 type SupportedType =
-  | 'application/xhtml+xml'
-  | 'application/xml'
-  | 'image/svg+xml'
-  | 'text/html'
-  | 'text/xml';
-type TCPReadyState = 'closed' | 'closing' | 'connecting' | 'open';
-type TCPSocketBinaryType = 'arraybuffer' | 'string';
-type TaskPriority = 'background' | 'user-blocking' | 'user-visible';
-type TensorDataLocation = 'cpu' | 'cpu-pinned' | 'gpu-buffer' | 'ml-tensor' | 'none' | 'texture';
-type TextTrackKind = 'captions' | 'chapters' | 'descriptions' | 'metadata' | 'subtitles';
-type TextTrackMode = 'disabled' | 'hidden' | 'showing';
-type TouchEventsOverride = 'disabled' | 'enabled' | 'none';
-type TransferFunction = 'hlg' | 'pq' | 'srgb';
-type UniFFIScaffoldingCallCode = 'error' | 'internal-error' | 'success';
-type VRDisplayEventReason = 'mounted' | 'navigation' | 'requested' | 'unmounted';
-type VREye = 'left' | 'right';
-type VideoColorPrimaries = 'bt2020' | 'bt470bg' | 'bt709' | 'smpte170m' | 'smpte432';
-type VideoEncoderBitrateMode = 'constant' | 'quantizer' | 'variable';
-type VideoMatrixCoefficients = 'bt2020-ncl' | 'bt470bg' | 'bt709' | 'rgb' | 'smpte170m';
+  | "application/xhtml+xml"
+  | "application/xml"
+  | "image/svg+xml"
+  | "text/html"
+  | "text/xml";
+type TCPReadyState = "closed" | "closing" | "connecting" | "open";
+type TCPSocketBinaryType = "arraybuffer" | "string";
+type TaskPriority = "background" | "user-blocking" | "user-visible";
+type TensorDataLocation = "cpu" | "cpu-pinned" | "gpu-buffer" | "ml-tensor" | "none" | "texture";
+type TextTrackKind = "captions" | "chapters" | "descriptions" | "metadata" | "subtitles";
+type TextTrackMode = "disabled" | "hidden" | "showing";
+type TouchEventsOverride = "disabled" | "enabled" | "none";
+type TransferFunction = "hlg" | "pq" | "srgb";
+type UniFFIScaffoldingCallCode = "error" | "internal-error" | "success";
+type VRDisplayEventReason = "mounted" | "navigation" | "requested" | "unmounted";
+type VREye = "left" | "right";
+type VideoColorPrimaries = "bt2020" | "bt470bg" | "bt709" | "smpte170m" | "smpte432";
+type VideoEncoderBitrateMode = "constant" | "quantizer" | "variable";
+type VideoMatrixCoefficients = "bt2020-ncl" | "bt470bg" | "bt709" | "rgb" | "smpte170m";
 type VideoPixelFormat =
-  | 'BGRA'
-  | 'BGRX'
-  | 'I420'
-  | 'I420A'
-  | 'I420AP10'
-  | 'I420AP12'
-  | 'I420P10'
-  | 'I420P12'
-  | 'I422'
-  | 'I422A'
-  | 'I422AP10'
-  | 'I422AP12'
-  | 'I422P10'
-  | 'I422P12'
-  | 'I444'
-  | 'I444A'
-  | 'I444AP10'
-  | 'I444AP12'
-  | 'I444P10'
-  | 'I444P12'
-  | 'NV12'
-  | 'RGBA'
-  | 'RGBX';
+  | "BGRA"
+  | "BGRX"
+  | "I420"
+  | "I420A"
+  | "I420AP10"
+  | "I420AP12"
+  | "I420P10"
+  | "I420P12"
+  | "I422"
+  | "I422A"
+  | "I422AP10"
+  | "I422AP12"
+  | "I422P10"
+  | "I422P12"
+  | "I444"
+  | "I444A"
+  | "I444AP10"
+  | "I444AP12"
+  | "I444P10"
+  | "I444P12"
+  | "NV12"
+  | "RGBA"
+  | "RGBX";
 type VideoTransferCharacteristics =
-  | 'bt709'
-  | 'hlg'
-  | 'iec61966-2-1'
-  | 'linear'
-  | 'pq'
-  | 'smpte170m';
-type VisibilityState = 'hidden' | 'visible';
-type WakeLockType = 'screen';
-type WebGLPowerPreference = 'default' | 'high-performance' | 'low-power';
+  | "bt709"
+  | "hlg"
+  | "iec61966-2-1"
+  | "linear"
+  | "pq"
+  | "smpte170m";
+type VisibilityState = "hidden" | "visible";
+type WakeLockType = "screen";
+type WebGLPowerPreference = "default" | "high-performance" | "low-power";
 type WebIDLProcType =
-  | 'browser'
-  | 'extension'
-  | 'file'
-  | 'forkServer'
-  | 'gmpPlugin'
-  | 'gpu'
-  | 'inference'
-  | 'ipdlUnitTest'
-  | 'preallocated'
-  | 'privilegedabout'
-  | 'privilegedmozilla'
-  | 'rdd'
-  | 'socket'
-  | 'unknown'
-  | 'utility'
-  | 'vr'
-  | 'web'
-  | 'webIsolated'
-  | 'webServiceWorker'
-  | 'withCoopCoep';
+  | "browser"
+  | "extension"
+  | "file"
+  | "forkServer"
+  | "gmpPlugin"
+  | "gpu"
+  | "inference"
+  | "ipdlUnitTest"
+  | "preallocated"
+  | "privilegedabout"
+  | "privilegedmozilla"
+  | "rdd"
+  | "socket"
+  | "unknown"
+  | "utility"
+  | "vr"
+  | "web"
+  | "webIsolated"
+  | "webServiceWorker"
+  | "withCoopCoep";
 type WebIDLUtilityActorName =
-  | 'audioDecoder_AppleMedia'
-  | 'audioDecoder_Generic'
-  | 'audioDecoder_WMF'
-  | 'jSOracle'
-  | 'mfMediaEngineCDM'
-  | 'unknown'
-  | 'windowsFileDialog'
-  | 'windowsUtils';
-type WebTransportCongestionControl = 'default' | 'low-latency' | 'throughput';
-type WebTransportErrorSource = 'session' | 'stream';
-type WebTransportReliabilityMode = 'pending' | 'reliable-only' | 'supports-unreliable';
-type WireframeRectType = 'background' | 'image' | 'text' | 'unknown';
-type WorkerType = 'classic' | 'module';
-type WriteCommandType = 'seek' | 'truncate' | 'write';
-type WriteMode = 'append' | 'appendOrCreate' | 'create' | 'overwrite';
-type XMLHttpRequestResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
-type XREye = 'left' | 'none' | 'right';
-type XRHandedness = 'left' | 'none' | 'right';
-type XRReferenceSpaceType = 'bounded-floor' | 'local' | 'local-floor' | 'unbounded' | 'viewer';
-type XRSessionMode = 'immersive-ar' | 'immersive-vr' | 'inline';
-type XRTargetRayMode = 'gaze' | 'screen' | 'tracked-pointer';
-type XRVisibilityState = 'hidden' | 'visible' | 'visible-blurred';
-type mozPacketDumpType = 'rtcp' | 'rtp' | 'srtcp' | 'srtp';
+  | "audioDecoder_AppleMedia"
+  | "audioDecoder_Generic"
+  | "audioDecoder_WMF"
+  | "jSOracle"
+  | "mfMediaEngineCDM"
+  | "unknown"
+  | "windowsFileDialog"
+  | "windowsUtils";
+type WebTransportCongestionControl = "default" | "low-latency" | "throughput";
+type WebTransportErrorSource = "session" | "stream";
+type WebTransportReliabilityMode = "pending" | "reliable-only" | "supports-unreliable";
+type WireframeRectType = "background" | "image" | "text" | "unknown";
+type WorkerType = "classic" | "module";
+type WriteCommandType = "seek" | "truncate" | "write";
+type WriteMode = "append" | "appendOrCreate" | "create" | "overwrite";
+type XMLHttpRequestResponseType = "" | "arraybuffer" | "blob" | "document" | "json" | "text";
+type XREye = "left" | "none" | "right";
+type XRHandedness = "left" | "none" | "right";
+type XRReferenceSpaceType = "bounded-floor" | "local" | "local-floor" | "unbounded" | "viewer";
+type XRSessionMode = "immersive-ar" | "immersive-vr" | "inline";
+type XRTargetRayMode = "gaze" | "screen" | "tracked-pointer";
+type XRVisibilityState = "hidden" | "visible" | "visible-blurred";
+type mozPacketDumpType = "rtcp" | "rtp" | "srtcp" | "srtp";
 
 /////////////////////////////
 /// Window Iterable APIs

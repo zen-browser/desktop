@@ -8,14 +8,13 @@
   "semi": true,
   "printWidth": 100,
   "plugins": ["prettier-plugin-sh"],
-   "overrides": [
+  "overrides": [
     {
       "files": "*.css",
       "options": {
         "parser": "css",
-        "printWidth": 160,
-      },
-    },
-  ],
-
+        "printWidth": 160
+      }
+    }
+  ]
 }

@@ -14,22 +14,18 @@
   gap: 12px;
   max-width: 56px;
 
-  :root:not([zen-right-side='true']) & {
+  :root:not([zen-right-side="true"]) & {
     left: 100%;
   }
 
-  :root[zen-right-side='true'] & {
+  :root[zen-right-side="true"] & {
     right: 100%;
   }
 
   & toolbarbutton {
     width: 32px;
     height: 32px;
-    background: color-mix(
-      in srgb,
-      light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%,
-      var(--zen-primary-color)
-    );
+    background: color-mix(in srgb, light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%, var(--zen-primary-color));
     transition:
       background 0.05s ease,
       scale 0.05s ease;
@@ -57,7 +53,7 @@
       }
     }
 
-    &[disabled='true'] {
+    &[disabled="true"] {
       scale: 1 !important;
       & image {
         opacity: 0.5;
@@ -93,7 +89,7 @@
   }
 }
 
-:root[zen-no-padding='true'] .browserSidebarContainer.zen-glance-background {
+:root[zen-no-padding="true"] .browserSidebarContainer.zen-glance-background {
   --zen-native-inner-radius: 6px;
   --zen-element-separation: 6px;
 }
@@ -103,7 +99,7 @@
 }
 
 .browserSidebarContainer.zen-glance-background,
-.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out='true']) {
+.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
 }
 
@@ -114,7 +110,7 @@
   /* Hint compositor to optimize animations and scrolling */
   will-change: transform, opacity, filter;
 
-  :root[zen-no-padding='true'] & {
+  :root[zen-no-padding="true"] & {
     --zen-native-inner-radius: 0px;
   }
 
@@ -129,11 +125,11 @@
     width: 85%;
     height: 100%;
 
-    &:not([has-finished-animation='true']) #statuspanel {
+    &:not([has-finished-animation="true"]) #statuspanel {
       display: none;
     }
 
-    &[has-finished-animation='true'] {
+    &[has-finished-animation="true"] {
       position: relative !important;
       transition: 0s !important;
       transform: none !important;
@@ -154,12 +150,12 @@
       height: 100%;
     }
 
-    &[animate='true'] {
+    &[animate="true"] {
       position: absolute;
     }
   }
 
-  &[fade-out='true'] {
+  &[fade-out="true"] {
     & .browserStack {
       transition: opacity 0.15s ease-in-out;
       opacity: 0;

@@ -2,6 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/**
+ *
+ */
 class nsHasPolyfill {
   constructor() {
     this.observers = [];
@@ -9,13 +12,19 @@ class nsHasPolyfill {
   }
 
   /**
+   * @param HTMLElement element
+   * @param element
    * @param {{selector: string, exists: boolean}} descendantSelectors
+   * @param string stateAttribute
+   * @param Array<string>} attributeFilter
+   * @param stateAttribute
+   * @param attributeFilter
    */
   observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
     const updateState = () => {
       const exists = descendantSelectors.some(({ selector }) => {
         let selected = element.querySelector(selector);
-        if (selected?.tagName?.toLowerCase() === 'menu') {
+        if (selected?.tagName?.toLowerCase() === "menu") {
           return null;
         }
         return selected;
@@ -25,10 +34,8 @@ class nsHasPolyfill {
         if (!element.hasAttribute(stateAttribute)) {
           gZenCompactModeManager._setElementExpandAttribute(element, true, stateAttribute);
         }
-      } else {
-        if (element.hasAttribute(stateAttribute)) {
-          gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
-        }
+      } else if (element.hasAttribute(stateAttribute)) {
+        gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
       }
     };
 
@@ -70,6 +77,6 @@ class nsHasPolyfill {
 }
 
 const hasPolyfillInstance = new nsHasPolyfill();
-window.addEventListener('unload', () => hasPolyfillInstance.destroy(), { once: true });
+window.addEventListener("unload", () => hasPolyfillInstance.destroy(), { once: true });
 
 window.ZenHasPolyfill = hasPolyfillInstance;

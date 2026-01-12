@@ -10,11 +10,11 @@
 
 - name: zen.view.mac.show-three-dot-menu
   value: false
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: zen.widget.mac.mono-window-controls
   value: true
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: zen.view.use-single-toolbar
   value: true
@@ -41,7 +41,7 @@
   value: 2
 
 - name: zen.view.context-menu.refresh
-  value: '@IS_TWILIGHT@'
+  value: "@IS_TWILIGHT@"
 
 - name: zen.view.borderless-fullscreen
   value: true

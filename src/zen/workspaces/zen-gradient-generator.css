@@ -117,10 +117,9 @@
       position: relative;
       transition: transform 0.1s;
 
-      &[data-num-dots='3'] {
+      &[data-num-dots="3"] {
         background:
-          radial-gradient(circle at 0% 0%, var(--c1), transparent 100%),
-          radial-gradient(circle at 100% 0%, var(--c2), transparent 100%),
+          radial-gradient(circle at 0% 0%, var(--c1), transparent 100%), radial-gradient(circle at 100% 0%, var(--c2), transparent 100%),
           linear-gradient(to top, var(--c3) 0%, transparent 60%);
       }
 
@@ -198,7 +197,7 @@
   justify-content: flex-start;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     width: calc(100% - 8px);
     height: 16px;
@@ -251,10 +250,7 @@
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
-  background-image: radial-gradient(
-    light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05)) 1px,
-    transparent 0
-  );
+  background-image: radial-gradient(light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05)) 1px, transparent 0);
   background-position: -23px -23px;
   background-size: 6px 6px;
 
@@ -289,7 +285,7 @@
       }
     }
 
-    &[dragging='true'] {
+    &[dragging="true"] {
       transform: scale(1.2) translate(-25%, -25%) !important;
     }
   }
@@ -361,7 +357,7 @@
   max-height: 32px;
 }
 
-@media not -moz-pref('zen.theme.gradient.show-custom-colors') {
+@media not -moz-pref("zen.theme.gradient.show-custom-colors") {
   #PanelUI-zen-gradient-generator-custom-colors {
     display: none !important;
   }
@@ -378,18 +374,14 @@
   }
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 60%;
     height: 60%;
     border: 1px solid color-mix(in srgb, var(--zen-colors-border) 50%, transparent 50%);
     border-radius: 50%;
     /* 3d effect */
-    background: linear-gradient(
-      -45deg,
-      transparent -10%,
-      light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) 110%
-    );
+    background: linear-gradient(-45deg, transparent -10%, light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) 110%);
     z-index: 2;
     top: 50%;
     left: 50%;
@@ -409,7 +401,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
-    content: '';
+    content: "";
     position: absolute;
   }
 
@@ -449,7 +441,7 @@
   margin: 0 !important;
 }
 
-#PanelUI-zen-gradient-generator[invalidate-controls='true'] {
+#PanelUI-zen-gradient-generator[invalidate-controls="true"] {
   #PanelUI-zen-gradient-generator-opacity {
     display: none !important;
   }

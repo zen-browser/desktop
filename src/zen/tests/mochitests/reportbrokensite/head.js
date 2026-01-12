@@ -238,6 +238,9 @@ function waitForWebcompatComTab(gBrowser) {
   return BrowserTestUtils.waitForNewTab(gBrowser, NEW_REPORT_ENDPOINT_TEST_URL);
 }
 
+/**
+ *
+ */
 class ReportBrokenSiteHelper {
   sourceMenu = undefined;
   win = undefined;
@@ -601,6 +604,9 @@ class ReportBrokenSiteHelper {
   }
 }
 
+/**
+ *
+ */
 class MenuHelper {
   menuDescription = undefined;
 
@@ -696,6 +702,9 @@ class MenuHelper {
   }
 }
 
+/**
+ *
+ */
 class AppMenuHelper extends MenuHelper {
   menuDescription = "AppMenu";
 
@@ -718,6 +727,9 @@ class AppMenuHelper extends MenuHelper {
   }
 }
 
+/**
+ *
+ */
 class HelpMenuHelper extends MenuHelper {
   menuDescription = "Help Menu";
 
@@ -786,6 +798,9 @@ class HelpMenuHelper extends MenuHelper {
   }
 }
 
+/**
+ *
+ */
 class ProtectionsPanelHelper extends MenuHelper {
   menuDescription = "Protections Panel";
 

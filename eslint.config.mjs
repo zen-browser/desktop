@@ -10,7 +10,7 @@ import json from "@eslint/json";
 import lit from "eslint-plugin-lit";
 import mozilla from "eslint-plugin-mozilla";
 import reactHooks from "eslint-plugin-react-hooks";
-import zenGlobals from './src/zen/zen.globals.mjs';
+import zenGlobals from "./src/zen/zen.globals.mjs";
 
 import fs from "fs";
 import globals from "globals";
@@ -28,7 +28,7 @@ function readFile(filePath) {
   return fs
     .readFileSync(filePath, { encoding: "utf-8" })
     .split("\n")
-    .filter(p => p && !p.startsWith("#"));
+    .filter((p) => p && !p.startsWith("#"));
 }
 
 const httpTestingPaths = [
@@ -48,9 +48,7 @@ globals.browser = {
   }, {}),
 };
 
-testPaths.browser = testPaths.browser.concat(
-  "src/zen/tests/"
-);
+testPaths.browser = testPaths.browser.concat("src/zen/tests/");
 
 /**
  * Takes each path in the paths array, and expands it with the list of extensions
@@ -64,9 +62,9 @@ testPaths.browser = testPaths.browser.concat(
  */
 function wrapPaths({ paths, excludedExtensions }) {
   let extensions = excludedExtensions
-    ? mozilla.allFileExtensions.filter(f => !excludedExtensions.includes(f))
+    ? mozilla.allFileExtensions.filter((f) => !excludedExtensions.includes(f))
     : mozilla.allFileExtensions;
-  return paths.map(p => {
+  return paths.map((p) => {
     if (p.endsWith("**")) {
       return p + `/*.{${extensions.join(",")}}`;
     }
@@ -89,7 +87,7 @@ function wrapPaths({ paths, excludedExtensions }) {
 function wrapPathsInConfig(configs) {
   for (let config of configs) {
     // add "engine/" to the paths in the files section.
-    config.files = wrapPaths({ paths: config.files.map(p => "engine/" + p) });
+    config.files = wrapPaths({ paths: config.files.map((p) => "engine/" + p) });
   }
   return configs;
 }
@@ -100,17 +98,14 @@ let config = [
     settings: {
       "import/extensions": [".mjs"],
       "import/resolver": {
-        [path.resolve(import.meta.dirname, "srcdir-resolver.js")]: {},
+        [path.resolve(import.meta.dirname, "engine", "srcdir-resolver.js")]: {},
         node: {},
       },
     },
   },
- {
+  {
     name: "ignores",
-    ignores: [
-      ...globalIgnores,
-      "src/zen/vendor/*"
-    ],
+    ignores: [...globalIgnores, "src/zen/vendor/*"],
   },
   {
     name: "all-files",
@@ -208,7 +203,7 @@ let config = [
       // based for node.
       "**/*.config.js",
       // The resolver for moz-src for eslint, vscode etc.
-      "srcdir-resolver.js",
+      "engine/srcdir-resolver.js",
     ],
     languageOptions: {
       globals: { ...globals.node, ...mozilla.turnOff(globals.browser) },
@@ -288,7 +283,7 @@ let config = [
     // would require searching the other test files to know if they are used or not.
     // This would be expensive and slow, and it isn't worth it for head files.
     // We could get developers to declare as exported, but that doesn't seem worth it.
-    files: testPaths.xpcshell.map(filePath => `${filePath}head*.js`),
+    files: testPaths.xpcshell.map((filePath) => `${filePath}head*.js`),
     rules: {
       "no-unused-vars": [
         "error",
@@ -307,7 +302,7 @@ let config = [
     // This is not done in the xpcshell-test configuration as we cannot pull
     // in overrides from there. We should at some stage, aim to enable this
     // for all files in xpcshell-tests.
-    files: testPaths.xpcshell.map(filePath => `${filePath}test*.js`),
+    files: testPaths.xpcshell.map((filePath) => `${filePath}test*.js`),
     rules: {
       // No declaring variables that are never used
       "no-unused-vars": [
@@ -350,8 +345,8 @@ let config = [
       },
     },
     files: [
-      ...testPaths.mochitest.map(filePath => `${filePath}/**/*.js`),
-      ...testPaths.chrome.map(filePath => `${filePath}/**/*.js`),
+      ...testPaths.mochitest.map((filePath) => `${filePath}/**/*.js`),
+      ...testPaths.chrome.map((filePath) => `${filePath}/**/*.js`),
     ],
   },
   {
@@ -360,7 +355,7 @@ let config = [
     // don't work well for HTML-based mochitests, so disable those.
     files: testPaths.xpcshell
       .concat(testPaths.browser)
-      .map(filePath => [`${filePath}/**/*.html`, `${filePath}/**/*.xhtml`])
+      .map((filePath) => [`${filePath}/**/*.html`, `${filePath}/**/*.xhtml`])
       .flat(),
     rules: {
       // plain/chrome mochitests don't automatically include Assert, so
@@ -475,7 +470,7 @@ let config = [
 
 // The various places we get our globals from use true/false rather than
 // the strings required by ESLint, so translate those here.
-config.map(entry => {
+config.map((entry) => {
   if (entry.languageOptions?.globals) {
     let newGlobals = {};
     for (let [key, value] of Object.entries(entry.languageOptions.globals)) {

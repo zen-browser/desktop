@@ -5,7 +5,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: '3 2 1 * *'
+    - cron: "3 2 1 * *"
 
 jobs:
   build:
@@ -47,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
           HIDE_AUTHOR: true
           HIDE_TIME_TO_ANSWER: true
-          SEARCH_QUERY: 'repo:zen-browser/desktop is:issue created:${{ env.last_month }}'
+          SEARCH_QUERY: "repo:zen-browser/desktop is:issue created:${{ env.last_month }}"
 
       - name: Move metrics to docs folder
         run: |
@@ -62,6 +62,6 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'docs: Update monthly issue metrics, b=(no bug), c={docs}'
+          commit_message: "docs: Update monthly issue metrics, b=(no bug), c={docs}"
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com

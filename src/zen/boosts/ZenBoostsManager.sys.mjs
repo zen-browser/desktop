@@ -2,13 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { JSONFile } from 'resource://gre/modules/JSONFile.sys.mjs';
 import { nsZenBoostStyles } from 'resource:///modules/ZenBoostStyles.sys.mjs';
 
 class nsZenBoostsManager {
   registeredBoosts = new Map();
-
   #stylesManager = new nsZenBoostStyles();
+
   #saveFilename = 'zen-boosts.jsonlz4';
+
+  #file = null;
 
   constructor() {
     this.#init();
@@ -157,8 +160,8 @@ class nsZenBoostsManager {
    * @private
    */
   #readBoostsFromStore(done) {
-    this.#readFromDisk().then((map) => {
-      this.registeredBoosts = map;
+    this.#readFromDisk().then((data) => {
+      this.registeredBoosts = data;
       done();
     });
   }
@@ -179,12 +182,18 @@ class nsZenBoostsManager {
    * @private
    */
   async #readFromDisk() {
-    const savePath = this.#storePath;
+    this.#file = new JSONFile({
+      path: this.#storePath,
+      compression: "lz4",
+    });
 
-    if (!(await IOUtils.exists(savePath))) return new Map();
+    await this.#file.load();
 
-    const array = await IOUtils.readJSON(savePath, { decompress: true });
-    return new Map(array);
+    let array = Array.isArray(this.#file.data) ? this.#file.data : [];
+    let data = new Map(array);
+
+    console.log('Loading Zen boost data: ', data);
+    return data;
   }
 
   /**
@@ -193,8 +202,11 @@ class nsZenBoostsManager {
    * @private
    */
   #writeToDisk(map) {
-    const array = Array.from(map.entries());
-    IOUtils.writeJSON(this.#storePath, array, { compress: true });
+    const data = Array.from(map.entries());
+
+    this.#file.data = data;
+    this.#file.saveSoon();
+    console.log('Saving Zen boost data: ', data);
   }
 
   /**

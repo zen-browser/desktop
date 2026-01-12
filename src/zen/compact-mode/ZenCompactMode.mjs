@@ -100,7 +100,7 @@ window.gZenCompactModeManager = {
 
   log(...args) {
     if (this._canDebugLog) {
-      /* eslint-disable no-console */
+      // eslint-disable-next-line no-console
       console.debug("[Zen Compact Mode]", ...args);
     }
   },

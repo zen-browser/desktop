@@ -14,7 +14,7 @@ const { UrlClassifierTestUtils } = ChromeUtils.importESModule(
   "resource://testing-common/UrlClassifierTestUtils.sys.mjs"
 );
 
-const { ReportBrokenSite, ViewState } = ChromeUtils.importESModule(
+const { ReportBrokenSite } = ChromeUtils.importESModule(
   "moz-src:///browser/components/reportbrokensite/ReportBrokenSite.sys.mjs"
 );
 
@@ -255,10 +255,6 @@ class ReportBrokenSiteHelper {
     return this.getViewNode("report-broken-site-popup-mainView");
   }
 
-  get previewView() {
-    return this.getViewNode("report-broken-site-popup-previewView");
-  }
-
   get sentView() {
     return this.getViewNode("report-broken-site-popup-reportSentView");
   }
@@ -311,13 +307,6 @@ class ReportBrokenSiteHelper {
     await Promise.all(promises);
   }
 
-  async awaitPreviewViewOpened() {
-    await Promise.all([
-      BrowserTestUtils.waitForEvent(this.sentView, "ViewShown"),
-      BrowserTestUtils.waitForEvent(this.okayButton, "focus"),
-    ]);
-  }
-
   async awaitReportSentViewOpened() {
     await Promise.all([
       BrowserTestUtils.waitForEvent(this.sentView, "ViewShown"),
@@ -363,21 +352,6 @@ class ReportBrokenSiteHelper {
 
   async clickOkay() {
     await this.#assertClickAndViewChanges(this.okayButton, this.sentView);
-  }
-
-  async clickPreview() {
-    await this.#assertClickAndViewChanges(
-      this.previewButton,
-      this.mainView,
-      this.previewView
-    );
-  }
-
-  async clickPreviewBack() {
-    await this.#assertClickAndViewChanges(
-      this.previewBackButton,
-      this.sourceMenu.popup
-    );
   }
 
   async clickBack() {
@@ -444,10 +418,6 @@ class ReportBrokenSiteHelper {
     return this.mainView.querySelector(".subviewbutton-back");
   }
 
-  get previewBackButton() {
-    return this.previewView.querySelector(".subviewbutton-back");
-  }
-
   get blockedTrackersCheckbox() {
     return this.getViewNode(
       "report-broken-site-popup-blocked-trackers-checkbox"
@@ -468,22 +438,6 @@ class ReportBrokenSiteHelper {
 
   get okayButton() {
     return this.getViewNode("report-broken-site-popup-okay-button");
-  }
-
-  get previewButton() {
-    return this.getViewNode("report-broken-site-popup-preview-button");
-  }
-
-  get previewCancelButton() {
-    return this.getViewNode("report-broken-site-popup-preview-cancel-button");
-  }
-
-  get previewSendButton() {
-    return this.getViewNode("report-broken-site-popup-preview-send-button");
-  }
-
-  get previewItems() {
-    return this.getViewNode("report-broken-site-panel-preview-items");
   }
 
   // Test helpers
@@ -647,6 +601,7 @@ class ReportBrokenSiteHelper {
   }
 }
 
+
 class MenuHelper {
   menuDescription = undefined;
 
@@ -742,6 +697,7 @@ class MenuHelper {
   }
 }
 
+
 class AppMenuHelper extends MenuHelper {
   menuDescription = "AppMenu";
 
@@ -763,6 +719,7 @@ class AppMenuHelper extends MenuHelper {
     }
   }
 }
+
 
 class HelpMenuHelper extends MenuHelper {
   menuDescription = "Help Menu";
@@ -831,6 +788,7 @@ class HelpMenuHelper extends MenuHelper {
     await promise;
   }
 }
+
 
 class ProtectionsPanelHelper extends MenuHelper {
   menuDescription = "Protections Panel";

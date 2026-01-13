@@ -33,8 +33,10 @@
    */
   const elementToMove = (element) => {
     if (
+      !element ||
       element.closest(".zen-current-workspace-indicator") ||
-      element.hasAttribute("split-view-group")
+      element.hasAttribute("split-view-group") ||
+      element.tagName == "zen-essentials-promo"
     ) {
       return element;
     }
@@ -74,6 +76,15 @@
         "_dndSwitchSpaceDelay",
         "zen.tabs.dnd-switch-space-delay",
         1000
+      );
+
+      ChromeUtils.defineESModuleGetters(
+        this,
+        {
+          createZenEssentialsPromo:
+            "chrome://browser/content/zen-components/ZenEssentialsPromo.mjs",
+        },
+        { global: "current" }
       );
     }
 
@@ -168,13 +179,15 @@
     // eslint-disable-next-line complexity
     _animateTabMove(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (event.target.closest("#zen-essentials")) {
+      if (
+        event.target.closest("#zen-essentials") &&
+        event.target.className != "zen-essentials-promo"
+      ) {
         if (!isTab(draggedTab)) {
           this.clearDragOverVisuals();
           return;
         }
-        this.#animateVerticalPinnedGridDragOver(event);
-        return;
+        return this.#animateVerticalPinnedGridDragOver(event);
       } else if (this._fakeEssentialTab) {
         this.#makeDragImageNonEssential(event);
       }
@@ -798,6 +811,10 @@
     }
 
     handle_dragend(event) {
+      let currentEssenialContainer = gZenWorkspaces.getCurrentEssentialsContainer();
+      if (currentEssenialContainer?.essentialsPromo) {
+        currentEssenialContainer.essentialsPromo.remove();
+      }
       this.ZenDragAndDropService.onDragEnd();
       super.handle_dragend(event);
       this.#removeDragOverBackground();
@@ -817,8 +834,13 @@
     }
 
     #applyDragOverBackground(element) {
-      if (this.#dragOverBackground && this.#lastDropTarget === element) {
+      if (this.#lastDropTarget === element) {
         return false;
+      }
+      if (element.tagName === "zen-essentials-promo") {
+        element.setAttribute("dragover", "true");
+        this.#lastDropTarget = element;
+        return true;
       }
       const margin = 2;
       const rect = window.windowUtils.getBoundsWithoutFlushing(element);
@@ -835,6 +857,9 @@
       if (this.#dragOverBackground) {
         this.#dragOverBackground.remove();
         this.#dragOverBackground = null;
+      }
+      if (this.#lastDropTarget) {
+        this.#lastDropTarget.removeAttribute("dragover");
         this.#lastDropTarget = null;
       }
     }
@@ -966,6 +991,9 @@
 
     // eslint-disable-next-line complexity
     #animateVerticalPinnedGridDragOver(event) {
+      if (!this.createZenEssentialsPromo()) {
+        return;
+      }
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;

@@ -422,6 +422,10 @@ class nsZenWindowSync {
     const isGroup = gBrowser.isTabGroup(aOriginalItem);
     const isTab = !isGroup;
 
+    if (aOriginalItem.hasAttribute("zen-glance-tab")) {
+      return;
+    }
+
     if (isTab) {
       if (originalIsEssential !== targetIsEssential) {
         if (originalIsEssential) {

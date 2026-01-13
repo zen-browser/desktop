@@ -152,7 +152,7 @@
   );
 
   /* Toolbar */
-  --tab-selected-color-scheme: inherit;
+  --tab-selected-color-scheme: inherit !important;
   --tabstrip-inner-border: transparent;
 
   --zen-toolbar-height: 38px;

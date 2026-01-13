@@ -365,7 +365,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       gBrowser.tabbox.appendChild(this.fakeBrowser);
       this.fakeBrowser.setAttribute("side", side);
       this._finishAllAnimatingPromise = Promise.all([
-        gZenUIManager.elementAnimate(
+        gZenUIManager.motion.animate(
           gBrowser.tabbox,
           side === "left"
             ? {
@@ -377,12 +377,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 paddingLeft: 0,
               },
           {
-            duration: 110,
+            duration: 0.1,
             easing: "ease-out",
-            fill: "forwards",
           }
         ),
-        gZenUIManager.elementAnimate(
+        gZenUIManager.motion.animate(
           this.fakeBrowser,
           {
             width: [0, `${halfWidth - padding}px`],
@@ -393,9 +392,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               : {}),
           },
           {
-            duration: 110,
+            duration: 0.1,
             easing: "ease-out",
-            fill: "forwards",
           }
         ),
       ]);
@@ -454,7 +452,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     );
     this._canDrop = false;
     Promise.all([
-      gZenUIManager.elementAnimate(
+      gZenUIManager.motion.animate(
         gBrowser.tabbox,
         side === "left"
           ? {
@@ -464,12 +462,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               paddingRight: [`${halfWidth}px`, 0],
             },
         {
-          duration: 110,
+          duration: 0.1,
           easing: "ease-out",
-          fill: "forwards",
         }
       ),
-      gZenUIManager.elementAnimate(
+      gZenUIManager.motion.animate(
         this.fakeBrowser,
         {
           width: [`${halfWidth - padding * 2}px`, 0],
@@ -480,9 +477,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
             : {}),
         },
         {
-          duration: 110,
+          duration: 0.1,
           easing: "ease-out",
-          fill: "forwards",
         }
       ),
     ]).finally(() => {
@@ -1761,17 +1757,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   };
 
   _maybeRemoveFakeBrowser(select = true) {
+    gBrowser.tabbox.removeAttribute("style");
+    this.tabBrowserPanel.removeAttribute("dragging-split");
     if (this._dndElement) {
       this._dndElement.remove();
       delete this._dndElement;
     }
     if (this.fakeBrowser) {
-      gBrowser.tabbox.removeAttribute("style");
-      this.tabBrowserPanel.removeAttribute("dragging-split");
-      const tabboxAnimations = document.getElementById("tabbrowser-tabbox").getAnimations();
-      if (tabboxAnimations.length) {
-        tabboxAnimations.forEach((a) => a.cancel());
-      }
       delete this._hasAnimated;
       this.fakeBrowser.remove();
       this.fakeBrowser = null;

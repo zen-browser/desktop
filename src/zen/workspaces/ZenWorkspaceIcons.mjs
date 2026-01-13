@@ -5,10 +5,6 @@
 class nsZenWorkspaceIcons extends MozXULElement {
   #hasConnected = false;
 
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     if (this.delayConnectedCallback() || this.#hasConnected) {
       return;

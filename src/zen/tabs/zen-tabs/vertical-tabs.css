@@ -1098,6 +1098,7 @@
 
 #zen-essentials {
   z-index: 1;
+  min-height: 2px;
 }
 
 .zen-essentials-container {

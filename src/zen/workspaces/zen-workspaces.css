@@ -156,7 +156,6 @@
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
   --indicator-gap: 10px;
-  margin-top: 1px;
   padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
@@ -247,6 +246,10 @@
       padding: 4px 8px;
       border-radius: 99px;
       font-size: 10px;
+    }
+
+    :root:not([zen-unsynced-window]) & {
+      flex: 1;
     }
   }
 

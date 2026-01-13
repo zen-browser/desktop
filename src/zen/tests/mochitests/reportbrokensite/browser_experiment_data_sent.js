@@ -74,7 +74,7 @@ add_task(async function testSendingMoreInfo() {
 
   const tab = await openTab(REPORTABLE_PAGE_URL);
 
-  await testSendMoreInfo(tab, AppMenu(), {
+  await testSendMoreInfo(tab, HelpMenu(), {
     experiments: EXPECTED_EXPERIMENTS_IN_REPORT,
   });
 

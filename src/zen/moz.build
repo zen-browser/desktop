@@ -16,4 +16,5 @@ DIRS += [
     "toolkit",
     "sessionstore",
     "share",
+    "library",
 ]

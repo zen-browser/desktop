@@ -1,11 +1,11 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 add_task(async function test_Unload_NoReset_Pinned() {
   await SpecialPowers.pushPrefEnv({
-    set: [['zen.pinned-tab-manager.close-shortcut-behavior', 'close']],
+    set: [["zen.pinned-tab-manager.close-shortcut-behavior", "close"]],
   });
 
   let resolvePromise;
@@ -13,13 +13,14 @@ add_task(async function test_Unload_NoReset_Pinned() {
     resolvePromise = resolve;
   });
 
-  await BrowserTestUtils.withNewTab({ gBrowser, url: 'https://example.com/1' }, async (browser) => {
+  await BrowserTestUtils.withNewTab({ gBrowser, url: "https://example.com/1" }, async (browser) => {
     const tab = gBrowser.getTabForBrowser(browser);
     gBrowser.pinTab(tab);
 
-    document.getElementById('cmd_close').doCommand();
+    document.getElementById("cmd_close").doCommand();
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(() => {
-      ok(tab.closing, 'The tab should be closing after being closed');
+      ok(tab.closing, "The tab should be closing after being closed");
       resolvePromise();
     }, 100);
     await promise;

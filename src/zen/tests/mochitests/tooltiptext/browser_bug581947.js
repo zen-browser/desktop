@@ -2,6 +2,7 @@ function check(aBrowser, aElementName, aBarred, aType) {
   return SpecialPowers.spawn(
     aBrowser,
     [[aElementName, aBarred, aType]],
+    // eslint-disable-next-line no-shadow
     async function ([aElementName, aBarred, aType]) {
       let e = content.document.createElement(aElementName);
       let contentElement = content.document.getElementById("content");
@@ -55,6 +56,7 @@ function todo_check(aBrowser, aElementName, aBarred) {
   return SpecialPowers.spawn(
     aBrowser,
     [[aElementName, aBarred]],
+    // eslint-disable-next-line no-shadow
     async function ([aElementName]) {
       let e = content.document.createElement(aElementName);
       let contentElement = content.document.getElementById("content");
@@ -63,6 +65,7 @@ function todo_check(aBrowser, aElementName, aBarred) {
       let caught = false;
       try {
         e.setCustomValidity("foo");
+      // eslint-disable-next-line no-shadow
       } catch (e) {
         caught = true;
       }

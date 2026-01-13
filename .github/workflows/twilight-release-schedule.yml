@@ -2,11 +2,11 @@ name: Zen Twilight Scheduled Releases
 
 on:
   schedule:
-    - cron: '0 23 * * *'
+    - cron: "0 23 * * *"
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Whether to do a release'
+        description: "Whether to do a release"
         required: false
         type: boolean
         default: true
@@ -34,4 +34,4 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"

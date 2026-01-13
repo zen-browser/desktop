@@ -19,13 +19,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Download Firefox and dependencies
+        env:
+          ZEN_DOWNLOAD_DONT_INIT_GIT: "1"
         run: npm run download
 
       - name: Import patches
         run: npm run import
+
+      - name: Run linting
+        run: npm run lint

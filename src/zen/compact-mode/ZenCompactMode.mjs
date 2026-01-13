@@ -6,34 +6,34 @@ const lazy = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'COMPACT_MODE_FLASH_DURATION',
-  'zen.view.compact.toolbar-flash-popup.duration',
+  "COMPACT_MODE_FLASH_DURATION",
+  "zen.view.compact.toolbar-flash-popup.duration",
   800
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'COMPACT_MODE_FLASH_ENABLED',
-  'zen.view.compact.toolbar-flash-popup',
+  "COMPACT_MODE_FLASH_ENABLED",
+  "zen.view.compact.toolbar-flash-popup",
   true
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'COMPACT_MODE_CAN_ANIMATE_SIDEBAR',
-  'zen.view.compact.animate-sidebar',
+  "COMPACT_MODE_CAN_ANIMATE_SIDEBAR",
+  "zen.view.compact.animate-sidebar",
   true
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER',
-  'zen.view.compact.show-sidebar-and-toolbar-on-hover',
+  "COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER",
+  "zen.view.compact.show-sidebar-and-toolbar-on-hover",
   true
 );
 
-ChromeUtils.defineLazyGetter(lazy, 'mainAppWrapper', () =>
-  document.getElementById('zen-main-app-wrapper')
+ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
+  document.getElementById("zen-main-app-wrapper")
 );
 
 window.gZenCompactModeManager = {
@@ -42,14 +42,14 @@ window.gZenCompactModeManager = {
   _removeHoverFrames: {},
 
   // Delay to avoid flickering when hovering over the sidebar
-  HOVER_HACK_DELAY: Services.prefs.getIntPref('zen.view.compact.hover-hack-delay', 0),
+  HOVER_HACK_DELAY: Services.prefs.getIntPref("zen.view.compact.hover-hack-delay", 0),
 
   preInit() {
     this._wasInCompactMode = Services.prefs.getBoolPref(
-      'zen.view.compact.enable-at-startup',
+      "zen.view.compact.enable-at-startup",
       false
     );
-    this._canDebugLog = Services.prefs.getBoolPref('zen.view.compact.debug', false);
+    this._canDebugLog = Services.prefs.getBoolPref("zen.view.compact.debug", false);
 
     this.addContextMenu();
   },
@@ -58,35 +58,37 @@ window.gZenCompactModeManager = {
     this.addMouseActions();
 
     const tabIsRightObserver = this._updateSidebarIsOnRight.bind(this);
-    Services.prefs.addObserver('zen.tabs.vertical.right-side', tabIsRightObserver);
+    Services.prefs.addObserver("zen.tabs.vertical.right-side", tabIsRightObserver);
 
     window.addEventListener(
-      'unload',
+      "unload",
       () => {
-        Services.prefs.removeObserver('zen.tabs.vertical.right-side', tabIsRightObserver);
+        Services.prefs.removeObserver("zen.tabs.vertical.right-side", tabIsRightObserver);
       },
       { once: true }
     );
 
     gZenUIManager.addPopupTrackingAttribute(this.sidebar);
     gZenUIManager.addPopupTrackingAttribute(
-      document.getElementById('zen-appcontent-navbar-wrapper')
+      document.getElementById("zen-appcontent-navbar-wrapper")
     );
 
     this.addHasPolyfillObserver();
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
-    window.addEventListener('sizemodechange', () => this._clearAllHoverStates());
+    window.addEventListener("sizemodechange", () => this._clearAllHoverStates());
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
-      'zen.view.compact.show-background-tab-toast',
+      "zen.view.compact.show-background-tab-toast",
       true
     );
 
-    if (AppConstants.platform == 'macosx') {
-      window.addEventListener('mouseover', (event) => {
+    if (AppConstants.platform == "macosx") {
+      window.addEventListener("mouseover", (event) => {
         const buttons = gZenVerticalTabsManager.actualWindowButtons;
-        if (event.target.closest('.titlebar-buttonbox-container') === buttons) return;
+        if (event.target.closest(".titlebar-buttonbox-container") === buttons) {
+          return;
+        }
         this._setElementExpandAttribute(buttons, false);
       });
     }
@@ -98,28 +100,29 @@ window.gZenCompactModeManager = {
 
   log(...args) {
     if (this._canDebugLog) {
-      console.log('[Zen Compact Mode]', ...args);
+      // eslint-disable-next-line no-console
+      console.debug("[Zen Compact Mode]", ...args);
     }
   },
 
   get preference() {
-    return document.documentElement.getAttribute('zen-compact-mode') === 'true';
+    return document.documentElement.getAttribute("zen-compact-mode") === "true";
   },
 
   get shouldBeCompact() {
-    return !document.documentElement.getAttribute('chromehidden')?.includes('toolbar');
+    return !document.documentElement.getAttribute("chromehidden")?.includes("toolbar");
   },
 
   set preference(value) {
     if (!this.shouldBeCompact) {
       value = false;
     }
-    this.log('Setting compact mode preference to', value);
+    this.log("Setting compact mode preference to", value);
     if (
       this.preference === value ||
-      document.documentElement.hasAttribute('zen-compact-animating')
+      document.documentElement.hasAttribute("zen-compact-animating")
     ) {
-      if (typeof this._wasInCompactMode !== 'undefined') {
+      if (typeof this._wasInCompactMode !== "undefined") {
         // We wont do anything with it anyway, so we remove it
         delete this._wasInCompactMode;
       }
@@ -127,22 +130,22 @@ window.gZenCompactModeManager = {
       // We dont want the user to be able to spam the button
       return;
     }
-    this.sidebar.removeAttribute('zen-user-show');
+    this.sidebar.removeAttribute("zen-user-show");
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
-    lazy.mainAppWrapper.setAttribute('zen-compact-mode', value);
-    document.documentElement.setAttribute('zen-compact-mode', value);
-    if (typeof this._wasInCompactMode === 'undefined') {
-      Services.prefs.setBoolPref('zen.view.compact.enable-at-startup', value);
+    lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
+    document.documentElement.setAttribute("zen-compact-mode", value);
+    if (typeof this._wasInCompactMode === "undefined") {
+      Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
     }
     this._updateEvent();
   },
 
   get sidebarIsOnRight() {
-    if (typeof this._sidebarIsOnRight !== 'undefined') {
+    if (typeof this._sidebarIsOnRight !== "undefined") {
       return this._sidebarIsOnRight;
     }
-    this._sidebarIsOnRight = Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+    this._sidebarIsOnRight = Services.prefs.getBoolPref("zen.tabs.vertical.right-side");
     return this._sidebarIsOnRight;
   },
 
@@ -151,7 +154,7 @@ window.gZenCompactModeManager = {
   },
 
   addHasPolyfillObserver() {
-    const attributes = ['panelopen', 'open', 'breakout-extend', 'zen-floating-urlbar'];
+    const attributes = ["panelopen", "open", "breakout-extend", "zen-floating-urlbar"];
     this.sidebarObserverId = ZenHasPolyfill.observeSelectorExistence(
       this.sidebar,
       [
@@ -160,18 +163,18 @@ window.gZenCompactModeManager = {
             ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
-      'zen-compact-mode-active',
+      "zen-compact-mode-active",
       attributes
     );
     this.toolbarObserverId = ZenHasPolyfill.observeSelectorExistence(
-      document.getElementById('zen-appcontent-navbar-wrapper'),
+      document.getElementById("zen-appcontent-navbar-wrapper"),
       [
         {
           selector:
             ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
         },
       ],
-      'zen-compact-mode-active',
+      "zen-compact-mode-active",
       attributes
     );
     // Always connect this observer, we need it even if compact mode is disabled
@@ -208,64 +211,66 @@ window.gZenCompactModeManager = {
     `);
 
     const idToAction = {
-      'zen-context-menu-compact-mode-hide-sidebar': this.hideSidebar.bind(this),
-      'zen-context-menu-compact-mode-hide-toolbar': this.hideToolbar.bind(this),
-      'zen-context-menu-compact-mode-hide-both': this.hideBoth.bind(this),
+      "zen-context-menu-compact-mode-hide-sidebar": this.hideSidebar.bind(this),
+      "zen-context-menu-compact-mode-hide-toolbar": this.hideToolbar.bind(this),
+      "zen-context-menu-compact-mode-hide-both": this.hideBoth.bind(this),
     };
 
-    for (let menuitem of fragment.querySelectorAll('menuitem')) {
+    for (let menuitem of fragment.querySelectorAll("menuitem")) {
       if (menuitem.id in idToAction) {
-        menuitem.addEventListener('command', idToAction[menuitem.id]);
+        menuitem.addEventListener("command", idToAction[menuitem.id]);
       }
     }
 
-    document.getElementById('viewToolbarsMenuSeparator').before(fragment);
+    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
     this.updateContextMenu();
   },
 
   updateCompactModeContext(isSingleToolbar) {
     const isIllegalState = this.checkIfIllegalState();
-    const menuitem = document.getElementById('zen-context-menu-compact-mode-toggle');
-    const menu = document.getElementById('zen-context-menu-compact-mode');
+    const menuitem = document.getElementById("zen-context-menu-compact-mode-toggle");
+    const menu = document.getElementById("zen-context-menu-compact-mode");
     if (!menu) {
       return;
     }
     if (isSingleToolbar) {
-      menu.setAttribute('hidden', 'true');
+      menu.setAttribute("hidden", "true");
       menu.before(menuitem);
     } else {
-      menu.removeAttribute('hidden');
-      menu.querySelector('menupopup').prepend(menuitem);
+      menu.removeAttribute("hidden");
+      menu.querySelector("menupopup").prepend(menuitem);
     }
     const hideToolbarMenuItem = document.getElementById(
-      'zen-context-menu-compact-mode-hide-toolbar'
+      "zen-context-menu-compact-mode-hide-toolbar"
     );
     if (isIllegalState) {
-      hideToolbarMenuItem.setAttribute('disabled', 'true');
+      hideToolbarMenuItem.setAttribute("disabled", "true");
     } else {
-      hideToolbarMenuItem.removeAttribute('disabled');
+      hideToolbarMenuItem.removeAttribute("disabled");
     }
   },
 
   hideSidebar() {
-    Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-    Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+    Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
+    Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", false);
     this.callAllEventListeners();
   },
 
   hideToolbar() {
-    Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
-    Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', false);
+    Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", true);
+    Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", false);
     this.callAllEventListeners();
   },
 
   hideBoth() {
-    Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-    Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', true);
+    Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
+    Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", true);
     this.callAllEventListeners();
   },
 
-  /* Check for illegal states and fix them
+  /**
+   * Check for illegal states and fix them
+   *
    * @returns {boolean} If the context menu should just show the "toggle" item
    *    instead of a submenu with hide options
    */
@@ -288,8 +293,8 @@ window.gZenCompactModeManager = {
       (isLeftSideButtons && !isRightSidebar) || (!isLeftSideButtons && isRightSidebar);
     if (closelyIllegalState && canHideToolbar && !canHideSidebar) {
       // This state is illegal
-      Services.prefs.setBoolPref('zen.view.compact.hide-tabbar', true);
-      Services.prefs.setBoolPref('zen.view.compact.hide-toolbar', false);
+      Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
+      Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", false);
       this.callAllEventListeners();
       return true;
     }
@@ -332,7 +337,7 @@ window.gZenCompactModeManager = {
     } else {
       ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
     }
-    window.dispatchEvent(new CustomEvent('ZenCompactMode:Toggled', { detail: this.preference }));
+    window.dispatchEvent(new CustomEvent("ZenCompactMode:Toggled", { detail: this.preference }));
   },
 
   // NOTE: Dont actually use event, it's just so we make sure
@@ -344,15 +349,15 @@ window.gZenCompactModeManager = {
     }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
     const shouldRecalculate =
-      this.preference || document.documentElement.hasAttribute('zen-creating-workspace');
-    const sidebarExpanded = document.documentElement.hasAttribute('zen-sidebar-expanded');
+      this.preference || document.documentElement.hasAttribute("zen-creating-workspace");
+    const sidebarExpanded = document.documentElement.hasAttribute("zen-sidebar-expanded");
     if (sidebarWidth > 1) {
       if (shouldRecalculate && sidebarExpanded) {
         sidebarWidth = Math.max(sidebarWidth, 150);
       }
       // Second variable to get the genuine width of the sidebar
-      this.sidebar.style.setProperty('--actual-zen-sidebar-width', `${sidebarWidth}px`);
-      window.dispatchEvent(new window.Event('resize')); // To recalculate the layout
+      this.sidebar.style.setProperty("--actual-zen-sidebar-width", `${sidebarWidth}px`);
+      window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
       if (
         event &&
         shouldRecalculate &&
@@ -362,57 +367,56 @@ window.gZenCompactModeManager = {
         return;
       }
       delete gZenVerticalTabsManager._hadSidebarCollapse;
-      this.sidebar.style.setProperty('--zen-sidebar-width', `${sidebarWidth}px`);
+      this.sidebar.style.setProperty("--zen-sidebar-width", `${sidebarWidth}px`);
     }
-    return sidebarWidth;
   },
 
   get canHideSidebar() {
     return (
-      Services.prefs.getBoolPref('zen.view.compact.hide-tabbar') ||
+      Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") ||
       gZenVerticalTabsManager._hasSetSingleToolbar
     );
   },
 
   get canHideToolbar() {
     return (
-      Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
+      Services.prefs.getBoolPref("zen.view.compact.hide-toolbar") &&
       !gZenVerticalTabsManager._hasSetSingleToolbar
     );
   },
 
   animateCompactMode() {
     // Get the splitter width before hiding it (we need to hide it before animating on right)
-    document.documentElement.setAttribute('zen-compact-animating', 'true');
+    document.documentElement.setAttribute("zen-compact-animating", "true");
     return new Promise((resolve) => {
       // We need to set the splitter width before hiding it
       let splitterWidth = document
-        .getElementById('zen-sidebar-splitter')
+        .getElementById("zen-sidebar-splitter")
         .getBoundingClientRect().width;
       const isCompactMode = this.preference;
       const canHideSidebar = this.canHideSidebar;
       let canAnimate = lazy.COMPACT_MODE_CAN_ANIMATE_SIDEBAR && !this.isSidebarPotentiallyOpen();
-      if (typeof this._wasInCompactMode !== 'undefined') {
+      if (typeof this._wasInCompactMode !== "undefined") {
         canAnimate = false;
         delete this._wasInCompactMode;
       }
       // Do this so we can get the correct width ONCE compact mode styled have been applied
       if (canAnimate) {
-        this.sidebar.setAttribute('animate', 'true');
+        this.sidebar.setAttribute("animate", "true");
       }
       if (this._ignoreNextHover) {
         this._setElementExpandAttribute(this.sidebar, false);
       }
-      this.sidebar.style.removeProperty('margin-right');
-      this.sidebar.style.removeProperty('margin-left');
-      this.sidebar.style.removeProperty('transform');
+      this.sidebar.style.removeProperty("margin-right");
+      this.sidebar.style.removeProperty("margin-left");
+      this.sidebar.style.removeProperty("transform");
       window.requestAnimationFrame(() => {
         delete this._ignoreNextResize;
         let sidebarWidth = this.getAndApplySidebarWidth();
         const elementSeparation = ZenThemeModifier.elementSeparation;
         if (!canAnimate) {
-          this.sidebar.removeAttribute('animate');
-          document.documentElement.removeAttribute('zen-compact-animating');
+          this.sidebar.removeAttribute("animate");
+          document.documentElement.removeAttribute("zen-compact-animating");
 
           this.getAndApplySidebarWidth({});
           this._ignoreNextResize = true;
@@ -422,7 +426,7 @@ window.gZenCompactModeManager = {
           resolve();
           return;
         }
-        if (document.documentElement.hasAttribute('zen-sidebar-expanded')) {
+        if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
           sidebarWidth -= 0.5 * splitterWidth;
           if (elementSeparation < splitterWidth) {
             // Subtract from the splitter width to end up with the correct element separation
@@ -441,20 +445,20 @@ window.gZenCompactModeManager = {
                 marginLeft: [0, this.sidebarIsOnRight ? 0 : `-${sidebarWidth}px`],
               },
               {
-                ease: 'easeIn',
-                type: 'spring',
+                ease: "easeIn",
+                type: "spring",
                 bounce: 0,
                 duration: 0.12,
               }
             )
             .then(() => {
-              this.sidebar.style.transition = 'none';
-              this.sidebar.style.pointEvents = 'none';
-              const titlebar = document.getElementById('titlebar');
-              titlebar.style.visibility = 'hidden';
-              titlebar.style.transition = 'none';
-              this.sidebar.removeAttribute('animate');
-              document.documentElement.removeAttribute('zen-compact-animating');
+              this.sidebar.style.transition = "none";
+              this.sidebar.style.pointEvents = "none";
+              const titlebar = document.getElementById("titlebar");
+              titlebar.style.visibility = "hidden";
+              titlebar.style.transition = "none";
+              this.sidebar.removeAttribute("animate");
+              document.documentElement.removeAttribute("zen-compact-animating");
 
               setTimeout(() => {
                 this.getAndApplySidebarWidth({});
@@ -467,16 +471,16 @@ window.gZenCompactModeManager = {
                     });
                   }
 
-                  this.sidebar.style.removeProperty('margin-right');
-                  this.sidebar.style.removeProperty('margin-left');
-                  this.sidebar.style.removeProperty('transition');
-                  this.sidebar.style.removeProperty('transform');
-                  this.sidebar.style.removeProperty('point-events');
+                  this.sidebar.style.removeProperty("margin-right");
+                  this.sidebar.style.removeProperty("margin-left");
+                  this.sidebar.style.removeProperty("transition");
+                  this.sidebar.style.removeProperty("transform");
+                  this.sidebar.style.removeProperty("point-events");
 
-                  titlebar.style.removeProperty('visibility');
-                  titlebar.style.removeProperty('transition');
+                  titlebar.style.removeProperty("visibility");
+                  titlebar.style.removeProperty("transition");
 
-                  gURLBar.style.removeProperty('visibility');
+                  gURLBar.style.removeProperty("visibility");
 
                   resolve();
                 });
@@ -485,7 +489,7 @@ window.gZenCompactModeManager = {
         } else if (canHideSidebar && !isCompactMode) {
           // Shouldn't be ever true, but just in case
           delete this._ignoreNextHover;
-          document.getElementById('browser').style.overflow = 'clip';
+          document.getElementById("browser").style.overflow = "clip";
           if (this.sidebarIsOnRight) {
             this.sidebar.style.marginRight = `-${sidebarWidth}px`;
           } else {
@@ -497,32 +501,32 @@ window.gZenCompactModeManager = {
               this.sidebarIsOnRight
                 ? {
                     marginRight: [`-${sidebarWidth}px`, 0],
-                    transform: ['translateX(100%)', 'translateX(0)'],
+                    transform: ["translateX(100%)", "translateX(0)"],
                   }
                 : { marginLeft: 0 },
               {
-                ease: 'easeOut',
-                type: 'spring',
+                ease: "easeOut",
+                type: "spring",
                 bounce: 0,
                 duration: 0.12,
               }
             )
             .then(() => {
-              this.sidebar.removeAttribute('animate');
-              document.getElementById('browser').style.removeProperty('overflow');
-              this.sidebar.style.transition = 'none';
-              this.sidebar.style.removeProperty('margin-right');
-              this.sidebar.style.removeProperty('margin-left');
-              this.sidebar.style.removeProperty('transform');
-              document.documentElement.removeAttribute('zen-compact-animating');
+              this.sidebar.removeAttribute("animate");
+              document.getElementById("browser").style.removeProperty("overflow");
+              this.sidebar.style.transition = "none";
+              this.sidebar.style.removeProperty("margin-right");
+              this.sidebar.style.removeProperty("margin-left");
+              this.sidebar.style.removeProperty("transform");
+              document.documentElement.removeAttribute("zen-compact-animating");
               setTimeout(() => {
-                this.sidebar.style.removeProperty('transition');
+                this.sidebar.style.removeProperty("transition");
                 resolve();
               });
             });
         } else {
-          this.sidebar.removeAttribute('animate'); // remove the attribute if we are not animating
-          document.documentElement.removeAttribute('zen-compact-animating');
+          this.sidebar.removeAttribute("animate"); // remove the attribute if we are not animating
+          document.documentElement.removeAttribute("zen-compact-animating");
           delete this._ignoreNextHover;
           resolve();
         }
@@ -531,32 +535,32 @@ window.gZenCompactModeManager = {
   },
 
   updateContextMenu() {
-    const toggle = document.getElementById('zen-context-menu-compact-mode-toggle');
+    const toggle = document.getElementById("zen-context-menu-compact-mode-toggle");
     if (!toggle) {
       return;
     }
-    toggle.setAttribute('checked', this.preference);
+    toggle.setAttribute("checked", this.preference);
 
     const hideTabBar = this.canHideSidebar;
     const hideToolbar = this.canHideToolbar;
     const hideBoth = hideTabBar && hideToolbar;
 
-    const idName = 'zen-context-menu-compact-mode-hide-';
-    const sidebarItem = document.getElementById(idName + 'sidebar');
-    const toolbarItem = document.getElementById(idName + 'toolbar');
-    const bothItem = document.getElementById(idName + 'both');
-    sidebarItem.setAttribute('checked', !hideBoth && hideTabBar);
-    toolbarItem.setAttribute('checked', !hideBoth && hideToolbar);
-    bothItem.setAttribute('checked', hideBoth);
+    const idName = "zen-context-menu-compact-mode-hide-";
+    const sidebarItem = document.getElementById(idName + "sidebar");
+    const toolbarItem = document.getElementById(idName + "toolbar");
+    const bothItem = document.getElementById(idName + "both");
+    sidebarItem.setAttribute("checked", !hideBoth && hideTabBar);
+    toolbarItem.setAttribute("checked", !hideBoth && hideToolbar);
+    bothItem.setAttribute("checked", hideBoth);
   },
 
   _removeOpenStateOnUnifiedExtensions() {
     // Fix for bug https://github.com/zen-browser/desktop/issues/1925
     const buttons = document.querySelectorAll(
-      'toolbarbutton:is(#unified-extensions-button, .webextension-browser-action)'
+      "toolbarbutton:is(#unified-extensions-button, .webextension-browser-action)"
     );
     for (let button of buttons) {
-      button.removeAttribute('open');
+      button.removeAttribute("open");
     }
   },
 
@@ -567,30 +571,30 @@ window.gZenCompactModeManager = {
   },
 
   _updateSidebarIsOnRight() {
-    this._sidebarIsOnRight = Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+    this._sidebarIsOnRight = Services.prefs.getBoolPref("zen.tabs.vertical.right-side");
   },
 
   toggleSidebar() {
-    this.sidebar.toggleAttribute('zen-user-show');
+    this.sidebar.toggleAttribute("zen-user-show");
   },
 
   get hideAfterHoverDuration() {
     if (this._hideAfterHoverDuration) {
       return this._hideAfterHoverDuration;
     }
-    return Services.prefs.getIntPref('zen.view.compact.toolbar-hide-after-hover.duration');
+    return Services.prefs.getIntPref("zen.view.compact.toolbar-hide-after-hover.duration");
   },
 
   get hoverableElements() {
     return [
       {
         element: this.sidebar,
-        screenEdge: this.sidebarIsOnRight ? 'right' : 'left',
+        screenEdge: this.sidebarIsOnRight ? "right" : "left",
         keepHoverDuration: 100,
       },
       {
-        element: document.getElementById('zen-appcontent-navbar-wrapper'),
-        screenEdge: 'top',
+        element: document.getElementById("zen-appcontent-navbar-wrapper"),
+        screenEdge: "top",
       },
       {
         element: gZenVerticalTabsManager.actualWindowButtons,
@@ -599,13 +603,13 @@ window.gZenCompactModeManager = {
   },
 
   flashSidebar(duration = lazy.COMPACT_MODE_FLASH_DURATION) {
-    let tabPanels = document.getElementById('tabbrowser-tabpanels');
+    let tabPanels = document.getElementById("tabbrowser-tabpanels");
     if (!tabPanels.matches("[zen-split-view='true']")) {
       this.flashElement(this.sidebar, duration, this.sidebar.id);
     }
   },
 
-  flashElement(element, duration, id, attrName = 'flash-popup') {
+  flashElement(element, duration, id, attrName = "flash-popup") {
     if (this._flashTimeouts[id]) {
       clearTimeout(this._flashTimeouts[id]);
     } else {
@@ -624,48 +628,50 @@ window.gZenCompactModeManager = {
     this._flashTimeouts[id] = null;
   },
 
-  _setElementExpandAttribute(element, value, attr = 'zen-has-hover') {
-    const kVerifiedAttributes = ['zen-has-hover', 'has-popup-menu', 'zen-compact-mode-active'];
-    const isToolbar = element.id === 'zen-appcontent-navbar-wrapper';
+  _setElementExpandAttribute(element, value, attr = "zen-has-hover") {
+    const kVerifiedAttributes = ["zen-has-hover", "has-popup-menu", "zen-compact-mode-active"];
+    const isToolbar = element.id === "zen-appcontent-navbar-wrapper";
     if (value) {
-      if (attr === 'zen-has-hover' && element !== gZenVerticalTabsManager.actualWindowButtons) {
-        element.setAttribute('zen-has-implicit-hover', 'true');
+      if (attr === "zen-has-hover" && element !== gZenVerticalTabsManager.actualWindowButtons) {
+        element.setAttribute("zen-has-implicit-hover", "true");
         if (!lazy.COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER) {
           return;
         }
       }
-      element.setAttribute(attr, 'true');
+      element.setAttribute(attr, "true");
       if (
         isToolbar &&
         ((gZenVerticalTabsManager._hasSetSingleToolbar &&
-          (element.hasAttribute('should-hide') ||
-            document.documentElement.hasAttribute('zen-has-bookmarks'))) ||
+          (element.hasAttribute("should-hide") ||
+            document.documentElement.hasAttribute("zen-has-bookmarks"))) ||
           (this.preference &&
-            Services.prefs.getBoolPref('zen.view.compact.hide-toolbar') &&
+            Services.prefs.getBoolPref("zen.view.compact.hide-toolbar") &&
             !gZenVerticalTabsManager._hasSetSingleToolbar))
       ) {
-        gBrowser.tabpanels.setAttribute('has-toolbar-hovered', 'true');
+        gBrowser.tabpanels.setAttribute("has-toolbar-hovered", "true");
       }
     } else {
-      if (attr === 'zen-has-hover') {
-        element.removeAttribute('zen-has-implicit-hover');
+      if (attr === "zen-has-hover") {
+        element.removeAttribute("zen-has-implicit-hover");
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present
-      if (isToolbar && !kVerifiedAttributes.some((attr) => element.hasAttribute(attr))) {
-        gBrowser.tabpanels.removeAttribute('has-toolbar-hovered');
+      if (
+        isToolbar &&
+        !kVerifiedAttributes.some((verifiedAttr) => element.hasAttribute(verifiedAttr))
+      ) {
+        gBrowser.tabpanels.removeAttribute("has-toolbar-hovered");
       }
     }
   },
 
   addMouseActions() {
-    gURLBar.addEventListener('mouseenter', (event) => {
-      if (event.target.closest('#urlbar[zen-floating-urlbar]')) {
+    gURLBar.addEventListener("mouseenter", (event) => {
+      if (event.target.closest("#urlbar[zen-floating-urlbar]")) {
         window.requestAnimationFrame(() => {
           this._setElementExpandAttribute(gZenVerticalTabsManager.actualWindowButtons, false);
         });
         this._hasHoveredUrlbar = true;
-        return;
       }
     });
 
@@ -673,22 +679,26 @@ window.gZenCompactModeManager = {
       let target = this.hoverableElements[i].element;
 
       // Add the attribute on startup if the mouse is already over the element
-      if (target.matches(':hover')) {
+      if (target.matches(":hover")) {
         this._setElementExpandAttribute(target, true);
       }
 
       const onEnter = (event) => {
         setTimeout(() => {
-          if (event.type === 'mouseenter' && !event.target.matches(':hover')) return;
-          if (event.target.closest('panel')) return;
+          if (event.type === "mouseenter" && !event.target.matches(":hover")) {
+            return;
+          }
+          if (event.target.closest("panel")) {
+            return;
+          }
           // Dont register the hover if the urlbar is floating and we are hovering over it
-          this.clearFlashTimeout('has-hover' + target.id);
+          this.clearFlashTimeout("has-hover" + target.id);
           window.requestAnimationFrame(() => {
             if (
-              document.documentElement.getAttribute('supress-primary-adjustment') === 'true' ||
+              document.documentElement.getAttribute("supress-primary-adjustment") === "true" ||
               this._hasHoveredUrlbar ||
               this._ignoreNextHover ||
-              target.hasAttribute('zen-has-hover')
+              target.hasAttribute("zen-has-hover")
             ) {
               return;
             }
@@ -698,7 +708,7 @@ window.gZenCompactModeManager = {
       };
 
       const onLeave = (event) => {
-        if (AppConstants.platform == 'macosx') {
+        if (AppConstants.platform == "macosx") {
           const buttonRect = gZenVerticalTabsManager.actualWindowButtons.getBoundingClientRect();
           const MAC_WINDOW_BUTTONS_X_BORDER = buttonRect.width + buttonRect.x;
           const MAC_WINDOW_BUTTONS_Y_BORDER = buttonRect.height + buttonRect.y;
@@ -717,17 +727,17 @@ window.gZenCompactModeManager = {
         // This is because the mouse is left to be handled natively so firefox thinks the mouse left the window for a split second.
         setTimeout(() => {
           // Let's double check if the mouse is still hovering over the element, see the bug above.
-          if (event.target.matches(':hover')) {
+          if (event.target.matches(":hover")) {
             return;
           }
 
           if (
-            event.explicitOriginalTarget?.closest?.('#urlbar[zen-floating-urlbar]') ||
-            (document.documentElement.getAttribute('supress-primary-adjustment') === 'true' &&
+            event.explicitOriginalTarget?.closest?.("#urlbar[zen-floating-urlbar]") ||
+            (document.documentElement.getAttribute("supress-primary-adjustment") === "true" &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
             this._hasHoveredUrlbar ||
             this._ignoreNextHover ||
-            (event.type === 'dragleave' &&
+            (event.type === "dragleave" &&
               event.explicitOriginalTarget !== target &&
               target.contains?.(event.explicitOriginalTarget))
           ) {
@@ -738,8 +748,8 @@ window.gZenCompactModeManager = {
             this.flashElement(
               target,
               this.hoverableElements[i].keepHoverDuration,
-              'has-hover' + target.id,
-              'zen-has-hover'
+              "has-hover" + target.id,
+              "zen-has-hover"
             );
           } else {
             this._removeHoverFrames[target.id] = window.requestAnimationFrame(() =>
@@ -749,21 +759,25 @@ window.gZenCompactModeManager = {
         }, this.HOVER_HACK_DELAY);
       };
 
-      target.addEventListener('mouseover', onEnter);
-      target.addEventListener('dragover', onEnter);
+      target.addEventListener("mouseover", onEnter);
+      target.addEventListener("dragover", onEnter);
 
-      target.addEventListener('mouseleave', onLeave);
-      target.addEventListener('dragleave', onLeave);
+      target.addEventListener("mouseleave", onLeave);
+      target.addEventListener("dragleave", onLeave);
     }
 
-    document.documentElement.addEventListener('mouseleave', (event) => {
+    document.documentElement.addEventListener("mouseleave", (event) => {
       setTimeout(() => {
         const screenEdgeCrossed = this._getCrossedEdge(event.pageX, event.pageY);
-        if (!screenEdgeCrossed) return;
+        if (!screenEdgeCrossed) {
+          return;
+        }
         for (let entry of this.hoverableElements) {
-          if (screenEdgeCrossed !== entry.screenEdge) continue;
+          if (screenEdgeCrossed !== entry.screenEdge) {
+            continue;
+          }
           const target = entry.element;
-          const boundAxis = entry.screenEdge === 'right' || entry.screenEdge === 'left' ? 'y' : 'x';
+          const boundAxis = entry.screenEdge === "right" || entry.screenEdge === "left" ? "y" : "x";
           if (!this._positionInBounds(boundAxis, target, event.pageX, event.pageY, 7)) {
             continue;
           }
@@ -772,15 +786,17 @@ window.gZenCompactModeManager = {
           this.flashElement(
             target,
             this.hideAfterHoverDuration,
-            'has-hover' + target.id,
-            'zen-has-hover'
+            "has-hover" + target.id,
+            "zen-has-hover"
           );
           document.addEventListener(
-            'mousemove',
+            "mousemove",
             () => {
-              if (target.matches(':hover')) return;
+              if (target.matches(":hover")) {
+                return;
+              }
               this._setElementExpandAttribute(target, false);
-              this.clearFlashTimeout('has-hover' + target.id);
+              this.clearFlashTimeout("has-hover" + target.id);
             },
             { once: true }
           );
@@ -788,7 +804,7 @@ window.gZenCompactModeManager = {
       }, this.HOVER_HACK_DELAY);
     });
 
-    gURLBar.addEventListener('mouseleave', () => {
+    gURLBar.addEventListener("mouseleave", () => {
       setTimeout(() => {
         setTimeout(() => {
           requestAnimationFrame(() => {
@@ -803,25 +819,27 @@ window.gZenCompactModeManager = {
     const targetBox = element.getBoundingClientRect();
     posX = Math.max(targetBox.left, Math.min(posX, targetBox.right));
     posY = Math.max(targetBox.top, Math.min(posY, targetBox.bottom));
-    return ['top', 'bottom', 'left', 'right'].find((edge, i) => {
+    return ["top", "bottom", "left", "right"].find((edge, i) => {
       const distance = Math.abs((i < 2 ? posY : posX) - targetBox[edge]);
       return distance <= maxDistance;
     });
   },
 
-  _positionInBounds(axis = 'x', element, x, y, error = 0) {
+  _positionInBounds(axis = "x", element, x, y, error = 0) {
     const bBox = element.getBoundingClientRect();
-    if (axis === 'y') return bBox.top - error < y && y < bBox.bottom + error;
-    else return bBox.left - error < x && x < bBox.right + error;
+    if (axis === "y") {
+      return bBox.top - error < y && y < bBox.bottom + error;
+    }
+    return bBox.left - error < x && x < bBox.right + error;
   },
 
   _clearAllHoverStates() {
     // Clear hover attributes from all hoverable elements
     for (let entry of this.hoverableElements) {
       const target = entry.element;
-      if (target && !target.matches(':hover') && target.hasAttribute('zen-has-hover')) {
+      if (target && !target.matches(":hover") && target.hasAttribute("zen-has-hover")) {
         this._setElementExpandAttribute(target, false);
-        this.clearFlashTimeout('has-hover' + target.id);
+        this.clearFlashTimeout("has-hover" + target.id);
       }
     }
   },
@@ -831,9 +849,9 @@ window.gZenCompactModeManager = {
       this._setElementExpandAttribute(this.sidebar, false);
     }
     return (
-      this.sidebar.hasAttribute('zen-user-show') ||
-      this.sidebar.hasAttribute('zen-has-hover') ||
-      this.sidebar.hasAttribute('zen-has-empty-tab')
+      this.sidebar.hasAttribute("zen-user-show") ||
+      this.sidebar.hasAttribute("zen-has-hover") ||
+      this.sidebar.hasAttribute("zen-has-empty-tab")
     );
   },
 
@@ -846,9 +864,9 @@ window.gZenCompactModeManager = {
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
-      gZenUIManager.showToast('zen-background-tab-opened-toast', {
+      gZenUIManager.showToast("zen-background-tab-opened-toast", {
         button: {
-          id: 'zen-open-background-tab-button',
+          id: "zen-open-background-tab-button",
           command: () => {
             const targetWindow = window.ownerGlobal.parent || window;
             targetWindow.gBrowser.selectedTab = tab;
@@ -861,7 +879,7 @@ window.gZenCompactModeManager = {
 };
 
 document.addEventListener(
-  'MozBeforeInitialXULLayout',
+  "MozBeforeInitialXULLayout",
   () => {
     gZenCompactModeManager.preInit();
   },

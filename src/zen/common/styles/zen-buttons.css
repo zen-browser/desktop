@@ -4,8 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@namespace html 'http://www.w3.org/1999/xhtml';
-@namespace xul 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+@namespace html "http://www.w3.org/1999/xhtml";
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 /** This file is used to override UI inside "common-shared.css" */
 

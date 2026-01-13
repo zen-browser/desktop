@@ -1,0 +1,28 @@
+{
+  "description": "A collection of rules that help enforce JavaScript coding standard in the Mozilla SpiderMonkey project.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "mozilla",
+    "spidermonkey"
+  ],
+  "bugs": {
+    "url": "https://bugzilla.mozilla.org/enter_bug.cgi?product=Testing&component=Lint"
+  },
+  "homepage": "http://firefox-source-docs.mozilla.org/tools/lint/linters/eslint-plugin-spidermonkey-js.html",
+  "repository": {
+    "type": "hg",
+    "url": "https://hg.mozilla.org/mozilla-central/"
+  },
+  "author": "Mozilla",
+  "main": "lib/index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=6.9.1"
+  },
+  "license": "MPL-2.0",
+  "notes(private)": "We don't want to publish to npm, so this is marked as private",
+  "private": true
+}

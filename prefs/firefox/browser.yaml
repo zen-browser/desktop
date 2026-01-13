@@ -18,7 +18,7 @@
   value: true
 
 - name: browser.toolbars.bookmarks.visibility
-  value: 'never'
+  value: "never"
 
 - name: widget.non-native-theme.scrollbar.style
   value: 2
@@ -48,7 +48,7 @@
 
 - name: app.update.checkInstallTime.days
   value: 6
-  condition: 'defined(MOZILLA_OFFICIAL)'
+  condition: "defined(MOZILLA_OFFICIAL)"
 
 - name: browser.profiles.enabled
   value: false

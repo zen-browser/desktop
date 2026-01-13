@@ -1,16 +1,19 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 function goToRightSideTabs(callback) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     await SpecialPowers.pushPrefEnv({
-      set: [['zen.tabs.vertical.right-side', true]],
+      set: [["zen.tabs.vertical.right-side", true]],
     });
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(async () => {
       await callback();
       await SpecialPowers.popPrefEnv();
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
         resolve();
       }, 1000); // Wait for new layout
@@ -26,20 +29,22 @@ async function testSidebarWidth() {
 
   let hasRan = false;
   const ogSize = gNavToolbox.getBoundingClientRect().width;
-  const onCompactChanged = (event) => {
+  const onCompactChanged = (_event) => {
     if (hasRan) {
+      // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
         gZenCompactModeManager.removeEventListener(onCompactChanged);
         resolvePromise();
       }, 500);
       return;
     }
+    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(() => {
-      const newSize = gNavToolbox.style.getPropertyValue('--zen-sidebar-width').replace('px', '');
+      const newSize = gNavToolbox.style.getPropertyValue("--zen-sidebar-width").replace("px", "");
       Assert.equal(
         newSize,
         ogSize,
-        'The size of the titlebar should be the same as the original size'
+        "The size of the titlebar should be the same as the original size"
       );
       hasRan = true;
       gZenCompactModeManager.preference = false;
@@ -61,7 +66,7 @@ add_task(async function test_Compact_Mode_Width_Right_Side() {
 });
 
 add_task(async function test_Compact_Mode_Hover() {
-  gNavToolbox.setAttribute('zen-has-hover', true);
+  gNavToolbox.setAttribute("zen-has-hover", true);
   await testSidebarWidth();
-  gNavToolbox.removeAttribute('zen-has-hover');
+  gNavToolbox.removeAttribute("zen-has-hover");
 });

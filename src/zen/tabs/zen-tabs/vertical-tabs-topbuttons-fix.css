@@ -5,12 +5,7 @@
  */
 
 &:not([zen-compact-animating])
-  #zen-sidebar-top-buttons:not(
-    :has(
-      #zen-sidebar-top-buttons-customization-target > *:not(#zen-sidebar-top-buttons-separator),
-      .titlebar-buttonbox-container
-    )
-  ) {
+  #zen-sidebar-top-buttons:not(:has(#zen-sidebar-top-buttons-customization-target > *:not(#zen-sidebar-top-buttons-separator), .titlebar-buttonbox-container)) {
   max-height: 0 !important;
   min-height: 0 !important;
   opacity: 0;

@@ -1,11 +1,11 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 function simulateClick(win = window) {
   let target = win.gURLBar.inputField;
-  let promise = BrowserTestUtils.waitForEvent(target, 'click');
+  let promise = BrowserTestUtils.waitForEvent(target, "click");
   EventUtils.synthesizeMouseAtCenter(target, {});
   return promise;
 }
@@ -13,36 +13,37 @@ function simulateClick(win = window) {
 function selectWithMouseDrag(fromX, toX, win = window) {
   let target = win.gURLBar.inputField;
   let rect = target.getBoundingClientRect();
-  let promise = BrowserTestUtils.waitForEvent(target, 'mouseup');
+  let promise = BrowserTestUtils.waitForEvent(target, "mouseup");
   EventUtils.synthesizeMouse(
     target,
     fromX,
     rect.height / 2,
-    { type: 'mousemove' },
+    { type: "mousemove" },
     target.ownerGlobal
   );
   EventUtils.synthesizeMouse(
     target,
     fromX,
     rect.height / 2,
-    { type: 'mousedown' },
+    { type: "mousedown" },
     target.ownerGlobal
   );
   EventUtils.synthesizeMouse(
     target,
     toX,
     rect.height / 2,
-    { type: 'mousemove' },
+    { type: "mousemove" },
     target.ownerGlobal
   );
-  EventUtils.synthesizeMouse(target, toX, rect.height / 2, { type: 'mouseup' }, target.ownerGlobal);
+  EventUtils.synthesizeMouse(target, toX, rect.height / 2, { type: "mouseup" }, target.ownerGlobal);
   return promise;
 }
 
 function goToMultipleLayouts(callback) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     await SpecialPowers.pushPrefEnv({
-      set: [['zen.view.use-single-toolbar', false]],
+      set: [["zen.view.use-single-toolbar", false]],
     });
     setTimeout(async () => {
       await callback();

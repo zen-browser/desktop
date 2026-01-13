@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 import {
   UrlbarProvider,
   UrlbarUtils,
-} from 'moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs';
-import { globalActions } from 'resource:///modules/ZenUBGlobalActions.sys.mjs';
-import { zenUrlbarResultsLearner } from './ZenUBResultsLearner.sys.mjs';
+} from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
+import { globalActions } from "resource:///modules/ZenUBGlobalActions.sys.mjs";
+import { zenUrlbarResultsLearner } from "./ZenUBResultsLearner.sys.mjs";
 
 const lazy = {};
 
-const DYNAMIC_TYPE_NAME = 'zen-actions';
+const DYNAMIC_TYPE_NAME = "zen-actions";
 
 // The suggestion index of the actions row within the urlbar results.
 const MAX_RECENT_ACTIONS = 5;
@@ -21,18 +21,16 @@ const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  UrlbarResult: 'moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs',
-  QueryScorer: 'moz-src:///browser/components/urlbar/UrlbarProviderInterventions.sys.mjs',
-  BrowserWindowTracker: 'resource:///modules/BrowserWindowTracker.sys.mjs',
-  AddonManager: 'resource://gre/modules/AddonManager.sys.mjs',
-  zenUrlbarResultsLearner: 'resource:///modules/ZenUBResultsLearner.sys.mjs',
-  UrlUtils: 'resource://gre/modules/UrlUtils.sys.mjs',
+  UrlbarResult: "moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
+  UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'enabledPref',
-  'zen.urlbar.suggestions.quick-actions',
+  "enabledPref",
+  "zen.urlbar.suggestions.quick-actions",
   true
 );
 
@@ -48,7 +46,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   get name() {
-    return 'ZenUrlbarProviderGlobalActions';
+    return "ZenUrlbarProviderGlobalActions";
   }
 
   /**
@@ -90,9 +88,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       if (workspace.uuid !== activeSpaceUUID) {
         const accentColor = window.gZenWorkspaces
           .workspaceElement(workspace.uuid)
-          ?.style.getPropertyValue('--zen-primary-color');
+          ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
-          label: 'Focus on',
+          label: "Focus on",
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -100,7 +98,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
             accentColor,
           },
           commandId: `zen:workspace-${workspace.uuid}`,
-          icon: 'chrome://browser/skin/zen-icons/forward.svg',
+          icon: "chrome://browser/skin/zen-icons/forward.svg",
         });
       }
     }
@@ -108,8 +106,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   }
 
   async #getExtensionActions(window) {
-    const addons = await lazy.AddonManager.getAddonsByTypes(['extension']);
-    if (window.gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+    const addons = await lazy.AddonManager.getAddonsByTypes(["extension"]);
+    if (window.gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
       // Don't show extension actions on empty tabs, as extensions can't run there.
       return [];
     }
@@ -122,8 +120,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       )
       .map((addon) => {
         return {
-          icon: 'chrome://browser/skin/zen-icons/extension.svg',
-          label: 'Extension',
+          icon: "chrome://browser/skin/zen-icons/extension.svg",
+          label: "Extension",
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -136,7 +134,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   /**
    * @param {Window} window The window to check available actions for.
-   * @returns All the available global actions.
+   * @returns {Array} All the available global actions.
    */
   async #getAvailableActions(window) {
     return globalActions
@@ -149,7 +147,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * Starts a search query amongst the available global actions.
    *
    * @param {string} query The user's search query.
-   *
+   * @param {boolean} isPrefixed Whether the query is prefixed.
    */
   async #findMatchingActions(query, isPrefixed) {
     const window = lazy.BrowserWindowTracker.getTopWindow();
@@ -179,20 +177,27 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   /**
    * A VS Code-style fuzzy scoring algorithm.
+   *
    * @param {string} target The string to score against.
    * @param {string} query The user's search query.
    * @returns {number} A score representing the match quality.
    *
-   * @credits Thanks a lot @BibekBhusal0 on GitHub for this implementation!
+   * -credits: Thanks a lot @BibekBhusal0 on GitHub for this implementation!
    */
   #calculateFuzzyScore(target, query) {
-    if (!target || !query) return 0;
+    if (!target || !query) {
+      return 0;
+    }
     const targetLower = target.toLowerCase();
     const queryLower = query.toLowerCase();
     const targetLen = target.length;
     const queryLen = query.length;
-    if (queryLen > targetLen) return 0;
-    if (queryLen === 0) return 0;
+    if (queryLen > targetLen) {
+      return 0;
+    }
+    if (queryLen === 0) {
+      return 0;
+    }
     // 1. Exact match gets the highest score.
     if (targetLower === queryLower) {
       return 200;
@@ -209,7 +214,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       if (queryIndex < queryLen && targetLower[targetIndex] === queryLower[queryIndex]) {
         let bonus = 10;
         // Bonus for matching at the beginning of a word
-        if (targetIndex === 0 || [' ', '-', '_'].includes(targetLower[targetIndex - 1])) {
+        if (targetIndex === 0 || [" ", "-", "_"].includes(targetLower[targetIndex - 1])) {
           bonus += 15;
         }
         // Bonus for consecutive matches
@@ -258,7 +263,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
           action.command
         ),
-        keywords: action.label.split(' '),
+        keywords: action.label.split(" "),
         ...action.extraPayload,
       });
 
@@ -313,37 +318,38 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   getViewUpdate(result) {
     const prettyIconIsSvg =
       result.payload.prettyIcon &&
-      (result.payload.prettyIcon.endsWith('.svg') || result.payload.prettyIcon.endsWith('.png'));
+      (result.payload.prettyIcon.endsWith(".svg") || result.payload.prettyIcon.endsWith(".png"));
     return {
       icon: {
         attributes: {
-          src: result.payload.icon || 'chrome://browser/skin/trending.svg',
+          src: result.payload.icon || "chrome://browser/skin/trending.svg",
         },
       },
       titleStrong: {
         textContent: result.payload.title,
-        attributes: { dir: 'ltr' },
+        attributes: { dir: "ltr" },
       },
       shortcutContent: {
-        textContent: result.payload.shortcutContent || '',
+        textContent: result.payload.shortcutContent || "",
       },
       prettyName: {
         attributes: {
           hidden: !result.payload.prettyName,
-          style: `--zen-primary-color: ${result.payload.accentColor || 'currentColor'}`,
+          style: `--zen-primary-color: ${result.payload.accentColor || "currentColor"}`,
         },
       },
       prettyNameTitle: {
+        /* eslint-disable-next-line no-nested-ternary */
         textContent: result.payload.prettyName
           ? prettyIconIsSvg || !result.payload.prettyIcon
             ? result.payload.prettyName
             : `${result.payload.prettyIcon}  ${result.payload.prettyName}`
-          : '',
-        attributes: { dir: 'ltr' },
+          : "",
+        attributes: { dir: "ltr" },
       },
       prettyNameIcon: {
         attributes: {
-          src: result.payload.prettyIcon || '',
+          src: result.payload.prettyIcon || "",
           hidden: !prettyIconIsSvg || !result.payload.prettyIcon,
         },
       },
@@ -357,42 +363,42 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       },
       children: [
         {
-          name: 'icon',
-          tag: 'img',
-          classList: ['urlbarView-favicon'],
+          name: "icon",
+          tag: "img",
+          classList: ["urlbarView-favicon"],
         },
         {
-          name: 'title',
-          tag: 'span',
-          classList: ['urlbarView-title'],
+          name: "title",
+          tag: "span",
+          classList: ["urlbarView-title"],
           children: [
             {
-              name: 'titleStrong',
-              tag: 'strong',
+              name: "titleStrong",
+              tag: "strong",
             },
           ],
         },
         {
-          tag: 'span',
-          classList: ['urlbarView-prettyName'],
+          tag: "span",
+          classList: ["urlbarView-prettyName"],
           hidden: true,
-          name: 'prettyName',
+          name: "prettyName",
           children: [
             {
-              tag: 'img',
-              name: 'prettyNameIcon',
+              tag: "img",
+              name: "prettyNameIcon",
               attributes: { hidden: true },
             },
             {
-              name: 'prettyNameTitle',
-              tag: 'span',
+              name: "prettyNameTitle",
+              tag: "span",
             },
           ],
         },
         {
-          name: 'shortcutContent',
-          tag: 'span',
-          classList: ['urlbarView-shortcutContent'],
+          name: "shortcutContent",
+          tag: "span",
+          classList: ["urlbarView-shortcutContent"],
         },
       ],
     };
@@ -417,7 +423,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const command = payload.zenCommand;
     const ownerGlobal = details.element.ownerGlobal;
     ownerGlobal.gBrowser.selectedBrowser.focus();
-    if (typeof command === 'function') {
+    if (typeof command === "function") {
       command(ownerGlobal);
       return;
     }

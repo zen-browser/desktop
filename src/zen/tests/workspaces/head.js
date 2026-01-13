@@ -8,27 +8,27 @@ const TAB_STATE_NEEDS_RESTORE = 1;
 const TAB_STATE_RESTORING = 2;
 
 const ROOT = getRootDirectory(gTestPath);
-const HTTPROOT = ROOT.replace('chrome://mochitests/content/', 'http://example.com/');
-const HTTPSROOT = ROOT.replace('chrome://mochitests/content/', 'https://example.com/');
+const HTTPROOT = ROOT.replace("chrome://mochitests/content/", "https://example.com/");
+const HTTPSROOT = ROOT.replace("chrome://mochitests/content/", "https://example.com/");
 
 const { SessionSaver } = ChromeUtils.importESModule(
-  'resource:///modules/sessionstore/SessionSaver.sys.mjs'
+  "resource:///modules/sessionstore/SessionSaver.sys.mjs"
 );
 const { SessionFile } = ChromeUtils.importESModule(
-  'resource:///modules/sessionstore/SessionFile.sys.mjs'
+  "resource:///modules/sessionstore/SessionFile.sys.mjs"
 );
 const { TabState } = ChromeUtils.importESModule(
-  'resource:///modules/sessionstore/TabState.sys.mjs'
+  "resource:///modules/sessionstore/TabState.sys.mjs"
 );
 const { TabStateFlusher } = ChromeUtils.importESModule(
-  'resource:///modules/sessionstore/TabStateFlusher.sys.mjs'
+  "resource:///modules/sessionstore/TabStateFlusher.sys.mjs"
 );
 const { SessionStoreTestUtils } = ChromeUtils.importESModule(
-  'resource://testing-common/SessionStoreTestUtils.sys.mjs'
+  "resource://testing-common/SessionStoreTestUtils.sys.mjs"
 );
 
 const { PageWireframes } = ChromeUtils.importESModule(
-  'resource:///modules/sessionstore/PageWireframes.sys.mjs'
+  "resource:///modules/sessionstore/PageWireframes.sys.mjs"
 );
 
 const ss = SessionStore;
@@ -37,20 +37,20 @@ SessionStoreTestUtils.init(this, window);
 // Some tests here assume that all restored tabs are loaded without waiting for
 // the user to bring them to the foreground. We ensure this by resetting the
 // related preference (see the "firefox.js" defaults file for details).
-Services.prefs.setBoolPref('browser.sessionstore.restore_on_demand', false);
+Services.prefs.setBoolPref("browser.sessionstore.restore_on_demand", false);
 registerCleanupFunction(function () {
-  Services.prefs.clearUserPref('browser.sessionstore.restore_on_demand');
+  Services.prefs.clearUserPref("browser.sessionstore.restore_on_demand");
 });
 
 // Obtain access to internals
-Services.prefs.setBoolPref('browser.sessionstore.debug', true);
+Services.prefs.setBoolPref("browser.sessionstore.debug", true);
 registerCleanupFunction(function () {
-  Services.prefs.clearUserPref('browser.sessionstore.debug');
+  Services.prefs.clearUserPref("browser.sessionstore.debug");
 });
 
 // This kicks off the search service used on about:home and allows the
 // session restore tests to be run standalone without triggering errors.
-Cc['@mozilla.org/browser/clh;1'].getService(Ci.nsIBrowserHandler).defaultArgs;
+Cc["@mozilla.org/browser/clh;1"].getService(Ci.nsIBrowserHandler).defaultArgs;
 
 function provideWindow(aCallback, aURL, aFeatures) {
   function callbackSoon(aWindow) {
@@ -61,19 +61,19 @@ function provideWindow(aCallback, aURL, aFeatures) {
 
   let win = openDialog(
     AppConstants.BROWSER_CHROME_URL,
-    '',
-    aFeatures || 'chrome,all,dialog=no',
-    aURL || 'about:blank'
+    "",
+    aFeatures || "chrome,all,dialog=no",
+    aURL || "about:blank"
   );
   whenWindowLoaded(win, function onWindowLoaded(aWin) {
     if (!aURL) {
-      info('Loaded a blank window.');
+      info("Loaded a blank window.");
       callbackSoon(aWin);
       return;
     }
 
     aWin.gBrowser.selectedBrowser.addEventListener(
-      'load',
+      "load",
       function () {
         callbackSoon(aWin);
       },
@@ -92,7 +92,7 @@ function promiseBrowserState(aState) {
 }
 
 function promiseTabState(tab, state) {
-  if (typeof state != 'string') {
+  if (typeof state != "string") {
     state = JSON.stringify(state);
   }
 
@@ -103,23 +103,23 @@ function promiseTabState(tab, state) {
 
 function promiseWindowRestoring(win) {
   return new Promise((resolve) =>
-    win.addEventListener('SSWindowRestoring', resolve, { once: true })
+    win.addEventListener("SSWindowRestoring", resolve, { once: true })
   );
 }
 
 function promiseWindowRestored(win) {
   return new Promise((resolve) =>
-    win.addEventListener('SSWindowRestored', resolve, { once: true })
+    win.addEventListener("SSWindowRestored", resolve, { once: true })
   );
 }
 
 async function setBrowserState(state, win = window) {
-  ss.setBrowserState(typeof state != 'string' ? JSON.stringify(state) : state);
+  ss.setBrowserState(typeof state != "string" ? JSON.stringify(state) : state);
   await promiseWindowRestored(win);
 }
 
 async function setWindowState(win, state, overwrite = false) {
-  ss.setWindowState(win, typeof state != 'string' ? JSON.stringify(state) : state, overwrite);
+  ss.setWindowState(win, typeof state != "string" ? JSON.stringify(state) : state, overwrite);
   await promiseWindowRestored(win);
 }
 
@@ -159,19 +159,19 @@ function waitForTopic(aTopic, aTimeout, aCallback) {
  * Wait until session restore has finished collecting its data and is
  * has written that data ("sessionstore-state-write-complete").
  *
- * @param {function} aCallback If sessionstore-state-write-complete is sent
+ * @param {() => void} aCallback If sessionstore-state-write-complete is sent
  * within buffering interval + 100 ms, the callback is passed |true|,
  * otherwise, it is passed |false|.
  */
 function waitForSaveState(aCallback) {
-  let timeout = 100 + Services.prefs.getIntPref('browser.sessionstore.interval');
-  return waitForTopic('sessionstore-state-write-complete', timeout, aCallback);
+  let timeout = 100 + Services.prefs.getIntPref("browser.sessionstore.interval");
+  return waitForTopic("sessionstore-state-write-complete", timeout, aCallback);
 }
 function promiseSaveState() {
   return new Promise((resolve, reject) => {
     waitForSaveState((isSuccessful) => {
       if (!isSuccessful) {
-        reject(new Error('Save state timeout'));
+        reject(new Error("Save state timeout"));
       } else {
         resolve();
       }
@@ -193,14 +193,14 @@ function promiseRecoveryFileContents() {
 
 var promiseForEachSessionRestoreFile = async function (cb) {
   for (let key of SessionFile.Paths.loadOrder) {
-    let data = '';
+    let data = "";
     try {
       data = await IOUtils.readUTF8(SessionFile.Paths[key], {
         decompress: true,
       });
     } catch (ex) {
       // Ignore missing files
-      if (!(DOMException.isInstance(ex) && ex.name == 'NotFoundError')) {
+      if (!(DOMException.isInstance(ex) && ex.name == "NotFoundError")) {
         throw ex;
       }
     }
@@ -214,7 +214,7 @@ function promiseBrowserLoaded(aBrowser, ignoreSubFrames = true, wantLoad = null)
 
 function whenWindowLoaded(aWindow, aCallback) {
   aWindow.addEventListener(
-    'load',
+    "load",
     function () {
       executeSoon(function executeWhenWindowLoaded() {
         aCallback(aWindow);
@@ -229,11 +229,11 @@ function promiseWindowLoaded(aWindow) {
 
 var gUniqueCounter = 0;
 function r() {
-  return Date.now() + '-' + ++gUniqueCounter;
+  return Date.now() + "-" + ++gUniqueCounter;
 }
 
 function* BrowserWindowIterator() {
-  for (let currentWindow of Services.wm.getEnumerator('navigator:browser')) {
+  for (let currentWindow of Services.wm.getEnumerator("navigator:browser")) {
     if (!currentWindow.closed) {
       yield currentWindow;
     }
@@ -276,14 +276,14 @@ var gProgressListener = {
   _callback: null,
 
   setCallback(callback) {
-    Services.obs.addObserver(this, 'sessionstore-debug-tab-restored');
+    Services.obs.addObserver(this, "sessionstore-debug-tab-restored");
     this._callback = callback;
   },
 
   unsetCallback() {
     if (this._callback) {
       this._callback = null;
-      Services.obs.removeObserver(this, 'sessionstore-debug-tab-restored');
+      Services.obs.removeObserver(this, "sessionstore-debug-tab-restored");
     }
   },
 
@@ -372,27 +372,30 @@ function forgetClosedTabGroups(win) {
  * has been dispatched. browser-delayed-startup-finished might be deferred even
  * further if parts of the window's initialization process take more time than
  * expected (e.g. reading a big session state from disk).
+ *
+ * @param {object} aOptions
+ * @param {() => void} aCallback
  */
 function whenNewWindowLoaded(aOptions, aCallback) {
-  let features = '';
-  let url = 'about:blank';
+  let features = "";
+  let url = "about:blank";
 
   if ((aOptions && aOptions.private) || false) {
-    features = ',private';
-    url = 'about:privatebrowsing';
+    features = ",private";
+    url = "about:privatebrowsing";
   }
 
-  let win = openDialog(AppConstants.BROWSER_CHROME_URL, '', 'chrome,all,dialog=no' + features, url);
+  let win = openDialog(AppConstants.BROWSER_CHROME_URL, "", "chrome,all,dialog=no" + features, url);
   let delayedStartup = promiseDelayedStartupFinished(win);
 
   let browserLoaded = new Promise((resolve) => {
-    if (url == 'about:blank') {
+    if (url == "about:blank") {
       resolve();
       return;
     }
 
     win.addEventListener(
-      'load',
+      "load",
       function () {
         let browser = win.gBrowser.selectedBrowser;
         promiseBrowserLoaded(browser).then(resolve);
@@ -411,6 +414,9 @@ function promiseNewWindowLoaded(aOptions) {
  * This waits for the browser-delayed-startup-finished notification of a given
  * window. It indicates that the windows has loaded completely and is ready to
  * be used for testing.
+ *
+ * @param {Window} aWindow
+ * @param {() => void} aCallback
  */
 function whenDelayedStartupFinished(aWindow, aCallback) {
   Services.obs.addObserver(function observer(aSubject, aTopic) {
@@ -418,18 +424,18 @@ function whenDelayedStartupFinished(aWindow, aCallback) {
       Services.obs.removeObserver(observer, aTopic);
       executeSoon(aCallback);
     }
-  }, 'browser-delayed-startup-finished');
+  }, "browser-delayed-startup-finished");
 }
 function promiseDelayedStartupFinished(aWindow) {
   return new Promise((resolve) => whenDelayedStartupFinished(aWindow, resolve));
 }
 
 function promiseTabRestored(tab) {
-  return BrowserTestUtils.waitForEvent(tab, 'SSTabRestored');
+  return BrowserTestUtils.waitForEvent(tab, "SSTabRestored");
 }
 
 function promiseTabRestoring(tab) {
-  return BrowserTestUtils.waitForEvent(tab, 'SSTabRestoring');
+  return BrowserTestUtils.waitForEvent(tab, "SSTabRestoring");
 }
 
 // Removes the given tab immediately and returns a promise that resolves when
@@ -443,7 +449,7 @@ function promiseRemoveTabAndSessionState(tab) {
 // Write DOMSessionStorage data to the given browser.
 function modifySessionStorage(browser, storageData, storageOptions = {}) {
   let browsingContext = browser.browsingContext;
-  if (storageOptions && 'frameIndex' in storageOptions) {
+  if (storageOptions && "frameIndex" in storageOptions) {
     browsingContext = browsingContext.children[storageOptions.frameIndex];
   }
 
@@ -458,7 +464,7 @@ function modifySessionStorage(browser, storageData, storageOptions = {}) {
 
       return new Promise((resolve) => {
         docShell.chromeEventHandler.addEventListener(
-          'MozSessionStorageChanged',
+          "MozSessionStorageChanged",
           function onStorageChanged(event) {
             if (event.storageArea == storage) {
               keys.delete(event.key);
@@ -466,7 +472,7 @@ function modifySessionStorage(browser, storageData, storageOptions = {}) {
 
             if (keys.size == 0) {
               docShell.chromeEventHandler.removeEventListener(
-                'MozSessionStorageChanged',
+                "MozSessionStorageChanged",
                 onStorageChanged,
                 true
               );
@@ -500,10 +506,10 @@ function setScrollPosition(bc, x, y) {
   return SpecialPowers.spawn(bc, [x, y], (childX, childY) => {
     return new Promise((resolve) => {
       content.addEventListener(
-        'mozvisualscroll',
+        "mozvisualscroll",
         function onScroll(event) {
           if (content.document.ownerGlobal.visualViewport == event.target) {
-            content.removeEventListener('mozvisualscroll', onScroll, {
+            content.removeEventListener("mozvisualscroll", onScroll, {
               mozSystemGroup: true,
             });
             resolve();
@@ -528,7 +534,7 @@ function whenDomWindowClosedHandled(aCallback) {
   Services.obs.addObserver(function observer(aSubject, aTopic) {
     Services.obs.removeObserver(observer, aTopic);
     aCallback();
-  }, 'sessionstore-debug-domwindowclosed-handled');
+  }, "sessionstore-debug-domwindowclosed-handled");
 }
 
 function getPropertyOfFormField(browserContext, selector, propName) {
@@ -549,8 +555,8 @@ function setPropertyOfFormField(browserContext, selector, propName, newValue) {
       let node = content.document.querySelector(selectorChild);
       node[propNameChild] = newValueChild;
 
-      let event = node.ownerDocument.createEvent('UIEvents');
-      event.initUIEvent('input', true, true, node.ownerGlobal, 0);
+      let event = node.ownerDocument.createEvent("UIEvents");
+      event.initUIEvent("input", true, true, node.ownerGlobal, 0);
       node.dispatchEvent(event);
     }
   );
@@ -572,7 +578,7 @@ function promiseOnHistoryReplaceEntry(browser) {
           resolve();
         },
 
-        QueryInterface: ChromeUtils.generateQI(['nsISHistoryListener', 'nsISupportsWeakReference']),
+        QueryInterface: ChromeUtils.generateQI(["nsISHistoryListener", "nsISupportsWeakReference"]),
       };
 
       sessionHistory.addSHistoryListener(historyListener);
@@ -591,7 +597,7 @@ function addCoopTask(aFile, aTest, aUrlRoot) {
     let url = aUrlRoot + `coopHeaderCommon.sjs?fileRoot=${filePath}`;
     await aTest(url);
   }
-  Object.defineProperty(taskToBeAdded, 'name', { value: aTest.name });
+  Object.defineProperty(taskToBeAdded, "name", { value: aTest.name });
   add_task(taskToBeAdded);
 }
 
@@ -599,7 +605,7 @@ function addNonCoopTask(aFile, aTest, aUrlRoot) {
   async function taskToBeAdded() {
     await aTest(aUrlRoot + aFile);
   }
-  Object.defineProperty(taskToBeAdded, 'name', { value: aTest.name });
+  Object.defineProperty(taskToBeAdded, "name", { value: aTest.name });
   add_task(taskToBeAdded);
 }
 
@@ -611,6 +617,8 @@ function openAndCloseTab(window, url) {
  * This is regrettable, but when `promiseBrowserState` resolves, we're still
  * midway through loading the tabs. To avoid race conditions in URLs for tabs
  * being available, wait for all the loads to finish:
+ *
+ * @param {number} numberOfLoads
  */
 function promiseSessionStoreLoads(numberOfLoads) {
   let loadsSeen = 0;
@@ -622,17 +630,17 @@ function promiseSessionStoreLoads(numberOfLoads) {
       }
       // The typeof check is here to avoid one test messing with everything else by
       // keeping the observer indefinitely.
-      if (typeof info == 'undefined' || loadsSeen >= numberOfLoads) {
-        Services.obs.removeObserver(obs, 'sessionstore-debug-tab-restored');
+      if (typeof info == "undefined" || loadsSeen >= numberOfLoads) {
+        Services.obs.removeObserver(obs, "sessionstore-debug-tab-restored");
       }
-      info('Saw load for ' + browser.currentURI.spec);
-    }, 'sessionstore-debug-tab-restored');
+      info("Saw load for " + browser.currentURI.spec);
+    }, "sessionstore-debug-tab-restored");
   });
 }
 
 function triggerClickOn(target, options) {
-  let promise = BrowserTestUtils.waitForEvent(target, 'click');
-  if (AppConstants.platform == 'macosx') {
+  let promise = BrowserTestUtils.waitForEvent(target, "click");
+  if (AppConstants.platform == "macosx") {
     options.metaKey = options.ctrlKey;
     delete options.ctrlKey;
   }
@@ -641,21 +649,21 @@ function triggerClickOn(target, options) {
 }
 
 async function openTabMenuFor(tab) {
-  let tabMenu = tab.ownerDocument.getElementById('tabContextMenu');
+  let tabMenu = tab.ownerDocument.getElementById("tabContextMenu");
 
-  let tabMenuShown = BrowserTestUtils.waitForEvent(tabMenu, 'popupshown');
-  EventUtils.synthesizeMouseAtCenter(tab, { type: 'contextmenu' }, tab.ownerGlobal);
+  let tabMenuShown = BrowserTestUtils.waitForEvent(tabMenu, "popupshown");
+  EventUtils.synthesizeMouseAtCenter(tab, { type: "contextmenu" }, tab.ownerGlobal);
   await tabMenuShown;
 
   return tabMenu;
 }
 
 var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
-  let dialogUrl = 'chrome://browser/content/places/bookmarkProperties.xhtml';
+  let dialogUrl = "chrome://browser/content/places/bookmarkProperties.xhtml";
   let closed = false;
   // We can't show the in-window prompt for windows which don't have
   // gDialogBox, like the library (Places:Organizer) window.
-  let hasDialogBox = !!Services.wm.getMostRecentWindow('').gDialogBox;
+  let hasDialogBox = !!Services.wm.getMostRecentWindow("").gDialogBox;
   let dialogPromise;
   if (hasDialogBox) {
     dialogPromise = BrowserTestUtils.promiseAlertDialogOpen(null, dialogUrl, {
@@ -667,7 +675,7 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
     }).then((win) => {
       ok(
         win.location.href.startsWith(dialogUrl),
-        'The bookmark properties dialog is open: ' + win.location.href
+        "The bookmark properties dialog is open: " + win.location.href
       );
       // This is needed for the overlay.
       return SimpleTest.promiseFocus(win).then(() => win);
@@ -677,8 +685,8 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
     if (!hasDialogBox) {
       return BrowserTestUtils.domWindowClosed(win);
     }
-    let container = win.top.document.getElementById('window-modal-dialog');
-    return BrowserTestUtils.waitForEvent(container, 'close').then(() => {
+    let container = win.top.document.getElementById("window-modal-dialog");
+    return BrowserTestUtils.waitForEvent(container, "close").then(() => {
       return BrowserTestUtils.waitForMutationCondition(
         container,
         { childList: true, attributes: true },
@@ -690,31 +698,31 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
     closed = true;
   });
 
-  info('withBookmarksDialog: opening the dialog');
+  info("withBookmarksDialog: opening the dialog");
   // The dialog might be modal and could block our events loop, so executeSoon.
   executeSoon(openFn);
 
-  info('withBookmarksDialog: waiting for the dialog');
+  info("withBookmarksDialog: waiting for the dialog");
   let dialogWin = await dialogPromise;
 
   // Ensure overlay is loaded
-  info('waiting for the overlay to be loaded');
+  info("waiting for the overlay to be loaded");
   await dialogWin.document.mozSubdialogReady;
 
   // Check the first input is focused.
   let doc = dialogWin.document;
   let elt = doc.querySelector('input:not([hidden="true"])');
-  ok(elt, 'There should be an input to focus.');
+  ok(elt, "There should be an input to focus.");
 
   if (elt) {
-    info('waiting for focus on the first textfield');
+    info("waiting for focus on the first textfield");
     await TestUtils.waitForCondition(
       () => doc.activeElement == elt,
-      'The first non collapsed input should have been focused'
+      "The first non collapsed input should have been focused"
     );
   }
 
-  info('withBookmarksDialog: executing the task');
+  info("withBookmarksDialog: executing the task");
 
   let closePromise = () => Promise.resolve();
   if (closeFn) {
@@ -725,8 +733,8 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
     await taskFn(dialogWin);
   } finally {
     if (!closed && autoCancel) {
-      info('withBookmarksDialog: canceling the dialog');
-      doc.getElementById('bookmarkpropertiesdialog').cancelDialog();
+      info("withBookmarksDialog: canceling the dialog");
+      doc.getElementById("bookmarkpropertiesdialog").cancelDialog();
       await closePromise;
     }
     guid = await PlacesUIUtils.lastBookmarkDialogDeferred.promise;

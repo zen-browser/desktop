@@ -3,6 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.welcome-screen.seen
-  value: '@cond'
+  value: "@cond"
   sticky: true
-  condition: '!defined(MOZILLA_OFFICIAL)'
+  condition: "!defined(MOZILLA_OFFICIAL)"

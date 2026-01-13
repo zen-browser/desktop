@@ -153,7 +153,7 @@
     flex-direction: column;
     gap: 1.6rem;
 
-    &[select-engine='true'] {
+    &[select-engine="true"] {
       display: grid;
       grid-template-columns: 1fr 1fr;
       box-sizing: border-box;
@@ -185,7 +185,7 @@
       }
     }
 
-    &[select-engine='true'] > label {
+    &[select-engine="true"] > label {
       flex-direction: column;
       font-weight: 600;
       aspect-ratio: 1 / 0.7;
@@ -197,7 +197,7 @@
     }
 
     /* 3 or more engines */
-    &[select-engine='true']:has(label:nth-of-type(3)) > label {
+    &[select-engine="true"]:has(label:nth-of-type(3)) > label {
       height: 50%;
     }
 
@@ -267,7 +267,7 @@
 
             &::after {
               position: absolute;
-              content: '';
+              content: "";
               width: 1.8rem;
               height: 1.8rem;
               top: 50%;

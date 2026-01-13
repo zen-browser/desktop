@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
 
@@ -10,13 +11,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   async handleEvent(event) {
     const handler = this[`on_${event.type}`];
-    if (typeof handler === 'function') {
+    if (typeof handler === "function") {
       await handler.call(this, event);
     }
   }
 
   async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery('ZenGlance:GetActivationMethod');
+    this.#activationMethod = await this.sendQuery("ZenGlance:GetActivationMethod");
   }
 
   #ensureOnlyKeyModifiers(event) {
@@ -29,7 +30,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     if (!url.match(/^(?:[a-z]+:)?\/\//i)) {
       url = this.contentWindow.location.origin + url;
     }
-    this.sendAsyncMessage('ZenGlance:OpenGlance', {
+    this.sendAsyncMessage("ZenGlance:OpenGlance", {
       url,
     });
   }
@@ -49,7 +50,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     if (anchorRect.width * anchorRect.height > rect.width * rect.height) {
       rect = anchorRect;
     }
-    this.sendAsyncMessage('ZenGlance:RecordLinkClickData', {
+    this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
       clientX: rect.left,
       clientY: rect.top,
       width: rect.width,
@@ -60,10 +61,12 @@ export class ZenGlanceChild extends JSWindowActorChild {
   /**
    * Returns the closest A element from the event target
    * and the element to record (originalTarget or target)
+   *
+   * @param {Event} event
    */
   #getTargetFromEvent(event) {
     // get closest A element
-    const target = event.target.closest('A');
+    const target = event.target.closest("A");
     const elementToRecord = event.originalTarget || event.target;
     return {
       target,
@@ -87,13 +90,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     }
     const activationMethod = this.#activationMethod;
-    if (activationMethod === 'ctrl' && !event.ctrlKey) {
+    if (activationMethod === "ctrl" && !event.ctrlKey) {
       return;
-    } else if (activationMethod === 'alt' && !event.altKey) {
+    } else if (activationMethod === "alt" && !event.altKey) {
       return;
-    } else if (activationMethod === 'shift' && !event.shiftKey) {
+    } else if (activationMethod === "shift" && !event.shiftKey) {
       return;
-    } else if (activationMethod === 'meta' && !event.metaKey) {
+    } else if (activationMethod === "meta" && !event.metaKey) {
       return;
     }
     event.preventDefault();
@@ -102,10 +105,10 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_keydown(event) {
-    if (event.defaultPrevented || event.key !== 'Escape') {
+    if (event.defaultPrevented || event.key !== "Escape") {
       return;
     }
-    this.sendAsyncMessage('ZenGlance:CloseGlance', {
+    this.sendAsyncMessage("ZenGlance:CloseGlance", {
       hasFocused: this.contentWindow.document.activeElement !== this.contentWindow.document.body,
     });
   }

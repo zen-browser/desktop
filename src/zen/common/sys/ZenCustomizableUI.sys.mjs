@@ -2,27 +2,27 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
 export const ZenCustomizableUI = new (class {
   constructor() {}
 
-  TYPE_TOOLBAR = 'toolbar';
-  defaultSidebarIcons = ['downloads-button', 'zen-workspaces-button', 'zen-create-new-button'];
+  TYPE_TOOLBAR = "toolbar";
+  defaultSidebarIcons = ["downloads-button", "zen-workspaces-button", "zen-create-new-button"];
 
   startup(CustomizableUIInternal) {
     CustomizableUIInternal.registerArea(
-      'zen-sidebar-top-buttons',
+      "zen-sidebar-top-buttons",
       {
         type: this.TYPE_TOOLBAR,
-        defaultPlacements: ['zen-toggle-compact-mode'],
+        defaultPlacements: ["zen-toggle-compact-mode"],
         defaultCollapsed: null,
         overflowable: true,
       },
       true
     );
     CustomizableUIInternal.registerArea(
-      'zen-sidebar-foot-buttons',
+      "zen-sidebar-foot-buttons",
       {
         type: this.TYPE_TOOLBAR,
         defaultPlacements: this.defaultSidebarIcons,
@@ -39,16 +39,16 @@ export const ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = AppConstants.platform === 'macosx' ? '230px' : '186px';
+    const kDefaultSidebarWidth = AppConstants.platform === "macosx" ? "230px" : "186px";
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox
-    const splitter = window.document.createXULElement('splitter');
-    splitter.setAttribute('id', 'zen-sidebar-splitter');
-    splitter.setAttribute('orient', 'horizontal');
-    splitter.setAttribute('resizebefore', 'sibling');
-    splitter.setAttribute('resizeafter', 'none');
-    toolbox.insertAdjacentElement('afterend', splitter);
+    const splitter = window.document.createXULElement("splitter");
+    splitter.setAttribute("id", "zen-sidebar-splitter");
+    splitter.setAttribute("orient", "horizontal");
+    splitter.setAttribute("resizebefore", "sibling");
+    splitter.setAttribute("resizeafter", "none");
+    toolbox.insertAdjacentElement("afterend", splitter);
 
     const sidebarBox = window.MozXULElement.parseXULToFragment(`
       <toolbar id="zen-sidebar-top-buttons"
@@ -82,7 +82,9 @@ export const ZenCustomizableUI = new (class {
     `);
     toolbox.prepend(sidebarBox);
     new window.MutationObserver((e) => {
-      if (e[0].type !== 'attributes' || e[0].attributeName !== 'width') return;
+      if (e[0].type !== "attributes" || e[0].attributeName !== "width") {
+        return;
+      }
       this._dispatchResizeEvent(window);
     }).observe(toolbox, {
       attributes: true, //configure it to listen to attribute changes
@@ -90,23 +92,27 @@ export const ZenCustomizableUI = new (class {
 
     // remove all styles except for the width, since we are xulstoring the complet style list
     const width = toolbox.style.width || kDefaultSidebarWidth;
-    toolbox.removeAttribute('style');
+    toolbox.removeAttribute("style");
     toolbox.style.width = width;
-    toolbox.setAttribute('width', width);
+    toolbox.setAttribute("width", width);
 
-    splitter.addEventListener('dblclick', (e) => {
-      if (e.button !== 0) return;
+    splitter.addEventListener("dblclick", (e) => {
+      if (e.button !== 0) {
+        return;
+      }
       toolbox.style.width = kDefaultSidebarWidth;
-      toolbox.setAttribute('width', kDefaultSidebarWidth);
+      toolbox.setAttribute("width", kDefaultSidebarWidth);
     });
 
-    const newTab = window.document.getElementById('vertical-tabs-newtab-button');
-    newTab.classList.add('zen-sidebar-action-button');
+    const newTab = window.document.getElementById("vertical-tabs-newtab-button");
+    newTab.classList.add("zen-sidebar-action-button");
 
     for (let id of this.defaultSidebarIcons) {
       const elem = window.document.getElementById(id);
-      if (!elem || elem.id === 'zen-workspaces-button') continue;
-      elem.setAttribute('removable', 'true');
+      if (!elem || elem.id === "zen-workspaces-button") {
+        continue;
+      }
+      elem.setAttribute("removable", "true");
     }
 
     this.#initCreateNewButton(window);
@@ -114,18 +120,19 @@ export const ZenCustomizableUI = new (class {
   }
 
   #initCreateNewButton(window) {
-    const button = window.document.getElementById('zen-create-new-button');
-    button.addEventListener('command', (event) => {
+    const button = window.document.getElementById("zen-create-new-button");
+    button.addEventListener("command", (event) => {
       if (window.gZenWorkspaces.privateWindowOrDisabled) {
-        return window.document.getElementById('cmd_newNavigatorTab').doCommand();
-      }
-      if (button.hasAttribute('open')) {
+        window.document.getElementById("cmd_newNavigatorTab").doCommand();
         return;
       }
-      const popup = window.document.getElementById('zenCreateNewPopup');
+      if (button.hasAttribute("open")) {
+        return;
+      }
+      const popup = window.document.getElementById("zenCreateNewPopup");
       popup.openPopup(
         button,
-        'before_start',
+        "before_start",
         0,
         0,
         true /* isContextMenu */,
@@ -136,13 +143,13 @@ export const ZenCustomizableUI = new (class {
   }
 
   #moveWindowButtons(window) {
-    const windowControls = window.document.getElementsByClassName('titlebar-buttonbox-container');
+    const windowControls = window.document.getElementsByClassName("titlebar-buttonbox-container");
     const toolboxIcons = window.document.getElementById(
-      'zen-sidebar-top-buttons-customization-target'
+      "zen-sidebar-top-buttons-customization-target"
     );
     if (
-      window.AppConstants.platform === 'macosx' ||
-      window.matchMedia('(-moz-gtk-csd-reversed-placement)').matches
+      window.AppConstants.platform === "macosx" ||
+      window.matchMedia("(-moz-gtk-csd-reversed-placement)").matches
     ) {
       for (let i = 0; i < windowControls.length; i++) {
         if (i === 0) {
@@ -155,27 +162,27 @@ export const ZenCustomizableUI = new (class {
   }
 
   #modifyToolbarButtons(window) {
-    const wrapper = window.document.getElementById('zen-sidebar-foot-buttons');
-    const elementsToHide = ['new-tab-button'];
+    const wrapper = window.document.getElementById("zen-sidebar-foot-buttons");
+    const elementsToHide = ["new-tab-button"];
     for (let id of elementsToHide) {
       const elem = window.document.getElementById(id);
       if (elem) {
         wrapper.prepend(elem);
       }
     }
-    window.document.getElementById('stop-reload-button').removeAttribute('overflows');
+    window.document.getElementById("stop-reload-button").removeAttribute("overflows");
   }
 
   _dispatchResizeEvent(window) {
-    window.dispatchEvent(new window.Event('resize'));
+    window.dispatchEvent(new window.Event("resize"));
   }
 
   registerToolbarNodes(window) {
     window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-top-buttons')
+      window.document.getElementById("zen-sidebar-top-buttons")
     );
     window.CustomizableUI.registerToolbarNode(
-      window.document.getElementById('zen-sidebar-foot-buttons')
+      window.document.getElementById("zen-sidebar-foot-buttons")
     );
   }
 })();

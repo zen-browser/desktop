@@ -21,7 +21,7 @@
   width: 50%;
   height: 50%;
   background-color: var(--zen-primary-color);
-  mask: url('chrome://browser/content/zen-images/downloads/archive.svg') no-repeat center;
+  mask: url("chrome://browser/content/zen-images/downloads/archive.svg") no-repeat center;
   mask-size: contain;
   display: block;
 }

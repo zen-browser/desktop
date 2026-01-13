@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Browser global components initializing before UI startup
-category browser-before-ui-startup resource:///modules/zen/ZenSessionManager.sys.mjs ZenSessionStore.init
 category browser-before-ui-startup resource:///modules/zen/ZenWindowSync.sys.mjs ZenWindowSync.init
 
 # App shutdown consumers

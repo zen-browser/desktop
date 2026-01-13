@@ -3,6 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.watermark.enabled
-  value: '@cond'
+  value: "@cond"
   sticky: true
-  condition: 'defined(MOZILLA_OFFICIAL)'
+  condition: "defined(MOZILLA_OFFICIAL)"

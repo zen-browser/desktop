@@ -8,15 +8,17 @@ window.ZenWorkspaceBookmarksStorage = {
 
   async init() {
     ChromeUtils.defineESModuleGetters(this.lazy, {
-      PlacesUtils: 'resource://gre/modules/PlacesUtils.sys.mjs',
+      PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
     });
-    if (!window.gZenWorkspaces) return;
+    if (!window.gZenWorkspaces) {
+      return;
+    }
     await this._ensureTable();
   },
 
   async _ensureTable() {
     await this.lazy.PlacesUtils.withConnectionWrapper(
-      'ZenWorkspaceBookmarksStorage.init',
+      "ZenWorkspaceBookmarksStorage.init",
       async (db) => {
         // Create table using GUIDs instead of IDs
         await db.execute(`
@@ -61,7 +63,8 @@ window.ZenWorkspaceBookmarksStorage = {
 
   /**
    * Updates the last change timestamp in the metadata table.
-   * @param {Object} db - The database connection.
+   *
+   * @param {object} db - The database connection.
    */
   async updateLastChangeTimestamp(db) {
     const now = Date.now();
@@ -76,6 +79,7 @@ window.ZenWorkspaceBookmarksStorage = {
 
   /**
    * Gets the timestamp of the last change.
+   *
    * @returns {Promise<number>} The timestamp of the last change.
    */
   async getLastChangeTimestamp() {
@@ -83,7 +87,7 @@ window.ZenWorkspaceBookmarksStorage = {
     const result = await db.executeCached(`
       SELECT value FROM moz_meta WHERE key = 'zen_bookmarks_workspaces_last_change'
     `);
-    return result.length ? parseInt(result[0].getResultByName('value'), 10) : 0;
+    return result.length ? parseInt(result[0].getResultByName("value"), 10) : 0;
   },
 
   async getBookmarkWorkspaces(bookmarkGuid) {
@@ -98,12 +102,13 @@ window.ZenWorkspaceBookmarksStorage = {
       { bookmark_guid: bookmarkGuid }
     );
 
-    return rows.map((row) => row.getResultByName('workspace_uuid'));
+    return rows.map((row) => row.getResultByName("workspace_uuid"));
   },
 
   /**
    * Get all bookmark GUIDs organized by workspace UUID.
-   * @returns {Promise<Object>} A dictionary with workspace UUIDs as keys and arrays of bookmark GUIDs as values.
+   *
+   * @returns {Promise<object>} A dictionary with workspace UUIDs as keys and arrays of bookmark GUIDs as values.
    * @example
    * // Returns:
    * {
@@ -122,9 +127,9 @@ window.ZenWorkspaceBookmarksStorage = {
 
     const result = {};
     for (const row of rows) {
-      const workspaceUuid = row.getResultByName('workspace_uuid');
-      const bookmarkGuids = row.getResultByName('bookmark_guids');
-      result[workspaceUuid] = bookmarkGuids ? bookmarkGuids.split(',') : [];
+      const workspaceUuid = row.getResultByName("workspace_uuid");
+      const bookmarkGuids = row.getResultByName("bookmark_guids");
+      result[workspaceUuid] = bookmarkGuids ? bookmarkGuids.split(",") : [];
     }
 
     return result;
@@ -132,7 +137,8 @@ window.ZenWorkspaceBookmarksStorage = {
 
   /**
    * Get all changed bookmarks with their change types.
-   * @returns {Promise<Object>} An object mapping bookmark+workspace pairs to their change data.
+   *
+   * @returns {Promise<object>} An object mapping bookmark+workspace pairs to their change data.
    */
   async getChangedIDs() {
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
@@ -143,10 +149,10 @@ window.ZenWorkspaceBookmarksStorage = {
 
     const changes = {};
     for (const row of rows) {
-      const key = `${row.getResultByName('bookmark_guid')}:${row.getResultByName('workspace_uuid')}`;
+      const key = `${row.getResultByName("bookmark_guid")}:${row.getResultByName("workspace_uuid")}`;
       changes[key] = {
-        type: row.getResultByName('change_type'),
-        timestamp: row.getResultByName('timestamp'),
+        type: row.getResultByName("change_type"),
+        timestamp: row.getResultByName("timestamp"),
       };
     }
     return changes;
@@ -157,7 +163,7 @@ window.ZenWorkspaceBookmarksStorage = {
    */
   async clearChangedIDs() {
     await this.lazy.PlacesUtils.withConnectionWrapper(
-      'ZenWorkspaceBookmarksStorage.clearChangedIDs',
+      "ZenWorkspaceBookmarksStorage.clearChangedIDs",
       async (db) => {
         await db.execute(`DELETE FROM zen_bookmarks_workspaces_changes`);
       }

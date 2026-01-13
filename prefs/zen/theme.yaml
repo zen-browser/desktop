@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.theme.accent-color
-  value: 'AccentColor'
+  value: "AccentColor"
 
 - name: zen.theme.content-element-separation
   value: 8
@@ -30,11 +30,11 @@
   value: true
 
 - name: zen.theme.styled-status-panel
-  value: '@IS_TWILIGHT@'
+  value: "@IS_TWILIGHT@"
 
 - name: zen.theme.styled-status-panel
   value: true
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: zen.theme.hide-unified-extensions-button
   value: true

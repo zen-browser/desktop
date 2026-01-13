@@ -92,13 +92,7 @@
       opacity: 1;
       --special-color: color-mix(in srgb, var(--zen-primary-color), currentColor 50%);
       --specia-color-2: color-mix(in srgb, var(--zen-primary-color), currentColor 90%);
-      background: linear-gradient(
-        135deg,
-        var(--specia-color-2),
-        var(--special-color),
-        var(--specia-color-2),
-        var(--special-color)
-      );
+      background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2), var(--special-color));
       background-size: 400%;
       filter: saturate(3);
       background-clip: text;

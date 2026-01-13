@@ -53,7 +53,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
           <ellipse cx="18" cy="16" rx="1.25" ry="1.25"/>
         </g>
       </svg>`,
-    'image/svg+xml'
+    "image/svg+xml"
   ).documentElement;
 
   constructor() {
@@ -70,29 +70,30 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     this._activeTabs = [];
     this.icon.appendChild(nsZenFolder.rawIcon.cloneNode(true));
 
-    this.labelElement.parentElement.setAttribute('context', 'zenFolderActions');
+    this.labelElement.parentElement.setAttribute("context", "zenFolderActions");
 
     this.labelElement.onRenameFinished = (newLabel) => {
-      this.name = newLabel.trim() || 'Folder';
-      const event = new CustomEvent('ZenFolderRenamed', {
+      this.name = newLabel.trim() || "Folder";
+      const event = new CustomEvent("ZenFolderRenamed", {
         bubbles: true,
       });
       this.dispatchEvent(event);
     };
 
     if (this.collapsed) {
-      this.groupContainer.setAttribute('hidden', true);
+      this.groupContainer.setAttribute("hidden", true);
     }
   }
 
   get icon() {
-    return this.querySelector('.tab-group-folder-icon');
+    return this.querySelector(".tab-group-folder-icon");
   }
 
   /**
    * Returns the group this folder belongs to.
+   *
    * @returns {MozTabbrowserTabGroup|null} The group this folder belongs to, or null if it is not part of a group.
-   **/
+   */
   get group() {
     if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
       return this.parentElement.parentElement;
@@ -107,10 +108,12 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   get activeGroups() {
     let activeGroups = [];
     let currentGroup = this;
-    if (currentGroup?.hasAttribute('has-active')) activeGroups.push(currentGroup);
+    if (currentGroup?.hasAttribute("has-active")) {
+      activeGroups.push(currentGroup);
+    }
     while (currentGroup?.group) {
       currentGroup = currentGroup?.group;
-      if (currentGroup?.hasAttribute('has-active')) {
+      if (currentGroup?.hasAttribute("has-active")) {
         activeGroups.push(currentGroup);
       }
     }
@@ -118,14 +121,14 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get childActiveGroups() {
-    if (this.tagName === 'zen-workspace-collapsible-pins') {
-      return Array.from(this.parentElement.querySelectorAll('zen-folder[has-active]'));
+    if (this.tagName === "zen-workspace-collapsible-pins") {
+      return Array.from(this.parentElement.querySelectorAll("zen-folder[has-active]"));
     }
-    return Array.from(this.querySelectorAll('zen-folder[has-active]'));
+    return Array.from(this.querySelectorAll("zen-folder[has-active]"));
   }
 
   rename() {
-    if (!document.documentElement.hasAttribute('zen-sidebar-expanded')) {
+    if (!document.documentElement.hasAttribute("zen-sidebar-expanded")) {
       return;
     }
     gZenVerticalTabsManager.renameTabStart({
@@ -143,7 +146,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     } while (currentFolder);
     gZenFolders.createFolder([], {
       renameFolder: !gZenUIManager.testingEnabled,
-      label: 'Subfolder',
+      label: "Subfolder",
       insertAfter: this.groupContainer.lastElementChild,
     });
   }
@@ -151,8 +154,8 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   async unpackTabs() {
     this.collapsed = false;
     for (let tab of this.allItems.reverse()) {
-      tab = tab.group.hasAttribute('split-view-group') ? tab.group : tab;
-      if (tab.hasAttribute('zen-empty-tab')) {
+      tab = tab.group.hasAttribute("split-view-group") ? tab.group : tab;
+      if (tab.hasAttribute("zen-empty-tab")) {
         gBrowser.removeTab(tab);
       } else {
         gBrowser.ungroupTab(tab);
@@ -162,7 +165,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   async delete() {
     for (const tab of this.allItemsRecursive) {
-      if (tab.hasAttribute('zen-empty-tab')) {
+      if (tab.hasAttribute("zen-empty-tab")) {
         // Manually remove the empty tabs as removeTabs() inside removeTabGroup
         // does ignore them.
         gBrowser.removeTab(tab);
@@ -187,8 +190,8 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     return [...this.groupContainer.children].filter(
       (child) =>
         !(
-          child.classList.contains('zen-tab-group-start') ||
-          child.classList.contains('pinned-tabs-container-separator')
+          child.classList.contains("zen-tab-group-start") ||
+          child.classList.contains("pinned-tabs-container-separator")
         )
     );
   }
@@ -207,26 +210,26 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   set pinned(value) {}
 
   get iconURL() {
-    return this.icon.querySelector('image')?.getAttribute('href') || '';
+    return this.icon.querySelector("image")?.getAttribute("href") || "";
   }
 
   set activeTabs(tabs) {
     if (tabs.length) {
       this._activeTabs = tabs;
       for (let tab of tabs) {
-        tab.setAttribute('folder-active', 'true');
+        tab.setAttribute("folder-active", "true");
       }
     } else {
       const folders = new Map();
       for (let tab of this._activeTabs) {
-        const group = tab?.group?.hasAttribute('split-view-group') ? tab?.group?.group : tab?.group;
+        const group = tab?.group?.hasAttribute("split-view-group") ? tab?.group?.group : tab?.group;
         if (!folders.has(group?.id)) {
           folders.set(group?.id, group?.activeGroups?.at(-1));
         }
         let activeGroup = folders.get(group?.id);
         if (!activeGroup) {
-          tab.removeAttribute('folder-active');
-          tab.style.removeProperty('--zen-folder-indent');
+          tab.removeAttribute("folder-active");
+          tab.style.removeProperty("--zen-folder-indent");
         }
       }
       this._activeTabs = [];
@@ -239,7 +242,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get resetButton() {
-    return this.labelElement.parentElement.querySelector('.tab-reset-button');
+    return this.labelElement.parentElement.querySelector(".tab-reset-button");
   }
 
   unloadAllTabs(event) {
@@ -266,6 +269,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   /**
    * Get the root most collapsed folder in the tree.
+   *
    * @returns {ZenFolder|null} The root most collapsed folder, or null if none are collapsed.
    */
   get rootMostCollapsedFolder() {
@@ -281,4 +285,4 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 }
 
-customElements.define('zen-folder', nsZenFolder);
+customElements.define("zen-folder", nsZenFolder);

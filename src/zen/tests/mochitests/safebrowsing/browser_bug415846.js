@@ -4,8 +4,8 @@ menu items.
 Mac makes this astonishingly painful to test since their help menu is special magic,
 but we can at least test it on the other platforms.*/
 
-const NORMAL_PAGE = "http://example.com";
-const PHISH_PAGE = "http://www.itisatrap.org/firefox/its-a-trap.html";
+const NORMAL_PAGE = "https://example.com";
+const PHISH_PAGE = "https://www.itisatrap.org/firefox/its-a-trap.html";
 
 /**
  * Opens a new tab and browses to some URL, tests for the existence
@@ -13,14 +13,13 @@ const PHISH_PAGE = "http://www.itisatrap.org/firefox/its-a-trap.html";
  * the state of the menu once opened. This function will take care of
  * opening and closing the menu.
  *
- * @param url (string)
- *        The URL to browse the tab to.
- * @param testFn (function)
+ * @param {string} url The URL to browse the tab to.
+ * @param {Function} testFn
  *        The function to run once the menu has been opened. This
  *        function will be passed the "reportMenu" and "errorMenu"
  *        DOM nodes as arguments, in that order. This function
  *        should not yield anything.
- * @returns Promise
+ * @returns {Promise} Promise that resolves when the test is complete
  */
 function check_menu_at_page(url, testFn) {
   return BrowserTestUtils.withNewTab(

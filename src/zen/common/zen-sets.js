@@ -3,114 +3,115 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 document.addEventListener(
-  'MozBeforeInitialXULLayout',
+  "MozBeforeInitialXULLayout",
   () => {
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
-    document.getElementById('zenCommandSet').addEventListener('command', (event) => {
+    // eslint-disable-next-line complexity
+    document.getElementById("zenCommandSet").addEventListener("command", (event) => {
       switch (event.target.id) {
-        case 'cmd_zenCompactModeToggle':
+        case "cmd_zenCompactModeToggle":
           gZenCompactModeManager.toggle();
           break;
-        case 'cmd_zenCompactModeShowSidebar':
+        case "cmd_zenCompactModeShowSidebar":
           gZenCompactModeManager.toggleSidebar();
           break;
-        case 'cmd_toggleCompactModeIgnoreHover':
+        case "cmd_toggleCompactModeIgnoreHover":
           gZenCompactModeManager.toggle(true);
           break;
-        case 'cmd_zenWorkspaceForward':
+        case "cmd_zenWorkspaceForward":
           gZenWorkspaces.changeWorkspaceShortcut();
           break;
-        case 'cmd_zenWorkspaceBackward':
+        case "cmd_zenWorkspaceBackward":
           gZenWorkspaces.changeWorkspaceShortcut(-1);
           break;
-        case 'cmd_zenSplitViewGrid':
-          gZenViewSplitter.toggleShortcut('grid');
+        case "cmd_zenSplitViewGrid":
+          gZenViewSplitter.toggleShortcut("grid");
           break;
-        case 'cmd_zenSplitViewVertical':
-          gZenViewSplitter.toggleShortcut('vsep');
+        case "cmd_zenSplitViewVertical":
+          gZenViewSplitter.toggleShortcut("vsep");
           break;
-        case 'cmd_zenSplitViewHorizontal':
-          gZenViewSplitter.toggleShortcut('hsep');
+        case "cmd_zenSplitViewHorizontal":
+          gZenViewSplitter.toggleShortcut("hsep");
           break;
-        case 'cmd_zenSplitViewUnsplit':
-          gZenViewSplitter.toggleShortcut('unsplit');
+        case "cmd_zenSplitViewUnsplit":
+          gZenViewSplitter.toggleShortcut("unsplit");
           break;
-        case 'cmd_zenSplitViewContextMenu':
+        case "cmd_zenSplitViewContextMenu":
           gZenViewSplitter.contextSplitTabs();
           break;
-        case 'cmd_zenCopyCurrentURLMarkdown':
+        case "cmd_zenCopyCurrentURLMarkdown":
           gZenCommonActions.copyCurrentURLAsMarkdownToClipboard();
           break;
-        case 'cmd_zenCopyCurrentURL':
+        case "cmd_zenCopyCurrentURL":
           gZenCommonActions.copyCurrentURLToClipboard();
           break;
-        case 'cmd_zenPinnedTabReset':
+        case "cmd_zenPinnedTabReset":
           gZenPinnedTabManager.resetPinnedTab(gBrowser.selectedTab);
           break;
-        case 'cmd_zenPinnedTabResetNoTab':
+        case "cmd_zenPinnedTabResetNoTab":
           gZenPinnedTabManager.resetPinnedTab();
           break;
-        case 'cmd_zenToggleSidebar':
+        case "cmd_zenToggleSidebar":
           gZenVerticalTabsManager.toggleExpand();
           break;
-        case 'cmd_zenOpenZenThemePicker':
+        case "cmd_zenOpenZenThemePicker":
           gZenThemePicker.openThemePicker(event);
           break;
-        case 'cmd_zenChangeWorkspaceTab':
+        case "cmd_zenChangeWorkspaceTab":
           gZenWorkspaces.changeTabWorkspace(
-            event.sourceEvent.target.getAttribute('zen-workspace-id')
+            event.sourceEvent.target.getAttribute("zen-workspace-id")
           );
           break;
-        case 'cmd_zenToggleTabsOnRight':
+        case "cmd_zenToggleTabsOnRight":
           gZenVerticalTabsManager.toggleTabsOnRight();
           break;
-        case 'cmd_zenSplitViewLinkInNewTab':
+        case "cmd_zenSplitViewLinkInNewTab":
           gZenViewSplitter.splitLinkInNewTab();
           break;
-        case 'cmd_zenNewEmptySplit':
+        case "cmd_zenNewEmptySplit":
           setTimeout(() => {
             gZenViewSplitter.createEmptySplit();
           }, 0);
           break;
-        case 'cmd_zenReplacePinnedUrlWithCurrent':
+        case "cmd_zenReplacePinnedUrlWithCurrent":
           gZenPinnedTabManager.replacePinnedUrlWithCurrent();
           break;
-        case 'cmd_contextZenAddToEssentials':
+        case "cmd_contextZenAddToEssentials":
           gZenPinnedTabManager.addToEssentials();
           break;
-        case 'cmd_contextZenRemoveFromEssentials':
+        case "cmd_contextZenRemoveFromEssentials":
           gZenPinnedTabManager.removeEssentials();
           break;
-        case 'cmd_zenCtxDeleteWorkspace':
+        case "cmd_zenCtxDeleteWorkspace":
           gZenWorkspaces.contextDeleteWorkspace(event);
           break;
-        case 'cmd_zenChangeWorkspaceName':
+        case "cmd_zenChangeWorkspaceName":
           gZenVerticalTabsManager.renameTabStart({
             target: gZenWorkspaces.activeWorkspaceIndicator.querySelector(
-              '.zen-current-workspace-indicator-name'
+              ".zen-current-workspace-indicator-name"
             ),
           });
           break;
-        case 'cmd_zenChangeWorkspaceIcon':
+        case "cmd_zenChangeWorkspaceIcon":
           gZenWorkspaces.changeWorkspaceIcon();
           break;
-        case 'cmd_zenReorderWorkspaces':
-          gZenUIManager.showToast('zen-workspaces-how-to-reorder-title', {
+        case "cmd_zenReorderWorkspaces":
+          gZenUIManager.showToast("zen-workspaces-how-to-reorder-title", {
             timeout: 9000,
-            descriptionId: 'zen-workspaces-how-to-reorder-desc',
+            descriptionId: "zen-workspaces-how-to-reorder-desc",
           });
           break;
-        case 'cmd_zenOpenWorkspaceCreation':
+        case "cmd_zenOpenWorkspaceCreation":
           gZenWorkspaces.openWorkspaceCreation(event);
           break;
-        case 'cmd_zenOpenFolderCreation':
+        case "cmd_zenOpenFolderCreation":
           gZenFolders.createFolder([], {
             renameFolder: true,
           });
           break;
-        case 'cmd_zenTogglePinTab': {
+        case "cmd_zenTogglePinTab": {
           const currentTab = gBrowser.selectedTab;
-          if (currentTab && !currentTab.hasAttribute('zen-empty-tab')) {
+          if (currentTab && !currentTab.hasAttribute("zen-empty-tab")) {
             if (currentTab.pinned) {
               gBrowser.unpinTab(currentTab);
             } else {
@@ -119,20 +120,20 @@ document.addEventListener(
           }
           break;
         }
-        case 'cmd_zenCloseUnpinnedTabs':
+        case "cmd_zenCloseUnpinnedTabs":
           gZenWorkspaces.closeAllUnpinnedTabs();
           break;
-        case 'cmd_zenUnloadWorkspace': {
+        case "cmd_zenUnloadWorkspace": {
           gZenWorkspaces.unloadWorkspace();
           break;
         }
-        case 'cmd_zenNewNavigatorUnsynced':
+        case "cmd_zenNewNavigatorUnsynced":
           OpenBrowserWindow({ zenSyncedWindow: false });
           break;
         default:
           gZenGlanceManager.handleMainCommandSet(event);
-          if (event.target.id.startsWith('cmd_zenWorkspaceSwitch')) {
-            const index = parseInt(event.target.id.replace('cmd_zenWorkspaceSwitch', ''), 10) - 1;
+          if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {
+            const index = parseInt(event.target.id.replace("cmd_zenWorkspaceSwitch", ""), 10) - 1;
             gZenWorkspaces.shortcutSwitchTo(index);
           }
           break;

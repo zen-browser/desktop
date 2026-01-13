@@ -29,8 +29,8 @@
 /* ==========================================================================
    Single Toolbar Mode Specific Styles (`zen-single-toolbar='true'`)
    ========================================================================== */
-:root[zen-single-toolbar='true'] {
-  @media (-moz-platform: macos) and (not -moz-pref('zen.view.mac.show-three-dot-menu')) {
+:root[zen-single-toolbar="true"] {
+  @media (-moz-platform: macos) and (not -moz-pref("zen.view.mac.show-three-dot-menu")) {
     &:not([customizing]) #PanelUI-button:not([open]):not([panelopen]) {
       position: absolute;
       opacity: 0;
@@ -51,20 +51,20 @@
 /* ==========================================================================
    Vertical Tabs Mode Specific Styles (`zen.tabs.vertical` pref)
    ========================================================================== */
-@media -moz-pref('zen.tabs.vertical') {
-  :root:not([zen-window-buttons-reversed='true']) {
+@media -moz-pref("zen.tabs.vertical") {
+  :root:not([zen-window-buttons-reversed="true"]) {
     & .titlebar-buttonbox-container {
       margin-left: auto;
       width: fit-content;
     }
 
-    &:root[zen-right-side='true'] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
+    &:root[zen-right-side="true"] #zen-sidebar-top-buttons .titlebar-buttonbox-container {
       margin-right: calc(-1 * var(--zen-toolbox-padding));
     }
   }
 }
 
-:root[zen-window-buttons-reversed='true'] .titlebar-buttonbox-container {
+:root[zen-window-buttons-reversed="true"] .titlebar-buttonbox-container {
   margin-right: auto;
   width: fit-content;
 }
@@ -89,21 +89,18 @@
     --zen-min-toolbox-padding: 0.35rem;
   }
 
-  --zen-toolbox-padding: max(
-    var(--zen-min-toolbox-padding),
-    calc(var(--zen-element-separation) / 1.5)
-  );
+  --zen-toolbox-padding: max(var(--zen-min-toolbox-padding), calc(var(--zen-element-separation) / 1.5));
 }
 
 /* ==========================================================================
    Single Toolbar Mode - Further Layout Adjustments
    ========================================================================== */
-:root[zen-single-toolbar='true'] {
+:root[zen-single-toolbar="true"] {
   #urlbar-container {
     width: -moz-available !important;
   }
 
-  & #urlbar-container[breakout='true']:has(#urlbar[zen-floating-urlbar='true']) {
+  & #urlbar-container[breakout="true"]:has(#urlbar[zen-floating-urlbar="true"]) {
     --urlbar-container-height: 36px !important;
     --urlbar-height: 38px !important;
   }
@@ -116,7 +113,7 @@
 
   & #zen-sidebar-top-buttons {
     margin: calc(var(--zen-toolbox-padding) / 2) 0;
-    :root[zen-right-side='true']:not([zen-window-buttons-reversed='true']) & {
+    :root[zen-right-side="true"]:not([zen-window-buttons-reversed="true"]) & {
       margin-top: 0;
     }
   }
@@ -182,7 +179,7 @@
     font-weight: 500;
     gap: 2px;
 
-    #navigator-toolbox[zen-has-implicit-hover='true'] & {
+    #navigator-toolbox[zen-has-implicit-hover="true"] & {
       visibility: visible;
       opacity: 0.5;
     }
@@ -191,7 +188,7 @@
       opacity: 1 !important;
     }
 
-    :root:not([zen-sidebar-expanded='true']) & {
+    :root:not([zen-sidebar-expanded="true"]) & {
       display: none;
     }
 
@@ -214,7 +211,7 @@
     }
   }
 
-  :root[zen-unsynced-window='true'] & {
+  :root[zen-unsynced-window="true"] & {
     transform: translateY(-4px);
   }
 }
@@ -246,8 +243,8 @@
 }
 
 /* Hide default titlebar spacers */
-.titlebar-spacer[type='pre-tabs'],
-.titlebar-spacer[type='post-tabs'] {
+.titlebar-spacer[type="pre-tabs"],
+.titlebar-spacer[type="post-tabs"] {
   display: none;
 }
 
@@ -260,7 +257,7 @@
   gap: 0;
 
   &::after {
-    content: '';
+    content: "";
     display: block;
     height: 1px;
     margin: 0 auto;
@@ -320,7 +317,7 @@
         var(--zen-tabbox-element-indent-transition);
     }
 
-    :root[zen-sidebar-expanded='true'] &:not([zen-glance-tab]) {
+    :root[zen-sidebar-expanded="true"] &:not([zen-glance-tab]) {
       margin-inline-start: var(--zen-folder-indent) !important;
     }
 
@@ -344,11 +341,7 @@
       &:not([src]),
       &:-moz-broken {
         content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
-        background: color-mix(
-          in srgb,
-          var(--zen-primary-color) 80%,
-          light-dark(rgb(0, 0, 0), rgb(255, 255, 255))
-        );
+        background: color-mix(in srgb, var(--zen-primary-color) 80%, light-dark(rgb(0, 0, 0), rgb(255, 255, 255)));
       }
     }
 
@@ -408,13 +401,13 @@
       }
 
       &[soundplaying]:not([muted]) .tab-icon-stack::after {
-        content: '';
+        content: "";
         position: absolute;
         width: 110%;
         height: 110%;
         background-repeat: no-repeat;
         opacity: 1;
-        background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+        background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
         top: -70%;
         left: 50%;
         transform: translateX(-50%);
@@ -427,7 +420,7 @@
 
     /* --- Essentials Glance Tab Specifics (Floating) --- */
     /* Additional styles for glance tabs in "essential" mode */
-    &[zen-essential='true'] .tabbrowser-tab {
+    &[zen-essential="true"] .tabbrowser-tab {
       position: absolute;
       top: 0px;
       right: 0px;
@@ -472,7 +465,7 @@
   overflow-y: auto;
   height: 100%;
 
-  :root[zen-workspace-id][zen-sidebar-expanded='true'] & {
+  :root[zen-workspace-id][zen-sidebar-expanded="true"] & {
     margin-left: calc(-1 * var(--zen-toolbox-padding));
     width: calc(100% + var(--zen-toolbox-padding) * 2);
   }
@@ -495,7 +488,7 @@
   margin: 0;
 }
 
-#navigator-toolbox[zen-sidebar-expanded='true'] {
+#navigator-toolbox[zen-sidebar-expanded="true"] {
   --zen-toolbox-min-width: fit-content;
 
   padding: var(--zen-toolbox-padding);
@@ -523,8 +516,8 @@
   & #nav-bar {
     padding-right: 0;
 
-    :root[zen-single-toolbar='true']:not([zen-has-empty-tab='true']) & {
-      & #urlbar:not([breakout-extend='true']) .urlbar-input-container {
+    :root[zen-single-toolbar="true"]:not([zen-has-empty-tab="true"]) & {
+      & #urlbar:not([breakout-extend="true"]) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }
@@ -535,12 +528,12 @@
     margin-top: 0;
   }
 
-  & .zen-current-workspace-indicator-icon[no-icon='true'] {
+  & .zen-current-workspace-indicator-icon[no-icon="true"] {
     display: none;
   }
 
   & #zen-workspaces-button {
-    & .zen-workspace-sidebar-icon[no-icon='true'] {
+    & .zen-workspace-sidebar-icon[no-icon="true"] {
       display: none;
     }
   }
@@ -557,10 +550,10 @@
     --tab-min-height: 44px;
   }
 
-  &[zen-right-side='true'] {
+  &[zen-right-side="true"] {
     padding-left: 0;
   }
-  &:not([zen-right-side='true']) {
+  &:not([zen-right-side="true"]) {
     padding-right: 0;
     padding-left: var(--zen-toolbox-padding);
   }
@@ -624,10 +617,7 @@
 
       /* --- Pinned Tab Icon Repositioning & Reset Button --- */
       /* Reposition icon stack absolutely when tab is pinned (and not essential) */
-      &[zen-pinned-changed='true']:not([zen-essential])
-        > .tab-stack
-        > .tab-content
-        > .tab-icon-stack {
+      &[zen-pinned-changed="true"]:not([zen-essential]) > .tab-stack > .tab-content > .tab-icon-stack {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -640,11 +630,11 @@
         }
       }
 
-      &[zen-pinned-changed='true']:not([zen-essential]) .tab-reset-pin-button image {
+      &[zen-pinned-changed="true"]:not([zen-essential]) .tab-reset-pin-button image {
         opacity: 0;
       }
 
-      &[zen-pinned-changed='true']:not([zen-essential]) .tab-reset-pin-button:hover {
+      &[zen-pinned-changed="true"]:not([zen-essential]) .tab-reset-pin-button:hover {
         & ~ .tab-label-container .tab-reset-pin-label {
           max-height: 10px;
           opacity: 0.6;
@@ -684,13 +674,13 @@
   }
 }
 
-:root:not([zen-sidebar-expanded='true']) {
+:root:not([zen-sidebar-expanded="true"]) {
   --tab-min-width: 48px !important;
   --zen-toolbox-padding: 6px !important;
   --zen-toolbox-max-width: calc(var(--tab-min-width) + var(--zen-toolbox-padding) * 2);
 }
 
-#navigator-toolbox:not([zen-sidebar-expanded='true']) {
+#navigator-toolbox:not([zen-sidebar-expanded="true"]) {
   max-width: var(--zen-toolbox-max-width) !important;
   min-width: var(--zen-toolbox-max-width) !important;
   padding-bottom: var(--zen-toolbox-padding);
@@ -713,7 +703,7 @@
       height: 100%;
     }
 
-    &:is([open='true'], :hover) .zen-current-workspace-indicator-icon {
+    &:is([open="true"], :hover) .zen-current-workspace-indicator-icon {
       display: none;
     }
   }
@@ -857,7 +847,7 @@
   }
 }
 
-:root:not([zen-sidebar-expanded='true']) #zen-sidebar-splitter {
+:root:not([zen-sidebar-expanded="true"]) #zen-sidebar-splitter {
   display: none !important;
 }
 
@@ -873,7 +863,7 @@
   order: 0;
 }
 
-:root[zen-right-side='true'] {
+:root[zen-right-side="true"] {
   & #navigator-toolbox {
     order: 10 !important;
   }
@@ -885,18 +875,18 @@
 
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    &[pinned]:not([pending='true']) .tab-close-button {
+    &[pinned]:not([pending="true"]) .tab-close-button {
       display: none !important;
     }
 
-    &[pinned]:not([pending='true']):not([zen-essential]) {
+    &[pinned]:not([pending="true"]):not([zen-essential]) {
       &:hover .tab-reset-button,
       &[visuallyselected] .tab-reset-button {
         display: block;
       }
     }
 
-    &:not([zen-pinned-changed='true']) .tab-reset-pin-button {
+    &:not([zen-pinned-changed="true"]) .tab-reset-pin-button {
       display: none;
     }
 
@@ -942,8 +932,7 @@
   height: calc(100% - var(--tab-block-margin) * 2);
   margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-block-margin));
   margin-right: 8px;
-  padding: 0 calc(var(--toolbarbutton-inner-padding) - 2px) 0
-    calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px);
+  padding: 0 calc(var(--toolbarbutton-inner-padding) - 2px) 0 calc(var(--toolbarbutton-inner-padding) / 4 + var(--tab-inline-padding) - 2px);
   border-radius: 0;
   border-top-left-radius: var(--border-radius-medium);
   width: unset;
@@ -960,7 +949,7 @@
   }
 
   &::after {
-    content: '';
+    content: "";
     display: block;
     width: 2.5px;
     height: 16px;
@@ -1019,11 +1008,11 @@
   order: -1;
   min-width: unset !important;
 
-  :root[zen-sidebar-expanded='true'] & {
+  :root[zen-sidebar-expanded="true"] & {
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
   }
 
-  :root[zen-single-toolbar='true'] & {
+  :root[zen-single-toolbar="true"] & {
     --zen-toolbar-height: 36px;
     @media (-moz-platform: macos) {
       --zen-toolbar-height: 38px;
@@ -1042,7 +1031,7 @@
       padding-inline-end: var(--toolbarbutton-outer-padding);
     }
 
-    :root:not([zen-sidebar-expanded='true']) & toolbarspring {
+    :root:not([zen-sidebar-expanded="true"]) & toolbarspring {
       display: none;
     }
   }
@@ -1061,7 +1050,7 @@
   -moz-user-focus: ignore !important;
 }
 
-@media -moz-pref('zen.tabs.show-newtab-vertical') {
+@media -moz-pref("zen.tabs.show-newtab-vertical") {
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
     display: flex !important;
@@ -1091,7 +1080,7 @@
       --zen-colors-border: var(--zen-colors-tertiary);
     }
 
-    @media -moz-pref('zen.view.show-newtab-button-top') {
+    @media -moz-pref("zen.view.show-newtab-button-top") {
       order: -1;
     }
   }
@@ -1119,24 +1108,14 @@
     grid-template-columns 0.3s ease-out;
   opacity: 1;
   --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr)
-  );
-  &[data-hack-type='1'] {
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(max(30%, var(--min-essentials-width-wrap)), auto)
-    );
+  grid-template-columns: repeat(auto-fit, minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr));
+  &[data-hack-type="1"] {
+    grid-template-columns: repeat(auto-fit, minmax(max(30%, var(--min-essentials-width-wrap)), auto));
   }
-  &[data-hack-type='2'] {
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
-        minmax(max(23%, var(--min-essentials-width-wrap)), 1fr)
-    );
+  &[data-hack-type="2"] {
+    grid-template-columns: repeat(auto-fit, minmax(max(23%, var(--min-essentials-width-wrap)), 1fr) minmax(max(23%, var(--min-essentials-width-wrap)), 1fr));
   }
-  &[data-hack-type='3'] {
+  &[data-hack-type="3"] {
     grid-template-columns: repeat(auto-fit, minmax(max(25%, 48px), 1fr));
   }
   scrollbar-width: thin;
@@ -1147,15 +1126,13 @@
 
   position: absolute;
 
-  :root[zen-single-toolbar='true'] &:not(:empty) {
+  :root[zen-single-toolbar="true"] &:not(:empty) {
     padding-top: 6px;
   }
 
-  &[hidden='true'] {
+  &[hidden="true"] {
     --hidden-essentials-width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
-    max-width: var(
-      --hidden-essentials-width
-    ) !important; /* To still allow essentials to grid the tabs */
+    max-width: var(--hidden-essentials-width) !important; /* To still allow essentials to grid the tabs */
     min-width: var(--hidden-essentials-width) !important;
 
     visibility: hidden;
@@ -1168,7 +1145,7 @@
   }
 }
 
-.tabbrowser-tab[zen-essential='true'],
+.tabbrowser-tab[zen-essential="true"],
 #zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
   --toolbarbutton-inner-padding: 0;
   max-width: unset;
@@ -1180,7 +1157,7 @@
 
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
 
-  &:not([visuallyselected], [multiselected='true']) .tab-background {
+  &:not([visuallyselected], [multiselected="true"]) .tab-background {
     background: var(--zen-toolbar-element-bg);
     border: none;
   }
@@ -1204,10 +1181,10 @@
     background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-selected-bgcolor));
   }
 
-  @media -moz-pref('zen.theme.essentials-favicon-bg') {
+  @media -moz-pref("zen.theme.essentials-favicon-bg") {
     &[visuallyselected] > .tab-stack > .tab-background {
       &::after {
-        content: '';
+        content: "";
         inset: -50%;
         filter: blur(20px);
         position: absolute;
@@ -1225,24 +1202,12 @@
       position: relative;
       --zen-essential-bg-margin: 2px;
 
-      --zen-essential-tab-selected-bg: light-dark(
-        rgba(255, 255, 255, 0.85),
-        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 40%)
-      );
-      --zen-essential-tab-selected-bg-hover: light-dark(
-        rgba(255, 255, 255, 0.8),
-        color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 30%)
-      );
+      --zen-essential-tab-selected-bg: light-dark(rgba(255, 255, 255, 0.85), color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 40%));
+      --zen-essential-tab-selected-bg-hover: light-dark(rgba(255, 255, 255, 0.8), color-mix(in srgb, var(--zen-primary-color), rgba(132, 132, 132, 0.85) 30%));
 
-      :root[zen-default-theme='true'] & {
-        --zen-essential-tab-selected-bg: light-dark(
-          rgba(255, 255, 255, 0.85),
-          rgba(68, 64, 64, 0.85)
-        );
-        --zen-essential-tab-selected-bg-hover: light-dark(
-          rgba(255, 255, 255, 0.8),
-          rgba(68, 64, 64, 0.75)
-        );
+      :root[zen-default-theme="true"] & {
+        --zen-essential-tab-selected-bg: light-dark(rgba(255, 255, 255, 0.85), rgba(68, 64, 64, 0.85));
+        --zen-essential-tab-selected-bg-hover: light-dark(rgba(255, 255, 255, 0.8), rgba(68, 64, 64, 0.75));
       }
 
       &::before {
@@ -1252,7 +1217,7 @@
         position: absolute;
         inset: 0;
         z-index: 0;
-        content: '';
+        content: "";
         transition: background 0.1s ease-in-out;
       }
     }
@@ -1265,11 +1230,7 @@
 
 #zen-drag-indicator {
   --zen-drag-indicator-height: 2px;
-  --zen-drag-indicator-bg: color-mix(
-    in srgb,
-    var(--zen-primary-color) 50%,
-    light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.95)) 50%
-  );
+  --zen-drag-indicator-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.95)) 50%);
 
   position: fixed;
   z-index: 1000;
@@ -1278,7 +1239,7 @@
   border-radius: 5px;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     height: calc(2 * var(--zen-drag-indicator-height));
     width: calc(2 * var(--zen-drag-indicator-height));
@@ -1287,7 +1248,7 @@
     background: transparent;
   }
 
-  &[orientation='horizontal'] {
+  &[orientation="horizontal"] {
     left: calc(var(--indicator-left) + 2 * var(--zen-drag-indicator-height) + 4px);
     width: calc(var(--indicator-width) - 2 * var(--zen-drag-indicator-height) - 4px);
     height: var(--zen-drag-indicator-height);
@@ -1303,7 +1264,7 @@
     }
   }
 
-  &[orientation='vertical'] {
+  &[orientation="vertical"] {
     top: calc(var(--indicator-top) + 2 * var(--zen-drag-indicator-height) + 4px);
     height: calc(var(--indicator-height) - 2 * var(--zen-drag-indicator-height) - 4px);
     width: var(--zen-drag-indicator-height);
@@ -1347,11 +1308,11 @@
   &:not(.zen-essentials-container) {
     display: flex;
 
-    :root[zen-sidebar-expanded='true'] & {
+    :root[zen-sidebar-expanded="true"] & {
       min-width: calc(100% - var(--zen-toolbox-padding) * 2);
     }
 
-    :root:not([zen-sidebar-expanded='true']) & {
+    :root:not([zen-sidebar-expanded="true"]) & {
       max-width: var(--zen-sidebar-width);
       align-items: center;
     }
@@ -1363,12 +1324,12 @@
   }
 }
 
-#tabs-newtab-button:not([in-urlbar='true']) label,
+#tabs-newtab-button:not([in-urlbar="true"]) label,
 .zen-current-workspace-indicator-name {
   opacity: 0.7;
 }
 
-@media (-moz-pref('zen.theme.hide-tab-throbber')) {
+@media (-moz-pref("zen.theme.hide-tab-throbber")) {
   .tab-throbber {
     display: none !important;
   }

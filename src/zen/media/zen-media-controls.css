@@ -115,13 +115,13 @@
   }
 
   & #zen-media-focus-button::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 110%;
     height: 110%;
     background-repeat: no-repeat;
     opacity: 1;
-    background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+    background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
     top: -70%;
     left: 50%;
     transform: translateX(-50%);
@@ -238,7 +238,7 @@
   min-width: 1px;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     width: 0.6em;
     background: linear-gradient(to right, var(--zen-sidebar-notification-bg) 0%, transparent 100%);
@@ -309,7 +309,7 @@
   }
 }
 
-:root:not([zen-sidebar-expanded='true']) {
+:root:not([zen-sidebar-expanded="true"]) {
   #zen-media-controls-toolbar {
     display: none;
   }

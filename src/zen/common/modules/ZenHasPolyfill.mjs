@@ -9,13 +9,16 @@ class nsHasPolyfill {
   }
 
   /**
-   * @param {{selector: string, exists: boolean}} descendantSelectors
+   * @param {HTMLElement} element
+   * @param {Array<{selector: string, exists: boolean}>} descendantSelectors
+   * @param {string} stateAttribute
+   * @param {Array<string>} attributeFilter
    */
   observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
     const updateState = () => {
       const exists = descendantSelectors.some(({ selector }) => {
         let selected = element.querySelector(selector);
-        if (selected?.tagName?.toLowerCase() === 'menu') {
+        if (selected?.tagName?.toLowerCase() === "menu") {
           return null;
         }
         return selected;
@@ -25,10 +28,8 @@ class nsHasPolyfill {
         if (!element.hasAttribute(stateAttribute)) {
           gZenCompactModeManager._setElementExpandAttribute(element, true, stateAttribute);
         }
-      } else {
-        if (element.hasAttribute(stateAttribute)) {
-          gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
-        }
+      } else if (element.hasAttribute(stateAttribute)) {
+        gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
       }
     };
 
@@ -70,6 +71,6 @@ class nsHasPolyfill {
 }
 
 const hasPolyfillInstance = new nsHasPolyfill();
-window.addEventListener('unload', () => hasPolyfillInstance.destroy(), { once: true });
+window.addEventListener("unload", () => hasPolyfillInstance.destroy(), { once: true });
 
 window.ZenHasPolyfill = hasPolyfillInstance;

@@ -3,30 +3,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-panel[type='arrow'] {
+panel[type="arrow"] {
   @media (-moz-platform: macos) and (-moz-panel-animations) {
-    &[side='bottom'] {
+    &[side="bottom"] {
       /* Animate from the bottom */
       -zen-window-transform-origin: 0 100%;
     }
-    :root[zen-right-side='true'] & {
+    :root[zen-right-side="true"] & {
       /* Animate from the right */
       -zen-window-transform-origin: 100% 0;
 
-      &[side='bottom'] {
+      &[side="bottom"] {
         /* Animate from the bottom right */
         -zen-window-transform-origin: 100% 100%;
       }
     }
     -moz-window-opacity: 0;
-    &[animate='open'] {
+    &[animate="open"] {
       animation: zen-jello-animation-macos 0.2s ease-in-out forwards !important;
     }
   }
 }
 
 menupopup,
-panel[type='arrow']:not(#feature-callout) {
+panel[type="arrow"]:not(#feature-callout) {
   @media (-moz-windows-mica-popups) {
     appearance: auto !important;
     -moz-default-appearance: menupopup;

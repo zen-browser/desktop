@@ -61,7 +61,7 @@ zen-workspaces-delete-workspace-title = 刪除工作區？
 zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操作無法復原。
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！按壓 <span>{ $shortcut }</span> 來回復此動作。
+zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！使用 <span>{ $shortcut }</span> 來回復此動作。
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = 清除
     .tooltiptext = 關閉所有未釘選的分頁

@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2a055f0c5f34f0a2667f659185120c07d38f4e41..959e73ab86bdb78203e3aed0c939c1b9acbe4897 100644
+index 2a055f0c5f34f0a2667f659185120c07d38f4e41..27f85dc47d66f2f83820e964198832d82bff04c1 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,9 @@ const TAB_EVENTS = [
@@ -235,7 +235,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..959e73ab86bdb78203e3aed0c939c1b9
 +    if (tabData.zenIsEmpty) {
 +      tab.setAttribute("zen-empty-tab", "true");
 +    }
-+    if (tabData.zenStaticLabel) {
++    if (typeof tabData.zenStaticLabel === "string") {
 +      tab.zenStaticLabel = tabData.zenStaticLabel;
 +    }
 +    if (tabData.zenHasStaticIcon && tabData.image) {

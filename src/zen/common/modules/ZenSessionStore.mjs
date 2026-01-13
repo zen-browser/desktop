@@ -21,7 +21,7 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenSyncId || tabData.zenPinnedId) {
       tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);
     }
-    if (tabData.zenStaticLabel) {
+    if (typeof tabData.zenStaticLabel === "string") {
       tab.zenStaticLabel = tabData.zenStaticLabel;
     }
     if (tabData.zenHasStaticIcon && tabData.image) {

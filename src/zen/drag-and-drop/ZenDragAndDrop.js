@@ -851,6 +851,7 @@
         ":is(.tabbrowser-tab, .zen-drop-target, .tab-group-label, tab-group[split-view-group])";
       let shouldPlayHapticFeedback = false;
       let showIndicatorUnderNewTabButton = false;
+      let dropBefore = false;
       let dropElement = event.target.closest(dropZoneSelector);
       if (!dropElement) {
         if (event.target.classList.contains("zen-workspace-empty-space")) {
@@ -862,7 +863,7 @@
           const numPinned = gBrowser.pinnedTabCount - numEssentials;
           const tabToUse = event.target.closest(dropZoneSelector);
           if (!tabToUse) {
-            return;
+            return null;
           }
           const isPinned = tabToUse.pinned;
           const relativeTabs = tabs.slice(
@@ -896,7 +897,7 @@
         (!dropElement.pinned || dropElement.hasAttribute("zen-essential"))
       ) {
         this.clearDragOverVisuals();
-        return;
+        return null;
       }
       if (
         isTab(dropElement) ||
@@ -913,8 +914,10 @@
           Services.prefs.getIntPref("browser.tabs.dragDrop.moveOverThresholdPercent") / 100;
         if (overlapPercent > threshold) {
           top = Math.round(rect.top + rect.height) + "px";
+          dropBefore = false;
         } else {
           top = Math.round(rect.top) + "px";
+          dropBefore = true;
         }
         if (indicator.style.top !== top) {
           shouldPlayHapticFeedback = true;
@@ -937,12 +940,14 @@
           dropElement =
             elementToMove(this._tabbrowserTabs.ariaFocusableItems.at(gBrowser._numZenEssentials)) ||
             dropElement;
+          dropBefore = true;
         }
       }
       if (shouldPlayHapticFeedback) {
         // eslint-disable-next-line mozilla/valid-services
         Services.zen.playHapticFeedback();
       }
+      return [dropBefore, dropElement];
     }
 
     #getDragImageOffset(event, tab, draggingTabs) {

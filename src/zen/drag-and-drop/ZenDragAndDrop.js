@@ -984,6 +984,7 @@
       ) {
         return;
       }
+      let essentialsPromoStatus = this.createZenEssentialsPromo();
       this.clearDragOverVisuals();
       switch (essentialsPromoStatus) {
         case "shown":

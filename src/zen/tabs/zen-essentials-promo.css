@@ -10,13 +10,13 @@ zen-essentials-promo {
   border-radius: var(--border-radius-medium);
   justify-content: center;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1.1rem 0;
   flex-direction: column;
   margin: 2px;
   text-align: center;
 
   &:not([dragover="true"]) {
-    background: color-mix(in srgb, var(--zen-primary-color) 50%, transparent);
+    background: color-mix(in srgb, var(--zen-primary-color) 60%, transparent);
     outline: 1px dashed var(--zen-primary-color);
   }
 

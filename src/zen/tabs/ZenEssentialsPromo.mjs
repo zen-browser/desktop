@@ -4,6 +4,12 @@
 
 const TAG_NAME = "zen-essentials-promo";
 
+// Even though its costly, we need to update the pinned height
+// whenever the promo is added or removed, to avoid any flickering.
+function updatePinnedHeight() {
+  gZenWorkspaces.updateTabsContainers();
+}
+
 class nsZenEssentialsPromo extends MozXULElement {
   #hasConnected = false;
 
@@ -29,6 +35,7 @@ class nsZenEssentialsPromo extends MozXULElement {
       delete section.essentialsPromo;
     }
     super.remove();
+    updatePinnedHeight();
   }
 }
 
@@ -57,6 +64,7 @@ export function createZenEssentialsPromo(container = undefined) {
   const element = document.createXULElement(TAG_NAME);
   section.appendChild(element);
   section.essentialsPromo = element;
+  updatePinnedHeight();
   return "created";
 }
 

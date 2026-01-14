@@ -60,6 +60,8 @@ zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
 zen-generic-more = Tuilleadh
 zen-generic-next = Ar Aghaidh
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte

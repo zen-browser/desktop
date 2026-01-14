@@ -306,6 +306,7 @@ zen-workspace {
   height: 100%;
   overflow: hidden;
   color: var(--toolbox-textcolor);
+  transition: padding-top 0.12s ease-in-out;
 
   :root:not([zen-sidebar-expanded='true']) & {
     width: 100%;

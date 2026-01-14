@@ -981,7 +981,6 @@
       if (!gZenPinnedTabManager.canEssentialBeAdded(draggedTab)) {
         return;
       }
-      let essentialsPromoStatus = this.createZenEssentialsPromo();
       this.clearDragOverVisuals();
       if (
         !draggedTab.hasAttribute("zen-essential") &&

@@ -1701,13 +1701,20 @@ class nsZenWorkspaces {
   }
 
   #updatePaddingTopOnTabs(workspaceElement, essentialContainer, forAnimation = false) {
+    const essentialsPromo = Services.prefs.getBoolPref(
+      "zen.tabs.essentials.dnd-promo-enabled",
+      true
+    );
+    const essentialsCount = gBrowser._numZenEssentials;
+    const hasEssentials = essentialsPromo || essentialsCount > 0;
     if (
       workspaceElement &&
       !(this.#inChangingWorkspace && !forAnimation && !this._alwaysAnimatePaddingTop)
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight =
-        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
+      const essentialsHeight = hasEssentials
+        ? window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height
+        : 2; // 2 is default padding-top for zen-workspace
       requestAnimationFrame(() => {
         workspaceElement.style.paddingTop = essentialsHeight + "px";
       });

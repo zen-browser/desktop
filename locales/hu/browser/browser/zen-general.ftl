@@ -60,6 +60,8 @@ zen-site-data-settings = Beállítások
 zen-generic-manage = Kezelés
 zen-generic-more = Több
 zen-generic-next = Következő
+zen-essentials-promo-label = Felvétel az alapvetőkbe
+zen-essentials-promo-sublabel = Tartsd kedvenc lapjaid egy kattintásnyira
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Blokkolva

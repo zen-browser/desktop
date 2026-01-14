@@ -60,6 +60,8 @@ zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
 zen-generic-more = Více
 zen-generic-next = Další
+zen-essentials-promo-label = Přídat do Essentials
+zen-essentials-promo-sublabel = Mějte oblíbené panely na dosah jedním kliknutím
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno

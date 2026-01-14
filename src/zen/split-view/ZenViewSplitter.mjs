@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* eslint-disable consistent-return */
+
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 class nsSplitLeafNode {
@@ -751,6 +753,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       dragImageOffset = dragImageOffset * scale;
     }
     event.dataTransfer.setDragImage(toDrag, dragImageOffset, dragImageOffset);
+    return true;
   };
 
   onBrowserDragOver = (event) => {

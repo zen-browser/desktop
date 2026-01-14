@@ -13,6 +13,7 @@ zen-essentials-promo {
   padding: 1rem 0;
   flex-direction: column;
   margin: 2px;
+  text-align: center;
 
   &:not([dragover="true"]) {
     background: color-mix(in srgb, var(--zen-primary-color) 50%, transparent);
@@ -40,5 +41,6 @@ zen-essentials-promo {
 
   & .zen-essentials-promo-sublabel {
     opacity: 0.8;
+    font-size: smaller;
   }
 }

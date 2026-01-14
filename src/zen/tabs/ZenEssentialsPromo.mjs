@@ -37,6 +37,8 @@ class nsZenEssentialsPromo extends MozXULElement {
  *
  * @param {number|undefined} container - The container to append the promo to.
  *  If undefined, appends to the current workspace's tab strip.
+ * @returns {"created"|"shown"|false} - "created" if the promo was created and appended,
+ *  "exists" if the promo already exists, or false if the section is not empty.
  */
 export function createZenEssentialsPromo(container = undefined) {
   if (container === undefined) {
@@ -44,15 +46,15 @@ export function createZenEssentialsPromo(container = undefined) {
   }
   const section = gZenWorkspaces.getEssentialsSection(container);
   if (!section || section.essentialsPromo) {
-    return false;
+    return "shown";
   }
   if (section.children.length) {
-    return true;
+    return false;
   }
   const element = document.createXULElement(TAG_NAME);
   section.appendChild(element);
   section.essentialsPromo = element;
-  return true;
+  return "created";
 }
 
 customElements.define(TAG_NAME, nsZenEssentialsPromo);

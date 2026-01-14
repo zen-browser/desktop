@@ -1359,7 +1359,6 @@ window.gZenVerticalTabsManager = {
           gBrowser.setTabTitle(this._tabEdited);
         }
 
-        // Maybe add some confetti here?!?
         gZenUIManager.motion.animate(
           this._tabEdited,
           {

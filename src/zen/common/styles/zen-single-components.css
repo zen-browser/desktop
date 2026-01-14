@@ -39,10 +39,6 @@
   display: none !important;
 }
 
-body > #confetti {
-  z-index: 1;
-}
-
 /* Bookmarks */
 #PersonalToolbar:not([collapsed]) {
   min-height: 30px;

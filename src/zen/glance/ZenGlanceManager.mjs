@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* eslint-disable consistent-return */
+
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 /**
@@ -885,7 +887,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#animateSidebarButtons(sidebarButtons);
     this.#animateParentBackgroundClose(browserSidebarContainer);
 
-    this.#executeClosingAnimation(setNewID, onTabClose);
+    return this.#executeClosingAnimation(setNewID, onTabClose);
   }
 
   /**

@@ -60,6 +60,8 @@ zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
 zen-generic-more = Daha
 zen-generic-next = Sonraki
+zen-essentials-promo-label = Temel Sekmelere Ekle
+zen-essentials-promo-sublabel = Favori sekmelerinize tek tıkla erişin
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = İzin verildi
 zen-site-data-setting-block = Engellendi

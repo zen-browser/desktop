@@ -60,6 +60,8 @@ zen-site-data-settings = Paramètres
 zen-generic-manage = Gérer
 zen-generic-more = Plus
 zen-generic-next = Suivant
+zen-essentials-promo-label = Ajouter aux Essentials
+zen-essentials-promo-sublabel = Accédez à vos onglets favoris en un clic
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Autorisé
 zen-site-data-setting-block = Bloqué

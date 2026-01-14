@@ -60,6 +60,8 @@ zen-site-data-settings = Sätted
 zen-generic-manage = Halda
 zen-generic-more = Rohkem
 zen-generic-next = Next
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Lubatud
 zen-site-data-setting-block = Keelatud

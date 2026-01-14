@@ -41,6 +41,9 @@ class nsZenEssentialsPromo extends MozXULElement {
  *  "exists" if the promo already exists, or false if the section is not empty.
  */
 export function createZenEssentialsPromo(container = undefined) {
+  if (!Services.prefs.getBoolPref("zen.tabs.essentials.dnd-promo-enabled", true)) {
+    return false;
+  }
   if (container === undefined) {
     container = gZenWorkspaces.getCurrentSpaceContainerId();
   }

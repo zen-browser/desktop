@@ -14,8 +14,8 @@
 - name: zen.tabs.essentials.max
   value: 12
 
-- name: zen.tabs.essentials.dnd-promo-dismissed
-  value: false
+- name: zen.tabs.essentials.dnd-promo-enabled
+  value: true
 
 - name: zen.tabs.show-newtab-vertical
   value: true

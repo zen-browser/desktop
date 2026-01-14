@@ -51,9 +51,14 @@ export function createZenEssentialsPromo(container = undefined) {
   if (!Services.prefs.getBoolPref("zen.tabs.essentials.dnd-promo-enabled", true)) {
     return false;
   }
+  const spaceContainerId = gZenWorkspaces.getCurrentSpaceContainerId();
   if (container === undefined) {
-    container = gZenWorkspaces.getCurrentSpaceContainerId();
+    container = spaceContainerId;
   }
+  if (container !== spaceContainerId) {
+    return false;
+  }
+
   const section = gZenWorkspaces.getEssentialsSection(container);
   if (!section || section.essentialsPromo) {
     return "shown";

@@ -1701,16 +1701,29 @@ class nsZenWorkspaces {
   }
 
   #updatePaddingTopOnTabs(workspaceElement, essentialContainer, forAnimation = false) {
+    const essentialsPromo = Services.prefs.getBoolPref(
+      "zen.tabs.essentials.dnd-promo-enabled",
+      true
+    );
+    const essentialsCount = gBrowser._numZenEssentials;
+    const hasEssentials = essentialsPromo || essentialsCount > 0;
+
     if (
       workspaceElement &&
       !(this.#inChangingWorkspace && !forAnimation && !this._alwaysAnimatePaddingTop)
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight =
-        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
-      requestAnimationFrame(() => {
-        workspaceElement.style.paddingTop = essentialsHeight + "px";
-      });
+      const essentialsHeight = hasEssentials
+        ? window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height
+        : 2; // 2 is default paddingTop for zen-workspace
+      window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
+      gZenUIManager.motion.animate(
+        workspaceElement,
+        {
+          paddingTop: essentialsHeight,
+        },
+        { duration: 0.12, ease: "easeInOut" }
+      );
     }
   }
 

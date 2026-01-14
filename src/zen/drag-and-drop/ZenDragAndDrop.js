@@ -973,10 +973,6 @@
 
     // eslint-disable-next-line complexity
     #animateVerticalPinnedGridDragOver(event) {
-      let essentialsPromoStatus = this.createZenEssentialsPromo();
-      if (essentialsPromoStatus === "shown") {
-        return;
-      }
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
@@ -987,8 +983,11 @@
       ) {
         return;
       }
-      if (essentialsPromoStatus === "created") {
-        return;
+      let essentialsPromoStatus = this.createZenEssentialsPromo(draggedTab?.userContextId);
+      switch (essentialsPromoStatus) {
+        case "shown":
+        case "created":
+          return;
       }
 
       if (!this._fakeEssentialTab) {

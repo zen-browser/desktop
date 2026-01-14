@@ -16,7 +16,7 @@ interface CanonicalBrowsingContext extends LoadContextMixin {
 }
 
 declare namespace ChromeUtils {
-  type Modules = import('./generated/lib.gecko.modules').Modules;
+  type Modules = import("./generated/lib.gecko.modules").Modules;
 
   function importESModule<T extends keyof Modules>(
     aResourceURI: T,
@@ -29,15 +29,15 @@ interface ChromeWindow extends Window {
 }
 
 interface Document {
-  createXULElement(name: 'browser'): MozBrowser;
+  createXULElement(name: "browser"): MozBrowser;
 }
 
 type nsIGleanPingNoReason = {
-  [K in keyof nsIGleanPing]: K extends 'submit' ? (_?: never) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit" ? (_?: never) => void : nsIGleanPing[K];
 };
 
 type nsIGleanPingWithReason<T> = {
-  [K in keyof nsIGleanPing]: K extends 'submit' ? (reason: T) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit" ? (reason: T) => void : nsIGleanPing[K];
 };
 
 interface MessageListenerManagerMixin {

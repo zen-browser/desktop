@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index a61b4e7af40f1404bf3555a7011c6211de917635..bb3c822ad14c4ebf0b8792665ff8242f97e501d9 100644
+index a61b4e7af40f1404bf3555a7011c6211de917635..69e3e360b3040dfcb4541bda57e88b0da1d59be3 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -240,7 +240,7 @@
@@ -90,7 +90,7 @@ index a61b4e7af40f1404bf3555a7011c6211de917635..bb3c822ad14c4ebf0b8792665ff8242f
 +            tabs.splice(i, 1);
 +            // add the tabs in the group to the list
 +            tabs.splice(i, 0, ...tab.tabs);
-+          } else if (tab.classList.contains("zen-tab-group-start")) {
++          } else if (!isTab(tab)) {
 +            tabs.splice(i, 1);
 +          }
          }

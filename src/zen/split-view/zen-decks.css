@@ -171,7 +171,6 @@
   cursor: pointer;
   appearance: none;
   outline: none;
-  color: var(--button-primary-bgcolor);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 
@@ -220,7 +219,7 @@
   background: black;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   gap: 20px;
   position: relative;
 

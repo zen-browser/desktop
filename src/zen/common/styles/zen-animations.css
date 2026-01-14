@@ -75,11 +75,7 @@
 @keyframes zen-urlbar-searchmode {
   0% {
     box-shadow: 0 0 20px
-      color-mix(
-        in srgb,
-        color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%),
-        light-dark(rgba(0, 0, 0, 0.3), transparent) 50%
-      );
+      color-mix(in srgb, color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
   }
 
   100% {

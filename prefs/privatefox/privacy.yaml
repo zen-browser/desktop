@@ -20,7 +20,7 @@
   locked: true
 
 - name: toolkit.telemetry.server
-  value: 'data:,'
+  value: "data:,"
   locked: true
 
 - name: toolkit.telemetry.archive.enabled
@@ -56,7 +56,7 @@
   locked: true
 
 - name: toolkit.coverage.endpoint.base
-  value: ''
+  value: ""
   locked: true
 
 - name: browser.newtabpage.activity-stream.feeds.telemetry
@@ -84,7 +84,7 @@
   value: false
 
 - name: app.normandy.api_url
-  value: ''
+  value: ""
   locked: true
 
 # Crash Reports

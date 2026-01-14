@@ -1,13 +1,13 @@
 diff --git a/toolkit/components/prompts/content/commonDialog.css b/toolkit/components/prompts/content/commonDialog.css
-index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..0095175bce6fb4520aca357e5209e1ad7329bbdb 100644
+index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..a34363a6a8bf5db6826738dbad0ec6b75b633474 100644
 --- a/toolkit/components/prompts/content/commonDialog.css
 +++ b/toolkit/components/prompts/content/commonDialog.css
-@@ -88,7 +88,7 @@ dialog[insecureauth] {
- 
-   /* Fix padding/spacing */
-   dialog {
--    --grid-padding: 16px;
-+    --grid-padding: 24px;
+@@ -91,7 +91,7 @@ dialog[insecureauth] {
+     --grid-padding: 16px;
      /* All the inner items should have 4px inline margin, leading to 1.16em spacing
       * between the dialog and its contents, and 8px horizontal spacing between items. */
-     padding: var(--grid-padding) calc(var(--grid-padding) - 4px);
+-    padding: var(--grid-padding) calc(var(--grid-padding) - 4px);
++    padding: 24px 20px;
+ 
+     &::part(dialog-button) {
+       /* Adjust vertical margins for buttons in subdialogs. */

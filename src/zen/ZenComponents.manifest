@@ -9,8 +9,9 @@
 # Thus we restrict it to these apps:
 #
 #   browser:        {ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+#   mobile/android: {aa3c5121-dab2-40e2-81ca-7ea25febc110}
 
-category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} application={aa3c5121-dab2-40e2-81ca-7ea25febc110}
 
 #include common/Components.manifest
 #include sessionstore/SessionComponents.manifest

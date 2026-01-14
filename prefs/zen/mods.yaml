@@ -9,8 +9,8 @@
   value: 20 # In days
 
 - name: zen.mods.auto-update
-  value: '@cond'
-  condition: 'defined(MOZILLA_OFFICIAL)'
+  value: "@cond"
+  condition: "defined(MOZILLA_OFFICIAL)"
 
 - name: zen.rice.share.notice.accepted
   value: false
@@ -18,10 +18,10 @@
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls
-  value: 'https://zen-browser.app/*'
+  value: "https://zen-browser.app/*"
   locked: true
-  condition: 'defined(MOZILLA_OFFICIAL)'
+  condition: "defined(MOZILLA_OFFICIAL)"
 
 - name: zen.injections.match-urls
-  value: 'http://localhost/*'
-  condition: '!defined(MOZILLA_OFFICIAL)'
+  value: "http://localhost/*"
+  condition: "!defined(MOZILLA_OFFICIAL)"

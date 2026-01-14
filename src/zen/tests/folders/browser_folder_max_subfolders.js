@@ -1,7 +1,7 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 // Keep in sync with the default value for `zen.folders.max-subfolders`
 const TEST_MAX_FOLDERS = 5;
@@ -11,13 +11,16 @@ add_task(async function test_Max_Subfolders() {
     renameFolder: false,
   });
 
-  const subfolderItem = document.getElementById('context_zenFolderNewSubfolder');
-  debugger;
+  const subfolderItem = document.getElementById("context_zenFolderNewSubfolder");
   let currentFolder = folder;
   for (let i = 1; i < TEST_MAX_FOLDERS; i++) {
     await openFolderContextMenu(currentFolder);
-    ok(subfolderItem.getAttribute('disabled') !== 'true', `Subfolder item should be enabled`);
-    const folderCreateEvent = BrowserTestUtils.waitForEvent(window, 'TabGroupCreate');
+    Assert.notStrictEqual(
+      subfolderItem.getAttribute("disabled"),
+      "true",
+      `Subfolder item should be enabled`
+    );
+    const folderCreateEvent = BrowserTestUtils.waitForEvent(window, "TabGroupCreate");
     EventUtils.synthesizeMouseAtCenter(subfolderItem, {});
     await folderCreateEvent;
     const items = currentFolder.allItems;
@@ -28,12 +31,12 @@ add_task(async function test_Max_Subfolders() {
 
   await openFolderContextMenu(currentFolder);
   Assert.equal(
-    subfolderItem.getAttribute('disabled'),
-    'true',
+    subfolderItem.getAttribute("disabled"),
+    "true",
     `Subfolder item should be disabled after reaching max subfolders`
   );
 
-  document.getElementById('zenFolderActions').hidePopup();
+  document.getElementById("zenFolderActions").hidePopup();
 
   await removeFolder(folder);
 });

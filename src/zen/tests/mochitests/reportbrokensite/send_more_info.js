@@ -15,6 +15,7 @@ Services.scriptloader.loadSubScript(
   this
 );
 
+// eslint-disable-next-line complexity
 async function reformatExpectedWebCompatInfo(tab, overrides) {
   const gfxInfo = Cc["@mozilla.org/gfx/info;1"].getService(Ci.nsIGfxInfo);
   const snapshot = await Troubleshoot.snapshot();

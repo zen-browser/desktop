@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { nsZenMultiWindowFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 function parseSinePath(pathStr) {
   const points = [];
   const commands = pathStr.match(/[MCL]\s*[\d\s.\-,]+/g);
-  if (!commands) return points;
+  if (!commands) {
+    return points;
+  }
 
   commands.forEach((command) => {
     const type = command.charAt(0);
@@ -15,10 +17,10 @@ function parseSinePath(pathStr) {
     const coords = coordsStr.split(/[\s,]+/).map(Number);
 
     switch (type) {
-      case 'M':
-        points.push({ x: coords[0], y: coords[1], type: 'M' });
+      case "M":
+        points.push({ x: coords[0], y: coords[1], type: "M" });
         break;
-      case 'C':
+      case "C":
         if (coords.length >= 6 && coords.length % 6 === 0) {
           for (let i = 0; i < coords.length; i += 6) {
             points.push({
@@ -28,13 +30,13 @@ function parseSinePath(pathStr) {
               y2: coords[i + 3],
               x: coords[i + 4],
               y: coords[i + 5],
-              type: 'C',
+              type: "C",
             });
           }
         }
         break;
-      case 'L':
-        points.push({ x: coords[0], y: coords[1], type: 'L' });
+      case "L":
+        points.push({ x: coords[0], y: coords[1], type: "L" });
         break;
     }
   });
@@ -43,26 +45,30 @@ function parseSinePath(pathStr) {
 
 const lazy = {};
 
-ChromeUtils.defineLazyGetter(lazy, 'MAX_OPACITY', () => {
-  return parseFloat(document.getElementById('PanelUI-zen-gradient-generator-opacity').max);
+ChromeUtils.defineLazyGetter(lazy, "MAX_OPACITY", () => {
+  return parseFloat(document.getElementById("PanelUI-zen-gradient-generator-opacity").max);
 });
 
-ChromeUtils.defineLazyGetter(lazy, 'MIN_OPACITY', () => {
-  return parseFloat(document.getElementById('PanelUI-zen-gradient-generator-opacity').min);
+ChromeUtils.defineLazyGetter(lazy, "MIN_OPACITY", () => {
+  return parseFloat(document.getElementById("PanelUI-zen-gradient-generator-opacity").min);
 });
 
-const EXPLICIT_LIGHTNESS_TYPE = 'explicit-lightness';
-const EXPLICIT_BLACKWHITE_TYPE = 'explicit-black-white';
+const EXPLICIT_LIGHTNESS_TYPE = "explicit-lightness";
+const EXPLICIT_BLACKWHITE_TYPE = "explicit-black-white";
 
+/**
+ * A class that manages the theme picker for Zen Workspaces.
+ * It allows users to create and customize gradients for their workspace themes.
+ */
 export class nsZenThemePicker extends nsZenMultiWindowFeature {
   static MAX_DOTS = 3;
 
   currentOpacity = 0.5;
   dots = [];
-  useAlgo = '';
+  useAlgo = "";
   #currentLightness = 50;
 
-  #allowTransparencyOnSidebar = Services.prefs.getBoolPref('zen.theme.acrylic-elements', false);
+  #allowTransparencyOnSidebar = Services.prefs.getBoolPref("zen.theme.acrylic-elements", false);
 
   #linePath = `M 51.373 27.395 L 367.037 27.395`;
   #sinePath = `M 51.373 27.395 C 60.14 -8.503 68.906 -8.503 77.671 27.395 C 86.438 63.293 95.205 63.293 103.971 27.395 C 112.738 -8.503 121.504 -8.503 130.271 27.395 C 139.037 63.293 147.803 63.293 156.57 27.395 C 165.335 -8.503 174.101 -8.503 182.868 27.395 C 191.634 63.293 200.4 63.293 209.167 27.395 C 217.933 -8.503 226.7 -8.503 235.467 27.395 C 244.233 63.293 252.999 63.293 261.765 27.395 C 270.531 -8.503 279.297 -8.503 288.064 27.395 C 296.83 63.293 305.596 63.293 314.363 27.395 C 323.13 -8.503 331.896 -8.503 340.662 27.395 M 314.438 27.395 C 323.204 -8.503 331.97 -8.503 340.737 27.395 C 349.503 63.293 358.27 63.293 367.037 27.395`;
@@ -82,30 +88,30 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     });
     this.dragStartPosition = null;
 
-    this.isLegacyVersion = Services.prefs.getIntPref('zen.theme.gradient-legacy-version', 1) === 0;
+    this.isLegacyVersion = Services.prefs.getIntPref("zen.theme.gradient-legacy-version", 1) === 0;
 
-    ChromeUtils.defineLazyGetter(this, 'panel', () =>
-      document.getElementById('PanelUI-zen-gradient-generator')
+    ChromeUtils.defineLazyGetter(this, "panel", () =>
+      document.getElementById("PanelUI-zen-gradient-generator")
     );
-    ChromeUtils.defineLazyGetter(this, 'toolbox', () => document.getElementById('TabsToolbar'));
-    ChromeUtils.defineLazyGetter(this, 'customColorInput', () =>
-      document.getElementById('PanelUI-zen-gradient-generator-custom-input')
+    ChromeUtils.defineLazyGetter(this, "toolbox", () => document.getElementById("TabsToolbar"));
+    ChromeUtils.defineLazyGetter(this, "customColorInput", () =>
+      document.getElementById("PanelUI-zen-gradient-generator-custom-input")
     );
-    ChromeUtils.defineLazyGetter(this, 'customColorList', () =>
-      document.getElementById('PanelUI-zen-gradient-generator-custom-list')
-    );
-
-    ChromeUtils.defineLazyGetter(this, 'sliderWavePath', () =>
-      document.getElementById('PanelUI-zen-gradient-slider-wave').querySelector('path')
+    ChromeUtils.defineLazyGetter(this, "customColorList", () =>
+      document.getElementById("PanelUI-zen-gradient-generator-custom-list")
     );
 
-    this.panel.addEventListener('popupshowing', this.handlePanelOpen.bind(this));
-    this.panel.addEventListener('popuphidden', this.handlePanelClose.bind(this));
-    this.panel.addEventListener('command', this.handlePanelCommand.bind(this));
+    ChromeUtils.defineLazyGetter(this, "sliderWavePath", () =>
+      document.getElementById("PanelUI-zen-gradient-slider-wave").querySelector("path")
+    );
+
+    this.panel.addEventListener("popupshowing", this.handlePanelOpen.bind(this));
+    this.panel.addEventListener("popuphidden", this.handlePanelClose.bind(this));
+    this.panel.addEventListener("command", this.handlePanelCommand.bind(this));
 
     document
-      .getElementById('PanelUI-zen-gradient-generator-opacity')
-      .addEventListener('input', this.onOpacityChange.bind(this));
+      .getElementById("PanelUI-zen-gradient-generator-opacity")
+      .addEventListener("input", this.onOpacityChange.bind(this));
 
     // Call the rest of the initialization
     this.initContextMenu();
@@ -120,17 +126,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.initColorPages();
 
     const darkModeChange = this.handleDarkModeChange.bind(this);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', darkModeChange);
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", darkModeChange);
 
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
-      'windowSchemeType',
-      'zen.view.window.scheme',
+      "windowSchemeType",
+      "zen.view.window.scheme",
       2,
       darkModeChange
     );
 
-    XPCOMUtils.defineLazyPreferenceGetter(this, 'darkModeBias', 'zen.theme.dark-mode-bias', '0.5');
+    XPCOMUtils.defineLazyPreferenceGetter(this, "darkModeBias", "zen.theme.dark-mode-bias", "0.5");
   }
 
   handleDarkModeChange() {
@@ -148,17 +154,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return false;
       default:
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
 
   get colorHarmonies() {
     return [
-      { type: 'complementary', angles: [180] },
-      { type: 'singleAnalogous', angles: [310] },
-      { type: 'splitComplementary', angles: [150, 210] },
-      { type: 'analogous', angles: [50, 310] },
-      { type: 'triadic', angles: [120, 240] },
-      { type: 'floating', angles: [] },
+      { type: "complementary", angles: [180] },
+      { type: "singleAnalogous", angles: [310] },
+      { type: "splitComplementary", angles: [150, 210] },
+      { type: "analogous", angles: [50, 310] },
+      { type: "triadic", angles: [120, 240] },
+      { type: "floating", angles: [] },
     ];
   }
 
@@ -168,22 +174,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
                   data-lazy-l10n-id="zen-workspaces-change-theme"
                   command="cmd_zenOpenZenThemePicker"/>
       `);
-    document.getElementById('toolbar-context-customize').before(menu);
+    document.getElementById("toolbar-context-customize").before(menu);
   }
 
   openThemePicker(event) {
     const fromForm = event.explicitOriginalTarget?.classList?.contains(
-      'zen-workspace-creation-edit-theme-button'
+      "zen-workspace-creation-edit-theme-button"
     );
     PanelMultiView.openPopup(this.panel, this.toolbox, {
-      position: 'topright topleft',
+      position: "topright topleft",
       triggerEvent: event,
       y: fromForm ? -160 : 0,
     });
   }
 
   initCustomColorInput() {
-    this.customColorInput.addEventListener('change', (event) => {
+    this.customColorInput.addEventListener("change", (event) => {
       // Prevent the popup from closing when the input is focused
       this.openThemePicker(event);
     });
@@ -191,25 +197,25 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   initPredefinedColors() {
     document
-      .getElementById('PanelUI-zen-gradient-generator-color-pages')
-      .addEventListener('click', async (event) => {
+      .getElementById("PanelUI-zen-gradient-generator-color-pages")
+      .addEventListener("click", async (event) => {
         const target = event.target;
-        const rawPosition = target.getAttribute('data-position');
+        const rawPosition = target.getAttribute("data-position");
         if (!rawPosition) {
           return;
         }
-        const algo = target.getAttribute('data-algo');
-        const lightness = target.getAttribute('data-lightness');
-        const numDots = parseInt(target.getAttribute('data-num-dots'));
+        const algo = target.getAttribute("data-algo");
+        const lightness = target.getAttribute("data-lightness");
+        const numDots = parseInt(target.getAttribute("data-num-dots"));
         if (numDots < this.dots.length) {
           for (let i = numDots; i < this.dots.length; i++) {
             this.dots[i].element.remove();
           }
           this.dots = this.dots.slice(0, numDots);
         }
-        const type = target.getAttribute('data-type') || EXPLICIT_LIGHTNESS_TYPE;
+        const type = target.getAttribute("data-type") || EXPLICIT_LIGHTNESS_TYPE;
         // Generate new gradient from the single color given
-        const [x, y] = rawPosition.split(',').map((pos) => parseInt(pos));
+        const [x, y] = rawPosition.split(",").map((pos) => parseInt(pos));
         let dots = [
           {
             ID: 0,
@@ -226,30 +232,32 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           });
         }
         this.useAlgo = algo;
-        if (lightness !== null) this.#currentLightness = lightness;
-        dots = this.calculateCompliments(dots, 'update', this.useAlgo);
+        if (lightness !== null) {
+          this.#currentLightness = lightness;
+        }
+        dots = this.calculateCompliments(dots, "update", this.useAlgo);
         this.handleColorPositions(dots, true);
         this.updateCurrentWorkspace();
       });
   }
 
   initColorPages() {
-    const leftButton = document.getElementById('PanelUI-zen-gradient-generator-color-page-left');
-    const rightButton = document.getElementById('PanelUI-zen-gradient-generator-color-page-right');
-    const pagesWrapper = document.getElementById('PanelUI-zen-gradient-generator-color-pages');
+    const leftButton = document.getElementById("PanelUI-zen-gradient-generator-color-page-left");
+    const rightButton = document.getElementById("PanelUI-zen-gradient-generator-color-page-right");
+    const pagesWrapper = document.getElementById("PanelUI-zen-gradient-generator-color-pages");
     const pages = pagesWrapper.children;
-    pagesWrapper.addEventListener('wheel', (event) => {
+    pagesWrapper.addEventListener("wheel", (event) => {
       event.preventDefault();
       event.stopPropagation();
     });
-    leftButton.addEventListener('command', () => {
+    leftButton.addEventListener("command", () => {
       this.#colorPage = (this.#colorPage - 1 + pages.length) % pages.length;
       // Scroll to the next page, by using scrollLeft
       pagesWrapper.scrollLeft = (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
       rightButton.disabled = false;
       leftButton.disabled = this.#colorPage === 0;
     });
-    rightButton.addEventListener('command', () => {
+    rightButton.addEventListener("command", () => {
       this.#colorPage = (this.#colorPage + 1) % pages.length;
       // Scroll to the next page, by using scrollLeft
       pagesWrapper.scrollLeft = (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
@@ -259,15 +267,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   initSchemeButtons() {
-    const buttons = document.getElementById('PanelUI-zen-gradient-generator-scheme');
-    buttons.addEventListener('click', (event) => {
-      const target = event.target.closest('.subviewbutton');
+    const buttons = document.getElementById("PanelUI-zen-gradient-generator-scheme");
+    buttons.addEventListener("click", (event) => {
+      const target = event.target.closest(".subviewbutton");
       if (!target) {
         return;
       }
       event.preventDefault();
       event.stopPropagation();
-      const scheme = target.id.replace('PanelUI-zen-gradient-generator-scheme-', '');
+      const scheme = target.id.replace("PanelUI-zen-gradient-generator-scheme-", "");
       if (!scheme) {
         return;
       }
@@ -279,25 +287,25 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       if (themeInt === undefined) {
         return;
       }
-      Services.prefs.setIntPref('zen.view.window.scheme', themeInt);
+      Services.prefs.setIntPref("zen.view.window.scheme", themeInt);
     });
   }
 
   initTextureInput() {
-    const wrapper = document.getElementById('PanelUI-zen-gradient-generator-texture-wrapper');
+    const wrapper = document.getElementById("PanelUI-zen-gradient-generator-texture-wrapper");
     const wrapperWidth = wrapper.getBoundingClientRect().width;
     // Add elements in a circular pattern, where the center is the center of the wrapper
     for (let i = 0; i < 16; i++) {
-      const dot = document.createElement('div');
-      dot.classList.add('zen-theme-picker-texture-dot');
+      const dot = document.createElement("div");
+      dot.classList.add("zen-theme-picker-texture-dot");
       const position = (i / 16) * Math.PI * 2 + wrapperWidth;
       dot.style.left = `${Math.cos(position) * 50 + 50}%`;
       dot.style.top = `${Math.sin(position) * 50 + 50}%`;
       wrapper.appendChild(dot);
     }
-    this._textureHandler = document.createElement('div');
-    this._textureHandler.id = 'PanelUI-zen-gradient-generator-texture-handler';
-    this._textureHandler.addEventListener('mousedown', this.onTextureHandlerMouseDown.bind(this));
+    this._textureHandler = document.createElement("div");
+    this._textureHandler.id = "PanelUI-zen-gradient-generator-texture-handler";
+    this._textureHandler.addEventListener("mousedown", this.onTextureHandlerMouseDown.bind(this));
     wrapper.appendChild(this._textureHandler);
   }
 
@@ -305,13 +313,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     event.preventDefault();
     this._onTextureMouseMove = this.onTextureMouseMove.bind(this);
     this._onTextureMouseUp = this.onTextureMouseUp.bind(this);
-    document.addEventListener('mousemove', this._onTextureMouseMove);
-    document.addEventListener('mouseup', this._onTextureMouseUp);
+    document.addEventListener("mousemove", this._onTextureMouseMove);
+    document.addEventListener("mouseup", this._onTextureMouseUp);
   }
 
   onTextureMouseMove(event) {
     event.preventDefault();
-    const wrapper = document.getElementById('PanelUI-zen-gradient-generator-texture-wrapper');
+    const wrapper = document.getElementById("PanelUI-zen-gradient-generator-texture-wrapper");
     const wrapperRect = wrapper.getBoundingClientRect();
     // Determine how much rotation there is based on the mouse position and the center of the wrapper
     const rotation = Math.atan2(
@@ -333,36 +341,37 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     if (previousTexture !== this.currentTexture) {
       this.updateCurrentWorkspace();
+      /* eslint-disable mozilla/valid-services */
       Services.zen.playHapticFeedback();
     }
   }
 
   onTextureMouseUp(event) {
     event.preventDefault();
-    document.removeEventListener('mousemove', this._onTextureMouseMove);
-    document.removeEventListener('mouseup', this._onTextureMouseUp);
+    document.removeEventListener("mousemove", this._onTextureMouseMove);
+    document.removeEventListener("mouseup", this._onTextureMouseUp);
     this._onTextureMouseMove = null;
     this._onTextureMouseUp = null;
   }
 
   initThemePicker() {
-    const themePicker = this.panel.querySelector('.zen-theme-picker-gradient');
+    const themePicker = this.panel.querySelector(".zen-theme-picker-gradient");
     this._onDotMouseMove = this.onDotMouseMove.bind(this);
     this._onDotMouseUp = this.onDotMouseUp.bind(this);
     this._onDotMouseDown = this.onDotMouseDown.bind(this);
     this._onThemePickerClick = this.onThemePickerClick.bind(this);
-    document.addEventListener('mousemove', this._onDotMouseMove);
-    document.addEventListener('mouseup', this._onDotMouseUp);
-    themePicker.addEventListener('mousedown', this._onDotMouseDown);
-    themePicker.addEventListener('click', this._onThemePickerClick);
+    document.addEventListener("mousemove", this._onDotMouseMove);
+    document.addEventListener("mouseup", this._onDotMouseUp);
+    themePicker.addEventListener("mousedown", this._onDotMouseDown);
+    themePicker.addEventListener("click", this._onThemePickerClick);
   }
 
   uninitThemePicker() {
-    const themePicker = this.panel.querySelector('.zen-theme-picker-gradient');
-    document.removeEventListener('mousemove', this._onDotMouseMove);
-    document.removeEventListener('mouseup', this._onDotMouseUp);
-    themePicker.removeEventListener('mousedown', this._onDotMouseDown);
-    themePicker.removeEventListener('click', this._onThemePickerClick);
+    const themePicker = this.panel.querySelector(".zen-theme-picker-gradient");
+    document.removeEventListener("mousemove", this._onDotMouseMove);
+    document.removeEventListener("mouseup", this._onDotMouseUp);
+    themePicker.removeEventListener("mousedown", this._onDotMouseDown);
+    themePicker.removeEventListener("click", this._onThemePickerClick);
     this._onDotMouseMove = null;
     this._onDotMouseUp = null;
     this._onDotMouseDown = null;
@@ -378,7 +387,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @param   {number}  h       The hue
    * @param   {number}  s       The saturation
    * @param   {number}  l       The lightness
-   * @return  {Array}           The RGB representation
+   * @returns  {Array}           The RGB representation
    */
   hslToRgb(h, s, l) {
     const { round } = Math;
@@ -405,21 +414,36 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let min = Math.min(r, g, b);
     let d = max - min;
     let h;
-    if (d === 0) h = 0;
-    else if (max === r) h = ((g - b) / d) % 6;
-    else if (max === g) h = (b - r) / d + 2;
-    else if (max === b) h = (r - g) / d + 4;
+    if (d === 0) {
+      h = 0;
+    } else if (max === r) {
+      h = ((g - b) / d) % 6;
+    } else if (max === g) {
+      h = (b - r) / d + 2;
+    } else if (max === b) {
+      h = (r - g) / d + 4;
+    }
     let l = (min + max) / 2;
     let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
     return [h * 60, s, l];
   }
 
   hueToRgb(p, q, t) {
-    if (t < 0) t += 1;
-    if (t > 1) t -= 1;
-    if (t < 1 / 6) return p + (q - p) * 6 * t;
-    if (t < 1 / 2) return q;
-    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    if (t < 0) {
+      t += 1;
+    }
+    if (t > 1) {
+      t -= 1;
+    }
+    if (t < 1 / 6) {
+      return p + (q - p) * 6 * t;
+    }
+    if (t < 1 / 2) {
+      return q;
+    }
+    if (t < 2 / 3) {
+      return p + (q - p) * (2 / 3 - t) * 6;
+    }
     return p;
   }
 
@@ -444,7 +468,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   getColorFromPosition(x, y, type = undefined) {
     // Return a color as hsl based on the position in the gradient
-    const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
+    const gradient = this.panel.querySelector(".zen-theme-picker-gradient");
     const rect = gradient.getBoundingClientRect();
     const padding = 30; // each side
     const dotHalfSize = 29; // half the size of the dot. -11 for correct centering
@@ -491,36 +515,36 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   createDot(color, fromWorkspace = false) {
     const [r, g, b] = color.c;
-    const dot = document.createElement('div');
+    const dot = document.createElement("div");
     if (color.isPrimary) {
-      dot.classList.add('primary');
+      dot.classList.add("primary");
     }
     if (color.isCustom) {
       if (!color.c) {
         return;
       }
-      dot.classList.add('custom');
+      dot.classList.add("custom");
       dot.style.opacity = 0;
-      dot.style.setProperty('--zen-theme-picker-dot-color', color.c);
+      dot.style.setProperty("--zen-theme-picker-dot-color", color.c);
     } else {
       const { x, y } = color.position || this.calculateInitialPosition([r, g, b]);
-      const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
+      const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
 
-      dot.classList.add('zen-theme-picker-dot');
+      dot.classList.add("zen-theme-picker-dot");
 
       dot.style.left = `${x}px`;
       dot.style.top = `${y}px`;
 
       if (this.dots.length < 1) {
-        dot.classList.add('primary');
+        dot.classList.add("primary");
       }
 
       dotPad.appendChild(dot);
       let id = this.dots.length;
 
-      dot.style.setProperty('--zen-theme-picker-dot-color', `rgb(${r}, ${g}, ${b})`);
-      dot.setAttribute('data-position', this.getJSONPos(x, y));
-      dot.setAttribute('data-type', color.type);
+      dot.style.setProperty("--zen-theme-picker-dot-color", `rgb(${r}, ${g}, ${b})`);
+      dot.setAttribute("data-position", this.getJSONPos(x, y));
+      dot.setAttribute("data-type", color.type);
 
       this.dots.push({
         ID: id,
@@ -543,14 +567,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           <toolbarbutton class="zen-theme-picker-custom-list-item-remove toolbarbutton-1"></toolbarbutton>
         </hbox>
       `);
-    listItems.querySelector('.zen-theme-picker-custom-list-item').setAttribute('data-color', color);
+    listItems.querySelector(".zen-theme-picker-custom-list-item").setAttribute("data-color", color);
     listItems
-      .querySelector('.zen-theme-picker-dot')
-      .style.setProperty('--zen-theme-picker-dot-color', color);
-    listItems.querySelector('.zen-theme-picker-custom-list-item-label').textContent = color;
+      .querySelector(".zen-theme-picker-dot")
+      .style.setProperty("--zen-theme-picker-dot-color", color);
+    listItems.querySelector(".zen-theme-picker-custom-list-item-label").textContent = color;
     listItems
-      .querySelector('.zen-theme-picker-custom-list-item-remove')
-      .addEventListener('command', this.removeCustomColor.bind(this));
+      .querySelector(".zen-theme-picker-custom-list-item-remove")
+      .addEventListener("command", this.removeCustomColor.bind(this));
 
     this.customColorList.appendChild(listItems);
   }
@@ -563,16 +587,16 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
 
     let colorOpacity =
-      document.getElementById('PanelUI-zen-gradient-generator-custom-opacity')?.value ?? 1;
+      document.getElementById("PanelUI-zen-gradient-generator-custom-opacity")?.value ?? 1;
     // Convert the opacity into a hex value if it's not already
     if (colorOpacity < 1) {
       // e.g. if opacity is 1, we add to the color FF, if it's 0.5 we add 80, etc.
       const hexOpacity = Math.round(colorOpacity * 255)
         .toString(16)
-        .padStart(2, '0')
+        .padStart(2, "0")
         .toUpperCase();
       // If the color is in hex format
-      if (color.startsWith('#')) {
+      if (color.startsWith("#")) {
         // If the color is already in hex format, we just append the opacity
         if (color.length === 7) {
           color += hexOpacity;
@@ -581,42 +605,42 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
 
     // Add '#' prefix if it's missing and the input appears to be a hex color
-    if (!color.startsWith('#') && /^[0-9A-Fa-f]{3,6}$/.test(color)) {
-      color = '#' + color;
+    if (!color.startsWith("#") && /^[0-9A-Fa-f]{3,6}$/.test(color)) {
+      color = "#" + color;
     }
 
     // can be any color format, we just add it to the list as a dot, but hidden
-    const dot = document.createElement('div');
-    dot.classList.add('zen-theme-picker-dot', 'hidden', 'custom');
+    const dot = document.createElement("div");
+    dot.classList.add("zen-theme-picker-dot", "hidden", "custom");
     dot.style.opacity = 0;
-    dot.style.setProperty('--zen-theme-picker-dot-color', color);
-    this.panel.querySelector('#PanelUI-zen-gradient-generator-custom-list').prepend(dot);
-    this.customColorInput.value = '';
-    document.getElementById('PanelUI-zen-gradient-generator-custom-opacity').value = 1;
+    dot.style.setProperty("--zen-theme-picker-dot-color", color);
+    this.panel.querySelector("#PanelUI-zen-gradient-generator-custom-list").prepend(dot);
+    this.customColorInput.value = "";
+    document.getElementById("PanelUI-zen-gradient-generator-custom-opacity").value = 1;
     this.updateCurrentWorkspace();
   }
 
   handlePanelCommand(event) {
-    const target = event.target.closest('toolbarbutton');
+    const target = event.target.closest("toolbarbutton");
     if (!target) {
       return;
     }
     switch (target.id) {
-      case 'PanelUI-zen-gradient-generator-color-custom-add':
+      case "PanelUI-zen-gradient-generator-color-custom-add":
         this.addCustomColor();
         break;
     }
   }
 
   spawnDot(dotData, primary = false) {
-    const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
+    const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
     const relativePosition = {
       x: dotData.x,
       y: dotData.y,
     };
 
-    const dot = document.createElement('div');
-    dot.classList.add('zen-theme-picker-dot');
+    const dot = document.createElement("div");
+    dot.classList.add("zen-theme-picker-dot");
 
     dot.style.left = `${dotData.x}px`;
     dot.style.top = `${dotData.y}px`;
@@ -627,12 +651,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
     if (primary) {
       id = 0;
-      dot.classList.add('primary');
+      dot.classList.add("primary");
 
       const existingPrimaryDot = this.dots.find((d) => d.ID === 0);
       if (existingPrimaryDot) {
         existingPrimaryDot.ID = this.dots.length;
-        existingPrimaryDot.element.classList.remove('primary');
+        existingPrimaryDot.element.classList.remove("primary");
       }
     }
 
@@ -642,11 +666,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       dotData.type
     );
     dot.style.setProperty(
-      '--zen-theme-picker-dot-color',
+      "--zen-theme-picker-dot-color",
       `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
     );
-    dot.setAttribute('data-position', this.getJSONPos(relativePosition.x, relativePosition.y));
-    dot.setAttribute('data-type', dotData.type);
+    dot.setAttribute("data-position", this.getJSONPos(relativePosition.x, relativePosition.y));
+    dot.setAttribute("data-type", dotData.type);
 
     this.dots.push({
       ID: id,
@@ -657,53 +681,54 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     });
   }
 
-  calculateCompliments(dots, action = 'update', useHarmony = '') {
+  calculateCompliments(dots, action = "update", useHarmony = "") {
     const colorHarmonies = this.colorHarmonies;
 
     if (dots.length === 0) {
       return [];
     }
 
+    /* eslint-disable no-shadow */
     function getColorHarmonyType(numDots, dots) {
-      if (useHarmony !== '') {
+      if (useHarmony !== "") {
         const selectedHarmony = colorHarmonies.find((harmony) => harmony.type === useHarmony);
 
         if (selectedHarmony) {
-          if (action === 'remove') {
+          if (action === "remove") {
             if (dots.length !== 0) {
               return colorHarmonies.find(
                 (harmony) => harmony.angles.length === selectedHarmony.angles.length - 1
               );
-            } else {
-              return { type: 'floating', angles: [] };
             }
+            return { type: "floating", angles: [] };
           }
-          if (action === 'add') {
+          if (action === "add") {
             return colorHarmonies.find(
               (harmony) => harmony.angles.length === selectedHarmony.angles.length + 1
             );
           }
-          if (action === 'update') {
+          if (action === "update") {
             return selectedHarmony;
           }
         }
       }
 
-      if (action === 'remove') {
-        let harmony = colorHarmonies.find((harmony) => harmony.angles.length === numDots);
+      if (action === "remove") {
+        let harmony = colorHarmonies.find((h) => h.angles.length === numDots);
         // If we are coming from 3 analogous dots, we should now go to singleAnalogous if
         // there are 2 dots left
-        if (harmony.type === 'analogous' && numDots === 1) {
-          harmony = colorHarmonies.find((harmony) => harmony.type === 'singleAnalogous');
+        if (harmony.type === "analogous" && numDots === 1) {
+          harmony = colorHarmonies.find((h) => h.type === "singleAnalogous");
         }
         return harmony;
       }
-      if (action === 'add') {
-        return colorHarmonies.find((harmony) => harmony.angles.length + 1 === numDots);
+      if (action === "add") {
+        return colorHarmonies.find((h) => h.angles.length + 1 === numDots);
       }
-      if (action === 'update') {
-        return colorHarmonies.find((harmony) => harmony.angles.length + 1 === numDots);
+      if (action === "update") {
+        return colorHarmonies.find((h) => h.angles.length + 1 === numDots);
       }
+      return null;
     }
 
     function getAngleFromPosition(position, centerPosition) {
@@ -719,7 +744,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
-    const dotPad = this.panel.querySelector('.zen-theme-picker-gradient');
+    const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
     const rect = dotPad.getBoundingClientRect();
     const padding = 0;
 
@@ -727,23 +752,30 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const centerPosition = { x: rect.width / 2, y: rect.height / 2 };
 
     const harmonyAngles = getColorHarmonyType(
-      dots.length + (action === 'add' ? 1 : action === 'remove' ? -1 : 0),
+      /* eslint-disable no-nested-ternary */
+      dots.length + (action === "add" ? 1 : action === "remove" ? -1 : 0),
       this.dots
     );
     this.useAlgo = harmonyAngles.type;
-    if (!harmonyAngles || harmonyAngles.angles.length === 0) return dots;
+    if (!harmonyAngles || harmonyAngles.angles.length === 0) {
+      return dots;
+    }
 
     let primaryDot = dots.find((dot) => dot.ID === 0);
-    if (!primaryDot) return [];
+    if (!primaryDot) {
+      return [];
+    }
 
-    if (action === 'add' && this.dots.length) {
+    if (action === "add" && this.dots.length) {
       updatedDots.push({ ID: this.dots.length, position: centerPosition });
     }
     const baseAngle = getAngleFromPosition(primaryDot.position, centerPosition);
     let distance = getDistanceFromCenter(primaryDot.position, centerPosition);
     const radius = (rect.width - padding) / 2;
-    if (distance > radius) distance = radius;
-    if (this.dots.length > 0) {
+    if (distance > radius) {
+      distance = radius;
+    }
+    if (this.dots.length) {
       updatedDots = [
         {
           ID: 0,
@@ -777,7 +809,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
     if (this.isLegacyVersion && !ignoreLegacy) {
       this.isLegacyVersion = false;
-      Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 1);
+      Services.prefs.setIntPref("zen.theme.gradient-legacy-version", 1);
     }
 
     colorPositions.forEach((dotPosition) => {
@@ -793,14 +825,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         );
         existingDot.lightness = this.#currentLightness;
         existingDot.element.style.setProperty(
-          '--zen-theme-picker-dot-color',
+          "--zen-theme-picker-dot-color",
           `rgb(${colorFromPos[0]}, ${colorFromPos[1]}, ${colorFromPos[2]})`
         );
         existingDot.element.setAttribute(
-          'data-position',
+          "data-position",
           this.getJSONPos(dotPosition.position.x, dotPosition.position.y)
         );
-        existingDot.element.setAttribute('data-type', dotPosition.type);
+        existingDot.element.setAttribute("data-type", dotPosition.type);
 
         if (!this.dragging) {
           gZenUIManager.motion.animate(
@@ -815,7 +847,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             },
             {
               duration: 0.4,
-              type: 'spring',
+              type: "spring",
               bounce: 0.3,
             }
           );
@@ -836,21 +868,25 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (this._rotating) {
       return;
     }
-    if (event.target.closest('#PanelUI-zen-gradient-generator-scheme')) {
+    if (event.target.closest("#PanelUI-zen-gradient-generator-scheme")) {
       return;
     }
     event.preventDefault();
     const target = event.target;
-    if (target.id === 'PanelUI-zen-gradient-generator-color-add') {
-      if (this.dots.length >= nsZenThemePicker.MAX_DOTS) return;
-      let colorPositions = this.calculateCompliments(this.dots, 'add', this.useAlgo);
+    if (target.id === "PanelUI-zen-gradient-generator-color-add") {
+      if (this.dots.length >= nsZenThemePicker.MAX_DOTS) {
+        return;
+      }
+      let colorPositions = this.calculateCompliments(this.dots, "add", this.useAlgo);
 
       this.handleColorPositions(colorPositions);
       this.updateCurrentWorkspace();
       return;
-    } else if (target.id === 'PanelUI-zen-gradient-generator-color-remove') {
+    } else if (target.id === "PanelUI-zen-gradient-generator-color-remove") {
       this.dots.sort((a, b) => a.ID - b.ID);
-      if (this.dots.length === 0) return;
+      if (this.dots.length === 0) {
+        return;
+      }
 
       const lastDot = this.dots.pop();
       lastDot.element.remove();
@@ -858,17 +894,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.dots.forEach((dot, index) => {
         dot.ID = index;
         if (index === 0) {
-          dot.element.classList.add('primary');
+          dot.element.classList.add("primary");
         } else {
-          dot.element.classList.remove('primary');
+          dot.element.classList.remove("primary");
         }
       });
 
-      let colorPositions = this.calculateCompliments(this.dots, 'remove');
+      let colorPositions = this.calculateCompliments(this.dots, "remove");
       this.handleColorPositions(colorPositions);
       this.updateCurrentWorkspace();
       return;
-    } else if (target.id === 'PanelUI-zen-gradient-generator-color-toggle-algo') {
+    } else if (target.id === "PanelUI-zen-gradient-generator-color-toggle-algo") {
       const applicableHarmonies = this.colorHarmonies.filter(
         (harmony) => harmony.angles.length + 1 === this.dots.length
       );
@@ -878,15 +914,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % applicableHarmonies.length;
       this.useAlgo = applicableHarmonies[nextIndex].type;
 
-      let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+      let colorPositions = this.calculateCompliments(this.dots, "update", this.useAlgo);
       this.handleColorPositions(colorPositions);
       this.updateCurrentWorkspace();
       return;
     }
 
-    if (event.button !== 0 || this.dragging || this.recentlyDragged) return;
+    if (event.button !== 0 || this.dragging || this.recentlyDragged) {
+      return;
+    }
 
-    const gradient = this.panel.querySelector('.zen-theme-picker-gradient');
+    const gradient = this.panel.querySelector(".zen-theme-picker-gradient");
     const rect = gradient.getBoundingClientRect();
     const padding = 0;
 
@@ -908,7 +946,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       clickedDot.ID = 0;
       clickedDot.element.style.zIndex = 999;
 
-      let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+      let colorPositions = this.calculateCompliments(this.dots, "update", this.useAlgo);
       this.handleColorPositions(colorPositions);
       return;
     }
@@ -933,7 +971,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         y: relativeY,
       };
 
-      let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+      let colorPositions = this.calculateCompliments(this.dots, "update", this.useAlgo);
       this.handleColorPositions(colorPositions);
       this.updateCurrentWorkspace(true);
 
@@ -945,7 +983,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         },
         {
           duration: 0.4,
-          type: 'spring',
+          type: "spring",
           bounce: 0.3,
         }
       );
@@ -961,7 +999,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       event.preventDefault();
       this.dragging = true;
       this.draggedDot = event.target;
-      this.draggedDot.classList.add('dragging');
+      this.draggedDot.classList.add("dragging");
     }
 
     // Store the starting position of the drag
@@ -976,7 +1014,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       return;
     }
     if (event.button === 2) {
-      if (!event.target.classList.contains('zen-theme-picker-dot')) {
+      if (!event.target.classList.contains("zen-theme-picker-dot")) {
         return;
       }
       this.dots = this.dots.filter((dot) => dot.element !== event.target);
@@ -988,13 +1026,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.dots.forEach((dot, index) => {
         dot.ID = index;
         if (index === 0) {
-          dot.element.classList.add('primary');
+          dot.element.classList.add("primary");
         } else {
-          dot.element.classList.remove('primary');
+          dot.element.classList.remove("primary");
         }
       });
 
-      let colorPositions = this.calculateCompliments(this.dots, 'remove');
+      let colorPositions = this.calculateCompliments(this.dots, "remove");
       this.handleColorPositions(colorPositions);
 
       this.updateCurrentWorkspace();
@@ -1005,7 +1043,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       event.preventDefault();
       event.stopPropagation();
       this.dragging = false;
-      this.draggedDot.classList.remove('dragging');
+      this.draggedDot.classList.remove("dragging");
       this.draggedDot = null;
       this.dragStartPosition = null; // Reset the drag start position
 
@@ -1013,14 +1051,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       setTimeout(() => {
         this.recentlyDragged = false;
       }, 100);
-      return;
     }
   }
 
   onDotMouseMove(event) {
     if (this.dragging) {
       event.preventDefault();
-      const rect = this.panel.querySelector('.zen-theme-picker-gradient').getBoundingClientRect();
+      const rect = this.panel.querySelector(".zen-theme-picker-gradient").getBoundingClientRect();
       const padding = 0; // each side
       // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
       // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
@@ -1049,7 +1086,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         x: relativeX,
         y: relativeY,
       };
-      let colorPositions = this.calculateCompliments(this.dots, 'update', this.useAlgo);
+      let colorPositions = this.calculateCompliments(this.dots, "update", this.useAlgo);
       this.handleColorPositions(colorPositions);
 
       this.updateCurrentWorkspace();
@@ -1082,7 +1119,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   get isMica() {
-    return window.matchMedia('(-moz-windows-mica)').matches;
+    return window.matchMedia("(-moz-windows-mica)").matches;
   }
 
   get canBeTransparent() {
@@ -1100,7 +1137,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (this.isMica) {
       colorToBlend = !this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
       colorToBlendOpacity = 0.35;
-    } else if (AppConstants.platform === 'macosx') {
+    } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
       colorToBlendOpacity = 0.35;
     }
@@ -1110,7 +1147,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         opacity + lazy.MIN_OPACITY + colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
       );
       baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
-      if (AppConstants.platform !== 'macosx') {
+      if (AppConstants.platform !== "macosx") {
         opacity += colorToBlendOpacity * (1 - opacity);
       }
     }
@@ -1171,61 +1208,60 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   getGradient(colors, forToolbar = false) {
     const themedColors = this.themedColors(colors);
-    this.useAlgo = themedColors[0]?.algorithm ?? '';
+    this.useAlgo = themedColors[0]?.algorithm ?? "";
     this.#currentLightness = themedColors[0]?.lightness ?? 50;
 
     const rotation = -45; // TODO: Detect rotation based on the accent color
     if (themedColors.length === 0) {
       const getBrowserBg = () => {
         if (this.canBeTransparent) {
-          return this.isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'transparent';
+          return this.isDarkMode ? "rgba(0, 0, 0, 0.4)" : "transparent";
         }
-        return this.isDarkMode ? '#131313' : '#e9e9e9';
+        return this.isDarkMode ? "#131313" : "#e9e9e9";
       };
       return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
     } else if (themedColors.length === 1) {
       return this.getSingleRGBColor(themedColors[0], forToolbar);
-    } else {
-      // If there are custom colors, we just return a linear gradient with all colors
-      if (themedColors.find((color) => color.isCustom)) {
-        // Just return a linear gradient with all colors
-        const gradientColors = themedColors.map((color) =>
-          this.getSingleRGBColor(color, forToolbar)
-        );
-        // Divide all colors evenly in the gradient
-        const colorStops = gradientColors
-          .map((color, index) => {
-            const position = (index / (gradientColors.length - 1)) * 100;
-            return `${color} ${position}%`;
-          })
-          .join(', ');
-        return `linear-gradient(${rotation}deg, ${colorStops})`;
-      }
-      if (themedColors.length === 2) {
-        if (!forToolbar) {
-          return [
-            `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-            `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
-          ]
-            .reverse()
-            .join(', ');
-        }
-        return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
-      } else if (themedColors.length === 3) {
-        let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
-        let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
-        let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
-        return [
-          `linear-gradient(-5deg, ${color1} 10%, transparent 80%)`,
-          `radial-gradient(circle at 95% 0%, ${color3} 0%, transparent 75%)`,
-          `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 70%)`,
-        ].join(', ');
-      }
     }
+    // If there are custom colors, we just return a linear gradient with all colors
+    if (themedColors.find((color) => color.isCustom)) {
+      // Just return a linear gradient with all colors
+      const gradientColors = themedColors.map((color) => this.getSingleRGBColor(color, forToolbar));
+      // Divide all colors evenly in the gradient
+      const colorStops = gradientColors
+        .map((color, index) => {
+          const position = (index / (gradientColors.length - 1)) * 100;
+          return `${color} ${position}%`;
+        })
+        .join(", ");
+      return `linear-gradient(${rotation}deg, ${colorStops})`;
+    }
+    if (themedColors.length === 2) {
+      if (!forToolbar) {
+        return [
+          `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+        ]
+          .reverse()
+          .join(", ");
+      }
+      return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
+    } else if (themedColors.length === 3) {
+      let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
+      let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
+      let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
+      return [
+        `linear-gradient(-5deg, ${color1} 10%, transparent 80%)`,
+        `radial-gradient(circle at 95% 0%, ${color3} 0%, transparent 75%)`,
+        `radial-gradient(circle at 0% 0%, ${color2} 10%, transparent 70%)`,
+      ].join(", ");
+    }
+    // We shouldn't really reach here but just in case, we return an empty array
+    return [];
   }
 
   shouldBeDarkMode(accentColor) {
-    if (Services.prefs.getBoolPref('zen.theme.use-system-colors')) {
+    if (Services.prefs.getBoolPref("zen.theme.use-system-colors")) {
       return this.isDarkMode;
     }
 
@@ -1260,7 +1296,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   static getTheme(colors = [], opacity = 0.5, texture = 0) {
     return {
-      type: 'gradient',
+      type: "gradient",
       gradientColors: colors ? colors.filter((color) => color) : [], // remove undefined
       opacity,
       texture,
@@ -1268,22 +1304,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   updateNoise(texture) {
-    document.documentElement.style.setProperty('--zen-grainy-background-opacity', texture);
+    document.documentElement.style.setProperty("--zen-grainy-background-opacity", texture);
     document.documentElement.setAttribute(
-      'zen-show-grainy-background',
-      texture > 0 ? 'true' : 'false'
+      "zen-show-grainy-background",
+      texture > 0 ? "true" : "false"
     );
   }
 
   hexToRgb(hex) {
-    if (hex.startsWith('#')) {
+    if (hex.startsWith("#")) {
       hex = hex.substring(1);
     }
     if (hex.length === 3) {
       hex = hex
-        .split('')
+        .split("")
         .map((char) => char + char)
-        .join('');
+        .join("");
     }
     return [
       parseInt(hex.substring(0, 2), 16),
@@ -1294,6 +1330,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   /**
    * Get the primary color from a list of colors.
+   *
+   * @param {Array<number>} accentColor The accent color as an array of RGB values.
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor) {
@@ -1302,7 +1340,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   getMostDominantColor(allColors) {
     const color = this.getPrimaryColor(allColors);
-    if (typeof color === 'string') {
+    if (typeof color === "string") {
       // We found a custom color, we should rather return the native accent color
       return this.getNativeAccentColor();
     }
@@ -1318,6 +1356,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // Use theme from workspace object or passed theme
     let workspaceTheme = theme || workspace.theme;
 
+    /* eslint-disable complexity */
     this.forEachWindowSync((browser) => {
       if (!browser.gZenThemePicker?.promiseInitialized) {
         return;
@@ -1342,7 +1381,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const docElement = browser.document.documentElement;
 
       if (!skipUpdate) {
-        for (const dot of browser.gZenThemePicker.panel.querySelectorAll('.zen-theme-picker-dot')) {
+        for (const dot of browser.gZenThemePicker.panel.querySelectorAll(".zen-theme-picker-dot")) {
           dot.remove();
         }
       }
@@ -1356,15 +1395,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
       if (!skipUpdate) {
         docElement.style.setProperty(
-          '--zen-main-browser-background-old',
-          docElement.style.getPropertyValue('--zen-main-browser-background')
+          "--zen-main-browser-background-old",
+          docElement.style.getPropertyValue("--zen-main-browser-background")
         );
         docElement.style.setProperty(
-          '--zen-main-browser-background-toolbar-old',
-          docElement.style.getPropertyValue('--zen-main-browser-background-toolbar')
+          "--zen-main-browser-background-toolbar-old",
+          docElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
         );
         docElement.style.setProperty(
-          '--zen-background-opacity',
+          "--zen-background-opacity",
           browser.gZenThemePicker.previousBackgroundOpacity ?? 1
         );
         if (browser.gZenThemePicker.previousBackgroundResolve) {
@@ -1385,7 +1424,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       const opacitySlider = browser.document.getElementById(
-        'PanelUI-zen-gradient-generator-opacity'
+        "PanelUI-zen-gradient-generator-opacity"
       );
 
       {
@@ -1393,7 +1432,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         const svg = browser.gZenThemePicker.sliderWavePath;
         /* eslint-disable no-unused-vars */
         const [_, secondStop, thirdStop] = document.querySelectorAll(
-          '#PanelUI-zen-gradient-generator-slider-wave-gradient stop'
+          "#PanelUI-zen-gradient-generator-slider-wave-gradient stop"
         );
         // Opacity can only be between lazy.MIN_OPACITY to lazy.MAX_OPACITY. Make opacity relative to that range
         if (opacity < lazy.MIN_OPACITY) {
@@ -1410,63 +1449,64 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         // The offset is the percentage of the wave that is visible, so we need to multiply
         // the opacity by 100 to get the percentage.
         // Set the offset of the stops
-        secondStop.setAttribute('offset', `${opacity * 100}%`);
-        thirdStop.setAttribute('offset', `${opacity * 100}%`);
+        secondStop.setAttribute("offset", `${opacity * 100}%`);
+        thirdStop.setAttribute("offset", `${opacity * 100}%`);
         const interpolatedPath = this.#interpolateWavePath(opacity);
-        svg.setAttribute('d', interpolatedPath);
-        opacitySlider.style.setProperty('--zen-thumb-height', `${40 + opacity * 15}px`);
-        opacitySlider.style.setProperty('--zen-thumb-width', `${10 + opacity * 15}px`);
+        svg.setAttribute("d", interpolatedPath);
+        opacitySlider.style.setProperty("--zen-thumb-height", `${40 + opacity * 15}px`);
+        opacitySlider.style.setProperty("--zen-thumb-width", `${10 + opacity * 15}px`);
         svg.style.stroke =
           interpolatedPath === this.#linePath
-            ? thirdStop.getAttribute('stop-color')
-            : 'url(#PanelUI-zen-gradient-generator-slider-wave-gradient)';
+            ? thirdStop.getAttribute("stop-color")
+            : "url(#PanelUI-zen-gradient-generator-slider-wave-gradient)";
       }
 
       for (const button of browser.document.querySelectorAll(
-        '#PanelUI-zen-gradient-generator-color-actions button'
+        "#PanelUI-zen-gradient-generator-color-actions button"
       )) {
         // disable if there are no buttons
         button.disabled =
           workspaceTheme.gradientColors.length === 0 ||
-          (button.id === 'PanelUI-zen-gradient-generator-color-add'
+          (button.id === "PanelUI-zen-gradient-generator-color-add"
             ? workspaceTheme.gradientColors.length >= nsZenThemePicker.MAX_DOTS
             : false) ||
-          (button.id === 'PanelUI-zen-gradient-generator-color-toggle-algo'
+          (button.id === "PanelUI-zen-gradient-generator-color-toggle-algo"
             ? workspaceTheme.gradientColors.length < 2
             : false);
       }
       const clickToAdd = browser.document.getElementById(
-        'PanelUI-zen-gradient-generator-color-click-to-add'
+        "PanelUI-zen-gradient-generator-color-click-to-add"
       );
-      if (workspaceTheme.gradientColors.length > 0) {
-        clickToAdd.setAttribute('hidden', 'true');
+      if (workspaceTheme.gradientColors.length) {
+        clickToAdd.setAttribute("hidden", "true");
       } else {
-        clickToAdd.removeAttribute('hidden');
+        clickToAdd.removeAttribute("hidden");
       }
 
       opacitySlider.value = browser.gZenThemePicker.currentOpacity;
       const textureSelectWrapper = browser.document.getElementById(
-        'PanelUI-zen-gradient-generator-texture-wrapper'
+        "PanelUI-zen-gradient-generator-texture-wrapper"
       );
       const textureWrapperWidth = textureSelectWrapper.getBoundingClientRect().width;
       // Dont show when hidden
       if (textureWrapperWidth) {
         // rotate and trasnform relative to the wrapper width depending on the texture value
-        const textureValue = this.currentTexture;
-        const textureHandler = browser.gZenThemePicker._textureHandler;
-        const rotation = textureValue * 360 - 90;
+        let textureValue = this.currentTexture;
+        let textureHandler = browser.gZenThemePicker._textureHandler;
+        let rotation = textureValue * 360 - 90;
         textureHandler.style.transform = `rotate(${rotation + 90}deg)`;
         // add top and left to center the texture handler in relation with textureWrapperWidth
         // based on the rotation
-        const top = Math.sin((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 6;
-        const left = Math.cos((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 3;
+        /* eslint-disable no-shadow */
+        let top = Math.sin((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 6;
+        let left = Math.cos((rotation * Math.PI) / 180) * (textureWrapperWidth / 2) - 3;
         textureHandler.style.top = `${textureWrapperWidth / 2 + top}px`;
         textureHandler.style.left = `${textureWrapperWidth / 2 + left}px`;
         // Highlight the 16 buttons based on the texture value
-        const buttons = browser.document.querySelectorAll('.zen-theme-picker-texture-dot');
+        let buttons = browser.document.querySelectorAll(".zen-theme-picker-texture-dot");
         let i = 4;
         for (const button of buttons) {
-          button.classList.toggle('active', i / 16 <= textureValue);
+          button.classList.toggle("active", i / 16 <= textureValue);
           i++;
           // We start at point 4 because that's the first point that is not in the middle of the texture
           if (i === 16) {
@@ -1482,46 +1522,46 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       );
       browser.gZenThemePicker.updateNoise(workspaceTheme.texture);
 
-      browser.gZenThemePicker.customColorList.innerHTML = '';
+      browser.gZenThemePicker.customColorList.innerHTML = "";
       for (const dot of workspaceTheme.gradientColors) {
         if (dot.isCustom) {
           browser.gZenThemePicker.addColorToCustomList(dot.c);
         }
       }
 
-      docElement.style.setProperty('--zen-main-browser-background-toolbar', gradientToolbar);
-      docElement.style.setProperty('--zen-main-browser-background', gradient);
+      docElement.style.setProperty("--zen-main-browser-background-toolbar", gradientToolbar);
+      docElement.style.setProperty("--zen-main-browser-background", gradient);
       const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
       if (isDefaultTheme) {
-        docElement.setAttribute('zen-default-theme', 'true');
+        docElement.setAttribute("zen-default-theme", "true");
       } else {
-        docElement.removeAttribute('zen-default-theme');
+        docElement.removeAttribute("zen-default-theme");
       }
       if (dominantColor) {
         const primaryColor = this.getAccentColorForUI(dominantColor);
-        docElement.style.setProperty('--zen-primary-color', primaryColor);
+        docElement.style.setProperty("--zen-primary-color", primaryColor);
 
         // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
         // so instead get the pref value directly.
         browser.gZenThemePicker.isLegacyVersion =
-          Services.prefs.getIntPref('zen.theme.gradient-legacy-version', 1) === 0;
+          Services.prefs.getIntPref("zen.theme.gradient-legacy-version", 1) === 0;
 
         let isDarkMode = isDarkModeWindow;
         if (!isDefaultTheme && !this.isLegacyVersion) {
           // Check for the primary color
           isDarkMode = browser.gZenThemePicker.shouldBeDarkMode(dominantColor);
-          docElement.setAttribute('zen-should-be-dark-mode', isDarkMode);
-          browser.gZenThemePicker.panel.removeAttribute('invalidate-controls');
+          docElement.setAttribute("zen-should-be-dark-mode", isDarkMode);
+          browser.gZenThemePicker.panel.removeAttribute("invalidate-controls");
         } else {
-          docElement.removeAttribute('zen-should-be-dark-mode');
+          docElement.removeAttribute("zen-should-be-dark-mode");
           if (!this.isLegacyVersion) {
-            browser.gZenThemePicker.panel.setAttribute('invalidate-controls', 'true');
+            browser.gZenThemePicker.panel.setAttribute("invalidate-controls", "true");
           }
         }
         // Set `--toolbox-textcolor` to have a contrast with the primary color
         const textColor = this.getToolbarColor(isDarkMode);
         docElement.style.setProperty(
-          '--toolbox-textcolor',
+          "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
         );
       }
@@ -1535,19 +1575,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   fixTheme(theme) {
     // add a primary color if there isn't one
-    if (!theme.gradientColors.find((color) => color.isPrimary) && theme.gradientColors.length > 0) {
+    if (!theme.gradientColors.find((color) => color.isPrimary) && theme.gradientColors.length) {
       theme.gradientColors[0].isPrimary = true;
     }
     return theme;
   }
 
   getNativeAccentColor() {
-    let accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
+    let accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
     let rgb;
-    if (accentColor === 'AccentColor') {
-      const rawRgb = window.getComputedStyle(document.getElementById('zen-browser-background'))[
-        'color'
-      ];
+    if (accentColor === "AccentColor") {
+      const rawRgb = window.getComputedStyle(
+        document.getElementById("zen-browser-background")
+      ).color;
       rgb = rawRgb.match(/\d+/g).map(Number);
       // Match our theme a bit more, since we can't always expect the OS
       // to give us a color matching our theme scheme
@@ -1567,15 +1607,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   resetCustomColorList() {
-    this.customColorList.innerHTML = '';
+    this.customColorList.innerHTML = "";
   }
 
   removeCustomColor(event) {
-    const target = event.target.closest('.zen-theme-picker-custom-list-item');
-    const color = target.getAttribute('data-color');
-    const dots = this.panel.querySelectorAll('.zen-theme-picker-dot');
+    const target = event.target.closest(".zen-theme-picker-custom-list-item");
+    const color = target.getAttribute("data-color");
+    const dots = this.panel.querySelectorAll(".zen-theme-picker-dot");
     for (const dot of dots) {
-      if (dot.style.getPropertyValue('--zen-theme-picker-dot-color') === color) {
+      if (dot.style.getPropertyValue("--zen-theme-picker-dot-color") === color) {
         dot.remove();
         break;
       }
@@ -1604,21 +1644,21 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   updateCurrentWorkspace(skipSave = true) {
     this.updated = skipSave;
-    const dots = this.panel.querySelectorAll('.zen-theme-picker-dot');
+    const dots = this.panel.querySelectorAll(".zen-theme-picker-dot");
     const colors = Array.from(dots)
-      .sort((a, b) => a.getAttribute('data-index') - b.getAttribute('data-index'))
+      .sort((a, b) => a.getAttribute("data-index") - b.getAttribute("data-index"))
       .map((dot) => {
-        const color = dot.style.getPropertyValue('--zen-theme-picker-dot-color');
-        const isPrimary = dot.classList.contains('primary');
+        const color = dot.style.getPropertyValue("--zen-theme-picker-dot-color");
+        const isPrimary = dot.classList.contains("primary");
 
-        if (color === 'undefined') {
-          return;
+        if (color === "undefined") {
+          return null;
         }
-        const isCustom = dot.classList.contains('custom');
+        const isCustom = dot.classList.contains("custom");
         const algorithm = this.useAlgo;
         const position =
-          dot.getAttribute('data-position') && JSON.parse(dot.getAttribute('data-position'));
-        const type = dot.getAttribute('data-type');
+          dot.getAttribute("data-position") && JSON.parse(dot.getAttribute("data-position"));
+        const type = dot.getAttribute("data-type");
         return {
           c: isCustom ? color : color.match(/\d+/g).map(Number),
           isCustom,
@@ -1628,7 +1668,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           position,
           type,
         };
-      });
+      })
+      .filter((color) => Boolean(color)); // remove nulls
     const gradient = nsZenThemePicker.getTheme(colors, this.currentOpacity, this.currentTexture);
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
@@ -1661,25 +1702,29 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (this.#sinePoints.length === 0) {
       return progress < 0.5 ? linePath : sinePath;
     }
-    if (progress <= 0.001) return linePath;
-    if (progress >= 0.999) return sinePath;
+    if (progress <= 0.001) {
+      return linePath;
+    }
+    if (progress >= 0.999) {
+      return sinePath;
+    }
     const t = progress;
-    let newPathData = '';
+    let newPathData = "";
     this.#sinePoints.forEach((p) => {
       switch (p.type) {
-        case 'M': {
+        case "M": {
           const interpolatedY = referenceY + (p.y - referenceY) * t;
           newPathData += `M ${p.x} ${interpolatedY} `;
           break;
         }
-        case 'C': {
+        case "C": {
           const y1 = referenceY + (p.y1 - referenceY) * t;
           const y2 = referenceY + (p.y2 - referenceY) * t;
           const y = referenceY + (p.y - referenceY) * t;
           newPathData += `C ${p.x1} ${y1} ${p.x2} ${y2} ${p.x} ${y} `;
           break;
         }
-        case 'L':
+        case "L":
           newPathData += `L ${p.x} ${p.y} `;
           break;
       }
@@ -1689,7 +1734,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   invalidateGradientCache() {
     this.#gradientsCache = {};
-    window.dispatchEvent(new Event('ZenGradientCacheChanged', { bubbles: true }));
+    window.dispatchEvent(new Event("ZenGradientCacheChanged", { bubbles: true }));
   }
 
   getGradientForWorkspace(workspace) {

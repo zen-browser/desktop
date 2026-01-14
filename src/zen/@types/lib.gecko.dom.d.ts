@@ -9169,113 +9169,113 @@ interface Document
     qualifiedName: string,
     options?: string | ElementCreationOptions
   ): Element;
-  createEvent(eventInterface: 'AddonEvent'): AddonEvent;
-  createEvent(eventInterface: 'AnimationEvent'): AnimationEvent;
-  createEvent(eventInterface: 'AnimationPlaybackEvent'): AnimationPlaybackEvent;
-  createEvent(eventInterface: 'AudioProcessingEvent'): AudioProcessingEvent;
-  createEvent(eventInterface: 'BeforeUnloadEvent'): BeforeUnloadEvent;
-  createEvent(eventInterface: 'BlobEvent'): BlobEvent;
-  createEvent(eventInterface: 'CSSCustomPropertyRegisteredEvent'): CSSCustomPropertyRegisteredEvent;
-  createEvent(eventInterface: 'CaretStateChangedEvent'): CaretStateChangedEvent;
-  createEvent(eventInterface: 'ClipboardEvent'): ClipboardEvent;
-  createEvent(eventInterface: 'CloseEvent'): CloseEvent;
-  createEvent(eventInterface: 'CommandEvent'): CommandEvent;
-  createEvent(eventInterface: 'CompositionEvent'): CompositionEvent;
+  createEvent(eventInterface: "AddonEvent"): AddonEvent;
+  createEvent(eventInterface: "AnimationEvent"): AnimationEvent;
+  createEvent(eventInterface: "AnimationPlaybackEvent"): AnimationPlaybackEvent;
+  createEvent(eventInterface: "AudioProcessingEvent"): AudioProcessingEvent;
+  createEvent(eventInterface: "BeforeUnloadEvent"): BeforeUnloadEvent;
+  createEvent(eventInterface: "BlobEvent"): BlobEvent;
+  createEvent(eventInterface: "CSSCustomPropertyRegisteredEvent"): CSSCustomPropertyRegisteredEvent;
+  createEvent(eventInterface: "CaretStateChangedEvent"): CaretStateChangedEvent;
+  createEvent(eventInterface: "ClipboardEvent"): ClipboardEvent;
+  createEvent(eventInterface: "CloseEvent"): CloseEvent;
+  createEvent(eventInterface: "CommandEvent"): CommandEvent;
+  createEvent(eventInterface: "CompositionEvent"): CompositionEvent;
   createEvent(
-    eventInterface: 'ContentVisibilityAutoStateChangeEvent'
+    eventInterface: "ContentVisibilityAutoStateChangeEvent"
   ): ContentVisibilityAutoStateChangeEvent;
-  createEvent(eventInterface: 'CookieChangeEvent'): CookieChangeEvent;
-  createEvent(eventInterface: 'CustomEvent'): CustomEvent;
-  createEvent(eventInterface: 'DeviceLightEvent'): DeviceLightEvent;
-  createEvent(eventInterface: 'DeviceMotionEvent'): DeviceMotionEvent;
-  createEvent(eventInterface: 'DeviceOrientationEvent'): DeviceOrientationEvent;
-  createEvent(eventInterface: 'DragEvent'): DragEvent;
-  createEvent(eventInterface: 'ErrorEvent'): ErrorEvent;
-  createEvent(eventInterface: 'FocusEvent'): FocusEvent;
-  createEvent(eventInterface: 'FontFaceSetLoadEvent'): FontFaceSetLoadEvent;
-  createEvent(eventInterface: 'FormDataEvent'): FormDataEvent;
-  createEvent(eventInterface: 'FrameCrashedEvent'): FrameCrashedEvent;
-  createEvent(eventInterface: 'GPUUncapturedErrorEvent'): GPUUncapturedErrorEvent;
-  createEvent(eventInterface: 'GamepadAxisMoveEvent'): GamepadAxisMoveEvent;
-  createEvent(eventInterface: 'GamepadButtonEvent'): GamepadButtonEvent;
-  createEvent(eventInterface: 'GamepadEvent'): GamepadEvent;
-  createEvent(eventInterface: 'HashChangeEvent'): HashChangeEvent;
-  createEvent(eventInterface: 'IDBVersionChangeEvent'): IDBVersionChangeEvent;
-  createEvent(eventInterface: 'ImageCaptureErrorEvent'): ImageCaptureErrorEvent;
-  createEvent(eventInterface: 'InputEvent'): InputEvent;
-  createEvent(eventInterface: 'KeyboardEvent'): KeyboardEvent;
-  createEvent(eventInterface: 'MIDIConnectionEvent'): MIDIConnectionEvent;
-  createEvent(eventInterface: 'MIDIMessageEvent'): MIDIMessageEvent;
-  createEvent(eventInterface: 'MediaEncryptedEvent'): MediaEncryptedEvent;
-  createEvent(eventInterface: 'MediaKeyMessageEvent'): MediaKeyMessageEvent;
-  createEvent(eventInterface: 'MediaQueryListEvent'): MediaQueryListEvent;
-  createEvent(eventInterface: 'MediaRecorderErrorEvent'): MediaRecorderErrorEvent;
-  createEvent(eventInterface: 'MediaStreamEvent'): MediaStreamEvent;
-  createEvent(eventInterface: 'MediaStreamTrackEvent'): MediaStreamTrackEvent;
-  createEvent(eventInterface: 'MerchantValidationEvent'): MerchantValidationEvent;
-  createEvent(eventInterface: 'MessageEvent'): MessageEvent;
-  createEvent(eventInterface: 'MouseEvent'): MouseEvent;
-  createEvent(eventInterface: 'MouseEvents'): MouseEvent;
-  createEvent(eventInterface: 'MouseScrollEvent'): MouseScrollEvent;
-  createEvent(eventInterface: 'MozSharedMapChangeEvent'): MozSharedMapChangeEvent;
-  createEvent(eventInterface: 'NavigateEvent'): NavigateEvent;
+  createEvent(eventInterface: "CookieChangeEvent"): CookieChangeEvent;
+  createEvent(eventInterface: "CustomEvent"): CustomEvent;
+  createEvent(eventInterface: "DeviceLightEvent"): DeviceLightEvent;
+  createEvent(eventInterface: "DeviceMotionEvent"): DeviceMotionEvent;
+  createEvent(eventInterface: "DeviceOrientationEvent"): DeviceOrientationEvent;
+  createEvent(eventInterface: "DragEvent"): DragEvent;
+  createEvent(eventInterface: "ErrorEvent"): ErrorEvent;
+  createEvent(eventInterface: "FocusEvent"): FocusEvent;
+  createEvent(eventInterface: "FontFaceSetLoadEvent"): FontFaceSetLoadEvent;
+  createEvent(eventInterface: "FormDataEvent"): FormDataEvent;
+  createEvent(eventInterface: "FrameCrashedEvent"): FrameCrashedEvent;
+  createEvent(eventInterface: "GPUUncapturedErrorEvent"): GPUUncapturedErrorEvent;
+  createEvent(eventInterface: "GamepadAxisMoveEvent"): GamepadAxisMoveEvent;
+  createEvent(eventInterface: "GamepadButtonEvent"): GamepadButtonEvent;
+  createEvent(eventInterface: "GamepadEvent"): GamepadEvent;
+  createEvent(eventInterface: "HashChangeEvent"): HashChangeEvent;
+  createEvent(eventInterface: "IDBVersionChangeEvent"): IDBVersionChangeEvent;
+  createEvent(eventInterface: "ImageCaptureErrorEvent"): ImageCaptureErrorEvent;
+  createEvent(eventInterface: "InputEvent"): InputEvent;
+  createEvent(eventInterface: "KeyboardEvent"): KeyboardEvent;
+  createEvent(eventInterface: "MIDIConnectionEvent"): MIDIConnectionEvent;
+  createEvent(eventInterface: "MIDIMessageEvent"): MIDIMessageEvent;
+  createEvent(eventInterface: "MediaEncryptedEvent"): MediaEncryptedEvent;
+  createEvent(eventInterface: "MediaKeyMessageEvent"): MediaKeyMessageEvent;
+  createEvent(eventInterface: "MediaQueryListEvent"): MediaQueryListEvent;
+  createEvent(eventInterface: "MediaRecorderErrorEvent"): MediaRecorderErrorEvent;
+  createEvent(eventInterface: "MediaStreamEvent"): MediaStreamEvent;
+  createEvent(eventInterface: "MediaStreamTrackEvent"): MediaStreamTrackEvent;
+  createEvent(eventInterface: "MerchantValidationEvent"): MerchantValidationEvent;
+  createEvent(eventInterface: "MessageEvent"): MessageEvent;
+  createEvent(eventInterface: "MouseEvent"): MouseEvent;
+  createEvent(eventInterface: "MouseEvents"): MouseEvent;
+  createEvent(eventInterface: "MouseScrollEvent"): MouseScrollEvent;
+  createEvent(eventInterface: "MozSharedMapChangeEvent"): MozSharedMapChangeEvent;
+  createEvent(eventInterface: "NavigateEvent"): NavigateEvent;
   createEvent(
-    eventInterface: 'NavigationCurrentEntryChangeEvent'
+    eventInterface: "NavigationCurrentEntryChangeEvent"
   ): NavigationCurrentEntryChangeEvent;
-  createEvent(eventInterface: 'NotifyPaintEvent'): NotifyPaintEvent;
-  createEvent(eventInterface: 'OfflineAudioCompletionEvent'): OfflineAudioCompletionEvent;
-  createEvent(eventInterface: 'PageTransitionEvent'): PageTransitionEvent;
-  createEvent(eventInterface: 'PaymentMethodChangeEvent'): PaymentMethodChangeEvent;
-  createEvent(eventInterface: 'PaymentRequestUpdateEvent'): PaymentRequestUpdateEvent;
-  createEvent(eventInterface: 'PerformanceEntryEvent'): PerformanceEntryEvent;
-  createEvent(eventInterface: 'PluginCrashedEvent'): PluginCrashedEvent;
-  createEvent(eventInterface: 'PointerEvent'): PointerEvent;
-  createEvent(eventInterface: 'PopStateEvent'): PopStateEvent;
-  createEvent(eventInterface: 'PopupBlockedEvent'): PopupBlockedEvent;
-  createEvent(eventInterface: 'PopupPositionedEvent'): PopupPositionedEvent;
-  createEvent(eventInterface: 'PositionStateEvent'): PositionStateEvent;
-  createEvent(eventInterface: 'ProgressEvent'): ProgressEvent;
-  createEvent(eventInterface: 'PromiseRejectionEvent'): PromiseRejectionEvent;
-  createEvent(eventInterface: 'RTCDTMFToneChangeEvent'): RTCDTMFToneChangeEvent;
-  createEvent(eventInterface: 'RTCDataChannelEvent'): RTCDataChannelEvent;
-  createEvent(eventInterface: 'RTCPeerConnectionIceEvent'): RTCPeerConnectionIceEvent;
-  createEvent(eventInterface: 'RTCTrackEvent'): RTCTrackEvent;
-  createEvent(eventInterface: 'RedirectBlockedEvent'): RedirectBlockedEvent;
-  createEvent(eventInterface: 'ScrollAreaEvent'): ScrollAreaEvent;
-  createEvent(eventInterface: 'SecurityPolicyViolationEvent'): SecurityPolicyViolationEvent;
-  createEvent(eventInterface: 'SimpleGestureEvent'): SimpleGestureEvent;
-  createEvent(eventInterface: 'SpeechRecognitionEvent'): SpeechRecognitionEvent;
-  createEvent(eventInterface: 'SpeechSynthesisErrorEvent'): SpeechSynthesisErrorEvent;
-  createEvent(eventInterface: 'SpeechSynthesisEvent'): SpeechSynthesisEvent;
-  createEvent(eventInterface: 'StorageEvent'): StorageEvent;
-  createEvent(eventInterface: 'StreamFilterDataEvent'): StreamFilterDataEvent;
+  createEvent(eventInterface: "NotifyPaintEvent"): NotifyPaintEvent;
+  createEvent(eventInterface: "OfflineAudioCompletionEvent"): OfflineAudioCompletionEvent;
+  createEvent(eventInterface: "PageTransitionEvent"): PageTransitionEvent;
+  createEvent(eventInterface: "PaymentMethodChangeEvent"): PaymentMethodChangeEvent;
+  createEvent(eventInterface: "PaymentRequestUpdateEvent"): PaymentRequestUpdateEvent;
+  createEvent(eventInterface: "PerformanceEntryEvent"): PerformanceEntryEvent;
+  createEvent(eventInterface: "PluginCrashedEvent"): PluginCrashedEvent;
+  createEvent(eventInterface: "PointerEvent"): PointerEvent;
+  createEvent(eventInterface: "PopStateEvent"): PopStateEvent;
+  createEvent(eventInterface: "PopupBlockedEvent"): PopupBlockedEvent;
+  createEvent(eventInterface: "PopupPositionedEvent"): PopupPositionedEvent;
+  createEvent(eventInterface: "PositionStateEvent"): PositionStateEvent;
+  createEvent(eventInterface: "ProgressEvent"): ProgressEvent;
+  createEvent(eventInterface: "PromiseRejectionEvent"): PromiseRejectionEvent;
+  createEvent(eventInterface: "RTCDTMFToneChangeEvent"): RTCDTMFToneChangeEvent;
+  createEvent(eventInterface: "RTCDataChannelEvent"): RTCDataChannelEvent;
+  createEvent(eventInterface: "RTCPeerConnectionIceEvent"): RTCPeerConnectionIceEvent;
+  createEvent(eventInterface: "RTCTrackEvent"): RTCTrackEvent;
+  createEvent(eventInterface: "RedirectBlockedEvent"): RedirectBlockedEvent;
+  createEvent(eventInterface: "ScrollAreaEvent"): ScrollAreaEvent;
+  createEvent(eventInterface: "SecurityPolicyViolationEvent"): SecurityPolicyViolationEvent;
+  createEvent(eventInterface: "SimpleGestureEvent"): SimpleGestureEvent;
+  createEvent(eventInterface: "SpeechRecognitionEvent"): SpeechRecognitionEvent;
+  createEvent(eventInterface: "SpeechSynthesisErrorEvent"): SpeechSynthesisErrorEvent;
+  createEvent(eventInterface: "SpeechSynthesisEvent"): SpeechSynthesisEvent;
+  createEvent(eventInterface: "StorageEvent"): StorageEvent;
+  createEvent(eventInterface: "StreamFilterDataEvent"): StreamFilterDataEvent;
   createEvent(
-    eventInterface: 'StyleSheetApplicableStateChangeEvent'
+    eventInterface: "StyleSheetApplicableStateChangeEvent"
   ): StyleSheetApplicableStateChangeEvent;
-  createEvent(eventInterface: 'StyleSheetRemovedEvent'): StyleSheetRemovedEvent;
-  createEvent(eventInterface: 'SubmitEvent'): SubmitEvent;
-  createEvent(eventInterface: 'TCPServerSocketEvent'): TCPServerSocketEvent;
-  createEvent(eventInterface: 'TCPSocketErrorEvent'): TCPSocketErrorEvent;
-  createEvent(eventInterface: 'TCPSocketEvent'): TCPSocketEvent;
-  createEvent(eventInterface: 'TaskPriorityChangeEvent'): TaskPriorityChangeEvent;
-  createEvent(eventInterface: 'TextEvent'): TextEvent;
-  createEvent(eventInterface: 'TimeEvent'): TimeEvent;
-  createEvent(eventInterface: 'ToggleEvent'): ToggleEvent;
-  createEvent(eventInterface: 'TouchEvent'): TouchEvent;
-  createEvent(eventInterface: 'TrackEvent'): TrackEvent;
-  createEvent(eventInterface: 'TransitionEvent'): TransitionEvent;
-  createEvent(eventInterface: 'UDPMessageEvent'): UDPMessageEvent;
-  createEvent(eventInterface: 'UIEvent'): UIEvent;
-  createEvent(eventInterface: 'UIEvents'): UIEvent;
-  createEvent(eventInterface: 'UserProximityEvent'): UserProximityEvent;
-  createEvent(eventInterface: 'VRDisplayEvent'): VRDisplayEvent;
-  createEvent(eventInterface: 'WebGLContextEvent'): WebGLContextEvent;
-  createEvent(eventInterface: 'WheelEvent'): WheelEvent;
-  createEvent(eventInterface: 'XRInputSourceEvent'): XRInputSourceEvent;
-  createEvent(eventInterface: 'XRInputSourcesChangeEvent'): XRInputSourcesChangeEvent;
-  createEvent(eventInterface: 'XRReferenceSpaceEvent'): XRReferenceSpaceEvent;
-  createEvent(eventInterface: 'XRSessionEvent'): XRSessionEvent;
-  createEvent(eventInterface: 'XULCommandEvent'): XULCommandEvent;
+  createEvent(eventInterface: "StyleSheetRemovedEvent"): StyleSheetRemovedEvent;
+  createEvent(eventInterface: "SubmitEvent"): SubmitEvent;
+  createEvent(eventInterface: "TCPServerSocketEvent"): TCPServerSocketEvent;
+  createEvent(eventInterface: "TCPSocketErrorEvent"): TCPSocketErrorEvent;
+  createEvent(eventInterface: "TCPSocketEvent"): TCPSocketEvent;
+  createEvent(eventInterface: "TaskPriorityChangeEvent"): TaskPriorityChangeEvent;
+  createEvent(eventInterface: "TextEvent"): TextEvent;
+  createEvent(eventInterface: "TimeEvent"): TimeEvent;
+  createEvent(eventInterface: "ToggleEvent"): ToggleEvent;
+  createEvent(eventInterface: "TouchEvent"): TouchEvent;
+  createEvent(eventInterface: "TrackEvent"): TrackEvent;
+  createEvent(eventInterface: "TransitionEvent"): TransitionEvent;
+  createEvent(eventInterface: "UDPMessageEvent"): UDPMessageEvent;
+  createEvent(eventInterface: "UIEvent"): UIEvent;
+  createEvent(eventInterface: "UIEvents"): UIEvent;
+  createEvent(eventInterface: "UserProximityEvent"): UserProximityEvent;
+  createEvent(eventInterface: "VRDisplayEvent"): VRDisplayEvent;
+  createEvent(eventInterface: "WebGLContextEvent"): WebGLContextEvent;
+  createEvent(eventInterface: "WheelEvent"): WheelEvent;
+  createEvent(eventInterface: "XRInputSourceEvent"): XRInputSourceEvent;
+  createEvent(eventInterface: "XRInputSourcesChangeEvent"): XRInputSourcesChangeEvent;
+  createEvent(eventInterface: "XRReferenceSpaceEvent"): XRReferenceSpaceEvent;
+  createEvent(eventInterface: "XRSessionEvent"): XRSessionEvent;
+  createEvent(eventInterface: "XULCommandEvent"): XULCommandEvent;
   createEvent(eventInterface: string): Event;
   createNodeIterator(root: Node, whatToShow?: number, filter?: NodeFilter | null): NodeIterator;
   createProcessingInstruction(target: string, data: string): ProcessingInstruction;
@@ -32719,7 +32719,7 @@ interface Console {
   warn(...data: any[]): void;
 }
 
-declare var console: Console;
+declare let console: Console;
 
 interface AnyCallback {
   (value: any): any;
@@ -33146,13 +33146,13 @@ interface MathMLElementTagNameMap {}
 type ElementTagNameMap = HTMLElementTagNameMap &
   Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;
 
-declare var Audio: {
+declare let Audio: {
   new (src?: string): HTMLAudioElement;
 };
-declare var Image: {
+declare let Image: {
   new (width?: number, height?: number): HTMLImageElement;
 };
-declare var Option: {
+declare let Option: {
   new (
     text?: string,
     value?: string,
@@ -33160,103 +33160,103 @@ declare var Option: {
     selected?: boolean
   ): HTMLOptionElement;
 };
-declare var webkitSpeechGrammar: {
+declare let webkitSpeechGrammar: {
   new (): SpeechGrammar;
 };
-declare var webkitSpeechGrammarList: {
+declare let webkitSpeechGrammarList: {
   new (): SpeechGrammarList;
 };
-declare var webkitSpeechRecognition: {
+declare let webkitSpeechRecognition: {
   new (): SpeechRecognition;
 };
-declare var Glean: GleanImpl;
-declare var GleanPings: GleanPingsImpl;
-declare var InstallTrigger: any;
-declare var browserDOMWindow: nsIBrowserDOMWindow | null;
-declare var browsingContext: BrowsingContext;
-declare var clientInformation: Navigator;
-declare var clientPrincipal: Principal | null;
-declare var closed: boolean;
-declare var content: any;
-declare var controllers: XULControllers;
-declare var cookieStore: CookieStore;
-declare var customElements: CustomElementRegistry;
-declare var desktopToDeviceScale: number;
-declare var devicePixelRatio: number;
-declare var docShell: nsIDocShell | null;
-declare var document: Document | null;
-declare var event: Event | undefined;
-declare var external: External;
-declare var frameElement: Element | null;
-declare var frames: WindowProxy;
-declare var fullScreen: boolean;
-declare var history: History;
-declare var innerHeight: number;
-declare var innerWidth: number;
-declare var intlUtils: IntlUtils;
-declare var isChromeWindow: boolean;
-declare var isCloaked: boolean;
-declare var isFullyOccluded: boolean;
-declare var isInFullScreenTransition: boolean;
-declare var length: number;
-declare var location: Location;
-declare var locationbar: BarProp;
-declare var menubar: BarProp;
-declare var messageManager: ChromeMessageBroadcaster;
-declare var mozInnerScreenX: number;
-declare var mozInnerScreenY: number;
+declare let Glean: GleanImpl;
+declare let GleanPings: GleanPingsImpl;
+declare let InstallTrigger: any;
+declare let browserDOMWindow: nsIBrowserDOMWindow | null;
+declare let browsingContext: BrowsingContext;
+declare let clientInformation: Navigator;
+declare let clientPrincipal: Principal | null;
+declare let closed: boolean;
+declare let content: any;
+declare let controllers: XULControllers;
+declare let cookieStore: CookieStore;
+declare let customElements: CustomElementRegistry;
+declare let desktopToDeviceScale: number;
+declare let devicePixelRatio: number;
+declare let docShell: nsIDocShell | null;
+declare let document: Document | null;
+declare let event: Event | undefined;
+declare let external: External;
+declare let frameElement: Element | null;
+declare let frames: WindowProxy;
+declare let fullScreen: boolean;
+declare let history: History;
+declare let innerHeight: number;
+declare let innerWidth: number;
+declare let intlUtils: IntlUtils;
+declare let isChromeWindow: boolean;
+declare let isCloaked: boolean;
+declare let isFullyOccluded: boolean;
+declare let isInFullScreenTransition: boolean;
+declare let length: number;
+declare let location: Location;
+declare let locationbar: BarProp;
+declare let menubar: BarProp;
+declare let messageManager: ChromeMessageBroadcaster;
+declare let mozInnerScreenX: number;
+declare let mozInnerScreenY: number;
 /** @deprecated */
 declare const name: void;
-declare var navigation: Navigation;
-declare var navigator: Navigator;
-declare var ondevicelight: ((this: Window, ev: Event) => any) | null;
-declare var ondevicemotion: ((this: Window, ev: Event) => any) | null;
-declare var ondeviceorientation: ((this: Window, ev: Event) => any) | null;
-declare var ondeviceorientationabsolute: ((this: Window, ev: Event) => any) | null;
-declare var onorientationchange: ((this: Window, ev: Event) => any) | null;
-declare var onuserproximity: ((this: Window, ev: Event) => any) | null;
-declare var onvrdisplayactivate: ((this: Window, ev: Event) => any) | null;
-declare var onvrdisplayconnect: ((this: Window, ev: Event) => any) | null;
-declare var onvrdisplaydeactivate: ((this: Window, ev: Event) => any) | null;
-declare var onvrdisplaydisconnect: ((this: Window, ev: Event) => any) | null;
-declare var onvrdisplaypresentchange: ((this: Window, ev: Event) => any) | null;
-declare var opener: any;
-declare var orientation: number;
-declare var originAgentCluster: boolean;
-declare var outerHeight: number;
-declare var outerWidth: number;
-declare var pageXOffset: number;
-declare var pageYOffset: number;
-declare var paintWorklet: Worklet;
-declare var parent: WindowProxy | null;
-declare var performance: Performance | null;
-declare var personalbar: BarProp;
-declare var realFrameElement: Element | null;
-declare var screen: Screen;
-declare var screenEdgeSlopX: number;
-declare var screenEdgeSlopY: number;
-declare var screenLeft: number;
-declare var screenTop: number;
-declare var screenX: number;
-declare var screenY: number;
-declare var scrollMaxX: number;
-declare var scrollMaxY: number;
-declare var scrollMinX: number;
-declare var scrollMinY: number;
-declare var scrollX: number;
-declare var scrollY: number;
-declare var scrollbars: BarProp;
-declare var self: WindowProxy;
-declare var status: string;
-declare var statusbar: BarProp;
-declare var toolbar: BarProp;
-declare var top: WindowProxy | null;
-declare var visualViewport: VisualViewport;
-declare var window: WindowProxy;
-declare var windowGlobalChild: WindowGlobalChild | null;
-declare var windowRoot: WindowRoot | null;
-declare var windowState: number;
-declare var windowUtils: nsIDOMWindowUtils;
+declare let navigation: Navigation;
+declare let navigator: Navigator;
+declare let ondevicelight: ((this: Window, ev: Event) => any) | null;
+declare let ondevicemotion: ((this: Window, ev: Event) => any) | null;
+declare let ondeviceorientation: ((this: Window, ev: Event) => any) | null;
+declare let ondeviceorientationabsolute: ((this: Window, ev: Event) => any) | null;
+declare let onorientationchange: ((this: Window, ev: Event) => any) | null;
+declare let onuserproximity: ((this: Window, ev: Event) => any) | null;
+declare let onvrdisplayactivate: ((this: Window, ev: Event) => any) | null;
+declare let onvrdisplayconnect: ((this: Window, ev: Event) => any) | null;
+declare let onvrdisplaydeactivate: ((this: Window, ev: Event) => any) | null;
+declare let onvrdisplaydisconnect: ((this: Window, ev: Event) => any) | null;
+declare let onvrdisplaypresentchange: ((this: Window, ev: Event) => any) | null;
+declare let opener: any;
+declare let orientation: number;
+declare let originAgentCluster: boolean;
+declare let outerHeight: number;
+declare let outerWidth: number;
+declare let pageXOffset: number;
+declare let pageYOffset: number;
+declare let paintWorklet: Worklet;
+declare let parent: WindowProxy | null;
+declare let performance: Performance | null;
+declare let personalbar: BarProp;
+declare let realFrameElement: Element | null;
+declare let screen: Screen;
+declare let screenEdgeSlopX: number;
+declare let screenEdgeSlopY: number;
+declare let screenLeft: number;
+declare let screenTop: number;
+declare let screenX: number;
+declare let screenY: number;
+declare let scrollMaxX: number;
+declare let scrollMaxY: number;
+declare let scrollMinX: number;
+declare let scrollMinY: number;
+declare let scrollX: number;
+declare let scrollY: number;
+declare let scrollbars: BarProp;
+declare let self: WindowProxy;
+declare let status: string;
+declare let statusbar: BarProp;
+declare let toolbar: BarProp;
+declare let top: WindowProxy | null;
+declare let visualViewport: VisualViewport;
+declare let window: WindowProxy;
+declare let windowGlobalChild: WindowGlobalChild | null;
+declare let windowRoot: WindowRoot | null;
+declare let windowState: number;
+declare let windowUtils: nsIDOMWindowUtils;
 declare function alert(): void;
 declare function alert(message: string): void;
 declare function blur(): void;
@@ -33348,146 +33348,146 @@ declare function synthesizeMouseEvent(
 ): boolean;
 declare function updateCommands(action: string): void;
 declare function toString(): string;
-declare var ownerGlobal: WindowProxy | null;
+declare let ownerGlobal: WindowProxy | null;
 declare function dispatchEvent(event: Event): boolean;
 declare function getEventHandler(type: string): EventHandler;
 declare function setEventHandler(type: string, handler: EventHandler): void;
 declare function cancelAnimationFrame(handle: number): void;
 declare function requestAnimationFrame(callback: FrameRequestCallback): number;
-declare var crypto: Crypto;
-declare var onabort: ((this: Window, ev: Event) => any) | null;
-declare var onanimationcancel: ((this: Window, ev: Event) => any) | null;
-declare var onanimationend: ((this: Window, ev: Event) => any) | null;
-declare var onanimationiteration: ((this: Window, ev: Event) => any) | null;
-declare var onanimationstart: ((this: Window, ev: Event) => any) | null;
-declare var onauxclick: ((this: Window, ev: Event) => any) | null;
-declare var onbeforeinput: ((this: Window, ev: Event) => any) | null;
-declare var onbeforematch: ((this: Window, ev: Event) => any) | null;
-declare var onbeforetoggle: ((this: Window, ev: Event) => any) | null;
-declare var onblur: ((this: Window, ev: Event) => any) | null;
-declare var oncancel: ((this: Window, ev: Event) => any) | null;
-declare var oncanplay: ((this: Window, ev: Event) => any) | null;
-declare var oncanplaythrough: ((this: Window, ev: Event) => any) | null;
-declare var onchange: ((this: Window, ev: Event) => any) | null;
-declare var onclick: ((this: Window, ev: Event) => any) | null;
-declare var onclose: ((this: Window, ev: Event) => any) | null;
-declare var oncommand: ((this: Window, ev: Event) => any) | null;
-declare var oncontentvisibilityautostatechange: ((this: Window, ev: Event) => any) | null;
-declare var oncontextlost: ((this: Window, ev: Event) => any) | null;
-declare var oncontextmenu: ((this: Window, ev: Event) => any) | null;
-declare var oncontextrestored: ((this: Window, ev: Event) => any) | null;
-declare var oncopy: ((this: Window, ev: Event) => any) | null;
-declare var oncuechange: ((this: Window, ev: Event) => any) | null;
-declare var oncut: ((this: Window, ev: Event) => any) | null;
-declare var ondblclick: ((this: Window, ev: Event) => any) | null;
-declare var ondrag: ((this: Window, ev: Event) => any) | null;
-declare var ondragend: ((this: Window, ev: Event) => any) | null;
-declare var ondragenter: ((this: Window, ev: Event) => any) | null;
-declare var ondragexit: ((this: Window, ev: Event) => any) | null;
-declare var ondragleave: ((this: Window, ev: Event) => any) | null;
-declare var ondragover: ((this: Window, ev: Event) => any) | null;
-declare var ondragstart: ((this: Window, ev: Event) => any) | null;
-declare var ondrop: ((this: Window, ev: Event) => any) | null;
-declare var ondurationchange: ((this: Window, ev: Event) => any) | null;
-declare var onemptied: ((this: Window, ev: Event) => any) | null;
-declare var onended: ((this: Window, ev: Event) => any) | null;
-declare var onfocus: ((this: Window, ev: Event) => any) | null;
-declare var onformdata: ((this: Window, ev: Event) => any) | null;
-declare var ongotpointercapture: ((this: Window, ev: Event) => any) | null;
-declare var oninput: ((this: Window, ev: Event) => any) | null;
-declare var oninvalid: ((this: Window, ev: Event) => any) | null;
-declare var onkeydown: ((this: Window, ev: Event) => any) | null;
-declare var onkeypress: ((this: Window, ev: Event) => any) | null;
-declare var onkeyup: ((this: Window, ev: Event) => any) | null;
-declare var onload: ((this: Window, ev: Event) => any) | null;
-declare var onloadeddata: ((this: Window, ev: Event) => any) | null;
-declare var onloadedmetadata: ((this: Window, ev: Event) => any) | null;
-declare var onloadstart: ((this: Window, ev: Event) => any) | null;
-declare var onlostpointercapture: ((this: Window, ev: Event) => any) | null;
-declare var onmousedown: ((this: Window, ev: Event) => any) | null;
-declare var onmouseenter: ((this: Window, ev: Event) => any) | null;
-declare var onmouseleave: ((this: Window, ev: Event) => any) | null;
-declare var onmousemove: ((this: Window, ev: Event) => any) | null;
-declare var onmouseout: ((this: Window, ev: Event) => any) | null;
-declare var onmouseover: ((this: Window, ev: Event) => any) | null;
-declare var onmouseup: ((this: Window, ev: Event) => any) | null;
-declare var onmozfullscreenchange: ((this: Window, ev: Event) => any) | null;
-declare var onmozfullscreenerror: ((this: Window, ev: Event) => any) | null;
-declare var onpaste: ((this: Window, ev: Event) => any) | null;
-declare var onpause: ((this: Window, ev: Event) => any) | null;
-declare var onplay: ((this: Window, ev: Event) => any) | null;
-declare var onplaying: ((this: Window, ev: Event) => any) | null;
-declare var onpointercancel: ((this: Window, ev: Event) => any) | null;
-declare var onpointerdown: ((this: Window, ev: Event) => any) | null;
-declare var onpointerenter: ((this: Window, ev: Event) => any) | null;
-declare var onpointerleave: ((this: Window, ev: Event) => any) | null;
-declare var onpointermove: ((this: Window, ev: Event) => any) | null;
-declare var onpointerout: ((this: Window, ev: Event) => any) | null;
-declare var onpointerover: ((this: Window, ev: Event) => any) | null;
+declare let crypto: Crypto;
+declare let onabort: ((this: Window, ev: Event) => any) | null;
+declare let onanimationcancel: ((this: Window, ev: Event) => any) | null;
+declare let onanimationend: ((this: Window, ev: Event) => any) | null;
+declare let onanimationiteration: ((this: Window, ev: Event) => any) | null;
+declare let onanimationstart: ((this: Window, ev: Event) => any) | null;
+declare let onauxclick: ((this: Window, ev: Event) => any) | null;
+declare let onbeforeinput: ((this: Window, ev: Event) => any) | null;
+declare let onbeforematch: ((this: Window, ev: Event) => any) | null;
+declare let onbeforetoggle: ((this: Window, ev: Event) => any) | null;
+declare let onblur: ((this: Window, ev: Event) => any) | null;
+declare let oncancel: ((this: Window, ev: Event) => any) | null;
+declare let oncanplay: ((this: Window, ev: Event) => any) | null;
+declare let oncanplaythrough: ((this: Window, ev: Event) => any) | null;
+declare let onchange: ((this: Window, ev: Event) => any) | null;
+declare let onclick: ((this: Window, ev: Event) => any) | null;
+declare let onclose: ((this: Window, ev: Event) => any) | null;
+declare let oncommand: ((this: Window, ev: Event) => any) | null;
+declare let oncontentvisibilityautostatechange: ((this: Window, ev: Event) => any) | null;
+declare let oncontextlost: ((this: Window, ev: Event) => any) | null;
+declare let oncontextmenu: ((this: Window, ev: Event) => any) | null;
+declare let oncontextrestored: ((this: Window, ev: Event) => any) | null;
+declare let oncopy: ((this: Window, ev: Event) => any) | null;
+declare let oncuechange: ((this: Window, ev: Event) => any) | null;
+declare let oncut: ((this: Window, ev: Event) => any) | null;
+declare let ondblclick: ((this: Window, ev: Event) => any) | null;
+declare let ondrag: ((this: Window, ev: Event) => any) | null;
+declare let ondragend: ((this: Window, ev: Event) => any) | null;
+declare let ondragenter: ((this: Window, ev: Event) => any) | null;
+declare let ondragexit: ((this: Window, ev: Event) => any) | null;
+declare let ondragleave: ((this: Window, ev: Event) => any) | null;
+declare let ondragover: ((this: Window, ev: Event) => any) | null;
+declare let ondragstart: ((this: Window, ev: Event) => any) | null;
+declare let ondrop: ((this: Window, ev: Event) => any) | null;
+declare let ondurationchange: ((this: Window, ev: Event) => any) | null;
+declare let onemptied: ((this: Window, ev: Event) => any) | null;
+declare let onended: ((this: Window, ev: Event) => any) | null;
+declare let onfocus: ((this: Window, ev: Event) => any) | null;
+declare let onformdata: ((this: Window, ev: Event) => any) | null;
+declare let ongotpointercapture: ((this: Window, ev: Event) => any) | null;
+declare let oninput: ((this: Window, ev: Event) => any) | null;
+declare let oninvalid: ((this: Window, ev: Event) => any) | null;
+declare let onkeydown: ((this: Window, ev: Event) => any) | null;
+declare let onkeypress: ((this: Window, ev: Event) => any) | null;
+declare let onkeyup: ((this: Window, ev: Event) => any) | null;
+declare let onload: ((this: Window, ev: Event) => any) | null;
+declare let onloadeddata: ((this: Window, ev: Event) => any) | null;
+declare let onloadedmetadata: ((this: Window, ev: Event) => any) | null;
+declare let onloadstart: ((this: Window, ev: Event) => any) | null;
+declare let onlostpointercapture: ((this: Window, ev: Event) => any) | null;
+declare let onmousedown: ((this: Window, ev: Event) => any) | null;
+declare let onmouseenter: ((this: Window, ev: Event) => any) | null;
+declare let onmouseleave: ((this: Window, ev: Event) => any) | null;
+declare let onmousemove: ((this: Window, ev: Event) => any) | null;
+declare let onmouseout: ((this: Window, ev: Event) => any) | null;
+declare let onmouseover: ((this: Window, ev: Event) => any) | null;
+declare let onmouseup: ((this: Window, ev: Event) => any) | null;
+declare let onmozfullscreenchange: ((this: Window, ev: Event) => any) | null;
+declare let onmozfullscreenerror: ((this: Window, ev: Event) => any) | null;
+declare let onpaste: ((this: Window, ev: Event) => any) | null;
+declare let onpause: ((this: Window, ev: Event) => any) | null;
+declare let onplay: ((this: Window, ev: Event) => any) | null;
+declare let onplaying: ((this: Window, ev: Event) => any) | null;
+declare let onpointercancel: ((this: Window, ev: Event) => any) | null;
+declare let onpointerdown: ((this: Window, ev: Event) => any) | null;
+declare let onpointerenter: ((this: Window, ev: Event) => any) | null;
+declare let onpointerleave: ((this: Window, ev: Event) => any) | null;
+declare let onpointermove: ((this: Window, ev: Event) => any) | null;
+declare let onpointerout: ((this: Window, ev: Event) => any) | null;
+declare let onpointerover: ((this: Window, ev: Event) => any) | null;
 /** Available only in secure contexts. */
-declare var onpointerrawupdate: ((this: Window, ev: Event) => any) | null;
-declare var onpointerup: ((this: Window, ev: Event) => any) | null;
-declare var onprogress: ((this: Window, ev: Event) => any) | null;
-declare var onratechange: ((this: Window, ev: Event) => any) | null;
-declare var onreset: ((this: Window, ev: Event) => any) | null;
-declare var onresize: ((this: Window, ev: Event) => any) | null;
-declare var onscroll: ((this: Window, ev: Event) => any) | null;
-declare var onscrollend: ((this: Window, ev: Event) => any) | null;
-declare var onsecuritypolicyviolation: ((this: Window, ev: Event) => any) | null;
-declare var onseeked: ((this: Window, ev: Event) => any) | null;
-declare var onseeking: ((this: Window, ev: Event) => any) | null;
-declare var onselect: ((this: Window, ev: Event) => any) | null;
-declare var onselectionchange: ((this: Window, ev: Event) => any) | null;
-declare var onselectstart: ((this: Window, ev: Event) => any) | null;
-declare var onslotchange: ((this: Window, ev: Event) => any) | null;
-declare var onstalled: ((this: Window, ev: Event) => any) | null;
-declare var onsubmit: ((this: Window, ev: Event) => any) | null;
-declare var onsuspend: ((this: Window, ev: Event) => any) | null;
-declare var ontimeupdate: ((this: Window, ev: Event) => any) | null;
-declare var ontoggle: ((this: Window, ev: Event) => any) | null;
-declare var ontransitioncancel: ((this: Window, ev: Event) => any) | null;
-declare var ontransitionend: ((this: Window, ev: Event) => any) | null;
-declare var ontransitionrun: ((this: Window, ev: Event) => any) | null;
-declare var ontransitionstart: ((this: Window, ev: Event) => any) | null;
-declare var onvolumechange: ((this: Window, ev: Event) => any) | null;
-declare var onwaiting: ((this: Window, ev: Event) => any) | null;
-declare var onwebkitanimationend: ((this: Window, ev: Event) => any) | null;
-declare var onwebkitanimationiteration: ((this: Window, ev: Event) => any) | null;
-declare var onwebkitanimationstart: ((this: Window, ev: Event) => any) | null;
-declare var onwebkittransitionend: ((this: Window, ev: Event) => any) | null;
-declare var onwheel: ((this: Window, ev: Event) => any) | null;
-declare var onerror: ((this: Window, ev: Event) => any) | null;
-declare var speechSynthesis: SpeechSynthesis;
-declare var ontouchcancel: ((this: Window, ev: Event) => any) | null;
-declare var ontouchend: ((this: Window, ev: Event) => any) | null;
-declare var ontouchmove: ((this: Window, ev: Event) => any) | null;
-declare var ontouchstart: ((this: Window, ev: Event) => any) | null;
-declare var onafterprint: ((this: Window, ev: Event) => any) | null;
-declare var onbeforeprint: ((this: Window, ev: Event) => any) | null;
-declare var onbeforeunload: ((this: Window, ev: Event) => any) | null;
-declare var ongamepadconnected: ((this: Window, ev: Event) => any) | null;
-declare var ongamepaddisconnected: ((this: Window, ev: Event) => any) | null;
-declare var onhashchange: ((this: Window, ev: Event) => any) | null;
-declare var onlanguagechange: ((this: Window, ev: Event) => any) | null;
-declare var onmessage: ((this: Window, ev: Event) => any) | null;
-declare var onmessageerror: ((this: Window, ev: Event) => any) | null;
-declare var onoffline: ((this: Window, ev: Event) => any) | null;
-declare var ononline: ((this: Window, ev: Event) => any) | null;
-declare var onpagehide: ((this: Window, ev: Event) => any) | null;
-declare var onpageshow: ((this: Window, ev: Event) => any) | null;
-declare var onpopstate: ((this: Window, ev: Event) => any) | null;
-declare var onrejectionhandled: ((this: Window, ev: Event) => any) | null;
-declare var onstorage: ((this: Window, ev: Event) => any) | null;
-declare var onunhandledrejection: ((this: Window, ev: Event) => any) | null;
-declare var onunload: ((this: Window, ev: Event) => any) | null;
-declare var localStorage: Storage | null;
-declare var caches: CacheStorage;
-declare var crossOriginIsolated: boolean;
-declare var indexedDB: IDBFactory | null;
-declare var isSecureContext: boolean;
-declare var origin: string;
-declare var scheduler: Scheduler;
-declare var trustedTypes: TrustedTypePolicyFactory;
+declare let onpointerrawupdate: ((this: Window, ev: Event) => any) | null;
+declare let onpointerup: ((this: Window, ev: Event) => any) | null;
+declare let onprogress: ((this: Window, ev: Event) => any) | null;
+declare let onratechange: ((this: Window, ev: Event) => any) | null;
+declare let onreset: ((this: Window, ev: Event) => any) | null;
+declare let onresize: ((this: Window, ev: Event) => any) | null;
+declare let onscroll: ((this: Window, ev: Event) => any) | null;
+declare let onscrollend: ((this: Window, ev: Event) => any) | null;
+declare let onsecuritypolicyviolation: ((this: Window, ev: Event) => any) | null;
+declare let onseeked: ((this: Window, ev: Event) => any) | null;
+declare let onseeking: ((this: Window, ev: Event) => any) | null;
+declare let onselect: ((this: Window, ev: Event) => any) | null;
+declare let onselectionchange: ((this: Window, ev: Event) => any) | null;
+declare let onselectstart: ((this: Window, ev: Event) => any) | null;
+declare let onslotchange: ((this: Window, ev: Event) => any) | null;
+declare let onstalled: ((this: Window, ev: Event) => any) | null;
+declare let onsubmit: ((this: Window, ev: Event) => any) | null;
+declare let onsuspend: ((this: Window, ev: Event) => any) | null;
+declare let ontimeupdate: ((this: Window, ev: Event) => any) | null;
+declare let ontoggle: ((this: Window, ev: Event) => any) | null;
+declare let ontransitioncancel: ((this: Window, ev: Event) => any) | null;
+declare let ontransitionend: ((this: Window, ev: Event) => any) | null;
+declare let ontransitionrun: ((this: Window, ev: Event) => any) | null;
+declare let ontransitionstart: ((this: Window, ev: Event) => any) | null;
+declare let onvolumechange: ((this: Window, ev: Event) => any) | null;
+declare let onwaiting: ((this: Window, ev: Event) => any) | null;
+declare let onwebkitanimationend: ((this: Window, ev: Event) => any) | null;
+declare let onwebkitanimationiteration: ((this: Window, ev: Event) => any) | null;
+declare let onwebkitanimationstart: ((this: Window, ev: Event) => any) | null;
+declare let onwebkittransitionend: ((this: Window, ev: Event) => any) | null;
+declare let onwheel: ((this: Window, ev: Event) => any) | null;
+declare let onerror: ((this: Window, ev: Event) => any) | null;
+declare let speechSynthesis: SpeechSynthesis;
+declare let ontouchcancel: ((this: Window, ev: Event) => any) | null;
+declare let ontouchend: ((this: Window, ev: Event) => any) | null;
+declare let ontouchmove: ((this: Window, ev: Event) => any) | null;
+declare let ontouchstart: ((this: Window, ev: Event) => any) | null;
+declare let onafterprint: ((this: Window, ev: Event) => any) | null;
+declare let onbeforeprint: ((this: Window, ev: Event) => any) | null;
+declare let onbeforeunload: ((this: Window, ev: Event) => any) | null;
+declare let ongamepadconnected: ((this: Window, ev: Event) => any) | null;
+declare let ongamepaddisconnected: ((this: Window, ev: Event) => any) | null;
+declare let onhashchange: ((this: Window, ev: Event) => any) | null;
+declare let onlanguagechange: ((this: Window, ev: Event) => any) | null;
+declare let onmessage: ((this: Window, ev: Event) => any) | null;
+declare let onmessageerror: ((this: Window, ev: Event) => any) | null;
+declare let onoffline: ((this: Window, ev: Event) => any) | null;
+declare let ononline: ((this: Window, ev: Event) => any) | null;
+declare let onpagehide: ((this: Window, ev: Event) => any) | null;
+declare let onpageshow: ((this: Window, ev: Event) => any) | null;
+declare let onpopstate: ((this: Window, ev: Event) => any) | null;
+declare let onrejectionhandled: ((this: Window, ev: Event) => any) | null;
+declare let onstorage: ((this: Window, ev: Event) => any) | null;
+declare let onunhandledrejection: ((this: Window, ev: Event) => any) | null;
+declare let onunload: ((this: Window, ev: Event) => any) | null;
+declare let localStorage: Storage | null;
+declare let caches: CacheStorage;
+declare let crossOriginIsolated: boolean;
+declare let indexedDB: IDBFactory | null;
+declare let isSecureContext: boolean;
+declare let origin: string;
+declare let scheduler: Scheduler;
+declare let trustedTypes: TrustedTypePolicyFactory;
 declare function atob(atob: string): string;
 declare function btoa(btoa: string): string;
 declare function clearInterval(handle?: number): void;
@@ -33511,7 +33511,7 @@ declare function reportError(e: any): void;
 declare function setInterval(handler: TimerHandler, timeout?: number, ...unused: any[]): number;
 declare function setTimeout(handler: TimerHandler, timeout?: number, ...arguments: any[]): number;
 declare function structuredClone(value: any, options?: StructuredSerializeOptions): any;
-declare var sessionStorage: Storage | null;
+declare let sessionStorage: Storage | null;
 declare function addEventListener<K extends keyof WindowEventMap>(
   type: K,
   listener: (this: Window, ev: WindowEventMap[K]) => any,
@@ -33698,932 +33698,932 @@ type XSLTParameterValue = number | boolean | string | Node | Node[] | XPathResul
 type XULCommandDispatcher = nsIDOMXULCommandDispatcher;
 type XULControllers = nsIControllers;
 type nsContentPolicyType = number;
-type AlignSetting = 'center' | 'end' | 'left' | 'right' | 'start';
-type AlphaOption = 'discard' | 'keep';
-type AnimationPlayState = 'finished' | 'idle' | 'paused' | 'running';
-type AnimationReplaceState = 'active' | 'persisted' | 'removed';
-type AudioContextState = 'closed' | 'running' | 'suspended';
+type AlignSetting = "center" | "end" | "left" | "right" | "start";
+type AlphaOption = "discard" | "keep";
+type AnimationPlayState = "finished" | "idle" | "paused" | "running";
+type AnimationReplaceState = "active" | "persisted" | "removed";
+type AudioContextState = "closed" | "running" | "suspended";
 type AudioSampleFormat =
-  | 'f32'
-  | 'f32-planar'
-  | 's16'
-  | 's16-planar'
-  | 's32'
-  | 's32-planar'
-  | 'u8'
-  | 'u8-planar';
-type AutoKeyword = 'auto';
-type AutoplayPolicy = 'allowed' | 'allowed-muted' | 'disallowed';
-type AutoplayPolicyMediaType = 'audiocontext' | 'mediaelement';
-type AvcBitstreamFormat = 'annexb' | 'avc';
-type Base64URLDecodePadding = 'ignore' | 'reject' | 'require';
-type BinaryType = 'arraybuffer' | 'blob';
+  | "f32"
+  | "f32-planar"
+  | "s16"
+  | "s16-planar"
+  | "s32"
+  | "s32-planar"
+  | "u8"
+  | "u8-planar";
+type AutoKeyword = "auto";
+type AutoplayPolicy = "allowed" | "allowed-muted" | "disallowed";
+type AutoplayPolicyMediaType = "audiocontext" | "mediaelement";
+type AvcBitstreamFormat = "annexb" | "avc";
+type Base64URLDecodePadding = "ignore" | "reject" | "require";
+type BinaryType = "arraybuffer" | "blob";
 type BiquadFilterType =
-  | 'allpass'
-  | 'bandpass'
-  | 'highpass'
-  | 'highshelf'
-  | 'lowpass'
-  | 'lowshelf'
-  | 'notch'
-  | 'peaking';
-type BitrateMode = 'constant' | 'variable';
-type CSSBoxType = 'border' | 'content' | 'margin' | 'padding';
-type CSSMathOperator = 'clamp' | 'invert' | 'max' | 'min' | 'negate' | 'product' | 'sum';
+  | "allpass"
+  | "bandpass"
+  | "highpass"
+  | "highshelf"
+  | "lowpass"
+  | "lowshelf"
+  | "notch"
+  | "peaking";
+type BitrateMode = "constant" | "variable";
+type CSSBoxType = "border" | "content" | "margin" | "padding";
+type CSSMathOperator = "clamp" | "invert" | "max" | "min" | "negate" | "product" | "sum";
 type CSSNumericBaseType =
-  | 'angle'
-  | 'flex'
-  | 'frequency'
-  | 'length'
-  | 'percent'
-  | 'resolution'
-  | 'time';
-type CSSStyleSheetParsingMode = 'agent' | 'author' | 'user';
-type CacheStorageNamespace = 'chrome' | 'content';
-type CallbackDebuggerNotificationPhase = 'post' | 'pre';
-type CanvasContextProperties = 'both' | 'fill' | 'none' | 'stroke';
-type CanvasDirection = 'inherit' | 'ltr' | 'rtl';
-type CanvasFontKerning = 'auto' | 'none' | 'normal';
+  | "angle"
+  | "flex"
+  | "frequency"
+  | "length"
+  | "percent"
+  | "resolution"
+  | "time";
+type CSSStyleSheetParsingMode = "agent" | "author" | "user";
+type CacheStorageNamespace = "chrome" | "content";
+type CallbackDebuggerNotificationPhase = "post" | "pre";
+type CanvasContextProperties = "both" | "fill" | "none" | "stroke";
+type CanvasDirection = "inherit" | "ltr" | "rtl";
+type CanvasFontKerning = "auto" | "none" | "normal";
 type CanvasFontStretch =
-  | 'condensed'
-  | 'expanded'
-  | 'extra-condensed'
-  | 'extra-expanded'
-  | 'normal'
-  | 'semi-condensed'
-  | 'semi-expanded'
-  | 'ultra-condensed'
-  | 'ultra-expanded';
+  | "condensed"
+  | "expanded"
+  | "extra-condensed"
+  | "extra-expanded"
+  | "normal"
+  | "semi-condensed"
+  | "semi-expanded"
+  | "ultra-condensed"
+  | "ultra-expanded";
 type CanvasFontVariantCaps =
-  | 'all-petite-caps'
-  | 'all-small-caps'
-  | 'normal'
-  | 'petite-caps'
-  | 'small-caps'
-  | 'titling-caps'
-  | 'unicase';
-type CanvasLineCap = 'butt' | 'round' | 'square';
-type CanvasLineJoin = 'bevel' | 'miter' | 'round';
-type CanvasTextAlign = 'center' | 'end' | 'left' | 'right' | 'start';
-type CanvasTextBaseline = 'alphabetic' | 'bottom' | 'hanging' | 'ideographic' | 'middle' | 'top';
-type CanvasTextRendering = 'auto' | 'geometricPrecision' | 'optimizeLegibility' | 'optimizeSpeed';
-type CanvasWindingRule = 'evenodd' | 'nonzero';
+  | "all-petite-caps"
+  | "all-small-caps"
+  | "normal"
+  | "petite-caps"
+  | "small-caps"
+  | "titling-caps"
+  | "unicase";
+type CanvasLineCap = "butt" | "round" | "square";
+type CanvasLineJoin = "bevel" | "miter" | "round";
+type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
+type CanvasTextBaseline = "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
+type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";
+type CanvasWindingRule = "evenodd" | "nonzero";
 type CaretChangedReason =
-  | 'dragcaret'
-  | 'longpressonemptycontent'
-  | 'presscaret'
-  | 'releasecaret'
-  | 'scroll'
-  | 'taponcaret'
-  | 'updateposition'
-  | 'visibilitychange';
-type ChannelCountMode = 'clamped-max' | 'explicit' | 'max';
-type ChannelInterpretation = 'discrete' | 'speakers';
-type CheckerboardReason = 'recent' | 'severe';
-type CodecState = 'closed' | 'configured' | 'unconfigured';
-type ColorGamut = 'p3' | 'rec2020' | 'srgb';
-type ColorSpaceConversion = 'default' | 'none';
-type CompositeOperation = 'accumulate' | 'add' | 'replace';
-type CompressionFormat = 'deflate' | 'deflate-raw' | 'gzip' | 'zstd';
-type ConnectionType = 'bluetooth' | 'cellular' | 'ethernet' | 'none' | 'other' | 'unknown' | 'wifi';
-type ConsoleLevel = 'error' | 'log' | 'warning';
+  | "dragcaret"
+  | "longpressonemptycontent"
+  | "presscaret"
+  | "releasecaret"
+  | "scroll"
+  | "taponcaret"
+  | "updateposition"
+  | "visibilitychange";
+type ChannelCountMode = "clamped-max" | "explicit" | "max";
+type ChannelInterpretation = "discrete" | "speakers";
+type CheckerboardReason = "recent" | "severe";
+type CodecState = "closed" | "configured" | "unconfigured";
+type ColorGamut = "p3" | "rec2020" | "srgb";
+type ColorSpaceConversion = "default" | "none";
+type CompositeOperation = "accumulate" | "add" | "replace";
+type CompressionFormat = "deflate" | "deflate-raw" | "gzip" | "zstd";
+type ConnectionType = "bluetooth" | "cellular" | "ethernet" | "none" | "other" | "unknown" | "wifi";
+type ConsoleLevel = "error" | "log" | "warning";
 type ConsoleLogLevel =
-  | 'All'
-  | 'Clear'
-  | 'Debug'
-  | 'Dir'
-  | 'Dirxml'
-  | 'Error'
-  | 'Group'
-  | 'GroupEnd'
-  | 'Info'
-  | 'Log'
-  | 'Off'
-  | 'Profile'
-  | 'ProfileEnd'
-  | 'Time'
-  | 'TimeEnd'
-  | 'TimeLog'
-  | 'Trace'
-  | 'Warn';
-type ContentScriptCssOrigin = 'author' | 'user';
-type ContentScriptExecutionWorld = 'ISOLATED' | 'MAIN' | 'USER_SCRIPT';
-type ContentScriptRunAt = 'document_end' | 'document_idle' | 'document_start';
-type CookieSameSite = 'lax' | 'none' | 'strict';
-type CredentialMediationRequirement = 'conditional' | 'optional' | 'required' | 'silent';
+  | "All"
+  | "Clear"
+  | "Debug"
+  | "Dir"
+  | "Dirxml"
+  | "Error"
+  | "Group"
+  | "GroupEnd"
+  | "Info"
+  | "Log"
+  | "Off"
+  | "Profile"
+  | "ProfileEnd"
+  | "Time"
+  | "TimeEnd"
+  | "TimeLog"
+  | "Trace"
+  | "Warn";
+type ContentScriptCssOrigin = "author" | "user";
+type ContentScriptExecutionWorld = "ISOLATED" | "MAIN" | "USER_SCRIPT";
+type ContentScriptRunAt = "document_end" | "document_idle" | "document_start";
+type CookieSameSite = "lax" | "none" | "strict";
+type CredentialMediationRequirement = "conditional" | "optional" | "required" | "silent";
 type CredentialProtectionPolicy =
-  | 'userVerificationOptional'
-  | 'userVerificationOptionalWithCredentialIDList'
-  | 'userVerificationRequired';
+  | "userVerificationOptional"
+  | "userVerificationOptionalWithCredentialIDList"
+  | "userVerificationRequired";
 type DebuggerNotificationType =
-  | 'cancelAnimationFrame'
-  | 'clearInterval'
-  | 'clearTimeout'
-  | 'domEvent'
-  | 'requestAnimationFrame'
-  | 'requestAnimationFrameCallback'
-  | 'setInterval'
-  | 'setIntervalCallback'
-  | 'setTimeout'
-  | 'setTimeoutCallback';
+  | "cancelAnimationFrame"
+  | "clearInterval"
+  | "clearTimeout"
+  | "domEvent"
+  | "requestAnimationFrame"
+  | "requestAnimationFrameCallback"
+  | "setInterval"
+  | "setIntervalCallback"
+  | "setTimeout"
+  | "setTimeoutCallback";
 type DeclarationOrigin =
-  | 'animations'
-  | 'position-fallback'
-  | 'pres-hints'
-  | 'smil'
-  | 'style-attribute'
-  | 'transitions'
-  | 'user'
-  | 'user-agent';
+  | "animations"
+  | "position-fallback"
+  | "pres-hints"
+  | "smil"
+  | "style-attribute"
+  | "transitions"
+  | "user"
+  | "user-agent";
 type DecoderDoctorReportType =
-  | 'mediacannotinitializepulseaudio'
-  | 'mediacannotplaynodecoders'
-  | 'mediadecodeerror'
-  | 'mediadecodewarning'
-  | 'medianodecoders'
-  | 'mediaplatformdecodernotfound'
-  | 'mediaunsupportedlibavcodec'
-  | 'mediawidevinenowmf'
-  | 'mediawmfneeded';
-type DirectionSetting = '' | 'lr' | 'rl';
-type DisplayMode = 'browser' | 'fullscreen' | 'minimal-ui' | 'standalone';
-type DistanceModelType = 'exponential' | 'inverse' | 'linear';
-type EncodedAudioChunkType = 'delta' | 'key';
-type EncodedVideoChunkType = 'delta' | 'key';
-type EndingType = 'native' | 'transparent';
+  | "mediacannotinitializepulseaudio"
+  | "mediacannotplaynodecoders"
+  | "mediadecodeerror"
+  | "mediadecodewarning"
+  | "medianodecoders"
+  | "mediaplatformdecodernotfound"
+  | "mediaunsupportedlibavcodec"
+  | "mediawidevinenowmf"
+  | "mediawmfneeded";
+type DirectionSetting = "" | "lr" | "rl";
+type DisplayMode = "browser" | "fullscreen" | "minimal-ui" | "standalone";
+type DistanceModelType = "exponential" | "inverse" | "linear";
+type EncodedAudioChunkType = "delta" | "key";
+type EncodedVideoChunkType = "delta" | "key";
+type EndingType = "native" | "transparent";
 type EventCallbackDebuggerNotificationType =
-  | 'closewatcher'
-  | 'global'
-  | 'node'
-  | 'websocket'
-  | 'worker'
-  | 'xhr';
-type FetchState = 'aborted' | 'complete' | 'errored' | 'requesting' | 'responding';
-type FileSystemHandleKind = 'directory' | 'file';
-type FileType = 'directory' | 'other' | 'regular';
-type FillMode = 'auto' | 'backwards' | 'both' | 'forwards' | 'none';
-type FlexItemClampState = 'clamped_to_max' | 'clamped_to_min' | 'unclamped';
-type FlexLineGrowthState = 'growing' | 'shrinking';
-type FlexPhysicalDirection = 'horizontal-lr' | 'horizontal-rl' | 'vertical-bt' | 'vertical-tb';
-type FontFaceLoadStatus = 'error' | 'loaded' | 'loading' | 'unloaded';
-type FontFaceSetLoadStatus = 'loaded' | 'loading';
-type ForceMediaDocument = 'image' | 'none' | 'video';
-type ForcedColorsOverride = 'active' | 'none';
-type GPUAddressMode = 'clamp-to-edge' | 'mirror-repeat' | 'repeat';
-type GPUAutoLayoutMode = 'auto';
+  | "closewatcher"
+  | "global"
+  | "node"
+  | "websocket"
+  | "worker"
+  | "xhr";
+type FetchState = "aborted" | "complete" | "errored" | "requesting" | "responding";
+type FileSystemHandleKind = "directory" | "file";
+type FileType = "directory" | "other" | "regular";
+type FillMode = "auto" | "backwards" | "both" | "forwards" | "none";
+type FlexItemClampState = "clamped_to_max" | "clamped_to_min" | "unclamped";
+type FlexLineGrowthState = "growing" | "shrinking";
+type FlexPhysicalDirection = "horizontal-lr" | "horizontal-rl" | "vertical-bt" | "vertical-tb";
+type FontFaceLoadStatus = "error" | "loaded" | "loading" | "unloaded";
+type FontFaceSetLoadStatus = "loaded" | "loading";
+type ForceMediaDocument = "image" | "none" | "video";
+type ForcedColorsOverride = "active" | "none";
+type GPUAddressMode = "clamp-to-edge" | "mirror-repeat" | "repeat";
+type GPUAutoLayoutMode = "auto";
 type GPUBlendFactor =
-  | 'constant'
-  | 'dst'
-  | 'dst-alpha'
-  | 'one'
-  | 'one-minus-constant'
-  | 'one-minus-dst'
-  | 'one-minus-dst-alpha'
-  | 'one-minus-src'
-  | 'one-minus-src-alpha'
-  | 'src'
-  | 'src-alpha'
-  | 'src-alpha-saturated'
-  | 'zero';
-type GPUBlendOperation = 'add' | 'max' | 'min' | 'reverse-subtract' | 'subtract';
-type GPUBufferBindingType = 'read-only-storage' | 'storage' | 'uniform';
-type GPUBufferMapState = 'mapped' | 'pending' | 'unmapped';
-type GPUCanvasAlphaMode = 'opaque' | 'premultiplied';
+  | "constant"
+  | "dst"
+  | "dst-alpha"
+  | "one"
+  | "one-minus-constant"
+  | "one-minus-dst"
+  | "one-minus-dst-alpha"
+  | "one-minus-src"
+  | "one-minus-src-alpha"
+  | "src"
+  | "src-alpha"
+  | "src-alpha-saturated"
+  | "zero";
+type GPUBlendOperation = "add" | "max" | "min" | "reverse-subtract" | "subtract";
+type GPUBufferBindingType = "read-only-storage" | "storage" | "uniform";
+type GPUBufferMapState = "mapped" | "pending" | "unmapped";
+type GPUCanvasAlphaMode = "opaque" | "premultiplied";
 type GPUCompareFunction =
-  | 'always'
-  | 'equal'
-  | 'greater'
-  | 'greater-equal'
-  | 'less'
-  | 'less-equal'
-  | 'never'
-  | 'not-equal';
-type GPUCompilationMessageType = 'error' | 'info' | 'warning';
-type GPUCullMode = 'back' | 'front' | 'none';
-type GPUDeviceLostReason = 'destroyed' | 'unknown';
-type GPUErrorFilter = 'internal' | 'out-of-memory' | 'validation';
+  | "always"
+  | "equal"
+  | "greater"
+  | "greater-equal"
+  | "less"
+  | "less-equal"
+  | "never"
+  | "not-equal";
+type GPUCompilationMessageType = "error" | "info" | "warning";
+type GPUCullMode = "back" | "front" | "none";
+type GPUDeviceLostReason = "destroyed" | "unknown";
+type GPUErrorFilter = "internal" | "out-of-memory" | "validation";
 type GPUFeatureName =
-  | 'bgra8unorm-storage'
-  | 'clip-distances'
-  | 'core-features-and-limits'
-  | 'depth-clip-control'
-  | 'depth32float-stencil8'
-  | 'dual-source-blending'
-  | 'float32-blendable'
-  | 'float32-filterable'
-  | 'indirect-first-instance'
-  | 'primitive-index'
-  | 'rg11b10ufloat-renderable'
-  | 'shader-f16'
-  | 'subgroups'
-  | 'texture-compression-astc'
-  | 'texture-compression-astc-sliced-3d'
-  | 'texture-compression-bc'
-  | 'texture-compression-bc-sliced-3d'
-  | 'texture-compression-etc2'
-  | 'timestamp-query';
-type GPUFilterMode = 'linear' | 'nearest';
-type GPUFrontFace = 'ccw' | 'cw';
-type GPUIndexFormat = 'uint16' | 'uint32';
-type GPULoadOp = 'clear' | 'load';
-type GPUMipmapFilterMode = 'linear' | 'nearest';
-type GPUPipelineErrorReason = 'internal' | 'validation';
-type GPUPowerPreference = 'high-performance' | 'low-power';
+  | "bgra8unorm-storage"
+  | "clip-distances"
+  | "core-features-and-limits"
+  | "depth-clip-control"
+  | "depth32float-stencil8"
+  | "dual-source-blending"
+  | "float32-blendable"
+  | "float32-filterable"
+  | "indirect-first-instance"
+  | "primitive-index"
+  | "rg11b10ufloat-renderable"
+  | "shader-f16"
+  | "subgroups"
+  | "texture-compression-astc"
+  | "texture-compression-astc-sliced-3d"
+  | "texture-compression-bc"
+  | "texture-compression-bc-sliced-3d"
+  | "texture-compression-etc2"
+  | "timestamp-query";
+type GPUFilterMode = "linear" | "nearest";
+type GPUFrontFace = "ccw" | "cw";
+type GPUIndexFormat = "uint16" | "uint32";
+type GPULoadOp = "clear" | "load";
+type GPUMipmapFilterMode = "linear" | "nearest";
+type GPUPipelineErrorReason = "internal" | "validation";
+type GPUPowerPreference = "high-performance" | "low-power";
 type GPUPrimitiveTopology =
-  | 'line-list'
-  | 'line-strip'
-  | 'point-list'
-  | 'triangle-list'
-  | 'triangle-strip';
-type GPUQueryType = 'occlusion' | 'timestamp';
-type GPUSamplerBindingType = 'comparison' | 'filtering' | 'non-filtering';
+  | "line-list"
+  | "line-strip"
+  | "point-list"
+  | "triangle-list"
+  | "triangle-strip";
+type GPUQueryType = "occlusion" | "timestamp";
+type GPUSamplerBindingType = "comparison" | "filtering" | "non-filtering";
 type GPUStencilOperation =
-  | 'decrement-clamp'
-  | 'decrement-wrap'
-  | 'increment-clamp'
-  | 'increment-wrap'
-  | 'invert'
-  | 'keep'
-  | 'replace'
-  | 'zero';
-type GPUStorageTextureAccess = 'read-only' | 'read-write' | 'write-only';
-type GPUStoreOp = 'discard' | 'store';
-type GPUTextureAspect = 'all' | 'depth-only' | 'stencil-only';
-type GPUTextureDimension = '1d' | '2d' | '3d';
+  | "decrement-clamp"
+  | "decrement-wrap"
+  | "increment-clamp"
+  | "increment-wrap"
+  | "invert"
+  | "keep"
+  | "replace"
+  | "zero";
+type GPUStorageTextureAccess = "read-only" | "read-write" | "write-only";
+type GPUStoreOp = "discard" | "store";
+type GPUTextureAspect = "all" | "depth-only" | "stencil-only";
+type GPUTextureDimension = "1d" | "2d" | "3d";
 type GPUTextureFormat =
-  | 'astc-10x10-unorm'
-  | 'astc-10x10-unorm-srgb'
-  | 'astc-10x5-unorm'
-  | 'astc-10x5-unorm-srgb'
-  | 'astc-10x6-unorm'
-  | 'astc-10x6-unorm-srgb'
-  | 'astc-10x8-unorm'
-  | 'astc-10x8-unorm-srgb'
-  | 'astc-12x10-unorm'
-  | 'astc-12x10-unorm-srgb'
-  | 'astc-12x12-unorm'
-  | 'astc-12x12-unorm-srgb'
-  | 'astc-4x4-unorm'
-  | 'astc-4x4-unorm-srgb'
-  | 'astc-5x4-unorm'
-  | 'astc-5x4-unorm-srgb'
-  | 'astc-5x5-unorm'
-  | 'astc-5x5-unorm-srgb'
-  | 'astc-6x5-unorm'
-  | 'astc-6x5-unorm-srgb'
-  | 'astc-6x6-unorm'
-  | 'astc-6x6-unorm-srgb'
-  | 'astc-8x5-unorm'
-  | 'astc-8x5-unorm-srgb'
-  | 'astc-8x6-unorm'
-  | 'astc-8x6-unorm-srgb'
-  | 'astc-8x8-unorm'
-  | 'astc-8x8-unorm-srgb'
-  | 'bc1-rgba-unorm'
-  | 'bc1-rgba-unorm-srgb'
-  | 'bc2-rgba-unorm'
-  | 'bc2-rgba-unorm-srgb'
-  | 'bc3-rgba-unorm'
-  | 'bc3-rgba-unorm-srgb'
-  | 'bc4-r-snorm'
-  | 'bc4-r-unorm'
-  | 'bc5-rg-snorm'
-  | 'bc5-rg-unorm'
-  | 'bc6h-rgb-float'
-  | 'bc6h-rgb-ufloat'
-  | 'bc7-rgba-unorm'
-  | 'bc7-rgba-unorm-srgb'
-  | 'bgra8unorm'
-  | 'bgra8unorm-srgb'
-  | 'depth16unorm'
-  | 'depth24plus'
-  | 'depth24plus-stencil8'
-  | 'depth32float'
-  | 'depth32float-stencil8'
-  | 'eac-r11snorm'
-  | 'eac-r11unorm'
-  | 'eac-rg11snorm'
-  | 'eac-rg11unorm'
-  | 'etc2-rgb8a1unorm'
-  | 'etc2-rgb8a1unorm-srgb'
-  | 'etc2-rgb8unorm'
-  | 'etc2-rgb8unorm-srgb'
-  | 'etc2-rgba8unorm'
-  | 'etc2-rgba8unorm-srgb'
-  | 'r16float'
-  | 'r16sint'
-  | 'r16uint'
-  | 'r32float'
-  | 'r32sint'
-  | 'r32uint'
-  | 'r8sint'
-  | 'r8snorm'
-  | 'r8uint'
-  | 'r8unorm'
-  | 'rg11b10ufloat'
-  | 'rg16float'
-  | 'rg16sint'
-  | 'rg16uint'
-  | 'rg32float'
-  | 'rg32sint'
-  | 'rg32uint'
-  | 'rg8sint'
-  | 'rg8snorm'
-  | 'rg8uint'
-  | 'rg8unorm'
-  | 'rgb10a2uint'
-  | 'rgb10a2unorm'
-  | 'rgb9e5ufloat'
-  | 'rgba16float'
-  | 'rgba16sint'
-  | 'rgba16uint'
-  | 'rgba32float'
-  | 'rgba32sint'
-  | 'rgba32uint'
-  | 'rgba8sint'
-  | 'rgba8snorm'
-  | 'rgba8uint'
-  | 'rgba8unorm'
-  | 'rgba8unorm-srgb'
-  | 'stencil8';
-type GPUTextureSampleType = 'depth' | 'float' | 'sint' | 'uint' | 'unfilterable-float';
-type GPUTextureViewDimension = '1d' | '2d' | '2d-array' | '3d' | 'cube' | 'cube-array';
+  | "astc-10x10-unorm"
+  | "astc-10x10-unorm-srgb"
+  | "astc-10x5-unorm"
+  | "astc-10x5-unorm-srgb"
+  | "astc-10x6-unorm"
+  | "astc-10x6-unorm-srgb"
+  | "astc-10x8-unorm"
+  | "astc-10x8-unorm-srgb"
+  | "astc-12x10-unorm"
+  | "astc-12x10-unorm-srgb"
+  | "astc-12x12-unorm"
+  | "astc-12x12-unorm-srgb"
+  | "astc-4x4-unorm"
+  | "astc-4x4-unorm-srgb"
+  | "astc-5x4-unorm"
+  | "astc-5x4-unorm-srgb"
+  | "astc-5x5-unorm"
+  | "astc-5x5-unorm-srgb"
+  | "astc-6x5-unorm"
+  | "astc-6x5-unorm-srgb"
+  | "astc-6x6-unorm"
+  | "astc-6x6-unorm-srgb"
+  | "astc-8x5-unorm"
+  | "astc-8x5-unorm-srgb"
+  | "astc-8x6-unorm"
+  | "astc-8x6-unorm-srgb"
+  | "astc-8x8-unorm"
+  | "astc-8x8-unorm-srgb"
+  | "bc1-rgba-unorm"
+  | "bc1-rgba-unorm-srgb"
+  | "bc2-rgba-unorm"
+  | "bc2-rgba-unorm-srgb"
+  | "bc3-rgba-unorm"
+  | "bc3-rgba-unorm-srgb"
+  | "bc4-r-snorm"
+  | "bc4-r-unorm"
+  | "bc5-rg-snorm"
+  | "bc5-rg-unorm"
+  | "bc6h-rgb-float"
+  | "bc6h-rgb-ufloat"
+  | "bc7-rgba-unorm"
+  | "bc7-rgba-unorm-srgb"
+  | "bgra8unorm"
+  | "bgra8unorm-srgb"
+  | "depth16unorm"
+  | "depth24plus"
+  | "depth24plus-stencil8"
+  | "depth32float"
+  | "depth32float-stencil8"
+  | "eac-r11snorm"
+  | "eac-r11unorm"
+  | "eac-rg11snorm"
+  | "eac-rg11unorm"
+  | "etc2-rgb8a1unorm"
+  | "etc2-rgb8a1unorm-srgb"
+  | "etc2-rgb8unorm"
+  | "etc2-rgb8unorm-srgb"
+  | "etc2-rgba8unorm"
+  | "etc2-rgba8unorm-srgb"
+  | "r16float"
+  | "r16sint"
+  | "r16uint"
+  | "r32float"
+  | "r32sint"
+  | "r32uint"
+  | "r8sint"
+  | "r8snorm"
+  | "r8uint"
+  | "r8unorm"
+  | "rg11b10ufloat"
+  | "rg16float"
+  | "rg16sint"
+  | "rg16uint"
+  | "rg32float"
+  | "rg32sint"
+  | "rg32uint"
+  | "rg8sint"
+  | "rg8snorm"
+  | "rg8uint"
+  | "rg8unorm"
+  | "rgb10a2uint"
+  | "rgb10a2unorm"
+  | "rgb9e5ufloat"
+  | "rgba16float"
+  | "rgba16sint"
+  | "rgba16uint"
+  | "rgba32float"
+  | "rgba32sint"
+  | "rgba32uint"
+  | "rgba8sint"
+  | "rgba8snorm"
+  | "rgba8uint"
+  | "rgba8unorm"
+  | "rgba8unorm-srgb"
+  | "stencil8";
+type GPUTextureSampleType = "depth" | "float" | "sint" | "uint" | "unfilterable-float";
+type GPUTextureViewDimension = "1d" | "2d" | "2d-array" | "3d" | "cube" | "cube-array";
 type GPUVertexFormat =
-  | 'float16'
-  | 'float16x2'
-  | 'float16x4'
-  | 'float32'
-  | 'float32x2'
-  | 'float32x3'
-  | 'float32x4'
-  | 'sint16'
-  | 'sint16x2'
-  | 'sint16x4'
-  | 'sint32'
-  | 'sint32x2'
-  | 'sint32x3'
-  | 'sint32x4'
-  | 'sint8'
-  | 'sint8x2'
-  | 'sint8x4'
-  | 'snorm16'
-  | 'snorm16x2'
-  | 'snorm16x4'
-  | 'snorm8'
-  | 'snorm8x2'
-  | 'snorm8x4'
-  | 'uint16'
-  | 'uint16x2'
-  | 'uint16x4'
-  | 'uint32'
-  | 'uint32x2'
-  | 'uint32x3'
-  | 'uint32x4'
-  | 'uint8'
-  | 'uint8x2'
-  | 'uint8x4'
-  | 'unorm10-10-10-2'
-  | 'unorm16'
-  | 'unorm16x2'
-  | 'unorm16x4'
-  | 'unorm8'
-  | 'unorm8x2'
-  | 'unorm8x4'
-  | 'unorm8x4-bgra';
-type GPUVertexStepMode = 'instance' | 'vertex';
-type GamepadHand = '' | 'left' | 'right';
-type GamepadHapticActuatorType = 'vibration';
-type GamepadLightIndicatorType = 'on-off' | 'rgb';
-type GamepadMappingType = '' | 'standard' | 'xr-standard';
-type GetUserMediaRequestType = 'getusermedia' | 'recording-device-stopped' | 'selectaudiooutput';
-type GridDeclaration = 'explicit' | 'implicit';
-type GridTrackState = 'removed' | 'repeat' | 'static';
-type HDCPVersion = '1.0' | '1.1' | '1.2' | '1.3' | '1.4' | '2.0' | '2.1' | '2.2' | '2.3';
-type HardwareAcceleration = 'no-preference' | 'prefer-hardware' | 'prefer-software';
-type HashAlgorithm = 'sha256' | 'sha384' | 'sha512';
-type HdrMetadataType = 'smpteSt2086' | 'smpteSt2094-10' | 'smpteSt2094-40';
-type HeadersGuardEnum = 'immutable' | 'none' | 'request' | 'request-no-cors' | 'response';
-type HighlightType = 'grammar-error' | 'highlight' | 'spelling-error';
-type IDBCursorDirection = 'next' | 'nextunique' | 'prev' | 'prevunique';
-type IDBRequestReadyState = 'done' | 'pending';
-type IDBTransactionDurability = 'default' | 'relaxed' | 'strict';
-type IDBTransactionMode = 'cleanup' | 'readonly' | 'readwrite' | 'readwriteflush' | 'versionchange';
-type IdentityCredentialRequestOptionsMode = 'active' | 'passive';
-type ImageOrientation = 'flipY' | 'from-image' | 'none';
-type ImportESModuleTargetGlobal = 'contextual' | 'current' | 'devtools' | 'shared';
-type InspectorPropertyType = 'color' | 'gradient' | 'timing-function';
-type IterationCompositeOperation = 'accumulate' | 'replace';
+  | "float16"
+  | "float16x2"
+  | "float16x4"
+  | "float32"
+  | "float32x2"
+  | "float32x3"
+  | "float32x4"
+  | "sint16"
+  | "sint16x2"
+  | "sint16x4"
+  | "sint32"
+  | "sint32x2"
+  | "sint32x3"
+  | "sint32x4"
+  | "sint8"
+  | "sint8x2"
+  | "sint8x4"
+  | "snorm16"
+  | "snorm16x2"
+  | "snorm16x4"
+  | "snorm8"
+  | "snorm8x2"
+  | "snorm8x4"
+  | "uint16"
+  | "uint16x2"
+  | "uint16x4"
+  | "uint32"
+  | "uint32x2"
+  | "uint32x3"
+  | "uint32x4"
+  | "uint8"
+  | "uint8x2"
+  | "uint8x4"
+  | "unorm10-10-10-2"
+  | "unorm16"
+  | "unorm16x2"
+  | "unorm16x4"
+  | "unorm8"
+  | "unorm8x2"
+  | "unorm8x4"
+  | "unorm8x4-bgra";
+type GPUVertexStepMode = "instance" | "vertex";
+type GamepadHand = "" | "left" | "right";
+type GamepadHapticActuatorType = "vibration";
+type GamepadLightIndicatorType = "on-off" | "rgb";
+type GamepadMappingType = "" | "standard" | "xr-standard";
+type GetUserMediaRequestType = "getusermedia" | "recording-device-stopped" | "selectaudiooutput";
+type GridDeclaration = "explicit" | "implicit";
+type GridTrackState = "removed" | "repeat" | "static";
+type HDCPVersion = "1.0" | "1.1" | "1.2" | "1.3" | "1.4" | "2.0" | "2.1" | "2.2" | "2.3";
+type HardwareAcceleration = "no-preference" | "prefer-hardware" | "prefer-software";
+type HashAlgorithm = "sha256" | "sha384" | "sha512";
+type HdrMetadataType = "smpteSt2086" | "smpteSt2094-10" | "smpteSt2094-40";
+type HeadersGuardEnum = "immutable" | "none" | "request" | "request-no-cors" | "response";
+type HighlightType = "grammar-error" | "highlight" | "spelling-error";
+type IDBCursorDirection = "next" | "nextunique" | "prev" | "prevunique";
+type IDBRequestReadyState = "done" | "pending";
+type IDBTransactionDurability = "default" | "relaxed" | "strict";
+type IDBTransactionMode = "cleanup" | "readonly" | "readwrite" | "readwriteflush" | "versionchange";
+type IdentityCredentialRequestOptionsMode = "active" | "passive";
+type ImageOrientation = "flipY" | "from-image" | "none";
+type ImportESModuleTargetGlobal = "contextual" | "current" | "devtools" | "shared";
+type InspectorPropertyType = "color" | "gradient" | "timing-function";
+type IterationCompositeOperation = "accumulate" | "replace";
 type JSRFPTarget =
-  | 'CSSPrefersColorScheme'
-  | 'HttpUserAgent'
-  | 'JSLocalePrompt'
-  | 'RoundWindowSize'
-  | 'SiteSpecificZoom';
-type L10nFileSourceHasFileStatus = 'missing' | 'present' | 'unknown';
-type LatencyMode = 'quality' | 'realtime';
-type LineAlignSetting = 'center' | 'end' | 'start';
-type LlamaKVCacheDtype = 'f16' | 'f32' | 'q4_0' | 'q4_1' | 'q5_0' | 'q5_1' | 'q8_0';
+  | "CSSPrefersColorScheme"
+  | "HttpUserAgent"
+  | "JSLocalePrompt"
+  | "RoundWindowSize"
+  | "SiteSpecificZoom";
+type L10nFileSourceHasFileStatus = "missing" | "present" | "unknown";
+type LatencyMode = "quality" | "realtime";
+type LineAlignSetting = "center" | "end" | "start";
+type LlamaKVCacheDtype = "f16" | "f32" | "q4_0" | "q4_1" | "q5_0" | "q5_1" | "q8_0";
 type LlamaSamplerType =
-  | 'dist'
-  | 'dry'
-  | 'infill'
-  | 'logit-bias'
-  | 'min-p'
-  | 'mirostat'
-  | 'penalties'
-  | 'temperature'
-  | 'temperature-ext'
-  | 'top-k'
-  | 'top-n-sigma'
-  | 'top-p'
-  | 'typical'
-  | 'xtc';
-type LockMode = 'exclusive' | 'shared';
-type LoginStatus = 'logged-in' | 'logged-out';
-type MIDIPortConnectionState = 'closed' | 'open' | 'pending';
-type MIDIPortDeviceState = 'connected' | 'disconnected';
-type MIDIPortType = 'input' | 'output';
+  | "dist"
+  | "dry"
+  | "infill"
+  | "logit-bias"
+  | "min-p"
+  | "mirostat"
+  | "penalties"
+  | "temperature"
+  | "temperature-ext"
+  | "top-k"
+  | "top-n-sigma"
+  | "top-p"
+  | "typical"
+  | "xtc";
+type LockMode = "exclusive" | "shared";
+type LoginStatus = "logged-in" | "logged-out";
+type MIDIPortConnectionState = "closed" | "open" | "pending";
+type MIDIPortDeviceState = "connected" | "disconnected";
+type MIDIPortType = "input" | "output";
 type MLSObjectType =
-  | 'application-message-ciphertext'
-  | 'application-message-plaintext'
-  | 'client-identifier'
-  | 'commit-output'
-  | 'commit-processed'
-  | 'credential-basic'
-  | 'exporter-context'
-  | 'exporter-label'
-  | 'exporter-output'
-  | 'group-epoch'
-  | 'group-identifier'
-  | 'group-info'
-  | 'key-package'
-  | 'proposal'
-  | 'welcome';
+  | "application-message-ciphertext"
+  | "application-message-plaintext"
+  | "client-identifier"
+  | "commit-output"
+  | "commit-processed"
+  | "credential-basic"
+  | "exporter-context"
+  | "exporter-label"
+  | "exporter-output"
+  | "group-epoch"
+  | "group-identifier"
+  | "group-info"
+  | "key-package"
+  | "proposal"
+  | "welcome";
 type MediaControlKey =
-  | 'focus'
-  | 'nexttrack'
-  | 'pause'
-  | 'play'
-  | 'playpause'
-  | 'previoustrack'
-  | 'seekbackward'
-  | 'seekforward'
-  | 'seekto'
-  | 'skipad'
-  | 'stop';
-type MediaDecodingType = 'file' | 'media-source';
-type MediaDeviceKind = 'audioinput' | 'audiooutput' | 'videoinput';
-type MediaEncodingType = 'record' | 'transmission';
+  | "focus"
+  | "nexttrack"
+  | "pause"
+  | "play"
+  | "playpause"
+  | "previoustrack"
+  | "seekbackward"
+  | "seekforward"
+  | "seekto"
+  | "skipad"
+  | "stop";
+type MediaDecodingType = "file" | "media-source";
+type MediaDeviceKind = "audioinput" | "audiooutput" | "videoinput";
+type MediaEncodingType = "record" | "transmission";
 type MediaKeyMessageType =
-  | 'individualization-request'
-  | 'license-release'
-  | 'license-renewal'
-  | 'license-request';
+  | "individualization-request"
+  | "license-release"
+  | "license-renewal"
+  | "license-request";
 type MediaKeySessionClosedReason =
-  | 'closed-by-application'
-  | 'hardware-context-reset'
-  | 'internal-error'
-  | 'release-acknowledged'
-  | 'resource-evicted';
-type MediaKeySessionType = 'persistent-license' | 'temporary';
+  | "closed-by-application"
+  | "hardware-context-reset"
+  | "internal-error"
+  | "release-acknowledged"
+  | "resource-evicted";
+type MediaKeySessionType = "persistent-license" | "temporary";
 type MediaKeyStatus =
-  | 'expired'
-  | 'internal-error'
-  | 'output-downscaled'
-  | 'output-restricted'
-  | 'released'
-  | 'status-pending'
-  | 'usable';
-type MediaKeysRequirement = 'not-allowed' | 'optional' | 'required';
+  | "expired"
+  | "internal-error"
+  | "output-downscaled"
+  | "output-restricted"
+  | "released"
+  | "status-pending"
+  | "usable";
+type MediaKeysRequirement = "not-allowed" | "optional" | "required";
 type MediaSessionAction =
-  | 'nexttrack'
-  | 'pause'
-  | 'play'
-  | 'previoustrack'
-  | 'seekbackward'
-  | 'seekforward'
-  | 'seekto'
-  | 'skipad'
-  | 'stop';
-type MediaSessionPlaybackState = 'none' | 'paused' | 'playing';
-type MediaSourceEndOfStreamError = 'decode' | 'network';
-type MediaSourceReadyState = 'closed' | 'ended' | 'open';
-type MediaStreamTrackState = 'ended' | 'live';
+  | "nexttrack"
+  | "pause"
+  | "play"
+  | "previoustrack"
+  | "seekbackward"
+  | "seekforward"
+  | "seekto"
+  | "skipad"
+  | "stop";
+type MediaSessionPlaybackState = "none" | "paused" | "playing";
+type MediaSourceEndOfStreamError = "decode" | "network";
+type MediaSourceReadyState = "closed" | "ended" | "open";
+type MediaStreamTrackState = "ended" | "live";
 type MozContentPolicyType =
-  | 'beacon'
-  | 'csp_report'
-  | 'font'
-  | 'image'
-  | 'imageset'
-  | 'json'
-  | 'main_frame'
-  | 'media'
-  | 'object'
-  | 'other'
-  | 'ping'
-  | 'script'
-  | 'speculative'
-  | 'stylesheet'
-  | 'sub_frame'
-  | 'web_manifest'
-  | 'websocket'
-  | 'xml_dtd'
-  | 'xmlhttprequest'
-  | 'xslt';
+  | "beacon"
+  | "csp_report"
+  | "font"
+  | "image"
+  | "imageset"
+  | "json"
+  | "main_frame"
+  | "media"
+  | "object"
+  | "other"
+  | "ping"
+  | "script"
+  | "speculative"
+  | "stylesheet"
+  | "sub_frame"
+  | "web_manifest"
+  | "websocket"
+  | "xml_dtd"
+  | "xmlhttprequest"
+  | "xslt";
 type MozUrlClassificationFlags =
-  | 'antifraud'
-  | 'any_basic_tracking'
-  | 'any_social_tracking'
-  | 'any_strict_tracking'
-  | 'consentmanager'
-  | 'cryptomining'
-  | 'cryptomining_content'
-  | 'emailtracking'
-  | 'emailtracking_content'
-  | 'fingerprinting'
-  | 'fingerprinting_content'
-  | 'socialtracking'
-  | 'socialtracking_facebook'
-  | 'socialtracking_linkedin'
-  | 'socialtracking_twitter'
-  | 'tracking'
-  | 'tracking_ad'
-  | 'tracking_analytics'
-  | 'tracking_content'
-  | 'tracking_social';
-type NavigationFocusReset = 'after-transition' | 'manual';
-type NavigationHistoryBehavior = 'auto' | 'push' | 'replace';
-type NavigationScrollBehavior = 'after-transition' | 'manual';
-type NavigationTimingType = 'back_forward' | 'navigate' | 'prerender' | 'reload';
-type NavigationType = 'push' | 'reload' | 'replace' | 'traverse';
-type NotificationDirection = 'auto' | 'ltr' | 'rtl';
-type NotificationPermission = 'default' | 'denied' | 'granted';
-type OffscreenRenderingContextId = '2d' | 'bitmaprenderer' | 'webgl' | 'webgl2' | 'webgpu';
-type OpusBitstreamFormat = 'ogg' | 'opus';
+  | "antifraud"
+  | "any_basic_tracking"
+  | "any_social_tracking"
+  | "any_strict_tracking"
+  | "consentmanager"
+  | "cryptomining"
+  | "cryptomining_content"
+  | "emailtracking"
+  | "emailtracking_content"
+  | "fingerprinting"
+  | "fingerprinting_content"
+  | "socialtracking"
+  | "socialtracking_facebook"
+  | "socialtracking_linkedin"
+  | "socialtracking_twitter"
+  | "tracking"
+  | "tracking_ad"
+  | "tracking_analytics"
+  | "tracking_content"
+  | "tracking_social";
+type NavigationFocusReset = "after-transition" | "manual";
+type NavigationHistoryBehavior = "auto" | "push" | "replace";
+type NavigationScrollBehavior = "after-transition" | "manual";
+type NavigationTimingType = "back_forward" | "navigate" | "prerender" | "reload";
+type NavigationType = "push" | "reload" | "replace" | "traverse";
+type NotificationDirection = "auto" | "ltr" | "rtl";
+type NotificationPermission = "default" | "denied" | "granted";
+type OffscreenRenderingContextId = "2d" | "bitmaprenderer" | "webgl" | "webgl2" | "webgpu";
+type OpusBitstreamFormat = "ogg" | "opus";
 type OrientationLockType =
-  | 'any'
-  | 'landscape'
-  | 'landscape-primary'
-  | 'landscape-secondary'
-  | 'natural'
-  | 'portrait'
-  | 'portrait-primary'
-  | 'portrait-secondary';
+  | "any"
+  | "landscape"
+  | "landscape-primary"
+  | "landscape-secondary"
+  | "natural"
+  | "portrait"
+  | "portrait-primary"
+  | "portrait-secondary";
 type OrientationType =
-  | 'landscape-primary'
-  | 'landscape-secondary'
-  | 'portrait-primary'
-  | 'portrait-secondary';
-type OscillatorType = 'custom' | 'sawtooth' | 'sine' | 'square' | 'triangle';
-type OverSampleType = '2x' | '4x' | 'none';
+  | "landscape-primary"
+  | "landscape-secondary"
+  | "portrait-primary"
+  | "portrait-secondary";
+type OscillatorType = "custom" | "sawtooth" | "sine" | "square" | "triangle";
+type OverSampleType = "2x" | "4x" | "none";
 type OverridableErrorCategory =
-  | 'domain-mismatch'
-  | 'expired-or-not-yet-valid'
-  | 'trust-error'
-  | 'unset';
+  | "domain-mismatch"
+  | "expired-or-not-yet-valid"
+  | "trust-error"
+  | "unset";
 type PCError =
-  | 'InvalidAccessError'
-  | 'InvalidCharacterError'
-  | 'InvalidModificationError'
-  | 'InvalidStateError'
-  | 'NotReadableError'
-  | 'NotSupportedError'
-  | 'OperationError'
-  | 'RangeError'
-  | 'SyntaxError'
-  | 'TypeError'
-  | 'UnknownError';
+  | "InvalidAccessError"
+  | "InvalidCharacterError"
+  | "InvalidModificationError"
+  | "InvalidStateError"
+  | "NotReadableError"
+  | "NotSupportedError"
+  | "OperationError"
+  | "RangeError"
+  | "SyntaxError"
+  | "TypeError"
+  | "UnknownError";
 type PCObserverStateType =
-  | 'ConnectionState'
-  | 'IceConnectionState'
-  | 'IceGatheringState'
-  | 'None'
-  | 'SignalingState';
-type PanningModelType = 'HRTF' | 'equalpower';
-type PaymentComplete = 'fail' | 'success' | 'unknown';
-type PaymentShippingType = 'delivery' | 'pickup' | 'shipping';
+  | "ConnectionState"
+  | "IceConnectionState"
+  | "IceGatheringState"
+  | "None"
+  | "SignalingState";
+type PanningModelType = "HRTF" | "equalpower";
+type PaymentComplete = "fail" | "success" | "unknown";
+type PaymentShippingType = "delivery" | "pickup" | "shipping";
 type PermissionName =
-  | 'camera'
-  | 'geolocation'
-  | 'microphone'
-  | 'midi'
-  | 'notifications'
-  | 'persistent-storage'
-  | 'push'
-  | 'screen-wake-lock'
-  | 'storage-access';
-type PermissionState = 'denied' | 'granted' | 'prompt';
-type PermitUnloadAction = 'dontUnload' | 'prompt' | 'unload';
+  | "camera"
+  | "geolocation"
+  | "microphone"
+  | "midi"
+  | "notifications"
+  | "persistent-storage"
+  | "push"
+  | "screen-wake-lock"
+  | "storage-access";
+type PermissionState = "denied" | "granted" | "prompt";
+type PermitUnloadAction = "dontUnload" | "prompt" | "unload";
 type PlacesEventType =
-  | 'bookmark-added'
-  | 'bookmark-guid-changed'
-  | 'bookmark-keyword-changed'
-  | 'bookmark-moved'
-  | 'bookmark-removed'
-  | 'bookmark-tags-changed'
-  | 'bookmark-time-changed'
-  | 'bookmark-title-changed'
-  | 'bookmark-url-changed'
-  | 'favicon-changed'
-  | 'history-cleared'
-  | 'none'
-  | 'page-removed'
-  | 'page-title-changed'
-  | 'page-visited'
-  | 'pages-rank-changed'
-  | 'purge-caches';
-type PlaybackDirection = 'alternate' | 'alternate-reverse' | 'normal' | 'reverse';
+  | "bookmark-added"
+  | "bookmark-guid-changed"
+  | "bookmark-keyword-changed"
+  | "bookmark-moved"
+  | "bookmark-removed"
+  | "bookmark-tags-changed"
+  | "bookmark-time-changed"
+  | "bookmark-title-changed"
+  | "bookmark-url-changed"
+  | "favicon-changed"
+  | "history-cleared"
+  | "none"
+  | "page-removed"
+  | "page-title-changed"
+  | "page-visited"
+  | "pages-rank-changed"
+  | "purge-caches";
+type PlaybackDirection = "alternate" | "alternate-reverse" | "normal" | "reverse";
 type PopupBlockerState =
-  | 'openAbused'
-  | 'openAllowed'
-  | 'openBlocked'
-  | 'openControlled'
-  | 'openOverridden';
-type PositionAlignSetting = 'auto' | 'center' | 'line-left' | 'line-right';
-type PredefinedColorSpace = 'display-p3' | 'srgb';
-type PrefersColorSchemeOverride = 'dark' | 'light' | 'none';
-type PremultiplyAlpha = 'default' | 'none' | 'premultiply';
-type PresentationStyle = 'attachment' | 'inline' | 'unspecified';
-type PrivateAttributionImpressionType = 'click' | 'view';
-type PromiseDebuggingState = 'fulfilled' | 'pending' | 'rejected';
-type PushEncryptionKeyName = 'auth' | 'p256dh';
-type RTCBundlePolicy = 'balanced' | 'max-bundle' | 'max-compat';
-type RTCCodecType = 'decode' | 'encode';
-type RTCDataChannelState = 'closed' | 'closing' | 'connecting' | 'open';
-type RTCDataChannelType = 'arraybuffer' | 'blob';
-type RTCDegradationPreference = 'balanced' | 'maintain-framerate' | 'maintain-resolution';
-type RTCDtlsTransportState = 'closed' | 'connected' | 'connecting' | 'failed' | 'new';
-type RTCEncodedVideoFrameType = 'delta' | 'empty' | 'key';
-type RTCIceCandidateType = 'host' | 'prflx' | 'relay' | 'srflx';
-type RTCIceComponent = 'rtcp' | 'rtp';
+  | "openAbused"
+  | "openAllowed"
+  | "openBlocked"
+  | "openControlled"
+  | "openOverridden";
+type PositionAlignSetting = "auto" | "center" | "line-left" | "line-right";
+type PredefinedColorSpace = "display-p3" | "srgb";
+type PrefersColorSchemeOverride = "dark" | "light" | "none";
+type PremultiplyAlpha = "default" | "none" | "premultiply";
+type PresentationStyle = "attachment" | "inline" | "unspecified";
+type PrivateAttributionImpressionType = "click" | "view";
+type PromiseDebuggingState = "fulfilled" | "pending" | "rejected";
+type PushEncryptionKeyName = "auth" | "p256dh";
+type RTCBundlePolicy = "balanced" | "max-bundle" | "max-compat";
+type RTCCodecType = "decode" | "encode";
+type RTCDataChannelState = "closed" | "closing" | "connecting" | "open";
+type RTCDataChannelType = "arraybuffer" | "blob";
+type RTCDegradationPreference = "balanced" | "maintain-framerate" | "maintain-resolution";
+type RTCDtlsTransportState = "closed" | "connected" | "connecting" | "failed" | "new";
+type RTCEncodedVideoFrameType = "delta" | "empty" | "key";
+type RTCIceCandidateType = "host" | "prflx" | "relay" | "srflx";
+type RTCIceComponent = "rtcp" | "rtp";
 type RTCIceConnectionState =
-  | 'checking'
-  | 'closed'
-  | 'completed'
-  | 'connected'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
-type RTCIceCredentialType = 'password';
-type RTCIceGathererState = 'complete' | 'gathering' | 'new';
-type RTCIceGatheringState = 'complete' | 'gathering' | 'new';
-type RTCIceProtocol = 'tcp' | 'udp';
-type RTCIceTcpCandidateType = 'active' | 'passive' | 'so';
-type RTCIceTransportPolicy = 'all' | 'relay';
+  | "checking"
+  | "closed"
+  | "completed"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "new";
+type RTCIceCredentialType = "password";
+type RTCIceGathererState = "complete" | "gathering" | "new";
+type RTCIceGatheringState = "complete" | "gathering" | "new";
+type RTCIceProtocol = "tcp" | "udp";
+type RTCIceTcpCandidateType = "active" | "passive" | "so";
+type RTCIceTransportPolicy = "all" | "relay";
 type RTCIceTransportState =
-  | 'checking'
-  | 'closed'
-  | 'completed'
-  | 'connected'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
+  | "checking"
+  | "closed"
+  | "completed"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "new";
 type RTCLifecycleEvent =
-  | 'connectionstatechange'
-  | 'iceconnectionstatechange'
-  | 'icegatheringstatechange'
-  | 'initialized';
+  | "connectionstatechange"
+  | "iceconnectionstatechange"
+  | "icegatheringstatechange"
+  | "initialized";
 type RTCPeerConnectionState =
-  | 'closed'
-  | 'connected'
-  | 'connecting'
-  | 'disconnected'
-  | 'failed'
-  | 'new';
-type RTCPriorityType = 'high' | 'low' | 'medium' | 'very-low';
-type RTCRtpTransceiverDirection = 'inactive' | 'recvonly' | 'sendonly' | 'sendrecv' | 'stopped';
-type RTCSctpTransportState = 'closed' | 'connected' | 'connecting';
-type RTCSdpType = 'answer' | 'offer' | 'pranswer' | 'rollback';
+  | "closed"
+  | "connected"
+  | "connecting"
+  | "disconnected"
+  | "failed"
+  | "new";
+type RTCPriorityType = "high" | "low" | "medium" | "very-low";
+type RTCRtpTransceiverDirection = "inactive" | "recvonly" | "sendonly" | "sendrecv" | "stopped";
+type RTCSctpTransportState = "closed" | "connected" | "connecting";
+type RTCSdpType = "answer" | "offer" | "pranswer" | "rollback";
 type RTCSignalingState =
-  | 'closed'
-  | 'have-local-offer'
-  | 'have-local-pranswer'
-  | 'have-remote-offer'
-  | 'have-remote-pranswer'
-  | 'stable';
+  | "closed"
+  | "have-local-offer"
+  | "have-local-pranswer"
+  | "have-remote-offer"
+  | "have-remote-pranswer"
+  | "stable";
 type RTCStatsIceCandidatePairState =
-  | 'cancelled'
-  | 'failed'
-  | 'frozen'
-  | 'in-progress'
-  | 'succeeded'
-  | 'waiting';
+  | "cancelled"
+  | "failed"
+  | "frozen"
+  | "in-progress"
+  | "succeeded"
+  | "waiting";
 type RTCStatsType =
-  | 'candidate-pair'
-  | 'codec'
-  | 'csrc'
-  | 'data-channel'
-  | 'inbound-rtp'
-  | 'local-candidate'
-  | 'media-source'
-  | 'outbound-rtp'
-  | 'peer-connection'
-  | 'remote-candidate'
-  | 'remote-inbound-rtp'
-  | 'remote-outbound-rtp'
-  | 'session'
-  | 'track'
-  | 'transport';
-type ReadableStreamReaderMode = 'byob';
-type RecordingState = 'inactive' | 'paused' | 'recording';
+  | "candidate-pair"
+  | "codec"
+  | "csrc"
+  | "data-channel"
+  | "inbound-rtp"
+  | "local-candidate"
+  | "media-source"
+  | "outbound-rtp"
+  | "peer-connection"
+  | "remote-candidate"
+  | "remote-inbound-rtp"
+  | "remote-outbound-rtp"
+  | "session"
+  | "track"
+  | "transport";
+type ReadableStreamReaderMode = "byob";
+type RecordingState = "inactive" | "paused" | "recording";
 type ReferrerPolicy =
-  | ''
-  | 'no-referrer'
-  | 'no-referrer-when-downgrade'
-  | 'origin'
-  | 'origin-when-cross-origin'
-  | 'same-origin'
-  | 'strict-origin'
-  | 'strict-origin-when-cross-origin'
-  | 'unsafe-url';
-type RenderBlockingStatusType = 'blocking' | 'non-blocking';
+  | ""
+  | "no-referrer"
+  | "no-referrer-when-downgrade"
+  | "origin"
+  | "origin-when-cross-origin"
+  | "same-origin"
+  | "strict-origin"
+  | "strict-origin-when-cross-origin"
+  | "unsafe-url";
+type RenderBlockingStatusType = "blocking" | "non-blocking";
 type RequestCache =
-  | 'default'
-  | 'force-cache'
-  | 'no-cache'
-  | 'no-store'
-  | 'only-if-cached'
-  | 'reload';
-type RequestCredentials = 'include' | 'omit' | 'same-origin';
+  | "default"
+  | "force-cache"
+  | "no-cache"
+  | "no-store"
+  | "only-if-cached"
+  | "reload";
+type RequestCredentials = "include" | "omit" | "same-origin";
 type RequestDestination =
-  | ''
-  | 'audio'
-  | 'audioworklet'
-  | 'document'
-  | 'embed'
-  | 'font'
-  | 'frame'
-  | 'iframe'
-  | 'image'
-  | 'json'
-  | 'manifest'
-  | 'object'
-  | 'paintworklet'
-  | 'report'
-  | 'script'
-  | 'sharedworker'
-  | 'style'
-  | 'track'
-  | 'video'
-  | 'worker'
-  | 'xslt';
-type RequestMode = 'cors' | 'navigate' | 'no-cors' | 'same-origin';
-type RequestPriority = 'auto' | 'high' | 'low';
-type RequestRedirect = 'error' | 'follow' | 'manual';
-type ResizeObserverBoxOptions = 'border-box' | 'content-box' | 'device-pixel-content-box';
-type ResourceCacheTarget = 'chrome' | 'content';
-type ResourceCacheType = 'image' | 'script' | 'stylesheet';
-type ResponseType = 'basic' | 'cors' | 'default' | 'error' | 'opaque' | 'opaqueredirect';
-type SanitizerPresets = 'default';
-type ScreenColorGamut = 'p3' | 'rec2020' | 'srgb';
-type ScrollBehavior = 'auto' | 'instant' | 'smooth';
-type ScrollLogicalPosition = 'center' | 'end' | 'nearest' | 'start';
-type ScrollRestoration = 'auto' | 'manual';
-type ScrollSetting = '' | 'up';
-type SecurityPolicyViolationEventDisposition = 'enforce' | 'report';
-type SelectionMode = 'end' | 'preserve' | 'select' | 'start';
-type SelectorWarningKind = 'SiblingCombinatorAfterScope' | 'UnconstrainedHas';
+  | ""
+  | "audio"
+  | "audioworklet"
+  | "document"
+  | "embed"
+  | "font"
+  | "frame"
+  | "iframe"
+  | "image"
+  | "json"
+  | "manifest"
+  | "object"
+  | "paintworklet"
+  | "report"
+  | "script"
+  | "sharedworker"
+  | "style"
+  | "track"
+  | "video"
+  | "worker"
+  | "xslt";
+type RequestMode = "cors" | "navigate" | "no-cors" | "same-origin";
+type RequestPriority = "auto" | "high" | "low";
+type RequestRedirect = "error" | "follow" | "manual";
+type ResizeObserverBoxOptions = "border-box" | "content-box" | "device-pixel-content-box";
+type ResourceCacheTarget = "chrome" | "content";
+type ResourceCacheType = "image" | "script" | "stylesheet";
+type ResponseType = "basic" | "cors" | "default" | "error" | "opaque" | "opaqueredirect";
+type SanitizerPresets = "default";
+type ScreenColorGamut = "p3" | "rec2020" | "srgb";
+type ScrollBehavior = "auto" | "instant" | "smooth";
+type ScrollLogicalPosition = "center" | "end" | "nearest" | "start";
+type ScrollRestoration = "auto" | "manual";
+type ScrollSetting = "" | "up";
+type SecurityPolicyViolationEventDisposition = "enforce" | "report";
+type SelectionMode = "end" | "preserve" | "select" | "start";
+type SelectorWarningKind = "SiblingCombinatorAfterScope" | "UnconstrainedHas";
 type ServiceWorkerState =
-  | 'activated'
-  | 'activating'
-  | 'installed'
-  | 'installing'
-  | 'parsed'
-  | 'redundant';
-type ServiceWorkerUpdateViaCache = 'all' | 'imports' | 'none';
-type ShadowRootMode = 'closed' | 'open';
-type SlotAssignmentMode = 'manual' | 'named';
-type SocketReadyState = 'closed' | 'closing' | 'halfclosed' | 'open' | 'opening';
-type SourceBufferAppendMode = 'segments' | 'sequence';
+  | "activated"
+  | "activating"
+  | "installed"
+  | "installing"
+  | "parsed"
+  | "redundant";
+type ServiceWorkerUpdateViaCache = "all" | "imports" | "none";
+type ShadowRootMode = "closed" | "open";
+type SlotAssignmentMode = "manual" | "named";
+type SocketReadyState = "closed" | "closing" | "halfclosed" | "open" | "opening";
+type SourceBufferAppendMode = "segments" | "sequence";
 type SpeechRecognitionErrorCode =
-  | 'aborted'
-  | 'audio-capture'
-  | 'bad-grammar'
-  | 'language-not-supported'
-  | 'network'
-  | 'no-speech'
-  | 'not-allowed'
-  | 'service-not-allowed';
+  | "aborted"
+  | "audio-capture"
+  | "bad-grammar"
+  | "language-not-supported"
+  | "network"
+  | "no-speech"
+  | "not-allowed"
+  | "service-not-allowed";
 type SpeechSynthesisErrorCode =
-  | 'audio-busy'
-  | 'audio-hardware'
-  | 'canceled'
-  | 'interrupted'
-  | 'invalid-argument'
-  | 'language-unavailable'
-  | 'network'
-  | 'synthesis-failed'
-  | 'synthesis-unavailable'
-  | 'text-too-long'
-  | 'voice-unavailable';
+  | "audio-busy"
+  | "audio-hardware"
+  | "canceled"
+  | "interrupted"
+  | "invalid-argument"
+  | "language-unavailable"
+  | "network"
+  | "synthesis-failed"
+  | "synthesis-unavailable"
+  | "text-too-long"
+  | "voice-unavailable";
 type StreamFilterStatus =
-  | 'closed'
-  | 'disconnected'
-  | 'failed'
-  | 'finishedtransferringdata'
-  | 'suspended'
-  | 'transferringdata'
-  | 'uninitialized';
-type StringType = 'inline' | 'literal' | 'other' | 'stringbuffer';
+  | "closed"
+  | "disconnected"
+  | "failed"
+  | "finishedtransferringdata"
+  | "suspended"
+  | "transferringdata"
+  | "uninitialized";
+type StringType = "inline" | "literal" | "other" | "stringbuffer";
 type SupportedType =
-  | 'application/xhtml+xml'
-  | 'application/xml'
-  | 'image/svg+xml'
-  | 'text/html'
-  | 'text/xml';
-type TCPReadyState = 'closed' | 'closing' | 'connecting' | 'open';
-type TCPSocketBinaryType = 'arraybuffer' | 'string';
-type TaskPriority = 'background' | 'user-blocking' | 'user-visible';
-type TensorDataLocation = 'cpu' | 'cpu-pinned' | 'gpu-buffer' | 'ml-tensor' | 'none' | 'texture';
-type TextTrackKind = 'captions' | 'chapters' | 'descriptions' | 'metadata' | 'subtitles';
-type TextTrackMode = 'disabled' | 'hidden' | 'showing';
-type TouchEventsOverride = 'disabled' | 'enabled' | 'none';
-type TransferFunction = 'hlg' | 'pq' | 'srgb';
-type UniFFIScaffoldingCallCode = 'error' | 'internal-error' | 'success';
-type VRDisplayEventReason = 'mounted' | 'navigation' | 'requested' | 'unmounted';
-type VREye = 'left' | 'right';
-type VideoColorPrimaries = 'bt2020' | 'bt470bg' | 'bt709' | 'smpte170m' | 'smpte432';
-type VideoEncoderBitrateMode = 'constant' | 'quantizer' | 'variable';
-type VideoMatrixCoefficients = 'bt2020-ncl' | 'bt470bg' | 'bt709' | 'rgb' | 'smpte170m';
+  | "application/xhtml+xml"
+  | "application/xml"
+  | "image/svg+xml"
+  | "text/html"
+  | "text/xml";
+type TCPReadyState = "closed" | "closing" | "connecting" | "open";
+type TCPSocketBinaryType = "arraybuffer" | "string";
+type TaskPriority = "background" | "user-blocking" | "user-visible";
+type TensorDataLocation = "cpu" | "cpu-pinned" | "gpu-buffer" | "ml-tensor" | "none" | "texture";
+type TextTrackKind = "captions" | "chapters" | "descriptions" | "metadata" | "subtitles";
+type TextTrackMode = "disabled" | "hidden" | "showing";
+type TouchEventsOverride = "disabled" | "enabled" | "none";
+type TransferFunction = "hlg" | "pq" | "srgb";
+type UniFFIScaffoldingCallCode = "error" | "internal-error" | "success";
+type VRDisplayEventReason = "mounted" | "navigation" | "requested" | "unmounted";
+type VREye = "left" | "right";
+type VideoColorPrimaries = "bt2020" | "bt470bg" | "bt709" | "smpte170m" | "smpte432";
+type VideoEncoderBitrateMode = "constant" | "quantizer" | "variable";
+type VideoMatrixCoefficients = "bt2020-ncl" | "bt470bg" | "bt709" | "rgb" | "smpte170m";
 type VideoPixelFormat =
-  | 'BGRA'
-  | 'BGRX'
-  | 'I420'
-  | 'I420A'
-  | 'I420AP10'
-  | 'I420AP12'
-  | 'I420P10'
-  | 'I420P12'
-  | 'I422'
-  | 'I422A'
-  | 'I422AP10'
-  | 'I422AP12'
-  | 'I422P10'
-  | 'I422P12'
-  | 'I444'
-  | 'I444A'
-  | 'I444AP10'
-  | 'I444AP12'
-  | 'I444P10'
-  | 'I444P12'
-  | 'NV12'
-  | 'RGBA'
-  | 'RGBX';
+  | "BGRA"
+  | "BGRX"
+  | "I420"
+  | "I420A"
+  | "I420AP10"
+  | "I420AP12"
+  | "I420P10"
+  | "I420P12"
+  | "I422"
+  | "I422A"
+  | "I422AP10"
+  | "I422AP12"
+  | "I422P10"
+  | "I422P12"
+  | "I444"
+  | "I444A"
+  | "I444AP10"
+  | "I444AP12"
+  | "I444P10"
+  | "I444P12"
+  | "NV12"
+  | "RGBA"
+  | "RGBX";
 type VideoTransferCharacteristics =
-  | 'bt709'
-  | 'hlg'
-  | 'iec61966-2-1'
-  | 'linear'
-  | 'pq'
-  | 'smpte170m';
-type VisibilityState = 'hidden' | 'visible';
-type WakeLockType = 'screen';
-type WebGLPowerPreference = 'default' | 'high-performance' | 'low-power';
+  | "bt709"
+  | "hlg"
+  | "iec61966-2-1"
+  | "linear"
+  | "pq"
+  | "smpte170m";
+type VisibilityState = "hidden" | "visible";
+type WakeLockType = "screen";
+type WebGLPowerPreference = "default" | "high-performance" | "low-power";
 type WebIDLProcType =
-  | 'browser'
-  | 'extension'
-  | 'file'
-  | 'forkServer'
-  | 'gmpPlugin'
-  | 'gpu'
-  | 'inference'
-  | 'ipdlUnitTest'
-  | 'preallocated'
-  | 'privilegedabout'
-  | 'privilegedmozilla'
-  | 'rdd'
-  | 'socket'
-  | 'unknown'
-  | 'utility'
-  | 'vr'
-  | 'web'
-  | 'webIsolated'
-  | 'webServiceWorker'
-  | 'withCoopCoep';
+  | "browser"
+  | "extension"
+  | "file"
+  | "forkServer"
+  | "gmpPlugin"
+  | "gpu"
+  | "inference"
+  | "ipdlUnitTest"
+  | "preallocated"
+  | "privilegedabout"
+  | "privilegedmozilla"
+  | "rdd"
+  | "socket"
+  | "unknown"
+  | "utility"
+  | "vr"
+  | "web"
+  | "webIsolated"
+  | "webServiceWorker"
+  | "withCoopCoep";
 type WebIDLUtilityActorName =
-  | 'audioDecoder_AppleMedia'
-  | 'audioDecoder_Generic'
-  | 'audioDecoder_WMF'
-  | 'jSOracle'
-  | 'mfMediaEngineCDM'
-  | 'unknown'
-  | 'windowsFileDialog'
-  | 'windowsUtils';
-type WebTransportCongestionControl = 'default' | 'low-latency' | 'throughput';
-type WebTransportErrorSource = 'session' | 'stream';
-type WebTransportReliabilityMode = 'pending' | 'reliable-only' | 'supports-unreliable';
-type WireframeRectType = 'background' | 'image' | 'text' | 'unknown';
-type WorkerType = 'classic' | 'module';
-type WriteCommandType = 'seek' | 'truncate' | 'write';
-type WriteMode = 'append' | 'appendOrCreate' | 'create' | 'overwrite';
-type XMLHttpRequestResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
-type XREye = 'left' | 'none' | 'right';
-type XRHandedness = 'left' | 'none' | 'right';
-type XRReferenceSpaceType = 'bounded-floor' | 'local' | 'local-floor' | 'unbounded' | 'viewer';
-type XRSessionMode = 'immersive-ar' | 'immersive-vr' | 'inline';
-type XRTargetRayMode = 'gaze' | 'screen' | 'tracked-pointer';
-type XRVisibilityState = 'hidden' | 'visible' | 'visible-blurred';
-type mozPacketDumpType = 'rtcp' | 'rtp' | 'srtcp' | 'srtp';
+  | "audioDecoder_AppleMedia"
+  | "audioDecoder_Generic"
+  | "audioDecoder_WMF"
+  | "jSOracle"
+  | "mfMediaEngineCDM"
+  | "unknown"
+  | "windowsFileDialog"
+  | "windowsUtils";
+type WebTransportCongestionControl = "default" | "low-latency" | "throughput";
+type WebTransportErrorSource = "session" | "stream";
+type WebTransportReliabilityMode = "pending" | "reliable-only" | "supports-unreliable";
+type WireframeRectType = "background" | "image" | "text" | "unknown";
+type WorkerType = "classic" | "module";
+type WriteCommandType = "seek" | "truncate" | "write";
+type WriteMode = "append" | "appendOrCreate" | "create" | "overwrite";
+type XMLHttpRequestResponseType = "" | "arraybuffer" | "blob" | "document" | "json" | "text";
+type XREye = "left" | "none" | "right";
+type XRHandedness = "left" | "none" | "right";
+type XRReferenceSpaceType = "bounded-floor" | "local" | "local-floor" | "unbounded" | "viewer";
+type XRSessionMode = "immersive-ar" | "immersive-vr" | "inline";
+type XRTargetRayMode = "gaze" | "screen" | "tracked-pointer";
+type XRVisibilityState = "hidden" | "visible" | "visible-blurred";
+type mozPacketDumpType = "rtcp" | "rtp" | "srtcp" | "srtp";
 
 /////////////////////////////
 /// Window Iterable APIs

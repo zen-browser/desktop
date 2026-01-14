@@ -4,10 +4,10 @@
 
 # Fullscreen API preferences
 - name: full-screen-api.transition-duration.enter
-  value: '0 0'
+  value: "0 0"
 
 - name: full-screen-api.transition-duration.leave
-  value: '0 0'
+  value: "0 0"
 
 - name: full-screen-api.warning.delay
   value: -1

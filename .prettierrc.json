@@ -2,11 +2,19 @@
   "bracketSameLine": true,
   "endOfLine": "lf",
   "trailingComma": "es5",
-  "singleQuote": true,
   "tabWidth": 2,
   "useTabs": false,
   "jsxSingleQuote": false,
   "semi": true,
   "printWidth": 100,
-  "plugins": ["prettier-plugin-sh"]
+  "plugins": ["prettier-plugin-sh"],
+  "overrides": [
+    {
+      "files": "*.css",
+      "options": {
+        "parser": "css",
+        "printWidth": 160
+      }
+    }
+  ]
 }

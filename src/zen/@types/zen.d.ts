@@ -18,8 +18,8 @@
 /// <reference types="../lib.gecko.tweaks.d.ts" />
 /// <reference types="../lib.gecko.nsresult.d.ts" />
 
-declare var window: Window;
-declare var Components: nsIXPCComponents;
+declare let window: Window;
+declare let Components: nsIXPCComponents;
 declare var Cu: nsIXPCComponents_Utils;
 declare var Ci: nsIXPCComponents_Interfaces;
 declare var Services: JSServices;
@@ -72,10 +72,10 @@ declare namespace MockedExports {
    * This interface teaches ChromeUtils.importESModule how to find modules.
    */
   interface KnownModules {
-    Services: typeof import('Services');
-    'resource://gre/modules/AppConstants.sys.mjs': typeof import('resource://gre/modules/AppConstants.sys.mjs');
-    'resource:///modules/CustomizableUI.sys.mjs': typeof import('resource:///modules/CustomizableUI.sys.mjs');
-    'resource:///modules/CustomizableWidgets.sys.mjs': typeof import('resource:///modules/CustomizableWidgets.sys.mjs');
+    Services: typeof import("Services");
+    "resource://gre/modules/AppConstants.sys.mjs": typeof import("resource://gre/modules/AppConstants.sys.mjs");
+    "resource:///modules/CustomizableUI.sys.mjs": typeof import("resource:///modules/CustomizableUI.sys.mjs");
+    "resource:///modules/CustomizableWidgets.sys.mjs": typeof import("resource:///modules/CustomizableWidgets.sys.mjs");
   }
 
   interface ChromeUtils {
@@ -166,7 +166,7 @@ declare namespace MockedExports {
 
   type PrefObserverFunction = (
     aSubject: nsIPrefBranch,
-    aTopic: 'nsPref:changed',
+    aTopic: "nsPref:changed",
     aData: string
   ) => unknown;
   type PrefObserver = PrefObserverFunction | { observe: PrefObserverFunction };
@@ -310,7 +310,7 @@ declare namespace MockedExports {
   }
 
   interface Cc {
-    '@mozilla.org/filepicker;1': {
+    "@mozilla.org/filepicker;1": {
       createInstance(instance: nsIFilePicker): FilePicker;
     };
   }
@@ -339,17 +339,17 @@ interface PathUtilsInterface {
   isAbsolute: (path: string) => boolean;
 }
 
-declare module 'Services' {
+declare module "Services" {
   export = MockedExports.Services;
 }
 
-declare module 'ChromeUtils' {
+declare module "ChromeUtils" {
   export = ChromeUtils;
 }
 
-declare var ChromeUtils: MockedExports.ChromeUtils;
+declare let ChromeUtils: MockedExports.ChromeUtils;
 
-declare var PathUtils: PathUtilsInterface;
+declare let PathUtils: PathUtilsInterface;
 
 // These global objects can be used directly in JSM files only.
 declare var Cu: MockedExports.Cu;
@@ -365,7 +365,7 @@ declare interface ChromeDocument extends Document {
    * Create a XUL element of a specific type. Right now this function
    * only refines iframes, but more tags could be added.
    */
-  createXULElement: ((type: 'iframe') => XULIframeElement) & ((type: string) => XULElement);
+  createXULElement: ((type: "iframe") => XULIframeElement) & ((type: string) => XULElement);
 
   /**
    * This is a fluent instance connected to this document.
@@ -400,7 +400,7 @@ declare interface Window {
   browsingContext: MockedExports.BrowsingContext;
   openWebLinkIn: (
     url: string,
-    where: 'current' | 'tab' | 'tabshifted' | 'window' | 'save',
+    where: "current" | "tab" | "tabshifted" | "window" | "save",
     options?: Partial<{
       // Not all possible options are present, please add more if/when needed.
       userContextId: number;
@@ -411,7 +411,7 @@ declare interface Window {
   ) => void;
   openTrustedLinkIn: (
     url: string,
-    where: 'current' | 'tab' | 'tabshifted' | 'window' | 'save',
+    where: "current" | "tab" | "tabshifted" | "window" | "save",
     options?: Partial<{
       // Not all possible options are present, please add more if/when needed.
       userContextId: number;
@@ -435,12 +435,12 @@ declare interface XULCommandEvent extends Event {
 
 declare interface XULElementWithCommandHandler {
   addEventListener: (
-    type: 'command',
+    type: "command",
     handler: (event: XULCommandEvent) => void,
     isCapture?: boolean
   ) => void;
   removeEventListener: (
-    type: 'command',
+    type: "command",
     handler: (event: XULCommandEvent) => void,
     isCapture?: boolean
   ) => void;

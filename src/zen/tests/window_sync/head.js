@@ -32,13 +32,13 @@ async function withNewTabAndWindow(action) {
   await withNewSyncedWindow(async (win) => {
     await runSyncAction(
       () => {
-        newTab = gBrowser.addTrustedTab('https://example.com/', { inBackground: true });
+        newTab = gBrowser.addTrustedTab("https://example.com/", { inBackground: true });
       },
       async (aEvent) => {
-        Assert.equal(aEvent.type, 'TabOpen', 'Event type should be TabOpen');
+        Assert.equal(aEvent.type, "TabOpen", "Event type should be TabOpen");
         await action(newTab, win);
       },
-      'TabOpen'
+      "TabOpen"
     );
   });
   let portalTabClosing = BrowserTestUtils.waitForTabClosing(newTab);

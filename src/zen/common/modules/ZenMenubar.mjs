@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const WINDOW_SCHEME_PREF = 'zen.view.window.scheme';
+const WINDOW_SCHEME_PREF = "zen.view.window.scheme";
 const WINDOW_SCHEME_MAPPING = {
   dark: 0,
   light: 1,
@@ -25,31 +25,33 @@ class nsZenMenuBar {
           <menuitem data-l10n-id="zen-menubar-appearance-dark" data-type="dark" type="radio" />
         </menupopup>
       </menu>`);
-    const menu = appearanceMenu.querySelector('menu');
-    menu.addEventListener('command', (event) => {
-      const type = event.target.getAttribute('data-type');
+    const menu = appearanceMenu.querySelector("menu");
+    menu.addEventListener("command", (event) => {
+      const type = event.target.getAttribute("data-type");
       const schemeValue = WINDOW_SCHEME_MAPPING[type];
       Services.prefs.setIntPref(WINDOW_SCHEME_PREF, schemeValue);
     });
-    const parent = document.getElementById('view-menu');
-    const parentPopup = parent.querySelector('menupopup');
-    parentPopup.prepend(document.createXULElement('menuseparator'));
+    const viewMenu = document.getElementById("view-menu");
+    const parentPopup = viewMenu.querySelector("menupopup");
+    parentPopup.prepend(document.createXULElement("menuseparator"));
     parentPopup.prepend(menu);
 
-    const sibling = document.getElementById('viewSidebarMenuMenu');
+    const sibling = document.getElementById("viewSidebarMenuMenu");
     const togglePinnedItem = window.MozXULElement.parseXULToFragment(
       '<menuitem data-l10n-id="zen-menubar-toggle-pinned-tabs" />'
-    ).querySelector('menuitem');
-    if (!gZenWorkspaces.privateWindowOrDisabled) sibling.after(togglePinnedItem);
+    ).querySelector("menuitem");
+    if (!gZenWorkspaces.privateWindowOrDisabled) {
+      sibling.after(togglePinnedItem);
+    }
 
-    parentPopup.addEventListener('popupshowing', () => {
+    parentPopup.addEventListener("popupshowing", () => {
       const currentScheme = Services.prefs.getIntPref(WINDOW_SCHEME_PREF);
       for (const [type, value] of Object.entries(WINDOW_SCHEME_MAPPING)) {
         let menuItem = menu.querySelector(`menuitem[data-type="${type}"]`);
         if (value === currentScheme) {
-          menuItem.setAttribute('checked', 'true');
+          menuItem.setAttribute("checked", "true");
         } else {
-          menuItem.removeAttribute('checked');
+          menuItem.removeAttribute("checked");
         }
       }
       const pinnedAreCollapsed =
@@ -58,13 +60,13 @@ class nsZenMenuBar {
       document.l10n.setArgs(togglePinnedItem, args);
     });
 
-    togglePinnedItem.addEventListener('command', () => {
+    togglePinnedItem.addEventListener("command", () => {
       gZenWorkspaces.activeWorkspaceElement?.collapsiblePins.toggle();
     });
   }
 
   #initSpacesMenu() {
-    let menubar = window.MozXULElement.parseXULToFragment(`
+    let spacesMenubar = window.MozXULElement.parseXULToFragment(`
       <menu id="zen-spaces-menubar" data-l10n-id="zen-panel-ui-spaces-label">
         <menupopup>
           <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
@@ -82,8 +84,8 @@ class nsZenMenuBar {
             key="zen-workspace-backward"/>
         </menupopup>
       </menu>`);
-    document.getElementById('view-menu').after(menubar);
-    document.getElementById('zen-spaces-menubar').addEventListener('popupshowing', () => {
+    document.getElementById("view-menu").after(spacesMenubar);
+    document.getElementById("zen-spaces-menubar").addEventListener("popupshowing", () => {
       gZenWorkspaces.updateWorkspacesChangeContextMenu();
     });
   }

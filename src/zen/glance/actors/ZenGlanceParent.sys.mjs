@@ -1,6 +1,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+/* eslint-disable consistent-return */
+
 export class ZenGlanceParent extends JSWindowActorParent {
   constructor() {
     super();
@@ -8,14 +11,14 @@ export class ZenGlanceParent extends JSWindowActorParent {
 
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenGlance:GetActivationMethod': {
-        return Services.prefs.getStringPref('zen.glance.activation-method', 'ctrl');
+      case "ZenGlance:GetActivationMethod": {
+        return Services.prefs.getStringPref("zen.glance.activation-method", "ctrl");
       }
-      case 'ZenGlance:OpenGlance': {
+      case "ZenGlance:OpenGlance": {
         this.openGlance(this.browsingContext.topChromeWindow, message.data);
         break;
       }
-      case 'ZenGlance:CloseGlance': {
+      case "ZenGlance:CloseGlance": {
         const params = {
           onTabClose: true,
           ...message.data,
@@ -23,7 +26,7 @@ export class ZenGlanceParent extends JSWindowActorParent {
         this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(params);
         break;
       }
-      case 'ZenGlance:RecordLinkClickData': {
+      case "ZenGlance:RecordLinkClickData": {
         this.browsingContext.topChromeWindow.gZenGlanceManager.lastLinkClickData = message.data;
         break;
       }

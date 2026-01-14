@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       release_candidate:
-        description: 'Set to true to sync release candidates'
+        description: "Set to true to sync release candidates"
         required: false
         type: boolean
         default: false
   workflow_call:
     inputs:
       release_candidate:
-        description: 'Set to true to sync release candidates'
+        description: "Set to true to sync release candidates"
         required: false
         type: boolean
         default: false
@@ -41,7 +41,7 @@ jobs:
         uses: actions/setup-node@v4
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Install dependencies
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
@@ -119,9 +119,9 @@ jobs:
           GIT_CURL_VERBOSE: 1
         with:
           token: ${{ secrets.DEPLOY_KEY }}
-          commit-message: 'chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`'
-          branch: 'chore/upstream-sync'
-          title: 'Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}'
+          commit-message: "chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`"
+          branch: "chore/upstream-sync"
+          title: "Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}"
           body: |
             This PR syncs the upstream Firefox to version ${{ steps.build-data.outputs.version }}.
 

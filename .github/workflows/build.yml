@@ -4,49 +4,49 @@ on:
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Create a new release for this build'
+        description: "Create a new release for this build"
         required: false
         default: false
-        type: 'boolean'
+        type: "boolean"
       update_version:
-        description: 'Update the version number'
+        description: "Update the version number"
         required: false
         default: false
-        type: 'boolean'
+        type: "boolean"
       update_branch:
-        description: 'Update branch with new version'
+        description: "Update branch with new version"
         required: true
-        default: 'release'
-        type: 'choice'
+        default: "release"
+        type: "choice"
         options:
-          - 'release'
-          - 'twilight'
+          - "release"
+          - "twilight"
       use-sccache:
-        description: 'Use sccache'
+        description: "Use sccache"
         required: true
-        type: 'boolean'
+        type: "boolean"
         default: false
   workflow_call:
     inputs:
       create_release:
-        description: 'Create a new release for this build'
+        description: "Create a new release for this build"
         required: false
         default: false
-        type: 'boolean'
+        type: "boolean"
       update_version:
-        description: 'Update the version number'
+        description: "Update the version number"
         required: false
         default: false
-        type: 'boolean'
+        type: "boolean"
       update_branch:
-        description: 'Update branch with new version'
+        description: "Update branch with new version"
         required: true
-        default: 'release'
-        type: 'string'
+        default: "release"
+        type: "string"
       use-sccache:
-        description: 'Use sccache'
+        description: "Use sccache"
         required: true
-        type: 'boolean'
+        type: "boolean"
         default: false
 
 jobs:
@@ -142,7 +142,7 @@ jobs:
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Install dependencies
         run: |
@@ -202,7 +202,7 @@ jobs:
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Install dependencies
         run: |
@@ -244,7 +244,7 @@ jobs:
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Setup Git
         run: |
@@ -379,7 +379,7 @@ jobs:
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Install dependencies
         run: |
@@ -565,8 +565,8 @@ jobs:
             ./zen.installer.exe/*
             ./zen.installer-arm64.exe/*
             ./zen.macos-universal.dmg/*
-          tag_name: 'twilight'
-          name: 'Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})'
+          tag_name: "twilight"
+          name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})"
           draft: false
           generate_release_notes: false
           prerelease: true
@@ -584,7 +584,7 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: false
           generate_release_notes: false
-          name: 'Release build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})'
+          name: "Release build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})"
           body_path: release_notes.md
           files: |
             ./zen.source.tar.zst/*
@@ -656,7 +656,7 @@ jobs:
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: '[release]: Update Flatpak manifest'
+          commit_message: "[release]: Update Flatpak manifest"
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
           repository: ./flatpak

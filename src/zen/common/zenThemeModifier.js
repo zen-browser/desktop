@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+"use strict";
 
 /* INCLUDE THIS FILE AS:
  *   <script src="chrome://browser/content/zenThemeModifier.js"></script>
@@ -11,13 +11,13 @@
  */
 {
   const { AppConstants } = ChromeUtils.importESModule(
-    'resource://gre/modules/AppConstants.sys.mjs'
+    "resource://gre/modules/AppConstants.sys.mjs"
   );
 
   const kZenThemePrefsList = [
-    'zen.theme.accent-color',
-    'zen.theme.border-radius',
-    'zen.theme.content-element-separation',
+    "zen.theme.accent-color",
+    "zen.theme.border-radius",
+    "zen.theme.content-element-separation",
   ];
   const kZenMaxElementSeparation = 12;
 
@@ -38,7 +38,7 @@
      * begin listening to changes in preferred color scheme.
      */
     init() {
-      this._inMainBrowserWindow = window.location.href == 'chrome://browser/content/browser.xhtml';
+      this._inMainBrowserWindow = window.location.href == "chrome://browser/content/browser.xhtml";
       this.listenForEvents();
       this.updateAllThemeBasics();
     },
@@ -52,10 +52,10 @@
 
       // Add fullscreen listener to update the theme when going in and out of fullscreen
       const eventsForSeparation = [
-        'ZenViewSplitter:SplitViewDeactivated',
-        'ZenViewSplitter:SplitViewActivated',
-        'fullscreen',
-        'ZenCompactMode:Toggled',
+        "ZenViewSplitter:SplitViewDeactivated",
+        "ZenViewSplitter:SplitViewActivated",
+        "fullscreen",
+        "ZenCompactMode:Toggled",
       ];
       const separationHandler = this.updateElementSeparation.bind(this);
       for (let eventName of eventsForSeparation) {
@@ -63,7 +63,7 @@
       }
 
       window.addEventListener(
-        'unload',
+        "unload",
         () => {
           for (let pref of kZenThemePrefsList) {
             Services.prefs.removeObserver(pref, handleEvent);
@@ -91,27 +91,27 @@
     },
 
     updateBorderRadius() {
-      const borderRadius = Services.prefs.getIntPref('zen.theme.border-radius', -1);
+      const borderRadius = Services.prefs.getIntPref("zen.theme.border-radius", -1);
 
       // -1 is the default value, will use platform-native values
       // otherwise, use the custom value
       if (borderRadius == -1) {
-        if (AppConstants.platform == 'macosx') {
-          const targetRadius = window.matchMedia('(-moz-mac-tahoe-theme)').matches ? 15 : 10;
-          document.documentElement.style.setProperty('--zen-border-radius', targetRadius + 'px');
-        } else if (AppConstants.platform == 'linux') {
+        if (AppConstants.platform == "macosx") {
+          const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)").matches ? 15 : 10;
+          document.documentElement.style.setProperty("--zen-border-radius", targetRadius + "px");
+        } else if (AppConstants.platform == "linux") {
           // Linux uses GTK CSD titlebar radius, default to 8px
           document.documentElement.style.setProperty(
-            '--zen-border-radius',
-            'env(-moz-gtk-csd-titlebar-radius, 8px)'
+            "--zen-border-radius",
+            "env(-moz-gtk-csd-titlebar-radius, 8px)"
           );
         } else {
           // Windows defaults to 8px
-          document.documentElement.style.setProperty('--zen-border-radius', '8px');
+          document.documentElement.style.setProperty("--zen-border-radius", "8px");
         }
       } else {
         // Use the overridden value
-        document.documentElement.style.setProperty('--zen-border-radius', borderRadius + 'px');
+        document.documentElement.style.setProperty("--zen-border-radius", borderRadius + "px");
       }
     },
 
@@ -119,26 +119,26 @@
       const kMinElementSeparation = 0.1; // in px
       let separation = this.elementSeparation;
       if (
-        document.documentElement.hasAttribute('inFullscreen') &&
+        document.documentElement.hasAttribute("inFullscreen") &&
         window.gZenCompactModeManager?.preference &&
-        !document.getElementById('tabbrowser-tabbox')?.hasAttribute('zen-split-view') &&
-        Services.prefs.getBoolPref('zen.view.borderless-fullscreen', true)
+        !document.getElementById("tabbrowser-tabbox")?.hasAttribute("zen-split-view") &&
+        Services.prefs.getBoolPref("zen.view.borderless-fullscreen", true)
       ) {
         separation = 0;
       }
       // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
       separation = Math.max(kMinElementSeparation, separation);
-      document.documentElement.style.setProperty('--zen-element-separation', separation + 'px');
+      document.documentElement.style.setProperty("--zen-element-separation", separation + "px");
       if (separation == kMinElementSeparation) {
-        document.documentElement.setAttribute('zen-no-padding', true);
+        document.documentElement.setAttribute("zen-no-padding", true);
       } else {
-        document.documentElement.removeAttribute('zen-no-padding');
+        document.documentElement.removeAttribute("zen-no-padding");
       }
     },
 
     get elementSeparation() {
       return Math.min(
-        Services.prefs.getIntPref('zen.theme.content-element-separation'),
+        Services.prefs.getIntPref("zen.theme.content-element-separation"),
         kZenMaxElementSeparation
       );
     },
@@ -147,10 +147,12 @@
      * Update the accent color.
      */
     updateAccentColor() {
-      const accentColor = Services.prefs.getStringPref('zen.theme.accent-color');
-      document.documentElement.style.setProperty('--zen-primary-color', accentColor);
+      const accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
+      document.documentElement.style.setProperty("--zen-primary-color", accentColor);
     },
   };
 
-  if (typeof Services !== 'undefined') ZenThemeModifier.init();
+  if (typeof Services !== "undefined") {
+    ZenThemeModifier.init();
+  }
 }

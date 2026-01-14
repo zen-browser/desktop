@@ -1,7 +1,7 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 add_task(async function test_Changed_Pinned() {
   let resolvePromise;
@@ -9,18 +9,18 @@ add_task(async function test_Changed_Pinned() {
     resolvePromise = resolve;
   });
 
-  await BrowserTestUtils.withNewTab({ gBrowser, url: 'https://example.com/1' }, async (browser) => {
+  await BrowserTestUtils.withNewTab({ gBrowser, url: "https://example.com/1" }, async (browser) => {
     const tab = gBrowser.getTabForBrowser(browser);
     gBrowser.pinTab(tab);
 
-    ok(tab.pinned, 'The tab should be pinned after calling gBrowser.pinTab()');
+    ok(tab.pinned, "The tab should be pinned after calling gBrowser.pinTab()");
 
-    BrowserTestUtils.startLoadingURIString(browser, 'https://example.com/2');
-    await BrowserTestUtils.browserLoaded(browser, false, 'https://example.com/2');
+    BrowserTestUtils.startLoadingURIString(browser, "https://example.com/2");
+    await BrowserTestUtils.browserLoaded(browser, false, "https://example.com/2");
     setTimeout(() => {
       ok(
-        tab.hasAttribute('zen-pinned-changed'),
-        'The tab should have a zen-pinned-changed attribute after being pinned'
+        tab.hasAttribute("zen-pinned-changed"),
+        "The tab should have a zen-pinned-changed attribute after being pinned"
       );
       resolvePromise();
     }, 0);

@@ -1,22 +1,22 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-'use strict';
+"use strict";
 
 const { TabGroupTestUtils } = ChromeUtils.importESModule(
-  'resource://testing-common/TabGroupTestUtils.sys.mjs'
+  "resource://testing-common/TabGroupTestUtils.sys.mjs"
 );
 
 function promiseTabLoadEvent(tab, url) {
-  info('Wait tab event: load');
+  info("Wait tab event: load");
 
   function handle(loadedUrl) {
-    if (loadedUrl === 'about:blank' || (url && loadedUrl !== url)) {
+    if (loadedUrl === "about:blank" || (url && loadedUrl !== url)) {
       info(`Skipping spurious load event for ${loadedUrl}`);
       return false;
     }
 
-    info('Tab event received: load');
+    info("Tab event received: load");
     return true;
   }
 
@@ -30,20 +30,20 @@ function promiseTabLoadEvent(tab, url) {
 }
 
 function updateTabContextMenu(tab) {
-  let menu = document.getElementById('tabContextMenu');
+  let menu = document.getElementById("tabContextMenu");
   if (!tab) {
     tab = gBrowser.selectedTab;
   }
-  var evt = new Event('');
+  var evt = new Event("");
   tab.dispatchEvent(evt);
-  menu.openPopup(tab, 'end_after', 0, 0, true, false, evt);
-  is(window.TabContextMenu.contextTab, tab, 'TabContextMenu context is the expected tab');
+  menu.openPopup(tab, "end_after", 0, 0, true, false, evt);
+  is(window.TabContextMenu.contextTab, tab, "TabContextMenu context is the expected tab");
   menu.hidePopup();
 }
 
 function triggerClickOn(target, options) {
-  let promise = BrowserTestUtils.waitForEvent(target, 'click');
-  if (AppConstants.platform == 'macosx') {
+  let promise = BrowserTestUtils.waitForEvent(target, "click");
+  if (AppConstants.platform == "macosx") {
     options = {
       metaKey: options.ctrlKey,
       shiftKey: options.shiftKey,
@@ -54,16 +54,16 @@ function triggerClickOn(target, options) {
 }
 
 function triggerMiddleClickOn(target) {
-  let promise = BrowserTestUtils.waitForEvent(target, 'click');
+  let promise = BrowserTestUtils.waitForEvent(target, "click");
   EventUtils.synthesizeMouseAtCenter(target, { button: 1 });
   return promise;
 }
 
-async function addTab(url = 'http://mochi.test:8888/', params) {
+async function addTab(url = "http://mochi.test:8888/", params) {
   return addTabTo(gBrowser, url, params);
 }
 
-async function addTabTo(targetBrowser, url = 'http://mochi.test:8888/', params = {}) {
+async function addTabTo(targetBrowser, url = "http://mochi.test:8888/", params = {}) {
   params.skipAnimation = true;
   const tab = BrowserTestUtils.addTab(targetBrowser, url, params);
   const browser = targetBrowser.getBrowserForTab(tab);
@@ -73,7 +73,7 @@ async function addTabTo(targetBrowser, url = 'http://mochi.test:8888/', params =
 
 async function addMediaTab() {
   const PAGE =
-    'https://example.com/browser/browser/components/tabbrowser/test/browser/tabs/file_mediaPlayback.html';
+    "https://example.com/browser/browser/components/tabbrowser/test/browser/tabs/file_mediaPlayback.html";
   const tab = BrowserTestUtils.addTab(gBrowser, PAGE, { skipAnimation: true });
   const browser = gBrowser.getBrowserForTab(tab);
   await BrowserTestUtils.browserLoaded(browser);
@@ -95,7 +95,7 @@ async function toggleMuteAudio(tab, expectMuted) {
 }
 
 async function pressIcon(icon) {
-  let tooltip = document.getElementById('tabbrowser-tab-tooltip');
+  let tooltip = document.getElementById("tabbrowser-tab-tooltip");
   await hover_icon(icon, tooltip);
   EventUtils.synthesizeMouseAtCenter(icon, { button: 0 });
   leave_icon(icon);
@@ -103,20 +103,20 @@ async function pressIcon(icon) {
 
 async function wait_for_tab_playing_event(tab, expectPlaying) {
   if (tab.soundPlaying == expectPlaying) {
-    ok(true, 'The tab should ' + (expectPlaying ? '' : 'not ') + 'be playing');
+    ok(true, "The tab should " + (expectPlaying ? "" : "not ") + "be playing");
     return true;
   }
-  return BrowserTestUtils.waitForEvent(tab, 'TabAttrModified', false, (event) => {
-    if (event.detail.changed.includes('soundplaying')) {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
+    if (event.detail.changed.includes("soundplaying")) {
       is(
-        tab.hasAttribute('soundplaying'),
+        tab.hasAttribute("soundplaying"),
         expectPlaying,
-        'The tab should ' + (expectPlaying ? '' : 'not ') + 'be playing'
+        "The tab should " + (expectPlaying ? "" : "not ") + "be playing"
       );
       is(
         tab.soundPlaying,
         expectPlaying,
-        'The tab should ' + (expectPlaying ? '' : 'not ') + 'be playing'
+        "The tab should " + (expectPlaying ? "" : "not ") + "be playing"
       );
       return true;
     }
@@ -126,20 +126,20 @@ async function wait_for_tab_playing_event(tab, expectPlaying) {
 
 async function wait_for_tab_media_blocked_event(tab, expectMediaBlocked) {
   if (tab.activeMediaBlocked == expectMediaBlocked) {
-    ok(true, 'The tab should ' + (expectMediaBlocked ? '' : 'not ') + 'be activemedia-blocked');
+    ok(true, "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked");
     return true;
   }
-  return BrowserTestUtils.waitForEvent(tab, 'TabAttrModified', false, (event) => {
-    if (event.detail.changed.includes('activemedia-blocked')) {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
+    if (event.detail.changed.includes("activemedia-blocked")) {
       is(
-        tab.hasAttribute('activemedia-blocked'),
+        tab.hasAttribute("activemedia-blocked"),
         expectMediaBlocked,
-        'The tab should ' + (expectMediaBlocked ? '' : 'not ') + 'be activemedia-blocked'
+        "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked"
       );
       is(
         tab.activeMediaBlocked,
         expectMediaBlocked,
-        'The tab should ' + (expectMediaBlocked ? '' : 'not ') + 'be activemedia-blocked'
+        "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked"
       );
       return true;
     }
@@ -150,7 +150,7 @@ async function wait_for_tab_media_blocked_event(tab, expectMediaBlocked) {
 async function is_audio_playing(tab) {
   let browser = tab.linkedBrowser;
   let isPlaying = await SpecialPowers.spawn(browser, [], async function () {
-    let audio = content.document.querySelector('audio');
+    let audio = content.document.querySelector("audio");
     return !audio.paused;
   });
   return isPlaying;
@@ -159,7 +159,7 @@ async function is_audio_playing(tab) {
 async function play(tab, expectPlaying = true) {
   let browser = tab.linkedBrowser;
   await SpecialPowers.spawn(browser, [], async function () {
-    let audio = content.document.querySelector('audio');
+    let audio = content.document.querySelector("audio");
     audio.play();
   });
 
@@ -184,24 +184,24 @@ function disable_non_test_mouse(disable) {
 function hover_icon(icon, tooltip) {
   disable_non_test_mouse(true);
 
-  let popupShownPromise = BrowserTestUtils.waitForEvent(tooltip, 'popupshown');
-  EventUtils.synthesizeMouse(icon, 1, 1, { type: 'mouseover' });
-  EventUtils.synthesizeMouse(icon, 2, 2, { type: 'mousemove' });
-  EventUtils.synthesizeMouse(icon, 3, 3, { type: 'mousemove' });
-  EventUtils.synthesizeMouse(icon, 4, 4, { type: 'mousemove' });
+  let popupShownPromise = BrowserTestUtils.waitForEvent(tooltip, "popupshown");
+  EventUtils.synthesizeMouse(icon, 1, 1, { type: "mouseover" });
+  EventUtils.synthesizeMouse(icon, 2, 2, { type: "mousemove" });
+  EventUtils.synthesizeMouse(icon, 3, 3, { type: "mousemove" });
+  EventUtils.synthesizeMouse(icon, 4, 4, { type: "mousemove" });
   return popupShownPromise;
 }
 
 function leave_icon(icon) {
-  EventUtils.synthesizeMouse(icon, 0, 0, { type: 'mouseout' });
+  EventUtils.synthesizeMouse(icon, 0, 0, { type: "mouseout" });
   EventUtils.synthesizeMouseAtCenter(document.documentElement, {
-    type: 'mousemove',
+    type: "mousemove",
   });
   EventUtils.synthesizeMouseAtCenter(document.documentElement, {
-    type: 'mousemove',
+    type: "mousemove",
   });
   EventUtils.synthesizeMouseAtCenter(document.documentElement, {
-    type: 'mousemove',
+    type: "mousemove",
   });
 
   disable_non_test_mouse(false);
@@ -212,27 +212,27 @@ function leave_icon(icon) {
 let everMutedTabs = new WeakSet();
 
 function get_wait_for_mute_promise(tab, expectMuted) {
-  return BrowserTestUtils.waitForEvent(tab, 'TabAttrModified', false, (event) => {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
     if (
-      event.detail.changed.includes('muted') ||
-      event.detail.changed.includes('activemedia-blocked')
+      event.detail.changed.includes("muted") ||
+      event.detail.changed.includes("activemedia-blocked")
     ) {
       is(
-        tab.hasAttribute('muted'),
+        tab.hasAttribute("muted"),
         expectMuted,
-        'The tab should ' + (expectMuted ? '' : 'not ') + 'be muted'
+        "The tab should " + (expectMuted ? "" : "not ") + "be muted"
       );
       is(
         tab.muted,
         expectMuted,
-        'The tab muted property ' + (expectMuted ? '' : 'not ') + 'be true'
+        "The tab muted property " + (expectMuted ? "" : "not ") + "be true"
       );
 
       if (expectMuted || everMutedTabs.has(tab)) {
         everMutedTabs.add(tab);
-        is(tab.muteReason, null, 'The tab should have a null muteReason value');
+        is(tab.muteReason, null, "The tab should have a null muteReason value");
       } else {
-        is(tab.muteReason, undefined, 'The tab should have an undefined muteReason value');
+        is(tab.muteReason, undefined, "The tab should have an undefined muteReason value");
       }
       return true;
     }
@@ -245,7 +245,7 @@ async function test_mute_tab(tab, icon, expectMuted) {
 
   let activeTab = gBrowser.selectedTab;
 
-  let tooltip = document.getElementById('tabbrowser-tab-tooltip');
+  let tooltip = document.getElementById("tabbrowser-tab-tooltip");
 
   await hover_icon(icon, tooltip);
   EventUtils.synthesizeMouseAtCenter(icon, { button: 0 });
@@ -254,7 +254,7 @@ async function test_mute_tab(tab, icon, expectMuted) {
   is(
     gBrowser.selectedTab,
     activeTab,
-    'Clicking on mute should not change the currently selected tab'
+    "Clicking on mute should not change the currently selected tab"
   );
 
   // If the audio is playing, we should check whether clicking on icon affects
@@ -294,19 +294,19 @@ async function dragAndDrop(
     tab1,
     tab2,
     null,
-    copy ? 'copy' : 'move',
+    copy ? "copy" : "move",
     origWindow,
     destWindow,
     event
   );
   // Ensure dnd suppression is cleared.
-  EventUtils.synthesizeMouseAtCenter(tab2, { type: 'mouseup' }, destWindow);
+  EventUtils.synthesizeMouseAtCenter(tab2, { type: "mouseup" }, destWindow);
   if (!copy && destWindow == origWindow) {
     await BrowserTestUtils.waitForCondition(() => {
       return tab1.elementIndex != originalIndex;
-    }, 'Waiting for tab position to be updated');
+    }, "Waiting for tab position to be updated");
   } else if (destWindow != origWindow) {
-    await BrowserTestUtils.waitForCondition(() => tab1.closing, 'Waiting for tab closing');
+    await BrowserTestUtils.waitForCondition(() => tab1.closing, "Waiting for tab closing");
   }
 }
 
@@ -318,12 +318,11 @@ function getUrl(tab) {
  * Takes a xul:browser and makes sure that the remoteTypes for the browser in
  * both the parent and the child processes are the same.
  *
- * @param {xul:browser} browser
- *        A xul:browser.
+ * @param {XULBrowser} browser
  * @param {string} expectedRemoteType
  *        The expected remoteType value for the browser in both the parent
  *        and child processes.
- * @param {optional string} message
+ * @param {string?} message
  *        If provided, shows this string as the message when remoteType values
  *        do not match. If not present, it uses the default message defined
  *        in the function parameters.
@@ -338,14 +337,14 @@ function checkBrowserRemoteType(
     ok(E10SUtils.isWebRemoteType(browser.remoteType), message);
     ok(
       E10SUtils.isWebRemoteType(browser.messageManager.remoteType),
-      'Parent and child process should agree on the remote type.'
+      "Parent and child process should agree on the remote type."
     );
   } else {
     is(browser.remoteType, expectedRemoteType, message);
     is(
       browser.messageManager.remoteType,
       expectedRemoteType,
-      'Parent and child process should agree on the remote type.'
+      "Parent and child process should agree on the remote type."
     );
   }
 }
@@ -367,129 +366,129 @@ function test_url_for_process_types({
   is(
     E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, CHROME_PROCESS),
     chromeResult,
-    'Check URL in chrome process.'
+    "Check URL in chrome process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, WEB_CONTENT_PROCESS),
     webContentResult,
-    'Check URL in web content process.'
+    "Check URL in web content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, PRIVILEGEDABOUT_CONTENT_PROCESS),
     privilegedAboutContentResult,
-    'Check URL in privileged about content process.'
+    "Check URL in privileged about content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, PRIVILEGEDMOZILLA_CONTENT_PROCESS),
     privilegedMozillaContentResult,
-    'Check URL in privileged mozilla content process.'
+    "Check URL in privileged mozilla content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, EXTENSION_PROCESS),
     extensionProcessResult,
-    'Check URL in extension process.'
+    "Check URL in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '#foo', /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, CHROME_PROCESS),
     chromeResult,
-    'Check URL with ref in chrome process.'
+    "Check URL with ref in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '#foo', /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, WEB_CONTENT_PROCESS),
     webContentResult,
-    'Check URL with ref in web content process.'
+    "Check URL with ref in web content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '#foo',
+      url + "#foo",
       /* fission */ false,
       PRIVILEGEDABOUT_CONTENT_PROCESS
     ),
     privilegedAboutContentResult,
-    'Check URL with ref in privileged about content process.'
+    "Check URL with ref in privileged about content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '#foo',
+      url + "#foo",
       /* fission */ false,
       PRIVILEGEDMOZILLA_CONTENT_PROCESS
     ),
     privilegedMozillaContentResult,
-    'Check URL with ref in privileged mozilla content process.'
+    "Check URL with ref in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '#foo', /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, EXTENSION_PROCESS),
     extensionProcessResult,
-    'Check URL with ref in extension process.'
+    "Check URL with ref in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo', /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, CHROME_PROCESS),
     chromeResult,
-    'Check URL with query in chrome process.'
+    "Check URL with query in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo', /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, WEB_CONTENT_PROCESS),
     webContentResult,
-    'Check URL with query in web content process.'
+    "Check URL with query in web content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '?foo',
+      url + "?foo",
       /* fission */ false,
       PRIVILEGEDABOUT_CONTENT_PROCESS
     ),
     privilegedAboutContentResult,
-    'Check URL with query in privileged about content process.'
+    "Check URL with query in privileged about content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '?foo',
+      url + "?foo",
       /* fission */ false,
       PRIVILEGEDMOZILLA_CONTENT_PROCESS
     ),
     privilegedMozillaContentResult,
-    'Check URL with query in privileged mozilla content process.'
+    "Check URL with query in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo', /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, EXTENSION_PROCESS),
     extensionProcessResult,
-    'Check URL with query in extension process.'
+    "Check URL with query in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo#bar', /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, CHROME_PROCESS),
     chromeResult,
-    'Check URL with query and ref in chrome process.'
+    "Check URL with query and ref in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo#bar', /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, WEB_CONTENT_PROCESS),
     webContentResult,
-    'Check URL with query and ref in web content process.'
+    "Check URL with query and ref in web content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '?foo#bar',
+      url + "?foo#bar",
       /* fission */ false,
       PRIVILEGEDABOUT_CONTENT_PROCESS
     ),
     privilegedAboutContentResult,
-    'Check URL with query and ref in privileged about content process.'
+    "Check URL with query and ref in privileged about content process."
   );
   is(
     E10SUtils.canLoadURIInRemoteType(
-      url + '?foo#bar',
+      url + "?foo#bar",
       /* fission */ false,
       PRIVILEGEDMOZILLA_CONTENT_PROCESS
     ),
     privilegedMozillaContentResult,
-    'Check URL with query and ref in privileged mozilla content process.'
+    "Check URL with query and ref in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + '?foo#bar', /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, EXTENSION_PROCESS),
     extensionProcessResult,
-    'Check URL with query and ref in extension process.'
+    "Check URL with query and ref in extension process."
   );
 }
 
@@ -505,8 +504,8 @@ function fileURL(filename) {
 /*
  * Get a http URL for the local file name.
  */
-function httpURL(filename, host = 'https://example.com/') {
-  let root = getRootDirectory(gTestPath).replace('chrome://mochitests/content/', host);
+function httpURL(filename, host = "https://example.com/") {
+  let root = getRootDirectory(gTestPath).replace("chrome://mochitests/content/", host);
   return root + filename;
 }
 
@@ -532,11 +531,11 @@ async function removeTabGroup(group) {
  */
 async function getContextMenu(triggerNode, contextMenuId) {
   let win = triggerNode.ownerGlobal;
-  triggerNode.scrollIntoView({ behavior: 'instant' });
+  triggerNode.scrollIntoView({ behavior: "instant" });
   const contextMenu = win.document.getElementById(contextMenuId);
-  const contextMenuShown = BrowserTestUtils.waitForPopupEvent(contextMenu, 'shown');
+  const contextMenuShown = BrowserTestUtils.waitForPopupEvent(contextMenu, "shown");
 
-  EventUtils.synthesizeMouseAtCenter(triggerNode, { type: 'contextmenu', button: 2 }, win);
+  EventUtils.synthesizeMouseAtCenter(triggerNode, { type: "contextmenu", button: 2 }, win);
   await contextMenuShown;
   return contextMenu;
 }
@@ -546,7 +545,7 @@ async function getContextMenu(triggerNode, contextMenuId) {
  * @returns {Promise<void>}
  */
 async function closeContextMenu(contextMenu) {
-  let menuHidden = BrowserTestUtils.waitForPopupEvent(contextMenu, 'hidden');
+  let menuHidden = BrowserTestUtils.waitForPopupEvent(contextMenu, "hidden");
   contextMenu.hidePopup();
   await menuHidden;
 }

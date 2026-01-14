@@ -978,17 +978,13 @@
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
-      if (!gZenPinnedTabManager.canEssentialBeAdded(draggedTab)) {
-        return;
-      }
-      this.clearDragOverVisuals();
       if (
-        !draggedTab.hasAttribute("zen-essential") &&
-        gBrowser._numZenEssentials >= gZenPinnedTabManager.maxEssentialTabs
+        !gZenPinnedTabManager.canEssentialBeAdded(draggedTab) &&
+        !draggedTab.hasAttribute("zen-essential")
       ) {
         return;
       }
-      let essentialsPromoStatus = this.createZenEssentialsPromo(draggedTab?.userContextId);
+      this.clearDragOverVisuals();
       switch (essentialsPromoStatus) {
         case "shown":
         case "created":

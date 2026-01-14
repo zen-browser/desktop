@@ -2023,13 +2023,22 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     this._sessionRestoring = true;
+    let groups = [];
     // We can just get the tab group with document.getElementById(group.groupId)
     // and add the tabs to it
     for (const group of data) {
       const groupElement = document.getElementById(group.groupId);
       if (groupElement) {
         const tabs = groupElement.tabs;
+        groups.push(groupElement);
         this.splitTabs(tabs, group.gridType);
+      }
+    }
+    // See https://github.com/zen-browser/desktop/issues/11887, some groups
+    // may end up empty after restoring, so we need to remove them
+    for (const groupElement of groups) {
+      if (groupElement.tabs.length === 0) {
+        groupElement.remove();
       }
     }
     delete this._sessionRestoring;

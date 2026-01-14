@@ -77,31 +77,6 @@ groupbox h2 {
   padding-inline: 20px !important;
 }
 
-#categories > .category[selected]::before {
-  content: "";
-  display: block;
-  height: 70%;
-  width: 5px;
-  background-color: var(--zen-primary-color);
-  position: absolute;
-  left: -3px;
-  border-radius: 5px;
-}
-
-#languagesGroup::before {
-  content: "";
-  display: block;
-  height: 1px;
-  background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  margin: 10px 0;
-  transform: translateY(-50%);
-  position: absolute;
-  top: -5px;
-  width: calc(100% - 40px);
-  margin-left: 20px;
-  left: 0;
-}
-
 .textbox-search-sign {
   margin-right: 15px;
 }

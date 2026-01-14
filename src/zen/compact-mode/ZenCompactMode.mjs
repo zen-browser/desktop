@@ -463,31 +463,27 @@ window.gZenCompactModeManager = {
               this.sidebar.removeAttribute("animate");
               document.documentElement.removeAttribute("zen-compact-animating");
 
-              setTimeout(() => {
-                this.getAndApplySidebarWidth({});
-                this._ignoreNextResize = true;
-
+              if (this._ignoreNextHover) {
                 setTimeout(() => {
-                  if (this._ignoreNextHover) {
-                    setTimeout(() => {
-                      delete this._ignoreNextHover;
-                    });
-                  }
-
-                  this.sidebar.style.removeProperty("margin-right");
-                  this.sidebar.style.removeProperty("margin-left");
-                  this.sidebar.style.removeProperty("transition");
-                  this.sidebar.style.removeProperty("transform");
-                  this.sidebar.style.removeProperty("point-events");
-
-                  titlebar.style.removeProperty("visibility");
-                  titlebar.style.removeProperty("transition");
-
-                  gURLBar.style.removeProperty("visibility");
-
-                  resolve();
+                  delete this._ignoreNextHover;
                 });
-              });
+              }
+
+              this.getAndApplySidebarWidth({});
+              this._ignoreNextResize = true;
+
+              this.sidebar.style.removeProperty("margin-right");
+              this.sidebar.style.removeProperty("margin-left");
+              this.sidebar.style.removeProperty("transition");
+              this.sidebar.style.removeProperty("transform");
+              this.sidebar.style.removeProperty("point-events");
+
+              titlebar.style.removeProperty("visibility");
+              titlebar.style.removeProperty("transition");
+
+              gURLBar.style.removeProperty("visibility");
+
+              resolve();
             });
         } else if (canHideSidebar && !isCompactMode) {
           // Shouldn't be ever true, but just in case

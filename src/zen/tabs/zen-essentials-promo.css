@@ -15,6 +15,9 @@ zen-essentials-promo {
   margin: 2px;
   text-align: center;
   box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+  transition:
+    background 0.1s,
+    outline 0.1s;
 
   &:not([dragover="true"]) {
     background: color-mix(in srgb, var(--zen-primary-color) 60%, transparent);

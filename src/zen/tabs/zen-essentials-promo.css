@@ -14,10 +14,11 @@ zen-essentials-promo {
   flex-direction: column;
   margin: 2px;
   text-align: center;
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
 
   &:not([dragover="true"]) {
     background: color-mix(in srgb, var(--zen-primary-color) 60%, transparent);
-    outline: 1px dashed var(--zen-primary-color);
+    outline: 1px dashed currentColor;
   }
 
   :root:not([zen-sidebar-expanded="true"]) & {
@@ -28,6 +29,7 @@ zen-essentials-promo {
     -moz-context-properties: fill;
     fill: currentColor;
     width: 18px;
+    margin-bottom: 4px;
   }
 
   & > * {
@@ -42,5 +44,6 @@ zen-essentials-promo {
   & .zen-essentials-promo-sublabel {
     opacity: 0.8;
     font-size: smaller;
+    margin: 0;
   }
 }

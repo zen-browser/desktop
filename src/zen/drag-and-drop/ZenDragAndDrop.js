@@ -142,7 +142,7 @@
         }
         // Apply a transform translate to the tab in order to center it within the drag image
         // based on the event coordinates.
-        if (movingTabs.length === 1) {
+        if (!movingTabs.length > 1) {
           tabClone.style.transform = `translate(${(tabRect.width - dragData.offsetX) / 2}px, ${(tabRect.height - dragData.offsetY) / 2}px)`;
         }
         tabClone.setAttribute("drag-image", "true");
@@ -864,7 +864,9 @@
         if (event.target.classList.contains("zen-workspace-empty-space")) {
           dropElement = this._tabbrowserTabs.ariaFocusableItems.at(-1);
           // Only if there are no normal tabs to drop after
-          showIndicatorUnderNewTabButton = !tabs.some((tab) => !(tab.group || tab).pinned);
+          showIndicatorUnderNewTabButton = !tabs.some(
+            (tab) => !(tab.group || tab).pinned || tab.hasAttribute("zen-essential")
+          );
         } else {
           const numEssentials = gBrowser._numZenEssentials;
           const numPinned = gBrowser.pinnedTabCount - numEssentials;
@@ -976,6 +978,10 @@
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
+      if (!gZenPinnedTabManager.canEssentialBeAdded(draggedTab)) {
+        return;
+      }
+      let essentialsPromoStatus = this.createZenEssentialsPromo();
       this.clearDragOverVisuals();
       if (
         !draggedTab.hasAttribute("zen-essential") &&
@@ -1089,6 +1095,8 @@
         lastTabInRow.getBoundingClientRect().width -
         (lastMovingTabScreenX + tabWidth);
       let lastBoundY = lastTab.screenY - lastMovingTabScreenY;
+      lastBoundX += 4;
+      firstBoundY += 6;
       translateX = Math.min(Math.max(translateX, firstBoundX), lastBoundX);
       translateY = Math.min(Math.max(translateY, firstBoundY), lastBoundY);
 

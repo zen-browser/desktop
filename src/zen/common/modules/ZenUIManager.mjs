@@ -1397,7 +1397,7 @@ window.gZenVerticalTabsManager = {
     ) {
       return;
     }
-    if (isTab && !target.closest(".tab-label-container")) {
+    if (isTab && !target.closest(".tab-label-container") && event.type === "dblclick") {
       return;
     }
     this._tabEdited =

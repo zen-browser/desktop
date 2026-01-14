@@ -2057,7 +2057,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       const deserializeNode = (nodeData) => {
         if (nodeData.type === "leaf") {
           const tab = document.getElementById(nodeData.tabId);
-          if (!tab) return null;
+          if (!tab) {
+            return null;
+          }
           return new nsSplitLeafNode(tab, nodeData.sizeInParent);
         }
 

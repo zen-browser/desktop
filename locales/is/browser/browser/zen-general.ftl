@@ -58,6 +58,8 @@ zen-site-data-settings = Stillingar
 zen-generic-manage = Stýra
 zen-generic-more = Meira
 zen-generic-next = Næsta
+zen-essentials-promo-label = Bæta við aðalflipa
+zen-essentials-promo-sublabel = Hafðu eftirlætisflipana þína við hendina
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Leyft
 zen-site-data-setting-block = Lokað á

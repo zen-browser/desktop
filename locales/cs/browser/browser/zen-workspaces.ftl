@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = Prostory
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Prostory
 zen-panel-ui-workspaces-create = 
     .label = Vytvořit prostor
 zen-panel-ui-folder-create = 
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Vyčistit
     .tooltiptext = Zavřít všechny nepřipnuté panely
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Další prostor
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Předchozí prostor

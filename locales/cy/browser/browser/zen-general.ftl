@@ -60,6 +60,8 @@ zen-site-data-settings = Gosodiadau
 zen-generic-manage = Rheoli
 zen-generic-more = Rhagor
 zen-generic-next = Nesaf
+zen-essentials-promo-label = Ychwanegu at Hanfodion
+zen-essentials-promo-sublabel = Cadwch eich hoff dabiau dim ond un clic i ffwrdd
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Caniatawyd
 zen-site-data-setting-block = Rhwystrwyd

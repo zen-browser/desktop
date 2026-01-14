@@ -22,6 +22,7 @@ XPCOMUtils.defineLazyPreferenceGetter(lazy, "gShouldLog", "zen.window-sync.log",
 
 const OBSERVING = ["browser-window-before-show"];
 const INSTANT_EVENTS = ["SSWindowClosing"];
+const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 const EVENTS = [
   "TabOpen",
   "TabClose",
@@ -163,6 +164,10 @@ class nsZenWindowSync {
     ) {
       this.log("Not syncing new window due to unsynced argument or existing synced windows");
       aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
+      aWindow.gZenWindowSync = this;
+      for (let eventName of UNSYNCED_WINDOW_EVENTS) {
+        aWindow.addEventListener(eventName, this, true);
+      }
       return;
     }
     aWindow.gZenWindowSync = this;
@@ -252,6 +257,13 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.ownerGlobal;
+    const isUnsyncedWindow = window.document.documentElement.hasAttribute("zen-unsynced-window");
+    if (isUnsyncedWindow) {
+      if (UNSYNCED_WINDOW_EVENTS.includes(aEvent.type)) {
+        this.#handleNextEvent(aEvent);
+        return;
+      }
+    }
     if (
       !window.gZenStartup.isReady ||
       window.gZenWorkspaces?.privateWindowOrDisabled ||
@@ -944,6 +956,16 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
+    const isUnsyncedWindow = window.document.documentElement.hasAttribute("zen-unsynced-window");
+
+    if (isUnsyncedWindow) {
+      if (!tab.id) {
+        tab.id = this.#newTabSyncId;
+        lazy.TabStateFlusher.flush(tab.linkedBrowser);
+      }
+      return;
+    }
+
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;

@@ -60,6 +60,8 @@ zen-site-data-settings = 設定
 zen-generic-manage = 管理
 zen-generic-more = その他
 zen-generic-next = 次へ
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 許可済み
 zen-site-data-setting-block = ブロック済み

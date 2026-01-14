@@ -58,6 +58,8 @@ zen-site-data-settings = 设置
 zen-generic-manage = 管理
 zen-generic-more = 更多
 zen-generic-next = 下一步
+zen-essentials-promo-label = 添加到常驻标签页
+zen-essentials-promo-sublabel = 让您常用的标签页触手可及
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 允许
 zen-site-data-setting-block = 阻止

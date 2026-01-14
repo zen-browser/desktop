@@ -171,7 +171,6 @@
   cursor: pointer;
   appearance: none;
   outline: none;
-  color: var(--button-primary-bgcolor);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 

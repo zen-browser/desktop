@@ -8,7 +8,7 @@ tab-context-zen-reset-pinned-tab =
     .label = Återställ Fäst flik
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Lägg till i Essentials
+    .label = Lägg till Essentials
     .accesskey = E
 tab-context-zen-add-essential-badge = { $num } / { $max } platser fyllda
 tab-context-zen-remove-essential = 
@@ -60,6 +60,8 @@ zen-site-data-settings = Inställningar
 zen-generic-manage = Hantera
 zen-generic-more = Mer
 zen-generic-next = Nästa
+zen-essentials-promo-label = Lägg till Essentials
+zen-essentials-promo-sublabel = Behåll dina favoritflikar bara ett klick bort
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Tillåtet
 zen-site-data-setting-block = Blockerade

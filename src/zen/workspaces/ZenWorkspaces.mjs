@@ -2954,15 +2954,6 @@ class nsZenWorkspaces {
     return this.pinnedTabsContainer.children.length - 1;
   }
 
-  get allWorkspaceTabs() {
-    const currentWorkspace = this.activeWorkspace;
-    return this.allStoredTabs.filter(
-      (tab) =>
-        tab.hasAttribute("zen-essential") ||
-        tab.getAttribute("zen-workspace-id") === currentWorkspace
-    );
-  }
-
   reorganizeTabsAfterWelcome() {
     const children = gBrowser.tabContainer.arrowScrollbox.children;
     const remainingTabs = Array.from(children).filter((child) => gBrowser.isTab(child));

@@ -9,6 +9,11 @@
     display: none !important;
   }
 
+  #zen-dragover-background {
+    width: calc(100% - var(--zen-toolbox-padding) * 2 - 5px);
+    left: unset;
+  }
+
   #zen-tabbox-wrapper {
     /* Remove extra 1px of margine we have to add to the tabbox */
     margin-left: var(--zen-element-separation) !important;

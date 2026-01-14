@@ -133,6 +133,21 @@ export class nsZenSessionManager {
             }
           : null,
       }));
+      rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
+      data.pins = rows.map((row) => ({
+        uuid: row.getResultByName("uuid"),
+        title: row.getResultByName("title"),
+        url: row.getResultByName("url"),
+        containerTabId: row.getResultByName("container_id"),
+        workspaceUuid: row.getResultByName("workspace_uuid"),
+        position: row.getResultByName("position"),
+        isEssential: Boolean(row.getResultByName("is_essential")),
+        isGroup: Boolean(row.getResultByName("is_group")),
+        parentUuid: row.getResultByName("folder_parent_uuid"),
+        editedTitle: Boolean(row.getResultByName("edited_title")),
+        folderIcon: row.getResultByName("folder_icon"),
+        isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
+      }));
       this._migrationData = data;
     } catch {
       /* ignore errors during migration */
@@ -188,35 +203,7 @@ export class nsZenSessionManager {
     // object will always be empty after migration because we haven't
     // gotten the opportunity to save the session yet.
     if (this._shouldRunMigration) {
-      this.log("Restoring tabs from Places DB after migration");
-      if (!this.#sidebar.spaces?.length) {
-        this.#sidebar = {
-          ...this.#sidebar,
-          spaces: this._migrationData?.spaces || [],
-        };
-      }
-      // There might be cases where there are no windows in the
-      // initial state, for example if the user had 'restore previous
-      // session' disabled before migration. In that case, we try
-      // to restore the last closed normal window.
-      if (!initialState?.windows?.length) {
-        let normalClosedWindow = initialState?._closedWindows?.find(
-          (win) => !win.isPopup && !win.isTaskbarTab && !win.isPrivate
-        );
-        if (normalClosedWindow) {
-          initialState.windows = [Cu.cloneInto(normalClosedWindow, {})];
-          this.log("Restoring tabs from last closed normal window");
-        }
-      }
-      for (const winData of initialState?.windows || []) {
-        winData.spaces = this._migrationData?.spaces || [];
-      }
-      // Save the state to the sidebar object so that it gets written
-      // to the session file.
-      this.saveState(initialState);
-      delete this._migrationData;
-      delete this._shouldRunMigration;
-      return;
+      this.#runStateMigration(initialState);
     }
     // If there are no windows, we create an empty one. By default,
     // firefox would create simply a new empty window, but we want
@@ -267,6 +254,55 @@ export class nsZenSessionManager {
 
   set #sidebar(data) {
     this.#sidebarObject.data = data;
+  }
+
+  /**
+   * Runs the state migration to restore spaces and pinned tabs
+   * from the Places database into the initial session state.
+   *
+   * @param {object} initialState
+   *        The initial session state read from the session file.
+   */
+  #runStateMigration(initialState) {
+    this.log("Restoring tabs from Places DB after migration");
+    if (!this.#sidebar.spaces?.length) {
+      this.#sidebar = {
+        ...this.#sidebar,
+        spaces: this._migrationData?.spaces || [],
+      };
+    }
+    // There might be cases where there are no windows in the
+    // initial state, for example if the user had 'restore previous
+    // session' disabled before migration. In that case, we try
+    // to restore the last closed normal window.
+    if (!initialState?.windows?.length) {
+      let normalClosedWindow = initialState?._closedWindows?.find(
+        (win) => !win.isPopup && !win.isTaskbarTab && !win.isPrivate
+      );
+      if (normalClosedWindow) {
+        initialState.windows = [Cu.cloneInto(normalClosedWindow, {})];
+        this.log("Restoring tabs from last closed normal window");
+      }
+    }
+    for (const winData of initialState?.windows || []) {
+      winData.spaces = this._migrationData?.spaces || [];
+      if (winData.tabs) {
+        for (const tabData of winData.tabs) {
+          let storeId = tabData.zenSyncId || tabData.zenPinnedId;
+          const pinData = this._migrationData?.pins?.find((pin) => pin.uuid === storeId);
+          // We need to migrate the static label from the pin data as this information
+          // was not stored in the session file before.
+          if (pinData) {
+            tabData.zenStaticLabel = pinData.editedTitle ? pinData.title : undefined;
+          }
+        }
+      }
+    }
+    // Save the state to the sidebar object so that it gets written
+    // to the session file.
+    this.saveState(initialState);
+    delete this._migrationData;
+    delete this._shouldRunMigration;
   }
 
   /**

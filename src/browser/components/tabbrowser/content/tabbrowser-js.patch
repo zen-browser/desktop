@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..64b6fc581be1791ef9a750e03ab9a91c92325be3 100644
+index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..452879acc73898eb28cabae66d2d5692e301f853 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -398,6 +398,7 @@
@@ -191,7 +191,7 @@ index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..64b6fc581be1791ef9a750e03ab9a91c
 +      if (!aTab._zenContentsVisible && !aTab._zenChangeLabelFlag && !aTab._labelIsInitialTitle && !gZenWorkspaces.privateWindowOrDisabled) {
 +        return false;
 +      }
-+      aLabel = aTab.zenStaticLabel || aLabel;
++      aLabel = (typeof aTab.zenStaticLabel === "string" && aTab.zenStaticLabel) ? aTab.zenStaticLabel : aLabel;
 +      gZenPinnedTabManager.onTabLabelChanged(aTab);
        if (!aLabel || aLabel.includes("about:reader?")) {
          return false;

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* eslint-disable consistent-return */
+
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
@@ -422,6 +424,10 @@ class nsZenWindowSync {
     const isGroup = gBrowser.isTabGroup(aOriginalItem);
     const isTab = !isGroup;
 
+    if (aOriginalItem.hasAttribute("zen-glance-tab")) {
+      return;
+    }
+
     if (isTab) {
       if (originalIsEssential !== targetIsEssential) {
         if (originalIsEssential) {
@@ -796,7 +802,11 @@ class nsZenWindowSync {
     if (aWindow.gBrowser.selectedTab === this.#lastSelectedTab && !ignoreSameTab) {
       return;
     }
-    if (aPreviousTab?._zenContentsVisible) {
+    let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
+    let activeTabs = activeBrowsers.map((browser) => aWindow.gBrowser.getTabForBrowser(browser));
+    // Ignore previous tabs that are still "active". These scenarios could happen for example,
+    // when selecting on a split view tab that was already active.
+    if (aPreviousTab?._zenContentsVisible && !activeTabs.includes(aPreviousTab)) {
       const otherTabToShow = this.#getActiveTabFromOtherWindows(
         aWindow,
         aPreviousTab.id,
@@ -809,8 +819,7 @@ class nsZenWindowSync {
       }
     }
     let promises = [];
-    for (const browserView of aWindow.gBrowser.selectedBrowsers) {
-      const selectedTab = aWindow.gBrowser.getTabForBrowser(browserView);
+    for (const selectedTab of activeTabs) {
       if (selectedTab._zenContentsVisible || selectedTab.hasAttribute("zen-empty-tab")) {
         continue;
       }
@@ -964,7 +973,7 @@ class nsZenWindowSync {
       // No need to sync icon changes for tabs that aren't active in this window.
       return;
     }
-    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
   }
 
   on_ZenTabLabelChanged(aEvent) {
@@ -972,7 +981,7 @@ class nsZenWindowSync {
       // No need to sync label changes for tabs that aren't active in this window.
       return;
     }
-    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
   }
 
   on_TabMove(aEvent) {

@@ -396,8 +396,7 @@
   content: url("arrow-right.svg") !important;
 }
 
-#PlacesChevron,
-#urlbar-go-button {
+#PlacesChevron {
   list-style-image: url("arrow-right.svg") !important;
 }
 

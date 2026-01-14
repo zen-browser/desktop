@@ -1060,7 +1060,7 @@ class nsZenKeyboardShortcutsVersioner {
       data.push(
         new KeyShortcut(
           "zen-new-empty-split-view",
-          AppConstants.platform == "macosx" ? "+" : "*",
+          "*",
           "",
           ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
           nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
@@ -1102,7 +1102,7 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
 
-    if (version < 14) {
+    if (version < 15) {
       // Migrate from version 13 to 14
       // Add shortcut to open a new unsynced window: Default accelt+option+N (Ctrl+Alt+N on non-macOS)
       data.push(
@@ -1116,6 +1116,15 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-new-unsynced-window-shortcut"
         )
       );
+      // Also, change the default for new empty split from + to * on mac
+      for (let shortcut of data) {
+        if (shortcut.getID() == "zen-new-empty-split-view" && AppConstants.platform == "macosx") {
+          if (shortcut.getKeyName() == "+") {
+            shortcut.setNewBinding("*");
+          }
+          break;
+        }
+      }
     }
 
     return data;

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* eslint-disable consistent-return */
+
 const lazy = {};
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -369,6 +371,7 @@ window.gZenCompactModeManager = {
       delete gZenVerticalTabsManager._hadSidebarCollapse;
       this.sidebar.style.setProperty("--zen-sidebar-width", `${sidebarWidth}px`);
     }
+    return sidebarWidth;
   },
 
   get canHideSidebar() {
@@ -460,31 +463,27 @@ window.gZenCompactModeManager = {
               this.sidebar.removeAttribute("animate");
               document.documentElement.removeAttribute("zen-compact-animating");
 
-              setTimeout(() => {
-                this.getAndApplySidebarWidth({});
-                this._ignoreNextResize = true;
-
+              if (this._ignoreNextHover) {
                 setTimeout(() => {
-                  if (this._ignoreNextHover) {
-                    setTimeout(() => {
-                      delete this._ignoreNextHover;
-                    });
-                  }
-
-                  this.sidebar.style.removeProperty("margin-right");
-                  this.sidebar.style.removeProperty("margin-left");
-                  this.sidebar.style.removeProperty("transition");
-                  this.sidebar.style.removeProperty("transform");
-                  this.sidebar.style.removeProperty("point-events");
-
-                  titlebar.style.removeProperty("visibility");
-                  titlebar.style.removeProperty("transition");
-
-                  gURLBar.style.removeProperty("visibility");
-
-                  resolve();
+                  delete this._ignoreNextHover;
                 });
-              });
+              }
+
+              this.getAndApplySidebarWidth({});
+              this._ignoreNextResize = true;
+
+              this.sidebar.style.removeProperty("margin-right");
+              this.sidebar.style.removeProperty("margin-left");
+              this.sidebar.style.removeProperty("transition");
+              this.sidebar.style.removeProperty("transform");
+              this.sidebar.style.removeProperty("point-events");
+
+              titlebar.style.removeProperty("visibility");
+              titlebar.style.removeProperty("transition");
+
+              gURLBar.style.removeProperty("visibility");
+
+              resolve();
             });
         } else if (canHideSidebar && !isCompactMode) {
           // Shouldn't be ever true, but just in case

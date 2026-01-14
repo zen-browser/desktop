@@ -58,6 +58,8 @@ zen-site-data-settings = Thiết lập
 zen-generic-manage = Quản lý
 zen-generic-more = Thêm
 zen-generic-next = Tiếp
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Đã cho phép
 zen-site-data-setting-block = Đã chặn

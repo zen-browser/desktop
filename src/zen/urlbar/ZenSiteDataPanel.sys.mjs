@@ -255,7 +255,13 @@ export class nsZenSiteDataPanel {
     if (gIdentityHandler._pageExtensionPolicy) {
       this.document.l10n.setAttributes(button, "zen-site-data-security-info-extension");
       identity = "extension";
-    } else if (gIdentityHandler._uriHasHost && gIdentityHandler._isSecureConnection) {
+    } else if (
+      gIdentityHandler._uriHasHost &&
+      gIdentityHandler._isSecureConnection &&
+      !gIdentityHandler._isCertUserOverridden &&
+      !gIdentityHandler._isCertErrorPage &&
+      !gIdentityHandler._isAboutHttpsOnlyErrorPage
+    ) {
       this.document.l10n.setAttributes(button, "zen-site-data-security-info-secure");
       identity = "secure";
     } else {

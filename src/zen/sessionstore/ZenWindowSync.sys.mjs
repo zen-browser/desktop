@@ -24,7 +24,6 @@ const OBSERVING = ["browser-window-before-show"];
 const INSTANT_EVENTS = ["SSWindowClosing"];
 const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 const EVENTS = [
-  "TabOpen",
   "TabClose",
 
   "ZenTabIconChanged",
@@ -48,6 +47,7 @@ const EVENTS = [
 
   "focus",
   ...INSTANT_EVENTS,
+  ...UNSYNCED_WINDOW_EVENTS,
 ];
 
 // Flags acting as an enum for sync types.
@@ -164,7 +164,6 @@ class nsZenWindowSync {
     ) {
       this.log("Not syncing new window due to unsynced argument or existing synced windows");
       aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
-      aWindow.gZenWindowSync = this;
       for (let eventName of UNSYNCED_WINDOW_EVENTS) {
         aWindow.addEventListener(eventName, this, true);
       }
@@ -257,16 +256,9 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.ownerGlobal;
-    const isUnsyncedWindow = window.document.documentElement.hasAttribute("zen-unsynced-window");
-    if (isUnsyncedWindow) {
-      if (UNSYNCED_WINDOW_EVENTS.includes(aEvent.type)) {
-        this.#handleNextEvent(aEvent);
-        return;
-      }
-    }
     if (
       !window.gZenStartup.isReady ||
-      window.gZenWorkspaces?.privateWindowOrDisabled ||
+      !window.gZenWorkspaces?.shouldHaveWorkspaces ||
       window._zenClosingWindow
     ) {
       return;
@@ -958,20 +950,15 @@ class nsZenWindowSync {
     const window = tab.ownerGlobal;
     const isUnsyncedWindow = window.document.documentElement.hasAttribute("zen-unsynced-window");
 
-    if (isUnsyncedWindow) {
-      if (!tab.id) {
-        tab.id = this.#newTabSyncId;
-        lazy.TabStateFlusher.flush(tab.linkedBrowser);
-      }
-      return;
-    }
-
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
     }
     tab._zenContentsVisible = true;
     tab.id = this.#newTabSyncId;
+    if (isUnsyncedWindow) {
+      return;
+    }
     this.#runOnAllWindows(window, (win) => {
       const newTab = win.gBrowser.addTrustedTab("about:blank", {
         animate: true,

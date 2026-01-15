@@ -706,6 +706,10 @@
       if (isTabGroupLabel(draggedTab)) {
         draggedTab = draggedTab.group;
       }
+      for (let item of this._tabbrowserTabs.ariaFocusableItems) {
+        item = elementToMove(item);
+        item.style.transform = "";
+      }
       let animations = [];
       try {
         if (
@@ -722,10 +726,6 @@
           return;
         }
         this.#isAnimatingTabMove = true;
-        for (let item of this._tabbrowserTabs.ariaFocusableItems) {
-          item = elementToMove(item);
-          item.style.transform = "";
-        }
         const animateElement = (ele, translateY) => {
           ele.style.transform = `translateY(${translateY}px)`;
           let animateInternal = (resolve) => {
@@ -749,9 +749,21 @@
         };
         const items = this._tabbrowserTabs.ariaFocusableItems;
         let rect = window.windowUtils.getBoundsWithoutFlushing(draggedTab);
+        let focusableDropElement = gBrowser.isTabGroup(dropElement)
+          ? dropElement.labelElement
+          : dropElement;
+        let focusableDraggedTab = gBrowser.isTabGroup(draggedTab)
+          ? draggedTab.labelElement
+          : draggedTab;
         let tabsInBetween = [];
-        let startIndex = Math.min(draggedTab.elementIndex, dropElement.elementIndex + !dropBefore);
-        let endIndex = Math.max(draggedTab.elementIndex, dropElement.elementIndex - dropBefore);
+        let startIndex = Math.min(
+          focusableDraggedTab.elementIndex,
+          focusableDropElement.elementIndex + !dropBefore
+        );
+        let endIndex = Math.max(
+          focusableDraggedTab.elementIndex,
+          focusableDropElement.elementIndex - dropBefore
+        );
         for (let i = startIndex; i <= endIndex; i++) {
           let item = items[i];
           if (!movingTabs.includes(item)) {
@@ -760,7 +772,9 @@
         }
         let extraTranslate = 0;
         let translateY =
-          draggedTab.elementIndex > dropElement.elementIndex ? -rect.height : rect.height;
+          focusableDraggedTab.elementIndex > focusableDropElement.elementIndex
+            ? -rect.height
+            : rect.height;
         translateY *= movingTabs.length;
         if (draggedTab.pinned != dropElement.pinned) {
           const shiftableItems = this.#dragShiftableItems;
@@ -777,11 +791,12 @@
           animateElement(elementToMove(item), translateY);
         }
         let draggedTabTranslateY =
-          draggedTab.elementIndex > dropElement.elementIndex
+          focusableDraggedTab.elementIndex > focusableDropElement.elementIndex
             ? rect.height * tabsInBetween.length
             : -rect.height * tabsInBetween.length;
         draggedTabTranslateY +=
-          extraTranslate * (draggedTab.elementIndex > dropElement.elementIndex ? 1 : -1);
+          extraTranslate *
+          (focusableDraggedTab.elementIndex > focusableDropElement.elementIndex ? 1 : -1);
         draggedTab.style.zIndex = "9";
         animateElement(draggedTab, draggedTabTranslateY);
       } catch (e) {

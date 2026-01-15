@@ -4,7 +4,7 @@
 
 zen-panel-ui-workspaces-text = スペース
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = スペース
 zen-panel-ui-workspaces-create = 
     .label = スペースを作成
 zen-panel-ui-folder-create = 
@@ -33,7 +33,7 @@ zen-workspaces-panel-context-edit =
     .label = ワークスペースを編集する
     .accesskey = E
 zen-bookmark-edit-panel-workspace-selector = 
-    .value = Spaces
+    .value = スペース
     .accesskey = W
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = 補完的
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = 削除する
     .tooltiptext = すべての固定しなかったタブを閉じる
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = 次のスペースに移動
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = 前のスペースに移動

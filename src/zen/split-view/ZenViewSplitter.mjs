@@ -250,6 +250,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return element;
   }
 
+  // eslint-disable-next-line complexity
   onBrowserDragOverToSplit(event) {
     if (this.fakeBrowser) {
       return;
@@ -275,7 +276,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       !this._lastOpenedTab ||
       (this._lastOpenedTab.getAttribute("zen-workspace-id") !==
         draggedTab.getAttribute("zen-workspace-id") &&
-        !this._lastOpenedTab.hasAttribute("zen-essential"))
+        !this._lastOpenedTab.hasAttribute("zen-essential") &&
+        !draggedTab.hasAttribute("zen-essential"))
     ) {
       this._lastOpenedTab = gBrowser.selectedTab;
     }
@@ -1829,7 +1831,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return false;
     }
 
-    const droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
+    let droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
     if (droppedOnTab === this._draggingTab) {
       this.createEmptySplit(dropSide == "right");
       return true;
@@ -1847,6 +1849,25 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // const browserRect = browser.getBoundingClientRect();
       // const hoverSide = this.calculateHoverSide(event.clientX, event.clientY, browserRect);
       const hoverSide = dropSide;
+
+      // We are here if none of the tabs have been previously split
+      // If there's ANY pinned tab on the list, we clone the pinned tab
+      // state to all the tabs
+      let tempTabs = [draggedTab, droppedOnTab];
+      const allArePinned = tempTabs.every((tab) => tab.pinned);
+      const thereIsOnePinned = tempTabs.some((tab) => tab.pinned);
+      const thereIsOneEssential = tempTabs.some((tab) => tab.hasAttribute("zen-essential"));
+
+      if (thereIsOneEssential || (thereIsOnePinned && !allArePinned)) {
+        for (let i = 0; i < tempTabs.length; i++) {
+          const tab = tempTabs[i];
+          if (tab.pinned) {
+            tempTabs[i] = gBrowser.duplicateTab(tab, true);
+          }
+        }
+      }
+
+      [draggedTab, droppedOnTab] = tempTabs;
 
       if (droppedOnTab.splitView) {
         // Add to existing split view
@@ -1910,6 +1931,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           dropSide == "left" ? 0 : 1
         );
       }
+
+      gBrowser.selectedTab = draggedTab;
     }
     if (this._finishAllAnimatingPromise) {
       this._finishAllAnimatingPromise.then(() => {

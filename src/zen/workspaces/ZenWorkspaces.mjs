@@ -2583,7 +2583,11 @@ class nsZenWorkspaces {
     }
 
     if (workspaceID) {
-      if (tab.hasAttribute("change-workspace") && this.moveTabToWorkspace(tab, workspaceID)) {
+      // Always move tab to its designated workspace
+      this.moveTabToWorkspace(tab, workspaceID);
+
+      // Only switch to workspace if explicitly requested
+      if (tab.hasAttribute("change-workspace")) {
         this.lastSelectedWorkspaceTabs[workspaceID] = gZenGlanceManager.getTabOrGlanceParent(tab);
         tab.removeAttribute("change-workspace");
         const workspace = this.getWorkspaceFromId(workspaceID);

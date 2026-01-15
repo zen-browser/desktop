@@ -11,6 +11,9 @@
 - name: zen.workspaces.force-container-workspace
   value: false
 
+- name: zen.workspaces.restore-tabs-to-original-workspace
+  value: false
+
 - name: zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed
   value: false
 

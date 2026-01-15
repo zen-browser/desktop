@@ -1193,6 +1193,11 @@ Preferences.addAll([
     type: "bool",
     default: false,
   },
+  {
+    id: "zen.workspaces.restore-tabs-to-original-workspace",
+    type: "bool",
+    default: false,
+  },
 ]);
 
 Preferences.addSetting({

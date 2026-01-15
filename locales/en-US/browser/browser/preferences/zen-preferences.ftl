@@ -99,6 +99,8 @@ zen-settings-workspaces-enabled =
     .label = Enable Workspaces
 zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
+zen-settings-workspaces-restore-tabs-to-original-workspace =
+    .label = Restore closed tabs to their original workspace
 
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }

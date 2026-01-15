@@ -963,7 +963,6 @@ class nsZenWindowSync {
       const newTab = win.gBrowser.addTrustedTab("about:blank", {
         animate: true,
         createLazyBrowser: true,
-        zenWorkspaceId: tab.getAttribute("zen-workspace-id") || "",
         _forZenEmptyTab: tab.hasAttribute("zen-empty-tab"),
       });
       newTab.id = tab.id;

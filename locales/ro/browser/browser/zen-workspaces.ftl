@@ -2,93 +2,93 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-workspaces-text = Spaces
+zen-panel-ui-workspaces-text = Spații
 
 zen-panel-ui-spaces-label =
-    .label = Spaces
+    .label = Spații
 
 zen-panel-ui-workspaces-create =
-    .label = Create Space
+    .label = Creează un spațiu
 
 zen-panel-ui-folder-create =
-    .label = Create Folder
+    .label = Creează un dosar
 
 zen-panel-ui-new-empty-split =
-    .label = New Split
+    .label = Divizare nouă
 
 zen-workspaces-panel-context-delete =
-    .label = Delete Space
-    .accesskey = D
+    .label = Șterge spațiul
+    .accesskey = G
 
 zen-workspaces-panel-change-name =
-    .label = Change Name
+    .label = Schimbă numele
 
 zen-workspaces-panel-change-icon =
-    .label = Change Icon
+    .label = Schimbă pictograma
 
 zen-workspaces-panel-context-default-profile =
-    .label = Set Profile
+    .label = Setează profilul
 
 zen-workspaces-panel-unload =
-    .label = Unload Space
+    .label = Descarcă spațiul
 
-zen-workspaces-how-to-reorder-title = How to reorder spaces
-zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them
+zen-workspaces-how-to-reorder-title = Cum să reordonezi spațiile
+zen-workspaces-how-to-reorder-desc = Trage pictogramele spațiilor din partea de jos a barei laterale pentru a le reordona
 
 zen-workspaces-change-theme =
-    .label = Edit Theme
+    .label = Editează tema
 
 zen-workspaces-panel-context-open =
-    .label = Open Workspace
-    .accesskey = O
+    .label = Deschide spațiul
+    .accesskey = D
 
 zen-workspaces-panel-context-edit =
-    .label = Edit Space
+    .label = Editează spațiul
     .accesskey = E
 
 zen-bookmark-edit-panel-workspace-selector =
-    .value = Spaces
-    .accesskey = W
+    .value = Spații
+    .accesskey = S
 
 zen-panel-ui-gradient-generator-algo-complementary =
-    .label = Complementary
+    .label = Complementar
 zen-panel-ui-gradient-generator-algo-splitComplementary =
-    .label = Split
+    .label = Divizat
 zen-panel-ui-gradient-generator-algo-analogous =
-    .label = Analogous
+    .label = Analog
 zen-panel-ui-gradient-generator-algo-triadic =
     .label = Triadic
 zen-panel-ui-gradient-generator-algo-floating =
-    .label = Floating
-zen-panel-ui-gradient-click-to-add = Click to add a color
+    .label = Flotant
+zen-panel-ui-gradient-click-to-add = Fă clic pentru a adăuga o culoare
 
 zen-workspace-creation-name =
-    .placeholder = Space Name
+    .placeholder = Nume spațiu
 
 zen-move-tab-to-workspace-button =
-    .label = Move To...
-    .tooltiptext = Move all tabs in this window to a Space
+    .label = Mută în...
+    .tooltiptext = Mută toate filele din această fereastră într-un spațiu
 
 zen-workspaces-panel-context-reorder =
-    .label = Reorder Spaces
+    .label = Reordonează spațiile
 
-zen-workspace-creation-profile = Profile
-    .tooltiptext = Profiles are used to separate cookies and site data between spaces.
-zen-workspace-creation-header = Create a Space
-zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profilurile sunt utilizate pentru a separa cookie-urile și datele site-urilor între spații.
+zen-workspace-creation-header = Creează un spațiu
+zen-workspace-creation-label = Spațiile sunt utilizate pentru a-ți organiza filele și sesiunile.
 
-zen-workspaces-delete-workspace-title = Delete Space?
-zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-delete-workspace-title = Ștergi spațiul?
+zen-workspaces-delete-workspace-body = Sigur vrei să ștergi { $name }? Această acțiune nu poate fi anulată.
 
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-toast = File închise! Folosește <span>{ $shortcut }</span> pentru a anula.
 zen-workspaces-close-all-unpinned-tabs-title =
-    .label = Clear
-    .tooltiptext = Close all unpinned tabs
+    .label = Curăță
+    .tooltiptext = Închide toate filele nefixate
 
 zen-panel-ui-workspaces-change-forward =
-    .label = Next Space
+    .label = Spațiul următor
 
 zen-panel-ui-workspaces-change-back =
-    .label = Previous Space
+    .label = Spațiul anterior

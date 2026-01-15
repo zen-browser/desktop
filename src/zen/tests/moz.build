@@ -7,6 +7,7 @@ BROWSER_CHROME_MANIFESTS += [
     "container_essentials/browser.toml",
     "folders/browser.toml",
     "glance/browser.toml",
+    "live-folders/browser.toml",
     "pinned/browser.toml",
     "split_view/browser.toml",
     "tabs/browser.toml",

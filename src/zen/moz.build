@@ -10,6 +10,7 @@ DIRS += [
     "common",
     "drag-and-drop",
     "glance",
+    "live-folders",
     "mods",
     "tests",
     "urlbar",

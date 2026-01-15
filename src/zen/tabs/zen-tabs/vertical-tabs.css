@@ -472,7 +472,7 @@
   display: none;
 }
 
-.tab-reset-pin-label {
+.zen-tab-sublabel {
   pointer-events: none;
   transition:
     opacity 0.1s ease-in-out,
@@ -483,6 +483,13 @@
   transform: translateY(-5px);
   font-size: x-small;
   margin: 0;
+}
+
+[zen-show-sublabel] {
+  & .tab-label-container .zen-tab-sublabel {
+    max-height: 10px;
+    opacity: 0.6;
+  }
 }
 
 #navigator-toolbox[zen-sidebar-expanded="true"] {
@@ -637,7 +644,7 @@
       }
 
       &[zen-pinned-changed="true"]:not([zen-essential]) .tab-reset-pin-button:hover {
-        & ~ .tab-label-container .tab-reset-pin-label {
+        & ~ .tab-label-container .zen-tab-sublabel {
           max-height: 10px;
           opacity: 0.6;
         }

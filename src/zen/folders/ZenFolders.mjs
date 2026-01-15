@@ -91,6 +91,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         return;
       }
       this.#lastFolderContextMenu = folder;
+      gZenLiveFoldersUI.buildContextMenu(folder);
 
       const newSubfolderItem = document.getElementById("context_zenFolderNewSubfolder");
       newSubfolderItem.setAttribute(
@@ -576,6 +577,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     folder.label = options.label || "New Folder";
     folder.saveOnWindowClose = !!options.saveOnWindowClose;
     folder.color = "zen-workspace-color";
+    folder.isLiveFolder = options.isLiveFolder;
 
     folder.setAttribute("zen-workspace-id", options.workspaceId || gZenWorkspaces.activeWorkspace);
 
@@ -1020,6 +1022,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         prevSiblingInfo,
         emptyTabIds: emptyFolderTabs,
         userIcon: userIcon?.getAttribute("href"),
+        isLiveFolder: folder.isLiveFolder,
         // note: We shouldn't be using the workspace-id anywhere, we are just
         //  remembering it for the pinned tabs manager to use it later.
         workspaceId: folder.getAttribute("zen-workspace-id"),
@@ -1059,6 +1062,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               pinned: folderData.pinned,
               saveOnWindowClose: folderData.saveOnWindowClose,
               workspaceId: folderData.workspaceId,
+              isLiveFolder: folderData.isLiveFolder,
             });
             folder.setAttribute("id", folderData.id);
             workingData.node = folder;

@@ -47,6 +47,8 @@ const EVENTS = [
   "TabGroupRemoved",
   "TabGroupMoved",
 
+  "TabUngrouped",
+
   "ZenTabRemovedFromSplit",
   "ZenSplitViewTabsSplit",
 
@@ -143,7 +145,7 @@ class nsZenWindowSync {
   /**
    * @returns {Window|null} The first opened browser window, or null if none exist.
    */
-  get #firstSyncedWindow() {
+  get firstSyncedWindow() {
     for (let window of this.#browserWindows) {
       return window;
     }
@@ -474,8 +476,23 @@ class nsZenWindowSync {
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-workspace-id");
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
     }
+    if (aOriginalItem.hasAttribute("zen-live-folder-item-id")) {
+      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-live-folder-item-id");
+      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-show-sublabel");
+      this.#syncTabSubtitle(aWindow, aOriginalItem, aTargetItem);
+    }
     if (gBrowser.isTab(aTargetItem)) {
       this.#maybeFlushTabState(aTargetItem);
+    }
+  }
+
+  #syncTabSubtitle(aWindow, aOriginalItem, aTargetItem) {
+    const subLabel = aOriginalItem.getAttribute("zen-show-sublabel");
+    const targetLabel = aTargetItem.querySelector(".zen-tab-sublabel");
+    if (subLabel && targetLabel) {
+      aWindow.document.l10n.setArgs(targetLabel, {
+        tabSubtitle: subLabel,
+      });
     }
   }
 
@@ -1066,7 +1083,7 @@ class nsZenWindowSync {
       (tab) => !tab.hasAttribute("zen-empty-tab")
     );
     const selectedTab = aWindow.gBrowser.selectedTab;
-    let win = this.#firstSyncedWindow;
+    let win = this.firstSyncedWindow;
     const moveAllTabsToWindow = async (allowSelected = false) => {
       const { gBrowser, gZenWorkspaces } = win;
       win.focus();
@@ -1365,6 +1382,10 @@ class nsZenWindowSync {
 
   on_TabGroupUpdate(aEvent) {
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON | SYNC_FLAG_LABEL);
+  }
+
+  on_TabUngrouped() {
+    return Promise.resolve();
   }
 
   on_ZenTabRemovedFromSplit(aEvent) {

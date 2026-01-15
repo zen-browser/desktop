@@ -2,6 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+});
+
 export class nsZenFolder extends MozTabbrowserTabGroup {
   #initialized = false;
 
@@ -261,7 +266,12 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   on_click(event) {
     if (event.target === this.resetButton) {
       event.stopPropagation();
-      this.unloadAllTabs(event);
+
+      if (event.target.hasAttribute("live-folder-action")) {
+        lazy.ZenLiveFoldersManager.handleEvent(event);
+      } else {
+        this.unloadAllTabs(event);
+      }
       return;
     }
     super.on_click(event);

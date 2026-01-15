@@ -548,10 +548,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   // eslint-disable-next-line complexity
   moveToAnotherTabContainerIfNecessary(event, movingTabs) {
-    movingTabs = [...movingTabs];
     if (!this.enabled) {
       return false;
     }
+    movingTabs = movingTabs.map((tab) => {
+      return tab.ownerGlobal !== window ? gBrowser.adoptTab(tab) : tab;
+    });
     try {
       const pinnedTabsTarget = event.target.closest(
         ":is(.zen-current-workspace-indicator, .zen-workspace-pinned-tabs-section)"

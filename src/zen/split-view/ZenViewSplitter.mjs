@@ -2070,11 +2070,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     for (const groupData of data) {
       const group = document.getElementById(groupData.groupId);
 
+      if (!group) {
+        // If the group element no longer exists in the DOM, skip restoring this group.
+        continue;
+      }
+
       // Backwards compatibility
       if (!groupData?.layoutTree) {
         this.splitTabs(group.tabs, group.gridType);
-        delete this._sessionRestoring;
-        return;
+        continue;
       }
 
       const deserializeNode = (nodeData) => {
@@ -2094,6 +2098,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           if (childNode) {
             childNode.parent = splitter;
             splitter._children.push(childNode);
+          } else {
+            // Child failed to deserialize; log a warning to aid debugging of inconsistent layout trees.
+            console.warn(
+              "ZenViewSplitter: Failed to deserialize child node during splitter restoration.",
+              childData
+            );
           }
         }
 
@@ -2102,7 +2112,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       const layout = deserializeNode(groupData.layoutTree);
       const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
-      splitData.layoutTree = layout;
+      if (splitData) {
+        splitData.layoutTree = layout;
+      }
     }
 
     delete this._sessionRestoring;

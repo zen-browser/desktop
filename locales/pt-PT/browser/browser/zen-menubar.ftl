@@ -5,16 +5,16 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Expandir Separadores Fixados
+           *[false] Colapsar Separadores Fixados
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Aparência
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Os sites utilizarão:
 zen-menubar-appearance-auto = 
     .label = Automatic
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Claro
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Escuro

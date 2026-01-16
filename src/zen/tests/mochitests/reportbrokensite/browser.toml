@@ -9,7 +9,6 @@ support-files = [
 ["browser_addon_data_sent.js"]
 disabled="Disabled by import_external_tests.py"
 support-files = [ "send_more_info.js" ]
-skip-if = ["os == 'win' && os_version == '11.26100' && processor == 'x86_64' && opt"] # Bug 1955805
 
 ["browser_antitracking_data_sent.js"]
 support-files = [ "send_more_info.js" ]
@@ -23,10 +22,10 @@ support-files = [ "send_more_info.js" ]
 
 ["browser_keyboard_navigation.js"]
 skip-if = [
-  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && tsan", # Bug 1867132
-  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && asan", # Bug 1867132
-  "os == 'linux' && os_version == '24.04' && processor == 'x86_64' && debug", # Bug 1867132
-  "os == 'win' && os_version == '11.26100' && processor == 'x86_64' && asan", # Bug 1867132
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && asan", # Bug 1867132
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug", # Bug 1867132
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && tsan", # Bug 1867132
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && asan", # Bug 1867132
 ]
 
 ["browser_learn_more_link.js"]
@@ -36,6 +35,8 @@ skip-if = [
 ["browser_prefers_contrast.js"]
 
 ["browser_reason_dropdown.js"]
+
+["browser_report_preview.js"]
 
 ["browser_report_send.js"]
 support-files = [ "send.js" ]

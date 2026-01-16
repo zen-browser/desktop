@@ -90,7 +90,7 @@ add_task(async function testSendingMoreInfo() {
 
   const tab = await openTab(REPORTABLE_PAGE_URL);
 
-  await testSendMoreInfo(tab, HelpMenu(), {
+  await testSendMoreInfo(tab, AppMenu(), {
     addons: EXPECTED_ADDONS,
   });
 

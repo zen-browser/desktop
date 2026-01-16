@@ -3,18 +3,30 @@
 ["browser_1119088.js"]
 disabled="Disabled by import_external_tests.py"
 support-files = ["mac_desktop_image.py"]
-run-if = ["os == 'mac'"]
+run-if = [
+  "os == 'mac'",
+]
 tags = "os_integration"
-skip-if = ["os == 'mac' && os_version == '14.70' && processor == 'x86_64'"] # Bug 1869703
+skip-if = [
+  "os == 'mac' && os_version == '14.70' && arch == 'x86_64'", # Bug 1869703
+]
 
 ["browser_420786.js"]
-run-if = ["os == 'linux'"]
+run-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland'",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'",
+]
 
 ["browser_633221.js"]
-run-if = ["os == 'linux'"]
+run-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland'",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'",
+]
 
 ["browser_createWindowsShortcut.js"]
-run-if = ["os == 'win'"]
+run-if = [
+  "os == 'win'",
+]
 
 ["browser_doesAppNeedPin.js"]
 
@@ -24,8 +36,8 @@ support-files = [
   "headless.html",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 tags = "os_integration"
@@ -36,8 +48,8 @@ support-files = [
   "headless.html",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
@@ -47,8 +59,8 @@ support-files = [
   "headless.html",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
@@ -58,8 +70,8 @@ support-files = [
   "headless.html",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
@@ -70,8 +82,8 @@ support-files = [
   "headless_iframe.html",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
@@ -83,19 +95,23 @@ support-files = [
   "headless_redirect.html^headers^",
 ]
 skip-if = [
-  "os == 'win'",
   "ccov",
+  "os == 'win'",
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
 ["browser_processAUMID.js"]
-run-if = ["os == 'win'"]
+run-if = [
+  "os == 'win'",
+]
 
 ["browser_setDefaultBrowser.js"]
 tags = "os_integration"
 
 ["browser_setDefaultPDFHandler.js"]
-run-if = ["os == 'win'"]
+run-if = [
+  "os == 'win'",
+]
 tags = "os_integration"
 
 ["browser_setDesktopBackgroundPreview.js"]

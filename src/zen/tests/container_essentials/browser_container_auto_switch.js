@@ -5,7 +5,7 @@
 
 add_task(async function test_Container_Essentials_Auto_Swithc() {
   await gZenWorkspaces.createAndSaveWorkspace("Container Profile 1", undefined, false, 1);
-  const workspaces = await gZenWorkspaces._workspaces();
+  const workspaces = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(workspaces.length, 2, "Two workspaces should exist.");
 
   let newTab = BrowserTestUtils.addTab(gBrowser, "about:blank", {

@@ -20,6 +20,7 @@ import testPathsConfig from "./engine/eslint-test-paths.config.mjs";
 import repositoryGlobals from "./engine/eslint-file-globals.config.mjs";
 import rollouts from "./engine/eslint-rollouts.config.mjs";
 import subdirConfigs from "./engine/eslint-subdirs.config.mjs";
+import { globalIgnores as globalIgnoresPath } from "eslint/config";
 
 const testPaths = testPathsConfig.testPaths;
 
@@ -451,6 +452,7 @@ let config = [
     },
   },
   ...wrapPathsInConfig(rollouts),
+  globalIgnoresPath(["src/zen/tests/"]),
 ];
 
 // The various places we get our globals from use true/false rather than

@@ -811,7 +811,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID);
+    return this.#animateGlanceClosing(
+      onTabClose,
+      browserSidebarContainer,
+      sidebarButtons,
+      setNewID
+    );
   }
 
   /**

@@ -189,7 +189,8 @@ class nsZenWindowSync {
       for (let tab of gZenWorkspaces.allStoredTabs) {
         if (!tab.id) {
           tab.id = this.#newTabSyncId;
-          lazy.TabStateFlusher.flush(tab.linkedBrowser);
+          // Don't call with await here to avoid blocking the loop.
+          this.#maybeFlushTabState(tab);
         }
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
@@ -407,7 +408,7 @@ class nsZenWindowSync {
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
     }
     if (gBrowser.isTab(aTargetItem)) {
-      lazy.TabStateFlusher.flush(aTargetItem.linkedBrowser);
+      this.#maybeFlushTabState(aTargetItem);
     }
   }
 
@@ -540,7 +541,7 @@ class nsZenWindowSync {
    * @param {object} aOtherTab - The tab in the other window.
    */
   async #swapBrowserDocShellsAsync(aOurTab, aOtherTab) {
-    lazy.TabStateFlusher.flush(aOtherTab.linkedBrowser);
+    this.#maybeFlushTabState(aOtherTab);
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
       this.#swapBrowserDocSheellsInner(aOurTab, aOtherTab);
     });
@@ -601,7 +602,7 @@ class nsZenWindowSync {
     // See https://github.com/zen-browser/desktop/issues/11851, swapping the browsers
     // don't seem to update the state's cache properly, leading to issues when restoring
     // the session later on.
-    let tabState = this.#getTabState(aOtherTab);
+    let tabStateEntries = this.#getTabEntriesFromCache(aOtherTab);
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
     // the operation, so it doesn't really care about cleaning up the other tab.
     // We need to make a new tab progress listener for the other tab after the swap.
@@ -656,13 +657,13 @@ class nsZenWindowSync {
     // It's also important to note that if we don't flush the state here,
     // we would start receiving invalid history changes from the the incorrect
     // browser view that was just swapped out.
-    lazy.TabStateFlusher.flush(aOurTab.linkedBrowser).finally(() => {
-      if (!tabState.entries?.length) {
+    this.#maybeFlushTabState(aOurTab).finally(() => {
+      if (!tabStateEntries?.length) {
         this.log(`Error: No tab state entries found for tab ${aOtherTab.id} during swap`);
         return;
       }
       lazy.TabStateCache.update(aOurTab.linkedBrowser.permanentKey, {
-        entries: tabState.entries,
+        entries: tabStateEntries,
       });
     });
     return true;
@@ -849,13 +850,30 @@ class nsZenWindowSync {
   }
 
   /**
-   * Retrieves the tab state for a given tab.
+   * Retrieves the tab state entries from the cache for a given tab.
    *
-   * @param {object} tab - The tab to retrieve the state for.
-   * @returns {object} The tab state.
+   * @param {object} aTab - The tab to retrieve the state for.
+   * @returns {Array} The tab state entries.
    */
-  #getTabState(tab) {
-    return JSON.parse(lazy.SessionStore.getTabState(tab));
+  #getTabEntriesFromCache(aTab) {
+    if (!aTab.linkedBrowser) {
+      return [];
+    }
+    let cachedState = lazy.TabStateCache.get(aTab.linkedBrowser.permanentKey) || { entries: [] };
+    return cachedState.entries || [];
+  }
+
+  /**
+   * Flushes the tab state for a given tab if it has a linked browser.
+   *
+   * @param {object} aTab - The tab to flush the state for.
+   * @returns {Promise} A promise that resolves when the operation is complete.
+   */
+  #maybeFlushTabState(aTab) {
+    if (!aTab.linkedBrowser) {
+      return Promise.resolve();
+    }
+    return lazy.TabStateFlusher.flush(aTab.linkedBrowser);
   }
 
   /* Mark: Public API */
@@ -867,15 +885,15 @@ class nsZenWindowSync {
    * @returns {Promise} A promise that resolves when the operation is complete.
    */
   setPinnedTabState(aTab) {
-    return lazy.TabStateFlusher.flush(aTab.linkedBrowser).finally(() => {
+    return this.#maybeFlushTabState(aTab).finally(() => {
       this.log(`Setting pinned initial state for tab ${aTab.id}`);
-      const state = this.#getTabState(aTab);
-      let activeIndex = "index" in state ? state.index : state.entries.length - 1;
-      activeIndex = Math.min(activeIndex, state.entries.length - 1);
+      const entries = this.#getTabEntriesFromCache(aTab);
+      let activeIndex = "index" in entries ? entries.index : entries.entries.length - 1;
+      activeIndex = Math.min(activeIndex, entries.entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
       const initialState = {
-        entry: state.entries[activeIndex],
-        image: state.image,
+        entry: entries.entries[activeIndex],
+        image: entries.image,
       };
       this.#runOnAllWindows(null, (win) => {
         const targetTab = this.getItemFromWindow(win, aTab.id);
@@ -973,7 +991,7 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
-    lazy.TabStateFlusher.flush(tab.linkedBrowser);
+    this.#maybeFlushTabState(tab);
   }
 
   on_ZenTabIconChanged(aEvent) {

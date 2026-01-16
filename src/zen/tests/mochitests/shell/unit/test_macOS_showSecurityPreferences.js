@@ -36,6 +36,5 @@ add_task(async function test_prefsOpen() {
   );
   shellSvc.showSecurityPreferences("Privacy_AllFiles");
 
-  // eslint-disable-next-line no-undef
   equal(killSystemPreferences(), 0, "Ensure System Preferences was started");
 });

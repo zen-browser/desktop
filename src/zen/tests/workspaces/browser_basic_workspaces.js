@@ -8,7 +8,7 @@ add_setup(async function () {});
 add_task(async function test_Check_Creation() {
   const currentWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
-  const workspaces = await gZenWorkspaces._workspaces();
+  const workspaces = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(workspaces.length, 2, "Two workspaces should exist.");
   Assert.notStrictEqual(
     currentWorkspaceUUID,
@@ -24,7 +24,7 @@ add_task(async function test_Check_Creation() {
   BrowserTestUtils.removeTab(newTab);
 
   await gZenWorkspaces.removeWorkspace(gZenWorkspaces.activeWorkspace);
-  const workspacesAfterRemove = await gZenWorkspaces._workspaces();
+  const workspacesAfterRemove = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(workspacesAfterRemove.workspaces.length, 1, "One workspace should exist.");
   Assert.strictEqual(
     workspacesAfterRemove[0].uuid,

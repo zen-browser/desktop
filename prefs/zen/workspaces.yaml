@@ -47,3 +47,6 @@
 
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch
+
+- name: zen.workspaces.action-filter-char
+  value: "#"

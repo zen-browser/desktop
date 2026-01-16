@@ -897,7 +897,6 @@ window.gZenVerticalTabsManager = {
         .catch((err) => {
           console.error(err);
         })
-
         .finally(() => {
           aItem.style.removeProperty("margin-bottom");
           aItem.style.removeProperty("transform");

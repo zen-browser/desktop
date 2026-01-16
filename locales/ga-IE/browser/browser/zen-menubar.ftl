@@ -9,9 +9,9 @@ zen-menubar-toggle-pinned-tabs =
         *[false] Laghdaigh Cluaisíní Priontáilte
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Dealramh
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Úsáidfidh suíomhanna gréasáin:
 zen-menubar-appearance-auto = 
     .label = Uathoibríoch
 zen-menubar-appearance-light = 

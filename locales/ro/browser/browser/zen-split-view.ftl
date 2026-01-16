@@ -5,18 +5,18 @@
 tab-zen-split-tabs =
     .label =
         { $tabCount ->
-            [1] Split Tab (multiple selected tabs needed)
-           *[other] Split { $tabCount } Tabs
+            [1] Împarte fila (sunt necesare mai multe file selectate)
+           *[other] Împarte { $tabCount } file
         }
-    .accesskey = S
+    .accesskey = I
 
 zen-split-link =
-    .label = Split link to new tab
-    .accesskey = S
+    .label = Împarte linkul într-o filă nouă
+    .accesskey = L
 
-zen-split-view-modifier-header = Split View
+zen-split-view-modifier-header = Vizualizare divizată
 zen-split-view-modifier-activate-reallocation =
-    .label = Activate reallocation
-zen-split-view-modifier-enabled-toast = Split view rearrange is ON.
-zen-split-view-modifier-enabled-toast-description = Drag and drop the view to rearrange. Press Esc to exit.
-zen-split-view-modifier-disabled-toast = Split view rearrange is OFF.
+    .label = Activează realocarea
+zen-split-view-modifier-enabled-toast = Rearanjarea vizualizării divizate: activată.
+zen-split-view-modifier-enabled-toast-description = Trage și plasează vizualizarea pentru a o rearanja. Apasă Esc pentru a ieși.
+zen-split-view-modifier-disabled-toast = Rearanjarea vizualizării divizate: dezactivată.

@@ -22,8 +22,8 @@ XPCOMUtils.defineLazyPreferenceGetter(lazy, "gShouldLog", "zen.window-sync.log",
 
 const OBSERVING = ["browser-window-before-show"];
 const INSTANT_EVENTS = ["SSWindowClosing"];
+const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 const EVENTS = [
-  "TabOpen",
   "TabClose",
 
   "ZenTabIconChanged",
@@ -47,6 +47,7 @@ const EVENTS = [
 
   "focus",
   ...INSTANT_EVENTS,
+  ...UNSYNCED_WINDOW_EVENTS,
 ];
 
 // Flags acting as an enum for sync types.
@@ -163,6 +164,9 @@ class nsZenWindowSync {
     ) {
       this.log("Not syncing new window due to unsynced argument or existing synced windows");
       aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
+      for (let eventName of UNSYNCED_WINDOW_EVENTS) {
+        aWindow.addEventListener(eventName, this, true);
+      }
       return;
     }
     aWindow.gZenWindowSync = this;
@@ -254,7 +258,7 @@ class nsZenWindowSync {
     const window = aEvent.currentTarget.ownerGlobal;
     if (
       !window.gZenStartup.isReady ||
-      window.gZenWorkspaces?.privateWindowOrDisabled ||
+      !window.gZenWorkspaces?.shouldHaveWorkspaces ||
       window._zenClosingWindow
     ) {
       return;
@@ -944,17 +948,21 @@ class nsZenWindowSync {
   on_TabOpen(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
+    const isUnsyncedWindow = window.document.documentElement.hasAttribute("zen-unsynced-window");
+
     if (tab.id) {
       // This tab was opened as part of a sync operation.
       return;
     }
     tab._zenContentsVisible = true;
     tab.id = this.#newTabSyncId;
+    if (isUnsyncedWindow) {
+      return;
+    }
     this.#runOnAllWindows(window, (win) => {
       const newTab = win.gBrowser.addTrustedTab("about:blank", {
         animate: true,
         createLazyBrowser: true,
-        zenWorkspaceId: tab.getAttribute("zen-workspace-id") || "",
         _forZenEmptyTab: tab.hasAttribute("zen-empty-tab"),
       });
       newTab.id = tab.id;
@@ -1041,7 +1049,7 @@ class nsZenWindowSync {
     }
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    this.#onTabSwitchOrWindowFocus(window);
+    return this.#onTabSwitchOrWindowFocus(window);
   }
 
   on_TabSelect(aEvent) {
@@ -1051,7 +1059,7 @@ class nsZenWindowSync {
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
+    return this.#onTabSwitchOrWindowFocus(aEvent.target.ownerGlobal, previousTab);
   }
 
   on_SSWindowClosing(aEvent) {

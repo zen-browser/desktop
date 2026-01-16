@@ -1,13 +1,23 @@
 diff --git a/toolkit/components/prompts/content/commonDialog.css b/toolkit/components/prompts/content/commonDialog.css
-index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..a34363a6a8bf5db6826738dbad0ec6b75b633474 100644
+index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..9aa4dc90c73e2f1e2fdcb6bdc26a505402a5c28f 100644
 --- a/toolkit/components/prompts/content/commonDialog.css
 +++ b/toolkit/components/prompts/content/commonDialog.css
-@@ -91,7 +91,7 @@ dialog[insecureauth] {
+@@ -3,7 +3,8 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ :root {
+-  min-width: 29em;
++  min-width: 32em;
++  min-height: 12rem;
+ }
+ 
+ dialog[insecureauth] {
+@@ -91,7 +92,7 @@ dialog[insecureauth] {
      --grid-padding: 16px;
      /* All the inner items should have 4px inline margin, leading to 1.16em spacing
       * between the dialog and its contents, and 8px horizontal spacing between items. */
 -    padding: var(--grid-padding) calc(var(--grid-padding) - 4px);
-+    padding: 24px 20px;
++    padding: 26px 22px;
  
      &::part(dialog-button) {
        /* Adjust vertical margins for buttons in subdialogs. */

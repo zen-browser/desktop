@@ -896,6 +896,12 @@ window.gZenVerticalTabsManager = {
         .then(() => {})
         .catch((err) => {
           console.error(err);
+        })
+
+        .finally(() => {
+          aItem.style.removeProperty("margin-bottom");
+          aItem.style.removeProperty("transform");
+          aItem.style.removeProperty("opacity");
         });
       const itemLabel =
         aItem.querySelector(".tab-group-label-container") || aItem.querySelector(".tab-content");
@@ -913,6 +919,9 @@ window.gZenVerticalTabsManager = {
         .then(() => {})
         .catch((err) => {
           console.error(err);
+        })
+        .finally(() => {
+          itemLabel.style.removeProperty("filter");
         });
     } catch (e) {
       console.error(e);
@@ -1240,12 +1249,14 @@ window.gZenVerticalTabsManager = {
           } else {
             navBar.append(windowButtons);
           }
-        }
-        // not windows styled buttons
-        if (isRightSide || !isSidebarExpanded) {
-          navBar.prepend(windowButtons);
         } else {
-          topButtons.prepend(windowButtons);
+          // not windows styled buttons
+          // eslint-disable-next-line no-lonely-if
+          if (isRightSide || !isSidebarExpanded) {
+            navBar.prepend(windowButtons);
+          } else {
+            topButtons.prepend(windowButtons);
+          }
         }
       } else if (!isSingleToolbar && isCompactMode) {
         if (captionsShouldStayOnSidebar) {

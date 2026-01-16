@@ -83,7 +83,7 @@
 #browser {
   --zen-min-toolbox-padding: 0.4rem;
   @media (-moz-platform: macos) {
-    --zen-min-toolbox-padding: 0.52rem;
+    --zen-min-toolbox-padding: 0.5rem;
   }
   @media (-moz-platform: linux) {
     --zen-min-toolbox-padding: 0.35rem;

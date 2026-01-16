@@ -5,12 +5,9 @@
  */
 .dialogBox {
   border: none;
-  outline: 1px solid #a8a8a9;
+  outline: 1px solid light-dark(transparent, #646464);
   animation: zen-dialog-fade-in 0.3s ease-out;
   border-radius: 12px !important;
-  @media (prefers-color-scheme: dark) {
-    outline-color: #44495a;
-    outline-offset: -2px;
-    border: 1px solid black;
-  }
+  border: 1px solid light-dark(#a8a8a9, black);
+  outline-offset: -1.5px;
 }

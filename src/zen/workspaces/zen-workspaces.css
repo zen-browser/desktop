@@ -22,7 +22,7 @@
     display: none !important;
   }
 
-  border-radius: var(--zen-button-border-radius) !important;
+  border-radius: var(--button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
   height: fit-content;
@@ -301,6 +301,7 @@
 zen-workspace {
   will-change: transform;
   flex-direction: column;
+  transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
   height: 100%;

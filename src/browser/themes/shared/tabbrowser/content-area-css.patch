@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index b00139d7af878326ff303c08d5ddd47501b8c7db..dbd8a9124fb159fa59012a6c06899a8ec74a1f27 100644
+index b00139d7af878326ff303c08d5ddd47501b8c7db..52bad3e978004f3322f3d504cbd663e7b620b69f 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
 @@ -90,7 +90,6 @@
@@ -27,3 +27,12 @@ index b00139d7af878326ff303c08d5ddd47501b8c7db..dbd8a9124fb159fa59012a6c06899a8e
    inset: 0;
  
    /* Hide tab-modal dialogs when a window-modal one is up. */
+@@ -553,7 +551,7 @@ split-view-footer {
+ 
+ .dialogOverlay[topmost="true"],
+ #window-modal-dialog::backdrop {
+-  background-color: var(--dialog-backdrop-color);
++  background-color: light-dark(rgba(255, 255, 255, .2), rgba(0, 0, 0, .2));
+ }
+ 
+ .dialogOverlay[hideContent="true"][topmost="true"] {

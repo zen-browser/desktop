@@ -265,7 +265,7 @@
   &::before {
     height: 50px;
     width: 2px;
-    background: var(--button-primary-bgcolor);
+    background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";
     position: absolute;
@@ -284,7 +284,7 @@
   &::before {
     height: 2px;
     width: 50px;
-    background: var(--button-primary-bgcolor);
+    background: var(--button-background-color-primary);
     border-radius: 2px;
     content: "";
     position: absolute;

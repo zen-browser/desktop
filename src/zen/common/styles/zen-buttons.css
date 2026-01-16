@@ -13,25 +13,23 @@
 xul|button {
   --size-item-large: 34px;
 
-  border-radius: var(--zen-button-border-radius) !important;
   padding: var(--zen-button-padding) !important;
   transition: 0.1s;
-  min-width: 100px !important;
-  font-weight: 500 !important;
-
-  border: 1px solid var(--zen-colors-border);
-  border-bottom-width: 2px;
 }
 
-button:not(#zen-workspaces-button):active {
+button[dlgtype] {
+  --button-background-color: light-dark(white, #302f63);
+  --button-background-color-hover: color-mix(in srgb, var(--button-background-color) 90%, transparent);
+  --button-background-color-active: color-mix(in srgb, var(--button-background-color) 80%, transparent);
+  --button-background-color-primary: #3138fc;
+  --button-background-color-primary-hover: color-mix(in srgb, var(--button-background-color-primary) 95%, transparent);
+  --in-content-primary-button-text-color: white;
+  border-color: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
+  border-bottom-width: 2px !important;
+}
+
+xul|button:not(#zen-workspaces-button):active {
   transform: scale(0.98);
-}
-
-html|button:not(:is(.tab-button, .ghost-button, .button-toggle, .button-edit, .button-add, )),
-xul|button:is(.expander-down) {
-  transition: 0.2s;
-  min-width: unset !important;
-  border-radius: 6px !important;
 }
 
 .footer-button {

@@ -109,28 +109,31 @@
       }
       const draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
       const { offsetX, offsetY } = this.#getDragImageOffset(event, tab, draggingTabs);
-      const dragImage = this.#createDragImageForTabs(tab, draggingTabs);
+      const dragImage = this.#createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
       dt.updateDragImage(...this.originalDragImageArgs);
+      if (tab.hasAttribute("zen-essential")) {
+        setTimeout(() => {
+          tab.style.visibility = "hidden";
+        }, 0);
+      }
     }
 
-    #createDragImageForTabs(draggedTab, movingTabs) {
+    #createDragImageForTabs(movingTabs) {
       const periphery = gZenWorkspaces.activeWorkspaceElement.querySelector(
         "#tabbrowser-arrowscrollbox-periphery"
       );
-      const dragData = draggedTab._dragData;
       const tabRect = window.windowUtils.getBoundsWithoutFlushing(movingTabs[0]);
       const wrapper = document.createElement("div");
       wrapper.style.width = tabRect.width + "px";
       wrapper.style.height = tabRect.height * movingTabs.length + "px";
-      wrapper.style.overflow = "clip";
       wrapper.style.position = "fixed";
       wrapper.style.top = "-9999px";
       periphery.appendChild(wrapper);
       for (let i = 0; i < movingTabs.length; i++) {
         const tab = movingTabs[i];
         const tabClone = tab.cloneNode(true);
-        if (tabClone.hasAttribute("zen-essential")) {
+        if (tab.hasAttribute("zen-essential")) {
           const rect = tab.getBoundingClientRect();
           tabClone.style.minWidth = tabClone.style.maxWidth = `${rect.width}px`;
           tabClone.style.minHeight = tabClone.style.maxHeight = `${rect.height}px`;
@@ -139,11 +142,6 @@
           tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;
           tabClone.style.opacity = "0.2";
           tabClone.style.zIndex = `${-i}`;
-        }
-        // Apply a transform translate to the tab in order to center it within the drag image
-        // based on the event coordinates.
-        if (!movingTabs.length > 1) {
-          tabClone.style.transform = `translate(${(tabRect.width - dragData.offsetX) / 2}px, ${(tabRect.height - dragData.offsetY) / 2}px)`;
         }
         tabClone.setAttribute("drag-image", "true");
         wrapper.appendChild(tabClone);
@@ -808,6 +806,9 @@
     }
 
     handle_dragend(event) {
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      draggedTab.style.visibility = "";
       let currentEssenialContainer = gZenWorkspaces.getCurrentEssentialsContainer();
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
@@ -1265,6 +1266,12 @@
     #makeDragImageNonEssential(event) {
       const dt = event.dataTransfer;
       const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab.hasAttribute("zen-essential")) {
+        setTimeout(() => {
+          dt.updateDragImage(...this.originalDragImageArgs);
+        }, 50);
+        return;
+      }
       const wrapper = this.originalDragImageArgs[0];
       const tab = wrapper.firstElementChild;
       tab.style.setProperty("transition", "none", "important");

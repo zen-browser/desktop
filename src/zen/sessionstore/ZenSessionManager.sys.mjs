@@ -19,22 +19,24 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gMaxSessionBackups",
   "zen.session-store.max-backups",
-  10
+  20
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gBackupHourSpan",
+  "zen.session-store.backup-hour-span",
+  3
 );
 
-// Note that changing this hidden pref will make the previous session file
-// unused, causing a new session file to be created on next write.
-const SHOULD_COMPRESS_FILE = Services.prefs.getBoolPref("zen.session-store.compress-file", true);
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
-
-const FILE_NAME = SHOULD_COMPRESS_FILE ? "zen-sessions.jsonlz4" : "zen-sessions.json";
+const FILE_NAME = "zen-sessions.jsonlz4";
 
 // 'browser.startup.page' preference value to resume the previous session.
 const BROWSER_STARTUP_RESUME_SESSION = 3;
 
 // The amount of time (in milliseconds) to wait for our backup regeneration
 // debouncer to kick off a regeneration.
-const REGENERATION_DEBOUNCE_RATE_MS = 5 * 60 * 1000; // 5 minutes
+const REGENERATION_DEBOUNCE_RATE_MS = 10 * 60 * 1000; // 10 minutes
 
 /**
  * Class representing the sidebar object stored in the session file.
@@ -79,7 +81,7 @@ export class nsZenSessionManager {
     }
     this.#file = new JSONFile({
       path: this.#storeFilePath,
-      compression: SHOULD_COMPRESS_FILE ? "lz4" : undefined,
+      compression: "lz4",
       backupFile,
     });
     this.#deferredBackupTask = new lazy.DeferredTask(async () => {
@@ -331,7 +333,6 @@ export class nsZenSessionManager {
    * events that might cause such a regeneration to occur.
    */
   #debounceRegeneration() {
-    this.#deferredBackupTask.disarm();
     this.#deferredBackupTask.arm();
   }
 
@@ -357,11 +358,17 @@ export class nsZenSessionManager {
         ignoreExisting: true,
         createAncestors: true,
       });
-      const todayFileName = `zen-sessions-${today.getFullYear()}-${(today.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}.json${
-        SHOULD_COMPRESS_FILE ? "lz4" : ""
-      }`;
+      // Since backups from days ago are not that useful compared to more
+      // recent ones, we would ideally want to keep more backups for recent days
+      // and less for older ones. To achieve this, we create backups only
+      // every few hours (configurable via gBackupHourSpan), so that we
+      // can have multiple backups per day for recent days, but only
+      // one backup per day for older days.
+      let dateToUse = today.toISOString().slice(0, 10); // YYYY-MM-DD
+      const hourSpan = Math.min(Math.max(1, lazy.gBackupHourSpan), 24);
+      const backupHour = Math.floor(today.getHours() / hourSpan) * hourSpan;
+      dateToUse += `-${String(backupHour).padStart(2, "0")}`;
+      const todayFileName = `zen-sessions-${dateToUse}.jsonlz4`;
       const todayFilePath = PathUtils.join(backupFolder, todayFileName);
       const sessionFilePath = this.#file.path;
       this.log(`Backing up session file to ${todayFileName}`);

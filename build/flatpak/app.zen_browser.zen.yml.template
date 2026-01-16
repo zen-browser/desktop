@@ -1,14 +1,10 @@
 app-id: app.zen_browser.zen
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 base: org.mozilla.firefox.BaseApp
-base-version: '24.08'
+base-version: '25.08'
 add-extensions:
-  org.freedesktop.Platform.ffmpeg-full:
-    directory: lib/ffmpeg
-    version: '24.08'
-    add-ld-path: .
   app.zen_browser.zen.systemconfig:
     directory: etc/zen
     no-autodownload: true
@@ -25,9 +21,8 @@ finish-args:
   - --persist=.zen
   - --env=DICPATH=/usr/share/hunspell
   - --filesystem=xdg-download:rw
-  - --filesystem=/run/.heim_org.h5l.kcm-socket
   - --filesystem=xdg-run/speech-dispatcher:ro
-  - --device=all
+  - --device=dri
   - --talk-name=org.freedesktop.FileManager1
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
@@ -51,7 +46,6 @@ modules:
     buildsystem: simple
     build-commands:
       - mv zen /app/
-      - mkdir -p /app/lib/ffmpeg
       - mkdir -p /app/etc/zen
 
       - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh

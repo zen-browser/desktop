@@ -188,16 +188,25 @@ async function getExpectedWebCompatInfo(tab, snapshot, fullAppData = false) {
         false
       ),
     },
-    security: {
-      antispyware: securityStringToArray(registeredAntiSpyware),
-      antivirus: securityStringToArray(registeredAntiVirus),
-      firewall: securityStringToArray(registeredFirewall),
-    },
     system: {
       isTablet: getSysinfoProperty("tablet", false),
       memory: Math.round(memorySizeBytes / 1024 / 1024),
     },
   };
+  if (registeredAntiSpyware) {
+    browserInfo.security ??= {};
+    browserInfo.security.antispyware = securityStringToArray(
+      registeredAntiSpyware
+    );
+  }
+  if (registeredAntiVirus) {
+    browserInfo.security ??= {};
+    browserInfo.security.antivirus = securityStringToArray(registeredAntiVirus);
+  }
+  if (registeredFirewall) {
+    browserInfo.security ??= {};
+    browserInfo.security.firewall = securityStringToArray(registeredFirewall);
+  }
 
   const tabInfo = await tab.linkedBrowser.ownerGlobal.SpecialPowers.spawn(
     tab.linkedBrowser,
@@ -257,9 +266,17 @@ function extractBrokenSiteReportFromGleanPing(Glean) {
       Glean.brokenSiteReportBrowserInfo.experiments.testGetValue()
     ),
     prefs: extractPingData(Glean.brokenSiteReportBrowserInfoPrefs),
-    security: extractPingData(Glean.brokenSiteReportBrowserInfoSecurity),
     system: extractPingData(Glean.brokenSiteReportBrowserInfoSystem),
   };
+  const security = extractPingData(Glean.brokenSiteReportBrowserInfoSecurity);
+  for (const [k, v] of Object.entries(security)) {
+    if (v === null) {
+      delete security[k];
+    }
+  }
+  if (Object.keys(security).length) {
+    ping.browserInfo.security = security;
+  }
   return ping;
 }
 

@@ -59,6 +59,7 @@ async function ensureExpectedTabOrder(
   if (expectSendMoreInfo) {
     order.push("#report-broken-site-popup-send-more-info-link");
   }
+  order.push("#report-broken-site-popup-preview-button");
   // moz-button-groups swap the order of buttons to follow
   // platform conventions, so the order of send/cancel will vary.
   order.push([

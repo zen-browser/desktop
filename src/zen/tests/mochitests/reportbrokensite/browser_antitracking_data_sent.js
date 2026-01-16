@@ -67,7 +67,7 @@ add_task(async function testSendingMoreInfo() {
   const tab = await openTab(REPORTABLE_PAGE_URL3, win);
   await blockedPromise;
 
-  await testSendMoreInfo(tab, HelpMenu(win), {
+  await testSendMoreInfo(tab, AppMenu(win), {
     antitracking: {
       blockList: "strict",
       blockedOrigins: ["https://trackertest.org"],

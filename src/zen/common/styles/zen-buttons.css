@@ -31,6 +31,9 @@ dialog::part(dialog-button) {
 
   &:is([dlgtype="accept"], [dlgtype="cancel"]) {
     padding-inline-end: 3.7em;
+    @media (-moz-platform: windows) {
+      padding-inline-end: 4em;
+    }
 
     &::after {
       border-radius: 4px;
@@ -48,7 +51,7 @@ dialog::part(dialog-button) {
     &[dlgtype="accept"]::after {
       content: "⏎";
       background: rgba(255, 255, 255, 0.1);
-      outline: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+      outline: 2px solid color-mix(in srgb, currentColor 20%, transparent);
       outline-offset: -2px;
     }
 

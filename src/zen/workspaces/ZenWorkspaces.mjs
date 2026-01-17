@@ -2819,9 +2819,8 @@ class nsZenWorkspaces {
     const tabWorkspaceId = aTab.getAttribute("zen-workspace-id");
     const containerId = aTab.getAttribute("usercontextid") ?? "0";
     // Return all tabs that are not on the same workspace
-    return this.allStoredTabs.filter(
+    return gBrowser.tabs.filter(
       (tab) =>
-        tab.getAttribute("zen-workspace-id") !== tabWorkspaceId &&
         !this._shouldShowTab(tab, tabWorkspaceId, containerId, this._workspaceCache) &&
         !tab.hasAttribute("zen-empty-tab")
     );

@@ -20,6 +20,9 @@
 - name: zen.tabs.close-window-with-empty
   value: true
 
+- name: zen.tabs.select-recently-used-on-close
+  value: true
+
 - name: zen.tabs.use-legacy-drag-and-drop
   value: false
 

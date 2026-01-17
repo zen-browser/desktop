@@ -40,7 +40,9 @@
   }
 
   #navigator-toolbox {
-    --zen-toolbox-max-width: 74px !important;
+    --zen-toolbox-max-width: 60px !important;
+    max-width: fit-content !important;
+    min-width: fit-content !important;
     --zen-compact-float: var(--zen-element-separation);
 
     :root[zen-no-padding='true'] & {

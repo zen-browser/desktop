@@ -349,6 +349,12 @@ window.gZenCompactModeManager = {
       delete this._ignoreNextResize;
       return;
     }
+    // Skip width updates during customization (pin/unpin) to prevent
+    // the expanded width from being stored as the new permanent width
+    // Only skip in compact mode - in default mode the sidebar should expand normally
+    if (this._skipWidthUpdate && this.preference) {
+      return;
+    }
     let sidebarWidth = this.sidebar.getBoundingClientRect().width;
     const shouldRecalculate =
       this.preference || document.documentElement.hasAttribute("zen-creating-workspace");
@@ -499,9 +505,9 @@ window.gZenCompactModeManager = {
               this.sidebar,
               this.sidebarIsOnRight
                 ? {
-                    marginRight: [`-${sidebarWidth}px`, 0],
-                    transform: ["translateX(100%)", "translateX(0)"],
-                  }
+                  marginRight: [`-${sidebarWidth}px`, 0],
+                  transform: ["translateX(100%)", "translateX(0)"],
+                }
                 : { marginLeft: 0 },
               {
                 ease: "easeOut",

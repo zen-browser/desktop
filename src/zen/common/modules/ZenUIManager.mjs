@@ -893,7 +893,7 @@ window.gZenVerticalTabsManager = {
             easing: "ease-out",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch((err) => {
           console.error(err);
         })
@@ -915,7 +915,7 @@ window.gZenVerticalTabsManager = {
             easing: "ease-out",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch((err) => {
           console.error(err);
         })
@@ -942,8 +942,8 @@ window.gZenVerticalTabsManager = {
         ...(isLastItem
           ? {}
           : {
-              marginBottom: [`0px`, `-${height}px`],
-            }),
+            marginBottom: [`0px`, `-${height}px`],
+          }),
       },
       {
         duration: 0.075,
@@ -964,6 +964,8 @@ window.gZenVerticalTabsManager = {
   },
 
   async _preCustomize() {
+    // Set flag to prevent getAndApplySidebarWidth from storing the expanded width
+    gZenCompactModeManager._skipWidthUpdate = true;
     await this._multiWindowFeature.foreachWindowAsActive(async (browser) => {
       browser.gZenVerticalTabsManager._updateEvent({
         forCustomizableMode: true,
@@ -980,6 +982,8 @@ window.gZenVerticalTabsManager = {
     this._multiWindowFeature.foreachWindowAsActive(async (browser) => {
       browser.gZenVerticalTabsManager._updateEvent({ dontRebuildAreas: true });
     });
+    // Clear the flag to allow normal width recalculation
+    delete gZenCompactModeManager._skipWidthUpdate;
   },
 
   initializePreferences(updateEvent) {

@@ -58,8 +58,8 @@ zen-site-data-settings = 設定
 zen-generic-manage = 管理
 zen-generic-more = 更多
 zen-generic-next = 下一個
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = 新增至 Essentials
+zen-essentials-promo-sublabel = 切換至你最愛的分頁僅需點一下滑鼠
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 允許
 zen-site-data-setting-block = 已封鎖
@@ -107,3 +107,11 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = 有東西壞掉了嗎？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在安全模式下重新啟動
+# Section: Dialog contents
+
+# notification for when window sync has been enabled and 
+# users might want to know about it
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It

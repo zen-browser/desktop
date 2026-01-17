@@ -18,7 +18,7 @@ tab-context-zen-replace-pinned-url-with-current =
     .label = Zastąp przypięty adres URL aktualnym
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Zmień nazwę...
 tab-context-zen-edit-icon = 
     .label = Zmień ikonę...
 zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
@@ -60,8 +60,8 @@ zen-site-data-settings = Ustawienia
 zen-generic-manage = Zarządzaj
 zen-generic-more = Więcej
 zen-generic-next = Następne
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Dodaj do kluczowych kart
+zen-essentials-promo-sublabel = Utrzymuj swoje ulubione karty w zasięgu myszki
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Dozwolone
 zen-site-data-setting-block = Zablokowane
@@ -109,3 +109,11 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Coś się zepsuło?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Zrestartuj w trybie bezpiecznym
+# Section: Dialog contents
+
+# notification for when window sync has been enabled and 
+# users might want to know about it
+zen-window-sync-migration-dialog-title = Utrzymuj synchronizację okien
+zen-window-sync-migration-dialog-message = Zen synchronizuje okna na jednym urządzeniu, żeby zmiany w jednym oknie były natychmiast odzwierciedlone w pozostałych.
+zen-window-sync-migration-dialog-learn-more = Dowiedz się więcej
+zen-window-sync-migration-dialog-accept = Rozumiem

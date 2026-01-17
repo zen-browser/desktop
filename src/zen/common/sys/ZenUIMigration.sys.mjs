@@ -4,9 +4,15 @@
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+});
+
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 5;
+  MIGRATION_VERSION = 6;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -88,6 +94,38 @@ class nsZenUIMigration {
 
   _migrateV5() {
     Services.prefs.setBoolPref("zen.site-data-panel.show-callout", true);
+  }
+
+  _migrateV6() {
+    lazy.SessionStore.promiseAllWindowsRestored.then(() => {
+      const win = Services.wm.getMostRecentWindow("navigator:browser");
+      win.setTimeout(async () => {
+        const [title, message, learnMore, accept] = await win.document.l10n.formatMessages([
+          "zen-window-sync-migration-dialog-title",
+          "zen-window-sync-migration-dialog-message",
+          "zen-window-sync-migration-dialog-learn-more",
+          "zen-window-sync-migration-dialog-accept",
+        ]);
+
+        // buttonPressed will be 0 for cancel, 1 for "more info"
+        let buttonPressed = Services.prompt.confirmEx(
+          win,
+          title.value,
+          message.value,
+          Services.prompt.BUTTON_POS_0 * Services.prompt.BUTTON_TITLE_IS_STRING +
+            Services.prompt.BUTTON_POS_1 * Services.prompt.BUTTON_TITLE_IS_STRING,
+          learnMore.value,
+          accept.value,
+          null,
+          null,
+          {}
+        );
+        // User has clicked on "Learn More"
+        if (buttonPressed === 0) {
+          win.openTrustedLinkIn("https://docs.zen-browser.app/user-manual/window-sync", "tab");
+        }
+      }, 1000);
+    });
   }
 }
 

@@ -1,0 +1,22 @@
+diff --git a/browser/components/urlbar/UrlbarTokenizer.sys.mjs b/browser/components/urlbar/UrlbarTokenizer.sys.mjs
+index THE FUCK
+--- a/browser/components/urlbar/UrlbarTokenizer.sys.mjs
++++ b/browser/components/urlbar/UrlbarTokenizer.sys.mjs
+
+   // Defines special search characters.
+@@ -77,6 +77,7 @@ export var UrlbarTokenizer
+    TITLE: "#",
+    URL: "$",
+    ACTION: ">",
++   WORKSPACE: "@",
+  },
+ 
+  // Defines search mode restrictions
+@@ -90,6 +91,7 @@ export var UrlbarTokenizer
+    const keys = [
+      this.RESTRICT.HISTORY,
+      this.RESTRICT.BOOKMARK,
+      this.RESTRICT.OPENPAGE,
+      this.RESTRICT.SEARCH,
++     this.RESTRICT.WORKSPACE,
+    ];

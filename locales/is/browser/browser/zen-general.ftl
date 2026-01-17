@@ -107,3 +107,11 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Bilaði eitthvað?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Endurræsa í öruggum ham
+# Section: Dialog contents
+
+# notification for when window sync has been enabled and 
+# users might want to know about it
+zen-window-sync-migration-dialog-title = Samstilltu gluggana þína
+zen-window-sync-migration-dialog-message = Zen samstillir núna glugga á sama tæki, þannig að breytingar í einum glugga endurspeglast samstundis í hinum.
+zen-window-sync-migration-dialog-learn-more = Frekari upplýsingar
+zen-window-sync-migration-dialog-accept = Skilið

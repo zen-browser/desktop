@@ -109,11 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte
-# Section: Dialog contents
-
-# notification for when window sync has been enabled and 
-# users might want to know about it
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Coinnigh Do Windows Sioncrónaithe
+zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
+zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
+zen-window-sync-migration-dialog-accept = Tuigim é

@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-        [gwir] Ehangu Tabiau wedi'u Pinio
-        *[ffug] Lleihau Tabiau wedi'u Pinio
+            [gwir] Ehangu Tabiau wedi'u Pinio
+           *[ffug] Lleihau Tabiau wedi'u Pinio
         }
 zen-menubar-appearance = 
     .label = Gwedd

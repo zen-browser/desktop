@@ -203,6 +203,9 @@
         isEssential ? 0 : numEssentials,
         isEssential ? numEssentials : undefined
       );
+      if (!tabs.length) {
+        tabs = [...movingTabs];
+      }
 
       let screen = this._tabbrowserTabs.verticalMode ? event.screenY : event.screenX;
       if (screen == dragData.animLastScreenPos) {
@@ -675,8 +678,8 @@
 
     handle_drop(event) {
       this.clearSpaceSwitchTimer();
-      this.#maybeClearVerticalPinnedGridDragOver();
       super.handle_drop(event);
+      this.#maybeClearVerticalPinnedGridDragOver();
       const dt = event.dataTransfer;
       const activeWorkspace = gZenWorkspaces.activeWorkspace;
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);

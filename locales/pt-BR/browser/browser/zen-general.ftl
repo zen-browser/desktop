@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = perfil atual
+zen-panel-ui-current-profile-text = Perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Redefinir Guia Fixada
@@ -58,8 +58,8 @@ zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
 zen-generic-more = Mais
 zen-generic-next = Próximo
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Adicionar aos Essenciais
+zen-essentials-promo-sublabel = Mantenha suas abas favoritas a um clique de distância
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
@@ -105,5 +105,9 @@ zen-sidebar-notification-updated-label = O que há de novo em { -brand-short-nam
 zen-sidebar-notification-updated-tooltip = 
     .title = Ver Notas da Versão
 zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
-zen-sidebar-notification-restart-safe-mode-tooltip = 
+zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Reiniciar no Modo Seguro
+zen-window-sync-migration-dialog-title = Mantenha Suas Janelas em Sincronia
+zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no mesmo dispositivo, assim as mudanças feitas em uma janela são refletidas para as outras instantaneamente.
+zen-window-sync-migration-dialog-learn-more = Saiba Mais
+zen-window-sync-migration-dialog-accept = Entendi

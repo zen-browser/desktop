@@ -191,14 +191,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Removes a tab from a group.
    *
    * @param {Tab} tab - The tab to remove.
-   * @param {number} groupIndex - The index of the group.
-   * @param {boolean} [forUnsplit=false] - Whether the removal is for unsplitting.
+   * @param {number} [groupIndex=undefined] - The index of the group.
+   * @param {object} [options={}] - Additional options.
+   * @param {boolean} [options.forUnsplit=false] - Whether the removal is for unsplitting.
+   * @param {boolean} [options.dontRebuildGrid=false] - Whether to skip rebuilding the grid layout.
+   * @param {boolean} [options.changeTab=true] - Whether to change the selected tab.
    */
   removeTabFromGroup(
     tab,
-    groupIndex,
+    groupIndex = undefined,
     { forUnsplit = false, dontRebuildGrid = false, changeTab = true } = {}
   ) {
+    if (typeof groupIndex === "undefined") {
+      groupIndex = this._data.findIndex((group) => group.tabs.includes(tab));
+    }
     const group = this._data[groupIndex];
     const tabIndex = group.tabs.indexOf(tab);
     group.tabs.splice(tabIndex, 1);

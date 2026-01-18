@@ -11,10 +11,10 @@ zen-welcome-import-button = Zaimportuj teraz
 zen-welcome-set-default-browser = Ustaw { -brand-short-name } jako swoją domyślną przeglądarkę
 zen-welcome-dont-set-default-browser = NIE ustawiaj { -brand-short-name } jako swoja domyślna przeglądarka
 zen-welcome-initial-essentials-title = Twoje kluczowe karty, zawsze w zasięgu
-zen-welcome-initial-essentials-description-1 = Utrzymuj swoje najważniejsze karty zawsze pod ręką, niezależnie od tego jak wiele masz ich otwartych.
-zen-welcome-initial-essentials-description-2 = Niezbędne karty są zawsze widoczne, niezależnie od bieżącego obszaru roboczego.
+zen-welcome-initial-essentials-description-1 = Utrzymuj swoje najważniejsze karty zawsze pod ręką, niezależnie od tego, jak wiele masz ich otwartych.
+zen-welcome-initial-essentials-description-2 = Kluczowe karty są zawsze widoczne, niezależnie od bieżącego obszaru roboczego.
 zen-welcome-workspace-colors-title = Twój obszar roboczy, Twoje kolory
-zen-welcome-workspace-colors-description = Spersonalizuj przeglądarkę nadając każdemu obszarowi roboczemu unikatową identyfikację kolorystyczną.
+zen-welcome-workspace-colors-description = Spersonalizuj przeglądarkę, nadając każdemu obszarowi roboczemu unikatową identyfikację kolorystyczną.
 zen-welcome-start-browsing-title =
     Wszystko gotowe?<br/>
     No to śmigamy!

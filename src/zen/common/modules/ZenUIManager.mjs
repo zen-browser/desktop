@@ -64,6 +64,7 @@ window.gZenUIManager = {
     this._initBookmarkCollapseListener();
 
     ZenMenubar.init();
+    gURLBar._setPlaceholder(null);
   },
 
   /**

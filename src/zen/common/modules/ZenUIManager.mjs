@@ -894,7 +894,7 @@ window.gZenVerticalTabsManager = {
             easing: "ease-out",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch((err) => {
           console.error(err);
         })
@@ -916,7 +916,7 @@ window.gZenVerticalTabsManager = {
             easing: "ease-out",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch((err) => {
           console.error(err);
         })
@@ -943,8 +943,8 @@ window.gZenVerticalTabsManager = {
         ...(isLastItem
           ? {}
           : {
-              marginBottom: [`0px`, `-${height}px`],
-            }),
+            marginBottom: [`0px`, `-${height}px`],
+          }),
       },
       {
         duration: 0.075,
@@ -965,6 +965,9 @@ window.gZenVerticalTabsManager = {
   },
 
   async _preCustomize() {
+    // Flag to prevent getAndApplySidebarWidth from storing the expanded width
+    gZenCompactModeManager._skipWidthUpdate = true;
+
     await this._multiWindowFeature.foreachWindowAsActive(async (browser) => {
       browser.gZenVerticalTabsManager._updateEvent({
         forCustomizableMode: true,
@@ -974,6 +977,8 @@ window.gZenVerticalTabsManager = {
     this.rebuildAreas();
     this.navigatorToolbox.setAttribute("zen-sidebar-expanded", "true");
     document.documentElement.setAttribute("zen-sidebar-expanded", "true"); // force expanded sidebar
+    // Clear the flag to allow normal width recalculation
+    delete gZenCompactModeManager._skipWidthUpdate;
   },
 
   _postCustomize() {

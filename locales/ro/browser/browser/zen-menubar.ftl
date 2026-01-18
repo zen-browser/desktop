@@ -16,8 +16,8 @@ zen-menubar-appearance-description =
     .label = Site-urile web vor folosi:
 
 zen-menubar-appearance-auto =
-    .label = Automată
+    .label = Automat
 zen-menubar-appearance-light =
-    .label = Luminoasă
+    .label = Deschis
 zen-menubar-appearance-dark =
-    .label = Întunecată
+    .label = Întunecat

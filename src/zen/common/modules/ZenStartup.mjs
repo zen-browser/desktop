@@ -5,6 +5,8 @@
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
+import { ensureWindowType } from "chrome://browser/content/ImportalWindowType.mjs";
+
 
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container"];
@@ -13,10 +15,12 @@ class ZenStartup {
   isReady = false;
 
   init() {
+    ensureWindowType(window);
     this.openWatermark();
     this.#initBrowserBackground();
     this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
+
   }
 
   #initBrowserBackground() {

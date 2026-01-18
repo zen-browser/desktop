@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = {$folder-name} Ara...
+    .placeholder = { $folder-name } Ara...
 zen-folders-panel-rename-folder = 
     .label = Klasörü Yeniden Adlandır
 zen-folders-panel-unpack-folder = 

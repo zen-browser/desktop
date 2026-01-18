@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-        [true] Leathnaigh Cluaisíní Priontáilte
-        *[false] Laghdaigh Cluaisíní Priontáilte
+            [true] Leathnaigh Cluaisíní Priontáilte
+           *[false] Laghdaigh Cluaisíní Priontáilte
         }
 zen-menubar-appearance = 
     .label = Dealramh

@@ -107,11 +107,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Khởi động lại ở Chế độ an toàn
-# Section: Dialog contents
-
-# notification for when window sync has been enabled and 
-# users might want to know about it
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-title = Giữ cho các cửa sổ của bạn luôn được đồng bộ
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
 zen-window-sync-migration-dialog-accept = Got It

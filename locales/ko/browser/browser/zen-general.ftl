@@ -60,8 +60,8 @@ zen-site-data-settings = 설정
 zen-generic-manage = 관리
 zen-generic-more = 더 보기
 zen-generic-next = 다음
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = 에센셜에 추가
+zen-essentials-promo-sublabel = 가장 좋아하는 탭을 바로 열 수 있게
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = 허용됨
 zen-site-data-setting-block = 금지됨
@@ -109,11 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 안전 모드로 다시 시작
-# Section: Dialog contents
-
-# notification for when window sync has been enabled and 
-# users might want to know about it
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = 창을 동기화 상태로 유지
+zen-window-sync-migration-dialog-message = Zen이 이제 같은 기기에서 창을 동기화합니다. 한 창에서의 변경이 다른 창에서도 즉시 적용됩니다.
+zen-window-sync-migration-dialog-learn-more = 더 알아보기
+zen-window-sync-migration-dialog-accept = 알겠습니다

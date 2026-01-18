@@ -109,11 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Start på nytt i sikker modus
-# Section: Dialog contents
-
-# notification for when window sync has been enabled and 
-# users might want to know about it
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Hold vinduene dine synkronisert
+zen-window-sync-migration-dialog-message = Zen synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
+zen-window-sync-migration-dialog-learn-more = Lær mer
+zen-window-sync-migration-dialog-accept = Skjønner

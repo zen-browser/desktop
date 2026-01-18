@@ -109,10 +109,6 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Bir sorun mu oluştu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Güvenli Modda Yeniden Başlat
-# Section: Dialog contents
-
-# notification for when window sync has been enabled and 
-# users might want to know about it
 zen-window-sync-migration-dialog-title = Pencerelerinizi senkronize tutun
 zen-window-sync-migration-dialog-message = Zen artık aynı cihazdaki pencereleri senkronize ediyor; böylece bir pencerede yapılan değişiklikler anında diğer pencerelere yansıyor.
 zen-window-sync-migration-dialog-learn-more = Daha fazla bilgi

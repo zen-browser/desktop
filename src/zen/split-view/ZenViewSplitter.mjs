@@ -1212,14 +1212,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               gBrowser.moveTabToExistingGroup(tab, this._getSplitViewGroup(tabs, groupFetchId));
               group.tabs.push(tab);
               this.addTabToSplit(tab, group.layoutTree);
+              tab.splitView = true;
             }
           }
         }
-        if (this._sessionRestoring) {
+        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
+        if (this._sessionRestoring || initialIndex < 0) {
           return;
         }
         this.activateSplitView(group, true);
-        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
         // eslint-disable-next-line consistent-return
         return group;
       }
@@ -1263,6 +1264,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (!this._sessionRestoring && initialIndex >= 0) {
         window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
         this.activateSplitView(splitData);
+      } else {
+        for (const tab of tabs) {
+          tab.splitView = true;
+        }
       }
 
       this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);

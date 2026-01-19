@@ -18,3 +18,5 @@ zen-menubar-appearance-light =
     .label = 浅色
 zen-menubar-appearance-dark = 
     .label = 深色
+zen-menubar-new-unsynced-window = 
+    .label = 新建空白窗口

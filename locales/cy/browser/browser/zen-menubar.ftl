@@ -18,3 +18,5 @@ zen-menubar-appearance-light =
     .label = Golau
 zen-menubar-appearance-dark = 
     .label = Tywyll
+zen-menubar-new-unsynced-window = 
+    .label = New Blank Window

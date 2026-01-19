@@ -18,3 +18,5 @@ zen-menubar-appearance-light =
     .label = Solas
 zen-menubar-appearance-dark = 
     .label = Dorcha
+zen-menubar-new-unsynced-window = 
+    .label = New Blank Window

@@ -18,3 +18,5 @@ zen-menubar-appearance-light =
     .label = Világos
 zen-menubar-appearance-dark = 
     .label = Sötét
+zen-menubar-new-unsynced-window = 
+    .label = New Blank Window

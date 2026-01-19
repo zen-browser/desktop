@@ -18,3 +18,5 @@ zen-menubar-appearance-light =
     .label = Šviesią
 zen-menubar-appearance-dark = 
     .label = Tamsų
+zen-menubar-new-unsynced-window = 
+    .label = New Blank Window

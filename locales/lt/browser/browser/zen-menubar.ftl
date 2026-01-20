@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = Tamsų
 zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = Naujas tuščias langas

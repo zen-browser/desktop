@@ -1191,12 +1191,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
 
       const existingSplitTab = tabs.find((tab) => tab.splitView);
+      let shouldActivateSplit =
+        (initialIndex >= 0 || tabs.includes(window.gBrowser.selectedTab)) &&
+        !this._sessionRestoring;
       if (existingSplitTab) {
         this._moveTabsToContainer(tabs, tabs[tabIndexToUse]);
         const groupIndex = this._data.findIndex((group) => group.tabs.includes(existingSplitTab));
         const group = this._data[groupIndex];
         const gridTypeChange = gridType && group.gridType !== gridType;
         const newTabsAdded = tabs.find((t) => !group.tabs.includes(t));
+        if (group.tabs.length >= this.MAX_TABS) {
+          return;
+        }
         if (gridTypeChange || !newTabsAdded) {
           // reset layout
           group.gridType = gridType;
@@ -1217,7 +1223,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           }
         }
         this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
-        if (this._sessionRestoring || initialIndex < 0) {
+        if (!shouldActivateSplit) {
           return;
         }
         this.activateSplitView(group, true);
@@ -1261,7 +1267,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         layoutTree: this.calculateLayoutTree(tabs, gridType),
       };
       this._data.push(splitData);
-      if (!this._sessionRestoring && initialIndex >= 0) {
+      if (shouldActivateSplit) {
         window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
         this.activateSplitView(splitData);
       } else {
@@ -2032,10 +2038,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
 
     // We can't create an empty group, so only create if we have tabs
-    let group = null;
     if (tabs?.length) {
       // Create a new group with the initial tabs
-      group = gBrowser.addTabGroup(tabs, {
+      splitGroup = gBrowser.addTabGroup(tabs, {
         id,
         label: "",
         showCreateUI: false,
@@ -2044,7 +2049,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       });
     }
 
-    return group;
+    return splitGroup;
   }
 
   storeDataForSessionStore() {
@@ -2091,6 +2096,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       // Backwards compatibility
       group.setAttribute("split-view-group", "true");
+      for (const tab of group.tabs) {
+        tab.splitView = true;
+      }
       if (!groupData?.layoutTree) {
         this.splitTabs(group.tabs, group.gridType);
         delete this._sessionRestoring;

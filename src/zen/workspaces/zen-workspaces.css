@@ -209,7 +209,7 @@
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
     fill: currentColor;
-    font-size: 18px;
+    font-size: 14px;
 
     &[zen-emoji-open='true']::before {
       border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));

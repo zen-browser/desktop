@@ -1224,7 +1224,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         }
         this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
         if (!shouldActivateSplit) {
-          return;
+          return group;
         }
         this.activateSplitView(group, true);
         // eslint-disable-next-line consistent-return

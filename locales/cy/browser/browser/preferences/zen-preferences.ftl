@@ -314,4 +314,4 @@ zen-devtools-toggle-storage-shortcut = Toglo Storio
 zen-devtools-toggle-dom-shortcut = Toglo DOM
 zen-devtools-toggle-accessibility-shortcut = Toglo Hygyrchedd
 zen-close-all-unpinned-tabs-shortcut = Cau Pob Tab Heb ei Binio
-zen-new-unsynced-window-shortcut = Ffenestr Newydd Heb ei Chydweddu
+zen-new-unsynced-window-shortcut = Ffenestr Wag Newydd

@@ -2801,7 +2801,7 @@ class nsZenWorkspaces {
       if (matchingWorkspaces.length === 1) {
         const workspace = matchingWorkspaces[0];
         if (workspace.uuid !== this.getActiveWorkspaceFromCache().uuid) {
-          return [userContextId, true, workspace.uuid];
+          return [userContextId, false, workspace.uuid];
         }
       }
     }

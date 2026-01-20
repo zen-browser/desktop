@@ -350,7 +350,16 @@ class nsZenMediaController {
     this.updateMuteState();
     this.switchController();
 
-    if (!mediaController.isActive || this._currentBrowser?.browserId === browser.browserId) {
+    if (!mediaController.isActive) {
+      return;
+    }
+
+    if (this._currentBrowser?.browserId === browser.browserId) {
+      const metadata = mediaController.getMetadata();
+      if (metadata.title !== this.mediaTitle.textContent || metadata.artist !== this.mediaArtist.textContent) {
+        this.mediaTitle.textContent = metadata.title || "";
+        this.mediaArtist.textContent = metadata.artist || "";
+      }
       return;
     }
 
@@ -555,6 +564,15 @@ class nsZenMediaController {
     this.mediaProgressBar.value = (this._currentPosition / this._currentDuration) * 100;
 
     this._mediaUpdateInterval = setInterval(() => {
+      const metadata = this._currentMediaController?.getMetadata();
+      if (
+        metadata &&
+        (metadata.title !== this.mediaTitle.textContent ||
+          metadata.artist !== this.mediaArtist.textContent)
+      ) {
+        this._onMetadataChange({ target: this._currentMediaController });
+      }
+
       if (this._currentMediaController?.isPlaying) {
         this._currentPosition += 1 * this._currentPlaybackRate;
         if (this._currentPosition > this._currentDuration) {

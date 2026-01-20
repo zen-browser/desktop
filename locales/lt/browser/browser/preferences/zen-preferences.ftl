@@ -314,4 +314,4 @@ zen-devtools-toggle-storage-shortcut = Perjungti saugyklą
 zen-devtools-toggle-dom-shortcut = Perjungti DOM
 zen-devtools-toggle-accessibility-shortcut = Perjungti prieinamumą
 zen-close-all-unpinned-tabs-shortcut = Užverti visas neprisegtas korteles
-zen-new-unsynced-window-shortcut = Naujas nesinchronizuotas langas
+zen-new-unsynced-window-shortcut = Naujas tuščias langas

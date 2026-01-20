@@ -2027,12 +2027,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
 
     // Try to find an existing split view group
-    let splitGroup = gBrowser.tabGroups.find(
-      (group) =>
-        group.getAttribute("split-view-group") &&
-        group.tabs.some((tab) => tabs.includes(tab) && tab.splitView)
-    );
-
+    let splitGroup = tabs.find((tab) => tab.group?.hasAttribute("split-view-group"))?.group;
     if (splitGroup) {
       return splitGroup;
     }
@@ -2096,9 +2091,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       // Backwards compatibility
       group.setAttribute("split-view-group", "true");
-      for (const tab of group.tabs) {
-        tab.splitView = true;
-      }
       if (!groupData?.layoutTree) {
         this.splitTabs(group.tabs, group.gridType);
         delete this._sessionRestoring;

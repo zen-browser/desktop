@@ -2027,7 +2027,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
 
     // Try to find an existing split view group
-    let splitGroup = tabs.find((tab) => tab.group?.hasAttribute("split-view-group"))?.group;
+    let splitGroup = tabs?.find((tab) => tab.group?.hasAttribute("split-view-group"))?.group;
     if (splitGroup) {
       return splitGroup;
     }

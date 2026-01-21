@@ -80,19 +80,19 @@ export class ZenVimChild extends JSWindowActorChild {
     let handled = false;
     switch (event.key) {
       case "h":
-        this.#moveFocus(Ci.nsIFocusManager.MOVEFOCUS_LEFT);
+        this.#moveFocus("left");
         handled = true;
         break;
       case "j":
-        this.#moveFocus(Ci.nsIFocusManager.MOVEFOCUS_DOWN);
+        this.#moveFocus("down");
         handled = true;
         break;
       case "k":
-        this.#moveFocus(Ci.nsIFocusManager.MOVEFOCUS_UP);
+        this.#moveFocus("up");
         handled = true;
         break;
       case "l":
-        this.#moveFocus(Ci.nsIFocusManager.MOVEFOCUS_RIGHT);
+        this.#moveFocus("right");
         handled = true;
         break;
       case "i":
@@ -162,11 +162,112 @@ export class ZenVimChild extends JSWindowActorChild {
   }
 
   #moveFocus(direction) {
-    try {
-      Services.focus.moveFocus(this.contentWindow, null, direction, Ci.nsIFocusManager.FLAG_BYKEY);
-    } catch (e) {
-      // ignore
+    const doc = this.contentWindow?.document;
+    if (!doc) {
+      return;
     }
+
+    const candidates = this.#collectFocusableElements(doc);
+    if (!candidates.length) {
+      return;
+    }
+
+    const active = doc.activeElement;
+    const activeRect =
+      active && active !== doc.body && active !== doc.documentElement
+        ? active.getBoundingClientRect()
+        : null;
+    const anchor = activeRect
+      ? {
+          x: activeRect.left + activeRect.width / 2,
+          y: activeRect.top + activeRect.height / 2,
+        }
+      : {
+          x: this.contentWindow.innerWidth / 2,
+          y: this.contentWindow.innerHeight / 2,
+        };
+
+    let best = null;
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (const element of candidates) {
+      if (element === active) {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+
+      let primary = 0;
+      let secondary = 0;
+      if (direction === "left") {
+        primary = anchor.x - center.x;
+        secondary = Math.abs(anchor.y - center.y);
+      } else if (direction === "right") {
+        primary = center.x - anchor.x;
+        secondary = Math.abs(anchor.y - center.y);
+      } else if (direction === "up") {
+        primary = anchor.y - center.y;
+        secondary = Math.abs(anchor.x - center.x);
+      } else if (direction === "down") {
+        primary = center.y - anchor.y;
+        secondary = Math.abs(anchor.x - center.x);
+      } else {
+        return;
+      }
+
+      if (primary <= 0) {
+        continue;
+      }
+
+      const score = primary * 1000 + secondary;
+      if (score < bestScore) {
+        bestScore = score;
+        best = element;
+      }
+    }
+
+    if (best && typeof best.focus === "function") {
+      best.focus({ preventScroll: false });
+    }
+  }
+
+  #collectFocusableElements(doc) {
+    const selector = [
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([type=hidden]):not([disabled])",
+      "textarea:not([disabled])",
+      "select:not([disabled])",
+      "[tabindex]:not([tabindex='-1'])",
+      "[contenteditable='true']",
+      "[role='button']",
+      "[role='link']",
+    ].join(",");
+
+    return Array.from(doc.querySelectorAll(selector)).filter((element) =>
+      this.#isVisible(element)
+    );
+  }
+
+  #isVisible(element) {
+    if (!element || !element.isConnected) {
+      return false;
+    }
+    const rects = element.getClientRects();
+    if (!rects || rects.length === 0) {
+      return false;
+    }
+    const rect = element.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      return false;
+    }
+    const style = element.ownerDocument?.defaultView?.getComputedStyle(element);
+    if (!style || style.display === "none" || style.visibility === "hidden") {
+      return false;
+    }
+    return true;
   }
 
   #clickFocused() {

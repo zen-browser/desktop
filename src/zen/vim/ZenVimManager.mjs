@@ -6,9 +6,12 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 
 const MAX_LOCAL_SUGGESTIONS = 3;
 const MAX_REMOTE_SUGGESTIONS = 6;
+const MAX_HISTORY_SUGGESTIONS = 5;
+const MAX_VIM_SUGGESTIONS = 9;
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
+  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SearchSuggestionController:
     "moz-src:///toolkit/components/search/SearchSuggestionController.sys.mjs",
@@ -197,6 +200,10 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       case "quit":
         this._runCommandById("cmd_quitApplication");
         break;
+      case "bd":
+      case "bdelete":
+        this._closeCurrentTab();
+        break;
       case "tab":
       case "tabnew":
         this._handleTabCommand(args.join(" "));
@@ -211,6 +218,23 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     const command = document.getElementById(commandId);
     if (command) {
       command.doCommand();
+    }
+  }
+
+  _closeCurrentTab() {
+    const command = document.getElementById("cmd_close");
+    if (command) {
+      command.doCommand();
+      return;
+    }
+
+    if (window.gBrowser?.removeCurrentTab) {
+      gBrowser.removeCurrentTab({ animate: true });
+      return;
+    }
+
+    if (window.gBrowser?.selectedTab) {
+      gBrowser.removeTab(gBrowser.selectedTab);
     }
   }
 
@@ -327,20 +351,39 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    const historyItems = await this._fetchHistorySuggestions(query, requestId);
+    if (requestId !== this._suggestRequestId) {
+      return;
+    }
+
     const engineName = engine?.name || "Search";
-    items.push({
-      type: "search",
-      label: query,
-      value: query,
-      meta: `Search with ${engineName}`,
-    });
+    const seen = new Set(items.map((item) => item.value.toLowerCase()));
+    for (const item of historyItems) {
+      const key = item.value.toLowerCase();
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      items.push(item);
+      if (items.length >= MAX_VIM_SUGGESTIONS) {
+        break;
+      }
+    }
+
+    if (items.length < MAX_VIM_SUGGESTIONS) {
+      items.push({
+        type: "search",
+        label: query,
+        value: query,
+        meta: `Search with ${engineName}`,
+      });
+    }
 
     const suggestions = await this._fetchSearchSuggestions(engine, query, requestId);
     if (requestId !== this._suggestRequestId) {
       return;
     }
 
-    const seen = new Set(items.map((item) => item.value.toLowerCase()));
     for (const suggestion of suggestions) {
       const key = suggestion.toLowerCase();
       if (seen.has(key)) {
@@ -353,12 +396,83 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
         value: suggestion,
         meta: "Suggestion",
       });
-      if (items.length >= 8) {
+      if (items.length >= MAX_VIM_SUGGESTIONS) {
         break;
       }
     }
 
     this._renderSuggestions(items);
+  }
+
+  async _fetchHistorySuggestions(query, requestId) {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    let conn = null;
+    try {
+      conn = await lazy.PlacesUtils.promiseLargeCacheDBConnection();
+    } catch (e) {
+      return [];
+    }
+
+    if (requestId !== this._suggestRequestId) {
+      return [];
+    }
+
+    const escaped = this._escapeLike(trimmed);
+    const like = `%${escaped}%`;
+    const inputPrefix = `${escaped}%`;
+
+    let rows = [];
+    try {
+      rows = await conn.executeCached(
+        `
+          SELECT h.url AS url,
+                 h.title AS title,
+                 IFNULL(i.use_count, 0) AS use_count,
+                 h.frecency AS frecency,
+                 h.last_visit_date AS last_visit_date
+          FROM moz_places h
+          LEFT JOIN moz_inputhistory i
+                 ON i.place_id = h.id
+                AND i.input LIKE :inputPrefix ESCAPE '\\'
+          WHERE h.frecency <> 0
+            AND h.url NOT LIKE 'place:%'
+            AND (h.url LIKE :like ESCAPE '\\' OR h.title LIKE :like ESCAPE '\\')
+          ORDER BY use_count DESC, frecency DESC, last_visit_date DESC
+          LIMIT :limit
+        `,
+        {
+          like,
+          inputPrefix,
+          limit: MAX_HISTORY_SUGGESTIONS,
+        }
+      );
+    } catch (e) {
+      return [];
+    }
+
+    if (requestId !== this._suggestRequestId) {
+      return [];
+    }
+
+    return rows
+      .map((row) => {
+        const url = row.getResultByName("url");
+        if (!url) {
+          return null;
+        }
+        const title = row.getResultByName("title") || url;
+        return {
+          type: "history",
+          label: title,
+          value: url,
+          meta: url,
+        };
+      })
+      .filter(Boolean);
   }
 
   async _fetchSearchSuggestions(engine, query, requestId) {
@@ -419,7 +533,13 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       const kind = document.createElement("div");
       kind.classList.add("zen-vim-commandline-suggest-kind");
       kind.textContent =
-        item.type === "url" ? "URL" : item.type === "search" ? "SEARCH" : "SUGG";
+        item.type === "url"
+          ? "URL"
+          : item.type === "history"
+            ? "HIST"
+            : item.type === "search"
+              ? "SEARCH"
+              : "SUGG";
 
       const label = document.createElement("div");
       label.classList.add("zen-vim-commandline-suggest-label");
@@ -487,7 +607,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return false;
     }
 
-    if (suggestion.type === "url") {
+    if (suggestion.type === "url" || suggestion.type === "history") {
       this._openUrlInNewTab(suggestion.value);
     } else {
       this._openSearchTab(suggestion.value).catch((error) => {
@@ -532,6 +652,10 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     }
     const query = (match[2] || "").trim();
     return query;
+  }
+
+  _escapeLike(value) {
+    return value.replace(/[\\%_]/gu, (match) => `\\${match}`);
   }
 
   _looksLikeUrl(value) {

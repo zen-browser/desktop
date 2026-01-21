@@ -32,6 +32,19 @@ z-index: 1;
 %include ../../compact-mode/windows-captions-fix-default.inc.css
   }
 
+  /* Issue #11915: In single-toolbar mode without bookmarks, prevent hover from
+   * expanding the toolbar when it's disabled. This mirrors the behavior of
+   * zen.view.experimental-no-window-controls but for the normal disable setting. */
+  @media -moz-pref('zen.view.use-single-toolbar') {
+    :root:not([zen-has-bookmarks]) & {
+      max-height: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    }
+  }
+
   @media -moz-pref('zen.view.experimental-no-window-controls') {
     :root:not([zen-has-bookmarks]) & {
       max-height: 0 !important;

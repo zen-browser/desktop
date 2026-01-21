@@ -46,8 +46,12 @@ export class ZenVimChild extends JSWindowActorChild {
 
     const editableTarget = this.#getEditableElement(event.target);
     const inEditable = !!editableTarget;
+    const supportedEditable = inEditable && this.#isSupportedEditableTarget(editableTarget);
 
     if (event.key === "Escape") {
+      if (inEditable && !supportedEditable) {
+        return;
+      }
       if (inEditable && this.#mode === "normal") {
         if (this.#inputMode === "insert") {
           this.#setInputMode("normal", { target: editableTarget, fromInsert: true });
@@ -82,6 +86,10 @@ export class ZenVimChild extends JSWindowActorChild {
     if (this.#mode === "command" || this.#mode === "search") {
       event.preventDefault();
       event.stopPropagation();
+      return;
+    }
+
+    if (inEditable && !supportedEditable) {
       return;
     }
 
@@ -145,6 +153,10 @@ export class ZenVimChild extends JSWindowActorChild {
     if (!editableTarget) {
       return;
     }
+    if (!this.#isSupportedEditableTarget(editableTarget)) {
+      this.#clearInputState();
+      return;
+    }
     if (this.#inputTarget && this.#inputTarget !== editableTarget) {
       this.#clearInputState();
     }
@@ -176,6 +188,9 @@ export class ZenVimChild extends JSWindowActorChild {
     }
     const editableTarget = this.#getEditableElement(event.target);
     if (!editableTarget || editableTarget !== this.#inputTarget) {
+      return;
+    }
+    if (!this.#isSupportedEditableTarget(editableTarget)) {
       return;
     }
     this.#normalizeSelectionForNormal(editableTarget);
@@ -341,6 +356,10 @@ export class ZenVimChild extends JSWindowActorChild {
     }
 
     return false;
+  }
+
+  #isSupportedEditableTarget(element) {
+    return this.#isTextControlElement(element);
   }
 
   async #handleEditableKeydown(event, editableTarget) {

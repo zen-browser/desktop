@@ -4,13 +4,13 @@
 
 zen-panel-ui-workspaces-text = Ruang Kerja Lainnya
 zen-panel-ui-spaces-label = 
-    .label = Spaces
+    .label = Ruang
 zen-panel-ui-workspaces-create = 
     .label = Buat Ruang
 zen-panel-ui-folder-create = 
     .label = Buat Folder
 zen-panel-ui-new-empty-split = 
-    .label = New Split
+    .label = Split Baru
 zen-workspaces-panel-context-delete = 
     .label = Hapus Ruang
     .accesskey = D
@@ -66,6 +66,6 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Bersihkan
     .tooltiptext = Tutup semua tab yang tidak disematkan
 zen-panel-ui-workspaces-change-forward = 
-    .label = Next Space
+    .label = Ruang Selanjutnya
 zen-panel-ui-workspaces-change-back = 
-    .label = Previous Space
+    .label = Ruang Sebelumnya

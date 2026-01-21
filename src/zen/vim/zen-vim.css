@@ -1,0 +1,41 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#zen-vim-commandline {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  padding: 8px 12px;
+  background: rgba(20, 20, 20, 0.9);
+  color: #f8f8f2;
+  font: 14px monospace;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+#zen-vim-commandline[hidden] {
+  display: none !important;
+}
+
+.zen-vim-commandline-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zen-vim-commandline-prompt {
+  font-weight: 600;
+}
+
+.zen-vim-commandline-input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  padding: 2px 0;
+}

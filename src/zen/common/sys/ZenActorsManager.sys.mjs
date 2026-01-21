@@ -57,6 +57,23 @@ let JSWINDOWACTORS = {
     matches: ["*://*/*"],
     enablePreference: "zen.glance.enabled",
   },
+  ZenVim: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenVimParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenVimChild.sys.mjs",
+      events: {
+        DOMContentLoaded: {},
+        keydown: {
+          capture: true,
+        },
+      },
+    },
+    allFrames: true,
+    matches: ["*://*/*", "file://*/*", "about:*"],
+    enablePreference: "zen.vim.enabled",
+  },
 };
 
 export let gZenActorsManager = {

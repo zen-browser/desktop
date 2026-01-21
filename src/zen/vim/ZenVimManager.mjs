@@ -196,6 +196,10 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
 
     const [name, ...args] = command.split(/\s+/u);
     switch (name) {
+      case "noh":
+      case "nohlsearch":
+        this._clearSearchHighlight();
+        break;
       case "q":
       case "quit":
         this._runCommandById("cmd_quitApplication");
@@ -704,6 +708,19 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     const finder = gBrowser.selectedBrowser.finder;
     finder.fastFind(query, false, false);
     finder.highlight(true, query, false);
+  }
+
+  _clearSearchHighlight() {
+    try {
+      const finder = gBrowser?.selectedBrowser?.finder;
+      if (!finder) {
+        return;
+      }
+      finder.removeSelection();
+      finder.highlight(false);
+    } catch (e) {
+      // ignore
+    }
   }
 
   async _closeFindBar() {

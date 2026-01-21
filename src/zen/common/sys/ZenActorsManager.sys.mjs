@@ -68,6 +68,15 @@ let JSWINDOWACTORS = {
         keydown: {
           capture: true,
         },
+        focusin: {
+          capture: true,
+        },
+        focusout: {
+          capture: true,
+        },
+        mouseup: {
+          capture: true,
+        },
       },
     },
     allFrames: true,

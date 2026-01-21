@@ -39,3 +39,63 @@
   outline: none;
   padding: 2px 0;
 }
+
+.zen-vim-commandline-suggest {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 100%;
+  margin-bottom: 8px;
+  background: rgba(20, 20, 20, 0.95);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.zen-vim-commandline-suggest[hidden] {
+  display: none !important;
+}
+
+.zen-vim-commandline-suggest-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.zen-vim-commandline-suggest-item {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: 12px monospace;
+}
+
+.zen-vim-commandline-suggest-item.is-selected {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.zen-vim-commandline-suggest-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.zen-vim-commandline-suggest-kind {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.zen-vim-commandline-suggest-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-vim-commandline-suggest-meta {
+  font-size: 11px;
+  opacity: 0.7;
+  white-space: nowrap;
+}

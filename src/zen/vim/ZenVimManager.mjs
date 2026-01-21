@@ -4,6 +4,16 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const MAX_LOCAL_SUGGESTIONS = 3;
+const MAX_REMOTE_SUGGESTIONS = 6;
+
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  SearchSuggestionController:
+    "moz-src:///toolkit/components/search/SearchSuggestionController.sys.mjs",
+});
+
 class nsZenVimManager extends nsZenDOMOperatedFeature {
   _mode = "normal";
   _lastSearch = "";
@@ -12,11 +22,22 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
   _commandline = null;
   _prompt = null;
   _input = null;
+  _suggestBox = null;
+  _suggestList = null;
+  _suggestions = [];
+  _suggestIndex = -1;
+  _suggestTimer = null;
+  _suggestRequestId = 0;
+  _suggestController = null;
 
   init() {
     this._commandline = document.getElementById("zen-vim-commandline");
     this._prompt = document.getElementById("zen-vim-commandline-prompt");
     this._input = document.getElementById("zen-vim-commandline-input");
+    this._suggestBox = document.getElementById("zen-vim-commandline-suggest");
+    this._suggestList = document.getElementById(
+      "zen-vim-commandline-suggest-list"
+    );
 
     if (!this._commandline || !this._prompt || !this._input) {
       console.warn("[vim] Command line UI not found; Vim mode disabled.");
@@ -24,6 +45,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     }
 
     this._input.addEventListener("keydown", this._onCommandLineKeyDown.bind(this));
+    this._input.addEventListener("input", this._onCommandLineInput.bind(this));
     this._commandline.addEventListener("mousedown", (event) => {
       event.preventDefault();
       this._input.focus();
@@ -57,6 +79,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     this._activePrompt = prompt;
     this._prompt.textContent = prompt;
     this._input.value = "";
+    this._clearSuggestions();
 
     this._commandline.hidden = false;
     this._commandline.setAttribute("data-open", "true");
@@ -75,6 +98,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    this._clearSuggestions();
     this._commandline.hidden = true;
     this._commandline.removeAttribute("data-open");
     this._input.value = "";
@@ -108,6 +132,34 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    if (this._activePrompt === ":" && this._hasSuggestions()) {
+      if (event.key === "ArrowDown") {
+        this._moveSuggestion(1);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        this._moveSuggestion(-1);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (event.key === "Tab") {
+        this._moveSuggestion(1);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (event.key === "Enter") {
+        if (this._acceptSuggestion()) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+      }
+    }
+
     if (event.key !== "Enter") {
       return;
     }
@@ -122,6 +174,15 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     this.closeCommandLine();
     event.preventDefault();
     event.stopPropagation();
+  }
+
+  _onCommandLineInput() {
+    if (this._activePrompt !== ":") {
+      this._clearSuggestions();
+      return;
+    }
+
+    this._scheduleSuggestUpdate();
   }
 
   _executeCommand(rawCommand) {
@@ -160,6 +221,11 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    if (this._looksLikeUrl(query)) {
+      this._openUrlInNewTab(this._normalizeUrl(query));
+      return;
+    }
+
     this._openSearchTab(query).catch((error) => {
       console.error("[vim] Failed to open search tab:", error);
       this._runCommandById("cmd_newNavigatorTab");
@@ -193,6 +259,314 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       inBackground: false,
     });
     gBrowser.selectedTab = tab;
+  }
+
+  _openUrlInNewTab(url) {
+    if (!url) {
+      this._runCommandById("cmd_newNavigatorTab");
+      return;
+    }
+
+    const params = {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      forceForeground: true,
+    };
+
+    if (typeof window.openLinkIn === "function") {
+      window.openLinkIn(url, "tab", params);
+      return;
+    }
+
+    const tab = gBrowser.addTab(url, {
+      triggeringPrincipal: params.triggeringPrincipal,
+      inBackground: false,
+    });
+    gBrowser.selectedTab = tab;
+  }
+
+  _scheduleSuggestUpdate() {
+    if (this._suggestTimer) {
+      clearTimeout(this._suggestTimer);
+    }
+    this._suggestTimer = setTimeout(() => {
+      this._suggestTimer = null;
+      this._updateTabSuggestions().catch((error) => {
+        console.error("[vim] Failed to update suggestions:", error);
+      });
+    }, 120);
+  }
+
+  async _updateTabSuggestions() {
+    const query = this._getTabCommandQuery(this._input?.value || "");
+    if (!query) {
+      this._clearSuggestions();
+      return;
+    }
+
+    const requestId = ++this._suggestRequestId;
+    const items = [];
+    const isUrl = this._looksLikeUrl(query);
+    if (isUrl) {
+      const url = this._normalizeUrl(query);
+      items.push({
+        type: "url",
+        label: url,
+        value: url,
+        meta: "Open link",
+      });
+    }
+
+    let engine = null;
+    try {
+      engine = await Services.search.getDefault();
+    } catch (e) {
+      // ignore
+    }
+
+    if (requestId !== this._suggestRequestId) {
+      return;
+    }
+
+    const engineName = engine?.name || "Search";
+    items.push({
+      type: "search",
+      label: query,
+      value: query,
+      meta: `Search with ${engineName}`,
+    });
+
+    const suggestions = await this._fetchSearchSuggestions(engine, query, requestId);
+    if (requestId !== this._suggestRequestId) {
+      return;
+    }
+
+    const seen = new Set(items.map((item) => item.value.toLowerCase()));
+    for (const suggestion of suggestions) {
+      const key = suggestion.toLowerCase();
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      items.push({
+        type: "suggestion",
+        label: suggestion,
+        value: suggestion,
+        meta: "Suggestion",
+      });
+      if (items.length >= 8) {
+        break;
+      }
+    }
+
+    this._renderSuggestions(items);
+  }
+
+  async _fetchSearchSuggestions(engine, query, requestId) {
+    if (!engine || !query) {
+      return [];
+    }
+
+    if (!this._suggestController) {
+      this._suggestController = new lazy.SearchSuggestionController();
+    }
+
+    const ok = lazy.SearchSuggestionController.engineOffersSuggestions(engine);
+    const maxLocalResults = ok ? MAX_LOCAL_SUGGESTIONS : MAX_LOCAL_SUGGESTIONS + 2;
+    const maxRemoteResults = ok ? MAX_REMOTE_SUGGESTIONS : 0;
+
+    try {
+      const suggestions = await this._suggestController.fetch({
+        searchString: query,
+        inPrivateBrowsing: lazy.PrivateBrowsingUtils.isBrowserPrivate(
+          gBrowser.selectedBrowser
+        ),
+        engine,
+        maxLocalResults,
+        maxRemoteResults,
+      });
+
+      if (requestId !== this._suggestRequestId || !suggestions) {
+        return [];
+      }
+
+      const local = suggestions.local || [];
+      const remote = suggestions.remote || [];
+      return [...local, ...remote].filter(Boolean);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  _renderSuggestions(items) {
+    if (!this._suggestBox || !this._suggestList) {
+      return;
+    }
+
+    if (!items.length) {
+      this._clearSuggestions();
+      return;
+    }
+
+    this._suggestions = items;
+    this._suggestList.textContent = "";
+
+    for (const [index, item] of items.entries()) {
+      const row = document.createElement("div");
+      row.classList.add("zen-vim-commandline-suggest-item");
+      row.dataset.index = String(index);
+      row.dataset.kind = item.type;
+
+      const kind = document.createElement("div");
+      kind.classList.add("zen-vim-commandline-suggest-kind");
+      kind.textContent =
+        item.type === "url" ? "URL" : item.type === "search" ? "SEARCH" : "SUGG";
+
+      const label = document.createElement("div");
+      label.classList.add("zen-vim-commandline-suggest-label");
+      label.textContent = item.label;
+
+      const meta = document.createElement("div");
+      meta.classList.add("zen-vim-commandline-suggest-meta");
+      meta.textContent = item.meta || "";
+
+      row.append(kind, label, meta);
+      row.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this._setSuggestionIndex(index);
+        this._acceptSuggestion();
+      });
+      this._suggestList.append(row);
+    }
+
+    this._suggestBox.hidden = false;
+    this._suggestBox.setAttribute("data-open", "true");
+    this._setSuggestionIndex(0);
+  }
+
+  _setSuggestionIndex(index) {
+    if (!this._suggestList || !this._suggestions.length) {
+      this._suggestIndex = -1;
+      return;
+    }
+
+    const clamped = Math.max(0, Math.min(index, this._suggestions.length - 1));
+    const previous = this._suggestList.querySelector(".is-selected");
+    if (previous) {
+      previous.classList.remove("is-selected");
+    }
+
+    this._suggestIndex = clamped;
+    const current = this._suggestList.querySelector(
+      `[data-index="${clamped}"]`
+    );
+    if (current) {
+      current.classList.add("is-selected");
+      current.scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  _moveSuggestion(delta) {
+    if (!this._suggestions.length) {
+      return;
+    }
+    const count = this._suggestions.length;
+    const startIndex = this._suggestIndex >= 0 ? this._suggestIndex : 0;
+    const nextIndex = (startIndex + delta + count) % count;
+    this._setSuggestionIndex(nextIndex);
+  }
+
+  _acceptSuggestion() {
+    if (!this._hasSuggestions()) {
+      return false;
+    }
+
+    const index = this._suggestIndex >= 0 ? this._suggestIndex : 0;
+    const suggestion = this._suggestions[index];
+    if (!suggestion) {
+      return false;
+    }
+
+    if (suggestion.type === "url") {
+      this._openUrlInNewTab(suggestion.value);
+    } else {
+      this._openSearchTab(suggestion.value).catch((error) => {
+        console.error("[vim] Failed to open suggestion:", error);
+        this._runCommandById("cmd_newNavigatorTab");
+      });
+    }
+
+    this.closeCommandLine();
+    return true;
+  }
+
+  _hasSuggestions() {
+    return (
+      !!this._suggestions.length &&
+      !!this._suggestBox &&
+      !this._suggestBox.hidden
+    );
+  }
+
+  _clearSuggestions() {
+    if (this._suggestTimer) {
+      clearTimeout(this._suggestTimer);
+      this._suggestTimer = null;
+    }
+    this._suggestRequestId += 1;
+    this._suggestions = [];
+    this._suggestIndex = -1;
+    if (this._suggestList) {
+      this._suggestList.textContent = "";
+    }
+    if (this._suggestBox) {
+      this._suggestBox.hidden = true;
+      this._suggestBox.removeAttribute("data-open");
+    }
+  }
+
+  _getTabCommandQuery(rawValue) {
+    const match = rawValue.match(/^\s*(tab|tabnew)\b(.*)$/iu);
+    if (!match) {
+      return "";
+    }
+    const query = (match[2] || "").trim();
+    return query;
+  }
+
+  _looksLikeUrl(value) {
+    const trimmed = value.trim();
+    if (!trimmed || /\s/u.test(trimmed)) {
+      return false;
+    }
+    if (/^[a-z][a-z0-9+.-]*:/iu.test(trimmed)) {
+      return true;
+    }
+    if (/^www\./iu.test(trimmed)) {
+      return true;
+    }
+    if (
+      /\.(com|edu|org|net|gov|io|co|ai|dev|app|info|biz|me|tv)(\/|$)/iu.test(
+        trimmed
+      )
+    ) {
+      return true;
+    }
+    if (/^\d{1,3}(\.\d{1,3}){3}(:\d+)?(\/|$)/u.test(trimmed)) {
+      return true;
+    }
+    if (/^localhost(:\d+)?(\/|$)/iu.test(trimmed)) {
+      return true;
+    }
+    return false;
+  }
+
+  _normalizeUrl(value) {
+    const trimmed = value.trim();
+    if (/^[a-z][a-z0-9+.-]*:/iu.test(trimmed)) {
+      return trimmed;
+    }
+    return `https://${trimmed}`;
   }
 
   _doSearch(rawQuery) {

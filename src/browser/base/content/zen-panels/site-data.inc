@@ -5,7 +5,8 @@
 <panel id="zen-unified-site-data-panel"
         role="group"
         type="arrow"
-        noautofocus="true">
+        noautofocus="true"
+        position="bottomright topright">
   <panelmultiview mainViewId="unified-extensions-view">
 # We'll keep the view with this name/id in order to prevent
 # any sort of future issues we may have if firefox decides

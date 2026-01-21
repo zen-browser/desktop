@@ -130,7 +130,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const [name] = command.split(/\s+/u);
+    const [name, ...args] = command.split(/\s+/u);
     switch (name) {
       case "q":
       case "quit":
@@ -138,7 +138,7 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
         break;
       case "tab":
       case "tabnew":
-        this._runCommandById("cmd_newNavigatorTab");
+        this._handleTabCommand(args.join(" "));
         break;
       default:
         console.warn(`[vim] Unknown command: ${command}`);
@@ -151,6 +151,48 @@ class nsZenVimManager extends nsZenDOMOperatedFeature {
     if (command) {
       command.doCommand();
     }
+  }
+
+  _handleTabCommand(rawQuery) {
+    const query = rawQuery.trim();
+    if (!query) {
+      this._runCommandById("cmd_newNavigatorTab");
+      return;
+    }
+
+    this._openSearchTab(query).catch((error) => {
+      console.error("[vim] Failed to open search tab:", error);
+      this._runCommandById("cmd_newNavigatorTab");
+    });
+  }
+
+  async _openSearchTab(query) {
+    const engine = await Services.search.getDefault();
+    const submission = engine.getSubmission(query, null);
+    if (!submission?.uri) {
+      this._runCommandById("cmd_newNavigatorTab");
+      return;
+    }
+
+    const params = {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      forceForeground: true,
+    };
+    if (submission.postData) {
+      params.postData = submission.postData;
+    }
+
+    if (typeof window.openLinkIn === "function") {
+      window.openLinkIn(submission.uri.spec, "tab", params);
+      return;
+    }
+
+    const tab = gBrowser.addTab(submission.uri.spec, {
+      triggeringPrincipal: params.triggeringPrincipal,
+      postData: params.postData || null,
+      inBackground: false,
+    });
+    gBrowser.selectedTab = tab;
   }
 
   _doSearch(rawQuery) {

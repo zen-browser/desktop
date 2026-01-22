@@ -123,11 +123,11 @@ zen-folder {
         }
 
         &[state="open"] .back {
-          transform: skewX(16deg) translate(-2px, 3.4px) scale(0.85);
+          transform: skewX(16deg) translate(-4px, 2px) scale(0.85);
         }
 
         &[state="open"] :is(.front, .dots, .icon) {
-          transform: skewX(-16deg) translate(11.1px, 3.4px) scale(0.85);
+          transform: skewX(-16deg) translate(8px, 2px) scale(0.85);
         }
 
         & .icon {

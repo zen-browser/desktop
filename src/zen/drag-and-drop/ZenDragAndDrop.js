@@ -39,6 +39,7 @@
       !element ||
       element.closest(".zen-current-workspace-indicator") ||
       element.hasAttribute("split-view-group") ||
+      element.classList.contains("zen-drop-target") ||
       isEssentialsPromo(element)
     ) {
       return element;
@@ -51,6 +52,9 @@
     }
     if (isTabGroupLabel(element)) {
       return element.closest(".tab-group-label-container");
+    }
+    if (gBrowser.isTabGroup(element)) {
+      return element.labelContainerElement;
     }
     throw new Error(`Element "${element.tagName}" is not expected to move`);
   };
@@ -111,7 +115,7 @@
       const { offsetX, offsetY } = this.#getDragImageOffset(event, tab, draggingTabs);
       const dragImage = this.#createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
-      dt.updateDragImage(...this.originalDragImageArgs);
+      dt.setDragImage(...this.originalDragImageArgs);
       if (tab.hasAttribute("zen-essential")) {
         setTimeout(() => {
           tab.style.visibility = "hidden";
@@ -137,6 +141,9 @@
           const rect = tab.getBoundingClientRect();
           tabClone.style.minWidth = tabClone.style.maxWidth = `${rect.width}px`;
           tabClone.style.minHeight = tabClone.style.maxHeight = `${rect.height}px`;
+          if (tabClone.hasAttribute("visuallyselected")) {
+            tabClone.style.transform = "translate(-50%, -50%)";
+          }
         }
         if (i > 0) {
           tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;
@@ -197,12 +204,7 @@
         ? dragData.screenY
         : dragData.screenX;
       let allTabs = this._tabbrowserTabs.ariaFocusableItems;
-      let numEssentials = gBrowser._numZenEssentials;
-      let isEssential = draggedTab.hasAttribute("zen-essential");
-      let tabs = allTabs.slice(
-        isEssential ? 0 : numEssentials,
-        isEssential ? numEssentials : undefined
-      );
+      let tabs = allTabs;
       if (!tabs.length) {
         tabs = [...movingTabs];
       }
@@ -235,7 +237,9 @@
       dragData.translateY = translateY;
 
       // Move the dragged tab based on the mouse position.
-      let periphery = document.getElementById("tabbrowser-arrowscrollbox-periphery");
+      let periphery = gZenWorkspaces.activeWorkspaceElement.querySelector(
+        "#tabbrowser-arrowscrollbox-periphery"
+      );
       let lastMovingTab = movingTabs.at(-1);
       let firstMovingTab = movingTabs[0];
       let endEdge = (ele) => ele[screenAxis] + bounds(ele)[size];
@@ -452,9 +456,7 @@
         // 4) we just started dragging and the `oldDropElementIndex` has its default
         //    valuë of `movingTabs[0].elementIndex`. In this case, the drop element
         //    shouldn't be a moving tab, so keep it `undefined`.
-        let lastPossibleDropElement = this._rtlMode
-          ? tabs.find((t) => t != draggedTab)
-          : tabs.findLast((t) => t != draggedTab);
+        let lastPossibleDropElement = this._rtlMode ? tabs.find((t) => t != draggedTab) : undefined;
         let maxElementIndexForDropElement = lastPossibleDropElement?.elementIndex;
         if (Number.isInteger(maxElementIndexForDropElement)) {
           let index = Math.min(oldDropElementIndex, maxElementIndexForDropElement);
@@ -521,7 +523,7 @@
 
       [dropBefore, dropElement] = this.#applyDragoverIndicator(
         event,
-        tabs,
+        dropElement,
         movingTabs,
         draggedTab
       ) ?? [dropBefore, dropElement];
@@ -678,6 +680,7 @@
 
     handle_drop(event) {
       this.clearSpaceSwitchTimer();
+      gZenFolders.highlightGroupOnDragOver(null);
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       const dt = event.dataTransfer;
@@ -817,6 +820,9 @@
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
       }
+      // We also call it here to ensure we clear any highlight if the drop happened
+      // outside of a valid drop target.
+      gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
       super.handle_dragend(event);
       this.#removeDragOverBackground();
@@ -872,35 +878,26 @@
     }
 
     // eslint-disable-next-line complexity
-    #applyDragoverIndicator(event, tabs, movingTabs, draggedTab) {
+    #applyDragoverIndicator(event, dropElement, movingTabs, draggedTab) {
       const separation = 4;
-      const dropZoneSelector =
-        ":is(.tabbrowser-tab, .zen-drop-target, .tab-group-label, tab-group[split-view-group])";
+      const dropZoneSelector = ":is(.zen-drop-target)";
       let shouldPlayHapticFeedback = false;
       let showIndicatorUnderNewTabButton = false;
       let dropBefore = false;
-      let dropElement = event.target.closest(dropZoneSelector);
-      if (!dropElement) {
-        if (event.target.classList.contains("zen-workspace-empty-space")) {
-          dropElement = this._tabbrowserTabs.ariaFocusableItems.at(-1);
+      let dropElementFromEvent = event.target.closest(dropZoneSelector);
+      dropElement = dropElementFromEvent || dropElement;
+      if (!dropElementFromEvent) {
+        let hoveringPeriphery = !!event.target.closest("#tabbrowser-arrowscrollbox-periphery");
+        if (event.target.classList.contains("zen-workspace-empty-space") || hoveringPeriphery) {
+          let lastTab = gBrowser.tabs.at(-1);
+          dropElement =
+            (hoveringPeriphery
+              ? this._tabbrowserTabs.ariaFocusableItems.at(
+                  gBrowser._numVisiblePinTabsWithoutCollapsed
+                )
+              : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
           // Only if there are no normal tabs to drop after
-          showIndicatorUnderNewTabButton =
-            gBrowser.tabs[gBrowser.tabs.length - 1].hasAttribute("zen-empty-tab");
-        } else {
-          const numEssentials = gBrowser._numZenEssentials;
-          const numPinned = gBrowser.pinnedTabCount - numEssentials;
-          const tabToUse =
-            event.target.closest(dropZoneSelector) || draggedTab._dragData?.dropElement;
-          if (!tabToUse) {
-            return null;
-          }
-          const isPinned = tabToUse.pinned;
-          const relativeTabs = tabs.slice(
-            isPinned ? 0 : numPinned,
-            isPinned ? numPinned : undefined
-          );
-          const draggedTabRect = elementToMove(tabToUse).getBoundingClientRect();
-          dropElement = event.clientY > draggedTabRect.top ? relativeTabs.at(-1) : relativeTabs[0];
+          showIndicatorUnderNewTabButton = lastTab.hasAttribute("zen-empty-tab");
         }
       }
       dropElement = elementToMove(dropElement);
@@ -909,16 +906,37 @@
         shouldPlayHapticFeedback = this.#lastDropTarget !== null;
         this.#removeDragOverBackground();
       }
-      let isZenFolder = dropElement.parentElement?.isZenFolder;
+      if (!dropElement) {
+        let dragData = draggedTab._dragData;
+        dropElement = dragData.dropElement;
+        dropBefore = dragData.dropBefore;
+      }
+      if (!dropElement) {
+        this.clearDragOverVisuals();
+        return null;
+      }
+      if (dropElement.hasAttribute("zen-empty-tab") && dropElement.group) {
+        let secondTab = dropElement.group.tabs[1];
+        dropElement = secondTab || dropElement.group.labelContainerElement;
+        if (secondTab) {
+          dropBefore = true;
+        }
+      }
+      let possibleFolderElement = dropElement.parentElement;
+      let isZenFolder = possibleFolderElement?.isZenFolder;
       let canHightlightGroup =
-        gZenFolders.highlightGroupOnDragOver(dropElement.parentElement, movingTabs) || !isZenFolder;
+        gZenFolders.highlightGroupOnDragOver(possibleFolderElement, movingTabs) || !isZenFolder;
       let rect = window.windowUtils.getBoundsWithoutFlushing(dropElement);
       const overlapPercent = (event.clientY - rect.top) / rect.height;
       // We wan't to leave a small threshold (20% for example) so we can drag tabs below and above
       // a folder label without dragging into the folder.
       let threshold = Services.prefs.getIntPref("zen.tabs.folder-dragover-threshold-percent") / 100;
       let dropIntoFolder =
-        isZenFolder && (overlapPercent < threshold || overlapPercent > 1 - threshold);
+        isZenFolder &&
+        (overlapPercent < threshold ||
+          (overlapPercent > 1 - threshold &&
+            (possibleFolderElement.collapsed ||
+              possibleFolderElement.childGroupsAndTabs.length < 2)));
       if (
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&

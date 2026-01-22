@@ -560,6 +560,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       );
       const essentialTabsTarget = event.target.closest(".zen-essentials-container");
       const tabsTarget = !pinnedTabsTarget;
+      let currentEssenialContainer = gZenWorkspaces.getCurrentEssentialsContainer();
+      if (currentEssenialContainer?.essentialsPromo) {
+        currentEssenialContainer.essentialsPromo.remove();
+      }
 
       // TODO: Solve the issue of adding a tab between two groups
       // Remove group labels from the moving tabs and replace it
@@ -651,7 +655,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           }
         }
       }
-
       return moved;
     } catch (ex) {
       console.error("Error moving tabs:", ex);

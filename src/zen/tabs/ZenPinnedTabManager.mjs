@@ -7,7 +7,7 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 const lazy = {};
 
 class ZenPinnedTabsObserver {
-  static ALL_EVENTS = ["TabPinned", "TabUnpinned"];
+  static ALL_EVENTS = ["TabPinned", "TabUnpinned", "TabAttrModified"];
 
   #listeners = [];
 
@@ -131,10 +131,25 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           delete tab._zenClickEventListener;
         }
         break;
+      case "TabAttrModified":
+        this.on_TabAttrModified(event);
+        break;
       default:
         console.warn("ZenPinnedTabManager: Unhandled tab event", action);
         break;
     }
+  }
+
+  on_TabAttrModified(aEvent) {
+    const tab = aEvent.target;
+    if (!tab?._zenContentsVisible || !tab?._zenPinnedInitialState) {
+      return;
+    }
+    if (tab._zenPinnedInitialState.image) {
+      return;
+    }
+    tab._zenPinnedInitialState.image =
+      tab.getAttribute("image") || tab.ownerGlobal.gBrowser.getIcon(tab);
   }
 
   #getTabState(tab) {

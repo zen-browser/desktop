@@ -60,6 +60,11 @@ export class ZenVimChild extends JSWindowActorChild {
           return;
         }
         if (this.#inputMode === "normal") {
+          if (this.#cancelSelection(editableTarget)) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
           event.preventDefault();
           event.stopPropagation();
           return;
@@ -363,7 +368,16 @@ export class ZenVimChild extends JSWindowActorChild {
   }
 
   async #handleEditableKeydown(event, editableTarget) {
-    if (event.ctrlKey || event.altKey || event.metaKey) {
+    if (event.ctrlKey && !event.altKey && !event.metaKey) {
+      if (event.key === "r" || event.key === "R") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.#redoEditable(editableTarget);
+        return true;
+      }
+      return false;
+    }
+    if (event.altKey || event.metaKey) {
       return false;
     }
 
@@ -381,8 +395,13 @@ export class ZenVimChild extends JSWindowActorChild {
     }
 
     const key = event.key;
-    if (this.#pendingOperator === "d" && key !== "d") {
-      this.#clearPendingOperator();
+    if (this.#pendingOperator) {
+      const handledPending = this.#handlePendingOperatorKey(key, editableTarget);
+      if (handledPending) {
+        event.preventDefault();
+        event.stopPropagation();
+        return true;
+      }
     }
 
     let handled = false;
@@ -422,6 +441,34 @@ export class ZenVimChild extends JSWindowActorChild {
         break;
       case "$":
         this.#moveEditable(editableTarget, "forward", "lineboundary");
+        handled = true;
+        break;
+      case "b":
+        this.#moveEditable(editableTarget, "backward", "word");
+        handled = true;
+        break;
+      case "w":
+        this.#moveEditable(editableTarget, "forward", "word");
+        handled = true;
+        break;
+      case "e":
+        this.#moveEditable(editableTarget, "forward", "wordend");
+        handled = true;
+        break;
+      case "o":
+        this.#openNewLine(editableTarget);
+        handled = true;
+        break;
+      case "g":
+        this.#setPendingOperator("g");
+        handled = true;
+        break;
+      case "G":
+        this.#moveToDocumentBoundary(editableTarget, "end");
+        handled = true;
+        break;
+      case "u":
+        this.#undoEditable(editableTarget);
         handled = true;
         break;
       case "d":
@@ -506,9 +553,26 @@ export class ZenVimChild extends JSWindowActorChild {
   #clearPendingOperator() {
     this.#pendingOperator = null;
     if (this.#pendingOperatorTimer) {
-      clearTimeout(this.#pendingOperatorTimer);
+      const win = this.contentWindow;
+      if (win?.clearTimeout) {
+        win.clearTimeout(this.#pendingOperatorTimer);
+      } else if (typeof clearTimeout === "function") {
+        clearTimeout(this.#pendingOperatorTimer);
+      }
       this.#pendingOperatorTimer = null;
     }
+  }
+
+  #setPendingOperator(operator) {
+    this.#clearPendingOperator();
+    this.#pendingOperator = operator;
+    const win = this.contentWindow;
+    if (!win?.setTimeout) {
+      return;
+    }
+    this.#pendingOperatorTimer = win.setTimeout(() => {
+      this.#clearPendingOperator();
+    }, 600);
   }
 
   #toggleVisualMode(editableTarget) {
@@ -591,6 +655,20 @@ export class ZenVimChild extends JSWindowActorChild {
     }
 
     let pos = this.#getTextControlCursor(editableTarget);
+    if (granularity === "word") {
+      if (direction === "backward") {
+        pos = this.#findWordStartBackward(value, pos);
+      } else {
+        pos = this.#findWordStartForward(value, pos);
+      }
+      this.#applyTextControlSelection(editableTarget, pos);
+      return;
+    }
+    if (granularity === "wordend") {
+      pos = this.#findWordEndForward(value, pos);
+      this.#applyTextControlSelection(editableTarget, pos);
+      return;
+    }
     if (granularity === "character") {
       pos += direction === "backward" ? -1 : 1;
       pos = Math.max(0, Math.min(pos, value.length - 1));
@@ -709,6 +787,72 @@ export class ZenVimChild extends JSWindowActorChild {
     return { lineStart, lineEnd, column };
   }
 
+  #isWordChar(char) {
+    return /[A-Za-z0-9_]/.test(char);
+  }
+
+  #findWordStartBackward(value, pos) {
+    if (!value.length) {
+      return 0;
+    }
+    let idx = Math.max(0, Math.min(pos, value.length - 1));
+    const atWordStart =
+      this.#isWordChar(value[idx]) && (idx === 0 || !this.#isWordChar(value[idx - 1]));
+    if (atWordStart && idx > 0) {
+      idx -= 1;
+    }
+    while (idx > 0 && !this.#isWordChar(value[idx])) {
+      idx -= 1;
+    }
+    if (this.#isWordChar(value[idx])) {
+      while (idx > 0 && this.#isWordChar(value[idx - 1])) {
+        idx -= 1;
+      }
+    }
+    return idx;
+  }
+
+  #findWordStartForward(value, pos) {
+    let idx = Math.max(0, Math.min(pos, value.length - 1));
+    if (this.#isWordChar(value[idx])) {
+      while (idx + 1 < value.length && this.#isWordChar(value[idx + 1])) {
+        idx += 1;
+      }
+      if (idx + 1 < value.length) {
+        idx += 1;
+      }
+    }
+    while (idx < value.length && !this.#isWordChar(value[idx])) {
+      idx += 1;
+    }
+    return Math.min(idx, value.length - 1);
+  }
+
+  #findWordEndForward(value, pos) {
+    if (!value.length) {
+      return 0;
+    }
+    let idx = Math.max(0, Math.min(pos, value.length - 1));
+    const atWordEnd =
+      this.#isWordChar(value[idx]) &&
+      (idx === value.length - 1 || !this.#isWordChar(value[idx + 1]));
+    if (atWordEnd && idx + 1 < value.length) {
+      idx += 1;
+    }
+    if (!this.#isWordChar(value[idx])) {
+      while (idx < value.length && !this.#isWordChar(value[idx])) {
+        idx += 1;
+      }
+      if (idx >= value.length) {
+        return value.length - 1;
+      }
+    }
+    while (idx + 1 < value.length && this.#isWordChar(value[idx + 1])) {
+      idx += 1;
+    }
+    return idx;
+  }
+
   #hasEditableSelection(editableTarget) {
     if (this.#isTextControlElement(editableTarget)) {
       const start = editableTarget.selectionStart ?? 0;
@@ -736,11 +880,38 @@ export class ZenVimChild extends JSWindowActorChild {
       return true;
     }
 
-    this.#pendingOperator = "d";
-    this.#pendingOperatorTimer = setTimeout(() => {
-      this.#clearPendingOperator();
-    }, 600);
+    this.#setPendingOperator("d");
     return true;
+  }
+
+  #handlePendingOperatorKey(key, editableTarget) {
+    if (this.#pendingOperator === "d") {
+      if (key === "d") {
+        this.#clearPendingOperator();
+        this.#deleteCurrentLine(editableTarget);
+        return true;
+      }
+      if (key === "b") {
+        this.#clearPendingOperator();
+        this.#deleteBackwardWord(editableTarget);
+        return true;
+      }
+      this.#clearPendingOperator();
+      return false;
+    }
+
+    if (this.#pendingOperator === "g") {
+      if (key === "g") {
+        this.#clearPendingOperator();
+        this.#moveToDocumentBoundary(editableTarget, "start");
+        return true;
+      }
+      this.#clearPendingOperator();
+      return false;
+    }
+
+    this.#clearPendingOperator();
+    return false;
   }
 
   async #deleteCurrentLine(editableTarget) {
@@ -792,6 +963,122 @@ export class ZenVimChild extends JSWindowActorChild {
     this.#inputVisual = false;
     this.#inputAnchor = null;
     this.#ensureContentEditableBlock(selection);
+  }
+
+  #deleteBackwardWord(editableTarget) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return;
+    }
+    const value = editableTarget.value ?? "";
+    if (!value.length) {
+      return;
+    }
+    const pos = this.#getTextControlCursor(editableTarget);
+    const start = this.#findWordStartBackward(value, pos);
+    const end = Math.min(pos + 1, value.length);
+    if (start >= end) {
+      return;
+    }
+    editableTarget.setSelectionRange(start, end);
+    let cutOk = false;
+    try {
+      cutOk = this.contentWindow?.document?.execCommand?.("cut") ?? false;
+    } catch (e) {
+      cutOk = false;
+    }
+    if (!cutOk) {
+      const text = value.slice(start, end);
+      void this.#writeClipboard(text);
+      editableTarget.setRangeText("", start, end, "start");
+    }
+    this.#inputVisual = false;
+    this.#inputAnchor = null;
+    const newLength = (editableTarget.value ?? "").length;
+    const newPos = newLength ? Math.min(start, newLength - 1) : 0;
+    this.#applyTextControlSelection(editableTarget, newPos);
+  }
+
+  #moveToDocumentBoundary(editableTarget, boundary) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return;
+    }
+    const value = editableTarget.value ?? "";
+    if (!value.length) {
+      editableTarget.setSelectionRange(0, 0);
+      this.#inputCursorPos = 0;
+      return;
+    }
+    const pos = boundary === "start" ? 0 : Math.max(0, value.length - 1);
+    this.#applyTextControlSelection(editableTarget, pos);
+  }
+
+  #openNewLine(editableTarget) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return;
+    }
+    this.#inputVisual = false;
+    this.#inputAnchor = null;
+
+    const tag = editableTarget.tagName?.toLowerCase();
+    if (tag !== "textarea") {
+      this.#setInputMode("insert", { target: editableTarget });
+      return;
+    }
+
+    const value = editableTarget.value ?? "";
+    const pos = this.#getTextControlCursor(editableTarget);
+    const { lineEnd } = this.#getLineBounds(value, pos);
+    const insertPos = lineEnd < value.length ? lineEnd + 1 : value.length;
+    editableTarget.setRangeText("\n", insertPos, insertPos, "end");
+    editableTarget.setSelectionRange(insertPos, insertPos);
+    this.#inputCursorPos = insertPos;
+    this.#setInputMode("insert", { target: editableTarget });
+  }
+
+  #cancelSelection(editableTarget) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return false;
+    }
+    const start = editableTarget.selectionStart ?? 0;
+    const end = editableTarget.selectionEnd ?? start;
+    if (!this.#inputVisual && Math.abs(end - start) <= 1) {
+      return false;
+    }
+    this.#inputVisual = false;
+    this.#inputAnchor = null;
+    const pos = this.#getTextControlCursor(editableTarget, { preserveCursor: true });
+    this.#applyTextControlSelection(editableTarget, pos);
+    return true;
+  }
+
+  #undoEditable(editableTarget) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return;
+    }
+    let ok = false;
+    try {
+      ok = this.contentWindow?.document?.execCommand?.("undo") ?? false;
+    } catch (e) {
+      ok = false;
+    }
+    if (ok) {
+      this.#normalizeSelectionForNormal(editableTarget, { preserveCursor: true });
+    }
+  }
+
+  #redoEditable(editableTarget) {
+    if (!this.#isTextControlElement(editableTarget)) {
+      return;
+    }
+    let ok = false;
+    try {
+      ok = this.contentWindow?.document?.execCommand?.("redo") ?? false;
+    } catch (e) {
+      ok = false;
+    }
+    if (ok) {
+      this.#normalizeSelectionForNormal(editableTarget, { preserveCursor: true });
+    }
   }
 
   async #cutSelection(editableTarget) {

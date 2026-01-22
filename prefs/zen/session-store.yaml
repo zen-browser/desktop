@@ -10,3 +10,6 @@
 
 - name: zen.session-store.restore-unsynced-windows
   value: true
+
+- name: browser.sessionstore.max_windows_undo
+  value: 2

@@ -506,6 +506,10 @@ class KeyShortcut {
     return this.#disabled;
   }
 
+  setDisabled(value) {
+    this.#disabled = value;
+  }
+
   isReserved() {
     return this.#reserved;
   }
@@ -1120,11 +1124,21 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
       // Also, change the default for new empty split from + to * on mac
+      // and disable the "Restore closed window" shortcut by default due to conflicts
+      let emptySplitFound = false,
+        undoCloseWindowFound = false;
       for (let shortcut of data) {
         if (shortcut.getID() == "zen-new-empty-split-view" && AppConstants.platform == "macosx") {
           if (shortcut.getKeyName() == "+") {
             shortcut.setNewBinding("*");
           }
+          emptySplitFound = true;
+        } else if (shortcut.getID() == "key_undoCloseWindow") {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
+          undoCloseWindowFound = true;
+        }
+        if (emptySplitFound && undoCloseWindowFound) {
           break;
         }
       }

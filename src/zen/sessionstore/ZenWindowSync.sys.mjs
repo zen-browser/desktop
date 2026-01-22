@@ -28,6 +28,7 @@ const EVENTS = [
 
   "ZenTabIconChanged",
   "ZenTabLabelChanged",
+  "TabAttrModified",
 
   "TabMove",
   "TabPinned",
@@ -1042,6 +1043,27 @@ class nsZenWindowSync {
       );
     });
     this.#maybeFlushTabState(tab);
+  }
+
+  on_TabAttrModified(aEvent) {
+    if (!aEvent.detail.changed.includes("image")) {
+      return;
+    }
+    const tab = aEvent.target;
+    if (
+      !tab?._zenContentsVisible ||
+      !tab?._zenPinnedInitialState ||
+      tab._zenPinnedInitialState.image
+    ) {
+      return;
+    }
+    let image = tab.getAttribute("image") || tab.ownerGlobal.gBrowser.getIcon(tab);
+    this.#runOnAllWindows(null, (win) => {
+      const targetTab = this.getItemFromWindow(win, tab.id);
+      if (targetTab) {
+        targetTab._zenPinnedInitialState.image = image;
+      }
+    });
   }
 
   on_ZenTabIconChanged(aEvent) {

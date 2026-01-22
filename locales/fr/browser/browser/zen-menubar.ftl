@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = Sombre
 zen-menubar-new-unsynced-window = 
-    .label = Nouvelle fenêtre vierge
+    .label = Nouvelle fenêtre non synchronisée

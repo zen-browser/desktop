@@ -185,7 +185,7 @@ class nsZenBoostsManager {
   async #readFromDisk() {
     this.#file = new JSONFile({
       path: this.#storePath,
-      compression: "lz4",
+      compression: 'lz4',
     });
 
     await this.#file.load();
@@ -249,17 +249,18 @@ class nsZenBoostsManager {
     const screenY = parentWindow.screenY;
     const width = parentWindow.outerWidth;
     const height = parentWindow.outerHeight;
-
-    // TODO: This needs to be changed to exact values
     const editorWidth = 185;
-    const editorHeight = 575;
+    const editorHeight = 565;
     const pad = 20;
 
     let left = screenX + width + pad;
+    if (this.#areTabsOnRightSide()) left = screenX - (editorWidth + pad);
+
     let top = screenY + height / 2 - editorHeight / 2;
 
     if (left + editorWidth > screen.availWidth) {
       left = screenX + width - (editorWidth + pad);
+      if (this.#areTabsOnRightSide()) left = screenX + editorWidth + pad;
     }
 
     const editor = Services.ww.openWindow(
@@ -293,6 +294,14 @@ class nsZenBoostsManager {
     editor.openerWindow = parentWindow;
 
     return editor;
+  }
+
+  /**
+   * Helper function to determine if tabs are on the right side.
+   * From: ZenDownloadAnimation.mjs
+   */
+  #areTabsOnRightSide() {
+    return Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
   }
 }
 

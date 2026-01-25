@@ -140,7 +140,7 @@ class nsZenWindowSync {
   }
 
   init() {
-    if (!lazy.gWindowSyncEnabled || this.#initialized) {
+    if (this.#initialized) {
       return;
     }
     this.#initialized = true;
@@ -307,6 +307,9 @@ class nsZenWindowSync {
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||
       window._zenClosingWindow
     ) {
+      return;
+    }
+    if (!lazy.gWindowSyncEnabled && !UNSYNCED_WINDOW_EVENTS.includes(aEvent.type)) {
       return;
     }
     if (INSTANT_EVENTS.includes(aEvent.type)) {

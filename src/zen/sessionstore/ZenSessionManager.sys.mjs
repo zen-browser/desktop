@@ -345,7 +345,7 @@ export class nsZenSessionManager {
   saveState(state) {
     let windows = state?.windows || [];
     windows = windows.filter((win) => this.#isWindowSaveable(win));
-    if (!windows.length || !lazy.gWindowSyncEnabled) {
+    if (!windows.length) {
       // Don't save (or even collect) anything in permanent private
       // browsing mode. We also don't want to save if there are no windows.
       return;
@@ -525,7 +525,7 @@ export class nsZenSessionManager {
    *        Whether this new window is being restored from a closed window.
    */
   restoreNewWindow(aWindow, SessionStoreInternal, fromClosedWindow = false) {
-    if (aWindow.gZenWorkspaces?.privateWindowOrDisabled || !lazy.gWindowSyncEnabled) {
+    if (aWindow.gZenWorkspaces?.privateWindowOrDisabled) {
       return;
     }
     this.log("Restoring new window with Zen session data");

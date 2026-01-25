@@ -4,11 +4,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#zenSettingsWindow {
+#zen-boost-code-editor-root {
+  flex: 1;
+}
+
+.source-editor-frame {
+  max-width: 1000px !important;
+  max-height: 1000px !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+}
+
+#zen-boost-code-top-bar {
+  width: 100%;
+  height: 40px;
+  background-color: #f7f7f7;
+}
+
+#zen-boost-code-editor {
+  width: 100%;
+  height: 100%;
+}
+
+#zenBoostWindow {
   animation: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) zen-boost-window-in;
-  max-width: 185px;
-  min-width: 185px;
   min-height: 528px;
+  min-width: 185px !important;
 }
 
 body {
@@ -18,9 +40,15 @@ body {
   width: 100%;
 }
 
-#zen-boost-editor-root {
+#zen-boost-editor-root,
+#zen-boost-code-editor-root {
   background-color: #fcfcfe;
   user-select: none;
+
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0px;
+  margin: 0px;
 
   & button {
     border-radius: 10px !important;
@@ -173,6 +201,17 @@ body {
   & p {
     width: 75%;
     margin: auto;
+  }
+}
+
+#zen-boost-back {
+  width: 70px !important;
+  margin: 5px !important;
+  left: 5px !important;
+
+  opacity: 0.6;
+  &:hover {
+    opacity: 0.8;
   }
 }
 

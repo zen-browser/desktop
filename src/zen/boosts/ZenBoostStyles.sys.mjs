@@ -76,6 +76,9 @@ export class nsZenBoostStyles {
       ${fontFamily}
       ${fontCase}
     }
+
+    /* USER CSS */
+    ${boostData.customCSS || ''}
     `;
 
     return style;

@@ -433,7 +433,8 @@
 }
 
 .panel-header > .subviewbutton-back,
-#PanelUI-zen-gradient-generator-color-page-left {
+#PanelUI-zen-gradient-generator-color-page-left,
+#zen-boost-back {
   list-style-image: url('arrow-left.svg') !important;
 }
 

@@ -12,7 +12,7 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns="http://www.w3.org/1999/xhtml"
-  id="zenSettingsWindow"
+  id="zenBoostWindow"
   alwaysontop="true"
   customtitlebar="true"
   sizemode="normal"
@@ -86,6 +86,16 @@
       <button data-l10n="zen-boost-code" id="zen-boost-code" class="subviewbutton mod-button big-button">
         <html:p id="zen-boost-code-text">Code</html:p>
       </button>
+    </vbox>
+  </vbox>
+  <vbox flex="1" id="zen-boost-code-editor-root">
+    <vbox flex="1" id="zen-boost-code-top-bar">
+      <button data-l10n="zen-boost-back" id="zen-boost-back" class="subviewbutton mod-button big-button">
+        <html:p id="zen-boost-back-text">Back</html:p>
+      </button>
+    </vbox>
+    
+    <vbox flex="1" id="zen-boost-code-editor">
     </vbox>
   </vbox>
 

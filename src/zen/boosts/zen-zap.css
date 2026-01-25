@@ -45,7 +45,7 @@
       0.9991 99.96%
     );
     --spring-duration: 0.6s;
-    animation: var(--spring-duration) zap-component-in var(--spring-easing);
+    animation: var(--spring-duration) boost-component-in var(--spring-easing);
   }
 
   position: fixed;
@@ -74,17 +74,6 @@
     &:active {
       scale: 0.95;
     }
-  }
-}
-
-@keyframes zap-component-in {
-  from {
-    scale: 0;
-    opacity: 0;
-  }
-  to {
-    scale: 1;
-    opacity: 1;
   }
 }
 

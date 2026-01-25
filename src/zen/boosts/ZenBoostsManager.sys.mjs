@@ -66,6 +66,7 @@ class nsZenBoostsManager {
       textCaseOverride: 'none',
 
       zapSelectors: [],
+      customCSS: '',
 
       changeWasMade: false,
     };

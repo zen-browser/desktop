@@ -8,6 +8,7 @@ export class nsZenBoostEditor {
   doc = null;
   window = null;
   openerWindow = null;
+  codeEditorReady = false;
 
   /**
    * Creates a new boost editor instance for the specified domain.
@@ -41,6 +42,9 @@ export class nsZenBoostEditor {
   init() {
     this.window.addEventListener('unload', () => this.handleClose(), { once: true });
 
+    this.doc.getElementById('zen-boost-editor-root').style.display = 'initial';
+    this.doc.getElementById('zen-boost-code-editor-root').style.display = 'none';
+
     this.doc
       .getElementById('zen-boost-color-contrast')
       .addEventListener('input', this.onColorOptionChange.bind(this));
@@ -63,6 +67,9 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById('zen-boost-code')
       .addEventListener('click', this.onCodeButtonPressed.bind(this));
+    this.doc
+      .getElementById('zen-boost-back')
+      .addEventListener('click', this.onCodeBackButtonPressed.bind(this));
     this.doc
       .getElementById('zen-boost-disable')
       .addEventListener('click', this.onToggleDisable.bind(this));
@@ -132,6 +139,44 @@ export class nsZenBoostEditor {
   }
 
   /**
+   * Initializes the code editor for the css editor
+   */
+  async initCodeEditor() {
+    if(this.codeEditorReady) return;
+
+    const { DevToolsLoader } = ChromeUtils.importESModule(
+      'resource://devtools/shared/loader/Loader.sys.mjs'
+    );
+    const loader = new DevToolsLoader({
+      invisibleToDebugger: true,
+    });
+    const { require } = loader;
+    const Editor = require('resource://devtools/client/shared/sourceeditor/editor');
+    const container = this.doc.getElementById('zen-boost-code-editor');
+
+    const editor = new Editor({
+      mode: Editor.modes.css,
+      lineNumbers: true,
+      theme: 'default', // default is light theme
+      readOnly: false,
+      gutters: ['CodeMirror-linenumbers'],
+    });
+
+    await editor.appendTo(container);
+    editor.refresh();
+    editor.on("change", this.onCodeEditorChange.bind(this));
+
+    this.window._editor = editor;
+    this.codeEditorReady = true;
+  }
+
+  onCodeEditorChange() {
+    this.currentBoostData.customCSS = this.window._editor.getText();
+    this.currentBoostData.changeWasMade = true;
+    this.updateCurrentBoost();
+  }
+
+  /**
    * Initializes the font selection UI by creating font buttons and dropdown options
    * for the available font families.
    */
@@ -198,7 +243,39 @@ export class nsZenBoostEditor {
     return enumerator.EnumerateFonts(null, null);
   }
 
-  onCodeButtonPressed() {}
+  /**
+   * Handles the code editor button press, resizing and offsetting the window and enabling the code view
+   */
+  onCodeButtonPressed() {
+    const CODE_WIDTH  = 450;
+    const offset = 265;
+
+    const win = this.doc.getElementById('zenBoostWindow');
+    if (win.getAttribute('editor') != 'code') {
+      this.window.resizeTo(CODE_WIDTH, this.window.outerHeight);
+      this.window.moveTo(this.window.screenX - offset, this.window.screenY);
+    }
+
+    this.doc.getElementById('zen-boost-editor-root').style.display = 'none';
+    this.doc.getElementById('zen-boost-code-editor-root').style.display = 'initial';
+  }
+
+  /**
+   * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
+   */
+  onCodeBackButtonPressed() {
+    const BOOST_WIDTH = 185;
+    const offset = 265;
+
+    const win = this.doc.getElementById('zenBoostWindow');
+    if (win.getAttribute('editor') != 'boost') {
+      this.window.resizeTo(BOOST_WIDTH, this.window.outerHeight);
+      this.window.moveTo(this.window.screenX + offset, this.window.screenY);
+    }
+
+    this.doc.getElementById('zen-boost-editor-root').style.display = 'initial';
+    this.doc.getElementById('zen-boost-code-editor-root').style.display = 'none';
+  }
 
   onZapButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
@@ -661,7 +738,7 @@ export class nsZenBoostEditor {
    * with the boost settings (dot position, sliders, buttons, etc.).
    * @param {string} domain - The domain for which to load the boost.
    */
-  loadBoost(domain) {
+  async loadBoost(domain) {
     this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
 
     // Initial save to register the boost
@@ -687,6 +764,11 @@ export class nsZenBoostEditor {
       brightnessSlider.value = this.currentBoostData.brightness;
       saturationSlider.value = this.currentBoostData.saturation;
     }
+
+    // The code editor needs time to initialize
+    await this.initCodeEditor();
+
+    this.window._editor.setText(this.currentBoostData.customCSS || '');
 
     this.updateDot();
     this.updateButtonToggleVisuals();

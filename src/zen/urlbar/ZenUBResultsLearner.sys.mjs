@@ -2,26 +2,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
-const DEFAULT_DB_DATA = '{}';
+let lazyDatabaseData = {};
+
+const DEFAULT_DB_DATA = "{}";
 const DEPRIORITIZE_MAX = -5;
 const PRIORITIZE_MAX = 5;
 
 function addDataToLazy(data) {
   try {
-    lazy.databaseData = JSON.parse(data);
-  } catch {
-    lazy.databaseData = {};
-  }
+    lazyDatabaseData = JSON.parse(data);
+  } catch {}
 }
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  'rawDatabase',
-  'zen.urlbar.suggestions-learner',
+  "rawDatabase",
+  "zen.urlbar.suggestions-learner",
   DEFAULT_DB_DATA,
   (_aPreference, _previousValue, newValue) => {
     addDataToLazy(newValue);
@@ -49,12 +49,12 @@ class ZenUrlbarResultsLearner {
   }
 
   get database() {
-    return lazy.databaseData;
+    return lazyDatabaseData;
   }
 
   saveDatabase(db) {
     Services.prefs.setStringPref(
-      'zen.urlbar.suggestions-learner',
+      "zen.urlbar.suggestions-learner",
       JSON.stringify(db || DEFAULT_DB_DATA)
     );
   }
@@ -106,6 +106,7 @@ class ZenUrlbarResultsLearner {
 
   /**
    * Sorts the given commands by their priority in the database.
+   *
    * @param {*} commands
    */
   sortCommandsByPriority(commands) {

@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { nsZenPreloadedFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenPreloadedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 class ZenSessionStore extends nsZenPreloadedFeature {
   init() {
@@ -15,11 +15,11 @@ class ZenSessionStore extends nsZenPreloadedFeature {
 
   restoreInitialTabData(tab, tabData) {
     if (tabData.zenWorkspace) {
-      tab.setAttribute('zen-workspace-id', tabData.zenWorkspace);
+      tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
     }
     // Keep for now, for backward compatibility for window sync to work.
     if (tabData.zenSyncId || tabData.zenPinnedId) {
-      tab.setAttribute('id', tabData.zenSyncId || tabData.zenPinnedId);
+      tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);
     }
     if (tabData.zenStaticLabel) {
       tab.zenStaticLabel = tabData.zenStaticLabel;
@@ -28,10 +28,10 @@ class ZenSessionStore extends nsZenPreloadedFeature {
       tab.zenStaticIcon = tabData.image;
     }
     if (tabData.zenEssential) {
-      tab.setAttribute('zen-essential', 'true');
+      tab.setAttribute("zen-essential", "true");
     }
     if (tabData.zenDefaultUserContextId) {
-      tab.setAttribute('zenDefaultUserContextId', 'true');
+      tab.setAttribute("zenDefaultUserContextId", "true");
     }
     if (tabData._zenPinnedInitialState) {
       tab._zenPinnedInitialState = tabData._zenPinnedInitialState;

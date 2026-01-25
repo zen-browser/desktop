@@ -9,8 +9,8 @@
   padding-block: 0 !important;
 }
 
-:root[zen-single-toolbar='true'] {
-  & #urlbar:not([breakout-extend='true']) {
+:root[zen-single-toolbar="true"] {
+  & #urlbar:not([breakout-extend="true"]) {
     padding: 1px;
     --toolbarbutton-border-radius: 6px;
   }
@@ -27,7 +27,7 @@
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 4px;
 
-  &[breakout-extend='true'] {
+  &[breakout-extend="true"] {
     --urlbar-container-padding: 0px;
   }
 
@@ -36,12 +36,12 @@
     visibility: visible;
   }
 
-  :root[zen-single-toolbar='true'] &[breakout-extend='true'],
-  &[zen-floating-urlbar='true'] {
+  :root[zen-single-toolbar="true"] &[breakout-extend="true"],
+  &[zen-floating-urlbar="true"] {
     --urlbar-container-padding: 3px;
     --urlbar-margin-inline: 11px;
 
-    &:not([zen-floating-urlbar='true']) {
+    &:not([zen-floating-urlbar="true"]) {
       --urlbar-container-height: 52px !important;
     }
   }
@@ -62,7 +62,7 @@
   border-radius: var(--border-radius-medium);
   outline: none !important;
 
-  #urlbar:not([breakout-extend='true']) & {
+  #urlbar:not([breakout-extend="true"]) & {
     margin: 1px;
   }
 
@@ -70,20 +70,20 @@
   box-shadow: none !important;
 }
 
-#urlbar[focused='true']:not([suppress-focus-border]) > .urlbar-background,
+#urlbar[focused="true"]:not([suppress-focus-border]) > .urlbar-background,
 #searchbar:focus-within {
   outline: none !important;
   outline-offset: none !important;
   outline-color: none !important;
 }
 
-#urlbar:not([breakout-extend='true']) {
+#urlbar:not([breakout-extend="true"]) {
   &:hover .urlbar-background {
     background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2)) !important;
   }
 }
 
-#identity-box.chromeUI:not([pageproxystate='invalid']) {
+#identity-box.chromeUI:not([pageproxystate="invalid"]) {
   & #identity-icon-box {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
   }
@@ -101,7 +101,7 @@
   padding-inline-start: 8px !important;
 }
 
-#urlbar:not([extend='true']) #identity-box #identity-icon-box {
+#urlbar:not([extend="true"]) #identity-box #identity-icon-box {
   position: relative;
 }
 
@@ -112,7 +112,7 @@
 
   margin-bottom: auto;
   padding: 6px 8px !important;
-  :root:not([zen-single-toolbar='true']) & {
+  :root:not([zen-single-toolbar="true"]) & {
     padding-block: 2px !important;
   }
 }
@@ -125,14 +125,14 @@
   font-weight: 500;
 }
 
-:root[zen-single-toolbar='true'] #urlbar:not([breakout-extend='true']) {
+:root[zen-single-toolbar="true"] #urlbar:not([breakout-extend="true"]) {
   & #urlbar-input {
     cursor: default;
   }
 
   & #identity-box {
     margin-inline-end: 0 !important;
-    &.chromeUI:not([pageproxystate='invalid']) #identity-icon-box {
+    &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
       border-radius: 10px !important;
     }
   }
@@ -143,25 +143,23 @@
     height: 100%; /* To still be able to open popups */
     visibility: collapse;
 
-    :root:not([supress-primary-adjustment='true']) & {
+    :root:not([supress-primary-adjustment="true"]) & {
       transition:
         opacity 0.15s,
         visibility 0.15s;
     }
 
-    #navigator-toolbox[zen-has-implicit-hover='true'] &,
+    #navigator-toolbox[zen-has-implicit-hover="true"] &,
     &[open],
-    #urlbar[has-popup-open='true'] &,
-    :root[zen-has-empty-tab='true'] & {
+    #urlbar[has-popup-open="true"] &,
+    :root[zen-has-empty-tab="true"] & {
       opacity: 1;
       visibility: visible;
     }
   }
 }
 
-:root:not([zen-single-toolbar='true']):not([zen-has-empty-tab='true'])
-  #urlbar:not([breakout-extend='true'])
-  .urlbar-input-container {
+:root:not([zen-single-toolbar="true"]):not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend="true"]) .urlbar-input-container {
   padding: 2px 3px;
   gap: 2px;
 
@@ -184,19 +182,19 @@
   background: transparent !important;
 }
 
-:root:is([zen-single-toolbar='true'], [zen-has-empty-tab='true']) {
+:root:is([zen-single-toolbar="true"], [zen-has-empty-tab="true"]) {
   #zen-copy-url-button[disabled] {
     display: none !important;
   }
 }
 
-@media -moz-pref('zen.urlbar.single-toolbar-show-copy-url', false) {
-  :root[zen-single-toolbar='true'] #zen-copy-url-button {
+@media -moz-pref("zen.urlbar.single-toolbar-show-copy-url", false) {
+  :root[zen-single-toolbar="true"] #zen-copy-url-button {
     display: none !important;
   }
 }
 
-@media not -moz-pref('zen.urlbar.show-pip-button') {
+@media not -moz-pref("zen.urlbar.show-pip-button") {
   #picture-in-picture-button {
     display: none !important;
   }
@@ -209,7 +207,7 @@
   align-items: center !important;
   margin: 0;
 
-  :root[zen-single-toolbar='true'] & {
+  :root[zen-single-toolbar="true"] & {
     padding: 6px !important;
     width: unset !important;
     height: unset !important;
@@ -239,11 +237,11 @@
   position: fixed;
 }
 
-#urlbar[breakout-extend='true'] {
+#urlbar[breakout-extend="true"] {
   z-index: 2;
 
-  :root[zen-single-toolbar='true'] & .urlbar-input-box,
-  &[zen-floating-urlbar='true'] .urlbar-input-box {
+  :root[zen-single-toolbar="true"] & .urlbar-input-box,
+  &[zen-floating-urlbar="true"] .urlbar-input-box {
     font-weight: 400;
     @media (-moz-platform: windows) {
       font-weight: 500;
@@ -254,33 +252,21 @@
     height: 100%;
   }
 
-  :root:not([zen-single-toolbar='true'])
-    &:not([zen-floating-urlbar='true'])
-    #identity-box:not([pageproxystate='invalid']) {
+  :root:not([zen-single-toolbar="true"]) &:not([zen-floating-urlbar="true"]) #identity-box:not([pageproxystate="invalid"]) {
     margin-inline-end: 0;
   }
 
   & .urlbar-background {
-    --zen-urlbar-background-base: light-dark(
-      #fbfbfb,
-      color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%)
-    );
-    @media -moz-pref('zen.theme.acrylic-elements') {
-      --zen-urlbar-background-transparent: color-mix(
-        in srgb,
-        var(--zen-urlbar-background-base) 70%,
-        transparent 30%
-      );
+    --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
+    @media -moz-pref("zen.theme.acrylic-elements") {
+      --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
     }
-    background-color: var(
-      --zen-urlbar-background-transparent,
-      var(--zen-urlbar-background-base)
-    ) !important;
+    background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
     box-shadow: 0px 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
     outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
-    @media -moz-pref('zen.theme.acrylic-elements') {
+    @media -moz-pref("zen.theme.acrylic-elements") {
       backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
     }
   }
@@ -290,9 +276,9 @@
     border-radius: 12px !important;
   }
 
-  &[breakout-extend][animate-searchmode='true']::before {
+  &[breakout-extend][animate-searchmode="true"]::before {
     position: absolute;
-    content: '';
+    content: "";
     inset: 0;
     width: 100%;
     height: 100%;
@@ -310,7 +296,7 @@
   display: none;
 }
 
-:root[zen-single-toolbar='true'] {
+:root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;
   --urlbar-inner-border-radius: var(--toolbarbutton-border-radius) !important;
 
@@ -322,7 +308,7 @@
     display: none;
   }
 
-  &:not([zen-has-empty-tab='true']) #urlbar:not([breakout-extend='true']) #identity-box {
+  &:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend="true"]) #identity-box {
     order: 2;
   }
 
@@ -354,7 +340,7 @@
   }
 }
 
-:root:not([zen-single-toolbar='true']) {
+:root:not([zen-single-toolbar="true"]) {
   --urlbar-icon-border-radius: 6px !important;
 
   #notification-popup-box {
@@ -372,7 +358,7 @@
   }
 }
 
-#urlbar[breakout-extend='true'] #notification-popup-box {
+#urlbar[breakout-extend="true"] #notification-popup-box {
   min-width: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
   height: calc(var(--urlbar-min-height) - 4 * var(--urlbar-container-padding)) !important;
 }
@@ -411,9 +397,7 @@
 /* Border radius on hover */
 #urlbar .urlbar-page-action,
 #urlbar #tracking-protection-icon-container,
-#urlbar:not([breakout-extend='true'])
-  #identity-box:is(:not(.chromeUI), [pageproxystate='invalid'])
-  #identity-icon-box {
+#urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
   min-width: 28px;
 }
@@ -423,7 +407,7 @@
 .notificationbox-stack {
   background: transparent;
 
-  &[notificationside='top'] {
+  &[notificationside="top"] {
     position: fixed;
     bottom: calc(var(--zen-element-separation) * 1.5);
     right: calc(var(--zen-element-separation) * 1.5);
@@ -453,12 +437,12 @@
   align-items: center;
 }
 
-:root:not([zen-single-toolbar='true']) {
-  &[zen-right-side='true']:not([zen-window-buttons-reversed='true']) #nav-bar {
+:root:not([zen-single-toolbar="true"]) {
+  &[zen-right-side="true"]:not([zen-window-buttons-reversed="true"]) #nav-bar {
     margin-inline-start: var(--zen-element-separation);
   }
 
-  &:not([zen-right-side='true'])[zen-window-buttons-reversed='true'] #nav-bar {
+  &:not([zen-right-side="true"])[zen-window-buttons-reversed="true"] #nav-bar {
     margin-inline-end: var(--zen-element-separation);
   }
 }
@@ -489,17 +473,17 @@
   }
 }
 
-:root[zen-single-toolbar='true'] {
+:root[zen-single-toolbar="true"] {
   #urlbar[open] {
     min-width: min(90%, 40rem);
   }
 
-  &[zen-right-side='true'] #urlbar[open]:not([zen-floating-urlbar='true']) {
+  &[zen-right-side="true"] #urlbar[open]:not([zen-floating-urlbar="true"]) {
     right: 0;
   }
 }
 
-#urlbar[open][zen-floating-urlbar='true'] {
+#urlbar[open][zen-floating-urlbar="true"] {
   z-index: 1000;
   max-width: unset;
   --urlbar-container-height: 62px !important;
@@ -520,7 +504,7 @@
     background: var(--toolbarbutton-hover-background);
     height: var(--urlbar-height) !important;
     margin-inline: 0.15rem !important;
-    :root:not([zen-single-toolbar='true']) & {
+    :root:not([zen-single-toolbar="true"]) & {
       max-height: 32px !important;
       min-height: unset !important;
       margin-block: -1px !important;
@@ -528,7 +512,7 @@
   }
 }
 
-@media not -moz-pref('zen.urlbar.show-protections-icon') {
+@media not -moz-pref("zen.urlbar.show-protections-icon") {
   #tracking-protection-icon-container {
     display: none !important;
   }
@@ -601,13 +585,13 @@
   }
 }
 
-.urlbarView-row[has-action]:is([type='switchtab'], [type='remotetab'], [type='clipboard']) {
+.urlbarView-row[has-action]:is([type="switchtab"], [type="remotetab"], [type="clipboard"]) {
   & .urlbarView-action:last-child {
     margin-left: auto !important;
     margin-right: 0 !important;
   }
 
-  &:is([type='switchtab'], [type='remotetab']) .urlbarView-action:last-child {
+  &:is([type="switchtab"], [type="remotetab"]) .urlbarView-action:last-child {
     background: transparent !important;
     align-items: center;
     display: flex;
@@ -619,13 +603,13 @@
     transform-origin: right;
 
     &::after {
-      content: '';
+      content: "";
       display: inline-block;
       width: 28px;
       height: 28px;
 
       background-color: currentColor;
-      mask-image: url('chrome://browser/skin/zen-icons/urlbar-arrow.svg');
+      mask-image: url("chrome://browser/skin/zen-icons/urlbar-arrow.svg");
       mask-size: contain;
       mask-repeat: no-repeat;
       mask-position: center;
@@ -648,11 +632,7 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
-  background-color: color-mix(
-    in srgb,
-    var(--zen-primary-color) 50%,
-    light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%
-  ) !important;
+  background-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white;
   padding: 4px 8px;
   border-radius: 50px;
@@ -667,20 +647,12 @@
   &:hover {
     &,
     & .urlbarView-favicon {
-      background-color: color-mix(
-        in srgb,
-        var(--zen-branding-bg-reverse) 5%,
-        transparent 95%
-      ) !important;
+      background-color: color-mix(in srgb, var(--zen-branding-bg-reverse) 5%, transparent 95%) !important;
     }
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(
-      in srgb,
-      var(--zen-primary-color) 50%,
-      light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%
-    );
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -698,7 +670,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:is([type='switchtab'], [type='dynamic']) .urlbarView-favicon,
+    &:is([type="switchtab"], [type="dynamic"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;
@@ -723,8 +695,7 @@
   }
 }
 
-:root:not([zen-single-toolbar='true'])
-  #urlbar[breakout-extend='true']:not([zen-floating-urlbar='true']) {
+:root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend="true"]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
     border-radius: 10px !important;
   }
@@ -759,7 +730,7 @@
   display: none !important;
 }
 
-@media not -moz-pref('zen.urlbar.show-contextual-id') {
+@media not -moz-pref("zen.urlbar.show-contextual-id") {
   #userContext-icons {
     display: none !important;
   }

@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
 class nsZenUIMigration {
-  PREF_NAME = 'zen.ui.migration.version';
+  PREF_NAME = "zen.ui.migration.version";
   MIGRATION_VERSION = 5;
 
   init(isNewProfile) {
@@ -13,7 +13,7 @@ class nsZenUIMigration {
       try {
         this._migrate();
       } catch (e) {
-        console.error('ZenUIMigration: Error during migration', e);
+        console.error("ZenUIMigration: Error during migration", e);
       }
     }
     this.clearVariables();
@@ -46,48 +46,48 @@ class nsZenUIMigration {
     // If there's an userChrome.css or userContent.css existing, we set
     // 'toolkit.legacyUserProfileCustomizations.stylesheets' back to true
     // We do this to avoid existing user stylesheets to be ignored
-    const profileDir = Services.dirsvc.get('ProfD', Ci.nsIFile);
+    const profileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
     const userChromeFile = profileDir.clone();
-    userChromeFile.append('chrome');
-    userChromeFile.append('userChrome.css');
+    userChromeFile.append("chrome");
+    userChromeFile.append("userChrome.css");
     const userContentFile = profileDir.clone();
-    userContentFile.append('chrome');
-    userContentFile.append('userContent.css');
+    userContentFile.append("chrome");
+    userContentFile.append("userContent.css");
     Services.prefs.setBoolPref(
-      'zen.workspaces.separate-essentials',
-      Services.prefs.getBoolPref('zen.workspaces.container-specific-essentials-enabled', false)
+      "zen.workspaces.separate-essentials",
+      Services.prefs.getBoolPref("zen.workspaces.container-specific-essentials-enabled", false)
     );
-    const theme = Services.prefs.getIntPref('layout.css.prefers-color-scheme.content-override', 0);
-    Services.prefs.setIntPref('zen.view.window.scheme', theme);
+    const theme = Services.prefs.getIntPref("layout.css.prefers-color-scheme.content-override", 0);
+    Services.prefs.setIntPref("zen.view.window.scheme", theme);
     if (userChromeFile.exists() || userContentFile.exists()) {
-      Services.prefs.setBoolPref('toolkit.legacyUserProfileCustomizations.stylesheets', true);
-      console.log('ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.');
+      Services.prefs.setBoolPref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+      console.warn("ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.");
       this.shouldRestart = true;
     }
   }
 
   _migrateV2() {
-    if (AppConstants.platform !== 'linux') {
-      Services.prefs.setIntPref('zen.theme.gradient-legacy-version', 0);
+    if (AppConstants.platform !== "linux") {
+      Services.prefs.setIntPref("zen.theme.gradient-legacy-version", 0);
     }
   }
 
   _migrateV3() {
-    if (Services.prefs.getStringPref('zen.theme.accent-color', '').startsWith('system')) {
-      Services.prefs.setStringPref('zen.theme.accent-color', 'AccentColor');
+    if (Services.prefs.getStringPref("zen.theme.accent-color", "").startsWith("system")) {
+      Services.prefs.setStringPref("zen.theme.accent-color", "AccentColor");
     }
   }
 
   _migrateV4() {
     // Fix spelling mistake in preference name
     Services.prefs.setBoolPref(
-      'zen.theme.use-system-colors',
-      Services.prefs.getBoolPref('zen.theme.use-sysyem-colors', false)
+      "zen.theme.use-system-colors",
+      Services.prefs.getBoolPref("zen.theme.use-sysyem-colors", false)
     );
   }
 
   _migrateV5() {
-    Services.prefs.setBoolPref('zen.site-data-panel.show-callout', true);
+    Services.prefs.setBoolPref("zen.site-data-panel.show-callout", true);
   }
 }
 

@@ -8,19 +8,19 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   }
 
   handleEvent(event) {
-    if (event.type === 'DOMContentLoaded') {
+    if (event.type === "DOMContentLoaded") {
       const verifier = this.contentWindow.document.querySelector(
         'meta[name="zen-content-verified"]'
       );
 
       if (verifier) {
-        verifier.setAttribute('content', 'verified');
+        verifier.setAttribute("content", "verified");
       }
 
       this.initiateModsMarketplace();
 
       this.contentWindow.document.addEventListener(
-        'ZenCheckForModUpdates',
+        "ZenCheckForModUpdates",
         this.checkForModUpdates.bind(this)
       );
     }
@@ -30,7 +30,7 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   checkForModUpdates(event) {
     event.preventDefault();
 
-    this.sendAsyncMessage('ZenModsMarketplace:CheckForUpdates');
+    this.sendAsyncMessage("ZenModsMarketplace:CheckForUpdates");
   }
 
   initiateModsMarketplace() {
@@ -41,20 +41,20 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   }
 
   get actionButton() {
-    return this.contentWindow.document.getElementById('install-theme');
+    return this.contentWindow.document.getElementById("install-theme");
   }
 
   get actionButtonUninstall() {
-    return this.contentWindow.document.getElementById('install-theme-uninstall');
+    return this.contentWindow.document.getElementById("install-theme-uninstall");
   }
 
   async isThemeInstalled(themeId) {
-    return await this.sendQuery('ZenModsMarketplace:IsModInstalled', { themeId });
+    return await this.sendQuery("ZenModsMarketplace:IsModInstalled", { themeId });
   }
 
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenModsMarketplace:ModChanged': {
+      case "ZenModsMarketplace:ModChanged": {
         const modId = message.data.modId;
         const actionButton = this.actionButton;
         const actionButtonInstalled = this.actionButtonUninstall;
@@ -64,22 +64,22 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
           actionButtonInstalled.disabled = false;
 
           if (await this.isThemeInstalled(modId)) {
-            actionButton.classList.add('hidden');
-            actionButtonInstalled.classList.remove('hidden');
+            actionButton.classList.add("hidden");
+            actionButtonInstalled.classList.remove("hidden");
           } else {
-            actionButton.classList.remove('hidden');
-            actionButtonInstalled.classList.add('hidden');
+            actionButton.classList.remove("hidden");
+            actionButtonInstalled.classList.add("hidden");
           }
         }
 
         break;
       }
 
-      case 'ZenModsMarketplace:CheckForUpdatesFinished': {
+      case "ZenModsMarketplace:CheckForUpdatesFinished": {
         const updates = message.data.updates;
 
         this.contentWindow.document.dispatchEvent(
-          new CustomEvent('ZenModsMarketplace:CheckForUpdatesFinished', { detail: { updates } })
+          new CustomEvent("ZenModsMarketplace:CheckForUpdatesFinished", { detail: { updates } })
         );
 
         break;
@@ -89,38 +89,38 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
 
   injectMarketplaceAPI() {
     Cu.exportFunction(this.handleModInstallationEvent.bind(this), this.contentWindow, {
-      defineAs: 'ZenInstallMod',
+      defineAs: "ZenInstallMod",
     });
   }
 
   async addButtons() {
     const actionButton = this.actionButton;
     const actionButtonUninstall = this.actionButtonUninstall;
-    const errorMessage = this.contentWindow.document.getElementById('install-theme-error');
+    const errorMessage = this.contentWindow.document.getElementById("install-theme-error");
     if (!actionButton || !actionButtonUninstall) {
       return;
     }
 
-    errorMessage.classList.add('hidden');
+    errorMessage.classList.add("hidden");
 
-    const themeId = actionButton.getAttribute('zen-theme-id');
+    const themeId = actionButton.getAttribute("zen-theme-id");
     if (await this.isThemeInstalled(themeId)) {
-      actionButtonUninstall.classList.remove('hidden');
+      actionButtonUninstall.classList.remove("hidden");
     } else {
-      actionButton.classList.remove('hidden');
+      actionButton.classList.remove("hidden");
     }
 
-    actionButton.addEventListener('click', this.handleModInstallationEvent.bind(this));
-    actionButtonUninstall.addEventListener('click', this.handleModUninstallEvent.bind(this));
+    actionButton.addEventListener("click", this.handleModInstallationEvent.bind(this));
+    actionButtonUninstall.addEventListener("click", this.handleModUninstallEvent.bind(this));
   }
 
   async handleModUninstallEvent(event) {
     const button = event.target;
     button.disabled = true;
 
-    const modId = button.getAttribute('zen-theme-id');
+    const modId = button.getAttribute("zen-theme-id");
 
-    this.sendAsyncMessage('ZenModsMarketplace:UninstallMod', { modId });
+    this.sendAsyncMessage("ZenModsMarketplace:UninstallMod", { modId });
   }
 
   async handleModInstallationEvent(event) {
@@ -131,12 +131,12 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
       const button = event.target;
       button.disabled = true;
 
-      modId = button.getAttribute('zen-theme-id');
+      modId = button.getAttribute("zen-theme-id");
     } else {
       // Backwards compatibility is... Interesting
       modId = event.themeId ?? event.modId ?? event.id;
     }
 
-    this.sendAsyncMessage('ZenModsMarketplace:InstallMod', { modId });
+    this.sendAsyncMessage("ZenModsMarketplace:InstallMod", { modId });
   }
 }

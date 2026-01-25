@@ -5,9 +5,6 @@ on:
     branches:
       - dev
   workflow_call:
-  pull_request:
-    branches:
-      - dev
 
 permissions:
   contents: read
@@ -25,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Setup and run autopep8
         if: ${{ contains(join(github.event.commits.*.modified, ' '), '.py') || contains(join(github.event.commits.*.added, ' '), '.py') || contains(join(github.event.commits.*.removed, ' '), '.py') }}
@@ -35,6 +32,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Download Firefox
+        env:
+          ZEN_DOWNLOAD_DONT_INIT_GIT: "1"
+        run: |
+          npm run download
 
       - name: Lint
         run: npm run lint

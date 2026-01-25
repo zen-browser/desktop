@@ -5,8 +5,8 @@
 # GTK-specific preferences
 - name: widget.gtk.rounded-bottom-corners.enabled
   value: true
-  condition: 'defined(MOZ_WIDGET_GTK)'
+  condition: "defined(MOZ_WIDGET_GTK)"
 
 - name: zen.widget.linux.transparency
   value: false
-  condition: 'defined(MOZ_WIDGET_GTK)'
+  condition: "defined(MOZ_WIDGET_GTK)"

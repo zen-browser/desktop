@@ -4,18 +4,18 @@ on:
   workflow_call:
     inputs:
       build-version:
-        description: 'The version to build'
+        description: "The version to build"
         required: true
         type: string
       release-branch:
-        description: 'The branch to build'
+        description: "The branch to build"
         required: true
         type: string
 
 jobs:
   mac-build:
     name: Unify macOS (Universal)
-    runs-on: 'macos-26'
+    runs-on: "macos-26"
 
     strategy:
       fail-fast: false
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       - name: Setup Python
         uses: actions/setup-python@v5

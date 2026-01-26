@@ -196,6 +196,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     window.addEventListener("FolderUngrouped", this);
     window.addEventListener("TabSelect", this);
     window.addEventListener("TabOpen", this);
+    window.addEventListener("ZenFolderRenamed", this);
     const onNewFolder = this.#onNewFolder.bind(this);
     document.getElementById("zen-context-menu-new-folder").addEventListener("command", onNewFolder);
     document
@@ -243,6 +244,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (group.collapsed && !this._sessionRestoring) {
       group.collapsed = group.hasAttribute("has-active");
     }
+
+    // Notify sync engine if pinned/essential tab was moved to folder
+    if (group.isZenFolder && (tab.pinned || tab.hasAttribute("zen-essential"))) {
+      Services.obs.notifyObservers(null, "zen-pinned-tabs-changed");
+    }
   }
 
   on_FolderGrouped(event) {
@@ -262,6 +268,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       );
     }
     parentFolder.collapsed = isActiveFolder;
+    // Notify sync engine of folder nesting change
+    if (parentFolder.isZenFolder && folder.isZenFolder) {
+      Services.obs.notifyObservers(null, "zen-folders-changed");
+    }
   }
 
   on_FolderUngrouped(event) {
@@ -273,6 +283,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     for (const tab of folder.tabs) {
       this.animateUnload(parentFolder, tab, true);
     }
+    // Notify sync engine of folder changes
+    Services.obs.notifyObservers(null, "zen-folders-changed");
   }
 
   async on_TabSelect(event) {
@@ -310,6 +322,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
   }
 
+  on_ZenFolderRenamed() {
+    // Notify sync engine of folder rename
+    Services.obs.notifyObservers(null, "zen-folders-changed");
+  }
+
   async on_TabUngrouped(event) {
     const tab = event.detail;
     const group = event.target;
@@ -319,6 +336,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateUnload(group, tab, true);
+    // Notify sync engine of folder/tab changes
+    Services.obs.notifyObservers(null, "zen-folders-changed");
   }
 
   on_TabGroupCreate(event) {
@@ -368,6 +387,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateCollapse(group);
+    // Notify sync engine of folder collapse state change
+    Services.obs.notifyObservers(null, "zen-folders-changed");
   }
 
   async on_TabGroupExpand(event) {
@@ -377,6 +398,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateExpand(group);
+    // Notify sync engine of folder expand state change
+    Services.obs.notifyObservers(null, "zen-folders-changed");
   }
 
   #onNewFolder(event) {
@@ -559,6 +582,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     this.#groupInit(folder);
+    // Notify sync engine of folder changes
+    Services.obs.notifyObservers(null, "zen-folders-changed");
     return folder;
   }
 

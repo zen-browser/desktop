@@ -230,8 +230,23 @@ WorkspacesStore.prototype = {
       // gBrowser.tabContainer.allTabs only returns tabs from the ACTIVE workspace!
       const workspaceElements = win.document.querySelectorAll("zen-workspace");
       const allTabs = [];
+      const seenTabs = new Set(); // Track seen tabs to avoid duplicates
 
-      // Helper to recursively collect tabs from containers (including inside folders)
+      // Helper to collect tabs from a folder (non-recursive, folder.tabs already includes nested)
+      const collectTabsFromFolder = (folder) => {
+        const folderTabs = folder.tabs || [];
+        log("debug", `Found folder "${folder.label}" with ${folderTabs.length} tabs`);
+        for (const tab of folderTabs) {
+          // Only add if we haven't seen this tab before (folder.tabs may include nested folder tabs)
+          if (!seenTabs.has(tab)) {
+            seenTabs.add(tab);
+            allTabs.push(tab);
+            log("debug", `Found tab in folder "${folder.label}": ${tab.linkedBrowser?.currentURI?.spec || "(no url)"}`);
+          }
+        }
+      };
+
+      // Helper to collect tabs from containers (including inside folders)
       const collectTabsFromContainer = (container, containerName) => {
         if (!container) {
           log("debug", `Container "${containerName}" is null`);
@@ -240,24 +255,13 @@ WorkspacesStore.prototype = {
         log("debug", `Scanning container "${containerName}" with ${container.children.length} children`);
         for (const child of container.children) {
           const tagName = child.tagName?.toLowerCase() || "unknown";
-          if (win.gBrowser.isTab(child)) {
+          if (win.gBrowser.isTab(child) && !seenTabs.has(child)) {
+            seenTabs.add(child);
             allTabs.push(child);
             log("debug", `Found tab in "${containerName}": ${child.linkedBrowser?.currentURI?.spec || "(no url)"}`);
           } else if (child.isZenFolder) {
-            // Use folder.tabs property to get tabs (inherited from MozTabbrowserTabGroup)
-            const folderTabs = child.tabs || [];
-            log("debug", `Found folder "${child.label}" with ${folderTabs.length} tabs`);
-            for (const tab of folderTabs) {
-              allTabs.push(tab);
-              log("debug", `Found tab in folder "${child.label}": ${tab.linkedBrowser?.currentURI?.spec || "(no url)"}`);
-            }
-            // Also check for nested folders
-            for (const folderChild of container.children) {
-              if (folderChild.isZenFolder && folderChild !== child) {
-                // This will be handled in the next iteration
-              }
-            }
-          } else {
+            collectTabsFromFolder(child);
+          } else if (!win.gBrowser.isTab(child)) {
             log("debug", `Skipping non-tab element in "${containerName}": <${tagName}>`);
           }
         }
@@ -325,7 +329,11 @@ WorkspacesStore.prototype = {
         // Get custom tab label if set (zenStaticLabel is the Zen Browser property for custom names)
         const label = tab.zenStaticLabel || null;
 
+        // Generate a unique ID for each tab (URL + position to handle duplicates)
+        const tabId = `${url}-${position}`;
+
         tabs.push({
+          id: tabId,
           url,
           workspaceId,
           folderId,
@@ -334,7 +342,7 @@ WorkspacesStore.prototype = {
           label,
           position: position++,
         });
-        log("debug", `Collected tab: "${url}" (label: "${label}") in folder: ${folderId || "none"}`);
+        log("debug", `Collected tab: "${url}" (label: "${label}", pos: ${position - 1}) in folder: ${folderId || "none"}`);
       }
     }
 
@@ -536,12 +544,27 @@ WorkspacesStore.prototype = {
           existingTab.setAttribute("zen-essential", "true");
         }
 
-        // Apply custom tab label if set
+        // Apply custom tab label - use zenStaticLabel and _setTabLabel like ZenWindowSync does
+        // This must be done for ALL tabs (not just those with custom labels) to show proper title for lazy tabs
         if (tabData.label) {
-          // Use zenStaticLabel property and _setTabLabel like ZenUIManager does
+          existingTab._zenChangeLabelFlag = true;
           existingTab.zenStaticLabel = tabData.label;
           win.gBrowser._setTabLabel(existingTab, tabData.label);
+          delete existingTab._zenChangeLabelFlag;
           log("debug", `Applied custom label "${tabData.label}" to tab "${tabData.url}"`);
+        } else {
+          // For tabs without custom labels, try to set a reasonable default from URL
+          // This helps lazy tabs show something other than "New Tab"
+          try {
+            const url = new URL(tabData.url);
+            const defaultLabel = url.hostname || tabData.url;
+            existingTab._zenChangeLabelFlag = true;
+            win.gBrowser._setTabLabel(existingTab, defaultLabel);
+            delete existingTab._zenChangeLabelFlag;
+            log("debug", `Applied default label "${defaultLabel}" to tab "${tabData.url}"`);
+          } catch (e) {
+            // URL parsing failed, leave as is
+          }
         }
 
         // Move to folder if specified

@@ -322,8 +322,8 @@ WorkspacesStore.prototype = {
         const folder = tab.group;
         const folderId = folder?.isZenFolder ? folder.id : null;
 
-        // Get custom tab label if set
-        const label = tab.getAttribute("zen-custom-label") || tab.label || null;
+        // Get custom tab label if set (zenStaticLabel is the Zen Browser property for custom names)
+        const label = tab.zenStaticLabel || null;
 
         tabs.push({
           url,
@@ -513,16 +513,17 @@ WorkspacesStore.prototype = {
         }
 
         if (!existingTab) {
-          // Create new pinned tab
+          // Create new pinned tab (lazy - don't load immediately)
           log("debug", `Creating pinned tab for URL: "${tabData.url}"`);
           existingTab = win.gBrowser.addTab(tabData.url, {
             skipAnimation: true,
             pinned: true,
             triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+            createLazyBrowser: true,  // Don't load tab immediately
           });
           win.gBrowser.pinTab(existingTab);
           created++;
-          log("debug", `Created pinned tab: "${tabData.url}"`);
+          log("debug", `Created pinned tab (lazy): "${tabData.url}"`);
         }
 
         // Apply workspace
@@ -537,8 +538,9 @@ WorkspacesStore.prototype = {
 
         // Apply custom tab label if set
         if (tabData.label) {
-          existingTab.setAttribute("zen-custom-label", tabData.label);
-          existingTab.label = tabData.label;
+          // Use zenStaticLabel property and _setTabLabel like ZenUIManager does
+          existingTab.zenStaticLabel = tabData.label;
+          win.gBrowser._setTabLabel(existingTab, tabData.label);
           log("debug", `Applied custom label "${tabData.label}" to tab "${tabData.url}"`);
         }
 

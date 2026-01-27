@@ -15,10 +15,10 @@ zen-layout-single-toolbar = Only Sidebar
 zen-layout-multiple-toolbar = Sidebar and Top Toolbar
 zen-layout-collapsed-toolbar = Collapsed Sidebar
 
-sync-currently-syncing-workspaces = Workspaces & Tabs
+sync-currently-syncing-workspaces = Workspaces
 sync-engine-workspaces =
-    .label = Workspaces & Tabs
-    .tooltiptext = Sync your workspaces and tabs across devices
+    .label = Workspaces
+    .tooltiptext = Sync your workspaces across devices
     .accesskey = W
 
 zen-glance-title = Glance

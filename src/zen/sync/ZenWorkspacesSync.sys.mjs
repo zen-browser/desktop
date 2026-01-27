@@ -168,11 +168,9 @@ WorkspacesStore.prototype = {
       const workspaces = ZenSessionStore.getClonedSpaces() || [];
       log("info", `Found ${workspaces.length} local workspaces`);
 
-      const folders = this._getFoldersData();
-      log("info", `Found ${folders.length} folders`);
-
-      const pinnedTabs = this._getPinnedTabsData();
-      log("info", `Found ${pinnedTabs.length} pinned/essential tabs`);
+      // Collect pinned items (tabs AND folders together) to preserve interleaved order
+      const { folders, pinnedTabs } = this._getPinnedItemsData();
+      log("info", `Found ${folders.length} folders, ${pinnedTabs.length} pinned/essential tabs`);
 
       return {
         workspaces,
@@ -186,168 +184,147 @@ WorkspacesStore.prototype = {
     }
   },
 
-  _getFoldersData() {
+  // Collect tabs and folders together to maintain correct interleaved positions
+  _getPinnedItemsData() {
     const folders = [];
+    const tabs = [];
     const win = Services.wm.getMostRecentWindow("navigator:browser");
-    if (!win?.gZenFolders) return folders;
+    if (!win?.gBrowser || !win?.gZenWorkspaces) {
+      return { folders, pinnedTabs: tabs };
+    }
 
-    // Get all zen-folder elements (excluding split-view-groups)
-    const folderElements = win.document.querySelectorAll("zen-folder:not([split-view-group])");
-    let position = 0;
+    const seenTabs = new Set();
+    const seenFolders = new Set();
 
-    for (const folder of folderElements) {
-      // Get parent folder by checking DOM hierarchy
-      const parentFolder = folder.parentElement?.closest("zen-folder");
+    // Helper to collect a folder and its data
+    const collectFolder = (folder, containerPosition, parentId = null) => {
+      if (seenFolders.has(folder.id)) return;
+      seenFolders.add(folder.id);
+
       const workspaceId = folder.getAttribute("zen-workspace-id");
+      // Get the folder icon using the iconURL getter
+      const userIcon = folder.iconURL || null;
 
       folders.push({
         id: folder.id,
         name: folder.label,
         workspaceId,
-        parentId: parentFolder?.id || null,
+        parentId,
         collapsed: folder.collapsed,
         isEssential: folder.hasAttribute("zen-essential"),
-        userIcon: folder.querySelector(".tab-group-folder-icon use")?.getAttribute("href") || null,
-        position: position++,
+        userIcon,
+        position: containerPosition,  // Position within parent container
       });
-      log("debug", `Collected folder: "${folder.label}" (${folder.id}), parent: ${parentFolder?.id || "none"}`);
+      log("debug", `Collected folder: "${folder.label}" (${folder.id}), pos: ${containerPosition}, icon: "${userIcon || "none"}"`);
+    };
+
+    // Helper to collect a tab
+    const collectTab = (tab, containerPosition, folderId = null) => {
+      if (seenTabs.has(tab)) return;
+
+      const isEssential = tab.hasAttribute("zen-essential");
+      const isInFolder = tab.group?.isZenFolder;
+      // If we're explicitly being told this tab is in a folder (folderId passed), treat it as pinned
+      const isPinned = tab.pinned || isInFolder || folderId;
+
+      const url = tab.linkedBrowser?.currentURI?.spec;
+      const isEmpty = tab.hasAttribute("zen-empty-tab");
+
+      log("debug", `collectTab checking: url="${url}", pinned=${tab.pinned}, isInFolder=${isInFolder}, folderId=${folderId}, isEmpty=${isEmpty}, essential=${isEssential}`);
+
+      if (!isEssential && !isPinned) {
+        log("debug", `  -> Skipped: not essential and not pinned`);
+        return;
+      }
+      if (isEmpty) {
+        log("debug", `  -> Skipped: empty tab placeholder`);
+        return;
+      }
+
+      if (!url || url.startsWith("about:")) {
+        log("debug", `  -> Skipped: no URL or about: URL`);
+        return;
+      }
+
+      seenTabs.add(tab);
+      const workspaceId = tab.getAttribute("zen-workspace-id");
+      const label = tab.zenStaticLabel || null;
+      const tabId = `${url}-${label || ""}-${folderId || "root"}-${containerPosition}`;
+
+      tabs.push({
+        id: tabId,
+        url,
+        workspaceId,
+        folderId,
+        isEssential,
+        isPinned: !!isPinned,
+        label,
+        position: containerPosition,  // Position within parent container (folder or pinned container)
+      });
+      log("debug", `  -> Collected tab: "${url}" (label: "${label}", pos: ${containerPosition}) in ${folderId || "root"}`);
+    };
+
+    // Helper to collect items from a folder using folder.allItems (includes nested folders)
+    const collectFolderContents = (folder) => {
+      // Use allItems instead of tabs - allItems includes both tabs AND nested folders
+      const folderItems = folder.allItems || [];
+      log("debug", `collectFolderContents: folder "${folder.label}" has ${folderItems.length} items`);
+      let folderPosition = 0;
+
+      for (const item of folderItems) {
+        const isFolder = item.isZenFolder;
+        const isTab = win.gBrowser.isTab(item);
+        const isEmptyTab = item.hasAttribute?.("zen-empty-tab");
+        log("debug", `  - Item: isFolder=${isFolder}, isTab=${isTab}, isEmpty=${isEmptyTab}, tagName=${item.tagName}`);
+
+        if (isFolder) {
+          // Nested folder
+          collectFolder(item, folderPosition++, folder.id);
+          // Recursively collect nested folder contents
+          collectFolderContents(item);
+        } else if (isTab) {
+          collectTab(item, folderPosition++, folder.id);
+        }
+      }
+    };
+
+    // Helper to collect items from a container in DOM order
+    const collectFromContainer = (container, parentFolderId = null) => {
+      if (!container) return;
+
+      let position = 0;
+      for (const child of container.children) {
+        // Skip separators and other non-tab/non-folder elements
+        if (child.classList?.contains("pinned-tabs-container-separator")) continue;
+
+        if (child.isZenFolder) {
+          // It's a folder - collect folder data with its position
+          collectFolder(child, position++, parentFolderId);
+          // Then collect items inside the folder using folder.tabs API
+          collectFolderContents(child);
+        } else if (win.gBrowser.isTab(child)) {
+          // It's a tab at root level (not in a folder)
+          collectTab(child, position++, parentFolderId);
+        }
+      }
+    };
+
+    // Process all workspaces
+    const workspaceElements = win.document.querySelectorAll("zen-workspace");
+    for (const workspace of workspaceElements) {
+      log("debug", `Processing workspace: ${workspace.id}`);
+      // Collect from pinned container - this maintains the interleaved order
+      collectFromContainer(workspace.pinnedTabsContainer, null);
     }
 
-    return folders;
-  },
-
-  _getPinnedTabsData() {
-    // Only sync pinned and essential tabs, NOT regular open tabs
-    const tabs = [];
-    let position = 0;
-    let totalPinned = 0;
-    let totalEssential = 0;
-
-    for (const win of Services.wm.getEnumerator("navigator:browser")) {
-      if (!win.gBrowser || !win.gZenWorkspaces) continue;
-
-      // Get ALL tabs from ALL workspaces by iterating over each zen-workspace element
-      // gBrowser.tabContainer.allTabs only returns tabs from the ACTIVE workspace!
-      const workspaceElements = win.document.querySelectorAll("zen-workspace");
-      const allTabs = [];
-      const seenTabs = new Set(); // Track seen tabs to avoid duplicates
-
-      // Helper to collect tabs from a folder (non-recursive, folder.tabs already includes nested)
-      const collectTabsFromFolder = (folder) => {
-        const folderTabs = folder.tabs || [];
-        log("debug", `Found folder "${folder.label}" with ${folderTabs.length} tabs`);
-        for (const tab of folderTabs) {
-          // Only add if we haven't seen this tab before (folder.tabs may include nested folder tabs)
-          if (!seenTabs.has(tab)) {
-            seenTabs.add(tab);
-            allTabs.push(tab);
-            log("debug", `Found tab in folder "${folder.label}": ${tab.linkedBrowser?.currentURI?.spec || "(no url)"}`);
-          }
-        }
-      };
-
-      // Helper to collect tabs from containers (including inside folders)
-      const collectTabsFromContainer = (container, containerName) => {
-        if (!container) {
-          log("debug", `Container "${containerName}" is null`);
-          return;
-        }
-        log("debug", `Scanning container "${containerName}" with ${container.children.length} children`);
-        for (const child of container.children) {
-          const tagName = child.tagName?.toLowerCase() || "unknown";
-          if (win.gBrowser.isTab(child) && !seenTabs.has(child)) {
-            seenTabs.add(child);
-            allTabs.push(child);
-            log("debug", `Found tab in "${containerName}": ${child.linkedBrowser?.currentURI?.spec || "(no url)"}`);
-          } else if (child.isZenFolder) {
-            collectTabsFromFolder(child);
-          } else if (!win.gBrowser.isTab(child)) {
-            log("debug", `Skipping non-tab element in "${containerName}": <${tagName}>`);
-          }
-        }
-      };
-
-      for (const workspace of workspaceElements) {
-        log("debug", `Processing workspace: ${workspace.id}`);
-        // Get pinned tabs from workspace's pinned container (including inside folders)
-        collectTabsFromContainer(workspace.pinnedTabsContainer, `${workspace.id}/pinned`);
-        // Get normal tabs from workspace's tabs container
-        collectTabsFromContainer(workspace.tabsContainer, `${workspace.id}/normal`);
-      }
-
-      // Also get essential tabs from the essentials container
-      const essentialsContainers = win.document.querySelectorAll(".zen-essentials-container");
-      for (const container of essentialsContainers) {
-        collectTabsFromContainer(container);
-      }
-
-      log("debug", `Scanning ${workspaceElements.length} workspaces with ${allTabs.length} total tabs`);
-
-      for (const tab of allTabs) {
-        // Skip non-pinned/non-essential tabs
-        const isEssential = tab.hasAttribute("zen-essential");
-        // Tabs in folders are pinned but tab.pinned might be false - check if in a zen-folder
-        const isInFolder = tab.group?.isZenFolder;
-        const isPinned = tab.pinned || isInFolder;
-        const tabUrl = tab.linkedBrowser?.currentURI?.spec || "(no url)";
-        const wsId = tab.getAttribute("zen-workspace-id");
-
-        if (isPinned) totalPinned++;
-        if (isEssential) totalEssential++;
-
-        log("debug", `Tab check: url="${tabUrl}", wsId=${wsId}, pinned=${tab.pinned}, inFolder=${isInFolder}, essential=${isEssential}`);
-
-        if (!isEssential && !isPinned) {
-          continue;
-        }
-
-        // Skip empty placeholder tabs in folders
-        if (tab.hasAttribute("zen-empty-tab")) {
-          log("debug", `Skipping empty tab placeholder`);
-          continue;
-        }
-
-        const workspaceId = tab.getAttribute("zen-workspace-id");
-        const url = tab.linkedBrowser?.currentURI?.spec;
-
-        log("debug", `Examining tab: pinned=${isPinned}, essential=${isEssential}, url="${url}", workspaceId=${workspaceId}`);
-
-        if (!url) {
-          log("debug", `Skipping tab with no URL (pinned: ${isPinned}, essential: ${isEssential})`);
-          continue;
-        }
-
-        if (url.startsWith("about:")) {
-          log("debug", `Skipping about: URL: ${url} (pinned: ${isPinned}, essential: ${isEssential})`);
-          continue;
-        }
-
-        // Get folder ID if tab is inside a folder
-        const folder = tab.group;
-        const folderId = folder?.isZenFolder ? folder.id : null;
-
-        // Get custom tab label if set (zenStaticLabel is the Zen Browser property for custom names)
-        const label = tab.zenStaticLabel || null;
-
-        // Generate a unique ID for each tab (URL + position to handle duplicates)
-        const tabId = `${url}-${position}`;
-
-        tabs.push({
-          id: tabId,
-          url,
-          workspaceId,
-          folderId,
-          isEssential,
-          isPinned: tab.pinned || isInFolder,
-          label,
-          position: position++,
-        });
-        log("debug", `Collected tab: "${url}" (label: "${label}", pos: ${position - 1}) in folder: ${folderId || "none"}`);
-      }
+    // Also process essentials container
+    const essentialsContainers = win.document.querySelectorAll(".zen-essentials-container");
+    for (const container of essentialsContainers) {
+      collectFromContainer(container, null);
     }
 
-    log("debug", `Tab scan summary: ${totalPinned} pinned, ${totalEssential} essential, ${tabs.length} collected`);
-    return tabs;
+    log("info", `Collected ${folders.length} folders, ${tabs.length} tabs with positions`);
+    return { folders, pinnedTabs: tabs };
   },
 
   async _applyWorkspacesData(data) {
@@ -369,17 +346,8 @@ WorkspacesStore.prototype = {
       await win.gZenWorkspaces.propagateWorkspaces(mergedWorkspaces);
       log("info", "Workspaces propagated to all windows");
 
-      // 2. Apply folders (with nesting order: parents first, then children)
-      if (data.folders?.length) {
-        log("info", `Applying ${data.folders.length} folders`);
-        await this._applyFolders(data.folders, win);
-      }
-
-      // 3. Apply pinned/essential tabs (with ordering)
-      if (data.pinnedTabs?.length) {
-        log("info", `Applying ${data.pinnedTabs.length} pinned/essential tabs`);
-        await this._applyPinnedTabs(data.pinnedTabs, win);
-      }
+      // 2. Apply pinned items (folders + tabs) with correct interleaved ordering
+      await this._applyPinnedItems(data.folders || [], data.pinnedTabs || [], win);
 
       log("info", "=== SYNC DATA APPLIED SUCCESSFULLY ===");
     } catch (e) {
@@ -410,27 +378,25 @@ WorkspacesStore.prototype = {
     return merged;
   },
 
-  async _applyFolders(folders, win) {
-    // Sort folders: parents first (parentId = null), then children by position
+  // Apply folders and tabs together to maintain correct interleaved ordering
+  async _applyPinnedItems(folders, pinnedTabs, win) {
+    const folderMap = new Map(); // id -> folder element
+    const tabMap = new Map(); // tabData.id -> tab element
+
+    // Phase 1: Create/find all folders (parents first, then children)
+    // Sort folders to ensure parents are created before children
     const sortedFolders = [...folders].sort((a, b) => {
-      // Top-level folders first
       if (!a.parentId && b.parentId) return -1;
       if (a.parentId && !b.parentId) return 1;
-      // Then by position
-      return a.position - b.position;
+      return 0;
     });
 
-    const folderMap = new Map(); // id -> folder element
-    let created = 0;
-    let updated = 0;
-
+    let foldersCreated = 0;
     for (const folderData of sortedFolders) {
       try {
-        // Check if folder already exists
         let folder = win.document.getElementById(folderData.id);
 
         if (!folder && win.gZenFolders) {
-          // Create new folder using _createFolderNode (internal API)
           folder = win.gZenFolders._createFolderNode({
             id: folderData.id,
             label: folderData.name,
@@ -438,29 +404,12 @@ WorkspacesStore.prototype = {
             collapsed: folderData.collapsed,
           });
 
-          // Determine where to insert the folder
-          if (folderData.parentId) {
-            // Nested folder - insert into parent folder
-            const parentFolder = folderMap.get(folderData.parentId) || win.document.getElementById(folderData.parentId);
-            if (parentFolder?.isZenFolder) {
-              parentFolder.appendChild(folder);
-              log("debug", `Nested folder "${folderData.name}" inside parent "${parentFolder.label}"`);
-            } else {
-              log("warn", `Parent folder ${folderData.parentId} not found for "${folderData.name}"`);
-            }
-          } else {
-            // Top-level folder - insert into workspace's pinned container
-            const workspaceElem = win.gZenWorkspaces.workspaceElement(folderData.workspaceId);
-            const pinnedContainer = workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
-            const separator = pinnedContainer.querySelector(".pinned-tabs-container-separator");
-            if (separator) {
-              separator.before(folder);
-            } else {
-              pinnedContainer.appendChild(folder);
-            }
-          }
+          // Temporarily append to a workspace container (will be repositioned later)
+          const workspaceElem = win.gZenWorkspaces.workspaceElement(folderData.workspaceId);
+          const pinnedContainer = workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
+          pinnedContainer.appendChild(folder);
 
-          // Create empty tab for folder (folders need at least one tab)
+          // Create empty tab for folder
           const emptyTab = win.gBrowser.addTab("about:blank", {
             skipAnimation: true,
             pinned: true,
@@ -475,42 +424,34 @@ WorkspacesStore.prototype = {
           }
           folder.addTabs([emptyTab]);
 
-          created++;
+          foldersCreated++;
           log("debug", `Created folder: "${folderData.name}" (${folderData.id})`);
         } else if (folder) {
-          // Update existing folder properties
           folder.label = folderData.name;
           folder.collapsed = folderData.collapsed;
           if (folderData.workspaceId) {
             folder.setAttribute("zen-workspace-id", folderData.workspaceId);
           }
-          updated++;
-          log("debug", `Updated folder: "${folderData.name}" (${folderData.id})`);
+        }
+
+        // Apply folder icon
+        if (folder && folderData.userIcon && win.gZenFolders) {
+          win.gZenFolders.setFolderUserIcon(folder, folderData.userIcon);
+          log("debug", `Applied icon "${folderData.userIcon}" to folder "${folderData.name}"`);
         }
 
         if (folder) {
-          folderMap.set(folderData.id, folder);
+          folderMap.set(folderData.id, { element: folder, data: folderData });
         }
       } catch (e) {
-        log("error", `Failed to apply folder "${folderData.name}": ${e.message}`);
-        log("error", `Stack: ${e.stack}`);
+        log("error", `Failed to create folder "${folderData.name}": ${e.message}`);
       }
     }
 
-    log("info", `Folders: ${created} created, ${updated} updated`);
-    return folderMap;
-  },
-
-  async _applyPinnedTabs(pinnedTabs, win) {
-    // Sort tabs by position to maintain ordering
-    const sortedTabs = [...pinnedTabs].sort((a, b) => a.position - b.position);
-
-    let created = 0;
-    let updated = 0;
-
-    for (const tabData of sortedTabs) {
+    // Phase 2: Create/find all tabs
+    let tabsCreated = 0;
+    for (const tabData of pinnedTabs) {
       try {
-        // Find existing tab by URL
         let existingTab = null;
         for (const tab of win.gBrowser.tabs) {
           const url = tab.linkedBrowser?.currentURI?.spec;
@@ -521,17 +462,15 @@ WorkspacesStore.prototype = {
         }
 
         if (!existingTab) {
-          // Create new pinned tab (lazy - don't load immediately)
-          log("debug", `Creating pinned tab for URL: "${tabData.url}"`);
           existingTab = win.gBrowser.addTab(tabData.url, {
             skipAnimation: true,
             pinned: true,
             triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
-            createLazyBrowser: true,  // Don't load tab immediately
+            createLazyBrowser: true,
           });
           win.gBrowser.pinTab(existingTab);
-          created++;
-          log("debug", `Created pinned tab (lazy): "${tabData.url}"`);
+          tabsCreated++;
+          log("debug", `Created tab: "${tabData.url}"`);
         }
 
         // Apply workspace
@@ -544,50 +483,124 @@ WorkspacesStore.prototype = {
           existingTab.setAttribute("zen-essential", "true");
         }
 
-        // Apply custom tab label - use zenStaticLabel and _setTabLabel like ZenWindowSync does
-        // This must be done for ALL tabs (not just those with custom labels) to show proper title for lazy tabs
+        // Apply label
         if (tabData.label) {
           existingTab._zenChangeLabelFlag = true;
           existingTab.zenStaticLabel = tabData.label;
           win.gBrowser._setTabLabel(existingTab, tabData.label);
           delete existingTab._zenChangeLabelFlag;
-          log("debug", `Applied custom label "${tabData.label}" to tab "${tabData.url}"`);
         } else {
-          // For tabs without custom labels, try to set a reasonable default from URL
-          // This helps lazy tabs show something other than "New Tab"
           try {
             const url = new URL(tabData.url);
             const defaultLabel = url.hostname || tabData.url;
             existingTab._zenChangeLabelFlag = true;
             win.gBrowser._setTabLabel(existingTab, defaultLabel);
             delete existingTab._zenChangeLabelFlag;
-            log("debug", `Applied default label "${defaultLabel}" to tab "${tabData.url}"`);
-          } catch (e) {
-            // URL parsing failed, leave as is
-          }
+          } catch (e) {}
         }
 
-        // Move to folder if specified
-        if (tabData.folderId) {
-          const folder = win.document.getElementById(tabData.folderId);
-          if (folder?.isZenFolder) {
-            folder.addTabs([existingTab]);
-            log("debug", `Moved tab "${tabData.url}" to folder ${tabData.folderId}`);
-          } else {
-            log("warn", `Folder ${tabData.folderId} not found for tab "${tabData.url}"`);
-          }
-        }
-
-        updated++;
+        tabMap.set(tabData.id, { element: existingTab, data: tabData });
       } catch (e) {
-        log("error", `Failed to apply tab "${tabData.url}": ${e.message}`);
-        log("error", `Stack: ${e.stack}`);
+        log("error", `Failed to create tab "${tabData.url}": ${e.message}`);
       }
-
-      updated++;
     }
 
-    log("info", `Pinned tabs: ${created} created, ${updated} updated`);
+    // Phase 3: Position items correctly
+    // Group items by their container (workspace for root items, folder for nested items)
+    const itemsByContainer = new Map(); // containerId -> array of {type, data, element}
+
+    // Add root-level folders (parentId is null)
+    for (const [id, { element, data }] of folderMap) {
+      if (!data.parentId) {
+        const containerId = data.workspaceId || "default";
+        if (!itemsByContainer.has(containerId)) {
+          itemsByContainer.set(containerId, []);
+        }
+        itemsByContainer.get(containerId).push({
+          type: "folder",
+          data,
+          element,
+          position: data.position,
+        });
+      }
+    }
+
+    // Add root-level tabs (folderId is null)
+    for (const [id, { element, data }] of tabMap) {
+      if (!data.folderId) {
+        const containerId = data.workspaceId || "default";
+        if (!itemsByContainer.has(containerId)) {
+          itemsByContainer.set(containerId, []);
+        }
+        itemsByContainer.get(containerId).push({
+          type: "tab",
+          data,
+          element,
+          position: data.position,
+        });
+      }
+    }
+
+    // Sort and position root-level items in each workspace
+    for (const [workspaceId, items] of itemsByContainer) {
+      // Sort by position to get correct interleaved order
+      items.sort((a, b) => a.position - b.position);
+
+      const workspaceElem = win.gZenWorkspaces.workspaceElement(workspaceId);
+      const pinnedContainer = workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
+      const separator = pinnedContainer?.querySelector(".pinned-tabs-container-separator");
+
+      log("debug", `Positioning ${items.length} items in workspace ${workspaceId}`);
+
+      // Insert items in order before the separator
+      for (const item of items) {
+        if (separator) {
+          separator.before(item.element);
+        } else {
+          pinnedContainer.appendChild(item.element);
+        }
+        log("debug", `Positioned ${item.type} "${item.data.name || item.data.url}" at position ${item.position}`);
+      }
+    }
+
+    // Phase 4: Handle nested items (tabs AND nested folders inside folders)
+    // Process folders to add their children in correct interleaved order
+    for (const [folderId, { element: folder, data: folderData }] of folderMap) {
+      // Collect ALL items that belong in this folder (tabs + nested folders)
+      const folderItems = [];
+
+      // Get tabs that belong to this folder
+      for (const [tabId, { element: tab, data: tabData }] of tabMap) {
+        if (tabData.folderId === folderId) {
+          folderItems.push({ type: "tab", element: tab, data: tabData, position: tabData.position });
+        }
+      }
+
+      // Get nested folders that belong to this folder
+      for (const [nestedId, { element: nestedFolder, data: nestedData }] of folderMap) {
+        if (nestedData.parentId === folderId) {
+          folderItems.push({ type: "folder", element: nestedFolder, data: nestedData, position: nestedData.position });
+        }
+      }
+
+      // Sort ALL items by position to get correct interleaved order
+      folderItems.sort((a, b) => a.position - b.position);
+
+      log("debug", `Adding ${folderItems.length} items to folder "${folderData.name}" in order`);
+
+      // Add items to folder in position order
+      for (const item of folderItems) {
+        if (item.type === "tab") {
+          folder.addTabs([item.element]);
+          log("debug", `  Added tab "${item.data.url}" at position ${item.position}`);
+        } else {
+          folder.appendChild(item.element);
+          log("debug", `  Added nested folder "${item.data.name}" at position ${item.position}`);
+        }
+      }
+    }
+
+    log("info", `Applied ${foldersCreated} new folders, ${tabsCreated} new tabs`);
   },
 
   async getAllIDs() {
@@ -685,11 +698,98 @@ WorkspacesTracker.prototype = {
     this.modified = false;
   },
 
+  _onTabMove(event) {
+    // Only trigger sync for pinned tabs or tabs in folders
+    const tab = event.target;
+    if (tab.pinned || tab.group?.isZenFolder) {
+      if (this.ignoreAll) {
+        log("debug", "TabMove detected but ignoreAll=true, skipping");
+        return;
+      }
+      this.score += SCORE_INCREMENT_XLARGE;
+      this.modified = true;
+      log("info", `LOCAL CHANGE DETECTED (TabMove) - Score: ${this.score}, sync scheduled`);
+    }
+  },
+
+  _onTabGroupMoved(event) {
+    if (this.ignoreAll) {
+      log("debug", "TabGroupMoved detected but ignoreAll=true, skipping");
+      return;
+    }
+    this.score += SCORE_INCREMENT_XLARGE;
+    this.modified = true;
+    log("info", `LOCAL CHANGE DETECTED (TabGroupMoved) - Score: ${this.score}, sync scheduled`);
+  },
+
+  _onTabGroupUpdate(event) {
+    // Triggered when folder properties change (icon, name, etc.)
+    log("debug", `TabGroupUpdate event received, target: ${event.target?.tagName}, isZenFolder: ${event.target?.isZenFolder}`);
+    const group = event.target;
+    if (group?.isZenFolder) {
+      if (this.ignoreAll) {
+        log("debug", "TabGroupUpdate detected but ignoreAll=true, skipping");
+        return;
+      }
+      this.score += SCORE_INCREMENT_XLARGE;
+      this.modified = true;
+      log("info", `LOCAL CHANGE DETECTED (TabGroupUpdate - folder icon/properties) - Score: ${this.score}, sync scheduled`);
+    } else {
+      log("debug", `TabGroupUpdate ignored - target is not a zen folder`);
+    }
+  },
+
+  _addWindowListeners(win) {
+    if (!win.gBrowser || win._zenWorkspacesSyncListenersAdded) return;
+    win._zenWorkspacesSyncListenersAdded = true;
+    win.addEventListener("TabMove", this._boundOnTabMove, true);
+    win.addEventListener("TabGroupMoved", this._boundOnTabGroupMoved, true);
+    win.addEventListener("TabGroupUpdate", this._boundOnTabGroupUpdate, true);
+    log("debug", `Added DOM event listeners to window`);
+  },
+
+  _removeWindowListeners(win) {
+    if (!win._zenWorkspacesSyncListenersAdded) return;
+    delete win._zenWorkspacesSyncListenersAdded;
+    win.removeEventListener("TabMove", this._boundOnTabMove, true);
+    win.removeEventListener("TabGroupMoved", this._boundOnTabGroupMoved, true);
+    win.removeEventListener("TabGroupUpdate", this._boundOnTabGroupUpdate, true);
+    log("debug", `Removed DOM event listeners from window`);
+  },
+
   onStart() {
     log("info", "Tracker STARTED - now observing workspace/folder/tab changes");
     Svc.Obs.add("zen-workspaces-changed", this.asyncObserver);
     Svc.Obs.add("zen-folders-changed", this.asyncObserver);
     Svc.Obs.add("zen-pinned-tabs-changed", this.asyncObserver);
+
+    // Bind event handlers once
+    this._boundOnTabMove = this._onTabMove.bind(this);
+    this._boundOnTabGroupMoved = this._onTabGroupMoved.bind(this);
+    this._boundOnTabGroupUpdate = this._onTabGroupUpdate.bind(this);
+
+    // Add listeners to existing windows
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      this._addWindowListeners(win);
+    }
+
+    // Watch for new windows
+    this._windowObserver = {
+      tracker: this,
+      observe(subject, topic) {
+        if (topic === "domwindowopened") {
+          const win = subject;
+          // Wait for window to be ready
+          win.addEventListener("load", () => {
+            if (win.document.documentElement.getAttribute("windowtype") === "navigator:browser") {
+              this.tracker._addWindowListeners(win);
+            }
+          }, { once: true });
+        }
+      }
+    };
+    Services.ww.registerNotification(this._windowObserver);
+    log("info", "Registered window observer for new browser windows");
   },
 
   onStop() {
@@ -697,6 +797,17 @@ WorkspacesTracker.prototype = {
     Svc.Obs.remove("zen-workspaces-changed", this.asyncObserver);
     Svc.Obs.remove("zen-folders-changed", this.asyncObserver);
     Svc.Obs.remove("zen-pinned-tabs-changed", this.asyncObserver);
+
+    // Unregister window observer
+    if (this._windowObserver) {
+      Services.ww.unregisterNotification(this._windowObserver);
+      this._windowObserver = null;
+    }
+
+    // Remove DOM event listeners from all windows
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      this._removeWindowListeners(win);
+    }
   },
 
   async observe(subject, topic) {

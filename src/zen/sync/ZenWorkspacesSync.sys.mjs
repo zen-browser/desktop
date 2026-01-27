@@ -446,6 +446,7 @@ WorkspacesStore.prototype = {
   },
 
   // Apply folders and tabs together to maintain correct interleaved ordering
+  // eslint-disable-next-line complexity
   async _applyPinnedItems(folders, pinnedTabs, win) {
     const folderMap = new Map(); // id -> folder element
     const tabMap = new Map(); // tabData.id -> tab element

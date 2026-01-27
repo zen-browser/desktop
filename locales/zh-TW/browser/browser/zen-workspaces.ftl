@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = 工作區
+zen-panel-ui-spaces-label = 
+    .label = 工作區
 zen-panel-ui-workspaces-create = 
     .label = 建立工作區
 zen-panel-ui-folder-create = 
@@ -30,11 +32,8 @@ zen-workspaces-panel-context-open =
 zen-workspaces-panel-context-edit = 
     .label = 編輯工作區
     .accesskey = E
-context-zen-change-workspace-tab = 
-    .label = 將分頁移至工作區
-    .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
-    .value = 選擇工作區
+    .value = 工作區
     .accesskey = W
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = 互補色
@@ -49,6 +48,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = 點擊新增顏色
 zen-workspace-creation-name = 
     .placeholder = 工作區名稱
+zen-move-tab-to-workspace-button = 
+    .label = 移動至……
+    .tooltiptext = 將此視窗所有頁面移至單一工作區
 zen-workspaces-panel-context-reorder = 
     .label = 排序工作區
 zen-workspace-creation-profile = 設定檔
@@ -56,10 +58,14 @@ zen-workspace-creation-profile = 設定檔
 zen-workspace-creation-header = 建立工作區
 zen-workspace-creation-label = 工作區用於組織您的分頁與工作階段。
 zen-workspaces-delete-workspace-title = 刪除工作區？
-zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操錯無法復原。
+zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操作無法復原。
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！按壓 <span>{ $shortcut }</span> 來回復此動作。
+zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！使用 <span>{ $shortcut }</span> 來回復此動作。
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = 清除
     .tooltiptext = 關閉所有未釘選的分頁
+zen-panel-ui-workspaces-change-forward = 
+    .label = 下一工作區
+zen-panel-ui-workspaces-change-back = 
+    .label = 上一工作區

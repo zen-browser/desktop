@@ -7,7 +7,9 @@ support-files = [
 ["browser_bug400731.js"]
 
 ["browser_bug415846.js"]
-skip-if = ["true"] # Bug 1248632
+skip-if = [
+  "true", # Bug 1248632
+]
 
 ["browser_mixedcontent_aboutblocked.js"]
 

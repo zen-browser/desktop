@@ -1,0 +1,177 @@
+diff --git a/toolkit/components/asyncshutdown/AsyncShutdown.sys.mjs b/toolkit/components/asyncshutdown/AsyncShutdown.sys.mjs
+--- a/toolkit/components/asyncshutdown/AsyncShutdown.sys.mjs
++++ b/toolkit/components/asyncshutdown/AsyncShutdown.sys.mjs
+@@ -490,10 +490,27 @@
+       if (accepted) {
+         return () => spinner.observe();
+       }
+       return undefined;
+     },
++
++    /**
++     * Reset the phase after a call to _trigger().
++     * For testing purposes only.
++     */
++    get _reset() {
++      let accepted = Services.prefs.getBoolPref(
++        "toolkit.asyncshutdown.testing",
++        false
++      );
++      if (accepted) {
++        return () => {
++          spinner = new Spinner(topic);
++        };
++      }
++      return undefined;
++    },
+   });
+   gPhases.set(topic, phase);
+   return phase;
+ }
+ 
+diff --git a/toolkit/components/contentrelevancy/ContentRelevancyManager.sys.mjs b/toolkit/components/contentrelevancy/ContentRelevancyManager.sys.mjs
+--- a/toolkit/components/contentrelevancy/ContentRelevancyManager.sys.mjs
++++ b/toolkit/components/contentrelevancy/ContentRelevancyManager.sys.mjs
+@@ -104,18 +104,14 @@
+     this._nimbusUpdateCallback = this.#onNimbusUpdate.bind(this);
+     // This will handle both Nimbus updates and pref changes.
+     lazy.NimbusFeatures.contentRelevancy.onUpdate(this._nimbusUpdateCallback);
+     this.#initialized = true;
+ 
+-    if (
+-      Services.startup.isInOrBeyondShutdownPhase(
+-        Ci.nsIAppStartup.SHUTDOWN_PHASE_APPSHUTDOWNCONFIRMED
+-      )
+-    ) {
++    if (lazy.AsyncShutdown.profileChangeTeardown.isClosed) {
+       // Corner case, where we're already in the shutdown phase while being constructed.  In this
+       // case, uninitialize immediately to deregister callback handlers
+-      // (#https://bugzilla.mozilla.org/show_bug.cgi?id=1990569#c11)
++      // (https://bugzilla.mozilla.org/show_bug.cgi?id=1990569#c11)
+       this.uninit();
+     } else {
+       // If we're not in the above corner case, then register a shutdown blocker to uninitialize.
+       // Interrupt sooner prior to the `profile-before-change` phase to allow
+       // all the in-progress IOs to exit.
+diff --git a/toolkit/components/contentrelevancy/tests/xpcshell/test_ContentRelevancyManager.js b/toolkit/components/contentrelevancy/tests/xpcshell/test_ContentRelevancyManager.js
+--- a/toolkit/components/contentrelevancy/tests/xpcshell/test_ContentRelevancyManager.js
++++ b/toolkit/components/contentrelevancy/tests/xpcshell/test_ContentRelevancyManager.js
+@@ -149,10 +149,39 @@
+   await TestUtils.waitForCondition(
+     () => ContentRelevancyManager.interrupt.calledOnce,
+     "The interrupt shutdown blocker should be called"
+   );
+ 
++  AsyncShutdown.profileChangeTeardown._reset();
++  Services.prefs.clearUserPref("toolkit.asyncshutdown.testing");
++  Services.prefs.clearUserPref(PREF_CONTENT_RELEVANCY_ENABLED);
++  gSandbox.restore();
++});
++
++add_task(async function test_dont_register_blocker_if_in_shutdown() {
++  // Test a corner case: the ContentRelevancyManager is initialized during shutdown.
++  //
++  // In this case it shouldn't register a shutdown blocker, because it's too late to do that.
++  // Instead, it should just immediately uninitialize itself.
++  //
++  // See https://bugzilla.mozilla.org/show_bug.cgi?id=1990569
++  ContentRelevancyManager.uninit();
++  Services.prefs.setBoolPref(PREF_CONTENT_RELEVANCY_ENABLED, true);
++  await TestUtils.waitForTick();
++
++  gSandbox.spy(ContentRelevancyManager, "interrupt");
++
++  // Simulate shutdown.
++  Services.prefs.setBoolPref("toolkit.asyncshutdown.testing", true);
++  AsyncShutdown.profileChangeTeardown._trigger();
++  ContentRelevancyManager.init();
++  Assert.ok(
++    !ContentRelevancyManager.initialized,
++    "ContentRelevancyManager should have uninitialized itself"
++  );
++
++  AsyncShutdown.profileChangeTeardown._reset();
+   Services.prefs.clearUserPref("toolkit.asyncshutdown.testing");
+   Services.prefs.clearUserPref(PREF_CONTENT_RELEVANCY_ENABLED);
+   gSandbox.restore();
+ });
+ 
+diff --git a/toolkit/modules/AppServicesTracing.sys.mjs b/toolkit/modules/AppServicesTracing.sys.mjs
+--- a/toolkit/modules/AppServicesTracing.sys.mjs
++++ b/toolkit/modules/AppServicesTracing.sys.mjs
+@@ -9,10 +9,11 @@
+  */
+ 
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
++  AsyncShutdown: "resource://gre/modules/AsyncShutdown.sys.mjs",
+   // eslint-disable-next-line mozilla/use-console-createInstance
+   Log: "resource://gre/modules/Log.sys.mjs",
+ });
+ 
+ import {
+@@ -118,20 +119,33 @@
+   }
+ }
+ 
+ /** A singleton uniffi callback interface. */
+ class TracingEventHandler extends EventSink {
+-  static OBSERVER_NAME = "xpcom-will-shutdown";
+-
+   constructor() {
+     super();
+     // Map targets to CallbackLists
+     this.targetCallbackLists = new Map();
+     // CallbackList for callbacks registered with registerMinLevelEventSink
+     this.minLevelCallbackList = new CallbackList();
+ 
+-    Services.obs.addObserver(this, TracingEventHandler.OBSERVER_NAME);
++    // Choose `profileBeforeChange` to call `#close()` and deregister our callbacks.
++    //
++    // Most other components will shutdown during the `profileChangeTeardown` phase, since that's
++    // the last opportunity to write to the profile directory.  By choosing the next one, we ensure
++    // we can forward any logging that happens when those components shutdown.
++    if (lazy.AsyncShutdown.profileBeforeChange.isClosed) {
++      // Corner case, where we're already in the shutdown phase while being constructed.  In this
++      // case, uninitialize immediately.
++      this.#close();
++    } else {
++      // If we're not in the above corner case, then register a shutdown blocker to uninitialize.
++      lazy.AsyncShutdown.profileBeforeChange.addBlocker(
++        "TracingEventHandler: deregister callbacks",
++        () => this.#close()
++      );
++    }
+   }
+ 
+   register(target, level, callback) {
+     if (this.targetCallbackLists === null) {
+       lazy.console.trace(
+@@ -223,19 +237,17 @@
+       targetList.processEvent(event);
+     }
+     this.minLevelCallbackList.processEvent(event);
+   }
+ 
+-  observe(_aSubject, aTopic, _aData) {
+-    if (aTopic == TracingEventHandler.OBSERVER_NAME) {
+-      for (let target of this.targetCallbackLists.keys()) {
+-        unregisterEventSink(target);
+-      }
+-      unregisterMinLevelEventSink();
+-      this.targetCallbackLists = null;
+-      this.minLevelCallbackList = null;
++  #close() {
++    for (let target of this.targetCallbackLists.keys()) {
++      unregisterEventSink(target);
+     }
++    unregisterMinLevelEventSink();
++    this.targetCallbackLists = null;
++    this.minLevelCallbackList = null;
+   }
+ }
+ 
+ // the singleton.
+ let tracingEventHandler = new TracingEventHandler();
+

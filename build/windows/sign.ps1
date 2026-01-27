@@ -148,7 +148,7 @@ function SignAndPackage($name) {
         $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2022\VC\Redist\MSVC\14.38.33135\x64\Microsoft.VC143.CRT"
     }
 
-    $env:MAR="..\\build\\winsign\\mar.exe"
+    $env:MAR="..\\build\\windows\\mar.exe"
     if ($name -eq "arm64") {
         $env:SURFER_COMPAT="aarch64"
     } else {

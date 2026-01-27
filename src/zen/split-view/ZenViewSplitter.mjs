@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* eslint-disable consistent-return */
+
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 class nsSplitLeafNode {
@@ -179,6 +181,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   onTabSelect(event) {
     const previousTab = event.detail.previousTab;
+    if (previousTab === gBrowser.selectedTab && this._canDrop) {
+      return;
+    }
     if (previousTab && !previousTab.hasAttribute("zen-empty-tab")) {
       this._lastOpenedTab = previousTab;
     }
@@ -189,14 +194,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Removes a tab from a group.
    *
    * @param {Tab} tab - The tab to remove.
-   * @param {number} groupIndex - The index of the group.
-   * @param {boolean} [forUnsplit=false] - Whether the removal is for unsplitting.
+   * @param {number} [groupIndex=undefined] - The index of the group.
+   * @param {object} [options={}] - Additional options.
+   * @param {boolean} [options.forUnsplit=false] - Whether the removal is for unsplitting.
+   * @param {boolean} [options.dontRebuildGrid=false] - Whether to skip rebuilding the grid layout.
+   * @param {boolean} [options.changeTab=true] - Whether to change the selected tab.
    */
   removeTabFromGroup(
     tab,
-    groupIndex,
+    groupIndex = undefined,
     { forUnsplit = false, dontRebuildGrid = false, changeTab = true } = {}
   ) {
+    if (typeof groupIndex === "undefined") {
+      groupIndex = this._data.findIndex((group) => group.tabs.includes(tab));
+    }
     const group = this._data[groupIndex];
     const tabIndex = group.tabs.indexOf(tab);
     group.tabs.splice(tabIndex, 1);
@@ -248,7 +259,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     return element;
   }
 
+  // eslint-disable-next-line complexity
   onBrowserDragOverToSplit(event) {
+    gBrowser.tabContainer.tabDragAndDrop.clearSpaceSwitchTimer();
     if (this.fakeBrowser) {
       return;
     }
@@ -273,7 +286,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       !this._lastOpenedTab ||
       (this._lastOpenedTab.getAttribute("zen-workspace-id") !==
         draggedTab.getAttribute("zen-workspace-id") &&
-        !this._lastOpenedTab.hasAttribute("zen-essential"))
+        !this._lastOpenedTab.hasAttribute("zen-essential") &&
+        !draggedTab.hasAttribute("zen-essential"))
     ) {
       this._lastOpenedTab = gBrowser.selectedTab;
     }
@@ -365,7 +379,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       gBrowser.tabbox.appendChild(this.fakeBrowser);
       this.fakeBrowser.setAttribute("side", side);
       this._finishAllAnimatingPromise = Promise.all([
-        gZenUIManager.elementAnimate(
+        gZenUIManager.motion.animate(
           gBrowser.tabbox,
           side === "left"
             ? {
@@ -377,12 +391,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 paddingLeft: 0,
               },
           {
-            duration: 110,
+            duration: 0.1,
             easing: "ease-out",
-            fill: "forwards",
           }
         ),
-        gZenUIManager.elementAnimate(
+        gZenUIManager.motion.animate(
           this.fakeBrowser,
           {
             width: [0, `${halfWidth - padding}px`],
@@ -393,9 +406,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               : {}),
           },
           {
-            duration: 110,
+            duration: 0.1,
             easing: "ease-out",
-            fill: "forwards",
           }
         ),
       ]);
@@ -448,13 +460,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const side = this.fakeBrowser.getAttribute("side");
     this._lastOpenedTab = gBrowser.selectedTab;
     this._draggingTab = null;
-    gBrowser.tabContainer.tabDragAndDrop.clearSpaceSwitchTimer();
     event.dataTransfer.updateDragImage(
       ...gBrowser.tabContainer.tabDragAndDrop.originalDragImageArgs
     );
     this._canDrop = false;
     Promise.all([
-      gZenUIManager.elementAnimate(
+      gZenUIManager.motion.animate(
         gBrowser.tabbox,
         side === "left"
           ? {
@@ -464,12 +475,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               paddingRight: [`${halfWidth}px`, 0],
             },
         {
-          duration: 110,
+          duration: 0.1,
           easing: "ease-out",
-          fill: "forwards",
         }
       ),
-      gZenUIManager.elementAnimate(
+      gZenUIManager.motion.animate(
         this.fakeBrowser,
         {
           width: [`${halfWidth - padding * 2}px`, 0],
@@ -480,9 +490,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
             : {}),
         },
         {
-          duration: 110,
+          duration: 0.1,
           easing: "ease-out",
-          fill: "forwards",
         }
       ),
     ]).finally(() => {
@@ -755,6 +764,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       dragImageOffset = dragImageOffset * scale;
     }
     event.dataTransfer.setDragImage(toDrag, dragImageOffset, dragImageOffset);
+    return true;
   };
 
   onBrowserDragOver = (event) => {
@@ -1167,9 +1177,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {string|undefined} gridType - The type of grid layout.
    * @param {number} initialIndex - The index of the initially active tab.
    *                                use -1 to avoid selecting any tab.
+   * @param {object} options - Additional options.
+   * @param {string|null} options.groupFetchId - An optional group fetch ID.
    * @returns {object|undefined} The split view data or undefined if the split was not performed.
    */
-  splitTabs(tabs, gridType, initialIndex = 0) {
+  splitTabs(tabs, gridType, initialIndex = 0, { groupFetchId = null } = {}) {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
@@ -1179,12 +1191,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
 
       const existingSplitTab = tabs.find((tab) => tab.splitView);
+      let shouldActivateSplit =
+        (initialIndex >= 0 || tabs.includes(window.gBrowser.selectedTab)) &&
+        !this._sessionRestoring;
       if (existingSplitTab) {
         this._moveTabsToContainer(tabs, tabs[tabIndexToUse]);
         const groupIndex = this._data.findIndex((group) => group.tabs.includes(existingSplitTab));
         const group = this._data[groupIndex];
         const gridTypeChange = gridType && group.gridType !== gridType;
         const newTabsAdded = tabs.find((t) => !group.tabs.includes(t));
+        if (group.tabs.length >= this.MAX_TABS) {
+          return;
+        }
         if (gridTypeChange || !newTabsAdded) {
           // reset layout
           group.gridType = gridType;
@@ -1197,17 +1215,18 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           for (let i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
             if (!group.tabs.includes(tab)) {
-              gBrowser.moveTabToExistingGroup(tab, this._getSplitViewGroup(tabs));
+              gBrowser.moveTabToExistingGroup(tab, this._getSplitViewGroup(tabs, groupFetchId));
               group.tabs.push(tab);
               this.addTabToSplit(tab, group.layoutTree);
+              tab.splitView = true;
             }
           }
         }
-        if (this._sessionRestoring) {
-          return;
+        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
+        if (!shouldActivateSplit) {
+          return group;
         }
         this.activateSplitView(group, true);
-        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group);
         // eslint-disable-next-line consistent-return
         return group;
       }
@@ -1230,18 +1249,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
       gridType ??= "grid";
 
-      const splitData = {
-        tabs,
-        gridType,
-        layoutTree: this.calculateLayoutTree(tabs, gridType),
-      };
-      this._data.push(splitData);
-      if (!this._sessionRestoring && initialIndex >= 0) {
-        window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
-      }
-
       // Add tabs to the split view group
-      let splitGroup = this._getSplitViewGroup(tabs);
+      let splitGroup = this._getSplitViewGroup(tabs, groupFetchId);
+      const groupId = splitGroup?.id;
       if (splitGroup) {
         for (const tab of tabs) {
           if (!tab.group || tab.group !== splitGroup) {
@@ -1250,10 +1260,22 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         }
       }
 
-      if (this._sessionRestoring) {
-        return;
+      const splitData = {
+        groupId,
+        tabs,
+        gridType,
+        layoutTree: this.calculateLayoutTree(tabs, gridType),
+      };
+      this._data.push(splitData);
+      if (shouldActivateSplit) {
+        window.gBrowser.selectedTab = tabs[tabIndexToUse] ?? tabs[0];
+        this.activateSplitView(splitData);
+      } else {
+        for (const tab of tabs) {
+          tab.splitView = true;
+        }
       }
-      this.activateSplitView(splitData);
+
       this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
       // eslint-disable-next-line consistent-return
       return splitData;
@@ -1332,10 +1354,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
     });
 
+    // Apply grid to tabs first to set zen-split attribute on containers
+    // before setting zen-split-view on parents. This prevents the black flash
+    // caused by CSS rules that hide containers without zen-split attribute
+    // when the parent has zen-split-view attribute.
+    this.applyGridToTabs(splitData.tabs);
+
     this.tabBrowserPanel.setAttribute("zen-split-view", "true");
     document.getElementById("tabbrowser-tabbox").setAttribute("zen-split-view", "true");
 
-    this.applyGridToTabs(splitData.tabs);
     this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
     this.toggleWrapperDisplay(true);
@@ -1381,6 +1408,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       tab.setAttribute("split-view", "true");
       const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
       container.setAttribute("is-zen-split", "true");
+      // Set zen-split early to prevent visibility flash when switching workspaces.
+      // The CSS rule for [is-zen-split]:not([zen-split]) sets visibility:hidden,
+      // so we must set zen-split before the parent zen-split-view attribute is applied.
+      container.setAttribute("zen-split", "true");
       if (!container?.querySelector(".zen-tab-rearrange-button")) {
         // insert a header into the container
         const header = this._createHeader(container);
@@ -1761,20 +1792,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   };
 
   _maybeRemoveFakeBrowser(select = true) {
+    gBrowser.tabbox.removeAttribute("style");
+    this.tabBrowserPanel.removeAttribute("dragging-split");
     if (this._dndElement) {
       this._dndElement.remove();
       delete this._dndElement;
     }
     if (this.fakeBrowser) {
-      gBrowser.tabbox.removeAttribute("style");
-      this.tabBrowserPanel.removeAttribute("dragging-split");
-      const tabboxAnimations = document.getElementById("tabbrowser-tabbox").getAnimations();
-      if (tabboxAnimations.length) {
-        tabboxAnimations.forEach((a) => a.cancel());
-      }
+      delete this._canDrop;
       delete this._hasAnimated;
       this.fakeBrowser.remove();
-      this.fakeBrowser = null;
+      delete this.fakeBrowser;
       if (select) {
         gBrowser.selectedTab = this._draggingTab;
         this._draggingTab = null;
@@ -1832,7 +1860,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return false;
     }
 
-    const droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
+    let droppedOnTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.getTabForBrowser(browser));
     if (droppedOnTab === this._draggingTab) {
       this.createEmptySplit(dropSide == "right");
       return true;
@@ -1850,6 +1878,25 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // const browserRect = browser.getBoundingClientRect();
       // const hoverSide = this.calculateHoverSide(event.clientX, event.clientY, browserRect);
       const hoverSide = dropSide;
+
+      // We are here if none of the tabs have been previously split
+      // If there's ANY pinned tab on the list, we clone the pinned tab
+      // state to all the tabs
+      let tempTabs = [draggedTab, droppedOnTab];
+      const allArePinned = tempTabs.every((tab) => tab.pinned);
+      const thereIsOnePinned = tempTabs.some((tab) => tab.pinned);
+      const thereIsOneEssential = tempTabs.some((tab) => tab.hasAttribute("zen-essential"));
+
+      if (thereIsOneEssential || (thereIsOnePinned && !allArePinned)) {
+        for (let i = 0; i < tempTabs.length; i++) {
+          const tab = tempTabs[i];
+          if (tab.pinned) {
+            tempTabs[i] = gBrowser.duplicateTab(tab, true);
+          }
+        }
+      }
+
+      [draggedTab, droppedOnTab] = tempTabs;
 
       if (droppedOnTab.splitView) {
         // Add to existing split view
@@ -1913,6 +1960,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           dropSide == "left" ? 0 : 1
         );
       }
+
+      gBrowser.selectedTab = draggedTab;
     }
     if (this._finishAllAnimatingPromise) {
       this._finishAllAnimatingPromise.then(() => {
@@ -1978,29 +2027,25 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Gets or creates a tab group for split view tabs
    *
    * @param {Array} tabs Initial tabs to add to the group if creating new
+   * @param {string|null} id Optional ID for the group
    * @returns {TabGroup} The tab group for split view tabs
    */
-  _getSplitViewGroup(tabs) {
+  _getSplitViewGroup(tabs, id = null) {
     if (tabs.some((tab) => tab.hasAttribute("zen-essential"))) {
       return null;
     }
 
     // Try to find an existing split view group
-    let splitGroup = gBrowser.tabGroups.find(
-      (group) =>
-        group.getAttribute("split-view-group") &&
-        group.tabs.some((tab) => tabs.includes(tab) && tab.splitView)
-    );
-
+    let splitGroup = tabs?.find((tab) => tab.group?.hasAttribute("split-view-group"))?.group;
     if (splitGroup) {
       return splitGroup;
     }
 
     // We can't create an empty group, so only create if we have tabs
-    let group = null;
     if (tabs?.length) {
       // Create a new group with the initial tabs
-      group = gBrowser.addTabGroup(tabs, {
+      splitGroup = gBrowser.addTabGroup(tabs, {
+        id,
         label: "",
         showCreateUI: false,
         insertBefore: tabs[0],
@@ -2008,35 +2053,91 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       });
     }
 
-    return group;
+    return splitGroup;
   }
 
   storeDataForSessionStore() {
-    // We cant store any tab or browser elements in the session store
-    // so we need to store the tab indexes and group indexes
-    const data = this._data.map((group) => {
+    const serializeNode = (node) => {
+      if (node.tab) {
+        return {
+          type: "leaf",
+          tabId: node.tab.id,
+          sizeInParent: node.sizeInParent,
+        };
+      }
+
       return {
-        groupId: group.tabs[0].group?.id,
+        type: "splitter",
+        direction: node.direction,
+        sizeInParent: node.sizeInParent,
+        children: node._children.map((child) => serializeNode(child)),
+      };
+    };
+
+    return this._data.map((group) => {
+      const serializedTree = serializeNode(group.layoutTree);
+      return {
+        groupId: group.groupId,
         gridType: group.gridType,
+        layoutTree: serializedTree,
+        tabs: group.tabs.map((tab) => tab.id),
       };
     });
-    return data;
   }
 
   restoreDataFromSessionStore(data) {
     if (!data) {
       return;
     }
+
     this._sessionRestoring = true;
-    // We can just get the tab group with document.getElementById(group.groupId)
-    // and add the tabs to it
-    for (const group of data) {
-      const groupElement = document.getElementById(group.groupId);
-      if (groupElement) {
-        const tabs = groupElement.tabs;
-        this.splitTabs(tabs, group.gridType);
+
+    for (const groupData of data) {
+      const group = document.getElementById(groupData.groupId);
+      if (!gBrowser.isTabGroup(group)) {
+        continue;
+      }
+
+      // Backwards compatibility
+      group.setAttribute("split-view-group", "true");
+      if (!groupData?.layoutTree) {
+        this.splitTabs(group.tabs, group.gridType);
+        delete this._sessionRestoring;
+        return;
+      }
+
+      const deserializeNode = (nodeData) => {
+        if (nodeData.type === "leaf") {
+          const tab = document.getElementById(nodeData.tabId);
+          if (!tab) {
+            return null;
+          }
+          return new nsSplitLeafNode(tab, nodeData.sizeInParent);
+        }
+
+        const splitter = new nsSplitNode(nodeData.direction, nodeData.sizeInParent);
+        splitter._children = [];
+
+        for (const childData of nodeData.children) {
+          const childNode = deserializeNode(childData);
+          if (childNode) {
+            childNode.parent = splitter;
+            splitter._children.push(childNode);
+          }
+        }
+
+        return splitter;
+      };
+
+      const layout = deserializeNode(groupData.layoutTree);
+      const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+      if (splitData) {
+        splitData.layoutTree = layout;
+      } else {
+        gBrowser.removeTabGroup(group);
       }
     }
+
     delete this._sessionRestoring;
   }
 
@@ -2096,49 +2197,51 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       gridType: "grid",
       layoutTree: this.calculateLayoutTree(tabs, "grid"),
     };
-    this._data.push(data);
-    this.activateSplitView(data);
-    gBrowser.selectedTab = emptyTab;
-    setTimeout(() => {
-      window.addEventListener(
-        "ZenURLBarClosed",
-        (event) => {
-          const { onElementPicked, onSwitch } = event.detail;
-          const groupIndex = this._data.findIndex((group) => group.tabs.includes(emptyTab));
-          const newSelectedTab = gBrowser.selectedTab;
-          const cleanup = () => {
-            this.removeTabFromGroup(emptyTab, groupIndex, {
-              changeTab: !onSwitch,
-              forUnsplit: true,
-            });
-            const command = document.getElementById("cmd_zenNewEmptySplit");
-            command.removeAttribute("disabled");
-          };
-          if (onElementPicked) {
-            if (
-              newSelectedTab === emptyTab ||
-              newSelectedTab === selectedTab ||
-              selectedTab.getAttribute("zen-workspace-id") !==
-                newSelectedTab.getAttribute("zen-workspace-id")
-            ) {
+    this.#withoutSplitViewTransition(() => {
+      this._data.push(data);
+      this.activateSplitView(data);
+      gBrowser.selectedTab = emptyTab;
+      setTimeout(() => {
+        window.addEventListener(
+          "ZenURLBarClosed",
+          (event) => {
+            const { onElementPicked, onSwitch } = event.detail;
+            const groupIndex = this._data.findIndex((group) => group.tabs.includes(emptyTab));
+            const newSelectedTab = gBrowser.selectedTab;
+            const cleanup = () => {
+              this.removeTabFromGroup(emptyTab, groupIndex, {
+                changeTab: !onSwitch,
+                forUnsplit: true,
+              });
+              const command = document.getElementById("cmd_zenNewEmptySplit");
+              command.removeAttribute("disabled");
+            };
+            if (onElementPicked) {
+              if (
+                newSelectedTab === emptyTab ||
+                newSelectedTab === selectedTab ||
+                selectedTab.getAttribute("zen-workspace-id") !==
+                  newSelectedTab.getAttribute("zen-workspace-id")
+              ) {
+                cleanup();
+                return;
+              }
+              this.removeTabFromGroup(emptyTab, groupIndex, { forUnsplit: true });
+              gBrowser.selectedTab = selectedTab;
+              this.resetTabState(emptyTab, false);
+              this.splitTabs(
+                rightSide ? [selectedTab, newSelectedTab] : [newSelectedTab, selectedTab],
+                "grid",
+                rightSide ? 1 : 0
+              );
+            } else {
               cleanup();
-              return;
             }
-            this.removeTabFromGroup(emptyTab, groupIndex, { forUnsplit: true });
-            gBrowser.selectedTab = selectedTab;
-            this.resetTabState(emptyTab, false);
-            this.splitTabs(
-              rightSide ? [selectedTab, newSelectedTab] : [newSelectedTab, selectedTab],
-              "grid",
-              rightSide ? 1 : 0
-            );
-          } else {
-            cleanup();
-          }
-        },
-        { once: true }
-      );
-      gZenUIManager.handleNewTab(false, false, "tab", true);
+          },
+          { once: true }
+        );
+        gZenUIManager.handleNewTab(false, false, "tab", true);
+      });
     });
   }
 

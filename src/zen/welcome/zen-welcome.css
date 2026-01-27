@@ -35,7 +35,8 @@
     list-style-image: url(chrome://browser/skin/zen-icons/forward.svg);
     position: absolute;
     bottom: 10%;
-    padding: 0.8em !important;
+    padding: 1em !important;
+    min-width: 100px;
   }
 
   #zen-welcome-title {

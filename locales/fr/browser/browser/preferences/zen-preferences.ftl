@@ -5,7 +5,7 @@
 pane-zen-looks-title = Apparence
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
-zen-warning-language = Si vous changez la langue par défaut, il peut être plus facile pour des sites Internet de vous traquer.
+zen-warning-language = Si vous changez la langue par défaut, il peut être plus facile pour des sites Web de vous traquer.
 zen-vertical-tabs-layout-header = Disposition du navigateur
 zen-vertical-tabs-layout-description = Choisissez la disposition qui vous convient le mieux
 zen-layout-single-toolbar = Barre d’outils unique
@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Afficher l’onglet Stockage
 zen-devtools-toggle-dom-shortcut = Afficher l’onglet DOM
 zen-devtools-toggle-accessibility-shortcut = Afficher l’onglet Accessibilité
 zen-close-all-unpinned-tabs-shortcut = Fermer tous les onglets non épinglés
+zen-new-unsynced-window-shortcut = Nouvelle fenêtre non synchronisée

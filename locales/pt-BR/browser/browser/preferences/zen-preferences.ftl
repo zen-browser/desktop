@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Ativar/Desativar Armazenamento
 zen-devtools-toggle-dom-shortcut = Ativar/Desativar DOM
 zen-devtools-toggle-accessibility-shortcut = Ativar/Desativar Acessibilidade
 zen-close-all-unpinned-tabs-shortcut = Fechar Todas as Abas Não Fixadas
+zen-new-unsynced-window-shortcut = Nova Janela Dessincronizada

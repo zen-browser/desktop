@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Svæði
+zen-panel-ui-spaces-label = 
+    .label = Svæði
 zen-panel-ui-workspaces-create = 
     .label = Búa til vinnusvæði
 zen-panel-ui-folder-create = 
@@ -30,9 +32,6 @@ zen-workspaces-panel-context-open =
 zen-workspaces-panel-context-edit = 
     .label = Breyta vinnusvæði
     .accesskey = E
-context-zen-change-workspace-tab = 
-    .label = Færa flipa yfir í vinnusvæði
-    .accesskey = B
 zen-bookmark-edit-panel-workspace-selector = 
     .value = Vinnusvæði
     .accesskey = V
@@ -49,6 +48,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = Smelltu til að bæta við lit
 zen-workspace-creation-name = 
     .placeholder = Nafn vinnusvæðis
+zen-move-tab-to-workspace-button = 
+    .label = Flytja í...
+    .tooltiptext = Flytja alla flipa í þessum glugga yfir í vinnusvæði
 zen-workspaces-panel-context-reorder = 
     .label = Endurraða vinnusvæðum
 zen-workspace-creation-profile = Notkunarsnið
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Flipa lokað! Notaðu <span>{ $sh
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Hreinsa
     .tooltiptext = Loka öllum ófestum flipum
+zen-panel-ui-workspaces-change-forward = 
+    .label = Næsta svæði
+zen-panel-ui-workspaces-change-back = 
+    .label = Fyrra svæði

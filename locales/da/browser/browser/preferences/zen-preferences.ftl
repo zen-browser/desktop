@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Vis/skjul Lager
 zen-devtools-toggle-dom-shortcut = Vis/skjul DOM
 zen-devtools-toggle-accessibility-shortcut = Vis/skjul Tilgængelighed
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-new-unsynced-window-shortcut = New Unsynced Window

@@ -13,6 +13,7 @@
 
 #include "mozilla/css/SheetParsingMode.h"
 #include "mozilla/GlobalStyleSheetCache.h"
+#include "mozilla/RefPtr.h"
 
 #define GET_MODS_FILE(chromeFile, err) \
   NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile)); \
@@ -57,7 +58,7 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
     return;
   }
 
-  auto loader = new mozilla::css::Loader;
+  RefPtr<mozilla::css::Loader> loader = new mozilla::css::Loader;
   auto result = loader->LoadSheetSync(uri, aParsingMode,
                                       css::Loader::UseSystemPrincipal::Yes);
   if (MOZ_UNLIKELY(result.isErr())) {

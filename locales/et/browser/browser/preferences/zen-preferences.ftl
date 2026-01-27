@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Lülita mälu sektsioon sisse/välja
 zen-devtools-toggle-dom-shortcut = Lülita DOM sisse/välja
 zen-devtools-toggle-accessibility-shortcut = Lülita ligipääsetavuse sektsioon sisse/välja
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-new-unsynced-window-shortcut = New Unsynced Window

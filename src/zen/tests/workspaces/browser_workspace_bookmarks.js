@@ -109,7 +109,7 @@ add_task(async function test_workspace_bookmark() {
   return;
   await withBookmarksShowing(async () => {
     await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
-    const workspaces = await gZenWorkspaces._workspaces();
+    const workspaces = gZenWorkspaces.getWorkspaces();
     Assert.strictEqual(workspaces.length, 2, "Two workspaces should exist.");
     const firstWorkspace = workspaces[0];
     const secondWorkspace = workspaces[1];
@@ -156,7 +156,7 @@ add_task(async function test_workspace_bookmark() {
 
     await gZenWorkspaces.removeWorkspace(secondWorkspace.uuid);
     Assert.equal(
-      (await gZenWorkspaces._workspaces()).workspaces.length,
+      gZenWorkspaces.getWorkspaces().workspaces.length,
       1,
       "Only one workspace should remain after removing the second one."
     );

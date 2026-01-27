@@ -12,9 +12,9 @@ zen-welcome-set-default-browser = הגדרת { -brand-short-name } כדפדפן 
 zen-welcome-dont-set-default-browser = לא להגדיר את { -brand-short-name } כדפדפן ברירת מחדל
 zen-welcome-initial-essentials-title = הלשוניות החשובות, תמיד במרחק לחיצה
 zen-welcome-initial-essentials-description-1 = הלשוניות הכי חשובות שלך תמיד זמינות וקל לגשת אליהן, לא משנה כמה לשוניות פתוחות.
-zen-welcome-initial-essentials-description-2 = הלשוניות הנחוצות מוצגות תמיד, לא משנה באיזו סביבת עבודה משתמשים.
-zen-welcome-workspace-colors-title = סביבות העבודה שלך, בצבעים שלך
-zen-welcome-workspace-colors-description = ניתן להתאים אישית את הדפדפן שלך על ידי הגדרת צבע ייחודי לכל סביבת עבודה.
+zen-welcome-initial-essentials-description-2 = הלשוניות הנחוצות מוצגות תמיד, לא משנה באיזה מרחב עבודה משתמשים.
+zen-welcome-workspace-colors-title = מרחבי העבודה שלך, בצבעים שלך
+zen-welcome-workspace-colors-description = אפשר להתאים אישית את הדפדפן שלך ולתת לכל מרחב עבודה צבע ייחודי.
 zen-welcome-start-browsing-title =
     הכול מוכן?<br/>
     יוצאים לדרך!

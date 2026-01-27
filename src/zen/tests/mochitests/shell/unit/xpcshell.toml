@@ -1,7 +1,11 @@
 [DEFAULT]
-run-if = ["os != 'android'"]
+run-if = [
+  "os != 'android'",
+]
 firefox-appdir = "browser"
 tags = "os_integration"
 
 ["test_macOS_showSecurityPreferences.js"]
-run-if = ["os == 'mac'"]
+run-if = [
+  "os == 'mac'",
+]

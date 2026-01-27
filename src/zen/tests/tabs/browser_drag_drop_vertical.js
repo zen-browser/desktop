@@ -52,7 +52,7 @@ async function dropAfter(itemToDrag, itemToDropAfter, win) {
   const midline = rect.left + 0.5 * rect.width;
   // Point where bottom edge of `itemToDrag` overlaps `itemToDropAfter` enough
   // for `itemToDrag` to come after.
-  const afterPoint = Math.ceil(rect.top + threshold * rect.height);
+  const afterPoint = Math.ceil(rect.top + (threshold + 0.5) * rect.height);
   const dragTo = afterPoint - sourceRect.height / 2;
   await drop(itemToDrag, itemToDropAfter, midline, dragTo, win);
 }
@@ -71,7 +71,7 @@ async function dropBefore(itemToDrag, itemToDropBefore, win) {
   const midline = rect.left + 0.5 * rect.width;
   // Point where top edge of `itemToDrag` overlaps `itemToDropBefore` enough
   // for `itemToDrag` to come before.
-  const beforePoint = Math.floor(rect.top + (1 - threshold) * rect.height);
+  const beforePoint = Math.floor(rect.top + (1 - threshold - 0.5) * rect.height);
   const dragTo = beforePoint + sourceRect.height / 2;
   await drop(itemToDrag, itemToDropBefore, midline, dragTo, win);
 }

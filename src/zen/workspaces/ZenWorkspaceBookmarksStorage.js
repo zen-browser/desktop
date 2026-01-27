@@ -57,6 +57,12 @@ window.ZenWorkspaceBookmarksStorage = {
         CREATE INDEX IF NOT EXISTS idx_bookmarks_workspaces_changes
           ON zen_bookmarks_workspaces_changes(bookmark_guid, workspace_uuid)
       `);
+
+        // Before, workspace_uuid was a FOREIGN KEY, not anymore, so we need to drop the constraint
+        // This is a no-op if the constraint doesn't exist
+        await db.execute(`
+          PRAGMA foreign_keys = OFF;
+        `);
       }
     );
   },

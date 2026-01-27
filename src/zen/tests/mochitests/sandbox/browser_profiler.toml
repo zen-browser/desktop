@@ -1,0 +1,22 @@
+[DEFAULT]
+skip-if = [
+  "!gecko_profiler",
+  "ccov",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && asan", # bug 1784517 for sandbox, bug 1885381 for profiler
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && tsan", # bug 1784517 for sandbox, bug 1885381 for profiler
+]
+tags = "contentsandbox"
+
+# This is here to make sure we will not have prelaunched processes, which will
+# mess with sandbox profiling interaction: we will miss launch-related markers
+# and this makes the test intermittently fail on TV jobs
+prefs = [
+  "dom.ipc.processPrelaunch.fission.number=0"
+]
+
+environment = "MOZ_SANDBOX_LOGGING_FOR_TESTS=1"
+
+["browser_sandbox_profiler.js"]
+run-if = [
+  "os == 'linux'",
+]

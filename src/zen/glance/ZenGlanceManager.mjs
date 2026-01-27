@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* eslint-disable consistent-return */
+
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 /**
@@ -638,7 +640,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       left: [],
       width: [],
       height: [],
-      transform: [],
     };
 
     const steps = this.#ARC_CONFIG.ARC_STEPS;
@@ -672,7 +673,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const y =
         startPosition.y + distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-      sequence.transform.push(`translate(-50%, -50%)`);
       sequence.top.push(`${y}px`);
       sequence.left.push(`${x}px`);
       sequence.width.push(`${currentWidth}px`);
@@ -809,7 +809,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#animateGlanceClosing(onTabClose, browserSidebarContainer, sidebarButtons, setNewID);
+    return this.#animateGlanceClosing(
+      onTabClose,
+      browserSidebarContainer,
+      sidebarButtons,
+      setNewID
+    );
   }
 
   /**
@@ -885,7 +890,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#animateSidebarButtons(sidebarButtons);
     this.#animateParentBackgroundClose(browserSidebarContainer);
 
-    this.#executeClosingAnimation(setNewID, onTabClose);
+    return this.#executeClosingAnimation(setNewID, onTabClose);
   }
 
   /**

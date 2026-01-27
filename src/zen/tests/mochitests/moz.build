@@ -7,8 +7,8 @@
 # Do not edit manually.
 
 BROWSER_CHROME_MANIFESTS += [
-	"reportbrokensite/browser.toml",
 	"safebrowsing/browser.toml",
+	"sandbox/browser.toml",
 	"shell/browser.toml",
 	"tooltiptext/browser.toml",
 ]

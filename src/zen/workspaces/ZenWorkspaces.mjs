@@ -6,6 +6,12 @@
 
 import { nsZenThemePicker } from "chrome://browser/content/zen-components/ZenGradientGenerator.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+});
+
 /**
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
@@ -131,6 +137,18 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       await this.#waitForPromises();
       await this.restoreWorkspacesFromSessionStore({});
+    }
+
+    if (!this.privateWindowOrDisabled) {
+      const observerFunction = async () => {
+        delete this._workspaceBookmarksCache;
+        await this.workspaceBookmarks();
+        this._invalidateBookmarkContainers();
+      };
+      Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      window.addEventListener("unload", () => {
+        Services.obs.removeObserver(observerFunction, "workspace-bookmarks-updated");
+      });
     }
   }
 
@@ -876,6 +894,13 @@ class nsZenWorkspaces {
       return Promise.resolve();
     }
     const spacesFromStore = aWinData.spaces || [];
+    if (
+      !this.privateWindowOrDisabled &&
+      spacesFromStore.length === 0 &&
+      lazy.ZenSessionStore._migrationData
+    ) {
+      spacesFromStore.push(...lazy.ZenSessionStore._migrationData.spaces);
+    }
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
       : [this.#createWorkspaceData("Space", undefined)];
@@ -1117,6 +1142,7 @@ class nsZenWorkspaces {
         (tab.pinned && tab.hasAttribute("zen-empty-tab") && !tab.group)
       ) {
         // Remove any tabs where their workspace doesn't exist anymore
+        this.log("Removed zombie tab from non-existing workspace", tab);
         gBrowser.unpinTab(tab);
         gBrowser.removeTab(tab, {
           skipSessionStore: true,
@@ -2297,7 +2323,7 @@ class nsZenWorkspaces {
     }
 
     // Reset bookmarks
-    this._invalidateBookmarkContainers();
+    this.#invalidateBookmarkContainers();
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);
@@ -2335,7 +2361,7 @@ class nsZenWorkspaces {
     ctrlTab.readPref();
   }
 
-  _invalidateBookmarkContainers() {
+  #invalidateBookmarkContainers() {
     for (let i = 0, len = this.bookmarkMenus.length; i < len; i++) {
       const element = document.getElementById(this.bookmarkMenus[i]);
       if (element && element._placesView) {
@@ -2343,6 +2369,7 @@ class nsZenWorkspaces {
         placesView.invalidateContainer(placesView._resultNode);
       }
     }
+    BookmarkingUI.updateEmptyToolbarMessage();
   }
 
   updateWorkspacesChangeContextMenu() {
@@ -2725,6 +2752,7 @@ class nsZenWorkspaces {
 
     let nextWorkspace = workspaces[targetIndex];
     await this.changeWorkspace(nextWorkspace, { whileScrolling });
+    return nextWorkspace;
   }
 
   #initializeWorkspaceTabContextMenus() {
@@ -2809,9 +2837,8 @@ class nsZenWorkspaces {
     const tabWorkspaceId = aTab.getAttribute("zen-workspace-id");
     const containerId = aTab.getAttribute("usercontextid") ?? "0";
     // Return all tabs that are not on the same workspace
-    return this.allStoredTabs.filter(
+    return gBrowser.tabs.filter(
       (tab) =>
-        tab.getAttribute("zen-workspace-id") !== tabWorkspaceId &&
         !this._shouldShowTab(tab, tabWorkspaceId, containerId, this._workspaceCache) &&
         !tab.hasAttribute("zen-empty-tab")
     );
@@ -2952,15 +2979,6 @@ class nsZenWorkspaces {
 
   get pinnedTabCount() {
     return this.pinnedTabsContainer.children.length - 1;
-  }
-
-  get allWorkspaceTabs() {
-    const currentWorkspace = this.activeWorkspace;
-    return this.allStoredTabs.filter(
-      (tab) =>
-        tab.hasAttribute("zen-essential") ||
-        tab.getAttribute("zen-workspace-id") === currentWorkspace
-    );
   }
 
   reorganizeTabsAfterWelcome() {

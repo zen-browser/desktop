@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Arbeitsbereiche
+zen-panel-ui-spaces-label = 
+    .label = Arbeitsbereiche
 zen-panel-ui-workspaces-create = 
     .label = Arbeitsbereich erstellen
 zen-panel-ui-folder-create = 
@@ -30,9 +32,6 @@ zen-workspaces-panel-context-open =
 zen-workspaces-panel-context-edit = 
     .label = Arbeitsbereich bearbeiten
     .accesskey = E
-context-zen-change-workspace-tab = 
-    .label = Tabs zu Arbeitsbereich verschieben
-    .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
     .value = Arbeitsbereiche
     .accesskey = W
@@ -49,6 +48,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = Klick hier, um eine Farbe hinzuzufügen
 zen-workspace-creation-name = 
     .placeholder = Name des Arbeitsbereichs
+zen-move-tab-to-workspace-button = 
+    .label = Verschieben nach...
+    .tooltiptext = Alle Tabs in diesem Fenster in einen Arbeitsbereich verschieben
 zen-workspaces-panel-context-reorder = 
     .label = Arbeitsbereiche neu anordnen
 zen-workspace-creation-profile = Profil
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tabs geschlossen! Nutze <span>{ $
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Aufräumen
     .tooltiptext = Alle nicht angehefteten Tabs schließen
+zen-panel-ui-workspaces-change-forward = 
+    .label = Nächster Arbeitsbereich
+zen-panel-ui-workspaces-change-back = 
+    .label = Vorheriger Arbeitsbereich

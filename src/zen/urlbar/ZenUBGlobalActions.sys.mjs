@@ -54,6 +54,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/window.svg",
   },
   {
+    label: "New Blank Window",
+    command: "cmd_zenNewNavigatorUnsynced",
+    icon: "chrome://browser/skin/zen-icons/window.svg",
+  },
+  {
     label: "Pin Tab",
     command: "cmd_zenTogglePinTab",
     icon: "chrome://browser/skin/zen-icons/pin.svg",

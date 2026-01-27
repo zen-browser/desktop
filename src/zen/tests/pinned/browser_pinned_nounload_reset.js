@@ -19,6 +19,7 @@ add_task(async function test_NoUnload_Changed_Pinned() {
 
     BrowserTestUtils.startLoadingURIString(browser, "https://example.com/2");
     await BrowserTestUtils.browserLoaded(browser, false, "https://example.com/2");
+    await gBrowser.TabStateFlusher.flush(browser);
     setTimeout(() => {
       ok(
         tab.hasAttribute("zen-pinned-changed"),

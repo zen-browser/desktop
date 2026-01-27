@@ -16,11 +16,12 @@
   }
 }
 
-#urlbar {
+.urlbar {
   --urlbarView-separator-color: light-dark(hsl(0, 0%, 89%), hsl(0, 0%, 20%));
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
+  height: var(--urlbar-height);
   --urlbarView-results-padding: 8px !important;
   --urlbar-container-height: 48px !important;
 
@@ -242,9 +243,9 @@
 
   :root[zen-single-toolbar="true"] & .urlbar-input-box,
   &[zen-floating-urlbar="true"] .urlbar-input-box {
-    font-weight: 400;
-    @media (-moz-platform: windows) {
-      font-weight: 500;
+    font-weight: 500;
+    @media (-moz-platform: linux) {
+      font-weight: 400;
     }
   }
 
@@ -290,10 +291,6 @@
   & #zen-copy-url-button {
     display: none;
   }
-}
-
-#urlbar-go-button {
-  display: none;
 }
 
 :root[zen-single-toolbar="true"] {
@@ -724,7 +721,7 @@
  * displayed anymore, since now zen displays
  * them into a single, unified button */
 #reader-mode-button,
-#urlbar-go-button,
+.urlbar-go-button,
 #star-button-box,
 #pageActionButton:not([open]) {
   display: none !important;

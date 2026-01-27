@@ -26,13 +26,13 @@ sidebar-zen-create-new =
     .label = Opprett ny...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] Avlast og bytt til fane
            *[other] Avlast { $tabCount } faner og bytt til den første
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] Tilbakestill og fest fane
            *[other] Tilbakestill og fest { $tabCount } faner
         }

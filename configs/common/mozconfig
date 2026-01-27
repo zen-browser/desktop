@@ -9,7 +9,9 @@ ac_add_options --with-app-basename=Zen
 # Localization (Must be an absolute path)
 ac_add_options --with-l10n-base="${topsrcdir}/browser/locales"
 
-export MOZ_USER_DIR="${name}"
+# See https://github.com/zen-browser/desktop/issues/11917 for future plans.
+# We should be removing this at some point and start supporting XDG dirs.
+ac_add_options --with-user-appdir=".${binName}"
 export MOZ_APP_BASENAME=Zen
 export MOZ_BRANDING_DIRECTORY=${brandingDir}
 export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}

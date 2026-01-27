@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Ubah Penyimpanan
 zen-devtools-toggle-dom-shortcut = Ubah DOM
 zen-devtools-toggle-accessibility-shortcut = Ubah Aksesibilitas
 zen-close-all-unpinned-tabs-shortcut = Tutup Semua Tab yang Tidak Disematkan
+zen-new-unsynced-window-shortcut = New Unsynced Window

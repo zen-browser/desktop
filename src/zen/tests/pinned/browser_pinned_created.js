@@ -13,9 +13,11 @@ add_task(async function test_Create_Pinned() {
 
   const newTab = gBrowser.selectedTab;
   gBrowser.pinTab(newTab);
+  await gBrowser.TabStateFlusher.flush(newTab.linkedBrowser);
 
   ok(newTab.pinned, "The tab should be pinned after calling gBrowser.pinTab()");
 
+  await new Promise((r) => setTimeout(r, 500));
   const pinObject = newTab._zenPinnedInitialState;
   ok(pinObject, "The pin object should be created in the tab's _zenPinnedInitialState");
   Assert.equal(

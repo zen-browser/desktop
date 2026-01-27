@@ -42,7 +42,6 @@ async function do_test(test) {
   );
 
   info("creating input field");
-  // eslint-disable-next-line no-shadow
   await SpecialPowers.spawn(tab.linkedBrowser, [test], async function (test) {
     let doc = content.document;
     let input = doc.createElement("input");

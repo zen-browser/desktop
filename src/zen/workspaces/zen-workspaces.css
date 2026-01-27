@@ -22,7 +22,7 @@
     display: none !important;
   }
 
-  border-radius: var(--zen-button-border-radius) !important;
+  border-radius: var(--button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
   height: fit-content;
@@ -155,8 +155,7 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
-  --indicator-gap: 10px;
-  margin-top: 1px;
+  --indicator-gap: calc(var(--toolbarbutton-inner-padding) - 1px);
   padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
@@ -209,8 +208,14 @@
     align-items: center;
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
-    fill: currentColor;
-    font-size: 18px;
+    fill: var(--toolbox-textcolor);
+    font-size: 16px;
+    padding-top: 2px;
+    color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
+
+    & img {
+      transform: translateY(-1px);
+    }
 
     &[zen-emoji-open='true']::before {
       border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
@@ -226,19 +231,19 @@
 
     @media (-moz-platform: windows) {
       & img {
-        margin-bottom: -4px;
+        margin-bottom: -2px;
       }
     }
   }
 
   .zen-current-workspace-indicator-name {
-    display: flex;
+    display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: auto;
+    white-space: nowrap;
     font-weight: 600;
-    align-items: center;
     margin: 0;
 
     :root[zen-unsynced-window] & {
@@ -247,6 +252,10 @@
       padding: 4px 8px;
       border-radius: 99px;
       font-size: 10px;
+    }
+
+    :root:not([zen-unsynced-window]) & {
+      flex: 1;
     }
   }
 
@@ -298,6 +307,7 @@
 zen-workspace {
   will-change: transform;
   flex-direction: column;
+  transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
   height: 100%;

@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Prostory
+zen-panel-ui-spaces-label = 
+    .label = Prostory
 zen-panel-ui-workspaces-create = 
     .label = Vytvořit prostor
 zen-panel-ui-folder-create = 
@@ -30,11 +32,8 @@ zen-workspaces-panel-context-open =
 zen-workspaces-panel-context-edit = 
     .label = Upravit prostor
     .accesskey = E
-context-zen-change-workspace-tab = 
-    .label = Přesunout panel(y) do prostoru
-    .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
-    .value = Pracovní prostory
+    .value = Prostory
     .accesskey = W
 zen-panel-ui-gradient-generator-algo-complementary = 
     .label = Protilehlé
@@ -49,6 +48,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = Kliknutím přidáte barvu
 zen-workspace-creation-name = 
     .placeholder = Název prostoru
+zen-move-tab-to-workspace-button = 
+    .label = Přesunout do...
+    .tooltiptext = Přesunout všechny panely v tomto okně do pracovního prostoru
 zen-workspaces-panel-context-reorder = 
     .label = Změnit pořadí prostorů
 zen-workspace-creation-profile = Profil
@@ -59,7 +61,11 @@ zen-workspaces-delete-workspace-title = Odstranit prostor?
 zen-workspaces-delete-workspace-body = Opravdu chcete smazat { $name }? Tuto akci nelze vrátit zpět.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Karty byly zavřeny! Použijte <span>{ $shortcut }</span> pro zrušení.
+zen-workspaces-close-all-unpinned-tabs-toast = Panely byly zavřeny! Použijte <span>{ $shortcut }</span> pro zrušení.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Vyčistit
     .tooltiptext = Zavřít všechny nepřipnuté panely
+zen-panel-ui-workspaces-change-forward = 
+    .label = Další prostor
+zen-panel-ui-workspaces-change-back = 
+    .label = Předchozí prostor

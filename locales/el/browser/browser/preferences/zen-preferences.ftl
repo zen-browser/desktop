@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Εναλλαγή Αποθηκευτικο
 zen-devtools-toggle-dom-shortcut = Εναλλαγή DOM
 zen-devtools-toggle-accessibility-shortcut = Εναλλαγή Προσβασιμότητας
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-new-unsynced-window-shortcut = New Unsynced Window

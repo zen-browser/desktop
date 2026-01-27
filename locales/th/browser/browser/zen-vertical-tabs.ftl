@@ -3,27 +3,27 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Tabs on the right
+    .label = แท็บทางด้านขวา
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Compact mode
+    .label = โหมดกะทัดรัด
 zen-toolbar-context-compact-mode-enable = 
-    .label = Enable compact mode
+    .label = เปิดใช้โหมดกะทัดรัด
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = ซ่อนแถบด้านข้าง
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Hide toolbar
+    .label = ซ่อนแถบเครื่องมือ
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Hide both
+    .label = ซ่อนทั้งคู่
     .accesskey = H
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = สร้างโฟลเดอร์ใหม่
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = ขยายแถบด้านข้าง
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = สร้างใหม่...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
@@ -36,4 +36,4 @@ tabbrowser-reset-pin-button =
             [one] Reset and pin tab
            *[other] Reset and pin { $tabCount } tabs
         }
-tab-reset-pin-label = Back to pinned url
+tab-reset-pin-label = กลับไปยัง URL ที่ปักหมุดไป

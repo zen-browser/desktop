@@ -1,7 +1,7 @@
 /* Ensure that hostnames in the whitelisted pref are not blocked. */
 
 const PREF_WHITELISTED_HOSTNAMES = "urlclassifier.skipHostnames";
-const TEST_PAGE = "https://www.itisatrap.org/firefox/its-an-attack.html";
+const TEST_PAGE = "http://www.itisatrap.org/firefox/its-an-attack.html";
 var tabbrowser = null;
 
 registerCleanupFunction(function () {

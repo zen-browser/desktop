@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..238d6ae1a4261e098d1e986e3c3df813d9d625f3 100644
+index 82721356d191055bec0d4b0ca49e481221988801..68437e6f9fa54fc75ca9e24d738e8afcd0ea22f8 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
 @@ -85,7 +85,24 @@ class _TabState {
@@ -8,7 +8,7 @@ index 82721356d191055bec0d4b0ca49e481221988801..238d6ae1a4261e098d1e986e3c3df813
  
 +    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");
 +    tabData.zenSyncId = tab.getAttribute("id");
-+    tabData.zenEssential = tab.getAttribute("zen-essential");
++    tabData.zenEssential = tab.getAttribute("zen-essential") === "true";
 +    tabData.pinned = tabData.pinned || tabData.zenEssential;
 +    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
 +    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");

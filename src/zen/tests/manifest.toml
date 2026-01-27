@@ -3,19 +3,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-[reportbrokensite]
-source = "browser/components/reportbrokensite/test/browser"
-is_direct_path = true
-disable = [
-  "browser_addon_data_sent.js"
-]
-
-[reportbrokensite.replace-manifest]
-"../../../../../" = "../../../../"
-
 [safebrowsing]
 source = "browser/components/safebrowsing/content/test"
 is_direct_path = true
+
+[sandbox]
+source = "security/sandbox/test"
+is_direct_path = true
+disable = [
+  "browser_bug1393259.js",
+]
+
+[sandbox.replace-manifest]
+"../../../" = "../../../../"
 
 [shell]
 source = "browser/components/shell/test"
@@ -27,4 +27,3 @@ disable = [
 
 [tooltiptext]
 source = "toolkit/components/tooltiptext"
-

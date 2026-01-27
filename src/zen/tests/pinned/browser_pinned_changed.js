@@ -15,6 +15,8 @@ add_task(async function test_Changed_Pinned() {
 
     ok(tab.pinned, "The tab should be pinned after calling gBrowser.pinTab()");
 
+    await gBrowser.TabStateFlusher.flush(browser);
+    await new Promise((r) => setTimeout(r, 500));
     BrowserTestUtils.startLoadingURIString(browser, "https://example.com/2");
     await BrowserTestUtils.browserLoaded(browser, false, "https://example.com/2");
     setTimeout(() => {
@@ -23,7 +25,7 @@ add_task(async function test_Changed_Pinned() {
         "The tab should have a zen-pinned-changed attribute after being pinned"
       );
       resolvePromise();
-    }, 0);
+    }, 500);
 
     await promise;
   });

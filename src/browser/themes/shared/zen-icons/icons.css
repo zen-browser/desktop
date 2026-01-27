@@ -253,8 +253,7 @@
   list-style-image: url("privateBrowsing.svg") !important;
 }
 
-#profiler-button-button > .toolbarbutton-icon,
-.subviewbutton[label="Task Manager"] {
+#profiler-button-button > .toolbarbutton-icon {
   list-style-image: url("tool-profiler.svg") !important;
 }
 
@@ -263,7 +262,8 @@
 }
 
 #new-window-button,
-#appMenu-new-window-button2 {
+#appMenu-new-window-button2,
+#appMenu-new-zen-unsynced-window-button {
   list-style-image: url("window.svg") !important;
 }
 
@@ -410,8 +410,7 @@
   content: url("arrow-right.svg") !important;
 }
 
-#PlacesChevron,
-#urlbar-go-button {
+#PlacesChevron {
   list-style-image: url("arrow-right.svg") !important;
 }
 

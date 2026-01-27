@@ -5,8 +5,8 @@
 zen-panel-ui-current-profile-text = نمایهٔ کنونی
 unified-extensions-description = افزونه‌های در حال استفاده عملکردهای بیشتری به { -brand-short-name } می‌دهند.
 tab-context-zen-reset-pinned-tab = 
-    .label = Reset Pinned Tab
-    .accesskey = R
+    .label = بازنشانی زبانهٔ سنجاق شده
+    .accesskey = ب
 tab-context-zen-add-essential = 
     .label = Add to Essentials
     .accesskey = E
@@ -15,43 +15,42 @@ tab-context-zen-remove-essential =
     .label = Remove from Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace Pinned URL with Current
+    .label = جایگزینی URL سنجاق شده با فعلی
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
 zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
     Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+zen-disable = غیرفعال
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
-zen-panel-ui-gradient-generator-custom-color = Custom Color
-zen-panel-ui-gradient-generator-saved-message = Successfully saved the gradient!
-zen-copy-current-url-confirmation = Copied current URL!
+    .aria-label = کمینه
+    .tooltip = کمینه
+zen-panel-ui-gradient-generator-custom-color = رنگ دلخواه
+zen-copy-current-url-confirmation = رونوشت از URL فعلی!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = لغو
 zen-general-confirm = 
-    .label = Confirm
+    .label = تایید
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
 zen-workspace-renamed-toast = Workspace has been successfully renamed!
-zen-library-sidebar-workspaces = 
-    .label = Spaces
-zen-library-sidebar-mods = 
-    .label = Mods
 zen-toggle-compact-mode-button = 
     .label = Compact Mode
     .tooltiptext = Toggle Compact Mode
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Learn More
-zen-close-label = Close
+zen-learn-more-text = یادگیری بیشتر
+zen-close-label = بستن
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = جستجو...
 zen-icons-picker-emoji = 
     .label = Emojis
 zen-icons-picker-svg = 
@@ -61,6 +60,8 @@ zen-site-data-settings = Settings
 zen-generic-manage = Manage
 zen-generic-more = More
 zen-generic-next = Next
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
@@ -108,3 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Something broke?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restart in Safe Mode
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It

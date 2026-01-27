@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-workspaces-text = Arbetsytor
+zen-panel-ui-spaces-label = 
+    .label = Arbetsytor
 zen-panel-ui-workspaces-create = 
     .label = Skapa arbetsyta
 zen-panel-ui-folder-create = 
@@ -30,9 +32,6 @@ zen-workspaces-panel-context-open =
 zen-workspaces-panel-context-edit = 
     .label = Redigera arbetsyta
     .accesskey = E
-context-zen-change-workspace-tab = 
-    .label = Ändra flik(er) till arbetsyta
-    .accesskey = C
 zen-bookmark-edit-panel-workspace-selector = 
     .value = Arbetsytor
     .accesskey = W
@@ -49,6 +48,9 @@ zen-panel-ui-gradient-generator-algo-floating =
 zen-panel-ui-gradient-click-to-add = Klicka för att lägga till en färg
 zen-workspace-creation-name = 
     .placeholder = Namn på arbetsyta
+zen-move-tab-to-workspace-button = 
+    .label = Flytta till...
+    .tooltiptext = Flytta alla flikar i detta fönster till en arbetsyta
 zen-workspaces-panel-context-reorder = 
     .label = Flytta om arbetsytor
 zen-workspace-creation-profile = Profil
@@ -63,3 +65,7 @@ zen-workspaces-close-all-unpinned-tabs-toast = Flikar stängda! Använd <span>{ 
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Rensa
     .tooltiptext = Stäng alla flikar som inte är fästa
+zen-panel-ui-workspaces-change-forward = 
+    .label = Nästa arbetsyta
+zen-panel-ui-workspaces-change-back = 
+    .label = Föregående arbetsyta

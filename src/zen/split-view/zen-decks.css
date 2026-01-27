@@ -59,6 +59,8 @@
 }
 
 #tabbrowser-tabpanels[zen-split-view='true']:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split='true'] {
+  --zen-active-split-outline-color: light-dark(var(--zen-primary-color), var(--button-background-color-primary));
+
   transition: inset 0.09s ease-out !important;
   & browser {
     transition: opacity 0.2s ease-out !important;
@@ -67,7 +69,6 @@
 
 #tabbrowser-tabpanels[zen-split-view='true'] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
-    --zen-active-split-outline-color: light-dark(var(--zen-primary-color), var(--button-background-color-primary));
     outline: 2px solid var(--zen-active-split-outline-color) !important;
   }
 
@@ -152,7 +153,7 @@
 }
 
 :root:not([inDOMFullscreen='true'])
-  .browserSidebarContainer.deck-selected:hover
+  .browserSidebarContainer:hover
   .zen-view-splitter-header-container,
 .zen-view-splitter-header-container:hover {
   pointer-events: all;
@@ -171,7 +172,6 @@
   cursor: pointer;
   appearance: none;
   outline: none;
-  color: var(--button-primary-bgcolor);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 
@@ -220,7 +220,7 @@
   background: black;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   gap: 20px;
   position: relative;
 

@@ -75,6 +75,9 @@ zen-generic-manage = Manage
 zen-generic-more = More
 zen-generic-next = Next
 
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Allowed
 zen-site-data-setting-block = Blocked
@@ -129,3 +132,8 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Something broke?
 zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
+
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It

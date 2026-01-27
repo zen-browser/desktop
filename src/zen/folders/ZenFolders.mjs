@@ -1134,11 +1134,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
    * @param {MozTabbrowserTabGroup|undefined|null} folder The folder to highlight, or null to clear highlight.
    * @param {Array<MozTabbrowserTab>|null} movingTabs The tabs being moved.
    */
-  highlightGroupOnDragOver(folder, movingTabs) {
+  highlightGroupOnDragOver(folder, movingTabs = null) {
     if (folder === this.#lastHighlightedGroup) {
       return true;
     }
-    const tab = movingTabs ? movingTabs[0] : null;
     if (this.#lastHighlightedGroup && this.#lastHighlightedGroup !== folder) {
       if (this.#lastHighlightedGroup.collapsed) {
         this.updateFolderIcon(this.#lastHighlightedGroup, "close");
@@ -1148,7 +1147,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (
       folder?.isZenFolder &&
       (!folder.hasAttribute("split-view-group") || !folder.hasAttribute("selected")) &&
-      folder !== tab?.group &&
       !(
         folder.level >= this.#ZEN_MAX_SUBFOLDERS &&
         movingTabs?.some((t) => gBrowser.isTabGroupLabel(t))

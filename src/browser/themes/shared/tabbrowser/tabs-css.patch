@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 310e7866b942df5c3c34815f4612a2a2ad8c42a6..c474e1cddcecd3def3b255c5c530c0b36a38e6b0 100644
+index 310e7866b942df5c3c34815f4612a2a2ad8c42a6..d4931a0184209951ced288c894613dccdf3b11fc 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -21,7 +21,7 @@
@@ -152,7 +152,17 @@ index 310e7866b942df5c3c34815f4612a2a2ad8c42a6..c474e1cddcecd3def3b255c5c530c0b3
  
        &:-moz-window-inactive {
          background-image:
-@@ -2382,7 +2373,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2348,9 +2339,6 @@ tab-group {
+ 
+ :root:not([privatebrowsingmode]) :is(toolbarbutton, toolbarpaletteitem) ~ #tabbrowser-tabs,
+ :root[privatebrowsingmode] :is(toolbarbutton:not(#firefox-view-button), toolbarpaletteitem:not(#wrapper-firefox-view-button)) ~ #tabbrowser-tabs {
+-  border-inline-start: var(--tabstrip-inner-border);
+-  padding-inline-start: 2px;
+-  margin-inline-start: 2px;
+ }
+ 
+ :root[privatebrowsingmode] :is(#firefox-view-button, #menu_openFirefoxView) {
+@@ -2382,7 +2370,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

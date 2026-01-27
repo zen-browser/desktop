@@ -7,7 +7,7 @@ add_task(async function test_Change_To_Empty() {
   // eslint-disable-next-line no-unused-vars
   const currentWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
-  const workspaces = await gZenWorkspaces._workspaces();
+  const workspaces = gZenWorkspaces.getWorkspaces();
   const secondWorkspace = workspaces.workspaces[1];
 
   await gZenWorkspaces.changeWorkspace(secondWorkspace.uuid);
@@ -24,7 +24,7 @@ add_task(async function test_Change_To_Empty() {
     "The empty tab should not be selected anymore."
   );
 
-  const workspacesAfterRemove = await gZenWorkspaces._workspaces();
+  const workspacesAfterRemove = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(workspacesAfterRemove.length, 1, "One workspace should exist.");
   Assert.strictEqual(gBrowser.tabs.length, 2, "There should be two tabs.");
 });

@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Växla lagring
 zen-devtools-toggle-dom-shortcut = Växla DOM
 zen-devtools-toggle-accessibility-shortcut = Växla tillgänglighetsinställningar
 zen-close-all-unpinned-tabs-shortcut = Stäng alla flikar som inte är fästa
+zen-new-unsynced-window-shortcut = Nytt osynkroniserat fönster

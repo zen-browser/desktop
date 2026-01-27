@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = 開啟儲存空間檢測器
 zen-devtools-toggle-dom-shortcut = 開啟 DOM
 zen-devtools-toggle-accessibility-shortcut = 開啟輔助功能
 zen-close-all-unpinned-tabs-shortcut = 關閉所有未釘選的分頁
+zen-new-unsynced-window-shortcut = 開新未同步視窗

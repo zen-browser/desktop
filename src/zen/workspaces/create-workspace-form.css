@@ -138,6 +138,7 @@ zen-workspace-creation {
           background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
           margin-left: auto;
           min-width: unset !important;
+          border-radius: 6px;
         }
       }
 

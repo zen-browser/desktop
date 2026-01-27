@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
-import { ZenMenubar } from "chrome://browser/content/zen-components/ZenMenubar.mjs";
+import { nsZenMenuBar } from "chrome://browser/content/zen-components/ZenMenubar.mjs";
 
 window.gZenUIManager = {
   _popupTrackingElements: [],
@@ -17,6 +17,8 @@ window.gZenUIManager = {
   _toastTimeouts: [],
 
   init() {
+    window.gZenMenubar = new nsZenMenuBar();
+
     document.addEventListener("popupshowing", this.onPopupShowing.bind(this));
     document.addEventListener("popuphidden", this.onPopupHidden.bind(this));
 
@@ -63,7 +65,7 @@ window.gZenUIManager = {
     this._initOmnibox();
     this._initBookmarkCollapseListener();
 
-    ZenMenubar.init();
+    gURLBar._setPlaceholder(null);
   },
 
   /**
@@ -896,6 +898,11 @@ window.gZenVerticalTabsManager = {
         .then(() => {})
         .catch((err) => {
           console.error(err);
+        })
+        .finally(() => {
+          aItem.style.removeProperty("margin-bottom");
+          aItem.style.removeProperty("transform");
+          aItem.style.removeProperty("opacity");
         });
       const itemLabel =
         aItem.querySelector(".tab-group-label-container") || aItem.querySelector(".tab-content");
@@ -913,6 +920,9 @@ window.gZenVerticalTabsManager = {
         .then(() => {})
         .catch((err) => {
           console.error(err);
+        })
+        .finally(() => {
+          itemLabel.style.removeProperty("filter");
         });
     } catch (e) {
       console.error(e);
@@ -1240,12 +1250,14 @@ window.gZenVerticalTabsManager = {
           } else {
             navBar.append(windowButtons);
           }
-        }
-        // not windows styled buttons
-        if (isRightSide || !isSidebarExpanded) {
-          navBar.prepend(windowButtons);
         } else {
-          topButtons.prepend(windowButtons);
+          // not windows styled buttons
+          // eslint-disable-next-line no-lonely-if
+          if (isRightSide || !isSidebarExpanded) {
+            navBar.prepend(windowButtons);
+          } else {
+            topButtons.prepend(windowButtons);
+          }
         }
       } else if (!isSingleToolbar && isCompactMode) {
         if (captionsShouldStayOnSidebar) {
@@ -1350,7 +1362,7 @@ window.gZenVerticalTabsManager = {
         // Check if name is blank, reset if so
         // Always remove, so we can always rename and if it's empty,
         // it will reset to the original name anyway
-        if (hasChanged) {
+        if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
           this._tabEdited.zenStaticLabel = newName;
           gBrowser._setTabLabel(this._tabEdited, newName);
           gZenUIManager.showToast("zen-tabs-renamed");
@@ -1359,7 +1371,6 @@ window.gZenVerticalTabsManager = {
           gBrowser.setTabTitle(this._tabEdited);
         }
 
-        // Maybe add some confetti here?!?
         gZenUIManager.motion.animate(
           this._tabEdited,
           {
@@ -1398,7 +1409,7 @@ window.gZenVerticalTabsManager = {
     ) {
       return;
     }
-    if (isTab && !target.closest(".tab-label-container")) {
+    if (isTab && !target.closest(".tab-label-container") && event.type === "dblclick") {
       return;
     }
     this._tabEdited =

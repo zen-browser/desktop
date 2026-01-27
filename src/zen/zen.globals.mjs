@@ -18,6 +18,7 @@ export default [
   "gZenUIManager",
   "gZenVerticalTabsManager",
   "gZenStartup",
+  "gZenMenubar",
 
   "gZenWorkspaces",
   "gZenKeyboardShortcutsManager",
@@ -47,6 +48,7 @@ export default [
 
   "delayedStartupPromise",
 
+  "BookmarkingUI",
   "Services",
   "PathUtils",
   "ChromeUtils",

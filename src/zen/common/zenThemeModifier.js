@@ -97,7 +97,7 @@
       // otherwise, use the custom value
       if (borderRadius == -1) {
         if (AppConstants.platform == "macosx") {
-          const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)").matches ? 15 : 10;
+          const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)").matches ? 16 : 10;
           document.documentElement.style.setProperty("--zen-border-radius", targetRadius + "px");
         } else if (AppConstants.platform == "linux") {
           // Linux uses GTK CSD titlebar radius, default to 8px

@@ -5,7 +5,7 @@
 zen-panel-ui-current-profile-text = aktuální profil
 unified-extensions-description = Rozšíření slouží k přidání dalších funkcí do prohlížeče { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetovat připnuté karty
+    .label = Resetovat připnutý panel
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Přidat do Essentials
@@ -17,18 +17,21 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label = Nahradit připnutou URL adresu aktuální adresou
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Změnit název...
+tab-context-zen-edit-icon = 
+    .label = Změnit ikonu...
 zen-themes-corrupted = Váš { -brand-short-name } mods soubor je poškozen. Byl obnoven na výchozí motiv.
 zen-shortcuts-corrupted = Soubor se zkratky prohlížeče { -brand-short-name } je poškozen. Zkratky byly resetovány na výchozí nastavení.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Nový adresní řádek je nyní zapnutý, takže už není potřeba otevírat nové karty.<br/><br/>
-    Zkuste otevřít novou kartu a podívejte se, jak funguje!
+    Zkuste otevřít nový panel a podívejte se, jak funguje!
 zen-disable = Zavřít
 pictureinpicture-minimize-btn = 
     .aria-label = Minimalizovat
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
-zen-panel-ui-gradient-generator-saved-message = Gradient byl úspěšně uložen!
 zen-copy-current-url-confirmation = URL adresa byla zkopírována!
 zen-general-cancel-label = 
     .label = Zrušit
@@ -36,12 +39,8 @@ zen-general-confirm =
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
-zen-background-tab-opened-toast = Nová karta na pozadí byla otevřena!
+zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
-zen-library-sidebar-workspaces = 
-    .label = Prostory
-zen-library-sidebar-mods = 
-    .label = Módy
 zen-toggle-compact-mode-button = 
     .label = Kompaktní režim
     .tooltiptext = Přepnout kompaktní režim
@@ -61,6 +60,8 @@ zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
 zen-generic-more = Více
 zen-generic-next = Další
+zen-essentials-promo-label = Přídat do Essentials
+zen-essentials-promo-sublabel = Mějte oblíbené panely na dosah jedním kliknutím
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Povoleno
 zen-site-data-setting-block = Blokováno
@@ -108,3 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Něco se rozbilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restartovat v Nouzovém Režimu
+zen-window-sync-migration-dialog-title = Mějte svá okna synchronizovaná
+zen-window-sync-migration-dialog-message = Zen nyní synchronizuje okna na stejném zařízení. Změny provedené v jednom okně se okamžitě projeví v ostatních.
+zen-window-sync-migration-dialog-learn-more = Zjistit více
+zen-window-sync-migration-dialog-accept = Rozumím

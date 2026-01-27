@@ -314,3 +314,4 @@ zen-devtools-toggle-storage-shortcut = Alternar almacenamiento
 zen-devtools-toggle-dom-shortcut = Alternar DOM
 zen-devtools-toggle-accessibility-shortcut = Alternar accesibilidad
 zen-close-all-unpinned-tabs-shortcut = Cerrar todas las pestañas sin fijar
+zen-new-unsynced-window-shortcut = Nueva ventana no sincronizada

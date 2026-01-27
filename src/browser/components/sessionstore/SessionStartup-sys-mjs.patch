@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
-index 86600ffb5178599ab23270a964064ca657a3283f..ffb22990e7d9e1b79f276fe5c1eb38f2b869a57b 100644
+index 86600ffb5178599ab23270a964064ca657a3283f..e7014e5bce547d37ec92377a95bad5be4d52152e 100644
 --- a/browser/components/sessionstore/SessionStartup.sys.mjs
 +++ b/browser/components/sessionstore/SessionStartup.sys.mjs
 @@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -23,7 +23,7 @@ index 86600ffb5178599ab23270a964064ca657a3283f..ffb22990e7d9e1b79f276fe5c1eb38f2
        this._initialState = parsed;
      }
  
-+    lazy.ZenSessionStore.onFileRead(this._initialState);
++    this._initialState = lazy.ZenSessionStore.onFileRead(this._initialState);
 +
      if (this._initialState == null) {
        // No valid session found.

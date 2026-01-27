@@ -39,10 +39,6 @@
   display: none !important;
 }
 
-body > #confetti {
-  z-index: 1;
-}
-
 /* Bookmarks */
 #PersonalToolbar:not([collapsed]) {
   min-height: 30px;
@@ -439,7 +435,7 @@ body > #confetti {
     border-radius: 99px;
     width: 32px;
     height: 32px;
-    background: var(--button-primary-bgcolor);
+    background: var(--button-background-color-primary);
     opacity: 0.6;
     transition:
       transform 0.12s ease-in-out,
@@ -560,7 +556,7 @@ body > #confetti {
       color: var(--button-primary-color);
 
       &::before {
-        background: var(--button-primary-bgcolor);
+        background: var(--button-background-color-primary);
       }
     }
 

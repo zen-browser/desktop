@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index b97fa81cef276e4bb22414b7c182e00b4bb835dc..1f489eceead0aa331ace59281cb777db5e635366 100644
+index a4ed35032c0c60f230d95f451b3f615232784cad..4c0b034982c56a649afbeb8837556a2c77154b4e 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -81,6 +81,7 @@ export var UrlbarUtils = {
@@ -27,3 +27,12 @@ index b97fa81cef276e4bb22414b7c182e00b4bb835dc..1f489eceead0aa331ace59281cb777db
          case "UrlbarProviderOmnibox":
            return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -3276,7 +3280,7 @@ export class L10nCache {
+     }
+ 
+     let messages = await l10n.formatMessages([{ id, args }]);
+-    if (!messages?.length) {
++    if (!messages?.length || !messages[0]) {
+       console.error(
+         "l10n.formatMessages returned an unexpected value for ID: ",
+         id

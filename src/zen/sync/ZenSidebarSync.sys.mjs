@@ -57,7 +57,7 @@ SidebarSyncEngine.prototype = {
   _storeObj: SidebarSyncStore,
   _trackerObj: SidebarSyncTracker,
   _recordObj: SidebarSyncRec,
-  version: 2,
+  version: 3,
   syncPriority: 6,
   allowSkippedRecord: false,
 

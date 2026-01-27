@@ -192,8 +192,6 @@ class nsZenBoostsManager {
 
     let array = Array.isArray(this.#file.data) ? this.#file.data : [];
     let data = new Map(array);
-
-    console.log('Loading Zen boost data: ', data);
     return data;
   }
 
@@ -207,7 +205,6 @@ class nsZenBoostsManager {
 
     this.#file.data = data;
     this.#file.saveSoon();
-    console.log('Saving Zen boost data: ', data);
   }
 
   /**

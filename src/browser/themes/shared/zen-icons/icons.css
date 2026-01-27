@@ -47,6 +47,8 @@
 #PanelUI-zen-gradient-generator-color-remove,
 #zen-gradient-generator-color-remove {
   list-style-image: url('unpin.svg') !important;
+}
+
 #appMenu-quit-button2 {
   list-style-image: url("close.svg") !important;
 }

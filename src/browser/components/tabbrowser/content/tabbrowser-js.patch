@@ -266,6 +266,17 @@ index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..2ab8633d0378e5a25cf75c50b29d4689
          );
        }
  
++      if (
++        userContextId === undefined &&
++        aURI?.spec?.startsWith("view-source:") &&
++        this.selectedTab
++      ) {
++        const selectedUserContextId = this.selectedTab.getAttribute("usercontextid");
++        if (selectedUserContextId) {
++          userContextId = parseInt(selectedUserContextId, 10);
++        }
++      }
++
 +      let hasZenDefaultUserContextId = false;
 +      let zenForcedWorkspaceId = undefined;
 +      if (typeof gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {

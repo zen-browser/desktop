@@ -338,8 +338,25 @@ WorkspacesStore.prototype = {
         return;
       }
 
+      // Safety check: Don't apply empty remote data that could wipe local data
+      if (!data?.workspaces || data.workspaces.length === 0) {
+        log("warn", "SAFETY: Refusing to apply empty workspaces data from server - this would wipe local workspaces");
+        return;
+      }
+
       // 1. Apply workspaces first
       const local = this._getWorkspacesData();
+
+      // Safety check: If we have significant local data but remote is minimal, be cautious
+      if (local.workspaces.length > 1 && data.workspaces.length === 1 &&
+          (local.folders.length > 0 || local.pinnedTabs.length > 0) &&
+          data.folders.length === 0 && data.pinnedTabs.length === 0) {
+        log("warn", "SAFETY: Remote data looks like a fresh profile (1 workspace, no folders/tabs). Preserving local data.");
+        log("warn", `Local: ${local.workspaces.length} workspaces, ${local.folders.length} folders, ${local.pinnedTabs.length} tabs`);
+        log("warn", `Remote: ${data.workspaces.length} workspaces, ${data.folders?.length || 0} folders, ${data.pinnedTabs?.length || 0} tabs`);
+        return;
+      }
+
       log("info", `Merging: ${local.workspaces.length} local + ${data.workspaces?.length || 0} remote workspaces`);
       const mergedWorkspaces = this._mergeWorkspaces(local.workspaces, data.workspaces || [], data.lastModified);
       log("info", `Merge result: ${mergedWorkspaces.length} total workspaces`);
@@ -473,14 +490,13 @@ WorkspacesStore.prototype = {
           log("debug", `Created tab: "${tabData.url}"`);
         }
 
-        // Apply workspace
-        if (tabData.workspaceId) {
-          existingTab.setAttribute("zen-workspace-id", tabData.workspaceId);
-        }
-
-        // Apply essential state
+        // Apply essential state OR workspace (essential tabs don't have workspace IDs)
         if (tabData.isEssential) {
           existingTab.setAttribute("zen-essential", "true");
+          // Essential tabs should NOT have a workspace ID - remove it if present
+          existingTab.removeAttribute("zen-workspace-id");
+        } else if (tabData.workspaceId) {
+          existingTab.setAttribute("zen-workspace-id", tabData.workspaceId);
         }
 
         // Apply label
@@ -507,7 +523,9 @@ WorkspacesStore.prototype = {
 
     // Phase 3: Position items correctly
     // Group items by their container (workspace for root items, folder for nested items)
+    // Essential tabs go to a special "essentials" container
     const itemsByContainer = new Map(); // containerId -> array of {type, data, element}
+    const essentialTabs = []; // Essential tabs are handled separately
 
     // Add root-level folders (parentId is null)
     for (const [id, { element, data }] of folderMap) {
@@ -528,16 +546,21 @@ WorkspacesStore.prototype = {
     // Add root-level tabs (folderId is null)
     for (const [id, { element, data }] of tabMap) {
       if (!data.folderId) {
-        const containerId = data.workspaceId || "default";
-        if (!itemsByContainer.has(containerId)) {
-          itemsByContainer.set(containerId, []);
+        // Essential tabs go to essentials container, not workspace container
+        if (data.isEssential) {
+          essentialTabs.push({ element, data, position: data.position });
+        } else {
+          const containerId = data.workspaceId || "default";
+          if (!itemsByContainer.has(containerId)) {
+            itemsByContainer.set(containerId, []);
+          }
+          itemsByContainer.get(containerId).push({
+            type: "tab",
+            data,
+            element,
+            position: data.position,
+          });
         }
-        itemsByContainer.get(containerId).push({
-          type: "tab",
-          data,
-          element,
-          position: data.position,
-        });
       }
     }
 
@@ -560,6 +583,22 @@ WorkspacesStore.prototype = {
           pinnedContainer.appendChild(item.element);
         }
         log("debug", `Positioned ${item.type} "${item.data.name || item.data.url}" at position ${item.position}`);
+      }
+    }
+
+    // Position essential tabs in the essentials container
+    if (essentialTabs.length > 0) {
+      essentialTabs.sort((a, b) => a.position - b.position);
+      // Get the essentials container (container 0 for default)
+      const essentialsContainer = win.gZenWorkspaces?.getEssentialsSection?.(0);
+      if (essentialsContainer) {
+        log("debug", `Positioning ${essentialTabs.length} essential tabs in essentials container`);
+        for (const { element, data, position } of essentialTabs) {
+          essentialsContainer.appendChild(element);
+          log("debug", `Positioned essential tab "${data.url}" at position ${position}`);
+        }
+      } else {
+        log("warn", "Could not find essentials container for essential tabs");
       }
     }
 
@@ -624,7 +663,19 @@ WorkspacesStore.prototype = {
     log("info", `Creating sync record for upload (id: ${id})`);
     let record = new WorkspacesRec(collection, id);
     if (id === lazy.WORKSPACES_GUID) {
-      record.value = this._getWorkspacesData();
+      const data = this._getWorkspacesData();
+
+      // Safety check: Don't upload empty or minimal data that could overwrite good data
+      // This can happen if sync runs before the browser is fully initialized
+      if (!data.workspaces || data.workspaces.length === 0) {
+        log("warn", "SAFETY: Refusing to upload empty workspaces data - browser may not be fully initialized");
+        // Return a record that won't overwrite server data
+        record.deleted = false;
+        record.value = null;
+        return record;
+      }
+
+      record.value = data;
       log("info", `Record created with ${record.value.workspaces.length} workspaces, ${record.value.folders.length} folders, ${record.value.pinnedTabs.length} pinned tabs`);
     } else {
       record.deleted = true;

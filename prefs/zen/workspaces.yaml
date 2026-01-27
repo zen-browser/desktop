@@ -26,10 +26,10 @@
 - name: zen.workspaces.scroll-modifier-key
   value: ctrl
 
-- name: services.sync.engine.workspaces
+- name: services.sync.engine.sidebarsync
   value: true
 
-- name: services.sync.engine.workspaces.modified
+- name: services.sync.engine.sidebarsync.modified
   value: false
 
 - name: zen.workspaces.separate-essentials

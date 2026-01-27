@@ -16,7 +16,7 @@ ChromeUtils.defineLazyGetter(lazy, "WORKSPACES_GUID", () =>
 // ============== LOGGING ==============
 
 function log(level, ...args) {
-  const prefix = `[ZenWorkspacesSync]`;
+  const prefix = `[ZenSidebarSync]`;
   const timestamp = new Date().toISOString();
   const message = `${prefix} [${timestamp}] ${args.join(" ")}`;
 
@@ -39,24 +39,24 @@ function log(level, ...args) {
 
 // ============== RECORD ==============
 
-export function WorkspacesRec(collection, id) {
+export function SidebarSyncRec(collection, id) {
   CryptoWrapper.call(this, collection, id);
 }
-WorkspacesRec.prototype = { _logName: "Sync.Record.Workspaces" };
-Object.setPrototypeOf(WorkspacesRec.prototype, CryptoWrapper.prototype);
-Utils.deferGetSet(WorkspacesRec, "cleartext", ["value"]);
+SidebarSyncRec.prototype = { _logName: "Sync.Record.SidebarSync" };
+Object.setPrototypeOf(SidebarSyncRec.prototype, CryptoWrapper.prototype);
+Utils.deferGetSet(SidebarSyncRec, "cleartext", ["value"]);
 
 // ============== ENGINE ==============
 
-export function WorkspacesEngine(service) {
-  SyncEngine.call(this, "Workspaces", service);
-  log("info", "WorkspacesEngine initialized");
+export function SidebarSyncEngine(service) {
+  SyncEngine.call(this, "SidebarSync", service);
+  log("info", "SidebarSyncEngine initialized");
 }
 
-WorkspacesEngine.prototype = {
-  _storeObj: WorkspacesStore,
-  _trackerObj: WorkspacesTracker,
-  _recordObj: WorkspacesRec,
+SidebarSyncEngine.prototype = {
+  _storeObj: SidebarSyncStore,
+  _trackerObj: SidebarSyncTracker,
+  _recordObj: SidebarSyncRec,
   version: 2,
   syncPriority: 6,
   allowSkippedRecord: false,
@@ -150,16 +150,16 @@ WorkspacesEngine.prototype = {
     }
   },
 };
-Object.setPrototypeOf(WorkspacesEngine.prototype, SyncEngine.prototype);
+Object.setPrototypeOf(SidebarSyncEngine.prototype, SyncEngine.prototype);
 
 // ============== STORE ==============
 
-function WorkspacesStore(name, engine) {
+function SidebarSyncStore(name, engine) {
   Store.call(this, name, engine);
-  log("info", "WorkspacesStore initialized");
+  log("info", "SidebarSyncStore initialized");
 }
 
-WorkspacesStore.prototype = {
+SidebarSyncStore.prototype = {
   _getWorkspacesData() {
     log("debug", "Collecting local workspace data...");
     try {
@@ -260,10 +260,9 @@ WorkspacesStore.prototype = {
       seenTabs.add(tab);
       const workspaceId = tab.getAttribute("zen-workspace-id");
       const label = tab.zenStaticLabel || null;
-      const tabId = `${url}-${label || ""}-${folderId || "root"}-${containerPosition}`;
 
       tabs.push({
-        id: tabId,
+        id: tab.id,
         url,
         workspaceId,
         folderId,
@@ -526,11 +525,21 @@ WorkspacesStore.prototype = {
     for (const tabData of pinnedTabs) {
       try {
         let existingTab = null;
+        // First try to match by tab.id (Zen's stable ID)
         for (const tab of win.gBrowser.tabs) {
-          const url = tab.linkedBrowser?.currentURI?.spec;
-          if (url === tabData.url) {
+          if (tab.id === tabData.id) {
             existingTab = tab;
             break;
+          }
+        }
+        // Fall back to URL matching if no ID match
+        if (!existingTab) {
+          for (const tab of win.gBrowser.tabs) {
+            const url = tab.linkedBrowser?.currentURI?.spec;
+            if (url === tabData.url) {
+              existingTab = tab;
+              break;
+            }
           }
         }
 
@@ -542,8 +551,9 @@ WorkspacesStore.prototype = {
             createLazyBrowser: true,
           });
           win.gBrowser.pinTab(existingTab);
+          existingTab.id = tabData.id; // Preserve the synced tab ID
           tabsCreated++;
-          log("debug", `Created tab: "${tabData.url}"`);
+          log("debug", `Created tab: "${tabData.url}" with id: ${tabData.id}`);
         }
 
         // Apply essential state OR workspace (essential tabs don't have workspace IDs)
@@ -731,7 +741,7 @@ WorkspacesStore.prototype = {
 
   async createRecord(id, collection) {
     log("info", `Creating sync record for upload (id: ${id})`);
-    let record = new WorkspacesRec(collection, id);
+    let record = new SidebarSyncRec(collection, id);
     if (id === lazy.WORKSPACES_GUID) {
       const data = this._getWorkspacesData();
 
@@ -795,18 +805,18 @@ WorkspacesStore.prototype = {
     log("warn", "wipe() called (ignoring - preserving local workspaces)");
   },
 };
-Object.setPrototypeOf(WorkspacesStore.prototype, Store.prototype);
+Object.setPrototypeOf(SidebarSyncStore.prototype, Store.prototype);
 
 // ============== TRACKER ==============
 
-function WorkspacesTracker(name, engine) {
+function SidebarSyncTracker(name, engine) {
   Tracker.call(this, name, engine);
   this._ignoreAll = false;
   Svc.Obs.add("profile-before-change", this.asyncObserver);
-  log("info", "WorkspacesTracker initialized");
+  log("info", "SidebarSyncTracker initialized");
 }
 
-WorkspacesTracker.prototype = {
+SidebarSyncTracker.prototype = {
   get ignoreAll() {
     return this._ignoreAll;
   },
@@ -816,11 +826,11 @@ WorkspacesTracker.prototype = {
   },
 
   get modified() {
-    return Svc.PrefBranch.getBoolPref("engine.workspaces.modified", false);
+    return Svc.PrefBranch.getBoolPref("engine.sidebarsync.modified", false);
   },
   set modified(value) {
     log("debug", `Tracker modified flag set to: ${value}`);
-    Svc.PrefBranch.setBoolPref("engine.workspaces.modified", value);
+    Svc.PrefBranch.setBoolPref("engine.sidebarsync.modified", value);
   },
 
   clearChangedIDs() {
@@ -974,4 +984,4 @@ WorkspacesTracker.prototype = {
     }
   },
 };
-Object.setPrototypeOf(WorkspacesTracker.prototype, Tracker.prototype);
+Object.setPrototypeOf(SidebarSyncTracker.prototype, Tracker.prototype);

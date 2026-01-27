@@ -1,13 +1,13 @@
 diff --git a/services/sync/modules/service.sys.mjs b/services/sync/modules/service.sys.mjs
 --- a/services/sync/modules/service.sys.mjs
 +++ b/services/sync/modules/service.sys.mjs
-@@ -80,6 +80,11 @@ function getEngineModules() {
+@@ -80,6 +80,10 @@ function getEngineModules() {
      result.Form = { module: "forms.sys.mjs", symbol: "FormEngine" };
      result.History = { module: "history.sys.mjs", symbol: "HistoryEngine" };
      result.Tab = { module: "tabs.sys.mjs", symbol: "TabEngine" };
-+    result.Workspaces = {
-+      module: "resource:///modules/zen/ZenWorkspacesSync.sys.mjs",
-+      symbol: "WorkspacesEngine",
++    result.SidebarSync = {
++      module: "resource:///modules/zen/ZenSidebarSync.sys.mjs",
++      symbol: "SidebarSyncEngine",
 +    };
    }
    if (Svc.PrefBranch.getBoolPref("engine.addresses.available", false)) {

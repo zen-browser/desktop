@@ -2,11 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import {
-  Store,
-  SyncEngine,
-  Tracker,
-} from "resource://services-sync/engines.sys.mjs";
+import { Store, SyncEngine, Tracker } from "resource://services-sync/engines.sys.mjs";
 import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { Svc, Utils } from "resource://services-sync/util.sys.mjs";
 import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
@@ -32,9 +28,11 @@ function log(level, ...args) {
       console.warn(message);
       break;
     case "debug":
+      // eslint-disable-next-line no-console
       console.debug(message);
       break;
     default:
+      // eslint-disable-next-line no-console
       console.log(message);
   }
 }
@@ -144,7 +142,10 @@ WorkspacesEngine.prototype = {
 
   async trackRemainingChanges() {
     if (this._modified.count() > 0) {
-      log("info", `trackRemainingChanges: ${this._modified.count()} changes remaining, marking modified`);
+      log(
+        "info",
+        `trackRemainingChanges: ${this._modified.count()} changes remaining, marking modified`
+      );
       this._tracker.modified = true;
     }
   },
@@ -198,7 +199,9 @@ WorkspacesStore.prototype = {
 
     // Helper to collect a folder and its data
     const collectFolder = (folder, containerPosition, parentId = null) => {
-      if (seenFolders.has(folder.id)) return;
+      if (seenFolders.has(folder.id)) {
+        return;
+      }
       seenFolders.add(folder.id);
 
       const workspaceId = folder.getAttribute("zen-workspace-id");
@@ -213,14 +216,19 @@ WorkspacesStore.prototype = {
         collapsed: folder.collapsed,
         isEssential: folder.hasAttribute("zen-essential"),
         userIcon,
-        position: containerPosition,  // Position within parent container
+        position: containerPosition, // Position within parent container
       });
-      log("debug", `Collected folder: "${folder.label}" (${folder.id}), pos: ${containerPosition}, icon: "${userIcon || "none"}"`);
+      log(
+        "debug",
+        `Collected folder: "${folder.label}" (${folder.id}), pos: ${containerPosition}, icon: "${userIcon || "none"}"`
+      );
     };
 
     // Helper to collect a tab
     const collectTab = (tab, containerPosition, folderId = null) => {
-      if (seenTabs.has(tab)) return;
+      if (seenTabs.has(tab)) {
+        return;
+      }
 
       const isEssential = tab.hasAttribute("zen-essential");
       const isInFolder = tab.group?.isZenFolder;
@@ -230,7 +238,10 @@ WorkspacesStore.prototype = {
       const url = tab.linkedBrowser?.currentURI?.spec;
       const isEmpty = tab.hasAttribute("zen-empty-tab");
 
-      log("debug", `collectTab checking: url="${url}", pinned=${tab.pinned}, isInFolder=${isInFolder}, folderId=${folderId}, isEmpty=${isEmpty}, essential=${isEssential}`);
+      log(
+        "debug",
+        `collectTab checking: url="${url}", pinned=${tab.pinned}, isInFolder=${isInFolder}, folderId=${folderId}, isEmpty=${isEmpty}, essential=${isEssential}`
+      );
 
       if (!isEssential && !isPinned) {
         log("debug", `  -> Skipped: not essential and not pinned`);
@@ -259,23 +270,32 @@ WorkspacesStore.prototype = {
         isEssential,
         isPinned: !!isPinned,
         label,
-        position: containerPosition,  // Position within parent container (folder or pinned container)
+        position: containerPosition, // Position within parent container (folder or pinned container)
       });
-      log("debug", `  -> Collected tab: "${url}" (label: "${label}", pos: ${containerPosition}) in ${folderId || "root"}`);
+      log(
+        "debug",
+        `  -> Collected tab: "${url}" (label: "${label}", pos: ${containerPosition}) in ${folderId || "root"}`
+      );
     };
 
     // Helper to collect items from a folder using folder.allItems (includes nested folders)
     const collectFolderContents = (folder) => {
       // Use allItems instead of tabs - allItems includes both tabs AND nested folders
       const folderItems = folder.allItems || [];
-      log("debug", `collectFolderContents: folder "${folder.label}" has ${folderItems.length} items`);
+      log(
+        "debug",
+        `collectFolderContents: folder "${folder.label}" has ${folderItems.length} items`
+      );
       let folderPosition = 0;
 
       for (const item of folderItems) {
         const isFolder = item.isZenFolder;
         const isTab = win.gBrowser.isTab(item);
         const isEmptyTab = item.hasAttribute?.("zen-empty-tab");
-        log("debug", `  - Item: isFolder=${isFolder}, isTab=${isTab}, isEmpty=${isEmptyTab}, tagName=${item.tagName}`);
+        log(
+          "debug",
+          `  - Item: isFolder=${isFolder}, isTab=${isTab}, isEmpty=${isEmptyTab}, tagName=${item.tagName}`
+        );
 
         if (isFolder) {
           // Nested folder
@@ -290,12 +310,16 @@ WorkspacesStore.prototype = {
 
     // Helper to collect items from a container in DOM order
     const collectFromContainer = (container, parentFolderId = null) => {
-      if (!container) return;
+      if (!container) {
+        return;
+      }
 
       let position = 0;
       for (const child of container.children) {
         // Skip separators and other non-tab/non-folder elements
-        if (child.classList?.contains("pinned-tabs-container-separator")) continue;
+        if (child.classList?.contains("pinned-tabs-container-separator")) {
+          continue;
+        }
 
         if (child.isZenFolder) {
           // It's a folder - collect folder data with its position
@@ -329,7 +353,10 @@ WorkspacesStore.prototype = {
 
   async _applyWorkspacesData(data) {
     log("info", "=== APPLYING INCOMING SYNC DATA ===");
-    log("info", `Incoming data: ${data?.workspaces?.length || 0} workspaces, ${data?.folders?.length || 0} folders, ${data?.pinnedTabs?.length || 0} pinned tabs`);
+    log(
+      "info",
+      `Incoming data: ${data?.workspaces?.length || 0} workspaces, ${data?.folders?.length || 0} folders, ${data?.pinnedTabs?.length || 0} pinned tabs`
+    );
 
     try {
       const win = Services.wm.getMostRecentWindow("navigator:browser");
@@ -340,7 +367,10 @@ WorkspacesStore.prototype = {
 
       // Safety check: Don't apply empty remote data that could wipe local data
       if (!data?.workspaces || data.workspaces.length === 0) {
-        log("warn", "SAFETY: Refusing to apply empty workspaces data from server - this would wipe local workspaces");
+        log(
+          "warn",
+          "SAFETY: Refusing to apply empty workspaces data from server - this would wipe local workspaces"
+        );
         return;
       }
 
@@ -348,17 +378,37 @@ WorkspacesStore.prototype = {
       const local = this._getWorkspacesData();
 
       // Safety check: If we have significant local data but remote is minimal, be cautious
-      if (local.workspaces.length > 1 && data.workspaces.length === 1 &&
-          (local.folders.length > 0 || local.pinnedTabs.length > 0) &&
-          data.folders.length === 0 && data.pinnedTabs.length === 0) {
-        log("warn", "SAFETY: Remote data looks like a fresh profile (1 workspace, no folders/tabs). Preserving local data.");
-        log("warn", `Local: ${local.workspaces.length} workspaces, ${local.folders.length} folders, ${local.pinnedTabs.length} tabs`);
-        log("warn", `Remote: ${data.workspaces.length} workspaces, ${data.folders?.length || 0} folders, ${data.pinnedTabs?.length || 0} tabs`);
+      if (
+        local.workspaces.length > 1 &&
+        data.workspaces.length === 1 &&
+        (!!local.folders.length || !!local.pinnedTabs.length) &&
+        data.folders.length === 0 &&
+        data.pinnedTabs.length === 0
+      ) {
+        log(
+          "warn",
+          "SAFETY: Remote data looks like a fresh profile (1 workspace, no folders/tabs). Preserving local data."
+        );
+        log(
+          "warn",
+          `Local: ${local.workspaces.length} workspaces, ${local.folders.length} folders, ${local.pinnedTabs.length} tabs`
+        );
+        log(
+          "warn",
+          `Remote: ${data.workspaces.length} workspaces, ${data.folders?.length || 0} folders, ${data.pinnedTabs?.length || 0} tabs`
+        );
         return;
       }
 
-      log("info", `Merging: ${local.workspaces.length} local + ${data.workspaces?.length || 0} remote workspaces`);
-      const mergedWorkspaces = this._mergeWorkspaces(local.workspaces, data.workspaces || [], data.lastModified);
+      log(
+        "info",
+        `Merging: ${local.workspaces.length} local + ${data.workspaces?.length || 0} remote workspaces`
+      );
+      const mergedWorkspaces = this._mergeWorkspaces(
+        local.workspaces,
+        data.workspaces || [],
+        data.lastModified
+      );
       log("info", `Merge result: ${mergedWorkspaces.length} total workspaces`);
       await win.gZenWorkspaces.propagateWorkspaces(mergedWorkspaces);
       log("info", "Workspaces propagated to all windows");
@@ -373,7 +423,7 @@ WorkspacesStore.prototype = {
     }
   },
 
-  _mergeWorkspaces(local, remote, remoteTimestamp) {
+  _mergeWorkspaces(local, remote, _remoteTimestamp) {
     const merged = [];
     const seen = new Set();
 
@@ -403,8 +453,12 @@ WorkspacesStore.prototype = {
     // Phase 1: Create/find all folders (parents first, then children)
     // Sort folders to ensure parents are created before children
     const sortedFolders = [...folders].sort((a, b) => {
-      if (!a.parentId && b.parentId) return -1;
-      if (a.parentId && !b.parentId) return 1;
+      if (!a.parentId && b.parentId) {
+        return -1;
+      }
+      if (a.parentId && !b.parentId) {
+        return 1;
+      }
       return 0;
     });
 
@@ -423,7 +477,8 @@ WorkspacesStore.prototype = {
 
           // Temporarily append to a workspace container (will be repositioned later)
           const workspaceElem = win.gZenWorkspaces.workspaceElement(folderData.workspaceId);
-          const pinnedContainer = workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
+          const pinnedContainer =
+            workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
           pinnedContainer.appendChild(folder);
 
           // Create empty tab for folder
@@ -528,7 +583,7 @@ WorkspacesStore.prototype = {
     const essentialTabs = []; // Essential tabs are handled separately
 
     // Add root-level folders (parentId is null)
-    for (const [id, { element, data }] of folderMap) {
+    for (const [, { element, data }] of folderMap) {
       if (!data.parentId) {
         const containerId = data.workspaceId || "default";
         if (!itemsByContainer.has(containerId)) {
@@ -544,7 +599,7 @@ WorkspacesStore.prototype = {
     }
 
     // Add root-level tabs (folderId is null)
-    for (const [id, { element, data }] of tabMap) {
+    for (const [, { element, data }] of tabMap) {
       if (!data.folderId) {
         // Essential tabs go to essentials container, not workspace container
         if (data.isEssential) {
@@ -570,7 +625,8 @@ WorkspacesStore.prototype = {
       items.sort((a, b) => a.position - b.position);
 
       const workspaceElem = win.gZenWorkspaces.workspaceElement(workspaceId);
-      const pinnedContainer = workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
+      const pinnedContainer =
+        workspaceElem?.pinnedTabsContainer || win.gZenWorkspaces.pinnedTabsContainer;
       const separator = pinnedContainer?.querySelector(".pinned-tabs-container-separator");
 
       log("debug", `Positioning ${items.length} items in workspace ${workspaceId}`);
@@ -582,12 +638,15 @@ WorkspacesStore.prototype = {
         } else {
           pinnedContainer.appendChild(item.element);
         }
-        log("debug", `Positioned ${item.type} "${item.data.name || item.data.url}" at position ${item.position}`);
+        log(
+          "debug",
+          `Positioned ${item.type} "${item.data.name || item.data.url}" at position ${item.position}`
+        );
       }
     }
 
     // Position essential tabs in the essentials container
-    if (essentialTabs.length > 0) {
+    if (essentialTabs.length) {
       essentialTabs.sort((a, b) => a.position - b.position);
       // Get the essentials container (container 0 for default)
       const essentialsContainer = win.gZenWorkspaces?.getEssentialsSection?.(0);
@@ -609,16 +668,26 @@ WorkspacesStore.prototype = {
       const folderItems = [];
 
       // Get tabs that belong to this folder
-      for (const [tabId, { element: tab, data: tabData }] of tabMap) {
+      for (const [, { element: tab, data: tabData }] of tabMap) {
         if (tabData.folderId === folderId) {
-          folderItems.push({ type: "tab", element: tab, data: tabData, position: tabData.position });
+          folderItems.push({
+            type: "tab",
+            element: tab,
+            data: tabData,
+            position: tabData.position,
+          });
         }
       }
 
       // Get nested folders that belong to this folder
-      for (const [nestedId, { element: nestedFolder, data: nestedData }] of folderMap) {
+      for (const [, { element: nestedFolder, data: nestedData }] of folderMap) {
         if (nestedData.parentId === folderId) {
-          folderItems.push({ type: "folder", element: nestedFolder, data: nestedData, position: nestedData.position });
+          folderItems.push({
+            type: "folder",
+            element: nestedFolder,
+            data: nestedData,
+            position: nestedData.position,
+          });
         }
       }
 
@@ -668,7 +737,10 @@ WorkspacesStore.prototype = {
       // Safety check: Don't upload empty or minimal data that could overwrite good data
       // This can happen if sync runs before the browser is fully initialized
       if (!data.workspaces || data.workspaces.length === 0) {
-        log("warn", "SAFETY: Refusing to upload empty workspaces data - browser may not be fully initialized");
+        log(
+          "warn",
+          "SAFETY: Refusing to upload empty workspaces data - browser may not be fully initialized"
+        );
         // Return a record that won't overwrite server data
         record.deleted = false;
         record.value = null;
@@ -676,7 +748,10 @@ WorkspacesStore.prototype = {
       }
 
       record.value = data;
-      log("info", `Record created with ${record.value.workspaces.length} workspaces, ${record.value.folders.length} folders, ${record.value.pinnedTabs.length} pinned tabs`);
+      log(
+        "info",
+        `Record created with ${record.value.workspaces.length} workspaces, ${record.value.folders.length} folders, ${record.value.pinnedTabs.length} pinned tabs`
+      );
     } else {
       record.deleted = true;
       log("debug", "Created tombstone record");
@@ -708,7 +783,10 @@ WorkspacesStore.prototype = {
       return;
     }
     log("info", "=== INCOMING UPDATE RECEIVED ===");
-    log("info", `Record contains: ${record.value.workspaces?.length || 0} workspaces, ${record.value.folders?.length || 0} folders, ${record.value.pinnedTabs?.length || 0} pinned tabs`);
+    log(
+      "info",
+      `Record contains: ${record.value.workspaces?.length || 0} workspaces, ${record.value.folders?.length || 0} folders, ${record.value.pinnedTabs?.length || 0} pinned tabs`
+    );
     await this._applyWorkspacesData(record.value);
   },
 
@@ -763,7 +841,7 @@ WorkspacesTracker.prototype = {
     }
   },
 
-  _onTabGroupMoved(event) {
+  _onTabGroupMoved(_event) {
     if (this.ignoreAll) {
       log("debug", "TabGroupMoved detected but ignoreAll=true, skipping");
       return;
@@ -775,7 +853,10 @@ WorkspacesTracker.prototype = {
 
   _onTabGroupUpdate(event) {
     // Triggered when folder properties change (icon, name, etc.)
-    log("debug", `TabGroupUpdate event received, target: ${event.target?.tagName}, isZenFolder: ${event.target?.isZenFolder}`);
+    log(
+      "debug",
+      `TabGroupUpdate event received, target: ${event.target?.tagName}, isZenFolder: ${event.target?.isZenFolder}`
+    );
     const group = event.target;
     if (group?.isZenFolder) {
       if (this.ignoreAll) {
@@ -784,14 +865,19 @@ WorkspacesTracker.prototype = {
       }
       this.score += SCORE_INCREMENT_XLARGE;
       this.modified = true;
-      log("info", `LOCAL CHANGE DETECTED (TabGroupUpdate - folder icon/properties) - Score: ${this.score}, sync scheduled`);
+      log(
+        "info",
+        `LOCAL CHANGE DETECTED (TabGroupUpdate - folder icon/properties) - Score: ${this.score}, sync scheduled`
+      );
     } else {
       log("debug", `TabGroupUpdate ignored - target is not a zen folder`);
     }
   },
 
   _addWindowListeners(win) {
-    if (!win.gBrowser || win._zenWorkspacesSyncListenersAdded) return;
+    if (!win.gBrowser || win._zenWorkspacesSyncListenersAdded) {
+      return;
+    }
     win._zenWorkspacesSyncListenersAdded = true;
     win.addEventListener("TabMove", this._boundOnTabMove, true);
     win.addEventListener("TabGroupMoved", this._boundOnTabGroupMoved, true);
@@ -800,7 +886,9 @@ WorkspacesTracker.prototype = {
   },
 
   _removeWindowListeners(win) {
-    if (!win._zenWorkspacesSyncListenersAdded) return;
+    if (!win._zenWorkspacesSyncListenersAdded) {
+      return;
+    }
     delete win._zenWorkspacesSyncListenersAdded;
     win.removeEventListener("TabMove", this._boundOnTabMove, true);
     win.removeEventListener("TabGroupMoved", this._boundOnTabGroupMoved, true);
@@ -831,13 +919,17 @@ WorkspacesTracker.prototype = {
         if (topic === "domwindowopened") {
           const win = subject;
           // Wait for window to be ready
-          win.addEventListener("load", () => {
-            if (win.document.documentElement.getAttribute("windowtype") === "navigator:browser") {
-              this.tracker._addWindowListeners(win);
-            }
-          }, { once: true });
+          win.addEventListener(
+            "load",
+            () => {
+              if (win.document.documentElement.getAttribute("windowtype") === "navigator:browser") {
+                this.tracker._addWindowListeners(win);
+              }
+            },
+            { once: true }
+          );
         }
-      }
+      },
     };
     Services.ww.registerNotification(this._windowObserver);
     log("info", "Registered window observer for new browser windows");

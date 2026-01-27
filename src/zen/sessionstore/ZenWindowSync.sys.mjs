@@ -40,6 +40,7 @@ const EVENTS = [
   "TabGroupRemoved",
   "TabGroupMoved",
 
+  "ZenFolderRenamed",
   "ZenTabRemovedFromSplit",
   "ZenSplitViewTabsSplit",
 
@@ -1003,6 +1004,15 @@ class nsZenWindowSync {
   }
 
   /**
+   * Notifies the sidebar sync engine that data has changed.
+   *
+   * @param {string} aType - The type of change: "workspaces", "folders", or "pinned-tabs"
+   */
+  notifySidebarSyncChange(aType) {
+    Services.obs.notifyObservers(null, `zen-${aType}-changed`);
+  }
+
+  /**
    * Propagates the workspaces to all windows.
    *
    * @param {Array} aWorkspaces - The workspaces to propagate.
@@ -1011,6 +1021,7 @@ class nsZenWindowSync {
     this.#runOnAllWindows(null, (win) => {
       win.gZenWorkspaces.propagateWorkspaces(aWorkspaces);
     });
+    this.notifySidebarSyncChange("workspaces");
   }
 
   /**
@@ -1108,16 +1119,26 @@ class nsZenWindowSync {
   }
 
   on_ZenTabIconChanged(aEvent) {
-    if (!aEvent.target?._zenContentsVisible) {
+    const tab = aEvent.target;
+    // Notify sidebar sync for pinned/essential tabs (before cross-window sync check)
+    if (tab.pinned || tab.hasAttribute("zen-essential")) {
+      this.notifySidebarSyncChange("pinned-tabs");
+    }
+    if (!tab?._zenContentsVisible) {
       // No need to sync icon changes for tabs that aren't active in this window.
       return;
     }
-    this.#maybeEditAllTabsEntryImage(aEvent.target);
+    this.#maybeEditAllTabsEntryImage(tab);
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
   }
 
   on_ZenTabLabelChanged(aEvent) {
-    if (!aEvent.target?._zenContentsVisible) {
+    const tab = aEvent.target;
+    // Notify sidebar sync for pinned/essential tabs (before cross-window sync check)
+    if (tab.pinned || tab.hasAttribute("zen-essential")) {
+      this.notifySidebarSyncChange("pinned-tabs");
+    }
+    if (!tab?._zenContentsVisible) {
       // No need to sync label changes for tabs that aren't active in this window.
       return;
     }
@@ -1137,6 +1158,7 @@ class nsZenWindowSync {
     if (!tab._zenPinnedInitialState) {
       tabStatePromise = this.setPinnedTabState(tab);
     }
+    this.notifySidebarSyncChange("pinned-tabs");
     return Promise.all([tabStatePromise, this.on_TabMove(aEvent)]);
   }
 
@@ -1148,14 +1170,17 @@ class nsZenWindowSync {
         delete targetTab._zenPinnedInitialState;
       }
     });
+    this.notifySidebarSyncChange("pinned-tabs");
     return this.on_TabMove(aEvent);
   }
 
   on_TabAddedToEssentials(aEvent) {
+    this.notifySidebarSyncChange("pinned-tabs");
     return this.on_TabMove(aEvent);
   }
 
   on_TabRemovedFromEssentials(aEvent) {
+    this.notifySidebarSyncChange("pinned-tabs");
     return this.on_TabMove(aEvent);
   }
 
@@ -1273,11 +1298,15 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
+    if (isFolder) {
+      this.notifySidebarSyncChange("folders");
+    }
   }
 
   on_TabGroupRemoved(aEvent) {
     const tabGroup = aEvent.target;
     const window = tabGroup.ownerGlobal;
+    const isFolder = tabGroup.isZenFolder;
     this.#runOnAllWindows(window, (win) => {
       const targetGroup = this.getItemFromWindow(win, tabGroup.id);
       if (targetGroup) {
@@ -1288,14 +1317,30 @@ class nsZenWindowSync {
         }
       }
     });
+    if (isFolder) {
+      this.notifySidebarSyncChange("folders");
+    }
   }
 
   on_TabGroupMoved(aEvent) {
+    const tabGroup = aEvent.target;
+    if (tabGroup.isZenFolder) {
+      this.notifySidebarSyncChange("folders");
+    }
     return this.on_TabMove(aEvent);
   }
 
   on_TabGroupUpdate(aEvent) {
+    const tabGroup = aEvent.target;
+    if (tabGroup.isZenFolder) {
+      this.notifySidebarSyncChange("folders");
+    }
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON | SYNC_FLAG_LABEL);
+  }
+
+  on_ZenFolderRenamed(aEvent) {
+    this.notifySidebarSyncChange("folders");
+    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
   }
 
   on_ZenTabRemovedFromSplit(aEvent) {

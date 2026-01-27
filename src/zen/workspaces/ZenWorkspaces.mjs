@@ -1375,8 +1375,6 @@ class nsZenWorkspaces {
     }
     window.dispatchEvent(new CustomEvent("ZenWorkspaceDataChanged"), { bubbles: true });
     window.gZenWindowSync.propagateWorkspacesToAllWindows(aSpaceData ?? this._workspaceCache);
-    // Notify sync engine of workspace changes
-    Services.obs.notifyObservers(null, "zen-workspaces-changed");
   }
 
   propagateWorkspaces(aWorkspaces) {

@@ -918,7 +918,7 @@
 
   position: relative;
 
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush.svg');
+  list-style-image: url('paintbrush.svg');
 
   & .toolbarbutton-text {
     display: none;
@@ -930,7 +930,7 @@
 }
 
 #zen-site-data-boost[boosting] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/paintbrush-fill.svg');
+  list-style-image: url('paintbrush-fill.svg');
 }
 
 #zen-site-data-security-info {
@@ -994,39 +994,39 @@
 }
 
 #zen-boost-text-case-toggle {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-title-case.svg');
+  list-style-image: url('text-title-case.svg');
 }
 
 #zen-boost-text-case-toggle[mode='uppercase'] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-uppercase.svg');
+  list-style-image: url('text-uppercase.svg');
 }
 
 #zen-boost-text-case-toggle[mode='lowercase'] {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/text-lowercase.svg');
+  list-style-image: url('text-lowercase.svg');
 }
 
 #zen-boost-code {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/brackets-curly.svg');
+  list-style-image: url('brackets-curly.svg');
 }
 
 #zen-boost-zap {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/bolt.svg');
+  list-style-image: url('bolt.svg');
 }
 
 #zen-boost-controls {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/sliders.svg');
+  list-style-image: url('sliders.svg');
 }
 
 #zen-boost-invert {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/lightbulb.svg');
+  list-style-image: url('lightbulb.svg');
 }
 
 #zen-boost-disable {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/block.svg');
+  list-style-image: url('block.svg');
 }
 
 #zen-boost-close {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/close-filled-round.svg');
+  list-style-image: url('close-filled-round.svg');
 }
 
 #zen-boost-magic-theme {
@@ -1034,5 +1034,5 @@
 }
 
 #zen-boost-shuffle {
-  list-style-image: url('chrome://browser/skin/zen-icons/selectable/arrow-rotate-anticlockwise.svg');
+  list-style-image: url('arrow-rotate-anticlockwise.svg');
 }

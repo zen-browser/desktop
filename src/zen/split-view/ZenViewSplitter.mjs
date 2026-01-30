@@ -1386,10 +1386,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           new nsSplitLeafNode(tabs[i], 50),
           new nsSplitLeafNode(tabs[i + 1], 50),
         ];
-        rootNode.addChild(columnNode);
+        rootNode.addChild(columnNode, false);
       }
       if (tabs.length % 2 !== 0) {
-        rootNode.addChild(new nsSplitLeafNode(tabs[tabs.length - 1], rowWidth));
+        rootNode.addChild(new nsSplitLeafNode(tabs[tabs.length - 1], rowWidth), false);
       }
     }
 

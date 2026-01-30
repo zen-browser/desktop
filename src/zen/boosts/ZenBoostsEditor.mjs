@@ -24,6 +24,7 @@ export class nsZenBoostEditor {
 
     this.isMouseDown = false;
     this.wasDragging = false;
+    this.mouseDownPosition = { x: 0, y: 0 };
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
 
@@ -319,7 +320,12 @@ export class nsZenBoostEditor {
    * @param {MouseEvent} event - The mouse move event.
    */
   onMouseMove(event) {
-    if (this.isMouseDown) {
+    const minDragDistance = 4;
+    let nDistance = Math.sqrt(
+      (event.clientX - this.mouseDownPosition.x) ** 2 + (event.clientY - this.mouseDownPosition.y) ** 2
+    );
+
+    if (this.isMouseDown && nDistance > minDragDistance) {
       this.wasDragging = true;
       event.preventDefault();
 
@@ -337,6 +343,7 @@ export class nsZenBoostEditor {
       return;
     }
 
+    this.mouseDownPosition = { x: event.clientX, y: event.clientY };
     this.isMouseDown = true;
   }
 
@@ -453,6 +460,7 @@ export class nsZenBoostEditor {
 
     const rect = gradient.getBoundingClientRect();
     const padding = 50;
+    const border = 8;
 
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -475,8 +483,8 @@ export class nsZenBoostEditor {
     }
 
     if (pixelX == null || pixelY == null) {
-      pixelX = centerX;
-      pixelY = centerY;
+      pixelX = centerX + border;
+      pixelY = centerY + border;
 
       this.currentBoostData.dotAngleDeg = 0;
       this.currentBoostData.dotDistance = 0;
@@ -505,28 +513,19 @@ export class nsZenBoostEditor {
     this.currentBoostData.dotPos.x = relativeX;
     this.currentBoostData.dotPos.y = relativeY;
 
-    // TODO: Fix animation
-    // if (animate) {
-    //   this.window.motion.animate(
-    //     dot,
-    //     {
-    //       left: `${relativeX}px`,
-    //       top: `${relativeY}px`,
-    //     },
-    //     {
-    //       duration: 0.4,
-    //       type: 'spring',
-    //       bounce: 0.3,
-    //     }
-    //   );
-    // } else {
+    dot.setAttribute('animated', animate ? 'true' : 'false');
     dot.style.left = `${relativeX}px`;
     dot.style.top = `${relativeY}px`;
-    // }
 
     // Enable color boosting again
     if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
     this.currentBoostData.autoTheme = false;
+
+    // Updating the circle size to match the distance of the point
+    const circle = this.doc.querySelector('.zen-boost-color-picker-circle');
+    circle.setAttribute('animated', animate ? 'true' : 'false');
+    circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
+    circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
 
     this.updateButtonToggleVisuals();
     this.updateDot();
@@ -543,15 +542,6 @@ export class nsZenBoostEditor {
       '--zen-theme-picker-dot-color',
       `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`
     );
-
-    const gradient = this.doc.querySelector('.zen-boost-color-picker-gradient');
-    const rect = gradient.getBoundingClientRect();
-    const padding = 50;
-    const radius = (rect.width - padding) / 2;
-
-    const circle = this.doc.querySelector('.zen-boost-color-picker-circle');
-    circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
-    circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
   }
 
   /**

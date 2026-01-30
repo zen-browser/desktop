@@ -1403,7 +1403,8 @@ window.gZenVerticalTabsManager = {
     if (
       this._tabEdited ||
       ((!Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
-        Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick")) &&
+        (Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick") &&
+          event.type === "dblclick")) &&
         isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
     ) {

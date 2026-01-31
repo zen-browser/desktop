@@ -10,3 +10,7 @@
 - name: zen.widget.linux.transparency
   value: false
   condition: "defined(MOZ_WIDGET_GTK)"
+
+- name: zen.widget.wayland.force_native_menus
+  value: false
+  condition: "defined(MOZ_WIDGET_GTK)"

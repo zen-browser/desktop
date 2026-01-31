@@ -541,7 +541,7 @@
   list-style-image: url("geo.svg") !important;
 }
 
-.geo-icon.blocked-permission-icon {
+.geo-icon.clpermission-icon {
   list-style-image: url("geo-blocked.svg") !important;
 }
 

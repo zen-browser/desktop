@@ -30,13 +30,32 @@ export class nsZenBoostStyles {
     if (this.#stylesCache.has(domain)) {
       return this.#stylesCache.get(domain);
     }
-
+    
     const rawStyle = this.#generateStyleString(boostData);
     if (!rawStyle) return null;
-
+    
     const styleUri = this.#convertStyleToDataUri(rawStyle);
     this.#cacheStyle(styleUri, domain);
     return this.getStyleForBoost(boostData);
+  }
+  
+  /**
+   * Retrieves the CSS style string for a given boost configuration excluding the ignored selectors.
+   * Does not cache styles.
+   * @param {Object} boostData - The boost configuration data.
+   * @param {List} ignoredSelectors - List of selectors that won't be hidden.
+   * @returns {string} The generated CSS style string.
+   */
+  getStyleForBoostWithIgnoreList(boostData, ignoredSelectors) {
+    const boost = { ...boostData, ignoredSelectors };
+    const rawStyle = this.#generateStyleString(boost);
+    if (!rawStyle) return null;
+
+    const styleUri = this.#convertStyleToDataUri(rawStyle);
+    return {
+      uuid: Services.uuid.generateUUID().toString(),
+      uri: styleUri,
+    };
   }
 
   invalidateStyleForDomain(domain) {
@@ -54,32 +73,39 @@ export class nsZenBoostStyles {
    * @private
    */
   #generateStyleString(boostData) {
-    if (boostData.fontFamily == '' && boostData.textCaseOverride == 'none') return null;
+    let style = ``;
 
-    const fontFamily =
-      boostData.fontFamily != '' ? `font-family: ${boostData.fontFamily} !important;` : ``;
+    const fontFamily = boostData.fontFamily != '' 
+      ? `font-family: ${boostData.fontFamily} !important;` 
+      : ``;
     const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
 
     let zapBlocks = '';
     if (boostData.zapSelectors) {
+      const ignoredZapSelectors = boostData?.ignoredSelectors || [];
       for (const selector of boostData.zapSelectors) {
-        zapBlocks += `${selector} { display: none !important; }\n`;
+        if(ignoredZapSelectors.includes(selector)) continue;
+        zapBlocks += `${selector}{ display: none !important; }\n`;
+      }
+
+      if(zapBlocks != ''){
+        style += `/* Zen-Zaps */\n`;
+        style += `${zapBlocks}\n`;
       }
     }
 
-    let style = `
-    /* Zen-Zaps */  
-    ${zapBlocks}
-
-    /* Text Format */
-    body :is(p, h1, h2, h3, h4, h5, a, span, textarea, input) {
-      ${fontFamily}
-      ${fontCase}
+    if(fontCase != '' || fontFamily != '') {
+      style += `/* Text Format */\n`;
+      style += `body :is(p, h1, h2, h3, h4, h5, a, span, textarea, input) {\n`;
+      style += `${fontFamily}\n`;
+      style += `${fontCase}\n`;
+      style += `}\n`;
     }
 
-    /* USER CSS */
-    ${boostData.customCSS || ''}
-    `;
+    if(boostData.customCSS != ''){
+      style += `/* USER CSS */\n`;
+      style += `${boostData.customCSS || ''}\n`;
+    }
 
     return style;
   }

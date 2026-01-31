@@ -21,36 +21,48 @@ export class ZapOverlay {
     SELECTED: 'selected',
   };
 
+  /**
+   * @param {*} document Webpage document
+   * @param {*} zenBoostsChild Boost JSActor child
+   */
   constructor(document, zenBoostsChild) {
     this.document = document;
     this.window = document.ownerGlobal;
     this.zenBoostsChild = zenBoostsChild;
-
-    this.initialize();
-    this.#setState(ZapOverlay.STATES.SELECTING);
   }
 
+  /**
+   * Initializes the zap mode and inserts anonymous content
+   */
   async initialize() {
     if (this.#initialized) return;
 
     this.#content = this.document.insertAnonymousContent();
     this.#content.root.appendChild(this.fragment);
-    this.initializeElements();
+    this.#initializeElements();
+    this.#setState(ZapOverlay.STATES.SELECTING);
+    
     this.#initialized = true;
   }
 
-  initializeElements() {
+  /**
+   * Initializes all anonymous content and events
+   */
+  #initializeElements() {
     this.hoverDiv = this.getElementById('hover-div');
     this.zapComponent = this.getElementById('zap-component');
 
     this.cancelButton = this.getElementById('zap-cancel');
-    this.cancelButton.addEventListener('click', this.cancelZap.bind(this));
+    this.cancelButton.addEventListener('click', this.#cancelZap.bind(this));
 
     this.zapThisButton = this.getElementById('zap-this');
-    this.zapThisButton.addEventListener('click', this.handleZap.bind(this));
+    this.zapThisButton.addEventListener('click', this.#handleZap.bind(this));
 
     this.zapRelatedSlider = this.getElementById('zap-related');
-    this.zapRelatedSlider.addEventListener('click', this.handleZap.bind(this));
+    this.zapRelatedSlider.addEventListener('click', this.#handleZap.bind(this));
+
+    this.zapDoneButton = this.getElementById('zap-done');
+    this.zapDoneButton.addEventListener('click', this.#disableZapMode.bind(this));
 
     // Initialize the related elements button
     this.zapRelatedSlider.addEventListener('mousemove', (e) => {
@@ -64,7 +76,7 @@ export class ZapOverlay {
 
       if (lastIndex != this.#relatedValueIndex) {
         this.updateHighlight();
-        this.updatePathTextField();
+        this.#updatePathTextField();
       }
     });
 
@@ -73,10 +85,17 @@ export class ZapOverlay {
       this.#relatedValueIndex = 0;
 
       this.updateHighlight();
-      this.updatePathTextField();
+      this.#updatePathTextField();
     });
+
+    this.#updateZappedList();
   }
 
+  /**
+   * Sets the state of the zap mode
+   * @param {STATES} newState New state
+   * @param {*} data Optional additional data 
+   */
   #setState(newState, data = null) {
     this.#currentState = newState;
 
@@ -85,15 +104,15 @@ export class ZapOverlay {
         this.#selectedElement = data;
         this.#relatedValueIndex = 0; // Reset index
 
-        this.hideHoverDiv();
-        this.showZapComponent();
+        this.#hideHoverDiv();
+        this.#showZapComponent();
         this.updateHighlight();
-        this.updatePathTextField();
+        this.#updatePathTextField();
         break;
       case ZapOverlay.STATES.SELECTING:
         this.#selectedElement = null;
-        this.showHoverDiv();
-        this.hideZapComponent();
+        this.#showHoverDiv();
+        this.#hideZapComponent();
         this.removeHighlight();
         break;
     }
@@ -106,6 +125,9 @@ export class ZapOverlay {
     return this.#content;
   }
 
+  /**
+   * Helper for getting an anonymous element by id
+   */
   getElementById(id) {
     return this.content.root.getElementById(id);
   }
@@ -114,6 +136,7 @@ export class ZapOverlay {
     return `
     <template>
       <link rel="stylesheet" href="chrome://browser/content/zen-styles/content/zen-zap.css" />
+      <div id="zap-border"></div>
       <div id="zap-component">
         <div id="zap-controls">
           <input type="button" id="zap-this" value="Zap this"/>
@@ -126,6 +149,12 @@ export class ZapOverlay {
       </div>
       <div id="hover-div"></div>
       <div id="highlight-container"></div>
+      <div id="highlight-shadow" style="display:none;"></div>
+      <div id="zap-controls-container">
+        <div id="zap-list">
+        </div>
+        <input type="button" id="zap-done" value="Done"/>
+      </div>
     </template>
     `;
   }
@@ -140,25 +169,132 @@ export class ZapOverlay {
     return fragment;
   }
 
-  handleZap() {
+  /**
+   * Notifies listeners for an update in the zap list
+   */
+  onZapUpdate() {
+    this.#updateZappedList();
+    this.zenBoostsChild.sendNotify('zap-list-update');
+  }
+
+  /**
+   * Handles the addition of the current zap selector
+   */
+  #handleZap() {
     const cssPath = this.getSelectionPath();
     this.zenBoostsChild.addZapSelector(cssPath);
 
     this.#setState(ZapOverlay.STATES.SELECTING);
+    this.onZapUpdate();
   }
 
-  cancelZap() {
+  /**
+   * Handles the removal of a zap selector
+   * @param {String} cssPath The css selector of the zap
+   */
+  #handleUnzap(cssPath) {
+    this.zenBoostsChild.removeZapSelector(cssPath);
+    this.onZapUpdate();
+  }
+
+  /**
+   * Cancles the current zap operation
+   */
+  #cancelZap() {
     this.#setState(ZapOverlay.STATES.SELECTING);
   }
+  
+  /**
+   * Helper function for leaving the zap mode 
+   */
+  #disableZapMode() {
+    this.zenBoostsChild.disableZapMode();
+  }
 
+  /**
+   * Rebuilds the unzap button list at the bottom of the website
+   * @param {Event} event 
+   */
+  async #updateZappedList() {
+    const zapList = this.getElementById('zap-list');
+    zapList.innerHTML = '';
+    
+    const boostData = await this.zenBoostsChild.getWebsiteBoost();
+    boostData.zapSelectors.forEach(selector => {
+      const unzapButton = zapList.ownerDocument.createElement('input');
+      unzapButton.type = 'button';
+      unzapButton.id = 'unzap';
+      unzapButton.value = 'X';
+      unzapButton.setAttribute('selector', selector);
+      zapList.appendChild(unzapButton);
+    });
+
+    if(boostData.zapSelectors.length == 0)
+      zapList.innerHTML += '<p class="pcenter">Click elements on the page to <b>Zap</b> them</p>';
+    else
+      zapList.innerHTML += '<p>← Click to Unzap</p>';
+  }
+
+  /**
+   * Handles the mouse enter event for the unzap buttons
+   * @param {Event} event 
+   */
+  #unzapButtonHover(event) {
+    const button = event.originalTarget;
+    const selector = button.getAttribute('selector');
+    this.zenBoostsChild.tempShowZappedElement([selector]);
+
+    const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
+
+    // This has to run on the next tick, as the elements we are trying to highlight do not exist yet.
+    // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
+    setTimeout(() => {
+      const selection = this.document.querySelectorAll(selector);
+      if(selection.length != 0)
+        this.showHightlight(selection);
+    }, 10);
+
+    this.#cancelZap();
+  }
+
+  /**
+   * Handles the mouse exit event for the unzap buttons
+   * @param {Event} event 
+   */
+  #unzapButtonUnhover(event) {
+    this.zenBoostsChild.tempHideZappedElement();
+    this.removeHighlight();
+  }
+  
+  /**
+   * Handles button clicks from the unzap list
+   * @param {Event} event 
+   */
+  #unzapButtonClick(event) {
+    const button = event.originalTarget;
+    const selector = button.getAttribute('selector');
+    this.#handleUnzap(selector);
+    this.removeHighlight();
+  }
+
+  /**
+   * Rebuilds the selection highlight
+   */
   updateHighlight() {
     this.removeHighlight();
+    this.showHightlight(this.getSelection());
+  }
 
+  /**
+   * Highlights a selection of elements on the website
+   * @param {List} selection A list of the web elements that should be highlighted
+   */
+  showHightlight(selection) {
     const highlightContainerDiv = this.getElementById('highlight-container');
     highlightContainerDiv.style.display = 'initial';
 
     let counter = 0;
-    for (const element of this.getSelection()) {
+    for (const element of selection) {
       if (counter >= 100) break; // Avoid too many instanced objects
       counter++;
 
@@ -178,23 +314,33 @@ export class ZapOverlay {
 
       highlightContainerDiv.appendChild(highlightDiv);
     }
+
+    this.getElementById('highlight-shadow').display = 'initial';
   }
 
-  updatePathTextField() {
-    const maxPathLength = 64;
-    const selection = this.getSelection();
-    const selectionPath = this.getSelectionPath();
-
-    this.getElementById('zap-element-preview-text').innerHTML =
-      `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
-  }
-
+  /**
+   * Clears the highlight
+   */
   removeHighlight() {
     const highlightContainerDiv = this.getElementById('highlight-container');
     highlightContainerDiv.style.display = 'none';
 
     // Clear all children elements
     highlightContainerDiv.innerHTML = '';
+    this.getElementById('highlight-shadow').display = 'none';
+  }
+
+  /**
+   * Updates the path display text on the zap component 
+   * based on the current selection
+   */
+  #updatePathTextField() {
+    const maxPathLength = 64;
+    const selection = this.getSelection();
+    const selectionPath = this.getSelectionPath();
+
+    this.getElementById('zap-element-preview-text').innerHTML =
+      `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
   }
 
   /**
@@ -211,24 +357,40 @@ export class ZapOverlay {
     this.#initialized = false;
   }
 
-  hideHoverDiv() {
+  /**
+   * Hides the hover selection box
+   */
+  #hideHoverDiv() {
     this.hoverDiv.style.display = 'none';
   }
 
-  showHoverDiv() {
+  /**
+   * Shows the hover selection box
+   */
+  #showHoverDiv() {
     this.hoverDiv.style.display = 'initial';
   }
 
-  showZapComponent() {
+  /**
+   * Hides the zap component
+   */
+  #hideZapComponent() {
+    this.zapComponent.style.display = 'none';
+  }
+
+  /**
+   * Shows the zap component
+   */
+  #showZapComponent() {
     this.zapComponent.style.display = 'initial';
-    this.setZapComponentPosition();
+    this.#setZapComponentPosition();
   }
 
   /**
    * Sets the aligned and clamped position for the zap component on the document
    * relative to #selectedElement
    */
-  setZapComponentPosition() {
+  #setZapComponentPosition() {
     const bounds = this.#selectedElement.getBoundingClientRect();
     const distance = 8;
 
@@ -257,34 +419,41 @@ export class ZapOverlay {
     });
   }
 
-  hideZapComponent() {
-    this.zapComponent.style.display = 'none';
-  }
-
   /**
    * This function handles page events while the overlay is active
    * @param {Event} event The event which will be handled by the overlay
    * @param {Boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
+    const interactableIDs = ['zap-controls', 'zap-list', 'zap-controls-container']
+    const closestID = event?.originalTarget?.closest('div')?.id ?? '';
+    const isZapContent = interactableIDs.includes(closestID);
+
     switch (event.type) {
       case 'click':
-        this.handleClick(event);
+        this.#handleClick(event, isZapContent);
         break;
       case 'mousemove':
-        this.handleMouseMove(event);
+        this.#handleMouseMove(event, isZapContent);
+        break;
+      case 'mouseover':
+        this.#handleHoverDelegation(event);
+        break;
+      case 'mouseout':
+        this.#handleUnhoverDelegation(event);
         break;
       case 'scroll':
-        this.handlePageChange(event);
+        this.#handlePageChange(event);
         return;
       case 'resize':
-        this.handlePageChange(event);
+        this.#handlePageChange(event);
         return;
     }
 
-    // Let the events for the zap controls pass through
-    const closestID = event.originalTarget.closest('div')?.id ?? '';
-    if (closestID != 'zap-controls' && prevent) {
+    // Let the interactable ids pass through
+    if(isZapContent) return;
+
+    if (prevent) {
       // From ScreenshotsComponentChild.sys.mjs:103
       // Preventing a pointerdown event throws an error in debug builds.
       // See https://searchfox.org/mozilla-central/rev/b41bb321fe4bd7d03926083698ac498ebec0accf/widget/WidgetEventImpl.cpp#566-572
@@ -296,16 +465,27 @@ export class ZapOverlay {
     }
   }
 
-  handlePageChange() {
+  /**
+   * Called after a page change to update the highlight and zap component position
+   */
+  #handlePageChange() {
     if (this.#currentState !== ZapOverlay.STATES.SELECTED) return;
 
     this.updateHighlight();
-    this.setZapComponentPosition();
+    this.#setZapComponentPosition();
   }
 
-  handleMouseMove(event) {
+  /**
+   * Handles the mouse move event
+   * @param {Event} event Mouse move event params
+   * @param {Boolean} isZapContent Flag if the target element is a zap related element
+   */
+  #handleMouseMove(event, isZapContent) {
     if (this.#lastOverElement === event.target) return;
-    this.#lastOverElement = event.target;
+    if (!isZapContent) this.#lastOverElement = event.target;
+    
+    if (isZapContent) this.#hideHoverDiv();
+    else if(this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
 
     if (this.#currentState !== ZapOverlay.STATES.SELECTING || !event.target) return;
 
@@ -320,9 +500,35 @@ export class ZapOverlay {
     });
   }
 
-  handleClick(event) {
-    if (this.#currentState === ZapOverlay.STATES.SELECTING)
+  /**
+   * Handles the mouse click event
+   * @param {Event} event Mouse move event params
+   * @param {Boolean} isZapContent Flag if the target element is a zap related element
+   */
+  #handleClick(event, isZapContent) {
+    if (this.#currentState === ZapOverlay.STATES.SELECTING && !isZapContent)
       this.#setState(ZapOverlay.STATES.SELECTED, event.target);
+
+    if(isZapContent && event.originalTarget.id == 'unzap')
+      this.#unzapButtonClick(event);
+  }
+
+  /**
+   * Handles the mouse enter event
+   * @param {Event} event Mouse enter event params 
+   */
+  #handleHoverDelegation(event) {
+    if(event.originalTarget.id == 'unzap')
+      this.#unzapButtonHover(event);
+  }
+
+  /**
+   * Handles the mouse leave event
+   * @param {Event} event Mouse leave event params 
+   */
+  #handleUnhoverDelegation(event) {
+    if(event.originalTarget.id == 'unzap')
+      this.#unzapButtonUnhover(event);
   }
 
   /**

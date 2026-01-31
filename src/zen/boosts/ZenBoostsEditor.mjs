@@ -30,6 +30,8 @@ export class nsZenBoostEditor {
 
     this.killOtherEditorInstances();
     Services.obs.addObserver(this, 'zen-boosts-kill-editor');
+    Services.obs.addObserver(this, 'zap-list-update');
+    Services.obs.addObserver(this, 'zap-state-update');
 
     this.init();
     this.initColorPicker();
@@ -89,6 +91,10 @@ export class nsZenBoostEditor {
       .getElementById('zen-boost-close')
       .addEventListener('click', this.onClosePressed.bind(this));
 
+    this.doc
+      .getElementById('zen-boost-shuffle')
+      .addEventListener('click', this.onShufflePressed.bind(this));
+
     this.doc.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' || (event.key === 'w' && (event.ctrlKey || event.metaKey))) {
         this.onClosePressed();
@@ -104,6 +110,8 @@ export class nsZenBoostEditor {
   uninit() {
     this.uninitColorPicker();
     Services.obs.removeObserver(this, 'zen-boosts-kill-editor');
+    Services.obs.removeObserver(this, 'zap-list-update');
+    Services.obs.removeObserver(this, 'zap-state-update');
   }
 
   /**
@@ -121,8 +129,17 @@ export class nsZenBoostEditor {
    * @param {string} topic - The topic of the notification.
    */
   observe(subject, topic) {
-    if (topic === 'zen-boosts-kill-editor') {
-      this.window.close();
+    switch(topic) {
+      case 'zap-state-update':
+        this.onUpdateZapButtonVisual();  
+      break;
+      case 'zap-list-update':
+        this.onUpdateZapValue();
+        this.currentBoostData.changeWasMade = true;
+        break;
+      case 'zen-boosts-kill-editor':
+        this.window.close();
+        break;
     }
   }
 
@@ -177,12 +194,8 @@ export class nsZenBoostEditor {
     this.updateCurrentBoost();
   }
 
-  /**
-   * Initializes the font selection UI by creating font buttons and dropdown options
-   * for the available font families.
-   */
-  initFonts() {
-    const commonFonts = [
+  get commonFonts() {
+    const cFonts = [
       'Arial',
       'Times New Roman',
       'Courier New',
@@ -194,6 +207,15 @@ export class nsZenBoostEditor {
       'Palatino Linotype',
       'Tahoma',
     ];
+    return cFonts;
+  }
+
+  /**
+   * Initializes the font selection UI by creating font buttons and dropdown options
+   * for the available font families.
+   */
+  initFonts() {
+    const commonFonts = this.commonFonts;
     const fonts = this.fetchFontList();
 
     const fontButtonGroup = this.doc.getElementById('zen-boost-font-grid');
@@ -250,11 +272,14 @@ export class nsZenBoostEditor {
   onCodeButtonPressed() {
     const CODE_WIDTH  = 450;
     const offset = 265;
+    const openRightAligned = (this.window.screen.availWidth / 2) < this.window.screenX;
 
     const win = this.doc.getElementById('zenBoostWindow');
     if (win.getAttribute('editor') != 'code') {
       this.window.resizeTo(CODE_WIDTH, this.window.outerHeight);
-      this.window.moveTo(this.window.screenX - offset, this.window.screenY);
+      
+      if(openRightAligned)
+        this.window.moveTo(this.window.screenX - offset, this.window.screenY);
     }
 
     this.doc.getElementById('zen-boost-editor-root').style.display = 'none';
@@ -267,21 +292,48 @@ export class nsZenBoostEditor {
   onCodeBackButtonPressed() {
     const BOOST_WIDTH = 185;
     const offset = 265;
+    const openRightAligned = (this.window.screen.availWidth / 2) < this.window.screenX;
 
     const win = this.doc.getElementById('zenBoostWindow');
     if (win.getAttribute('editor') != 'boost') {
       this.window.resizeTo(BOOST_WIDTH, this.window.outerHeight);
-      this.window.moveTo(this.window.screenX + offset, this.window.screenY);
+
+      if(openRightAligned)
+        this.window.moveTo(this.window.screenX + offset, this.window.screenY);
     }
 
     this.doc.getElementById('zen-boost-editor-root').style.display = 'initial';
     this.doc.getElementById('zen-boost-code-editor-root').style.display = 'none';
   }
 
-  onZapButtonPressed() {
+  async onZapButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor('ZenBoosts');
     actor.sendQuery('ZenBoost:ToggleZapMode');
+  }
+  
+  async onUpdateZapButtonVisual() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor('ZenBoosts');
+    const zapButton = this.doc.getElementById('zen-boost-zap');
+    const zapEnabled = await actor.sendQuery('ZenBoost:ZapModeEnabled');
+    
+    zapButton.setAttribute('enabled', zapEnabled ? "true" : "false");
+  }
+
+  onUpdateZapValue() {
+    const zapButton = this.doc.getElementById('zen-boost-zap');
+    const zapValueBox = this.doc.getElementById('zen-boost-zap-value');
+    const zapCount = this.currentBoostData.zapSelectors.length;
+
+    if(zapCount == 0){
+      zapValueBox.innerHTML = "";
+      zapButton.setAttribute('hideicon', "false");
+    }
+    else{
+      zapValueBox.innerHTML = zapCount;
+      zapButton.setAttribute('hideicon', "true");
+    }
   }
 
   /**
@@ -365,8 +417,6 @@ export class nsZenBoostEditor {
    * (0.9, 1.0, 1.1, 1.25, 1.5) and updating the UI accordingly.
    */
   onBoostSizePressed() {
-    const sizeValue = this.doc.getElementById('zen-boost-size-value');
-
     if (this.currentBoostData.siteSizeOverride >= 1.5) this.currentBoostData.siteSizeOverride = 0.9;
     else if (this.currentBoostData.siteSizeOverride >= 1.25)
       this.currentBoostData.siteSizeOverride = 1.5;
@@ -377,8 +427,6 @@ export class nsZenBoostEditor {
     else if (this.currentBoostData.siteSizeOverride >= 0.9)
       this.currentBoostData.siteSizeOverride = 1;
     else this.currentBoostData.siteSizeOverride = 1.1;
-
-    sizeValue.innerHTML = `${Math.round(this.currentBoostData.siteSizeOverride * 100)}%`;
 
     this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
@@ -577,16 +625,18 @@ export class nsZenBoostEditor {
    * site size override value, setting appropriate color modes.
    */
   updateSizeButtonVisuals() {
-    const sizeValue = this.doc.getElementById('zen-boost-size');
+    const sizeBox = this.doc.getElementById('zen-boost-size');
+    const sizeValue = this.doc.getElementById('zen-boost-size-value');
+    sizeValue.innerHTML = `${Math.round(this.currentBoostData.siteSizeOverride * 100)}%`;
 
-    if (this.currentBoostData.siteSizeOverride >= 1.5) sizeValue.setAttribute('mode', 'red');
+    if (this.currentBoostData.siteSizeOverride >= 1.5) sizeBox.setAttribute('mode', 'red');
     else if (this.currentBoostData.siteSizeOverride >= 1.25)
-      sizeValue.setAttribute('mode', 'orange-red');
+      sizeBox.setAttribute('mode', 'orange-red');
     else if (this.currentBoostData.siteSizeOverride >= 1.1)
-      sizeValue.setAttribute('mode', 'orange');
-    else if (this.currentBoostData.siteSizeOverride >= 1) sizeValue.setAttribute('mode', 'none');
-    else if (this.currentBoostData.siteSizeOverride >= 0.9) sizeValue.setAttribute('mode', 'blue');
-    else sizeValue.setAttribute('mode', 'none');
+      sizeBox.setAttribute('mode', 'orange');
+    else if (this.currentBoostData.siteSizeOverride >= 1) sizeBox.setAttribute('mode', 'none');
+    else if (this.currentBoostData.siteSizeOverride >= 0.9) sizeBox.setAttribute('mode', 'blue');
+    else sizeBox.setAttribute('mode', 'none');
   }
 
   /**
@@ -627,6 +677,19 @@ export class nsZenBoostEditor {
     if (!this.currentBoostData.enableColorBoost || this.currentBoostData.autoTheme)
       gradient.classList.add('zen-boost-panel-disabled');
     else gradient.classList.remove('zen-boost-panel-disabled');
+  }
+
+  /**
+   * Updates the value of the sliders with the current boost data
+   */
+  updateColorControlSliderVisuals() {
+    const contrastSlider = this.doc.getElementById('zen-boost-color-contrast');
+    const brightnessSlider = this.doc.getElementById('zen-boost-color-brightness');
+    const saturationSlider = this.doc.getElementById('zen-boost-color-saturation');
+
+    contrastSlider.value = this.currentBoostData.contrast;
+    brightnessSlider.value = this.currentBoostData.brightness;
+    saturationSlider.value = this.currentBoostData.saturation;
   }
 
   /**
@@ -709,6 +772,33 @@ export class nsZenBoostEditor {
   }
 
   /**
+   * Shuffles the boost data and updates the presentation
+   */
+  onShufflePressed() {
+    const availFonts = this.fetchFontList();
+    const commonFonts = this.commonFonts;
+    let font = commonFonts[Math.round(Math.random() * commonFonts.length)];
+    if(availFonts.includes(font))
+      this.currentBoostData.fontFamily = font; 
+
+    this.currentBoostData.smartInvert = (Math.random() > 0.5) ? true : false;
+    this.currentBoostData.autoTheme = false;
+
+    this.currentBoostData.brightness = Math.random();
+    this.currentBoostData.contrast = Math.random();
+    this.currentBoostData.saturation = Math.random();
+
+    const gradient = this.doc.querySelector('.zen-boost-color-picker-gradient');
+    const rect = gradient.getBoundingClientRect();
+    this.setDotPos(Math.round(rect.left + Math.random() * rect.width), Math.round(rect.top + Math.random() * rect.height), true);
+
+    this.updateColorControlSliderVisuals();
+    this.updateButtonToggleVisuals();
+    this.updateDot();
+    this.updateCurrentBoost();
+  }
+
+  /**
    * Handles the editor window close event. Saves the boost if changes were made,
    * or deletes it if no changes were made (temporary boost).
    */
@@ -718,9 +808,7 @@ export class nsZenBoostEditor {
     else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade)
       gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
 
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor('ZenBoosts');
-    actor.sendQuery('ZenBoost:DisableZapMode');
+    Services.obs.notifyObservers(null, 'zen-boosts-disable-zap', null);
   }
 
   /**
@@ -733,13 +821,8 @@ export class nsZenBoostEditor {
 
     // Initial save to register the boost
     gZenBoostsManager.saveBoostToStore(this.currentBoostData);
-
     this.doc.getElementById('zen-boost-name-text').innerHTML = domain;
-
     const dot = this.doc.querySelector('.zen-boost-color-picker-dot');
-    const contrastSlider = this.doc.getElementById('zen-boost-color-contrast');
-    const brightnessSlider = this.doc.getElementById('zen-boost-color-brightness');
-    const saturationSlider = this.doc.getElementById('zen-boost-color-saturation');
 
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null)
       this.resetDotPosition();
@@ -750,9 +833,7 @@ export class nsZenBoostEditor {
       this.updateSizeButtonVisuals();
       this.updateCaseButtonVisuals();
 
-      contrastSlider.value = this.currentBoostData.contrast;
-      brightnessSlider.value = this.currentBoostData.brightness;
-      saturationSlider.value = this.currentBoostData.saturation;
+      this.updateColorControlSliderVisuals();
     }
 
     // The code editor needs time to initialize
@@ -762,6 +843,7 @@ export class nsZenBoostEditor {
 
     this.updateDot();
     this.updateButtonToggleVisuals();
+    this.onUpdateZapValue();
   }
 
   /**

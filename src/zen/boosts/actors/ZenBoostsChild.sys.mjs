@@ -7,7 +7,7 @@ const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZapOverlay: 'resource:///modules/ZenZapOverlayChild.sys.mjs',
+  ZapOverlay: "resource:///modules/ZenZapOverlayChild.sys.mjs",
 });
 
 export class ZenBoostsChild extends JSWindowActorChild {
@@ -18,37 +18,37 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #overlay = null;
 
   static STATES = {
-    NONE: 'none',
-    ZAP: 'zap',
+    NONE: "none",
+    ZAP: "zap",
   };
 
-  static OVERLAY_EVENTS = ['click', 'pointerdown', 'pointermove', 'pointerup', 'scroll', 'resize'];
+  static OVERLAY_EVENTS = ["click", "pointerdown", "pointermove", "pointerup", "scroll", "resize"];
 
   // A list of events that will be prevented from
   // reaching the document
   static PREVENTABLE_EVENTS = [
-    'click',
-    'pointerdown',
-    'pointermove',
-    'pointerup',
-    'mousemove',
-    'mousedown',
-    'mouseup',
-    'mouseenter',
-    'mouseover',
-    'mouseout',
-    'mouseleave',
-    'touchstart',
-    'touchmove',
-    'touchend',
-    'dblclick',
-    'auxclick',
-    'keypress',
-    'contextmenu',
-    'pointerenter',
-    'pointerover',
-    'pointerout',
-    'pointerleave',
+    "click",
+    "pointerdown",
+    "pointermove",
+    "pointerup",
+    "mousemove",
+    "mousedown",
+    "mouseup",
+    "mouseenter",
+    "mouseover",
+    "mouseout",
+    "mouseleave",
+    "touchstart",
+    "touchmove",
+    "touchend",
+    "dblclick",
+    "auxclick",
+    "keypress",
+    "contextmenu",
+    "pointerenter",
+    "pointerover",
+    "pointerout",
+    "pointerleave",
   ];
 
   /**
@@ -145,12 +145,12 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   handleEvent(event) {
     switch (event.type) {
-      case 'unload':
+      case "unload":
         if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.#disableZapMode();
+          this.disableZapMode();
         }
         break;
-      case 'DOMDocElementInserted':
+      case "DOMDocElementInserted":
         this.#applyBoostForPageIfAvailable();
         break;
       default:
@@ -173,7 +173,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #addEventListeners() {
     this._handleZapEvent = this.handleZapEvent.bind(this);
 
-    this._disableZapMode = this.#disableZapMode.bind();
+    this._disableZapMode = this.disableZapMode.bind();
     // this.contentWindow.addEventlistener("unload", this._disableZapMode);
 
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
@@ -210,23 +210,25 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenBoost:BoostDataUpdated': {
+      case "ZenBoost:BoostDataUpdated": {
         const { unloadStyles = false } = message.data || {};
         this.#applyBoostForPageIfAvailable(unloadStyles);
         break;
       }
-      case 'ZenBoost:DisableZapMode':
+      case "ZenBoost:DisableZapMode":
         if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.#disableZapMode();
+          this.disableZapMode();
         }
         break;
-      case 'ZenBoost:ToggleZapMode':
+      case "ZenBoost:ToggleZapMode":
         if (this.#currentState === ZenBoostsChild.STATES.NONE) {
           this.#startZappingOverlay();
         } else if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.#disableZapMode();
+          this.disableZapMode();
         }
         break;
+      case "ZenBoost:ZapModeEnabled":
+        return this.#currentState === ZenBoostsChild.STATES.ZAP;
     }
   }
 
@@ -244,6 +246,28 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   /**
+   * Aquires the boost data for this website
+   * @returns Boost data for the current website
+   */
+  async getWebsiteBoost() {
+    const domain = this.browsingContext.topWindow?.location?.host;
+    if (!domain) return null;
+
+    return this.sendQuery("ZenBoost:GetBoostForDomain", domain);
+  }
+
+  /**
+   * Aquires the stylesheet for this website
+   * @returns Generated stylesheet string for this website
+   */
+  async getWebsiteStyle(ignoreZapSelectors = null) {
+    const domain = this.browsingContext.topWindow?.location?.host;
+    if (!domain) return null;
+    const styleSheet = (await this.sendQuery("ZenBoost:GetStyleForDomain", { domain, ignoreZapSelectors })).styleSheet; 
+    return styleSheet;
+  }
+
+  /**
    * Applies the boost settings for the current page if available.
    * @param {boolean} unloadStyles - Indicates whether to unload styles.
    */
@@ -256,30 +280,23 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     const domain = browsingContext.topWindow?.location?.host;
-    if (!domain) {
-      return null;
-    }
+    if (!domain) return null;
 
-    const boost = await this.sendQuery('ZenBoost:GetBoostForDomain', domain);
+    const boost = await this.getWebsiteBoost();
+    const styleSheet = await this.getWebsiteStyle();
 
     if (unloadStyles) {
       this.#unloadCurrentStyleSheet();
     }
 
     if (boost) {
-      if (boost.styleSheet) {
-        const { styleSheet } = boost;
-        styleSheet.uri = Services.io.newURI(styleSheet.uri);
-        if (this.#currentSheet?.uuid !== styleSheet.uuid) {
-          browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
-          this.#currentSheet = styleSheet;
-        }
-      }
+      if (styleSheet)
+        this.#loadStyleSheet(styleSheet);
 
       if (boost.enableColorBoost) {
-        let prefersColorSchemeOverride = 'none';
+        let prefersColorSchemeOverride = "none";
         if (boost.smartInvert) {
-          prefersColorSchemeOverride = boost.topWindowIsDarkMode ? 'light' : 'dark';
+          prefersColorSchemeOverride = boost.topWindowIsDarkMode ? "light" : "dark";
         }
 
         browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
@@ -292,7 +309,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
           boost.dotAngleDeg / 360,
           /* already is [0, 1] */
           boost.dotDistance * (1 - boost.saturation),
-          /* lightness range from [0.2, 0.6] */
+          /* lightness range from [0.1, 0.7] */
           0.1 + boost.dotDistance * 0.6 * boost.brightness
         );
 
@@ -316,12 +333,31 @@ export class ZenBoostsChild extends JSWindowActorChild {
         browsingContext.zenBoostsData = nsColor;
         return;
       }
-    }
 
-    browsingContext.prefersColorSchemeOverride = 'none';
-    browsingContext.zenBoostsData = 0;
+      browsingContext.zenBoostsData = 0;
+      browsingContext.prefersColorSchemeOverride = 'none';
+    }
   }
 
+  /**
+   * Loads the given stylesheet into the website
+   * @param {Object} styleSheet The stylesheet
+   */
+  #loadStyleSheet(styleSheet) {
+    const browsingContext = this.browsingContext;
+    styleSheet.uri = Services.io.newURI(styleSheet.uri);
+    
+    if (this.#currentSheet?.uuid !== styleSheet.uuid) {
+      if (this.#currentSheet)
+        this.#unloadCurrentStyleSheet();
+      browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
+      this.#currentSheet = styleSheet;
+    }
+  }
+
+  /**
+   * Unloads the currently loaded stylesheet
+   */
   #unloadCurrentStyleSheet() {
     const browsingContext = this.browsingContext;
     if (this.#currentSheet && browsingContext) {
@@ -338,14 +374,38 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.#overlay.initialize();
 
     this.#addEventListeners();
+    this.sendNotify("zap-state-update");
   }
 
   addZapSelector(selector) {
     const domain = this.browsingContext.topWindow?.location?.host;
-    this.sendQuery('ZenBoost:ZapSelector', { action: 'add', selector: selector, domain: domain });
+    this.sendQuery("ZenBoost:ZapSelector", { 
+      action: "add",
+      selector: selector, 
+      domain: domain 
+    });
   }
 
-  #disableZapMode() {
+  removeZapSelector(selector) {
+    const domain = this.browsingContext.topWindow?.location?.host;
+    this.sendQuery("ZenBoost:ZapSelector", {
+      action: "remove",
+      selector: selector,
+      domain: domain,
+    });
+  }
+
+  async tempShowZappedElement(selectors) {
+    const styleSheet = await this.getWebsiteStyle(selectors);
+    this.#loadStyleSheet(styleSheet);
+  }
+
+  async tempHideZappedElement() {
+    const styleSheet = await this.getWebsiteStyle();
+    this.#loadStyleSheet(styleSheet);
+  }
+
+  disableZapMode() {
     if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
     this.#currentState = ZenBoostsChild.STATES.NONE;
 
@@ -353,5 +413,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.#overlay = null;
 
     this.#removeEventListeners();
+    this.sendNotify("zap-state-update");
+  }
+
+  sendNotify(topic) {
+    this.sendQuery("ZenBoost:Notify", { topic });
   }
 }

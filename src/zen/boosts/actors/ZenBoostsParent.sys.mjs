@@ -5,7 +5,7 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
+  gZenBoostsManager: "resource:///modules/ZenBoostsManager.sys.mjs",
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
@@ -17,14 +17,16 @@ export class ZenBoostsParent extends JSWindowActorParent {
     super();
 
     this._observe = this.observe.bind(this);
-    Services.obs.addObserver(this._observe, 'zen-boosts-update');
+    Services.obs.addObserver(this._observe, "zen-boosts-update");
+    Services.obs.addObserver(this._observe, "zen-boosts-disable-zap");
   }
 
   /**
    * Called when the actor is destroyed. Cleans up the observer.
    */
   didDestroy() {
-    Services.obs.removeObserver(this._observe, 'zen-boosts-update');
+    Services.obs.removeObserver(this._observe, "zen-boosts-update");
+    Services.obs.removeObserver(this._observe, "zen-boosts-disable-zap");
   }
 
   /**
@@ -35,8 +37,11 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   observe(subject, topic) {
     switch (topic) {
-      case 'zen-boosts-update':
-        this.sendQuery('ZenBoost:BoostDataUpdated', { unloadStyles: true });
+      case "zen-boosts-update":
+        this.sendQuery("ZenBoost:BoostDataUpdated", { unloadStyles: true });
+        break;
+      case "zen-boosts-disable-zap":
+        this.sendQuery("ZenBoost:DisableZapMode");
         break;
     }
   }
@@ -49,43 +54,65 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   async receiveMessage(message) {
     switch (message.name) {
-      case 'ZenBoost:ZapSelector': {
+      case "ZenBoost:Notify": {
+        Services.obs.notifyObservers(null, message.data.topic, null);
+        break;
+      }
+      case "ZenBoost:ZapSelector": {
         const data = message.data;
 
         if (!data.action) return;
         if (!data.selector) return;
         if (!data.domain) return;
 
-        if (data.action == 'add') {
+        if (data.action == "add") {
           lazy.gZenBoostsManager.addZapSelector(data.selector, data.domain);
-        } else if (data.action == 'remove') {
+        } else if (data.action == "remove") {
           lazy.gZenBoostsManager.removeZapSelector(data.selector, data.domain);
-        } else if (data.action == 'clear') {
+        } else if (data.action == "clear") {
           lazy.gZenBoostsManager.clearZapSelectors(data.domain);
         }
         break;
       }
-      case 'ZenBoost:GetBoostForDomain': {
-        const domain = message.data;
-        const embedder = this.browsingContext.top.embedderElement;
-        if (!embedder || !domain) return null;
-        const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
-        if (!exists) return null;
-        const topWindowIsDarkMode =
-          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === 'dark';
+      case "ZenBoost:GetStyleForDomain": {
+        const domain = message.data.domain;
         const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
-        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
-        const currentWorkspace =
-          await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
+        const ignoredSelectors = message.data?.ignoreZapSelectors || '';
+        
+        let styleData = null;
+        if(!ignoredSelectors)
+          styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
+        else
+          styleData = await lazy.gZenBoostsManager.getStyleSheetForBoostWithIgnoreList(boostData, ignoredSelectors);
+
         return {
-          ...boostData,
-          topWindowIsDarkMode,
           styleSheet: styleData
             ? {
                 uuid: styleData.uuid,
                 uri: styleData.uri.spec,
               }
             : null,
+        };
+      }
+      case "ZenBoost:GetBoostForDomain": {
+        const domain = message.data;
+        const embedder = this.browsingContext.top.embedderElement;
+        
+        if (!embedder || !domain) return null;
+        
+        const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
+        if (!exists) return null;
+
+        const topWindowIsDarkMode =
+          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === "dark";
+
+        const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
+        const currentWorkspace =
+          await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
+          
+        return {
+          ...boostData,
+          topWindowIsDarkMode,
           workspaceGradient: currentWorkspace.theme.gradientColors,
         };
       }

@@ -4,6 +4,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+:root {
+  --boost-spring-easing: linear(
+      0,
+      0.0015 0.53%,
+      0.0069,
+      0.0158,
+      0.0279 2.4%,
+      0.0631 3.74%,
+      0.1119 5.16%,
+      0.2201 7.74%,
+      0.4761 13.17%,
+      0.5914 15.75%,
+      0.6983 18.43%,
+      0.7872,
+      0.861,
+      0.9199 26.17%,
+      0.9449 27.5%,
+      0.9678,
+      0.987,
+      1.0028 31.78%,
+      1.0223 34.09%,
+      1.0358 36.58%,
+      1.0435 39.25%,
+      1.046 42.28%,
+      1.0446 44.68%,
+      1.0407 47.44%,
+      1.0118 61.86%,
+      1.0027 69.52%,
+      0.9981 80.46%,
+      0.9991 99.96%
+  );
+  --boost-spring-duration: 0.6s;
+}
+
 #zen-boost-code-editor-root {
   flex: 1;
 }
@@ -112,6 +146,10 @@ body {
   gap: 10px;
 }
 
+#zen-boost-code-top-bar {
+  -moz-window-dragging: drag; /* Allow dragging the window with the custom titlebar for the code view */
+}
+
 #zen-boost-head-wrapper {
   -moz-window-dragging: drag; /* Allow dragging the window with the custom titlebar */
 
@@ -213,6 +251,23 @@ body {
   &:hover {
     opacity: 0.8;
   }
+}
+
+#zen-boost-zap {
+  & #zen-boost-zap-value {
+    text-align: right;
+    right: 0;
+    margin: auto;
+  }
+}
+
+#zen-boost-zap[hideicon="true"] {
+  list-style: none !important;
+  list-style-type: none !important;
+}
+
+#zen-boost-zap[enabled="true"] {
+  filter: invert();
 }
 
 #zen-boost-size {
@@ -384,7 +439,7 @@ body {
   flex-direction: column;
 
   & .visible-separator {
-    content: '';
+    content: "";
     height: 1px;
     width: auto;
 
@@ -413,29 +468,29 @@ body {
   }
 }
 
-.mod-button[mode='orange'] {
+.mod-button[mode="orange"] {
   color: #e3e9e4 !important;
   background: linear-gradient(180deg, #ffab35 0%, #ffa01d 100%) border-box;
 }
-.mod-button[mode='orange-red'] {
+.mod-button[mode="orange-red"] {
   color: #e3e9e4 !important;
   background: linear-gradient(180deg, #ff723b 0%, #ff5b1b 100%) border-box;
 }
-.mod-button[mode='red'] {
+.mod-button[mode="red"] {
   color: #e3e9e4 !important;
   background: linear-gradient(180deg, #ff3e45 0%, #ff121b 100%) border-box;
 }
-.mod-button[mode='blue'] {
+.mod-button[mode="blue"] {
   color: #e3e9e4 !important;
   background: linear-gradient(180deg, #5d45ff 0%, #4125ff 100%) border-box;
 }
 
-#zen-boost-text-case-toggle[mode='none'] {
+#zen-boost-text-case-toggle[mode="none"] {
   opacity: 0.5;
 }
 
 .zen-boost-color-picker-gradient::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 8px;
@@ -450,7 +505,7 @@ body {
 }
 
 .zen-boost-color-picker-gradient::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -487,39 +542,7 @@ body {
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
   & [animated='true'] {
-      --spring-easing: linear(
-        0,
-        0.0015 0.53%,
-        0.0069,
-        0.0158,
-        0.0279 2.4%,
-        0.0631 3.74%,
-        0.1119 5.16%,
-        0.2201 7.74%,
-        0.4761 13.17%,
-        0.5914 15.75%,
-        0.6983 18.43%,
-        0.7872,
-        0.861,
-        0.9199 26.17%,
-        0.9449 27.5%,
-        0.9678,
-        0.987,
-        1.0028 31.78%,
-        1.0223 34.09%,
-        1.0358 36.58%,
-        1.0435 39.25%,
-        1.046 42.28%,
-        1.0446 44.68%,
-        1.0407 47.44%,
-        1.0118 61.86%,
-        1.0027 69.52%,
-        0.9981 80.46%,
-        0.9991 99.96%
-      );
-      --spring-duration: 0.6s;
-
-      transition: all var(--spring-duration) var(--spring-easing) !important;
+      transition: all var(--boost-spring-duration) var(--boost-spring-easing) !important;
     }
 
   & .zen-boost-color-picker-circle {
@@ -568,7 +591,7 @@ body {
       }
     }
 
-    &[dragging='true'] {
+    &[dragging="true"] {
       transform: scale(1.2) translate(-50%, -50%) !important;
     }
   }

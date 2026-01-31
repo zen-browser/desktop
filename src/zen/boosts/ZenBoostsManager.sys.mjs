@@ -108,8 +108,12 @@ class nsZenBoostsManager {
     if (this.registeredBoosts.has(domain)) {
       let boostData = this.registeredBoosts.get(domain);
 
-      if (boostData.zapSelectors && boostData.zapSelectors.includes(selector))
-        boostData.zapSelectors.remove(selector);
+      if (boostData.zapSelectors && boostData.zapSelectors.includes(selector)){
+        const i = boostData.zapSelectors.indexOf(selector);
+        if (i !== -1) {
+          boostData.zapSelectors.splice(i, 1);
+        }
+      }
 
       this.updateBoost(boostData);
     }
@@ -233,6 +237,16 @@ class nsZenBoostsManager {
    */
   getStyleSheetForBoost(boostData) {
     return this.#stylesManager.getStyleForBoost(boostData);
+  }
+  
+  /**
+   * @brief Creates a new style sheet for the given boost data.
+   * @param {Object} boostData - The boost data object containing all boost settings for the domain.
+   * @param {List} ignoredSelectors - A list of css selectors that will not be hidden.
+   * @returns {nsIStyleSheet} The style sheet corresponding to the boost data.
+   */
+  getStyleSheetForBoostWithIgnoreList(boostData, ignoredSelectors) {
+    return this.#stylesManager.getStyleForBoostWithIgnoreList(boostData, ignoredSelectors);
   }
 
   /**

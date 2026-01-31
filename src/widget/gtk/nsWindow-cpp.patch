@@ -3,7 +3,7 @@ index e8cef42106..1eff90f9ee 100644
 --- a/widget/gtk/nsWindow.cpp
 +++ b/widget/gtk/nsWindow.cpp
 @@ -794,2 +794,11 @@ bool nsWindow::WidgetTypeSupportsNativeCompositing() {
- 
+
 +// Small wrapper for hints that changes them to xdg_popups based on pref
 +static GdkWindowTypeHint GetGdkTypeHint(GdkWindowTypeHint aOriginalHint) {
 +  if (Preferences::GetBool("zen.widget.wayland.force_native_menus", false)) {
@@ -33,7 +33,7 @@ index e8cef42106..1eff90f9ee 100644
                                               ? GDK_WINDOW_TYPE_HINT_POPUP_MENU
 -                                             : GDK_WINDOW_TYPE_HINT_UTILITY;
 +                                             : GetGdkTypeHint(GDK_WINDOW_TYPE_HINT_UTILITY);
- 
+
 @@ -2719,5 +2728,5 @@ void nsWindow::WaylandPopupMovePlain(int aX, int aY) {
    MOZ_DIAGNOSTIC_ASSERT(gtk_window_get_type_hint(GTK_WINDOW(mShell)) ==
 -                            GDK_WINDOW_TYPE_HINT_UTILITY ||
@@ -41,9 +41,8 @@ index e8cef42106..1eff90f9ee 100644
                          gtk_window_get_type_hint(GTK_WINDOW(mShell)) ==
 -                            GDK_WINDOW_TYPE_HINT_TOOLTIP);
 +                            GetGdkTypeHint(GDK_WINDOW_TYPE_HINT_TOOLTIP));
- 
-@@ -6232,3 +6241,3 @@ nsresult nsWindow::Create(nsIWidget* aParent, const LayoutDeviceIntRect& aRect,
-     LOG("  Is Media PiP window\n");
+
+@@ -6232,2 +6241,2 @@ nsresult nsWindow::Create(nsIWidget* aParent, const LayoutDeviceIntRect& aRect,
 -    gtk_window_set_type_hint(GTK_WINDOW(mShell), GDK_WINDOW_TYPE_HINT_UTILITY);
 +    gtk_window_set_type_hint(GTK_WINDOW(mShell), GetGdkTypeHint(GDK_WINDOW_TYPE_HINT_UTILITY));
    } else if (mIsAlert) {
@@ -72,7 +71,7 @@ index e8cef42106..1eff90f9ee 100644
 +          gtkTypeHint = GetGdkTypeHint(GDK_WINDOW_TYPE_HINT_UTILITY);
            break;
 @@ -7210,3 +7219,3 @@ FullscreenTransitionWindow::FullscreenTransitionWindow(GtkWidget* aWidget) {
- 
+
 -  gtk_window_set_type_hint(gtkWin, GDK_WINDOW_TYPE_HINT_SPLASHSCREEN);
 +  gtk_window_set_type_hint(gtkWin, GetGdkTypeHint(GDK_WINDOW_TYPE_HINT_SPLASHSCREEN));
    GtkWindowSetTransientFor(gtkWin, GTK_WINDOW(aWidget));

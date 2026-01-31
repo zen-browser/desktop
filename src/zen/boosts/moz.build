@@ -6,6 +6,7 @@ EXTRA_JS_MODULES += [
   "ZenBoostsEditor.mjs",
   "ZenBoostsManager.sys.mjs",
   "ZenBoostStyles.sys.mjs",
+  "ZenZapDissolve.sys.mjs",
   "ZenZapOverlayChild.sys.mjs",
 ]
 

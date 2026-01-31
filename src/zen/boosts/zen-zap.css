@@ -301,3 +301,13 @@
 
   background-color: #c2b72046;
 }
+
+#zen-zap-dissolve-canvas {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+}

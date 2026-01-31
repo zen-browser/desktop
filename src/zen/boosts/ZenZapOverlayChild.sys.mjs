@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  ZapDissolve: "resource:///modules/ZenZapDissolve.sys.mjs",
+});
+
 export class ZapOverlay {
   document = null;
   window = null;
@@ -17,8 +23,8 @@ export class ZapOverlay {
   #relatedValueIndex = 0;
 
   static STATES = {
-    SELECTING: 'selecting',
-    SELECTED: 'selected',
+    SELECTING: "selecting",
+    SELECTED: "selected",
   };
 
   /**
@@ -41,7 +47,7 @@ export class ZapOverlay {
     this.#content.root.appendChild(this.fragment);
     this.#initializeElements();
     this.#setState(ZapOverlay.STATES.SELECTING);
-    
+
     this.#initialized = true;
   }
 
@@ -49,23 +55,23 @@ export class ZapOverlay {
    * Initializes all anonymous content and events
    */
   #initializeElements() {
-    this.hoverDiv = this.getElementById('hover-div');
-    this.zapComponent = this.getElementById('zap-component');
+    this.hoverDiv = this.getElementById("hover-div");
+    this.zapComponent = this.getElementById("zap-component");
 
-    this.cancelButton = this.getElementById('zap-cancel');
-    this.cancelButton.addEventListener('click', this.#cancelZap.bind(this));
+    this.cancelButton = this.getElementById("zap-cancel");
+    this.cancelButton.addEventListener("click", this.#cancelZap.bind(this));
 
-    this.zapThisButton = this.getElementById('zap-this');
-    this.zapThisButton.addEventListener('click', this.#handleZap.bind(this));
+    this.zapThisButton = this.getElementById("zap-this");
+    this.zapThisButton.addEventListener("click", this.#handleZap.bind(this));
 
-    this.zapRelatedSlider = this.getElementById('zap-related');
-    this.zapRelatedSlider.addEventListener('click', this.#handleZap.bind(this));
+    this.zapRelatedSlider = this.getElementById("zap-related");
+    this.zapRelatedSlider.addEventListener("click", this.#handleZap.bind(this));
 
-    this.zapDoneButton = this.getElementById('zap-done');
-    this.zapDoneButton.addEventListener('click', this.#disableZapMode.bind(this));
+    this.zapDoneButton = this.getElementById("zap-done");
+    this.zapDoneButton.addEventListener("click", this.#disableZapMode.bind(this));
 
     // Initialize the related elements button
-    this.zapRelatedSlider.addEventListener('mousemove', (e) => {
+    this.zapRelatedSlider.addEventListener("mousemove", (e) => {
       const r = e.target.getBoundingClientRect();
       const mouseX = e.clientX;
       const value = (mouseX - r.left) / r.width;
@@ -80,8 +86,8 @@ export class ZapOverlay {
       }
     });
 
-    this.zapRelatedSlider.addEventListener('mouseleave', (e) => {
-      e.target.style = ''; // Clear variable
+    this.zapRelatedSlider.addEventListener("mouseleave", (e) => {
+      e.target.style = ""; // Clear variable
       this.#relatedValueIndex = 0;
 
       this.updateHighlight();
@@ -94,7 +100,7 @@ export class ZapOverlay {
   /**
    * Sets the state of the zap mode
    * @param {STATES} newState New state
-   * @param {*} data Optional additional data 
+   * @param {*} data Optional additional data
    */
   #setState(newState, data = null) {
     this.#currentState = newState;
@@ -162,8 +168,8 @@ export class ZapOverlay {
   get fragment() {
     if (!this.template) {
       let parser = new DOMParser();
-      let doc = parser.parseFromString(this.markup, 'text/html');
-      this.template = this.document.importNode(doc.querySelector('template'), true);
+      let doc = parser.parseFromString(this.markup, "text/html");
+      this.template = this.document.importNode(doc.querySelector("template"), true);
     }
     let fragment = this.template.content.cloneNode(true);
     return fragment;
@@ -174,7 +180,7 @@ export class ZapOverlay {
    */
   onZapUpdate() {
     this.#updateZappedList();
-    this.zenBoostsChild.sendNotify('zap-list-update');
+    this.zenBoostsChild.sendNotify("zap-list-update");
   }
 
   /**
@@ -182,10 +188,33 @@ export class ZapOverlay {
    */
   #handleZap() {
     const cssPath = this.getSelectionPath();
-    this.zenBoostsChild.addZapSelector(cssPath);
 
-    this.#setState(ZapOverlay.STATES.SELECTING);
-    this.onZapUpdate();
+    this.removeHighlight();
+    this.#resetHoverDiv();
+
+    const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
+
+    setTimeout(() => {
+      const useDissolve = Services.prefs.getBoolPref("zen.boosts.dissolve-on-zap");
+      if (!this.window.gReduceMotion && useDissolve) {
+        const elements = this.document.querySelectorAll(cssPath);
+
+        let counter = 0;
+        elements.forEach(async (element) => {
+          // Do not allow more than 5 instances of this effect as it is expensive
+          if (counter >= 6) return;
+          counter++;
+
+          const dissolveEffect = new lazy.ZapDissolve(this.document);
+          await dissolveEffect.initialize();
+          dissolveEffect.dissolve(element);
+        });
+      }
+
+      this.zenBoostsChild.addZapSelector(cssPath);
+      this.#setState(ZapOverlay.STATES.SELECTING);
+      this.onZapUpdate();
+    }, 5);
   }
 
   /**
@@ -203,9 +232,9 @@ export class ZapOverlay {
   #cancelZap() {
     this.#setState(ZapOverlay.STATES.SELECTING);
   }
-  
+
   /**
-   * Helper function for leaving the zap mode 
+   * Helper function for leaving the zap mode
    */
   #disableZapMode() {
     this.zenBoostsChild.disableZapMode();
@@ -213,45 +242,43 @@ export class ZapOverlay {
 
   /**
    * Rebuilds the unzap button list at the bottom of the website
-   * @param {Event} event 
+   * @param {Event} event
    */
   async #updateZappedList() {
-    const zapList = this.getElementById('zap-list');
-    zapList.innerHTML = '';
-    
+    const zapList = this.getElementById("zap-list");
+    zapList.innerHTML = "";
+
     const boostData = await this.zenBoostsChild.getWebsiteBoost();
-    boostData.zapSelectors.forEach(selector => {
-      const unzapButton = zapList.ownerDocument.createElement('input');
-      unzapButton.type = 'button';
-      unzapButton.id = 'unzap';
-      unzapButton.value = 'X';
-      unzapButton.setAttribute('selector', selector);
+    boostData.zapSelectors.forEach((selector) => {
+      const unzapButton = zapList.ownerDocument.createElement("input");
+      unzapButton.type = "button";
+      unzapButton.id = "unzap";
+      unzapButton.value = "X";
+      unzapButton.setAttribute("selector", selector);
       zapList.appendChild(unzapButton);
     });
 
-    if(boostData.zapSelectors.length == 0)
+    if (boostData.zapSelectors.length == 0)
       zapList.innerHTML += '<p class="pcenter">Click elements on the page to <b>Zap</b> them</p>';
-    else
-      zapList.innerHTML += '<p>← Click to Unzap</p>';
+    else zapList.innerHTML += "<p>← Click to Unzap</p>";
   }
 
   /**
    * Handles the mouse enter event for the unzap buttons
-   * @param {Event} event 
+   * @param {Event} event
    */
   #unzapButtonHover(event) {
     const button = event.originalTarget;
-    const selector = button.getAttribute('selector');
+    const selector = button.getAttribute("selector");
     this.zenBoostsChild.tempShowZappedElement(selector);
 
     const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
 
-    // This has to run on the next tick, as the elements we are trying to highlight do not exist yet.
+    // This has to run with delay, as the elements we are trying to highlight do not exist yet.
     // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
     setTimeout(() => {
       const selection = this.document.querySelectorAll(selector);
-      if(selection.length != 0)
-        this.showHightlight(selection);
+      if (selection.length != 0) this.showHightlight(selection);
     }, 10);
 
     this.#cancelZap();
@@ -259,22 +286,25 @@ export class ZapOverlay {
 
   /**
    * Handles the mouse exit event for the unzap buttons
-   * @param {Event} event 
+   * @param {Event} event
    */
   #unzapButtonUnhover(event) {
     this.zenBoostsChild.tempHideZappedElement();
     this.removeHighlight();
   }
-  
+
   /**
    * Handles button clicks from the unzap list
-   * @param {Event} event 
+   * @param {Event} event
    */
   #unzapButtonClick(event) {
     const button = event.originalTarget;
-    const selector = button.getAttribute('selector');
-    this.#handleUnzap(selector);
+    const selector = button.getAttribute("selector");
+
+    this.zenBoostsChild.tempHideZappedElement();
     this.removeHighlight();
+
+    this.#handleUnzap(selector);
   }
 
   /**
@@ -290,8 +320,8 @@ export class ZapOverlay {
    * @param {List} selection A list of the web elements that should be highlighted
    */
   showHightlight(selection) {
-    const highlightContainerDiv = this.getElementById('highlight-container');
-    highlightContainerDiv.style.display = 'initial';
+    const highlightContainerDiv = this.getElementById("highlight-container");
+    highlightContainerDiv.style.display = "initial";
 
     let counter = 0;
     for (const element of selection) {
@@ -302,8 +332,8 @@ export class ZapOverlay {
       const elementMeasurement = element?.getBoundingClientRect() ?? undefined;
       if (elementMeasurement == undefined) continue;
 
-      const highlightDiv = this.document.createElement('div');
-      highlightDiv.classList.add('highlight');
+      const highlightDiv = this.document.createElement("div");
+      highlightDiv.classList.add("highlight");
 
       Object.assign(highlightDiv.style, {
         left: `${elementMeasurement.left - padding}px`,
@@ -315,23 +345,23 @@ export class ZapOverlay {
       highlightContainerDiv.appendChild(highlightDiv);
     }
 
-    this.getElementById('highlight-shadow').display = 'initial';
+    this.getElementById("highlight-shadow").display = "initial";
   }
 
   /**
    * Clears the highlight
    */
   removeHighlight() {
-    const highlightContainerDiv = this.getElementById('highlight-container');
-    highlightContainerDiv.style.display = 'none';
+    const highlightContainerDiv = this.getElementById("highlight-container");
+    highlightContainerDiv.style.display = "none";
 
     // Clear all children elements
-    highlightContainerDiv.innerHTML = '';
-    this.getElementById('highlight-shadow').display = 'none';
+    highlightContainerDiv.innerHTML = "";
+    this.getElementById("highlight-shadow").display = "none";
   }
 
   /**
-   * Updates the path display text on the zap component 
+   * Updates the path display text on the zap component
    * based on the current selection
    */
   #updatePathTextField() {
@@ -339,7 +369,7 @@ export class ZapOverlay {
     const selection = this.getSelection();
     const selectionPath = this.getSelectionPath();
 
-    this.getElementById('zap-element-preview-text').innerHTML =
+    this.getElementById("zap-element-preview-text").innerHTML =
       `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
   }
 
@@ -354,6 +384,7 @@ export class ZapOverlay {
         /* This might fail but that's not an issue */
       }
     }
+
     this.#initialized = false;
   }
 
@@ -361,28 +392,40 @@ export class ZapOverlay {
    * Hides the hover selection box
    */
   #hideHoverDiv() {
-    this.hoverDiv.style.display = 'none';
+    this.hoverDiv.style.display = "none";
   }
 
   /**
    * Shows the hover selection box
    */
   #showHoverDiv() {
-    this.hoverDiv.style.display = 'initial';
+    this.hoverDiv.style.display = "initial";
+  }
+
+  /**
+   * Resets the hover selection box bounds
+   */
+  #resetHoverDiv() {
+    Object.assign(this.getElementById("hover-div").style, {
+      top: `0px`,
+      left: `0px`,
+      width: `0px`,
+      height: `0px`,
+    });
   }
 
   /**
    * Hides the zap component
    */
   #hideZapComponent() {
-    this.zapComponent.style.display = 'none';
+    this.zapComponent.style.display = "none";
   }
 
   /**
    * Shows the zap component
    */
   #showZapComponent() {
-    this.zapComponent.style.display = 'initial';
+    this.zapComponent.style.display = "initial";
     this.#setZapComponentPosition();
   }
 
@@ -425,40 +468,40 @@ export class ZapOverlay {
    * @param {Boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
-    const interactableIDs = ['zap-controls', 'zap-list', 'zap-controls-container']
-    const closestID = event?.originalTarget?.closest('div')?.id ?? '';
+    const interactableIDs = ["zap-controls", "zap-list", "zap-controls-container"];
+    const closestID = event?.originalTarget?.closest("div")?.id ?? "";
     const isZapContent = interactableIDs.includes(closestID);
 
     switch (event.type) {
-      case 'click':
+      case "click":
         this.#handleClick(event, isZapContent);
         break;
-      case 'mousemove':
+      case "mousemove":
         this.#handleMouseMove(event, isZapContent);
         break;
-      case 'mouseover':
+      case "mouseover":
         this.#handleHoverDelegation(event);
         break;
-      case 'mouseout':
+      case "mouseout":
         this.#handleUnhoverDelegation(event);
         break;
-      case 'scroll':
+      case "scroll":
         this.#handlePageChange(event);
         return;
-      case 'resize':
+      case "resize":
         this.#handlePageChange(event);
         return;
     }
 
     // Let the interactable ids pass through
-    if(isZapContent) return;
+    if (isZapContent) return;
 
     if (prevent) {
       // From ScreenshotsComponentChild.sys.mjs:103
       // Preventing a pointerdown event throws an error in debug builds.
       // See https://searchfox.org/mozilla-central/rev/b41bb321fe4bd7d03926083698ac498ebec0accf/widget/WidgetEventImpl.cpp#566-572
       // Don't prevent the default context menu.
-      if (!['contextmenu', 'pointerdown'].includes(event.type)) {
+      if (!["contextmenu", "pointerdown"].includes(event.type)) {
         event.preventDefault();
       }
       event.stopImmediatePropagation();
@@ -483,16 +526,16 @@ export class ZapOverlay {
   #handleMouseMove(event, isZapContent) {
     if (this.#lastOverElement === event.target) return;
     if (!isZapContent) this.#lastOverElement = event.target;
-    
+
     if (isZapContent) this.#hideHoverDiv();
-    else if(this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
+    else if (this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
 
     if (this.#currentState !== ZapOverlay.STATES.SELECTING || !event.target) return;
 
     const bounds = event.target.getBoundingClientRect();
     const padding = 5;
 
-    Object.assign(this.getElementById('hover-div').style, {
+    Object.assign(this.getElementById("hover-div").style, {
       top: `${bounds.top - padding}px`,
       left: `${bounds.left - padding}px`,
       width: `${bounds.width + padding * 2}px`,
@@ -509,26 +552,23 @@ export class ZapOverlay {
     if (this.#currentState === ZapOverlay.STATES.SELECTING && !isZapContent)
       this.#setState(ZapOverlay.STATES.SELECTED, event.target);
 
-    if(isZapContent && event.originalTarget.id == 'unzap')
-      this.#unzapButtonClick(event);
+    if (isZapContent && event.originalTarget.id == "unzap") this.#unzapButtonClick(event);
   }
 
   /**
    * Handles the mouse enter event
-   * @param {Event} event Mouse enter event params 
+   * @param {Event} event Mouse enter event params
    */
   #handleHoverDelegation(event) {
-    if(event.originalTarget.id == 'unzap')
-      this.#unzapButtonHover(event);
+    if (event.originalTarget.id == "unzap") this.#unzapButtonHover(event);
   }
 
   /**
    * Handles the mouse leave event
-   * @param {Event} event Mouse leave event params 
+   * @param {Event} event Mouse leave event params
    */
   #handleUnhoverDelegation(event) {
-    if(event.originalTarget.id == 'unzap')
-      this.#unzapButtonUnhover(event);
+    if (event.originalTarget.id == "unzap") this.#unzapButtonUnhover(event);
   }
 
   /**
@@ -560,48 +600,48 @@ export class ZapOverlay {
 
     const escape = (str) => CSS.escape(str);
     const nthChild = (element) => {
-      if (!element.parentNode) return '';
+      if (!element.parentNode) return "";
       const parent = element.parentNode;
       const index = Array.prototype.indexOf.call(parent.children, element) + 1;
 
-      if (index === 1) return ':first-child';
-      if (index === parent.children.length) return ':last-child';
+      if (index === 1) return ":first-child";
+      if (index === parent.children.length) return ":last-child";
       return `:nth-child(${index})`;
     };
     const getIdentification = (element, specifity = 0) => {
-      if (!element) return '';
-      const id = specifity < 2 && element.id ? `#${escape(element.id)}` : '';
+      if (!element) return "";
+      const id = specifity < 2 && element.id ? `#${escape(element.id)}` : "";
       const cls =
         specifity < 1 && element.classList.length > 0
-          ? '.' + [...element.classList].map((c) => escape(c)).join('.')
-          : '';
-      const tag = element.tagName ? element.tagName.toLowerCase() : '';
+          ? "." + [...element.classList].map((c) => escape(c)).join(".")
+          : "";
+      const tag = element.tagName ? element.tagName.toLowerCase() : "";
 
       return `${tag}${id}${cls}`;
     };
 
-    const build = () => path.toReversed().join('');
+    const build = () => path.toReversed().join("");
 
     let selectedElement = this.#selectedElement;
 
     switch (this.#relatedValueIndex) {
       case 0:
         path.push(nthChild(selectedElement));
-        path.push(' > ');
+        path.push(" > ");
         if (selectedElement.parentNode) {
           path.push(getIdentification(selectedElement.parentNode, 0));
 
           while (
             this.document.querySelectorAll(build()).length > 1 &&
             selectedElement.parentNode &&
-            selectedElement.parentNode.tagName.toLowerCase() !== 'body'
+            selectedElement.parentNode.tagName.toLowerCase() !== "body"
           ) {
             selectedElement = selectedElement.parentNode;
             if (
               selectedElement.parentNode &&
-              selectedElement.parentNode.tagName.toLowerCase() !== 'body'
+              selectedElement.parentNode.tagName.toLowerCase() !== "body"
             ) {
-              path.push(' > ');
+              path.push(" > ");
               path.push(nthChild(selectedElement.parentNode));
               path.push(getIdentification(selectedElement.parentNode, 0));
             }
@@ -610,22 +650,22 @@ export class ZapOverlay {
         break;
       case 1:
         path.push(getIdentification(selectedElement, 1));
-        path.push(' > ');
+        path.push(" > ");
         path.push(getIdentification(selectedElement.parentNode, 0));
         break;
       case 2:
         path.push(getIdentification(selectedElement, 2));
-        path.push(' > ');
+        path.push(" > ");
         path.push(getIdentification(selectedElement.parentNode, 0));
         break;
       case 3:
-        path.push('*');
-        path.push(' > ');
+        path.push("*");
+        path.push(" > ");
         path.push(getIdentification(selectedElement.parentNode, 0));
         break;
       case 4:
         path.push(getIdentification(selectedElement, 2));
-        path.push(' > ');
+        path.push(" > ");
         path.push(getIdentification(selectedElement.parentNode, 2));
         break;
       case 5:

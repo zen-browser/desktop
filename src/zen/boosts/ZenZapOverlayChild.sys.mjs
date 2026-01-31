@@ -242,7 +242,7 @@ export class ZapOverlay {
   #unzapButtonHover(event) {
     const button = event.originalTarget;
     const selector = button.getAttribute('selector');
-    this.zenBoostsChild.tempShowZappedElement([selector]);
+    this.zenBoostsChild.tempShowZappedElement(selector);
 
     const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
 

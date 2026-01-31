@@ -75,15 +75,9 @@ export class ZenBoostsParent extends JSWindowActorParent {
         break;
       }
       case "ZenBoost:GetStyleForDomain": {
-        const domain = message.data.domain;
+        const domain = message.data;
         const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
-        const ignoredSelectors = message.data?.ignoreZapSelectors || '';
-        
-        let styleData = null;
-        if(!ignoredSelectors)
-          styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
-        else
-          styleData = await lazy.gZenBoostsManager.getStyleSheetForBoostWithIgnoreList(boostData, ignoredSelectors);
+        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
 
         return {
           styleSheet: styleData

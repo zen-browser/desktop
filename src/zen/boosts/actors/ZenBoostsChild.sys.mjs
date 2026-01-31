@@ -14,6 +14,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #currentSheet = null;
   #currentState = ZenBoostsChild.STATES.NONE;
   #preventableEventsAdded = false;
+  #zappedElementsTempShown = [];
 
   #overlay = null;
 
@@ -260,10 +261,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * Aquires the stylesheet for this website
    * @returns Generated stylesheet string for this website
    */
-  async getWebsiteStyle(ignoreZapSelectors = null) {
+  async getWebsiteStyle() {
     const domain = this.browsingContext.topWindow?.location?.host;
     if (!domain) return null;
-    const styleSheet = (await this.sendQuery("ZenBoost:GetStyleForDomain", { domain, ignoreZapSelectors })).styleSheet; 
+    const styleSheet = (await this.sendQuery("ZenBoost:GetStyleForDomain", domain)).styleSheet; 
     return styleSheet;
   }
 
@@ -395,14 +396,23 @@ export class ZenBoostsChild extends JSWindowActorChild {
     });
   }
 
-  async tempShowZappedElement(selectors) {
-    const styleSheet = await this.getWebsiteStyle(selectors);
-    this.#loadStyleSheet(styleSheet);
+  async tempShowZappedElement(selector) {
+    this.document.querySelectorAll(selector).forEach(element => {
+      element.setAttribute('zen-zap-unhide', 'true');
+    });
+
+    if(!this.#zappedElementsTempShown.includes(selector))
+      this.#zappedElementsTempShown.push(selector);
   }
 
   async tempHideZappedElement() {
-    const styleSheet = await this.getWebsiteStyle();
-    this.#loadStyleSheet(styleSheet);
+    this.#zappedElementsTempShown.forEach(selector => {
+      this.document.querySelectorAll(selector).forEach(element => {
+        element.removeAttribute('zen-zap-unhide');
+      });
+    });
+
+    this.#zappedElementsTempShown = [];
   }
 
   disableZapMode() {

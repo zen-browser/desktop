@@ -38,25 +38,6 @@ export class nsZenBoostStyles {
     this.#cacheStyle(styleUri, domain);
     return this.getStyleForBoost(boostData);
   }
-  
-  /**
-   * Retrieves the CSS style string for a given boost configuration excluding the ignored selectors.
-   * Does not cache styles.
-   * @param {Object} boostData - The boost configuration data.
-   * @param {List} ignoredSelectors - List of selectors that won't be hidden.
-   * @returns {string} The generated CSS style string.
-   */
-  getStyleForBoostWithIgnoreList(boostData, ignoredSelectors) {
-    const boost = { ...boostData, ignoredSelectors };
-    const rawStyle = this.#generateStyleString(boost);
-    if (!rawStyle) return null;
-
-    const styleUri = this.#convertStyleToDataUri(rawStyle);
-    return {
-      uuid: Services.uuid.generateUUID().toString(),
-      uri: styleUri,
-    };
-  }
 
   invalidateStyleForDomain(domain) {
     if (this.#stylesCache.has(domain)) {
@@ -82,11 +63,8 @@ export class nsZenBoostStyles {
 
     let zapBlocks = '';
     if (boostData.zapSelectors) {
-      const ignoredZapSelectors = boostData?.ignoredSelectors || [];
-      for (const selector of boostData.zapSelectors) {
-        if(ignoredZapSelectors.includes(selector)) continue;
-        zapBlocks += `${selector}{ display: none !important; }\n`;
-      }
+      for (const selector of boostData.zapSelectors)
+        zapBlocks += `${selector}:not([zen-zap-unhide]){ display: none !important; }\n`;
 
       if(zapBlocks != ''){
         style += `/* Zen-Zaps */\n`;

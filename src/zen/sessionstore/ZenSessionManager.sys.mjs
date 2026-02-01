@@ -164,6 +164,21 @@ export class nsZenSessionManager {
       } catch {
         /* ignore errors reading recovery data */
       }
+      if (!data.recoverYData) {
+        try {
+          data.recoveryData = await IOUtils.readJSON(
+            PathUtils.join(
+              Services.dirsvc.get("ProfD", Ci.nsIFile).path,
+              "sessionstore-backups",
+              "recovery.jsonlz4"
+            ),
+            { decompress: true }
+          );
+          this.log("Recovered recovery data from sessionstore-backups");
+        } catch {
+          /* ignore errors reading recovery data */
+        }
+      }
       this._migrationData = data;
     } catch {
       /* ignore errors during migration */

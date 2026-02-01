@@ -141,6 +141,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           tab.removeEventListener("click", tab._zenClickEventListener);
           delete tab._zenClickEventListener;
         }
+        this.resetPinChangedUrl(tab);
         break;
       default:
         console.warn("ZenPinnedTabManager: Unhandled tab event", action);
@@ -563,7 +564,25 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return false;
     }
     movingTabs = movingTabs.map((tab) => {
-      return tab.ownerGlobal !== window ? gBrowser.adoptTab(tab) : tab;
+      let workspaceId;
+      if (tab.ownerGlobal !== window) {
+        if (
+          !tab.hasAttribute("zen-essential") &&
+          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+        ) {
+          workspaceId = gZenWorkspaces.activeWorkspace;
+          tab.ownerGlobal.gBrowser.selectedTab = tab.ownerGlobal.gBrowser._findTabToBlurTo(
+            tab,
+            movingTabs
+          );
+          tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
+        }
+        tab = gBrowser.adoptTab(tab);
+        if (workspaceId) {
+          tab.setAttribute("zen-workspace-id", workspaceId);
+        }
+      }
+      return tab;
     });
     try {
       const pinnedTabsTarget = event.target.closest(

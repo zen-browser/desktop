@@ -672,10 +672,17 @@
       if (!isTab(draggedTab)) {
         return;
       }
-      const { clientX, clientY } = event;
-      const { innerWidth, innerHeight } = window;
+      let { screenX, clientX, screenY, clientY } = event;
+      if (!screenX && !screenY) {
+        return;
+      }
+      const { innerWidth: winWidth, innerHeight: winHeight } = window;
+      let allowedMargin = Services.prefs.getIntPref("zen.tabs.dnd-outside-window-margin", 5);
       const isOutOfWindow =
-        clientX < 0 || clientX > innerWidth || clientY < 0 || clientY > innerHeight;
+        clientX <= allowedMargin ||
+        clientX >= winWidth - allowedMargin ||
+        clientY <= allowedMargin ||
+        clientY >= winHeight - allowedMargin;
       if (isOutOfWindow && !this.#isOutOfWindow) {
         this.#isOutOfWindow = true;
         gZenViewSplitter.onBrowserDragEndToSplit(event, true);
@@ -706,6 +713,8 @@
           once: true,
           capture: true,
         });
+      } else {
+        this.#isOutOfWindow = false;
       }
     }
 
@@ -762,7 +771,8 @@
           draggedTab.hasAttribute("zen-essential") ||
           draggedTab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace ||
           !dropElement.visible ||
-          !draggedTab.visible
+          !draggedTab.visible ||
+          draggedTab.ownerGlobal !== window
         ) {
           return;
         }
@@ -851,18 +861,19 @@
     handle_dragend(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      let ownerGlobal = draggedTab?.ownerGlobal;
       draggedTab.style.visibility = "";
-      let currentEssenialContainer = gZenWorkspaces.getCurrentEssentialsContainer();
+      let currentEssenialContainer = ownerGlobal.gZenWorkspaces.getCurrentEssentialsContainer();
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
       }
       // We also call it here to ensure we clear any highlight if the drop happened
       // outside of a valid drop target.
-      gZenFolders.highlightGroupOnDragOver(null);
+      ownerGlobal.gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
       super.handle_dragend(event);
       this.#removeDragOverBackground();
-      gZenPinnedTabManager.removeTabContainersDragoverClass();
+      ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       this.#maybeClearVerticalPinnedGridDragOver();
       this.originalDragImageArgs = [];
       window.removeEventListener("dragover", this.handle_windowDragEnter, { capture: true });
@@ -875,9 +886,9 @@
         this._tempDragImageParent.remove();
         delete this._tempDragImageParent;
       }
-      delete gZenCompactModeManager._isTabBeingDragged;
+      delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
       if (dt.dropEffect !== "move") {
-        gZenCompactModeManager._clearAllHoverStates();
+        ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
       }
     }
 
@@ -1279,6 +1290,9 @@
       if (newIndex == dragData.animDropElementIndex) {
         return;
       }
+
+      // eslint-disable-next-line mozilla/valid-services
+      Services.zen.playHapticFeedback();
 
       dragData.animDropElementIndex = newIndex;
       dragData.dropElement = tabs[Math.min(newIndex, tabs.length - 1)];

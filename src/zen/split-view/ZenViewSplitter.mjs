@@ -1386,10 +1386,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           new nsSplitLeafNode(tabs[i], 50),
           new nsSplitLeafNode(tabs[i + 1], 50),
         ];
-        rootNode.addChild(columnNode);
+        rootNode.addChild(columnNode, false);
       }
       if (tabs.length % 2 !== 0) {
-        rootNode.addChild(new nsSplitLeafNode(tabs[tabs.length - 1], rowWidth));
+        rootNode.addChild(new nsSplitLeafNode(tabs[tabs.length - 1], rowWidth), false);
       }
     }
 
@@ -2093,48 +2093,52 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._sessionRestoring = true;
 
     for (const groupData of data) {
-      const group = document.getElementById(groupData.groupId);
-      if (!gBrowser.isTabGroup(group)) {
-        continue;
-      }
-
-      // Backwards compatibility
-      group.setAttribute("split-view-group", "true");
-      if (!groupData?.layoutTree) {
-        this.splitTabs(group.tabs, group.gridType);
-        delete this._sessionRestoring;
-        return;
-      }
-
-      const deserializeNode = (nodeData) => {
-        if (nodeData.type === "leaf") {
-          const tab = document.getElementById(nodeData.tabId);
-          if (!tab) {
-            return null;
-          }
-          return new nsSplitLeafNode(tab, nodeData.sizeInParent);
+      try {
+        const group = document.getElementById(groupData.groupId);
+        if (!gBrowser.isTabGroup(group)) {
+          continue;
         }
 
-        const splitter = new nsSplitNode(nodeData.direction, nodeData.sizeInParent);
-        splitter._children = [];
-
-        for (const childData of nodeData.children) {
-          const childNode = deserializeNode(childData);
-          if (childNode) {
-            childNode.parent = splitter;
-            splitter._children.push(childNode);
-          }
+        // Backwards compatibility
+        group.setAttribute("split-view-group", "true");
+        if (!groupData?.layoutTree) {
+          this.splitTabs(group.tabs, group.gridType);
+          delete this._sessionRestoring;
+          return;
         }
 
-        return splitter;
-      };
+        const deserializeNode = (nodeData) => {
+          if (nodeData.type === "leaf") {
+            const tab = document.getElementById(nodeData.tabId);
+            if (!tab) {
+              return null;
+            }
+            return new nsSplitLeafNode(tab, nodeData.sizeInParent);
+          }
 
-      const layout = deserializeNode(groupData.layoutTree);
-      const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
-      if (splitData) {
-        splitData.layoutTree = layout;
-      } else {
-        gBrowser.removeTabGroup(group);
+          const splitter = new nsSplitNode(nodeData.direction, nodeData.sizeInParent);
+          splitter._children = [];
+
+          for (const childData of nodeData.children) {
+            const childNode = deserializeNode(childData);
+            if (childNode) {
+              childNode.parent = splitter;
+              splitter._children.push(childNode);
+            }
+          }
+
+          return splitter;
+        };
+
+        const layout = deserializeNode(groupData.layoutTree);
+        const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+        if (splitData) {
+          splitData.layoutTree = layout;
+        } else {
+          gBrowser.removeTabGroup(group);
+        }
+      } catch (e) {
+        console.error("Error restoring split view session data:", e);
       }
     }
 

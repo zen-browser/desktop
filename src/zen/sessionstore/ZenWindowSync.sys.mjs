@@ -15,6 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
@@ -189,6 +190,10 @@ class nsZenWindowSync {
     // to avoid confusing the old private window behavior.
     let forcedSync = !aWindow.gZenWorkspaces?.privateWindowOrDisabled;
     let hasUnsyncedArg = false;
+    // See issue https://github.com/zen-browser/desktop/issues/12211
+    if (lazy.PrivateBrowsingUtils.isWindowPrivate(aWindow)) {
+      aWindow._zenStartupSyncFlag = "synced";
+    }
     if (aWindow._zenStartupSyncFlag === "synced") {
       forcedSync = true;
     } else if (aWindow._zenStartupSyncFlag === "unsynced") {
@@ -235,6 +240,9 @@ class nsZenWindowSync {
         }
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
+        }
+        if (!lazy.gWindowSyncEnabled) {
+          tab._zenContentsVisible = true;
         }
       }
     });

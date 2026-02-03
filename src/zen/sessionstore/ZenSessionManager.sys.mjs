@@ -151,6 +151,34 @@ export class nsZenSessionManager {
         folderIcon: row.getResultByName("folder_icon"),
         isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
       }));
+      try {
+        data.recoveryData = await IOUtils.readJSON(
+          PathUtils.join(
+            Services.dirsvc.get("ProfD", Ci.nsIFile).path,
+            "sessionstore-backups",
+            "recovery.jsonlz4"
+          ),
+          { decompress: true }
+        );
+        this.log("Recovered recovery data from sessionstore-backups");
+      } catch {
+        /* ignore errors reading recovery data */
+      }
+      if (!data.recoverYData) {
+        try {
+          data.recoveryData = await IOUtils.readJSON(
+            PathUtils.join(
+              Services.dirsvc.get("ProfD", Ci.nsIFile).path,
+              "sessionstore-backups",
+              "recovery.jsonlz4"
+            ),
+            { decompress: true }
+          );
+          this.log("Recovered recovery data from sessionstore-backups");
+        } catch {
+          /* ignore errors reading recovery data */
+        }
+      }
       this._migrationData = data;
     } catch {
       /* ignore errors during migration */
@@ -298,6 +326,11 @@ export class nsZenSessionManager {
       initialState?.lastSessionState,
       this._migrationData
     );
+    if (!initialState?.windows?.length && this._migrationData?.recoveryData) {
+      this.log("Using recovery data for migration");
+      initialState = this._migrationData.recoveryData;
+    }
+    delete this._migrationData?.recoveryData;
     // Restore spaces into the sidebar object if we don't
     // have any yet.
     if (!this.#sidebar.spaces?.length) {

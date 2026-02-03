@@ -1193,6 +1193,11 @@ Preferences.addAll([
     type: "bool",
     default: false,
   },
+  {
+    id: "zen.tabs.select-recently-used-on-close",
+    type: "bool",
+    default: true,
+  },
 ]);
 
 Preferences.addSetting({

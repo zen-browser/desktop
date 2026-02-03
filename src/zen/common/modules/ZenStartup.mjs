@@ -87,7 +87,6 @@ class ZenStartup {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;
       delete gZenUIManager.promiseInitialized;
-      this.#initSearchBar();
       gZenCompactModeManager.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
       if (gURLBar.hasAttribute("breakout-extend")) {
@@ -152,11 +151,6 @@ class ZenStartup {
         sidebarPanelWrapper.prepend(elem);
       }
     }
-  }
-
-  #initSearchBar() {
-    // Only focus the url bar
-    gURLBar.focus();
   }
 
   #checkForWelcomePage() {

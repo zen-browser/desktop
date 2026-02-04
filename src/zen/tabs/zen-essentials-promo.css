@@ -22,7 +22,7 @@ zen-essentials-promo {
     outline: 1px dashed currentColor;
   }
 
-  :root:not([zen-sidebar-expanded="true"]) & {
+  :root:is(:not([zen-sidebar-expanded="true"]), [zen-unsynced-window="true"]) & {
     display: none !important;
   }
 

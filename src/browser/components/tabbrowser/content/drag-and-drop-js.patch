@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b1f2bf82b 100644
+index 57800333445ec7850742145527e04ae8d504b0bb..a13875436a72f89178455a09c8665b9a1ef240b5 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -39,7 +39,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
        event.stopPropagation();
 +      if (draggedTab && dropEffect == "move") {
 +        this.handle_drop_transition?.(draggedTab._dragData.dropElement, draggedTab, movingTabs, draggedTab._dragData.dropBefore);
-+        gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, movingTabs);
++        gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
 +      }
        if (draggedTab && dropEffect == "copy") {
          let duplicatedDraggedTab;
@@ -102,7 +102,36 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
                  postTransitionCleanup();
                } else {
                  let onTransitionEnd = transitionendEvent => {
-@@ -584,6 +597,7 @@
+@@ -513,7 +526,7 @@
+           if (tab.selected) {
+             selectedTab = tab;
+             indexForSelectedTab = newIndex;
+-          } else {
++          } else if (false) {
+             const newTab = gBrowser.adoptTab(tab, {
+               elementIndex: newIndex,
+               selectTab: tab == draggedTab,
+@@ -523,7 +536,7 @@
+             }
+           }
+         }
+-        if (selectedTab) {
++        if (false) {
+           const newTab = gBrowser.adoptTab(selectedTab, {
+             elementIndex: indexForSelectedTab,
+             selectTab: selectedTab == draggedTab,
+@@ -534,10 +547,6 @@
+         }
+ 
+         // Restore tab selection
+-        gBrowser.addRangeToMultiSelectedTabs(
+-          this._tabbrowserTabs.dragAndDropElements[dropIndex],
+-          this._tabbrowserTabs.dragAndDropElements[newIndex - 1]
+-        );
+       } else {
+         // Pass true to disallow dropping javascript: or data: urls
+         let links;
+@@ -584,6 +593,7 @@
  
            let nextItem = this._tabbrowserTabs.dragAndDropElements[newIndex];
            let tabGroup = isTab(nextItem) && nextItem.group;
@@ -110,7 +139,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
            gBrowser.loadTabs(urls, {
              inBackground,
              replace,
-@@ -621,7 +635,16 @@
+@@ -621,7 +631,16 @@
          this._expandGroupOnDrop(draggedTab);
        }
        this._resetTabsAfterDrop(draggedTab.ownerDocument);
@@ -128,7 +157,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
        if (
          dt.mozUserCancelled ||
          dt.dropEffect != "none" ||
-@@ -825,7 +848,10 @@
+@@ -825,7 +844,10 @@
      _getDragTarget(event, { ignoreSides = false } = {}) {
        let { target } = event;
        while (target) {
@@ -140,7 +169,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
            break;
          }
          target = target.parentNode;
-@@ -842,14 +868,17 @@
+@@ -842,14 +864,17 @@
            return null;
          }
        }
@@ -160,7 +189,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
          !this._tabbrowserTabs.expandOnHover
        );
      }
-@@ -880,7 +909,8 @@
+@@ -880,7 +905,8 @@
          isTabGroupLabel(draggedTab) &&
          draggedTab._dragData?.expandGroupOnDrop
        ) {
@@ -170,7 +199,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
        }
      }
  
-@@ -1058,7 +1088,6 @@
+@@ -1058,7 +1084,6 @@
          // using updateDragImage. On Linux, we can use a panel.
          if (platform == "win" || platform == "macosx") {
            captureListener = function () {
@@ -178,7 +207,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
            };
          } else {
            // Create a panel to use it in setDragImage
-@@ -1096,7 +1125,6 @@
+@@ -1096,7 +1121,6 @@
          );
          dragImageOffset = dragImageOffset * scale;
        }
@@ -186,7 +215,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
  
        // _dragData.offsetX/Y give the coordinates that the mouse should be
        // positioned relative to the corner of the new window created upon
-@@ -1115,7 +1143,7 @@
+@@ -1115,7 +1139,7 @@
        let dropEffect = this.getDropEffectForTabDrag(event);
        let isMovingInTabStrip = !fromTabList && dropEffect == "move";
        let collapseTabGroupDuringDrag =
@@ -195,7 +224,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
  
        tab._dragData = {
          offsetX: this._tabbrowserTabs.verticalMode
-@@ -1125,7 +1153,7 @@
+@@ -1125,7 +1149,7 @@
            ? event.screenY - window.screenY - tabOffset
            : event.screenY - window.screenY,
          scrollPos:
@@ -204,7 +233,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
              ? this._tabbrowserTabs.pinnedTabsContainer.scrollPosition
              : this._tabbrowserTabs.arrowScrollbox.scrollPosition,
          screenX: event.screenX,
-@@ -1152,6 +1180,7 @@
+@@ -1152,6 +1176,7 @@
  
            if (collapseTabGroupDuringDrag) {
              tab.group.collapsed = true;
@@ -212,7 +241,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
            }
          }
        }
-@@ -1176,6 +1205,7 @@
+@@ -1176,6 +1201,7 @@
        if (tabStripItemElement.hasAttribute("dragtarget")) {
          return;
        }
@@ -220,7 +249,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
        let isPinned = tab.pinned;
        let numPinned = gBrowser.pinnedTabCount;
        let dragAndDropElements = this._tabbrowserTabs.dragAndDropElements;
-@@ -1601,7 +1631,6 @@
+@@ -1601,7 +1627,6 @@
  
        for (let item of this._tabbrowserTabs.dragAndDropElements) {
          item = elementToMove(item);
@@ -228,7 +257,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
          item.removeAttribute("multiselected-move-together");
          delete item._moveTogetherSelectedTabsData;
        }
-@@ -2429,7 +2458,6 @@
+@@ -2429,7 +2454,6 @@
        for (let item of this._tabbrowserTabs.dragAndDropElements) {
          this._resetGroupTarget(item);
          item = elementToMove(item);
@@ -236,7 +265,7 @@ index 57800333445ec7850742145527e04ae8d504b0bb..65361da4791b6418705f364f750f409b
        }
        this._tabbrowserTabs.removeAttribute("movingtab-group");
        this._tabbrowserTabs.removeAttribute("movingtab-ungroup");
-@@ -2460,17 +2488,14 @@
+@@ -2460,17 +2484,14 @@
          tab.style.left = "";
          tab.style.top = "";
          tab.style.maxWidth = "";

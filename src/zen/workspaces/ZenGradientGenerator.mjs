@@ -1348,7 +1348,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   getToolbarColor(isDarkMode = false) {
-    let opacity = AppConstants.platform === "linux" ? 0.8 : 0.6;
+    const opacity = 0.8;
     return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
   }
 

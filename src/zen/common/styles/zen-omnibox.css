@@ -309,7 +309,7 @@
     order: 2;
   }
 
-  #notification-popup-box:not([open]) {
+  #notification-popup-box:not([open]):not(:has(> [showing="true"])) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
     transition: all 0.2s;

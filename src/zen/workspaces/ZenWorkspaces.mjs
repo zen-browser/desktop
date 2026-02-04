@@ -807,7 +807,7 @@ class nsZenWorkspaces {
         chromeFlags & Ci.nsIWebBrowserChrome.CHROME_MENUBAR;
       return this._shouldHaveWorkspaces;
     }
-    return this._shouldHaveWorkspaces;
+    return this._shouldHaveWorkspaces && !document.documentElement.hasAttribute("taskbartab");
   }
 
   get isPrivateWindow() {
@@ -1044,11 +1044,17 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
-      BrowserCommands.openTab();
-    } else if (!showed) {
-      gBrowser.selectedBrowser.focus();
-    }
+    // Wait for the next event loop to ensure that the startup focus logic by
+    // firefox has finished doing it's thing.
+    setTimeout(() => {
+      setTimeout(() => {
+        if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
+          BrowserCommands.openTab();
+        } else if (!showed) {
+          gBrowser.selectedBrowser.focus();
+        }
+      });
+    });
 
     if (
       !gZenVerticalTabsManager._canReplaceNewTab &&

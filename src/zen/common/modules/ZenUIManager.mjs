@@ -891,8 +891,8 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 0.11,
-            easing: "ease-out",
+            duration: 0.075,
+            easing: "easeOut",
           }
         )
         .then(() => {})
@@ -913,8 +913,8 @@ window.gZenVerticalTabsManager = {
             filter: ["blur(1px)", "blur(0px)"],
           },
           {
-            duration: 0.11,
-            easing: "ease-out",
+            duration: 0.075,
+            easing: "easeOut",
           }
         )
         .then(() => {})
@@ -949,7 +949,7 @@ window.gZenVerticalTabsManager = {
       },
       {
         duration: 0.075,
-        easing: "ease-out",
+        easing: "easeOut",
       }
     );
   },
@@ -1403,7 +1403,8 @@ window.gZenVerticalTabsManager = {
     if (
       this._tabEdited ||
       ((!Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
-        Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick")) &&
+        (Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick") &&
+          event.type === "dblclick")) &&
         isTab) ||
       !gZenVerticalTabsManager._prefsSidebarExpanded
     ) {

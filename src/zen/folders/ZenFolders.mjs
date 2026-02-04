@@ -1038,43 +1038,47 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const tabFolderWorkingData = new Map();
 
     for (const folderData of data) {
-      const workingData = {
-        stateData: folderData,
-        node: null,
-        containingTabsFragment: document.createDocumentFragment(),
-      };
-      tabFolderWorkingData.set(folderData.id, workingData);
+      try {
+        const workingData = {
+          stateData: folderData,
+          node: null,
+          containingTabsFragment: document.createDocumentFragment(),
+        };
+        tabFolderWorkingData.set(folderData.id, workingData);
 
-      const oldGroup = document.getElementById(folderData.id);
-      folderData.emptyTabIds.forEach((id) => {
-        oldGroup?.querySelector(`tab[id="${id}"]`)?.setAttribute("zen-empty-tab", true);
-      });
-      if (gBrowser.isTabGroup(oldGroup)) {
-        if (!folderData.splitViewGroup) {
-          const folder = this._createFolderNode({
-            id: folderData.id,
-            label: folderData.name,
-            collapsed: folderData.collapsed,
-            pinned: folderData.pinned,
-            saveOnWindowClose: folderData.saveOnWindowClose,
-            workspaceId: folderData.workspaceId,
-          });
-          folder.setAttribute("id", folderData.id);
-          workingData.node = folder;
-          oldGroup.before(folder);
-        } else {
-          workingData.node = oldGroup;
-        }
-        while (oldGroup.tabs.length) {
-          const tab = oldGroup.tabs[0];
-          if (folderData.workspaceId) {
-            tab.setAttribute("zen-workspace-id", folderData.workspaceId);
+        const oldGroup = document.getElementById(folderData.id);
+        folderData.emptyTabIds.forEach((id) => {
+          oldGroup?.querySelector(`tab[id="${id}"]`)?.setAttribute("zen-empty-tab", true);
+        });
+        if (gBrowser.isTabGroup(oldGroup)) {
+          if (!folderData.splitViewGroup) {
+            const folder = this._createFolderNode({
+              id: folderData.id,
+              label: folderData.name,
+              collapsed: folderData.collapsed,
+              pinned: folderData.pinned,
+              saveOnWindowClose: folderData.saveOnWindowClose,
+              workspaceId: folderData.workspaceId,
+            });
+            folder.setAttribute("id", folderData.id);
+            workingData.node = folder;
+            oldGroup.before(folder);
+          } else {
+            workingData.node = oldGroup;
           }
-          workingData.containingTabsFragment.appendChild(tab);
+          while (oldGroup.tabs.length) {
+            const tab = oldGroup.tabs[0];
+            if (folderData.workspaceId) {
+              tab.setAttribute("zen-workspace-id", folderData.workspaceId);
+            }
+            workingData.containingTabsFragment.appendChild(tab);
+          }
+          if (!folderData.splitViewGroup) {
+            oldGroup.remove();
+          }
         }
-        if (!folderData.splitViewGroup) {
-          oldGroup.remove();
-        }
+      } catch (e) {
+        console.error("Error restoring Zen Folders session data:", e);
       }
     }
 

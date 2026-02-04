@@ -143,7 +143,7 @@
           if (tabClone.hasAttribute("visuallyselected")) {
             tabClone.style.transform = "translate(-50%, -50%)";
           }
-        } else if (AppConstants.platform !== "macosx") {
+        } else if (AppConstants.platform !== "macosx" && !tab.isZenFolder) {
           // On windows and linux, we still don't add some extra opaqueness
           // for the tab to be more visible. This is a hacky workaround.
           // TODO: Make windows and linux DnD use nsZenDragAndDrop::mDragImageOpacity
@@ -726,19 +726,19 @@
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (draggedTab.ownerGlobal === window) {
         if (
-          isTab(draggedTab) &&
           !draggedTab.hasAttribute("zen-essential") &&
           draggedTab.getAttribute("zen-workspace-id") != activeWorkspace
         ) {
-          const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
-          for (let tab of movingTabs) {
-            tab.setAttribute("zen-workspace-id", activeWorkspace);
+          if (isTab(draggedTab)) {
+            const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
+            for (let tab of movingTabs) {
+              tab.setAttribute("zen-workspace-id", activeWorkspace);
+            }
+            gBrowser.selectedTab = draggedTab;
+          } else if (isTabGroupLabel(draggedTab)) {
+            draggedTab = draggedTab.group;
+            gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
           }
-          gBrowser.selectedTab = draggedTab;
-        }
-        if (isTabGroupLabel(draggedTab)) {
-          draggedTab = draggedTab.group;
-          gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
         }
       }
       gZenWorkspaces.updateTabsContainers();

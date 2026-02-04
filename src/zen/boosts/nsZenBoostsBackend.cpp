@@ -58,24 +58,24 @@ static __inline int32_t clamp255(int32_t v) {
  * @return The filtered color with transformations applied.
  */
 static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColor) {
-  auto r1 = NS_GET_R(aOriginalColor);
-  auto g1 = NS_GET_G(aOriginalColor);
-  auto b1 = NS_GET_B(aOriginalColor);
+  const auto r1 = NS_GET_R(aOriginalColor);
+  const auto g1 = NS_GET_G(aOriginalColor);
+  const auto b1 = NS_GET_B(aOriginalColor);
 
-  auto r2 = NS_GET_R(aAccentColor);
-  auto g2 = NS_GET_G(aAccentColor);
-  auto b2 = NS_GET_B(aAccentColor);
+  const auto r2 = NS_GET_R(aAccentColor);
+  const auto g2 = NS_GET_G(aAccentColor);
+  const auto b2 = NS_GET_B(aAccentColor);
 
   // It's a bit of a hacky solution, but instead of using alpha as what it is
   // (opacity), we use it to store contrast information for now.
   // We do this primarily to avoid having to deal with WebIDL structs and
   // serialization/deserialization between parent and content processes.
-  auto contrast = NS_GET_A(aAccentColor);
+  const auto contrast = NS_GET_A(aAccentColor);
 
   // Approximate perceived luminance in sRGB space
   // Coefficients per Rec.709; gamma correction ignored for speed
-  double origLum = 0.2126 * r1 + 0.7152 * g1 + 0.0722 * b1;
-  double accentLum = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
+  const double origLum = 0.2126 * r1 + 0.7152 * g1 + 0.0722 * b1;
+  const double accentLum = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
 
   double scale = accentLum > 0.0 ? (origLum / accentLum) : 1.0;
 
@@ -87,14 +87,14 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
   // contrast = 0: maximum darkening (mix toward black)
   // contrast = 127.5: no change
   // contrast = 255: maximum lightening (mix toward white)
-  double contrastFactor = (contrast - 128.0) / 128.0;
+  const double contrastFactor = (contrast - 128.0) / 128.0;
 
   // Compute perceived luminance for the filtered color
-  double lum = 0.2126 * fr + 0.7152 * fg + 0.0722 * fb;
+  const double lum = 0.2126 * fr + 0.7152 * fg + 0.0722 * fb;
 
   // If it's bright, mix toward white; if dark, mix toward black
   if (lum >= COLOR_CHANNEL_MIDPOINT) {
-    double mix = (lum - COLOR_CHANNEL_MIDPOINT) / COLOR_CHANNEL_MIDPOINT;
+    const double mix = (lum - COLOR_CHANNEL_MIDPOINT) / COLOR_CHANNEL_MIDPOINT;
     double amount = contrastFactor * mix;
     fr = fr + (255.0 - fr) * amount;
     fg = fg + (255.0 - fg) * amount;
@@ -107,10 +107,9 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
     fb = fb * (1.0 - amount);
   }
 
-  // Clamp to [0,255] using fast branchless clamp
-  uint8_t fr8 = clamp255(fr);
-  uint8_t fg8 = clamp255(fg);
-  uint8_t fb8 = clamp255(fb);
+  const uint8_t fr8 = clamp255(fr);
+  const uint8_t fg8 = clamp255(fg);
+  const uint8_t fb8 = clamp255(fb);
 
   return NS_RGB(fr8, fg8, fb8);
 }

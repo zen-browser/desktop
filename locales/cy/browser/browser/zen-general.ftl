@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = proffil cyfredol
-unified-extensions-description = Mae ychwanegiadau'n cael ei defnyddio er mwyn ychwanegu fwy o weithrediadau i { -brand-short-name }.
+zen-panel-ui-current-profile-text = y proffil cyfredol
+unified-extensions-description = Mae estyniadau'n cael ei defnyddio er mwyn ychwanegu fwy o swyddogaeth i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label = Ailosod Tab wedi'i Binio
     .accesskey = A
@@ -109,7 +109,7 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Rhywbeth wedi torri?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Ailgychwyn yn y Modd Diogel
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Cadw Eich Ffenestr Wedi'u Cydweddu
+zen-window-sync-migration-dialog-message = Mae Zen bellach yn cydweddu ffenestri ar yr un ddyfais, felly mae newidiadau mewn un ffenestr yn cael eu dangos ar y lleill yn syth.
+zen-window-sync-migration-dialog-learn-more = Dysgu Rhagor
+zen-window-sync-migration-dialog-accept = Iawn

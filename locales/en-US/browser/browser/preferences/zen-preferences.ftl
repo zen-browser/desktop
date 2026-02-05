@@ -59,6 +59,9 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
+zen-settings-workspaces-sync-unpinned-tabs =
+    .label = Sync only pinned tabs in workspaces
+
 zen-tabs-cycle-by-attribute =
   .label = Ctrl+Tab cycles within Essential or Workspace tabs only
 zen-tabs-cycle-ignore-pending-tabs =

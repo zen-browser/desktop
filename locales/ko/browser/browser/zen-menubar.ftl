@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = 다크
 zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = 새 빈 창

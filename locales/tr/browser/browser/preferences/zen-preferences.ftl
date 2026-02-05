@@ -314,4 +314,4 @@ zen-devtools-toggle-storage-shortcut = Depolamayı Aç/Kapat
 zen-devtools-toggle-dom-shortcut = DOM'u Aç/Kapat
 zen-devtools-toggle-accessibility-shortcut = Erişilebilirliği Aç/Kapat
 zen-close-all-unpinned-tabs-shortcut = Sabitlenmemiş Tüm Sekmeleri Kapat
-zen-new-unsynced-window-shortcut = Senkronize Edilmemiş Yeni Pencere
+zen-new-unsynced-window-shortcut = Yeni Boş Pencere

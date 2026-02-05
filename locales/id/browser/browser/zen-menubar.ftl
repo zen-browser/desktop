@@ -4,19 +4,19 @@
 
 zen-menubar-toggle-pinned-tabs = 
     .label =
-        { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+        { $pinnedAreCollapsed -> 
+         [true] Perluas Tab yang Disematkan 
+         *[false] Ciutkan Tab yang Disematkan 
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Tampilan
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Situs web akan menggunakan:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Otomatis
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Terang
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Gelap
 zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = Jendela Kosong Baru

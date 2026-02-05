@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = Sötét
 zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = Új üres lap

@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = Tywyll
 zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = Ffenestr Wag Newydd

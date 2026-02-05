@@ -11,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
+  gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
 });
 
@@ -562,7 +563,17 @@ export class nsZenSessionManager {
     if (!sidebar) {
       return;
     }
-    aWindowData.tabs = sidebar.tabs || [];
+    // If we should only sync the pinned tabs, we should only edit the unpinned
+    // tabs in the window data and keep the pinned tabs from the window data,
+    // as they should be the same as the ones in the sidebar.
+    if (lazy.gSyncOnlyPinnedTabs) {
+      let pinnedTabs = (sidebar.tabs || []).filter((tab) => tab.pinned);
+      let unpinedWindowTabs = (aWindowData.tabs || []).filter((tab) => !tab.pinned);
+      aWindowData.tabs = [...pinnedTabs, ...unpinedWindowTabs];
+    } else {
+      aWindowData.tabs = sidebar.tabs || [];
+    }
+
     aWindowData.splitViewData = sidebar.splitViewData;
     aWindowData.folders = sidebar.folders;
     aWindowData.groups = sidebar.groups;
@@ -599,8 +610,8 @@ export class nsZenSessionManager {
       this.#restoreWindowData(newWindow);
     }
     newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
-    if (!lazy.gWindowSyncEnabled) {
-      // Don't bring over any unpinned tabs if window sync is disabled.
+    if (!lazy.gWindowSyncEnabled || lazy.gSyncOnlyPinnedTabs) {
+      // Don't bring over any unpinned tabs if window sync is disabled or if syncing only pinned tabs.
       newWindow.tabs = newWindow.tabs.filter((tab) => tab.pinned);
     }
 

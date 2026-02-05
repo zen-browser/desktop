@@ -19,6 +19,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gSyncOnlyPinnedTabs",
+  "zen.window-sync.sync-only-pinned-tabs",
+  true
+);
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gShouldLog", "zen.window-sync.log", true);
 
 const OBSERVING = ["browser-window-before-show", "sessionstore-windows-restored"];
@@ -241,7 +247,7 @@ class nsZenWindowSync {
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
         }
-        if (!lazy.gWindowSyncEnabled) {
+        if (!lazy.gWindowSyncEnabled || (lazy.gSyncOnlyPinnedTabs && !tab.pinned)) {
           tab._zenContentsVisible = true;
         }
       }
@@ -953,6 +959,9 @@ class nsZenWindowSync {
    */
   #delegateGenericSyncEvent(aEvent, flags = 0) {
     const item = aEvent.target;
+    if (lazy.gSyncOnlyPinnedTabs && !item.pinned) {
+      return;
+    }
     this.#syncItemForAllWindows(item, flags);
   }
 
@@ -1089,16 +1098,19 @@ class nsZenWindowSync {
 
   /* Mark: Event Handlers */
 
-  on_TabOpen(aEvent) {
+  on_TabOpen(aEvent, { duringPinning = false } = {}) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
     const isUnsyncedWindow = window.gZenWorkspaces.privateWindowOrDisabled;
-    if (tab.id) {
+    if (tab.id && !duringPinning) {
       // This tab was opened as part of a sync operation.
       return;
     }
     tab._zenContentsVisible = true;
     tab.id = this.#newTabSyncId;
+    if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
+      return;
+    }
     if (isUnsyncedWindow || !lazy.gWindowSyncEnabled) {
       return;
     }
@@ -1116,6 +1128,9 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
+    if (duringPinning && tab?.splitView) {
+      this.on_ZenSplitViewTabsSplit({ target: tab.group });
+    }
     this.#maybeFlushTabState(tab);
   }
 
@@ -1137,7 +1152,8 @@ class nsZenWindowSync {
   }
 
   on_TabMove(aEvent) {
-    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_MOVE);
+    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_MOVE);
+    return Promise.resolve();
   }
 
   on_TabPinned(aEvent) {
@@ -1149,7 +1165,14 @@ class nsZenWindowSync {
     if (!tab._zenPinnedInitialState) {
       tabStatePromise = this.setPinnedTabState(tab);
     }
-    return Promise.all([tabStatePromise, this.on_TabMove(aEvent)]);
+    return Promise.all([
+      tabStatePromise,
+      this.on_TabMove(aEvent).then(() => {
+        if (lazy.gSyncOnlyPinnedTabs) {
+          this.on_TabOpen({ target: tab }, { duringPinning: true });
+        }
+      }),
+    ]);
   }
 
   on_TabUnpinned(aEvent) {
@@ -1160,7 +1183,11 @@ class nsZenWindowSync {
         delete targetTab._zenPinnedInitialState;
       }
     });
-    return this.on_TabMove(aEvent);
+    return this.on_TabMove(aEvent).then(() => {
+      if (lazy.gSyncOnlyPinnedTabs) {
+        this.on_TabClose({ target: tab });
+      }
+    });
   }
 
   on_TabAddedToEssentials(aEvent) {
@@ -1351,4 +1378,6 @@ class nsZenWindowSync {
 
 // eslint-disable-next-line mozilla/valid-lazy
 export const gWindowSyncEnabled = lazy.gWindowSyncEnabled;
+// eslint-disable-next-line mozilla/valid-lazy
+export const gSyncOnlyPinnedTabs = lazy.gSyncOnlyPinnedTabs;
 export const ZenWindowSync = new nsZenWindowSync();

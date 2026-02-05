@@ -62,18 +62,18 @@ let JSWINDOWACTORS = {
 if (!Services.appinfo.inSafeMode) {
   JSWINDOWACTORS.ZenBoosts = {
     parent: {
-      esModuleURI: 'resource:///actors/ZenBoostsParent.sys.mjs',
+      esModuleURI: "resource:///actors/ZenBoostsParent.sys.mjs",
     },
     child: {
-      esModuleURI: 'resource:///actors/ZenBoostsChild.sys.mjs',
+      esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
       events: {
         DOMDocElementInserted: { capture: true },
         unload: {},
       },
     },
     allFrames: true,
-    matches: ['*://*/*'],
-    enablePreference: 'zen.boosts.enabled',
+    matches: ["*://*/*"],
+    enablePreference: "zen.boosts.enabled",
   };
 }
 

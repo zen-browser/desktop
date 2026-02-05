@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { XPCOMUtils } from 'resource://gre/modules/XPCOMUtils.sys.mjs';
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = XPCOMUtils.declareLazy({
   styleSheetService: {
-    service: '@mozilla.org/content/style-sheet-service;1',
+    service: "@mozilla.org/content/style-sheet-service;1",
     iid: Ci.nsIStyleSheetService,
   },
-  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
+  gZenBoostsManager: "resource:///modules/ZenBoostsManager.sys.mjs",
 });
 
 const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
@@ -30,10 +30,10 @@ export class nsZenBoostStyles {
     if (this.#stylesCache.has(domain)) {
       return this.#stylesCache.get(domain);
     }
-    
+
     const rawStyle = this.#generateStyleString(boostData);
     if (!rawStyle) return null;
-    
+
     const styleUri = this.#convertStyleToDataUri(rawStyle);
     this.#cacheStyle(styleUri, domain);
     return this.getStyleForBoost(boostData);
@@ -56,23 +56,22 @@ export class nsZenBoostStyles {
   #generateStyleString(boostData) {
     let style = ``;
 
-    const fontFamily = boostData.fontFamily != '' 
-      ? `font-family: ${boostData.fontFamily} !important;` 
-      : ``;
+    const fontFamily =
+      boostData.fontFamily != "" ? `font-family: ${boostData.fontFamily} !important;` : ``;
     const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
 
-    let zapBlocks = '';
+    let zapBlocks = "";
     if (boostData.zapSelectors) {
       for (const selector of boostData.zapSelectors)
         zapBlocks += `${selector}:not([zen-zap-unhide]){ display: none !important; }\n`;
 
-      if(zapBlocks != ''){
+      if (zapBlocks != "") {
         style += `/* Zen-Zaps */\n`;
         style += `${zapBlocks}\n`;
       }
     }
 
-    if(fontCase != '' || fontFamily != '') {
+    if (fontCase != "" || fontFamily != "") {
       style += `/* Text Format */\n`;
       style += `body :is(p, h1, h2, h3, h4, h5, a, span, textarea, input) {\n`;
       style += `${fontFamily}\n`;
@@ -80,9 +79,9 @@ export class nsZenBoostStyles {
       style += `}\n`;
     }
 
-    if(boostData.customCSS != ''){
+    if (boostData.customCSS != "") {
       style += `/* USER CSS */\n`;
-      style += `${boostData.customCSS || ''}\n`;
+      style += `${boostData.customCSS || ""}\n`;
     }
 
     return style;

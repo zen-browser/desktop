@@ -524,9 +524,8 @@ export class ZapOverlay {
     if (this.#lastOverElement === event.target) return;
     if (!isZapContent) {
       this.#lastOverElement = event.target;
-      if(this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
-    }
-    else this.#hideHoverDiv();
+      if (this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
+    } else this.#hideHoverDiv();
 
     if (this.#currentState !== ZapOverlay.STATES.SELECTING || !event.target) return;
 

@@ -76,9 +76,9 @@ export class ZenBoostsParent extends JSWindowActorParent {
       case "ZenBoost:GetBoostForDomain": {
         const domain = message.data;
         const embedder = this.browsingContext.top.embedderElement;
-        
+
         if (!embedder || !domain) return null;
-        
+
         const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
         if (!exists) return null;
 
@@ -88,7 +88,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
         const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
         const currentWorkspace =
           await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
-          
+
         const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
 
         return {
@@ -99,7 +99,8 @@ export class ZenBoostsParent extends JSWindowActorParent {
             ? {
                 uuid: styleData.uuid,
                 uri: styleData.uri.spec,
-              } : null
+              }
+            : null,
         };
       }
       default:

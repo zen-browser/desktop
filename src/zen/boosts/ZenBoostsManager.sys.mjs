@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { JSONFile } from 'resource://gre/modules/JSONFile.sys.mjs';
-import { nsZenBoostStyles } from 'resource:///modules/ZenBoostStyles.sys.mjs';
+import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { nsZenBoostStyles } from "resource:///modules/ZenBoostStyles.sys.mjs";
 
 class nsZenBoostsManager {
   registeredBoosts = new Map();
   #stylesManager = new nsZenBoostStyles();
 
-  #saveFilename = 'zen-boosts.jsonlz4';
+  #saveFilename = "zen-boosts.jsonlz4";
 
   #file = null;
 
@@ -34,11 +34,11 @@ class nsZenBoostsManager {
    * @returns {Object} The boost data object containing all boost settings for the domain.
    */
   loadBoostFromStore(domain) {
-    if (!domain) console.error('[ZenBoostsManager] Domain expected but got null.');
+    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
 
     let boostData = {
       domain,
-      boostName: 'My Boost',
+      boostName: "My Boost",
 
       dotAngleDeg: 0,
       dotPos: { x: null, y: null },
@@ -48,7 +48,7 @@ class nsZenBoostsManager {
       saturation: 0.5,
       contrast: 0.5,
 
-      fontFamily: '',
+      fontFamily: "",
 
       enableColorBoost: false,
       smartInvert: false,
@@ -58,10 +58,10 @@ class nsZenBoostsManager {
 
       // Default to 100% scale
       siteSizeOverride: 1,
-      textCaseOverride: 'none',
+      textCaseOverride: "none",
 
       zapSelectors: [],
-      customCSS: '',
+      customCSS: "",
 
       changeWasMade: false,
     };
@@ -100,7 +100,7 @@ class nsZenBoostsManager {
     if (this.registeredBoosts.has(domain)) {
       let boostData = this.registeredBoosts.get(domain);
 
-      if (boostData.zapSelectors && boostData.zapSelectors.includes(selector)){
+      if (boostData.zapSelectors && boostData.zapSelectors.includes(selector)) {
         const i = boostData.zapSelectors.indexOf(selector);
         if (i !== -1) {
           boostData.zapSelectors.splice(i, 1);
@@ -138,7 +138,7 @@ class nsZenBoostsManager {
    * This triggers a 'zen-boosts-update' notification event.
    */
   notify(unloadStyles = false) {
-    Services.obs.notifyObservers(null, 'zen-boosts-update', { unloadStyles });
+    Services.obs.notifyObservers(null, "zen-boosts-update", { unloadStyles });
   }
 
   /**
@@ -181,7 +181,7 @@ class nsZenBoostsManager {
   async #readFromDisk() {
     this.#file = new JSONFile({
       path: this.#storePath,
-      compression: 'lz4',
+      compression: "lz4",
     });
 
     await this.#file.load();
@@ -219,7 +219,7 @@ class nsZenBoostsManager {
    * @returns {boolean} True if the URI scheme is http or https, false otherwise.
    */
   canBoostSite(uri) {
-    return uri.schemeIs('http') || uri.schemeIs('https');
+    return uri.schemeIs("http") || uri.schemeIs("https");
   }
 
   /**
@@ -258,7 +258,7 @@ class nsZenBoostsManager {
 
     const editor = Services.ww.openWindow(
       parentWindow,
-      'chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml',
+      "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
       null,
       `left=${left},top=${top},chrome,alwaysontop,resizable=no`,
       null
@@ -266,7 +266,7 @@ class nsZenBoostsManager {
 
     // Close the editor if the tab is switched
     parentWindow.gBrowser.tabContainer.addEventListener(
-      'TabSelect',
+      "TabSelect",
       (event) => {
         // This seems to be a safer way than doing currentURI.host
         const url = new URL(event.target.linkedBrowser.currentURI.spec);
@@ -294,7 +294,7 @@ class nsZenBoostsManager {
    * From: ZenDownloadAnimation.mjs
    */
   #areTabsOnRightSide() {
-    return Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+    return Services.prefs.getBoolPref("zen.tabs.vertical.right-side");
   }
 }
 

@@ -12,8 +12,8 @@ const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  FeatureCallout: 'resource:///modules/asrouter/FeatureCallout.sys.mjs',
-  gZenBoostsManager: 'resource:///modules/ZenBoostsManager.sys.mjs',
+  FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
+  gZenBoostsManager: "resource:///modules/ZenBoostsManager.sys.mjs",
 });
 
 export class nsZenSiteDataPanel {
@@ -75,12 +75,12 @@ export class nsZenSiteDataPanel {
     this.document.getElementById("zen-site-data-settings-more").addEventListener("click", this);
     this.anchor.addEventListener("click", this);
     const kCommandIDs = [
-      'zen-site-data-header-share',
-      'zen-site-data-header-bookmark',
-      'zen-site-data-security-info',
-      'zen-site-data-boost',
-      'zen-site-data-actions',
-      'zen-site-data-new-addon-button',
+      "zen-site-data-header-share",
+      "zen-site-data-header-bookmark",
+      "zen-site-data-security-info",
+      "zen-site-data-boost",
+      "zen-site-data-actions",
+      "zen-site-data-new-addon-button",
     ];
 
     for (let id of kCommandIDs) {
@@ -91,7 +91,7 @@ export class nsZenSiteDataPanel {
   }
 
   #initBrowserListeners() {
-    Services.obs.addObserver(this, 'zen-boosts-update');
+    Services.obs.addObserver(this, "zen-boosts-update");
     this.window.gBrowser.addProgressListener({
       onLocationChange: (aWebProgress) => {
         if (aWebProgress.isTopLevel) {
@@ -100,9 +100,9 @@ export class nsZenSiteDataPanel {
       },
     });
     this.window.addEventListener(
-      'unload',
+      "unload",
       () => {
-        Services.obs.removeObserver(this, 'zen-boosts-update');
+        Services.obs.removeObserver(this, "zen-boosts-update");
       },
       { once: true }
     );
@@ -110,7 +110,7 @@ export class nsZenSiteDataPanel {
 
   observe(subject, topic) {
     switch (topic) {
-      case 'zen-boosts-update':
+      case "zen-boosts-update":
         this.checkIfTabIsBoosted();
         break;
     }
@@ -120,7 +120,7 @@ export class nsZenSiteDataPanel {
     try {
       return this.window.gBrowser.currentURI.host;
     } catch {
-      return '';
+      return "";
     }
   }
 
@@ -128,9 +128,9 @@ export class nsZenSiteDataPanel {
     const domain = this.#getCurrentDomain();
     const isBoosted = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
     if (isBoosted) {
-      this.anchor.setAttribute('boosting', 'true');
+      this.anchor.setAttribute("boosting", "true");
     } else {
-      this.anchor.removeAttribute('boosting');
+      this.anchor.removeAttribute("boosting");
     }
   }
 
@@ -228,18 +228,18 @@ export class nsZenSiteDataPanel {
   }
 
   #setSiteBoost() {
-    const boostButton = this.document.getElementById('zen-site-data-boost');
+    const boostButton = this.document.getElementById("zen-site-data-boost");
     const domain = this.#getCurrentDomain();
     const uri = this.window.gBrowser.currentURI;
 
     if (!lazy.gZenBoostsManager.canBoostSite(uri)) {
-      boostButton.removeAttribute('boosting');
+      boostButton.removeAttribute("boosting");
       return;
     }
 
     if (lazy.gZenBoostsManager.registeredBoostForDomain(domain))
-      boostButton.setAttribute('boosting', 'true');
-    else boostButton.removeAttribute('boosting');
+      boostButton.setAttribute("boosting", "true");
+    else boostButton.removeAttribute("boosting");
   }
 
   #setAddonsOverflow() {
@@ -307,8 +307,8 @@ export class nsZenSiteDataPanel {
   }
 
   #resetSiteOptionsList() {
-    const list = this.document.getElementById('zen-site-data-settings-list');
-    list.innerHTML = '';
+    const list = this.document.getElementById("zen-site-data-settings-list");
+    list.innerHTML = "";
   }
 
   #setSiteSecurityInfo() {
@@ -448,7 +448,7 @@ export class nsZenSiteDataPanel {
       });
     }
 
-    const separator = this.document.createXULElement('toolbarseparator');
+    const separator = this.document.createXULElement("toolbarseparator");
     list.appendChild(separator);
     const settingElements = [];
     const crossSiteCookieElements = [];
@@ -585,13 +585,13 @@ export class nsZenSiteDataPanel {
         this.window.gIdentityHandler._openPopup(event);
         break;
       }
-      case 'zen-site-data-boost': {
+      case "zen-site-data-boost": {
         lazy.gZenBoostsManager.openBoostWindow(this.window);
         break;
       }
-      case 'zen-site-data-actions': {
-        const button = this.document.getElementById('zen-site-data-actions');
-        const popup = this.document.getElementById('zenSiteDataActions');
+      case "zen-site-data-actions": {
+        const button = this.document.getElementById("zen-site-data-actions");
+        const popup = this.document.getElementById("zenSiteDataActions");
         popup.openPopup(
           button,
           "after_start",
@@ -696,7 +696,7 @@ export class nsZenSiteDataPanel {
       }
       default: {
         const item = event.target.closest(
-          '.permission-popup-permission-item, .permission-popup-generic-item'
+          ".permission-popup-permission-item, .permission-popup-generic-item"
         );
         if (!item) {
           break;

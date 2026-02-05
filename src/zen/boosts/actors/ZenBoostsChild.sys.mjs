@@ -163,10 +163,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   handleZapEvent(event) {
     if (ZenBoostsChild.ALL_EVENTS_SET.has(event.type)) {
-      this.#overlay.handleEvent(
-        event, 
-        ZenBoostsChild.PREVENTABLE_SET.has(event.type)
-      );
+      this.#overlay.handleEvent(event, ZenBoostsChild.PREVENTABLE_SET.has(event.type));
     }
   }
 
@@ -267,7 +264,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     if (!browsingContext || browsingContext.parent !== null) {
       return null;
     }
-    
+
     const boost = await this.getWebsiteBoost();
 
     if (unloadStyles) {
@@ -275,8 +272,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     if (boost) {
-      if (boost.styleSheet)
-        this.#loadStyleSheet(styleSheet);
+      if (boost.styleSheet) this.#loadStyleSheet(styleSheet);
 
       if (boost.enableColorBoost) {
         let prefersColorSchemeOverride = "none";
@@ -320,7 +316,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
       }
 
       browsingContext.zenBoostsData = 0;
-      browsingContext.prefersColorSchemeOverride = 'none';
+      browsingContext.prefersColorSchemeOverride = "none";
     }
   }
 
@@ -331,10 +327,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #loadStyleSheet(styleSheet) {
     const browsingContext = this.browsingContext;
     styleSheet.uri = Services.io.newURI(styleSheet.uri);
-    
+
     if (this.#currentSheet?.uuid !== styleSheet.uuid) {
-      if (this.#currentSheet)
-        this.#unloadCurrentStyleSheet();
+      if (this.#currentSheet) this.#unloadCurrentStyleSheet();
       browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
       this.#currentSheet = styleSheet;
     }
@@ -364,10 +359,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   addZapSelector(selector) {
     const domain = this.browsingContext.topWindow?.location?.host;
-    this.sendQuery("ZenBoost:ZapSelector", { 
+    this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
-      selector: selector, 
-      domain: domain 
+      selector: selector,
+      domain: domain,
     });
   }
 
@@ -381,18 +376,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   async tempShowZappedElement(selector) {
-    this.document.querySelectorAll(selector).forEach(element => {
-      element.setAttribute('zen-zap-unhide', 'true');
+    this.document.querySelectorAll(selector).forEach((element) => {
+      element.setAttribute("zen-zap-unhide", "true");
     });
 
-    if(!this.#zappedElementsTempShown.includes(selector))
+    if (!this.#zappedElementsTempShown.includes(selector))
       this.#zappedElementsTempShown.push(selector);
   }
 
   async tempHideZappedElement() {
-    this.#zappedElementsTempShown.forEach(selector => {
-      this.document.querySelectorAll(selector).forEach(element => {
-        element.removeAttribute('zen-zap-unhide');
+    this.#zappedElementsTempShown.forEach((selector) => {
+      this.document.querySelectorAll(selector).forEach((element) => {
+        element.removeAttribute("zen-zap-unhide");
       });
     });
 

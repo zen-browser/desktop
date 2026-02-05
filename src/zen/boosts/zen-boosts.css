@@ -43,11 +43,11 @@
 }
 
 .source-editor-frame {
-  max-width: 1000px !important;
-  max-height: 1000px !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
+  max-width: 1000px;
+  max-height: 1000px;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 #zen-boost-code-top-bar {
@@ -77,18 +77,18 @@ body {
   background-color: #fcfcfe;
   user-select: none;
 
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   padding: 0px;
   margin: 0px;
 
   & button {
-    border-radius: 10px !important;
+    border-radius: 10px;
 
     padding: 0 !important;
     min-width: fit-content !important;
 
-    border: solid 6px transparent !important;
+    border: solid 6px transparent;
     width: 26px;
     height: 26px;
 
@@ -96,7 +96,6 @@ body {
     appearance: none;
 
     &:active {
-      scale: 1 !important;
       transform: none !important;
     }
   }
@@ -152,7 +151,7 @@ body {
   -moz-window-dragging: drag; /* Allow dragging the window with the custom titlebar */
 
   margin-bottom: -10px;
-  height: 40px !important;
+  height: 40px;
   min-height: 40px;
   max-height: 40px;
   align-items: center;
@@ -169,8 +168,8 @@ body {
   & button {
     height: 24px !important;
     width: 24px !important;
-    aspect-ratio: 1/1;
-    background-color: transparent !important;
+    aspect-ratio: 1/1 !important;
+    background-color: transparent;
     opacity: 0.45;
 
     &:hover {
@@ -210,8 +209,8 @@ body {
   padding: 2px;
 
   & button {
-    padding: auto !important;
-    margin: auto !important;
+    padding: auto;
+    margin: auto;
     background-color: transparent;
   }
 }
@@ -242,8 +241,8 @@ body {
 
 #zen-boost-back {
   width: 70px !important;
-  margin: 5px !important;
-  left: 5px !important;
+  margin: 5px;
+  left: 5px;
 
   opacity: 0.6;
   &:hover {
@@ -260,8 +259,8 @@ body {
 }
 
 #zen-boost-zap[hideicon="true"] {
-  list-style: none !important;
-  list-style-type: none !important;
+  list-style: none;
+  list-style-type: none;
 }
 
 #zen-boost-zap[enabled="true"] {
@@ -269,7 +268,7 @@ body {
 }
 
 #zen-boost-size {
-  list-style-type: none !important;
+  list-style-type: none;
 
   & #zen-boost-size-value {
     text-align: right;
@@ -282,10 +281,6 @@ body {
   filter: grayscale(1);
 }
 
-#zen-boost-filter-wrapper separator {
-  height: 7px !important;
-}
-
 .title-button {
   scale: 0.9;
 }
@@ -294,8 +289,8 @@ body {
   height: 38px !important;
 
   transition:
-    0.35s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
-    0.35s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
+    0.5s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.5s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
   background-color: #ebebed;
   &:hover {
@@ -303,7 +298,6 @@ body {
   }
 
   &:active {
-    scale: 1 !important;
     transform: none !important;
 
     opacity: 0.9;
@@ -312,43 +306,35 @@ body {
 }
 
 #zen-boost-name {
-  height: 26px !important;
-  font-size: 8pt !important;
+  height: 26px;
+  font-size: 8pt;
   text-indent: 2px;
   vertical-align: middle;
-  color: #3a3a3b !important;
+  color: #3a3a3b;
 
   justify-content: center;
 }
 
 #zen-boost-shuffle {
-  margin-left: 6px;
-  margin-right: 6px;
-}
-
-#zen-boost-close {
-  margin-right: 10px;
-}
-
-.zen-boost-font-button-active {
-  background-color: #5b5b5c22 !important;
-}
-
-.zen-boost-font-button-active:hover {
-  background-color: #5b5b5c32 !important;
+  margin-right: 0px;
+  margin-left: 10px;
+  @media (-moz-platform: macos) {
+    margin-right: 10px;
+    margin-left: 0px;
+  }
 }
 
 .zen-boost-button-active {
-  background-color: #3a3a3a !important;
-  color: #fcfcfe !important;
+  background-color: #3a3a3a;
+  color: #fcfcfe;
 }
 
 .zen-boost-button-active:hover {
-  background-color: #5b5b5c !important;
+  background-color: #5b5b5c;
 }
 
 #zen-boost-magic-theme {
-  width: 18px !important;
+  width: 18px;
   height: 18px !important;
   margin-top: 12px;
   padding: 2px;
@@ -369,14 +355,14 @@ body {
 
   & .small {
     width: 40px;
-    margin: auto !important;
-    padding: 5px 5px 5px 5px !important;
+    margin: auto;
+    padding: 5px 5px 5px 5px;
   }
 
   & .med {
     width: 70px;
-    margin: auto !important;
-    padding: 3px 5px 5px 3px !important;
+    margin: auto;
+    padding: 3px 5px 5px 3px;
 
     display: flex;
     text-align: center;
@@ -389,21 +375,21 @@ body {
 }
 
 #zen-boost-font-select {
-  width: 85px !important;
+  width: 85px;
   height: 20px !important;
 
-  color: #727272 !important;
+  color: #727272;
   background-color: transparent;
   background: none;
 
   font-size: 9pt;
 
-  padding: 0px !important;
+  padding: 0px;
   text-indent: 2px;
 
-  margin-left: 8px !important;
-  margin-right: 8px !important;
-  margin-top: 8px !important;
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-top: 8px;
 
   &:hover {
     background-color: #9a9a9a44;
@@ -415,14 +401,14 @@ body {
   flex-direction: row;
 
   & button {
-    border-radius: 6px !important;
-    min-width: fit-content !important;
+    border-radius: 6px;
+    min-width: fit-content;
     height: 20px !important;
 
     margin-left: 8px;
     margin-right: 8px;
     margin-top: 8px;
-    background-color: transparent !important;
+    background-color: transparent;
   }
 }
 
@@ -443,43 +429,52 @@ body {
 
     margin-right: 12px;
     margin-left: 12px;
+    margin-top: 2px;
 
     opacity: 0.25;
 
-    border-top: solid 1px #9a9a9a !important;
+    border-top: solid 1px #9a9a9a;
   }
 
   & button {
     filter: none;
-    color: #9a9a9a !important;
-    border-radius: 99px !important;
+    color: #9a9a9a;
+    border-radius: 99px;
     transition:
-      0.15s transform cubic-bezier(0.075, 0.82, 0.165, 1),
-      0.15s background-color cubic-bezier(0.075, 0.82, 0.165, 1);
+      0.5s transform cubic-bezier(0.075, 0.82, 0.165, 1),
+      0.5s background-color cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
     padding: 2px;
 
     &:hover {
-      transform: scale(1.1);
+      transform: scale(1.15);
       background-color: #9a9a9a30;
     }
   }
 }
 
+.zen-boost-font-button-active {
+  background-color: #5b5b5c22;
+}
+
+.zen-boost-font-button-active:hover {
+  background-color: #5b5b5c32;
+}
+
 .mod-button[mode="orange"] {
-  color: #e3e9e4 !important;
+  color: #e3e9e4;
   background: linear-gradient(180deg, #ffab35 0%, #ffa01d 100%) border-box;
 }
 .mod-button[mode="orange-red"] {
-  color: #e3e9e4 !important;
+  color: #e3e9e4;
   background: linear-gradient(180deg, #ff723b 0%, #ff5b1b 100%) border-box;
 }
 .mod-button[mode="red"] {
-  color: #e3e9e4 !important;
+  color: #e3e9e4;
   background: linear-gradient(180deg, #ff3e45 0%, #ff121b 100%) border-box;
 }
 .mod-button[mode="blue"] {
-  color: #e3e9e4 !important;
+  color: #e3e9e4;
   background: linear-gradient(180deg, #5d45ff 0%, #4125ff 100%) border-box;
 }
 
@@ -539,9 +534,9 @@ body {
   transition: filter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) !important;
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
-  & [animated='true'] {
-      transition: all var(--boost-spring-duration) var(--boost-spring-easing) !important;
-    }
+  & [animated="true"] {
+    transition: all var(--boost-spring-duration) var(--boost-spring-easing) !important;
+  }
 
   & .zen-boost-color-picker-circle {
     position: absolute;
@@ -563,8 +558,8 @@ body {
     box-shadow: 0px 2px 4px #00000022;
     position: absolute;
     z-index: 4;
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: var(--zen-theme-picker-dot-color);
     @media (-prefers-color-scheme: dark) {
@@ -578,8 +573,8 @@ body {
     transform-origin: top left;
 
     &:first-of-type {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-width: 3px;
       pointer-events: all;
       transition: transform 0.2s;
@@ -590,13 +585,13 @@ body {
     }
 
     &[dragging="true"] {
-      transform: scale(1.2) translate(-50%, -50%) !important;
+      transform: scale(1.2) translate(-50%, -50%);
     }
   }
 }
 
 .zen-boost-color-picker-gradient:hover {
   & .zen-boost-color-picker-circle {
-    opacity: 0.4 !important;
+    opacity: 0.4;
   }
 }

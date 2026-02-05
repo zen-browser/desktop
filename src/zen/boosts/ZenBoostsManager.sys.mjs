@@ -14,14 +14,6 @@ class nsZenBoostsManager {
   #file = null;
 
   constructor() {
-    this.#init();
-  }
-
-  /**
-   * Initializes the boosts manager by reading boosts from persistent storage.
-   * @private
-   */
-  #init() {
     this.#readBoostsFromStore(this.notify);
   }
 

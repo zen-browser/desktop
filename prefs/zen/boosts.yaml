@@ -4,5 +4,6 @@
 
 - name: zen.boosts.enabled
   value: false
+
 - name: zen.boosts.dissolve-on-zap
   value: true

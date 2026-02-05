@@ -16,17 +16,16 @@ export class ZenBoostsParent extends JSWindowActorParent {
   constructor() {
     super();
 
-    this._observe = this.observe.bind(this);
-    Services.obs.addObserver(this._observe, "zen-boosts-update");
-    Services.obs.addObserver(this._observe, "zen-boosts-disable-zap");
+    Services.obs.addObserver(this, "zen-boosts-update");
+    Services.obs.addObserver(this, "zen-boosts-disable-zap");
   }
 
   /**
    * Called when the actor is destroyed. Cleans up the observer.
    */
   didDestroy() {
-    Services.obs.removeObserver(this._observe, "zen-boosts-update");
-    Services.obs.removeObserver(this._observe, "zen-boosts-disable-zap");
+    Services.obs.removeObserver(this, "zen-boosts-update");
+    Services.obs.removeObserver(this, "zen-boosts-disable-zap");
   }
 
   /**
@@ -74,20 +73,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
         }
         break;
       }
-      case "ZenBoost:GetStyleForDomain": {
-        const domain = message.data;
-        const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
-        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
-
-        return {
-          styleSheet: styleData
-            ? {
-                uuid: styleData.uuid,
-                uri: styleData.uri.spec,
-              }
-            : null,
-        };
-      }
       case "ZenBoost:GetBoostForDomain": {
         const domain = message.data;
         const embedder = this.browsingContext.top.embedderElement;
@@ -104,10 +89,17 @@ export class ZenBoostsParent extends JSWindowActorParent {
         const currentWorkspace =
           await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
           
+        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
+
         return {
           ...boostData,
           topWindowIsDarkMode,
           workspaceGradient: currentWorkspace.theme.gradientColors,
+          styleSheet: styleData
+            ? {
+                uuid: styleData.uuid,
+                uri: styleData.uri.spec,
+              } : null
         };
       }
       default:

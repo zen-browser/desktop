@@ -82,6 +82,5 @@
 }
 
 #zen-boost-advanced-color-options-container {
-  display: flex !important;
-  flex-direction: column !important;
+  flex-direction: column;
 }

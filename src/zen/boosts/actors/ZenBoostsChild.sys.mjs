@@ -52,12 +52,13 @@ export class ZenBoostsChild extends JSWindowActorChild {
     "pointerleave",
   ];
 
-  /**
-   * Called when the actor is destroyed. Cleans up the events.
-   */
-  didDestroy() {
-    this.#removeEventListeners();
-  }
+  // Caching the events in sets for performance
+  static ALL_EVENTS_SET = new Set([
+    ...ZenBoostsChild.OVERLAY_EVENTS,
+    ...ZenBoostsChild.PREVENTABLE_EVENTS,
+  ]);
+
+  static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
   /**
    * Inverse of https://searchfox.org/firefox-main/rev/1a8c62b86277005f907151bc5389cf5c5091e76f/gfx/src/nsColor.h#23-27
@@ -150,6 +151,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
           this.disableZapMode();
         }
+        this.#removeEventListeners();
         break;
       case "DOMDocElementInserted":
         this.#applyBoostForPageIfAvailable();
@@ -160,10 +162,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   handleZapEvent(event) {
-    if (
-      [...ZenBoostsChild.OVERLAY_EVENTS, ...ZenBoostsChild.PREVENTABLE_EVENTS].includes(event.type)
-    ) {
-      this.#overlay.handleEvent(event, ZenBoostsChild.PREVENTABLE_EVENTS.includes(event.type));
+    if (ZenBoostsChild.ALL_EVENTS_SET.has(event.type)) {
+      this.#overlay.handleEvent(
+        event, 
+        ZenBoostsChild.PREVENTABLE_SET.has(event.type)
+      );
     }
   }
 
@@ -173,9 +176,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   #addEventListeners() {
     this._handleZapEvent = this.handleZapEvent.bind(this);
-
     this._disableZapMode = this.disableZapMode.bind();
-    // this.contentWindow.addEventlistener("unload", this._disableZapMode);
 
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.addEventListener(event, this._handleZapEvent, true);
@@ -191,8 +192,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * Removes the event listeners from the document
    */
   #removeEventListeners() {
-    // this.contentWindow.removeEventListener("unload", this._disableZapMode);
-
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.removeEventListener(event, this._handleZapEvent, true);
     }
@@ -248,24 +247,13 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   /**
    * Aquires the boost data for this website
-   * @returns Boost data for the current website
+   * @returns {Object} Boost data for the current website
    */
-  async getWebsiteBoost() {
+  getWebsiteBoost() {
     const domain = this.browsingContext.topWindow?.location?.host;
     if (!domain) return null;
 
     return this.sendQuery("ZenBoost:GetBoostForDomain", domain);
-  }
-
-  /**
-   * Aquires the stylesheet for this website
-   * @returns Generated stylesheet string for this website
-   */
-  async getWebsiteStyle() {
-    const domain = this.browsingContext.topWindow?.location?.host;
-    if (!domain) return null;
-    const styleSheet = (await this.sendQuery("ZenBoost:GetStyleForDomain", domain)).styleSheet; 
-    return styleSheet;
   }
 
   /**
@@ -279,19 +267,15 @@ export class ZenBoostsChild extends JSWindowActorChild {
     if (!browsingContext || browsingContext.parent !== null) {
       return null;
     }
-
-    const domain = browsingContext.topWindow?.location?.host;
-    if (!domain) return null;
-
+    
     const boost = await this.getWebsiteBoost();
-    const styleSheet = await this.getWebsiteStyle();
 
     if (unloadStyles) {
       this.#unloadCurrentStyleSheet();
     }
 
     if (boost) {
-      if (styleSheet)
+      if (boost.styleSheet)
         this.#loadStyleSheet(styleSheet);
 
       if (boost.enableColorBoost) {

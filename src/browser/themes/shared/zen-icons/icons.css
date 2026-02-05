@@ -49,10 +49,6 @@
   list-style-image: url('unpin.svg') !important;
 }
 
-#appMenu-quit-button2 {
-  list-style-image: url("close.svg") !important;
-}
-
 #PanelUI-zen-emojis-picker-none {
   list-style-image: url("trash.svg");
 }
@@ -541,7 +537,7 @@
   list-style-image: url("geo.svg") !important;
 }
 
-.geo-icon.clpermission-icon {
+.geo-icon.blocked-permission-icon {
   list-style-image: url("geo-blocked.svg") !important;
 }
 

@@ -51,8 +51,8 @@
     <vbox flex="1" id="zen-boost-filter-wrapper">
       <hbox class="zen-boost-color-picker-gradient">
         <button data-l10n="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
-        <div class="zen-boost-color-picker-dot"></div>
-        <div class="zen-boost-color-picker-circle"></div>
+        <html:div class="zen-boost-color-picker-dot"></html:div>
+        <html:div class="zen-boost-color-picker-circle"></html:div>
       </hbox>
 
       <hbox flex="1" id="zen-boost-toolbar-wrapper">
@@ -61,18 +61,18 @@
         <button data-l10n="zen-boost-disable" id="zen-boost-disable" class="subviewbutton mod-button small"></button>
       </hbox>
 
-      <div id="zen-boost-font-wrapper">
+      <html:div id="zen-boost-font-wrapper">
         <vbox id="zen-boost-font-grid">
           <!-- Font buttons will be injected here -->
         </vbox>
-        <div class="visible-separator"></div>
+        <html:div class="visible-separator"></html:div>
         <hbox flex="1" id="zen-boost-font-toolbar">
           <html:select name="font" id="zen-boost-font-select" class="mod-button down-arrow-icon">  
             <!-- Additional font options will be injected here -->
           </html:select>
           <button data-l10n="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
         </hbox>
-      </div>
+      </html:div>
 
       <button data-l10n="zen-boost-size" id="zen-boost-size" class="subviewbutton mod-button big-button">
         <html:p flex="1" id="zen-boost-size-text">Size</html:p>
@@ -102,7 +102,7 @@
 
   <popupset id="mainPopupSet">
     <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
-      <div id="zen-boost-advanced-color-options-container">
+      <html:div flex="1" id="zen-boost-advanced-color-options-container">
         <p>Contrast</p>
         <html:input id="zen-boost-color-contrast" type="range" min="0" max="1" value="0.5" step="0.01"/>
         <separator />
@@ -111,7 +111,7 @@
         <separator />
         <p>Original Saturation</p>
         <html:input id="zen-boost-color-saturation" type="range" min="0" max="1" value="0.5" step="0.01"/>
-      </div>
+      </html:div>
     </panel>
   </popupset>
 </html:body>

@@ -6,6 +6,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZapDissolve: "resource:///modules/ZenZapDissolve.sys.mjs",
+  setTimeout: "resource://gre/modules/Timer.sys.mjs",
 });
 
 export class ZapOverlay {
@@ -192,9 +193,7 @@ export class ZapOverlay {
     this.removeHighlight();
     this.#resetHoverDiv();
 
-    const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
-
-    setTimeout(() => {
+    lazy.setTimeout(() => {
       const useDissolve = Services.prefs.getBoolPref("zen.boosts.dissolve-on-zap");
       if (!this.window.gReduceMotion && useDissolve) {
         const elements = this.document.querySelectorAll(cssPath);
@@ -272,11 +271,9 @@ export class ZapOverlay {
     const selector = button.getAttribute("selector");
     this.zenBoostsChild.tempShowZappedElement(selector);
 
-    const { setTimeout } = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
-
     // This has to run with delay, as the elements we are trying to highlight do not exist yet.
     // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
-    setTimeout(() => {
+    lazy.setTimeout(() => {
       const selection = this.document.querySelectorAll(selector);
       if (selection.length != 0) this.showHightlight(selection);
     }, 10);
@@ -345,7 +342,7 @@ export class ZapOverlay {
       highlightContainerDiv.appendChild(highlightDiv);
     }
 
-    this.getElementById("highlight-shadow").display = "initial";
+    this.getElementById("highlight-shadow").style.display = "initial";
   }
 
   /**
@@ -357,7 +354,7 @@ export class ZapOverlay {
 
     // Clear all children elements
     highlightContainerDiv.innerHTML = "";
-    this.getElementById("highlight-shadow").display = "none";
+    this.getElementById("highlight-shadow").style.display = "none";
   }
 
   /**
@@ -525,10 +522,11 @@ export class ZapOverlay {
    */
   #handleMouseMove(event, isZapContent) {
     if (this.#lastOverElement === event.target) return;
-    if (!isZapContent) this.#lastOverElement = event.target;
-
-    if (isZapContent) this.#hideHoverDiv();
-    else if (this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
+    if (!isZapContent) {
+      this.#lastOverElement = event.target;
+      if(this.#currentState === ZapOverlay.STATES.SELECTING) this.#showHoverDiv();
+    }
+    else this.#hideHoverDiv();
 
     if (this.#currentState !== ZapOverlay.STATES.SELECTING || !event.target) return;
 

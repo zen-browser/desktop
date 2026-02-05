@@ -560,9 +560,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   // eslint-disable-next-line complexity
   moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, dropIndex) {
-    if (!this.enabled) {
-      return false;
-    }
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
     movingTabs = Array.from(movingTabs || draggedTab)

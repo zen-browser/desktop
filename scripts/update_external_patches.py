@@ -77,7 +77,7 @@ def main():
         with open(output_file, 'r') as f:
           content = f.read()
         if replace not in content:
-          die(f"Replace string '{replace}' not found in {replace}")
+          die(f"Replace string '{replace}' not found in {output_file}")
         with open(output_file, 'w') as f:
           f.write(content.replace(replace, value))
       expected_files.add(output_file)

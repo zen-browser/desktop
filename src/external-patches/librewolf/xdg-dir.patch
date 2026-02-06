@@ -1,0 +1,65 @@
+diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
+index 3cf7073..b1c782a 100644
+--- a/toolkit/xre/nsXREDirProvider.cpp
++++ b/toolkit/xre/nsXREDirProvider.cpp
+@@ -1283,9 +1283,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+   // Similar to nsXREDirProvider::AppendProfilePath.
+   // TODO: Bug 1990407 - Evaluate if refactoring might be required there in the
+   // future?
+-  if (gAppData->profile) {
++  // Use aIsDotted for a different purpose here, will probably break in the future
++  if (gAppData->profile && aIsDotted) {
+     nsAutoCString profile;
+     profile = gAppData->profile;
++    profile = "."_ns + nsDependentCString(gAppData->profile);
+     MOZ_TRY(aFile->AppendRelativeNativePath(profile));
+   } else {
+     nsAutoCString vendor;
+@@ -1295,8 +1297,8 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+     ToLowerCase(vendor);
+     ToLowerCase(appName);
+ 
+-    MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
+-                                                      : vendor));
++    //MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
++    //                                                  : vendor));
+     MOZ_TRY(aFile->AppendRelativeNativePath(appName));
+   }
+ 
+@@ -1435,28 +1437,22 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+       return NS_OK;
+     }
+ 
+-    // If the build was made against a specific profile name, MOZ_APP_PROFILE=
+-    // then make sure we respect this and dont move to XDG directory
+-    if (gAppData->profile) {
+-      MOZ_TRY(NS_NewNativeLocalFile(nsDependentCString(aHomeDir),
+-                                    getter_AddRefs(localDir)));
+-    } else {
+-      MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
+-      MOZ_TRY(localDir->Clone(getter_AddRefs(parentDir)));
+-    }
++    // Since we set gAppData->profile and don't want to force legacy behaviour
++    MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
++    MOZ_TRY(localDir->Clone(getter_AddRefs(parentDir)));
+ 
+     MOZ_TRY(AppendFromAppData(localDir, false));
+   }
+ 
++  // The profile root directory needs to exists at that point.
++  MOZ_TRY(EnsureDirectoryExists(localDir));
++  
+   // If required return the parent directory that matches the profile root
+   // directory.
+   if (aFile) {
+-    parentDir.forget(aFile);
++    localDir.forget(aFile);
+   }
+ 
+-  // The profile root directory needs to exists at that point.
+-  MOZ_TRY(EnsureDirectoryExists(localDir));
+-
+   return NS_OK;
+ }
+ #endif  // defined(MOZ_WIDGET_GTK)
+

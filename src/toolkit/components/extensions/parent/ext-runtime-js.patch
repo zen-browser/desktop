@@ -7,7 +7,7 @@ index 0d7a3e505b6bd30548c6dda1504dd343a517b083..54400def5e02e886765fab68c3854a6b
          getBrowserInfo: function () {
            const { name, vendor, version, appBuildID } = Services.appinfo;
 -          const info = { name, vendor, version, buildID: appBuildID };
-+          const info = { name: 'firefox', vendor, version: AppConstants.ZEN_FIREFOX_VERSION, buildID: appBuildID };
++          const info = { name: 'Firefox', vendor, version: AppConstants.ZEN_FIREFOX_VERSION, buildID: appBuildID };
            return Promise.resolve(info);
          },
  

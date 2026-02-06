@@ -80,7 +80,7 @@
 
 #urlbar:not([breakout-extend="true"]) {
   &:hover .urlbar-background {
-    background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2)) !important;
+    background-color: var(--zen-toolbar-element-bg-hover) !important;
   }
 }
 

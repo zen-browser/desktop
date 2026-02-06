@@ -1,0 +1,43 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-overflow-extensions-list:not(:empty) {
+  --uei-icon-size: 16px;
+  display: flex;
+  gap: 8px;
+  padding: 8px calc(var(--zen-toolbox-padding) - 4px);
+  padding-bottom: 0px;
+
+  & .unified-extensions-item {
+    flex: 1;
+    margin: 0;
+  }
+
+  & .toolbarbutton-badge-stack {
+    margin: 0;
+  }
+
+  & .unified-extensions-item-action-button {
+    background-color: var(--zen-toolbar-element-bg);
+    height: 32px;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius-medium);
+    overflow: clip;
+    padding: 0;
+
+    &:hover {
+      background-color: var(--zen-toolbar-element-bg-hover);
+    }
+  }
+
+  .unified-extensions-item-contents,
+  .unified-extensions-item-menu-button,
+  unified-extensions-item-messagebar-wrapper {
+    display: none;
+  }
+}

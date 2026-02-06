@@ -141,14 +141,11 @@
   --zen-button-padding: 0.6rem 1.2rem;
 
   --zen-toolbar-element-bg: light-dark(
-    color-mix(in oklch, var(--toolbox-textcolor) 10%, transparent),
+    color-mix(in oklch, var(--toolbox-textcolor) 8%, transparent),
     color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
   );
 
-  --zen-toolbar-element-bg-hover: light-dark(
-    color-mix(in srgb, var(--zen-toolbar-element-bg) 75%, transparent),
-    color-mix(in srgb, var(--zen-toolbar-element-bg) 60%, transparent)
-  );
+  --zen-toolbar-element-bg-hover: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit !important;

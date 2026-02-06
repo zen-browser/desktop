@@ -1275,6 +1275,15 @@ window.gZenVerticalTabsManager = {
         appContentNavbarContaienr.append(windowButtons);
       }
 
+      if (
+        this._hasSetSingleToolbar &&
+        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true)
+      ) {
+        topButtons.setAttribute("addon-webext-overflowtarget", "zen-overflow-extensions-list");
+      } else {
+        topButtons.setAttribute("addon-webext-overflowtarget", "overflowed-extensions-list");
+      }
+
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);
 
       // Always move the splitter next to the sidebar

@@ -531,8 +531,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const isVisible = contextTab.pinned && !contextTab.multiselected;
     const isEssential = contextTab.getAttribute("zen-essential");
     const zenAddEssential = document.getElementById("context_zen-add-essential");
-    document.getElementById("context_zen-reset-pinned-tab").hidden = !isVisible;
-    document.getElementById("context_zen-replace-pinned-url-with-current").hidden = !isVisible;
+    const zenResetPinnedTab = document.getElementById("context_zen-reset-pinned-tab");
+    const zenReplacePinnedUrl = document.getElementById("context_zen-replace-pinned-url-with-current");
+    [zenResetPinnedTab, zenReplacePinnedUrl].forEach((element) => {
+      if (element) {
+        element.hidden = !isVisible;
+        document.l10n.setArgs(element, { isEssential });
+      }
+    });
     zenAddEssential.hidden = isEssential || !!contextTab.group;
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {

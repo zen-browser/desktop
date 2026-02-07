@@ -64,9 +64,9 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
   if (MOZ_UNLIKELY(result.isErr())) {
     return;
   }
-  mModsSheet = result.unwrapOr(nullptr);
+  mModsSheet = result.unwrap();
 }
-  
+
 /* static */
 auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   MOZ_ASSERT(NS_IsMainThread());
@@ -77,7 +77,7 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
 }
 
 nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents) {
-  // Re-parse the mods stylesheet. By doing so, we read 
+  // Re-parse the mods stylesheet. By doing so, we read
   // Once we have the data as a nsACString, we call ReparseSheet from the
   // StyleSheet class to re-parse the stylesheet.
   auto sheet = GetModsSheet();
@@ -93,6 +93,6 @@ nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents)
 }
 
 
-mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache; 
+mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache;
 
 } // namespace: zen

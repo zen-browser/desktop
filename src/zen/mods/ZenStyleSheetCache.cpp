@@ -64,7 +64,7 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
   if (MOZ_UNLIKELY(result.isErr())) {
     return;
   }
-  mModsSheet = result.unwrap();
+  mModsSheet = result.unwrapOr(nullptr);
 }
 
 /* static */

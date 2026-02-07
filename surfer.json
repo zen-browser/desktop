@@ -45,6 +45,16 @@
           "repo": "zen-browser/desktop"
         }
       }
+    },
+    "unofficial": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Zen",
+      "brandShortName": "Nightly",
+      "brandFullName": "Zen Nightly",
+      "release":{"displayVersion":"1.19u"},
+      "github": {
+        "repo": "zen-browser/desktop"
+      }
     }
   },
   "license": {

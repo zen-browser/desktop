@@ -153,6 +153,7 @@ window.addEventListener("unload", this.onUnloadBound);
         "workspace-bookmarks-updated"
       );
     }
+  }
 
   log(...args) {
     if (this.#canDebug) {

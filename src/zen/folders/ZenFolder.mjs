@@ -242,7 +242,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get resetButton() {
-    return this.labelElement.parentElement.querySelector(".tab-reset-button");
+    return this.labelElement.parentElement?.querySelector(".tab-reset-button") ?? null;
   }
 
   unloadAllTabs(event) {

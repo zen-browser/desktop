@@ -131,10 +131,10 @@ class nsZenWorkspaces {
 
     this.popupOpenHandler = this._popupOpenHandler.bind(this);
     this.onWindowResizeBound = this.onWindowResize.bind(this);
+    this.onUnloadBound = this.cleanup.bind(this);
     window.addEventListener("resize", this.onWindowResizeBound);
+    window.addEventListener("unload", this.onUnloadBound);
     this.addPopupListeners();
-
-window.addEventListener("unload", this.onUnloadBound);
 
     if (this.privateWindowOrDisabled) {
       await this.#waitForPromises();
@@ -142,16 +142,15 @@ window.addEventListener("unload", this.onUnloadBound);
     }
 
     if (!this.privateWindowOrDisabled) {
-      this.workspaceBookmarksObserver = async () => {
+      const observerFunction = async () => {
         delete this._workspaceBookmarksCache;
         await this.workspaceBookmarks();
         this._invalidateBookmarkContainers();
       };
-
-      Services.obs.addObserver(
-        this.workspaceBookmarksObserver,
-        "workspace-bookmarks-updated"
-      );
+      Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      window.addEventListener("unload", () => {
+        Services.obs.removeObserver(observerFunction, "workspace-bookmarks-updated");
+      });
     }
   }
 
@@ -955,18 +954,30 @@ window.addEventListener("unload", this.onUnloadBound);
       this.#clearAnyZombieTabs(); // Dont call with await
       delete this._resolveInitialized;
 
-      this.tabUpdateListener = this.updateTabsContainers.bind(this);
-      window.addEventListener("TabOpen", this.tabUpdateListener);
-      window.addEventListener("TabClose", this.tabUpdateListener);
-      window.addEventListener("TabAddedToEssentials", this.tabUpdateListener);
-      window.addEventListener("TabRemovedFromEssentials", this.tabUpdateListener);
-      window.addEventListener("TabPinned", this.tabUpdateListener);
-      window.addEventListener("TabUnpinned", this.tabUpdateListener);
-      window.addEventListener("aftercustomization", this.tabUpdateListener);
-      this.onLocationChangeBound = this.onLocationChange.bind(this);
-      window.addEventListener("TabSelect", this.onLocationChangeBound);
-      this.onTabBrowserInsertedBound = this.onTabBrowserInserted.bind(this);
-      window.addEventListener("TabBrowserInserted", this.onTabBrowserInsertedBound);
+      const tabUpdateListener = this.updateTabsContainers.bind(this);
+      window.addEventListener("TabOpen", tabUpdateListener);
+      window.addEventListener("TabClose", tabUpdateListener);
+      window.addEventListener("TabAddedToEssentials", tabUpdateListener);
+      window.addEventListener("TabRemovedFromEssentials", tabUpdateListener);
+      window.addEventListener("TabPinned", tabUpdateListener);
+      window.addEventListener("TabUnpinned", tabUpdateListener);
+      window.addEventListener("aftercustomization", tabUpdateListener);
+      const onLocationChangeBound = this.onLocationChange.bind(this);
+      window.addEventListener("TabSelect", onLocationChangeBound);
+      const onTabBrowserInsertedBound = this.onTabBrowserInserted.bind(this);
+      window.addEventListener("TabBrowserInserted", onTabBrowserInsertedBound);
+
+      window.addEventListener("unload", () => {
+        window.removeEventListener("TabOpen", tabUpdateListener);
+        window.removeEventListener("TabClose", tabUpdateListener);
+        window.removeEventListener("TabAddedToEssentials", tabUpdateListener);
+        window.removeEventListener("TabRemovedFromEssentials", tabUpdateListener);
+        window.removeEventListener("TabPinned", tabUpdateListener);
+        window.removeEventListener("TabUnpinned", tabUpdateListener);
+        window.removeEventListener("aftercustomization", tabUpdateListener);
+        window.removeEventListener("TabSelect", onLocationChangeBound);
+        window.removeEventListener("TabBrowserInserted", onTabBrowserInsertedBound);
+      });
 
       this.updateWorkspacesChangeContextMenu();
     })();
@@ -3174,33 +3185,9 @@ window.addEventListener("unload", this.onUnloadBound);
   }
 
   cleanup() {
-    // Defensive: ensure cleanup runs only once
-    if (this._cleanupDone) {
-      return;
-    }
-    this._cleanupDone = true;
-
     // Remove window event listeners to prevent ghost window refs
     if (this.onWindowResizeBound) {
       window.removeEventListener("resize", this.onWindowResizeBound);
-    }
-    if (this.tabUpdateListener) {
-      window.removeEventListener("TabOpen", this.tabUpdateListener);
-      window.removeEventListener("TabClose", this.tabUpdateListener);
-      window.removeEventListener("TabAddedToEssentials", this.tabUpdateListener);
-      window.removeEventListener("TabRemovedFromEssentials", this.tabUpdateListener);
-      window.removeEventListener("TabPinned", this.tabUpdateListener);
-      window.removeEventListener("TabUnpinned", this.tabUpdateListener);
-      window.removeEventListener("aftercustomization", this.tabUpdateListener);
-    }
-    if (this.onLocationChangeBound) {
-      window.removeEventListener("TabSelect", this.onLocationChangeBound);
-    }
-    if (this.onTabBrowserInsertedBound) {
-      window.removeEventListener("TabBrowserInserted", this.onTabBrowserInsertedBound);
-    }
-    if (this.workspaceBookmarksObserver) {
-      Services.obs.removeObserver(this.workspaceBookmarksObserver, "workspace-bookmarks-updated");
     }
     if (this.handleAppCommandBound) {
       window.removeEventListener("AppCommand", this.handleAppCommandBound, true);

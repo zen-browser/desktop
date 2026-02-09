@@ -237,7 +237,7 @@ class nsZenBoostsManager {
    * @returns {Object} The instanced editor window
    */
   openBoostWindow(parentWindow) {
-    const screen = parentWindow.screen;
+    const { availLeft, availWidth } = parentWindow.screen;
     const screenX = parentWindow.screenX;
     const screenY = parentWindow.screenY;
     const width = parentWindow.outerWidth;
@@ -251,7 +251,7 @@ class nsZenBoostsManager {
 
     let top = screenY + height / 2 - editorHeight / 2;
 
-    if (left + editorWidth > screen.availWidth) {
+    if (left + editorWidth > (availLeft + availWidth) || left < availLeft) {
       left = screenX + width - (editorWidth + pad);
       if (this.#areTabsOnRightSide()) left = screenX + editorWidth + pad;
     }

@@ -272,7 +272,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     if (boost) {
-      if (boost.styleSheet) this.#loadStyleSheet(styleSheet);
+      if (boost.styleSheet) this.#loadStyleSheet(boost.styleSheet);
 
       if (boost.enableColorBoost) {
         let prefersColorSchemeOverride = "none";

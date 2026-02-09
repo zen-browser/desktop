@@ -9,6 +9,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
+  static OBSERVERS = ["zen-boosts-update", "zen-boosts-disable-zap"];
+
   /**
    * Creates a new ZenBoostsParent actor instance and sets up an observer
    * for boost update notifications.
@@ -16,16 +18,20 @@ export class ZenBoostsParent extends JSWindowActorParent {
   constructor() {
     super();
 
-    Services.obs.addObserver(this, "zen-boosts-update");
-    Services.obs.addObserver(this, "zen-boosts-disable-zap");
+    this._observe = this.observe.bind(this);
+    ZenBoostsParent.OBSERVERS.forEach((observe) => {
+      Services.obs.addObserver(this._observe, observe);
+    });
   }
 
   /**
    * Called when the actor is destroyed. Cleans up the observer.
    */
-  didDestroy() {
-    Services.obs.removeObserver(this, "zen-boosts-update");
-    Services.obs.removeObserver(this, "zen-boosts-disable-zap");
+  async destroy() {
+    super.destroy();
+    ZenBoostsParent.OBSERVERS.forEach((observe) => {
+      Services.obs.removeObserver(this._observe, observe);
+    });
   }
 
   /**

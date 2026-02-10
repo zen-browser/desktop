@@ -15,5 +15,6 @@ DIRS += [
     "urlbar",
     "toolkit",
     "sessionstore",
+    "space-routing",
     "share",
 ]

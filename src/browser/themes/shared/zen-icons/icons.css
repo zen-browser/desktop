@@ -485,7 +485,7 @@
 }
 
 #zen-site-data-icon-button {
-  padding: 0 6px !important;
+  padding: 0 4px !important;
   border-radius: var(--urlbar-icon-border-radius) !important;
 
   & image {

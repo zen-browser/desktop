@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..d21c461c4e05fa5b28bc0806b07f9256ca3c9175 100644
+index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..c7c7e6dd8cacf5d2d13c48ad9bed8195d677420f 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -398,6 +398,7 @@
@@ -777,7 +777,7 @@ index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..d21c461c4e05fa5b28bc0806b07f9256
          options,
          aTab
        );
-+      win._zenStartupSyncFlag = zenForceSync ? 'synced' : 'unsynced';
++      win._zenStartupSyncFlag = (zenForceSync || !Services.prefs.getBoolPref("zen.tabs.dnd-open-blank-window", true)) ? 'synced' : 'unsynced';
 +      return win;
      }
  

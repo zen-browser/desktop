@@ -297,7 +297,7 @@
 
   --tab-block-margin: 2px;
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18));
-  --tab-selected-shadow: 0 1px 1px 1px light-dark(rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.05)) !important;
+  --tab-selected-shadow: 0 1px 1px 0px light-dark(rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.05)) !important;
   grid-gap: 0 !important;
 
   &[overflow]::after,

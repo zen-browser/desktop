@@ -169,7 +169,7 @@ class nsZenWindowSync {
   log(...args) {
     if (lazy.gShouldLog) {
       // eslint-disable-next-line no-console
-      console.info("ZenWindowSync:", ...args);
+      console.debug("ZenWindowSync:", ...args);
     }
   }
 

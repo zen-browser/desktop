@@ -98,18 +98,16 @@ export class nsZenSessionManager {
   log(...args) {
     if (lazy.gShouldLog) {
       // eslint-disable-next-line no-console
-      console.log("ZenSessionManager:", ...args);
+      console.debug("ZenSessionManager:", ...args);
     }
   }
 
   get #storeFilePath() {
-    let profileDir = Services.dirsvc.get("ProfD", Ci.nsIFile).path;
-    return PathUtils.join(profileDir, FILE_NAME);
+    return PathUtils.join(PathUtils.profileDir, FILE_NAME);
   }
 
   get #backupFolderPath() {
-    let profileDir = Services.dirsvc.get("ProfD", Ci.nsIFile).path;
-    return PathUtils.join(profileDir, "zen-sessions-backup");
+    return PathUtils.join(PathUtils.profileDir, "zen-sessions-backup");
   }
 
   /**

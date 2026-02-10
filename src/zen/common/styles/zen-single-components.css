@@ -172,7 +172,9 @@
   }
 }
 
-.toolbarbutton-1:not(#tabs-newtab-button) {
+.toolbarbutton-1:not(#tabs-newtab-button),
+.urlbar-page-action,
+.identity-box-button {
   --tab-border-radius: 6px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-inner-padding: 6px;
@@ -386,6 +388,7 @@
     &:hover {
       background-color: color-mix(in srgb, currentColor 10%, transparent);
     }
+
     .zen-site-data-section:hover & {
       opacity: 0.5;
     }
@@ -541,7 +544,7 @@
           0px 2px 4px rgba(0, 0, 0, 0.1),
           inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
-        --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
+        --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
         border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
       }
 

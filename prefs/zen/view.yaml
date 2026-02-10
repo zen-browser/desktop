@@ -56,4 +56,4 @@
   value: true
 
 - name: zen.view.overflow-webext-toolbar
-  value: true
+  value: "@IS_TWILIGHT@"

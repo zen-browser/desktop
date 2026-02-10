@@ -209,7 +209,7 @@
   margin: 0;
 
   :root[zen-single-toolbar="true"] & {
-    padding: 6px !important;
+    padding: 5px !important;
     width: unset !important;
     height: unset !important;
   }
@@ -396,7 +396,7 @@
 #urlbar #tracking-protection-icon-container,
 #urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
-  min-width: 28px;
+  min-width: 26px;
 }
 
 /* Notification Stack */
@@ -649,7 +649,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 55%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -667,7 +667,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:is([type="switchtab"], [type="dynamic"]) .urlbarView-favicon,
+    &:is([type="switchtab"], [type="dynamic"], [type="history_serp"], [type="autofill_origin"], [type="top_site"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;

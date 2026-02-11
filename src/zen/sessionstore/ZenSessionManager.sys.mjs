@@ -262,6 +262,18 @@ export class nsZenSessionManager {
       }
       return initialState;
     }
+    const allowRestoreUnsynced = Services.prefs.getBoolPref(
+      "zen.session-store.restore-unsynced-windows",
+      true
+    );
+    if (initialState?.windows?.length && !allowRestoreUnsynced) {
+      initialState.windows = initialState.windows.filter((win) => {
+        if (win.isZenUnsynced) {
+          this.log("Skipping unsynced window during restore");
+        }
+        return !win.isZenUnsynced;
+      });
+    }
     // If there are no windows, we create an empty one. By default,
     // firefox would create simply a new empty window, but we want
     // to make sure that the sidebar object is properly initialized.
@@ -300,27 +312,18 @@ export class nsZenSessionManager {
     // Restore all windows with the same sidebar object, this will
     // guarantee that all tabs, groups, folders and split view data
     // are properly synced across all windows.
-    const allowRestoreUnsynced = Services.prefs.getBoolPref(
-      "zen.session-store.restore-unsynced-windows",
-      true
-    );
     if (!this._shouldRunMigration) {
       this.log(`Restoring Zen session data into ${initialState.windows?.length || 0} windows`);
       for (let i = 0; i < initialState.windows.length; i++) {
         let winData = initialState.windows[i];
         if (winData.isZenUnsynced) {
-          if (!allowRestoreUnsynced) {
-            // We don't wan't to restore any unsynced windows with the sidebar data.
-            this.log("Skipping restore of unsynced window");
-            delete initialState.windows[i];
-          }
           continue;
         }
         this.#restoreWindowData(winData);
       }
     } else if (initialState) {
       this.log("Saving windata state after migration");
-      this.saveState(Cu.cloneInto(initialState, {}));
+      this.saveState(Cu.cloneInto(initialState, {}), true);
     }
     delete this._shouldRunMigration;
   }
@@ -438,8 +441,11 @@ export class nsZenSessionManager {
    * Saves the current session state. Collects data and writes to disk.
    *
    * @param {object} state The current session state.
+   * @param {boolean} soon Whether to save the file soon or immediately.
+   *        If true, the file will be saved asynchronously or when quitting
+   *        the app. If false, the file will be saved immediately.
    */
-  saveState(state) {
+  saveState(state, soon = false) {
     let windows = state?.windows || [];
     windows = windows.filter((win) => this.#isWindowSaveable(win));
     if (!windows.length) {
@@ -448,11 +454,14 @@ export class nsZenSessionManager {
       return;
     }
     this.#collectWindowData(windows);
-    // This would save the data to disk asynchronously or when
-    // quitting the app.
+    // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebar;
     this.#file.data = sidebar;
-    this.#file.saveSoon();
+    if (soon) {
+      this.#file.saveSoon();
+    } else {
+      this.#file._save();
+    }
     this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
   }
@@ -533,7 +542,7 @@ export class nsZenSessionManager {
       return;
     }
     this.log("Saving closed window session data into Zen session store");
-    this.saveState({ windows: [aWinData] });
+    this.saveState({ windows: [aWinData] }, true);
   }
 
   /**

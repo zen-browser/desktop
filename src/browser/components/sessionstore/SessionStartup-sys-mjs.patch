@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStartup.sys.mjs b/browser/components/sessionstore/SessionStartup.sys.mjs
-index 86600ffb5178599ab23270a964064ca657a3283f..97975af7822a157eafe02ec8bbebdf1a6b564ccb 100644
+index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b595052264c67d351 100644
 --- a/browser/components/sessionstore/SessionStartup.sys.mjs
 +++ b/browser/components/sessionstore/SessionStartup.sys.mjs
 @@ -40,6 +40,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -51,3 +51,13 @@ index 86600ffb5178599ab23270a964064ca657a3283f..97975af7822a157eafe02ec8bbebdf1a
      }
  
      return this._resumeSessionEnabled;
+@@ -354,8 +354,7 @@ export var SessionStartup = {
+    */
+   willRestore() {
+     return (
+-      this.sessionType == this.RECOVER_SESSION ||
+-      this.sessionType == this.RESUME_SESSION
++      true
+     );
+   },
+ 

@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2a055f0c5f34f0a2667f659185120c07d38f4e41..2f63071f78782dbc30bde25b3bcaa96faedf6f0b 100644
+index 2a055f0c5f34f0a2667f659185120c07d38f4e41..564cdc7a442eb05525572d4b7bbc75282fc5460e 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,9 @@ const TAB_EVENTS = [
@@ -63,6 +63,15 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..2f63071f78782dbc30bde25b3bcaa96f
  
      // perform additional initialization when the first window is loading
      if (lazy.RunState.isStopped) {
+@@ -2088,7 +2097,7 @@ var SessionStoreInternal = {
+         // to disk to NOW() to enforce a full interval before the next write.
+         lazy.SessionSaver.updateLastSaveTime();
+ 
+-        if (isPrivateWindow || isTaskbarTab) {
++        if (isPrivateWindow || isTaskbarTab || aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+           this._log.debug(
+             "initializeWindow, the window is private or a web app. Saving SessionStartup.state for possibly restoring later"
+           );
 @@ -2131,6 +2140,7 @@ var SessionStoreInternal = {
            null,
            "sessionstore-one-or-no-tab-restored"

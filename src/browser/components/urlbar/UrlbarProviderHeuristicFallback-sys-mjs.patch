@@ -1,14 +1,11 @@
 diff --git a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-index 7a60a871022df44c0d26745f0035fce988cc5f92..42f352df933881c83c0560be2e4678c783f90eee 100644
+index 7a60a871022df44c0d26745f0035fce988cc5f92..0b89f9b66573d4c5ffb67983d728bb593e5cb524 100644
 --- a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-@@ -72,25 +72,30 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
-       let result = this._matchUnknownUrl(queryContext);
-       if (result) {
-         addCallback(this, result);
--        // Since we can't tell if this is a real URL and whether the user wants
--        // to visit or search for it, we provide an alternative searchengine
--        // match if the string looks like an alphanumeric origin or an e-mail.
+@@ -75,22 +75,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+         // Since we can't tell if this is a real URL and whether the user wants
+         // to visit or search for it, we provide an alternative searchengine
+         // match if the string looks like an alphanumeric origin or an e-mail.
 -        let str = queryContext.searchString;
 -        if (!URL.canParse(str)) {
 -          if (
@@ -19,20 +16,12 @@ index 7a60a871022df44c0d26745f0035fce988cc5f92..42f352df933881c83c0560be2e4678c7
 -            }) ||
 -              lazy.UrlUtils.REGEXP_COMMON_EMAIL.test(str))
 -          ) {
--            let searchResult = await this._engineSearchResult({ queryContext });
--            if (instance != this.queryInstance) {
--              return;
--            }
--            addCallback(this, searchResult);
-+        // Since we can't tell whether the user wants to visit or search for it,
-+        // we provide an alternative search engine match when the string looks
-+        // like a URL, an origin, or an email.
 +        let trimmedSearchString = queryContext.trimmedSearchString;
 +        let [searchCandidate] = UrlbarUtils.stripPrefixAndTrim(
 +          trimmedSearchString,
 +          {
 +            trimSlash: true,
-           }
++           }
 +        );
 +        if (
 +          lazy.UrlbarPrefs.get("keyword.enabled") &&
@@ -42,11 +31,12 @@ index 7a60a871022df44c0d26745f0035fce988cc5f92..42f352df933881c83c0560be2e4678c7
 +            }) !== lazy.UrlUtils.LOOKS_LIKE_ORIGIN.NONE ||
 +            lazy.UrlUtils.REGEXP_COMMON_EMAIL.test(trimmedSearchString))
 +        ) {
-+          let searchResult = await this._engineSearchResult({ queryContext });
-+          if (instance != this.queryInstance) {
-+            return;
-+          }
-+          addCallback(this, searchResult);
+             let searchResult = await this._engineSearchResult({ queryContext });
+             if (instance != this.queryInstance) {
+               return;
+             }
+             addCallback(this, searchResult);
+-          }
          }
          return;
        }

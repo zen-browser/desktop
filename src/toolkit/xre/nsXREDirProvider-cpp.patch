@@ -1,8 +1,8 @@
 diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
-index 64456439499d449ce7f2861b1a5addbeecd61721..d0acdb3082b4805e2b8903f8044c97ddf29419bb 100644
+index 5eae0bca990fea9e995bd2edf5e879361f89391c..3f8bfedb83ddae07b1e82715fc7f6b2109a39e33 100644
 --- a/toolkit/xre/nsXREDirProvider.cpp
 +++ b/toolkit/xre/nsXREDirProvider.cpp
-@@ -1317,9 +1317,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+@@ -1322,9 +1322,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
    // Similar to nsXREDirProvider::AppendProfilePath.
    // TODO: Bug 1990407 - Evaluate if refactoring might be required there in the
    // future?
@@ -15,7 +15,7 @@ index 64456439499d449ce7f2861b1a5addbeecd61721..d0acdb3082b4805e2b8903f8044c97dd
      MOZ_TRY(aFile->AppendRelativeNativePath(profile));
    } else {
      nsAutoCString vendor;
-@@ -1329,8 +1331,6 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+@@ -1334,8 +1336,6 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
      ToLowerCase(vendor);
      ToLowerCase(appName);
  
@@ -24,7 +24,7 @@ index 64456439499d449ce7f2861b1a5addbeecd61721..d0acdb3082b4805e2b8903f8044c97dd
      MOZ_TRY(aFile->AppendRelativeNativePath(appName));
    }
  
-@@ -1498,13 +1498,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+@@ -1503,13 +1503,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
  
      // If the build was made against a specific profile name, MOZ_APP_PROFILE=
      // then make sure we respect this and dont move to XDG directory

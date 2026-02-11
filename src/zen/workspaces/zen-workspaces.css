@@ -173,7 +173,6 @@
   &::before {
     border-radius: var(--border-radius-medium);
     background: transparent;
-    transition: background 0.1s;
     pointer-events: none;
     content: '';
     position: absolute;

@@ -145,7 +145,7 @@
     color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
   );
 
-  --zen-toolbar-element-bg-hover: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+  --zen-toolbar-element-bg-hover: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.1));
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit !important;

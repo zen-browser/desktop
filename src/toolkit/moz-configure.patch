@@ -1,8 +1,8 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d232f392d47 100644
+index 226d0c5a93a9a2404e1974001da4e34b7b670067..4bc5f1dddd9e4a18900bb2e8e209cc4d7cf1e0fe 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
-@@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):
+@@ -22,19 +22,21 @@ def check_moz_app_id(moz_app_id, build_project):
  
  project_flag(
      env="MOZ_APP_VENDOR",
@@ -10,7 +10,14 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      nargs=1,
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
-@@ -35,6 +36,7 @@ project_flag(
+ 
+ project_flag(
+     env="MOZ_APP_UA_NAME",
+-    default="",
++    default="Firefox",
+     nargs=1,
+     help="Application name in the User Agent string",
+ )
  
  project_flag(
      "MOZ_APP_PROFILE",

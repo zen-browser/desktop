@@ -51,14 +51,38 @@
 }
 
 #zen-boost-code-top-bar {
+  top: 0;
+  z-index: 10;
+
   width: 100%;
   height: 40px;
-  background-color: #f7f7f7;
+  background-color: #f6f6f8;
+  border: solid 0px #ededef;
+  border-bottom-width: 1px;
+}
+
+#zen-boost-code-bottom-bar {
+  bottom: 0;
+  z-index: 10;
+
+  width: 100%;
+  height: 60px;
+  background-color: #f6f6f8;
+  border: solid 0px #ededef;
+  border-top-width: 1px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
 }
 
 #zen-boost-code-editor {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 100px);
+
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 #zenBoostWindow {
@@ -89,14 +113,17 @@ body {
     min-width: fit-content !important;
 
     border: solid 6px transparent;
-    width: 26px;
-    height: 26px;
 
     transition: background 0.1s cubic-bezier(0.075, 0.82, 0.165, 1);
     appearance: none;
 
     &:active {
       transform: none !important;
+    }
+
+    opacity: 0.6;
+    &:hover {
+      opacity: 0.8;
     }
   }
 
@@ -244,10 +271,19 @@ body {
   margin: 5px;
   left: 5px;
 
-  opacity: 0.6;
-  &:hover {
-    opacity: 0.8;
-  }
+  background-position: left center !important;
+  padding-left: 20px !important;
+  padding-right: 5px !important;
+  list-style-position: outside !important;
+}
+
+#zen-boost-code-bottom-bar button {
+  content: "";
+  width: auto !important;
+  aspect-ratio: 1/1 !important;
+
+  margin: 5px;
+  left: 5px;
 }
 
 #zen-boost-zap {
@@ -261,10 +297,6 @@ body {
 #zen-boost-zap[hideicon="true"] {
   list-style: none;
   list-style-type: none;
-}
-
-#zen-boost-zap[enabled="true"] {
-  filter: invert();
 }
 
 #zen-boost-size {
@@ -289,6 +321,7 @@ body {
   height: 38px !important;
 
   transition:
+    0.5s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
     0.5s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
     0.5s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
@@ -305,6 +338,14 @@ body {
   }
 }
 
+#zen-boost-code-top-bar .mod-button {
+  height: auto !important;
+}
+
+#zen-boost-code-bottom-bar button {
+  margin: 0;
+}
+
 #zen-boost-name {
   height: 26px;
   font-size: 8pt;
@@ -315,9 +356,18 @@ body {
   justify-content: center;
 }
 
+#zen-boost-close {
+  margin-left: 0px;
+  margin-right: 10px;
+  @media (-moz-platform: macos) {
+    margin-left: 10px;
+    margin-right: 0px;
+  }
+}
+
 #zen-boost-shuffle {
   margin-right: 0px;
-  margin-left: 10px;
+  margin-left: 8px;
   @media (-moz-platform: macos) {
     margin-right: 10px;
     margin-left: 0px;
@@ -476,6 +526,24 @@ body {
 .mod-button[mode="blue"] {
   color: #e3e9e4;
   background: linear-gradient(180deg, #5d45ff 0%, #4125ff 100%) border-box;
+}
+
+#zen-boost-back {
+  background-color: transparent;
+
+  &:hover {
+    background-color: #e3e3e6;
+  }
+}
+
+.toggleable-button[enabled="true"] {
+  filter: invert();
+  opacity: 0.9;
+  
+  &:active {
+    filter: invert();
+    opacity: 0.8;
+  }
 }
 
 #zen-boost-text-case-toggle[mode="none"] {

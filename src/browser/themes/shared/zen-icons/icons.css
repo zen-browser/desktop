@@ -1032,3 +1032,11 @@
 #zen-boost-shuffle {
   list-style-image: url("arrow-rotate-anticlockwise.svg");
 }
+
+#zen-boost-css-picker {
+  list-style-image: url("pipette.svg");
+}
+
+#zen-boost-css-inspector {
+  list-style-image: url("hammer.svg");
+}

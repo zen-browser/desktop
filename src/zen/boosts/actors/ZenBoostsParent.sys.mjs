@@ -59,8 +59,28 @@ export class ZenBoostsParent extends JSWindowActorParent {
    */
   async receiveMessage(message) {
     switch (message.name) {
+      case "ZenBoost:OpenInspector": {
+        const { require } =
+          ChromeUtils.importESModule(
+            "resource://devtools/shared/loader/Loader.sys.mjs"
+          );
+
+        const { gDevTools } =
+          require("devtools/client/framework/devtools");
+
+        let win = Services.wm.getMostRecentWindow("navigator:browser");
+        let tab = win.gBrowser.selectedTab;
+
+        let toolbox = gDevTools.getToolboxForTab(tab);
+
+        if (toolbox) {
+          await gDevTools.closeToolboxForTab(tab);
+        } else {
+          await gDevTools.showToolboxForTab(tab, "inspector");
+        }
+      }
       case "ZenBoost:Notify": {
-        Services.obs.notifyObservers(null, message.data.topic, null);
+        Services.obs.notifyObservers(null, message.data.topic, message.data.msg);
         break;
       }
       case "ZenBoost:ZapSelector": {

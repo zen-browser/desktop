@@ -8,6 +8,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZapOverlay: "resource:///modules/ZenZapOverlayChild.sys.mjs",
+  SelectorComponent: "resource:///modules/ZenSelectorComponent.sys.mjs",
 });
 
 export class ZenBoostsChild extends JSWindowActorChild {
@@ -21,6 +22,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   static STATES = {
     NONE: "none",
     ZAP: "zap",
+    PICKER: "picker",
   };
 
   static OVERLAY_EVENTS = ["click", "pointerdown", "pointermove", "pointerup", "scroll", "resize"];
@@ -217,6 +219,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
           this.disableZapMode();
         }
         break;
+      case "ZenBoost:DisablePickerMode":
+        if (this.#currentState === ZenBoostsChild.STATES.PICKER) {
+          this.disablePickerMode();
+        }
+        break;
       case "ZenBoost:ToggleZapMode":
         if (this.#currentState === ZenBoostsChild.STATES.NONE) {
           this.#startZappingOverlay();
@@ -224,8 +231,20 @@ export class ZenBoostsChild extends JSWindowActorChild {
           this.disableZapMode();
         }
         break;
+      case "ZenBoost:TogglePickerMode":
+        if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+          this.#startPickingOverlay();
+        } else if (this.#currentState === ZenBoostsChild.STATES.PICKER) {
+          this.disablePickerMode();
+        }
+        break;
       case "ZenBoost:ZapModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.ZAP;
+      case "ZenBoost:SelectorPickerModeEnabled":
+        return this.#currentState === ZenBoostsChild.STATES.PICKER;
+      case "ZenBoost:OpenInspector":
+        this.sendQuery("ZenBoost:OpenInspector");
+        break;
     }
   }
 
@@ -357,6 +376,26 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.sendNotify("zap-state-update");
   }
 
+  async #startPickingOverlay() {
+    if (this.#currentState === ZenBoostsChild.STATES.PICKER) return;
+    this.#currentState = ZenBoostsChild.STATES.PICKER;
+
+    this.#overlay = new lazy.SelectorComponent(
+      this.document,
+      this,
+      [], // No additional IDs needed
+      this.onPickerSelection.bind(this));
+
+    this.#overlay.initialize();
+
+    this.#addEventListeners();
+    this.sendNotify("selector-picker-state-update", "onenable");
+  }
+
+  onPickerSelection(cssSelector) {
+    this.sendNotify("selector-picker-picked", cssSelector);
+  }
+
   addZapSelector(selector) {
     const domain = this.browsingContext.topWindow?.location?.host;
     this.sendQuery("ZenBoost:ZapSelector", {
@@ -405,7 +444,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.sendNotify("zap-state-update");
   }
 
-  sendNotify(topic) {
-    this.sendQuery("ZenBoost:Notify", { topic });
+  disablePickerMode() {
+    if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
+    this.#currentState = ZenBoostsChild.STATES.NONE;
+
+    this.#overlay?.tearDown();
+    this.#overlay = null;
+
+    this.#removeEventListeners();
+    this.sendNotify("selector-picker-state-update", "ondisable");
+  }
+
+  sendNotify(topic, msg = null) {
+    this.sendQuery("ZenBoost:Notify", { topic, msg });
   }
 }

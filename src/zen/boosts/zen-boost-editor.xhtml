@@ -31,6 +31,8 @@
   <link rel="stylesheet" href="chrome://browser/skin/zen-icons/icons.css" />
   <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" />
 
+  <link rel="localization" href="browser/zen-boosts.ftl"/>
+
   <!-- Loading in the window module -->
   <script>
     const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/ZenBoostsEditor.mjs" );
@@ -42,23 +44,23 @@
 <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox flex="1" id="zen-boost-editor-root">
     <hbox id="zen-boost-head-wrapper">
-      <button data-l10n="zen-boost-close" id="zen-boost-close" class="subviewbutton mod-button title-button"></button>
-      <button data-l10n="zen-boost-name" id="zen-boost-name" class="subviewbutton" flex="1">
+      <button id="zen-boost-close" class="subviewbutton mod-button title-button"></button>
+      <button id="zen-boost-name" class="subviewbutton" flex="1">
         <p id="zen-boost-name-text"></p>
       </button>
-      <button data-l10n="zen-boost-shuffle" id="zen-boost-shuffle" class="subviewbutton mod-button title-button"></button>
+      <button data-l10n-id="zen-boost-shuffle" id="zen-boost-shuffle" class="subviewbutton mod-button title-button"></button>
     </hbox>
     <vbox flex="1" id="zen-boost-filter-wrapper">
       <hbox class="zen-boost-color-picker-gradient">
-        <button data-l10n="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
+        <button data-l10n-id="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
         <html:div class="zen-boost-color-picker-dot"></html:div>
         <html:div class="zen-boost-color-picker-circle"></html:div>
       </hbox>
 
       <hbox flex="1" id="zen-boost-toolbar-wrapper">
-        <button data-l10n="zen-boost-invert" id="zen-boost-invert" class="subviewbutton mod-button small"></button>
-        <button data-l10n="zen-boost-controls" id="zen-boost-controls" class="subviewbutton mod-button small"></button>
-        <button data-l10n="zen-boost-disable" id="zen-boost-disable" class="subviewbutton mod-button small"></button>
+        <button data-l10n-id="zen-boost-invert" id="zen-boost-invert" class="subviewbutton mod-button small"></button>
+        <button data-l10n-id="zen-boost-controls" id="zen-boost-controls" class="subviewbutton mod-button small"></button>
+        <button data-l10n-id="zen-boost-disable" id="zen-boost-disable" class="subviewbutton mod-button small"></button>
       </hbox>
 
       <html:div id="zen-boost-font-wrapper">
@@ -70,46 +72,51 @@
           <html:select name="font" id="zen-boost-font-select" class="mod-button">  
             <!-- Additional font options will be injected here -->
           </html:select>
-          <button data-l10n="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
+          <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
         </hbox>
       </html:div>
 
-      <button data-l10n="zen-boost-size" id="zen-boost-size" class="subviewbutton mod-button big-button">
-        <html:p flex="1" id="zen-boost-size-text">Size</html:p>
+      <button id="zen-boost-size" class="subviewbutton mod-button big-button">
+        <html:p data-l10n-id="zen-boost-size" flex="1" id="zen-boost-size-text"></html:p>
         <box id="zen-boost-size-value" />
       </button>
 
-      <button data-l10n="zen-boost-zap" id="zen-boost-zap" class="subviewbutton mod-button big-button">
-        <html:p id="zen-boost-zap-text">Zap</html:p>
+      <button id="zen-boost-zap" class="subviewbutton mod-button big-button toggleable-button">
+        <html:p data-l10n-id="zen-boost-zap" id="zen-boost-zap-text"></html:p>
         <box id="zen-boost-zap-value" />
       </button>
 
-      <button data-l10n="zen-boost-code" id="zen-boost-code" class="subviewbutton mod-button big-button">
-        <html:p id="zen-boost-code-text">Code</html:p>
+      <button id="zen-boost-code" class="subviewbutton mod-button big-button">
+        <html:p data-l10n-id="zen-boost-code" id="zen-boost-code-text"></html:p>
       </button>
     </vbox>
   </vbox>
   <vbox flex="1" id="zen-boost-code-editor-root">
-    <vbox flex="1" id="zen-boost-code-top-bar">
-      <button data-l10n="zen-boost-back" id="zen-boost-back" class="subviewbutton mod-button big-button">
-        <html:p id="zen-boost-back-text">Back</html:p>
+    <hbox id="zen-boost-code-top-bar">
+      <button id="zen-boost-back" class="subviewbutton mod-button big-button">
+        <html:p data-l10n-id="zen-boost-back" id="zen-boost-back-text"></html:p>
       </button>
-    </vbox>
+    </hbox>
     
     <vbox flex="1" id="zen-boost-code-editor">
     </vbox>
+
+    <hbox id="zen-boost-code-bottom-bar">
+      <button data-l10n-id="zen-boost-css-picker" id="zen-boost-css-picker" class="subviewbutton mod-button big-button toggleable-button"></button>
+      <button data-l10n-id="zen-boost-css-inspector" id="zen-boost-css-inspector" class="subviewbutton mod-button big-button"></button>
+    </hbox>
   </vbox>
 
   <popupset id="mainPopupSet">
     <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
       <html:div flex="1" id="zen-boost-advanced-color-options-container">
-        <p>Contrast</p>
+        <p data-l10n-id="zen-bootst-color-contrast"></p>
         <html:input id="zen-boost-color-contrast" type="range" min="0" max="1" value="0.5" step="0.01"/>
         <separator />
-        <p>Brightness</p>
+        <p data-l10n-id="zen-bootst-color-brightness"></p>
         <html:input id="zen-boost-color-brightness" type="range" min="0" max="1" value="0.5" step="0.01"/>
         <separator />
-        <p>Original Saturation</p>
+        <p data-l10n-id="zen-bootst-color-original-saturation"></p>
         <html:input id="zen-boost-color-saturation" type="range" min="0" max="1" value="0.5" step="0.01"/>
       </html:div>
     </panel>

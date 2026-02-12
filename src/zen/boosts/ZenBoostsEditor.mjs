@@ -22,6 +22,10 @@ export class nsZenBoostEditor {
     this.window = window;
     this.openerWindow = openerWindow;
 
+    this._codeEditorWidth = 450;
+    this._boostEditorWidth = 185;
+    this._pickerCallback = null;
+
     this.isMouseDown = false;
     this.wasDragging = false;
     this.mouseDownPosition = { x: 0, y: 0 };
@@ -32,6 +36,7 @@ export class nsZenBoostEditor {
     Services.obs.addObserver(this, "zen-boosts-kill-editor");
     Services.obs.addObserver(this, "zap-list-update");
     Services.obs.addObserver(this, "zap-state-update");
+    Services.obs.addObserver(this, "selector-picker-state-update");
 
     this.init();
     this.initColorPicker();
@@ -82,18 +87,21 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-controls")
       .addEventListener("click", (event) => this.openAdvancedColorOptions(event));
-
     this.doc
       .getElementById("zen-boost-name")
       .addEventListener("input", (e) => (this.currentBoostData.boostName = e.target.value));
-
     this.doc
       .getElementById("zen-boost-close")
       .addEventListener("click", this.onClosePressed.bind(this));
-
     this.doc
       .getElementById("zen-boost-shuffle")
       .addEventListener("click", this.onShufflePressed.bind(this));
+    this.doc
+      .getElementById("zen-boost-css-picker")
+      .addEventListener("click", this.onPickerButtonPressed.bind(this));
+    this.doc
+      .getElementById("zen-boost-css-inspector")
+      .addEventListener("click", this.onInspectorButtonPressed.bind(this));
 
     this.doc.addEventListener("keydown", (event) => {
       if (event.key === "Escape" || (event.key === "w" && (event.ctrlKey || event.metaKey))) {
@@ -112,6 +120,7 @@ export class nsZenBoostEditor {
     Services.obs.removeObserver(this, "zen-boosts-kill-editor");
     Services.obs.removeObserver(this, "zap-list-update");
     Services.obs.removeObserver(this, "zap-state-update");
+    Services.obs.removeObserver(this, "selector-picker-state-update");
   }
 
   /**
@@ -127,11 +136,19 @@ export class nsZenBoostEditor {
    * Closes the editor window when a 'zen-boosts-kill-editor' notification is received.
    * @param {Object} subject - The subject of the notification.
    * @param {string} topic - The topic of the notification.
+   * @param {*} data - The message data.
    */
-  observe(subject, topic) {
+  observe(subject, topic, data) {
     switch (topic) {
       case "zap-state-update":
         this.onUpdateZapButtonVisual();
+        break;
+      case "selector-picker-state-update":
+        this.onUpdatePickerButtonVisual();
+        this.onUpdatePickerObserver(data);
+        break;
+      case "selector-picker-picked":
+        this.onPickerPickedCallback(data);
         break;
       case "zap-list-update":
         this.onUpdateZapValue();
@@ -186,6 +203,34 @@ export class nsZenBoostEditor {
 
     this.window._editor = editor;
     this.codeEditorReady = true;
+  }
+
+  /**
+   * Inserts a code snippet at the current cursor position
+   * @param {String} code The code to insert
+   */
+  insertCode(code) {
+    if (!code) code = "";
+
+    const cm = this.window._editor.codeMirror;
+    const cursor = cm.getCursor(); // { line, ch }
+    cm.replaceRange(code, cursor);
+    cm.focus();
+  }
+
+  /**
+   * Inserts a code snippet at the end of the code
+   * @param {String} code The code to insert
+   */
+  appendCode(code) {
+    if (!code) code = "";
+
+    const cm = this.window._editor.codeMirror;
+    const line = cm.lineCount();
+    const ch = 0;
+
+    cm.replaceRange(`\n${code}`, { line, ch });
+    cm.focus();
   }
 
   onCodeEditorChange() {
@@ -270,16 +315,21 @@ export class nsZenBoostEditor {
    * Handles the code editor button press, resizing and offsetting the window and enabling the code view
    */
   onCodeButtonPressed() {
-    const CODE_WIDTH = 450;
     const offset = 265;
     const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
+    const windowElem = this.doc.getElementById('zenBoostWindow');
 
-    const win = this.doc.getElementById("zenBoostWindow");
-    if (win.getAttribute("editor") != "code") {
-      this.window.resizeTo(CODE_WIDTH, this.window.outerHeight);
+    if(windowElem.getAttribute('editor') == 'code') return;
+    windowElem.setAttribute('editor', 'code');
 
-      if (openRightAligned) this.window.moveTo(this.window.screenX - offset, this.window.screenY);
-    }
+    // Store the old boost editor width. 
+    // The window needs the outer width which includes
+    // window chrome. This results in the window
+    // being smaller than it should be
+    this._boostEditorWidth = this.window.outerWidth;
+
+    this.window.resizeTo(this._codeEditorWidth, this.window.outerHeight);
+    if (openRightAligned) this.window.moveTo(this.window.screenX - offset, this.window.screenY);
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "none";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "initial";
@@ -289,25 +339,55 @@ export class nsZenBoostEditor {
    * Handles the back button in the code view, resizing and offsetting the window and changing back to boost view
    */
   onCodeBackButtonPressed() {
-    const BOOST_WIDTH = 185;
     const offset = 265;
     const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
+    const windowElem = this.doc.getElementById('zenBoostWindow');
 
-    const win = this.doc.getElementById("zenBoostWindow");
-    if (win.getAttribute("editor") != "boost") {
-      this.window.resizeTo(BOOST_WIDTH, this.window.outerHeight);
+    if(windowElem.getAttribute('editor') == 'boost') return;
+    windowElem.setAttribute('editor', 'boost');
 
-      if (openRightAligned) this.window.moveTo(this.window.screenX + offset, this.window.screenY);
-    }
+    this.window.resizeTo(this._boostEditorWidth, this.window.outerHeight);
+    if (openRightAligned) this.window.moveTo(this.window.screenX + offset, this.window.screenY);
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "initial";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
+
+    // Disable picker mode
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:DisablePickerMode");
   }
 
   async onZapButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:ToggleZapMode");
+  }
+
+  async onPickerButtonPressed() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:TogglePickerMode");
+  }
+
+  onPickerPickedCallback(cssSelector) {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:DisablePickerMode");
+    
+    // Insert the css selector at the cursor position in the css editor
+    this.appendCode(`
+${cssSelector} {
+
+}`);
+
+    Services.obs.removeObserver(this, "selector-picker-picked");
+  }
+
+  onInspectorButtonPressed() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    actor.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
@@ -317,6 +397,26 @@ export class nsZenBoostEditor {
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
 
     zapButton.setAttribute("enabled", zapEnabled ? "true" : "false");
+  }
+
+  async onUpdatePickerButtonVisual() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    
+    const pickerButton = this.doc.getElementById("zen-boost-css-picker");
+    const selectEnabled = await actor.sendQuery("ZenBoost:SelectorPickerModeEnabled");
+
+    pickerButton.setAttribute("enabled", selectEnabled ? "true" : "false");
+  }
+
+  onUpdatePickerObserver(data) {
+    console.log(data);
+    if(!data) return;
+
+    if(data == "onenable")
+      Services.obs.addObserver(this, "selector-picker-picked");
+    else if (data == "ondisable")
+      Services.obs.removeObserver(this, "selector-picker-picked");
   }
 
   onUpdateZapValue() {

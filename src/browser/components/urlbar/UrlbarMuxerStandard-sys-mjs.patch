@@ -13,6 +13,7 @@ index c12d875172650dddfe7de623a776149517c83302..de24df54f510c44acda8c64584bf483a
      ) {
        return false;
      }
+     
  
      if (result.providerName == "UrlbarProviderTabToSearch") {
 +      return false;

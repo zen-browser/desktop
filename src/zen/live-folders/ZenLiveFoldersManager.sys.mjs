@@ -184,7 +184,7 @@ class nsZenLiveFoldersManager {
         ]);
 
         label = message.attributes[0].value;
-        icon = "chrome://browser/content/zen-images/favicons/github.svg";
+        icon = "chrome://browser/skin/zen-icons/selectable/logo-github.svg";
         break;
       }
     }

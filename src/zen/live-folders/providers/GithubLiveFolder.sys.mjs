@@ -67,7 +67,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           items.push({
             title,
             subtitle: author,
-            icon: "chrome://browser/content/zen-images/favicons/github.svg",
+            icon: "chrome://browser/skin/zen-icons/selectable/logo-github.svg",
             url: `https://github.com/${issueUrl}`,
             id: `${repo}#${number}`,
           });

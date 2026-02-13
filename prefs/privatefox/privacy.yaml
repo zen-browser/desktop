@@ -109,6 +109,13 @@
 
 - name: privacy.globalprivacycontrol.enabled
   value: true
+  locked: false
+
+# Enhanced Tracking Protection
+# Can interfere with web apps like Spotify - allow users to control
+- name: privacy.trackingprotection.enabled
+  value: true
+  locked: false
 
 # Contextual Identities
 - name: privacy.userContext.enabled

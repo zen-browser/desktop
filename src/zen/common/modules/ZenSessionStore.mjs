@@ -20,9 +20,6 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenLiveFolderItemId) {
       tab.setAttribute("zen-live-folder-item-id", tabData.zenLiveFolderItemId);
     }
-    if (tabData.zenShowSublabel === true) {
-      tab.setAttribute("zen-show-sublabel", "true");
-    }
     // Keep for now, for backward compatibility for window sync to work.
     if (tabData.zenSyncId || tabData.zenPinnedId) {
       tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);

@@ -257,14 +257,18 @@ body {
 }
 
 #zen-boost-back {
-  width: 70px !important;
+  width: 60px !important;
   margin: 5px;
   left: 5px;
 
-  background-position: left center !important;
-  padding-left: 20px !important;
-  padding-right: 5px !important;
-  list-style-position: outside !important;
+  display: flex;
+  flex-direction: row-reverse;
+
+  & hbox {
+    scale: 0.75;
+    margin-right: -7px;
+    margin-top: 2px;
+  }
 }
 
 #zen-boost-code-bottom-bar button {
@@ -279,8 +283,9 @@ body {
 #zen-boost-zap {
   & #zen-boost-zap-value {
     text-align: right;
-    right: 0;
+    right: 8px;
     margin: auto;
+    position: relative;
   }
 }
 
@@ -294,8 +299,9 @@ body {
 
   & #zen-boost-size-value {
     text-align: right;
-    right: 0;
+    right: 8px;
     margin: auto;
+    position: relative;
   }
 }
 
@@ -334,6 +340,13 @@ body {
   }
 }
 
+#zen-boost-text-case-toggle[case-mode="none"] {
+  opacity: 0.5;
+  &:hover {
+    opacity: 0.6 !important;
+  }
+}
+
 #zen-boost-code-top-bar .mod-button {
   height: auto !important;
 }
@@ -363,7 +376,7 @@ body {
 
 #zen-boost-shuffle {
   margin-right: 0px;
-  margin-left: 8px;
+  margin-left: 4px;
   @media (-moz-platform: macos) {
     margin-right: 10px;
     margin-left: 0px;
@@ -513,21 +526,46 @@ body {
   background-color: #5b5b5c32;
 }
 
+@property --mod-button-c1 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #ebebed;
+}
+
+@property --mod-button-c2 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #ebebed;
+}
+
 .mod-button[mode="orange"] {
   color: #e3e9e4;
-  background: linear-gradient(180deg, #ffab35 0%, #ffa01d 100%) border-box;
+  --mod-button-c1: #ffab35;
+  --mod-button-c2: #ffa01d;
 }
 .mod-button[mode="orange-red"] {
   color: #e3e9e4;
-  background: linear-gradient(180deg, #ff723b 0%, #ff5b1b 100%) border-box;
+  --mod-button-c1: #ff723b;
+  --mod-button-c2: #ff5b1b;
 }
 .mod-button[mode="red"] {
   color: #e3e9e4;
-  background: linear-gradient(180deg, #ff3e45 0%, #ff121b 100%) border-box;
+  --mod-button-c1: #ff3e45;
+  --mod-button-c2: #ff121b;
 }
 .mod-button[mode="blue"] {
   color: #e3e9e4;
-  background: linear-gradient(180deg, #5d45ff 0%, #4125ff 100%) border-box;
+  --mod-button-c1: #5d45ff;
+  --mod-button-c2: #4125ff;
+}
+.mod-button[mode] {
+  background: linear-gradient(180deg, var(--mod-button-c1) 0%, var(--mod-button-c2) 100%) border-box;
+  transition:
+    0.4s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.4s filter cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.75s --mod-button-c1 cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.55s --mod-button-c2 cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 }
 
 #zen-boost-back {
@@ -550,10 +588,6 @@ body {
     filter: invert();
     opacity: 0.8;
   }
-}
-
-#zen-boost-text-case-toggle[mode="none"] {
-  opacity: 0.5;
 }
 
 .zen-boost-color-picker-gradient::after {

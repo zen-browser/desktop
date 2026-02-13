@@ -993,11 +993,11 @@
   list-style-image: url("text-title-case.svg");
 }
 
-#zen-boost-text-case-toggle[mode="uppercase"] {
+#zen-boost-text-case-toggle[case-mode="uppercase"] {
   list-style-image: url("text-uppercase.svg");
 }
 
-#zen-boost-text-case-toggle[mode="lowercase"] {
+#zen-boost-text-case-toggle[case-mode="lowercase"] {
   list-style-image: url("text-lowercase.svg");
 }
 

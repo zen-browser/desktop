@@ -750,7 +750,7 @@ ${cssSelector} {
    */
   updateCaseButtonVisuals() {
     const sizeValue = this.doc.getElementById("zen-boost-text-case-toggle");
-    sizeValue.setAttribute("mode", this.currentBoostData.textCaseOverride);
+    sizeValue.setAttribute("case-mode", this.currentBoostData.textCaseOverride);
   }
 
   /**

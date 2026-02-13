@@ -53,10 +53,11 @@
 }
 
 #zap-controls-container {
+  font-family: system-ui !important;
+  
   display: flex;
-  font-family: Arial, Helvetica, sans-serif !important;
   pointer-events: auto !important;
-  z-index: 99999;
+  z-index: 999999;
 
   bottom: 8px;
   left: 8px;

@@ -260,7 +260,7 @@ class nsZenBoostsManager {
       parentWindow,
       "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
       null,
-      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent`,
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=no`,
       null
     );
 

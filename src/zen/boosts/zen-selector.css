@@ -17,6 +17,7 @@
 
 #select-component {
   width: min-content;
+  font-family: system-ui !important;
 
   height: 94px;
   @media (-moz-platform: macos) {

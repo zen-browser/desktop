@@ -8,11 +8,9 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
 
   constructor({ id, state, manager }) {
-    super({ id, manager });
+    super({ id, state, manager });
 
     this.state.url = "https://github.com/issues/assigned";
-    this.state.interval = state.interval;
-    this.state.lastFetched = state.lastFetched;
     this.state.type = state.type;
 
     this.state.options = state.options ?? {};

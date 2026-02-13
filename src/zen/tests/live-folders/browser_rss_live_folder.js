@@ -29,6 +29,8 @@ function getRssProviderForTest(sandbox, customState = {}) {
   });
 
   sandbox.stub(instance, "fetch");
+  sandbox.stub(instance, "getMetadata").resolves({});
+
   return instance;
 }
 
@@ -63,7 +65,6 @@ add_task(async function test_rss_parsing() {
   });
 
   const items = await instance.fetchItems();
-
   Assert.equal(items.length, 2, "Should find 2 items");
 
   // Check mapping

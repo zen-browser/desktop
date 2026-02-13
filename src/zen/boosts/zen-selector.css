@@ -17,7 +17,11 @@
 
 #select-component {
   width: min-content;
-  height: 98px;
+
+  height: 94px;
+  @media (-moz-platform: macos) {
+    height: 98px;
+  }
 
   pointer-events: auto !important;
 
@@ -30,7 +34,10 @@
   background-color: #f5f7fb;
   border: 1px solid #dad9e2;
 
-  border-radius: 24px;
+  border-radius: 12px;
+  @media (-moz-platform: macos) {
+    border-radius: 24px;
+  }
 
   box-shadow: 0px 0px 20px#00000020;
 
@@ -84,14 +91,17 @@
 
     height: 40px;
 
-    border-radius: 12px;
+    border-radius: 6px;
+    @media (-moz-platform: macos) {
+      border-radius: 12px;
+    }
 
     padding-left: 10px;
     padding-right: 10px;
 
     font-size: 11pt;
     transition:
-      0.1s filter ease-out,
+      0.15s filter ease,
       0.1s box-shadow ease-out,
       scale 0.35s cubic-bezier(0.11, 1.6, 0.63, 1);
 
@@ -135,8 +145,13 @@
 
 #select-controls {
   display: flex;
-  gap: 12px;
-  padding: 12px;
+
+  gap: 10px;
+  padding: 10px;
+  @media (-moz-platform: macos) {
+    gap: 12px;
+    padding: 12px;
+  }
 }
 
 #select-related {
@@ -145,7 +160,6 @@
 
   width: 250px !important;
   --related-elements-value: 100%;
-
   background: linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
 
   border: none;
@@ -153,10 +167,14 @@
   box-shadow: 0px 0px 15px #00000052;
 
   &:hover {
+    box-shadow: 0px 0px 14px #00000066;
     background:
       linear-gradient(to right, transparent var(--related-elements-value), gray var(--related-elements-value)),
       linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
-    box-shadow: 0px 0px 20px #00000077;
+
+    @media (-moz-platform: macos) {
+      box-shadow: 0px 0px 20px #00000077;
+    }
   }
 }
 
@@ -173,7 +191,11 @@
 #select-cancel {
   appearance: none;
 
-  background: linear-gradient(0deg, rgba(81, 83, 85, 1) 0%, rgba(108, 110, 112, 1) 100%);
+  background: rgb(90, 94, 100);
+  @media (-moz-platform: macos) {
+    background: linear-gradient(0deg, rgba(81, 83, 85, 1) 0%, rgba(108, 110, 112, 1) 100%);
+  }
+
   border: none;
   color: #dadada;
 

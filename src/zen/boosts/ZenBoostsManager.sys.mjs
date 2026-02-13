@@ -253,14 +253,14 @@ class nsZenBoostsManager {
 
     if (left + editorWidth > (availLeft + availWidth) || left < availLeft) {
       left = screenX + width - (editorWidth + pad);
-      if (this.#areTabsOnRightSide()) left = screenX + editorWidth + pad;
+      if (this.#areTabsOnRightSide()) left = screenX + pad;
     }
 
     const editor = Services.ww.openWindow(
       parentWindow,
       "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
       null,
-      `left=${left},top=${top},chrome,alwaysontop,resizable=no`,
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent`,
       null
     );
 

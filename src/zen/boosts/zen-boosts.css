@@ -107,7 +107,10 @@ body {
   margin: 0px;
 
   & button {
-    border-radius: 10px;
+    border-radius: 6px;
+    @media (-moz-platform: macos) {
+      border-radius: 10px;
+    }
 
     padding: 0 !important;
     min-width: fit-content !important;
@@ -121,9 +124,8 @@ body {
       transform: none !important;
     }
 
-    opacity: 0.6;
     &:hover {
-      opacity: 0.8;
+      opacity: 0.8 !important;
     }
   }
 
@@ -152,18 +154,6 @@ body {
 
 .subviewbutton {
   color: #3a3a3b;
-}
-
-#zen-boost-font-arial {
-  font-family: Arial, sans-serif;
-}
-
-#zen-boost-font-serif {
-  font-family: serif;
-}
-
-#zen-boost-font-mono {
-  font-family: monospace, monospace;
 }
 
 #zen-boost-editor-view {
@@ -320,14 +310,20 @@ body {
 .mod-button {
   height: 38px !important;
 
-  transition:
-    0.5s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
-    0.5s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
-    0.5s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
+  border-radius: 6px;
+  @media (-moz-platform: macos) {
+    border-radius: 12px;
+  }
 
   background-color: #ebebed;
+
+  transition:
+    0.4s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
+    0.4s filter cubic-bezier(0.075, 0.82, 0.165, 1) !important;
+
   &:hover {
-    opacity: 0.9;
+    opacity: 0.85;
   }
 
   &:active {
@@ -401,7 +397,7 @@ body {
 #zen-boost-toolbar-wrapper {
   width: auto;
   margin: auto;
-  gap: 0.75em;
+  gap: 0.8em;
 
   & .small {
     width: 40px;
@@ -465,7 +461,12 @@ body {
 #zen-boost-font-wrapper {
   box-shadow: 0px 4px 8px #00000020;
   background-color: #ffffff;
-  border-radius: 8px;
+
+  border-radius: 6px;
+  @media (-moz-platform: macos) {
+    border-radius: 8px;
+  }
+
   padding-top: 4px;
   padding-bottom: 4px;
 
@@ -489,12 +490,13 @@ body {
   & button {
     filter: none;
     color: #9a9a9a;
-    border-radius: 99px;
+    border-radius: 50px;
     transition:
       0.5s transform cubic-bezier(0.075, 0.82, 0.165, 1),
       0.5s background-color cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
     padding: 2px;
+    transform: scale(1);
 
     &:hover {
       transform: scale(1.15);
@@ -536,10 +538,14 @@ body {
   }
 }
 
+#zen-boost-code-editor-root button {
+  opacity: 0.6;
+}
+
 .toggleable-button[enabled="true"] {
   filter: invert();
   opacity: 0.9;
-  
+
   &:active {
     filter: invert();
     opacity: 0.8;
@@ -598,7 +604,7 @@ body {
   box-shadow: 0px 4px 8px #00000021;
   width: 100%;
   aspect-ratio: 1 /1;
-  margin: 10px 0px 10px 0px;
+  margin: 10px 0px 8px 0px;
   transition: filter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) !important;
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 

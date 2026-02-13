@@ -14,21 +14,42 @@
   }
 }
 
+@keyframes zap-border-in {
+  0% {
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+  }
+
+  100% {
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    right: 2px;
+  }
+}
+
 #zap-border {
   z-index: 9999;
   content: "";
   position: fixed;
 
-  left: 3px;
-  top: 3px;
-  bottom: 3px;
-  right: 3px;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
 
   pointer-events: none;
   background-color: transparent;
 
+  outline: 4px solid #dfd43a;
+  animation: 0.15s zap-border-in ease-out;
+
   border-radius: 4px;
-  outline: 6px solid #dfd43a !important;
+  @media (-moz-platform: macos) {
+    border-radius: 8px;
+  }
 }
 
 #zap-controls-container {
@@ -45,7 +66,10 @@
   height: 54px;
   position: fixed;
 
-  border-radius: 12px;
+  border-radius: 6px;
+  @media (-moz-platform: macos) {
+    border-radius: 12px;
+  }
 
   align-items: center;
   gap: 8px;
@@ -54,15 +78,18 @@
   background-color: #1d1b1b;
   border: 1px solid #2f2b2b;
 
-  animation: 0.2s select-controls-container-in ease-out;
+  animation: 0.15s select-controls-container-in cubic-bezier(0.07, 1.32, 0.41, 1);
 
   & input {
     width: min-content;
     height: 36px;
 
-    border-radius: 8px;
-    border: none;
+    border-radius: 4px;
+    @media (-moz-platform: macos) {
+      border-radius: 8px;
+    }
 
+    border: none;
     background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%) !important;
 
     color: #1d1b1b;

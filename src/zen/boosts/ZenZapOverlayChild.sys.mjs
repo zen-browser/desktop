@@ -19,7 +19,7 @@ export class ZapOverlay {
   #initialized = false;
   #content = null;
 
-  #zapContentIDs = ["zap-list"];
+  #zapContentIDs = ["zap-list", "zap-controls-container"];
   #selectorComponent = null;
 
   /**
@@ -91,6 +91,7 @@ export class ZapOverlay {
         </div>
         <input type="button" id="zap-done" value="${done.value}"/>
       </div>
+      <div id="zap-border"></div>
     </template>
     `;
   }

@@ -227,9 +227,14 @@ export class nsZenBoostEditor {
 
     const cm = this.window._editor.codeMirror;
     const line = cm.lineCount();
+    const content = this.window._editor.getText();
     const ch = 0;
 
-    cm.replaceRange(`\n${code}`, { line, ch });
+    if(content == '')
+      cm.replaceRange(code, { line, ch });
+    else  
+      cm.replaceRange(`\n${code}`, { line, ch });
+    
     cm.focus();
   }
 
@@ -909,6 +914,7 @@ ${cssSelector} {
       gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
 
     Services.obs.notifyObservers(null, "zen-boosts-disable-zap", null);
+    Services.obs.notifyObservers(null, "zen-boosts-disable-picker", null);
   }
 
   /**

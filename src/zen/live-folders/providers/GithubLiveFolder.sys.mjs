@@ -32,14 +32,14 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const searchParams = this.#buildSearchOptions();
       const url = `${this.state.url}?${searchParams}`;
 
-      const { html, status } = await this.fetchHTML(url);
+      const { text, status } = await this.fetch(url);
 
       // Assume no auth
       if (status === 404) {
         return "zen-live-folder-github-no-auth";
       }
 
-      const document = new DOMParser().parseFromString(html, "text/html");
+      const document = new DOMParser().parseFromString(text, "text/html");
       const issues = document.querySelectorAll(
         "div[class^=IssueItem-module__defaultRepoContainer]"
       );

@@ -28,14 +28,9 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
 
   async fetchItems() {
     try {
-      const response = await this.fetch(this.state.url);
-      if (!response.ok) {
-        return "zen-live-folder-failed-fetch";
-      }
+      const { text } = await this.fetch(this.state.url);
 
       const metadata = await this.getMetadata();
-
-      const text = await response.text();
       const doc = new DOMParser().parseFromString(text, "text/xml");
 
       const cutoffTime = Date.now() - this.state.timeRange;

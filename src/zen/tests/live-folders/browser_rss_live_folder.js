@@ -60,8 +60,7 @@ add_task(async function test_rss_parsing() {
   `;
 
   instance.fetch.resolves({
-    ok: true,
-    text: () => Promise.resolve(rssXml),
+    text: rssXml,
   });
 
   const items = await instance.fetchItems();
@@ -99,8 +98,7 @@ add_task(async function test_atom_parsing() {
   `;
 
   instance.fetch.resolves({
-    ok: true,
-    text: () => Promise.resolve(atomXml),
+    text: atomXml,
   });
 
   const items = await instance.fetchItems();
@@ -143,8 +141,7 @@ add_task(async function test_time_range_filtering() {
   `;
 
   instance.fetch.resolves({
-    ok: true,
-    text: () => Promise.resolve(rssXml),
+    text: rssXml,
   });
 
   const items = await instance.fetchItems();
@@ -173,8 +170,7 @@ add_task(async function test_max_items_limit() {
   `;
 
   instance.fetch.resolves({
-    ok: true,
-    text: () => Promise.resolve(rssXml),
+    text: rssXml,
   });
 
   const items = await instance.fetchItems();
@@ -209,8 +205,7 @@ add_task(async function test_invalid_dates() {
   `;
 
   instance.fetch.resolves({
-    ok: true,
-    text: () => Promise.resolve(rssXml),
+    text: rssXml,
   });
 
   const items = await instance.fetchItems();

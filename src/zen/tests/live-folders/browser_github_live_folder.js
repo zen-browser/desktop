@@ -34,7 +34,7 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
     manager: mockManager,
   });
 
-  sandbox.stub(instance, "fetchHTML");
+  sandbox.stub(instance, "fetch");
   return instance;
 }
 
@@ -50,16 +50,16 @@ add_task(async function test_fetch_items_url_construction() {
     type: "pull-requests",
   });
 
-  instance.fetchHTML.resolves({
+  instance.fetch.resolves({
     status: 200,
-    html: "<html></html>",
+    text: "<html></html>",
   });
 
   await instance.fetchItems();
 
-  Assert.ok(instance.fetchHTML.calledOnce, "Fetch should be called once");
+  Assert.ok(instance.fetch.calledOnce, "Fetch should be called once");
 
-  const fetchedUrl = new URL(instance.fetchHTML.firstCall.args[0]);
+  const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
   const searchParams = fetchedUrl.searchParams;
 
   Assert.ok(fetchedUrl.href.startsWith("https://github.com/issues/assigned"));
@@ -85,14 +85,14 @@ add_task(async function test_fetch_items_url_complex_options() {
     reviewRequested: true,
   });
 
-  instance.fetchHTML.resolves({
+  instance.fetch.resolves({
     status: 200,
-    html: "<html></html>",
+    text: "<html></html>",
   });
 
   await instance.fetchItems();
 
-  const fetchedUrl = new URL(instance.fetchHTML.firstCall.args[0]);
+  const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
   const query = fetchedUrl.searchParams.get("q");
 
   Assert.ok(query.includes("author:@me"), "Should include author");
@@ -128,8 +128,8 @@ add_task(async function test_html_parsing_logic() {
     </html>
   `;
 
-  instance.fetchHTML.resolves({
-    html: mockHtml,
+  instance.fetch.resolves({
+    text: mockHtml,
     status: 200,
   });
 
@@ -156,7 +156,7 @@ add_task(async function test_fetch_network_error() {
   let sandbox = sinon.createSandbox();
   let instance = getGithubProviderForTest(sandbox);
 
-  instance.fetchHTML.rejects(new Error("Network down"));
+  instance.fetch.rejects(new Error("Network down"));
 
   const errorId = await instance.fetchItems();
   Assert.equal(errorId, "zen-live-folder-failed-fetch", "Should return an error on failed fetch");

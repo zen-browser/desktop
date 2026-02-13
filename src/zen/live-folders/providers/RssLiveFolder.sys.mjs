@@ -17,24 +17,15 @@ ChromeUtils.defineLazyGetter(
 
 export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "rss";
-<<<<<<< HEAD
-=======
-  state = {};
->>>>>>> 44bbe65e (merge)
 
   constructor({ id, state, manager }) {
     super({ id, state, manager });
 
     this.state.url = state.url;
-<<<<<<< HEAD
-    this.state.maxItems = state.maxItems ?? 10;
-    this.state.timeRange = state.timeRange ?? 0;
-=======
     this.state.interval = state.interval;
     this.state.maxItems = state.maxItems ?? 10;
     this.state.timeRange = state.timeRange ?? 0;
     this.state.lastFetched = state.lastFetched;
->>>>>>> 44bbe65e (merge)
   }
 
   async fetchItems() {
@@ -164,19 +155,11 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   // static so it can be easily accessed by the manager without having to create the live folder first
-<<<<<<< HEAD
   static async getMetadata(url, window) {
     try {
       const response = await fetch(url);
       if (!response.ok) {
         return { label: "", icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg") };
-=======
-  static async getMetadata(url, fetchFn = fetch) {
-    try {
-      const response = await fetchFn(url);
-      if (!response.ok) {
-        return { label: "" };
->>>>>>> 44bbe65e (merge)
       }
 
       const text = await response.text();
@@ -200,18 +183,12 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
         Services.io.newURI(faviconPageUrl)
       );
 
-<<<<<<< HEAD
       return {
         label: title || "",
         icon: favicon?.dataURI.spec || window.gZenEmojiPicker.getSVGURL("logo-rss.svg"),
       };
     } catch (e) {
       return { label: "", icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg") };
-=======
-      return { label: title || "", icon: favicon?.dataURI.spec };
-    } catch (e) {
-      return { label: "" };
->>>>>>> 44bbe65e (merge)
     }
   }
 
@@ -245,11 +222,7 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   async getMetadata() {
-<<<<<<< HEAD
     return nsRssLiveFolderProvider.getMetadata(this.state.url, this.manager.window);
-=======
-    return nsRssLiveFolderProvider.getMetadata(this.state.url, this.fetch.bind(this));
->>>>>>> 44bbe65e (merge)
   }
 
   async onOptionTrigger(option) {
@@ -264,14 +237,10 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (key) {
       case "feedURL": {
-<<<<<<< HEAD
         const url = await nsRssLiveFolderProvider.promptForFeedUrl(
           this.manager.window,
           this.state.url
         );
-=======
-        const url = await nsRssLiveFolderProvider.promptForFeedUrl(this.manager.window);
->>>>>>> 44bbe65e (merge)
         if (url) {
           this.state.url = url;
           this.refresh();
@@ -283,10 +252,7 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
         const parsedValue = Number.parseInt(value);
         if (!Number.isNaN(parsedValue)) {
           this.state[key] = parsedValue;
-<<<<<<< HEAD
           this.refresh();
-=======
->>>>>>> 44bbe65e (merge)
         }
         break;
       }

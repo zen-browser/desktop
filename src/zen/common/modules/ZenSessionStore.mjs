@@ -17,20 +17,12 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenWorkspace) {
       tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
     }
-<<<<<<< HEAD
-    if (tabData.zenLiveFolderItemId) {
-      tab.setAttribute("zen-live-folder-item-id", tabData.zenLiveFolderItemId);
-    }
-=======
-
     if (tabData.zenLiveFolderItemId) {
       tab.setAttribute("zen-live-folder-item-id", tabData.zenLiveFolderItemId);
     }
     if (tabData.zenShowSublabel === true) {
       tab.setAttribute("zen-show-sublabel", "true");
     }
-
->>>>>>> 44bbe65e (merge)
     // Keep for now, for backward compatibility for window sync to work.
     if (tabData.zenSyncId || tabData.zenPinnedId) {
       tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);

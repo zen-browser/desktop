@@ -6,14 +6,6 @@ import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.s
 
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
-<<<<<<< HEAD
-
-  constructor({ id, state, manager }) {
-    super({ id, state, manager });
-
-    this.state.url = "https://github.com/issues/assigned";
-=======
-  state = {};
 
   constructor({ id, state, manager }) {
     super({ id, manager });
@@ -21,7 +13,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     this.state.url = "https://github.com/issues/assigned";
     this.state.interval = state.interval;
     this.state.lastFetched = state.lastFetched;
->>>>>>> 44bbe65e (merge)
     this.state.type = state.type;
 
     this.state.options = state.options ?? {};
@@ -40,7 +31,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return "zen-live-folder-github-no-filter";
       }
 
-<<<<<<< HEAD
       const searchParams = this.#buildSearchOptions();
       const url = `${this.state.url}?${searchParams}`;
 
@@ -52,34 +42,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       const document = new DOMParser().parseFromString(html, "text/html");
-=======
-      const cookies = Services.cookies
-        .getCookiesWithOriginAttributes("{}", "github.com")
-        .filter((c) => c.isSession);
-      const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
-
-      const searchParams = this.#buildSearchOptions();
-      const url = `${this.state.url}?${searchParams}`;
-      const response = await this.fetch(url, {
-        headers: {
-          Cookie: cookieHeader,
-        },
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        // github.com/issues/assigned should always return 404 when no auth
-        if (response.status === 404) {
-          return "zen-live-folder-github-no-auth";
-        }
-
-        return "zen-live-folder-failed-fetch";
-      }
-
-      const text = await response.text();
-      const document = new DOMParser().parseFromString(text, "text/html");
->>>>>>> 44bbe65e (merge)
-
       const issues = document.querySelectorAll(
         "div[class^=IssueItem-module__defaultRepoContainer]"
       );

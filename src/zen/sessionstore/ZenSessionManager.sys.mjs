@@ -474,6 +474,7 @@ export class nsZenSessionManager {
     } else {
       this.#file._save();
     }
+    lazy.ZenLiveFoldersManager.saveState();
     this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
   }

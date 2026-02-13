@@ -9,10 +9,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   clearTimeout: "resource://gre/modules/Timer.sys.mjs",
   requestIdleCallback: "resource://gre/modules/Timer.sys.mjs",
   cancelIdleCallback: "resource://gre/modules/Timer.sys.mjs",
-<<<<<<< HEAD
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
-=======
->>>>>>> 44bbe65e (merge)
 });
 
 XPCOMUtils.defineLazyServiceGetter(
@@ -27,7 +24,6 @@ export class nsZenLiveFolderProvider {
   #idleCallbackHandle = null;
   state = {};
 
-<<<<<<< HEAD
   constructor({ id, manager, state }) {
     this.id = id;
     this.manager = manager;
@@ -211,11 +207,6 @@ export class nsZenLiveFolderProvider {
       // The label was invalid or unsupported.
     }
     return null;
-=======
-  constructor({ id, manager }) {
-    this.id = id;
-    this.manager = manager;
->>>>>>> 44bbe65e (merge)
   }
 
   fetchItems() {

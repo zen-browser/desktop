@@ -189,30 +189,21 @@ class nsZenLiveFoldersUI {
   }
 
   #timeAgo(date) {
-<<<<<<< HEAD
     if (date === 0) {
       return "-";
     }
 
-=======
->>>>>>> 44bbe65e (merge)
     const rtf = new Intl.RelativeTimeFormat(Services.locale.appLocaleAsBCP47, { numeric: "auto" });
     const secondsDiff = (date - Date.now()) / 1000;
     const absSeconds = Math.abs(secondsDiff);
 
     const ranges = {
-<<<<<<< HEAD
-=======
-      year: 31536000,
-      month: 2592000,
->>>>>>> 44bbe65e (merge)
       day: 86400,
       hour: 3600,
       minute: 60,
       second: 1,
     };
 
-<<<<<<< HEAD
     if (Number.isFinite(secondsDiff)) {
       for (const [key, value] of Object.entries(ranges)) {
         if (absSeconds >= value) {
@@ -224,15 +215,6 @@ class nsZenLiveFoldersUI {
     }
 
     return "-";
-=======
-    for (const [key, value] of Object.entries(ranges)) {
-      if (absSeconds >= value) {
-        return rtf.format(Math.round(secondsDiff / value), key);
-      }
-    }
-
-    return rtf.format(Math.round(secondsDiff), "second");
->>>>>>> 44bbe65e (merge)
   }
 }
 

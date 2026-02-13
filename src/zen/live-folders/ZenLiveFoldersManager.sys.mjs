@@ -172,11 +172,7 @@ class nsZenLiveFoldersManager {
           return -1;
         }
 
-<<<<<<< HEAD
         const metadata = await ProviderClass.getMetadata(url, this.window);
-=======
-        const metadata = await ProviderClass.getMetadata(url);
->>>>>>> 44bbe65e (merge)
         label = metadata.label;
         icon = metadata.icon;
 
@@ -334,14 +330,8 @@ class nsZenLiveFoldersManager {
     // Wait for tabs to (hopefully) be initialized on all windows
     lazy.setTimeout(() => {
       folder.addTabs(newItems);
-<<<<<<< HEAD
       this.saveState();
     }, 0);
-=======
-    }, 0);
-
-    this.saveState();
->>>>>>> 44bbe65e (merge)
   }
 
   // Helpers

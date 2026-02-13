@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5fbefff5ce 100644
+index 2a055f0c5f34f0a2667f659185120c07d38f4e41..d3c917eba316563d440aca4f602c483a665cf919 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,9 @@ const TAB_EVENTS = [
@@ -192,16 +192,17 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -4565,6 +4592,8 @@ var SessionStoreInternal = {
+@@ -4565,6 +4592,9 @@ var SessionStoreInternal = {
        // Append the tab if we're opening into a different window,
        tabIndex: aSource == aTargetWindow ? pos : Infinity,
        pinned: state.pinned,
 +      essential: state.zenEssential,
 +      zenWorkspaceId: state.zenWorkspace,
++      zenRestoreTPos: pos,
        userContextId: state.userContextId,
        skipLoad: true,
        preferredRemoteType,
-@@ -5055,9 +5084,10 @@ var SessionStoreInternal = {
+@@ -5055,9 +5085,10 @@ var SessionStoreInternal = {
        if (activePageData.title && activePageData.title != activePageData.url) {
          win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
            isContentTitle: true,
@@ -213,7 +214,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
        }
      }
  
-@@ -5414,7 +5444,7 @@ var SessionStoreInternal = {
+@@ -5414,7 +5445,7 @@ var SessionStoreInternal = {
  
      for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
        let tab = tabbrowser.tabs[i];
@@ -222,7 +223,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
          removableTabs.push(tab);
        }
      }
-@@ -5525,7 +5555,7 @@ var SessionStoreInternal = {
+@@ -5525,7 +5556,7 @@ var SessionStoreInternal = {
  
      // collect the data for all windows
      for (ix in this._windows) {
@@ -231,7 +232,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
          // window data is still in _statesToRestore
          continue;
        }
-@@ -5668,11 +5698,12 @@ var SessionStoreInternal = {
+@@ -5668,11 +5699,12 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -245,7 +246,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
-@@ -5683,6 +5714,9 @@ var SessionStoreInternal = {
+@@ -5683,6 +5715,9 @@ var SessionStoreInternal = {
        tabsData.push(tabData);
      }
  
@@ -255,7 +256,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {
-@@ -5695,7 +5729,7 @@ var SessionStoreInternal = {
+@@ -5695,7 +5730,7 @@ var SessionStoreInternal = {
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
      if (aWindow.FirefoxViewHandler.tab?.selected) {
@@ -264,7 +265,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5810,8 +5844,8 @@ var SessionStoreInternal = {
+@@ -5810,8 +5845,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -275,7 +276,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5833,6 +5867,7 @@ var SessionStoreInternal = {
+@@ -5833,6 +5868,7 @@ var SessionStoreInternal = {
      if (overwriteTabs) {
        for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
          if (!tabbrowser.tabs[i].selected) {
@@ -283,7 +284,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
            tabbrowser.removeTab(tabbrowser.tabs[i]);
          }
        }
-@@ -5866,6 +5901,12 @@ var SessionStoreInternal = {
+@@ -5866,6 +5902,12 @@ var SessionStoreInternal = {
          savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
        );
      }
@@ -296,7 +297,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
  
      // Move the originally open tabs to the end.
      if (initialTabs) {
-@@ -6419,6 +6460,25 @@ var SessionStoreInternal = {
+@@ -6419,6 +6461,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -322,7 +323,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -6567,6 +6627,9 @@ var SessionStoreInternal = {
+@@ -6567,6 +6628,9 @@ var SessionStoreInternal = {
          aWindow.gURLBar.readOnly = false;
        }
      }
@@ -332,7 +333,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
  
      let promiseParts = Promise.withResolvers();
      aWindow.setTimeout(() => {
-@@ -7343,7 +7406,7 @@ var SessionStoreInternal = {
+@@ -7343,7 +7407,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {
@@ -341,7 +342,7 @@ index 2a055f0c5f34f0a2667f659185120c07d38f4e41..53465df6060e6765e1e4564d340bba5f
            // Adjust window.selected
            if (tIndex + 1 < window.selected) {
              window.selected -= 1;
-@@ -7358,7 +7421,7 @@ var SessionStoreInternal = {
+@@ -7358,7 +7422,7 @@ var SessionStoreInternal = {
            );
            // We don't want to increment tIndex here.
            continue;

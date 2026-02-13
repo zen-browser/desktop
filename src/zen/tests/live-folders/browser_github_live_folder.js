@@ -130,7 +130,7 @@ add_task(async function test_html_parsing_logic() {
 
   instance.fetchHTML.resolves({
     html: mockHtml,
-    status: 200
+    status: 200,
   });
 
   const items = await instance.fetchItems();

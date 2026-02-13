@@ -468,6 +468,11 @@ class nsZenLiveFoldersManager {
       }
 
       const folder = folders.find((x) => x.id === entry.id);
+      if (!folder) {
+        // No point restore if the live folder can't find its folder
+        continue;
+      }
+
       entry.data.state = this.#applyDefaultStateValues(entry.data.state);
       let liveFolder = new ProviderClass({
         id: entry.id,
@@ -476,9 +481,7 @@ class nsZenLiveFoldersManager {
       });
 
       this.liveFolders.set(entry.id, liveFolder);
-      if (folder) {
-        this.folderRefs.set(liveFolder, folder);
-      }
+      this.folderRefs.set(liveFolder, folder);
 
       liveFolder.tabsState = entry.tabsState;
       liveFolder.state.lastErrorId = entry.data.state.lastErrorId;

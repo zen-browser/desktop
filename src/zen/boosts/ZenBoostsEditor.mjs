@@ -367,6 +367,9 @@ export class nsZenBoostEditor {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:ToggleZapMode");
+
+    // Focus the parent browser window
+    this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {

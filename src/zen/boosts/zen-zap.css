@@ -56,6 +56,7 @@
   display: flex;
   font-family: Arial, Helvetica, sans-serif !important;
   pointer-events: auto !important;
+  z-index: 99999;
 
   bottom: 8px;
   left: 8px;

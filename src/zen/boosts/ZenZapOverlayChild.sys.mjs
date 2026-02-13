@@ -181,7 +181,21 @@ export class ZapOverlay {
       const unzapButton = zapList.ownerDocument.createElement("input");
       unzapButton.type = "button";
       unzapButton.id = "zen-zap-unzap";
-      unzapButton.value = "X";
+
+      const index = boostData.zapSelectors.indexOf(selector) + 1;
+      const zappedElementsCount = selector == '' ? 0 : this.document.querySelectorAll(selector).length;
+
+      const [tooltip] = lazy.overlayLocalization.formatMessagesSync([
+        {
+          id: "zen-unzap-tooltip",
+          args: { elementCount: zappedElementsCount },
+        },
+      ]);
+
+      unzapButton.value = index;
+      unzapButton.title = tooltip.value;
+
+      unzapButton.setAttribute("index", index);
       unzapButton.setAttribute("selector", selector);
       zapList.appendChild(unzapButton);
     });
@@ -207,6 +221,8 @@ export class ZapOverlay {
     const selector = button.getAttribute("selector");
     this.zenBoostsChild.tempShowZappedElement(selector);
 
+    button.value = '×';
+
     // This has to run with later, as the elements we are trying to highlight do not exist yet.
     // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
     this.window.requestAnimationFrame((t) => {
@@ -223,6 +239,9 @@ export class ZapOverlay {
    * @param {Event} event
    */
   #unzapButtonUnhover(event) {
+    const button = event.originalTarget;
+    button.value = button.getAttribute("index");
+
     this.zenBoostsChild.tempHideZappedElement();
     this.#selectorComponent.removeHighlight();
   }
@@ -237,6 +256,7 @@ export class ZapOverlay {
 
     this.zenBoostsChild.tempHideZappedElement();
     this.#selectorComponent.removeHighlight();
+    this.#selectorComponent.setState(lazy.SelectorComponent.STATES.SELECTING);
 
     this.#handleUnzap(selector);
   }

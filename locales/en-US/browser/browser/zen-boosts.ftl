@@ -32,3 +32,10 @@ zen-zap-this = Zap this
 zen-zap-related = Zap all related elements
 zen-zap-cancel = Cancel
 zen-zap-done = Done
+zen-unzap-tooltip = 
+    {
+        $elementCount -> 
+            [0] No elements zapped
+            [1] { $elementCount } element zapped
+            *[other] { $elementCount } elements zapped
+    }

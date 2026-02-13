@@ -38,6 +38,9 @@ export class ZapOverlay {
       this.handleSelectComponentSelect.bind(this),
       [{ id: "zen-zap-this" }, { id: "zen-zap-related" }, { id: "zen-zap-cancel" }]
     );
+
+    // Remove the bottom unzap bar to the safe area
+    this.#selectorComponent.safeAreaPadding.bottom = 65;
   }
 
   /**

@@ -33,6 +33,8 @@ export class SelectorComponent {
     { id: "zen-select-cancel" },
   ];
 
+  safeAreaPadding = { left: 0, right: 0, top: 0, bottom: 0 }
+
   /**
    * @param {Document} document Webpage document
    * @param {ZenBoostsChild} zenBoostsChild Boost JSActor child
@@ -360,13 +362,13 @@ export class SelectorComponent {
     // This clamps the position so the zap component never goes out of the client bounds and adds a small padding
     const top = this.clamp(
       bounds.top + bounds.height + distance,
-      windowPadding,
-      windowHeight - zapComponentHeight - windowPadding
+      windowPadding + this.safeAreaPadding.top,
+      windowHeight - zapComponentHeight - windowPadding - this.safeAreaPadding.bottom
     );
     const left = this.clamp(
       bounds.left + bounds.width / 2 - zapComponentWidth / 2,
-      windowPadding,
-      windowWidth - zapComponentWidth - windowPadding
+      windowPadding + this.safeAreaPadding.left,
+      windowWidth - zapComponentWidth - windowPadding - this.safeAreaPadding.right
     );
 
     Object.assign(this.selectorComponent.style, {

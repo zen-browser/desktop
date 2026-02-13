@@ -1531,10 +1531,12 @@ class nsZenWorkspaces {
         ? workspaceContainer?.pinnedTabsContainer
         : workspaceContainer?.tabsContainer;
       if (container?.contains(tab)) {
+        delete tab._zenRestoreTPos;
         continue;
       }
 
       if (tab.hasAttribute("zen-essential")) {
+        delete tab._zenRestoreTPos;
         continue;
       }
 
@@ -1547,12 +1549,18 @@ class nsZenWorkspaces {
             }
             container.insertBefore(tab.group, container.lastChild);
           });
+          delete tab._zenRestoreTPos;
           continue;
         }
+        const insertionRef = this.#getInsertionReference(container, tab);
         gBrowser.zenHandleTabMove(tab, () => {
           tab.setAttribute("zen-workspace-id", workspaceID);
-          container.insertBefore(tab, container.lastChild);
+          container.insertBefore(tab, insertionRef);
         });
+        delete tab._zenRestoreTPos;
+      }
+      if (!container) {
+        delete tab._zenRestoreTPos;
       }
       // also change glance tab if it's the same tab
       const glanceTab = tab.querySelector(".tabbrowser-tab[zen-glance-tab]");
@@ -1561,6 +1569,48 @@ class nsZenWorkspaces {
       }
     }
     return true;
+  }
+
+  #getInsertionReference(container, tab) {
+    const tabPos = Number.isInteger(tab?._zenRestoreTPos) ? tab._zenRestoreTPos : tab?._tPos;
+    if (!Number.isInteger(tabPos)) {
+      return container.lastChild;
+    }
+    const workspaceId = container.getAttribute("zen-workspace-id");
+    if (!workspaceId) {
+      return container.lastChild;
+    }
+    const tabs = [];
+    for (const child of container.children) {
+      if (gBrowser.isTab(child)) {
+        tabs.push(child);
+        continue;
+      }
+      if (gBrowser.isTabGroup(child)) {
+        for (const groupTab of child.tabs) {
+          tabs.push(groupTab);
+        }
+      }
+    }
+    const eligibleTabs = tabs.filter(
+      (tab) =>
+        tab.getAttribute("zen-workspace-id") === workspaceId &&
+        !tab.pinned &&
+        !tab.hasAttribute("zen-essential") &&
+        !tab.hasAttribute("zen-empty-tab") &&
+        !tab.hasAttribute("zen-glance-tab") &&
+        !tab.group?.isZenFolder
+    );
+    const targetTab = eligibleTabs.find(
+      (candidate) => Number.isInteger(candidate._tPos) && candidate._tPos >= tabPos
+    );
+    if (targetTab) {
+      const targetNode = targetTab.group ?? targetTab;
+      if (targetNode.parentElement === container) {
+        return targetNode;
+      }
+    }
+    return container.lastChild;
   }
 
   #prepareNewWorkspace(space) {

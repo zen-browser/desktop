@@ -852,31 +852,32 @@ ${cssSelector} {
   /**
    * Handles opening a save file dialog and exporting the boost data to a JSON file
    */
-  onSaveBoostClick() {
+  async onSaveBoostClick() {
     const loadButton = this.doc.getElementById("zen-boost-save");
     loadButton.setAttribute("mode", "blue");
 
-    gZenBoostsManager.exportBoost(this.window, this.currentBoostData).then(() => {
-      loadButton.setAttribute("mode", "");
+    const success = await gZenBoostsManager.exportBoost(this.window, this.currentBoostData);
+    
+    loadButton.setAttribute("mode", "");
+    if (success)
       this.openerWindow.gZenUIManager.showToast("zen-panel-ui-boosts-exported-message");
-    });
   }
 
   /**
    * Handles opening a load file dialog and importing the boost data to a JSON file
    */
-  onLoadBoostClick() {
+  async onLoadBoostClick() {
     const loadButton = this.doc.getElementById("zen-boost-load");
     loadButton.setAttribute("mode", "orange-red");
 
-    gZenBoostsManager.importBoost(this.window).then((data) => {
-      loadButton.setAttribute("mode", "");
-      if (data == null) return;
-
+    const data = await gZenBoostsManager.importBoost(this.window);
+    
+    loadButton.setAttribute("mode", "");
+    if (data) { 
       this.currentBoostData = data;
       this.updateAllVisuals();
       this.windowImportAnimation();
-    });
+    }
   }
 
   /**

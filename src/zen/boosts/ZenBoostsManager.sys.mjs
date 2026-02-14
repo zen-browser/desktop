@@ -290,6 +290,7 @@ class nsZenBoostsManager {
   /**
    * Will spawn a file save dialog and export the selected boost
    * @param {Window} parentWindow The window that will instance the file picker
+   * @returns {Promise<void>} Returns a promise which will be resolved after the export action is complete
    */
   exportBoost(parentWindow, boostData) {
     // From: firefox-main/browser/base/content/browser-commands.js:354
@@ -325,18 +326,17 @@ class nsZenBoostsManager {
 
     return new Promise((resolve) => {
       fp.open(async (result) => {
-        if (result == nsIFilePicker.returnOK) {
+        if (result === nsIFilePicker.returnOK && fp.file) {
           try {
-            if (fp.file) {
-              const boostJSON = JSON.stringify(boostData);
-              IOUtils.writeUTF8(fp.file.path, boostJSON);
-              resolve();
-            }
+            const boostJSON = JSON.stringify(boostData);
+            await IOUtils.writeUTF8(fp.file.path, boostJSON);
+            resolve(true);
           } catch (ex) {
-            resolve();
+            console.error("Export failed:", ex);
+            resolve(false);
           }
         } else {
-          resolve();
+          resolve(false);
         }
       });
     });
@@ -345,8 +345,9 @@ class nsZenBoostsManager {
   /**
    * Will spawn a file open dialog and import the selected boost
    * @param {Window} parentWindow The window that will instance the file picker
+   * @returns {Promise<Object|null>} Returns a promise with the boost data or null
    */
-  async importBoost(parentWindow) {
+  importBoost(parentWindow) {
     const nsIFilePicker = Ci.nsIFilePicker;
     const fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
 

@@ -55,3 +55,13 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+# Tab Switcher (Arc-style visual tab switcher)
+- name: zen.tabs.tab-switcher.enabled
+  value: true
+
+- name: zen.tabs.tab-switcher.show-unloaded
+  value: false
+
+- name: zen.tabs.tab-switcher.use-recent-order
+  value: false

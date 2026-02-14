@@ -172,13 +172,14 @@ body {
     background-color: transparent;
     opacity: 0.45;
 
+    transition: 0.25s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
+
     &:hover {
       opacity: 0.6;
     }
   }
 
   & #zen-boost-name {
-    pointer-events: none;
     transition: color 0.2s ease-in-out;
     background-color: transparent;
     border: none;
@@ -187,17 +188,31 @@ body {
 
     display: flex;
     align-items: center;
-
-    -moz-window-dragging: drag;
   }
 }
 
-#zen-boost-name-text {
+#zen-boost-name-text,
+#zen-boost-name-input {
   width: 100%;
-  text-align: center;
   justify-content: center;
   font-size: 100%;
   font-weight: 600;
+  
+  -moz-window-dragging: no-drag;
+}
+
+#zen-boost-name-text {
+  text-align: center;
+}
+
+#zen-boost-name-input {
+  appearance: none;
+  border: none;
+
+  margin-left: 15px;
+  margin-right: 15px;
+  background-color: transparent;
+  color: #111;
 }
 
 #zen-boost-font-grid {

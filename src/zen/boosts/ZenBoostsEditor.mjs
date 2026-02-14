@@ -52,6 +52,7 @@ export class nsZenBoostEditor {
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "initial";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
+    this.doc.getElementById("zen-boost-name-input").style.display = "none";
 
     this.doc
       .getElementById("zen-boost-color-contrast")
@@ -91,8 +92,14 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-load")
       .addEventListener("click", this.onLoadBoostClick.bind(this));
     this.doc
-      .getElementById("zen-boost-name")
-      .addEventListener("input", (e) => (this.currentBoostData.boostName = e.target.value));
+      .getElementById("zen-boost-name-input")
+      .addEventListener("keydown", this.onNameInputKeyDown.bind(this));
+    this.doc
+      .getElementById("zen-boost-name-input")
+      .addEventListener("blur", this.onNameInputUnfocus.bind(this));
+    this.doc
+      .getElementById("zen-boost-name-text")
+      .addEventListener("click", this.onNameTextClick.bind(this));
     this.doc
       .getElementById("zen-boost-close")
       .addEventListener("click", this.onClosePressed.bind(this));
@@ -842,6 +849,42 @@ ${cssSelector} {
     this.window.close();
   }
 
+  onNameInputKeyDown(event) {
+    if (event.key === 'Enter') {
+      this.onNameInputSubmit();
+    }
+  }
+  
+  onNameInputUnfocus(_) {
+    this.onNameInputSubmit();
+  }
+
+  onNameInputSubmit() {
+    const nameText = this.doc.getElementById("zen-boost-name-text");
+    const nameInputField = this.doc.getElementById("zen-boost-name-input");
+
+    if (nameInputField.value.trim().length !== 0) { 
+      this.currentBoostData.boostName = nameInputField.value;
+      nameText.innerHTML = this.currentBoostData.boostName;
+      this.updateCurrentBoost();
+    }
+      
+    nameText.style.display = 'initial'; 
+    nameInputField.style.display = 'none';
+  }
+  
+  onNameTextClick(_) {
+    const nameText = this.doc.getElementById("zen-boost-name-text");
+    const nameInputField = this.doc.getElementById("zen-boost-name-input");
+    nameInputField.value = this.currentBoostData.boostName;
+    
+    nameText.style.display = 'none';
+    nameInputField.style.display = 'initial';
+
+    nameInputField.focus();
+    nameInputField.select();
+  }
+
   /**
    * Handles the close button press by closing the editor window.
    */
@@ -1006,7 +1049,7 @@ ${cssSelector} {
   }
 
   updateAllVisuals() {
-    this.doc.getElementById("zen-boost-name-text").innerHTML = this.currentBoostData.domain;
+    this.doc.getElementById("zen-boost-name-text").innerHTML = this.currentBoostData.boostName;
     const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
 
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null)

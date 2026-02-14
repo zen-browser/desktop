@@ -46,9 +46,10 @@
   <vbox flex="1" id="zen-boost-editor-root">
     <hbox id="zen-boost-head-wrapper">
       <button id="zen-boost-close" class="subviewbutton mod-button title-button"></button>
-      <button id="zen-boost-name" class="subviewbutton" flex="1">
+      <hbox id="zen-boost-name" flex="1">
         <p id="zen-boost-name-text"></p>
-      </button>
+        <html:input maxlength="12" type="text" id="zen-boost-name-input"></html:input>
+      </hbox>
       <button data-l10n-id="zen-boost-shuffle" id="zen-boost-shuffle" class="subviewbutton mod-button title-button"></button>
     </hbox>
     <vbox flex="1" id="zen-boost-filter-wrapper">

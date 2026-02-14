@@ -285,11 +285,19 @@ body {
     margin: auto;
     position: relative;
   }
+
+  & hbox {
+    margin-right: 8px;
+  }
 }
 
 #zen-boost-zap[hideicon="true"] {
   list-style: none;
   list-style-type: none;
+
+  & hbox {
+    margin-right: 0px;
+  }
 }
 
 #zen-boost-size {

@@ -259,9 +259,13 @@ export class ZapOverlay {
 
     this.zenBoostsChild.tempHideZappedElement();
     this.#selectorComponent.removeHighlight();
-    this.#selectorComponent.setState(lazy.SelectorComponent.STATES.SELECTING);
+    this.#cancelZap();
 
-    this.#handleUnzap(selector);
+    // In order to avoid the clicked element being null when the
+    // SelectorComponent receives it, push the list re-creation to the next frame
+    this.window.requestAnimationFrame((t) => {
+      this.#handleUnzap(selector);
+    });
   }
 
   /**

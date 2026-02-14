@@ -67,9 +67,6 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-text-case-toggle")
       .addEventListener("click", this.onBoostCasePressed.bind(this));
     this.doc
-      .getElementById("zen-boost-size")
-      .addEventListener("click", this.onBoostSizePressed.bind(this));
-    this.doc
       .getElementById("zen-boost-zap")
       .addEventListener("click", this.onZapButtonPressed.bind(this));
     this.doc
@@ -87,6 +84,12 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-controls")
       .addEventListener("click", (event) => this.openAdvancedColorOptions(event));
+    this.doc
+      .getElementById("zen-boost-save")
+      .addEventListener("click", this.onSaveBoostClick.bind(this));
+    this.doc
+      .getElementById("zen-boost-load")
+      .addEventListener("click", this.onLoadBoostClick.bind(this));
     this.doc
       .getElementById("zen-boost-name")
       .addEventListener("input", (e) => (this.currentBoostData.boostName = e.target.value));
@@ -230,11 +233,9 @@ export class nsZenBoostEditor {
     const content = this.window._editor.getText();
     const ch = 0;
 
-    if(content == '')
-      cm.replaceRange(code, { line, ch });
-    else  
-      cm.replaceRange(`\n${code}`, { line, ch });
-    
+    if (content == "") cm.replaceRange(code, { line, ch });
+    else cm.replaceRange(`\n${code}`, { line, ch });
+
     cm.focus();
   }
 
@@ -283,6 +284,7 @@ export class nsZenBoostEditor {
       fontButton.classList.add("subviewbutton");
       fontButton.style.fontFamily = `'${font}'`;
       fontButton.innerHTML = "Aa";
+      fontButton.title = font;
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
@@ -322,12 +324,12 @@ export class nsZenBoostEditor {
   onCodeButtonPressed() {
     const offset = 265;
     const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
-    const windowElem = this.doc.getElementById('zenBoostWindow');
+    const windowElem = this.doc.getElementById("zenBoostWindow");
 
-    if(windowElem.getAttribute('editor') == 'code') return;
-    windowElem.setAttribute('editor', 'code');
+    if (windowElem.getAttribute("editor") == "code") return;
+    windowElem.setAttribute("editor", "code");
 
-    // Store the old boost editor width. 
+    // Store the old boost editor width.
     // The window needs the outer width which includes
     // window chrome. This results in the window
     // being smaller than it should be
@@ -346,10 +348,10 @@ export class nsZenBoostEditor {
   onCodeBackButtonPressed() {
     const offset = 265;
     const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
-    const windowElem = this.doc.getElementById('zenBoostWindow');
+    const windowElem = this.doc.getElementById("zenBoostWindow");
 
-    if(windowElem.getAttribute('editor') == 'boost') return;
-    windowElem.setAttribute('editor', 'boost');
+    if (windowElem.getAttribute("editor") == "boost") return;
+    windowElem.setAttribute("editor", "boost");
 
     this.window.resizeTo(this._boostEditorWidth, this.window.outerHeight);
     if (openRightAligned) this.window.moveTo(this.window.screenX + offset, this.window.screenY);
@@ -382,7 +384,7 @@ export class nsZenBoostEditor {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:DisablePickerMode");
-    
+
     // Insert the css selector at the cursor position in the css editor
     this.appendCode(`
 ${cssSelector} {
@@ -410,7 +412,7 @@ ${cssSelector} {
   async onUpdatePickerButtonVisual() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    
+
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
     const selectEnabled = await actor.sendQuery("ZenBoost:SelectorPickerModeEnabled");
 
@@ -419,12 +421,10 @@ ${cssSelector} {
 
   onUpdatePickerObserver(data) {
     console.log(data);
-    if(!data) return;
+    if (!data) return;
 
-    if(data == "onenable")
-      Services.obs.addObserver(this, "selector-picker-picked");
-    else if (data == "ondisable")
-      Services.obs.removeObserver(this, "selector-picker-picked");
+    if (data == "onenable") Services.obs.addObserver(this, "selector-picker-picked");
+    else if (data == "ondisable") Services.obs.removeObserver(this, "selector-picker-picked");
   }
 
   onUpdateZapValue() {
@@ -516,26 +516,6 @@ ${cssSelector} {
 
     this.isMouseDown = false;
     this.wasDragging = false;
-  }
-
-  /**
-   * Handles the boost size button press, cycling through size override values
-   * (0.9, 1.0, 1.1, 1.25, 1.5) and updating the UI accordingly.
-   */
-  onBoostSizePressed() {
-    if (this.currentBoostData.siteSizeOverride >= 1.5) this.currentBoostData.siteSizeOverride = 0.9;
-    else if (this.currentBoostData.siteSizeOverride >= 1.25)
-      this.currentBoostData.siteSizeOverride = 1.5;
-    else if (this.currentBoostData.siteSizeOverride >= 1.1)
-      this.currentBoostData.siteSizeOverride = 1.25;
-    else if (this.currentBoostData.siteSizeOverride >= 1)
-      this.currentBoostData.siteSizeOverride = 1.1;
-    else if (this.currentBoostData.siteSizeOverride >= 0.9)
-      this.currentBoostData.siteSizeOverride = 1;
-    else this.currentBoostData.siteSizeOverride = 1.1;
-
-    this.updateSizeButtonVisuals();
-    this.updateCurrentBoost();
   }
 
   /**
@@ -675,19 +655,14 @@ ${cssSelector} {
     if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
     this.currentBoostData.autoTheme = false;
 
-    // Updating the circle size to match the distance of the point
-    const circle = this.doc.querySelector(".zen-boost-color-picker-circle");
-    circle.setAttribute("animated", animate ? "true" : "false");
-    circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
-    circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
-
     this.updateButtonToggleVisuals();
     this.updateDot();
+    this.updateCircleRadius(animate);
     this.updateCurrentBoost();
   }
 
   /**
-   * Updates the visual appearance of the color picker dot and circle
+   * Updates the visual appearance of the color picker dot
    * based on the current boost data's angle and distance values.
    */
   updateDot() {
@@ -696,6 +671,22 @@ ${cssSelector} {
       "--zen-theme-picker-dot-color",
       `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`
     );
+  }
+
+  /**
+   * Updates the radius of the circle based on the dot's position.
+   */
+  updateCircleRadius(animate = true) {
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const rect = gradient.getBoundingClientRect();
+    const padding = 50;
+    const radius = (rect.width - padding) / 2;
+
+    // Updating the circle size to match the distance of the point
+    const circle = this.doc.querySelector(".zen-boost-color-picker-circle");
+    circle.setAttribute("animated", animate ? "true" : "false");
+    circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
+    circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
   }
 
   /**
@@ -724,24 +715,6 @@ ${cssSelector} {
 
     this.updateButtonToggleVisuals();
     this.updateCurrentBoost();
-  }
-
-  /**
-   * Updates the visual state of the size button based on the current
-   * site size override value, setting appropriate color modes.
-   */
-  updateSizeButtonVisuals() {
-    const sizeBox = this.doc.getElementById("zen-boost-size");
-    const sizeValue = this.doc.getElementById("zen-boost-size-value");
-    sizeValue.innerHTML = `${Math.round(this.currentBoostData.siteSizeOverride * 100)}%`;
-
-    if (this.currentBoostData.siteSizeOverride >= 1.5) sizeBox.setAttribute("mode", "red");
-    else if (this.currentBoostData.siteSizeOverride >= 1.25)
-      sizeBox.setAttribute("mode", "orange-red");
-    else if (this.currentBoostData.siteSizeOverride >= 1.1) sizeBox.setAttribute("mode", "orange");
-    else if (this.currentBoostData.siteSizeOverride >= 1) sizeBox.setAttribute("mode", "none");
-    else if (this.currentBoostData.siteSizeOverride >= 0.9) sizeBox.setAttribute("mode", "blue");
-    else sizeBox.setAttribute("mode", "none");
   }
 
   /**
@@ -877,6 +850,101 @@ ${cssSelector} {
   }
 
   /**
+   * Handles opening a save file dialog and exporting the boost data to a JSON file
+   */
+  onSaveBoostClick() {
+    const loadButton = this.doc.getElementById("zen-boost-save");
+    loadButton.setAttribute("mode", "blue");
+
+    gZenBoostsManager.exportBoost(this.window, this.currentBoostData).then(() => {
+      loadButton.setAttribute("mode", "");
+      this.openerWindow.gZenUIManager.showToast("zen-panel-ui-boosts-exported-message");
+    });
+  }
+
+  /**
+   * Handles opening a load file dialog and importing the boost data to a JSON file
+   */
+  onLoadBoostClick() {
+    const loadButton = this.doc.getElementById("zen-boost-load");
+    loadButton.setAttribute("mode", "orange-red");
+
+    gZenBoostsManager.importBoost(this.window).then((data) => {
+      loadButton.setAttribute("mode", "");
+      if (data == null) return;
+
+      this.currentBoostData = data;
+      this.updateAllVisuals();
+      this.windowImportAnimation();
+    });
+  }
+
+  /**
+   * Handles animating the window with the import glint animation
+   */
+  windowImportAnimation() {
+    const windowWrapper = this.doc.getElementById("zenBoostWindow");
+    if (!windowWrapper) return;
+
+    const element = this.doc.createElement("div");
+    element.id = "import-animation";
+
+    const elementBorder = this.doc.createElement("div");
+    elementBorder.id = "import-animation-border";
+
+    const elementShadow = this.doc.createElement("div");
+    elementShadow.id = "import-animation-shadow";
+
+    this.window.requestAnimationFrame(() => {
+      if (this.openerWindow.gReduceMotion) {
+        element.remove();
+        elementBorder.remove();
+        elementShadow.remove();
+        return;
+      }
+
+      windowWrapper.appendChild(element);
+      windowWrapper.appendChild(elementBorder);
+      windowWrapper.appendChild(elementShadow);
+
+      const anim1 = element.animate(
+        [
+          { top: "100%", opacity: 0.5 },
+          { top: "-50%", opacity: 1 },
+        ],
+        {
+          duration: 350,
+          delay: 120,
+          fill: "forwards",
+          easing: "ease-out",
+        }
+      );
+
+      const anim2 = elementBorder.animate(
+        [{ "--background-top": "150%" }, { "--background-top": "-50%" }],
+        {
+          duration: 350,
+          delay: 200,
+          fill: "forwards",
+          easing: "ease-out",
+        }
+      );
+
+      const anim3 = elementShadow.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }], {
+        duration: 460,
+        fill: "forwards",
+        easing: "ease-out",
+      });
+
+      Promise.all([anim1.finished, anim2.finished, anim3.finished]).then(() => {
+        element.remove();
+        elementBorder.remove();
+        elementShadow.remove();
+      });
+    });
+  }
+
+  /**
    * Shuffles the boost data and updates the presentation
    */
   onShufflePressed() {
@@ -930,28 +998,34 @@ ${cssSelector} {
 
     // Initial save to register the boost
     gZenBoostsManager.saveBoostToStore(this.currentBoostData);
-    this.doc.getElementById("zen-boost-name-text").innerHTML = domain;
+
+    // The code editor needs time to initialize
+    await this.initCodeEditor();
+    this.updateAllVisuals();
+  }
+
+  updateAllVisuals() {
+    this.doc.getElementById("zen-boost-name-text").innerHTML = this.currentBoostData.domain;
     const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
 
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null)
       this.resetDotPosition();
     else {
+      dot.setAttribute("animated", "true");
       dot.style.left = `${this.currentBoostData.dotPos.x}px`;
       dot.style.top = `${this.currentBoostData.dotPos.y}px`;
+
       this.updateFontButtonVisuals();
-      this.updateSizeButtonVisuals();
       this.updateCaseButtonVisuals();
 
       this.updateColorControlSliderVisuals();
     }
 
-    // The code editor needs time to initialize
-    await this.initCodeEditor();
-
     this.window._editor.setText(this.currentBoostData.customCSS || "");
 
-    this.updateDot();
     this.updateButtonToggleVisuals();
+    this.updateDot();
+    this.updateCircleRadius();
     this.onUpdateZapValue();
   }
 

@@ -56,8 +56,6 @@ class nsZenBoostsManager {
       // Choses theme based on Zen's workspace theme
       autoTheme: false,
 
-      // Default to 100% scale
-      siteSizeOverride: 1,
       textCaseOverride: "none",
 
       zapSelectors: [],
@@ -251,7 +249,7 @@ class nsZenBoostsManager {
 
     let top = screenY + height / 2 - editorHeight / 2;
 
-    if (left + editorWidth > (availLeft + availWidth) || left < availLeft) {
+    if (left + editorWidth > availLeft + availWidth || left < availLeft) {
       left = screenX + width - (editorWidth + pad);
       if (this.#areTabsOnRightSide()) left = screenX + pad;
     }
@@ -287,6 +285,90 @@ class nsZenBoostsManager {
     editor.openerWindow = parentWindow;
 
     return editor;
+  }
+
+  /**
+   * Will spawn a file save dialog and export the selected boost
+   * @param {Window} parentWindow The window that will instance the file picker
+   */
+  exportBoost(parentWindow, boostData) {
+    // From: firefox-main/browser/base/content/browser-commands.js:354
+    // https://searchfox.org/firefox-main/source/browser/base/content/browser-commands.js#355:~:text=try%20%7B-,const,fp%2Eopen%28fpCallback%29%3B
+
+    const nsIFilePicker = Ci.nsIFilePicker;
+    const fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+
+    fp.init(
+      parentWindow.browsingContext,
+      `Exporting Boost ${boostData.boostName}...`,
+      nsIFilePicker.modeSave
+    );
+
+    // Sanitizing filename
+    // From: https://gist.github.com/barbietunnie/7bc6d48a424446c44ff4#:~:text=bytes%22%29%3B-,var,%7D
+    const illegalRe = /[\/\?<>\\:\*\|":]/g;
+    const controlRe = /[\x00-\x1f\x80-\x9f]/g;
+    const reservedRe = /^\.+$/;
+    const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
+    let sanitized = boostData.boostName
+      .replace(illegalRe, "")
+      .replace(controlRe, "")
+      .replace(reservedRe, "")
+      .replace(windowsReservedRe, "");
+
+    // Replace if resulting filename is empty
+    if (!sanitized) sanitized = "New Boost";
+
+    fp.defaultString = sanitized;
+    fp.defaultExtension = "json";
+    fp.appendFilters(nsIFilePicker.filterAll);
+
+    return new Promise((resolve) => {
+      fp.open(async (result) => {
+        if (result == nsIFilePicker.returnOK) {
+          try {
+            if (fp.file) {
+              const boostJSON = JSON.stringify(boostData);
+              IOUtils.writeUTF8(fp.file.path, boostJSON);
+              resolve();
+            }
+          } catch (ex) {
+            resolve();
+          }
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
+   * Will spawn a file open dialog and import the selected boost
+   * @param {Window} parentWindow The window that will instance the file picker
+   */
+  async importBoost(parentWindow) {
+    const nsIFilePicker = Ci.nsIFilePicker;
+    const fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+
+    fp.init(parentWindow.browsingContext, "Importing Boost from JSON", nsIFilePicker.modeOpen);
+
+    fp.appendFilters(nsIFilePicker.filterAll);
+
+    return new Promise((resolve) => {
+      fp.open(async (result) => {
+        if (result === nsIFilePicker.returnOK && fp.file) {
+          try {
+            const fileContent = await IOUtils.readUTF8(fp.file.path);
+            resolve(JSON.parse(fileContent));
+          } catch (e) {
+            console.error("Import failed:", e);
+            resolve(null);
+          }
+        } else {
+          resolve(null);
+        }
+      });
+    });
   }
 
   /**

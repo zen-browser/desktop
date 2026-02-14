@@ -1040,3 +1040,11 @@
 #zen-boost-css-inspector {
   list-style-image: url("hammer.svg");
 }
+
+#zen-boost-save {
+  list-style-image: url("downloads.svg");
+}
+
+#zen-boost-load {
+  list-style-image: url("open.svg");
+}

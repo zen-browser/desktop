@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename this Boost...
+    .label = Rename Boost
 zen-boost-edit-shuffle = 
-    .label = Shuffle
+    .label = Shuffle Vibes
 zen-boost-edit-reset = 
-    .label = Reset all Edits
+    .label = Reset All Edits
 zen-boost-edit-delete = 
-    .label = Delete this Boost
+    .label = Delete Boost
 zen-boost-size = Size
 zen-boost-zap = Zap
 zen-boost-code = Code

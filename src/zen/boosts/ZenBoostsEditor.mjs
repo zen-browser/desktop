@@ -171,19 +171,6 @@ export class nsZenBoostEditor {
   }
 
   /**
-   * Registers an event listener to close the editor when the active tab changes
-   * to a different domain than the one being edited.
-   */
-  registerTabChangedEvent() {
-    this.window.gBrowser.tabContainer.addEventListener("TabSelect", (event) => {
-      const tab = event.target;
-      const domain = new URL(tab.linkedBrowser.currentURI.spec).hostname;
-
-      if (domain != this.currentBoostData.domain) this.window.close();
-    });
-  }
-
-  /**
    * Initializes the code editor for the css editor
    */
   async initCodeEditor() {
@@ -330,7 +317,8 @@ export class nsZenBoostEditor {
    */
   onCodeButtonPressed() {
     const offset = 265;
-    const openRightAligned = (this.openerWindow.screenX + this.openerWindow.outerWidth / 2) < this.window.screenX;
+    const openRightAligned =
+      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 < this.window.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "code") return;
@@ -354,7 +342,8 @@ export class nsZenBoostEditor {
    */
   onCodeBackButtonPressed() {
     const offset = 265;
-    const openRightAligned = (this.openerWindow.screenX + this.openerWindow.outerWidth / 2) < this.window.screenX;
+    const openRightAligned =
+      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 < this.window.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "boost") return;
@@ -850,11 +839,11 @@ ${cssSelector} {
   }
 
   onNameInputKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.onNameInputSubmit();
     }
   }
-  
+
   onNameInputUnfocus(_) {
     this.onNameInputSubmit();
   }
@@ -864,16 +853,16 @@ ${cssSelector} {
     const nameContainer = this.doc.getElementById("zen-boost-name-container");
     const nameInputField = this.doc.getElementById("zen-boost-name-input");
 
-    if (nameInputField.value.trim().length !== 0) { 
+    if (nameInputField.value.trim().length !== 0) {
       this.currentBoostData.boostName = nameInputField.value;
       nameText.innerHTML = this.currentBoostData.boostName;
       this.updateCurrentBoost();
     }
-      
-    nameContainer.style.display = 'initial'; 
-    nameInputField.style.display = 'none';
+
+    nameContainer.style.display = "initial";
+    nameInputField.style.display = "none";
   }
-  
+
   onNameTextClick(event) {
     const popup = this.doc.getElementById("zenBoostContextMenu");
     popup.openPopup(
@@ -891,10 +880,10 @@ ${cssSelector} {
     const nameContainer = this.doc.getElementById("zen-boost-name-container");
     const nameInputField = this.doc.getElementById("zen-boost-name-input");
     nameInputField.value = this.currentBoostData.boostName;
-    
-    nameContainer.style.display = 'none';
-    nameInputField.style.display = 'initial';
-    
+
+    nameContainer.style.display = "none";
+    nameInputField.style.display = "initial";
+
     nameInputField.focus();
     nameInputField.select();
   }
@@ -914,10 +903,9 @@ ${cssSelector} {
     loadButton.setAttribute("mode", "blue");
 
     const success = await gZenBoostsManager.exportBoost(this.window, this.currentBoostData);
-    
+
     loadButton.setAttribute("mode", "");
-    if (success)
-      this.openerWindow.gZenUIManager.showToast("zen-panel-ui-boosts-exported-message");
+    if (success) this.openerWindow.gZenUIManager.showToast("zen-panel-ui-boosts-exported-message");
   }
 
   /**
@@ -928,9 +916,9 @@ ${cssSelector} {
     loadButton.setAttribute("mode", "orange-red");
 
     const data = await gZenBoostsManager.importBoost(this.window);
-    
+
     loadButton.setAttribute("mode", "");
-    if (data) { 
+    if (data) {
       this.currentBoostData = data;
       this.updateAllVisuals();
       this.windowImportAnimation();

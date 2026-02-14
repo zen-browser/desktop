@@ -243,7 +243,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:SelectorPickerModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.PICKER;
       case "ZenBoost:OpenInspector":
-        this.sendQuery("ZenBoost:OpenInspector");
+        this.sendAsyncMessage("ZenBoost:OpenInspector");
         break;
     }
   }
@@ -451,6 +451,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   sendNotify(topic, msg = null) {
-    this.sendQuery("ZenBoost:Notify", { topic, msg });
+    this.sendAsyncMessage("ZenBoost:Notify", { topic, msg });
   }
 }

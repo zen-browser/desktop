@@ -43,12 +43,13 @@ export class ZenBoostsParent extends JSWindowActorParent {
   observe(subject, topic) {
     switch (topic) {
       case "zen-boosts-update":
-        this.sendQuery("ZenBoost:BoostDataUpdated", { unloadStyles: true });
+        this.sendAsyncMessage("ZenBoost:BoostDataUpdated", { unloadStyles: true });
         break;
       case "zen-boosts-disable-zap":
-        this.sendQuery("ZenBoost:DisableZapMode");
+        this.sendAsyncMessage("ZenBoost:DisableZapMode");
+        break;
       case "zen-boosts-disable-picker":
-        this.sendQuery("ZenBoost:DisablePickerMode");
+        this.sendAsyncMessage("ZenBoost:DisablePickerMode");
         break;
     }
   }

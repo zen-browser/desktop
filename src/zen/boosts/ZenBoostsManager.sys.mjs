@@ -31,7 +31,7 @@ class nsZenBoostsManager {
    * @param {string} domain The domain this boost will be applied to
    * @returns Returns a new empty boost
    */
-  getEmptyBoost(domain = '') {
+  getEmptyBoost(domain = "") {
     return {
       domain,
       boostName: "My Boost",
@@ -271,21 +271,9 @@ class nsZenBoostsManager {
     );
 
     // Close the editor if the tab is switched
-    parentWindow.gBrowser.tabContainer.addEventListener(
-      "TabSelect",
-      (event) => {
-        // This seems to be a safer way than doing currentURI.host
-        const url = new URL(event.target.linkedBrowser.currentURI.spec);
-        const domain = url.hostname;
-
-        // Close if domain doesn't match
-        if (domain != editor.domain) {
-          editor.close();
-        }
-      },
-      // Remove the event listener after the window closes
-      { once: true }
-    );
+    parentWindow.gBrowser.tabContainer.addEventListener("TabSelect", editor.close.bind(editor), {
+      once: true,
+    });
 
     // Give the domain
     const domain = parentWindow.gBrowser.selectedTab.linkedBrowser.currentURI.host;

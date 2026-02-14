@@ -2,6 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+zen-boost-edit-rename = 
+    .label = Rename this Boost...
+zen-boost-edit-shuffle = 
+    .label = Shuffle
+zen-boost-edit-reset = 
+    .label = Reset all Edits
+zen-boost-edit-delete = 
+    .label = Delete this Boost
 zen-boost-size = Size
 zen-boost-zap = Zap
 zen-boost-code = Code

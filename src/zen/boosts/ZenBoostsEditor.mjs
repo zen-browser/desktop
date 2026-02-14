@@ -98,14 +98,14 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-name-input")
       .addEventListener("blur", this.onNameInputUnfocus.bind(this));
     this.doc
-      .getElementById("zen-boost-name-text")
+      .getElementById("zen-boost-name-container")
       .addEventListener("click", this.onNameTextClick.bind(this));
     this.doc
       .getElementById("zen-boost-close")
       .addEventListener("click", this.onClosePressed.bind(this));
     this.doc
       .getElementById("zen-boost-shuffle")
-      .addEventListener("click", this.onShufflePressed.bind(this));
+      .addEventListener("click", this.shuffleBoost.bind(this));
     this.doc
       .getElementById("zen-boost-css-picker")
       .addEventListener("click", this.onPickerButtonPressed.bind(this));
@@ -843,7 +843,7 @@ ${cssSelector} {
   /**
    * Deletes the current boost for the domain and closes the editor window.
    */
-  onDeleteBoost() {
+  deleteBoost() {
     gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
     this.currentBoostData = null;
     this.window.close();
@@ -861,6 +861,7 @@ ${cssSelector} {
 
   onNameInputSubmit() {
     const nameText = this.doc.getElementById("zen-boost-name-text");
+    const nameContainer = this.doc.getElementById("zen-boost-name-container");
     const nameInputField = this.doc.getElementById("zen-boost-name-input");
 
     if (nameInputField.value.trim().length !== 0) { 
@@ -869,18 +870,31 @@ ${cssSelector} {
       this.updateCurrentBoost();
     }
       
-    nameText.style.display = 'initial'; 
+    nameContainer.style.display = 'initial'; 
     nameInputField.style.display = 'none';
   }
   
-  onNameTextClick(_) {
-    const nameText = this.doc.getElementById("zen-boost-name-text");
+  onNameTextClick(event) {
+    const popup = this.doc.getElementById("zenBoostContextMenu");
+    popup.openPopup(
+      event.target,
+      "bottomcenter topcenter",
+      0,
+      0,
+      true /* isContextMenu */,
+      false /* attributesOverride */,
+      event
+    );
+  }
+
+  editBoostName() {
+    const nameContainer = this.doc.getElementById("zen-boost-name-container");
     const nameInputField = this.doc.getElementById("zen-boost-name-input");
     nameInputField.value = this.currentBoostData.boostName;
     
-    nameText.style.display = 'none';
+    nameContainer.style.display = 'none';
     nameInputField.style.display = 'initial';
-
+    
     nameInputField.focus();
     nameInputField.select();
   }
@@ -991,7 +1005,7 @@ ${cssSelector} {
   /**
    * Shuffles the boost data and updates the presentation
    */
-  onShufflePressed() {
+  shuffleBoost() {
     const availFonts = this.fetchFontList();
     const commonFonts = this.commonFonts;
     let font = commonFonts[Math.round(Math.random() * commonFonts.length)];
@@ -1012,10 +1026,19 @@ ${cssSelector} {
       true
     );
 
-    this.updateColorControlSliderVisuals();
-    this.updateButtonToggleVisuals();
-    this.updateDot();
     this.updateCurrentBoost();
+    this.updateAllVisuals();
+  }
+
+  /**
+   * Reverts boost data to defaults
+   */
+  resetBoost() {
+    const domain = this.currentBoostData.domain;
+    this.currentBoostData = gZenBoostsManager.getEmptyBoost(domain);
+
+    this.updateCurrentBoost();
+    this.updateAllVisuals();
   }
 
   /**

@@ -28,15 +28,11 @@ class nsZenBoostsManager {
   }
 
   /**
-   * Loads a boost configuration for the specified domain from storage.
-   * If no boost exists for the domain, creates and returns a new default boost configuration.
-   * @param {string} domain - The domain for which to load the boost.
-   * @returns {Object} The boost data object containing all boost settings for the domain.
+   * @param {string} domain The domain this boost will be applied to
+   * @returns Returns a new empty boost
    */
-  loadBoostFromStore(domain) {
-    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
-
-    let boostData = {
+  getEmptyBoost(domain = '') {
+    return {
       domain,
       boostName: "My Boost",
 
@@ -63,6 +59,18 @@ class nsZenBoostsManager {
 
       changeWasMade: false,
     };
+  }
+
+  /**
+   * Loads a boost configuration for the specified domain from storage.
+   * If no boost exists for the domain, creates and returns a new default boost configuration.
+   * @param {string} domain - The domain for which to load the boost.
+   * @returns {Object} The boost data object containing all boost settings for the domain.
+   */
+  loadBoostFromStore(domain) {
+    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
+
+    let boostData = this.getEmptyBoost(domain);
 
     if (this.registeredBoosts.has(domain)) {
       boostData = this.registeredBoosts.get(domain);

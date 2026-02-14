@@ -330,7 +330,7 @@ export class nsZenBoostEditor {
    */
   onCodeButtonPressed() {
     const offset = 265;
-    const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
+    const openRightAligned = (this.openerWindow.screenX + this.openerWindow.outerWidth / 2) < this.window.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "code") return;
@@ -354,7 +354,7 @@ export class nsZenBoostEditor {
    */
   onCodeBackButtonPressed() {
     const offset = 265;
-    const openRightAligned = this.window.screen.availWidth / 2 < this.window.screenX;
+    const openRightAligned = (this.openerWindow.screenX + this.openerWindow.outerWidth / 2) < this.window.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "boost") return;

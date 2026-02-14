@@ -85,10 +85,6 @@
   margin-bottom: 0;
 }
 
-#zenBoostWindow {
-  animation: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) zen-boost-window-in;
-}
-
 body {
   overflow: clip;
   display: flex;
@@ -136,19 +132,6 @@ body {
   &[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-}
-
-@keyframes zen-boost-window-in {
-  from {
-    transform: scale(0.9) translateY(20px);
-    opacity: 0;
-    filter: blur(6px);
-  }
-  to {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    filter: none;
   }
 }
 
@@ -599,10 +582,18 @@ body {
 
   z-index: 2;
 
-  background: #fbfbfdf2;
-  background-image: radial-gradient(#e3e9e4 0.5px, transparent 0);
+  background: #fbfbfdea;
+
   background-position: -23px -23px;
-  background-size: 4px 4px;
+  backdrop-filter: saturate(2) blur(15px);
+  
+  background-size: 6px 6px;
+  background-image: radial-gradient(#e3e9e4, 1px, transparent 0);
+  
+  @media (-moz-platform: macos) {
+    background-size: 4px 4px;
+    background-image: radial-gradient(#e3e9e4 0.5px, transparent 0);
+  }
 }
 
 .zen-boost-color-picker-gradient::before {

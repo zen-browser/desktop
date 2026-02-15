@@ -164,6 +164,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #handleKeyDown(event) {
     if (!this.#lazyPrefs.enabled) return;
 
+    if (event.key === "Escape" && this.#isOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      this.#forceClose();
+      return false;
+    }
+
     // Check for Ctrl+Tab or Ctrl+Shift+Tab
     if (event.ctrlKey && event.key === "Tab") {
       console.log("ZenTabSwitcher: Ctrl+Tab detected, opening switcher");
@@ -268,6 +276,21 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (selectedTab && selectedTab !== gBrowser.selectedTab) {
       gBrowser.selectedTab = selectedTab;
     }
+
+    this.#isOpen = false;
+    this.#currentIndex = 0;
+    this.#tabList = [];
+  }
+
+  /**
+   * Force close the switcher without switching tabs.
+   */
+  #forceClose() {
+    if (!this.#isOpen) return;
+
+    this.#ctrlPressed = false;
+    this.container.classList.remove("zen-tab-switcher-open");
+    this.container.hidden = true;
 
     this.#isOpen = false;
     this.#currentIndex = 0;
@@ -407,6 +430,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       }
       this.tabsContainer.appendChild(tabCard);
     });
+
+    this.#applySelectionTextStyles();
   }
 
 
@@ -446,7 +471,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     // Favicon
     const favicon = document.createXULElement("image");
     favicon.className = "zen-tab-switcher-favicon";
-    favicon.setAttribute("src", gBrowser.getIcon(tab) || PlacesUtils.favicons.defaultFavicon.spec);
+
+    const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
+    const iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
+    favicon.setAttribute("src", iconSrc);
+
+    if (
+      iconSrc === defaultFavicon ||
+      iconSrc === "chrome://global/skin/icons/settings.svg" ||
+      iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
+    ) {
+      favicon.classList.add("zen-tab-switcher-favicon-zen");
+    }
+
     infoContainer.appendChild(favicon);
 
     // Title
@@ -511,13 +548,34 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         card.classList.remove("zen-tab-switcher-selected");
       }
     });
+
+    this.#applySelectionTextStyles();
     
     // Scroll to show selected tab
     this.#scrollToSelected();
   }
+
+  #applySelectionTextStyles() {
+    if (!this.tabsContainer) return;
+
+    const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
+    cards.forEach((card) => {
+      const title = card.querySelector(".zen-tab-switcher-title");
+      if (!title) return;
+
+      if (card.classList.contains("zen-tab-switcher-selected")) {
+        title.style.setProperty("color", "white", "important");
+        title.style.setProperty("-moz-text-fill-color", "white", "important");
+      } else {
+        title.style.color = "";
+        title.style.removeProperty("-moz-text-fill-color");
+      }
+    });
+  }
   
   /**
-   * Scroll container to show the selected tab with smooth animation
+   * Scroll container to show the selected tab with page-based snapping
+   * Ensures full cards are visible without cutoff
    */
   #scrollToSelected() {
     if (!this.tabsContainer) return;
@@ -525,15 +583,39 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
     if (!selectedCard) return;
     
-    // Calculate the scroll position to center the selected card
-    const cardWidth = 230; // var(--zen-tab-switcher-card-width)
-    const gap = 24; // var(--zen-tab-switcher-gap)
+    const cardWidth = 200; // var(--zen-tab-switcher-card-width)
+    const gap = 0; // var(--zen-tab-switcher-gap)
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
+    const totalTabs = this.#tabList.length;
     
-    // Position to scroll to: each card + gap, centered in viewport
-    const cardPosition = cardIndex * (cardWidth + gap);
-    const containerWidth = this.tabsContainer.clientWidth;
-    const scrollPosition = cardPosition - (containerWidth / 2) + (cardWidth / 2);
+    // Calculate max visible cards based on viewport width (same logic as #renderTabs)
+    let maxVisible = 5;
+    const viewportWidth = window.innerWidth;
+    if (viewportWidth <= 550) {
+      maxVisible = 1;
+    } else if (viewportWidth <= 800) {
+      maxVisible = 2;
+    } else if (viewportWidth <= 1050) {
+      maxVisible = 3;
+    } else if (viewportWidth <= 1300) {
+      maxVisible = 4;
+    }
+    
+    // Calculate which page the selected card is on
+    const currentPage = Math.floor(cardIndex / maxVisible);
+    
+    // Calculate the starting index for this page
+    let pageStartIndex = currentPage * maxVisible;
+    
+    // If we're near the end and don't have enough cards for a full page,
+    // adjust to show the last full page
+    const remainingCards = totalTabs - pageStartIndex;
+    if (remainingCards < maxVisible && totalTabs > maxVisible) {
+      pageStartIndex = Math.max(0, totalTabs - maxVisible);
+    }
+    
+    // Calculate scroll position to show the page starting at pageStartIndex
+    const scrollPosition = pageStartIndex * (cardWidth + gap);
     
     // Smooth scroll to position
     this.tabsContainer.scrollTo({

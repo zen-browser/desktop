@@ -66,8 +66,10 @@
   backdrop-filter: none;
   position: relative;
   z-index: 999999;
-  
-  @media -moz-pref("zen.theme.acrylic-elements") {
+}
+
+@media -moz-pref("zen.theme.acrylic-elements") {
+  #zen-tab-switcher-panel {
     --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
     background: var(--zen-urlbar-background-transparent) !important;
     backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
@@ -120,10 +122,7 @@
 /* Selected state - uses accent color like urlbar */
 .zen-tab-switcher-card.zen-tab-switcher-selected {
   background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
-}
-
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
-  color: light-dark(rgba(0, 0, 0, 0.85), white) !important;
+  color: white !important;
 }
 
 /* Thumbnail container */
@@ -156,8 +155,6 @@
   width: 48px !important;
   height: 48px !important;
   opacity: 0.3;
-  /* Black in light theme, white in dark theme - matches text */
-  filter: light-dark(brightness(0), brightness(0) invert(1));
   -moz-context-properties: fill, stroke, fill-opacity;
   fill: currentColor;
 }
@@ -178,11 +175,22 @@
   width: 18px !important;
   height: 18px !important;
   flex-shrink: 0;
-  /* Black in light theme, white in dark theme - matches text */
-  filter: light-dark(brightness(0), brightness(0) invert(1));
   -moz-context-properties: fill, stroke, fill-opacity;
   fill: currentColor;
   fill-opacity: var(--urlbar-icon-fill-opacity);
+}
+
+/* Zen-specific favicon styling (default globe + settings) */
+.zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
+.zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
+  /* Dark in light mode, light in dark mode */
+  filter: light-dark(brightness(0), brightness(0) invert(1));
+}
+
+/* Selected state: force white for Zen-specific favicons */
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
+  filter: brightness(0) invert(1) !important;
 }
 
 /* Title */
@@ -196,6 +204,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+}
+
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info,
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
+  color: white !important;
+  -moz-text-fill-color: white !important;
 }
 
 /* Pending/unloaded tab indicator */

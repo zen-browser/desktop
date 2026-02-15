@@ -121,6 +121,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#cleanupRecentlyUsedTabs();
     });
     window.addEventListener("TabAttrModified", () => this.#invalidateThumbnailsCache());
+    window.addEventListener("TabMove", () => this.#invalidateThumbnailsCache());
     window.addEventListener("resize", () => this.handleResize());
     
     // Track tab selection for recently used order
@@ -213,7 +214,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   /**
    * Open the tab switcher
    */
-  open() {
+  async open() {
     if (this.#isOpen) return;
 
     this.#buildTabList();
@@ -234,9 +235,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#currentIndex = currentTabIndex >= 0 ? currentTabIndex : 0;
     }
     
-    // Pre-cache thumbnails for all tabs
-    this.#preCacheThumbnails();
-    
+    // Pre-cache thumbnails for the visible page before showing the panel
+    await this.#preCacheThumbnailsForVisible();
+
     this.#renderTabs();
     
     // Show the UI immediately - selection is already applied during render
@@ -245,6 +246,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     
     // Scroll to selected tab after showing
     setTimeout(() => this.#scrollToSelected(), 0);
+
+    // Continue pre-caching remaining thumbnails in the background
+    this.#preCacheThumbnails();
   }
 
   /**
@@ -305,36 +309,46 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const tabsToCache = this.#tabList;
     
     for (const tab of tabsToCache) {
-      if (tab.hasAttribute("pending")) continue;
-      
-      const tabId = tab.linkedPanel;
-      if (this.#thumbnailCache.has(tabId)) continue;
-      
-      const browser = tab.linkedBrowser;
-      if (!browser) continue;
-      
-      try {
-        const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-        canvas.width = 320;
-        canvas.height = 180;
-        
-        const { PageThumbs } = ChromeUtils.importESModule(
-          "resource://gre/modules/PageThumbs.sys.mjs"
-        );
-        
-        PageThumbs.captureToCanvas(browser, canvas)
-          .then(() => {
-            const dataUrl = canvas.toDataURL("image/png");
-            this.#thumbnailCache.set(tabId, dataUrl);
-            // Re-render to show newly loaded thumbnail
-            if (this.#isOpen) {
-              this.#renderTabs();
-            }
-          })
-          .catch(e => console.warn("Failed to pre-cache thumbnail:", e));
-      } catch (e) {
-        console.warn("Failed to pre-cache thumbnail:", e);
+      this.#captureThumbnail(tab);
+    }
+  }
+
+  async #preCacheThumbnailsForVisible() {
+    const { pageStartIndex, maxVisible } = this.#getPageStartIndex(this.#currentIndex);
+    const endIndex = Math.min(this.#tabList.length, pageStartIndex + maxVisible);
+    const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
+
+    const tasks = tabsToCache.map((tab) => this.#captureThumbnail(tab));
+    await Promise.all(tasks);
+  }
+
+  async #captureThumbnail(tab) {
+    if (tab.hasAttribute("pending")) return;
+
+    const tabId = tab.linkedPanel;
+    if (this.#thumbnailCache.has(tabId)) return;
+
+    const browser = tab.linkedBrowser;
+    if (!browser) return;
+
+    try {
+      const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+      canvas.width = 320;
+      canvas.height = 180;
+
+      const { PageThumbs } = ChromeUtils.importESModule(
+        "resource://gre/modules/PageThumbs.sys.mjs"
+      );
+
+      await PageThumbs.captureToCanvas(browser, canvas);
+      const dataUrl = canvas.toDataURL("image/png");
+      this.#thumbnailCache.set(tabId, dataUrl);
+
+      if (this.#isOpen) {
+        this.#renderTabs();
       }
+    } catch (e) {
+      console.warn("Failed to pre-cache thumbnail:", e);
     }
   }
 
@@ -398,17 +412,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     
     // Responsive max visible cards based on viewport width
     // 5 cards: >1300px, 4 cards: >1050px, 3 cards: >800px, 2 cards: >550px, 1 card: <=550px
-    let maxVisible = 5;
-    const viewportWidth = window.innerWidth;
-    if (viewportWidth <= 550) {
-      maxVisible = 1;
-    } else if (viewportWidth <= 800) {
-      maxVisible = 2;
-    } else if (viewportWidth <= 1050) {
-      maxVisible = 3;
-    } else if (viewportWidth <= 1300) {
-      maxVisible = 4;
-    }
+    const maxVisible = this.#getMaxVisibleCards();
     
     // Set fixed width to show cards based on viewport size (or fewer if we have fewer tabs)
     // This creates the viewport that shows the appropriate number of cards
@@ -586,9 +590,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const cardWidth = 200; // var(--zen-tab-switcher-card-width)
     const gap = 0; // var(--zen-tab-switcher-gap)
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
-    const totalTabs = this.#tabList.length;
+    const { pageStartIndex } = this.#getPageStartIndex(cardIndex);
     
-    // Calculate max visible cards based on viewport width (same logic as #renderTabs)
+    // Calculate scroll position to show the page starting at pageStartIndex
+    const scrollPosition = pageStartIndex * (cardWidth + gap);
+    
+    // Smooth scroll to position
+    this.tabsContainer.scrollTo({
+      left: scrollPosition,
+      behavior: "smooth"
+    });
+  }
+
+  #getMaxVisibleCards() {
     let maxVisible = 5;
     const viewportWidth = window.innerWidth;
     if (viewportWidth <= 550) {
@@ -600,28 +614,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     } else if (viewportWidth <= 1300) {
       maxVisible = 4;
     }
-    
-    // Calculate which page the selected card is on
+
+    return maxVisible;
+  }
+
+  #getPageStartIndex(cardIndex) {
+    const totalTabs = this.#tabList.length;
+    const maxVisible = this.#getMaxVisibleCards();
+
     const currentPage = Math.floor(cardIndex / maxVisible);
-    
-    // Calculate the starting index for this page
     let pageStartIndex = currentPage * maxVisible;
-    
-    // If we're near the end and don't have enough cards for a full page,
-    // adjust to show the last full page
+
     const remainingCards = totalTabs - pageStartIndex;
     if (remainingCards < maxVisible && totalTabs > maxVisible) {
       pageStartIndex = Math.max(0, totalTabs - maxVisible);
     }
-    
-    // Calculate scroll position to show the page starting at pageStartIndex
-    const scrollPosition = pageStartIndex * (cardWidth + gap);
-    
-    // Smooth scroll to position
-    this.tabsContainer.scrollTo({
-      left: scrollPosition,
-      behavior: "smooth"
-    });
+
+    return { pageStartIndex, maxVisible };
   }
 
   /**

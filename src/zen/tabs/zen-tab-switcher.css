@@ -212,12 +212,6 @@
   -moz-text-fill-color: white !important;
 }
 
-/* Pending/unloaded tab indicator */
-.zen-tab-switcher-card.zen-tab-switcher-pending .zen-tab-switcher-title,
-.zen-tab-switcher-card.zen-tab-switcher-no-thumbnail .zen-tab-switcher-title {
-  opacity: 0.7;
-}
-
 /* Animation keyframes */
 @keyframes zen-tab-switcher-fade-in {
   from {

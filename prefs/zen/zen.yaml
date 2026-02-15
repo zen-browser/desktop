@@ -61,7 +61,7 @@
   value: true
 
 - name: zen.tabs.tab-switcher.show-unloaded
-  value: false
+  value: true
 
 - name: zen.tabs.tab-switcher.use-recent-order
   value: false

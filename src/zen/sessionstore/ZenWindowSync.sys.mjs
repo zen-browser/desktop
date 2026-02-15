@@ -798,6 +798,7 @@ class nsZenWindowSync {
           {
             fullScale: true,
             fullViewport: true,
+            backgroundColor: "transparent"
           }
         );
 

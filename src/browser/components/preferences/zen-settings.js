@@ -281,11 +281,42 @@ var gZenMarketplaceManager = {
       return;
     }
 
+    
+    if (this._rebuildInProgress) {
+      this._rebuildQueued = true;
+      return;
+    }
+    this._rebuildInProgress = true;
+
+    try {
+      await this._doBuildModsList();
+    } finally {
+      this._rebuildInProgress = false;
+     
+      if (this._rebuildQueued) {
+        this._rebuildQueued = false;
+  
+        Promise.resolve().then(() => this._buildModsList());
+      }
+    }
+  },
+
+  async _doBuildModsList() {
     const mods = await gZenMods.getMods();
     const browser = nsZenMultiWindowFeature.currentBrowser;
     const modList = document.createElement("div");
 
-    for (const mod of Object.values(mods).sort((a, b) => a.name.localeCompare(b.name))) {
+
+    const modEntries = Object.values(mods).sort((a, b) => a.name.localeCompare(b.name));
+    const preferencesMap = new Map();
+    await Promise.all(
+      modEntries.map(async (mod) => {
+        const prefs = await gZenMods.getModPreferences(mod);
+        preferencesMap.set(mod.id, prefs);
+      })
+    );
+
+    for (const mod of modEntries) {
       const sanitizedName = gZenMods.sanitizeModName(mod.name);
       const isModEnabled = mod.enabled === undefined || mod.enabled;
       const fragment = window.MozXULElement.parseXULToFragment(`
@@ -430,7 +461,8 @@ var gZenMarketplaceManager = {
         }
       }
 
-      const preferences = await gZenMods.getModPreferences(mod);
+      // Use pre-fetched preferences from parallel fetch
+      const preferences = preferencesMap.get(mod.id);
 
       if (preferences.length) {
         const preferencesWrapper = document.createXULElement("vbox");

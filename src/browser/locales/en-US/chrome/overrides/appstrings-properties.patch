@@ -1,0 +1,55 @@
+diff --git a/browser/locales/en-US/chrome/overrides/appstrings.properties b/browser/locales/en-US/chrome/overrides/appstrings.properties
+--- a/browser/locales/en-US/chrome/overrides/appstrings.properties
++++ b/browser/locales/en-US/chrome/overrides/appstrings.properties
+@@ -4,10 +4,10 @@
+
+ malformedURI2=Please check that the URL is correct and try again.
+-fileNotFound=Firefox can't find the file at %S.
++fileNotFound=Zen can't find the file at %S.
+ fileAccessDenied=The file at %S is not readable.
+ # %S is replaced by the uri host
+ httpErrorPage=%S sent back an error.
+ serverError=%S might have a temporary problem or it could have moved.
+ dnsNotFound2=We can't connect to the server at %S.
+ basicHttpAuthDisabled=Someone pretending to be the site could try to steal things like your username, password, or email.
+-unknownProtocolFound=Firefox doesn't know how to open this address, because one of the following protocols (%S) isn't associated with any program or is not allowed in this context.
+-connectionFailure=Firefox can't establish a connection to the server at %S.
++unknownProtocolFound=Zen doesn't know how to open this address, because one of the following protocols (%S) isn't associated with any program or is not allowed in this context.
++connectionFailure=Zen can't establish a connection to the server at %S.
+ netInterrupt=The connection to %S was interrupted while the page was loading.
+ netTimeout=The server at %S is taking too long to respond.
+-redirectLoop=Firefox has detected that the server is redirecting the request for this address in a way that will never complete.
++redirectLoop=Zen has detected that the server is redirecting the request for this address in a way that will never complete.
+ ## LOCALIZATION NOTE (confirmRepostPrompt): In this item, don't translate "%S"
+ confirmRepostPrompt=To display this page, %S must send information that will repeat any action (such as a search or order confirmation) that was performed earlier.
+ resendButton.label=Resend
+-clientSocketMisconfiguration=Firefox doesn't know how to communicate with the server.
++clientSocketMisconfiguration=Zen doesn't know how to communicate with the server.
+ netReset=The connection to the server was reset while the page was loading.
+ notCached=This document is no longer available.
+-netOffline=Firefox is currently in offline mode and can't browse the Web.
++netOffline=Zen is currently in offline mode and can't browse the Web.
+ isprinting=The document cannot change while Printing or in Print Preview.
+-deniedPortAccess=This address uses a network port which is normally used for purposes other than Web browsing. Firefox has canceled the request for your protection.
+-proxyResolveFailure=Firefox is configured to use a proxy server that can't be found.
+-proxyConnectFailure=Firefox is configured to use a proxy server that is refusing connections.
++deniedPortAccess=This address uses a network port which is normally used for purposes other than Web browsing. Zen has canceled the request for your protection.
++proxyResolveFailure=Zen is configured to use a proxy server that can't be found.
++proxyConnectFailure=Zen is configured to use a proxy server that is refusing connections.
+ contentEncodingError=The page you are trying to view cannot be shown because it uses an invalid or unsupported form of compression.
+ unsafeContentType=The page you are trying to view cannot be shown because it is contained in a file type that may not be safe to open. Please contact the website owners to inform them of this problem.
+ externalProtocolTitle=External Protocol Request
+@@ -36,7 +36,7 @@
+ cspBlocked=This page has a content security policy that prevents it from being loaded in this way.
+ xfoBlocked=This page has an X-Frame-Options policy that prevents it from being loaded in this context.
+ corruptedContentErrorv2=The site at %S has experienced a network protocol violation that cannot be repaired.
+ ## LOCALIZATION NOTE (sslv3Used) - Do not translate "%S".
+-sslv3Used=Firefox cannot guarantee the safety of your data on %S because it uses SSLv3, a broken security protocol.
++sslv3Used=Zen cannot guarantee the safety of your data on %S because it uses SSLv3, a broken security protocol.
+ inadequateSecurityError=The website tried to negotiate an inadequate level of security.
+ blockedByPolicy=Your organization has blocked access to this page or website.
+-blockedByCORP=Firefox didn't load this page because it looks like the security configuration doesn't match the previous page.
++blockedByCORP=Zen didn't load this page because it looks like the security configuration doesn't match the previous page.
+ invalidHeaderValue=%S sent back a header with empty characters not allowed by web security standards.
+-networkProtocolError=Firefox has experienced a network protocol violation that cannot be repaired.
++networkProtocolError=Zen has experienced a network protocol violation that cannot be repaired.

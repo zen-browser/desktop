@@ -489,9 +489,9 @@ class nsZenWindowSync {
   #syncTabSubtitle(aWindow, aOriginalItem, aTargetItem) {
     const subLabel = aOriginalItem.getAttribute("zen-show-sublabel");
     const targetLabel = aTargetItem.querySelector(".zen-tab-sublabel");
-    if (subLabel && targetLabel) {
+    if (targetLabel) {
       aWindow.document.l10n.setArgs(targetLabel, {
-        tabSubtitle: subLabel,
+        tabSubtitle: subLabel || "zen-default-pinned",
       });
     }
   }

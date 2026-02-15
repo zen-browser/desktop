@@ -313,6 +313,9 @@ export class nsZenSessionManager {
    *        The initial session state read from the session file, possibly modified by onFileRead.
    */
   onCrashCheckpoints(initialState) {
+    if (!lazy.gWindowSyncEnabled) {
+      return;
+    }
     // When we don't have browser.startup.page set to resume session,
     // we only want to restore the pinned tabs into the new windows.
     if (this.#shouldRestoreOnlyPinned && !this.#shouldRestoreFromCrash && this.#sidebar?.tabs) {

@@ -65,3 +65,6 @@
 
 - name: zen.tabs.tab-switcher.use-recent-order
   value: false
+
+- name: zen.tabs.tab-switcher.max-visible-cards
+  value: 5

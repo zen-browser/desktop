@@ -88,9 +88,11 @@
   overflow-x: hidden; /* No overflow - perfectly symmetrical */
   overflow-y: hidden;
   /* width is set dynamically via JavaScript */
+  max-width: 100%; /* Constrain within panel boundaries */
   scroll-behavior: smooth;
   scrollbar-width: none; /* Hide scrollbar */
   position: relative;
+  box-sizing: border-box;
 }
 
 #zen-tab-switcher-tabs::-webkit-scrollbar {

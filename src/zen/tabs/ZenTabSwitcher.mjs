@@ -477,11 +477,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     favicon.className = "zen-tab-switcher-favicon";
 
     const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
-    const iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
+    let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
+    
+    // Replace branding icons with newtab icon
+    if (iconSrc.startsWith("chrome://branding/content/")) {
+      iconSrc = "chrome://browser/skin/zen-icons/new-tab-image.svg";
+    }
+    
     favicon.setAttribute("src", iconSrc);
 
     if (
       iconSrc === defaultFavicon ||
+      iconSrc.startsWith("page-icon:") ||
+      iconSrc === "chrome://browser/skin/zen-icons/new-tab-image.svg" ||
       iconSrc === "chrome://global/skin/icons/settings.svg" ||
       iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
     ) {

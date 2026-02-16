@@ -2,14 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* Uses same color variables as urlbar (zen-omnibox.css and zen-theme.css):
- * Panel background: --zen-urlbar-background-base (light: #fbfbfb, dark: hsl(0, 0%, 6.7%) + primary 30%)
- * Card hover: --toolbarbutton-hover-background (light: rgba(0,0,0,0.1), dark: rgba(255,255,255,0.2))
- * Card selected: --urlbarView-highlight-background (matches urlbar dropdown selection)
- * Text: --toolbar-field-color (resolves to --toolbox-textcolor)
- * Thumbnails: --zen-branding-bg, --zen-colors-border
- */
-
 :root {
   --zen-tab-switcher-card-width: 200px;
   --zen-tab-switcher-card-height: 167px;
@@ -22,50 +14,26 @@
   --zen-tab-switcher-card-inner-padding: 11px;
 }
 
-/* Main container - centered in entire browser window */
 #zen-tab-switcher-container {
-  /* Fixed positioning relative to viewport - centered exactly like floating urlbar */
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  translate: -50% -50% !important; /* Separate translate property to avoid conflicts with panel transform */
-  z-index: 999999 !important; /* High z-index to be above sidebar and all other elements */
-  display: none; /* Hidden by default */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease-in-out;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Ensure hidden attribute works */
-#zen-tab-switcher-container[hidden] {
-  display: none !important;
-}
-
-#zen-tab-switcher-container:not([hidden]) {
-  display: block; /* Only display when not hidden */
-}
-
-#zen-tab-switcher-container.zen-tab-switcher-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Panel container - uses same colors as focused urlbar */
 #zen-tab-switcher-panel {
   --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
   background: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
   border: none;
   border-radius: var(--zen-tab-switcher-border-radius);
   padding: var(--zen-tab-switcher-padding);
-  box-shadow: 0px 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
   outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2));
   outline-offset: -0.5px;
   max-width: 90vw;
-  transform: scale(0.95);
-  transition: transform 0.15s ease-out;
   backdrop-filter: none;
   position: relative;
   z-index: 999999;
+  box-sizing: border-box;
 }
 
 @media -moz-pref("zen.theme.acrylic-elements") {
@@ -76,30 +44,23 @@
   }
 }
 
-#zen-tab-switcher-container.zen-tab-switcher-open #zen-tab-switcher-panel {
-  transform: scale(1);
-}
-
-/* Tabs container - horizontal scrollable */
 #zen-tab-switcher-tabs {
   display: flex;
   flex-direction: row;
   gap: var(--zen-tab-switcher-gap);
-  overflow-x: hidden; /* No overflow - perfectly symmetrical */
+  overflow-x: hidden;
   overflow-y: hidden;
-  /* width is set dynamically via JavaScript */
-  max-width: 100%; /* Constrain within panel boundaries */
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Hide scrollbar */
+  scrollbar-width: none; 
   position: relative;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 #zen-tab-switcher-tabs::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for WebKit browsers */
+  display: none;
 }
 
-/* Individual tab card */
 .zen-tab-switcher-card {
   flex-shrink: 0;
   width: var(--zen-tab-switcher-card-width);
@@ -116,18 +77,15 @@
   box-sizing: border-box;
 }
 
-/* Hover state - matches urlbar hover */
 .zen-tab-switcher-card:hover {
   background: var(--toolbarbutton-hover-background);
 }
 
-/* Selected state - uses accent color like urlbar */
 .zen-tab-switcher-card.zen-tab-switcher-selected {
   background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white !important;
 }
 
-/* Thumbnail container */
 .zen-tab-switcher-thumbnail {
   width: 100%;
   height: var(--zen-tab-switcher-thumbnail-height);
@@ -147,21 +105,19 @@
   border-radius: var(--zen-tab-switcher-thumbnail-border-radius);
 }
 
-/* Grey box placeholder for unloaded tabs */
 .zen-tab-switcher-card.zen-tab-switcher-pending .zen-tab-switcher-thumbnail,
 .zen-tab-switcher-card.zen-tab-switcher-no-thumbnail .zen-tab-switcher-thumbnail {
   background: color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg));
 }
 
 .zen-tab-switcher-favicon-large {
-  width: 48px !important;
-  height: 48px !important;
+  width: 48px;
+  height: 48px;
   opacity: 0.3;
   -moz-context-properties: fill, stroke, fill-opacity;
   fill: currentColor;
 }
 
-/* Info container at bottom */
 .zen-tab-switcher-info {
   padding: 0;
   background: transparent;
@@ -172,35 +128,29 @@
   border-top: none;
 }
 
-/* Favicon in info bar */
 .zen-tab-switcher-favicon {
-  width: 18px !important;
-  height: 18px !important;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   -moz-context-properties: fill, stroke, fill-opacity;
   fill: currentColor;
   fill-opacity: var(--urlbar-icon-fill-opacity);
 }
 
-/* Zen-specific favicon styling (default globe + settings) */
 .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
 .zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
-  /* Dark in light mode, light in dark mode */
   filter: light-dark(brightness(0), brightness(0) invert(1));
 }
 
-/* Selected state: force white for Zen-specific favicons */
 .zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
 .zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
-  filter: brightness(0) invert(1) !important;
+  filter: brightness(0) invert(1);
 }
 
-/* Title */
 .zen-tab-switcher-title {
   flex: 1;
   font-size: 15px;
   font-weight: 600;
-  /* Black in light theme, white in dark theme */
   color: light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.9));
   white-space: nowrap;
   overflow: hidden;
@@ -212,35 +162,4 @@
 .zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
   color: white !important;
   -moz-text-fill-color: white !important;
-}
-
-/* Animation keyframes */
-@keyframes zen-tab-switcher-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes zen-tab-switcher-fade-out {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-}
-
-#zen-tab-switcher-container.zen-tab-switcher-open {
-  animation: zen-tab-switcher-fade-in 0.15s ease-out;
-}
-
-#zen-tab-switcher-container:not(.zen-tab-switcher-open) {
-  animation: zen-tab-switcher-fade-out 0.15s ease-in;
 }

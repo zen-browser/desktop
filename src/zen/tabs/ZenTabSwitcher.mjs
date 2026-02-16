@@ -58,19 +58,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   // Loads user preferences from Firefox's preference system
   #setupPreferences() {
-
     XPCOMUtils.defineLazyPreferenceGetter(
       this.#lazyPrefs,
       "enabled",
       "zen.tabs.tab-switcher.enabled",
       true
-    );
-
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this.#lazyPrefs,
-      "showUnloaded",
-      "zen.tabs.tab-switcher.show-unloaded",
-      false
     );
 
     XPCOMUtils.defineLazyPreferenceGetter(
@@ -93,13 +85,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Registers event listeners for keyboard input
   #setupKeyboardListeners() {
     window.addEventListener("keydown", this.#handleKeyDown.bind(this), true);
     window.addEventListener("keyup", this.#handleKeyUp.bind(this), true);
   }
 
-  // Gets references to HTML/XUL elements that make up the switcher interface
   #createUI() {
     this.container = document.getElementById("zen-tab-switcher-container");
     this.panel = document.getElementById("zen-tab-switcher-panel");
@@ -108,10 +98,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.container) {
       console.error("ZenTabSwitcher: UI elements not found");
       return;
-    }
-
-    if (this.container.parentNode !== document.documentElement) {
-      document.documentElement.appendChild(this.container);
     }
   }
 
@@ -124,9 +110,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
     window.addEventListener("TabAttrModified", () => this.#invalidateThumbnailsCache());
     window.addEventListener("TabMove", () => this.#invalidateThumbnailsCache());
-
-    window.addEventListener("resize", () => this.handleResize());
-
     window.addEventListener("TabSelect", (event) => this.#onTabSelect(event));
   }
 
@@ -229,8 +212,26 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     await this.#preCacheThumbnailsForVisible();
 
     this.#renderTabs();
-    this.container.hidden = false;
-    this.container.classList.add("zen-tab-switcher-open");
+
+    // Center on screen like Firefox's Ctrl+Tab panel
+    const screenLeft = screen.availLeft || 0;
+    const screenTop = screen.availTop || 0;
+    const screenWidth = screen.availWidth;
+    const screenHeight = screen.availHeight;
+    
+    // Open popup first to get rendered dimensions
+    this.container.openPopup(document.documentElement, "overlap", 0, 0, false, false);
+    
+    // Get actual panel dimensions after rendering
+    await new Promise(resolve => setTimeout(resolve, 0));
+    const panelRect = this.container.getBoundingClientRect();
+    
+    // Calculate center position
+    const centerX = screenLeft + (screenWidth - panelRect.width) / 2;
+    const centerY = screenTop + (screenHeight - panelRect.height) / 2;
+    
+    // Move to center
+    this.container.moveTo(centerX, centerY);
 
     setTimeout(() => this.#scrollToSelected(), 0);
 
@@ -243,19 +244,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const selectedTab = this.#tabList[this.#currentIndex];
 
-    this.container.classList.remove("zen-tab-switcher-open");
-
-    let hasHidden = false;
-    const hideContainer = () => {
-      if (hasHidden) return;
-      hasHidden = true;
-      this.container.hidden = true;
-      this.container.removeEventListener("animationend", hideContainer);
-    };
-
-    this.container.addEventListener("animationend", hideContainer, { once: true });
-
-    setTimeout(hideContainer, 200);
+    this.container.hidePopup();
 
     if (selectedTab && selectedTab !== gBrowser.selectedTab) {
       gBrowser.selectedTab = selectedTab;
@@ -271,8 +260,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.#isOpen) return;
 
     this.#ctrlPressed = false;
-    this.container.classList.remove("zen-tab-switcher-open");
-    this.container.hidden = true;
+    this.container.hidePopup();
 
     this.#isOpen = false;
     this.#currentIndex = 0;
@@ -334,9 +322,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   // Creates the list of tabs to show in the switcher
-  // Filters tabs based on user preferences
   #buildTabList() {
-    const showUnloaded = this.#lazyPrefs.showUnloaded;
     const useRecentOrder = this.#lazyPrefs.useRecentOrder;
 
     let tabs = [];
@@ -360,17 +346,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#tabList = tabs.filter(tab => {
       if (tab.closing || tab.hidden) return false;
-
       if (tab.hasAttribute("zen-empty-tab")) return false;
-
-      if (!showUnloaded && tab.hasAttribute("pending")) return false;
-
       return true;
     });
   }
 
   // Creates the visual tab cards and adds them to the DOM
-  // Calculates responsive layout based on window size
   #renderTabs() {
     if (!this.tabsContainer) return;
 
@@ -382,15 +363,20 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const gap = 0;
     const panelPadding = 23 * 2;
 
-    const maxAvailableWidth = window.innerWidth * 0.9 - panelPadding;
-    const maxCardsThatFit = Math.floor((maxAvailableWidth + gap) / (cardWidth + gap));
-    const maxVisibleFromBreakpoints = this.#getMaxVisibleCards();
-    const visibleCount = Math.min(totalTabs, maxVisibleFromBreakpoints, maxCardsThatFit);
+    const visibleCount = Math.min(totalTabs, 5);
     const containerWidth = (cardWidth * visibleCount) + (gap * (visibleCount - 1));
+    const panelWidth = containerWidth + panelPadding;
 
     this.#actualVisibleCards = visibleCount;
     this.tabsContainer.style.width = `${containerWidth}px`;
     this.tabsContainer.style.maxWidth = `${containerWidth}px`;
+    this.tabsContainer.style.minWidth = `${containerWidth}px`;
+    
+    if (this.panel) {
+      this.panel.style.width = `${panelWidth}px`;
+      this.panel.style.maxWidth = `${panelWidth}px`;
+      this.panel.style.minWidth = `${panelWidth}px`;
+    }
 
     this.#tabList.forEach((tab, index) => {
       const tabCard = this.#createTabCard(tab, index);
@@ -555,29 +541,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  // Calculates how many cards should be visible based on window width
-  // Uses responsive breakpoints and user preference
-  #getMaxVisibleCards() {
-    const prefMax = Math.min(10, Math.max(1,
-      Services.prefs.getIntPref("zen.tabs.tab-switcher.max-visible-cards", 5)
-    ));
-
-    let maxVisible = prefMax;
-    const viewportWidth = window.innerWidth;
-
-    if (viewportWidth <= 550) {
-      maxVisible = 1;
-    } else if (viewportWidth <= 800) {
-      maxVisible = Math.min(2, prefMax);
-    } else if (viewportWidth <= 1050) {
-      maxVisible = Math.min(3, prefMax);
-    } else if (viewportWidth <= 1300) {
-      maxVisible = Math.min(4, prefMax);
-    }
-
-    return maxVisible;
-  }
-
   // Calculates which card should be at the left edge for pagination
   // Ensures the page shows full cards without cutoff at the end
   #getPageStartIndex(cardIndex) {
@@ -607,14 +570,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#updateSelection();
   }
 
-  // Called when the browser window is resized
-  // Re-renders the switcher if it's open to adjust card count
-  handleResize() {
-    if (this.#isOpen) {
-      this.#renderTabs();
-      this.#updateSelection();
-    }
-  }
 }
 
 export var gZenTabSwitcher = new nsZenTabSwitcher();

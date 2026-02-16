@@ -33,7 +33,7 @@ export class SelectorComponent {
     { id: "zen-select-cancel" },
   ];
 
-  safeAreaPadding = { left: 0, right: 0, top: 0, bottom: 0 }
+  safeAreaPadding = { left: 0, right: 0, top: 0, bottom: 0 };
 
   /**
    * @param {Document} document Webpage document
@@ -491,7 +491,7 @@ export class SelectorComponent {
    */
   getSelection() {
     const selector = this.getSelectionPath();
-    if (selector == '') return [];
+    if (selector == "") return [];
 
     return this.document.querySelectorAll(selector);
   }

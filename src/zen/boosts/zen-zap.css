@@ -54,7 +54,7 @@
 
 #zap-controls-container {
   font-family: system-ui !important;
-  
+
   display: flex;
   pointer-events: auto !important;
   z-index: 999999;

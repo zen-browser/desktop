@@ -231,7 +231,7 @@ export class nsZenSiteDataPanel {
     const domain = this.#getCurrentDomain();
     const uri = this.window.gBrowser.currentURI;
     const canBoostSite = lazy.gZenBoostsManager.canBoostSite(uri);
-    
+
     const list = this.document.getElementById("zen-site-data-boost-list");
     const section = list.closest(".zen-site-data-section");
     section.hidden = canBoostSite;

@@ -856,7 +856,7 @@ ${cssSelector} {
   /**
    * Handles the key down event for the name input field
    * to detect the enter key
-   * @param {Event} event 
+   * @param {Event} event
    */
   onNameInputKeyDown(event) {
     if (event.key === "Enter") {
@@ -866,7 +866,7 @@ ${cssSelector} {
 
   /**
    * Handles the unfocus/blur event for the name input field
-   * @param {Event} _ 
+   * @param {Event} _
    */
   onNameInputUnfocus(_) {
     this.onNameInputSubmit();
@@ -895,7 +895,7 @@ ${cssSelector} {
 
   /**
    * Handles showing the popup when clicking the name text
-   * @param {Event} event 
+   * @param {Event} event
    */
   onNameTextClick(event) {
     const popup = this.doc.getElementById("zenBoostContextMenu");
@@ -1073,8 +1073,8 @@ ${cssSelector} {
   handleClose() {
     this.uninit();
     if (this.currentBoostData != null && this.currentBoostData.changeWasMade) this.saveBoost();
-    else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade){
-const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade) {
+      const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
       gZenBoostsManager.deleteBoost(boost);
     }
 

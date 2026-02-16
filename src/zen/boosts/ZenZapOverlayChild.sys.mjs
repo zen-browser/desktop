@@ -188,7 +188,8 @@ export class ZapOverlay {
       unzapButton.id = "zen-zap-unzap";
 
       const index = boostData.zapSelectors.indexOf(selector) + 1;
-      const zappedElementsCount = selector == '' ? 0 : this.document.querySelectorAll(selector).length;
+      const zappedElementsCount =
+        selector == "" ? 0 : this.document.querySelectorAll(selector).length;
 
       const [tooltip] = lazy.overlayLocalization.formatMessagesSync([
         {
@@ -206,11 +207,10 @@ export class ZapOverlay {
     });
 
     // Fetch localizations
-    let [addZapHelper, removeZapHelper] = 
-      lazy.overlayLocalization.formatMessagesSync([
-        { id: "zen-add-zap-helper" },
-        { id: "zen-remove-zap-helper" }
-      ]);
+    let [addZapHelper, removeZapHelper] = lazy.overlayLocalization.formatMessagesSync([
+      { id: "zen-add-zap-helper" },
+      { id: "zen-remove-zap-helper" },
+    ]);
 
     if (boostData.zapSelectors.length == 0)
       zapList.innerHTML += `<p class="pcenter">${addZapHelper.value}</p>`;
@@ -226,7 +226,7 @@ export class ZapOverlay {
     const selector = button.getAttribute("selector");
     this.zenBoostsChild.tempShowZappedElement(selector);
 
-    button.value = '×';
+    button.value = "×";
 
     // This has to run with later, as the elements we are trying to highlight do not exist yet.
     // The css has to load first and calculate the bounding boxes for the elements before we can highlight.

@@ -63,13 +63,11 @@ export class ZenBoostsParent extends JSWindowActorParent {
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenBoost:OpenInspector": {
-        const { require } =
-          ChromeUtils.importESModule(
-            "resource://devtools/shared/loader/Loader.sys.mjs"
-          );
+        const { require } = ChromeUtils.importESModule(
+          "resource://devtools/shared/loader/Loader.sys.mjs"
+        );
 
-        const { gDevTools } =
-          require("devtools/client/framework/devtools");
+        const { gDevTools } = require("devtools/client/framework/devtools");
 
         let win = Services.wm.getMostRecentWindow("navigator:browser");
         let tab = win.gBrowser.selectedTab;

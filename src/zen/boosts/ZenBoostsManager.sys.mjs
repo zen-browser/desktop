@@ -290,7 +290,7 @@ class nsZenBoostsManager {
         } else {
           domainEntry.activeBoostId = id;
           Services.obs.notifyObservers(null, "zen-boosts-active-change", { id });
-          
+
           this.#stylesManager.invalidateStyleForDomain(domain);
           this.notify();
         }

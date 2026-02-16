@@ -411,7 +411,7 @@
   -moz-context-properties: fill;
   fill: white;
 
-  &:active { 
+  &:active {
     transform: scale(0.95);
   }
 
@@ -486,12 +486,12 @@
   }
 
   .permission-popup-permission-item:hover &::before,
-  .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover))  &::before {
+  .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
   .permission-popup-permission-item:active:hover &::before,
-  .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover))  &::before {
+  .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);
   }
 

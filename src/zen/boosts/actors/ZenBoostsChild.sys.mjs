@@ -285,11 +285,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     const boost = await this.getWebsiteBoost();
-    
+
     if (unloadStyles) {
       this.#unloadCurrentStyleSheet();
     }
-    
+
     if (boost) {
       const { boostData } = boost.boostEntry;
       if (boost.styleSheet) this.#loadStyleSheet(boost.styleSheet);
@@ -327,7 +327,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         const rgbColor = boostData.autoTheme ? primaryGradientColor : colorWheelColor;
         const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
         browsingContext.zenBoostsData = nsColor;
-      } else { 
+      } else {
         browsingContext.zenBoostsData = 0;
         browsingContext.prefersColorSchemeOverride = "none";
       }
@@ -382,7 +382,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
       this.document,
       this,
       [], // No additional IDs needed
-      this.onPickerSelection.bind(this));
+      this.onPickerSelection.bind(this)
+    );
 
     this.#overlay.initialize();
 

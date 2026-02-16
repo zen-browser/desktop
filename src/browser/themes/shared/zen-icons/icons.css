@@ -926,7 +926,8 @@
   }
 }
 
-#zen-site-data-boost[boosting], .boost-brush {
+#zen-site-data-boost[boosting],
+.boost-brush {
   list-style-image: url("paintbrush-fill.svg");
 }
 

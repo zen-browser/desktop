@@ -38,6 +38,12 @@
   --boost-spring-duration: 0.6s;
 }
 
+#zenBoostWindow {
+  /* For the mica effect we want a white tint */
+  color-scheme: light !important;
+  appearance: none !important;
+}
+
 #zen-boost-code-editor-root {
   flex: 1;
 }
@@ -442,6 +448,14 @@ body {
   background-color: #5b5b5c;
 }
 
+.zen-boost-button-active-transparent {
+  opacity: 0.35;
+}
+
+.zen-boost-button-active-transparent:hover {
+  opacity: 0.4 !important;
+}
+
 #zen-boost-magic-theme {
   width: 18px;
   height: 18px !important;
@@ -457,35 +471,35 @@ body {
   margin-right: auto;
 }
 
-#zen-boost-toolbar-wrapper {
-  width: auto;
+#zen-boost-toolbar-wrapper,
+#zen-boost-toolbar-wrapper-colors {
+  width: 100%;
   margin: auto;
-  gap: 0.8em;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  &#zen-boost-toolbar-wrapper-colors {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
 
   & .small {
-    width: 40px;
-    margin: auto;
-    padding: 5px 5px 5px 5px;
+    margin: 0;
+    flex: 1 1 30%; 
   }
 
   & .med {
-    width: 70px;
-    margin: auto;
-    padding: 3px 5px 5px 3px;
-
-    display: flex;
-    text-align: center;
-
-    vertical-align: middle;
-    justify-content: center;
-    align-items: center;
-    font-size: 10pt;
+    margin: 0;
+    flex: 1 1 50%;
   }
 }
 
 #zen-boost-font-select {
-  width: 85px;
+  width: 95px;
   height: 20px !important;
+
+  transition: 0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
   color: #727272;
   background-color: transparent;
@@ -497,11 +511,11 @@ body {
   text-indent: 2px;
 
   margin-left: 8px;
-  margin-right: 8px;
+  margin-right: 3px;
   margin-top: 8px;
 
   &:hover {
-    background-color: #9a9a9a44;
+    opacity: 0.75;
   }
 }
 
@@ -693,11 +707,11 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  box-shadow: 0px 4px 8px #00000021;
+  box-shadow: 0px 4px 12px #00000021;
   width: 100%;
   aspect-ratio: 1 /1;
-  margin: 10px 0px 8px 0px;
-  transition: filter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) !important;
+  margin: 10px 0px 4px 0px;
+  
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
   & [animated="true"] {

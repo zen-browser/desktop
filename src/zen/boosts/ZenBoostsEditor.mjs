@@ -59,7 +59,7 @@ export class nsZenBoostEditor {
   init() {
     this.window.addEventListener("unload", () => this.handleClose(), { once: true });
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "initial";
+    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
     this.doc.getElementById("zen-boost-name-input").style.display = "none";
 
@@ -364,7 +364,7 @@ export class nsZenBoostEditor {
     this.window.resizeTo(this._boostEditorWidth, this.window.outerHeight);
     if (openRightAligned) this.window.moveTo(this.window.screenX + offset, this.window.screenY);
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "initial";
+    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
 
     // Disable picker mode
@@ -658,9 +658,11 @@ ${cssSelector} {
     dot.style.left = `${relativeX}px`;
     dot.style.top = `${relativeY}px`;
 
-    // Enable color boosting again
-    if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
-    this.currentBoostData.autoTheme = false;
+    if (pixelX != null && pixelY != null) {
+      // Enable color boosting again
+      if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
+      this.currentBoostData.autoTheme = false;
+    }
 
     this.updateButtonToggleVisuals();
     this.updateDot();
@@ -753,8 +755,8 @@ ${cssSelector} {
     else invertButton.classList.remove("zen-boost-button-active");
 
     if (!this.currentBoostData.enableColorBoost)
-      disableButton.classList.add("zen-boost-button-active");
-    else disableButton.classList.remove("zen-boost-button-active");
+      disableButton.classList.add("zen-boost-button-active-transparent");
+    else disableButton.classList.remove("zen-boost-button-active-transparent");
 
     // Give the gradient a grayscale effect
     // when the color boosting is disabled

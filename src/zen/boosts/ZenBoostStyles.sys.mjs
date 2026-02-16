@@ -25,8 +25,7 @@ export class nsZenBoostStyles {
    * @param {Object} boostData - The boost configuration data.
    * @returns {string} The generated CSS style string.
    */
-  getStyleForBoost(boostData) {
-    const { domain } = boostData;
+  getStyleForBoost(boostData, domain) {
     if (this.#stylesCache.has(domain)) {
       return this.#stylesCache.get(domain);
     }
@@ -36,7 +35,7 @@ export class nsZenBoostStyles {
 
     const styleUri = this.#convertStyleToDataUri(rawStyle);
     this.#cacheStyle(styleUri, domain);
-    return this.getStyleForBoost(boostData);
+    return this.getStyleForBoost(boostData, domain);
   }
 
   invalidateStyleForDomain(domain) {

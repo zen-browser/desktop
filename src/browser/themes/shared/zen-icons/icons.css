@@ -122,7 +122,8 @@
 }
 
 .zen-current-workspace-indicator-chevron,
-#PanelUI-zen-gradient-generator-color-page-right {
+#PanelUI-zen-gradient-generator-color-page-right,
+.zen-permission-popup-boost-editor-button {
   list-style-image: url("arrow-right.svg");
 }
 
@@ -925,7 +926,7 @@
   }
 }
 
-#zen-site-data-boost[boosting] {
+#zen-site-data-boost[boosting], .boost-brush {
   list-style-image: url("paintbrush-fill.svg");
 }
 

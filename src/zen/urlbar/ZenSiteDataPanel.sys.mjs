@@ -228,18 +228,115 @@ export class nsZenSiteDataPanel {
   }
 
   #setSiteBoost() {
-    const boostButton = this.document.getElementById("zen-site-data-boost");
     const domain = this.#getCurrentDomain();
     const uri = this.window.gBrowser.currentURI;
+    const canBoostSite = lazy.gZenBoostsManager.canBoostSite(uri);
+    
+    const list = this.document.getElementById("zen-site-data-boost-list");
+    const section = list.closest(".zen-site-data-section");
+    section.hidden = canBoostSite;
 
-    if (!lazy.gZenBoostsManager.canBoostSite(uri)) {
+    const boostButton = this.document.getElementById("zen-site-data-boost");
+    if (!canBoostSite) {
       boostButton.removeAttribute("boosting");
-      return;
     }
+
+    if (!canBoostSite) return;
 
     if (lazy.gZenBoostsManager.registeredBoostForDomain(domain))
       boostButton.setAttribute("boosting", "true");
     else boostButton.removeAttribute("boosting");
+
+    /* Boosts panel */
+
+    const boosts = lazy.gZenBoostsManager.loadBoostsFromStore(domain);
+    let validBoostCount = 0;
+
+    if (boosts) {
+      const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
+      boosts.forEach((boost) => {
+        const boostData = boost.boostEntry.boostData;
+        if (!boostData.changeWasMade) return;
+        validBoostCount++;
+
+        const enabled = boost.id === activeBoostId;
+        list.appendChild(
+          this.#createBoostPanelItem(
+            "boost-brush",
+            boostData.boostName,
+            enabled ? "Enabled" : "Disabled",
+            "zen-site-data-toggle-boost",
+            boost,
+            enabled
+          )
+        );
+      });
+    }
+    section.hidden = validBoostCount === 0;
+  }
+
+  #updateSiteBoost() {
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
+
+    this.#setSiteBoost();
+  }
+
+  #createBoostPanelItem(iconClass, title, description, actionId, boost = null, enabled = false) {
+    const container = this.document.createXULElement("hbox");
+    container.classList.add("permission-popup-boost-item");
+    container.id = actionId;
+
+    container.setAttribute("align", "center");
+    container.setAttribute("role", "group");
+    container.setAttribute("data-action-id", actionId);
+    container.setAttribute("state", "enabled");
+
+    if (boost) {
+      container.setAttribute("data-boost-id", boost.id);
+      container.setAttribute("state", enabled ? "enabled" : "disabled");
+    }
+
+    const img = this.document.createXULElement("toolbarbutton");
+    img.classList.add("permission-popup-boost-icon", "zen-site-data-boost-icon");
+    img.setAttribute("closemenu", "none");
+    img.classList.add(iconClass);
+
+    const labelContainer = this.document.createXULElement("vbox");
+    labelContainer.setAttribute("flex", "1");
+    labelContainer.setAttribute("align", "start");
+    labelContainer.classList.add("permission-popup-boost-label-container");
+
+    const nameLabel = this.document.createXULElement("label");
+    nameLabel.setAttribute("flex", "1");
+    nameLabel.setAttribute("class", "permission-popup-boost-label");
+    nameLabel.textContent = title || "";
+    labelContainer.appendChild(nameLabel);
+
+    const stateLabel = this.document.createXULElement("label");
+    stateLabel.setAttribute("class", "zen-permission-popup-boost-state-label");
+    stateLabel.textContent = description || "";
+    labelContainer.appendChild(stateLabel);
+
+    container.appendChild(img);
+    container.appendChild(labelContainer);
+
+    if (boost) {
+      const editorButton = this.document.createXULElement("toolbarbutton");
+      editorButton.setAttribute("data-action-id", "zen-site-data-edit-boost");
+      editorButton.setAttribute("data-boost-id", boost.id);
+      editorButton.classList.add("zen-permission-popup-boost-editor-button");
+      container.appendChild(editorButton);
+
+      editorButton.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevents the container event
+        this.#onBoostClick(event);
+      });
+    }
+
+    container.addEventListener("click", this.#onBoostClick.bind(this));
+
+    return container;
   }
 
   #setAddonsOverflow() {
@@ -307,8 +404,10 @@ export class nsZenSiteDataPanel {
   }
 
   #resetSiteOptionsList() {
-    const list = this.document.getElementById("zen-site-data-settings-list");
-    list.innerHTML = "";
+    const settingsList = this.document.getElementById("zen-site-data-settings-list");
+    settingsList.innerHTML = "";
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
   }
 
   #setSiteSecurityInfo() {
@@ -586,7 +685,9 @@ export class nsZenSiteDataPanel {
         break;
       }
       case "zen-site-data-boost": {
-        lazy.gZenBoostsManager.openBoostWindow(this.window);
+        const domain = this.#getCurrentDomain();
+        const boost = lazy.gZenBoostsManager.createNewBoost(domain);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
         break;
       }
       case "zen-site-data-actions": {
@@ -670,6 +771,32 @@ export class nsZenSiteDataPanel {
     }
   }
 
+  #onBoostClick(event) {
+    const target = event.target.closest("[data-action-id]");
+    if (!target) return;
+
+    const actionId = target.getAttribute("data-action-id");
+    const domain = this.#getCurrentDomain();
+
+    switch (actionId) {
+      case "zen-site-data-toggle-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+
+        lazy.gZenBoostsManager.toggleBoostActiveForDomain(domain, boostId);
+        this.#updateSiteBoost();
+        break;
+      }
+      case "zen-site-data-edit-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+
+        const boost = lazy.gZenBoostsManager.loadBoostFromStore(domain, boostId);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
+        this.unifiedPanel.hidePopup();
+        break;
+      }
+    }
+  }
+
   #onClickEvent(event) {
     const id = event.target.id;
     switch (id) {
@@ -695,9 +822,7 @@ export class nsZenSiteDataPanel {
         break;
       }
       default: {
-        const item = event.target.closest(
-          ".permission-popup-permission-item, .permission-popup-generic-item"
-        );
+        const item = event.target.closest(".permission-popup-permission-item");
         if (!item) {
           break;
         }

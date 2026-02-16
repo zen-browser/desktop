@@ -179,7 +179,9 @@ export class ZapOverlay {
     const zapList = this.getElementById("zap-list");
     zapList.innerHTML = "";
 
-    const boostData = await this.zenBoostsChild.getWebsiteBoost();
+    const boost = await this.zenBoostsChild.getWebsiteBoost();
+    const { boostData } = boost.boostEntry;
+
     boostData.zapSelectors.forEach((selector) => {
       const unzapButton = zapList.ownerDocument.createElement("input");
       unzapButton.type = "button";

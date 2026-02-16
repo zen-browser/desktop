@@ -52,3 +52,6 @@ zen-boost-save =
 zen-boost-load =
     .tooltiptext = Import Boost
 zen-panel-ui-boosts-exported-message = Boost exported!
+zen-site-data-boosts = Boosts
+zen-site-data-create-boost =
+    .tooltiptext = Create new boost

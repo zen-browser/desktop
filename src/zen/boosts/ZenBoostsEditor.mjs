@@ -10,6 +10,14 @@ export class nsZenBoostEditor {
   openerWindow = null;
   codeEditorReady = false;
 
+  static OBSERVERS = [
+    "zen-boosts-kill-editor",
+    "zap-list-update",
+    "zap-state-update",
+    "selector-picker-state-update",
+    "zen-boosts-active-change",
+  ];
+
   /**
    * Creates a new boost editor instance for the specified domain.
    * @param {Document} doc - The document object for the editor window.
@@ -31,12 +39,13 @@ export class nsZenBoostEditor {
     this.mouseDownPosition = { x: 0, y: 0 };
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
+    this.boostInfo = null;
 
     this.killOtherEditorInstances();
-    Services.obs.addObserver(this, "zen-boosts-kill-editor");
-    Services.obs.addObserver(this, "zap-list-update");
-    Services.obs.addObserver(this, "zap-state-update");
-    Services.obs.addObserver(this, "selector-picker-state-update");
+
+    nsZenBoostEditor.OBSERVERS.forEach((observe) => {
+      Services.obs.addObserver(this, observe);
+    });
 
     this.init();
     this.initColorPicker();
@@ -127,10 +136,10 @@ export class nsZenBoostEditor {
    */
   uninit() {
     this.uninitColorPicker();
-    Services.obs.removeObserver(this, "zen-boosts-kill-editor");
-    Services.obs.removeObserver(this, "zap-list-update");
-    Services.obs.removeObserver(this, "zap-state-update");
-    Services.obs.removeObserver(this, "selector-picker-state-update");
+
+    nsZenBoostEditor.OBSERVERS.forEach((observe) => {
+      Services.obs.removeObserver(this, observe);
+    });
   }
 
   /**
@@ -165,6 +174,9 @@ export class nsZenBoostEditor {
         this.currentBoostData.changeWasMade = true;
         break;
       case "zen-boosts-kill-editor":
+        this.window.close();
+        break;
+      case "zen-boosts-active-change":
         this.window.close();
         break;
     }
@@ -416,7 +428,6 @@ ${cssSelector} {
   }
 
   onUpdatePickerObserver(data) {
-    console.log(data);
     if (!data) return;
 
     if (data == "onenable") Services.obs.addObserver(this, "selector-picker-picked");
@@ -826,28 +837,44 @@ ${cssSelector} {
    * This triggers notifications to observers but does not persist to disk.
    */
   updateCurrentBoost() {
-    gZenBoostsManager.updateBoost(this.currentBoostData);
+    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    boost.boostEntry.boostData = this.currentBoostData;
+    gZenBoostsManager.updateBoost(boost);
   }
 
   /**
    * Deletes the current boost for the domain and closes the editor window.
    */
   deleteBoost() {
-    gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
+    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    gZenBoostsManager.deleteBoost(boost);
+
     this.currentBoostData = null;
     this.window.close();
   }
 
+  /**
+   * Handles the key down event for the name input field
+   * to detect the enter key
+   * @param {Event} event 
+   */
   onNameInputKeyDown(event) {
     if (event.key === "Enter") {
       this.onNameInputSubmit();
     }
   }
 
+  /**
+   * Handles the unfocus/blur event for the name input field
+   * @param {Event} _ 
+   */
   onNameInputUnfocus(_) {
     this.onNameInputSubmit();
   }
 
+  /**
+   * Handles hiding the text field and saving the new boost name
+   */
   onNameInputSubmit() {
     const nameText = this.doc.getElementById("zen-boost-name-text");
     const nameContainer = this.doc.getElementById("zen-boost-name-container");
@@ -861,8 +888,15 @@ ${cssSelector} {
 
     nameContainer.style.display = "initial";
     nameInputField.style.display = "none";
+
+    this.currentBoostData.changeWasMade = true;
+    this.updateCurrentBoost();
   }
 
+  /**
+   * Handles showing the popup when clicking the name text
+   * @param {Event} event 
+   */
   onNameTextClick(event) {
     const popup = this.doc.getElementById("zenBoostContextMenu");
     popup.openPopup(
@@ -876,6 +910,9 @@ ${cssSelector} {
     );
   }
 
+  /**
+   * Handles showing a text field for renaming the boost
+   */
   editBoostName() {
     const nameContainer = this.doc.getElementById("zen-boost-name-container");
     const nameInputField = this.doc.getElementById("zen-boost-name-input");
@@ -1022,7 +1059,7 @@ ${cssSelector} {
    * Reverts boost data to defaults
    */
   resetBoost() {
-    const domain = this.currentBoostData.domain;
+    const domain = this.boostInfo.domain;
     this.currentBoostData = gZenBoostsManager.getEmptyBoost(domain);
 
     this.updateCurrentBoost();
@@ -1036,8 +1073,10 @@ ${cssSelector} {
   handleClose() {
     this.uninit();
     if (this.currentBoostData != null && this.currentBoostData.changeWasMade) this.saveBoost();
-    else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade)
-      gZenBoostsManager.deleteBoost(this.currentBoostData.domain);
+    else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade){
+const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+      gZenBoostsManager.deleteBoost(boost);
+    }
 
     Services.obs.notifyObservers(null, "zen-boosts-disable-zap", null);
     Services.obs.notifyObservers(null, "zen-boosts-disable-picker", null);
@@ -1049,10 +1088,12 @@ ${cssSelector} {
    * @param {string} domain - The domain for which to load the boost.
    */
   async loadBoost(domain) {
-    this.currentBoostData = gZenBoostsManager.loadBoostFromStore(domain);
+    const boost = gZenBoostsManager.loadActiveBoostFromStore(domain);
+    this.currentBoostData = boost.boostEntry.boostData;
+    this.boostInfo = { domain, id: boost.id };
 
     // Initial save to register the boost
-    gZenBoostsManager.saveBoostToStore(this.currentBoostData);
+    gZenBoostsManager.saveBoostToStore(boost);
 
     // The code editor needs time to initialize
     await this.initCodeEditor();
@@ -1089,6 +1130,10 @@ ${cssSelector} {
    */
   saveBoost() {
     if (this.currentBoostData == null || !this.currentBoostData.changeWasMade) return;
-    gZenBoostsManager.saveBoostToStore(this.currentBoostData);
+
+    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    boost.boostEntry.boostData = this.currentBoostData;
+
+    gZenBoostsManager.saveBoostToStore(boost);
   }
 }

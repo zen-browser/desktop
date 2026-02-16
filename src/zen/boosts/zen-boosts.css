@@ -64,7 +64,7 @@
 #zen-boost-name-container {
   background-image: url("chrome://global/skin/icons/arrow-down.svg");
   background-repeat: no-repeat;
-  background-position: calc(100% - 2px) calc(50% + 2px);;
+  background-position: calc(100% - 2px) calc(50% + 2px);
   background-size: 12px 12px;
   padding: 4px 18px 4px 2px;
   margin-left: 4px;

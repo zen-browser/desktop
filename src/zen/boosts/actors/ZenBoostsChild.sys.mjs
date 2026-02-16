@@ -285,27 +285,28 @@ export class ZenBoostsChild extends JSWindowActorChild {
     }
 
     const boost = await this.getWebsiteBoost();
-
+    
     if (unloadStyles) {
       this.#unloadCurrentStyleSheet();
     }
-
+    
     if (boost) {
+      const { boostData } = boost.boostEntry;
       if (boost.styleSheet) this.#loadStyleSheet(boost.styleSheet);
 
-      if (boost.enableColorBoost) {
+      if (boostData.enableColorBoost) {
         let prefersColorSchemeOverride = "none";
-        if (boost.smartInvert) {
-          prefersColorSchemeOverride = boost.topWindowIsDarkMode ? "light" : "dark";
+        if (boostData.smartInvert) {
+          prefersColorSchemeOverride = boostData.topWindowIsDarkMode ? "light" : "dark";
         }
 
         browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
         let colorWheelColor = this.#hslToRgb(
-          boost.dotAngleDeg / 360,
+          boostData.dotAngleDeg / 360,
           /* already is [0, 1] */
-          boost.dotDistance * (1 - boost.saturation),
+          boostData.dotDistance * (1 - boostData.saturation),
           /* lightness range from [0.1, 0.7] */
-          0.1 + boost.dotDistance * 0.6 * boost.brightness
+          0.1 + boostData.dotDistance * 0.6 * boostData.brightness
         );
 
         let primaryGradientColor = boost.workspaceGradient[0].c ?? this.#rgbToHsl([75, 75, 75]);
@@ -319,16 +320,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
         // using the same modifiers as the color above
         primaryGradientColor = this.#hslToRgb(
           primaryGradientColor[0] / 360,
-          primaryGradientColor[1] * (1 - boost.saturation),
-          0.1 + primaryGradientColor[2] * 0.6 * boost.brightness
+          primaryGradientColor[1] * (1 - boostData.saturation),
+          0.1 + primaryGradientColor[2] * 0.6 * boostData.brightness
         );
 
-        const rgbColor = boost.autoTheme ? primaryGradientColor : colorWheelColor;
-        const nsColor = this.#rgbToNSColor(rgbColor, (1 - boost.contrast) * 255);
+        const rgbColor = boostData.autoTheme ? primaryGradientColor : colorWheelColor;
+        const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
         browsingContext.zenBoostsData = nsColor;
-        return;
+      } else { 
+        browsingContext.zenBoostsData = 0;
+        browsingContext.prefersColorSchemeOverride = "none";
       }
-
+    } else {
       browsingContext.zenBoostsData = 0;
       browsingContext.prefersColorSchemeOverride = "none";
     }

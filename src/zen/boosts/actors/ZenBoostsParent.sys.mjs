@@ -94,11 +94,11 @@ export class ZenBoostsParent extends JSWindowActorParent {
         if (!data.domain) return;
 
         if (data.action == "add") {
-          lazy.gZenBoostsManager.addZapSelector(data.selector, data.domain);
+          lazy.gZenBoostsManager.addZapSelectorToActive(data.selector, data.domain);
         } else if (data.action == "remove") {
-          lazy.gZenBoostsManager.removeZapSelector(data.selector, data.domain);
+          lazy.gZenBoostsManager.removeZapSelectorToActive(data.selector, data.domain);
         } else if (data.action == "clear") {
-          lazy.gZenBoostsManager.clearZapSelectors(data.domain);
+          lazy.gZenBoostsManager.clearZapSelectorsForActive(data.domain);
         }
         break;
       }
@@ -114,14 +114,14 @@ export class ZenBoostsParent extends JSWindowActorParent {
         const topWindowIsDarkMode =
           embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === "dark";
 
-        const boostData = lazy.gZenBoostsManager.loadBoostFromStore(domain);
+        const boost = lazy.gZenBoostsManager.loadActiveBoostFromStore(domain);
         const currentWorkspace =
           await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
 
-        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(boostData);
+        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
 
         return {
-          ...boostData,
+          ...boost,
           topWindowIsDarkMode,
           workspaceGradient: currentWorkspace.theme.gradientColors,
           styleSheet: styleData

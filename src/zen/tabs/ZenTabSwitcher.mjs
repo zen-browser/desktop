@@ -6,13 +6,13 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   
-  #isOpen = false;                    // Boolean: Is the switcher panel currently visible?
-  #currentIndex = 0;                  // Number: Which tab card is currently selected (0-based index)
-  #tabList = [];                      // Array: List of all tabs to show in the switcher
+  #isOpen = false;                    
+  #currentIndex = 0;
+  #tabList = [];
   #thumbnailCache = new Map();        // Map: Stores tab screenshots using tabId as key
-  #ctrlPressed = false;               // Boolean: Is the Ctrl key currently held down?
+  #ctrlPressed = false;
   #lazyPrefs = {};                    // Object: Stores user preferences loaded lazily
-  #recentlyUsedTabs = [];             // Array: Tracks tabs in most-recently-used order
+  #recentlyUsedTabs = [];
   #actualVisibleCards = 5;            // Number: How many cards fit on screen (updates dynamically)
 
   // ==========================================================================
@@ -23,13 +23,13 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     console.log("ZenTabSwitcher: Initializing...");
     
     // Call setup methods in order:
-    this.#setupPreferences();          // Load user settings from Firefox preferences
-    this.#disableDefaultCtrlTab();     // Turn off Firefox's built-in Ctrl+Tab handler
-    this.#setupKeyboardListeners();    // Listen for Ctrl+Tab key presses
-    this.#createUI();                  // Get references to UI elements in the DOM
-    this.#observeTabChanges();         // Watch for tab open/close/move events
-    this.#setupShutdownObserver();     // Clean up when browser closes
-    this.#initializeRecentlyUsedTabs(); // Start tracking which tabs are used
+    this.#setupPreferences();          
+    this.#disableDefaultCtrlTab();
+    this.#setupKeyboardListeners();
+    this.#createUI();        
+    this.#observeTabChanges();     
+    this.#setupShutdownObserver(); 
+    this.#initializeRecentlyUsedTabs(); 
     
     console.log("ZenTabSwitcher: Initialization complete");
   }
@@ -39,7 +39,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   // Sets up the list that tracks which tabs have been used recently
   // ==========================================================================
   #initializeRecentlyUsedTabs() {
-    // gBrowser.selectedTab is the currently active tab
     if (gBrowser.selectedTab) {
       // Start the list with just the current tab
       this.#recentlyUsedTabs = [gBrowser.selectedTab];

@@ -624,8 +624,8 @@ ${cssSelector} {
     }
 
     if (pixelX == null || pixelY == null) {
-      pixelX = centerX + border;
-      pixelY = centerY + border;
+      pixelX = centerX;
+      pixelY = centerY;
 
       this.currentBoostData.dotAngleDeg = 0;
       this.currentBoostData.dotDistance = 0;
@@ -1050,6 +1050,8 @@ ${cssSelector} {
       Math.round(rect.top + Math.random() * rect.height),
       true
     );
+
+    this.currentBoostData.changeWasMade = true;
 
     this.updateCurrentBoost();
     this.updateAllVisuals();

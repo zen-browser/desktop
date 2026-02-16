@@ -1024,7 +1024,23 @@
 }
 
 #zen-boost-close {
-  list-style-image: url("close-filled-round.svg");
+  list-style-image: url("close.svg");
+  
+  @media (-moz-platform: macos) {
+    list-style-image: url("close-filled-round.svg");
+  }
+
+  @media (-moz-platform: windows) {
+    list-style-image: none;
+    list-style: none;
+    display: inline-flex;
+    
+    &::before {
+      font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
+      content: "\e8bb";
+      font-size: 12px;
+    }
+  }
 }
 
 #zen-boost-magic-theme {

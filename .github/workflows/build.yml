@@ -368,7 +368,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86_64, aarch64]
-    needs: [linux]
+    needs: [linux, build-data]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -405,6 +405,8 @@ jobs:
             sed -i -e 's/Name=Zen Browser/Name=Zen Twilight/g' build/AppDir/zen.desktop
             sed -i -e 's/StartupWMClass=zen/StartupWMClass=zen-twilight/g' build/AppDir/zen.desktop
           fi
+
+          sed -i -e 's/\$VERSION/${{ needs.build-data.outputs.version }}/g' build/AppDir/zen.desktop
 
           APPDIR=build/AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*

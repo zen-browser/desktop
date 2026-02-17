@@ -182,9 +182,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       "zen-workspace-creation-edit-theme-button"
     );
     PanelMultiView.openPopup(this.panel, this.toolbox, {
-      position: "topright topleft",
+      position: "start_before",
       triggerEvent: event,
       y: fromForm ? -160 : 0,
+      x: 10,
     });
   }
 

@@ -30,6 +30,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
   3
 );
 
+const SHOULD_LOG_TAB_ENTRIES = Services.prefs.getBoolPref(
+  "zen.session-store.log-tab-entries",
+  false
+);
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
@@ -80,14 +84,14 @@ export class nsZenSessionManager {
 
   init() {
     this.log("Initializing session manager");
-    let backupFile = null;
+    let backupTo = null;
     if (SHOULD_BACKUP_FILE) {
-      backupFile = PathUtils.join(this.#backupFolderPath, FILE_NAME);
+      backupTo = PathUtils.join(this.#backupFolderPath, "recovery.baklz4");
     }
     this.#file = new JSONFile({
       path: this.#storeFilePath,
       compression: "lz4",
-      backupFile,
+      backupTo,
     });
     this.log("Session file path:", this.#file.path);
     this.#deferredBackupTask = new lazy.DeferredTask(async () => {
@@ -123,37 +127,47 @@ export class nsZenSessionManager {
       const db = await PlacesUtils.promiseDBConnection();
       let data = {};
       let rows = await db.execute("SELECT * FROM zen_workspaces ORDER BY created_at ASC");
-      data.spaces = rows.map((row) => ({
-        uuid: row.getResultByName("uuid"),
-        name: row.getResultByName("name"),
-        icon: row.getResultByName("icon"),
-        containerTabId: row.getResultByName("container_id") ?? 0,
-        position: row.getResultByName("position"),
-        theme: row.getResultByName("theme_type")
-          ? {
-              type: row.getResultByName("theme_type"),
-              gradientColors: JSON.parse(row.getResultByName("theme_colors")),
-              opacity: row.getResultByName("theme_opacity"),
-              rotation: row.getResultByName("theme_rotation"),
-              texture: row.getResultByName("theme_texture"),
-            }
-          : null,
-      }));
-      rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
-      data.pins = rows.map((row) => ({
-        uuid: row.getResultByName("uuid"),
-        title: row.getResultByName("title"),
-        url: row.getResultByName("url"),
-        containerTabId: row.getResultByName("container_id"),
-        workspaceUuid: row.getResultByName("workspace_uuid"),
-        position: row.getResultByName("position"),
-        isEssential: Boolean(row.getResultByName("is_essential")),
-        isGroup: Boolean(row.getResultByName("is_group")),
-        parentUuid: row.getResultByName("folder_parent_uuid"),
-        editedTitle: Boolean(row.getResultByName("edited_title")),
-        folderIcon: row.getResultByName("folder_icon"),
-        isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
-      }));
+      try {
+        data.spaces = rows.map((row) => ({
+          uuid: row.getResultByName("uuid"),
+          name: row.getResultByName("name"),
+          icon: row.getResultByName("icon"),
+          containerTabId: row.getResultByName("container_id") ?? 0,
+          position: row.getResultByName("position"),
+          theme: row.getResultByName("theme_type")
+            ? {
+                type: row.getResultByName("theme_type"),
+                gradientColors: JSON.parse(row.getResultByName("theme_colors")),
+                opacity: row.getResultByName("theme_opacity"),
+                rotation: row.getResultByName("theme_rotation"),
+                texture: row.getResultByName("theme_texture"),
+              }
+            : null,
+        }));
+      } catch (e) {
+        /* ignore errors reading spaces data, as it is not critical and we want to migrate even if we fail to read it */
+        console.error("Failed to read spaces data from database during migration", e);
+      }
+      try {
+        rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
+        data.pins = rows.map((row) => ({
+          uuid: row.getResultByName("uuid"),
+          title: row.getResultByName("title"),
+          url: row.getResultByName("url"),
+          containerTabId: row.getResultByName("container_id"),
+          workspaceUuid: row.getResultByName("workspace_uuid"),
+          position: row.getResultByName("position"),
+          isEssential: Boolean(row.getResultByName("is_essential")),
+          isGroup: Boolean(row.getResultByName("is_group")),
+          parentUuid: row.getResultByName("folder_parent_uuid"),
+          editedTitle: Boolean(row.getResultByName("edited_title")),
+          folderIcon: row.getResultByName("folder_icon"),
+          isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
+        }));
+      } catch (e) {
+        /* ignore errors reading pins data, as it is not critical and we want to migrate even if we fail to read it */
+        console.error("Failed to read pins data from database during migration", e);
+      }
       try {
         data.recoveryData = await IOUtils.readJSON(
           PathUtils.join(
@@ -183,8 +197,9 @@ export class nsZenSessionManager {
         }
       }
       this._migrationData = data;
-    } catch {
+    } catch (e) {
       /* ignore errors during migration */
+      console.error(e);
     }
   }
 
@@ -220,6 +235,11 @@ export class nsZenSessionManager {
       // check if we already planned to run migration for optimization.
       this._shouldRunMigration = true;
       await this.#getDataFromDBForMigration();
+    }
+    if (SHOULD_LOG_TAB_ENTRIES) {
+      for (const tab of this.#sidebar.tabs || []) {
+        this.log("Tab entry in session file:", tab);
+      }
     }
   }
 
@@ -303,6 +323,9 @@ export class nsZenSessionManager {
    *        The initial session state read from the session file, possibly modified by onFileRead.
    */
   onCrashCheckpoints(initialState) {
+    if (!lazy.gWindowSyncEnabled) {
+      return;
+    }
     // When we don't have browser.startup.page set to resume session,
     // we only want to restore the pinned tabs into the new windows.
     if (this.#shouldRestoreOnlyPinned && !this.#shouldRestoreFromCrash && this.#sidebar?.tabs) {
@@ -517,12 +540,12 @@ export class nsZenSessionManager {
       // Now we need to check if we have exceeded the maximum
       // number of backups allowed, and delete the oldest ones
       // if needed.
+      let prefix = PathUtils.join(backupFolder, "zen-sessions-");
       let files = await IOUtils.getChildren(backupFolder);
-      files = files.filter((file) => file.startsWith("zen-sessions-")).sort();
+      files = files.filter((file) => file.startsWith(prefix)).sort();
       for (let i = 0; i < files.length - lazy.gMaxSessionBackups; i++) {
-        const fileToDelete = PathUtils.join(backupFolder, files[i].name);
-        this.log(`Deleting old backup file ${files[i].name}`);
-        await IOUtils.remove(fileToDelete);
+        this.log(`Deleting old backup file ${files[i]}`);
+        await IOUtils.remove(files[i]);
       }
     } catch (e) {
       console.error("ZenSessionManager: Failed to create session file backups", e);

@@ -9,7 +9,7 @@
  */
 
 :host(:is(.anonymous-content-host, notification-message)),
-:root:not([windowtype^="Browser:"]) {
+:root {
   /* Default values */
   --zen-border-radius: 7px;
   --zen-primary-color: AccentColor;
@@ -288,7 +288,7 @@
   }
 }
 
-#main-window:not([chromehidden~='toolbar']) {
+#main-window[windowtype="navigator:browser"]:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and

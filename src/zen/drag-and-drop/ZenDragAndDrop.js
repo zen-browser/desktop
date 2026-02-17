@@ -105,6 +105,7 @@
 
     startTabDrag(event, tab, ...args) {
       this.ZenDragAndDropService.onDragStart(1);
+      this.#isOutOfWindow = false;
       gZenCompactModeManager._isTabBeingDragged = true;
       super.startTabDrag(event, tab, ...args);
       const dt = event.dataTransfer;
@@ -861,6 +862,7 @@
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       let ownerGlobal = draggedTab?.ownerGlobal;
       draggedTab.style.visibility = "";
+      let thisFromGlobal = ownerGlobal?.gBrowser.tabContainer.tabDragAndDrop;
       let currentEssenialContainer = ownerGlobal.gZenWorkspaces.getCurrentEssentialsContainer();
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
@@ -870,19 +872,21 @@
       ownerGlobal.gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
       super.handle_dragend(event);
-      this.#removeDragOverBackground();
+      thisFromGlobal.clearDragOverVisuals();
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       this.#maybeClearVerticalPinnedGridDragOver();
-      this.originalDragImageArgs = [];
-      window.removeEventListener("dragenter", this.handle_windowDragEnter, { capture: true });
+      thisFromGlobal.originalDragImageArgs = [];
+      window.removeEventListener("dragenter", thisFromGlobal.handle_windowDragEnter, {
+        capture: true,
+      });
       this.#isOutOfWindow = false;
-      if (this._browserDragImageWrapper) {
-        this._browserDragImageWrapper.remove();
-        delete this._browserDragImageWrapper;
+      if (thisFromGlobal._browserDragImageWrapper) {
+        thisFromGlobal._browserDragImageWrapper.remove();
+        delete thisFromGlobal._browserDragImageWrapper;
       }
-      if (this._tempDragImageParent) {
-        this._tempDragImageParent.remove();
-        delete this._tempDragImageParent;
+      if (thisFromGlobal._tempDragImageParent) {
+        thisFromGlobal._tempDragImageParent.remove();
+        delete thisFromGlobal._tempDragImageParent;
       }
       delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
       if (dt.dropEffect !== "move") {
@@ -941,14 +945,19 @@
         );
         if (event.target.classList.contains("zen-workspace-empty-space") || hoveringPeriphery) {
           let lastTab = gBrowser.tabs.at(-1);
-          dropElement =
-            (hoveringPeriphery && Services.prefs.getBoolPref("zen.view.show-newtab-button-top")
-              ? this._tabbrowserTabs.ariaFocusableItems.at(
-                  gBrowser._numVisiblePinTabsWithoutCollapsed
-                )
-              : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
+          let pinnedTabsCount = gBrowser._numVisiblePinTabsWithoutCollapsed;
+
           // Only if there are no normal tabs to drop after
           showIndicatorUnderNewTabButton = lastTab.hasAttribute("zen-empty-tab");
+          let useLastPinnd =
+            (hoveringPeriphery ||
+              (showIndicatorUnderNewTabButton &&
+                !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
+            Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
+          dropElement =
+            (useLastPinnd
+              ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)
+              : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
         }
       }
       dropElement = elementToMove(dropElement);

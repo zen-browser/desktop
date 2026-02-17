@@ -9,18 +9,29 @@ panel[type="arrow"] {
       /* Animate from the bottom */
       -zen-window-transform-origin: 0 100%;
     }
+    &[side="left"] {
+      /* Animate from the left and center */
+      -zen-window-transform-origin: 0 50%;
+    }
+    &[side="right"] {
+      /* Animate from the right */
+      -zen-window-transform-origin: 100% 50%;
+    }
     :root[zen-right-side="true"] & {
       /* Animate from the right */
       -zen-window-transform-origin: 100% 0;
-
       &[side="bottom"] {
         /* Animate from the bottom right */
         -zen-window-transform-origin: 100% 100%;
       }
-    }
-    -moz-window-opacity: 0;
-    &[animate="open"] {
-      animation: zen-jello-animation-macos 0.2s ease-in-out forwards !important;
+      &[side="left"] {
+        /* Animate from the right */
+        -zen-window-transform-origin: 100% 50%;
+      }
+      &[side="right"] {
+        /* Animate from the right */
+        -zen-window-transform-origin: 100% 50%;
+      }
     }
   }
 }

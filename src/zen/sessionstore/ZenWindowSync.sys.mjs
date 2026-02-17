@@ -245,8 +245,6 @@ class nsZenWindowSync {
       for (let tab of gZenWorkspaces.allStoredTabs) {
         if (!tab.id) {
           tab.id = this.#newTabSyncId;
-          // Don't call with await here to avoid blocking the loop.
-          this.#maybeFlushTabState(tab);
         }
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
@@ -473,9 +471,6 @@ class nsZenWindowSync {
     if (flags & SYNC_FLAG_MOVE && !aTargetItem.hasAttribute("zen-empty-tab")) {
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-workspace-id");
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
-    }
-    if (gBrowser.isTab(aTargetItem)) {
-      this.#maybeFlushTabState(aTargetItem);
     }
   }
 
@@ -803,6 +798,7 @@ class nsZenWindowSync {
           {
             fullScale: true,
             fullViewport: true,
+            backgroundColor: "transparent",
           }
         );
 
@@ -819,13 +815,12 @@ class nsZenWindowSync {
         });
 
         let promise = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
+
         await Promise.all([promiseToWait, promise]);
-        aOurTab.ownerGlobal.requestAnimationFrame(() => {
-          otherBrowser.setAttribute("zen-pseudo-hidden", "true");
-          ourBrowser.removeAttribute("zen-pseudo-hidden");
-          this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-        });
         callback();
+        otherBrowser.setAttribute("zen-pseudo-hidden", "true");
+        ourBrowser.removeAttribute("zen-pseudo-hidden");
+        this.#maybeRemovePseudoImageForBrowser(ourBrowser);
       } else {
         ourBrowser.removeAttribute("zen-pseudo-hidden");
         this.#maybeRemovePseudoImageForBrowser(ourBrowser);
@@ -1151,7 +1146,6 @@ class nsZenWindowSync {
     if (duringPinning && tab?.splitView) {
       this.on_ZenSplitViewTabsSplit({ target: tab.group });
     }
-    this.#maybeFlushTabState(tab);
   }
 
   on_ZenTabIconChanged(aEvent) {
@@ -1279,21 +1273,26 @@ class nsZenWindowSync {
     for (let browser of aBrowsers) {
       const tab = this.#swapedTabsEntriesForWC.get(browser.permanentKey);
       if (tab) {
-        let win = tab.ownerGlobal;
-        this.log(`Finalizing swap for tab ${tab.id} on window close`);
-        lazy.TabStateCache.update(
-          tab.linkedBrowser.permanentKey,
-          lazy.TabStateCache.get(browser.permanentKey)
-        );
-        let tabData = this.#getTabEntriesFromCache(tab);
-        let activePageData = tabData.entries[tabData.index - 1] || null;
+        try {
+          let win = tab.ownerGlobal;
+          this.log(`Finalizing swap for tab ${tab.id} on window close`);
+          lazy.TabStateCache.update(
+            tab.linkedBrowser.permanentKey,
+            lazy.TabStateCache.get(browser.permanentKey)
+          );
+          let tabData = this.#getTabEntriesFromCache(tab);
+          let activePageData = tabData.entries[tabData.index - 1] || null;
 
-        // If the page has a title, set it. When doing a swap and we still didn't
-        // flush the tab state, the title might not be correct.
-        if (activePageData && win.gBrowser) {
-          win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
-            isContentTitle: activePageData.title && activePageData.title != activePageData.url,
-          });
+          // If the page has a title, set it. When doing a swap and we still didn't
+          // flush the tab state, the title might not be correct.
+          if (activePageData && win?.gBrowser) {
+            win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
+              isContentTitle: activePageData.title && activePageData.title != activePageData.url,
+            });
+          }
+        } catch (e) {
+          // We might have already closed the window at this point, so just ignore any error.
+          console.error(e);
         }
       }
     }

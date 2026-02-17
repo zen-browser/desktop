@@ -132,7 +132,6 @@
 }
 
 #nav-bar {
-  overflow: clip;
   border-top-color: transparent !important;
 
   :root[zen-single-toolbar="true"] & {

@@ -12,6 +12,7 @@ Terminal=false
 X-MultipleArgs=false
 Keywords=Internet;WWW;Browser;Web;Explorer;
 Actions=new-window;new-private-window;profilemanager;
+X-AppImage-Version=$VERSION
 
 [Desktop Action new-window]
 Name=Open a New Window

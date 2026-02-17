@@ -641,21 +641,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
-  get rearangeActionTarget() {
-    return document.getElementById("urlbar-container");
-  }
-
-  afterRearangeAction() {
-    document.getElementById("zenSplitViewModifier").hidePopup();
-    gZenUIManager.showToast("zen-split-view-modifier-enabled-toast", {
-      descriptionId: "zen-split-view-modifier-enabled-toast-description",
-    });
-  }
-
-  afterRearangeRemove() {
-    gZenUIManager.showToast("zen-split-view-modifier-disabled-toast");
-  }
-
   toggleWrapperDisplay(value) {
     const wrapper = this.overlay?.parentNode;
     if (!wrapper) {
@@ -695,9 +680,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     this.tabBrowserPanel.addEventListener("click", this.disableTabRearrangeView);
     window.addEventListener("keydown", this.disableTabRearrangeView);
-    if (!tabDrag) {
-      this.afterRearangeAction();
-    }
   }
 
   disableTabRearrangeView = (event = null) => {
@@ -733,10 +715,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     });
     this.rearrangeViewEnabled = false;
     this.rearrangeViewView = null;
-    if (!event?.type === "dragend") {
-      // Don't show toast if exiting from drag
-      this.afterRearangeRemove();
-    }
   };
 
   onBrowserDragStart = (event) => {

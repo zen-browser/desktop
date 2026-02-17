@@ -818,6 +818,13 @@ const zenMissingKeyboardShortcutL10n = {
   key_accessibility: "zen-devtools-toggle-accessibility-shortcut",
 };
 
+var zenIgnoreKeyboardShortcutIDs = [
+  "key_enterFullScreen_old",
+  "key_enterFullScreen_compat",
+  "key_exitFullScreen_old",
+  "key_exitFullScreen_compat",
+];
+
 var zenIgnoreKeyboardShortcutL10n = [
   "zen-full-zoom-reduce-shortcut-alt-b",
   "zen-full-zoom-reduce-shortcut-alt-a",
@@ -888,7 +895,11 @@ var gZenCKSSettings = {
 
       const labelValue = zenMissingKeyboardShortcutL10n[keyID] ?? l10nID;
 
-      if (zenIgnoreKeyboardShortcutL10n.includes(labelValue) || shortcut.shouldBeEmpty) {
+      if (
+        zenIgnoreKeyboardShortcutIDs.includes(keyID) ||
+        zenIgnoreKeyboardShortcutL10n.includes(labelValue) ||
+        shortcut.shouldBeEmpty
+      ) {
         continue;
       }
 

@@ -677,7 +677,7 @@ class nsZenKeyboardShortcutsLoader {
         "",
         ZEN_COMPACT_MODE_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true }),
-        "cmd_zenCompactModeToggle",
+        "cmd_toggleCompactModeIgnoreHover",
         "zen-compact-mode-shortcut-toggle"
       )
     );
@@ -812,7 +812,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 14;
+  static LATEST_KBS_VERSION = 16;
 
   constructor() {}
 
@@ -1141,6 +1141,17 @@ class nsZenKeyboardShortcutsVersioner {
           undoCloseWindowFound = true;
         }
         if (emptySplitFound && undoCloseWindowFound) {
+          break;
+        }
+      }
+    }
+
+    if (version < 16) {
+      // Migrate from version 14 to 16.
+      // We move the action for "toggle compact mode" to "cmd_toggleCompactModeIgnoreHover"
+      for (let shortcut of data) {
+        if (shortcut.getID() == "zen-compact-mode-toggle") {
+          shortcut._setAction("cmd_toggleCompactModeIgnoreHover");
           break;
         }
       }

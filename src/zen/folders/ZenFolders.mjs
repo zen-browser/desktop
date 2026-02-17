@@ -179,7 +179,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (this.#popup.matches(":hover")) {
           return;
         }
-        this.#popup.hidePopup();
+        this.#popup.hidePopup(true);
       }, 200);
     });
   }
@@ -357,7 +357,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       this.#mouseTimer = null;
     }
     if (this.#popup) {
-      this.#popup.hidePopup();
+      this.#popup.hidePopup(true);
     }
   }
 
@@ -729,11 +729,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   get #searchPopupOptions() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-    const position = isRightSide ? "topleft topright" : "topright topleft";
+    const position = isRightSide ? "start_before" : "start_before";
+    let size = this.#popup.querySelector("#zen-folder-tabs-list").children.length + 1;
+    size *= 48;
     return {
       position,
-      x: 10,
-      y: -25,
+      x: -10,
+      y: -size / 4,
     };
   }
 
@@ -958,7 +960,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         if (this.#popup.matches(":hover")) {
           return;
         }
-        this.#popup.hidePopup();
+        this.#popup.hidePopup(true);
       }, 200);
     });
   }

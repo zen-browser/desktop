@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index b97fa81cef276e4bb22414b7c182e00b4bb835dc..1f489eceead0aa331ace59281cb777db5e635366 100644
+index a4ed35032c0c60f230d95f451b3f615232784cad..2c92860acb2ddc9829eef006d93431e871241c3a 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -81,6 +81,7 @@ export var UrlbarUtils = {

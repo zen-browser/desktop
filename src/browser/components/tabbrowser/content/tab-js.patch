@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c9b8386b3 100644
+index 6528da245d922e2ccdb59cbf8106055bc34d1e74..b5d5ac633c06d7d9c909ec9456a5f3c165a6b925 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -52,7 +52,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
          return;
        }
  
-@@ -224,11 +227,21 @@
+@@ -224,11 +227,23 @@
      }
  
      get visible() {
@@ -64,7 +64,6 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
 +      if (!this.isOpen || this.hidden || this.hasAttribute("zen-empty-tab")) {
 +        return false;
 +      }
-+
 +      // Selected tabs are always visible
 +      if (this.selected || this.multiselected || this.hasAttribute("folder-active")) return true;
 +      // Recursively check all parent groups
@@ -75,11 +74,14 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
 +        }
 +        currentParent = currentParent.group;
 +      }
++      if (this.pinned && !this.hasAttribute("zen-essential") && gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
++        return false;
++      }
 +      return true;
      }
  
      get hidden() {
-@@ -307,7 +320,7 @@
+@@ -307,7 +322,7 @@
          return false;
        }
  
@@ -88,7 +90,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
      }
  
      get lastAccessed() {
-@@ -384,7 +397,18 @@
+@@ -384,7 +399,18 @@
      }
  
      get group() {
@@ -108,7 +110,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
      }
  
      get splitview() {
-@@ -489,6 +513,8 @@
+@@ -489,6 +515,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -117,7 +119,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -543,6 +569,10 @@
+@@ -543,6 +571,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -128,7 +130,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -603,6 +633,14 @@
+@@ -603,6 +635,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -143,7 +145,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..1cd3395961a80e3b48582794b5b5365c
      }
  
      on_dblclick(event) {
-@@ -626,6 +664,8 @@
+@@ -626,6 +666,8 @@
            animate: true,
            triggeringEvent: event,
          });

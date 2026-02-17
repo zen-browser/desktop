@@ -12,11 +12,11 @@ document.addEventListener(
         case "cmd_zenCompactModeToggle":
           gZenCompactModeManager.toggle();
           break;
-        case "cmd_zenCompactModeShowSidebar":
-          gZenCompactModeManager.toggleSidebar();
-          break;
         case "cmd_toggleCompactModeIgnoreHover":
           gZenCompactModeManager.toggle(true);
+          break;
+        case "cmd_zenCompactModeShowSidebar":
+          gZenCompactModeManager.toggleSidebar();
           break;
         case "cmd_zenWorkspaceForward":
           gZenWorkspaces.changeWorkspaceShortcut();

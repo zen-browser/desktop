@@ -9,9 +9,6 @@ ac_add_options --with-app-basename=Zen
 # Localization (Must be an absolute path)
 ac_add_options --with-l10n-base="${topsrcdir}/browser/locales"
 
-# See https://github.com/zen-browser/desktop/issues/11917 for future plans.
-# We should be removing this at some point and start supporting XDG dirs.
-ac_add_options --with-user-appdir=".${binName}"
 export MOZ_APP_BASENAME=Zen
 export MOZ_BRANDING_DIRECTORY=${brandingDir}
 export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}
@@ -85,6 +82,11 @@ if test "$ZEN_RELEASE"; then
   export MOZ_PACKAGE_JSSHELL=1
 
   ac_add_options --disable-crashreporter
+
+  # Experimental flag, enabled only on nightly for Firefox.
+  # Should bring in some nice performance improvements, 
+  # but may cause stability issues.
+  ac_add_options --enable-replace-malloc
 fi
 
 ac_add_options --enable-unverified-updates

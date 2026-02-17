@@ -1,5 +1,5 @@
 diff --git a/browser/extensions/newtab/lib/ActivityStream.sys.mjs b/browser/extensions/newtab/lib/ActivityStream.sys.mjs
-index ae3c01650b3023a692cd4c50e33e3c3c39770c47..27a5fb0a630b9b79566be08cd5f7c9466ca30381 100644
+index 0f73c33c3237413131a2f4d2d1f3be857e533437..d7e9fcadc7744651fbe14952589df4603e7db592 100644
 --- a/browser/extensions/newtab/lib/ActivityStream.sys.mjs
 +++ b/browser/extensions/newtab/lib/ActivityStream.sys.mjs
 @@ -295,7 +295,7 @@ export const PREFS_CONFIG = new Map([

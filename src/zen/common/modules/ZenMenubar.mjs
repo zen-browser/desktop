@@ -112,7 +112,7 @@ export class nsZenMenuBar {
     const openUnsyncedWindowItem = window.MozXULElement.parseXULToFragment(
       `<toolbarbutton id="appMenu-new-zen-unsynced-window-button"
                 class="subviewbutton"
-                data-l10n-id="zen-menubar-new-unsynced-window"
+                data-l10n-id="zen-appmenu-new-blank-window"
                 key="zen-new-unsynced-window"
                 command="cmd_zenNewNavigatorUnsynced"/>`
     ).querySelector("toolbarbutton");
@@ -123,7 +123,7 @@ export class nsZenMenuBar {
       window.MozXULElement.parseXULToFragment(`
         <menuitem id="menu_new_zen_unsynced_window"
                 class="subviewbutton"
-                data-l10n-id="zen-menubar-new-unsynced-window"
+                data-l10n-id="zen-menubar-new-blank-window"
                 key="zen-new-unsynced-window"
                 command="cmd_zenNewNavigatorUnsynced"/>`)
     );

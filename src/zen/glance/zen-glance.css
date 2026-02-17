@@ -34,7 +34,7 @@
     box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
     padding: 8px;
     opacity: 1 !important;
-    color: var(--zen-primary-color);
+    color: var(--zen-primary-color) !important;
 
     &:hover {
       background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));

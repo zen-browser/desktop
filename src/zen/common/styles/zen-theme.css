@@ -141,14 +141,11 @@
   --zen-button-padding: 0.6rem 1.2rem;
 
   --zen-toolbar-element-bg: light-dark(
-    color-mix(in oklch, var(--toolbox-textcolor) 10%, transparent),
+    color-mix(in oklch, var(--toolbox-textcolor) 8%, transparent),
     color-mix(in oklch, var(--toolbox-textcolor) 15%, transparent)
   );
 
-  --zen-toolbar-element-bg-hover: light-dark(
-    color-mix(in srgb, var(--zen-toolbar-element-bg) 75%, transparent),
-    color-mix(in srgb, var(--zen-toolbar-element-bg) 60%, transparent)
-  );
+  --zen-toolbar-element-bg-hover: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.1));
 
   /* Toolbar */
   --tab-selected-color-scheme: inherit !important;
@@ -222,7 +219,7 @@
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
 
-  --zen-workspace-indicator-height: 46px;
+  --zen-workspace-indicator-height: 44px;
 
   &:not([zen-sidebar-expanded='true']) {
     --zen-workspace-indicator-height: 38px;
@@ -231,10 +228,7 @@
   --toolbar-field-color: var(--toolbox-textcolor) !important;
 
   &[zen-private-window='true'] {
-    --zen-main-browser-background: linear-gradient(130deg,
-      color-mix(in srgb, rgb(10, 6, 11) 80%, var(--zen-themed-toolbar-bg-transparent)) 0%,
-      color-mix(in srgb, rgb(19, 7, 22) 80%, var(--zen-themed-toolbar-bg-transparent)) 100%
-    );
+    --zen-main-browser-background: color-mix(in srgb, rgb(11, 10, 11) 90%, var(--zen-themed-toolbar-bg-transparent));
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
     --zen-primary-color: light-dark(rgb(93, 42, 107), rgb(110, 48, 125)) !important;
     --toolbox-textcolor: color-mix(in srgb, currentColor 95%, transparent) !important;
@@ -294,7 +288,7 @@
   }
 }
 
-#main-window:not([chromehidden~='toolbar']) {
+#main-window[windowtype="navigator:browser"]:not([chromehidden~='toolbar']) {
   min-height: 495px !important;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and

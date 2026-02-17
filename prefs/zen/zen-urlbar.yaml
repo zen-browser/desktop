@@ -32,6 +32,9 @@
 - name: zen.urlbar.show-pip-button
   value: false
 
+- name: zen.urlbar.open-on-startup
+  value: true
+
 # Mark: Zen suggestions controls
 
 - name: zen.urlbar.suggestions.quick-actions

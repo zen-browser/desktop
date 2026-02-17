@@ -56,7 +56,7 @@ def main():
   os.chdir(engine_dir)
 
   def run_mach_with_paths(test_paths):
-    command = ['./mach', 'mochitest'] + other_args + test_paths
+    command = ['./mach', 'test'] + other_args + test_paths
     # Replace the current process with the mach command
     os.execvp(command[0], command)
 

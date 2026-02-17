@@ -37,5 +37,6 @@ src/zen/common/ZenEmojis.mjs
 
 src/zen/split-view/zen-decks.css
 src/zen/workspaces/zen-workspaces.css
+src/zen/common/styles/zen-toolbar.css
 
 *.inc

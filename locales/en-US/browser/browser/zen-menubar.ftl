@@ -22,5 +22,5 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark =
     .label = Dark
 
-zen-menubar-new-unsynced-window =
-    .label = New blank window
+zen-menubar-new-blank-window =
+    .label = New Blank Window

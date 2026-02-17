@@ -44,12 +44,12 @@
 #zen-splitview-dropzone {
   position: absolute !important;
 
-  margin: var(--zen-split-column-gap) var(--zen-split-row-gap) !important;
-  margin-bottom: 0 !important;
-  margin-left: 0 !important;
+  margin: var(--zen-split-column-gap) var(--zen-split-row-gap);
+  margin-bottom: 0;
+  margin-left: 0;
 
   &.browserSidebarContainer:not([zen-split='true']) {
-    margin-top: 0 !important;
+    margin-top: 0;
     visibility: hidden;
   }
 }
@@ -204,12 +204,25 @@
   overflow: hidden;
   will-change: width, margin-left;
 
+  &[side='top'],
+  &[side='bottom'] {
+    width: 100%;
+    
+    &[has-split-view='true'] {
+      width: calc(100% - var(--zen-element-separation));
+    }
+  }
+
   &[side='right'] {
     right: 0;
 
     &[has-split-view='true'] {
       right: var(--zen-element-separation);
     }
+  }
+
+  &[side='bottom'] {
+    bottom: 0;
   }
 }
 

@@ -98,6 +98,7 @@ zen-folder {
 
       & svg {
         filter: contrast(125%);
+        transform: translate(-1px, -1px);
 
         :root:not([zen-sidebar-expanded]) & {
           transition: transform 0.1s ease;

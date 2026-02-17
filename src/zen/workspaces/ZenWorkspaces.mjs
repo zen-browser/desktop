@@ -231,7 +231,7 @@ class nsZenWorkspaces {
     }
   }
 
-  async selectEmptyTab(newTabTarget = null, selectURLBar = true) {
+  async selectEmptyTab(newTabTarget = null) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for empty tab selection");
@@ -251,30 +251,6 @@ class nsZenWorkspaces {
         !this._emptyTab.ownerGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
-        // Only set up URL bar selection if we're switching to a different tab
-        if (gBrowser.selectedTab !== this._emptyTab && selectURLBar) {
-          const tabSelectListener = () => {
-            // Remove the event listener first to prevent any chance of multiple executions
-            window.removeEventListener("TabSelect", tabSelectListener);
-
-            // Use requestAnimationFrame to ensure DOM is updated
-            requestAnimationFrame(() => {
-              // Then use setTimeout to ensure browser has time to process tab switch
-              setTimeout(() => {
-                if (gURLBar) {
-                  try {
-                    gURLBar.select();
-                  } catch (e) {
-                    console.warn("Error selecting URL bar:", e);
-                  }
-                }
-              }, 50);
-            });
-          };
-
-          window.addEventListener("TabSelect", tabSelectListener, { once: true });
-        }
-
         // Safely switch to the empty tab using our debounced method
         const success = await this._safelySelectTab(this._emptyTab);
         if (!success) {
@@ -547,7 +523,7 @@ class nsZenWorkspaces {
 
   _handleAppCommand(event) {
     // note: Dont use this._hoveringSidebar as it's not as reliable as checking for :hover
-    if (!this.workspaceEnabled || !this._hoveringSidebar) {
+    if (!this.workspaceEnabled || !gNavToolbox.matches(":hover")) {
       return;
     }
 
@@ -1044,6 +1020,8 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
+    showed &&= Services.prefs.getBoolPref("zen.urlbar.open-on-startup", true);
+
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
@@ -1130,7 +1108,7 @@ class nsZenWorkspaces {
     return (
       !window.toolbar.visible ||
       Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab") ||
-      this.privateWindowOrDisabled
+      (this.privateWindowOrDisabled && !this.isPrivateWindow)
     );
   }
 
@@ -2436,7 +2414,10 @@ class nsZenWorkspaces {
     if (!this.currentWindowIsSyncing) {
       containerTabId = parseInt(gBrowser.selectedTab.getAttribute("usercontextid")) || 0;
       let label = ContextualIdentityService.getUserContextLabel(containerTabId) || "Default";
-      name = this.isPrivateWindow ? "Private " + name : label;
+      name = this.isPrivateWindow ? "Incognito" : label;
+      if (this.isPrivateWindow) {
+        icon = gZenEmojiPicker.getSVGURL("eye.svg");
+      }
     }
     let workspace = {
       uuid: gZenUIManager.generateUuidv4(),

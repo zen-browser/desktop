@@ -25,7 +25,7 @@
         content/browser/zen-styles/zen-panel-ui.css                             (../../zen/common/styles/zen-panel-ui.css)
         content/browser/zen-styles/zen-single-components.css                    (../../zen/common/styles/zen-single-components.css)
         content/browser/zen-styles/zen-sidebar.css                              (../../zen/common/styles/zen-sidebar.css)
-        content/browser/zen-styles/zen-toolbar.css                              (../../zen/common/styles/zen-toolbar.css)
+*       content/browser/zen-styles/zen-toolbar.css                              (../../zen/common/styles/zen-toolbar.css)
         content/browser/zen-styles/zen-browser-container.css                    (../../zen/common/styles/zen-browser-container.css)
         content/browser/zen-styles/zen-omnibox.css                              (../../zen/common/styles/zen-omnibox.css)
         content/browser/zen-styles/zen-popup.css                                (../../zen/common/styles/zen-popup.css)

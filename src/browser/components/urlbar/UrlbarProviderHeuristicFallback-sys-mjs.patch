@@ -1,0 +1,42 @@
+diff --git a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
+index 7a60a871022df44c0d26745f0035fce988cc5f92..0b89f9b66573d4c5ffb67983d728bb593e5cb524 100644
+--- a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
+@@ -75,22 +75,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+         // Since we can't tell if this is a real URL and whether the user wants
+         // to visit or search for it, we provide an alternative searchengine
+         // match if the string looks like an alphanumeric origin or an e-mail.
+-        let str = queryContext.searchString;
+-        if (!URL.canParse(str)) {
+-          if (
+-            lazy.UrlbarPrefs.get("keyword.enabled") &&
+-            (lazy.UrlUtils.looksLikeOrigin(str, {
+-              noIp: true,
+-              noPort: true,
+-            }) ||
+-              lazy.UrlUtils.REGEXP_COMMON_EMAIL.test(str))
+-          ) {
++        let trimmedSearchString = queryContext.trimmedSearchString;
++        let [searchCandidate] = UrlbarUtils.stripPrefixAndTrim(
++          trimmedSearchString,
++          {
++            trimSlash: true,
++           }
++        );
++        if (
++          lazy.UrlbarPrefs.get("keyword.enabled") &&
++          (lazy.UrlUtils.looksLikeUrl(searchCandidate) ||
++            lazy.UrlUtils.looksLikeOrigin(searchCandidate, {
++              allowPartialNumericalTLDs: true,
++            }) !== lazy.UrlUtils.LOOKS_LIKE_ORIGIN.NONE ||
++            lazy.UrlUtils.REGEXP_COMMON_EMAIL.test(trimmedSearchString))
++        ) {
+             let searchResult = await this._engineSearchResult({ queryContext });
+             if (instance != this.queryInstance) {
+               return;
+             }
+             addCallback(this, searchResult);
+-          }
+         }
+         return;
+       }

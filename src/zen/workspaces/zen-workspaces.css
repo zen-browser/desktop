@@ -156,7 +156,7 @@
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
   --indicator-gap: calc(var(--toolbarbutton-inner-padding) - 1px);
-  padding: calc(2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  padding: calc(3px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
   max-height: var(--zen-workspace-indicator-height);
@@ -173,14 +173,13 @@
   &::before {
     border-radius: var(--border-radius-medium);
     background: transparent;
-    transition: background 0.1s;
     pointer-events: none;
     content: '';
     position: absolute;
-    top: var(--zen-toolbox-padding);
+    top: 4px;
     left: calc(var(--zen-toolbox-padding) + 2px);
-    width: calc(100% - var(--zen-toolbox-padding) * 3);
-    height: calc(100% - var(--zen-toolbox-padding) * 2);
+    width: calc(100% - var(--zen-toolbox-padding) * 2.5);
+    height: calc(100% - 8px);
   }
 
   :root[zen-private-window] & {

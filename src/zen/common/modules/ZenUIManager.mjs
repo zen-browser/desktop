@@ -222,7 +222,7 @@ window.gZenUIManager = {
       "--zen-urlbar-top",
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.getBoundingClientRect().height) / 2}px`
     );
-    gURLBar.style.setProperty("--zen-urlbar-width", `${Math.min(window.innerWidth / 2, 700)}px`);
+    gURLBar.style.setProperty("--zen-urlbar-width", `${Math.min(window.innerWidth / 2, 750)}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute("zen-has-hover");
     gZenVerticalTabsManager.recalculateURLBarHeight();
     if (!this._preventToolbarRebuild) {
@@ -570,11 +570,10 @@ window.gZenUIManager = {
   },
 
   urlbarTrim(aURL) {
-    if (
-      gZenVerticalTabsManager._hasSetSingleToolbar &&
-      this.urlbarShowDomainOnly &&
-      !gURLBar.hasAttribute("breakout-extend")
-    ) {
+    if (gURLBar.hasAttribute("breakout-extend")) {
+      return aURL;
+    }
+    if (gZenVerticalTabsManager._hasSetSingleToolbar && this.urlbarShowDomainOnly) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
       return url.startsWith("https://") ? url.split("/")[2] : url;
     }
@@ -1055,7 +1054,7 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == "macosx" ? 34 : 32;
         } else if (gURLBar.getAttribute("breakout-extend") !== "true") {
-          height = 40;
+          height = 38;
         }
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);
@@ -1273,6 +1272,15 @@ window.gZenVerticalTabsManager = {
 
       if (shouldHide) {
         appContentNavbarContaienr.append(windowButtons);
+      }
+
+      if (
+        this._hasSetSingleToolbar &&
+        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true)
+      ) {
+        topButtons.setAttribute("addon-webext-overflowtarget", "zen-overflow-extensions-list");
+      } else {
+        topButtons.setAttribute("addon-webext-overflowtarget", "overflowed-extensions-list");
       }
 
       gZenCompactModeManager.updateCompactModeContext(isSingleToolbar);

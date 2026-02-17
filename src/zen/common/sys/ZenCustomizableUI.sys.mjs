@@ -121,8 +121,11 @@ export const ZenCustomizableUI = new (class {
 
   #initCreateNewButton(window) {
     const button = window.document.getElementById("zen-create-new-button");
-    button.addEventListener("command", (event) => {
-      if (window.gZenWorkspaces.privateWindowOrDisabled) {
+    // If we use "mousedown" event for private windows (which open a new tab on "click"), we might end up with
+    // the urlbar flicking and therefore we use "command" event to avoid that.
+    let isPrivateMode = window.gZenWorkspaces.privateWindowOrDisabled;
+    button.addEventListener(isPrivateMode ? "command" : "mousedown", (event) => {
+      if (isPrivateMode) {
         window.document.getElementById("cmd_newNavigatorTab").doCommand();
         return;
       }

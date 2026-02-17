@@ -92,7 +92,6 @@ jobs:
 
       - name: Fix Rust version
         run: |
-          # Install a rust version compatible with LLVM 18
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
           source $HOME/.cargo/env
 

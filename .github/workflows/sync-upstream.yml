@@ -73,15 +73,13 @@ jobs:
             npm run sync
           fi
 
-      - name: Run formatter
-        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
-        run: |
-          sudo apt install python3-autopep8
-          npm run pretty
+      - name: Install autopep8
+        run: sudo apt install python3-autopep8
 
       - name: Check if any files changed
         id: git-check
         run: |
+          npm run pretty
           if [ -n "$(git status --porcelain)" ]; then
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
@@ -110,6 +108,15 @@ jobs:
       - name: Import external tests
         if: steps.git-check.outputs.files_changed == 'true'
         run: python3 scripts/import_external_tests.py || true
+
+      - name: Import external patches
+        if: steps.git-check.outputs.files_changed == 'true'
+        run: python3 scripts/import_external_patches.py || true
+
+      - name: Run formatter
+        if: steps.check-upstream-branch.outputs.branch_exists == 'false'
+        run: |
+          npm run pretty
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7

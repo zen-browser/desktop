@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 68c24f730d56f548cf1e286198a04f8363529378..71418c93ce7216d71412f2fa67295322bb73abad 100644
+index 68c24f730d56f548cf1e286198a04f8363529378..eb9aa5e77cf549062d8d3770f8057ceafe67c317 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -22,16 +22,17 @@ index 68c24f730d56f548cf1e286198a04f8363529378..71418c93ce7216d71412f2fa67295322
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -62,6 +61,8 @@
+@@ -62,6 +61,9 @@
            <html:sidebar-pins-promo id="drag-to-pin-promo-card"></html:sidebar-pins-promo>
            <arrowscrollbox id="pinned-tabs-container" orient="horizontal" clicktoscroll=""></arrowscrollbox>
            <splitter orient="vertical" id="vertical-pinned-tabs-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
++<html:div id="zen-overflow-extensions-list" skipintoolbarset="true"></html:div>
 +<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">
            <hbox class="tab-drop-indicator" hidden="true"/>
            <arrowscrollbox id="tabbrowser-arrowscrollbox" orient="horizontal" flex="1" clicktoscroll="" scrolledtostart="" scrolledtoend="">
              <tab is="tabbrowser-tab" class="tabbrowser-tab" selected="true" visuallyselected="" fadein=""/>
-@@ -81,6 +82,7 @@
+@@ -81,6 +83,7 @@
                                tooltip="dynamic-shortcut-tooltip"
                                data-l10n-id="tabs-toolbar-new-tab"/>
            <html:span id="tabbrowser-tab-a11y-desc" hidden="true"/>
@@ -39,7 +40,7 @@ index 68c24f730d56f548cf1e286198a04f8363529378..71418c93ce7216d71412f2fa67295322
          </tabs>
  
          <toolbarbutton id="new-tab-button"
-@@ -106,9 +108,10 @@
+@@ -106,9 +109,10 @@
  #include private-browsing-indicator.inc.xhtml
      <toolbarbutton class="content-analysis-indicator toolbarbutton-1 content-analysis-indicator-icon"/>
  

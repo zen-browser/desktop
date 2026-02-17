@@ -144,6 +144,10 @@ export class nsZenWorkspace extends MozXULElement {
     this.pinnedTabsContainer.scrollbox = this.scrollbox;
     this.#initialPinnedElementChildrenCount = this.pinnedTabsContainer.children.length;
 
+    if (document.documentElement.hasAttribute("zen-unsynced-window")) {
+      this.indicator.removeAttribute("context");
+    }
+
     this.indicator
       .querySelector(".zen-workspaces-actions")
       .addEventListener("click", this.onActionsCommand.bind(this));

@@ -10,9 +10,14 @@
   }
 
   #zen-dragover-background {
-    width: calc(100% - var(--zen-toolbox-padding) * 2 - 5px);
+    width: calc(100% - var(--zen-toolbox-padding) * 2 - 7px);
     left: unset;
+    right: calc(var(--zen-toolbox-padding) + 3px);
     transform: translateY(-4px);
+
+    :root:not([zen-single-toolbar="true"]) & {
+      transform: translateY(calc(-100% - 2px));
+    }
   }
 
   #zen-tabbox-wrapper {

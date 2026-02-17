@@ -5,33 +5,12 @@
 :root {
   --zen-tab-switcher-card-width: 200px;
   --zen-tab-switcher-card-height: 167px;
-  --zen-tab-switcher-thumbnail-height: 122px;
-  --zen-tab-switcher-gap: 0px;
-  --zen-tab-switcher-padding: 0px;
-  --zen-tab-switcher-border-radius: 25px;
   --zen-tab-switcher-card-border-radius: 14px;
-  --zen-tab-switcher-thumbnail-border-radius: 8px;
   --zen-tab-switcher-card-inner-padding: 11px;
-}
-
-#zen-tab-switcher-container {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-#zen-tab-switcher-panel {
-  background: transparent !important;
-  border: none;
-  border-radius: var(--zen-tab-switcher-border-radius);
-  padding: var(--zen-tab-switcher-padding);
-  outline: none;
-  max-width: 90vw;
-  backdrop-filter: none;
-  position: relative;
-  z-index: 999999;
-  box-sizing: border-box;
+  --zen-tab-switcher-thumbnail-height: 122px;
+  --zen-tab-switcher-thumbnail-border-radius: 8px;
+  --zen-tab-switcher-gap: 0px;
+  --zen-tab-switcher-border-radius: 25px;
 }
 
 #zen-tab-switcher-tabs {
@@ -40,6 +19,9 @@
   gap: var(--zen-tab-switcher-gap);
   overflow-x: hidden;
   overflow-y: hidden;
+  /*Tiny padding to hide random fractional seams*/
+  padding-right: 1px;
+  padding-bottom: 1px;
   scroll-behavior: smooth;
   scrollbar-width: none; 
   position: relative;
@@ -60,7 +42,6 @@
   border-radius: var(--zen-tab-switcher-card-border-radius);
   padding: var(--zen-tab-switcher-card-inner-padding);
   cursor: pointer;
-  transition: background 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -74,6 +55,11 @@
 .zen-tab-switcher-card.zen-tab-switcher-selected {
   background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white !important;
+}
+
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-thumbnail {
+  border-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+  outline: none !important;
 }
 
 .zen-tab-switcher-thumbnail {
@@ -123,6 +109,7 @@
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  margin-left: 4px;
   -moz-context-properties: fill, stroke, fill-opacity;
   fill: currentColor;
   fill-opacity: var(--urlbar-icon-fill-opacity);

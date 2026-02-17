@@ -8,7 +8,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
-  static PANEL_PADDING = 11;
+  static PANEL_PADDING = 0;
 
   #isOpen = false;
   #currentIndex = 0;

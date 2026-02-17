@@ -7,8 +7,8 @@ const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZapOverlay: "resource:///modules/ZenZapOverlayChild.sys.mjs",
-  SelectorComponent: "resource:///modules/ZenSelectorComponent.sys.mjs",
+  ZapOverlay: "resource:///modules/zen/boosts/ZenZapOverlayChild.sys.mjs",
+  SelectorComponent: "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
 });
 
 export class ZenBoostsChild extends JSWindowActorChild {

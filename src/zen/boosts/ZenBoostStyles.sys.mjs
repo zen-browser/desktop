@@ -11,7 +11,7 @@ const lazy = XPCOMUtils.declareLazy({
     service: "@mozilla.org/content/style-sheet-service;1",
     iid: Ci.nsIStyleSheetService,
   },
-  gZenBoostsManager: "resource:///modules/ZenBoostsManager.sys.mjs",
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
 });
 
 const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;

@@ -5,7 +5,7 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  gZenBoostsManager: "resource:///modules/ZenBoostsManager.sys.mjs",
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {

@@ -37,7 +37,7 @@
 
   <!-- Loading in the window module -->
   <script>
-    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/ZenBoostsEditor.mjs" );
+    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
     window.addEventListener("load", () => {           
       window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
     });

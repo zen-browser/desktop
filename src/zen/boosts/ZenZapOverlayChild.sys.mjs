@@ -5,8 +5,8 @@
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZapDissolve: "resource:///modules/ZenZapDissolve.sys.mjs",
-  SelectorComponent: "resource:///modules/ZenSelectorComponent.sys.mjs",
+  ZapDissolve: "resource:///modules/zen/boosts/ZenZapDissolve.sys.mjs",
+  SelectorComponent: "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "overlayLocalization", () => {

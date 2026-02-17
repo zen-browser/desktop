@@ -6,6 +6,10 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
+  static CARD_WIDTH = 200;
+  static MAX_VISIBLE_CARDS = 5;
+  static PANEL_PADDING = 11;
+
   #isOpen = false;
   #currentIndex = 0;
   #tabList = [];
@@ -13,7 +17,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #ctrlPressed = false;
   #lazyPrefs = {}; 
   #recentlyUsedTabs = [];
-  #actualVisibleCards = 5; 
+  #actualVisibleCards = nsZenTabSwitcher.MAX_VISIBLE_CARDS; 
 
   init() {
     console.log("ZenTabSwitcher: Initializing...");
@@ -280,8 +284,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   // This is async so it waits for all thumbnails before showing the panel
   async #preCacheThumbnailsForVisible() {
     // Calculate which tabs are currently visible based on pagination
-    const { pageStartIndex, maxVisible } = this.#getPageStartIndex(this.#currentIndex);
-    const endIndex = Math.min(this.#tabList.length, pageStartIndex + maxVisible);
+    const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
+    const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
 
     const tasks = tabsToCache.map((tab) => this.#captureThumbnail(tab));
@@ -307,7 +311,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         "resource://gre/modules/PageThumbs.sys.mjs"
       );
 
-      await PageThumbs.captureToCanvas(browser, canvas);
+      await PageThumbs.captureToCanvas(browser, canvas, { targetWidth: 1024 });
 
       const dataUrl = canvas.toDataURL("image/png");
 
@@ -329,20 +333,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     if (useRecentOrder) {
       this.#cleanupRecentlyUsedTabs();
-
       tabs = [...this.#recentlyUsedTabs];
-
-      this.#tabList = tabs.filter(tab => {
-        if (tab.closing || tab.hidden) return false;
-        if (tab.hasAttribute("zen-empty-tab")) return false;
-        if (tab.hasAttribute("pending")) return false;
-        return true;
-      });
-
-      return;
+    } else {
+      tabs = [...gBrowser.tabs];
     }
-
-    tabs = [...gBrowser.tabs];
 
     this.#tabList = tabs.filter(tab => {
       if (tab.closing || tab.hidden) return false;
@@ -358,20 +352,17 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.tabsContainer.innerHTML = "";
 
     const totalTabs = this.#tabList.length;
-
-    const cardWidth = 200;
     const gap = 0;
-    const panelPadding = 23 * 2;
-
-    const visibleCount = Math.min(totalTabs, 5);
-    const containerWidth = (cardWidth * visibleCount) + (gap * (visibleCount - 1));
+    const panelPadding = nsZenTabSwitcher.PANEL_PADDING * 2;
+    const visibleCount = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
+    const containerWidth = (nsZenTabSwitcher.CARD_WIDTH * visibleCount) + (gap * (visibleCount - 1));
     const panelWidth = containerWidth + panelPadding;
 
     this.#actualVisibleCards = visibleCount;
     this.tabsContainer.style.width = `${containerWidth}px`;
     this.tabsContainer.style.maxWidth = `${containerWidth}px`;
     this.tabsContainer.style.minWidth = `${containerWidth}px`;
-    
+
     if (this.panel) {
       this.panel.style.width = `${panelWidth}px`;
       this.panel.style.maxWidth = `${panelWidth}px`;
@@ -529,11 +520,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
     if (!selectedCard) return;
 
-    const cardWidth = 200;
-    const gap = 0;
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
-    const { pageStartIndex } = this.#getPageStartIndex(cardIndex);
-    const scrollPosition = pageStartIndex * (cardWidth + gap);
+    const pageStartIndex = this.#getPageStartIndex(cardIndex);
+    const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
 
     this.tabsContainer.scrollTo({
       left: scrollPosition,
@@ -555,7 +544,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       pageStartIndex = Math.max(0, totalTabs - maxVisible);
     }
 
-    return { pageStartIndex, maxVisible };
+    return pageStartIndex;
   }
 
   // Moves selection to the next tab (wraps around at end)

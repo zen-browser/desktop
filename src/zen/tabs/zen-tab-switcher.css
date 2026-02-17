@@ -7,7 +7,7 @@
   --zen-tab-switcher-card-height: 167px;
   --zen-tab-switcher-thumbnail-height: 122px;
   --zen-tab-switcher-gap: 0px;
-  --zen-tab-switcher-padding: 23px;
+  --zen-tab-switcher-padding: 11px;
   --zen-tab-switcher-border-radius: 25px;
   --zen-tab-switcher-card-border-radius: 14px;
   --zen-tab-switcher-thumbnail-border-radius: 8px;
@@ -22,26 +22,16 @@
 }
 
 #zen-tab-switcher-panel {
-  --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
-  background: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
+  background: transparent !important;
   border: none;
   border-radius: var(--zen-tab-switcher-border-radius);
   padding: var(--zen-tab-switcher-padding);
-  outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2));
-  outline-offset: -0.5px;
+  outline: none;
   max-width: 90vw;
   backdrop-filter: none;
   position: relative;
   z-index: 999999;
   box-sizing: border-box;
-}
-
-@media -moz-pref("zen.theme.acrylic-elements") {
-  #zen-tab-switcher-panel {
-    --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
-    background: var(--zen-urlbar-background-transparent) !important;
-    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-  }
 }
 
 #zen-tab-switcher-tabs {
@@ -96,6 +86,7 @@
   overflow: hidden;
   position: relative;
   border-radius: var(--zen-tab-switcher-thumbnail-border-radius);
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
 }
 
 .zen-tab-switcher-thumbnail image {

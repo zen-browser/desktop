@@ -1063,8 +1063,7 @@ ${cssSelector} {
    * Reverts boost data to defaults
    */
   resetBoost() {
-    const domain = this.boostInfo.domain;
-    this.currentBoostData = gZenBoostsManager.getEmptyBoost(domain);
+    this.currentBoostData = gZenBoostsManager.getEmptyBoostEntry().boostData;
 
     this.updateCurrentBoost();
     this.updateAllVisuals();

@@ -66,7 +66,7 @@
   @media (-moz-windows-mica) {
     background-color: #f6f6f8c0;
   }
-  
+
   border: solid 0px #ededef;
   border-bottom-width: 1px;
 }
@@ -194,7 +194,7 @@ body {
   align-items: center;
   background-color: #f6f6f8;
   border: solid 1px #e7e7e7ab;
-  
+
   @media (-moz-windows-mica) {
     background-color: #f6f6f8c0;
     border: none;
@@ -280,9 +280,9 @@ body {
   gap: 14px;
   margin-top: 10px;
   padding-top: 10px;
-  
+
   background-color: #fcfcfe;
-  
+
   -moz-window-dragging: drag;
   & > * {
     -moz-window-dragging: no-drag;
@@ -486,7 +486,7 @@ body {
 
   & .small {
     margin: 0;
-    flex: 1 1 30%; 
+    flex: 1 1 30%;
   }
 
   & .med {
@@ -711,7 +711,7 @@ body {
   width: 100%;
   aspect-ratio: 1 /1;
   margin: 10px 0px 4px 0px;
-  
+
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
   & [animated="true"] {

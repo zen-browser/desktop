@@ -78,7 +78,7 @@
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="zen-site-data-boosts" flex="1" />
-          <label data-l10n-id="zen-generic-more" id="zen-site-data-boosts-more" />
+          <label data-l10n-id="zen-generic-more" id="zen-site-data-boosts-more" hidden="true" />
         </hbox>
         <vbox id="zen-site-data-boost-list">
           <!-- settings will be inserted here -->

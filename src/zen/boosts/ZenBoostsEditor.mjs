@@ -368,9 +368,7 @@ export class nsZenBoostEditor {
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
 
     // Disable picker mode
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:DisablePickerMode");
+    this.disableAllPickers();
   }
 
   async onZapButtonPressed() {
@@ -389,9 +387,7 @@ export class nsZenBoostEditor {
   }
 
   onPickerPickedCallback(cssSelector) {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:DisablePickerMode");
+    this.disableAllPickers();
 
     // Insert the css selector at the cursor position in the css editor
     this.appendCode(`
@@ -400,6 +396,14 @@ ${cssSelector} {
 }`);
 
     Services.obs.removeObserver(this, "selector-picker-picked");
+  }
+
+  /**
+   * Disables zap mode and picker mode
+   */
+  disableAllPickers() {
+    Services.obs.notifyObservers(null, "zen-boosts-disable-zap", null);
+    Services.obs.notifyObservers(null, "zen-boosts-disable-picker", null);
   }
 
   onInspectorButtonPressed() {
@@ -645,6 +649,10 @@ ${cssSelector} {
 
       // Map to 0-1 range
       this.currentBoostData.dotDistance = distance / radius;
+
+      // Enable color boosting again
+      if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
+      this.currentBoostData.autoTheme = false;
     }
 
     const relativeX = pixelX - rect.left;
@@ -657,12 +665,6 @@ ${cssSelector} {
     dot.setAttribute("animated", animate ? "true" : "false");
     dot.style.left = `${relativeX}px`;
     dot.style.top = `${relativeY}px`;
-
-    if (pixelX != null && pixelY != null) {
-      // Enable color boosting again
-      if (!this.currentBoostData.enableColorBoost) this.onToggleDisable(false);
-      this.currentBoostData.autoTheme = false;
-    }
 
     this.updateButtonToggleVisuals();
     this.updateDot();
@@ -1065,6 +1067,7 @@ ${cssSelector} {
   resetBoost() {
     this.currentBoostData = gZenBoostsManager.getEmptyBoostEntry().boostData;
 
+    
     this.updateCurrentBoost();
     this.updateAllVisuals();
   }
@@ -1081,8 +1084,7 @@ ${cssSelector} {
       gZenBoostsManager.deleteBoost(boost);
     }
 
-    Services.obs.notifyObservers(null, "zen-boosts-disable-zap", null);
-    Services.obs.notifyObservers(null, "zen-boosts-disable-picker", null);
+    this.disableAllPickers();
   }
 
   /**
@@ -1113,15 +1115,13 @@ ${cssSelector} {
       dot.setAttribute("animated", "true");
       dot.style.left = `${this.currentBoostData.dotPos.x}px`;
       dot.style.top = `${this.currentBoostData.dotPos.y}px`;
-
-      this.updateFontButtonVisuals();
-      this.updateCaseButtonVisuals();
-
-      this.updateColorControlSliderVisuals();
     }
-
+    
     this.window._editor.setText(this.currentBoostData.customCSS || "");
-
+    
+    this.updateFontButtonVisuals();
+    this.updateCaseButtonVisuals();
+    this.updateColorControlSliderVisuals();
     this.updateButtonToggleVisuals();
     this.updateDot();
     this.updateCircleRadius();

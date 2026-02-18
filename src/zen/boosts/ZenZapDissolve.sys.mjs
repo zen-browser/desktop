@@ -298,7 +298,7 @@ void main() {
    * @param {Image} image The target image
    */
   #loadTexture(image) {
-    if (this.#texture) gl.deleteTexture(this.#texture);
+    if (this.#texture) this.#webglContext.deleteTexture(this.#texture);
 
     const texture = this.#webglContext.createTexture();
     this.#webglContext.activeTexture(this.#webglContext.TEXTURE0);
@@ -424,13 +424,13 @@ void main() {
    */
   #draw(time) {
     const gl = this.#webglContext;
+    gl.useProgram(this.#program);
+    
     if (this.#animationStartTime === -1) this.#animationStartTime = time;
 
     const elapsed = time - this.#animationStartTime;
     if (elapsed > this.#duration) {
-      this.#animationStartTime = -1;
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      this.tearDown();
+      this.#resetForNextRun();
       return;
     }
 
@@ -446,14 +446,22 @@ void main() {
    * @param {Element} element The element to dissolve
    */
   dissolve(element) {
-    if (!this.#initialized || this.#hasTriggered) return;
+    if (!this.#initialized || this.#hasTriggered || !element) return;
     this.#hasTriggered = true;
 
     const rect = element.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      console.warn("[ZapDissolve]: element has zero size. Skipping dissolve");
+      return;
+    }
+
     const captureCanvas = this.document.createElement("canvas");
     captureCanvas.width = rect.width;
     captureCanvas.height = rect.height;
     const ctx = captureCanvas.getContext("2d");
+
+    const canvas = this.getElementById("zen-zap-dissolve-canvas");
+    this.#resizeCanvasToClientSize(canvas);
 
     ctx.drawWindow(this.window, rect.left, rect.top, rect.width, rect.height, "rgba(0,0,0,0)");
 
@@ -498,6 +506,33 @@ void main() {
   }
 
   /**
+   * Makes the class ready for reusage
+   */
+  #resetForNextRun() {
+    const gl = this.#webglContext;
+    if (gl) {
+      if (this.#texture) {
+        gl.deleteTexture(this.#texture);
+        this.#texture = null;
+      }
+      if (this.#buffer) {
+        gl.deleteBuffer(this.#buffer);
+        this.#buffer = null;
+      }
+
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+
+    this.#hasTriggered = false;
+    this.#animationStartTime = -1;
+
+    if (this.#rafId) {
+      this.window.cancelAnimationFrame(this.#rafId);
+      this.#rafId = null;
+    }
+  }
+
+  /**
    * Removes all event listeners and removes the overlay from the Anonymous Content
    */
   tearDown() {
@@ -510,7 +545,9 @@ void main() {
       this.#program = null;
     }
 
-    this.window.cancelAnimationFrame(this.#rafId);
+    if (this.window != null) {
+      this.window.cancelAnimationFrame(this.#rafId);
+    }
     this.#rafId = null;
 
     if (this.#content) {
@@ -524,8 +561,6 @@ void main() {
     const loseCtx = gl.getExtension("WEBGL_lose_context");
     loseCtx?.loseContext();
 
-    this.document = null;
-    this.window = null;
     this.#content = null;
     this.#initialized = false;
   }

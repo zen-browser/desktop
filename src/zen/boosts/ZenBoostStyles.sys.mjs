@@ -62,7 +62,7 @@ export class nsZenBoostStyles {
     let zapBlocks = "";
     if (boostData.zapSelectors) {
       for (const selector of boostData.zapSelectors)
-        zapBlocks += `${selector}:not([zen-zap-unhide]){ display: none !important; }\n`;
+        zapBlocks += `html > body ${selector}:not([zen-zap-unhide]){ display: none !important; }\n`;
 
       if (zapBlocks != "") {
         style += `/* Zen-Zaps */\n`;

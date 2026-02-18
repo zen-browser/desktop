@@ -22,6 +22,10 @@ export class ZapOverlay {
   #zapContentIDs = ["zap-list", "zap-controls-container"];
   #selectorComponent = null;
 
+  #dissolvePoolSize = 5;
+  #dissolveEffectPool = [];
+  #currentDissolveIndex = 0;
+
   /**
    * @param {*} document Webpage document
    * @param {*} zenBoostsChild Boost JSActor child
@@ -47,8 +51,11 @@ export class ZapOverlay {
    * Initializes the zap mode and inserts anonymous content
    */
   async initialize() {
-    if (this.#initialized) return;
-
+    if (this.#initialized) {
+      console.warn("[ZenZapOverlayChild]: Skipping initialize because initialized.");
+      return;
+    }
+    
     this.#selectorComponent.initialize();
 
     this.#content = this.document.insertAnonymousContent();
@@ -66,6 +73,27 @@ export class ZapOverlay {
     this.zapDoneButton.addEventListener("click", this.#disableZapMode.bind(this));
 
     this.#updateZappedList();
+  }
+
+  /**
+   * Lazily loads the next available dissolve effect.
+   * The returned effect might not currently be ready to trigger again.
+   * @returns {Promise<ZapDissolve>} Dissolve effect
+   */
+  async #getNextDissolveEffect() {
+    // Effect does not exist yet, create and initialize
+    if (this.#currentDissolveIndex >= this.#dissolveEffectPool.length) {
+      const dissolveEffect = new lazy.ZapDissolve(this.document);
+      await dissolveEffect.initialize();
+      this.#dissolveEffectPool.push(dissolveEffect);
+    }
+
+    // Capture current index and increment for next call
+    const returnIndex = this.#currentDissolveIndex;
+    this.#currentDissolveIndex =
+      (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
+
+    return this.#dissolveEffectPool[returnIndex];
   }
 
   get content() {
@@ -134,13 +162,12 @@ export class ZapOverlay {
 
       let counter = 0;
       elements.forEach(async (element) => {
-        // Do not allow more than 5 instances of this effect as it is expensive
-        if (counter >= 6) return;
+        if (counter > this.#dissolvePoolSize) return;
         counter++;
 
-        const dissolveEffect = new lazy.ZapDissolve(this.document);
-        await dissolveEffect.initialize();
-        dissolveEffect.dissolve(element);
+        this.#getNextDissolveEffect().then(dissolve => {
+          dissolve.dissolve(element);
+        });
       });
     }
 
@@ -275,6 +302,10 @@ export class ZapOverlay {
    */
   tearDown() {
     this.#selectorComponent.tearDown();
+
+    this.#dissolveEffectPool.forEach((dissolve) => {
+      dissolve.tearDown();
+    });
 
     if (this.#content) {
       try {

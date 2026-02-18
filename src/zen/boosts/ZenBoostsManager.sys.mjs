@@ -503,6 +503,18 @@ class nsZenBoostsManager {
       once: true,
     });
 
+    const progressListener = {
+      onLocationChange(browser, webProgress, request, location, flags) {
+        // Only react to current tab
+        if (browser === parentWindow.gBrowser.selectedBrowser) {
+          editor.close();
+          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
+        }
+      },
+    };
+
+    parentWindow.gBrowser.addTabsProgressListener(progressListener);
+
     // Give the domain
     editor.domain = boost.domain;
     editor.openerWindow = parentWindow;

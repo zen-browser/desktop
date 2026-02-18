@@ -171,7 +171,7 @@ export class SelectorComponent {
       <div id="select-component">
         <div id="select-controls">
           <input type="button" id="select-this" value="${thisElement.value}"/>
-          <input type="button" id="select-related" value="${relatedElements.value}">
+          <input type="button" id="select-related" value="${relatedElements.value}"/>
           <input type="button" id="select-cancel" value="${cancelAction.value}"/>
         </div>
         <div id="selector-preview">
@@ -395,8 +395,11 @@ export class SelectorComponent {
    * @param {Boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
-    const closestID = event?.originalTarget?.closest("div")?.id ?? "";
-    const isZenContent = this.#zenContentIDs.includes(closestID);
+    let isZenContent = false;
+    if (event?.originalTarget?.closest) {
+      const closestID = event.originalTarget.closest("div")?.id ?? "";
+      isZenContent = this.#zenContentIDs.includes(closestID);
+    }
 
     switch (event.type) {
       case "click":
@@ -469,6 +472,15 @@ export class SelectorComponent {
    * @param {Boolean} isZenContent Flag if the target element is a zen related element
    */
   #handleClick(event, isZenContent) {
+    // Safeguards for protecting anonymous content from being zapped
+    if (
+      event.target === this.document.documentElement ||
+      event.target === this.document.body ||
+      !this.document.documentElement.contains(event.target)
+    ) {
+      return;
+    }
+
     if (this.#currentState === SelectorComponent.STATES.SELECTING && !isZenContent)
       this.setState(SelectorComponent.STATES.SELECTED, event.target);
   }
@@ -505,6 +517,7 @@ export class SelectorComponent {
 
     const escape = (str) => CSS.escape(str);
     const nthChild = (element) => {
+      if (!element) return "";
       if (!element.parentNode) return "";
       const parent = element.parentNode;
       const index = Array.prototype.indexOf.call(parent.children, element) + 1;
@@ -533,7 +546,7 @@ export class SelectorComponent {
       case 0:
         path.push(nthChild(selectedElement));
         path.push(" > ");
-        if (selectedElement.parentNode) {
+        if (selectedElement && selectedElement.parentNode) {
           path.push(getIdentification(selectedElement.parentNode, 0));
 
           while (

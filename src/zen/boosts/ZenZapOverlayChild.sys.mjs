@@ -55,7 +55,7 @@ export class ZapOverlay {
       console.warn("[ZenZapOverlayChild]: Skipping initialize because initialized.");
       return;
     }
-    
+
     this.#selectorComponent.initialize();
 
     this.#content = this.document.insertAnonymousContent();
@@ -90,8 +90,7 @@ export class ZapOverlay {
 
     // Capture current index and increment for next call
     const returnIndex = this.#currentDissolveIndex;
-    this.#currentDissolveIndex =
-      (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
+    this.#currentDissolveIndex = (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
 
     return this.#dissolveEffectPool[returnIndex];
   }
@@ -165,7 +164,7 @@ export class ZapOverlay {
         if (counter > this.#dissolvePoolSize) return;
         counter++;
 
-        this.#getNextDissolveEffect().then(dissolve => {
+        this.#getNextDissolveEffect().then((dissolve) => {
           dissolve.dissolve(element);
         });
       });

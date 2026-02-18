@@ -50,7 +50,7 @@
       scale: 0;
       opacity: 0;
 
-      animation: 0.4s select-component-in cubic-bezier(.14,1.43,.56,1.01) forwards;
+      animation: 0.4s select-component-in cubic-bezier(0.14, 1.43, 0.56, 1.01) forwards;
     }
   }
 

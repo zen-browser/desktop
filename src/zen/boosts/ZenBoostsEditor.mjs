@@ -1067,7 +1067,6 @@ ${cssSelector} {
   resetBoost() {
     this.currentBoostData = gZenBoostsManager.getEmptyBoostEntry().boostData;
 
-    
     this.updateCurrentBoost();
     this.updateAllVisuals();
   }
@@ -1116,9 +1115,9 @@ ${cssSelector} {
       dot.style.left = `${this.currentBoostData.dotPos.x}px`;
       dot.style.top = `${this.currentBoostData.dotPos.y}px`;
     }
-    
+
     this.window._editor.setText(this.currentBoostData.customCSS || "");
-    
+
     this.updateFontButtonVisuals();
     this.updateCaseButtonVisuals();
     this.updateColorControlSliderVisuals();

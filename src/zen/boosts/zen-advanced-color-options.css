@@ -30,7 +30,7 @@
 
   @media (-moz-platform: macos) {
     &[animate="open"] {
-      animation: 0.4 zen-color-options-panel-animation-macos cubic-bezier(.14,1.43,.56,1.01) forwards !important;
+      animation: 0.4 zen-color-options-panel-animation-macos cubic-bezier(0.14, 1.43, 0.56, 1.01) forwards !important;
     }
   }
 }

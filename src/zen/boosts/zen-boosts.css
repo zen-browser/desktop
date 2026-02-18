@@ -681,7 +681,7 @@ body {
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
   & [animated="true"] {
-    transition: all 0.4s cubic-bezier(.14,1.43,.56,1.01) !important;
+    transition: all 0.4s cubic-bezier(0.14, 1.43, 0.56, 1.01) !important;
   }
 
   & .zen-boost-color-picker-circle {

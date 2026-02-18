@@ -425,7 +425,7 @@ void main() {
   #draw(time) {
     const gl = this.#webglContext;
     gl.useProgram(this.#program);
-    
+
     if (this.#animationStartTime === -1) this.#animationStartTime = time;
 
     const elapsed = time - this.#animationStartTime;

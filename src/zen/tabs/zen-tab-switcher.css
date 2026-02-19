@@ -58,8 +58,7 @@
 }
 
 .zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-thumbnail {
-  border-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
-  outline: none !important;
+  background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
 }
 
 .zen-tab-switcher-thumbnail {

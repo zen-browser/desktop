@@ -194,7 +194,7 @@ zen-folder {
     }
 
     .tab-reset-button[live-folder-action] {
-      list-style-image: url("chrome://browser/skin/zen-icons/selectable/warning.svg");
+      list-style-image: url("chrome://browser/skin/zen-icons/security-broken.svg");
       display: flex;
       opacity: 1;
     }

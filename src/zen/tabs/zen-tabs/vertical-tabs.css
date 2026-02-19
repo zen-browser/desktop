@@ -480,15 +480,15 @@
     max-height 0.1s ease-in-out;
   max-height: 0px;
   opacity: 0;
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   font-size: x-small;
   margin: 0;
 }
 
-[zen-show-sublabel] {
+.tabbrowser-tab[zen-show-sublabel] {
   & .tab-label-container .zen-tab-sublabel {
     max-height: 10px;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 }
 

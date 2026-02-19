@@ -42,13 +42,9 @@ class nsZenLiveFoldersUI {
       return;
     }
 
-    for (const { itemId, label, icon } of liveFolder.tabsState) {
+    for (const { itemId, label } of liveFolder.tabsState) {
       const tab = folder.tabs.find((t) => t.getAttribute("zen-live-folder-item-id") === itemId);
       if (tab) {
-        if (icon && !tab.iconImage.src) {
-          window.gBrowser.setIcon(tab, icon);
-        }
-
         if (label) {
           const tabLabel = tab.querySelector(".zen-tab-sublabel");
           tab.setAttribute("zen-show-sublabel", label);
@@ -87,6 +83,9 @@ class nsZenLiveFoldersUI {
     menuItem.setAttribute("option-key", option.key);
     if (option.disabled) {
       menuItem.setAttribute("disabled", "true");
+    }
+    if (option.hidden) {
+      menuItem.setAttribute("hidden", "true");
     }
   }
 

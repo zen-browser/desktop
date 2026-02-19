@@ -2,12 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ZenWindowSync } from "resource:///modules/zen/ZenWindowSync.sys.mjs";
-
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   JSONFile: "resource://gre/modules/JSONFile.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(
@@ -41,7 +41,7 @@ class nsZenLiveFoldersManager {
   }
 
   get window() {
-    return ZenWindowSync.firstSyncedWindow;
+    return lazy.ZenWindowSync.firstSyncedWindow;
   }
 
   async init() {
@@ -63,7 +63,7 @@ class nsZenLiveFoldersManager {
   // Event Handling
   // --------------
   #initEventListeners() {
-    ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
+    lazy.ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
   }
 
   handleEvent(aEvent) {
@@ -192,7 +192,6 @@ class nsZenLiveFoldersManager {
     const folder = this.window.gZenFolders.createFolder([], {
       label,
       isLiveFolder: true,
-      renameFolder: true,
     });
 
     if (icon) {
@@ -314,6 +313,11 @@ class nsZenLiveFoldersManager {
         this.window.gBrowser.pinTab(tab);
         if (item.icon) {
           this.window.gBrowser.setIcon(tab, item.icon);
+          if (tab.linkedBrowser) {
+            lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
+              image: null,
+            });
+          }
         }
         tab.setAttribute("zen-live-folder-item-id", this.#makeCompositeId(liveFolder.id, item.id));
         if (item.subtitle) {
@@ -373,8 +377,8 @@ class nsZenLiveFoldersManager {
       return null;
     }
 
-    const folder = this.window.gZenWorkspaces.allTabGroups.find((x) => x.id === liveFolder.id);
-    if (folder) {
+    const folder = lazy.ZenWindowSync.getItemFromWindow(this.window, liveFolder.id);
+    if (folder?.isZenFolder) {
       this.folderRefs.set(liveFolder, folder);
     }
 
@@ -460,6 +464,7 @@ class nsZenLiveFoldersManager {
       return;
     }
 
+    await this.window.gZenWorkspaces.promiseInitialized;
     const folders = this.window.gZenWorkspaces.allTabGroups;
     for (let entry of data) {
       let ProviderClass = this.registry.get(entry.type);

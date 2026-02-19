@@ -21,10 +21,7 @@ zen-live-folder-github-option-review-requested =
     .label = Review Requests
 
 zen-live-folder-type-rss =
-    .label = RSS Live Folder
-
-zen-live-folder-type-github =
-    .label = GitHub Live Folder
+    .label = RSS Feed
 
 zen-live-folder-option-fetch-interval =
     .label = Fetch Interval

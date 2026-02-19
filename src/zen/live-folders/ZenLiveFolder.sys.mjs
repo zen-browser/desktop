@@ -137,7 +137,12 @@ export class nsZenLiveFolderProvider {
 
   fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
     const uri = lazy.NetUtil.newURI(url);
-    const principal = Services.scriptSecurityManager.createContentPrincipal(uri, {});
+    // TODO: Support userContextId when fetching, it should be inherited from the folder's
+    // current space context ID.
+    let userContextId = 0;
+    const principal = Services.scriptSecurityManager.createContentPrincipal(uri, {
+      userContextId,
+    });
 
     const securityFlags =
       Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_INHERITS_SEC_CONTEXT |

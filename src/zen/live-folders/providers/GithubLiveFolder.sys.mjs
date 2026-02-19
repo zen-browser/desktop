@@ -67,7 +67,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           items.push({
             title,
             subtitle: author,
-            icon: "chrome://browser/skin/zen-icons/selectable/logo-github.svg",
+            icon: "chrome://browser/content/zen-images/favicons/github.svg",
             url: `https://github.com/${issueUrl}`,
             id: `${repo}#${number}`,
           });
@@ -184,13 +184,15 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-github-option-review-requested",
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
-        disabled: this.state.type === "issues",
+        hidden: this.state.type === "issues",
       },
       { type: "separator" },
       {
         l10nId: "zen-live-folder-github-option-repo-filter",
         key: "repoExclude",
         options: repoOptions,
+        // 1 repo + separator + note = 3 options, so if we have less than 4 options it means we don't have any repo to exclude
+        disabled: repoOptions.length < 4,
       },
     ];
   }
@@ -222,6 +224,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       this.state.options[key] = checked;
     }
 
+    this.refresh();
     this.requestSave();
   }
 

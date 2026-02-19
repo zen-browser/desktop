@@ -3,15 +3,20 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <menupopup id="zenCreateNewPopup">
-  <menu data-l10n-id="zen-panel-ui-live-folder-create">
+  <menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-panel-ui-live-folder-create">
     <menupopup>
-      <menu data-l10n-id="zen-live-folder-type-github">
-        <menupopup>
-          <menuitem data-l10n-id="zen-live-folder-github-pull-requests" command="cmd_zenNewLiveFolder" />
-          <menuitem data-l10n-id="zen-live-folder-github-issues" command="cmd_zenNewLiveFolder" />
-        </menupopup>
-      </menu>
-      <menuitem data-l10n-id="zen-live-folder-type-rss" command="cmd_zenNewLiveFolder" />
+      <menuitem
+        data-l10n-id="zen-live-folder-github-pull-requests"
+        command="cmd_zenNewLiveFolder"
+        image="chrome://browser/content/zen-images/favicons/github.svg" />
+      <menuitem
+        data-l10n-id="zen-live-folder-github-issues"
+        command="cmd_zenNewLiveFolder"
+        image="chrome://browser/content/zen-images/favicons/github.svg" />
+      <menuitem
+        data-l10n-id="zen-live-folder-type-rss"
+        command="cmd_zenNewLiveFolder"
+        image="chrome://browser/skin/zen-icons/selectable/logo-rss.svg"/>
     </menupopup>
   </menu>
   <menuseparator/>

@@ -480,6 +480,12 @@ class nsZenWindowSync {
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-live-folder-item-id");
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-show-sublabel");
       this.#syncTabSubtitle(aWindow, aOriginalItem, aTargetItem);
+    } else if (aTargetItem.hasAttribute("zen-live-folder-item-id")) {
+      aTargetItem.removeAttribute("zen-live-folder-item-id");
+      if (aTargetItem.hasAttribute("zen-show-sublabel")) {
+        this.#syncTabSubtitle(aWindow, aOriginalItem, aTargetItem);
+        aTargetItem.removeAttribute("zen-show-sublabel");
+      }
     }
   }
 

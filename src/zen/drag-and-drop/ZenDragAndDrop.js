@@ -930,6 +930,19 @@
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 
+    #canDropIntoFolder(dropElement, draggedTab) {
+      let folder = dropElement?.classList.contains("tab-group-label-container")
+        ? dropElement.parentElement
+        : dropElement?.group;
+      if (!folder?.isZenFolder) {
+        return true;
+      }
+      if (folder.isLiveFolder && draggedTab.getAttribute("zen-live-folder-item-id") !== folder.id) {
+        return false;
+      }
+      return true;
+    }
+
     // eslint-disable-next-line complexity
     #applyDragoverIndicator(event, dropElement, movingTabs, draggedTab) {
       const separation = 4;
@@ -998,6 +1011,15 @@
           (overlapPercent > 1 - threshold &&
             (possibleFolderElement.collapsed ||
               possibleFolderElement.childGroupsAndTabs.length < 2)));
+      if (
+        canHightlightGroup &&
+        !dropIntoFolder &&
+        !this.#canDropIntoFolder(dropElement, draggedTab)
+      ) {
+        this.clearDragOverVisuals();
+        dropElement = null;
+        return [dropElement, dropBefore];
+      }
       if (
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&

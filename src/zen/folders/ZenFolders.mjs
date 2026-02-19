@@ -241,7 +241,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.setAttribute("had-zen-pinned-changed", true);
     }
 
-    if (group.collapsed && !this._sessionRestoring) {
+    if (group.collapsed && !this._sessionRestoring && !group.isLiveFolder) {
       group.collapsed = group.hasAttribute("has-active");
     }
   }
@@ -1135,7 +1135,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     gBrowser.tabContainer._invalidateCachedTabs();
-    this._sessionRestoring = false;
+    setTimeout(() => {
+      delete this._sessionRestoring;
+    }, 0);
   }
 
   /**
@@ -1258,6 +1260,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     return heightShift;
   }
 
+  get #folderAnimationDuration() {
+    return this._sessionRestoring ? 0 : 0.12;
+  }
+
   async animateCollapse(group) {
     this.cancelPopupTimer();
 
@@ -1313,11 +1319,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       });
     }
 
+    let duration = this.#folderAnimationDuration;
+
     animations.push(
       ...this.#createAnimation(
         itemsToHide,
         { opacity: [1, 0], height: ["auto", 0] },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1325,7 +1333,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         {
           marginTop: -(collapsedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)),
         },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       )
     );
 
@@ -1433,16 +1441,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.activeTabs = [];
     };
 
+    let duration = this.#folderAnimationDuration;
+
     animations.push(
       ...this.#createAnimation(
         itemsToShow,
         { opacity: "", height: "" },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.#createAnimation(
         itemsToHide,
         { opacity: 0, height: 0 },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1450,7 +1460,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         {
           marginTop: 0,
         },
-        { duration: 0.12, ease: "easeInOut" },
+        { duration, ease: "easeInOut" },
         afterMarginTop
       )
     );

@@ -1411,6 +1411,10 @@ class nsZenWindowSync {
   }
 
   on_TabUngrouped() {
+    // No need to sync anything when a tab is ungrouped, since on_TabMove will take
+    // care of moving the tab to the correct position. We still need to listen to this
+    // in order to throw sync events for other components such as live folders to
+    // update their state, but we don't need to do anything here.
     return Promise.resolve();
   }
 

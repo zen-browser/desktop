@@ -44,15 +44,13 @@ class nsZenLiveFoldersUI {
 
     for (const { itemId, label } of liveFolder.tabsState) {
       const tab = folder.tabs.find((t) => t.getAttribute("zen-live-folder-item-id") === itemId);
-      if (tab) {
-        if (label) {
-          const tabLabel = tab.querySelector(".zen-tab-sublabel");
-          tab.setAttribute("zen-show-sublabel", label);
+      if (tab && label) {
+        const tabLabel = tab.querySelector(".zen-tab-sublabel");
+        tab.setAttribute("zen-show-sublabel", label);
 
-          window.document.l10n.setArgs(tabLabel, {
-            tabSubtitle: label,
-          });
-        }
+        window.document.l10n.setArgs(tabLabel, {
+          tabSubtitle: label,
+        });
       }
     }
 

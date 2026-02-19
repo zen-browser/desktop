@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-<panel id="zen-folder-tabs-popup" type="arrow" orient="vertical">
+<panel id="zen-folder-tabs-popup" type="arrow" orient="vertical" side="left">
   <hbox class="tabs-list-header" flex="1">
     <image class="zen-folder-tabs-list-search-icon" src="chrome://global/skin/icons/search-glass.svg"/>
     <html:input id="zen-folder-tabs-list-search" 

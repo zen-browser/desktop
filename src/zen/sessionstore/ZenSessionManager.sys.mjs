@@ -31,10 +31,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
   3
 );
 
-const SHOULD_LOG_TAB_ENTRIES = Services.prefs.getBoolPref(
-  "zen.session-store.log-tab-entries",
-  false
-);
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
@@ -128,37 +124,47 @@ export class nsZenSessionManager {
       const db = await PlacesUtils.promiseDBConnection();
       let data = {};
       let rows = await db.execute("SELECT * FROM zen_workspaces ORDER BY created_at ASC");
-      data.spaces = rows.map((row) => ({
-        uuid: row.getResultByName("uuid"),
-        name: row.getResultByName("name"),
-        icon: row.getResultByName("icon"),
-        containerTabId: row.getResultByName("container_id") ?? 0,
-        position: row.getResultByName("position"),
-        theme: row.getResultByName("theme_type")
-          ? {
-              type: row.getResultByName("theme_type"),
-              gradientColors: JSON.parse(row.getResultByName("theme_colors")),
-              opacity: row.getResultByName("theme_opacity"),
-              rotation: row.getResultByName("theme_rotation"),
-              texture: row.getResultByName("theme_texture"),
-            }
-          : null,
-      }));
-      rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
-      data.pins = rows.map((row) => ({
-        uuid: row.getResultByName("uuid"),
-        title: row.getResultByName("title"),
-        url: row.getResultByName("url"),
-        containerTabId: row.getResultByName("container_id"),
-        workspaceUuid: row.getResultByName("workspace_uuid"),
-        position: row.getResultByName("position"),
-        isEssential: Boolean(row.getResultByName("is_essential")),
-        isGroup: Boolean(row.getResultByName("is_group")),
-        parentUuid: row.getResultByName("folder_parent_uuid"),
-        editedTitle: Boolean(row.getResultByName("edited_title")),
-        folderIcon: row.getResultByName("folder_icon"),
-        isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
-      }));
+      try {
+        data.spaces = rows.map((row) => ({
+          uuid: row.getResultByName("uuid"),
+          name: row.getResultByName("name"),
+          icon: row.getResultByName("icon"),
+          containerTabId: row.getResultByName("container_id") ?? 0,
+          position: row.getResultByName("position"),
+          theme: row.getResultByName("theme_type")
+            ? {
+                type: row.getResultByName("theme_type"),
+                gradientColors: JSON.parse(row.getResultByName("theme_colors")),
+                opacity: row.getResultByName("theme_opacity"),
+                rotation: row.getResultByName("theme_rotation"),
+                texture: row.getResultByName("theme_texture"),
+              }
+            : null,
+        }));
+      } catch (e) {
+        /* ignore errors reading spaces data, as it is not critical and we want to migrate even if we fail to read it */
+        console.error("Failed to read spaces data from database during migration", e);
+      }
+      try {
+        rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
+        data.pins = rows.map((row) => ({
+          uuid: row.getResultByName("uuid"),
+          title: row.getResultByName("title"),
+          url: row.getResultByName("url"),
+          containerTabId: row.getResultByName("container_id"),
+          workspaceUuid: row.getResultByName("workspace_uuid"),
+          position: row.getResultByName("position"),
+          isEssential: Boolean(row.getResultByName("is_essential")),
+          isGroup: Boolean(row.getResultByName("is_group")),
+          parentUuid: row.getResultByName("folder_parent_uuid"),
+          editedTitle: Boolean(row.getResultByName("edited_title")),
+          folderIcon: row.getResultByName("folder_icon"),
+          isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
+        }));
+      } catch (e) {
+        /* ignore errors reading pins data, as it is not critical and we want to migrate even if we fail to read it */
+        console.error("Failed to read pins data from database during migration", e);
+      }
       try {
         data.recoveryData = await IOUtils.readJSON(
           PathUtils.join(
@@ -188,8 +194,9 @@ export class nsZenSessionManager {
         }
       }
       this._migrationData = data;
-    } catch {
+    } catch (e) {
       /* ignore errors during migration */
+      console.error(e);
     }
   }
 
@@ -226,7 +233,7 @@ export class nsZenSessionManager {
       this._shouldRunMigration = true;
       await this.#getDataFromDBForMigration();
     }
-    if (SHOULD_LOG_TAB_ENTRIES) {
+    if (Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)) {
       for (const tab of this.#sidebar.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }

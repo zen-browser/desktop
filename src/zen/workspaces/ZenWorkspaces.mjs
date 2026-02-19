@@ -159,7 +159,7 @@ class nsZenWorkspaces {
     }
   }
 
-  async #afterLoadInit() {
+  #afterLoadInit() {
     const onResize = (...args) => {
       requestAnimationFrame(() => {
         this.onPinnedTabsResize(...args);
@@ -523,7 +523,7 @@ class nsZenWorkspaces {
 
   _handleAppCommand(event) {
     // note: Dont use this._hoveringSidebar as it's not as reliable as checking for :hover
-    if (!this.workspaceEnabled || !this._hoveringSidebar) {
+    if (!this.workspaceEnabled || !gNavToolbox.matches(":hover")) {
       return;
     }
 
@@ -918,7 +918,7 @@ class nsZenWorkspaces {
     this.#initializeEmptyTab();
     return (async () => {
       await this.#waitForPromises();
-      await this.#afterLoadInit();
+      this.#afterLoadInit();
       await this.workspaceBookmarks();
       await this.changeWorkspace(activeWorkspace, { onInit: true });
       this.#fixTabPositions();

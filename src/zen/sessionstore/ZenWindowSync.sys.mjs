@@ -42,12 +42,14 @@ const EVENTS = [
   "TabAddedToEssentials",
   "TabRemovedFromEssentials",
 
+  "TabUngrouped",
   "TabGroupUpdate",
   "TabGroupCreate",
   "TabGroupRemoved",
   "TabGroupMoved",
 
-  "TabUngrouped",
+  "TabHide",
+  "TabShow",
 
   "ZenTabRemovedFromSplit",
   "ZenSplitViewTabsSplit",
@@ -247,8 +249,6 @@ class nsZenWindowSync {
       for (let tab of gZenWorkspaces.allStoredTabs) {
         if (!tab.id) {
           tab.id = this.#newTabSyncId;
-          // Don't call with await here to avoid blocking the loop.
-          this.#maybeFlushTabState(tab);
         }
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
@@ -480,9 +480,6 @@ class nsZenWindowSync {
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-live-folder-item-id");
       this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-show-sublabel");
       this.#syncTabSubtitle(aWindow, aOriginalItem, aTargetItem);
-    }
-    if (gBrowser.isTab(aTargetItem)) {
-      this.#maybeFlushTabState(aTargetItem);
     }
   }
 
@@ -737,7 +734,7 @@ class nsZenWindowSync {
         return;
       }
       lazy.TabStateCache.update(aOurTab.linkedBrowser.permanentKey, {
-        history: tabStateEntries,
+        history: Cu.cloneInto(tabStateEntries, {}),
       });
     };
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
@@ -820,6 +817,7 @@ class nsZenWindowSync {
           {
             fullScale: true,
             fullViewport: true,
+            backgroundColor: "transparent",
           }
         );
 
@@ -837,17 +835,18 @@ class nsZenWindowSync {
 
         let promise = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
         await Promise.all([promiseToWait, promise]);
-        aOurTab.ownerGlobal.requestAnimationFrame(() => {
+        callback();
+        lazy.setTimeout(() => {
           otherBrowser.setAttribute("zen-pseudo-hidden", "true");
           ourBrowser.removeAttribute("zen-pseudo-hidden");
           this.#maybeRemovePseudoImageForBrowser(ourBrowser);
+          ourBrowser.focus();
+          resolve();
         });
-        callback();
-      } else {
-        ourBrowser.removeAttribute("zen-pseudo-hidden");
-        this.#maybeRemovePseudoImageForBrowser(ourBrowser);
+        return;
       }
-
+      ourBrowser.removeAttribute("zen-pseudo-hidden");
+      this.#maybeRemovePseudoImageForBrowser(ourBrowser);
       resolve();
     });
   }
@@ -1168,7 +1167,6 @@ class nsZenWindowSync {
     if (duringPinning && tab?.splitView) {
       this.on_ZenSplitViewTabsSplit({ target: tab.group });
     }
-    this.#maybeFlushTabState(tab);
   }
 
   on_ZenTabIconChanged(aEvent) {
@@ -1186,6 +1184,34 @@ class nsZenWindowSync {
       return;
     }
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_LABEL);
+  }
+
+  on_TabHide(aEvent) {
+    const tab = aEvent.target;
+    const window = tab.ownerGlobal;
+    if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
+      return;
+    }
+    this.#runOnAllWindows(window, (win) => {
+      const targetTab = this.getItemFromWindow(win, tab.id);
+      if (targetTab) {
+        targetTab.ownerGlobal.gBrowser.hideTab(targetTab);
+      }
+    });
+  }
+
+  on_TabShow(aEvent) {
+    const tab = aEvent.target;
+    const window = tab.ownerGlobal;
+    if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
+      return;
+    }
+    this.#runOnAllWindows(window, (win) => {
+      const targetTab = this.getItemFromWindow(win, tab.id);
+      if (targetTab) {
+        targetTab.ownerGlobal.gBrowser.showTab(targetTab);
+      }
+    });
   }
 
   on_TabMove(aEvent) {

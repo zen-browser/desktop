@@ -4,18 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@keyframes zen-jello-animation-macos {
-  0% {
-    -moz-window-opacity: 0;
-    -moz-window-transform: scale(0.8);
-  }
-
-  100% {
-    -moz-window-opacity: 1;
-    -moz-window-transform: scale(1);
-  }
-}
-
 @keyframes zen-theme-picker-dot-animation {
   from {
     transform: scale(0.8) translate(-50%, -50%);

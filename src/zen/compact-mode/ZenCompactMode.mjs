@@ -630,6 +630,7 @@ window.gZenCompactModeManager = {
   _setElementExpandAttribute(element, value, attr = "zen-has-hover") {
     const kVerifiedAttributes = ["zen-has-hover", "has-popup-menu", "zen-compact-mode-active"];
     const isToolbar = element.id === "zen-appcontent-navbar-wrapper";
+    this.log("Setting", attr, "to", value, "on element", element?.id);
     if (value) {
       if (attr === "zen-has-hover" && element !== gZenVerticalTabsManager.actualWindowButtons) {
         element.setAttribute("zen-has-implicit-hover", "true");
@@ -666,6 +667,7 @@ window.gZenCompactModeManager = {
 
   addMouseActions() {
     gURLBar.addEventListener("mouseenter", (event) => {
+      this.log("Mouse entered URL bar:", event.target);
       if (event.target.closest("#urlbar[zen-floating-urlbar]")) {
         window.requestAnimationFrame(() => {
           this._setElementExpandAttribute(gZenVerticalTabsManager.actualWindowButtons, false);

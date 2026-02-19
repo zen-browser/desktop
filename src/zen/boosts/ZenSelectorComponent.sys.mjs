@@ -199,7 +199,11 @@ export class SelectorComponent {
    * Handles the addition of the current zap selector
    */
   #handleSelect() {
-    const cssPath = this.getSelectionPath();
+    const cssPath = this.getSelectionPath(
+      this.document,
+      this.#relatedValueIndex,
+      this.#selectedElement
+    );
 
     this.removeHighlight();
     this.#resetHoverDiv();
@@ -207,7 +211,7 @@ export class SelectorComponent {
     // The highlight should be gone before the onSelect is called
     this.window.requestAnimationFrame((t) => {
       this.setState(SelectorComponent.STATES.SELECTING);
-      this.#onSelect(cssPath);
+      if (cssPath) this.#onSelect(cssPath);
     });
   }
 
@@ -278,7 +282,13 @@ export class SelectorComponent {
   #updatePathTextField() {
     const maxPathLength = 64;
     const selection = this.getSelection();
-    const selectionPath = this.getSelectionPath();
+    const selectionPath = this.getSelectionPath(
+      this.document,
+      this.#relatedValueIndex,
+      this.#selectedElement
+    );
+
+    if (!selectionPath) return;
 
     this.getElementById("selector-element-preview-text").innerHTML =
       `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
@@ -502,8 +512,12 @@ export class SelectorComponent {
    * @returns {Element[]} An array of selected elements
    */
   getSelection() {
-    const selector = this.getSelectionPath();
-    if (selector == "") return [];
+    const selector = this.getSelectionPath(
+      this.document,
+      this.#relatedValueIndex,
+      this.#selectedElement
+    );
+    if (!selector) return [];
 
     return this.document.querySelectorAll(selector);
   }
@@ -512,10 +526,19 @@ export class SelectorComponent {
    * Used for retreiving the css path from the selected element and taking
    * the related objects into account
    */
-  getSelectionPath() {
+  getSelectionPath(document, relatedValueIndex, selectedElement) {
     let path = [];
 
     const escape = (str) => CSS.escape(str);
+
+    // Body and Html nodes are not considered valid here
+    const isValidNode = (element) => {
+      if (!element) return false;
+      else if (element.tagName.toLowerCase() === "body") return false;
+      else if (element.tagName.toLowerCase() === "html") return false;
+      return true;
+    };
+
     const nthChild = (element) => {
       if (!element) return "";
       if (!element.parentNode) return "";
@@ -526,6 +549,7 @@ export class SelectorComponent {
       if (index === parent.children.length) return ":last-child";
       return `:nth-child(${index})`;
     };
+
     const getIdentification = (element, specifity = 0) => {
       if (!element) return "";
       const id = specifity < 2 && element.id ? `#${escape(element.id)}` : "";
@@ -534,69 +558,130 @@ export class SelectorComponent {
           ? "." + [...element.classList].map((c) => escape(c)).join(".")
           : "";
       const tag = element.tagName ? element.tagName.toLowerCase() : "";
-
       return `${tag}${id}${cls}`;
     };
 
-    const build = () => path.toReversed().join("");
+    const traverse = (element, specifity = 0, pathArray) => {
+      let currentElement = element;
+      if (!isValidNode(currentElement)) return "";
 
-    let selectedElement = this.#selectedElement;
+      pathArray.push(nthChild(currentElement));
+      pathArray.push(getIdentification(currentElement, specifity));
 
-    switch (this.#relatedValueIndex) {
-      case 0:
-        path.push(nthChild(selectedElement));
-        path.push(" > ");
-        if (selectedElement && selectedElement.parentNode) {
-          path.push(getIdentification(selectedElement.parentNode, 0));
+      if (currentElement && currentElement.parentNode) {
+        pathArray.push(" > ");
+        pathArray.push(getIdentification(currentElement.parentNode, 0));
 
-          while (
-            this.document.querySelectorAll(build()).length > 1 &&
-            selectedElement.parentNode &&
-            selectedElement.parentNode.tagName.toLowerCase() !== "body"
-          ) {
-            selectedElement = selectedElement.parentNode;
-            if (
-              selectedElement.parentNode &&
-              selectedElement.parentNode.tagName.toLowerCase() !== "body"
-            ) {
-              path.push(" > ");
-              path.push(nthChild(selectedElement.parentNode));
-              path.push(getIdentification(selectedElement.parentNode, 0));
-            }
-          }
+        while (
+          document.querySelectorAll(build(pathArray)).length > 1 &&
+          isValidNode(currentElement.parentNode)
+        ) {
+          currentElement = currentElement.parentNode;
+          pathArray.push(" > ");
+          pathArray.push(nthChild(currentElement.parentNode));
+          pathArray.push(getIdentification(currentElement.parentNode, 0));
         }
-        break;
+      }
+    };
+
+    const build = (pathArray) => pathArray.toReversed().join("");
+
+    const findBestExactSelector = (element, document) => {
+      let buildMap = new Map();
+
+      let pathExactElement = [];
+      traverse(element, 0, pathExactElement);
+
+      const pathExactElementBuilt = build(pathExactElement);
+      const pathExactElementLength = document.querySelectorAll(pathExactElementBuilt).length;
+      buildMap.set(pathExactElementLength, pathExactElementBuilt);
+
+      let pathTypeElement = [];
+      pathTypeElement.push(getIdentification(element, 2));
+      if (isValidNode(element.parentNode)) {
+        pathTypeElement.push(" > ");
+        traverse(element.parentNode, 0, pathTypeElement);
+      }
+
+      const pathTypeElementBuilt = build(pathTypeElement);
+      const pathTypeElementLength = document.querySelectorAll(pathTypeElementBuilt).length;
+      if (!buildMap.has(pathTypeElementLength))
+        buildMap.set(pathTypeElementLength, pathTypeElementBuilt);
+
+      let parentExactElement = [];
+      if (isValidNode(element.parentNode)) {
+        traverse(element.parentNode, 0, parentExactElement);
+      }
+
+      const pathParentElementBuilt = build(parentExactElement);
+      const pathParentElementLength = document.querySelectorAll(pathParentElementBuilt).length;
+      if (!buildMap.has(pathParentElementLength))
+        buildMap.set(pathParentElementLength, pathParentElementBuilt);
+
+      let smallestLength = Number.MAX_VALUE;
+      let smallestLengthPath = null;
+      buildMap.forEach((buildPath, length) => {
+        if (length < smallestLength) {
+          smallestLength = length;
+          smallestLengthPath = buildPath;
+        }
+      });
+
+      return smallestLengthPath;
+    };
+
+    if (!isValidNode(selectedElement)) return null;
+    switch (relatedValueIndex) {
+      // Sometimes getting the exact element we want is not guaranteed by
+      // one specific path builder. It is best to build multiple possible paths
+      // and decide which one is best.
+      default:
+      case 0:
+        return findBestExactSelector(selectedElement, document);
+      // Getting the exact parent element of selected element
       case 1:
-        path.push(getIdentification(selectedElement, 1));
-        path.push(" > ");
-        path.push(getIdentification(selectedElement.parentNode, 0));
+        if (!isValidNode(selectedElement.parentNode)) return null;
+        traverse(selectedElement.parentNode, 0, path);
         break;
+      // Getting the type of selected element with same exact parent
       case 2:
         path.push(getIdentification(selectedElement, 2));
-        path.push(" > ");
-        path.push(getIdentification(selectedElement.parentNode, 0));
+        if (isValidNode(selectedElement.parentNode)) {
+          path.push(" > ");
+          path.push(getIdentification(selectedElement.parentNode, 0));
+        }
         break;
+      // Getting the same type of selected element with same parent type
       case 3:
-        path.push("*");
-        path.push(" > ");
-        path.push(getIdentification(selectedElement.parentNode, 0));
+        path.push(getIdentification(selectedElement, 2));
+        if (isValidNode(selectedElement.parentNode)) {
+          path.push(" > ");
+          path.push(getIdentification(selectedElement.parentNode, 2));
+        }
         break;
+      // Getting the same type of selected element
       case 4:
         path.push(getIdentification(selectedElement, 2));
-        path.push(" > ");
+        break;
+      // Getting the same type of the parent
+      case 5:
+        if (!isValidNode(selectedElement.parentNode)) return null;
         path.push(getIdentification(selectedElement.parentNode, 2));
         break;
-      case 5:
-        path.push(getIdentification(selectedElement, 0));
-        break;
+      // Get any element with same parent
       case 6:
-        path.push(getIdentification(selectedElement, 1));
+        if (!isValidNode(selectedElement.parentNode)) return null;
+
+        path.push("*");
+        path.push(" > ");
+        traverse(selectedElement.parentNode, 0, path);
         break;
+      // Get elements with similar classes
       case 7:
-        path.push(getIdentification(selectedElement, 2));
+        path.push(getIdentification(selectedElement, 1));
         break;
     }
 
-    return build();
+    return build(path);
   }
 }

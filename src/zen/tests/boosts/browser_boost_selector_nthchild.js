@@ -23,8 +23,6 @@ add_task(async function test_getSelectionPath_basic() {
 
   for (let i = 0; i < container.children.length; i++) {
     const currentNode = container.children[i];
-    component.setState(SelectorComponent.STATES.SELECTED, currentNode);
-
     // Get exact element
     const path = component.getSelectionPath(doc, 0, currentNode);
     ok(path, "Path should be generated");
@@ -36,6 +34,6 @@ add_task(async function test_getSelectionPath_basic() {
       "Selector must include the selected node"
     );
 
-    Assert.equal(matches.length, 1, "Selector should uniquely identify the element");
+    Assert.equal(selectedElements.length, 1, "Selector should uniquely identify the element");
   }
 });

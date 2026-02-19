@@ -204,7 +204,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#renderTabs();
 
-    // Center on screen like Firefox's Ctrl+Tab panel
+    // Center panel on screen 
     const screenLeft = screen.availLeft || 0;
     const screenTop = screen.availTop || 0;
     const screenWidth = screen.availWidth;
@@ -329,26 +329,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   // Creates the visual tab cards and adds them to the DOM
   #renderTabs() {
     if (!this.tabsContainer) return;
-
     this.tabsContainer.innerHTML = "";
 
     const totalTabs = this.#tabList.length;
-    const gap = 0;
-    const panelPadding = 0;
     const visibleCount = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
-    const containerWidth = (nsZenTabSwitcher.CARD_WIDTH * visibleCount) + (gap * (visibleCount - 1));
-    const panelWidth = containerWidth + panelPadding;
+    const containerWidth = nsZenTabSwitcher.CARD_WIDTH * visibleCount;
 
     this.#actualVisibleCards = visibleCount;
     this.tabsContainer.style.width = `${containerWidth}px`;
     this.tabsContainer.style.maxWidth = `${containerWidth}px`;
     this.tabsContainer.style.minWidth = `${containerWidth}px`;
-
-    if (this.panel) {
-      this.panel.style.width = `${panelWidth}px`;
-      this.panel.style.maxWidth = `${panelWidth}px`;
-      this.panel.style.minWidth = `${panelWidth}px`;
-    }
 
     this.#tabList.forEach((tab, index) => {
       const tabCard = this.#createTabCard(tab, index);
@@ -362,8 +352,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#applySelectionTextStyles();
   }
-
-
 
   // Creates a single tab card element with thumbnail, favicon, and title
   // Returns: XUL <vbox> element representing the tab card

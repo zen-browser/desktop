@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
-index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7cbafb10b2 100644
+index 344984211e70c67bcc65fbbee54495f381da2b9f..1346ab8b820ae60b13511f6e35b713060b2453d7 100644
 --- a/toolkit/content/widgets/tabbox.js
 +++ b/toolkit/content/widgets/tabbox.js
 @@ -11,6 +11,23 @@
@@ -35,7 +35,7 @@ index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7c
          this._selectedPanel?.classList.add("deck-selected");
        }
        this.setAttribute("selectedIndex", val);
-@@ -718,7 +735,7 @@
+@@ -736,7 +753,7 @@
        if (!tab) {
          return;
        }
@@ -44,7 +44,7 @@ index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7c
          if (otherTab != tab && otherTab.selected) {
            otherTab._selected = false;
          }
-@@ -754,6 +771,7 @@
+@@ -772,6 +789,7 @@
       * @param {MozTab|null} [val]
       */
      set selectedItem(val) {
@@ -52,7 +52,7 @@ index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7c
        if (val && !val.selected) {
          // The selectedIndex setter ignores invalid values
          // such as -1 if |val| isn't one of our child nodes.
-@@ -931,7 +949,7 @@
+@@ -949,7 +967,7 @@
          if (tab == startTab) {
            return null;
          }
@@ -61,7 +61,7 @@ index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7c
            return tab;
          }
        }
-@@ -993,13 +1011,30 @@
+@@ -1011,13 +1029,30 @@
       * @param {boolean} [aWrap]
       */
      advanceSelectedTab(aDir, aWrap) {
@@ -93,7 +93,7 @@ index 7f6e075c818a6aefdcbdfb8ab04df8daa07499d5..9e2d05a9ce02630b8305d5642b6c0d7c
        // Handle keyboard navigation for a hidden tab that can be selected, like the Firefox View tab,
        // which has a random placement in this.allTabs.
        if (startTab.hidden) {
-@@ -1012,7 +1047,7 @@
+@@ -1030,7 +1065,7 @@
          newTab = this.findNextTab(startTab, {
            direction: aDir,
            wrap: aWrap,

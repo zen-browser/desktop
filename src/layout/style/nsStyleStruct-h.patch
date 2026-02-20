@@ -1,5 +1,5 @@
 diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
-index ca11ab168761a6da23811d802a87f6c31af6cca9..cb74679626620a12d37fb1671c373ea9793ae004 100644
+index 14c24446880b7342f6c194bb068f5fd54657ec85..8a0067b2694029242a0fbe6d806b1dd0153f1715 100644
 --- a/layout/style/nsStyleStruct.h
 +++ b/layout/style/nsStyleStruct.h
 @@ -2094,6 +2094,7 @@ struct MOZ_NEEDS_MEMMOVABLE_MEMBERS nsStyleUIReset {

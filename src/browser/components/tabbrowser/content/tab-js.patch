@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6528da245d922e2ccdb59cbf8106055bc34d1e74..b5d5ac633c06d7d9c909ec9456a5f3c165a6b925 100644
+index 836bee14d2b63604688ebe477a5d915a5e99b305..a2aca4443ee1c909149739d002028c6c481aa62a 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@

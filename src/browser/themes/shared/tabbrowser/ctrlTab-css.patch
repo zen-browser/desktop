@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/ctrlTab.css b/browser/themes/shared/tabbrowser/ctrlTab.css
-index ffda4922c675f6159c825334cba9d49658d316ba..7b3d4d2b5c6d732a1d0074e05cc48131fe57c630 100644
+index 6a7d295bfaed7f0429a8ff5ac9b8a2db4ee911e3..d1a3a8d44bc06102adaef294dc72f8f404be17dc 100644
 --- a/browser/themes/shared/tabbrowser/ctrlTab.css
 +++ b/browser/themes/shared/tabbrowser/ctrlTab.css
 @@ -11,6 +11,7 @@

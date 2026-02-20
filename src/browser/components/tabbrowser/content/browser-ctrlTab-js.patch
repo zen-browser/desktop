@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/browser-ctrlTab.js b/browser/components/tabbrowser/content/browser-ctrlTab.js
-index 3330dc133c120e7fbeecd2a36c71f9dfba60b3fb..0243cdfe67e5eb3f68fc7cde66bb3809e79bd6c3 100644
+index b435917892ac77fb433ea709f2524db2f2347a1d..fcbfeb92f3ae4effbfd3333514ed4d412e3063c6 100644
 --- a/browser/components/tabbrowser/content/browser-ctrlTab.js
 +++ b/browser/components/tabbrowser/content/browser-ctrlTab.js
 @@ -252,7 +252,8 @@ var ctrlTab = {

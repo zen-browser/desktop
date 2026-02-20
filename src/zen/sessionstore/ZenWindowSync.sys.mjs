@@ -620,15 +620,9 @@ class nsZenWindowSync {
       this.log(`Cannot swap browsers, other tab ${aOtherTab.id} is closing`);
       return;
     }
-    let promise = this.#maybeFlushTabState(aOtherTab);
-    await this.#styleSwapedBrowsers(
-      aOurTab,
-      aOtherTab,
-      () => {
-        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
-      },
-      promise
-    );
+    await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
+      this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+    });
   }
 
   /**
@@ -708,28 +702,23 @@ class nsZenWindowSync {
       );
       return null;
     }
-    // See https://github.com/zen-browser/desktop/issues/11851, swapping the browsers
-    // don't seem to update the state's cache properly, leading to issues when restoring
-    // the session later on.
-    let tabStateEntries = this.#getTabEntriesFromCache(aOtherTab);
-    const setStateToTab = () => {
-      if (!tabStateEntries?.entries.length) {
-        this.log(`Error: No tab state entries found for tab ${aOurTab.id} during swap`);
-        return;
-      }
-      lazy.TabStateCache.update(aOurTab.linkedBrowser.permanentKey, {
-        history: Cu.cloneInto(tabStateEntries, {}),
-      });
-    };
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
     // the operation, so it doesn't really care about cleaning up the other tab.
     // We need to make a new tab progress listener for the other tab after the swap.
     this.#withRestoreTabProgressListener(
       aOtherTab,
       () => {
-        setStateToTab();
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+
+        // Swap permanent keys
+        const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
+        const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
+        aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
+        aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
+        aOurTab.permanentKey = otherPermanentKey;
+        aOtherTab.permanentKey = ourPermanentKey;
+
         // Since we are moving progress listeners around, there's a chance that we
         // trigger a load while making the switch, and since we remove the previous
         // tab's listeners, the other browser window will never get the 'finish load' event
@@ -745,11 +734,7 @@ class nsZenWindowSync {
         // We do need to do this though instead of just unloading the browser because
         // firefox doesn't expect an unloaded + selected tab, so we need to get
         // around this limitation somehow.
-        if (
-          !onClose &&
-          (aOtherTab.linkedBrowser?.currentURI.spec !== "about:blank" ||
-            aOtherTab.hasAttribute("busy"))
-        ) {
+        if (!onClose) {
           this.log(`Loading about:blank in our tab ${aOtherTab.id} before swap`);
           aOtherTab.linkedBrowser.loadURI(Services.io.newURI("about:blank"), {
             triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
@@ -772,14 +757,6 @@ class nsZenWindowSync {
       aOurTab.ownerGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
       aOurTab.linkedBrowser.docShellIsActive = true;
     }
-    // Ensure the tab's state is flushed after the swap. By doing this,
-    // we can re-schedule another session store delayed process to fire.
-    // It's also important to note that if we don't flush the state here,
-    // we would start receiving invalid history changes from the the incorrect
-    // browser view that was just swapped out.
-    return this.#maybeFlushTabState(aOurTab).finally(() => {
-      setStateToTab();
-    });
   }
 
   /**
@@ -788,9 +765,8 @@ class nsZenWindowSync {
    * @param {object} aOurTab - The tab in the current window.
    * @param {object} aOtherTab - The tab in the other window.
    * @param {Function|undefined} callback - The callback function to execute after styling.
-   * @param {Promise|null} promiseToWait - A promise to wait for before executing the callback.
    */
-  #styleSwapedBrowsers(aOurTab, aOtherTab, callback = undefined, promiseToWait = null) {
+  #styleSwapedBrowsers(aOurTab, aOtherTab, callback = undefined) {
     const ourBrowser = aOurTab.linkedBrowser;
     const otherBrowser = aOtherTab.linkedBrowser;
     // eslint-disable-next-line no-async-promise-executor
@@ -817,8 +793,7 @@ class nsZenWindowSync {
           };
         });
 
-        let promise = this.#createPseudoImageForBrowser(otherBrowser, mySrc);
-        await Promise.all([promiseToWait, promise]);
+        await this.#createPseudoImageForBrowser(otherBrowser, mySrc);
         callback();
         lazy.setTimeout(() => {
           otherBrowser.setAttribute("zen-pseudo-hidden", "true");
@@ -1006,7 +981,7 @@ class nsZenWindowSync {
    * @returns {Promise} A promise that resolves when the operation is complete.
    */
   #maybeFlushTabState(aTab) {
-    if (!aTab.linkedBrowser) {
+    if (!aTab.linkedBrowser || aTab.hasAttribute("pending")) {
       return Promise.resolve();
     }
     return lazy.TabStateFlusher.flush(aTab.linkedBrowser);

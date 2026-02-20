@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-index c12ba1cd3891dab6ccf07e0ee069d44cc11f3c8f..d7e35aa2dc93629f74e62d6437e3a064242e8974 100644
+index c62ad0b054296d0302aaeb60d78a30eba257647e..68f5ff2761ab4ded10cd98fb12e5668ece511e14 100644
 --- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
 +++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-@@ -32,7 +32,7 @@ const toolkitVariableMap = [
+@@ -34,7 +34,7 @@ const toolkitVariableMap = [
        lwtProperty: "accentcolor",
        processColor(rgbaChannels) {
          if (!rgbaChannels || rgbaChannels.a == 0) {
@@ -11,7 +11,7 @@ index c12ba1cd3891dab6ccf07e0ee069d44cc11f3c8f..d7e35aa2dc93629f74e62d6437e3a064
          }
          // Remove the alpha channel
          const { r, g, b } = rgbaChannels;
-@@ -320,7 +320,7 @@ LightweightThemeConsumer.prototype = {
+@@ -347,7 +347,7 @@ LightweightThemeConsumer.prototype = {
      let forcedColorsThemeOverride =
        this.FORCED_COLORS_OVERRIDE_ENABLED &&
        this.forcedColorsMediaQuery?.matches;

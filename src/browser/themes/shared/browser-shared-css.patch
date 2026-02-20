@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 63d9641c7107c1444cb74f1536193246106f5cae..4298760fab4862e64ec74df23e00b373c5745605 100644
+index aceda010e08cd20dcfb5eb2e6f253314ea087849..9b0b4af4fded24be573d59b62b9905d15e1e2dd6 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -103,7 +103,7 @@ body {
+@@ -104,7 +104,7 @@ body {
    --toolbarbutton-border-radius: var(--button-border-radius);
    --identity-box-margin-inline: 4px;
    --urlbar-min-height: max(32px, 1.4em);
@@ -11,7 +11,7 @@ index 63d9641c7107c1444cb74f1536193246106f5cae..4298760fab4862e64ec74df23e00b373
  
    /* This should be used for icons and chiclets inside the input field, as well
       as result rows. It makes the gap around them more uniform when they are
-@@ -172,8 +172,6 @@ body {
+@@ -173,8 +173,6 @@ body {
     */
    &.fullscreen-with-menubar {
      z-index: var(--browser-area-z-index-toolbox-while-animating);
@@ -20,7 +20,7 @@ index 63d9641c7107c1444cb74f1536193246106f5cae..4298760fab4862e64ec74df23e00b373
    }
  
    /* Themes define a set of toolbox foreground and background colors which we
-@@ -282,13 +280,13 @@ body {
+@@ -283,13 +281,13 @@ body {
  
    @media (-moz-platform: macos) and (not (-moz-mac-rtl)) {
      &:-moz-locale-dir(ltr) {

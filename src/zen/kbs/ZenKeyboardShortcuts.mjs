@@ -1308,11 +1308,6 @@ window.gZenKeyboardShortcutsManager = {
       const keyset = this.getZenKeyset(browser);
       keyset.innerHTML = "";
 
-      // We dont check this anymore since we are skiping internal keys
-      //if (mainKeyset.children.length > 0) {
-      //  throw new Error('Child list not empty');
-      //}
-
       for (let key of this._currentShortcutList) {
         if (key.isInternal()) {
           continue;

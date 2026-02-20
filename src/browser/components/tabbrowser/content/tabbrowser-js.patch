@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d7765e0adb37216d35f2125abf96025cbb150bab..ba1af672047d37c300446a9e87d7a69d67c2b504 100644
+index d7765e0adb37216d35f2125abf96025cbb150bab..27202066cef98d9826884806f71e70812457bd78 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -405,6 +405,7 @@
@@ -470,10 +470,10 @@ index d7765e0adb37216d35f2125abf96025cbb150bab..ba1af672047d37c300446a9e87d7a69d
 +            gZenWorkspaces._initialTab._shouldRemove = true;
 +          }
 +        }
-       }
++      }
 +      else {
 +        gZenWorkspaces._tabToRemoveForEmpty = this.selectedTab;
-+      }
+       }
 +      this._hasAlreadyInitializedZenSessionStore = true;
  
        if (tabs.length > 1 || !tabs[0].selected) {
@@ -1035,7 +1035,21 @@ index d7765e0adb37216d35f2125abf96025cbb150bab..ba1af672047d37c300446a9e87d7a69d
            !this.mBrowser.mIconURL &&
            !ignoreBlank &&
            !(originalLocation.spec in FAVICON_DEFAULTS);
-@@ -9941,7 +10188,7 @@ var TabContextMenu = {
+@@ -9071,13 +9318,6 @@
+             this.mBrowser.originalURI = aRequest.originalURI;
+           }
+ 
+-          if (!gBrowser._allowTransparentBrowser) {
+-            this.mBrowser.toggleAttribute(
+-              "transparent",
+-              AIWindow.isAIWindowActive(window) &&
+-                AIWindow.isAIWindowContentPage(aLocation)
+-            );
+-          }
+         }
+ 
+         let userContextId = this.mBrowser.getAttribute("usercontextid") || 0;
+@@ -9941,7 +10181,7 @@ var TabContextMenu = {
      );
      contextUnpinSelectedTabs.hidden =
        !this.contextTab.pinned || !this.multiselected;

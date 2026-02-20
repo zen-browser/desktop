@@ -186,7 +186,7 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   static async promptForFeedUrl(window, initialUrl = "") {
-    const input = { value: initialUrl ?? "" };
+    const input = { value: initialUrl };
     const [prompt] = await lazy.l10n.formatValues(["zen-live-folder-rss-prompt-feed-url"]);
     const promptOk = Services.prompt.prompt(window, prompt, null, input, null, {
       value: null,

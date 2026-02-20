@@ -14,13 +14,11 @@ ChromeUtils.defineESModuleGetters(lazy, {
 export class nsZenLiveFolderProvider {
   #timerHandle = null;
   #idleCallbackHandle = null;
-  state = {};
 
   constructor({ id, manager, state }) {
     this.id = id;
     this.manager = manager;
-    this.state.interval = state.interval;
-    this.state.lastFetched = state.lastFetched;
+    this.state = { ...state };
   }
 
   fetchItems() {
@@ -77,9 +75,7 @@ export class nsZenLiveFolderProvider {
       };
 
       this.#idleCallbackHandle = lazy.requestIdleCallback(fetchWhenIdle);
-      if (this.#timerHandle) {
-        this.#scheduleNext(this.state.interval);
-      }
+      this.#scheduleNext(this.state.interval);
     }, delay);
   }
 
@@ -231,7 +227,9 @@ export class nsZenLiveFolderProvider {
         }
 
         let effectiveCharset = "utf-8";
-        if (contentType === "text/html") {
+
+        const mimeType = contentType ? contentType.split(";")[0].trim().toLowerCase() : "";
+        if (mimeType === "text/html") {
           effectiveCharset = this.sniffCharset(bytes, headerCharset);
         } else if (headerCharset) {
           const norm = this.normalizeAndValidateEncodingLabel(headerCharset);

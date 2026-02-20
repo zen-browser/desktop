@@ -57,10 +57,6 @@
   color: white !important;
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-thumbnail {
-  background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
-}
-
 .zen-tab-switcher-thumbnail {
   width: 100%;
   height: var(--zen-tab-switcher-thumbnail-height);
@@ -72,6 +68,16 @@
   position: relative;
   border-radius: var(--zen-tab-switcher-thumbnail-border-radius);
   border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
+  box-sizing: border-box;
+}
+
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-thumbnail {
+  background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+  border: none;
+}
+
+.zen-tab-switcher-thumbnail:has(image) {
+  border: none;
 }
 
 .zen-tab-switcher-thumbnail image {

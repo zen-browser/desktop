@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index b00139d7af878326ff303c08d5ddd47501b8c7db..7361a5e98d6ea372f6fdc583d90044d276cfb81b 100644
+index 7fbe572527a702f35434ad73ad6cda41c5c082c0..ccf7c8c5f408cec50e562a9821767ea3e22b7e3c 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
-@@ -90,7 +90,6 @@
+@@ -89,7 +89,6 @@
    min-height: 0;
  
    /* We want to be able to show the frame color behind the clipped radiused corner */
@@ -18,20 +18,20 @@ index b00139d7af878326ff303c08d5ddd47501b8c7db..7361a5e98d6ea372f6fdc583d90044d2
    }
  
    browser[type="content"] {
-@@ -392,7 +390,7 @@ split-view-footer {
+@@ -423,7 +421,7 @@ split-view-footer {
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);
 -  position: absolute;
 +  position: fixed;
    inset: 0;
- 
-   /* Hide tab-modal dialogs when a window-modal one is up. */
-@@ -553,7 +551,7 @@ split-view-footer {
+   /* --browser-with-dialog set on browser[tabDialogShowing], we want to position the overlay
+      only on the top of the <browser> element so it doesn't overlap the DevTools toolbox */
+@@ -590,7 +588,7 @@ split-view-footer {
  
  .dialogOverlay[topmost="true"],
  #window-modal-dialog::backdrop {
--  background-color: var(--dialog-backdrop-color);
+-  background-color: var(--background-color-overlay);
 +  background-color: light-dark(rgba(255, 255, 255, .3), rgba(0, 0, 0, .3));
  }
  

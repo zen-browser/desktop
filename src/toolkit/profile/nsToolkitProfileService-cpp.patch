@@ -1,5 +1,5 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index c9f742dc4588a21db5011b3386999a5832defd33..4a4a6fc28822200c3e254d682d303b38d10d9c67 100644
+index 474f55e5662da51a3783fbaef4d9c76422210513..90afd653f6989334bc9a0fa3789338ebc07cb762 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
 @@ -83,6 +83,8 @@ using namespace mozilla;
@@ -11,7 +11,7 @@ index c9f742dc4588a21db5011b3386999a5832defd33..4a4a6fc28822200c3e254d682d303b38
  struct KeyValue {
    KeyValue(const char* aKey, const char* aValue) : key(aKey), value(aValue) {}
  
-@@ -1369,7 +1371,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
+@@ -1370,7 +1372,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
    if (mUseDevEditionProfile) {
      name.AssignLiteral(DEV_EDITION_NAME);
    } else if (mUseDedicatedProfile) {

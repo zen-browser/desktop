@@ -1,8 +1,8 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 57a37b5c0d1982ecfff8d94e05fea89895713a58..062dcb0d1de00982bd777c3dc5d62a88a304bc68 100644
+index 2152327b42c884456785ef065422e3ca6cc8c50b..932150495d23c0a63987abf14b3dc8a12eb42d6c 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -601,6 +601,28 @@ nsBrowserContentHandler.prototype = {
+@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -31,7 +31,7 @@ index 57a37b5c0d1982ecfff8d94e05fea89895713a58..062dcb0d1de00982bd777c3dc5d62a88
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -670,6 +692,7 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";

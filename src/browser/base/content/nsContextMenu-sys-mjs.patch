@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index d9fbd3a9a78c993c89efa75be9e2ffc975158aba..e64382b32580c2d113774e76e3587002ce0aebad 100644
+index 90c8d48fa992ca5ac125fa2998741db79264de4a..a598431671e42b9ede23b0595790564202408a8e 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
 @@ -371,6 +371,9 @@ export class nsContextMenu {

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index ac82dcd286b5502d1ba38ed740813db08941eb7b..c26b3f0468ee6acd7716d4e8a24ad8cc84fce186 100644
+index 832d98f911e0bd0e231421332a521bfefea72ef8..a9955256c81b252fe0527ae5857c9283e2518274 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -19,6 +19,7 @@
@@ -10,7 +10,7 @@ index ac82dcd286b5502d1ba38ed740813db08941eb7b..c26b3f0468ee6acd7716d4e8a24ad8cc
          persist="screenX screenY width height sizemode"
          data-l10n-sync="true">
  <head>
-@@ -99,8 +100,10 @@
+@@ -100,8 +101,10 @@
  
    <title data-l10n-id="browser-main-window-default-title"></title>
  
@@ -21,7 +21,7 @@ index ac82dcd286b5502d1ba38ed740813db08941eb7b..c26b3f0468ee6acd7716d4e8a24ad8cc
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -133,9 +136,11 @@
+@@ -134,9 +137,11 @@
      </vbox>
    </html:template>
  

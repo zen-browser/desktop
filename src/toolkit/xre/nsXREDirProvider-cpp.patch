@@ -1,5 +1,5 @@
 diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
-index 5eae0bca990fea9e995bd2edf5e879361f89391c..3f8bfedb83ddae07b1e82715fc7f6b2109a39e33 100644
+index f60d1ab57e2fdf522744381ca43b953c3270122d..0c7ac9541821f169e4fb5bbf43cdc932390860a3 100644
 --- a/toolkit/xre/nsXREDirProvider.cpp
 +++ b/toolkit/xre/nsXREDirProvider.cpp
 @@ -1322,9 +1322,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {

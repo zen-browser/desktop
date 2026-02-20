@@ -1,10 +1,10 @@
 diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
-index 57dd6042d2620dd64c55e0e966913047a6c3502f..40d016a0a13596439046e2bbcfa59daa30f10b2d 100644
+index d881606aa72ba8c703ff83f23c265189ccc648a0..637a384dbe9367f9914ee593afbbc4e5594c81c5 100644
 --- a/toolkit/content/xul.css
 +++ b/toolkit/content/xul.css
 @@ -463,7 +463,8 @@ deck > *|*:not(:-moz-native-anonymous) {
  tabpanels > .deck-selected,
- tabpanels > .split-view-panel,
+ tabpanels > .split-view-panel-active,
  tabpanels > .split-view-splitter,
 -deck > .deck-selected {
 +deck > .deck-selected,

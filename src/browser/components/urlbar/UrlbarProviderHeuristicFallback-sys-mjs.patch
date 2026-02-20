@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-index 7a60a871022df44c0d26745f0035fce988cc5f92..0b89f9b66573d4c5ffb67983d728bb593e5cb524 100644
+index 1e159d12ffdc39be87046689b05022813ea925ac..cba7168eeffa54d2c576982927f096b21e039c83 100644
 --- a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-@@ -75,22 +75,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+@@ -77,22 +77,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
          // Since we can't tell if this is a real URL and whether the user wants
          // to visit or search for it, we provide an alternative searchengine
          // match if the string looks like an alphanumeric origin or an e-mail.

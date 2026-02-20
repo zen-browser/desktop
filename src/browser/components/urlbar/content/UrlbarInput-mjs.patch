@@ -128,7 +128,7 @@ index edb0482f0bfb22c70a585b0770e5b0437983779e..109e9eb18b90c650caff1287caef04dc
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue) {
++    } else if (!this._untrimmedValue || this.searchMode) {
 +      // Restore the current page URL when the urlbar is empty on blur
 +      this.handleRevert();
 +    }

@@ -194,7 +194,7 @@ export class nsZenSessionManager {
       } catch {
         /* ignore errors reading recovery data */
       }
-      if (!data.recoverYData) {
+      if (!data.recoveryData) {
         try {
           data.recoveryData = await IOUtils.readJSON(
             PathUtils.join(

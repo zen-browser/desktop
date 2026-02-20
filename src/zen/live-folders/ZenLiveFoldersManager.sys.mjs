@@ -237,7 +237,7 @@ class nsZenLiveFoldersManager {
     );
 
     if (deleteFolder) {
-      const folder = this.#getFolderForLiveFolder(liveFolder);
+      const folder = this.getFolderForLiveFolder(liveFolder);
       if (folder) {
         folder.delete();
       }
@@ -250,7 +250,7 @@ class nsZenLiveFoldersManager {
   // Live Folder Updates
   // -------------------
   onLiveFolderFetch(liveFolder, items) {
-    const folder = this.#getFolderForLiveFolder(liveFolder);
+    const folder = this.getFolderForLiveFolder(liveFolder);
     if (!folder) {
       return;
     }
@@ -349,7 +349,7 @@ class nsZenLiveFoldersManager {
   }
 
   #applyLiveFolderError(liveFolder, errorId = null) {
-    const folder = this.#getFolderForLiveFolder(liveFolder);
+    const folder = this.getFolderForLiveFolder(liveFolder);
     if (!folder?.isLiveFolder) {
       return;
     }
@@ -368,7 +368,7 @@ class nsZenLiveFoldersManager {
     }
   }
 
-  #getFolderForLiveFolder(liveFolder) {
+  getFolderForLiveFolder(liveFolder) {
     if (this.folderRefs.has(liveFolder)) {
       return this.folderRefs.get(liveFolder);
     }
@@ -406,12 +406,16 @@ class nsZenLiveFoldersManager {
     return this.#file.data;
   }
 
-  #writeStateToDisk(data) {
+  #writeStateToDisk(data, soon = true) {
     this.#file.data = data;
-    this.#file.saveSoon();
+    if (soon) {
+      this.#file.saveSoon();
+    } else {
+      this.#file._save();
+    }
   }
 
-  saveState() {
+  saveState(soon = true) {
     if (!this.#isInitialized) {
       return;
     }
@@ -423,7 +427,7 @@ class nsZenLiveFoldersManager {
         itemId.startsWith(prefix)
       );
 
-      const folder = this.#getFolderForLiveFolder(liveFolder);
+      const folder = this.getFolderForLiveFolder(liveFolder);
       if (!folder) {
         // Assume browser is quiting.
         return;
@@ -455,7 +459,7 @@ class nsZenLiveFoldersManager {
       });
     }
 
-    this.#writeStateToDisk(data);
+    this.#writeStateToDisk(data, soon);
   }
 
   async #restoreState() {

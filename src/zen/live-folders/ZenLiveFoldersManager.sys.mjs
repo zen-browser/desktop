@@ -143,7 +143,7 @@ class nsZenLiveFoldersManager {
 
   #onTabGroupRemoved(event) {
     const tabGroup = event.target;
-    if (tabGroup.isZenFolder) {
+    if (tabGroup.isLiveFolder) {
       this.deleteFolder(tabGroup.id, false);
     }
   }

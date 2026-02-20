@@ -72,7 +72,7 @@ zen-live-folder-failed-fetch =
     .tooltiptext = Failed to update. Try again.
 
 zen-live-folder-github-no-auth =
-    .label = Not logged to GitHub
+    .label = Not signed in to GitHub
     .tooltiptext = Sign back in to GitHub.
 
 zen-live-folder-github-no-filter =

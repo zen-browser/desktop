@@ -937,8 +937,11 @@
       if (!folder?.isZenFolder) {
         return true;
       }
-      if (folder.isLiveFolder && draggedTab.getAttribute("zen-live-folder-item-id") !== folder.id) {
-        return false;
+      if (folder.isLiveFolder) {
+        const liveFolderItemId = draggedTab.getAttribute("zen-live-folder-item-id");
+        if (!liveFolderItemId || !liveFolderItemId.startsWith(`${folder.id}:`)) {
+          return false;
+        }
       }
       return true;
     }

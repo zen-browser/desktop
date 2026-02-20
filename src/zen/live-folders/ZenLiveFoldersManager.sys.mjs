@@ -429,7 +429,7 @@ class nsZenLiveFoldersManager {
 
       const folder = this.getFolderForLiveFolder(liveFolder);
       if (!folder) {
-        // Assume browser is quiting.
+        // Assume browser is quitting.
         return;
       }
 

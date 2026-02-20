@@ -42,6 +42,7 @@ window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
   _removeHoverFrames: {},
+  _edgeHoverMoveListeners: {},
 
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref("zen.view.compact.hover-hack-delay", 0),
@@ -627,6 +628,66 @@ window.gZenCompactModeManager = {
     this._flashTimeouts[id] = null;
   },
 
+  _clearEdgeHoverMoveListener(targetId) {
+    const listener = this._edgeHoverMoveListeners[targetId];
+    if (!listener) {
+      return;
+    }
+    document.removeEventListener("mousemove", listener);
+    delete this._edgeHoverMoveListeners[targetId];
+  },
+
+  _isPointerAtScreenEdge(event, edge, maxDistance = 2) {
+    if (typeof event?.screenX !== "number" || typeof event?.screenY !== "number") {
+      return false;
+    }
+
+    const screenLeft = screen.availLeft;
+    const screenTop = screen.availTop;
+    const screenRight = screenLeft + screen.availWidth;
+    const screenBottom = screenTop + screen.availHeight;
+
+    switch (edge) {
+      case "left":
+        return Math.abs(event.screenX - screenLeft) <= maxDistance;
+      case "right":
+        return Math.abs(event.screenX - screenRight) <= maxDistance;
+      case "top":
+        return Math.abs(event.screenY - screenTop) <= maxDistance;
+      case "bottom":
+        return Math.abs(event.screenY - screenBottom) <= maxDistance;
+      default:
+        return false;
+    }
+  },
+
+  _keepExpandedWhilePointerIsAtScreenEdge(target, screenEdge, boundAxis) {
+    const timeoutId = "has-hover" + target.id;
+    this.clearFlashTimeout(timeoutId);
+    this._setElementExpandAttribute(target, true);
+    this._clearEdgeHoverMoveListener(target.id);
+
+    const onMove = (event) => {
+      if (target.matches(":hover")) {
+        return;
+      }
+
+      const pointerStillAtScreenEdge =
+        this._isPointerAtScreenEdge(event, screenEdge) &&
+        this._positionInBounds(boundAxis, target, event.pageX, event.pageY, 7);
+
+      if (pointerStillAtScreenEdge) {
+        return;
+      }
+
+      this._setElementExpandAttribute(target, false);
+      this._clearEdgeHoverMoveListener(target.id);
+    };
+
+    this._edgeHoverMoveListeners[target.id] = onMove;
+    document.addEventListener("mousemove", onMove);
+  },
+
   _setElementExpandAttribute(element, value, attr = "zen-has-hover") {
     const kVerifiedAttributes = ["zen-has-hover", "has-popup-menu", "zen-compact-mode-active"];
     const isToolbar = element.id === "zen-appcontent-navbar-wrapper";
@@ -694,6 +755,7 @@ window.gZenCompactModeManager = {
           }
           // Dont register the hover if the urlbar is floating and we are hovering over it
           this.clearFlashTimeout("has-hover" + target.id);
+          this._clearEdgeHoverMoveListener(target.id);
           window.requestAnimationFrame(() => {
             if (
               document.documentElement.getAttribute("supress-primary-adjustment") === "true" ||
@@ -787,6 +849,12 @@ window.gZenCompactModeManager = {
             continue;
           }
           window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
+          this._clearEdgeHoverMoveListener(target.id);
+
+          if (this._isPointerAtScreenEdge(event, entry.screenEdge)) {
+            this._keepExpandedWhilePointerIsAtScreenEdge(target, entry.screenEdge, boundAxis);
+            continue;
+          }
 
           this.flashElement(
             target,
@@ -842,7 +910,11 @@ window.gZenCompactModeManager = {
     // Clear hover attributes from all hoverable elements
     for (let entry of this.hoverableElements) {
       const target = entry.element;
-      if (target && !target.matches(":hover") && target.hasAttribute("zen-has-hover")) {
+      if (!target) {
+        continue;
+      }
+      this._clearEdgeHoverMoveListener(target.id);
+      if (!target.matches(":hover") && target.hasAttribute("zen-has-hover")) {
         this._setElementExpandAttribute(target, false);
         this.clearFlashTimeout("has-hover" + target.id);
       }

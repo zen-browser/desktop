@@ -36,11 +36,23 @@ add_task(async function testNormalBrowsing() {
     PREF_WHITELISTED_HOSTNAMES,
     "example.com,www.ItIsaTrap.org,example.net"
   );
-  await promiseTabLoadEvent(tab, TEST_PAGE, "load");
+  await BrowserTestUtils.loadURIString({
+    browser: tab.linkedBrowser,
+    uriString: TEST_PAGE,
+  });
   testWhitelistedPage(tab.ownerGlobal);
 
   info("Load a test page that's no longer whitelisted");
   Services.prefs.setCharPref(PREF_WHITELISTED_HOSTNAMES, "");
-  await promiseTabLoadEvent(tab, TEST_PAGE, "AboutBlockedLoaded");
+  // Wait for AboutBlockedLoaded event
+  let blockedLoaded = BrowserTestUtils.waitForContentEvent(
+    tab.linkedBrowser,
+    "AboutBlockedLoaded",
+    true,
+    undefined,
+    true
+  );
+  BrowserTestUtils.startLoadingURIString(tab.linkedBrowser, TEST_PAGE);
+  await blockedLoaded;
   testBlockedPage(tab.ownerGlobal);
 });

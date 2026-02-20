@@ -241,8 +241,25 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.setAttribute("had-zen-pinned-changed", true);
     }
 
-    if (group.collapsed && !this._sessionRestoring && !group.isLiveFolder) {
-      group.collapsed = group.hasAttribute("has-active");
+    if (group.collapsed && !this._sessionRestoring) {
+      if (group.isLiveFolder) {
+        if (!group.hasAttribute("has-active")) {
+          let groupStart = group.groupStartElement;
+          let marginTop = groupStart.style.marginTop ? parseInt(groupStart.style.marginTop) : 0;
+          if (marginTop < 0) {
+            groupStart.style.marginTop = `${marginTop + 4}px`;
+          }
+        }
+
+        tab.setAttribute("folder-active", "true");
+        group.setAttribute("has-active", "true");
+        group.groupContainer.removeAttribute("hidden");
+        group.activeTabs = [...new Set([...group.activeTabs, tab])].sort(
+          (a, b) => a._tPos > b._tPos
+        );
+      } else {
+        group.collapsed = group.hasAttribute("has-active");
+      }
     }
   }
 

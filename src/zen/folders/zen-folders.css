@@ -213,7 +213,7 @@ zen-folder {
 }
 
 zen-workspace[collapsedpinnedtabs] .zen-workspace-pinned-tabs-section,
-zen-folder[collapsed]:not([has-active]) > .tab-group-container {
+zen-folder[collapsed] > .tab-group-container {
   overflow-y: clip;
 }
 

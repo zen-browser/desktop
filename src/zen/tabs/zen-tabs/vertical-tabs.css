@@ -884,11 +884,11 @@
 
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    &[pinned]:not([pending="true"]) .tab-close-button {
+    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button {
       display: none !important;
     }
 
-    &[pinned]:not([pending="true"]):not([zen-essential]) {
+    &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) {
       &:hover .tab-reset-button,
       &[visuallyselected] .tab-reset-button {
         display: block;

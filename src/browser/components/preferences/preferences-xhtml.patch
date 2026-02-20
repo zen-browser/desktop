@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index a1aec823d6266d69ff02aa8523d2da999a0871b9..559f2ea12e53dd19f24e7953db4388456b97f02c 100644
+index 0dd43c76f947e593a9be5edae936f1af17f9b627..df026b3e164da92536adef72ee0388386cb9708b 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
-@@ -46,6 +46,8 @@
+@@ -42,6 +42,8 @@
    <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-pane.css" />
    <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-control.css" />
  
@@ -11,7 +11,7 @@ index a1aec823d6266d69ff02aa8523d2da999a0871b9..559f2ea12e53dd19f24e7953db438845
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -115,6 +117,11 @@
+@@ -111,6 +113,11 @@
    <hbox flex="1">
  
      <vbox class="navigation">
@@ -23,7 +23,7 @@ index a1aec823d6266d69ff02aa8523d2da999a0871b9..559f2ea12e53dd19f24e7953db438845
        <!-- category list -->
        <richlistbox id="categories" data-l10n-id="category-list" data-l10n-attrs="aria-label">
          <richlistitem id="category-general"
-@@ -127,6 +134,50 @@
+@@ -123,6 +130,50 @@
            <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
          </richlistitem>
  
@@ -74,7 +74,7 @@ index a1aec823d6266d69ff02aa8523d2da999a0871b9..559f2ea12e53dd19f24e7953db438845
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
-@@ -242,11 +293,6 @@
+@@ -248,11 +299,6 @@
                  <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
                </hbox>
              </hbox>
@@ -86,7 +86,7 @@ index a1aec823d6266d69ff02aa8523d2da999a0871b9..559f2ea12e53dd19f24e7953db438845
            </hbox>
          </hbox>
          <vbox id="mainPrefPane">
-@@ -260,6 +306,10 @@
+@@ -265,6 +311,10 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml

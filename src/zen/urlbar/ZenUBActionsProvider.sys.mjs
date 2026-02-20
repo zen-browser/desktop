@@ -35,6 +35,89 @@ XPCOMUtils.defineLazyPreferenceGetter(
 );
 
 /**
+ * A convenience function that takes a payload annotated with
+ * UrlbarUtils.HIGHLIGHT enums and returns the payload and the payload's
+ * highlights. Use this function when the highlighting required by your
+ * payload is based on simple substring matching, as done by
+ * UrlbarUtils.getTokenMatches(). Pass the return values as the `payload` and
+ * `payloadHighlights` params of the UrlbarResult constructor.
+ * `payloadHighlights` is optional. If omitted, payload will not be
+ * highlighted.
+ *
+ * If the payload doesn't have a title or has an empty title, and it also has
+ * a URL, then this function also sets the title to the URL's domain.
+ *
+ * @param {Array} tokens The tokens that should be highlighted in each of the
+ *        payload properties.
+ * @param {object} payloadInfo An object that looks like this:
+ *        { payloadPropertyName: payloadPropertyInfo }
+ *
+ *        Each payloadPropertyInfo may be either a string or an array.  If
+ *        it's a string, then the property value will be that string, and no
+ *        highlighting will be applied to it.  If it's an array, then it
+ *        should look like this: [payloadPropertyValue, highlightType].
+ *        payloadPropertyValue may be a string or an array of strings.  If
+ *        it's a string, then the payloadHighlights in the return value will
+ *        be an array of match highlights as described in
+ *        UrlbarUtils.getTokenMatches().  If it's an array, then
+ *        payloadHighlights will be an array of arrays of match highlights,
+ *        one element per element in payloadPropertyValue.
+ * @returns {{ payload: object, payloadHighlights: object }}
+ */
+function payloadAndSimpleHighlights(tokens, payloadInfo) {
+  let payload = {};
+  let highlightTypes = {};
+  for (let [name, valueOrValues] of Object.entries(payloadInfo)) {
+    if (Array.isArray(valueOrValues)) {
+      if (valueOrValues.length) {
+        payload[name] = valueOrValues[0];
+        let highlightType = valueOrValues[1];
+        if (highlightType) {
+          highlightTypes[name] = highlightType;
+        }
+      }
+    } else if (valueOrValues != undefined) {
+      payload[name] = valueOrValues;
+    }
+  }
+  if (!payload.title && !payload.fallbackTitle && payload.url && typeof payload.url == "string") {
+    // If there's no title, show the domain as the title. Not all valid URLs
+    // have a domain.
+    highlightTypes.title = UrlbarUtils.HIGHLIGHT.TYPED;
+    try {
+      payload.title = new URL(payload.url).URI.displayHostPort;
+    } catch (e) {}
+  }
+  if (payload.url) {
+    // For display purposes we need to unescape the url.
+    payload.displayUrl = UrlbarUtils.prepareUrlForDisplay(payload.url);
+    highlightTypes.displayUrl = highlightTypes.url;
+  }
+  // For performance reasons limit excessive string lengths, to reduce the
+  // amount of string matching we do here, and avoid wasting resources to
+  // handle long textruns that the user would never see anyway.
+  for (let prop of ["displayUrl", "title", "suggestion"]) {
+    let value = payload[prop];
+    if (typeof value == "string") {
+      payload[prop] = value.substring(0, UrlbarUtils.MAX_TEXT_LENGTH);
+    }
+  }
+  let payloadHighlights = {};
+  if (tokens) {
+    for (let [name, highlightType] of Object.entries(highlightTypes)) {
+      let value = payload[name];
+      let highlights = Array.isArray(value)
+        ? value.map((subval) => UrlbarUtils.getTokenMatches(tokens, subval, highlightType))
+        : UrlbarUtils.getTokenMatches(tokens, value || "", highlightType);
+      if (highlights.length) {
+        payloadHighlights[name] = highlights;
+      }
+    }
+  }
+  return { payload, payloadHighlights };
+}
+
+/**
  * A provider that lets the user view all available global actions for a query.
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
@@ -252,7 +335,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
     let finalResults = [];
     for (const action of actionsResults) {
-      const { payload, payloadHighlights } = lazy.UrlbarResult.payloadAndSimpleHighlights([], {
+      const { payload, payloadHighlights } = payloadAndSimpleHighlights([], {
         suggestion: action.label,
         title: action.label,
         zenCommand: action.command,
@@ -273,7 +356,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
         source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
-        payloadHighlights,
+        highlights: payloadHighlights,
         heuristic: shouldBePrioritized,
         suggestedIndex: !shouldBePrioritized
           ? zenUrlbarResultsLearner.getDeprioritizeIndex(action.commandId)

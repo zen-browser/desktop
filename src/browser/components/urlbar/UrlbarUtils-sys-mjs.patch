@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index a4ed35032c0c60f230d95f451b3f615232784cad..2c92860acb2ddc9829eef006d93431e871241c3a 100644
+index caceb63a04fe282d7c906e27a6a2cfebc1ec8cda..74e395e649dd2cbe84683cb583d641b5596082d4 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -81,6 +81,7 @@ export var UrlbarUtils = {
@@ -18,7 +18,7 @@ index a4ed35032c0c60f230d95f451b3f615232784cad..2c92860acb2ddc9829eef006d93431e8
    }),
  
    // Per-result exposure telemetry.
-@@ -552,6 +554,8 @@ export var UrlbarUtils = {
+@@ -561,6 +563,8 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;

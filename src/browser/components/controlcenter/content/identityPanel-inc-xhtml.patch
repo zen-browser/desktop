@@ -1,5 +1,5 @@
 diff --git a/browser/components/controlcenter/content/identityPanel.inc.xhtml b/browser/components/controlcenter/content/identityPanel.inc.xhtml
-index 8e23aad8ca0bb686a669b11e1d78b7906f5f38d0..cf4873cc6165b5f77091c056d7e275e0f3d36769 100644
+index d7f214f471f70de3805e0f5b3b2d77f49a06c4f1..555b55089368e1782cf0266415fb3040b269d3a5 100644
 --- a/browser/components/controlcenter/content/identityPanel.inc.xhtml
 +++ b/browser/components/controlcenter/content/identityPanel.inc.xhtml
 @@ -28,7 +28,7 @@

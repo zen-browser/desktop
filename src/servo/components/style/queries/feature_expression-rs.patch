@@ -1,8 +1,8 @@
 diff --git a/servo/components/style/queries/feature_expression.rs b/servo/components/style/queries/feature_expression.rs
-index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d916820e6f 100644
+index 17490c8b1d8efee96d7894262d3e25b91cea7506..fa7b32bcd4f3a5490c481ac7c8203b164b851e22 100644
 --- a/servo/components/style/queries/feature_expression.rs
 +++ b/servo/components/style/queries/feature_expression.rs
-@@ -11,7 +11,7 @@ use crate::parser::{Parse, ParserContext};
+@@ -12,7 +12,7 @@ use crate::parser::{Parse, ParserContext};
  use crate::str::{starts_with_ignore_ascii_case, string_as_ascii_lowercase};
  use crate::values::computed::{self, Ratio, ToComputedValue};
  use crate::values::specified::{Integer, Length, Number, Resolution};
@@ -11,7 +11,7 @@ index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d9
  use crate::{Atom, Zero};
  use cssparser::{Parser, Token};
  use selectors::kleene_value::KleeneValue;
-@@ -623,6 +623,10 @@ impl QueryFeatureExpression {
+@@ -624,6 +624,10 @@ impl QueryFeatureExpression {
                      .map(|v| *expect!(Enumerated, v));
                  return evaluator(context, computed);
              },
@@ -22,7 +22,7 @@ index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d9
              Evaluator::BoolInteger(eval) => {
                  let computed = self
                      .kind
-@@ -661,6 +665,7 @@ pub enum QueryExpressionValue {
+@@ -662,6 +666,7 @@ pub enum QueryExpressionValue {
      /// An enumerated value, defined by the variant keyword table in the
      /// feature's `mData` member.
      Enumerated(KeywordDiscriminant),
@@ -30,7 +30,7 @@ index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d9
  }
  
  impl QueryExpressionValue {
-@@ -679,6 +684,7 @@ impl QueryExpressionValue {
+@@ -680,6 +685,7 @@ impl QueryExpressionValue {
                  Evaluator::Enumerated { serializer, .. } => dest.write_str(&*serializer(value)),
                  _ => unreachable!(),
              },
@@ -38,7 +38,7 @@ index e0787193559ccd32b214272f1a0560cb058e3729..4388de8e2bcba9c3610dfc791fb751d9
          }
      }
  
-@@ -716,6 +722,9 @@ impl QueryExpressionValue {
+@@ -717,6 +723,9 @@ impl QueryExpressionValue {
              Evaluator::Resolution(..) => {
                  QueryExpressionValue::Resolution(Resolution::parse(context, input)?)
              },

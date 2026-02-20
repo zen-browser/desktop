@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-siteIdentity.js b/browser/base/content/browser-siteIdentity.js
-index 8369e546866aa313e62f808acb8d51afa8da4f9b..7a4b20dd5922425cebfac542893a52cd68a26449 100644
+index 6d2052e060896bb5e91ba84c15bf14c969340935..6ceef1806e2d88cd7e2ebc867d633e9148f3b298 100644
 --- a/browser/base/content/browser-siteIdentity.js
 +++ b/browser/base/content/browser-siteIdentity.js
-@@ -451,11 +451,6 @@ var gIdentityHandler = {
+@@ -464,11 +464,6 @@ var gIdentityHandler = {
      // avoid a pretty ugly transition. Also hide it even
      // if the update resulted in no site data, to keep the
      // illusion that clicking the button had an effect.
@@ -14,7 +14,7 @@ index 8369e546866aa313e62f808acb8d51afa8da4f9b..7a4b20dd5922425cebfac542893a52cd
  
      let baseDomain = SiteDataManager.getBaseDomainFromHost(this._uri.host);
      if (SiteDataManager.promptSiteDataRemoval(window, [baseDomain])) {
-@@ -832,7 +827,7 @@ var gIdentityHandler = {
+@@ -847,7 +842,7 @@ var gIdentityHandler = {
        // This is a secure internal Firefox page.
        this._identityBox.className = "chromeUI";
        let brandBundle = document.getElementById("bundle_brand");
@@ -23,7 +23,7 @@ index 8369e546866aa313e62f808acb8d51afa8da4f9b..7a4b20dd5922425cebfac542893a52cd
      } else if (this._pageExtensionPolicy) {
        // This is a WebExtension page.
        this._identityBox.className = "extensionPage";
-@@ -1161,6 +1156,12 @@ var gIdentityHandler = {
+@@ -1190,6 +1185,12 @@ var gIdentityHandler = {
        }
      }
  

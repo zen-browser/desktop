@@ -1,5 +1,5 @@
 diff --git a/browser/components/extensions/parent/ext-tabs.js b/browser/components/extensions/parent/ext-tabs.js
-index bff93996b42aa1f88f1bfcbd813c3af4a5806f13..1252727b4811248e138cf7a38f8d1fd422576d28 100644
+index 7e32fc3f3c325b7317533acf5142bb912556fdbe..04bbe6bece881a05d2eadf81411bd4df2b745017 100644
 --- a/browser/components/extensions/parent/ext-tabs.js
 +++ b/browser/components/extensions/parent/ext-tabs.js
 @@ -501,6 +501,7 @@ this.tabs = class extends ExtensionAPIPersistent {

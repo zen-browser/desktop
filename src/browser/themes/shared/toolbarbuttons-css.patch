@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index e2b8a7cae70ed2bd3c80ee4214a09dbdb68a0d01..ab1b50a06b68cc6941789b31494b44da6aecdb19 100644
+index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef6ef95b6d 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
 @@ -44,20 +44,6 @@

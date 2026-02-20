@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-sets.js b/browser/base/content/browser-sets.js
-index 94a05a510204c027e482fda33deaf3dc0d7471c9..da7cda8e2708a29cf6cc3bf667240d37ef66ecfb 100644
+index 50845ebd925955bf9646fc499b9828eccbf266ef..5482a24576ebcd4382409cae01a4c6bcbd88a96c 100644
 --- a/browser/base/content/browser-sets.js
 +++ b/browser/base/content/browser-sets.js
-@@ -266,7 +266,7 @@ document.addEventListener(
+@@ -270,7 +270,7 @@ document.addEventListener(
          }
        });
  
@@ -11,7 +11,7 @@ index 94a05a510204c027e482fda33deaf3dc0d7471c9..da7cda8e2708a29cf6cc3bf667240d37
        const SIDEBAR_REVAMP_PREF = "sidebar.revamp";
        const SIDEBAR_REVAMP_ENABLED = Services.prefs.getBoolPref(
          SIDEBAR_REVAMP_PREF,
-@@ -304,6 +304,8 @@ document.addEventListener(
+@@ -308,6 +308,8 @@ document.addEventListener(
                panel: SidebarController.currentID,
                opened: SidebarController._state.launcherExpanded,
              });

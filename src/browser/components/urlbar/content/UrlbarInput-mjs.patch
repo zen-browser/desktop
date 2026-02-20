@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index edb0482f0bfb22c70a585b0770e5b0437983779e..109e9eb18b90c650caff1287caef04dce857e122 100644
+index edb0482f0bfb22c70a585b0770e5b0437983779e..5822aa9ec1b366cfa05879b5bc0bd9c110bf17f8 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -68,6 +68,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -128,7 +128,7 @@ index edb0482f0bfb22c70a585b0770e5b0437983779e..109e9eb18b90c650caff1287caef04dc
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue) {
++    } else if (!this._untrimmedValue || this.searchMode) {
 +      // Restore the current page URL when the urlbar is empty on blur
 +      this.handleRevert();
 +    }

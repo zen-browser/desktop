@@ -136,7 +136,7 @@ export class nsZenLiveFolderProvider {
     // TODO: Support userContextId when fetching, it should be inherited from the folder's
     // current space context ID.
     let userContextId = 0;
-    let folder = this.manager.getFolderForLiveFolder(this.id);
+    let folder = this.manager.getFolderForLiveFolder(this);
     if (folder) {
       let space = folder.ownerGlobal.gZenWorkspaces.getWorkspaceFromId(
         folder.getAttribute("zen-workspace-id")

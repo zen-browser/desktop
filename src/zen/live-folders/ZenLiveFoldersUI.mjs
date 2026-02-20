@@ -18,7 +18,10 @@ class nsZenLiveFoldersUI {
 
       const folderId = option.getAttribute("option-folder");
       if (folderId) {
-        lazy.ZenLiveFoldersManager.getFolder(folderId).onOptionTrigger(option);
+        const folder = lazy.ZenLiveFoldersManager.getFolder(folderId);
+        if (folder && typeof folder.onOptionTrigger === "function") {
+          folder.onOptionTrigger(option);
+        }
       }
     });
 

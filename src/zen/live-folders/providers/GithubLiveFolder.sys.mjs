@@ -62,7 +62,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
             activeRepos.add(repo);
           }
 
-          const number = rawNumber.textContent.match(/[0-9]+/)[0];
+          const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
+          const number = numberMatch?.[0] ?? "";
 
           items.push({
             title,

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a59d803095 100644
+index 2760f6700056e2ae9b6a6fdad006c5b679a97233..9661404c030e6815ded926a6d91d4f24f4139f9e 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -244,7 +244,7 @@
@@ -186,7 +186,17 @@ index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a5
      }
  
      _invalidateCachedVisibleTabs() {
-@@ -1159,7 +1189,7 @@
+@@ -1065,7 +1095,8 @@
+ 
+     isContainerVerticalPinnedGrid(tab) {
+       return (
+-        tab.pinned &&
++        tab.hasAttribute("zen-essential") &&
++        (this._tabbrowserTabs.hasAttribute("expanded") || document.documentElement.hasAttribute("zen-sidebar-expanded")) &&
+         this.verticalMode &&
+         this.hasAttribute("expanded") &&
+         !this.expandOnHover
+@@ -1159,7 +1190,7 @@
  
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
@@ -195,7 +205,7 @@ index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a5
        }
  
        node.before(tab);
-@@ -1257,7 +1287,7 @@
+@@ -1257,7 +1288,7 @@
            // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
@@ -204,7 +214,7 @@ index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a5
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1358,8 +1388,10 @@
+@@ -1358,8 +1389,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -215,7 +225,7 @@ index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a5
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1368,7 +1400,7 @@
+@@ -1368,7 +1401,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -224,7 +234,7 @@ index 2760f6700056e2ae9b6a6fdad006c5b679a97233..270f73a74c49743ab9ccda34953038a5
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
-@@ -1501,7 +1533,7 @@
+@@ -1501,7 +1534,7 @@
      }
  
      _notifyBackgroundTab(aTab) {

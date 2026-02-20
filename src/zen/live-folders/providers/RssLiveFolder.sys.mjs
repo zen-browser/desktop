@@ -30,7 +30,6 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
     try {
       const { text } = await this.fetch(this.state.url);
 
-      const metadata = await this.getMetadata();
       const doc = new DOMParser().parseFromString(text, "text/xml");
 
       const cutoffTime = Date.now() - this.state.timeRange;
@@ -64,9 +63,22 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
           }
           return !isNaN(item.date.getTime()) && item.date.getTime() >= cutoffTime;
         })
-        .slice(0, this.state.maxItems)
-        .map(({ title, url, id }) => ({ title, url, id, icon: metadata.icon }));
-
+        .slice(0, this.state.maxItems);
+      for (let item of items) {
+        if (item.url) {
+          try {
+            const url = new URL(item.url);
+            const favicon = await lazy.PlacesUtils.favicons.getFaviconForPage(
+              Services.io.newURI(url.href)
+            );
+            item.icon =
+              favicon?.dataURI.spec ||
+              this.manager.window.gZenEmojiPicker.getSVGURL("logo-rss.svg");
+          } catch {
+            // Ignore errors related to fetching favicons for individual items
+          }
+        }
+      }
       return items;
     } catch {
       return "zen-live-folder-failed-fetch";

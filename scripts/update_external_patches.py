@@ -59,6 +59,15 @@ def main():
       output_file = os.path.join(OUTPUT_DIR, "firefox", f"{name}.patch")
       print(f"Processing Phabricator patch: {phab_id} -> {output_file}")
       download_phab_patch(phab_id, output_file)
+      replaces = patch.get("replaces", {})
+      for replace in replaces.keys():
+        value = replaces[replace]
+        with open(output_file, 'r') as f:
+          content = f.read()
+        if replace not in content:
+          die(f"Replace string '{replace}' not found in {output_file}")
+        with open(output_file, 'w') as f:
+          f.write(content.replace(replace, value))
       expected_files.add(output_file)
     elif patch.get("type") == "local":
       print(f"Local patch: {patch.get('path')}")

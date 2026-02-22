@@ -566,6 +566,9 @@ class nsZenWorkspaces {
     const verticalScrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const verticalScrollThreshold = 1;
     const horizontalSnapPositionThreshold = 55;
+    // Keep this short so wheel gestures feel responsive, but long enough to
+    // wait for bursty horizontal wheel events before deciding where to snap.
+    const horizontalGestureFinalizeDelay = 180;
 
     toolbox.addEventListener(
       "wheel",
@@ -646,7 +649,7 @@ class nsZenWorkspaces {
             void this.#finalizeHorizontalWheelGesture(true);
             return;
           }
-          this.#scheduleHorizontalWheelGestureFinalize();
+          this.#scheduleHorizontalWheelGestureFinalize(horizontalGestureFinalizeDelay);
           return;
         }
 
@@ -698,14 +701,14 @@ class nsZenWorkspaces {
     }
   }
 
-  #scheduleHorizontalWheelGestureFinalize() {
+  #scheduleHorizontalWheelGestureFinalize(finalizeDelay) {
     if (this.#horizontalScrollFinalizeTimer) {
       clearTimeout(this.#horizontalScrollFinalizeTimer);
     }
     this.#horizontalScrollFinalizeTimer = setTimeout(() => {
       this.#horizontalScrollFinalizeTimer = null;
       void this.#finalizeHorizontalWheelGesture();
-    }, 180);
+    }, finalizeDelay);
   }
 
   async #finalizeHorizontalWheelGesture(forceSwitch = false) {

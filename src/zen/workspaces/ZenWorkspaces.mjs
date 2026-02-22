@@ -12,6 +12,11 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
+const SMART_HIBERNATION_ENABLED_PREF = "zen.tabs.smart_hibernate.enabled";
+const SMART_HIBERNATION_TIMEOUT_PREF = "zen.tabs.smart_hibernate.timeout_minutes";
+const SMART_HIBERNATION_DEFAULT_TIMEOUT_MINUTES = 15;
+const SMART_HIBERNATION_SCAN_INTERVAL_MS = 60_000;
+
 /**
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
@@ -45,6 +50,9 @@ class nsZenWorkspaces {
   #tabActivityListenersReady = false;
   #onTabSelectedForHibernation = null;
   #onTabOpenedForHibernation = null;
+  #smartHibernationTimer = null;
+  #smartHibernationPrefObserver = null;
+  #smartHibernationTickInProgress = false;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -176,6 +184,10 @@ class nsZenWorkspaces {
     window.addEventListener("TabOpen", this.#onTabOpenedForHibernation);
 
     this.#seedTabActivityTimestamps();
+    this.#smartHibernationPrefObserver = this.#onSmartHibernationPrefChanged.bind(this);
+    Services.prefs.addObserver(SMART_HIBERNATION_ENABLED_PREF, this.#smartHibernationPrefObserver);
+    Services.prefs.addObserver(SMART_HIBERNATION_TIMEOUT_PREF, this.#smartHibernationPrefObserver);
+    this.#updateSmartHibernationTimer();
 
     window.addEventListener(
       "unload",
@@ -192,6 +204,20 @@ class nsZenWorkspaces {
     }
 
     this.#tabActivityListenersReady = false;
+
+    this.#stopSmartHibernationTimer();
+
+    if (this.#smartHibernationPrefObserver) {
+      Services.prefs.removeObserver(
+        SMART_HIBERNATION_ENABLED_PREF,
+        this.#smartHibernationPrefObserver
+      );
+      Services.prefs.removeObserver(
+        SMART_HIBERNATION_TIMEOUT_PREF,
+        this.#smartHibernationPrefObserver
+      );
+      this.#smartHibernationPrefObserver = null;
+    }
 
     if (this.#onTabSelectedForHibernation) {
       window.removeEventListener("TabSelect", this.#onTabSelectedForHibernation);
@@ -230,6 +256,139 @@ class nsZenWorkspaces {
   #getCurrentTabsForSmartHibernation() {
     delete this._allStoredTabs;
     return this.allStoredTabs;
+  }
+
+  #onSmartHibernationPrefChanged() {
+    this.#updateSmartHibernationTimer();
+  }
+
+  #updateSmartHibernationTimer() {
+    if (!Services.prefs.getBoolPref(SMART_HIBERNATION_ENABLED_PREF, false)) {
+      this.#stopSmartHibernationTimer();
+      return;
+    }
+
+    this.#startSmartHibernationTimer();
+  }
+
+  #startSmartHibernationTimer() {
+    if (this.#smartHibernationTimer) {
+      return;
+    }
+
+    this.#smartHibernationTimer = window.setInterval(() => {
+      this.#runSmartHibernationTick();
+    }, SMART_HIBERNATION_SCAN_INTERVAL_MS);
+  }
+
+  #stopSmartHibernationTimer() {
+    if (!this.#smartHibernationTimer) {
+      return;
+    }
+
+    window.clearInterval(this.#smartHibernationTimer);
+    this.#smartHibernationTimer = null;
+  }
+
+  async #runSmartHibernationTick() {
+    if (this.#smartHibernationTickInProgress || window.closed) {
+      return;
+    }
+
+    if (!Services.prefs.getBoolPref(SMART_HIBERNATION_ENABLED_PREF, false)) {
+      return;
+    }
+
+    const tabToUnload = this.#pickTabForSmartHibernation();
+    if (!tabToUnload) {
+      return;
+    }
+
+    this.#smartHibernationTickInProgress = true;
+    try {
+      await gBrowser.explicitUnloadTabs([tabToUnload]);
+    } catch (error) {
+      console.error("Error while unloading a smart hibernation tab:", error);
+    } finally {
+      this.#smartHibernationTickInProgress = false;
+    }
+  }
+
+  #pickTabForSmartHibernation() {
+    const timeoutMinutes = Services.prefs.getIntPref(
+      SMART_HIBERNATION_TIMEOUT_PREF,
+      SMART_HIBERNATION_DEFAULT_TIMEOUT_MINUTES
+    );
+    if (timeoutMinutes <= 0) {
+      return null;
+    }
+
+    const now = Date.now();
+    const inactiveBefore = now - timeoutMinutes * 60_000;
+    let oldestTab = null;
+    let oldestActiveTime = Infinity;
+
+    for (const tab of this.#getCurrentTabsForSmartHibernation()) {
+      if (!this.#canSmartHibernateTab(tab)) {
+        continue;
+      }
+
+      let lastActiveTime = this.#tabLastActiveAt.get(tab);
+      if (!lastActiveTime) {
+        lastActiveTime = now;
+        this.#tabLastActiveAt.set(tab, now);
+      }
+
+      if (lastActiveTime > inactiveBefore || lastActiveTime >= oldestActiveTime) {
+        continue;
+      }
+
+      oldestActiveTime = lastActiveTime;
+      oldestTab = tab;
+    }
+
+    return oldestTab;
+  }
+
+  #canSmartHibernateTab(tab) {
+    if (!tab || !gBrowser.isTab(tab)) {
+      return false;
+    }
+
+    if (tab.closing || tab.selected || tab.pinned) {
+      return false;
+    }
+
+    if (tab.undiscardable || tab.hasAttribute("zen-empty-tab")) {
+      return false;
+    }
+
+    if (tab.hasAttribute("pending") || tab.hasAttribute("discarded")) {
+      return false;
+    }
+
+    if (tab.hasAttribute("soundplaying") || tab.hasAttribute("pictureinpicture")) {
+      return false;
+    }
+
+    if (tab.hasAttribute("glance-id") || tab.hasAttribute("zen-glance-tab")) {
+      return false;
+    }
+
+    const browser = tab.linkedBrowser;
+    if (!browser) {
+      return false;
+    }
+
+    if (window.webrtcUI?.browserHasStreams(browser)) {
+      return false;
+    }
+
+    if (browser.browsingContext?.currentWindowGlobal?.hasActivePeerConnections()) {
+      return false;
+    }
+
+    return true;
   }
 
   #afterLoadInit() {

@@ -41,6 +41,10 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
+  #tabLastActiveAt = new WeakMap();
+  #tabActivityListenersReady = false;
+  #onTabSelectedForHibernation = null;
+  #onTabOpenedForHibernation = null;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -157,6 +161,75 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
+  }
+
+  #initSmartTabActivityTracking() {
+    if (this.#tabActivityListenersReady) {
+      return;
+    }
+
+    this.#tabActivityListenersReady = true;
+    this.#onTabSelectedForHibernation = this.#handleSmartHibernationTabSelect.bind(this);
+    this.#onTabOpenedForHibernation = this.#handleSmartHibernationTabOpen.bind(this);
+
+    window.addEventListener("TabSelect", this.#onTabSelectedForHibernation);
+    window.addEventListener("TabOpen", this.#onTabOpenedForHibernation);
+
+    this.#seedTabActivityTimestamps();
+
+    window.addEventListener(
+      "unload",
+      () => {
+        this.#shutdownSmartTabActivityTracking();
+      },
+      { once: true }
+    );
+  }
+
+  #shutdownSmartTabActivityTracking() {
+    if (!this.#tabActivityListenersReady) {
+      return;
+    }
+
+    this.#tabActivityListenersReady = false;
+
+    if (this.#onTabSelectedForHibernation) {
+      window.removeEventListener("TabSelect", this.#onTabSelectedForHibernation);
+      this.#onTabSelectedForHibernation = null;
+    }
+
+    if (this.#onTabOpenedForHibernation) {
+      window.removeEventListener("TabOpen", this.#onTabOpenedForHibernation);
+      this.#onTabOpenedForHibernation = null;
+    }
+  }
+
+  #handleSmartHibernationTabSelect(event) {
+    this.#recordTabActivity(event.target);
+  }
+
+  #handleSmartHibernationTabOpen(event) {
+    this.#recordTabActivity(event.target);
+  }
+
+  #seedTabActivityTimestamps() {
+    const now = Date.now();
+    for (const tab of this.#getCurrentTabsForSmartHibernation()) {
+      this.#tabLastActiveAt.set(tab, now);
+    }
+  }
+
+  #recordTabActivity(tab) {
+    if (!tab || !gBrowser.isTab(tab)) {
+      return;
+    }
+
+    this.#tabLastActiveAt.set(tab, Date.now());
+  }
+
+  #getCurrentTabsForSmartHibernation() {
+    delete this._allStoredTabs;
+    return this.allStoredTabs;
   }
 
   #afterLoadInit() {
@@ -938,6 +1011,7 @@ class nsZenWorkspaces {
       window.addEventListener("TabSelect", this.onLocationChange.bind(this));
       window.addEventListener("TabBrowserInserted", this.onTabBrowserInserted.bind(this));
 
+      this.#initSmartTabActivityTracking();
       this.updateWorkspacesChangeContextMenu();
     })();
   }

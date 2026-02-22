@@ -277,7 +277,9 @@ class nsZenWorkspaces {
     }
 
     this.#smartHibernationTimer = window.setInterval(() => {
-      this.#runSmartHibernationTick();
+      this.#runSmartHibernationTick().catch((error) => {
+        console.error("Unhandled error in smart hibernation tick:", error);
+      });
     }, SMART_HIBERNATION_SCAN_INTERVAL_MS);
   }
 

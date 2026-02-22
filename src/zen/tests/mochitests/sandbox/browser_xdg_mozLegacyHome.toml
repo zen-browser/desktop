@@ -12,12 +12,17 @@ support-files = [
   "browser_content_sandbox_utils.js",
   "browser_content_sandbox_fs_tests.js",
 ]
-test-directories = ["/tmp/.xdg_mozLegacyHome_test/.config", "/tmp/.xdg_config_home_test"]
+test-directories = [
+  "/tmp/.xdg_mozLegacyHome_test/.config",
+  "/tmp/.xdg_config_home_test",
+  "/tmp/.xdg_mozLegacyHome_test/.mozilla/firefox/xdg_mozLegacyHome_profile",
+]
 environment = [
   "XDG_CONFIG_HOME=/tmp/.xdg_config_home_test",
   "HOME=/tmp/.xdg_mozLegacyHome_test",
   "MOZ_LEGACY_HOME=1",
 ]
+profile-path = "/tmp/.xdg_mozLegacyHome_test/.mozilla/firefox/xdg_mozLegacyHome_profile"
 
 ["browser_content_sandbox_fs_xdg_mozLegacyHome.js"]
 run-if = ["os == 'linux'"]

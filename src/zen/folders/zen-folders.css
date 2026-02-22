@@ -111,8 +111,8 @@ zen-folder {
         & image {
           fill-opacity: 0.9;
           -moz-context-properties: fill, fill-opacity;
-          fill: var(--zen-folder-stroke);
-          transform: translate(9px, 11px);
+          fill: color-mix(in srgb, var(--zen-folder-stroke) 50%, currentColor);
+          transform: translate(8.5px, 10.5px);
         }
 
         & g,
@@ -192,6 +192,12 @@ zen-folder {
         max-width: 100% !important;
       }
     }
+
+    .tab-reset-button[live-folder-action] {
+      list-style-image: url("chrome://browser/skin/zen-icons/security-broken.svg");
+      display: flex;
+      opacity: 1;
+    }
   }
 
   :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
@@ -207,7 +213,7 @@ zen-folder {
 }
 
 zen-workspace[collapsedpinnedtabs] .zen-workspace-pinned-tabs-section,
-zen-folder[collapsed]:not([has-active]) > .tab-group-container {
+zen-folder[collapsed] > .tab-group-container {
   overflow-y: clip;
 }
 

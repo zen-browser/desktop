@@ -758,6 +758,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   pinHasChangedUrl(tab) {
     if (tab.hasAttribute("zen-pinned-changed")) {
+      const showSublabel = tab.hasAttribute("zen-show-sublabel");
+      if (showSublabel) {
+        tab.removeAttribute("zen-show-sublabel");
+
+        const label = tab.querySelector(".zen-tab-sublabel");
+        window.document.l10n.setArgs(label, {
+          tabSubtitle: "zen-default-pinned",
+        });
+      }
       return;
     }
     if (tab.group?.hasAttribute("split-view-group")) {

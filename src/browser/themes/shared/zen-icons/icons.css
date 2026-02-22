@@ -18,6 +18,11 @@
   border-radius: 100% !important;
 }
 
+#zenCreateNewPopup menuitem {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+}
+
 #back-button {
   list-style-image: url("back.svg") !important;
 }

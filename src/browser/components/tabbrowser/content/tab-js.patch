@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6528da245d922e2ccdb59cbf8106055bc34d1e74..b5d5ac633c06d7d9c909ec9456a5f3c165a6b925 100644
+index 836bee14d2b63604688ebe477a5d915a5e99b305..a675aed711560b4a44604fc17478cffa7fb68439 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -14,7 +14,7 @@ index 6528da245d922e2ccdb59cbf8106055bc34d1e74..b5d5ac633c06d7d9c909ec9456a5f3c1
              <hbox class="tab-secondary-label">
                <label class="tab-icon-sound-label tab-icon-sound-pip-label" data-l10n-id="browser-tab-audio-pip" role="presentation"/>
              </hbox>
-+            <label class="tab-reset-pin-label" data-l10n-id="tab-reset-pin-label" role="presentation"/>
++            <label class="zen-tab-sublabel" data-l10n-id="zen-tab-sublabel" data-l10n-args='{"tabSubtitle": "zen-default-pinned"}' role="presentation"/>
            </vbox>
            <image class="tab-note-icon" role="presentation"/>
            <image class="tab-close-button close-icon" role="button" data-l10n-id="tabbrowser-close-tabs-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>

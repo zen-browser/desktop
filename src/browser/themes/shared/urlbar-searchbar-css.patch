@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index edfe3e05a1b4517a4de6e09221ebdcfb5d8f1fe5..5986f88babf2b8d48ec8a5c0724787b13275aeff 100644
+index 78a2c85af51f90958b445eac53a540b382163102..7509b28c6d868a6f1c34f36330e695c163e12788 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -9,7 +9,7 @@
@@ -11,16 +11,16 @@ index edfe3e05a1b4517a4de6e09221ebdcfb5d8f1fe5..5986f88babf2b8d48ec8a5c0724787b1
    --urlbar-container-border-padding: calc(var(--urlbar-container-border-width) + var(--urlbar-container-padding));
    --urlbar-margin-inline: 5px;
    --urlbar-padding-block: 4px;
-@@ -52,7 +52,7 @@
- #urlbar[usertyping] > .urlbar-input-container > #page-action-buttons > #urlbar-zoom-button,
- .urlbar:is(:not([usertyping]), :not([focused])) > .urlbar-input-container > .urlbar-go-button,
- .urlbar-revert-button-container {
+@@ -54,7 +54,7 @@ toolbar[inactive="true"] .urlbar,
+ .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
+ .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
+ #urlbar-revert-button-container {
 -  display: none;
 +  display: none !important;
  }
  
  /* When rich suggestions are enabled the urlbar identity icon is given extra padding to
-@@ -323,10 +323,14 @@
+@@ -325,10 +325,14 @@ toolbar[inactive="true"] .urlbar,
  
  .urlbar[breakout][breakout-extend] {
    height: auto;

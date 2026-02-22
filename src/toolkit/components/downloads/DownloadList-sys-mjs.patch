@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/downloads/DownloadList.sys.mjs b/toolkit/components/downloads/DownloadList.sys.mjs
-index ef84be4cfd8194a99e2b2019360b780c700d8d42..3979c03670902ea3ae8bd344612612b20bec6176 100644
+index 8e6d1987c359c9388ae73aeeb57ec6c94be033e5..0162a3f3033e97be95d1230852d38c9fe0c524a1 100644
 --- a/toolkit/components/downloads/DownloadList.sys.mjs
 +++ b/toolkit/components/downloads/DownloadList.sys.mjs
 @@ -50,6 +50,7 @@ const FILE_EXTENSIONS = [

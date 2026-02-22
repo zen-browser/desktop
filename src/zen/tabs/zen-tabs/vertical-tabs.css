@@ -472,7 +472,7 @@
   display: none;
 }
 
-.tab-reset-pin-label {
+.zen-tab-sublabel {
   pointer-events: none;
   transition:
     opacity 0.1s ease-in-out,
@@ -480,9 +480,16 @@
     max-height 0.1s ease-in-out;
   max-height: 0px;
   opacity: 0;
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   font-size: x-small;
   margin: 0;
+}
+
+.tabbrowser-tab[zen-show-sublabel] {
+  & .tab-label-container .zen-tab-sublabel {
+    max-height: 10px;
+    opacity: 0.5;
+  }
 }
 
 #navigator-toolbox[zen-sidebar-expanded="true"] {
@@ -637,7 +644,7 @@
       }
 
       &[zen-pinned-changed="true"]:not([zen-essential]) .tab-reset-pin-button:hover {
-        & ~ .tab-label-container .tab-reset-pin-label {
+        & ~ .tab-label-container .zen-tab-sublabel {
           max-height: 10px;
           opacity: 0.6;
         }
@@ -877,11 +884,11 @@
 
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    &[pinned]:not([pending="true"]) .tab-close-button {
+    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button {
       display: none !important;
     }
 
-    &[pinned]:not([pending="true"]):not([zen-essential]) {
+    &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) {
       &:hover .tab-reset-button,
       &[visuallyselected] .tab-reset-button {
         display: block;

@@ -35,7 +35,7 @@ export class nsZenSiteDataPanel {
       this.window.gUnifiedExtensions._panel = this.unifiedPanel;
 
       // Remove the old permissions dialog
-      this.document.getElementById("unified-extensions-panel-template").remove();
+      this.document.getElementById("unified-extensions-panel-template")?.remove();
     } else {
       this.extensionsPanel = this.#initExtensionsPanel();
     }

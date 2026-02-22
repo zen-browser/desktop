@@ -1,8 +1,8 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 7bbbaf6fb936eda9cf87f164f93f4a96a50cf733..b1a50d8b4932f60f882b7f60c7d65ce3a9fde99d 100644
+index d9917d78b93d3200cbe15a1ee316cf01c0ad88de..4d7e4f9d57f0d121c717758ead06e554e01aea91 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
-@@ -461,6 +461,7 @@
+@@ -462,6 +462,7 @@
  #include "prtime.h"
  #include "prtypes.h"
  #include "xpcpublic.h"
@@ -10,7 +10,7 @@ index 7bbbaf6fb936eda9cf87f164f93f4a96a50cf733..b1a50d8b4932f60f882b7f60c7d65ce3
  
  // clang-format off
  #include "mozilla/Encoding.h"
-@@ -3446,6 +3447,10 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -3327,6 +3328,10 @@ void Document::FillStyleSetUserAndUASheets() {
    for (StyleSheet* sheet : *sheetService->UserStyleSheets()) {
      styleSet.AppendStyleSheet(*sheet);
    }

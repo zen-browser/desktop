@@ -8,6 +8,16 @@
     "name": "Fix MacOS Crash on Shutdown Firefox 149"
   },
   {
+    "type": "phabricator",
+    "id": "D284084",
+    "name": "Native MacOS popovers",
+    "replaces": {
+      // The patch we sent was for firefox 149, but we are currently in 148, so theres
+      // a conflict in the patch. See https://bugzilla.mozilla.org/show_bug.cgi?id=2015354
+      "overridden": "overriden"
+    }
+  },
+  {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
   },

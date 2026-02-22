@@ -25,6 +25,7 @@ finish-args:
   - --filesystem=xdg-run/speech-dispatcher:ro
   - --device=all
   - --talk-name=org.freedesktop.FileManager1
+  - --talk-name=org.freedesktop.Notifications
   - --system-talk-name=org.freedesktop.NetworkManager
   - --talk-name=org.a11y.Bus
   - --talk-name=org.gtk.vfs.*

@@ -159,7 +159,7 @@ class nsZenWorkspaces {
     }
   }
 
-  async #afterLoadInit() {
+  #afterLoadInit() {
     const onResize = (...args) => {
       requestAnimationFrame(() => {
         this.onPinnedTabsResize(...args);
@@ -918,7 +918,7 @@ class nsZenWorkspaces {
     this.#initializeEmptyTab();
     return (async () => {
       await this.#waitForPromises();
-      await this.#afterLoadInit();
+      this.#afterLoadInit();
       await this.workspaceBookmarks();
       await this.changeWorkspace(activeWorkspace, { onInit: true });
       this.#fixTabPositions();

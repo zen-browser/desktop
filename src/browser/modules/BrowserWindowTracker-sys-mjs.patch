@@ -1,16 +1,16 @@
 diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
-index 0cd9e9630fff20d71dc1dd7367ae6af4f7a53f71..7212c5f4745f3c93c1ede932af1b0e85580aa679 100644
+index 0f2f66e4bbc27785d53e262001f2ad7f9a1b3216..ed8b600fd2093428e01489d7dc4aa1f5365b645e 100644
 --- a/browser/modules/BrowserWindowTracker.sys.mjs
 +++ b/browser/modules/BrowserWindowTracker.sys.mjs
-@@ -326,6 +326,7 @@ export const BrowserWindowTracker = {
-     args = null,
-     remote = undefined,
-     fission = undefined,
+@@ -331,6 +331,7 @@ export const BrowserWindowTracker = {
+       args = null,
+       remote = undefined,
+       fission = undefined,
 +    zenSyncedWindow = true,
-   } = {}) {
-     let windowFeatures = "chrome,dialog=no";
-     if (all) {
-@@ -382,6 +383,12 @@ export const BrowserWindowTracker = {
+     } = options;
+ 
+     args = lazy.AIWindow.handleAIWindowOptions(options);
+@@ -390,6 +391,12 @@ export const BrowserWindowTracker = {
        windowFeatures,
        args
      );

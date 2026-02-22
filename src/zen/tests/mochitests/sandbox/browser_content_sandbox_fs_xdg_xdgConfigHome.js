@@ -22,6 +22,13 @@ add_setup(async function setup() {
   const xdgConfigHome = Services.env.get("XDG_CONFIG_HOME");
   Assert.greater(xdgConfigHome.length, 1, "XDG_CONFIG_HOME is defined");
 
+  // Verify the profile directory is inside XDG_CONFIG_HOME
+  const profileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+  Assert.ok(
+    profileDir.path.startsWith(xdgConfigHome),
+    `Profile directory (${profileDir.path}) should be inside XDG_CONFIG_HOME (${xdgConfigHome})`
+  );
+
   // If it is there, do actual testing
   sanityChecks();
 });

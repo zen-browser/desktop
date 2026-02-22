@@ -2,7 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-<panel flip="side" type="arrow" popupalign="center" orient="vertical" id="PanelUI-zen-gradient-generator" position="bottomright topright" mainview="true" side="left">
+<panel flip="side" type="arrow"
+    opupalign="center" 
+    orient="vertical" 
+    id="PanelUI-zen-gradient-generator" 
+    position="bottomright topright" 
+    mainview="true" 
+    hidepopovertail="true"
+    side="left">
   <panelmultiview id="PanelUI-zen-gradient-generator-multiview" mainViewId="PanelUI-zen-gradient-generator-view">
     <panelview id="PanelUI-zen-gradient-generator-view" class="PanelUI-subView zen-theme-picker" role="document" mainview-with-header="true" has-custom-header="true">
       <hbox class="zen-theme-picker-gradient">

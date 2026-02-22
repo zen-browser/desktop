@@ -1,5 +1,5 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index a687d271a91207f3e4a7b9afdf67031f8d9385d1..ebbf2e0cbf5e9eeca472c4c2a5963c290be8897d 100644
+index 1e1fa8146450e3e09706180b85633cc87ddf6269..acbcefa6533d6bf909a767899b280592d3b0efda 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
 @@ -442,10 +442,10 @@ Tester.prototype = {
@@ -15,16 +15,16 @@ index a687d271a91207f3e4a7b9afdf67031f8d9385d1..ebbf2e0cbf5e9eeca472c4c2a5963c29
            let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
            if (!lastTab.closing) {
              // Report the stale tab as an error only when they're not closing.
-@@ -480,12 +480,6 @@ Tester.prototype = {
- 
-       // Replace the last tab with a fresh one
-       if (window.gBrowser) {
--        gBrowser.addTab("about:blank", {
--          skipAnimation: true,
--          triggeringPrincipal:
--            Services.scriptSecurityManager.getSystemPrincipal(),
--        });
--        gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
-         gBrowser.stop();
-       }
+@@ -1151,12 +1151,6 @@ Tester.prototype = {
+     // test_end is logged, otherwise the new windows created by addTab will be
+     // tracked by ShutdownLeaks as belonging to the test and cause false leak reports.
+     if (window.gBrowser) {
+-      gBrowser.addTab("about:blank", {
+-        skipAnimation: true,
+-        triggeringPrincipal:
+-          Services.scriptSecurityManager.getSystemPrincipal(),
+-      });
+-      gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
+       gBrowser.stop();
+     }
  

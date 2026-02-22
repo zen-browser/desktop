@@ -3,38 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-panel[type="arrow"] {
-  @media (-moz-platform: macos) and (-moz-panel-animations) {
-    &[side="bottom"] {
-      /* Animate from the bottom */
-      -zen-window-transform-origin: 0 100%;
-    }
-    &[side="left"] {
-      /* Animate from the left and center */
-      -zen-window-transform-origin: 0 50%;
-    }
-    &[side="right"] {
-      /* Animate from the right */
-      -zen-window-transform-origin: 100% 50%;
-    }
-    :root[zen-right-side="true"] & {
-      /* Animate from the right */
-      -zen-window-transform-origin: 100% 0;
-      &[side="bottom"] {
-        /* Animate from the bottom right */
-        -zen-window-transform-origin: 100% 100%;
-      }
-      &[side="left"] {
-        /* Animate from the right */
-        -zen-window-transform-origin: 100% 50%;
-      }
-      &[side="right"] {
-        /* Animate from the right */
-        -zen-window-transform-origin: 100% 50%;
-      }
-    }
-  }
-}
 
 menupopup,
 panel[type="arrow"]:not(#feature-callout) {
@@ -62,12 +30,6 @@ panel[type="arrow"]:not(#feature-callout) {
   }
 
   @media (-moz-platform: macos) {
-    appearance: auto !important;
-    -moz-default-appearance: menupopup;
-    /* We set the default background here, rather than on ::part(content),
-     * because otherwise it'd interfere with the native look. Non-native-looking
-     * popups should get their background via --panel-background */
-    background-color: Menu;
     --panel-shadow-margin: 0px !important;
     --panel-background: transparent !important;
     --panel-border-color: transparent;

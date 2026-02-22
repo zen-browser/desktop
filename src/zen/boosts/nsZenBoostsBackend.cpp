@@ -7,7 +7,6 @@
 #include "nsIXULRuntime.h"
 #include "nsPresContext.h"
 
-#include "mozilla/RefPtr.h"
 #include "mozilla/StaticPtr.h"
 
 #include "mozilla/ServoStyleConsts.h"
@@ -19,8 +18,13 @@
 
 #define COLOR_CHANNEL_MIDPOINT 128
 
+// It's a bit of a hacky solution, but instead of using alpha as what it is
+// (opacity), we use it to store contrast information for now.
+// We do this primarily to avoid having to deal with WebIDL structs and
+// serialization/deserialization between parent and content processes.
+#define NS_GET_CONTRAST(_c) NS_GET_A(_c)
+
 using BrowsingContext = mozilla::dom::BrowsingContext;
-using BoostData = nscolor; // For now, Zen boosts data is just a color.
 
 /**
  * @brief Called when the ZenBoostsData field is set on a browsing context.
@@ -28,9 +32,23 @@ using BoostData = nscolor; // For now, Zen boosts data is just a color.
  * @param aOldValue The previous value of the boost data.
  */
 void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
-                                          BoostData aOldValue) {
+                             ZenBoostData aOldValue) {
   MOZ_ASSERT(IsTop());
   if (ZenBoostsData() == aOldValue) {
+    return;
+  }
+  PresContextAffectingFieldChanged();
+}
+
+/**
+ * @brief Called when the IsZenBoostsInverted field is set on a browsing
+ * context. Triggers a restyle if the value has changed.
+ * @param aOldValue The previous value of the IsZenBoostsInverted flag.
+ */
+void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
+                             bool aOldValue) {
+  MOZ_ASSERT(IsTop());
+  if (IsZenBoostsInverted() == aOldValue) {
     return;
   }
   PresContextAffectingFieldChanged();
@@ -50,14 +68,17 @@ static __inline int32_t clamp255(int32_t v) {
 }
 
 /**
- * @brief Applies a color filter to transform an original color toward an accent color.
- * Preserves the original color's perceived luminance while shifting hue/chroma toward the accent.
- * Uses the alpha channel of the accent color to store contrast information.
+ * @brief Applies a color filter to transform an original color toward an accent
+ * color. Preserves the original color's perceived luminance while shifting
+ * hue/chroma toward the accent. Uses the alpha channel of the accent color to
+ * store contrast information.
  * @param aOriginalColor The original color to filter.
- * @param aAccentColor The accent color to filter toward (alpha channel contains contrast value).
+ * @param aAccentColor The accent color to filter toward (alpha channel contains
+ * contrast value).
  * @return The filtered color with transformations applied.
  */
-static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColor) {
+static nscolor zenFilterColorChannel(nscolor aOriginalColor,
+                                     nscolor aAccentColor) {
   const auto r1 = NS_GET_R(aOriginalColor);
   const auto g1 = NS_GET_G(aOriginalColor);
   const auto b1 = NS_GET_B(aOriginalColor);
@@ -70,7 +91,7 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
   // (opacity), we use it to store contrast information for now.
   // We do this primarily to avoid having to deal with WebIDL structs and
   // serialization/deserialization between parent and content processes.
-  const auto contrast = NS_GET_A(aAccentColor);
+  const auto contrast = NS_GET_CONTRAST(aAccentColor);
 
   // Approximate perceived luminance in sRGB space
   // Coefficients per Rec.709; gamma correction ignored for speed
@@ -95,13 +116,13 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
   // If it's bright, mix toward white; if dark, mix toward black
   if (lum >= COLOR_CHANNEL_MIDPOINT) {
     const double mix = (lum - COLOR_CHANNEL_MIDPOINT) / COLOR_CHANNEL_MIDPOINT;
-    double amount = contrastFactor * mix;
+    const double amount = contrastFactor * mix;
     fr = fr + (255.0 - fr) * amount;
     fg = fg + (255.0 - fg) * amount;
     fb = fb + (255.0 - fb) * amount;
   } else {
-    double mix = (COLOR_CHANNEL_MIDPOINT - lum) / COLOR_CHANNEL_MIDPOINT;
-    double amount = -contrastFactor * mix;
+    const double mix = (COLOR_CHANNEL_MIDPOINT - lum) / COLOR_CHANNEL_MIDPOINT;
+    const double amount = -contrastFactor * mix;
     fr = fr * (1.0 - amount);
     fg = fg * (1.0 - amount);
     fb = fb * (1.0 - amount);
@@ -115,21 +136,48 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor, nscolor aAccentColo
 }
 
 /**
- * @brief Retrieves the current boost data from the browsing context.
+ * @brief Inverts a color by inverting each RGB channel while preserving
+ * perceived luminance. This is done by inverting the color and then shifting it
+ * based on the sum of the inverted channels.
+ * @param aColor The color to invert.
+ * @return The inverted color with luminance preservation.
  */
-[[nodiscard]]
- inline static auto GetZenBoostsDataFromBrowsingContext() -> BoostData {
-  auto zenBoosts = nsZenBoostsBackend::GetInstance();
-  if (!zenBoosts || zenBoosts->mCurrentFrameIsAnonymousContent) {
-    return 0;
-  }
-  if (auto presContext = zenBoosts->GetCurrentPresContext()) {
-    return presContext->mZenBoostsPresContextData;
-  }
-  return 0;
+inline static nscolor zenInvertColorChannel(nscolor aColor) {
+  const auto r = NS_GET_R(aColor);
+  const auto g = NS_GET_G(aColor);
+  const auto b = NS_GET_B(aColor);
+
+  const auto rInv = 255 - r;
+  const auto gInv = 255 - g;
+  const auto bInv = 255 - b;
+
+  const auto max = std::max({rInv, gInv, bInv});
+  const auto min = std::min({rInv, gInv, bInv});
+  const auto sum = max + min;
+
+  const auto rShifted = sum - rInv;
+  const auto gShifted = sum - gInv;
+  const auto bShifted = sum - bInv;
+
+  return NS_RGB(rShifted, gShifted, bShifted);
 }
 
-} // namespace
+/**
+ * @brief Retrieves the current boost data from the browsing context.
+ */
+inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
+                                                       bool* aIsInverted) {
+  auto zenBoosts = nsZenBoostsBackend::GetInstance();
+  if (!zenBoosts || zenBoosts->mCurrentFrameIsAnonymousContent) {
+    return;
+  }
+  if (auto presContext = zenBoosts->GetCurrentPresContext()) {
+    *aData = presContext->mZenBoostsPresContextData;
+    *aIsInverted = presContext->mZenBoostsInvert;
+  }
+}
+
+}  // namespace
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
@@ -141,16 +189,18 @@ auto nsZenBoostsBackend::GetInstance() -> nsCOMPtr<nsZenBoostsBackend> {
   return zenBoosts;
 }
 
-auto nsZenBoostsBackend::onPressShellEntered(nsPresContext* aPresContext) -> void {
+auto nsZenBoostsBackend::onPressShellEntered(nsPresContext* aPresContext)
+    -> void {
   // Note that aPresContext can be null when entering anonymous content frames.
-  // We explicitly do this to prevent applying boosts to anonymous content, such as
-  // devtools or screenshots.
+  // We explicitly do this to prevent applying boosts to anonymous content, such
+  // as devtools or screenshots.
   mCurrentPresContext = aPresContext;
 }
 
-auto nsZenBoostsBackend::onPressShellLeave(nsPresContext* aPresContext) -> void {
-  // TODO: We should set it as a null as well, but this prevents borders and shadows
-  // from being drawn into our Zen boosts modifications.
+auto nsZenBoostsBackend::onPressShellLeave(nsPresContext* aPresContext)
+    -> void {
+  // TODO: We should set it as a null as well, but this prevents borders and
+  // shadows from being drawn into our Zen boosts modifications.
   if (!aPresContext) {
     return;
   }
@@ -158,40 +208,50 @@ auto nsZenBoostsBackend::onPressShellLeave(nsPresContext* aPresContext) -> void 
 }
 
 auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
-    nsPresContext* aPresContext, mozilla::dom::BrowsingContext* aBrowsingContext) -> void {
+    nsPresContext* aPresContext,
+    mozilla::dom::BrowsingContext* aBrowsingContext) -> void {
   if (!aPresContext || aPresContext->IsChrome()) {
     return;
   }
 
   auto previousData = aPresContext->mZenBoostsPresContextData;
+  auto previousInvert = aPresContext->mZenBoostsInvert;
   aPresContext->mZenBoostsPresContextData = aBrowsingContext->ZenBoostsData();
-  if (previousData != aPresContext->mZenBoostsPresContextData) {
+  aPresContext->mZenBoostsInvert = aBrowsingContext->IsZenBoostsInverted();
+  if (previousData != aPresContext->mZenBoostsPresContextData ||
+      previousInvert != aPresContext->mZenBoostsInvert) {
     // Lets ask the prescontext to restyle the document
     aPresContext->MediaFeatureValuesChanged(
-      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,
-       mozilla::MediaFeatureChangeReason::PreferenceChange},
-      mozilla::MediaFeatureChangePropagation::JustThisDocument);
+        {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,
+         mozilla::MediaFeatureChangeReason::PreferenceChange},
+        mozilla::MediaFeatureChangePropagation::JustThisDocument);
   }
 }
 
-auto nsZenBoostsBackend::ResolveStyleColor(
-    mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
-  if (auto accentNS = GetZenBoostsDataFromBrowsingContext()) {
+auto nsZenBoostsBackend::ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
+    -> mozilla::StyleAbsoluteColor {
+  ZenBoostData accentNS = 0;
+  bool invertColors = false;
+  GetZenBoostsDataFromBrowsingContext(&accentNS, &invertColors);
+
+  nscolor resultColor = aColor.ToColor();
+  if (accentNS) {
     // Apply a filter-like tint:
     // - Preserve the original color's perceived luminance
     // - Map hue/chroma toward the accent by scaling the accent's RGB
     //   to match the original luminance
     // - Keep the original alpha
-
     // Convert both colors to nscolor to access channels
-    nscolor originalNS = aColor.ToColor();
-    nscolor filteredNS = zenFilterColorChannel(originalNS, accentNS);
-    
-    auto filtered = mozilla::StyleAbsoluteColor::FromColor(filteredNS);
-    filtered.alpha = aColor.alpha;
-    return filtered;
+    const nscolor originalNS = aColor.ToColor();
+    resultColor = zenFilterColorChannel(originalNS, (nscolor)accentNS);
   }
+  if (invertColors) {
+    resultColor = zenInvertColorChannel(resultColor);
+  }
+  const auto alpha = aColor.alpha;
+  aColor = mozilla::StyleAbsoluteColor::FromColor(resultColor);
+  aColor.alpha = alpha;
   return aColor;
 }
 
-} // namespace zen
+}  // namespace zen

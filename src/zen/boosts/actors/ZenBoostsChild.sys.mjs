@@ -294,13 +294,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
       const { boostData } = boost.boostEntry;
       if (boost.styleSheet) this.#loadStyleSheet(boost.styleSheet);
 
+      browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
-        let prefersColorSchemeOverride = "none";
-        if (boostData.smartInvert) {
-          prefersColorSchemeOverride = boostData.topWindowIsDarkMode ? "light" : "dark";
-        }
-
-        browsingContext.prefersColorSchemeOverride = prefersColorSchemeOverride;
         let colorWheelColor = this.#hslToRgb(
           boostData.dotAngleDeg / 360,
           /* already is [0, 1] */
@@ -327,14 +322,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
         const rgbColor = boostData.autoTheme ? primaryGradientColor : colorWheelColor;
         const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
         browsingContext.zenBoostsData = nsColor;
-      } else {
-        browsingContext.zenBoostsData = 0;
-        browsingContext.prefersColorSchemeOverride = "none";
+        return;
       }
-    } else {
-      browsingContext.zenBoostsData = 0;
-      browsingContext.prefersColorSchemeOverride = "none";
     }
+    browsingContext.zenBoostsData = 0;
   }
 
   /**

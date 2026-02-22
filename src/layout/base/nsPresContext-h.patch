@@ -1,12 +1,13 @@
 diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
-index 659c2a237280794c19de2fbb54b3b3070590cc30..b47ef9d53ddcdd904c1383fd136cf13a2224f347 100644
+index cabe267af71a442fba3aa9dbb4d5f742242e8313..e919600e632422b44d6f7dabadf1f70745994254 100644
 --- a/layout/base/nsPresContext.h
 +++ b/layout/base/nsPresContext.h
-@@ -566,6 +566,7 @@ class nsPresContext : public nsISupports,
+@@ -561,6 +561,8 @@ class nsPresContext : public nsISupports,
    void UpdateForcedColors(bool aNotify = true);
  
   public:
-+  nscolor mZenBoostsPresContextData;
++  nscolor mZenBoostsPresContextData{0};
++  bool mZenBoostsInvert;
    float GetFullZoom() { return mFullZoom; }
    /**
     * Device full zoom differs from full zoom because it gets the zoom from

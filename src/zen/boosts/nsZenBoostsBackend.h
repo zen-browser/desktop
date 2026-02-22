@@ -11,8 +11,9 @@
 
 #include "mozilla/RefPtr.h"
 
-#define ZEN_BOOSTS_BACKEND_CONTRACTID \
-  "@mozilla.org/zen/boosts-backend;1"
+#define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/boosts-backend;1"
+
+using ZenBoostData = nscolor;  // For now, Zen boosts data is just a color.
 
 namespace zen {
 
@@ -21,19 +22,22 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
 
  public:
   explicit nsZenBoostsBackend();
-  
+
   /**
-   * Indicates whether the current frame being rendered is for anonymous content.
+   * Indicates whether the current frame being rendered is for anonymous
+   * content.
    */
   bool mCurrentFrameIsAnonymousContent = false;
 
   /**
    * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.
    * @param aColor The color to resolve.
-   * @return The resolved color with Zen boost filters applied, or the original color if no boost is active.
+   * @return The resolved color with Zen boost filters applied, or the original
+   * color if no boost is active.
    * @see StyleColor::ResolveColor for reference.
    */
-  static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor;
+  static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
+      -> mozilla::StyleAbsoluteColor;
 
   /**
    * @brief Called when a presshell is entered during rendering.
@@ -48,16 +52,19 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
   auto onPressShellLeave(nsPresContext* aPresContext) -> void;
 
   /**
-   * @brief Recomputes browsing context dependent data, including Zen boost data.
-   * Triggers a restyle if the boost data has changed.
+   * @brief Recomputes browsing context dependent data, including Zen boost
+   * data. Triggers a restyle if the boost data has changed.
    * @param aPresContext The presentation context to update.
    * @param aBrowsingContext The browsing context containing the boost data.
    */
-  void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext,
-                                            mozilla::dom::BrowsingContext* aBrowsingContext);
+  void RecomputeBrowsingContextDependentData(
+      nsPresContext* aPresContext,
+      mozilla::dom::BrowsingContext* aBrowsingContext);
 
-  [[nodiscard]] 
-  auto GetCurrentPresContext() const { return mCurrentPresContext; }
+  [[nodiscard]]
+  auto GetCurrentPresContext() const {
+    return mCurrentPresContext;
+  }
 
   NS_DECL_NSIZENBOOSTSBACKEND
  private:
@@ -76,6 +83,6 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
   static auto GetInstance() -> nsCOMPtr<nsZenBoostsBackend>;
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

@@ -42,6 +42,23 @@
             hidden="true"/>
       <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
             preference="zen.tabs.select-recently-used-on-close"/>
+      <checkbox id="zenTabsSmartHibernateEnabled"
+            data-l10n-id="zen-tabs-smart-hibernate-enabled"
+            preference="zen.tabs.smart_hibernate.enabled"/>
+      <hbox align="center">
+            <label id="zenTabsSmartHibernateTimeoutLabel"
+                  data-l10n-id="zen-tabs-smart-hibernate-timeout-label"/>
+            <menulist id="zenTabsSmartHibernateTimeout"
+                  preference="zen.tabs.smart_hibernate.timeout_minutes">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-tabs-smart-hibernate-timeout-5-minutes" value="5"/>
+                        <menuitem data-l10n-id="zen-tabs-smart-hibernate-timeout-10-minutes" value="10"/>
+                        <menuitem data-l10n-id="zen-tabs-smart-hibernate-timeout-15-minutes" value="15"/>
+                        <menuitem data-l10n-id="zen-tabs-smart-hibernate-timeout-30-minutes" value="30"/>
+                        <menuitem data-l10n-id="zen-tabs-smart-hibernate-timeout-60-minutes" value="60"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"
@@ -78,5 +95,4 @@
 </groupbox>
 
 </html:template>
-
 

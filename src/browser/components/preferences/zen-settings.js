@@ -730,8 +730,18 @@ var gZenWorkspacesSettings = {
         );
       },
     };
+    let toggleSmartHibernateTimeout = {
+      observe() {
+        const timeout = document.getElementById("zenTabsSmartHibernateTimeout");
+        if (!timeout) {
+          return;
+        }
+        timeout.disabled = !Services.prefs.getBoolPref("zen.tabs.smart_hibernate.enabled", false);
+      },
+    };
 
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+    toggleSmartHibernateTimeout.observe();
 
     Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
@@ -742,6 +752,7 @@ var gZenWorkspacesSettings = {
       toggleZenCycleByAttrWarning
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
+    Services.prefs.addObserver("zen.tabs.smart_hibernate.enabled", toggleSmartHibernateTimeout);
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
@@ -757,6 +768,10 @@ var gZenWorkspacesSettings = {
       Services.prefs.removeObserver(
         "browser.ctrlTab.sortByRecentlyUsed",
         toggleZenCycleByAttrWarning
+      );
+      Services.prefs.removeObserver(
+        "zen.tabs.smart_hibernate.enabled",
+        toggleSmartHibernateTimeout
       );
     });
   },
@@ -1213,6 +1228,16 @@ Preferences.addAll([
     id: "zen.tabs.select-recently-used-on-close",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.tabs.smart_hibernate.enabled",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.tabs.smart_hibernate.timeout_minutes",
+    type: "int",
+    default: 15,
   },
   {
     id: "zen.window-sync.sync-only-pinned-tabs",

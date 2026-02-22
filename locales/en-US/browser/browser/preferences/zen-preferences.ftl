@@ -56,6 +56,20 @@ pane-settings-workspaces-title = Workspaces
 zen-tabs-select-recently-used-on-close =
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
 
+zen-tabs-smart-hibernate-enabled =
+    .label = Automatically hibernate inactive background tabs
+zen-tabs-smart-hibernate-timeout-label = Hibernate tab after inactivity
+zen-tabs-smart-hibernate-timeout-5-minutes =
+    .label = 5 minutes
+zen-tabs-smart-hibernate-timeout-10-minutes =
+    .label = 10 minutes
+zen-tabs-smart-hibernate-timeout-15-minutes =
+    .label = 15 minutes
+zen-tabs-smart-hibernate-timeout-30-minutes =
+    .label = 30 minutes
+zen-tabs-smart-hibernate-timeout-60-minutes =
+    .label = 60 minutes
+
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 

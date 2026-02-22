@@ -26,10 +26,10 @@
 - name: zen.tabs.use-legacy-drag-and-drop
   value: false
 
-- name: zen.tabs.smart_hibernate.enabled
+- name: zen.tabs.smart-hibernate.enabled
   value: false
 
-- name: zen.tabs.smart_hibernate.timeout_minutes
+- name: zen.tabs.smart-hibernate.timeout-minutes
   value: 15
 
 - name: zen.tabs.folder-dragover-threshold-percent

@@ -12,9 +12,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
-const SMART_HIBERNATION_ENABLED_PREF = "zen.tabs.smart_hibernate.enabled";
-const SMART_HIBERNATION_TIMEOUT_PREF = "zen.tabs.smart_hibernate.timeout_minutes";
-const SMART_HIBERNATION_DEFAULT_TIMEOUT_MINUTES = 15;
+const SMART_HIBERNATION_ENABLED_PREF = "zen.tabs.smart-hibernate.enabled";
+const SMART_HIBERNATION_TIMEOUT_PREF = "zen.tabs.smart-hibernate.timeout-minutes";
+const SMART_HIBERNATION_DEFAULT_TIMEOUT_MIN = 15;
 const SMART_HIBERNATION_SCAN_INTERVAL_MS = 60_000;
 
 /**
@@ -231,11 +231,23 @@ class nsZenWorkspaces {
   }
 
   #handleSmartHibernationTabSelect(event) {
-    this.#recordTabActivity(event.target);
+    const tab =
+      typeof gZenGlanceManager !== "undefined" &&
+      gZenGlanceManager &&
+      typeof gZenGlanceManager.getTabOrGlanceParent === "function"
+        ? gZenGlanceManager.getTabOrGlanceParent(event.target)
+        : event.target;
+    this.#recordTabActivity(tab);
   }
 
   #handleSmartHibernationTabOpen(event) {
-    this.#recordTabActivity(event.target);
+    const tab =
+      typeof gZenGlanceManager !== "undefined" &&
+      gZenGlanceManager &&
+      typeof gZenGlanceManager.getTabOrGlanceParent === "function"
+        ? gZenGlanceManager.getTabOrGlanceParent(event.target)
+        : event.target;
+    this.#recordTabActivity(tab);
   }
 
   #seedTabActivityTimestamps() {
@@ -319,7 +331,7 @@ class nsZenWorkspaces {
   #pickTabForSmartHibernation() {
     const timeoutMinutes = Services.prefs.getIntPref(
       SMART_HIBERNATION_TIMEOUT_PREF,
-      SMART_HIBERNATION_DEFAULT_TIMEOUT_MINUTES
+      SMART_HIBERNATION_DEFAULT_TIMEOUT_MIN
     );
     if (timeoutMinutes <= 0) {
       return null;

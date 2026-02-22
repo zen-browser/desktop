@@ -736,7 +736,7 @@ var gZenWorkspacesSettings = {
         if (!timeout) {
           return;
         }
-        timeout.disabled = !Services.prefs.getBoolPref("zen.tabs.smart_hibernate.enabled", false);
+        timeout.disabled = !Services.prefs.getBoolPref("zen.tabs.smart-hibernate.enabled", false);
       },
     };
 
@@ -752,7 +752,7 @@ var gZenWorkspacesSettings = {
       toggleZenCycleByAttrWarning
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
-    Services.prefs.addObserver("zen.tabs.smart_hibernate.enabled", toggleSmartHibernateTimeout);
+    Services.prefs.addObserver("zen.tabs.smart-hibernate.enabled", toggleSmartHibernateTimeout);
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
@@ -770,7 +770,7 @@ var gZenWorkspacesSettings = {
         toggleZenCycleByAttrWarning
       );
       Services.prefs.removeObserver(
-        "zen.tabs.smart_hibernate.enabled",
+        "zen.tabs.smart-hibernate.enabled",
         toggleSmartHibernateTimeout
       );
     });
@@ -1230,12 +1230,12 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: "zen.tabs.smart_hibernate.enabled",
+    id: "zen.tabs.smart-hibernate.enabled",
     type: "bool",
     default: false,
   },
   {
-    id: "zen.tabs.smart_hibernate.timeout_minutes",
+    id: "zen.tabs.smart-hibernate.timeout-minutes",
     type: "int",
     default: 15,
   },

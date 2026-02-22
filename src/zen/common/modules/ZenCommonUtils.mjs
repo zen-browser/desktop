@@ -85,7 +85,29 @@ export class nsZenPreloadedFeature {
 window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const displaySpec = currentUrl.displaySpec;
+
+    let clickedUrl = "";
+    if (window._zenPendingClick && Date.now() - window._zenPendingClick.time < 4000) {
+      clickedUrl = window._zenPendingClick.url;
+      window._zenPendingClick = null;
+    }
+
+    const activeBrowser = gBrowser.selectedBrowser;
+    const engineUrl = activeBrowser.currentURI ? activeBrowser.currentURI.displaySpec : "";
+
+    let visibleUrl = gURLBar.value;
+    if (
+      visibleUrl &&
+      !visibleUrl.startsWith("http") &&
+      !visibleUrl.startsWith("about:") &&
+      !visibleUrl.startsWith("file:") &&
+      !visibleUrl.startsWith("zen:")
+    ) {
+      visibleUrl = "https://" + visibleUrl;
+    }
+
+    const displaySpec = clickedUrl || engineUrl || visibleUrl || currentUrl.displaySpec;
+
     ClipboardHelper.copyString(displaySpec);
     let button;
     /* eslint-disable mozilla/valid-services */
@@ -112,8 +134,29 @@ window.gZenCommonActions = {
 
   copyCurrentURLAsMarkdownToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const tabTitle = gBrowser.selectedTab.label;
-    const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
+    let clickedUrl = "";
+    if (window._zenPendingClick && Date.now() - window._zenPendingClick.time < 4000) {
+      clickedUrl = window._zenPendingClick.url;
+      window._zenPendingClick = null;
+    }
+
+    const activeBrowser = gBrowser.selectedBrowser;
+    const engineUrl = activeBrowser.currentURI ? activeBrowser.currentURI.displaySpec : "";
+
+    let visibleUrl = gURLBar.value;
+    if (
+      visibleUrl &&
+      !visibleUrl.startsWith("http") &&
+      !visibleUrl.startsWith("about:") &&
+      !visibleUrl.startsWith("file:") &&
+      !visibleUrl.startsWith("zen:")
+    ) {
+      visibleUrl = "https://" + visibleUrl;
+    }
+
+    const displaySpec = clickedUrl || engineUrl || visibleUrl || currentUrl.displaySpec;
+    const tabTitle = gBrowser.selectedTab.label || displaySpec;
+    const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
     gZenUIManager.showToast("zen-copy-current-url-confirmation", { timeout: 3000 });
   },
@@ -141,3 +184,21 @@ window.gZenCommonActions = {
     return Boolean(tab.owner && !tab.pinned && !tab.hasAttribute("zen-empty-tab"));
   },
 };
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    const tabPanels = document.getElementById("tabbrowser-tabpanels") || window;
+
+    tabPanels.addEventListener(
+      "mousedown",
+      () => {
+        if (typeof XULBrowserWindow !== "undefined" && XULBrowserWindow.overLink) {
+          window._zenPendingClick = { url: XULBrowserWindow.overLink, time: Date.now() };
+        }
+      },
+      { capture: true, passive: true }
+    );
+  },
+  { once: true }
+);

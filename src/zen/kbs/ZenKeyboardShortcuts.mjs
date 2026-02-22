@@ -772,7 +772,11 @@ class nsZenKeyboardShortcutsLoader {
         "U",
         "",
         ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+        nsKeyShortcutModifiers.fromObject(
+          AppConstants.platform == "macosx"
+            ? { accel: true, alt: true, shift: true }
+            : { accel: true, alt: true }
+        ),
         "cmd_zenSplitViewUnsplit",
         "zen-split-view-shortcut-unsplit"
       )
@@ -812,7 +816,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 16;
+  static LATEST_KBS_VERSION = 17;
 
   constructor() {}
 
@@ -1154,6 +1158,33 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut._setAction("cmd_toggleCompactModeIgnoreHover");
           break;
         }
+      }
+    }
+
+    if (version < 17 && AppConstants.platform == "macosx") {
+      // Migrate old macOS default for unsplit from Cmd+Opt+U to Cmd+Opt+Shift+U
+      // to avoid colliding with the page source shortcut.
+      for (let shortcut of data) {
+        if (shortcut.getID() != "zen-split-view-unsplit") {
+          continue;
+        }
+
+        const modifiers = shortcut.getModifiers();
+        const isOldDefault =
+          shortcut.getKeyName() == "u" &&
+          !shortcut.getKeyCode() &&
+          modifiers.accel &&
+          modifiers.alt &&
+          !modifiers.shift &&
+          !modifiers.control &&
+          !modifiers.meta;
+
+        if (isOldDefault) {
+          shortcut.setModifiers(
+            nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
+          );
+        }
+        break;
       }
     }
 

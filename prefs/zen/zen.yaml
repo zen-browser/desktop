@@ -26,6 +26,12 @@
 - name: zen.tabs.use-legacy-drag-and-drop
   value: false
 
+- name: zen.tabs.smart_hibernate.enabled
+  value: false
+
+- name: zen.tabs.smart_hibernate.timeout_minutes
+  value: 15
+
 - name: zen.tabs.folder-dragover-threshold-percent
   value: 20 # Percentage of folder height to trigger dragover
 

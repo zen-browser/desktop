@@ -18,6 +18,11 @@
     }
   },
   {
+    "type": "phabricator",
+    "id": "D284404",
+    "name": "Add urlbar closeOnWindowBlur preference"
+  },
+  {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
   },

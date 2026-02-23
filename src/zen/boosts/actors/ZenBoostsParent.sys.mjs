@@ -68,10 +68,6 @@ export class ZenBoostsParent extends JSWindowActorParent {
    * @returns {Promise<object | null>} A promise that resolves to the boost data or null.
    */
   async receiveMessage(message) {
-    if (!this.canSend) {
-      return;
-    }
-
     switch (message.name) {
       case "ZenBoost:OpenInspector": {
         const { require } = ChromeUtils.importESModule(

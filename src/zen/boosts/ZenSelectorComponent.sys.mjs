@@ -304,7 +304,8 @@ export class SelectorComponent {
       return;
     }
 
-    this.getElementById("selector-element-preview-text").textContent =
+    // eslint-disable-next-line no-unsanitized/property
+    this.getElementById("selector-element-preview-text").innerHTML =
       `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
   }
 

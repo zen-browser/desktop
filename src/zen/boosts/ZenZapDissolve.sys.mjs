@@ -337,7 +337,7 @@ void main() {
       this.#webglContext.NEAREST
     );
 
-    if (Image.isInstance(image) && image.width && image.height) {
+    if (image instanceof Image && image.width && image.height) {
       this.#webglContext.texImage2D(
         this.#webglContext.TEXTURE_2D,
         0,

@@ -287,7 +287,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     await Promise.all(tasks);
   }
 
-  // Captures tab screenshot 
+  /**
+   * Captures a screenshot of the given tab and stores it in the thumbnail cache.
+   * @param {object} tab - The tab to capture a thumbnail for.
+   * @returns {Promise<void>} Resolves when the thumbnail is captured or skipped.
+   */
   async #captureThumbnail(tab) {
     if (tab.hasAttribute("pending")) return;
     const tabId = tab.linkedPanel;
@@ -313,7 +317,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Creates the list of tabs to show in the switcher
+  // Creates the list of tabs to show in the switcher.
   #buildTabList() {
     const useRecentOrder = this.#lazyPrefs.useRecentOrder;
     let tabs = [];
@@ -332,7 +336,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  // Creates the visual tab cards and adds them to the DOM
+  // Creates the visual tab cards and adds them to the DOM.
   #renderTabs() {
     if (!this.tabsContainer) return;
     this.tabsContainer.innerHTML = "";
@@ -359,8 +363,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#applySelectionTextStyles();
   }
 
-  /* Creates a single tab card element with thumbnail, favicon, and title
-   * Returns: XUL <vbox> element representing the tab card */
+  /**
+   * Creates a single tab card element with thumbnail, favicon, and title.
+   * @param {object} tab - The tab to create a card for.
+   * @param {number} index - The index of the tab in the list.
+   * @returns {Element} XUL <vbox> element representing the tab card.
+   */
   #createTabCard(tab, index) {
     const card = document.createXULElement("vbox");
     card.className = "zen-tab-switcher-card";
@@ -433,7 +441,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     return card;
   }
 
-  // Retrieves a cached screenshot for a tab (returns null if not available)
+  /**
+   * Retrieves a cached screenshot for a tab.
+   * @param {object} tab - The tab to get the thumbnail for.
+   * @returns {string|null} The thumbnail data URL, or null if not available.
+   */
   #getTabThumbnail(tab) {
     const tabId = tab.linkedPanel;
 
@@ -444,7 +456,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     return this.#thumbnailCache.get(tabId) || null;
   }
 
-  // Updates the visual appearance when selection changes
+  // Updates the visual appearance when selection changes.
   #updateSelection() {
     if (!this.tabsContainer) return;
     const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
@@ -463,8 +475,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#scrollToSelected();
   }
 
-  /* Forces the selected card's title text to be white using inline styles
-   * This is necessary because XUL labels don't always respect CSS color */
+  /* Forces the selected card's title text to be white using inline styles.
+   * This is necessary because XUL labels don't always respect CSS color. */
   #applySelectionTextStyles() {
     if (!this.tabsContainer) return;
     const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
@@ -483,8 +495,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  /* Scrolls the tab container to show the selected card
-   * Uses page-based scrolling (shows full pages of cards, never cuts off) */
+  /* Scrolls the tab container to show the selected card.
+   * Uses page-based scrolling (shows full pages of cards, never cuts off).*/
   #scrollToSelected() {
     if (!this.tabsContainer) return;
     const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
@@ -499,8 +511,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  /* Calculates which card should be at the left edge for pagination
-   * Ensures the page shows full cards without cutoff at the end */
+  /**
+   * Calculates which card should be at the left edge for pagination.
+   * Ensures the page shows full cards without cutoff at the end.
+   * @param {number} cardIndex - The index of the card.
+   * @returns {number} The start index for the current page.
+   */
   #getPageStartIndex(cardIndex) {
     const totalTabs = this.#tabList.length;
     const maxVisible = this.#actualVisibleCards;

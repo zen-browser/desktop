@@ -3,17 +3,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  setTimeout: "resource://gre/modules/Timer.sys.mjs",
-  clearTimeout: "resource://gre/modules/Timer.sys.mjs",
-  requestIdleCallback: "resource://gre/modules/Timer.sys.mjs",
-  cancelIdleCallback: "resource://gre/modules/Timer.sys.mjs",
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
+  DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
   NetworkHelper: "resource://devtools/shared/network-observer/NetworkHelper.sys.mjs",
 });
 
 export class nsZenLiveFolderProvider {
-  #timerHandle = null;
-  #idleCallbackHandle = null;
+  #task = null;
 
   constructor({ id, manager, state }) {
     this.id = id;
@@ -30,9 +26,9 @@ export class nsZenLiveFolderProvider {
   }
 
   async refresh() {
-    this.stop();
-    const result = await this.#internalFetch();
-    this.start();
+    this.#task.disarm();
+    const result = await this.#fetchLiveFolder();
+    this.#task.arm();
     return result;
   }
 
@@ -45,41 +41,28 @@ export class nsZenLiveFolderProvider {
     let delay = interval - timeSinceLast;
 
     if (delay <= 0) {
-      delay = 0;
+      this.#fetchLiveFolder();
     }
 
-    this.#scheduleNext(delay);
+    if (this.#task) {
+      this.#task.finalize();
+    }
+
+    this.#task = new lazy.DeferredTask(async () => {
+      await this.#fetchLiveFolder();
+      this.#task.arm();
+    }, interval);
+
+    this.#task.arm();
   }
 
   stop() {
-    if (this.#timerHandle) {
-      lazy.clearTimeout(this.#timerHandle);
-      this.#timerHandle = null;
-    }
-
-    if (this.#idleCallbackHandle) {
-      lazy.cancelIdleCallback(this.#idleCallbackHandle);
-      this.#idleCallbackHandle = null;
+    if (this.#task) {
+      this.#task.disarm();
     }
   }
 
-  #scheduleNext(delay) {
-    if (this.#timerHandle) {
-      lazy.clearTimeout(this.#timerHandle);
-    }
-
-    this.#timerHandle = lazy.setTimeout(() => {
-      const fetchWhenIdle = () => {
-        this.#internalFetch();
-        this.#idleCallbackHandle = null;
-      };
-
-      this.#idleCallbackHandle = lazy.requestIdleCallback(fetchWhenIdle);
-      this.#scheduleNext(this.state.interval);
-    }, delay);
-  }
-
-  async #internalFetch() {
+  async #fetchLiveFolder() {
     try {
       const items = await this.fetchItems();
       this.state.lastFetched = Date.now();

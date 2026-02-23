@@ -50,11 +50,11 @@ describe("Zen Live Folder Scheduling", () => {
     instance.start();
 
     sinon.assert.notCalled(fetchStub);
-    await sleep(INTERVAL / 2);
-    sinon.assert.notCalled(fetchStub);
+    await sleep(INTERVAL + 50);
+    Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
 
-    await sleep(INTERVAL * 2);
-    Assert.ok(fetchStub.callCount > 1, "Should have fetched more than once");
+    await sleep(INTERVAL + 50);
+    Assert.equal(fetchStub.callCount, 2, "Should have fetched twice");
 
     sinon.assert.called(mockManager.saveState);
     sinon.assert.called(mockManager.onLiveFolderFetch);
@@ -79,5 +79,36 @@ describe("Zen Live Folder Scheduling", () => {
 
     await sleep(20);
     sinon.assert.calledOnce(fetchStub);
+  });
+
+  it("should re-start the timer if interval was changed", async () => {
+    const INTERVAL = 500;
+
+    instance = new nsZenLiveFolderProvider({
+      id: "test-folder-interval-change",
+      manager: mockManager,
+      state: {
+        interval: INTERVAL,
+        lastFetched: Date.now(),
+      },
+    });
+
+    const fetchStub = sandbox.stub(instance, "fetchItems").resolves(["item1"]);
+    sandbox.stub(instance, "getMetadata").returns({});
+
+    instance.start();
+
+    sinon.assert.notCalled(fetchStub);
+    await sleep(INTERVAL + INTERVAL / 5);
+    Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
+
+    const NEW_INTERVAL = 1000;
+    instance.state.interval = NEW_INTERVAL;
+
+    instance.stop();
+    instance.start();
+
+    await sleep(NEW_INTERVAL + NEW_INTERVAL / 5);
+    Assert.equal(fetchStub.callCount, 2, "Should have once after the new interval");
   });
 });

@@ -13,6 +13,9 @@ function sleep(ms) {
 }
 
 describe("Zen Live Folder Scheduling", () => {
+  const INTERVAL = 250;
+  const INTERVAL_OFFSET = 50;
+
   let instance;
   let sandbox;
   let mockManager;
@@ -49,8 +52,6 @@ describe("Zen Live Folder Scheduling", () => {
   });
 
   it("should fetch correctly at an interval", async () => {
-    const INTERVAL = 250;
-
     const { fetchStub } = createInstance({
       id: "test-folder",
       interval: INTERVAL,
@@ -62,10 +63,10 @@ describe("Zen Live Folder Scheduling", () => {
 
     const startSpy = sandbox.spy(instance, "start");
 
-    await sleep(INTERVAL + 50);
+    await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
 
-    await sleep(INTERVAL + 50);
+    await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 2, "Should have fetched 2 times");
     Assert.deepEqual(
       startSpy.firstCall.args,
@@ -73,7 +74,7 @@ describe("Zen Live Folder Scheduling", () => {
       "Start should have been called once with false"
     );
 
-    await sleep(INTERVAL + 50);
+    await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 3, "Should have fetched 3 times");
     Assert.equal(startSpy.callCount, 1, "Start should not been called");
 
@@ -82,8 +83,6 @@ describe("Zen Live Folder Scheduling", () => {
   });
 
   it("should fetch immediately if overdue", async () => {
-    const INTERVAL = 500;
-
     const { fetchStub } = createInstance({
       id: "test-folder-overdue",
       interval: INTERVAL,
@@ -92,13 +91,11 @@ describe("Zen Live Folder Scheduling", () => {
 
     instance.start();
 
-    await sleep(20);
+    await sleep(INTERVAL_OFFSET);
     sinon.assert.calledOnce(fetchStub);
   });
 
   it("should fetch with correct offset", async () => {
-    const INTERVAL = 500;
-
     const { fetchStub } = createInstance({
       id: "test-folder-delay",
       interval: INTERVAL,
@@ -106,16 +103,14 @@ describe("Zen Live Folder Scheduling", () => {
     });
 
     instance.start();
-    await sleep(INTERVAL / 2 + 50);
+    await sleep(INTERVAL / 2 + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 1, "Should have fetched once");
 
-    await sleep(INTERVAL + 50);
+    await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 2, "Should have fetched once with normal interval");
   });
 
   it("should re-start the timer if interval was changed", async () => {
-    const INTERVAL = 500;
-
     const { fetchStub } = createInstance({
       id: "test-folder-interval-change",
       interval: INTERVAL,
@@ -125,16 +120,16 @@ describe("Zen Live Folder Scheduling", () => {
     instance.start();
 
     sinon.assert.notCalled(fetchStub);
-    await sleep(INTERVAL + INTERVAL / 5);
+    await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
 
-    const NEW_INTERVAL = 1000;
+    const NEW_INTERVAL = 500;
     instance.state.interval = NEW_INTERVAL;
 
     instance.stop();
     instance.start();
 
-    await sleep(NEW_INTERVAL + NEW_INTERVAL / 5);
+    await sleep(NEW_INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 2, "Should have once after the new interval");
   });
 });

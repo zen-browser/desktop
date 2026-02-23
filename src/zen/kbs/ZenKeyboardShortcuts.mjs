@@ -658,6 +658,13 @@ class nsZenKeyboardShortcutsLoader {
         shortcut.setModifiers(
           nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
         );
+        return;
+      }
+
+      if (AppConstants.platform == "macosx" && shortcut.getID() === "key_viewSourceSafari") {
+        shortcut.setModifiers(
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
+        );
       }
     };
 
@@ -772,11 +779,7 @@ class nsZenKeyboardShortcutsLoader {
         "U",
         "",
         ZEN_SPLIT_VIEW_SHORTCUTS_GROUP,
-        nsKeyShortcutModifiers.fromObject(
-          AppConstants.platform == "macosx"
-            ? { accel: true, alt: true, shift: true }
-            : { accel: true, alt: true }
-        ),
+        nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
         "cmd_zenSplitViewUnsplit",
         "zen-split-view-shortcut-unsplit"
       )
@@ -1162,10 +1165,10 @@ class nsZenKeyboardShortcutsVersioner {
     }
 
     if (version < 17 && AppConstants.platform == "macosx") {
-      // Migrate old macOS default for unsplit from Cmd+Opt+U to Cmd+Opt+Shift+U
-      // to avoid colliding with the page source shortcut.
+      // Migrate old macOS Safari view-source alias shortcut from Cmd+Opt+U
+      // to Cmd+Opt+Shift+U to avoid colliding with split-view unsplit.
       for (let shortcut of data) {
-        if (shortcut.getID() != "zen-split-view-unsplit") {
+        if (shortcut.getID() != "key_viewSourceSafari") {
           continue;
         }
 

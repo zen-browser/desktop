@@ -160,7 +160,7 @@ body {
   align-items: center;
   background-color: #f6f6f8;
   border: solid 1px #e7e7e7ab;
-
+  
   @media (-moz-windows-mica) {
     background-color: #f6f6f8c0;
     border: none;
@@ -391,7 +391,7 @@ body {
   margin-left: 0px;
   margin-right: 10px;
   @media (-moz-platform: macos) {
-    margin-left: 10px;
+    margin-left: 6px;
     margin-right: 0px;
   }
 }

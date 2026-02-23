@@ -622,6 +622,7 @@ ${cssSelector} {
     this.currentBoostData.changeWasMade = true;
 
     if (event.target.id == "zen-boost-magic-theme") {
+      this.currentBoostData.enableColorBoost = true;
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
       this.updateButtonToggleVisuals();
       this.updateCurrentBoost();
@@ -766,7 +767,6 @@ ${cssSelector} {
    * @param {boolean} userAction - Whether this was triggered by a user action (default: true).
    */
   onToggleInvert(userAction = true) {
-    this.currentBoostData.enableColorBoost = true;
     this.currentBoostData.smartInvert = !this.currentBoostData.smartInvert;
 
     if (userAction) {

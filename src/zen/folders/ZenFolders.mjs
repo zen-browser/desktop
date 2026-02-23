@@ -921,7 +921,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     gZenEmojiPicker
-      .open(group.icon, { onlySvgIcons: true })
+      .open(group.icon, { onlySvgIcons: true, allowNone: Boolean(group.iconURL) })
       .then((icon) => {
         this.setFolderUserIcon(group, icon);
         group.dispatchEvent(new CustomEvent("TabGroupUpdate", { bubbles: true }));

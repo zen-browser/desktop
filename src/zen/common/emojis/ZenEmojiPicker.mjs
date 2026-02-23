@@ -217,7 +217,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#panel.hidePopup();
   }
 
-  open(anchor, { onlySvgIcons = false, emojiAsSVG = false } = {}) {
+  open(anchor, { onlySvgIcons = false, emojiAsSVG = false, allowNone = true } = {}) {
     if (this.#currentPromise) {
       return null;
     }
@@ -233,6 +233,11 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       this.#panel.setAttribute("only-svg-icons", "true");
     } else {
       this.#panel.removeAttribute("only-svg-icons");
+    }
+    if (allowNone) {
+      this.#panel.removeAttribute("hide-none-option");
+    } else {
+      this.#panel.setAttribute("hide-none-option", "true");
     }
     this.#panel.openPopup(anchor, "after_start", 0, 0, false, false);
     return this.#currentPromise;

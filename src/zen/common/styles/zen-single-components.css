@@ -87,6 +87,13 @@
     }
   }
 
+  &[hide-none-option="true"] {
+    & #PanelUI-zen-emojis-picker-none {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
   #PanelUI-zen-emojis-picker-none label {
     display: none;
   }

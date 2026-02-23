@@ -497,7 +497,9 @@ class nsZenBoostsManager {
    * @returns {boolean} True if the URI scheme is http or https, false otherwise.
    */
   canBoostSite(uri) {
-    if(!uri || !uri.schemeIs) return false;
+    if(!uri || !uri.schemeIs) {
+      return false;
+    }
     return uri.schemeIs("http") || uri.schemeIs("https");
   }
 
@@ -523,12 +525,12 @@ class nsZenBoostsManager {
    * @param {Window} parentWindow - The parent browser window
    * @param {Boost} boost - The boost which will be edited
    * @param {nsIURI} domainUri - The boost which will be edited
-   * @returns {Window} The instanced editor window
+   * @returns {Window|null} The instanced editor window
    */
   openBoostWindow(parentWindow, boost, domainUri) {
     if (!this.canBoostSite(domainUri)) {
       console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
-      return;
+      return null;
     }
     
     const domain = boost.domain;

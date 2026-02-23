@@ -958,10 +958,14 @@ ${cssSelector} {
       "zen-boost-rename-boost-prompt",
     ]);
 
-    let input = { value: this.currentBoostData.boostName }; // Default value and also output
+    let input = { 
+      value: this.currentBoostData.boostName // Default value and also output
+    }; 
     const success = await Services.prompt.prompt(this.openerWindow, title.value, null, input, null, { value: false });
 
-    if (!success) return;
+    if (!success) {
+      return;
+    }
     const newName = input.value;
     const maxDisplayedNameChars = 10;
     

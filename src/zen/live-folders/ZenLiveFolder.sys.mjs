@@ -46,8 +46,7 @@ export class nsZenLiveFolderProvider {
       let delay = interval - timeSinceLast;
 
       if (delay <= 0) {
-        this.#fetchLiveFolder();
-        delay = interval;
+        delay = 0;
       }
 
       this.#task = new lazy.DeferredTask(async () => {

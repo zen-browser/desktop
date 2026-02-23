@@ -17,6 +17,22 @@ describe("Zen Live Folder Scheduling", () => {
   let sandbox;
   let mockManager;
 
+  function createInstance({ id, interval, lastFetched }) {
+    instance = new nsZenLiveFolderProvider({
+      id,
+      manager: mockManager,
+      state: {
+        interval,
+        lastFetched,
+      },
+    });
+
+    const fetchStub = sandbox.stub(instance, "fetchItems").resolves(["item1"]);
+    sandbox.stub(instance, "getMetadata").returns({});
+
+    return { fetchStub };
+  }
+
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     mockManager = {
@@ -35,26 +51,31 @@ describe("Zen Live Folder Scheduling", () => {
   it("should fetch correctly at an interval", async () => {
     const INTERVAL = 250;
 
-    instance = new nsZenLiveFolderProvider({
+    const { fetchStub } = createInstance({
       id: "test-folder",
-      manager: mockManager,
-      state: {
-        interval: INTERVAL,
-        lastFetched: Date.now(),
-      },
+      interval: INTERVAL,
+      lastFetched: Date.now(),
     });
 
-    const fetchStub = sandbox.stub(instance, "fetchItems").resolves(["item1"]);
-    sandbox.stub(instance, "getMetadata").returns({});
-
     instance.start();
-
     sinon.assert.notCalled(fetchStub);
+
+    const startSpy = sandbox.spy(instance, "start");
+
     await sleep(INTERVAL + 50);
     Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
 
     await sleep(INTERVAL + 50);
-    Assert.equal(fetchStub.callCount, 2, "Should have fetched twice");
+    Assert.equal(fetchStub.callCount, 2, "Should have fetched 2 times");
+    Assert.deepEqual(
+      startSpy.firstCall.args,
+      [false],
+      "Start should have been called once with false"
+    );
+
+    await sleep(INTERVAL + 50);
+    Assert.equal(fetchStub.callCount, 3, "Should have fetched 3 times");
+    Assert.equal(startSpy.callCount, 1, "Start should not been called");
 
     sinon.assert.called(mockManager.saveState);
     sinon.assert.called(mockManager.onLiveFolderFetch);
@@ -63,17 +84,11 @@ describe("Zen Live Folder Scheduling", () => {
   it("should fetch immediately if overdue", async () => {
     const INTERVAL = 500;
 
-    instance = new nsZenLiveFolderProvider({
+    const { fetchStub } = createInstance({
       id: "test-folder-overdue",
-      manager: mockManager,
-      state: {
-        interval: INTERVAL,
-        lastFetched: Date.now() - 3600000,
-      },
+      interval: INTERVAL,
+      lastFetched: Date.now() - 3600000,
     });
-
-    const fetchStub = sandbox.stub(instance, "fetchItems").resolves(["item1"]);
-    sandbox.stub(instance, "getMetadata").returns({});
 
     instance.start();
 
@@ -81,20 +96,31 @@ describe("Zen Live Folder Scheduling", () => {
     sinon.assert.calledOnce(fetchStub);
   });
 
+  it("should fetch with correct offset", async () => {
+    const INTERVAL = 500;
+
+    const { fetchStub } = createInstance({
+      id: "test-folder-delay",
+      interval: INTERVAL,
+      lastFetched: Date.now() - INTERVAL / 2,
+    });
+
+    instance.start();
+    await sleep(INTERVAL / 2 + 50);
+    Assert.equal(fetchStub.callCount, 1, "Should have fetched once");
+
+    await sleep(INTERVAL + 50);
+    Assert.equal(fetchStub.callCount, 2, "Should have fetched once with normal interval");
+  });
+
   it("should re-start the timer if interval was changed", async () => {
     const INTERVAL = 500;
 
-    instance = new nsZenLiveFolderProvider({
+    const { fetchStub } = createInstance({
       id: "test-folder-interval-change",
-      manager: mockManager,
-      state: {
-        interval: INTERVAL,
-        lastFetched: Date.now(),
-      },
+      interval: INTERVAL,
+      lastFetched: Date.now(),
     });
-
-    const fetchStub = sandbox.stub(instance, "fetchItems").resolves(["item1"]);
-    sandbox.stub(instance, "getMetadata").returns({});
 
     instance.start();
 

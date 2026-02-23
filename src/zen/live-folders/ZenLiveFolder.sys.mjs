@@ -32,26 +32,34 @@ export class nsZenLiveFolderProvider {
     return result;
   }
 
-  start() {
-    const now = Date.now();
-    const lastFetched = this.state.lastFetched;
+  start(checkDelay = true) {
     const interval = this.state.interval;
-
-    const timeSinceLast = now - lastFetched;
-    let delay = interval - timeSinceLast;
-
-    if (delay <= 0) {
-      this.#fetchLiveFolder();
-    }
-
     if (this.#task) {
       this.#task.finalize();
     }
 
-    this.#task = new lazy.DeferredTask(async () => {
-      await this.#fetchLiveFolder();
-      this.#task.arm();
-    }, interval);
+    if (checkDelay) {
+      const now = Date.now();
+      const lastFetched = this.state.lastFetched;
+
+      const timeSinceLast = now - lastFetched;
+      let delay = interval - timeSinceLast;
+
+      if (delay <= 0) {
+        this.#fetchLiveFolder();
+        delay = interval;
+      }
+
+      this.#task = new lazy.DeferredTask(async () => {
+        await this.#fetchLiveFolder();
+        this.start(false);
+      }, delay);
+    } else {
+      this.#task = new lazy.DeferredTask(async () => {
+        await this.#fetchLiveFolder();
+        this.#task.arm();
+      }, interval);
+    }
 
     this.#task.arm();
   }

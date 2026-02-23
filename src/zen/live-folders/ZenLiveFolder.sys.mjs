@@ -131,7 +131,7 @@ export class nsZenLiveFolderProvider {
     this.manager.saveState();
   }
 
-  fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
+  fetch(url, { maxContentLength = 5 * 1024 * 1024, method = "GET", body = null } = {}) {
     const uri = lazy.NetUtil.newURI(url);
     // TODO: Support userContextId when fetching, it should be inherited from the folder's
     // current space context ID.
@@ -163,6 +163,27 @@ export class nsZenLiveFolderProvider {
         Ci.nsIContentPolicy.TYPE_DOCUMENT
       )
       .QueryInterface(Ci.nsIHttpChannel);
+
+    const upperMethod = method.toUpperCase();
+    if (upperMethod === "POST") {
+      channel.QueryInterface(Ci.nsIHttpChannel).QueryInterface(Ci.nsIUploadChannel2);
+
+      let uploadBody = body;
+      if (uploadBody == null) {
+        uploadBody = "";
+      } else if (typeof uploadBody !== "string") {
+        uploadBody = JSON.stringify(uploadBody);
+      }
+
+      const stream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
+        Ci.nsIStringInputStream
+      );
+
+      stream.setByteStringData(uploadBody);
+      channel.explicitSetUploadStream(stream, "application/json", -1, "POST", false);
+    }
+
+    channel.requestMethod = upperMethod;
 
     let httpStatus = null;
     let contentType = "";

@@ -71,7 +71,11 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * Converts [r, g, b] array to NSColor
    * Make a color out of r,g,b,a values. This assumes that the r,g,b,a
    * values are properly constrained to 0-255.
+   *
    * @param {Array} rgb - Array of red, green, blue values [0, 255]
+   * @param {number} rgb.0 - Red color value [0, 255]
+   * @param {number} rgb.1 - Green color value [0, 255]
+   * @param {number} rgb.2 - Blue color value [0, 255]
    * @param {number} contrast - Contrast value (default 255)
    * @returns {number} NSColor integer representation
    */
@@ -93,7 +97,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * @param   {number}  h       The hue
    * @param   {number}  s       The saturation
    * @param   {number}  l       The lightness
-   * @return  {Array}           The RGB representation
+   * @returns  {Array}           The RGB representation
    */
   #hslToRgb(h, s, l) {
     const { round } = Math;
@@ -123,7 +127,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * @param   {number}  r       The red value
    * @param   {number}  g       The green value
    * @param   {number}  b       The blue value
-   * @return  {Array}           The HSL representation
+   * @returns  {Array}           The HSL representation
    */
   #rgbToHsl(r, g, b) {
     r /= 255;
@@ -133,10 +137,15 @@ export class ZenBoostsChild extends JSWindowActorChild {
     let min = Math.min(r, g, b);
     let d = max - min;
     let h;
-    if (d === 0) h = 0;
-    else if (max === r) h = ((g - b) / d) % 6;
-    else if (max === g) h = (b - r) / d + 2;
-    else if (max === b) h = (r - g) / d + 4;
+    if (d === 0) {
+      h = 0;
+    } else if (max === r) {
+      h = ((g - b) / d) % 6;
+    } else if (max === g) {
+      h = (b - r) / d + 2;
+    } else if (max === b) {
+      h = (r - g) / d + 4;
+    }
     let l = (min + max) / 2;
     let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
     return [h * 60, s, l];
@@ -145,6 +154,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   /**
    * Handles DOM events for the actor. Applies boost settings when a document
    * element is inserted.
+   *
    * @param {Event} event - The DOM event to handle.
    */
   handleEvent(event) {
@@ -205,7 +215,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   /**
    * Handles messages received from the parent actor.
-   * @param {Object} message - The message object containing name and data.
+   *
+   * @param {object} message - The message object containing name and data.
    */
   async receiveMessage(message) {
     switch (message.name) {
@@ -246,6 +257,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.sendAsyncMessage("ZenBoost:OpenInspector");
         break;
     }
+    return null;
   }
 
   /**
@@ -253,35 +265,50 @@ export class ZenBoostsChild extends JSWindowActorChild {
    * Helper function for hslToRgb conversion
    */
   #hueToRgb(p, q, t) {
-    if (t < 0) t += 1;
-    if (t > 1) t -= 1;
-    if (t < 1 / 6) return p + (q - p) * 6 * t;
-    if (t < 1 / 2) return q;
-    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    if (t < 0) {
+      t += 1;
+    }
+    if (t > 1) {
+      t -= 1;
+    }
+    if (t < 1 / 6) {
+      return p + (q - p) * 6 * t;
+    }
+    if (t < 1 / 2) {
+      return q;
+    }
+    if (t < 2 / 3) {
+      return p + (q - p) * (2 / 3 - t) * 6;
+    }
     return p;
   }
 
   /**
    * Aquires the boost data for this website
-   * @returns {Object} Boost data for the current website
+   *
+   * @returns {object} Boost data for the current website
    */
   getWebsiteBoost() {
     const domain = this.browsingContext.topWindow?.location?.host;
-    if (!domain) return null;
+    if (!domain) {
+      return null;
+    }
 
     return this.sendQuery("ZenBoost:GetBoostForDomain", domain);
   }
 
   /**
    * Applies the boost settings for the current page if available.
+   *
    * @param {boolean} unloadStyles - Indicates whether to unload styles.
    */
   async #applyBoostForPageIfAvailable(unloadStyles = false) {
     const browsingContext = this.browsingContext;
+
     // Prevent applying boosts to iframes or non-top-level browsing contexts.
     // It makes the tab crash if we try to load stylesheets into an iframe's
     if (!browsingContext || browsingContext.parent !== null) {
-      return null;
+      return;
     }
 
     const boost = await this.getWebsiteBoost();
@@ -292,7 +319,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     if (boost) {
       const { boostData } = boost.boostEntry;
-      if (boost.styleSheet) this.#loadStyleSheet(boost.styleSheet);
+      if (boost.styleSheet) {
+        this.#loadStyleSheet(boost.styleSheet);
+      }
 
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
@@ -308,8 +337,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
         // Workspace color is converted to the HSL color space
         boost.workspaceGradient.forEach((color) => {
-          if (color.isPrimary)
+          if (color.isPrimary) {
             primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
+          }
         });
         // Workspace color is converted back to rgb
         // using the same modifiers as the color above
@@ -330,14 +360,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   /**
    * Loads the given stylesheet into the website
-   * @param {Object} styleSheet The stylesheet
+   *
+   * @param {object} styleSheet The stylesheet
    */
   #loadStyleSheet(styleSheet) {
     const browsingContext = this.browsingContext;
     styleSheet.uri = Services.io.newURI(styleSheet.uri);
 
     if (this.#currentSheet?.uuid !== styleSheet.uuid) {
-      if (this.#currentSheet) this.#unloadCurrentStyleSheet();
+      if (this.#currentSheet) {
+        this.#unloadCurrentStyleSheet();
+      }
       browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
       this.#currentSheet = styleSheet;
     }
@@ -355,7 +388,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   async #startZappingOverlay() {
-    if (this.#currentState === ZenBoostsChild.STATES.ZAP) return;
+    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+      return;
+    }
     this.#currentState = ZenBoostsChild.STATES.ZAP;
 
     this.#overlay = new lazy.ZapOverlay(this.document, this);
@@ -366,7 +401,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   async #startPickingOverlay() {
-    if (this.#currentState === ZenBoostsChild.STATES.PICKER) return;
+    if (this.#currentState === ZenBoostsChild.STATES.PICKER) {
+      return;
+    }
     this.#currentState = ZenBoostsChild.STATES.PICKER;
 
     this.#overlay = new lazy.SelectorComponent(
@@ -390,8 +427,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
     const domain = this.browsingContext.topWindow?.location?.host;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
-      selector: selector,
-      domain: domain,
+      selector,
+      domain,
     });
   }
 
@@ -399,8 +436,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
     const domain = this.browsingContext.topWindow?.location?.host;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
-      selector: selector,
-      domain: domain,
+      selector,
+      domain,
     });
   }
 
@@ -409,8 +446,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
       element.setAttribute("zen-zap-unhide", "true");
     });
 
-    if (!this.#zappedElementsTempShown.includes(selector))
+    if (!this.#zappedElementsTempShown.includes(selector)) {
       this.#zappedElementsTempShown.push(selector);
+    }
   }
 
   async tempHideZappedElement() {
@@ -424,7 +462,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   disableZapMode() {
-    if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
+    if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+      return;
+    }
     this.#currentState = ZenBoostsChild.STATES.NONE;
 
     this.#overlay?.tearDown();
@@ -435,7 +475,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   disablePickerMode() {
-    if (this.#currentState === ZenBoostsChild.STATES.NONE) return;
+    if (this.#currentState === ZenBoostsChild.STATES.NONE) {
+      return;
+    }
     this.#currentState = ZenBoostsChild.STATES.NONE;
 
     this.#overlay?.tearDown();

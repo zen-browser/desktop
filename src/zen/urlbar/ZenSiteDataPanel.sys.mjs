@@ -241,11 +241,15 @@ export class nsZenSiteDataPanel {
       boostButton.removeAttribute("boosting");
     }
 
-    if (!canBoostSite) return;
+    if (!canBoostSite) {
+      return;
+    }
 
-    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain))
+    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
       boostButton.setAttribute("boosting", "true");
-    else boostButton.removeAttribute("boosting");
+    } else {
+      boostButton.removeAttribute("boosting");
+    }
 
     /* Boosts panel */
 
@@ -256,7 +260,9 @@ export class nsZenSiteDataPanel {
       const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
       boosts.forEach((boost) => {
         const boostData = boost.boostEntry.boostData;
-        if (!boostData.changeWasMade) return;
+        if (!boostData.changeWasMade) {
+          return;
+        }
         validBoostCount++;
 
         const enabled = boost.id === activeBoostId;
@@ -773,7 +779,9 @@ export class nsZenSiteDataPanel {
 
   #onBoostClick(event) {
     const target = event.target.closest("[data-action-id]");
-    if (!target) return;
+    if (!target) {
+      return;
+    }
 
     const actionId = target.getAttribute("data-action-id");
     const domain = this.#getCurrentDomain();

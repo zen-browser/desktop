@@ -40,7 +40,7 @@ export class SelectorComponent {
    * @param {ZenBoostsChild} zenBoostsChild Boost JSActor child
    * @param {string[]} additionalZenContentIDs Additional IDs that will be considered as non website content
    * @param {Function<string>} onSelect Callback for when a selection was made. The parameter is the css selector
-   * @param {Object[]} localizationArray An array of 3 { id: 'l10n-id' } fluent IDs for localization going from the inputs left to right
+   * @param {object[]} localizationArray An array of 3 { id: 'l10n-id' } fluent IDs for localization going from the inputs left to right
    */
   constructor(
     document,
@@ -54,7 +54,9 @@ export class SelectorComponent {
     this.zenBoostsChild = zenBoostsChild;
     this.#onSelect = onSelect;
 
-    if (localizationArray != null) this.#localizationArray = localizationArray;
+    if (localizationArray != null) {
+      this.#localizationArray = localizationArray;
+    }
 
     const baseSelectorIDs = ["select-controls", "select-controls-container"];
     this.#zenContentIDs = [...additionalZenContentIDs, ...baseSelectorIDs];
@@ -64,7 +66,9 @@ export class SelectorComponent {
    * Initializes the zap mode and inserts anonymous content
    */
   async initialize() {
-    if (this.#initialized) return;
+    if (this.#initialized) {
+      return;
+    }
 
     this.#content = this.document.insertAnonymousContent();
     this.#content.root.appendChild(this.fragment);
@@ -120,6 +124,7 @@ export class SelectorComponent {
 
   /**
    * Sets the state of the zap mode
+   *
    * @param {STATES} newState New state
    * @param {*} data Optional additional data
    */
@@ -209,9 +214,11 @@ export class SelectorComponent {
     this.#resetHoverDiv();
 
     // The highlight should be gone before the onSelect is called
-    this.window.requestAnimationFrame((t) => {
+    this.window.requestAnimationFrame(() => {
       this.setState(SelectorComponent.STATES.SELECTING);
-      if (cssPath) this.#onSelect(cssPath);
+      if (cssPath) {
+        this.#onSelect(cssPath);
+      }
     });
   }
 
@@ -232,6 +239,7 @@ export class SelectorComponent {
 
   /**
    * Highlights a selection of elements on the website
+   *
    * @param {List} selection A list of the web elements that should be highlighted
    */
   showHighlight(selection) {
@@ -240,12 +248,16 @@ export class SelectorComponent {
 
     let counter = 0;
     for (const element of selection) {
-      if (counter >= 100) break; // Avoid too many instanced objects
+      if (counter >= 100) {
+        break;
+      } // Avoid too many instanced objects
       counter++;
 
       const padding = 5;
       const elementMeasurement = element?.getBoundingClientRect() ?? undefined;
-      if (elementMeasurement == undefined) continue;
+      if (elementMeasurement == undefined) {
+        continue;
+      }
 
       const highlightDiv = this.document.createElement("div");
       highlightDiv.classList.add("highlight");
@@ -288,9 +300,11 @@ export class SelectorComponent {
       this.#selectedElement
     );
 
-    if (!selectionPath) return;
+    if (!selectionPath) {
+      return;
+    }
 
-    this.getElementById("selector-element-preview-text").innerHTML =
+    this.getElementById("selector-element-preview-text").textValue =
       `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
   }
 
@@ -394,15 +408,16 @@ export class SelectorComponent {
 
     this.selectorComponent.style.transformOrigin = `${originX}px ${originY}px`;
 
-    this.window.requestAnimationFrame((t) => {
+    this.window.requestAnimationFrame(() => {
       this.selectorComponent.setAttribute("is-appearing", "true");
     });
   }
 
   /**
    * This function handles page events while the overlay is active
+   *
    * @param {Event} event The event which will be handled by the overlay
-   * @param {Boolean} prevent True if the event should be prevented
+   * @param {boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
     let isZenContent = false;
@@ -427,7 +442,9 @@ export class SelectorComponent {
     }
 
     // Let the interactable ids pass through
-    if (isZenContent) return;
+    if (isZenContent) {
+      return;
+    }
 
     if (prevent) {
       // From ScreenshotsComponentChild.sys.mjs:103
@@ -445,7 +462,9 @@ export class SelectorComponent {
    * Called after a page change to update the highlight and selector component position
    */
   #handlePageChange() {
-    if (this.#currentState !== SelectorComponent.STATES.SELECTED) return;
+    if (this.#currentState !== SelectorComponent.STATES.SELECTED) {
+      return;
+    }
 
     this.updateHighlight();
     this.#setSelectorComponentPosition();
@@ -453,17 +472,26 @@ export class SelectorComponent {
 
   /**
    * Handles the mouse move event
+   *
    * @param {Event} event Mouse move event params
-   * @param {Boolean} isZenContent Flag if the target element is a zen related element
+   * @param {boolean} isZenContent Flag if the target element is a zen related element
    */
   #handleMouseMove(event, isZenContent) {
-    if (this.#lastOverElement === event.target) return;
+    if (this.#lastOverElement === event.target) {
+      return;
+    }
     if (!isZenContent) {
       this.#lastOverElement = event.target;
-      if (this.#currentState === SelectorComponent.STATES.SELECTING) this.#showHoverDiv();
-    } else this.#hideHoverDiv();
+      if (this.#currentState === SelectorComponent.STATES.SELECTING) {
+        this.#showHoverDiv();
+      }
+    } else {
+      this.#hideHoverDiv();
+    }
 
-    if (this.#currentState !== SelectorComponent.STATES.SELECTING || !event.target) return;
+    if (this.#currentState !== SelectorComponent.STATES.SELECTING || !event.target) {
+      return;
+    }
 
     const bounds = event.target.getBoundingClientRect();
     const padding = 5;
@@ -478,8 +506,9 @@ export class SelectorComponent {
 
   /**
    * Handles the mouse click event
+   *
    * @param {Event} event Mouse move event params
-   * @param {Boolean} isZenContent Flag if the target element is a zen related element
+   * @param {boolean} isZenContent Flag if the target element is a zen related element
    */
   #handleClick(event, isZenContent) {
     // Safeguards for protecting anonymous content from being zapped
@@ -491,15 +520,16 @@ export class SelectorComponent {
       return;
     }
 
-    if (this.#currentState === SelectorComponent.STATES.SELECTING && !isZenContent)
+    if (this.#currentState === SelectorComponent.STATES.SELECTING && !isZenContent) {
       this.setState(SelectorComponent.STATES.SELECTED, event.target);
+    }
   }
 
   /**
-   * @param {Number} x Value
-   * @param {Number} min Minimum limit
-   * @param {Number} max Maximum limit
-   * @returns A value which always lies between min and max
+   * @param {number} x Value
+   * @param {number} min Minimum limit
+   * @param {number} max Maximum limit
+   * @returns {number} A value which always lies between min and max
    */
   clamp(x, min, max) {
     return Math.min(Math.max(x, min), max);
@@ -509,6 +539,7 @@ export class SelectorComponent {
    * When selecting an area to zap there can be a set of zapped elements
    * since related elements can be included.
    * This method returns all targeted elements for the zapping process.
+   *
    * @returns {Element[]} An array of selected elements
    */
   getSelection() {
@@ -517,7 +548,9 @@ export class SelectorComponent {
       this.#relatedValueIndex,
       this.#selectedElement
     );
-    if (!selector) return [];
+    if (!selector) {
+      return [];
+    }
 
     return this.document.querySelectorAll(selector);
   }
@@ -529,33 +562,47 @@ export class SelectorComponent {
   getSelectionPath(document, relatedValueIndex, selectedElement) {
     let path = [];
 
-    const escape = (str) => CSS.escape(str);
+    const cssescape = (str) => CSS.escape(str);
 
     // Body and Html nodes are not considered valid here
     const isValidNode = (element) => {
-      if (!element) return false;
-      else if (element.tagName.toLowerCase() === "body") return false;
-      else if (element.tagName.toLowerCase() === "html") return false;
+      if (!element) {
+        return false;
+      } else if (element.tagName.toLowerCase() === "body") {
+        return false;
+      } else if (element.tagName.toLowerCase() === "html") {
+        return false;
+      }
       return true;
     };
 
     const nthChild = (element) => {
-      if (!element) return "";
-      if (!element.parentNode) return "";
+      if (!element) {
+        return "";
+      }
+      if (!element.parentNode) {
+        return "";
+      }
       const parent = element.parentNode;
       const index = Array.prototype.indexOf.call(parent.children, element) + 1;
 
-      if (index === 1) return ":first-child";
-      if (index === parent.children.length) return ":last-child";
+      if (index === 1) {
+        return ":first-child";
+      }
+      if (index === parent.children.length) {
+        return ":last-child";
+      }
       return `:nth-child(${index})`;
     };
 
     const getIdentification = (element, specifity = 0) => {
-      if (!element) return "";
-      const id = specifity < 2 && element.id ? `#${escape(element.id)}` : "";
+      if (!element) {
+        return "";
+      }
+      const id = specifity < 2 && element.id ? `#${cssescape(element.id)}` : "";
       const cls =
-        specifity < 1 && element.classList.length > 0
-          ? "." + [...element.classList].map((c) => escape(c)).join(".")
+        specifity < 1 && element.classList.length
+          ? "." + [...element.classList].map((c) => cssescape(c)).join(".")
           : "";
       const tag = element.tagName ? element.tagName.toLowerCase() : "";
       return `${tag}${id}${cls}`;
@@ -563,7 +610,9 @@ export class SelectorComponent {
 
     const traverse = (element, specifity = 0, pathArray) => {
       let currentElement = element;
-      if (!isValidNode(currentElement)) return "";
+      if (!isValidNode(currentElement)) {
+        return;
+      }
 
       pathArray.push(nthChild(currentElement));
       pathArray.push(getIdentification(currentElement, specifity));
@@ -571,9 +620,11 @@ export class SelectorComponent {
       if (currentElement && currentElement.parentNode) {
         pathArray.push(" > ");
         pathArray.push(getIdentification(currentElement.parentNode, 0));
+        const tempBuild = build(pathArray);
 
         while (
-          document.querySelectorAll(build(pathArray)).length > 1 &&
+          tempBuild &&
+          document.querySelectorAll(tempBuild).length > 1 &&
           isValidNode(currentElement.parentNode)
         ) {
           currentElement = currentElement.parentNode;
@@ -586,14 +637,17 @@ export class SelectorComponent {
 
     const build = (pathArray) => pathArray.toReversed().join("");
 
-    const findBestExactSelector = (element, document) => {
+    const findBestExactSelector = (element, doc) => {
       let buildMap = new Map();
 
       let pathExactElement = [];
       traverse(element, 0, pathExactElement);
 
       const pathExactElementBuilt = build(pathExactElement);
-      const pathExactElementLength = document.querySelectorAll(pathExactElementBuilt).length;
+      const pathExactElementLength = (
+        parentExactElement ? doc.querySelectorAll(pathExactElementBuilt) : []
+      ).length;
+
       buildMap.set(pathExactElementLength, pathExactElementBuilt);
 
       let pathTypeElement = [];
@@ -604,9 +658,13 @@ export class SelectorComponent {
       }
 
       const pathTypeElementBuilt = build(pathTypeElement);
-      const pathTypeElementLength = document.querySelectorAll(pathTypeElementBuilt).length;
-      if (!buildMap.has(pathTypeElementLength))
+      const pathTypeElementLength = (
+        parentExactElement ? doc.querySelectorAll(pathTypeElementBuilt) : []
+      ).length;
+
+      if (!buildMap.has(pathTypeElementLength)) {
         buildMap.set(pathTypeElementLength, pathTypeElementBuilt);
+      }
 
       let parentExactElement = [];
       if (isValidNode(element.parentNode)) {
@@ -614,9 +672,13 @@ export class SelectorComponent {
       }
 
       const pathParentElementBuilt = build(parentExactElement);
-      const pathParentElementLength = document.querySelectorAll(pathParentElementBuilt).length;
-      if (!buildMap.has(pathParentElementLength))
+      const pathParentElementLength = (
+        parentExactElement ? doc.querySelectorAll(pathParentElementBuilt) : []
+      ).length;
+
+      if (!buildMap.has(pathParentElementLength)) {
         buildMap.set(pathParentElementLength, pathParentElementBuilt);
+      }
 
       let smallestLength = Number.MAX_VALUE;
       let smallestLengthPath = null;
@@ -630,7 +692,9 @@ export class SelectorComponent {
       return smallestLengthPath;
     };
 
-    if (!isValidNode(selectedElement)) return null;
+    if (!isValidNode(selectedElement)) {
+      return null;
+    }
     switch (relatedValueIndex) {
       // Sometimes getting the exact element we want is not guaranteed by
       // one specific path builder. It is best to build multiple possible paths
@@ -640,7 +704,9 @@ export class SelectorComponent {
         return findBestExactSelector(selectedElement, document);
       // Getting the exact parent element of selected element
       case 1:
-        if (!isValidNode(selectedElement.parentNode)) return null;
+        if (!isValidNode(selectedElement.parentNode)) {
+          return null;
+        }
         traverse(selectedElement.parentNode, 0, path);
         break;
       // Getting the type of selected element with same exact parent
@@ -665,12 +731,16 @@ export class SelectorComponent {
         break;
       // Getting the same type of the parent
       case 5:
-        if (!isValidNode(selectedElement.parentNode)) return null;
+        if (!isValidNode(selectedElement.parentNode)) {
+          return null;
+        }
         path.push(getIdentification(selectedElement.parentNode, 2));
         break;
       // Get any element with same parent
       case 6:
-        if (!isValidNode(selectedElement.parentNode)) return null;
+        if (!isValidNode(selectedElement.parentNode)) {
+          return null;
+        }
 
         path.push("*");
         path.push(" > ");

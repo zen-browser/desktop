@@ -78,6 +78,7 @@ export class ZapOverlay {
   /**
    * Lazily loads the next available dissolve effect.
    * The returned effect might not currently be ready to trigger again.
+   *
    * @returns {Promise<ZapDissolve>} Dissolve effect
    */
   async #getNextDissolveEffect() {
@@ -161,7 +162,9 @@ export class ZapOverlay {
 
       let counter = 0;
       elements.forEach(async (element) => {
-        if (counter > this.#dissolvePoolSize) return;
+        if (counter > this.#dissolvePoolSize) {
+          return;
+        }
         counter++;
 
         this.#getNextDissolveEffect().then((dissolve) => {
@@ -176,7 +179,8 @@ export class ZapOverlay {
 
   /**
    * Handles the removal of a zap selector
-   * @param {String} cssPath The css selector of the zap
+   *
+   * @param {string} cssPath The css selector of the zap
    */
   #handleUnzap(cssPath) {
     this.zenBoostsChild.removeZapSelector(cssPath);
@@ -199,7 +203,6 @@ export class ZapOverlay {
 
   /**
    * Rebuilds the unzap button list at the bottom of the website
-   * @param {Event} event
    */
   async #updateZappedList() {
     const zapList = this.getElementById("zap-list");
@@ -238,13 +241,16 @@ export class ZapOverlay {
       { id: "zen-remove-zap-helper" },
     ]);
 
-    if (boostData.zapSelectors.length == 0)
-      zapList.innerHTML += `<p class="pcenter">${addZapHelper.value}</p>`;
-    else zapList.innerHTML += `<p>${removeZapHelper.value}</p>`;
+    if (!boostData.zapSelectors.length) {
+      zapList.textValue += `<p class="pcenter">${addZapHelper.value}</p>`;
+    } else {
+      zapList.textValue += `<p>${removeZapHelper.value}</p>`;
+    }
   }
 
   /**
    * Handles the mouse enter event for the unzap buttons
+   *
    * @param {Event} event
    */
   #unzapButtonHover(event) {
@@ -256,9 +262,11 @@ export class ZapOverlay {
 
     // This has to run with later, as the elements we are trying to highlight do not exist yet.
     // The css has to load first and calculate the bounding boxes for the elements before we can highlight.
-    this.window.requestAnimationFrame((t) => {
+    this.window.requestAnimationFrame(() => {
       const selection = this.document.querySelectorAll(selector);
-      if (selection.length != 0) this.#selectorComponent.showHighlight(selection);
+      if (selection.length) {
+        this.#selectorComponent.showHighlight(selection);
+      }
     });
 
     // Cancle an ongoing select action
@@ -267,6 +275,7 @@ export class ZapOverlay {
 
   /**
    * Handles the mouse exit event for the unzap buttons
+   *
    * @param {Event} event
    */
   #unzapButtonUnhover(event) {
@@ -279,6 +288,7 @@ export class ZapOverlay {
 
   /**
    * Handles button clicks from the unzap list
+   *
    * @param {Event} event
    */
   #unzapButtonClick(event) {
@@ -291,7 +301,7 @@ export class ZapOverlay {
 
     // In order to avoid the clicked element being null when the
     // SelectorComponent receives it, push the list re-creation to the next frame
-    this.window.requestAnimationFrame((t) => {
+    this.window.requestAnimationFrame(() => {
       this.#handleUnzap(selector);
     });
   }
@@ -319,8 +329,9 @@ export class ZapOverlay {
 
   /**
    * This function handles page events while the overlay is active
+   *
    * @param {Event} event The event which will be handled by the overlay
-   * @param {Boolean} prevent True if the event should be prevented
+   * @param {boolean} prevent True if the event should be prevented
    */
   handleEvent(event, prevent) {
     switch (event.type) {
@@ -339,25 +350,34 @@ export class ZapOverlay {
 
   /**
    * Handles the mouse click event
+   *
    * @param {Event} event Mouse move event params
    */
   #handleClick(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") this.#unzapButtonClick(event);
+    if (event.originalTarget.id == "zen-zap-unzap") {
+      this.#unzapButtonClick(event);
+    }
   }
 
   /**
    * Handles the mouse enter event
+   *
    * @param {Event} event Mouse enter event params
    */
   #handleHoverDelegation(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") this.#unzapButtonHover(event);
+    if (event.originalTarget.id == "zen-zap-unzap") {
+      this.#unzapButtonHover(event);
+    }
   }
 
   /**
    * Handles the mouse leave event
+   *
    * @param {Event} event Mouse leave event params
    */
   #handleUnhoverDelegation(event) {
-    if (event.originalTarget.id == "zen-zap-unzap") this.#unzapButtonUnhover(event);
+    if (event.originalTarget.id == "zen-zap-unzap") {
+      this.#unzapButtonUnhover(event);
+    }
   }
 }

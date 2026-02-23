@@ -1575,7 +1575,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     });
 
     // Notify boosts for auto theme
-    Services.obs.notifyObservers(null, "zen-boosts-update", null);
+    Services.obs.notifyObservers(null, "zen-boosts-update");
   }
 
   fixTheme(theme) {

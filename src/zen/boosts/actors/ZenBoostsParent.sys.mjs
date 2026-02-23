@@ -37,7 +37,8 @@ export class ZenBoostsParent extends JSWindowActorParent {
   /**
    * Observer callback that handles boost update notifications.
    * Sends a message to child actors when boosts are updated.
-   * @param {Object} subject - The subject of the notification.
+   *
+   * @param {object} subject - The subject of the notification.
    * @param {string} topic - The topic of the notification.
    */
   observe(subject, topic) {
@@ -57,8 +58,9 @@ export class ZenBoostsParent extends JSWindowActorParent {
   /**
    * Handles messages received from child actors.
    * Retrieves boost data for a domain when requested.
-   * @param {Object} message - The message object containing name and data.
-   * @returns {Promise<Object|null>} A promise that resolves to the boost data or null.
+   *
+   * @param {object} message - The message object containing name and data.
+   * @returns {Promise<object | null>} A promise that resolves to the boost data or null.
    */
   async receiveMessage(message) {
     switch (message.name) {
@@ -79,6 +81,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
         } else {
           await gDevTools.showToolboxForTab(tab, "inspector");
         }
+        break;
       }
       case "ZenBoost:Notify": {
         Services.obs.notifyObservers(null, message.data.topic, message.data.msg);
@@ -87,9 +90,15 @@ export class ZenBoostsParent extends JSWindowActorParent {
       case "ZenBoost:ZapSelector": {
         const data = message.data;
 
-        if (!data.action) return;
-        if (!data.selector) return;
-        if (!data.domain) return;
+        if (!data.action) {
+          break;
+        }
+        if (!data.selector) {
+          break;
+        }
+        if (!data.domain) {
+          break;
+        }
 
         if (data.action == "add") {
           lazy.gZenBoostsManager.addZapSelectorToActive(data.selector, data.domain);
@@ -104,10 +113,14 @@ export class ZenBoostsParent extends JSWindowActorParent {
         const domain = message.data;
         const embedder = this.browsingContext.top.embedderElement;
 
-        if (!embedder || !domain) return null;
+        if (!embedder || !domain) {
+          break;
+        }
 
         const exists = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
-        if (!exists) return null;
+        if (!exists) {
+          break;
+        }
 
         const topWindowIsDarkMode =
           embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === "dark";
@@ -130,8 +143,12 @@ export class ZenBoostsParent extends JSWindowActorParent {
             : null,
         };
       }
-      default:
+      default: {
         console.warn(`[ZenBoostsParent]: Unknown message: ${message.name}`);
+        break;
+      }
     }
+
+    return null;
   }
 }

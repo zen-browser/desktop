@@ -11,7 +11,6 @@ const lazy = XPCOMUtils.declareLazy({
     service: "@mozilla.org/content/style-sheet-service;1",
     iid: Ci.nsIStyleSheetService,
   },
-  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
 });
 
 const AGENT_SHEET = Ci.nsIStyleSheetService.AGENT_SHEET;
@@ -22,7 +21,8 @@ export class nsZenBoostStyles {
   /**
    * Retrieves the CSS style string for a given boost configuration.
    * Caches styles to optimize performance.
-   * @param {Object} boostData - The boost configuration data.
+   *
+   * @param {object} boostData - The boost configuration data.
    * @returns {string} The generated CSS style string.
    */
   getStyleForBoost(boostData, domain) {
@@ -31,7 +31,9 @@ export class nsZenBoostStyles {
     }
 
     const rawStyle = this.#generateStyleString(boostData);
-    if (!rawStyle) return null;
+    if (!rawStyle) {
+      return null;
+    }
 
     const styleUri = this.#convertStyleToDataUri(rawStyle);
     this.#cacheStyle(styleUri, domain);
@@ -48,7 +50,8 @@ export class nsZenBoostStyles {
 
   /**
    * Generates a CSS style string based on the boost configuration.
-   * @param {Object} boostData - The boost configuration data.
+   *
+   * @param {object} boostData - The boost configuration data.
    * @returns {string} The generated CSS style string.
    * @private
    */
@@ -61,8 +64,9 @@ export class nsZenBoostStyles {
 
     let zapBlocks = "";
     if (boostData.zapSelectors) {
-      for (const selector of boostData.zapSelectors)
+      for (const selector of boostData.zapSelectors) {
         zapBlocks += `html > body ${selector}:not([zen-zap-unhide]){ display: none !important; }\n`;
+      }
 
       if (zapBlocks != "") {
         style += `/* Zen-Zaps */\n`;
@@ -88,6 +92,7 @@ export class nsZenBoostStyles {
 
   /**
    * Converts a raw CSS style string into a data URI.
+   *
    * @param {string} rawStyle - The raw CSS style string.
    * @returns {string} The data URI representing the CSS style.
    * @private
@@ -99,6 +104,7 @@ export class nsZenBoostStyles {
 
   /**
    * Prefetches the style from the data URI and caches it.
+   *
    * @param {string} styleUri - The data URI of the CSS style.
    * @param {string} domain - The domain associated with the boost.
    * @returns {string} The cached style sheet URI.

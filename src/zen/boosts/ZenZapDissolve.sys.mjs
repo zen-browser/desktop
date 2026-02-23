@@ -158,7 +158,9 @@ void main() {
    * @param {Document} document Webpage document
    */
   constructor(document) {
-    if (!document) return;
+    if (!document) {
+      return;
+    }
     this.document = document;
     this.window = document.ownerGlobal;
   }
@@ -167,7 +169,9 @@ void main() {
    * Initializes the zap mode and inserts anonymous content
    */
   async initialize() {
-    if (this.#initialized) return;
+    if (this.#initialized) {
+      return;
+    }
 
     this.#content = this.document.insertAnonymousContent();
     this.#content.root.appendChild(this.fragment);
@@ -207,6 +211,7 @@ void main() {
 
   /**
    * Resizes the canvas to the correct size
+   *
    * @param {Element} canvas
    */
   #resizeCanvasToClientSize(canvas) {
@@ -226,10 +231,11 @@ void main() {
 
   /**
    * Creates the canvas program
-   * @param {Object} gl WebGL context
-   * @param {String} vertContent Content of the vertex shader
-   * @param {String} fragContent Content of the fragment shader
-   * @returns
+   *
+   * @param {object} gl WebGL context
+   * @param {string} vertContent Content of the vertex shader
+   * @param {string} fragContent Content of the fragment shader
+   * @returns {*} The WebGL program
    */
   async #createProgram(gl, vertContent, fragContent) {
     const vertexShader = this.#compileShader(gl, vertContent, gl.VERTEX_SHADER);
@@ -250,18 +256,20 @@ void main() {
     gl.deleteShader(vertexShader);
     gl.deleteShader(fragmentShader);
 
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       console.error("Shader program initializiation failure:", gl.getProgramInfoLog(program));
+    }
 
     return program;
   }
 
   /**
    * Compiles a shader
-   * @param {Object} gl WebGL context
-   * @param {String} source Shader source
-   * @param {Object} type Shader type
-   * @returns
+   *
+   * @param {object} gl WebGL context
+   * @param {string} source Shader source
+   * @param {object} type Shader type
+   * @returns {*} The compiled shader
    */
   #compileShader(gl, source, type) {
     const shader = gl.createShader(type);
@@ -279,8 +287,9 @@ void main() {
 
   /**
    * Retreives image data from a given image
+   *
    * @param {Image} image The image
-   * @returns Image data
+   * @returns {ImageData} Image data
    */
   #getImageData(image) {
     const canvas =
@@ -295,10 +304,13 @@ void main() {
 
   /**
    * Creates and loads a WebGL texture from an Image
+   *
    * @param {Image} image The target image
    */
   #loadTexture(image) {
-    if (this.#texture) this.#webglContext.deleteTexture(this.#texture);
+    if (this.#texture) {
+      this.#webglContext.deleteTexture(this.#texture);
+    }
 
     const texture = this.#webglContext.createTexture();
     this.#webglContext.activeTexture(this.#webglContext.TEXTURE0);
@@ -325,7 +337,7 @@ void main() {
       this.#webglContext.NEAREST
     );
 
-    if (image instanceof Image && image.width && image.height) {
+    if (Image.isInstance(image) && image.width && image.height) {
       this.#webglContext.texImage2D(
         this.#webglContext.TEXTURE_2D,
         0,
@@ -359,6 +371,7 @@ void main() {
 
   /**
    * Binds the parameters to the program for a given Element
+   *
    * @param {Element} element
    */
   #bindParameters(element) {
@@ -386,9 +399,13 @@ void main() {
     this.#setUniform1f("u_TextureTop", rect.top);
 
     const indices = new Float32Array(this.#particlesCount);
-    for (let i = 0; i < this.#particlesCount; i++) indices[i] = i;
+    for (let i = 0; i < this.#particlesCount; i++) {
+      indices[i] = i;
+    }
 
-    if (this.#buffer) gl.deleteBuffer(this.#buffer);
+    if (this.#buffer) {
+      gl.deleteBuffer(this.#buffer);
+    }
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -410,7 +427,8 @@ void main() {
 
   /**
    * Helper function for setting a uniform in the WebGL context
-   * @param {String} name The property name
+   *
+   * @param {string} name The property name
    * @param {*} value The property value
    */
   #setUniform1f(name, value) {
@@ -420,13 +438,16 @@ void main() {
 
   /**
    * Renders the output to a canvas
-   * @param {Number} time The frametime
+   *
+   * @param {number} time The frametime
    */
   #draw(time) {
     const gl = this.#webglContext;
     gl.useProgram(this.#program);
 
-    if (this.#animationStartTime === -1) this.#animationStartTime = time;
+    if (this.#animationStartTime === -1) {
+      this.#animationStartTime = time;
+    }
 
     const elapsed = time - this.#animationStartTime;
     if (elapsed > this.#duration) {
@@ -443,10 +464,13 @@ void main() {
 
   /**
    * Displays a dissolve effect for the element
+   *
    * @param {Element} element The element to dissolve
    */
   dissolve(element) {
-    if (!this.#initialized || this.#hasTriggered || !element) return;
+    if (!this.#initialized || this.#hasTriggered || !element) {
+      return;
+    }
     this.#hasTriggered = true;
 
     const rect = element.getBoundingClientRect();

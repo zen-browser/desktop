@@ -200,12 +200,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (this.#tabList.length <= 1) return;
     this.#isOpen = true;
 
-    // Decide which tab index is selected initially
+    // Decide which tab index is selected initially - always start on next tab
     if (this.#lazyPrefs.useRecentOrder) {
-      this.#currentIndex = 0;
+      this.#currentIndex = 1; // Start on second most recent (skip current which is at 0)
     } else {
       const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
-      this.#currentIndex = currentTabIndex >= 0 ? currentTabIndex : 0;
+      this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
     }
 
     await this.#preCacheThumbnailsForVisible();

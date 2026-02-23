@@ -9,7 +9,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 export class ZenBoostsParent extends JSWindowActorParent {
-  static OBSERVERS = ["zen-boosts-update", "zen-boosts-disable-zap", "zen-boosts-disable-picker"];
+  static OBSERVERS = [
+    "zen-boosts-update",
+    "zen-space-gradient-update",
+    "zen-boosts-disable-zap",
+    "zen-boosts-disable-picker",
+  ];
 
   /**
    * Creates a new ZenBoostsParent actor instance and sets up an observer
@@ -43,6 +48,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
   observe(subject, topic) {
     switch (topic) {
       case "zen-boosts-update":
+      case "zen-space-gradient-update":
         this.sendAsyncMessage("ZenBoost:BoostDataUpdated", { unloadStyles: true });
         break;
       case "zen-boosts-disable-zap":

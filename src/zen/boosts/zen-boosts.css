@@ -389,7 +389,7 @@ body {
 
 #zen-boost-close {
   margin-left: 0px;
-  margin-right: 10px;
+  margin-right: 6px;
   @media (-moz-platform: macos) {
     margin-left: 6px;
     margin-right: 0px;

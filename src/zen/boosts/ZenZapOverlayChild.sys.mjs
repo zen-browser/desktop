@@ -242,9 +242,9 @@ export class ZapOverlay {
     ]);
 
     if (!boostData.zapSelectors.length) {
-      zapList.textValue += `<p class="pcenter">${addZapHelper.value}</p>`;
+      zapList.textContent += `<p class="pcenter">${addZapHelper.value}</p>`;
     } else {
-      zapList.textValue += `<p>${removeZapHelper.value}</p>`;
+      zapList.textContent += `<p>${removeZapHelper.value}</p>`;
     }
   }
 

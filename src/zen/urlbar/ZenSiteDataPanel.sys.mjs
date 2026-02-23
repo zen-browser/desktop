@@ -234,7 +234,7 @@ export class nsZenSiteDataPanel {
 
     const list = this.document.getElementById("zen-site-data-boost-list");
     const section = list.closest(".zen-site-data-section");
-    section.hidden = canBoostSite;
+    section.hidden = true;
 
     const boostButton = this.document.getElementById("zen-site-data-boost");
     if (!canBoostSite) {

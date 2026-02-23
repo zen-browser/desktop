@@ -325,33 +325,39 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
-        let colorWheelColor = this.#hslToRgb(
-          boostData.dotAngleDeg / 360,
-          /* already is [0, 1] */
-          boostData.dotDistance * (1 - boostData.saturation),
-          /* lightness range from [0.1, 0.7] */
-          0.1 + boostData.dotDistance * 0.6 * boostData.brightness
-        );
+        if (boostData.autoTheme) {
+          // Workspace color is converted to the HSL color space
+          let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [0, 0, 0.6];
+          boost.workspaceGradient.forEach((color) => {
+            if (color.isPrimary) {
+              primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
+            }
+          });
 
-        let primaryGradientColor = boost.workspaceGradient[0].c ?? this.#rgbToHsl([75, 75, 75]);
+          // Workspace color is converted back to rgb
+          // using the same modifiers as the color above
+          primaryGradientColor = this.#hslToRgb(
+            primaryGradientColor[0] / 360,
+            primaryGradientColor[1] * (1 - boostData.saturation),
+            0.1 + primaryGradientColor[2] * 0.6 * boostData.brightness
+          );
 
-        // Workspace color is converted to the HSL color space
-        boost.workspaceGradient.forEach((color) => {
-          if (color.isPrimary) {
-            primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
-          }
-        });
-        // Workspace color is converted back to rgb
-        // using the same modifiers as the color above
-        primaryGradientColor = this.#hslToRgb(
-          primaryGradientColor[0] / 360,
-          primaryGradientColor[1] * (1 - boostData.saturation),
-          0.1 + primaryGradientColor[2] * 0.6 * boostData.brightness
-        );
+          const rgbColor = primaryGradientColor;
+          const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
+          browsingContext.zenBoostsData = nsColor;
+        } else {
+          let colorWheelColor = this.#hslToRgb(
+            boostData.dotAngleDeg / 360,
+            /* already is [0, 1] */
+            boostData.dotDistance * (1 - boostData.saturation),
+            /* lightness range from [0.1, 0.7] */
+            0.1 + boostData.dotDistance * 0.6 * boostData.brightness
+          );
 
-        const rgbColor = boostData.autoTheme ? primaryGradientColor : colorWheelColor;
-        const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
-        browsingContext.zenBoostsData = nsColor;
+          const rgbColor = colorWheelColor;
+          const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
+          browsingContext.zenBoostsData = nsColor;
+        }
         return;
       }
     }

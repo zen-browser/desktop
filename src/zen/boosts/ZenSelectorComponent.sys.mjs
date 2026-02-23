@@ -304,7 +304,7 @@ export class SelectorComponent {
       return;
     }
 
-    this.getElementById("selector-element-preview-text").textValue =
+    this.getElementById("selector-element-preview-text").textContent =
       `<b>[${selection.length}]</b> ${selectionPath.substring(0, Math.min(maxPathLength, selectionPath.length))}`;
   }
 
@@ -645,7 +645,7 @@ export class SelectorComponent {
 
       const pathExactElementBuilt = build(pathExactElement);
       const pathExactElementLength = (
-        parentExactElement ? doc.querySelectorAll(pathExactElementBuilt) : []
+        pathExactElementBuilt ? doc.querySelectorAll(pathExactElementBuilt) : []
       ).length;
 
       buildMap.set(pathExactElementLength, pathExactElementBuilt);
@@ -659,7 +659,7 @@ export class SelectorComponent {
 
       const pathTypeElementBuilt = build(pathTypeElement);
       const pathTypeElementLength = (
-        parentExactElement ? doc.querySelectorAll(pathTypeElementBuilt) : []
+        pathTypeElementBuilt ? doc.querySelectorAll(pathTypeElementBuilt) : []
       ).length;
 
       if (!buildMap.has(pathTypeElementLength)) {
@@ -673,7 +673,7 @@ export class SelectorComponent {
 
       const pathParentElementBuilt = build(parentExactElement);
       const pathParentElementLength = (
-        parentExactElement ? doc.querySelectorAll(pathParentElementBuilt) : []
+        pathParentElementBuilt ? doc.querySelectorAll(pathParentElementBuilt) : []
       ).length;
 
       if (!buildMap.has(pathParentElementLength)) {

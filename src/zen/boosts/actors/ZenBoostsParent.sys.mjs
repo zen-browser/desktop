@@ -27,8 +27,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
   /**
    * Called when the actor is destroyed. Cleans up the observer.
    */
-  async destroy() {
-    super.destroy();
+  didDestroy() {
     ZenBoostsParent.OBSERVERS.forEach((observe) => {
       Services.obs.removeObserver(this._observe, observe);
     });
@@ -63,6 +62,10 @@ export class ZenBoostsParent extends JSWindowActorParent {
    * @returns {Promise<object | null>} A promise that resolves to the boost data or null.
    */
   async receiveMessage(message) {
+    if (!this.canSend) {
+      return;
+    }
+
     switch (message.name) {
       case "ZenBoost:OpenInspector": {
         const { require } = ChromeUtils.importESModule(

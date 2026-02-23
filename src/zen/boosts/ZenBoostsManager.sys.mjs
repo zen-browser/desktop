@@ -144,11 +144,17 @@ class nsZenBoostsManager {
    * Will create a new boost
    *
    * @param {string} domain - The domain which will be affected by the boost
-   * @returns {object} The created boost with { id, domain, boostEntry: { boostData } }
+   * @returns {object|null} The created boost with { id, domain, boostEntry: { boostData } } or null
    */
   createNewBoost(domain) {
     if (!domain) {
       console.error("[ZenBoostsManager] Domain expected but got null.");
+      return null;
+    }
+
+    if (!this.canBoostSite(domain)) {
+      console.error("[ZenBoostsManager] Domain is not supported for Zen Boosts.");
+      return null;
     }
 
     const id = crypto.randomUUID();
@@ -523,6 +529,12 @@ class nsZenBoostsManager {
    * @returns {object} The instanced editor window
    */
   openBoostWindow(parentWindow, boost) {
+    const domain = boost.domain;
+    if (!this.canBoostSite(domain)) {
+      console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
+      return;
+    }
+
     const { availLeft, availWidth } = parentWindow.screen;
     const screenX = parentWindow.screenX;
     const screenY = parentWindow.screenY;
@@ -560,24 +572,21 @@ class nsZenBoostsManager {
     });
 
     const progressListener = {
-      onLocationChange(browser) {
-        // Only react to current tab
-        if (browser === parentWindow.gBrowser.selectedBrowser) {
-          editor.close();
-          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
-        }
+      onLocationChange() {
+        editor.close();
+        parentWindow.gBrowser.removeTabsProgressListener(progressListener);
       },
     };
 
-    parentWindow.gBrowser.addTabsProgressListener(progressListener);
+    parentWindow.gBrowser.addProgressListener(progressListener);
 
     // Give the domain
-    editor.domain = boost.domain;
+    editor.domain = domain;
     editor.openerWindow = parentWindow;
     editor.focus();
 
     // Make boost active
-    this.makeBoostActiveForDomain(boost.domain, boost.id);
+    this.makeBoostActiveForDomain(domain, boost.id);
 
     return editor;
   }

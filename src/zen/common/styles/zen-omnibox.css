@@ -667,7 +667,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:is([type="switchtab"], [type="dynamic"], [type="history_serp"], [type="autofill_origin"], [type="top_site"]) .urlbarView-favicon,
+    &:is([type="switchtab"], [type="dynamic"], [type="history_serp"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;

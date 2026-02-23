@@ -12,11 +12,14 @@ support-files = [
   "browser_content_sandbox_utils.js",
   "browser_content_sandbox_fs_tests.js",
 ]
-# .config needs to exists for the sandbox to properly add it
-test-directories = ["/tmp/.xdg_default_test", "/tmp/.xdg_default_test/.config"]
+test-directories = [
+  "/tmp/.xdg_default_test",
+  "/tmp/.xdg_default_test/.config/mozilla/firefox/xdg_default_profile",
+]
 environment = [
   "HOME=/tmp/.xdg_default_test",
 ]
+profile-path = "/tmp/.xdg_default_test/.config/mozilla/firefox/xdg_default_profile"
 
 ["browser_content_sandbox_fs_xdg_default.js"]
 run-if = ["os == 'linux'"]

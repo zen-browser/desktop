@@ -682,6 +682,13 @@ async function testFileAccessWindowsOnly() {
   let tests = [];
 
   let extDir = GetPerUserExtensionDir();
+  // We used to unconditionally create this directory from Firefox, but that
+  // was dropped in bug 2001887. The value of this directory is questionable;
+  // the test was added in Firefox 56 (bug 1403744) to cover legacy add-ons,
+  // but legacy add-on support was discontinued in Firefox 57, and we stopped
+  // sideloading add-ons from this directory on all builds except ESR in
+  // Firefox 74 (bug 1602840).
+  await IOUtils.makeDirectory(extDir.path);
   tests.push({
     desc: "per-user extensions dir",
     ok: true,

@@ -1,13 +1,13 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index 35e725043bce0b39fea550e8fb2b0ae1ff752e43..abac2042d537fcc1ce26e0e3acbf98fc2975b793 100644
+index ab9eda43302a6281e59a2738170e77bb0f0b1b90..3389f1c744b56e3a6a4eb3f05b0601bed4538fa1 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -237,6 +237,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }
+@@ -240,6 +240,8 @@ moz_asserts = { path = "mozglue/static/rust/moz_asserts" }
  # Workaround for https://github.com/rust-lang/cargo/issues/11232
  rure = { path = "third_party/rust/rure" }
  
 +mime_guess = { path = "third_party/rust/mime_guess" }
 +
- # Patch `unicode-width` 0.1.* to 0.2.
- unicode-width = { path = "build/rust/unicode-width" }
- 
+ # To-be-published changes.
+ unicode-bidi = { git = "https://github.com/servo/unicode-bidi", rev = "ca612daf1c08c53abe07327cb3e6ef6e0a760f0c" }
+ nss-gk-api = { git = "https://github.com/beurdouche/nss-gk-api", rev = "e48a946811ffd64abc78de3ee284957d8d1c0d63" }

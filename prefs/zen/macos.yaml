@@ -20,3 +20,10 @@
   cpptype: uint32_t
   mirror: always
   type: static
+
+# Enable native popovers on macOS, we've sent this patch to upstream
+# but we enable it by default anyways in case they decide to not use it,
+# or to disable it by default.
+- name: widget.macos.native-popovers
+  value: true
+  condition: "defined(XP_MACOSX)"

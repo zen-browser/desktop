@@ -130,6 +130,13 @@ document.addEventListener(
         case "cmd_zenNewNavigatorUnsynced":
           OpenBrowserWindow({ zenSyncedWindow: false });
           break;
+        case "cmd_zenNewLiveFolder": {
+          const { ZenLiveFoldersManager } = ChromeUtils.importESModule(
+            "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs"
+          );
+          ZenLiveFoldersManager.handleEvent(event);
+          break;
+        }
         default:
           gZenGlanceManager.handleMainCommandSet(event);
           if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

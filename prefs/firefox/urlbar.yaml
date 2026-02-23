@@ -59,3 +59,8 @@
 - name: browser.urlbar.suggest.topsites
   value: true
   locked: true
+
+# See https://github.com/zen-browser/desktop/issues/7248
+# We've submitted a patch to Firefox at https://bugzilla.mozilla.org/show_bug.cgi?id=2018499
+- name: browser.urlbar.closeOnWindowBlur
+  value: false

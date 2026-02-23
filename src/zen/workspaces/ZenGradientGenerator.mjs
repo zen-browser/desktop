@@ -185,7 +185,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       position: "start_before",
       triggerEvent: event,
       y: fromForm ? -160 : 0,
-      x: 10,
+      x: -10,
     });
   }
 

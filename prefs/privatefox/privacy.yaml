@@ -63,6 +63,10 @@
   value: false
   locked: true
 
+- name: browser.search.serpEventTelemetryCategorization.enabled
+  value: false
+  locked: true
+
 - name: browser.newtabpage.activity-stream.telemetry
   value: false
   locked: true

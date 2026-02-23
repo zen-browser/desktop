@@ -42,4 +42,9 @@ tabbrowser-reset-pin-button =
         [one] Reset and pin tab
         *[other] Reset and pin { $tabCount } tabs
     }
-tab-reset-pin-label = Back to pinned url
+
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        *[other] { $tabSubtitle }
+    }

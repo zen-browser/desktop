@@ -80,6 +80,14 @@ panel {
   padding-inline-start: calc(16px + var(--uc-arrowpanel-menuicon-margin-inline));
 }
 
+/* Allow localized zoom labels to shrink so the fullscreen button stays visible. */
+#appMenu-zoom-controls > .toolbarbutton-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Firefox profile avatar in appmenu */
 #appMenu-fxa-label2::before {
   content: "";
@@ -123,7 +131,7 @@ panel {
 
 /* #appMenu-zoomReduce-button2, */
 #appMenu-zoom-controls > #appMenu-fullscreen-button2 {
-  margin-left: calc((var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px);
+  margin-inline-start: calc((var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px);
 }
 
 #appMenu-zoom-controls > #appMenu-fullscreen-button2::before {

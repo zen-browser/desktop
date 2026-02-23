@@ -91,6 +91,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         return;
       }
       this.#lastFolderContextMenu = folder;
+      gZenLiveFoldersUI.buildContextMenu(folder);
 
       const newSubfolderItem = document.getElementById("context_zenFolderNewSubfolder");
       newSubfolderItem.setAttribute(
@@ -241,7 +242,24 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     if (group.collapsed && !this._sessionRestoring) {
-      group.collapsed = group.hasAttribute("has-active");
+      if (group.isLiveFolder) {
+        if (!group.hasAttribute("has-active")) {
+          let groupStart = group.groupStartElement;
+          let marginTop = groupStart.style.marginTop ? parseInt(groupStart.style.marginTop) : 0;
+          if (marginTop < 0) {
+            groupStart.style.marginTop = `${marginTop + 4}px`;
+          }
+        }
+
+        tab.setAttribute("folder-active", "true");
+        group.setAttribute("has-active", "true");
+        group.groupContainer.removeAttribute("hidden");
+        group.activeTabs = [...new Set([...group.activeTabs, tab])].sort(
+          (a, b) => a._tPos > b._tPos
+        );
+      } else {
+        group.collapsed = group.hasAttribute("has-active");
+      }
     }
   }
 
@@ -576,6 +594,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     folder.label = options.label || "New Folder";
     folder.saveOnWindowClose = !!options.saveOnWindowClose;
     folder.color = "zen-workspace-color";
+    folder.isLiveFolder = options.isLiveFolder;
 
     folder.setAttribute("zen-workspace-id", options.workspaceId || gZenWorkspaces.activeWorkspace);
 
@@ -730,12 +749,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   get #searchPopupOptions() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
     const position = isRightSide ? "start_before" : "start_before";
-    let size = Math.min(this.#popup.querySelector("#zen-folder-tabs-list").children.length, 6) + 1;
+    let size = Math.min(this.#popup.querySelector("#zen-folder-tabs-list").children.length, 6);
     size *= 48;
     return {
       position,
       x: -10,
-      y: -size / 4,
+      y: size / -2,
     };
   }
 
@@ -1022,6 +1041,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         prevSiblingInfo,
         emptyTabIds: emptyFolderTabs,
         userIcon: userIcon?.getAttribute("href"),
+        isLiveFolder: folder.isLiveFolder,
         // note: We shouldn't be using the workspace-id anywhere, we are just
         //  remembering it for the pinned tabs manager to use it later.
         workspaceId: folder.getAttribute("zen-workspace-id"),
@@ -1061,6 +1081,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               pinned: folderData.pinned,
               saveOnWindowClose: folderData.saveOnWindowClose,
               workspaceId: folderData.workspaceId,
+              isLiveFolder: folderData.isLiveFolder,
             });
             folder.setAttribute("id", folderData.id);
             workingData.node = folder;
@@ -1131,7 +1152,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     gBrowser.tabContainer._invalidateCachedTabs();
-    this._sessionRestoring = false;
+    setTimeout(() => {
+      delete this._sessionRestoring;
+    }, 0);
   }
 
   /**
@@ -1254,6 +1277,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     return heightShift;
   }
 
+  get #folderAnimationDuration() {
+    return this._sessionRestoring ? 0 : 0.12;
+  }
+
   async animateCollapse(group) {
     this.cancelPopupTimer();
 
@@ -1309,11 +1336,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       });
     }
 
+    let duration = this.#folderAnimationDuration;
+
     animations.push(
       ...this.#createAnimation(
         itemsToHide,
         { opacity: [1, 0], height: ["auto", 0] },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1321,7 +1350,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         {
           marginTop: -(collapsedHeight + 4 * (selectedTabs.length === 0 ? 1 : 0)),
         },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       )
     );
 
@@ -1429,16 +1458,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.activeTabs = [];
     };
 
+    let duration = this.#folderAnimationDuration;
+
     animations.push(
       ...this.#createAnimation(
         itemsToShow,
         { opacity: "", height: "" },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.#createAnimation(
         itemsToHide,
         { opacity: 0, height: 0 },
-        { duration: 0.12, ease: "easeInOut" }
+        { duration, ease: "easeInOut" }
       ),
       ...this.updateFolderIcon(group),
       ...this.#createAnimation(
@@ -1446,7 +1477,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         {
           marginTop: 0,
         },
-        { duration: 0.12, ease: "easeInOut" },
+        { duration, ease: "easeInOut" },
         afterMarginTop
       )
     );

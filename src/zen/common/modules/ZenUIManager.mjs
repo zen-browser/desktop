@@ -58,6 +58,7 @@ window.gZenUIManager = {
 
     gZenMediaController.init();
     gZenVerticalTabsManager.init();
+    gZenLiveFoldersUI.init();
 
     this._initCreateNewPopup();
     this._debloatContextMenus();

@@ -1,8 +1,8 @@
 diff --git a/browser/components/screenshots/overlay/overlay.css b/browser/components/screenshots/overlay/overlay.css
-index 43a5d2109ad107ce1c79eef7cb8635bc1fa813f7..c1e5648d0e71826119bda1bc18c5d16886bab8fd 100644
+index 94d87522bfaaf59b9138ec5ca960be0a0ea31339..ab3fa41cefdfc1d93edeb8a2d626bd9b1e07344b 100644
 --- a/browser/components/screenshots/overlay/overlay.css
 +++ b/browser/components/screenshots/overlay/overlay.css
-@@ -196,6 +196,9 @@
+@@ -200,6 +200,9 @@
    pointer-events: none;
    position: absolute;
    z-index: var(--screenshots-high-layer);
@@ -12,11 +12,11 @@ index 43a5d2109ad107ce1c79eef7cb8635bc1fa813f7..c1e5648d0e71826119bda1bc18c5d168
  }
  
  #top-background {
-@@ -214,7 +217,7 @@
+@@ -218,7 +221,7 @@
  }
  
  .bghighlight {
--  background-color: rgba(0, 0, 0, 0.7);
+-  background-color: var(--background-color-overlay);
 +  background-color: rgba(0, 0, 0, 0.5);
    position: absolute;
    overflow: clip;

@@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
@@ -30,10 +31,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
   3
 );
 
-const SHOULD_LOG_TAB_ENTRIES = Services.prefs.getBoolPref(
-  "zen.session-store.log-tab-entries",
-  false
-);
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
@@ -114,6 +111,23 @@ export class nsZenSessionManager {
     return PathUtils.join(PathUtils.profileDir, "zen-sessions-backup");
   }
 
+  async #getBackupRecoveryOrder() {
+    // Also add the most recent backup file to the recovery order
+    let backupFiles = [PathUtils.join(this.#backupFolderPath, "clean.jsonlz4")];
+    let prefix = PathUtils.join(this.#backupFolderPath, "zen-sessions-");
+    try {
+      let files = await IOUtils.getChildren(this.#backupFolderPath);
+      files = files
+        .filter((file) => file.startsWith(prefix))
+        .sort()
+        .reverse();
+      backupFiles.push(files[0]);
+    } catch {
+      /* ignore errors reading backup folder */
+    }
+    return backupFiles;
+  }
+
   /**
    * Gets the spaces data from the Places database for migration.
    * This is only called once during the first run after updating
@@ -181,7 +195,7 @@ export class nsZenSessionManager {
       } catch {
         /* ignore errors reading recovery data */
       }
-      if (!data.recoverYData) {
+      if (!data.recoveryData) {
         try {
           data.recoveryData = await IOUtils.readJSON(
             PathUtils.join(
@@ -203,6 +217,31 @@ export class nsZenSessionManager {
     }
   }
 
+  async #readDataFromFile() {
+    try {
+      await this.#file.load();
+      this._dataFromFile = this.#file.data;
+      if (!this._dataFromFile?.spaces) {
+        // Go to the catch block to try to recover from backup files
+        // if the file is empty or has invalid data, as it can happen if the app
+        // crashes while writing the session file.
+        throw new Error("No data in session file");
+      }
+    } catch {
+      for (const backupFile of await this.#getBackupRecoveryOrder()) {
+        try {
+          let data = await IOUtils.readJSON(backupFile, { decompress: true });
+          this.log(`Recovered data from backup file ${backupFile}`);
+          this._dataFromFile = data;
+          break;
+        } catch (e) {
+          /* ignore errors reading backup files */
+          console.error(`Failed to read backup file ${backupFile}`, e);
+        }
+      }
+    }
+  }
+
   /**
    * Reads the session file and populates the sidebar object.
    * This should be only called once at startup.
@@ -210,24 +249,14 @@ export class nsZenSessionManager {
    * @see SessionFileInternal.read
    */
   async readFile() {
-    let fileExists = await IOUtils.exists(this.#storeFilePath);
-    if (!fileExists) {
-      this.log("Session file does not exist, running migration", this.#storeFilePath);
-      this._shouldRunMigration = true;
-    }
     this.init();
     try {
       this.log("Reading Zen session file from disk");
-      let promises = [];
-      promises.push(this.#file.load());
-      if (this._shouldRunMigration) {
-        promises.push(this.#getDataFromDBForMigration());
-      }
-      await Promise.all(promises);
+      await this.#readDataFromFile();
     } catch (e) {
       console.error("ZenSessionManager: Failed to read session file", e);
     }
-    this.#sidebar = this.#file.data || {};
+    this.#sidebar = this._dataFromFile || {};
     if (!this.#sidebar.spaces?.length && !this._shouldRunMigration) {
       this.log("No spaces data found in session file, running migration", this.#sidebar);
       // If we have no spaces data, we should run migration
@@ -236,11 +265,12 @@ export class nsZenSessionManager {
       this._shouldRunMigration = true;
       await this.#getDataFromDBForMigration();
     }
-    if (SHOULD_LOG_TAB_ENTRIES) {
+    if (Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)) {
       for (const tab of this.#sidebar.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }
     }
+    delete this._dataFromFile;
   }
 
   get #shouldRestoreOnlyPinned() {
@@ -417,7 +447,7 @@ export class nsZenSessionManager {
       ];
     }
     for (const winData of initialState?.windows || []) {
-      winData.spaces = this._migrationData?.spaces || [];
+      winData.spaces = winData.spaces || this._migrationData?.spaces || [];
       if (winData.tabs) {
         for (const tabData of winData.tabs) {
           let storeId = tabData.zenSyncId || tabData.zenPinnedId;
@@ -478,6 +508,11 @@ export class nsZenSessionManager {
       // browsing mode. We also don't want to save if there are no windows.
       return;
     }
+    const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
+    IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(() => {
+      /* ignore errors creating clean backup, as it is not critical and
+       * we want to save the session even if we fail to create it */
+    });
     this.#collectWindowData(windows);
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebar;
@@ -487,6 +522,7 @@ export class nsZenSessionManager {
     } else {
       this.#file._save();
     }
+    lazy.ZenLiveFoldersManager.saveState(soon);
     this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
   }

@@ -230,8 +230,9 @@
   &[zen-private-window='true'] {
     --zen-main-browser-background: color-mix(in srgb, rgb(11, 10, 11) 90%, var(--zen-themed-toolbar-bg-transparent));
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
-    --zen-primary-color: light-dark(rgb(93, 42, 107), rgb(110, 48, 125)) !important;
-    --toolbox-textcolor: color-mix(in srgb, currentColor 95%, transparent) !important;
+    --zen-primary-color: rgb(11, 10, 11) !important;
+    /* Make sure its in sync with getToolbarColor */
+    --toolbox-textcolor: rgba(255, 255, 255, 0.8) !important;
   }
 
   &[zen-unsynced-window='true'] {

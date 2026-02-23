@@ -567,7 +567,7 @@ jobs:
             ./zen.installer.exe/*
             ./zen.installer-arm64.exe/*
             ./zen.macos-universal.dmg/*
-          tag_name: "twilight"
+          tag_name: "twilight-1"
           name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})"
           draft: false
           generate_release_notes: false

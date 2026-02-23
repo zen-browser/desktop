@@ -177,7 +177,6 @@ zen-folder {
 
     & > label {
       width: 100% !important;
-      background: transparent !important;
       border: none !important;
       color: var(--sidebar-text-color) !important;
       margin: 0 !important;
@@ -190,6 +189,13 @@ zen-folder {
       :root:not([zen-sidebar-expanded]) & {
         padding: 0 !important;
         max-width: 100% !important;
+      }
+
+      &[live-folder-animation] {
+        background: linear-gradient(90deg, color-mix(in srgb, var(--sidebar-text-color) 50%, transparent), var(--sidebar-text-color));
+        background-size: 400%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
     }
 

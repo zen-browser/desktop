@@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
+  FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(
@@ -192,7 +193,10 @@ class nsZenLiveFoldersManager {
     const folder = this.window.gZenFolders.createFolder([], {
       label,
       isLiveFolder: true,
+      collapsed: true,
     });
+
+    this.#maybeShowPromotion(folder, icon);
 
     if (icon) {
       this.window.gZenFolders.setFolderUserIcon(folder, icon);
@@ -218,6 +222,88 @@ class nsZenLiveFoldersManager {
     this.saveState();
 
     return folder.id;
+  }
+
+  #maybeShowPromotion(folder, icon) {
+    let labelElement = folder.labelElement;
+    labelElement.setAttribute("live-folder-animation", "true");
+    labelElement.style.backgroundPositionX = "0%";
+    let animation = folder.ownerGlobal.gZenUIManager.motion
+      .animate(
+        labelElement,
+        {
+          backgroundPositionX: ["0%", "-100%"],
+        },
+        {
+          duration: 2,
+        }
+      )
+      .then(() => {
+        labelElement.style.backgroundPositionX = "";
+        labelElement.removeAttribute("live-folder-animation");
+      });
+
+    if (Services.prefs.getBoolPref("zen.live-folders.promotion.shown", false)) {
+      return;
+    }
+    Services.prefs.setBoolPref("zen.live-folders.promotion.shown", true);
+    let window = this.window;
+    let gBrowser = window.gBrowser;
+    const callout = new lazy.FeatureCallout({
+      win: this.window,
+      location: "chrome",
+      context: "chrome",
+      browser: gBrowser.selectedBrowser,
+      theme: { preset: "chrome" },
+    });
+    animation.then(() => {
+      callout.showFeatureCallout({
+        id: "ZEN_LIVE_FOLDERS_CALLOUT",
+        template: "feature_callout",
+        groups: ["cfr"],
+        content: {
+          id: "ZEN_LIVE_FOLDERS_CALLOUT",
+          template: "spotlight",
+          backdrop: "transparent",
+          transitions: true,
+          autohide: true,
+          screens: [
+            {
+              id: "ZEN_LIVE_FOLDERS_CALLOUT",
+              anchors: [
+                {
+                  selector: `[id="${folder.id}"]`,
+                  panel_position: {
+                    anchor_attachment: "rightcenter",
+                    callout_attachment: "topleft",
+                  },
+                },
+              ],
+              content: {
+                position: "callout",
+                width: "355px",
+                title_logo: {
+                  imageURL: icon,
+                  width: "18px",
+                  height: "18px",
+                  marginInline: "0 8px",
+                },
+                title: {
+                  string_id: "zen-live-folders-promotion-title",
+                },
+                subtitle: {
+                  string_id: "zen-live-folders-promotion-description",
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      lazy.setTimeout(() => {
+        callout.endTour();
+      }, 8000);
+    });
   }
 
   deleteFolder(id, deleteFolder = true) {
@@ -286,7 +372,10 @@ class nsZenLiveFoldersManager {
       existingItemIds.add(itemId);
     }
 
-    this.window.gBrowser.removeTabs(outdatedTabs);
+    this.window.gBrowser.removeTabs(outdatedTabs, {
+      skipSessionStore: true,
+      animate: !folder.collapsed,
+    });
 
     // Remove the dismissed items that are no longer in the given list
     for (const dismissedItemId of this.dismissedItems) {

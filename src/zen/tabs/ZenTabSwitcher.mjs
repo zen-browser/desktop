@@ -13,7 +13,6 @@ async function ensurePageThumbs() {
 }
 
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
-
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
   static MAX_RECENT_TABS = 50;
@@ -100,7 +99,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #createUI() {
-    this.container = document.getElementById("zen-tab-switcher-container");
+    this.container = document.getElementById("zen-tab-switcher-panel");
     this.tabsContainer = document.getElementById("zen-tab-switcher-tabs");
 
     if (!this.container) {
@@ -213,24 +212,21 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#renderTabs();
 
-    // Center panel on screen 
+    // Use PanelMultiView API for proper panelmultiview handling
+    PanelMultiView.openPopup(this.container, document.documentElement, {
+      position: "overlap",
+      triggerEvent: null,
+    });
+
+    // Center panel on screen after opening
+    await new Promise(resolve => setTimeout(resolve, 0));
     const screenLeft = screen.availLeft || 0;
     const screenTop = screen.availTop || 0;
     const screenWidth = screen.availWidth;
     const screenHeight = screen.availHeight;
-    
-    // Open popup first to get rendered dimensions
-    this.container.openPopup(document.documentElement, "overlap", 0, 0, false, false);
-    
-    // Get actual panel dimensions after rendering
-    await new Promise(resolve => setTimeout(resolve, 0));
     const panelRect = this.container.getBoundingClientRect();
-    
-    // Calculate center position
     const centerX = screenLeft + (screenWidth - panelRect.width) / 2;
     const centerY = screenTop + (screenHeight - panelRect.height) / 2;
-    
-    // Move to center
     this.container.moveTo(centerX, centerY);
 
     // Scroll to selected tab

@@ -11,6 +11,15 @@
   --zen-tab-switcher-thumbnail-border-radius: 8px;
   --zen-tab-switcher-gap: 0px;
   --zen-tab-switcher-border-radius: 25px;
+  --zen-tab-switcher-padding: 7px;
+}
+
+#zen-tab-switcher-panel {
+  --panel-padding: var(--zen-tab-switcher-padding);
+}
+
+#zen-tab-switcher-view {
+  padding: var(--zen-tab-switcher-padding);
 }
 
 #zen-tab-switcher-tabs {

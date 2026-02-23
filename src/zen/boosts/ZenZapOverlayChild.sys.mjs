@@ -242,9 +242,11 @@ export class ZapOverlay {
     ]);
 
     if (!boostData.zapSelectors.length) {
-      zapList.textContent += `<p class="pcenter">${addZapHelper.value}</p>`;
+      // eslint-disable-next-line no-unsanitized/property
+      zapList.innerHTML += `<p class="pcenter">${addZapHelper.value}</p>`;
     } else {
-      zapList.textContent += `<p>${removeZapHelper.value}</p>`;
+      // eslint-disable-next-line no-unsanitized/property
+      zapList.innerHTML += `<p>${removeZapHelper.value}</p>`;
     }
   }
 

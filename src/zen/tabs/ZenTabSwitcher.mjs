@@ -4,10 +4,19 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+// Lazy import for page thumbnails
+let PageThumbs;
+async function ensurePageThumbs() {
+  if (!PageThumbs) {
+    PageThumbs = (await ChromeUtils.importESModule("resource://gre/modules/PageThumbs.sys.mjs")).PageThumbs;
+  }
+}
+
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
+  static MAX_RECENT_TABS = 50;
 
   #isOpen = false;
   #currentIndex = 0;
@@ -123,7 +132,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#recentlyUsedTabs.unshift(tab);
 
-    if (this.#recentlyUsedTabs.length > 50) {
+    if (this.#recentlyUsedTabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
       this.#recentlyUsedTabs.pop(); 
     }
   }
@@ -184,8 +193,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Initialize the panel UI
-  // This is async because it waits for thumbnails to be captured
+  /* Initialize the panel UI
+   * This is async because it waits for thumbnails to be captured */
   async open() {
     if (this.#isOpen) return;
     this.#buildTabList();
@@ -267,8 +276,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Captures screenshots only for tabs that are currently visible on screen
-  // This is async so it waits for all thumbnails before showing the panel
+  /* Captures screenshots only for tabs that are currently visible on screen
+   * This is async so it waits for all thumbnails before showing the panel */
   async #preCacheThumbnailsForVisible() {
     // Calculate which tabs are currently visible based on pagination
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
@@ -291,10 +300,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       canvas.width = 320;
       canvas.height = 180;
 
-      const { PageThumbs } = ChromeUtils.importESModule(
-        "resource://gre/modules/PageThumbs.sys.mjs"
-      );
-
+      await ensurePageThumbs();
       await PageThumbs.captureToCanvas(browser, canvas, { targetWidth: 1024 });
       const dataUrl = canvas.toDataURL("image/png");
       this.#thumbnailCache.set(tabId, dataUrl);
@@ -353,8 +359,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#applySelectionTextStyles();
   }
 
-  // Creates a single tab card element with thumbnail, favicon, and title
-  // Returns: XUL <vbox> element representing the tab card
+  /* Creates a single tab card element with thumbnail, favicon, and title
+   * Returns: XUL <vbox> element representing the tab card */
   #createTabCard(tab, index) {
     const card = document.createXULElement("vbox");
     card.className = "zen-tab-switcher-card";
@@ -457,8 +463,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#scrollToSelected();
   }
 
-  // Forces the selected card's title text to be white using inline styles
-  // This is necessary because XUL labels don't always respect CSS color
+  /* Forces the selected card's title text to be white using inline styles
+   * This is necessary because XUL labels don't always respect CSS color */
   #applySelectionTextStyles() {
     if (!this.tabsContainer) return;
     const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
@@ -477,8 +483,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  // Scrolls the tab container to show the selected card
-  // Uses page-based scrolling (shows full pages of cards, never cuts off)
+  /* Scrolls the tab container to show the selected card
+   * Uses page-based scrolling (shows full pages of cards, never cuts off) */
   #scrollToSelected() {
     if (!this.tabsContainer) return;
     const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
@@ -493,8 +499,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     });
   }
 
-  // Calculates which card should be at the left edge for pagination
-  // Ensures the page shows full cards without cutoff at the end
+  /* Calculates which card should be at the left edge for pagination
+   * Ensures the page shows full cards without cutoff at the end */
   #getPageStartIndex(cardIndex) {
     const totalTabs = this.#tabList.length;
     const maxVisible = this.#actualVisibleCards;
@@ -509,13 +515,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     return pageStartIndex;
   }
 
-  // Moves selection to the next tab (wraps around at end)
   #navigateForward() {
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection();
   }
 
-  // Moves selection to the previous tab (wraps around at beginning)
   #navigateBackward() {
     this.#currentIndex = (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;
     this.#updateSelection();

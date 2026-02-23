@@ -29,10 +29,6 @@
   flex-shrink: 0;
 }
 
-#zen-tab-switcher-tabs::-webkit-scrollbar {
-  display: none;
-}
-
 .zen-tab-switcher-card {
   flex-shrink: 0;
   width: var(--zen-tab-switcher-card-width);
@@ -89,11 +85,7 @@
 
 .zen-tab-switcher-card.zen-tab-switcher-pending .zen-tab-switcher-thumbnail,
 .zen-tab-switcher-card.zen-tab-switcher-no-thumbnail .zen-tab-switcher-thumbnail {
-  background: color-mix(
-    in srgb,
-    color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%,
-    transparent
-  );
+  background: color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent);
 }
 
 .zen-tab-switcher-favicon-large {

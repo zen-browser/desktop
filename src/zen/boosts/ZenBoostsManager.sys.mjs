@@ -152,11 +152,6 @@ class nsZenBoostsManager {
       return null;
     }
 
-    if (!this.canBoostSite(domain)) {
-      console.error("[ZenBoostsManager] Domain is not supported for Zen Boosts.");
-      return null;
-    }
-
     const id = crypto.randomUUID();
     const boostEntry = this.getEmptyBoostEntry(domain);
 
@@ -502,6 +497,7 @@ class nsZenBoostsManager {
    * @returns {boolean} True if the URI scheme is http or https, false otherwise.
    */
   canBoostSite(uri) {
+    if(!uri || !uri.schemeIs) return false;
     return uri.schemeIs("http") || uri.schemeIs("https");
   }
 
@@ -526,15 +522,16 @@ class nsZenBoostsManager {
    *
    * @param {Window} parentWindow - The parent browser window
    * @param {Boost} boost - The boost which will be edited
-   * @returns {object} The instanced editor window
+   * @param {nsIURI} domainUri - The boost which will be edited
+   * @returns {Window} The instanced editor window
    */
-  openBoostWindow(parentWindow, boost) {
-    const domain = boost.domain;
-    if (!this.canBoostSite(domain)) {
+  openBoostWindow(parentWindow, boost, domainUri) {
+    if (!this.canBoostSite(domainUri)) {
       console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
       return;
     }
-
+    
+    const domain = boost.domain;
     const { availLeft, availWidth } = parentWindow.screen;
     const screenX = parentWindow.screenX;
     const screenY = parentWindow.screenY;

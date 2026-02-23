@@ -692,8 +692,9 @@ export class nsZenSiteDataPanel {
       }
       case "zen-site-data-boost": {
         const domain = this.#getCurrentDomain();
+        const uri = this.window.gBrowser.currentURI;
         const boost = lazy.gZenBoostsManager.createNewBoost(domain);
-        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         break;
       }
       case "zen-site-data-actions": {
@@ -796,9 +797,9 @@ export class nsZenSiteDataPanel {
       }
       case "zen-site-data-edit-boost": {
         const boostId = target.getAttribute("data-boost-id");
-
+        const uri = this.window.gBrowser.currentURI;
         const boost = lazy.gZenBoostsManager.loadBoostFromStore(domain, boostId);
-        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         this.unifiedPanel.hidePopup();
         break;
       }

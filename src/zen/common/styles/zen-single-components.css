@@ -9,6 +9,7 @@
   position: absolute !important;
   top: 3%;
   right: 1.5%;
+  z-index: 2;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {

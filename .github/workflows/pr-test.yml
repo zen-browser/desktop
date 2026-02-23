@@ -25,6 +25,9 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
+      - name: Run linting
+        run: npm run lint
+
       - name: Install dependencies
         run: npm ci
 
@@ -35,6 +38,3 @@ jobs:
 
       - name: Import patches
         run: npm run import
-
-      - name: Run linting
-        run: npm run lint

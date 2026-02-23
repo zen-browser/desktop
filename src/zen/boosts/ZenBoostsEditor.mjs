@@ -64,7 +64,6 @@ export class nsZenBoostEditor {
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
-    this.doc.getElementById("zen-boost-name-input").style.display = "none";
 
     this.doc
       .getElementById("zen-boost-color-contrast")
@@ -103,12 +102,6 @@ export class nsZenBoostEditor {
     this.doc
       .getElementById("zen-boost-load")
       .addEventListener("click", this.onLoadBoostClick.bind(this));
-    this.doc
-      .getElementById("zen-boost-name-input")
-      .addEventListener("keydown", this.onNameInputKeyDown.bind(this));
-    this.doc
-      .getElementById("zen-boost-name-input")
-      .addEventListener("blur", this.onNameInputUnfocus.bind(this));
     this.doc
       .getElementById("zen-boost-name-container")
       .addEventListener("click", this.onNameTextClick.bind(this));
@@ -928,53 +921,15 @@ ${cssSelector} {
   }
 
   /**
-   * Handles the key down event for the name input field
-   * to detect the enter key
-   *
-   * @param {Event} event
-   */
-  onNameInputKeyDown(event) {
-    if (event.key === "Enter") {
-      this.onNameInputSubmit();
-    }
-  }
-
-  /**
-   * Handles the unfocus/blur event for the name input field
-   *
-   * @param {Event} _
-   */
-  onNameInputUnfocus(_) {
-    this.onNameInputSubmit();
-  }
-
-  /**
-   * Handles hiding the text field and saving the new boost name
-   */
-  onNameInputSubmit() {
-    const nameText = this.doc.getElementById("zen-boost-name-text");
-    const nameContainer = this.doc.getElementById("zen-boost-name-container");
-    const nameInputField = this.doc.getElementById("zen-boost-name-input");
-
-    if (nameInputField.value.trim().length !== 0) {
-      this.currentBoostData.boostName = nameInputField.value;
-      nameText.textContent = this.currentBoostData.boostName;
-      this.updateCurrentBoost();
-    }
-
-    nameContainer.style.display = "initial";
-    nameInputField.style.display = "none";
-
-    this.currentBoostData.changeWasMade = true;
-    this.updateCurrentBoost();
-  }
-
-  /**
    * Handles showing the popup when clicking the name text
    *
    * @param {Event} event
    */
   onNameTextClick(event) {
+    const renameBoost = this.doc.getElementById('zen-boost-edit-rename');
+    const deleteBoost = this.doc.getElementById('zen-boost-edit-delete');
+    const resetBoost = this.doc.getElementById('zen-boost-edit-reset');
+
     const popup = this.doc.getElementById("zenBoostContextMenu");
     popup.openPopup(
       event.target,
@@ -985,21 +940,37 @@ ${cssSelector} {
       false /* attributesOverride */,
       event
     );
+
+    // Don't give the user following options if the boost
+    // is not going to save / not currently saved (unchanged)
+    renameBoost.disabled  = !this.currentBoostData.changeWasMade;
+    deleteBoost.disabled  = !this.currentBoostData.changeWasMade;
+    resetBoost.disabled   = !this.currentBoostData.changeWasMade;
   }
 
   /**
    * Handles showing a text field for renaming the boost
    */
-  editBoostName() {
-    const nameContainer = this.doc.getElementById("zen-boost-name-container");
-    const nameInputField = this.doc.getElementById("zen-boost-name-input");
-    nameInputField.value = this.currentBoostData.boostName;
+  async editBoostName() {
+    const nameText = this.doc.getElementById("zen-boost-name-text");
 
-    nameContainer.style.display = "none";
-    nameInputField.style.display = "initial";
+    const [title] = await this.doc.l10n.formatMessages([
+      "zen-boost-rename-boost-prompt",
+    ]);
 
-    nameInputField.focus();
-    nameInputField.select();
+    let input = { value: this.currentBoostData.boostName }; // Default value and also output
+    const success = await Services.prompt.prompt(this.openerWindow, title.value, null, input, null, { value: false });
+
+    if (!success) return;
+    const newName = input.value;
+    const maxDisplayedNameChars = 10;
+    
+    if (newName.trim().length !== 0) {
+      var truncatedName = newName.substring(0, maxDisplayedNameChars);
+      this.currentBoostData.boostName = truncatedName;
+      nameText.textContent = this.currentBoostData.boostName;
+      this.updateCurrentBoost();
+    }
   }
 
   /**

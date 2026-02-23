@@ -199,8 +199,7 @@ body {
   }
 }
 
-#zen-boost-name-text,
-#zen-boost-name-input {
+#zen-boost-name-text {
   width: 100%;
   justify-content: center;
   font-size: 100%;
@@ -214,16 +213,6 @@ body {
   text-align: center;
   margin: auto !important;
   height: min-content;
-}
-
-#zen-boost-name-input {
-  appearance: none;
-  border: none;
-
-  margin-left: 15px;
-  margin-right: 15px;
-  background-color: transparent;
-  color: #111;
 }
 
 #zen-boost-font-grid {

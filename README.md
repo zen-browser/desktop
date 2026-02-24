@@ -34,7 +34,7 @@ Zen is a firefox-based browser with the aim of pushing your productivity to a ne
 
 ### Firefox Versions
 
-- [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `147.0.4`! 🚀
+- [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `148.0`! 🚀
 - [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 148.0`!
 
 ### Contributing

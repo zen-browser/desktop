@@ -18,6 +18,13 @@
   --panel-padding: var(--zen-tab-switcher-padding);
 }
 
+#zen-tab-switcher-panel .panel-viewcontainer,
+#zen-tab-switcher-panel .panel-viewstack {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
 #zen-tab-switcher-view {
   padding: var(--zen-tab-switcher-padding);
 }

@@ -3,15 +3,22 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <panel id="zen-tab-switcher-panel"
-        role="group"
+        flip="side"
         type="arrow"
+        opupalign="center"
+        orient="vertical"
+        position="bottomright topright"
+        mainview="true"
+        hidepopovertail="true"
         noautohide="true"
         noautofocus="true"
-        level="top">
+        level="top"
+        side="left">
   <panelmultiview id="zen-tab-switcher-multiview"
                   mainViewId="zen-tab-switcher-view">
     <panelview id="zen-tab-switcher-view"
-                class="cui-widget-panelview">
+                class="cui-widget-panelview"
+                mainview-with-header="true">
       <hbox id="zen-tab-switcher-tabs" class="zen-tab-switcher-tabs">
         <!-- Tab cards will be dynamically inserted here -->
       </hbox>

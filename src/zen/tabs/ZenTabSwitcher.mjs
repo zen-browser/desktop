@@ -218,16 +218,17 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       triggerEvent: null,
     });
 
-    // Center panel on screen after opening
-    await new Promise(resolve => setTimeout(resolve, 0));
-    const screenLeft = screen.availLeft || 0;
-    const screenTop = screen.availTop || 0;
-    const screenWidth = screen.availWidth;
-    const screenHeight = screen.availHeight;
-    const panelRect = this.container.getBoundingClientRect();
-    const centerX = screenLeft + (screenWidth - panelRect.width) / 2;
-    const centerY = screenTop + (screenHeight - panelRect.height) / 2;
-    this.container.moveTo(centerX, centerY);
+    // Center panel on screen after first layout
+    requestAnimationFrame(() => {
+      const screenLeft = screen.availLeft || 0;
+      const screenTop = screen.availTop || 0;
+      const screenWidth = screen.availWidth;
+      const screenHeight = screen.availHeight;
+      const panelRect = this.container.getBoundingClientRect();
+      const centerX = screenLeft + (screenWidth - panelRect.width) / 2;
+      const centerY = screenTop + (screenHeight - panelRect.height) / 2;
+      this.container.moveTo(centerX, centerY);
+    });
 
     // Scroll to selected tab
     setTimeout(() => this.#scrollToSelected(), 0);

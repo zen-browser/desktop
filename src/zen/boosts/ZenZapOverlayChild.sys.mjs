@@ -242,11 +242,14 @@ export class ZapOverlay {
     ]);
 
     if (!boostData.zapSelectors.length) {
-      // eslint-disable-next-line no-unsanitized/property
-      zapList.innerHTML += `<p class="pcenter">${addZapHelper.value}</p>`;
+      const addZapHelperText = zapList.ownerDocument.createElement("p");
+      addZapHelperText.setHTML(addZapHelper.value);
+      addZapHelperText.classList.add("pcenter");
+      zapList.appendChild(addZapHelperText);
     } else {
-      // eslint-disable-next-line no-unsanitized/property
-      zapList.innerHTML += `<p>${removeZapHelper.value}</p>`;
+      const removeZapHelperText = zapList.ownerDocument.createElement("p");
+      removeZapHelperText.setHTML(removeZapHelper.value);
+      zapList.appendChild(removeZapHelperText);
     }
   }
 

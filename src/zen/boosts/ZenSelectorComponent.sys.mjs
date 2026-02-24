@@ -321,6 +321,8 @@ export class SelectorComponent {
       }
     }
 
+    this.window = null;
+    this.document = null;
     this.#initialized = false;
   }
 

@@ -313,6 +313,7 @@ export class ZapOverlay {
    */
   tearDown() {
     this.#selectorComponent.tearDown();
+    this.#selectorComponent = null;
 
     this.#dissolveEffectPool.forEach((dissolve) => {
       dissolve.tearDown();
@@ -326,6 +327,8 @@ export class ZapOverlay {
       }
     }
 
+    this.window = null;
+    this.document = null;
     this.#initialized = false;
   }
 

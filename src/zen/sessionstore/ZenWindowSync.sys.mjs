@@ -734,12 +734,14 @@ class nsZenWindowSync {
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
 
         // Swap permanent keys
-        const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
-        const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
-        aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
-        aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
-        aOurTab.permanentKey = otherPermanentKey;
-        aOtherTab.permanentKey = ourPermanentKey;
+        if (!onClose) {
+          const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
+          const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
+          aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
+          aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
+          aOurTab.permanentKey = otherPermanentKey;
+          aOtherTab.permanentKey = ourPermanentKey;
+        }
 
         // Since we are moving progress listeners around, there's a chance that we
         // trigger a load while making the switch, and since we remove the previous

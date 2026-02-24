@@ -3,17 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <panel id="zen-tab-switcher-panel"
-        flip="side"
+        role="group"
         type="arrow"
-        opupalign="center"
-        orient="vertical"
-        position="bottomright topright"
-        mainview="true"
         hidepopovertail="true"
-        noautohide="true"
-        noautofocus="true"
-        level="top"
-        side="left">
+        noautofocus="true">
   <panelmultiview id="zen-tab-switcher-multiview"
                   mainViewId="zen-tab-switcher-view">
     <panelview id="zen-tab-switcher-view"

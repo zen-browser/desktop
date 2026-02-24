@@ -30,10 +30,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#setupPreferences();
     this.#disableDefaultCtrlTab();
     this.#setupKeyboardListeners();
+    this.#setupLazyGetters();
     this.#createUI();
     this.#observeTabChanges();
     this.#setupShutdownObserver();
     this.#initializeRecentlyUsedTabs();
+  }
+
+  #setupLazyGetters() {
+    ChromeUtils.defineLazyGetter(this, "panel", () =>
+      document.getElementById("zen-tab-switcher-panel")
+    );
+    ChromeUtils.defineLazyGetter(this, "toolbox", () =>
+      document.getElementById("TabsToolbar")
+    );
+    ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
+      document.getElementById("zen-tab-switcher-tabs")
+    );
   }
 
   #initializeRecentlyUsedTabs() {
@@ -99,10 +112,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #createUI() {
-    this.container = document.getElementById("zen-tab-switcher-panel");
-    this.tabsContainer = document.getElementById("zen-tab-switcher-tabs");
-
-    if (!this.container) {
+    // Elements are now defined via lazy getters
+    if (!this.panel) {
       console.error("ZenTabSwitcher: UI elements not found");
       return;
     }
@@ -213,21 +224,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#renderTabs();
 
     // Use PanelMultiView API for proper panelmultiview handling
-    PanelMultiView.openPopup(this.container, document.documentElement, {
+    // Anchor to TabsToolbar like other zen-panels (gradient-generator pattern)
+    PanelMultiView.openPopup(this.panel, this.toolbox, {
       position: "overlap",
       triggerEvent: null,
-    });
-
-    // Center panel on screen after first layout
-    requestAnimationFrame(() => {
-      const screenLeft = screen.availLeft || 0;
-      const screenTop = screen.availTop || 0;
-      const screenWidth = screen.availWidth;
-      const screenHeight = screen.availHeight;
-      const panelRect = this.container.getBoundingClientRect();
-      const centerX = screenLeft + (screenWidth - panelRect.width) / 2;
-      const centerY = screenTop + (screenHeight - panelRect.height) / 2;
-      this.container.moveTo(centerX, centerY);
+      x: 0,
+      y: 0
     });
 
     // Scroll to selected tab
@@ -241,7 +243,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.#isOpen) return;
 
     const selectedTab = this.#tabList[this.#currentIndex];
-    this.container.hidePopup();
+    this.panel.hidePopup();
 
     if (selectedTab && selectedTab !== gBrowser.selectedTab) {
       gBrowser.selectedTab = selectedTab;
@@ -258,7 +260,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.#isOpen) return;
 
     this.#ctrlPressed = false;
-    this.container.hidePopup();
+    this.panel.hidePopup();
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];

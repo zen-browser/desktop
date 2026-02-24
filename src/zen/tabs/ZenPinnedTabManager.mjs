@@ -504,9 +504,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     });
     document.getElementById("context_zen-edit-tab-icon").addEventListener("command", () => {
       const tab = TabContextMenu.contextTab;
-      gZenEmojiPicker
-        .open(tab.iconImage, { emojiAsSVG: true })
-        .then((icon) => {
+      gZenEmojiPicker.open(tab.iconImage, {
+        emojiAsSVG: true,
+        closeOnSelect: false,
+        allowNone: Boolean(tab.zenStaticIcon),
+        onSelect: (icon) => {
           if (icon) {
             tab.zenStaticIcon = icon;
           } else {
@@ -516,10 +518,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           lazy.TabStateCache.update(tab.permanentKey, {
             image: null,
           });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+        },
+      });
     });
   }
 

@@ -903,21 +903,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const pickerPromise = gZenEmojiPicker.open(group.icon, {
+    gZenEmojiPicker.open(group.icon, {
       onlySvgIcons: true,
-      allowNone: Boolean(group.icon?.querySelector("svg .icon image")?.getAttribute("href")),
+      allowNone: Boolean(group.iconURL),
       closeOnSelect: false,
       onSelect: (icon) => {
         this.setFolderUserIcon(group, icon);
         group.dispatchEvent(new CustomEvent("TabGroupUpdate", { bubbles: true }));
       },
-    });
-
-    pickerPromise?.catch((err) => {
-      if (err?.message === "Emoji picker closed without selection") {
-        return;
-      }
-      console.error(err);
     });
   }
 

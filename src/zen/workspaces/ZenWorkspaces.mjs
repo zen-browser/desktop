@@ -625,6 +625,8 @@ class nsZenWorkspaces {
             this.#horizontalScrollAccumulator !== 0 &&
             Math.sign(this.#horizontalScrollAccumulator) !== Math.sign(deltaPixels)
           ) {
+            // Reset on direction flips so small wheel nudges do not fight against
+            // stale momentum from the opposite side.
             this.#horizontalScrollAccumulator = 0;
           }
           this.#horizontalScrollAccumulator += deltaPixels;
@@ -692,6 +694,8 @@ class nsZenWorkspaces {
       window.windowUtils.getBoundsWithoutFlushing(document.getElementById("zen-sidebar-splitter"))
         .width *
         2;
+    // Keep an explicit wheel accumulator so low-amplitude wheel input still
+    // feels continuous instead of stepping between discrete event deltas.
     let translateX = this.#horizontalScrollAccumulator;
     // Match workspace swipe resistance so wheel and gesture interactions feel consistent.
     const forceMultiplier = Math.max(0.5, 1 - Math.abs(translateX) / (stripWidth * 4.5));
@@ -722,6 +726,8 @@ class nsZenWorkspaces {
     }
     const threshold = 55;
     const swipeDelta = this.#horizontalScrollAccumulator;
+    // forceSwitch is used when the visual strip translation already crossed
+    // the snap position threshold and should commit immediately.
     const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= threshold;
     const workspaceOffset = swipeDelta > 0 ? -1 : 1;
     this.#horizontalScrollAccumulator = 0;

@@ -192,7 +192,7 @@ zen-folder {
       }
 
       &[live-folder-animation] {
-        background: linear-gradient(90deg, color-mix(in srgb, var(--sidebar-text-color) 50%, transparent), var(--sidebar-text-color));
+        background: linear-gradient(270deg, var(--sidebar-text-color), color-mix(in srgb, var(--sidebar-text-color) 25%, transparent));
         background-size: 400%;
         background-clip: text;
         -webkit-text-fill-color: transparent;

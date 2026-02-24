@@ -232,10 +232,10 @@ class nsZenLiveFoldersManager {
       .animate(
         labelElement,
         {
-          backgroundPositionX: ["0%", "-100%"],
+          backgroundPositionX: ["0%", "-50%"],
         },
         {
-          duration: 2,
+          duration: 1.5,
         }
       )
       .then(() => {

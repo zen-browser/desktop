@@ -1,3 +1,54 @@
+diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
+--- a/browser/components/aboutwelcome/content/aboutwelcome.css
++++ b/browser/components/aboutwelcome/content/aboutwelcome.css
+@@ -329,10 +329,15 @@
+   --panel-color: var(--fc-color);
+   --panel-shadow: none;
+   --panel-shadow-margin: 6px;
+   --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
+   --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --panel-shadow-margin: 0;
++    --panel-arrow-space: 0;
++  }
+ }
+ 
+ panel#feature-callout::part(content) {
+   width: initial;
+   border: 0;
+@@ -515,10 +520,16 @@
+   border-radius: 4px;
+   padding: var(--callout-padding, 16px);
+   width: 25em;
+   gap: 16px;
+   background: var(--fc-background);
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --fc-background: transparent;
++    box-shadow: none;
++    border-width: 0;
++  }
+ }
+ #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
+   gap: 12px;
+ }
+ #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner .legal-paragraph .text-link {
+@@ -828,10 +839,14 @@
+ #feature-callout .arrow-box {
+   position: absolute;
+   overflow: visible;
+   transform: rotate(45deg);
+   transform-style: preserve-3d;
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    display: none;
++  }
+ }
+ #feature-callout:not([arrow-position]) .arrow-box, #feature-callout[hide-arrow] .arrow-box {
+   display: none;
+ }
+ #feature-callout .arrow {
 diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
 --- a/browser/components/customizableui/content/panelUI.inc.xhtml
 +++ b/browser/components/customizableui/content/panelUI.inc.xhtml
@@ -80,7 +131,7 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
 diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
-@@ -100,10 +100,19 @@
+@@ -100,10 +100,20 @@
    --panel-padding: var(--arrowpanel-padding);
    --panel-shadow-margin: var(--arrowpanel-shadow-margin);
    --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
@@ -94,6 +145,7 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 +    --panel-shadow: none;
 +    --panel-border-color: transparent;
 +    --panel-shadow-margin: 0px;
++    --panel-padding: 0px;
 +  }
  }
  
@@ -216,7 +268,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +
 +static void SyncPopoverBounds(NSPopover* aPopover,
 +                              nsMenuPopupFrame* aPopupFrame) {
-+  if (!aPopover || !aPopover.shown) {
++  if (!aPopover || !aPopover.shown || !aPopupFrame) {
 +    return;
 +  }
 +  NSWindow* popoverWindow = aPopover.contentViewController.view.window;
@@ -246,7 +298,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5280,58 @@
+@@ -5227,10 +5280,56 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -286,11 +338,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +          NSRect positioningRect = [parentView convertRect:windowRect
 +                                                  fromView:nil];
 +          BOOL shouldHideAnchor = NO;
-+          if (auto popoverElement = GetPopupFrame()) {
-+            auto& element = popoverElement->PopupElement();
-+            if (element.GetBoolAttr(nsGkAtoms::hidepopovertail)) {
-+              shouldHideAnchor = YES;
-+            }
++          auto& element = popupFrame->PopupElement();
++          if (element.GetBoolAttr(nsGkAtoms::hidepopovertail)) {
++            shouldHideAnchor = YES;
 +          }
 +          [(PopupWindow*)mWindow showPopoverRelativeToRect:positioningRect
 +                                                    ofView:parentView
@@ -305,7 +355,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5301,10 +5402,15 @@
+@@ -5301,10 +5400,15 @@
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
        [nativeParentWindow removeChildWindow:mWindow];
@@ -321,7 +371,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5351,10 +5457,17 @@
+@@ -5351,10 +5455,17 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -339,7 +389,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6313,10 +6426,20 @@
+@@ -6313,10 +6424,20 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
@@ -360,7 +410,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
    DoResize(aRect.x, aRect.y, aRect.width, aRect.height, aRepaint, false);
-@@ -8277,18 +8400,27 @@
+@@ -8277,18 +8398,27 @@
                    backing:(NSBackingStoreType)bufferingType
                      defer:(BOOL)deferCreation {
    NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -388,7 +438,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8342,10 +8474,120 @@
+@@ -8342,10 +8472,120 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;

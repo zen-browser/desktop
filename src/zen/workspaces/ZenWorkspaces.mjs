@@ -567,7 +567,7 @@ class nsZenWorkspaces {
     const verticalScrollThreshold = 1;
     // Keep this short so wheel gestures feel responsive, but long enough to
     // wait for bursty horizontal wheel events before deciding where to snap.
-    const horizontalGestureFinalizeDelay = 120;
+    const horizontalGestureFinalizeDelay = 70;
 
     toolbox.addEventListener(
       "wheel",

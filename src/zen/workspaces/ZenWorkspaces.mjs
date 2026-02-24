@@ -45,6 +45,9 @@ class nsZenWorkspaces {
   #horizontalScrollAccumulator = 0;
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
+  // Slightly lower than the previous 55 to reduce required wheel travel
+  // while keeping accidental switches uncommon.
+  #horizontalWheelSnapThreshold = 50;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -564,7 +567,6 @@ class nsZenWorkspaces {
 
     const verticalScrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const verticalScrollThreshold = 1;
-    const horizontalSnapPositionThreshold = 55;
     // Keep this short so wheel gestures feel responsive, but long enough to
     // wait for bursty horizontal wheel events before deciding where to snap.
     const horizontalGestureFinalizeDelay = 180;
@@ -631,7 +633,7 @@ class nsZenWorkspaces {
           }
           this.#horizontalScrollAccumulator += deltaPixels;
           const translateX = this.#applyHorizontalSwipeDelta(deltaPixels);
-          if (Math.abs(translateX) >= horizontalSnapPositionThreshold) {
+          if (Math.abs(translateX) >= this.#horizontalWheelSnapThreshold) {
             void this.#finalizeHorizontalWheelGesture(true);
             return;
           }
@@ -724,11 +726,10 @@ class nsZenWorkspaces {
     if (!this.#horizontalWheelGestureActive) {
       return;
     }
-    const threshold = 55;
     const swipeDelta = this.#horizontalScrollAccumulator;
     // forceSwitch is used when the visual strip translation already crossed
     // the snap position threshold and should commit immediately.
-    const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= threshold;
+    const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= this.#horizontalWheelSnapThreshold;
     const workspaceOffset = swipeDelta > 0 ? -1 : 1;
     this.#horizontalScrollAccumulator = 0;
     if (shouldSwitch) {

@@ -46,9 +46,6 @@ class nsZenWorkspaces {
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
   #horizontalWheelSnapThreshold = 55;
-  // Multiplier for wheel-derived deltas. Slightly >1 keeps behavior familiar
-  // while requiring a bit less physical wheel travel.
-  #horizontalWheelSensitivity = 1.12;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -619,10 +616,7 @@ class nsZenWorkspaces {
           }
           this.#startHorizontalWheelGesture();
           const scrollDirection = this.naturalScroll ? -1 : 1;
-          const deltaPixels =
-            this.#normalizeHorizontalWheelDelta(event) *
-            scrollDirection *
-            this.#horizontalWheelSensitivity;
+          const deltaPixels = this.#normalizeHorizontalWheelDelta(event) * scrollDirection;
           if (!deltaPixels) {
             return;
           }
@@ -636,11 +630,7 @@ class nsZenWorkspaces {
             this.#horizontalScrollAccumulator = 0;
           }
           this.#horizontalScrollAccumulator += deltaPixels;
-          const translateX = this.#applyHorizontalSwipeDelta(deltaPixels);
-          if (Math.abs(translateX) >= this.#horizontalWheelSnapThreshold) {
-            void this.#finalizeHorizontalWheelGesture(true);
-            return;
-          }
+          this.#applyHorizontalSwipeDelta(deltaPixels);
           this.#scheduleHorizontalWheelGestureFinalize(horizontalGestureFinalizeDelay);
           return;
         }
@@ -726,14 +716,12 @@ class nsZenWorkspaces {
     }, finalizeDelay);
   }
 
-  async #finalizeHorizontalWheelGesture(forceSwitch = false) {
+  async #finalizeHorizontalWheelGesture() {
     if (!this.#horizontalWheelGestureActive) {
       return;
     }
     const swipeDelta = this.#horizontalScrollAccumulator;
-    // forceSwitch is used when the visual strip translation already crossed
-    // the snap position threshold and should commit immediately.
-    const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= this.#horizontalWheelSnapThreshold;
+    const shouldSwitch = Math.abs(swipeDelta) >= this.#horizontalWheelSnapThreshold;
     const workspaceOffset = swipeDelta > 0 ? -1 : 1;
     this.#horizontalScrollAccumulator = 0;
     if (shouldSwitch) {

@@ -185,7 +185,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
    */
   #addEventListeners() {
     this._handleZapEvent = this.handleZapEvent.bind(this);
-    this._disableZapMode = this.disableZapMode.bind();
+    this._disableZapMode = this.disableZapMode.bind(this);
 
     for (let event of ZenBoostsChild.OVERLAY_EVENTS) {
       this.document.addEventListener(event, this._handleZapEvent, true);

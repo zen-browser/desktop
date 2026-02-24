@@ -562,11 +562,22 @@ void main() {
   tearDown() {
     const gl = this.#webglContext;
     if (gl) {
-      gl.deleteTexture(this.#texture);
-      gl.deleteBuffer(this.#buffer);
+      if (this.#texture) {
+        gl.deleteTexture(this.#texture);
+        this.#texture = null;
+      }
+      if (this.#buffer) {
+        gl.deleteBuffer(this.#buffer);
+        this.#buffer = null;
+      }
 
-      gl.deleteProgram(this.#program);
-      this.#program = null;
+      if (this.#program) {
+        gl.deleteProgram(this.#program);
+        this.#program = null;
+      }
+
+      const loseCtx = gl.getExtension("WEBGL_lose_context");
+      loseCtx?.loseContext();
     }
 
     if (this.window != null) {
@@ -581,9 +592,6 @@ void main() {
         /* This might fail but that's not an issue */
       }
     }
-
-    const loseCtx = gl.getExtension("WEBGL_lose_context");
-    loseCtx?.loseContext();
 
     this.#content = null;
     this.#initialized = false;

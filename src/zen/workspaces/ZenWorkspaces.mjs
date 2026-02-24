@@ -42,7 +42,6 @@ class nsZenWorkspaces {
 
   #lastScrollTime = 0;
   #lastHorizontalWheelEventTime = 0;
-  #horizontalScrollAccumulator = 0;
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
 
@@ -179,7 +178,6 @@ class nsZenWorkspaces {
       this.workspaceEnabled &&
       !this.isPrivateWindow
     ) {
-      this.initializeGestureHandlers();
       this.initializeWorkspaceNavigation();
     }
   }
@@ -623,28 +621,12 @@ class nsZenWorkspaces {
           }
           this.#lastHorizontalWheelEventTime = currentTime;
           if (
-            this.#horizontalScrollAccumulator !== 0 &&
-            Math.sign(this.#horizontalScrollAccumulator) !== Math.sign(deltaPixels)
+            this._swipeState.lastDelta !== 0 &&
+            Math.sign(this._swipeState.lastDelta) !== Math.sign(deltaPixels)
           ) {
-            this.#horizontalScrollAccumulator = 0;
+            this._swipeState.lastDelta = 0;
           }
-          this.#horizontalScrollAccumulator += deltaPixels;
-          const stripWidth =
-            window.windowUtils.getBoundsWithoutFlushing(
-              document.getElementById("navigator-toolbox")
-            ).width +
-            window.windowUtils.getBoundsWithoutFlushing(
-              document.getElementById("zen-sidebar-splitter")
-            ).width *
-              2;
-          let translateX = this.#horizontalScrollAccumulator;
-          let forceMultiplier = Math.max(0.5, 1 - Math.abs(translateX) / (stripWidth * 4.5));
-          translateX *= forceMultiplier;
-          if (Math.abs(deltaPixels) > 0.8) {
-            this._swipeState.direction = deltaPixels > 0 ? "left" : "right";
-          }
-          const currentWorkspace = this.getActiveWorkspaceFromCache();
-          this._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
+          const translateX = this.#applyHorizontalSwipeDelta(deltaPixels);
           if (Math.abs(translateX) >= horizontalSnapPositionThreshold) {
             void this.#finalizeHorizontalWheelGesture(true);
             return;
@@ -701,6 +683,32 @@ class nsZenWorkspaces {
     }
   }
 
+  #applyHorizontalSwipeDelta(deltaPixels) {
+    const stripWidth =
+      window.windowUtils.getBoundsWithoutFlushing(document.getElementById("navigator-toolbox"))
+        .width +
+      window.windowUtils.getBoundsWithoutFlushing(document.getElementById("zen-sidebar-splitter"))
+        .width *
+        2;
+    let translateX = this._swipeState.lastDelta + deltaPixels;
+    // Match workspace swipe resistance so wheel and gesture interactions feel consistent.
+    const forceMultiplier = Math.min(1, 1 - Math.abs(translateX) / (stripWidth * 4.5));
+    if (forceMultiplier > 0.5) {
+      translateX *= forceMultiplier;
+      this._swipeState.lastDelta = deltaPixels + (translateX - deltaPixels) * 0.5;
+    } else {
+      translateX = this._swipeState.lastDelta;
+    }
+
+    if (Math.abs(deltaPixels) > 0.8) {
+      this._swipeState.direction = deltaPixels > 0 ? "left" : "right";
+    }
+
+    const currentWorkspace = this.getActiveWorkspaceFromCache();
+    this._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
+    return translateX;
+  }
+
   #scheduleHorizontalWheelGestureFinalize(finalizeDelay) {
     if (this.#horizontalScrollFinalizeTimer) {
       clearTimeout(this.#horizontalScrollFinalizeTimer);
@@ -716,10 +724,11 @@ class nsZenWorkspaces {
       return;
     }
     const threshold = 55;
-    const shouldSwitch = forceSwitch || Math.abs(this.#horizontalScrollAccumulator) >= threshold;
-    const workspaceOffset = this.#horizontalScrollAccumulator > 0 ? -1 : 1;
-    this.#horizontalScrollAccumulator = 0;
-    if (shouldSwitch) {
+    const swipeDelta = this._swipeState.lastDelta;
+    const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= threshold;
+    const workspaceOffset = swipeDelta > 0 ? -1 : 1;
+    this._swipeState.lastDelta = 0;
+    if (shouldSwitch && swipeDelta !== 0) {
       await this.changeWorkspaceShortcut(workspaceOffset, true);
       this.#lastScrollTime = Date.now();
     } else {
@@ -736,7 +745,7 @@ class nsZenWorkspaces {
       clearTimeout(this.#horizontalScrollFinalizeTimer);
       this.#horizontalScrollFinalizeTimer = null;
     }
-    this.#horizontalScrollAccumulator = 0;
+    this._swipeState.lastDelta = 0;
     this._cancelSwipeAnimation();
     this.#cleanupHorizontalWheelGesture();
   }
@@ -757,46 +766,6 @@ class nsZenWorkspaces {
     document.removeEventListener("popupshown", this.popupOpenHandler, { once: true });
   }
 
-  initializeGestureHandlers() {
-    const elements = [
-      gNavToolbox,
-      // event handlers do not work on elements inside shadow DOM so we need to attach them directly
-      document.getElementById("tabbrowser-arrowscrollbox").shadowRoot.querySelector("scrollbox"),
-    ];
-
-    // Attach gesture handlers to each element
-    for (const element of elements) {
-      if (!element) {
-        continue;
-      }
-      this.attachGestureHandlers(element);
-    }
-  }
-
-  attachGestureHandlers(element) {
-    element.addEventListener("MozSwipeGestureMayStart", this._handleSwipeMayStart.bind(this), true);
-    element.addEventListener("MozSwipeGestureStart", this._handleSwipeStart.bind(this), true);
-    element.addEventListener("MozSwipeGestureUpdate", this._handleSwipeUpdate.bind(this), true);
-
-    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
-    // while MozSwipeGesture is fired immediately after swipe ends.
-    element.addEventListener("MozSwipeGesture", this._handleSwipeEnd.bind(this), true);
-
-    element.addEventListener(
-      "MozSwipeGestureEnd",
-      () => {
-        Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-        document.documentElement.removeAttribute("swipe-gesture");
-        gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-        document.documentElement.style.setProperty("--zen-background-opacity", "1");
-        delete this._hasAnimatedBackgrounds;
-        this.updateTabsContainers();
-        document.removeEventListener("popupshown", this.popupOpenHandler, { once: true });
-      },
-      true
-    );
-  }
-
   _popupOpenHandler() {
     // If a popup is opened, we should stop the swipe gesture
     if (this._swipeState?.isGestureActive) {
@@ -805,108 +774,12 @@ class nsZenWorkspaces {
         this.#horizontalScrollFinalizeTimer = null;
       }
       this.#horizontalWheelGestureActive = false;
-      this.#horizontalScrollAccumulator = 0;
+      this._swipeState.lastDelta = 0;
       document.documentElement.removeAttribute("swipe-gesture");
       gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
       this.updateTabsContainers();
       this._cancelSwipeAnimation();
     }
-  }
-
-  _handleSwipeMayStart(event) {
-    if (this.privateWindowOrDisabled || this.#inChangingWorkspace) {
-      return;
-    }
-    if (
-      event.target.closest("#zen-sidebar-foot-buttons") ||
-      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
-    ) {
-      return;
-    }
-
-    // Only handle horizontal swipes
-    if (event.direction === event.DIRECTION_LEFT || event.direction === event.DIRECTION_RIGHT) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      // Set allowed directions based on available workspaces
-      event.allowedDirections |= event.DIRECTION_LEFT | event.DIRECTION_RIGHT;
-    }
-  }
-
-  _handleSwipeStart(event) {
-    if (!this.workspaceEnabled) {
-      return;
-    }
-
-    gZenFolders.cancelPopupTimer();
-
-    document.documentElement.setAttribute("swipe-gesture", "true");
-    document.addEventListener("popupshown", this.popupOpenHandler, { once: true });
-
-    event.preventDefault();
-    event.stopPropagation();
-    this._swipeState = {
-      isGestureActive: true,
-      lastDelta: 0,
-      direction: null,
-    };
-    Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
-  }
-
-  _handleSwipeUpdate(event) {
-    if (!this.workspaceEnabled || !this._swipeState?.isGestureActive) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const delta = event.delta * 300;
-    const stripWidth =
-      window.windowUtils.getBoundsWithoutFlushing(document.getElementById("navigator-toolbox"))
-        .width +
-      window.windowUtils.getBoundsWithoutFlushing(document.getElementById("zen-sidebar-splitter"))
-        .width *
-        2;
-    let translateX = this._swipeState.lastDelta + delta;
-    // Add a force multiplier as we are translating the strip depending on how close to the edge we are
-    let forceMultiplier = Math.min(1, 1 - Math.abs(translateX) / (stripWidth * 4.5)); // 4.5 instead of 4 to add a bit of a buffer
-    if (forceMultiplier > 0.5) {
-      translateX *= forceMultiplier;
-      this._swipeState.lastDelta = delta + (translateX - delta) * 0.5;
-    } else {
-      translateX = this._swipeState.lastDelta;
-    }
-
-    if (Math.abs(delta) > 0.8) {
-      this._swipeState.direction = delta > 0 ? "left" : "right";
-    }
-
-    // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const currentWorkspace = this.getActiveWorkspaceFromCache();
-    this._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
-  }
-
-  async _handleSwipeEnd(event) {
-    if (!this.workspaceEnabled) {
-      return;
-    }
-    event.preventDefault();
-    event.stopPropagation();
-    const isRTL = document.documentElement.matches(":-moz-locale-dir(rtl)");
-    const moveForward = (event.direction === SimpleGestureEvent.DIRECTION_RIGHT) !== isRTL;
-
-    const rawDirection = moveForward ? 1 : -1;
-    const direction = this.naturalScroll ? -1 : 1;
-    await this.changeWorkspaceShortcut(rawDirection * direction, true);
-
-    // Reset swipe state
-    this._swipeState = {
-      isGestureActive: false,
-      lastDelta: 0,
-      direction: null,
-    };
   }
 
   get activeWorkspace() {

@@ -45,9 +45,10 @@ class nsZenWorkspaces {
   #horizontalScrollAccumulator = 0;
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
-  // Slightly lower than the previous 55 to reduce required wheel travel
-  // while keeping accidental switches uncommon.
-  #horizontalWheelSnapThreshold = 50;
+  #horizontalWheelSnapThreshold = 55;
+  // Multiplier for wheel-derived deltas. Slightly >1 keeps behavior familiar
+  // while requiring a bit less physical wheel travel.
+  #horizontalWheelSensitivity = 1.12;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -618,7 +619,10 @@ class nsZenWorkspaces {
           }
           this.#startHorizontalWheelGesture();
           const scrollDirection = this.naturalScroll ? -1 : 1;
-          const deltaPixels = this.#normalizeHorizontalWheelDelta(event) * scrollDirection;
+          const deltaPixels =
+            this.#normalizeHorizontalWheelDelta(event) *
+            scrollDirection *
+            this.#horizontalWheelSensitivity;
           if (!deltaPixels) {
             return;
           }

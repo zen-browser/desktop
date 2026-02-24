@@ -10,3 +10,12 @@
 
 - name: zen.splitView.rearrange-hover-size
   value: 24
+
+- name: zen.splitView.enable-drag-over-split
+  value: true
+
+- name: zen.splitView.drag-over-split-delayMC
+  value: 300
+
+- name: zen.splitView.drag-over-split-threshold
+  value: 25

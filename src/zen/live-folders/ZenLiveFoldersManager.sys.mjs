@@ -228,14 +228,14 @@ class nsZenLiveFoldersManager {
     let labelElement = folder.labelElement;
     labelElement.setAttribute("live-folder-animation", "true");
     labelElement.style.backgroundPositionX = "0%";
-    let animation = folder.ownerGlobal.gZenUIManager.motion
+    folder.ownerGlobal.gZenUIManager.motion
       .animate(
         labelElement,
         {
           backgroundPositionX: ["0%", "-50%"],
         },
         {
-          duration: 1.5,
+          duration: 1,
         }
       )
       .then(() => {
@@ -256,54 +256,52 @@ class nsZenLiveFoldersManager {
       browser: gBrowser.selectedBrowser,
       theme: { preset: "chrome" },
     });
-    animation.then(() => {
-      callout.showFeatureCallout({
+    callout.showFeatureCallout({
+      id: "ZEN_LIVE_FOLDERS_CALLOUT",
+      template: "feature_callout",
+      groups: ["cfr"],
+      content: {
         id: "ZEN_LIVE_FOLDERS_CALLOUT",
-        template: "feature_callout",
-        groups: ["cfr"],
-        content: {
-          id: "ZEN_LIVE_FOLDERS_CALLOUT",
-          template: "spotlight",
-          backdrop: "transparent",
-          transitions: true,
-          autohide: true,
-          screens: [
-            {
-              id: "ZEN_LIVE_FOLDERS_CALLOUT",
-              anchors: [
-                {
-                  selector: `[id="${folder.id}"]`,
-                  panel_position: {
-                    anchor_attachment: "rightcenter",
-                    callout_attachment: "topleft",
-                  },
-                },
-              ],
-              content: {
-                position: "callout",
-                width: "355px",
-                title_logo: {
-                  imageURL: icon,
-                  width: "18px",
-                  height: "18px",
-                  marginInline: "0 8px",
-                },
-                title: {
-                  string_id: "zen-live-folders-promotion-title",
-                },
-                subtitle: {
-                  string_id: "zen-live-folders-promotion-description",
+        template: "spotlight",
+        backdrop: "transparent",
+        transitions: true,
+        autohide: true,
+        screens: [
+          {
+            id: "ZEN_LIVE_FOLDERS_CALLOUT",
+            anchors: [
+              {
+                selector: `[id="${folder.id}"]`,
+                panel_position: {
+                  anchor_attachment: "rightcenter",
+                  callout_attachment: "topleft",
                 },
               },
+            ],
+            content: {
+              width: "310px",
+              position: "callout",
+              title_logo: {
+                imageURL: icon,
+                width: "18px",
+                height: "18px",
+                marginInline: "0 8px",
+              },
+              title: {
+                string_id: "zen-live-folders-promotion-title",
+              },
+              subtitle: {
+                string_id: "zen-live-folders-promotion-description",
+              },
             },
-          ],
-        },
-      });
-
-      lazy.setTimeout(() => {
-        callout.endTour();
-      }, 8000);
+          },
+        ],
+      },
     });
+
+    lazy.setTimeout(() => {
+      callout.endTour();
+    }, 10000);
   }
 
   deleteFolder(id, deleteFolder = true) {

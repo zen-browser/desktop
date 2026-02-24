@@ -30,6 +30,12 @@ panel[type="arrow"]:not(#feature-callout) {
   }
 
   @media (-moz-platform: macos) {
+    &[followanchor="false"] {
+      appearance: auto !important;
+      -moz-default-appearance: menupopup;
+      background-color: Menu !important;
+    }
+
     --panel-shadow-margin: 0px !important;
     --panel-background: transparent !important;
     --panel-border-color: transparent;

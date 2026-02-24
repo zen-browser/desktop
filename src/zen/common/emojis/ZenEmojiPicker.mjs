@@ -244,7 +244,13 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
 
   open(
     anchor,
-    { onlySvgIcons = false, emojiAsSVG = false, allowNone = true, closeOnSelect = true, onSelect = null } = {}
+    {
+      onlySvgIcons = false,
+      emojiAsSVG = false,
+      allowNone = true,
+      closeOnSelect = true,
+      onSelect = null,
+    } = {}
   ) {
     if (this.#currentPromise) {
       return null;

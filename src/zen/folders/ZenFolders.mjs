@@ -731,12 +731,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   get #searchPopupOptions() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-    const position = isRightSide ? "start_before" : "start_before";
+    const position = isRightSide ? "topleft topright" : "topright topleft";
     let size = Math.min(this.#popup.querySelector("#zen-folder-tabs-list").children.length, 6);
     size *= 48;
     return {
       position,
-      x: -10,
+      x: 10,
       y: size / -2,
     };
   }
@@ -960,7 +960,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
       this.#mouseTimer = setTimeout(() => {
         // If popup is focused don't hide it
-        if (this.#popup.matches(":hover")) {
+        if (this.#popup.matches(":hover") || labelContainer.matches(":hover")) {
           return;
         }
         this.#popup.hidePopup(true);
@@ -1262,7 +1262,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   get #folderAnimationDuration() {
-    return this._sessionRestoring ? 0 : 0.12;
+    return this._sessionRestoring || this._dontAnimateFolder ? 0 : 0.12;
   }
 
   async animateCollapse(group) {

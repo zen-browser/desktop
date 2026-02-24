@@ -616,13 +616,24 @@
 }
 
 /* Feature allouts */
-#feature-callout #mainContentHeader {
-  --special-color: color-mix(in srgb, light-dark(white, black), currentColor 50%);
-  --specia-color-2: color-mix(in srgb, light-dark(white, black), currentColor 90%);
-  background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2));
-  background-size: 400%;
-  background-clip: text;
-  /* Still works on firefox */
-  -webkit-text-fill-color: transparent;
-  animation: zen-text-gradient 5s linear infinite;
+#feature-callout {
+  #mainContentHeader {
+    --special-color: color-mix(in srgb, light-dark(white, black), currentColor 50%);
+    --specia-color-2: color-mix(in srgb, light-dark(white, black), currentColor 90%);
+    background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2));
+    background-size: 400%;
+    background-clip: text;
+    /* Still works on firefox */
+    -webkit-text-fill-color: transparent;
+    animation: zen-text-gradient 5s linear infinite;
+    font-size: initial;
+  }
+
+  #mainContentSubheader {
+    text-wrap: balance;
+  }
+
+  #multi-stage-message-welcome-text {
+    gap: 4px;
+  }
 }

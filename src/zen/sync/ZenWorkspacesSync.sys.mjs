@@ -43,41 +43,50 @@ ZenWorkspacesStore.prototype = {
 
     const space = ZenSessionStore.spaces.find((s) => s.uuid === id);
     if (space) {
-      record.cleartext = {
-        ...space,
-        type: "space",
-      };
+      record.cleartext = { ...space, type: "space" };
       this._log.debug("createRecord", record);
       return record;
     }
 
     const tab = ZenSessionStore.tabs.find((t) => t.zenSyncId === id);
     if (tab) {
-      record.cleartext = {
-        ...tab,
-        type: "tab",
-      };
+      record.cleartext = { ...tab, type: "tab" };
       this._log.debug("createRecord", record);
       return record;
     }
 
     const folder = ZenSessionStore.folders.find((f) => f.id === id);
     if (folder) {
-      record.cleartext = {
-        ...folder,
-        type: "folder",
-      };
+      record.cleartext = { ...folder, type: "folder" };
       this._log.debug("createRecord", record);
       return record;
     }
 
     record.deleted = true;
-    this._log.debug("createRecord", record);
+    this._log.debug("createRecord (tombstone)", record);
     return record;
   },
 
   async itemExists(id) {
     return id in (await this.getAllIDs());
+  },
+
+  _resolveType(record) {
+    const type = record.cleartext?.type;
+    if (type) {
+      return type;
+    }
+    const id = record.id;
+    if (ZenSessionStore.spaces.some((s) => s.uuid === id)) {
+      return "space";
+    }
+    if (ZenSessionStore.tabs.some((t) => t.zenSyncId === id)) {
+      return "tab";
+    }
+    if (ZenSessionStore.folders.some((f) => f.id === id)) {
+      return "folder";
+    }
+    return null;
   },
 
   async _upsert(record) {
@@ -151,9 +160,12 @@ ZenWorkspacesStore.prototype = {
   async remove(record) {
     this._log.debug("remove", record);
 
-    switch (record.cleartext.type) {
+    const type = this._resolveType(record);
+    const id = record.id;
+
+    switch (type) {
       case "space": {
-        const spaces = ZenSessionStore.spaces.filter((s) => s.uuid !== record.cleartext.uuid);
+        const spaces = ZenSessionStore.spaces.filter((s) => s.uuid !== id);
         this.engine._tracker.ignoreAll = true;
         try {
           await ZenSessionStore.updateSyncedSpaces(spaces, true);
@@ -163,7 +175,7 @@ ZenWorkspacesStore.prototype = {
         break;
       }
       case "tab": {
-        const tabs = ZenSessionStore.tabs.filter((t) => t.zenSyncId !== record.cleartext.zenSyncId);
+        const tabs = ZenSessionStore.tabs.filter((t) => t.zenSyncId !== id);
         this.engine._tracker.ignoreAll = true;
         try {
           await ZenSessionStore.updateSyncedTabs(tabs, true);
@@ -173,7 +185,7 @@ ZenWorkspacesStore.prototype = {
         break;
       }
       case "folder": {
-        const folders = ZenSessionStore.folders.filter((f) => f.id !== record.cleartext.id);
+        const folders = ZenSessionStore.folders.filter((f) => f.id !== id);
         this.engine._tracker.ignoreAll = true;
         try {
           await ZenSessionStore.updateSyncedFolders(folders, true);
@@ -182,6 +194,8 @@ ZenWorkspacesStore.prototype = {
         }
         break;
       }
+      default:
+        this._log.warn("remove: could not resolve type for id", id);
     }
   },
 

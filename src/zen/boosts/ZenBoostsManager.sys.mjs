@@ -562,6 +562,7 @@ class nsZenBoostsManager {
       "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
       null,
       `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=no`,
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=yes`,
       null
     );
 

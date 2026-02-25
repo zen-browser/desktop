@@ -565,9 +565,13 @@ class nsZenWorkspaces {
 
     const verticalScrollCooldown = 200; // Milliseconds to wait before allowing another scroll
     const verticalScrollThreshold = 1;
-    // Keep this short so wheel gestures feel responsive, but long enough to
-    // wait for bursty horizontal wheel events before deciding where to snap.
-    const horizontalGestureFinalizeDelay = 70;
+    const horizontalWheelSensitivity = 1.1;
+    // Keep settle timing fast for wheel UX, while still respecting platform
+    // transaction timing as an upper bound.
+    const horizontalGestureFinalizeDelay = Math.min(
+      Services.prefs.getIntPref("mousewheel.transaction.timeout", 150),
+      95
+    );
 
     toolbox.addEventListener(
       "wheel",
@@ -611,27 +615,30 @@ class nsZenWorkspaces {
         const currentTime = Date.now();
 
         if (isHorizontalScroll) {
-          if (this.#inChangingWorkspace) {
-            return;
-          }
-          this.#startHorizontalWheelGesture();
           const scrollDirection = this.naturalScroll ? -1 : 1;
-          const deltaPixels = this.#normalizeHorizontalWheelDelta(event) * scrollDirection;
+          const deltaPixels =
+            this.#normalizeHorizontalWheelDelta(event) *
+            scrollDirection *
+            horizontalWheelSensitivity;
           if (!deltaPixels) {
             return;
           }
           this.#lastHorizontalWheelEventTime = currentTime;
-          if (
-            this.#horizontalScrollAccumulator !== 0 &&
-            Math.sign(this.#horizontalScrollAccumulator) !== Math.sign(deltaPixels)
-          ) {
-            // Reset on direction flips so small wheel nudges do not fight against
-            // stale momentum from the opposite side.
-            this.#horizontalScrollAccumulator = 0;
+          if (this.#inChangingWorkspace) {
+            return;
           }
+          this.#startHorizontalWheelGesture();
           this.#horizontalScrollAccumulator += deltaPixels;
-          this.#applyHorizontalSwipeDelta(deltaPixels);
-          this.#scheduleHorizontalWheelGestureFinalize(horizontalGestureFinalizeDelay);
+          const translateX = this.#applyHorizontalSwipeDelta(deltaPixels);
+          if (Math.abs(translateX) >= this.#horizontalWheelSnapThreshold) {
+            if (this.#horizontalScrollFinalizeTimer) {
+              clearTimeout(this.#horizontalScrollFinalizeTimer);
+              this.#horizontalScrollFinalizeTimer = null;
+            }
+            void this.#finalizeHorizontalWheelGesture(true);
+          } else {
+            this.#scheduleHorizontalWheelGestureFinalize(horizontalGestureFinalizeDelay);
+          }
           return;
         }
 
@@ -716,12 +723,12 @@ class nsZenWorkspaces {
     }, finalizeDelay);
   }
 
-  async #finalizeHorizontalWheelGesture() {
+  async #finalizeHorizontalWheelGesture(forceSwitch = false) {
     if (!this.#horizontalWheelGestureActive) {
       return;
     }
     const swipeDelta = this.#horizontalScrollAccumulator;
-    const shouldSwitch = Math.abs(swipeDelta) >= this.#horizontalWheelSnapThreshold;
+    const shouldSwitch = forceSwitch || Math.abs(swipeDelta) >= this.#horizontalWheelSnapThreshold;
     const workspaceOffset = swipeDelta > 0 ? -1 : 1;
     this.#horizontalScrollAccumulator = 0;
     if (shouldSwitch) {

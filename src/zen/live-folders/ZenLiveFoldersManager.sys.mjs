@@ -272,7 +272,7 @@ class nsZenLiveFoldersManager {
             id: "ZEN_LIVE_FOLDERS_CALLOUT",
             anchors: [
               {
-                selector: `[id="${folder.id}"] > hbox`,
+                selector: `[id="${folder.id}"] > .tab-group-label-container`,
                 panel_position: {
                   anchor_attachment: "rightcenter",
                   callout_attachment: "topleft",

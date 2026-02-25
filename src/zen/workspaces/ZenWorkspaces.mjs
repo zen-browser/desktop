@@ -911,19 +911,11 @@ class nsZenWorkspaces {
     }
     this.#trackpadLastEventDelta = rawDelta;
 
-    const motionStepThreshold = 0.8;
+    // Keep direction detection responsive at low swipe velocities so reversing
+    // mid-gesture does not stall around the strip center.
+    const motionStepThreshold = 0.35;
     if (Math.abs(stepDelta) >= motionStepThreshold) {
       const stepDirection = stepDelta > 0 ? 1 : -1;
-      if (
-        this.#trackpadLastMotionDirection &&
-        stepDirection !== this.#trackpadLastMotionDirection
-      ) {
-        // Rebase when reversing so the swipe starts immediately in the new direction
-        // instead of fighting the previous accumulated displacement.
-        this.#trackpadMotionBaseline = rawDelta;
-        delta = 0;
-        this._swipeState.lastDelta = 0;
-      }
       this.#trackpadLastMotionDirection = stepDirection;
       this._swipeState.direction = stepDirection > 0 ? "left" : "right";
     }
@@ -966,7 +958,13 @@ class nsZenWorkspaces {
 
     const rawDirection = moveForward ? 1 : -1;
     const direction = this.naturalScroll ? -1 : 1;
+    const previousWorkspaceId = this.activeWorkspace;
     await this.changeWorkspaceShortcut(rawDirection * direction, true);
+    if (this.activeWorkspace === previousWorkspaceId) {
+      // Ensure the strip recenters when a swipe gesture resolves without a committed
+      // workspace change (for example while another transition is still settling).
+      this._cancelSwipeAnimation();
+    }
 
     // Reset swipe state
     this._swipeState = {

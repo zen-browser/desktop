@@ -4,13 +4,10 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-// Lazy import for page thumbnails
-let PageThumbs;
-async function ensurePageThumbs() {
-  if (!PageThumbs) {
-    PageThumbs = (await ChromeUtils.importESModule("resource://gre/modules/PageThumbs.sys.mjs")).PageThumbs;
-  }
-}
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  PageThumbs: "resource://gre/modules/PageThumbs.sys.mjs",
+});
 
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
@@ -224,7 +221,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#renderTabs();
 
     // Use PanelMultiView API for proper panelmultiview handling
-    // Anchor to TabsToolbar like other zen-panels (gradient-generator pattern)
+    // Anchor to TabsToolbar like other zen-panels 
     PanelMultiView.openPopup(this.panel, this.toolbox, {
       position: "overlap",
       triggerEvent: null,
@@ -303,8 +300,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       canvas.width = 320;
       canvas.height = 180;
 
-      await ensurePageThumbs();
-      await PageThumbs.captureToCanvas(browser, canvas, { targetWidth: 1024 });
+      await lazy.PageThumbs.captureToCanvas(browser, canvas);
       const dataUrl = canvas.toDataURL("image/png");
       this.#thumbnailCache.set(tabId, dataUrl);
 

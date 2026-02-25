@@ -48,6 +48,10 @@
       position: absolute;
       font-size: 14px;
 
+      @media (-moz-platform: linux) {
+        font-size: 12px;
+      }
+
       &:is(img) {
         width: 14px;
       }

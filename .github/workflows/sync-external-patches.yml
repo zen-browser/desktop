@@ -19,10 +19,13 @@ jobs:
         uses: actions/setup-python@v5
         # note: This will use the version defined in '.python-version' by defaultç
 
-      - name: Install dependencies
+      - name: Setup git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
 
       - name: Import external patches
         run: python3 scripts/update_external_patches.py

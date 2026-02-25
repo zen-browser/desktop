@@ -76,6 +76,9 @@ jobs:
       - name: Install autopep8
         run: sudo apt install python3-autopep8
 
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
+
       - name: Check if any files changed
         id: git-check
         run: |

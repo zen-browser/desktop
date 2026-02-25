@@ -33,6 +33,9 @@ panel[type="arrow"]:not(#feature-callout) {
     &[followanchor="false"] {
       appearance: auto !important;
       -moz-default-appearance: menupopup;
+      /* We set the default background here, rather than on ::part(content),
+       * because otherwise it'd interfere with the native look. Non-native-looking
+       * popups should get their background via --panel-background */
       background-color: Menu !important;
     }
 

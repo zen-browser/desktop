@@ -42,6 +42,8 @@ class nsZenWorkspaces {
 
   #lastScrollTime = 0;
   #lastHorizontalWheelEventTime = 0;
+  #lastTrackpadSwipeEventTime = 0;
+  #trackpadPostSwipeSuppressionMs = 2000;
   #horizontalScrollAccumulator = 0;
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
@@ -531,6 +533,9 @@ class nsZenWorkspaces {
     if (!this.workspaceEnabled || !gNavToolbox.matches(":hover")) {
       return;
     }
+    if (Date.now() - this.#lastTrackpadSwipeEventTime < this.#trackpadPostSwipeSuppressionMs) {
+      return;
+    }
     // Some devices emit AppCommand and wheel for the same horizontal wheel action.
     // Ignore AppCommand if a horizontal wheel event just occurred.
     if (Date.now() - this.#lastHorizontalWheelEventTime < 250) {
@@ -616,6 +621,12 @@ class nsZenWorkspaces {
         const currentTime = Date.now();
 
         if (isHorizontalScroll) {
+          if (
+            event.deltaMode === event.DOM_DELTA_PIXEL &&
+            currentTime - this.#lastTrackpadSwipeEventTime < this.#trackpadPostSwipeSuppressionMs
+          ) {
+            return;
+          }
           const scrollDirection = this.naturalScroll ? -1 : 1;
           const deltaPixels =
             this.#normalizeHorizontalWheelDelta(event) *
@@ -798,6 +809,7 @@ class nsZenWorkspaces {
     element.addEventListener(
       "MozSwipeGestureEnd",
       () => {
+        this.#lastTrackpadSwipeEventTime = Date.now();
         Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
         document.documentElement.removeAttribute("swipe-gesture");
         gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
@@ -827,6 +839,7 @@ class nsZenWorkspaces {
   }
 
   _handleSwipeMayStart(event) {
+    this.#lastTrackpadSwipeEventTime = Date.now();
     if (this.privateWindowOrDisabled || this.#inChangingWorkspace) {
       return;
     }
@@ -848,6 +861,7 @@ class nsZenWorkspaces {
   }
 
   _handleSwipeStart(event) {
+    this.#lastTrackpadSwipeEventTime = Date.now();
     if (!this.workspaceEnabled) {
       return;
     }
@@ -868,6 +882,7 @@ class nsZenWorkspaces {
   }
 
   _handleSwipeUpdate(event) {
+    this.#lastTrackpadSwipeEventTime = Date.now();
     if (!this.workspaceEnabled || !this._swipeState?.isGestureActive) {
       return;
     }
@@ -902,6 +917,7 @@ class nsZenWorkspaces {
   }
 
   async _handleSwipeEnd(event) {
+    this.#lastTrackpadSwipeEventTime = Date.now();
     if (!this.workspaceEnabled) {
       return;
     }

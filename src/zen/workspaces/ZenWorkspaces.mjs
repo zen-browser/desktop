@@ -545,7 +545,7 @@ class nsZenWorkspaces {
       this.#cancelHorizontalWheelGesture();
     }
 
-    const direction = this.naturalScroll ? -1 : 1;
+    const direction = this.naturalScroll ? 1 : -1;
     // event is forward or back
     switch (event.command) {
       case "Forward":
@@ -627,7 +627,7 @@ class nsZenWorkspaces {
           ) {
             return;
           }
-          const scrollDirection = this.naturalScroll ? -1 : 1;
+          const scrollDirection = this.naturalScroll ? 1 : -1;
           const deltaPixels =
             this.#normalizeHorizontalWheelDelta(event) *
             scrollDirection *

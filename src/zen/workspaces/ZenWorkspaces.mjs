@@ -1353,6 +1353,8 @@ class nsZenWorkspaces {
     if (!this.#hasInitialized || this.privateWindowOrDisabled) {
       return;
     }
+
+    Services.obs.notifyObservers(null, "ZenWorkspaceDataChanged");
     window.dispatchEvent(new CustomEvent("ZenWorkspaceDataChanged"), { bubbles: true });
     window.gZenWindowSync.propagateWorkspacesToAllWindows(aSpaceData ?? this._workspaceCache);
   }

@@ -111,6 +111,22 @@ export class nsZenSessionManager {
     return PathUtils.join(PathUtils.profileDir, "zen-sessions-backup");
   }
 
+  get sidebarData() {
+    return this.#sidebar;
+  }
+
+  get tabs() {
+    return this.sidebarData ? this.sidebarData.tabs || [] : [];
+  }
+
+  get folders() {
+    return this.sidebarData ? this.sidebarData.folders || [] : [];
+  }
+
+  get spaces() {
+    return this.sidebarData ? this.sidebarData.spaces || [] : [];
+  }
+
   async #getBackupRecoveryOrder() {
     // Also add the most recent backup file to the recovery order
     let backupFiles = [PathUtils.join(this.#backupFolderPath, "clean.jsonlz4")];
@@ -524,7 +540,72 @@ export class nsZenSessionManager {
     }
     lazy.ZenLiveFoldersManager.saveState(soon);
     this.#debounceRegeneration();
+    Services.obs.notifyObservers(null, "ZenWorkspaceDataChanged");
     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
+  }
+
+  /**
+   * Helper function to save the session file. Returns false if there is no file to save.
+   * Returns the result of the save operation otherwise.
+   */
+  saveSessionFile(soon = false) {
+    if (!this.#file) {
+      return false;
+    }
+
+    if (soon) {
+      return this.#file.saveSoon();
+    }
+
+    return this.#file._save();
+  }
+
+  /**
+   * Called when there is new synced data from other windows.
+   */
+  updateSyncedData({ tabs, folders, spaces }, soon = false) {
+    let sidebar = this.#sidebar;
+    if (tabs) {
+      sidebar.tabs = this.#filterUnusedTabs(tabs);
+    }
+    if (folders) {
+      sidebar.folders = folders;
+    }
+    if (spaces) {
+      sidebar.spaces = spaces;
+    }
+    this.#sidebar = sidebar;
+    return this.saveSessionFile(soon);
+  }
+
+  /**
+   * Called when tabs need to be synced to other windows.
+   */
+  updateSyncedTabs(tabs, soon = false) {
+    let sidebar = this.#sidebar;
+    sidebar.tabs = this.#filterUnusedTabs(tabs);
+    this.#sidebar = sidebar;
+    return this.saveSessionFile(soon);
+  }
+
+  /**
+   * Called when folders need to be synced to other windows.
+   */
+  updateSyncedFolders(folders, soon = false) {
+    let sidebar = this.#sidebar;
+    sidebar.folders = folders;
+    this.#sidebar = sidebar;
+    return this.saveSessionFile(soon);
+  }
+
+  /**
+   * Called when spaces need to be synced to other windows.
+   */
+  updateSyncedSpaces(spaces, soon = false) {
+    let sidebar = this.#sidebar;
+    sidebar.spaces = spaces;
+    this.#sidebar = sidebar;
+    return this.saveSessionFile(soon);
   }
 
   /**

@@ -48,6 +48,11 @@ class nsZenWorkspaces {
   #horizontalScrollFinalizeTimer = null;
   #horizontalWheelGestureActive = false;
   #horizontalWheelSnapThreshold = 55;
+  // Trackpad swipe deltas are cumulative; keep explicit state so slow gestures
+  // and mid-gesture reversals stay stable and deterministic.
+  #trackpadLastEventDelta = null;
+  #trackpadLastMotionDirection = 0;
+  #trackpadMotionBaseline = null;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -840,7 +845,9 @@ class nsZenWorkspaces {
 
   _handleSwipeMayStart(event) {
     this.#lastTrackpadSwipeEventTime = Date.now();
-    if (this.privateWindowOrDisabled || this.#inChangingWorkspace) {
+    // Allow new swipe intent even while a previous workspace transition settles,
+    // otherwise reversing direction feels blocked until finger lift.
+    if (this.privateWindowOrDisabled) {
       return;
     }
     if (
@@ -878,6 +885,9 @@ class nsZenWorkspaces {
       lastDelta: 0,
       direction: null,
     };
+    this.#trackpadLastEventDelta = null;
+    this.#trackpadLastMotionDirection = 0;
+    this.#trackpadMotionBaseline = null;
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
   }
 
@@ -890,25 +900,47 @@ class nsZenWorkspaces {
     event.preventDefault();
     event.stopPropagation();
 
-    const delta = event.delta * 300;
+    const rawDelta = event.delta * 300;
+    if (this.#trackpadMotionBaseline === null) {
+      this.#trackpadMotionBaseline = rawDelta;
+    }
+    let delta = rawDelta - this.#trackpadMotionBaseline;
+    let stepDelta = 0;
+    if (typeof this.#trackpadLastEventDelta === "number") {
+      stepDelta = rawDelta - this.#trackpadLastEventDelta;
+    }
+    this.#trackpadLastEventDelta = rawDelta;
+
+    const motionStepThreshold = 0.8;
+    if (Math.abs(stepDelta) >= motionStepThreshold) {
+      const stepDirection = stepDelta > 0 ? 1 : -1;
+      if (
+        this.#trackpadLastMotionDirection &&
+        stepDirection !== this.#trackpadLastMotionDirection
+      ) {
+        // Rebase when reversing so the swipe starts immediately in the new direction
+        // instead of fighting the previous accumulated displacement.
+        this.#trackpadMotionBaseline = rawDelta;
+        delta = 0;
+        this._swipeState.lastDelta = 0;
+      }
+      this.#trackpadLastMotionDirection = stepDirection;
+      this._swipeState.direction = stepDirection > 0 ? "left" : "right";
+    }
     const stripWidth =
       window.windowUtils.getBoundsWithoutFlushing(document.getElementById("navigator-toolbox"))
         .width +
       window.windowUtils.getBoundsWithoutFlushing(document.getElementById("zen-sidebar-splitter"))
         .width *
         2;
-    let translateX = this._swipeState.lastDelta + delta;
+    let translateX = delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(1, 1 - Math.abs(translateX) / (stripWidth * 4.5)); // 4.5 instead of 4 to add a bit of a buffer
     if (forceMultiplier > 0.5) {
       translateX *= forceMultiplier;
-      this._swipeState.lastDelta = delta + (translateX - delta) * 0.5;
+      this._swipeState.lastDelta = translateX;
     } else {
       translateX = this._swipeState.lastDelta;
-    }
-
-    if (Math.abs(delta) > 0.8) {
-      this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
     // Apply a translateX to the tab strip to give the user feedback on the swipe
@@ -924,7 +956,13 @@ class nsZenWorkspaces {
     event.preventDefault();
     event.stopPropagation();
     const isRTL = document.documentElement.matches(":-moz-locale-dir(rtl)");
-    const moveForward = (event.direction === SimpleGestureEvent.DIRECTION_RIGHT) !== isRTL;
+    let swipeDirection = event.direction;
+    if (this.#trackpadLastMotionDirection < 0) {
+      swipeDirection = SimpleGestureEvent.DIRECTION_RIGHT;
+    } else if (this.#trackpadLastMotionDirection > 0) {
+      swipeDirection = SimpleGestureEvent.DIRECTION_LEFT;
+    }
+    const moveForward = (swipeDirection === SimpleGestureEvent.DIRECTION_RIGHT) !== isRTL;
 
     const rawDirection = moveForward ? 1 : -1;
     const direction = this.naturalScroll ? -1 : 1;
@@ -936,6 +974,9 @@ class nsZenWorkspaces {
       lastDelta: 0,
       direction: null,
     };
+    this.#trackpadLastEventDelta = null;
+    this.#trackpadLastMotionDirection = 0;
+    this.#trackpadMotionBaseline = null;
   }
 
   get activeWorkspace() {

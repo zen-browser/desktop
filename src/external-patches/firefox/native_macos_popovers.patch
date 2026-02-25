@@ -212,20 +212,21 @@ diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -5,10 +5,12 @@
+@@ -5,10 +5,13 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "nsCocoaWindow.h"
  
  #include "nsArrayUtils.h"
 +#include "nsMenuPopupFrame.h"
++#include "nsDeviceContext.h"
 +#include "mozilla/dom/XULPopupElement.h"
  #include "MOZDynamicCursor.h"
  #include "nsIAppStartup.h"
  #include "nsIDOMWindowUtils.h"
  #include "nsILocalFileMac.h"
  #include "CocoaCompositorWidget.h"
-@@ -4958,10 +4960,15 @@
+@@ -4958,10 +4961,15 @@
    if (mWindowType == WindowType::Popup) {
      SetPopupWindowLevel();
      mWindow.backgroundColor = NSColor.clearColor;
@@ -241,7 +242,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // the active space. Does not work with multiple displays. See
      // NeedsRecreateToReshow() for multi-display with multi-space workaround.
      mWindow.collectionBehavior = mWindow.collectionBehavior |
-@@ -5163,10 +5170,56 @@
+@@ -5163,10 +5171,57 @@
    NS_OBJC_END_TRY_IGNORE_BLOCK;
  }
  
@@ -276,21 +277,22 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +    return;
 +  }
 +
-+  // Synchronizing the internal bounds with the actual bounds
-+  // that macOS calculated
++  // Synchronize the popup frame's internal bounds with the actual bounds that
++  // macOS calculated for the popover.
 +  NSView* contentView = popoverWindow.contentView;
 +  NSRect contentFrame = [contentView convertRect:contentView.bounds toView:nil];
 +  NSRect windowFrame = [popoverWindow convertRectToScreen:contentFrame];
-+  NSScreen* screen = [popoverWindow screen];
 +
-+  if (screen) {
-+    // Inverting the y axis. We convert from a cocoa point to a css point
-+    CGFloat screenHeight = screen.frame.size.height;
-+    mozilla::CSSPoint cssPos(
-+        windowFrame.origin.x,
-+        screenHeight - windowFrame.origin.y - windowFrame.size.height);
-+    aPopupFrame->MoveTo(cssPos, false);
-+  }
++  CGFloat backingScale = popoverWindow.backingScaleFactor;
++  mozilla::LayoutDeviceIntRect devPixRect =
++      nsCocoaUtils::CocoaRectToGeckoRectDevPix(windowFrame, backingScale);
++
++  nsPresContext* presContext = aPopupFrame->PresContext();
++  mozilla::CSSIntPoint cssPos =
++      presContext->DevPixelsToIntCSSPixels(devPixRect.TopLeft());
++
++  aPopupFrame->MoveTo(mozilla::CSSPoint(cssPos.x, cssPos.y),
++                      /* aUpdateAttrs */ false);
 +}
 +
  // Hide or show this window
@@ -298,7 +300,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5280,56 @@
+@@ -5227,10 +5282,56 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -312,15 +314,15 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
 +          nsRect anchorRectAppUnits = popupFrame->GetUntransformedAnchorRect();
-+          mozilla::CSSIntRect cssAnchorRect =
-+              mozilla::CSSIntRect::FromAppUnitsRounded(anchorRectAppUnits);
-+          mozilla::LayoutDeviceIntRect layoutRect =
-+              mozilla::LayoutDeviceIntRect::FromUnknownRect(
-+                  (cssAnchorRect.ToUnknownRect()));
++          nsPresContext* pc = popupFrame->PresContext();
++          int32_t appUnitsPerDevPixel = pc->AppUnitsPerDevPixel();
++          mozilla::DesktopToLayoutDeviceScale desktopToLayoutScale =
++              pc->DeviceContext()->GetDesktopToDeviceScale();
 +          mozilla::DesktopIntRect popupAnchorRectScaled =
-+              mozilla::DesktopIntRect::RoundOut(layoutRect.X(), layoutRect.Y(),
-+                                                layoutRect.Width(),
-+                                                layoutRect.Height());
++              mozilla::DesktopIntRect::RoundOut(
++                  mozilla::LayoutDeviceRect::FromAppUnits(anchorRectAppUnits,
++                                                          appUnitsPerDevPixel) /
++                  desktopToLayoutScale);
 +          // Taking the now correctly scaled anchor rect and turning it into a
 +          // gecko rect this accounts for the y-axis inversion that cocoa needs,
 +          // as the origin is in the bottom left. This rect is in screen space
@@ -355,7 +357,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5301,10 +5400,15 @@
+@@ -5301,10 +5402,15 @@
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
        [nativeParentWindow removeChildWindow:mWindow];
@@ -371,7 +373,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5351,10 +5455,17 @@
+@@ -5351,10 +5457,17 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -389,7 +391,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6313,10 +6424,20 @@
+@@ -6313,10 +6426,20 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
@@ -410,7 +412,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
    DoResize(aRect.x, aRect.y, aRect.width, aRect.height, aRepaint, false);
-@@ -8277,18 +8398,27 @@
+@@ -8277,18 +8400,27 @@
                    backing:(NSBackingStoreType)bufferingType
                      defer:(BOOL)deferCreation {
    NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -438,7 +440,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8342,10 +8472,120 @@
+@@ -8342,10 +8474,120 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;

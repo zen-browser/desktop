@@ -44,11 +44,14 @@ index 2e6e2be9d7e28c3f189131ec19a26d552d13af99..101b5a3a70c24f28a755f2ca6630a6bc
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1012,8 +1032,16 @@ export class UrlbarInput extends HTMLElement {
+@@ -1012,8 +1032,19 @@ export class UrlbarInput extends HTMLElement {
          return;
        }
      }
 -
++    if (this.window.gZenUIManager.maybeOpenMultipleUrls(this.value)) {
++      return;
++    }
 +    const zenToolbox = this.document.getElementById("navigator-toolbox");
 +    this.window.document.documentElement.setAttribute("supress-primary-adjustment", !(
 +      zenToolbox.hasAttribute("zen-has-hover") ||

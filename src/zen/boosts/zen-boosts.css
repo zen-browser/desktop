@@ -6,8 +6,8 @@
 
 #zenBoostWindow {
   /* For the mica effect we want a white tint */
-  color-scheme: light !important;
-  appearance: none !important;
+  color-scheme: light;
+  appearance: none;
 }
 
 #zen-boost-code-editor-root {
@@ -94,6 +94,7 @@ body {
   display: flex;
   margin: 0;
   width: 100%;
+  border-radius: env(-moz-gtk-csd-titlebar-radius);
 }
 
 #zen-boost-editor-root,

@@ -1085,23 +1085,19 @@ class nsZenWorkspaces {
     if (hasNoIcon) {
       anchor.textContent = "";
     }
-    gZenEmojiPicker
-      .open(anchor)
-      .then(async (emoji) => {
+    gZenEmojiPicker.open(anchor, {
+      closeOnSelect: false,
+      allowNone: hasNoIcon,
+      onSelect: async (icon) => {
         const workspace = this.getWorkspaceFromId(workspaceId);
         if (!workspace) {
           console.warn("No active workspace found to change icon");
           return;
         }
-        workspace.icon = emoji;
+        workspace.icon = icon;
         await this.saveWorkspace(workspace);
-      })
-      .catch((error) => {
-        console.warn("Error changing workspace icon:", error);
-        if (hasNoIcon) {
-          anchor.setAttribute("no-icon", "true");
-        }
-      });
+      },
+    });
   }
 
   shouldCloseWindow() {

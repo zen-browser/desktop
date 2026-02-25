@@ -35,7 +35,7 @@ class nsZenLiveFoldersUI {
     });
   }
 
-  async #restoreUIStateForLiveFolder(liveFolder) {
+  #restoreUIStateForLiveFolder(liveFolder) {
     const folder = window.gZenWorkspaces.allTabGroups.find((x) => x.id === liveFolder.id);
     if (!folder) {
       return;

@@ -51,7 +51,6 @@
         <hbox id="zen-boost-name-container">
           <html:p id="zen-boost-name-text"></html:p>
         </hbox>
-        <html:input maxlength="12" type="text" id="zen-boost-name-input"></html:input>
       </hbox>
       <button data-l10n-id="zen-boost-shuffle" id="zen-boost-shuffle" class="subviewbutton mod-button title-button"></button>
     </hbox>
@@ -128,11 +127,11 @@
   </popupset>
 
   <menupopup id="zenBoostContextMenu">
-    <menuitem data-l10n-id="zen-boost-edit-rename" command="cmd_zenBoostEditName" />
-    <menuitem data-l10n-id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
-    <menuitem data-l10n-id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
+    <menuitem data-l10n-id="zen-boost-edit-rename" id="zen-boost-edit-rename" command="cmd_zenBoostEditName" />
+    <menuitem data-l10n-id="zen-boost-edit-shuffle" id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
+    <menuitem data-l10n-id="zen-boost-edit-reset" id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
     <menuseparator/>
-    <menuitem data-l10n-id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
+    <menuitem data-l10n-id="zen-boost-edit-delete" id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
   </menupopup>
 
   <commandset id="zenBoostCommandSet">

@@ -3,7 +3,7 @@
 
 "use strict";
 
-add_task(async function test_getSelectionPath_basic() {
+add_task(async function test_getSelectionPath_nthchild() {
   const doc = document.implementation.createHTMLDocument("TestDoc");
   const childCount = 10;
 

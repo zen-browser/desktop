@@ -1,0 +1,75 @@
+diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -411,10 +411,13 @@
+ pref("browser.urlbar.maxRichResults", 10);
+ 
+ // The maximum number of historical search results to show.
+ pref("browser.urlbar.maxHistoricalSearchSuggestions", 2);
+ 
++// Whether to close the urlbar when blurring the window while the urlbar is focused.
++pref("browser.urlbar.closeOnWindowBlur", true);
++
+ // The default behavior for the urlbar can be configured to use any combination
+ // of the match filters with each additional filter adding more results (union).
+ pref("browser.urlbar.suggest.bookmark",             true);
+ pref("browser.urlbar.suggest.clipboard",            true);
+ pref("browser.urlbar.suggest.history",              true);
+diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
+--- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
++++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
+@@ -152,10 +152,13 @@
+   ["filter.javascript", true],
+ 
+   // Feature gate pref for flight status suggestions in the urlbar.
+   ["flightStatus.featureGate", false],
+ 
++  // Whether to close the urlbar when blurring the window while the urlbar is focused.
++  ["closeOnWindowBlur", true],
++
+   // The minimum prefix length of a flight status keyword the user must type to
+   // trigger the suggestion. 0 means the min length should be taken from Nimbus
+   // or remote settings.
+   ["flightStatus.minKeywordLength", 0],
+ 
+diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
+--- a/browser/components/urlbar/UrlbarView.sys.mjs
++++ b/browser/components/urlbar/UrlbarView.sys.mjs
+@@ -3909,10 +3909,16 @@
+       }
+     }
+   }
+ 
+   on_blur() {
++    if (
++      this.document.commandDispatcher.focusedElement == this.input.inputField &&
++      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
++    ) {
++      return;
++    }
+     // If the view is open without the input being focused, it will not close
+     // automatically when the window loses focus. We might be in this state
+     // after a Search Tip is shown on an engine homepage.
+     if (!lazy.UrlbarPrefs.get("ui.popup.disable_autohide")) {
+       this.close();
+diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
+--- a/browser/components/urlbar/content/UrlbarInput.mjs
++++ b/browser/components/urlbar/content/UrlbarInput.mjs
+@@ -4783,10 +4783,16 @@
+     }
+   }
+ 
+   _on_blur(event) {
+     lazy.logger.debug("Blur Event");
++    if (
++      this.document.commandDispatcher.focusedElement == this.inputField &&
++      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
++    ) {
++      return;
++    }
+     // We cannot count every blur events after a missed engagement as abandoment
+     // because the user may have clicked on some view element that executes
+     // a command causing a focus change. For example opening preferences from
+     // the oneoff settings button.
+     // For now we detect that case by discarding the event on command, but we
+

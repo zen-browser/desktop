@@ -241,25 +241,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.setAttribute("had-zen-pinned-changed", true);
     }
 
-    if (group.collapsed && !this._sessionRestoring) {
-      if (group.isLiveFolder) {
-        if (!group.hasAttribute("has-active")) {
-          let groupStart = group.groupStartElement;
-          let marginTop = groupStart.style.marginTop ? parseInt(groupStart.style.marginTop) : 0;
-          if (marginTop < 0) {
-            groupStart.style.marginTop = `${marginTop + 4}px`;
-          }
-        }
-
-        tab.setAttribute("folder-active", "true");
-        group.setAttribute("has-active", "true");
-        group.groupContainer.removeAttribute("hidden");
-        group.activeTabs = [...new Set([...group.activeTabs, tab])].sort(
-          (a, b) => a._tPos > b._tPos
-        );
-      } else {
-        group.collapsed = group.hasAttribute("has-active");
-      }
+    if (group.collapsed && !this._sessionRestoring && !group.isLiveFolder) {
+      group.collapsed = group.hasAttribute("has-active");
     }
   }
 
@@ -748,12 +731,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   get #searchPopupOptions() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-    const position = isRightSide ? "start_before" : "start_before";
+    const position = isRightSide ? "topleft topright" : "topright topleft";
     let size = Math.min(this.#popup.querySelector("#zen-folder-tabs-list").children.length, 6);
     size *= 48;
     return {
       position,
-      x: -10,
+      x: 10,
       y: size / -2,
     };
   }
@@ -920,15 +903,15 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       return;
     }
 
-    gZenEmojiPicker
-      .open(group.icon, { onlySvgIcons: true })
-      .then((icon) => {
+    gZenEmojiPicker.open(group.icon, {
+      onlySvgIcons: true,
+      allowNone: Boolean(group.iconURL),
+      closeOnSelect: false,
+      onSelect: (icon) => {
         this.setFolderUserIcon(group, icon);
         group.dispatchEvent(new CustomEvent("TabGroupUpdate", { bubbles: true }));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      },
+    });
   }
 
   setFolderUserIcon(group, icon) {
@@ -961,7 +944,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       if (
         !group.collapsed ||
         !Services.prefs.getBoolPref("zen.folders.search.enabled") ||
-        gBrowser.tabContainer.hasAttribute("movingtab")
+        gBrowser.tabContainer.hasAttribute("movingtab") ||
+        event.target.classList.contains("tab-reset-button")
       ) {
         return;
       }
@@ -976,7 +960,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       }
       this.#mouseTimer = setTimeout(() => {
         // If popup is focused don't hide it
-        if (this.#popup.matches(":hover")) {
+        if (this.#popup.matches(":hover") || labelContainer.matches(":hover")) {
           return;
         }
         this.#popup.hidePopup(true);
@@ -1278,7 +1262,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   get #folderAnimationDuration() {
-    return this._sessionRestoring ? 0 : 0.12;
+    return this._sessionRestoring || this._dontAnimateFolder ? 0 : 0.12;
   }
 
   async animateCollapse(group) {

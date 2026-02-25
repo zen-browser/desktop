@@ -18,7 +18,7 @@ class nsZenBoostsManager {
   }
 
   /**
-   * @returns New domain entry with empty boost map and active boost id
+   * @returns {object} New domain entry with empty boost map and active boost id
    */
   #createDomainEntry() {
     return {
@@ -29,8 +29,9 @@ class nsZenBoostsManager {
 
   /**
    * Will get or create a domain entry for the given domain
-   * @param {String} domain - The domain of which the data will be fetched
-   * @returns The domain entry
+   *
+   * @param {string} domain - The domain of which the data will be fetched
+   * @returns {object} The domain entry
    */
   #getOrCreateDomainEntry(domain) {
     if (!this.registeredDomains.has(domain)) {
@@ -41,8 +42,9 @@ class nsZenBoostsManager {
 
   /**
    * Will get a domain entry for the given domain
-   * @param {String} domain - The domain of which the data will be fetched
-   * @returns The domain entry
+   *
+   * @param {string} domain - The domain of which the data will be fetched
+   * @returns {object|null} The domain entry
    */
   #getDomainEntry(domain) {
     if (!this.registeredDomains.has(domain)) {
@@ -53,36 +55,49 @@ class nsZenBoostsManager {
 
   /**
    * Will delete the domain entry for a domain
-   * @param {String} domain - The given domain
+   *
+   * @param {string} domain - The given domain
    */
   #deleteDomainEntry(domain) {
-    if (this.registeredDomains.has(domain)) this.registeredDomains.delete(domain);
+    if (this.registeredDomains.has(domain)) {
+      this.registeredDomains.delete(domain);
+    }
   }
 
   /**
    * Gets the active boost id for a given domain
-   * @param {String} domain - The target domain
-   * @returns {String|null} Will return the active boost id or null
+   *
+   * @param {string} domain - The target domain
+   * @returns {string | null} Will return the active boost id or null
    */
   getActiveBoostId(domain) {
     const domainEntry = this.#getDomainEntry(domain);
-    if (domainEntry) return domainEntry.activeBoostId;
+    if (domainEntry) {
+      return domainEntry.activeBoostId;
+    }
     return null;
   }
 
   /**
    * Deletes a boost for the specified domain and persists the change to disk.
-   * @param {Object} boost - The targeted boost.
+   *
+   * @param {object} boost - The targeted boost.
    */
   deleteBoost(boost) {
     const { domain, id } = boost;
 
     if (this.registeredDomains.has(domain)) {
       let domainEntry = this.#getOrCreateDomainEntry(domain);
-      if (domainEntry.boostEntries.has(id)) domainEntry.boostEntries.delete(id);
-      if (domainEntry.activeBoostId == id) domainEntry.activeBoostId = null;
+      if (domainEntry.boostEntries.has(id)) {
+        domainEntry.boostEntries.delete(id);
+      }
+      if (domainEntry.activeBoostId == id) {
+        domainEntry.activeBoostId = null;
+      }
 
-      if (domainEntry.boostEntries.size === 0) this.#deleteDomainEntry(domain);
+      if (domainEntry.boostEntries.size === 0) {
+        this.#deleteDomainEntry(domain);
+      }
     }
 
     this.#stylesManager.invalidateStyleForDomain(domain);
@@ -92,7 +107,7 @@ class nsZenBoostsManager {
   }
 
   /**
-   * @returns Returns a new empty boost entry
+   * @returns {object} Returns a new empty boost entry
    */
   getEmptyBoostEntry() {
     return {
@@ -127,11 +142,15 @@ class nsZenBoostsManager {
 
   /**
    * Will create a new boost
-   * @param {String} domain - The domain which will be affected by the boost
-   * @returns The created boost with { id, domain, boostEntry: { boostData } }
+   *
+   * @param {string} domain - The domain which will be affected by the boost
+   * @returns {object|null} The created boost with { id, domain, boostEntry: { boostData } } or null
    */
   createNewBoost(domain) {
-    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
+    if (!domain) {
+      console.error("[ZenBoostsManager] Domain expected but got null.");
+      return null;
+    }
 
     const id = crypto.randomUUID();
     const boostEntry = this.getEmptyBoostEntry(domain);
@@ -145,11 +164,14 @@ class nsZenBoostsManager {
 
   /**
    * Loads the boost configuration for the specified domain from storage.
+   *
    * @param {string} domain - The domain for which to load the boost
-   * @returns {Object[]|null} All boosts for the domain or null
+   * @returns {object[] | null} All boosts for the domain or null
    */
   loadBoostsFromStore(domain) {
-    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
+    if (!domain) {
+      console.error("[ZenBoostsManager] Domain expected but got null.");
+    }
 
     const boosts = [];
     const domainEntry = this.#getDomainEntry(domain);
@@ -160,45 +182,53 @@ class nsZenBoostsManager {
         boosts.push(boost);
       });
       return boosts;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**
    * Loads the boost for the specified domain and id from storage.
    * If no boost is present, a new one will be created.
-   * @param {String} domain - The domain of the boost
-   * @param {String} id - The id of the boost
-   * @returns {Object} Returns the boost with { id, domain, boostEntry: { boostData } }
+   *
+   * @param {string} domain - The domain of the boost
+   * @param {string} id - The id of the boost
+   * @returns {object} Returns the boost with { id, domain, boostEntry: { boostData } }
    */
   loadBoostFromStore(domain, id) {
-    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
-    if (!id) console.error("[ZenBoostsManager] ID expected but got null.");
+    if (!domain) {
+      console.error("[ZenBoostsManager] Domain expected but got null.");
+    }
+    if (!id) {
+      console.error("[ZenBoostsManager] ID expected but got null.");
+    }
 
     const domainEntry = this.#getOrCreateDomainEntry(domain);
 
     if (domainEntry.boostEntries.has(id)) {
       const boostEntry = domainEntry.boostEntries.get(id);
       return { id, domain, boostEntry };
-    } else {
-      const boost = this.createNewBoost(domain);
-      return boost;
     }
+    const boost = this.createNewBoost(domain);
+    return boost;
   }
 
   /**
    * Loads the active boost for the specified domain from storage.
-   * @param {String} domain - The domain of the boost
-   * @returns {Object|null} Returns the boost with { id, domain, boostEntry: { boostData } } or null
+   *
+   * @param {string} domain - The domain of the boost
+   * @returns {object | null} Returns the boost with { id, domain, boostEntry: { boostData } } or null
    */
   loadActiveBoostFromStore(domain) {
-    if (!domain) console.error("[ZenBoostsManager] Domain expected but got null.");
+    if (!domain) {
+      console.error("[ZenBoostsManager] Domain expected but got null.");
+    }
 
     const domainEntry = this.#getDomainEntry(domain);
 
     if (domainEntry) {
-      if (domainEntry.boostEntries.size === 0) return this.createNewBoost(domain);
+      if (domainEntry.boostEntries.size === 0) {
+        return this.createNewBoost(domain);
+      }
 
       if (domainEntry.boostEntries.has(domainEntry.activeBoostId)) {
         const boostEntry = domainEntry.boostEntries.get(domainEntry.activeBoostId);
@@ -211,8 +241,9 @@ class nsZenBoostsManager {
 
   /**
    * Adds the zap selector to the selectors list and updates the website.
-   * @param {String} selector - Selector which will hide the elements
-   * @param {String} domain - Domain of the target boost
+   *
+   * @param {string} selector - Selector which will hide the elements
+   * @param {string} domain - Domain of the target boost
    */
   addZapSelectorToActive(selector, domain) {
     const boost = this.loadActiveBoostFromStore(domain);
@@ -223,16 +254,21 @@ class nsZenBoostsManager {
 
     const { boostData } = boost.boostEntry;
 
-    if (!boostData.zapSelectors) boostData.zapSelectors = [];
-    if (!boostData.zapSelectors.includes(selector)) boostData.zapSelectors.push(selector);
+    if (!boostData.zapSelectors) {
+      boostData.zapSelectors = [];
+    }
+    if (!boostData.zapSelectors.includes(selector)) {
+      boostData.zapSelectors.push(selector);
+    }
 
     this.updateBoost(boost);
   }
 
   /**
    * Removes the zap selector to the selectors list and updates the website.
-   * @param {String} selector - Selector which will no longer hide the elements
-   * @param {String} domain - Domain of the target boost
+   *
+   * @param {string} selector - Selector which will no longer hide the elements
+   * @param {string} domain - Domain of the target boost
    */
   removeZapSelectorToActive(selector, domain) {
     const boost = this.loadActiveBoostFromStore(domain);
@@ -255,14 +291,17 @@ class nsZenBoostsManager {
 
   /**
    * Makes the boost at the domain with the id active
-   * @param {String} domain The target domain
-   * @param {String} id The target boost id
+   *
+   * @param {string} domain The target domain
+   * @param {string} id The target boost id
    */
   makeBoostActiveForDomain(domain, id) {
     const domainEntry = this.#getDomainEntry(domain);
 
     if (domainEntry) {
-      if (domainEntry.boostEntries.has(id)) domainEntry.activeBoostId = id;
+      if (domainEntry.boostEntries.has(id)) {
+        domainEntry.activeBoostId = id;
+      }
     }
 
     Services.obs.notifyObservers(null, "zen-boosts-active-change", { id });
@@ -273,8 +312,9 @@ class nsZenBoostsManager {
 
   /**
    * Toggles the boost activeness at the domain with the id active
-   * @param {String} domain The target domain
-   * @param {String} id The target boost id
+   *
+   * @param {string} domain The target domain
+   * @param {string} id The target boost id
    */
   toggleBoostActiveForDomain(domain, id) {
     const domainEntry = this.#getDomainEntry(domain);
@@ -300,7 +340,8 @@ class nsZenBoostsManager {
 
   /**
    * Clears all zap selectors from a boost
-   * @param {String} domain - Target boost domain
+   *
+   * @param {string} domain - Target boost domain
    */
   clearZapSelectorsForActive(domain) {
     const boost = this.loadActiveBoostFromStore(domain);
@@ -317,7 +358,8 @@ class nsZenBoostsManager {
 
   /**
    * Updates the boost for a domain in memory and notifies observers of the change.
-   * @param {Object} boost - The target boost
+   *
+   * @param {object} boost - The target boost
    */
   updateBoost(boost) {
     const { domain, id, boostEntry } = boost;
@@ -339,7 +381,8 @@ class nsZenBoostsManager {
 
   /**
    * Saves a boost configuration to persistent storage and notifies observers.
-   * @param {Object|null} boost - The boost data object to save. If null, only saves existing boosts.
+   *
+   * @param {object | null} boost - The boost data object to save. If null, only saves existing boosts.
    */
   saveBoostToStore(boost) {
     if (boost) {
@@ -352,6 +395,7 @@ class nsZenBoostsManager {
 
   /**
    * Reads all boosts from persistent storage and updates the registered boosts map.
+   *
    * @param {Function} done - Callback function to execute after reading is complete.
    * @private
    */
@@ -364,6 +408,7 @@ class nsZenBoostsManager {
 
   /**
    * Gets the file path where boost data is stored in the user's profile directory.
+   *
    * @returns {string} The full path to the boost storage file.
    * @private
    */
@@ -374,6 +419,7 @@ class nsZenBoostsManager {
 
   /**
    * Reads boost data from disk, decompresses it, and converts it to a Map.
+   *
    * @returns {Promise<Map>} A promise that resolves to a Map of domain to boost data.
    * @private
    */
@@ -405,6 +451,7 @@ class nsZenBoostsManager {
 
   /**
    * Writes boost data to disk by converting the Map to JSON and compressing it.
+   *
    * @param {Map} map - The Map of domain to boost data to write to disk.
    * @private
    */
@@ -428,6 +475,7 @@ class nsZenBoostsManager {
 
   /**
    * Checks if any boost is registered and active for the specified domain.
+   *
    * @param {string} domain - The domain to check for any registered and active boost.
    * @returns {boolean} True if a boost exists for the domain and is active, false otherwise.
    */
@@ -444,33 +492,48 @@ class nsZenBoostsManager {
   /**
    * Determines if a boost can be created for the given URI.
    * Only HTTP and HTTPS schemes are supported for boosting.
+   *
    * @param {nsIURI} uri - The URI to check for boost eligibility.
    * @returns {boolean} True if the URI scheme is http or https, false otherwise.
    */
   canBoostSite(uri) {
+    if(!uri || !uri.schemeIs) {
+      return false;
+    }
     return uri.schemeIs("http") || uri.schemeIs("https");
   }
 
   /**
-   * @brief Gets from cache or creates and caches a new style sheet for the given boost data.
-   * @param {String} domain - The domain of the boosts.
+   * Gets from cache or creates and caches a new style sheet for the given boost data.
+   *
+   * @param {string} domain - The domain of the boosts.
    * @returns {nsIStyleSheet} The style sheet corresponding to the boost data.
    */
   getStyleSheetForBoost(domain) {
     const boost = this.loadActiveBoostFromStore(domain);
-    if (!boost) return null;
+    if (!boost) {
+      return null;
+    }
 
     const { boostData } = boost.boostEntry;
     return this.#stylesManager.getStyleForBoost(boostData, domain);
   }
 
   /**
-   * @brief Opens the boost editor in a new popup window.
+   * Opens the boost editor in a new popup window.
+   *
    * @param {Window} parentWindow - The parent browser window
    * @param {Boost} boost - The boost which will be edited
-   * @returns {Object} The instanced editor window
+   * @param {nsIURI} domainUri - The boost which will be edited
+   * @returns {Window|null} The instanced editor window
    */
-  openBoostWindow(parentWindow, boost) {
+  openBoostWindow(parentWindow, boost, domainUri) {
+    if (!this.canBoostSite(domainUri)) {
+      console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
+      return null;
+    }
+    
+    const domain = boost.domain;
     const { availLeft, availWidth } = parentWindow.screen;
     const screenX = parentWindow.screenX;
     const screenY = parentWindow.screenY;
@@ -481,13 +544,17 @@ class nsZenBoostsManager {
     const pad = 20;
 
     let left = screenX + width + pad;
-    if (this.#areTabsOnRightSide()) left = screenX - (editorWidth + pad);
+    if (this.#areTabsOnRightSide()) {
+      left = screenX - (editorWidth + pad);
+    }
 
     let top = screenY + height / 2 - editorHeight / 2;
 
     if (left + editorWidth > availLeft + availWidth || left < availLeft) {
       left = screenX + width - (editorWidth + pad);
-      if (this.#areTabsOnRightSide()) left = screenX + pad;
+      if (this.#areTabsOnRightSide()) {
+        left = screenX + pad;
+      }
     }
 
     const editor = Services.ww.openWindow(
@@ -504,30 +571,28 @@ class nsZenBoostsManager {
     });
 
     const progressListener = {
-      onLocationChange(browser, webProgress, request, location, flags) {
-        // Only react to current tab
-        if (browser === parentWindow.gBrowser.selectedBrowser) {
-          editor.close();
-          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
-        }
+      onLocationChange() {
+        editor.close();
+        parentWindow.gBrowser.removeTabsProgressListener(progressListener);
       },
     };
 
-    parentWindow.gBrowser.addTabsProgressListener(progressListener);
+    parentWindow.gBrowser.addProgressListener(progressListener);
 
     // Give the domain
-    editor.domain = boost.domain;
+    editor.domain = domain;
     editor.openerWindow = parentWindow;
     editor.focus();
 
     // Make boost active
-    this.makeBoostActiveForDomain(boost.domain, boost.id);
+    this.makeBoostActiveForDomain(domain, boost.id);
 
     return editor;
   }
 
   /**
    * Will spawn a file save dialog and export the selected boost
+   *
    * @param {Window} parentWindow The window that will instance the file picker
    * @returns {Promise<void>} Returns a promise which will be resolved after the export action is complete
    */
@@ -547,9 +612,12 @@ class nsZenBoostsManager {
     // Sanitizing filename
     // From: https://gist.github.com/barbietunnie/7bc6d48a424446c44ff4#:~:text=bytes%22%29%3B-,var,%7D
     const illegalRe = /[\/\?<>\\:\*\|":]/g;
+
+    // eslint-disable-next-line no-control-regex
     const controlRe = /[\x00-\x1f\x80-\x9f]/g;
     const reservedRe = /^\.+$/;
     const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
+
     let sanitized = boostData.boostName
       .replace(illegalRe, "")
       .replace(controlRe, "")
@@ -557,7 +625,9 @@ class nsZenBoostsManager {
       .replace(windowsReservedRe, "");
 
     // Replace if resulting filename is empty
-    if (!sanitized) sanitized = "New Boost";
+    if (!sanitized) {
+      sanitized = "New Boost";
+    }
 
     fp.defaultString = sanitized;
     fp.defaultExtension = "json";
@@ -583,8 +653,9 @@ class nsZenBoostsManager {
 
   /**
    * Will spawn a file open dialog and import the selected boost
+   *
    * @param {Window} parentWindow The window that will instance the file picker
-   * @returns {Promise<Object|null>} Returns a promise with the boost data or null
+   * @returns {Promise<object | null>} Returns a promise with the boost data or null
    */
   importBoost(parentWindow) {
     const nsIFilePicker = Ci.nsIFilePicker;

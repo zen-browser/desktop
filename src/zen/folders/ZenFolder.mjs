@@ -278,6 +278,21 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     super.on_click(event);
   }
 
+  addTabs(tabs) {
+    super.addTabs(tabs);
+    if (this.collapsed && !gZenFolders._sessionRestoring && this.isLiveFolder && tabs.length) {
+      let activeTabs = this.activeTabs;
+      activeTabs.push(...tabs);
+      gZenFolders._dontAnimateFolder = true;
+      this.collapsed = false;
+      for (let tab of activeTabs) {
+        tab.setAttribute("folder-active", "true");
+      }
+      this.collapsed = true;
+      delete gZenFolders._dontAnimateFolder;
+    }
+  }
+
   /**
    * Get the root most collapsed folder in the tree.
    *

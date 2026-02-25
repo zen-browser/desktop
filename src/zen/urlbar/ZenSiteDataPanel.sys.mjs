@@ -234,18 +234,22 @@ export class nsZenSiteDataPanel {
 
     const list = this.document.getElementById("zen-site-data-boost-list");
     const section = list.closest(".zen-site-data-section");
-    section.hidden = canBoostSite;
+    section.hidden = true;
 
     const boostButton = this.document.getElementById("zen-site-data-boost");
     if (!canBoostSite) {
       boostButton.removeAttribute("boosting");
     }
 
-    if (!canBoostSite) return;
+    if (!canBoostSite) {
+      return;
+    }
 
-    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain))
+    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
       boostButton.setAttribute("boosting", "true");
-    else boostButton.removeAttribute("boosting");
+    } else {
+      boostButton.removeAttribute("boosting");
+    }
 
     /* Boosts panel */
 
@@ -256,7 +260,9 @@ export class nsZenSiteDataPanel {
       const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
       boosts.forEach((boost) => {
         const boostData = boost.boostEntry.boostData;
-        if (!boostData.changeWasMade) return;
+        if (!boostData.changeWasMade) {
+          return;
+        }
         validBoostCount++;
 
         const enabled = boost.id === activeBoostId;
@@ -686,8 +692,9 @@ export class nsZenSiteDataPanel {
       }
       case "zen-site-data-boost": {
         const domain = this.#getCurrentDomain();
+        const uri = this.window.gBrowser.currentURI;
         const boost = lazy.gZenBoostsManager.createNewBoost(domain);
-        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         break;
       }
       case "zen-site-data-actions": {
@@ -773,7 +780,9 @@ export class nsZenSiteDataPanel {
 
   #onBoostClick(event) {
     const target = event.target.closest("[data-action-id]");
-    if (!target) return;
+    if (!target) {
+      return;
+    }
 
     const actionId = target.getAttribute("data-action-id");
     const domain = this.#getCurrentDomain();
@@ -788,9 +797,9 @@ export class nsZenSiteDataPanel {
       }
       case "zen-site-data-edit-boost": {
         const boostId = target.getAttribute("data-boost-id");
-
+        const uri = this.window.gBrowser.currentURI;
         const boost = lazy.gZenBoostsManager.loadBoostFromStore(domain, boostId);
-        lazy.gZenBoostsManager.openBoostWindow(this.window, boost);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         this.unifiedPanel.hidePopup();
         break;
       }

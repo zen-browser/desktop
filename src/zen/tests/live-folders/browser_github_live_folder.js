@@ -116,13 +116,13 @@ add_task(async function test_html_parsing_logic() {
            <div class="IssueItem-module__defaultRepoContainer"><span>mozilla/zen</span><span>#101</span></div>
            <a class="IssueItem-module__authorCreatedLink">UserA</a>
            <div class="Title-module__container">Fix the login bug</div>
-           <a data-testid="issue-pr-title-link" href="issues/101"></a>
+           <a data-testid="issue-pr-title-link" href="/issues/101"></a>
         </div>
         <div>
            <div class="IssueItem-module__defaultRepoContainer"><span>mozilla/zen</span><span>#102</span></div>
            <a class="IssueItem-module__authorCreatedLink">UserB</a>
            <div class="Title-module__container">Add dark mode</div>
-           <a data-testid="issue-pr-title-link" href="pull/102"></a>
+           <a data-testid="issue-pr-title-link" href="/pull/102"></a>
         </div>
       </body>
     </html>

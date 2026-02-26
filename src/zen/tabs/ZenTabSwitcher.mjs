@@ -22,6 +22,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #lazyPrefs = {}; 
   #recentlyUsedTabs = [];
   #actualVisibleCards = nsZenTabSwitcher.MAX_VISIBLE_CARDS; 
+  #firstPress = true;
 
   init() {
     this.#setupPreferences();
@@ -58,16 +59,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   #disableDefaultCtrlTab() {
     const enabled = Services.prefs.getBoolPref("zen.tabs.tab-switcher.enabled", true);
-
-    if (enabled) {
-      if (window.ctrlTab && window.ctrlTab.uninit) {
-        ctrlTab.uninit();
-      }
-    } else {
-      if (window.ctrlTab && window.ctrlTab.readPref) {
-        ctrlTab.readPref();
-      }
-    }
+    const method = enabled ? "uninit" : "readPref";
+    window.ctrlTab?.[method]?.();
   }
 
   #setupPreferences() {
@@ -98,14 +91,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #setupKeyboardListeners() {
-    window.addEventListener("keydown", this.#handleKeyDown.bind(this), true);
-    window.addEventListener("keyup", this.#handleKeyUp.bind(this), true);
-    // Close the switcher if the window loses focus
-    window.addEventListener("blur", () => {
-      if (this.#isOpen) {
-        this.close();
-      }
-    });
+    window.addEventListener("keydown", (e) => this.#handleKeyDown(e), true);
+    window.addEventListener("keyup", (e) => this.#handleKeyUp(e), true);
+    window.addEventListener("blur", () => this.#isOpen && this.#forceClose());
   }
 
   #createUI() {
@@ -146,10 +134,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   // Remove tabs that no longer exist from the recently-used list
   #cleanupRecentlyUsedTabs() {
-    this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(tab =>
-      tab &&
-      !tab.closing &&
-      gBrowser.tabs.includes(tab)
+    this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(
+      tab => tab && !tab.closing && gBrowser.tabs.includes(tab)
     );
   }
 
@@ -162,30 +148,27 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #handleKeyDown(event) {
     if (!this.#lazyPrefs.enabled) return;
 
-    if (event.key === "Escape" && this.#isOpen) {
+    const stopEvent = () => {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
+    };
+
+    if (event.key === "Escape" && this.#isOpen) {
+      stopEvent();
       this.#forceClose();
       return false;
     }
 
     if (event.ctrlKey && event.key === "Tab") {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
+      stopEvent();
       this.#ctrlPressed = true;
 
       if (!this.#isOpen) {
         this.open();
       } else {
-        if (event.shiftKey) {
-          this.#navigateBackward();
-        } else {
-          this.#navigateForward();
-        }
+        event.shiftKey ? this.#navigateBackward() : this.#navigateForward();
       }
-
       return false;
     }
   }
@@ -196,7 +179,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     if (event.key === "Control") {
       this.#ctrlPressed = false;
-      this.close();
+      // If window doesn't have focus, close without switching tabs
+      document.hasFocus() ? this.close() : this.#forceClose();
     }
   }
 
@@ -220,8 +204,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#renderTabs();
 
-    // Use PanelMultiView API for proper panelmultiview handling
-    // Anchor to TabsToolbar like other zen-panels 
+    // Use PanelMultiView API and anchor to toolbar like other panels
     PanelMultiView.openPopup(this.panel, this.toolbox, {
       position: "overlap",
       triggerEvent: null,
@@ -229,7 +212,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       y: 0
     });
 
-    // Scroll to selected tab
+    // Scroll to selected tab - firstPress flag ensures instant scroll
     setTimeout(() => this.#scrollToSelected(), 0);
 
     this.#preCacheThumbnails();
@@ -240,36 +223,32 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.#isOpen) return;
 
     const selectedTab = this.#tabList[this.#currentIndex];
-    this.panel.hidePopup();
-
     if (selectedTab && selectedTab !== gBrowser.selectedTab) {
       gBrowser.selectedTab = selectedTab;
     }
 
-    // Reset state
-    this.#isOpen = false;
-    this.#currentIndex = 0;
-    this.#tabList = [];
+    this.#resetState();
   }
 
   // Closes the switcher without switching tabs (used for Escape key)
   #forceClose() {
     if (!this.#isOpen) return;
-
     this.#ctrlPressed = false;
+    this.#resetState();
+  }
+
+  // Resets the switcher state
+  #resetState() {
     this.panel.hidePopup();
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
+    this.#firstPress = true;
   }
 
   // Captures screenshots for all tabs in the background
   #preCacheThumbnails() {
-    const tabsToCache = this.#tabList;
-
-    for (const tab of tabsToCache) {
-      this.#captureThumbnail(tab);
-    }
+    this.#tabList.forEach(tab => this.#captureThumbnail(tab));
   }
 
   /* Captures screenshots only for tabs that are currently visible on screen
@@ -314,21 +293,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   // Creates the list of tabs to show in the switcher.
   #buildTabList() {
-    const useRecentOrder = this.#lazyPrefs.useRecentOrder;
-    let tabs = [];
-
-    if (useRecentOrder) {
+    if (this.#lazyPrefs.useRecentOrder) {
       this.#cleanupRecentlyUsedTabs();
-      tabs = [...this.#recentlyUsedTabs];
-    } else {
-      tabs = [...gBrowser.tabs];
     }
-
-    this.#tabList = tabs.filter(tab => {
-      if (tab.closing || tab.hidden) return false;
-      if (tab.hasAttribute("zen-empty-tab")) return false;
-      return true;
-    });
+    
+    const tabs = this.#lazyPrefs.useRecentOrder ? this.#recentlyUsedTabs : gBrowser.tabs;
+    this.#tabList = [...tabs].filter(
+      tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
+    );
   }
 
   // Creates the visual tab cards and adds them to the DOM.
@@ -337,13 +309,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.tabsContainer.innerHTML = "";
 
     const totalTabs = this.#tabList.length;
-    const visibleCount = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
-    const containerWidth = nsZenTabSwitcher.CARD_WIDTH * visibleCount;
+    this.#actualVisibleCards = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
+    const containerWidth = `${nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards}px`;
 
-    this.#actualVisibleCards = visibleCount;
-    this.tabsContainer.style.width = `${containerWidth}px`;
-    this.tabsContainer.style.maxWidth = `${containerWidth}px`;
-    this.tabsContainer.style.minWidth = `${containerWidth}px`;
+    Object.assign(this.tabsContainer.style, {
+      width: containerWidth,
+      maxWidth: containerWidth,
+      minWidth: containerWidth
+    });
 
     this.#tabList.forEach((tab, index) => {
       const tabCard = this.#createTabCard(tab, index);
@@ -354,8 +327,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
       this.tabsContainer.appendChild(tabCard);
     });
-
-    this.#applySelectionTextStyles();
   }
 
   /**
@@ -426,9 +397,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       if (event.ctrlKey || event.metaKey) {
         event.preventDefault();
         event.stopPropagation();
-
         this.#currentIndex = index;
-
         this.close();
       }
     });
@@ -442,68 +411,52 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {string|null} The thumbnail data URL, or null if not available.
    */
   #getTabThumbnail(tab) {
-    const tabId = tab.linkedPanel;
-
-    if (tab.hasAttribute("pending")) {
-      return null;
-    }
-
-    return this.#thumbnailCache.get(tabId) || null;
+    return tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel) || null;
   }
 
   // Updates the visual appearance when selection changes.
   #updateSelection() {
     if (!this.tabsContainer) return;
-    const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
-
-    cards.forEach((card) => {
+    
+    this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
-
-      if (cardIndex === this.#currentIndex) {
-        card.classList.add("zen-tab-switcher-selected");
-      } else {
-        card.classList.remove("zen-tab-switcher-selected");
+      const isSelected = cardIndex === this.#currentIndex;
+      const title = card.querySelector(".zen-tab-switcher-title");
+      
+      card.classList.toggle("zen-tab-switcher-selected", isSelected);
+      
+      if (title) {
+        if (isSelected) {
+          title.style.setProperty("color", "white", "important");
+          title.style.setProperty("-moz-text-fill-color", "white", "important");
+        } else {
+          title.style.color = "";
+          title.style.removeProperty("-moz-text-fill-color");
+        }
       }
     });
 
-    this.#applySelectionTextStyles();
     this.#scrollToSelected();
   }
 
-  /* Forces the selected card's title text to be white using inline styles.
-   * This is necessary because XUL labels don't always respect CSS color. */
-  #applySelectionTextStyles() {
-    if (!this.tabsContainer) return;
-    const cards = this.tabsContainer.querySelectorAll(".zen-tab-switcher-card");
-
-    cards.forEach((card) => {
-      const title = card.querySelector(".zen-tab-switcher-title");
-      if (!title) return;
-
-      if (card.classList.contains("zen-tab-switcher-selected")) {
-        title.style.setProperty("color", "white", "important");
-        title.style.setProperty("-moz-text-fill-color", "white", "important");
-      } else {
-        title.style.color = "";
-        title.style.removeProperty("-moz-text-fill-color");
-      }
-    });
-  }
-
   /* Scrolls the tab container to show the selected card.
-   * Uses page-based scrolling (shows full pages of cards, never cuts off).*/
+   * Uses page-based scrolling (shows full pages of cards, never cuts off).
+   * First press uses instant scroll, subsequent ones use smooth. */
   #scrollToSelected() {
     if (!this.tabsContainer) return;
     const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
     if (!selectedCard) return;
+    
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
     const pageStartIndex = this.#getPageStartIndex(cardIndex);
     const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
 
     this.tabsContainer.scrollTo({
       left: scrollPosition,
-      behavior: "smooth"
+      behavior: this.#firstPress ? "auto" : "smooth"
     });
+    
+    this.#firstPress = false;
   }
 
   /**

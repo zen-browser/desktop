@@ -1,54 +1,33 @@
-diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
---- a/browser/components/aboutwelcome/content/aboutwelcome.css
-+++ b/browser/components/aboutwelcome/content/aboutwelcome.css
-@@ -329,10 +329,15 @@
-   --panel-color: var(--fc-color);
-   --panel-shadow: none;
-   --panel-shadow-margin: 6px;
-   --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
-   --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
-+
-+  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    --panel-shadow-margin: 0;
-+    --panel-arrow-space: 0;
-+  }
- }
- 
- panel#feature-callout::part(content) {
-   width: initial;
-   border: 0;
-@@ -515,10 +520,16 @@
-   border-radius: 4px;
-   padding: var(--callout-padding, 16px);
-   width: 25em;
-   gap: 16px;
-   background: var(--fc-background);
-+
-+  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    --fc-background: transparent;
-+    box-shadow: none;
-+    border-width: 0;
-+  }
- }
- #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
-   gap: 12px;
- }
- #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner .legal-paragraph .text-link {
-@@ -828,10 +839,14 @@
- #feature-callout .arrow-box {
-   position: absolute;
-   overflow: visible;
-   transform: rotate(45deg);
-   transform-style: preserve-3d;
-+
-+  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    display: none;
-+  }
- }
- #feature-callout:not([arrow-position]) .arrow-box, #feature-callout[hide-arrow] .arrow-box {
-   display: none;
- }
- #feature-callout .arrow {
+diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
+--- a/browser/base/content/main-popupset.inc.xhtml
++++ b/browser/base/content/main-popupset.inc.xhtml
+@@ -556,10 +556,11 @@
+          type="arrow"
+          orient="vertical"
+          noautofocus="true"
+          norolluponanchor="true"
+          consumeoutsideclicks="false"
++         nonnativepopover="true"
+          role="tooltip">
+     <html:div class="tab-preview-text-container">
+       <html:div class="tab-preview-title"></html:div>
+       <html:div class="tab-preview-uri"></html:div>
+       <html:div class="tab-preview-pid-activeness">
+diff --git a/browser/components/asrouter/modules/FeatureCallout.sys.mjs b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
+--- a/browser/components/asrouter/modules/FeatureCallout.sys.mjs
++++ b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
+@@ -1046,10 +1046,11 @@
+             noautofocus="true"
+             flip="slide"
+             type="arrow"
+             consumeoutsideclicks="never"
+             norolluponanchor="true"
++            nonnativepopover="true"
+             position="${panel_position.panel_position_string}"
+             ${hide_arrow ? "" : 'show-arrow=""'}
+             ${autohide ? "" : 'noautohide="true"'}
+             ${ignorekeys ? 'ignorekeys="true"' : ""}
+             ${no_open_on_anchor ? 'no-open-on-anchor=""' : ""}
 diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
 --- a/browser/components/customizableui/content/panelUI.inc.xhtml
 +++ b/browser/components/customizableui/content/panelUI.inc.xhtml
@@ -131,7 +110,7 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
 diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
-@@ -100,10 +100,20 @@
+@@ -100,10 +100,22 @@
    --panel-padding: var(--arrowpanel-padding);
    --panel-shadow-margin: var(--arrowpanel-shadow-margin);
    --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
@@ -140,12 +119,14 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 +
 +  /* stylelint-disable-next-line media-query-no-invalid */
 +  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    background-color: transparent;
-+    --panel-background: transparent;
-+    --panel-shadow: none;
-+    --panel-border-color: transparent;
-+    --panel-shadow-margin: 0px;
-+    --panel-padding: 0px;
++    &:not([nonnativepopover="true"]) {
++      background-color: transparent;
++      --panel-background: transparent;
++      --panel-shadow: none;
++      --panel-border-color: transparent;
++      --panel-shadow-margin: 0px;
++      --panel-padding: 0px;
++    }
 +  }
  }
  
@@ -300,7 +281,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5282,56 @@
+@@ -5227,10 +5282,58 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -309,7 +290,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +      nsMenuPopupFrame* popupFrame = GetPopupFrame();
 +      if ([mWindow isKindOfClass:[PopupWindow class]] &&
 +          [(PopupWindow*)mWindow usePopover] && popupFrame &&
-+          popupFrame->ShouldFollowAnchor()) {
++          popupFrame->ShouldFollowAnchor() &&
++          !popupFrame->PopupElement().GetBoolAttr(
++              nsGkAtoms::nonnativepopover)) {
 +        if (nativeParentWindow) {
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
@@ -357,7 +340,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5301,10 +5402,15 @@
+@@ -5301,10 +5404,15 @@
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
        [nativeParentWindow removeChildWindow:mWindow];
@@ -373,7 +356,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5351,10 +5457,17 @@
+@@ -5351,10 +5459,17 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -391,7 +374,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6313,10 +6426,20 @@
+@@ -6313,10 +6428,20 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
@@ -412,7 +395,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
    DoResize(aRect.x, aRect.y, aRect.width, aRect.height, aRepaint, false);
-@@ -8277,18 +8400,27 @@
+@@ -8277,18 +8402,27 @@
                    backing:(NSBackingStoreType)bufferingType
                      defer:(BOOL)deferCreation {
    NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -440,7 +423,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8342,10 +8474,120 @@
+@@ -8342,10 +8476,120 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;
@@ -576,4 +559,16 @@ diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
      Atom("highest", "highest"),
      Atom("horizontal", "horizontal"),
      Atom("hover", "hover"),
+@@ -756,10 +757,11 @@
+     Atom("nohref", "nohref"),
+     Atom("noinitialselection", "noinitialselection"),
+     Atom("nomodule", "nomodule"),
+     Atom("nonce", "nonce"),
+     Atom("none", "none"),
++    Atom("nonnativepopover", "nonnativepopover"),
+     Atom("noresize", "noresize"),
+     Atom("normal", "normal"),
+     Atom("normalizeSpace", "normalize-space"),
+     Atom("noscript", "noscript"),
+     Atom("noshade", "noshade"),
 

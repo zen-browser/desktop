@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
@@ -1268,7 +1269,8 @@ class nsZenWindowSync {
       !window?.gBrowser ||
       this.#lastFocusedWindow?.deref() === window ||
       window.closing ||
-      !window.toolbar.visible
+      !window.toolbar.visible ||
+      lazy.RunState.isQuitting
     ) {
       return;
     }

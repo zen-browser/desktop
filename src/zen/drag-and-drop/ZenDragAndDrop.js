@@ -707,7 +707,9 @@
       if (
         movingTabsSet.has(dropElement) ||
         !isTab(draggedTab) ||
-        draggedTab?.group?.hasAttribute("split-view-group")
+        draggedTab?.group?.hasAttribute("split-view-group") ||
+        draggedTab.hasAttribute("zen-live-folder-item-id") ||
+        dropElement.hasAttribute("zen-live-folder-item-id")
       ) {
         this._clearDragOverSplit();
         return;

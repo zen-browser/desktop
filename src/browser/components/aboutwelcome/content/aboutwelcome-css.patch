@@ -1,0 +1,40 @@
+diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
+index 0e1985aa519d66b047c5d40977bb12099d966b18..76b59891b4c4464b38d6973858f13fff0285737d 100644
+--- a/browser/components/aboutwelcome/content/aboutwelcome.css
++++ b/browser/components/aboutwelcome/content/aboutwelcome.css
+@@ -329,6 +329,11 @@ panel#feature-callout {
+   --panel-shadow-margin: 6px;
+   --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
+   --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --panel-shadow-margin: 0;
++    --panel-arrow-space: 0;
++  }
+ }
+ 
+ panel#feature-callout::part(content) {
+@@ -512,6 +517,12 @@ div#feature-callout.hidden {
+   width: 25em;
+   gap: 16px;
+   background: var(--fc-background);
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --fc-background: transparent;
++    box-shadow: none;
++    border-width: 0;
++  }
+ }
+ #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
+   gap: 12px;
+@@ -818,6 +829,10 @@ panel#feature-callout::part(content) {
+   overflow: visible;
+   transform: rotate(45deg);
+   transform-style: preserve-3d;
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    display: none;
++  }
+ }
+ #feature-callout:not([arrow-position]) .arrow-box, #feature-callout[hide-arrow] .arrow-box {
+   display: none;

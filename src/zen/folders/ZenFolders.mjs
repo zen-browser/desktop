@@ -400,6 +400,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       tabs = [];
     }
 
+    // Prevent create folder inside Live Folder
+    const thereIsOneLiveFolderTab = tabs?.some((tab) =>
+      tab.hasAttribute("zen-live-folder-item-id")
+    );
+    if (thereIsOneLiveFolderTab) {
+      return;
+    }
+
     const canInsertBefore =
       !isFromToolbar &&
       !triggerTab.hasAttribute("zen-essential") &&

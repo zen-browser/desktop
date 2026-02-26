@@ -125,28 +125,21 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    let clickedUrl = "";
-    if (window._zenPendingClick && Date.now() - window._zenPendingClick.time < 4000) {
-      clickedUrl = window._zenPendingClick.url;
-      window._zenPendingClick = null;
-    }
-
     const activeBrowser = gBrowser.selectedBrowser;
-    const engineUrl = activeBrowser.currentURI ? activeBrowser.currentURI.displaySpec : "";
+    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
 
-    let visibleUrl = gURLBar.value;
-    if (
-      visibleUrl &&
-      !visibleUrl.startsWith("http") &&
-      !visibleUrl.startsWith("about:") &&
-      !visibleUrl.startsWith("file:") &&
-      !visibleUrl.startsWith("zen:")
-    ) {
-      visibleUrl = "https://" + visibleUrl;
+    let displaySpec = activeBrowser.userTypedValue || 
+                      gURLBar.untrimmedValue || 
+                      (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "") || 
+                      currentUrl.displaySpec;
+
+    if (displaySpec === "about:blank" || displaySpec === "") {
+      const tabLabel = gBrowser.selectedTab.label;
+      if (tabLabel && tabLabel !== "New Tab") {
+         displaySpec = tabLabel;
+      }
     }
 
-    const displaySpec = clickedUrl || engineUrl || visibleUrl || currentUrl.displaySpec;
     const tabTitle = gBrowser.selectedTab.label || displaySpec;
     const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);

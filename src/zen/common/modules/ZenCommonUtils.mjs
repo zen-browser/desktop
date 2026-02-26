@@ -169,21 +169,3 @@ window.gZenCommonActions = {
     return Boolean(tab.owner && !tab.pinned && !tab.hasAttribute("zen-empty-tab"));
   },
 };
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-    const tabPanels = document.getElementById("tabbrowser-tabpanels") || window;
-
-    tabPanels.addEventListener(
-      "mousedown",
-      () => {
-        if (typeof XULBrowserWindow !== "undefined" && XULBrowserWindow.overLink) {
-          window._zenPendingClick = { url: XULBrowserWindow.overLink, time: Date.now() };
-        }
-      },
-      { capture: true, passive: true }
-    );
-  },
-  { once: true }
-);

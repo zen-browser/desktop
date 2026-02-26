@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8b4f0fffe 100644
+index e2e0526a0ddd617291f1f6c17bcfb807954b481f..a7d8b2a08a27d9c445eb18facf65631ec7126ea1 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -60,7 +60,15 @@ index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4809,6 +4817,9 @@ var ConfirmationHint = {
+@@ -4107,6 +4115,7 @@ function duplicateTabIn(aTab, where, delta) {
+     case "tab":
+       SessionStore.duplicateTab(window, aTab, delta, true, {
+         inBackground: false,
++        tabIndex: aTab._tPos + 1,
+       });
+       break;
+   }
+@@ -4809,6 +4818,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

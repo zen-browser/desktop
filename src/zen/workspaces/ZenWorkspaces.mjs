@@ -287,7 +287,7 @@ class nsZenWorkspaces {
   #initializeEmptyTab() {
     for (const tab of gBrowser.tabs) {
       // Check if session store has an empty tab
-      if (tab.hasAttribute("zen-empty-tab") && !tab.pinned) {
+      if (tab.hasAttribute("zen-empty-tab") && !tab.pinned && !tab.group) {
         this.log("Found existing empty tab from session store!");
         this._emptyTab = tab;
         return;
@@ -1095,7 +1095,7 @@ class nsZenWorkspaces {
         workspace.icon = icon;
         await this.saveWorkspace(workspace);
       },
-    });
+      });
   }
 
   shouldCloseWindow() {
@@ -1117,7 +1117,7 @@ class nsZenWorkspaces {
           !workspaces.find((workspace) => workspace.uuid === workspaceID)) ||
         // Also remove empty tabs that are supposed to be from parent folders but
         // they dont exist anymore
-        (tab.pinned && tab.hasAttribute("zen-empty-tab") && !tab.group)
+        (tab.hasAttribute("zen-empty-tab") && !tab.group && tab !== this._emptyTab)
       ) {
         // Remove any tabs where their workspace doesn't exist anymore
         this.log("Removed zombie tab from non-existing workspace", tab);
@@ -3106,6 +3106,9 @@ class nsZenWorkspaces {
   }
 
   fixTabInsertLocation(tab) {
+    if (tab.group) {
+      return;
+    }
     if (tab.hasAttribute("zen-essential")) {
       // Essential tabs should always be inserted at the end of the essentials section
       const essentialsSection = this.getEssentialsSection(tab);

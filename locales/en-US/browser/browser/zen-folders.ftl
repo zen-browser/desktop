@@ -8,6 +8,12 @@ zen-folders-search-placeholder =
 zen-folders-panel-rename-folder =
     .label = Rename Folder
 
+zen-folders-panel-pin-folder =
+    .label = Pin Folder
+
+zen-folders-panel-unpin-folder =
+    .label = Unpin Folder
+
 zen-folders-panel-unpack-folder =
     .label = Unpack Folder
 

@@ -216,7 +216,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
               }
               return tab;
             })
-            .filter((tab) => tab?.pinned)
+            .filter((tab) => tab?.pinned || folderToUnload)
         ),
       ];
 
@@ -519,7 +519,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             image: null,
           });
         },
-      });
+        });
     });
   }
 
@@ -625,7 +625,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
       movingTabs = movingTabs.filter((tab) =>
         gBrowser.isTabGroupLabel(tab) && tab.group?.isZenFolder
-          ? !tabsTarget && !essentialTabsTarget
+          ? (tab.group.pinned ? pinnedTabsTarget : !pinnedTabsTarget) && !essentialTabsTarget
           : true
       );
 

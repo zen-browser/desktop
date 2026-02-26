@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index f066bc7a9cca1788080d088141030c225a733931..accb078ebbc23f9a823ae6c277f1e1bf06644d92 100644
+index f066bc7a9cca1788080d088141030c225a733931..346504793c545344caaead7cd3ee3201c61e759a 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -127,6 +127,9 @@ const TAB_EVENTS = [
@@ -179,10 +179,12 @@ index f066bc7a9cca1788080d088141030c225a733931..accb078ebbc23f9a823ae6c277f1e1bf
        return;
      }
  
-@@ -4150,6 +4171,12 @@ var SessionStoreInternal = {
+@@ -4149,7 +4170,13 @@ var SessionStoreInternal = {
+         1,
          Math.min(tabState.index, tabState.entries.length)
        );
-       tabState.pinned = false;
+-      tabState.pinned = false;
++      tabState.pinned = !!(aTab.group?.isZenFolder && aTab.group?.pinned);
 +      tabState.zenEssential = false;
 +      tabState.zenSyncId = null;
 +      tabState.zenIsGlance = false;

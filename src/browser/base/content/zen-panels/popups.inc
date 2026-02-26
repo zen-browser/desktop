@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <menupopup id="zenCreateNewPopup">
-  <menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-panel-ui-live-folder-create">
+<menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-panel-ui-live-folder-create">
     <menupopup>
       <menuitem
         data-l10n-id="zen-live-folder-github-pull-requests"
@@ -52,7 +52,7 @@
 </menupopup>
 
 <menupopup id="zenFolderActions">
-  <menu id="context_zenLiveFolderOptions"
+<menu id="context_zenLiveFolderOptions"
     data-l10n-id="zen-live-folder-options"
     hidden="true">
     <menupopup />
@@ -60,6 +60,9 @@
   <menuseparator id="live-folder-separator" hidden="true"/>
   <menuitem id="context_zenFolderRename" data-l10n-id="zen-folders-panel-rename-folder"/>
   <menuitem id="context_zenFolderChangeIcon" data-l10n-id="tab-context-zen-edit-icon"/>
+  <menuseparator />
+  <menuitem id="context_zenFolderPin" data-l10n-id="zen-folders-panel-pin-folder"/>
+  <menuitem id="context_zenFolderUnpin" data-l10n-id="zen-folders-panel-unpin-folder"/>
   <menuseparator />
   <menuitem id="context_zenFolderUnloadAll" data-l10n-id="zen-folders-unload-folder"/>
   <menuitem id="context_zenFolderNewSubfolder" data-l10n-id="zen-folders-new-subfolder"/>

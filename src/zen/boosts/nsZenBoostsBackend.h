@@ -40,16 +40,25 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
       -> mozilla::StyleAbsoluteColor;
 
   /**
+   * @brief Filter a color based on the current Zen boost settings.
+   * @param aColor The color to filter.
+   * @param aPresContext The presentation context to use for filtering.
+   * @return The filtered color.
+   */
+  static auto FilterColorFromPresContext(nscolor aColor, 
+      nsPresContext* aPresContext = nullptr) -> nscolor;
+
+  /**
    * @brief Called when a presshell is entered during rendering.
    * @param aPresContext The presentation context that was entered.
    */
-  auto onPressShellEntered(nsPresContext* aPresContext) -> void;
+  auto onPresShellEntered(nsPresContext* aPresContext) -> void;
 
   /**
    * @brief Called when a presshell is left during rendering.
    * @param aPresContext The presentation context that was left.
    */
-  auto onPressShellLeave(nsPresContext* aPresContext) -> void;
+  auto onPresShellLeave(nsPresContext* aPresContext) -> void;
 
   /**
    * @brief Recomputes browsing context dependent data, including Zen boost

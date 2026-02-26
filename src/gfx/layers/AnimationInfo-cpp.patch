@@ -1,0 +1,21 @@
+diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
+index dd67af463d383dd98da80ce44f41b395e4a9a7cf..9da3849630a80fea2b254659a218e5ed38b44bc0 100644
+--- a/gfx/layers/AnimationInfo.cpp
++++ b/gfx/layers/AnimationInfo.cpp
+@@ -16,6 +16,7 @@
+ #include "mozilla/MotionPathUtils.h"
+ #include "mozilla/PresShell.h"
+ #include "mozilla/ScrollContainerFrame.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsIContent.h"
+ #include "nsLayoutUtils.h"
+ #include "nsRefreshDriver.h"
+@@ -344,7 +345,7 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+       // resolve currentColor at this moment.
+       nscolor foreground =
+           aFrame->Style()->GetVisitedDependentColor(&nsStyleText::mColor);
+-      aAnimatable = aAnimationValue.GetColor(foreground);
++      aAnimatable = zen::nsZenBoostsBackend::FilterColorFromPresContext(aAnimationValue.GetColor(foreground), aFrame->PresContext());
+       break;
+     }
+     case eCSSProperty_opacity:

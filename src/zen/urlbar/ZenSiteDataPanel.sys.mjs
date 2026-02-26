@@ -291,7 +291,6 @@ export class nsZenSiteDataPanel {
   #createBoostPanelItem(iconClass, title, description, actionId, boost = null, enabled = false) {
     const container = this.document.createXULElement("hbox");
     container.classList.add("permission-popup-boost-item");
-    container.id = actionId;
 
     container.setAttribute("align", "center");
     container.setAttribute("role", "group");

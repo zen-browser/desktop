@@ -14,12 +14,12 @@ interface nsIZenBoostsBackend : nsISupports {
      * @brief Called when the presshell is entered. See nsDisplayListBuilder::EnterPresShell
      * for context.
      */
-    auto onPressShellEntered(nsPresContext* aPresContext) -> void;
+    auto onPresShellEntered(nsPresContext* aPresContext) -> void;
 
     /*
      * @brief Called when the presshell is exited.
      */
-    auto onPressShellLeave(nsPresContext* aPresContext) -> void;
+    auto onPresShellLeave(nsPresContext* aPresContext) -> void;
 
     /*
      * Recomputes the data dependent on the browsing context, like zoom and text

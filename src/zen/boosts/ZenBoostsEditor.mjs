@@ -926,9 +926,9 @@ ${cssSelector} {
    * @param {Event} event
    */
   onNameTextClick(event) {
-    const renameBoost = this.doc.getElementById('zen-boost-edit-rename');
-    const deleteBoost = this.doc.getElementById('zen-boost-edit-delete');
-    const resetBoost = this.doc.getElementById('zen-boost-edit-reset');
+    const renameBoost = this.doc.getElementById("zen-boost-edit-rename");
+    const deleteBoost = this.doc.getElementById("zen-boost-edit-delete");
+    const resetBoost = this.doc.getElementById("zen-boost-edit-reset");
 
     const popup = this.doc.getElementById("zenBoostContextMenu");
     popup.openPopup(
@@ -943,9 +943,9 @@ ${cssSelector} {
 
     // Don't give the user following options if the boost
     // is not going to save / not currently saved (unchanged)
-    renameBoost.disabled  = !this.currentBoostData.changeWasMade;
-    deleteBoost.disabled  = !this.currentBoostData.changeWasMade;
-    resetBoost.disabled   = !this.currentBoostData.changeWasMade;
+    renameBoost.disabled = !this.currentBoostData.changeWasMade;
+    deleteBoost.disabled = !this.currentBoostData.changeWasMade;
+    resetBoost.disabled = !this.currentBoostData.changeWasMade;
   }
 
   /**
@@ -954,21 +954,26 @@ ${cssSelector} {
   async editBoostName() {
     const nameText = this.doc.getElementById("zen-boost-name-text");
 
-    const [title] = await this.doc.l10n.formatMessages([
-      "zen-boost-rename-boost-prompt",
-    ]);
+    const [title] = await this.doc.l10n.formatMessages(["zen-boost-rename-boost-prompt"]);
 
-    let input = { 
-      value: this.currentBoostData.boostName // Default value and also output
-    }; 
-    const success = await Services.prompt.prompt(this.openerWindow, title.value, null, input, null, { value: false });
+    let input = {
+      value: this.currentBoostData.boostName, // Default value and also output
+    };
+    const success = await Services.prompt.prompt(
+      this.openerWindow,
+      title.value,
+      null,
+      input,
+      null,
+      { value: false }
+    );
 
     if (!success) {
       return;
     }
     const newName = input.value;
     const maxDisplayedNameChars = 10;
-    
+
     if (newName.trim().length !== 0) {
       var truncatedName = newName.substring(0, maxDisplayedNameChars);
       this.currentBoostData.boostName = truncatedName;

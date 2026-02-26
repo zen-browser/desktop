@@ -362,7 +362,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
       }
     }
     browsingContext.zenBoostsData = 0;
-    browsingContext.isZenBoostsInverted = false;
   }
 
   /**

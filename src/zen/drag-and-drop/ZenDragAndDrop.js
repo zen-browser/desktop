@@ -1002,7 +1002,7 @@
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&
         (((isTab(dropElement) || dropElement.hasAttribute("split-view-group")) &&
-          (!dropElement.pinned || dropElement.hasAttribute("zen-essential"))) ||
+          dropElement.hasAttribute("zen-essential")) ||
           showIndicatorUnderNewTabButton)
       ) {
         dropElement = null;

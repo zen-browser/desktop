@@ -1215,6 +1215,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.folders.auto-pin",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.window-sync.sync-only-pinned-tabs",
     type: "bool",
     default: false,

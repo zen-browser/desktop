@@ -482,7 +482,7 @@ index 0eaca7a58e0026237b71b2ad515efe84d9e8c779..41cbe295b29abd014cc0425972be45b5
        if (ownerTab) {
          tab.owner = ownerTab;
        }
-+      if ((!tab.pinned && tabGroup?.isZenFolder && !Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder')) || (tabGroup && tabGroup.hasAttribute("split-view-group"))) {
++      if ((tab.pinned != !!tabGroup?.pinned && tabGroup?.isZenFolder && !Services.prefs.getBoolPref('zen.folders.owned-tabs-in-folder')) || (tabGroup && tabGroup.hasAttribute("split-view-group"))) {
 +        tabGroup = null;
 +      }
  

@@ -62,7 +62,6 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   connectedCallback() {
     super.connectedCallback();
-    this.labelElement.pinned = true;
     if (this.#initialized) {
       return;
     }
@@ -196,18 +195,21 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     );
   }
 
-  get pinned() {
-    return this.isZenFolder;
+  get emptyTab() {
+    return this.tabs.find((tab) => tab.hasAttribute("zen-empty-tab"));
   }
 
-  /**
-   * Intentionally ignore attempts to change the pinned state.
-   * ZenFolder instances determine their "pinned" status based on their type (isZenFolder)
-   * and do not support being pinned or unpinned via this setter.
-   * This no-op setter ensures compatibility with interfaces expecting a pinned property,
-   * while preserving the invariant that ZenFolders cannot have their pinned state changed externally.
-   */
-  set pinned(value) {}
+  get pinned() {
+    return this.hasAttribute("pinned");
+  }
+
+  set pinned(value) {
+    if (value) {
+      this.setAttribute("pinned", "true");
+    } else {
+      this.removeAttribute("pinned");
+    }
+  }
 
   get iconURL() {
     return this.icon.querySelector("image")?.getAttribute("href") || "";

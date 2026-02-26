@@ -50,8 +50,8 @@ jobs:
       - name: Install dependencies
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: |
-          git config --global user.email "mr-cheffy@users.noreply.github.com"
-          git config --global user.name "mr-cheffy"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup surfer CI
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
@@ -75,6 +75,9 @@ jobs:
 
       - name: Install autopep8
         run: sudo apt install python3-autopep8
+
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
 
       - name: Check if any files changed
         id: git-check
@@ -111,7 +114,7 @@ jobs:
 
       - name: Import external patches
         if: steps.git-check.outputs.files_changed == 'true'
-        run: python3 scripts/import_external_patches.py || true
+        run: python3 scripts/update_external_patches.py || true
 
       - name: Run formatter
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'

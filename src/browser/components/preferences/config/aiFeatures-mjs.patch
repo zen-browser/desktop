@@ -1,0 +1,42 @@
+diff --git a/browser/components/preferences/config/aiFeatures.mjs b/browser/components/preferences/config/aiFeatures.mjs
+index f00c1e20a8ca06108fc41c97badd234167430aee..b3a6c0db7f0f8be50ed80be227ba9cabd714f7fd 100644
+--- a/browser/components/preferences/config/aiFeatures.mjs
++++ b/browser/components/preferences/config/aiFeatures.mjs
+@@ -649,37 +649,6 @@ SettingGroupManager.registerGroups({
+                   },
+                 ],
+               },
+-              {
+-                control: "moz-box-item",
+-                items: [
+-                  {
+-                    id: "aiControlSmartTabGroupsSelect",
+-                    l10nId:
+-                      "preferences-ai-controls-tab-group-suggestions-control",
+-                    control: "moz-select",
+-                    controlAttrs: {
+-                      inputlayout: "inline-end",
+-                    },
+-                    supportPage: "how-use-ai-enhanced-tab-groups",
+-                    options: [...AI_CONTROL_OPTIONS],
+-                  },
+-                ],
+-              },
+-              {
+-                control: "moz-box-item",
+-                items: [
+-                  {
+-                    id: "aiControlLinkPreviewKeyPointsSelect",
+-                    l10nId: "preferences-ai-controls-key-points-control",
+-                    control: "moz-select",
+-                    controlAttrs: {
+-                      inputlayout: "inline-end",
+-                    },
+-                    supportPage: "use-link-previews-firefox",
+-                    options: [...AI_CONTROL_OPTIONS],
+-                  },
+-                ],
+-              },
+             ],
+           },
+         ],

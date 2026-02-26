@@ -1101,20 +1101,16 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         const parentWorkingData = tabFolderWorkingData.get(stateData.parentId);
         if (parentWorkingData && parentWorkingData.node) {
           switch (stateData?.prevSiblingInfo?.type) {
-            case "tab": {
-              const tab = document.getElementById(stateData.prevSiblingInfo.id);
-              tab.after(node);
-              break;
-            }
+            case "tab":
             case "group": {
-              const folder = document.getElementById(stateData.prevSiblingInfo.id);
-              if (folder) {
-                folder.after(node);
+              const item = document.getElementById(stateData.prevSiblingInfo.id);
+              if (item) {
+                item.after(node);
                 break;
               }
               // If we didn't find the group, we should debug it and continue to default case.
-              console.warn(
-                `Zen Folders: Could not find previous sibling group with id ${stateData.prevSiblingInfo.id} while restoring session.`
+              console.error(
+                `Zen Folders: Could not find previous sibling with id ${stateData.prevSiblingInfo.id} while restoring session.`
               );
               // @eslint-disable-next-line no-fallthrough
             }
@@ -1202,6 +1198,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       });
   }
 
+  #shouldTabBeActive(tab, contextGroup) {
+    if (tab.multiselected || tab.selected) {
+      return true;
+    }
+    // See https://github.com/zen-browser/desktop/issues/12509.
+    // We can't just blindly check for the tab's active state
+    // because it would mean that all tabs in a collapsed group that
+    // are active means they should be active for contextGroup as well,
+    // even if they are active because of another group they belong to.
+    return tab.hasAttribute("folder-active") && contextGroup === tab.group;
+  }
+
   #collectGroupItems(group, opts = {}) {
     const { selectedTabs = [], splitViewIds = new Set(), activeFoldersIds = new Set() } = opts;
     const folders = new Map();
@@ -1217,7 +1225,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         const activeFolderId = lastActiveFolder?.id;
         const splitViewId = isSplitView ? item?.group?.id : null;
 
-        if (item.multiselected || item.selected || item.hasAttribute("folder-active")) {
+        if (this.#shouldTabBeActive(item, group)) {
           selectedTabs.push(item);
           if (splitViewId) {
             splitViewIds.add(splitViewId);

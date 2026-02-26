@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d7765e0adb37216d35f2125abf96025cbb150bab..27202066cef98d9826884806f71e70812457bd78 100644
+index d7765e0adb37216d35f2125abf96025cbb150bab..4913c2e6cfb4f77bd8f2c0f33310c27475172132 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -405,6 +405,7 @@
@@ -605,7 +605,7 @@ index d7765e0adb37216d35f2125abf96025cbb150bab..27202066cef98d9826884806f71e7081
          aTab._closeTimeAnimTimerId = null;
 -        this._endRemoveTab(aTab);
 +        if (animate && !gReduceMotion && !(gZenUIManager.testingEnabled && !gZenUIManager.profilingEnabled)) {
-+          gZenVerticalTabsManager.animateTabClose(aTab, (animate && !gReduceMotion)).then(() => {
++          gZenVerticalTabsManager.animateItemClose(aTab, (animate && !gReduceMotion)).then(() => {
 +            this._endRemoveTab(aTab);
 +          });
 +        } else {

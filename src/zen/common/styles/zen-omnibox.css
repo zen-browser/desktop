@@ -183,7 +183,7 @@
   background: transparent !important;
 }
 
-:root:is([zen-single-toolbar="true"], [zen-has-empty-tab="true"]) {
+:root:where([zen-single-toolbar="true"], [zen-has-empty-tab="true"]) {
   #zen-copy-url-button[disabled] {
     display: none !important;
   }
@@ -394,7 +394,7 @@
 /* Border radius on hover */
 #urlbar .urlbar-page-action,
 #urlbar #tracking-protection-icon-container,
-#urlbar:not([breakout-extend="true"]) #identity-box:is(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
+#urlbar:not([breakout-extend="true"]) #identity-box:where(:not(.chromeUI), [pageproxystate="invalid"]) #identity-icon-box {
   border-radius: var(--urlbar-icon-border-radius) !important;
   min-width: 26px;
 }
@@ -667,7 +667,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:is([type="switchtab"], [type="dynamic"], [type="history_serp"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
+    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;

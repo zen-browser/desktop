@@ -4,40 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@keyframes boost-component-in {
-  from {
-    scale: 0;
-    opacity: 0;
-  }
-  to {
-    scale: 1;
-    opacity: 1;
-  }
-}
-
-/* Mark: Zen Glance */
-@keyframes zen-glance-overlay-animation {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes zen-glance-overlay-animation-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
 @keyframes zen-back-and-forth-text {
   0%,
   10% {

@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
@@ -1259,37 +1260,45 @@ class nsZenWindowSync {
     });
   }
 
-  async on_focus(aEvent) {
+  on_focus(aEvent) {
     if (typeof aEvent.target !== "object") {
       return;
     }
-    await this.#docShellSwitchPromise;
     const window = Services.focus.activeWindow;
     if (
       !window?.gBrowser ||
       this.#lastFocusedWindow?.deref() === window ||
       window.closing ||
-      !window.toolbar.visible
+      !window.toolbar.visible ||
+      lazy.RunState.isQuitting
     ) {
       return;
     }
+    let promise = this.#docShellSwitchPromise;
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    return (this.#docShellSwitchPromise = this.#onTabSwitchOrWindowFocus(window));
+    // eslint-disable-next-line no-async-promise-executor
+    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+      await promise;
+      await this.#onTabSwitchOrWindowFocus(window);
+      resolve();
+    });
   }
 
-  async on_TabSelect(aEvent) {
-    await this.#docShellSwitchPromise;
+  on_TabSelect(aEvent) {
     const tab = aEvent.target;
     if (this.#lastSelectedTab?.deref() === tab) {
       return;
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    return (this.#docShellSwitchPromise = this.#onTabSwitchOrWindowFocus(
-      aEvent.target.ownerGlobal,
-      previousTab
-    ));
+    let promise = this.#docShellSwitchPromise;
+    // eslint-disable-next-line no-async-promise-executor
+    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+      await promise;
+      await this.#onTabSwitchOrWindowFocus(tab.ownerGlobal, previousTab);
+      resolve();
+    });
   }
 
   on_SSWindowClosing(aEvent) {

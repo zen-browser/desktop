@@ -683,6 +683,10 @@
 
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (!isTab(draggedTab)) {
+        return;
+      }
+
       const dragData = draggedTab._dragData;
       const movingTabsSet = dragData.movingTabsSet;
       const dropElement = event.target.closest(".tabbrowser-tab");
@@ -703,7 +707,9 @@
       if (
         movingTabsSet.has(dropElement) ||
         !isTab(draggedTab) ||
-        draggedTab?.group?.hasAttribute("split-view-group")
+        draggedTab?.group?.hasAttribute("split-view-group") ||
+        draggedTab.hasAttribute("zen-live-folder-item-id") ||
+        dropElement.hasAttribute("zen-live-folder-item-id")
       ) {
         this._clearDragOverSplit();
         return;
@@ -771,6 +777,7 @@
       }
 
       this.#dragOverSplit.fakeTab = element;
+      this.#dragOverSplit.canDrop = true;
     }
 
     _clearDragOverSplit() {
@@ -782,6 +789,7 @@
       this.#dragOverSplit.timer = null;
       this.#dragOverSplit.fakeTab = null;
       this.#dragOverSplit.data = null;
+      this.#dragOverSplit.canDrop = null;
     }
 
     handle_windowDragEnter(event) {
@@ -881,6 +889,10 @@
     }
 
     #handle_dropCreateSplit(event) {
+      if (!this.#dragOverSplit.canDrop) {
+        return;
+      }
+
       const dragData = this.#dragOverSplit.data;
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -1118,7 +1130,7 @@
     // eslint-disable-next-line complexity
     #applyDragoverIndicator(event, dropElement, movingTabs, draggedTab) {
       // Doesn't show indicator when dragOverSplit
-      if (this.#dragOverSplit.data) {
+      if (this.#dragOverSplit.canDrop) {
         return;
       }
       const separation = 4;

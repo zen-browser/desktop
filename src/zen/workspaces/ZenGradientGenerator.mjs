@@ -181,8 +181,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const fromForm = event.explicitOriginalTarget?.classList?.contains(
       "zen-workspace-creation-edit-theme-button"
     );
+    const isRightSide = window.gZenVerticalTabsManager._prefsRightSide;
     PanelMultiView.openPopup(this.panel, this.toolbox, {
-      position: "start_before",
+      position: isRightSide ? "topleft topright" : "topright topleft",
       triggerEvent: event,
       y: fromForm ? -160 : 0,
       x: -10,

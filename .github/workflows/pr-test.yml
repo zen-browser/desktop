@@ -36,5 +36,8 @@ jobs:
           ZEN_DOWNLOAD_DONT_INIT_GIT: "1"
         run: npm run download
 
+      - name: Run linting
+        run: npm run lint
+
       - name: Import patches
         run: npm run import

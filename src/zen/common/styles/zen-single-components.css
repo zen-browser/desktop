@@ -87,6 +87,13 @@
     }
   }
 
+  &[hide-none-option="true"] {
+    & #PanelUI-zen-emojis-picker-none {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
   #PanelUI-zen-emojis-picker-none label {
     display: none;
   }
@@ -164,6 +171,7 @@
     width: 22px;
     height: 22px;
     appearance: none;
+    transition: opacity 0.08s ease-in-out;
 
     &:hover {
       background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));

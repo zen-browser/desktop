@@ -929,15 +929,20 @@ window.gZenVerticalTabsManager = {
     }
   },
 
-  animateTabClose(aTab) {
-    if (aTab.hasAttribute("zen-essential") || aTab.group?.hasAttribute("split-view-group")) {
+  animateItemClose(aItem) {
+    if (
+      aItem.hasAttribute("zen-essential") ||
+      aItem.group?.hasAttribute("split-view-group") ||
+      !gZenUIManager.motion ||
+      gReduceMotion
+    ) {
       return Promise.resolve();
     }
-    const height = aTab.getBoundingClientRect().height;
+    const height = aItem.getBoundingClientRect().height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
-    const isLastItem = visibleItems[visibleItems.length - 1] === aTab;
+    const isLastItem = visibleItems[visibleItems.length - 1] === aItem;
     return gZenUIManager.motion.animate(
-      aTab,
+      aItem,
       {
         opacity: [1, 0],
         transform: ["scale(1)", "scale(0.95)"],

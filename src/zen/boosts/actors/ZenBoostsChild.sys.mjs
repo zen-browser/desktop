@@ -377,7 +377,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
       if (this.#currentSheet) {
         this.#unloadCurrentStyleSheet();
       }
-      browsingContext.window.windowUtils.loadSheet(styleSheet.uri, AGENT_SHEET);
+      browsingContext.window.windowGlobalChild.browsingContext.window.windowUtils.loadSheet(
+        styleSheet.uri,
+        AGENT_SHEET
+      );
       this.#currentSheet = styleSheet;
     }
   }
@@ -388,7 +391,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
   #unloadCurrentStyleSheet() {
     const browsingContext = this.browsingContext;
     if (this.#currentSheet && browsingContext) {
-      browsingContext.window.windowUtils.removeSheet(this.#currentSheet.uri, AGENT_SHEET);
+      browsingContext.window.windowGlobalChild.browsingContext.window.windowUtils.removeSheet(
+        this.#currentSheet.uri,
+        AGENT_SHEET
+      );
       this.#currentSheet = null;
     }
   }

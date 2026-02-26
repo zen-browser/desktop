@@ -1,8 +1,8 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index 4fb8975858a26206753e0f545268f63a7be2c586..313446a66f79495a41b94cc9d609e550fc9fb9cb 100644
+index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..78e705366d74d1ce5aec3ab9e41d1e7dfbc19153 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
-@@ -83,6 +83,7 @@
+@@ -82,6 +82,7 @@
  #include "mozilla/layers/WebRenderLayerManager.h"
  #include "mozilla/layers/WebRenderMessages.h"
  #include "mozilla/layers/WebRenderScrollData.h"
@@ -10,24 +10,24 @@ index 4fb8975858a26206753e0f545268f63a7be2c586..313446a66f79495a41b94cc9d609e550
  #include "nsCSSProps.h"
  #include "nsCSSRendering.h"
  #include "nsCSSRenderingGradients.h"
-@@ -1044,6 +1045,11 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
+@@ -1158,6 +1159,11 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
    state->mFirstFrameMarkedForDisplay = mFramesMarkedForDisplay.Length();
    state->mFirstFrameWithOOFData = mFramesWithOOFData.Length();
  
 +  // Ignore on anonymous content documents.
 +  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
-+    zenBackend->onPressShellEntered(state->mPresShell->GetPresContext());
++    zenBackend->onPresShellEntered(state->mPresShell->GetPresContext());
 +  }
 +
    ScrollContainerFrame* sf = state->mPresShell->GetRootScrollContainerFrame();
    if (sf && IsInSubdocument()) {
      // We are forcing a rebuild of nsDisplayCanvasBackgroundColor to make sure
-@@ -1229,6 +1235,13 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
+@@ -1343,6 +1349,13 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
    ResetMarkedFramesForDisplayList(aReferenceFrame);
    mPresShellStates.RemoveLastElement();
  
 +  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
-+    zenBackend->onPressShellLeave(
++    zenBackend->onPresShellLeave(
 +      mPresShellStates.IsEmpty()
 +          ? nullptr
 +          : CurrentPresShellState()->mPresShell->GetPresContext());

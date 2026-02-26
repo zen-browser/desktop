@@ -497,7 +497,7 @@ class nsZenBoostsManager {
    * @returns {boolean} True if the URI scheme is http or https, false otherwise.
    */
   canBoostSite(uri) {
-    if(!uri || !uri.schemeIs) {
+    if (!uri || !uri.schemeIs) {
       return false;
     }
     return uri.schemeIs("http") || uri.schemeIs("https");
@@ -532,7 +532,7 @@ class nsZenBoostsManager {
       console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
       return null;
     }
-    
+
     const domain = boost.domain;
     const { availLeft, availWidth } = parentWindow.screen;
     const screenX = parentWindow.screenX;
@@ -561,7 +561,6 @@ class nsZenBoostsManager {
       parentWindow,
       "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
       null,
-      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=no`,
       `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=yes`,
       null
     );
@@ -572,9 +571,11 @@ class nsZenBoostsManager {
     });
 
     const progressListener = {
-      onLocationChange() {
-        editor.close();
-        parentWindow.gBrowser.removeTabsProgressListener(progressListener);
+      onLocationChange: (webProgress) => {
+        if (webProgress.isTopLevel) {
+          editor.close();
+          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
+        }
       },
     };
 

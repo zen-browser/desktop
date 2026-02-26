@@ -165,7 +165,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#ctrlPressed = true;
 
       if (!this.#isOpen) {
-        this.open();
+        this.open(event.shiftKey);
       } else {
         event.shiftKey ? this.#navigateBackward() : this.#navigateForward();
       }
@@ -186,18 +186,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /* Initialize the panel UI
    * This is async because it waits for thumbnails to be captured */
-  async open() {
+  async open(shiftKey = false) {
     if (this.#isOpen) return;
     this.#buildTabList();
     if (this.#tabList.length <= 1) return;
     this.#isOpen = true;
 
-    // Decide which tab index is selected initially - always start on next tab
+    // Decide which tab index is selected initially
     if (this.#lazyPrefs.useRecentOrder) {
-      this.#currentIndex = 1; // Start on second most recent (skip current which is at 0)
+      // In recent order mode, forward goes to next recent (index 1), backward goes to last
+      this.#currentIndex = shiftKey ? this.#tabList.length - 1 : 1;
     } else {
       const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
-      this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
+      if (shiftKey) {
+        this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length : this.#tabList.length - 1;
+      } else {
+        this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
+      }
     }
 
     await this.#preCacheThumbnailsForVisible();

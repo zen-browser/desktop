@@ -1,3 +1,54 @@
+diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
+--- a/browser/components/aboutwelcome/content/aboutwelcome.css
++++ b/browser/components/aboutwelcome/content/aboutwelcome.css
+@@ -329,10 +329,15 @@
+   --panel-color: var(--fc-color);
+   --panel-shadow: none;
+   --panel-shadow-margin: 6px;
+   --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
+   --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --panel-shadow-margin: 0;
++    --panel-arrow-space: 0;
++  }
+ }
+ 
+ panel#feature-callout::part(content) {
+   width: initial;
+   border: 0;
+@@ -515,10 +520,16 @@
+   border-radius: 4px;
+   padding: var(--callout-padding, 16px);
+   width: 25em;
+   gap: 16px;
+   background: var(--fc-background);
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    --fc-background: transparent;
++    box-shadow: none;
++    border-width: 0;
++  }
+ }
+ #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
+   gap: 12px;
+ }
+ #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner .legal-paragraph .text-link {
+@@ -828,10 +839,14 @@
+ #feature-callout .arrow-box {
+   position: absolute;
+   overflow: visible;
+   transform: rotate(45deg);
+   transform-style: preserve-3d;
++
++  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++    display: none;
++  }
+ }
+ #feature-callout:not([arrow-position]) .arrow-box, #feature-callout[hide-arrow] .arrow-box {
+   display: none;
+ }
+ #feature-callout .arrow {
 diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
 --- a/browser/components/customizableui/content/panelUI.inc.xhtml
 +++ b/browser/components/customizableui/content/panelUI.inc.xhtml
@@ -80,7 +131,7 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
 diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
-@@ -100,10 +100,19 @@
+@@ -100,10 +100,20 @@
    --panel-padding: var(--arrowpanel-padding);
    --panel-shadow-margin: var(--arrowpanel-shadow-margin);
    --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
@@ -94,6 +145,7 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 +    --panel-shadow: none;
 +    --panel-border-color: transparent;
 +    --panel-shadow-margin: 0px;
++    --panel-padding: 0px;
 +  }
  }
  
@@ -160,20 +212,21 @@ diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -5,10 +5,12 @@
+@@ -5,10 +5,13 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "nsCocoaWindow.h"
  
  #include "nsArrayUtils.h"
 +#include "nsMenuPopupFrame.h"
++#include "nsDeviceContext.h"
 +#include "mozilla/dom/XULPopupElement.h"
  #include "MOZDynamicCursor.h"
  #include "nsIAppStartup.h"
  #include "nsIDOMWindowUtils.h"
  #include "nsILocalFileMac.h"
  #include "CocoaCompositorWidget.h"
-@@ -4958,10 +4960,15 @@
+@@ -4958,10 +4961,15 @@
    if (mWindowType == WindowType::Popup) {
      SetPopupWindowLevel();
      mWindow.backgroundColor = NSColor.clearColor;
@@ -189,7 +242,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // the active space. Does not work with multiple displays. See
      // NeedsRecreateToReshow() for multi-display with multi-space workaround.
      mWindow.collectionBehavior = mWindow.collectionBehavior |
-@@ -5163,10 +5170,56 @@
+@@ -5163,10 +5171,57 @@
    NS_OBJC_END_TRY_IGNORE_BLOCK;
  }
  
@@ -216,7 +269,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +
 +static void SyncPopoverBounds(NSPopover* aPopover,
 +                              nsMenuPopupFrame* aPopupFrame) {
-+  if (!aPopover || !aPopover.shown) {
++  if (!aPopover || !aPopover.shown || !aPopupFrame) {
 +    return;
 +  }
 +  NSWindow* popoverWindow = aPopover.contentViewController.view.window;
@@ -224,21 +277,22 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +    return;
 +  }
 +
-+  // Synchronizing the internal bounds with the actual bounds
-+  // that macOS calculated
++  // Synchronize the popup frame's internal bounds with the actual bounds that
++  // macOS calculated for the popover.
 +  NSView* contentView = popoverWindow.contentView;
 +  NSRect contentFrame = [contentView convertRect:contentView.bounds toView:nil];
 +  NSRect windowFrame = [popoverWindow convertRectToScreen:contentFrame];
-+  NSScreen* screen = [popoverWindow screen];
 +
-+  if (screen) {
-+    // Inverting the y axis. We convert from a cocoa point to a css point
-+    CGFloat screenHeight = screen.frame.size.height;
-+    mozilla::CSSPoint cssPos(
-+        windowFrame.origin.x,
-+        screenHeight - windowFrame.origin.y - windowFrame.size.height);
-+    aPopupFrame->MoveTo(cssPos, false);
-+  }
++  CGFloat backingScale = popoverWindow.backingScaleFactor;
++  mozilla::LayoutDeviceIntRect devPixRect =
++      nsCocoaUtils::CocoaRectToGeckoRectDevPix(windowFrame, backingScale);
++
++  nsPresContext* presContext = aPopupFrame->PresContext();
++  mozilla::CSSIntPoint cssPos =
++      presContext->DevPixelsToIntCSSPixels(devPixRect.TopLeft());
++
++  aPopupFrame->MoveTo(mozilla::CSSPoint(cssPos.x, cssPos.y),
++                      /* aUpdateAttrs */ false);
 +}
 +
  // Hide or show this window
@@ -246,7 +300,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5280,58 @@
+@@ -5227,10 +5282,56 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -260,15 +314,15 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
 +          nsRect anchorRectAppUnits = popupFrame->GetUntransformedAnchorRect();
-+          mozilla::CSSIntRect cssAnchorRect =
-+              mozilla::CSSIntRect::FromAppUnitsRounded(anchorRectAppUnits);
-+          mozilla::LayoutDeviceIntRect layoutRect =
-+              mozilla::LayoutDeviceIntRect::FromUnknownRect(
-+                  (cssAnchorRect.ToUnknownRect()));
++          nsPresContext* pc = popupFrame->PresContext();
++          int32_t appUnitsPerDevPixel = pc->AppUnitsPerDevPixel();
++          mozilla::DesktopToLayoutDeviceScale desktopToLayoutScale =
++              pc->DeviceContext()->GetDesktopToDeviceScale();
 +          mozilla::DesktopIntRect popupAnchorRectScaled =
-+              mozilla::DesktopIntRect::RoundOut(layoutRect.X(), layoutRect.Y(),
-+                                                layoutRect.Width(),
-+                                                layoutRect.Height());
++              mozilla::DesktopIntRect::RoundOut(
++                  mozilla::LayoutDeviceRect::FromAppUnits(anchorRectAppUnits,
++                                                          appUnitsPerDevPixel) /
++                  desktopToLayoutScale);
 +          // Taking the now correctly scaled anchor rect and turning it into a
 +          // gecko rect this accounts for the y-axis inversion that cocoa needs,
 +          // as the origin is in the bottom left. This rect is in screen space
@@ -286,11 +340,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +          NSRect positioningRect = [parentView convertRect:windowRect
 +                                                  fromView:nil];
 +          BOOL shouldHideAnchor = NO;
-+          if (auto popoverElement = GetPopupFrame()) {
-+            auto& element = popoverElement->PopupElement();
-+            if (element.GetBoolAttr(nsGkAtoms::hidepopovertail)) {
-+              shouldHideAnchor = YES;
-+            }
++          auto& element = popupFrame->PopupElement();
++          if (element.GetBoolAttr(nsGkAtoms::hidepopovertail)) {
++            shouldHideAnchor = YES;
 +          }
 +          [(PopupWindow*)mWindow showPopoverRelativeToRect:positioningRect
 +                                                    ofView:parentView

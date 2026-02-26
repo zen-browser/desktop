@@ -218,23 +218,21 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   onIconCommand(event) {
-    gZenEmojiPicker
-      .open(event.target)
-      .then(async (emoji) => {
-        const isSvg = emoji && emoji.endsWith(".svg");
+    gZenEmojiPicker.open(event.target, {
+      closeOnSelect: false,
+      onSelect: async (icon) => {
+        const isSvg = icon && icon.endsWith(".svg");
         if (isSvg) {
           this.inputIcon.label = "";
-          this.inputIcon.image = emoji;
+          this.inputIcon.image = icon;
           this.inputIcon.setAttribute("has-svg-icon", "true");
         } else {
           this.inputIcon.image = "";
-          this.inputIcon.label = emoji || "";
+          this.inputIcon.label = icon || "";
           this.inputIcon.removeAttribute("has-svg-icon");
         }
-      })
-      .catch((error) => {
-        console.warn("Error changing workspace icon:", error);
-      });
+      },
+    });
   }
 
   set currentProfile(profile) {

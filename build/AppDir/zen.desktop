@@ -11,12 +11,16 @@ StartupNotify=true
 Terminal=false
 X-MultipleArgs=false
 Keywords=Internet;WWW;Browser;Web;Explorer;
-Actions=new-window;new-private-window;profilemanager;
+Actions=new-window;new-blank-window;new-private-window;profilemanager;
 X-AppImage-Version=$VERSION
 
 [Desktop Action new-window]
 Name=Open a New Window
 Exec=zen %u
+
+[Desktop Action new-blank-window]
+Name=Open a New Blank Window
+Exec=zen --blank-window %u
 
 [Desktop Action new-private-window]
 Name=Open a New Private Window

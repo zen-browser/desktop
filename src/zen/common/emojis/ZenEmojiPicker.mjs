@@ -35,6 +35,10 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
 
   #anchor;
   #emojiAsSVG = false;
+  #closeOnSelect = true;
+  #onSelect = null;
+  #hasSelection = false;
+  #lastSelectedEmoji = null;
 
   #currentPromise = null;
   #currentPromiseResolve = null;
@@ -120,6 +124,14 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     delete this._emojis;
   }
 
+  #setAllowNone(allowNone) {
+    if (allowNone) {
+      this.#panel.removeAttribute("hide-none-option");
+      return;
+    }
+    this.#panel.setAttribute("hide-none-option", "true");
+  }
+
   #onSearchInput(event) {
     const input = event.target;
     const value = input.value.trim().toLowerCase();
@@ -192,13 +204,19 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
 
     this.svgList.innerHTML = "";
 
-    if (this.#currentPromiseReject) {
-      this.#currentPromiseReject(new Error("Emoji picker closed without selection"));
+    if (!this.#hasSelection) {
+      this.#currentPromiseReject?.(new Error("Emoji picker closed without selection"));
+    } else if (!this.#closeOnSelect) {
+      this.#currentPromiseResolve?.(this.#lastSelectedEmoji);
     }
 
     this.#currentPromise = null;
     this.#currentPromiseResolve = null;
     this.#currentPromiseReject = null;
+    this.#onSelect = null;
+    this.#closeOnSelect = true;
+    this.#hasSelection = false;
+    this.#lastSelectedEmoji = null;
 
     this.#anchor.removeAttribute("zen-emoji-open");
     this.#anchor.parentElement.removeAttribute("zen-emoji-open");
@@ -213,15 +231,35 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
         )}</text></svg>`
       )}`;
     }
+    this.#setAllowNone(Boolean(emoji));
+    this.#hasSelection = true;
+    this.#lastSelectedEmoji = emoji;
+    this.#onSelect?.(emoji);
+    if (!this.#closeOnSelect) {
+      return;
+    }
     this.#currentPromiseResolve?.(emoji);
     this.#panel.hidePopup();
   }
 
-  open(anchor, { onlySvgIcons = false, emojiAsSVG = false } = {}) {
+  open(
+    anchor,
+    {
+      onlySvgIcons = false,
+      emojiAsSVG = false,
+      allowNone = true,
+      closeOnSelect = true,
+      onSelect = null,
+    } = {}
+  ) {
     if (this.#currentPromise) {
       return null;
     }
     this.#emojiAsSVG = emojiAsSVG;
+    this.#closeOnSelect = closeOnSelect;
+    this.#onSelect = onSelect;
+    this.#hasSelection = false;
+    this.#lastSelectedEmoji = null;
     this.#currentPromise = new Promise((resolve, reject) => {
       this.#currentPromiseResolve = resolve;
       this.#currentPromiseReject = reject;
@@ -234,6 +272,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     } else {
       this.#panel.removeAttribute("only-svg-icons");
     }
+    this.#setAllowNone(allowNone);
     this.#panel.openPopup(anchor, "after_start", 0, 0, false, false);
     return this.#currentPromise;
   }

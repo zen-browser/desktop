@@ -32,9 +32,6 @@
 - name: browser.search.suggest.enabled.private
   value: false
 
-- name: browser.search.separatePrivateDefault.ui.enabled
-  value: true
-
 - name: browser.urlbar.quicksuggest.enabled
   value: false
   locked: true

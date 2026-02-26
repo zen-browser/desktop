@@ -501,6 +501,8 @@ groupbox h2 {
 #support-firefox,
 #tabGroupSuggestions,
 #web-appearance-manage-themes-link,
+#setting-control-sidebarChatbotFieldset,
+#aiControlsDescription,
 .mission-message {
   display: none !important;
 }

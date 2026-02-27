@@ -48,7 +48,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #initializeRecentlyUsedTabs() {
-    if (gBrowser.selectedTab) {
+    if (gBrowser && gBrowser.selectedTab) {
       this.#recentlyUsedTabs = [gBrowser.selectedTab];
     }
   }
@@ -287,11 +287,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   /* Captures screenshots only for tabs that are currently visible on screen
    * This is async so it waits for all thumbnails before showing the panel */
   async #preCacheThumbnailsForVisible() {
-    // Step 1: Get the index of the first tab that should be visible on the current page: 
+    // Step 1: Get the index of the first tab that should be visible on the current page 
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
-    // Step 2: Get the tabs that should be visible on the current page based on the start index and max visible cards:
+    // Step 2: Get the tabs that should be visible on the current page based on the start index and max visible cards
     const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
-    // Step 3: Capture thumbnails for those tabs and ensure they are all captured before showing panel:
+    // Step 3: Capture thumbnails for those tabs and ensure they are all captured before showing panel
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
     const tasks = tabsToCache.map((tab) => this.#captureThumbnail(tab));
     await Promise.all(tasks);
@@ -333,7 +333,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
     
     const tabs = this.#lazyPrefs.useRecentOrder ? this.#recentlyUsedTabs : gBrowser.tabs;
-    // #tabList contains only valid tabs in the chosen order (recent/visual): 
+    // #tabList contains only valid tabs in the chosen order (recent/visual)
     this.#tabList = [...tabs].filter(
       tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
     );
@@ -342,7 +342,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   // Creates the visual tab cards and adds them to the DOM.
   #renderTabs() {
     if (!this.tabsContainer) return;
-    // Remove old cards for fresh render:
+    // Remove old cards for fresh render
     this.tabsContainer.innerHTML = "";
 
     const totalTabs = this.#tabList.length;
@@ -456,9 +456,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #updateSelection() {
     if (!this.tabsContainer) return;
     
-    // Select all tab card elements:
+    // Select all tab card elements
     this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
-      // Check if current card is selected:
+      // Check if current card is selected
       // Convert data attribute string to base 10
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
       const isSelected = cardIndex === this.#currentIndex;

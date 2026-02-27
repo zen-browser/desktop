@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <panel id="zen-folder-tabs-popup"
-    followanchor="false"
-    hidepopovertail="true"
+    nonnativepopover="true"
     type="arrow"
     orient="vertical"
     side="left"

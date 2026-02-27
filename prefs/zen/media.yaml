@@ -4,7 +4,6 @@
 
 - name: image.jxl.enabled
   value: true
-  locked: true
 
 - name: svg.context-properties.content.enabled
   value: true

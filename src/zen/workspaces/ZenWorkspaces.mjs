@@ -450,16 +450,13 @@ class nsZenWorkspaces {
       workspaceWrapper.hidden = true; // Hide workspace while creating it
     }
     container.appendChild(workspaceWrapper);
-    this.#organizeTabsToWorkspaceSections(
-      workspace,
-      workspaceWrapper.tabsContainer,
-      workspaceWrapper.pinnedTabsContainer,
-      tabs
-    );
+    this.#organizeTabsToWorkspaceSections(workspace, workspaceWrapper, tabs);
     workspaceWrapper.checkPinsExistence();
   }
 
-  #organizeTabsToWorkspaceSections(workspace, section, pinnedSection, tabs) {
+  #organizeTabsToWorkspaceSections(workspace, spaceElement, tabs) {
+    let section = spaceElement.tabsContainer;
+    let pinnedSection = spaceElement.pinnedTabsContainer;
     const workspaceTabs = Array.from(tabs).filter(
       (tab) =>
         tab.getAttribute("zen-workspace-id") === workspace.uuid &&
@@ -781,7 +778,6 @@ class nsZenWorkspaces {
       this._shouldHaveWorkspaces =
         chromeFlags & Ci.nsIWebBrowserChrome.CHROME_TOOLBAR ||
         chromeFlags & Ci.nsIWebBrowserChrome.CHROME_MENUBAR;
-      return this._shouldHaveWorkspaces;
     }
     return this._shouldHaveWorkspaces && !document.documentElement.hasAttribute("taskbartab");
   }
@@ -1062,6 +1058,7 @@ class nsZenWorkspaces {
     }
     // note: We cant access `gZenVerticalTabsManager._canReplaceNewTab` this early
     if (isEmpty && Services.prefs.getBoolPref("zen.urlbar.replace-newtab", true)) {
+      tab._markedForReplacement = true;
       this._tabToRemoveForEmpty = tab;
     } else {
       this._initialTab = tab;

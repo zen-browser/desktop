@@ -30,7 +30,7 @@ panel[type="arrow"]:not(#feature-callout) {
   }
 
   @media (-moz-platform: macos) {
-    &[followanchor="false"] {
+    &:where([followanchor="false"], [nonnativepopover="true"]) {
       appearance: auto !important;
       -moz-default-appearance: menupopup;
       /* We set the default background here, rather than on ::part(content),

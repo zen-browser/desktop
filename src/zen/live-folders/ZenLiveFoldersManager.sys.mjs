@@ -275,7 +275,7 @@ class nsZenLiveFoldersManager {
               {
                 selector: `[id="${folder.id}"] > .tab-group-label-container`,
                 panel_position: {
-                  anchor_attachment: "rightcenter",
+                  anchor_attachment: isRightSide ? "leftcenter" : "rightcenter",
                   callout_attachment: isRightSide ? "topright" : "topleft",
                 },
               },

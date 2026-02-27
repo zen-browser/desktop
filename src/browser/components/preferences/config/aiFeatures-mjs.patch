@@ -1,11 +1,26 @@
 diff --git a/browser/components/preferences/config/aiFeatures.mjs b/browser/components/preferences/config/aiFeatures.mjs
-index f00c1e20a8ca06108fc41c97badd234167430aee..b3a6c0db7f0f8be50ed80be227ba9cabd714f7fd 100644
+index f00c1e20a8ca06108fc41c97badd234167430aee..f7d553cc10492f9447c7b0f801f36b2d66b95d43 100644
 --- a/browser/components/preferences/config/aiFeatures.mjs
 +++ b/browser/components/preferences/config/aiFeatures.mjs
-@@ -649,37 +649,6 @@ SettingGroupManager.registerGroups({
+@@ -634,52 +634,6 @@ SettingGroupManager.registerGroups({
                    },
                  ],
                },
+-              {
+-                control: "moz-box-item",
+-                items: [
+-                  {
+-                    id: "aiControlPdfjsAltTextSelect",
+-                    l10nId: "preferences-ai-controls-pdfjs-control",
+-                    control: "moz-select",
+-                    controlAttrs: {
+-                      inputlayout: "inline-end",
+-                    },
+-                    supportPage: "pdf-alt-text",
+-                    options: [...AI_CONTROL_OPTIONS],
+-                  },
+-                ],
+-              },
 -              {
 -                control: "moz-box-item",
 -                items: [

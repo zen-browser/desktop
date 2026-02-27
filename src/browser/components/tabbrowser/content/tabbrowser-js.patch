@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d7765e0adb37216d35f2125abf96025cbb150bab..4913c2e6cfb4f77bd8f2c0f33310c27475172132 100644
+index d7765e0adb37216d35f2125abf96025cbb150bab..d787c39f68ea4507b2cb902df325498dd65b1fba 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -405,6 +405,7 @@
@@ -411,9 +411,12 @@ index d7765e0adb37216d35f2125abf96025cbb150bab..4913c2e6cfb4f77bd8f2c0f33310c274
          });
        }
  
-@@ -4122,7 +4247,7 @@
+@@ -4120,9 +4245,9 @@
+         }
+ 
          // Add a new tab if needed.
-         if (!tab) {
+-        if (!tab) {
++        if (!tab || tab?._markedForReplacement) {
            let createLazyBrowser =
 -            restoreTabsLazily && !select && !tabData.pinned;
 +            restoreTabsLazily && !(tabData.pinned && !Services.prefs.getBoolPref("browser.sessionstore.restore_pinned_tabs_on_demand"));
@@ -470,10 +473,10 @@ index d7765e0adb37216d35f2125abf96025cbb150bab..4913c2e6cfb4f77bd8f2c0f33310c274
 +            gZenWorkspaces._initialTab._shouldRemove = true;
 +          }
 +        }
-+      }
+       }
 +      else {
 +        gZenWorkspaces._tabToRemoveForEmpty = this.selectedTab;
-       }
++      }
 +      this._hasAlreadyInitializedZenSessionStore = true;
  
        if (tabs.length > 1 || !tabs[0].selected) {

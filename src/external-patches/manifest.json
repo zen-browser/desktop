@@ -14,7 +14,11 @@
     "replaces": {
       // The patch we sent was for firefox 149, but we are currently in 148, so theres
       // a conflict in the patch. See https://bugzilla.mozilla.org/show_bug.cgi?id=2015354
-      "overridden": "overriden"
+      "overridden": "overriden",
+      // Specifically trying to target FeatureCallout.sys.mjs's change.
+      // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
+      //    syncing from upstream, as this is a critical part of the patch.
+      "+            nonnativepopover=\"true\"": "+ "
     }
   },
   {

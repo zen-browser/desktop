@@ -400,6 +400,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       tabs = [];
     }
 
+    // Prevent create folder inside Live Folder
+    const thereIsOneLiveFolderTab = tabs?.some((tab) =>
+      tab.hasAttribute("zen-live-folder-item-id")
+    );
+    if (thereIsOneLiveFolderTab) {
+      return;
+    }
+
     const canInsertBefore =
       !isFromToolbar &&
       !triggerTab.hasAttribute("zen-essential") &&
@@ -736,7 +744,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     size *= 48;
     return {
       position,
-      x: 10,
+      x: isRightSide ? -10 : 10,
       y: size / -2,
     };
   }
@@ -1525,7 +1533,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     this.#animationCount += 1;
     await Promise.all(animations);
     this.#animationCount -= 1;
-    gBrowser.tabContainer._invalidateCachedTabs();
+    gBrowser.tabContainer._invalidateCachedVisibleTabs();
   }
 
   async animateUnload(group, tabToUnload, ungroup = false) {

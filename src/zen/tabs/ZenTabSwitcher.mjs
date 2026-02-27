@@ -97,7 +97,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #createUI() {
-    // Elements are now defined via lazy getters
+    // Elements are defined via lazy getters
     if (!this.panel) {
       console.error("ZenTabSwitcher: UI elements not found");
       return;
@@ -105,21 +105,27 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #observeTabChanges() {
-    window.addEventListener("TabOpen", () => this.#invalidateThumbnailsCache());
+    window.addEventListener("TabOpen", () => this.#clearThumbnailsCache());
     window.addEventListener("TabClose", () => {
-      this.#invalidateThumbnailsCache();
+      this.#clearThumbnailsCache();
       this.#cleanupRecentlyUsedTabs();
     });
-    window.addEventListener("TabAttrModified", () => this.#invalidateThumbnailsCache());
-    window.addEventListener("TabMove", () => this.#invalidateThumbnailsCache());
+    window.addEventListener("TabAttrModified", () => this.#clearThumbnailsCache());
+    window.addEventListener("TabMove", () => this.#clearThumbnailsCache());
     window.addEventListener("TabSelect", (event) => this.#onTabSelect(event));
   }
 
-  // Update recently-used order list whenever a user clicks/switches to tab
+  /**
+   * Update recently-used order list whenever a user clicks/switches to tab.
+   * Maintains an MRU (most-recently-used) list by moving the selected tab to the front.
+   * @param {Event} event - The TabSelect event containing the selected tab in event.target.
+   * @returns {void}
+   */
   #onTabSelect(event) {
     const tab = event.target;
     if (!tab || tab.closing || tab.hidden) return;
 
+    // Remove tab from its current position when selected and add it to the front
     const index = this.#recentlyUsedTabs.indexOf(tab);
     if (index !== -1) {
       this.#recentlyUsedTabs.splice(index, 1);
@@ -140,11 +146,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   // Clear all cached tab screenshots so they'll be regenerated
-  #invalidateThumbnailsCache() {
+  #clearThumbnailsCache() {
     this.#thumbnailCache.clear();
   }
 
-  // Process keyboard input when keys are pressed down
+  /**
+   * Process keyboard input when keys are pressed down.
+   * Handles Escape (to close panel) and Ctrl+Tab (to open/navigate panel).
+   * @param {KeyboardEvent} event - The keydown event containing key information and modifiers.
+   * @returns {boolean|void} Returns false when handling Ctrl+Tab or Escape.
+   */
   #handleKeyDown(event) {
     if (!this.#lazyPrefs.enabled) return;
 
@@ -173,7 +184,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Processes keyboard input when keys are released
+  /**
+   * Processes keyboard input when keys are released.
+   * Detects when Control key is released to close the panel and switch to selected tab.
+   * @param {KeyboardEvent} event - The keyup event containing information about which key was released.
+   * @returns {void}
+   */
   #handleKeyUp(event) {
     if (!this.#isOpen) return;
 
@@ -184,8 +200,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  /* Initialize the panel UI
-   * This is async because it waits for thumbnails to be captured */
+  /**
+   * Initialize the panel UI and display it to the user.
+   * This is async because it waits for thumbnails to be captured before showing the panel.
+   * @param {boolean} shiftKey - Whether Shift was pressed, determining initial navigation direction (false = forward, true = backward).
+   * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.
+   */
   async open(shiftKey = false) {
     if (this.#isOpen) return;
     this.#buildTabList();
@@ -198,8 +218,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#currentIndex = shiftKey ? this.#tabList.length - 1 : 1;
     } else {
       const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
+
+      // Determine which tab to initially highlight when opening switcher
+      // If current tab is in the list and ctrl+shift+tab: Select previous tab
+      // + this.#tablist.length ensures subtraction never goes negative before modulo
+      // Example: If at index 0 in a 5-tab list, (0 - 1 + 5) % 5 = 4 (wraps to end of list)
       if (shiftKey) {
         this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length : this.#tabList.length - 1;
+      // If current tab is in the list and ctrl+tab: Select the next tab 
+      // Uses modulo to wrap around to index 0 if at the end
+      // If current tab not found: default to first tab (index 0)
       } else {
         this.#currentIndex = currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
       }
@@ -259,9 +287,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   /* Captures screenshots only for tabs that are currently visible on screen
    * This is async so it waits for all thumbnails before showing the panel */
   async #preCacheThumbnailsForVisible() {
-    // Calculate which tabs are currently visible based on pagination
+    // Step 1: Get the index of the first tab that should be visible on the current page: 
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
+    // Step 2: Get the tabs that should be visible on the current page based on the start index and max visible cards:
     const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
+    // Step 3: Capture thumbnails for those tabs and ensure they are all captured before showing panel:
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
     const tasks = tabsToCache.map((tab) => this.#captureThumbnail(tab));
     await Promise.all(tasks);
@@ -303,6 +333,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
     
     const tabs = this.#lazyPrefs.useRecentOrder ? this.#recentlyUsedTabs : gBrowser.tabs;
+    // #tabList contains only valid tabs in the chosen order (recent/visual): 
     this.#tabList = [...tabs].filter(
       tab => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
     );
@@ -311,9 +342,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   // Creates the visual tab cards and adds them to the DOM.
   #renderTabs() {
     if (!this.tabsContainer) return;
+    // Remove old cards for fresh render:
     this.tabsContainer.innerHTML = "";
 
     const totalTabs = this.#tabList.length;
+    // Prevent showing more cards than tabs exist
     this.#actualVisibleCards = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
     const containerWidth = `${nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards}px`;
 
@@ -423,7 +456,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #updateSelection() {
     if (!this.tabsContainer) return;
     
+    // Select all tab card elements:
     this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
+      // Check if current card is selected:
+      // Convert data attribute string to base 10
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
       const isSelected = cardIndex === this.#currentIndex;
       const title = card.querySelector(".zen-tab-switcher-title");
@@ -454,11 +490,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
     const pageStartIndex = this.#getPageStartIndex(cardIndex);
+    // Multiply the page start index by card width to get pixel offset
+    // Example: If pageStartIndex = 5, scroll position = 5 * 200 = 1000px from the left edge
     const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
 
+    // Scroll the container horizontally to show the selected tab's page
     this.tabsContainer.scrollTo({
-      left: scrollPosition,
-      behavior: this.#firstPress ? "auto" : "smooth"
+      // Set horizontal scroll position in pixels
+      left: scrollPosition, 
+      // Instant scroll on first open, smooth animation afterwards
+      behavior: this.#firstPress ? "auto" : "smooth" 
     });
     
     this.#firstPress = false;
@@ -473,10 +514,20 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #getPageStartIndex(cardIndex) {
     const totalTabs = this.#tabList.length;
     const maxVisible = this.#actualVisibleCards;
+    // Determine which page contains the card
+    // Example: If cardIndex = 7 and maxVisible = 5, currentPage = 1 (second page), pageStartIndex = 5
     const currentPage = Math.floor(cardIndex / maxVisible);
     let pageStartIndex = currentPage * maxVisible;
+
+    // Edge case: Adjustment for last page
+    // Example: 12 total tabs with 5 visible means last page starts at index 10
+    // but that would only show 2 tabs (10 and 11).
     const remainingCards = totalTabs - pageStartIndex;
 
+    // Solution: When remaining cards < maxVisible, shift the page backwards to always show a full page. 
+    // totalTabs - maxVisible ensures last maxVisible cards are shown
+    // Example: 12 - 5 = 7, so show cards 7-11 (5 full cards)
+    // Math.max(0, ...) prevents negative index if totalTabs < maxVisible
     if (remainingCards < maxVisible && totalTabs > maxVisible) {
       pageStartIndex = Math.max(0, totalTabs - maxVisible);
     }
@@ -485,11 +536,18 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   #navigateForward() {
+    // this.#currentIndex + 1 - Moves to next tab
+    // % this.#tabList.length - Wraps around to start if at the end of the list
+    // Example: In a 5-tab list, if currentIndex is 4 (last tab), (4 + 1) % 5 = 0 (wraps to first tab)
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection();
   }
 
   #navigateBackward() {
+    // this.#currentIndex - 1 - Moves to previous tab
+    // + this.#tabList.length - Ensures positive result before modulo
+    // % this.#tabList.length - Wraps around to end if at the start of the list
+    // Example: In a 5-tab list, if currentIndex is 0 (first tab), (0 - 1 + 5) % 5 = 4 (wraps to last tab)
     this.#currentIndex = (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;
     this.#updateSelection();
   }

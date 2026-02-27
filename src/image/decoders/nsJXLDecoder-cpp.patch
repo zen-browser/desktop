@@ -144,13 +144,22 @@ index ffb7f3cd51e1d0e480bf8ac5e936a90c11f0c93d..378ae56d7fa99fbe8bdea2e689949994
 +                                               icc_profile.data(), size))
 +
 +        mInProfile = qcms_profile_from_memory((char*)icc_profile.data(), size);
++        if (!mInProfile) {
++          // Profile parsing failed. Fall back to RGBA output without color
++          // management to avoid buffer over-read when mChannels < 4.
++          mChannels = 4;
++          mFormat = {mChannels, JXL_TYPE_UINT8, JXL_LITTLE_ENDIAN, 0};
++          break;
++        }
 +
 +        uint32_t profileSpace = qcms_profile_get_color_space(mInProfile);
 +
 +        // Skip color management if color profile is not compatible with number
-+        // of channels.
++        // of channels. Reset to RGBA output to avoid buffer over-read.
 +        if (profileSpace != icSigRgbData &&
 +            (mInfo.num_color_channels == 3 || profileSpace != icSigGrayData)) {
++          mChannels = 4;
++          mFormat = {mChannels, JXL_TYPE_UINT8, JXL_LITTLE_ENDIAN, 0};
 +          break;
 +        }
 +
@@ -169,6 +178,14 @@ index ffb7f3cd51e1d0e480bf8ac5e936a90c11f0c93d..378ae56d7fa99fbe8bdea2e689949994
 +        if (!mUsePipeTransform) {
 +          mCMSLine =
 +              static_cast<uint8_t*>(malloc(sizeof(uint32_t) * mInfo.xsize));
++          if (!mCMSLine) {
++            // Allocation failed. Fall back to RGBA output without color
++            // management to avoid buffer over-read when mChannels < 4.
++            mUsePipeTransform = true;
++            mChannels = 4;
++            mFormat = {mChannels, JXL_TYPE_UINT8, JXL_LITTLE_ENDIAN, 0};
++            break;
++          }
 +        }
 +
 +        int intent = gfxPlatform::GetRenderingIntent();
@@ -179,6 +196,19 @@ index ffb7f3cd51e1d0e480bf8ac5e936a90c11f0c93d..378ae56d7fa99fbe8bdea2e689949994
 +        mTransform =
 +            qcms_transform_create(mInProfile, inType, GetCMSOutputProfile(),
 +                                  QCMS_DATA_RGBA_8, (qcms_intent)intent);
++
++        if (!mTransform) {
++          // Transform creation failed. Fall back to requesting RGBA output
++          // directly from the decoder to avoid buffer over-read when
++          // mChannels < 4 and no transform is available.
++          mUsePipeTransform = true;
++          mChannels = 4;
++          mFormat = {mChannels, JXL_TYPE_UINT8, JXL_LITTLE_ENDIAN, 0};
++          if (mCMSLine) {
++            free(mCMSLine);
++            mCMSLine = nullptr;
++          }
++        }
 +
 +        break;
 +      }

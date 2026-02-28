@@ -40,7 +40,7 @@
   /*Tiny padding to hide random fractional seams*/
   padding-right: 1px;
   padding-bottom: 1px;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   position: relative;
   box-sizing: border-box;
   flex-shrink: 0;

@@ -64,7 +64,8 @@ namespace {
  */
 static __inline int32_t clamp255(int32_t v) {
   // llvm x86 is poor at ternary operator, so use branchless min/max.
-  return (((255 - (v)) >> 31) | (v)) & 255;
+  v = v & ~(v >> 31);
+  return (v | ((255 - v) >> 31)) & 255;
 }
 
 /**
@@ -105,7 +106,14 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor,
   const double origLum = 0.2126 * r1 + 0.7152 * g1 + 0.0722 * b1;
   const double accentLum = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
 
-  double scale = accentLum > 0.0 ? (origLum / accentLum) : 1.0;
+  double scale = 1.0;
+  // The scale explodes for very small values of the luminance
+  // so to counteract that we simply don't calculate it
+  if (accentLum > 1e-5) {
+    scale = origLum / accentLum;
+    // Limit the scale factor
+    scale = std::clamp(scale, 0.0, 4.0);
+  }
 
   double fr = r2 * scale;
   double fg = g2 * scale;

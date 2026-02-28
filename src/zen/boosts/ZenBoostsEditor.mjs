@@ -695,9 +695,9 @@ ${cssSelector} {
     const relativeX = pixelX - rect.left;
     const relativeY = pixelY - rect.top;
 
-    // Capture position of dot for restoring it correctly later
-    this.currentBoostData.dotPos.x = relativeX;
-    this.currentBoostData.dotPos.y = relativeY;
+    // Capture normalized position of dot for restoring it correctly later
+    this.currentBoostData.dotPos.x = relativeX / rect.width;
+    this.currentBoostData.dotPos.y = relativeY / rect.height;
 
     dot.setAttribute("animated", animate ? "true" : "false");
     dot.style.left = `${relativeX}px`;
@@ -1172,9 +1172,28 @@ ${cssSelector} {
     if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null) {
       this.resetDotPosition();
     } else {
+      const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+      const rect = gradient.getBoundingClientRect();
+
+      // Test if the stored position is a non-normalized dot position
+      if (
+        this.currentBoostData.dotPos.x > 1 ||
+        this.currentBoostData.dotPos.x < 0 ||
+        this.currentBoostData.dotPos.y > 1 ||
+        this.currentBoostData.dotPos.y < 0
+      ) {
+        // Normalize position
+        this.currentBoostData.dotPos.x = this.currentBoostData.dotPos.x / rect.width;
+        this.currentBoostData.dotPos.y = this.currentBoostData.dotPos.y / rect.height;
+      }
+
+      // Convert normalized position to relative position
+      const xPos = this.currentBoostData.dotPos.x * rect.width;
+      const yPos = this.currentBoostData.dotPos.y * rect.height;
+
       dot.setAttribute("animated", "true");
-      dot.style.left = `${this.currentBoostData.dotPos.x}px`;
-      dot.style.top = `${this.currentBoostData.dotPos.y}px`;
+      dot.style.left = `${xPos}px`;
+      dot.style.top = `${yPos}px`;
     }
 
     this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");

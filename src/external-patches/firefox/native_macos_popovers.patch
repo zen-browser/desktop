@@ -110,29 +110,29 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
 diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
-@@ -100,10 +100,22 @@
-   --panel-padding: var(--arrowpanel-padding);
-   --panel-shadow-margin: var(--arrowpanel-shadow-margin);
+@@ -102,10 +102,22 @@
    --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
    --menuitem-padding: var(--arrowpanel-menuitem-padding);
    --menuitem-margin: var(--arrowpanel-menuitem-margin);
-+
-+  /* stylelint-disable-next-line media-query-no-invalid */
-+  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    &:not([nonnativepopover="true"]) {
-+      background-color: transparent;
-+      --panel-background: transparent;
-+      --panel-shadow: none;
-+      --panel-border-color: transparent;
-+      --panel-shadow-margin: 0px;
-+      --panel-padding: 0px;
-+    }
-+  }
  }
  
++/* stylelint-disable-next-line media-query-no-invalid */
++@media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
++  panel:where([nativepopover="true"]) {
++    background-color: transparent;
++    --panel-background: transparent;
++    --panel-shadow: none;
++    --panel-border-color: transparent;
++    --panel-shadow-margin: 0px;
++    --panel-padding: 0px;
++  }
++}
++
  /* Lightweight theme roots */
  
  :root[lwtheme] {
+   body,
+   toolbar,
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
@@ -281,19 +281,22 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5282,58 @@
+@@ -5227,10 +5282,65 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
        }
        NS_OBJC_END_TRY_IGNORE_BLOCK;
 +      nsMenuPopupFrame* popupFrame = GetPopupFrame();
++      mozilla::ErrorResult rv;
 +      if ([mWindow isKindOfClass:[PopupWindow class]] &&
 +          [(PopupWindow*)mWindow usePopover] && popupFrame &&
 +          popupFrame->ShouldFollowAnchor() &&
 +          !popupFrame->PopupElement().GetBoolAttr(
 +              nsGkAtoms::nonnativepopover)) {
 +        if (nativeParentWindow) {
++          popupFrame->PopupElement().SetXULBoolAttr(nsGkAtoms::nativepopover,
++                                                    true, rv);
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
 +          nsRect anchorRectAppUnits = popupFrame->GetUntransformedAnchorRect();
@@ -335,12 +338,16 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +        }
 +        return;
 +      }
++      if (popupFrame) {
++        popupFrame->PopupElement().SetXULBoolAttr(nsGkAtoms::nativepopover,
++                                                  false, rv);
++      }
        // If our popup window is a non-native context menu, tell the OS (and
        // other programs) that a menu has opened.  This is how the OS knows to
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5301,10 +5404,15 @@
+@@ -5301,10 +5411,15 @@
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
        [nativeParentWindow removeChildWindow:mWindow];
@@ -356,7 +363,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5351,10 +5459,17 @@
+@@ -5351,10 +5466,17 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -374,7 +381,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6313,10 +6428,20 @@
+@@ -6313,10 +6435,20 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
@@ -395,7 +402,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
    DoResize(aRect.x, aRect.y, aRect.width, aRect.height, aRepaint, false);
-@@ -8277,18 +8402,27 @@
+@@ -8277,18 +8409,27 @@
                    backing:(NSBackingStoreType)bufferingType
                      defer:(BOOL)deferCreation {
    NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -423,7 +430,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8342,10 +8476,120 @@
+@@ -8342,10 +8483,120 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;
@@ -559,13 +566,14 @@ diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
      Atom("highest", "highest"),
      Atom("horizontal", "horizontal"),
      Atom("hover", "hover"),
-@@ -756,10 +757,11 @@
+@@ -756,10 +757,12 @@
      Atom("nohref", "nohref"),
      Atom("noinitialselection", "noinitialselection"),
      Atom("nomodule", "nomodule"),
      Atom("nonce", "nonce"),
      Atom("none", "none"),
 +    Atom("nonnativepopover", "nonnativepopover"),
++    Atom("nativepopover", "nativepopover"),
      Atom("noresize", "noresize"),
      Atom("normal", "normal"),
      Atom("normalizeSpace", "normalize-space"),

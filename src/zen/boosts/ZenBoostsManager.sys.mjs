@@ -418,6 +418,17 @@ class nsZenBoostsManager {
   }
 
   /**
+   * Gets the directory path where user css is stored in the user's profile directory.
+   *
+   * @returns {string} The full path to the boost userCSS directory.
+   * @private
+   */
+  get #cssPath() {
+    const profilePath = PathUtils.profileDir;
+    return PathUtils.join(profilePath, "zen-boosts");
+  }
+
+  /**
    * Reads boost data from disk, decompresses it, and converts it to a Map.
    *
    * @returns {Promise<Map>} A promise that resolves to a Map of domain to boost data.
@@ -437,6 +448,13 @@ class nsZenBoostsManager {
     for (const [domain, entry] of Object.entries(raw)) {
       const boostsMap = new Map();
       for (const [id, boostEntry] of Object.entries(entry.boostEntries ?? {})) {
+
+        // Reuinite the user css with the boost data if any exists
+        const userCSS = await this.#readBoostCSS(id);
+        if (userCSS) {
+          boostEntry.boostData.customCSS = userCSS;
+        }
+
         boostsMap.set(id, boostEntry);
       }
 
@@ -447,6 +465,28 @@ class nsZenBoostsManager {
     }
 
     return map;
+  }
+
+  /**
+   * Reads the user CSS of a boost with the given id from the dedicated folder.
+   * Returns null if the file doesn't exist.
+   *
+   * @param {string} id - The id of the boost
+   * @returns {string|null} Returns the user CSS or null
+   */
+  async #readBoostCSS(id) {
+    const fileName = `${id}.css`;
+    const directoryPath = this.#cssPath;
+    const savePath = PathUtils.join(directoryPath, fileName);
+
+    await IOUtils.makeDirectory(directoryPath, { createAncestors: true });
+
+    if (await IOUtils.exists(savePath)) {
+      const css = await IOUtils.readUTF8(savePath);
+      return css;
+    }
+    
+    return null;
   }
 
   /**
@@ -461,7 +501,12 @@ class nsZenBoostsManager {
     for (const [domain, entry] of map) {
       const boostsObj = {};
       for (const [id, boostEntry] of entry.boostEntries) {
-        boostsObj[id] = boostEntry;
+        
+        // Split the user css from the boost data
+        boostsObj[id] = structuredClone(boostEntry);
+        delete boostsObj[id].boostData.customCSS;
+        
+        this.#writeBoostCSS(id, boostEntry.boostData.customCSS);
       }
       obj[domain] = {
         activeBoostId: entry.activeBoostId ?? null,
@@ -471,6 +516,21 @@ class nsZenBoostsManager {
 
     this.#file.data = obj;
     this.#file.saveSoon();
+  }
+
+  /**
+   * Writes the user CSS of a boost with the given id to a dedicated folder.
+   *
+   * @param {string} id - The id of the boost
+   * @param {string} css - The user CSS
+   */
+  async #writeBoostCSS(id, css) {
+    const fileName = `${id}.css`;
+    const directoryPath = this.#cssPath;
+    const savePath = PathUtils.join(directoryPath, fileName);
+
+    await IOUtils.makeDirectory(directoryPath, { createAncestors: true });
+    await IOUtils.writeUTF8(savePath, css);
   }
 
   /**

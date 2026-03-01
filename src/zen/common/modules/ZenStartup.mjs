@@ -19,6 +19,13 @@ class ZenStartup {
     this.#zenInitBrowserLayout();
   }
 
+  get #shouldUseWatermark() {
+    return (
+      Services.prefs.getBoolPref("zen.watermark.enabled", false) &&
+      gZenWorkspaces.shouldHaveWorkspaces
+    );
+  }
+
   #initBrowserBackground() {
     const background = document.createXULElement("box");
     background.id = "zen-browser-background";
@@ -102,7 +109,7 @@ class ZenStartup {
   }
 
   openWatermark() {
-    if (!Services.prefs.getBoolPref("zen.watermark.enabled", false)) {
+    if (!this.#shouldUseWatermark) {
       document.documentElement.removeAttribute("zen-before-loaded");
       return;
     }
@@ -113,7 +120,7 @@ class ZenStartup {
 
   closeWatermark() {
     document.documentElement.removeAttribute("zen-before-loaded");
-    if (Services.prefs.getBoolPref("zen.watermark.enabled", false)) {
+    if (this.#shouldUseWatermark) {
       let elementsToIgnore = this.#watermarkIgnoreElements.map((id) => "#" + id).join(", ");
       gZenUIManager.motion
         .animate(

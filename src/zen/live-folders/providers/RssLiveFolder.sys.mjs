@@ -80,7 +80,8 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
         }
       }
       return items;
-    } catch {
+    } catch (error) {
+      console.error("Error fetching or parsing RSS feed:", error);
       return "zen-live-folder-failed-fetch";
     }
   }

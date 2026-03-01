@@ -39,7 +39,6 @@ class nsZenLiveFoldersManager {
     this.liveFolders = new Map();
     this.registry = new Map();
     this.dismissedItems = new Set();
-    this.folderRefs = new WeakMap();
   }
 
   get window() {
@@ -217,7 +216,6 @@ class nsZenLiveFoldersManager {
     });
 
     this.liveFolders.set(folder.id, liveFolder);
-    this.folderRefs.set(liveFolder, folder);
 
     liveFolder.start();
     this.saveState();
@@ -275,7 +273,7 @@ class nsZenLiveFoldersManager {
               {
                 selector: `[id="${folder.id}"] > .tab-group-label-container`,
                 panel_position: {
-                  anchor_attachment: "rightcenter",
+                  anchor_attachment: isRightSide ? "leftcenter" : "rightcenter",
                   callout_attachment: isRightSide ? "topright" : "topleft",
                 },
               },
@@ -458,20 +456,14 @@ class nsZenLiveFoldersManager {
   }
 
   getFolderForLiveFolder(liveFolder) {
-    if (this.folderRefs.has(liveFolder)) {
-      return this.folderRefs.get(liveFolder);
-    }
-
     if (!this.window) {
       return null;
     }
-
     const folder = lazy.ZenWindowSync.getItemFromWindow(this.window, liveFolder.id);
     if (folder?.isZenFolder) {
-      this.folderRefs.set(liveFolder, folder);
+      return folder;
     }
-
-    return folder;
+    return null;
   }
 
   #makeCompositeId(folderId, itemId) {
@@ -578,7 +570,6 @@ class nsZenLiveFoldersManager {
       });
 
       this.liveFolders.set(entry.id, liveFolder);
-      this.folderRefs.set(liveFolder, folder);
       liveFolder.tabsState = entry.tabsState || [];
       liveFolder.state.lastErrorId = entry.data.state.lastErrorId;
       if (entry.dismissedItems && Array.isArray(entry.dismissedItems)) {

@@ -218,7 +218,8 @@ class nsZenWindowSync {
     if (
       !forcedSync &&
       (hasUnsyncedArg ||
-        (typeof aWindow.arguments[0] === "string" &&
+        !aWindow.gZenWorkspaces.shouldHaveWorkspaces ||
+        (typeof aWindow.arguments?.[0] === "string" &&
           aWindow.arguments.length > 1 &&
           !!this.#browserWindowsList.length))
     ) {

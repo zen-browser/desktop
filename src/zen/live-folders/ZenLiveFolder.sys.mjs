@@ -121,7 +121,7 @@ export class nsZenLiveFolderProvider {
     this.manager.saveState();
   }
 
-  fetch(url, { maxContentLength = 5 * 1024 * 1024, method = "GET", body = null } = {}) {
+  fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
     const uri = lazy.NetUtil.newURI(url);
     // TODO: Support userContextId when fetching, it should be inherited from the folder's
     // current space context ID.
@@ -135,46 +135,21 @@ export class nsZenLiveFolderProvider {
         userContextId = space.containerTabId || 0;
       }
     }
-    const principal = Services.scriptSecurityManager.createContentPrincipal(uri, {
-      userContextId,
-    });
+    const principal = Services.scriptSecurityManager.createContentPrincipal(uri, { userContextId });
 
-    const securityFlags =
-      Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_INHERITS_SEC_CONTEXT |
-      Ci.nsILoadInfo.SEC_COOKIES_INCLUDE;
+    const channel = lazy.NetUtil.newChannel({
+      uri,
+      // Use TYPE_SAVEAS_DOWNLOAD instead of TYPE_DOCUMENT because otherwise,
+      // the loading principal will be inherited from the loadingNode, which doesn't exist.
+      // Meaning that we will never properly inject cookies. For some reason thouh,
+      // using TYPE_SAVEAS_DOWNLOAD doesn't have this issue and correctly uses the provided principal.
+      contentPolicyType: Ci.nsIContentPolicy.TYPE_SAVEAS_DOWNLOAD,
+      loadingPrincipal: principal,
+      securityFlags:
+        Ci.nsILoadInfo.SEC_REQUIRE_CORS_INHERITS_SEC_CONTEXT | Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
+      triggeringPrincipal: principal,
+    }).QueryInterface(Ci.nsIHttpChannel);
 
-    const channel = Services.io
-      .newChannelFromURI(
-        uri,
-        this.manager.window.document,
-        principal,
-        principal,
-        securityFlags,
-        Ci.nsIContentPolicy.TYPE_DOCUMENT
-      )
-      .QueryInterface(Ci.nsIHttpChannel);
-
-    method = method.toUpperCase();
-    if (method === "POST") {
-      const uploadChannel = channel
-        .QueryInterface(Ci.nsIHttpChannel)
-        .QueryInterface(Ci.nsIUploadChannel2);
-
-      if (body === null) {
-        body = "";
-      } else if (typeof body !== "string") {
-        body = JSON.stringify(body);
-      }
-
-      const stream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
-        Ci.nsIStringInputStream
-      );
-
-      stream.setByteStringData(body);
-      uploadChannel.explicitSetUploadStream(stream, "application/json", -1, method, false);
-    }
-
-    channel.requestMethod = method;
     let httpStatus = null;
     let contentType = "";
     let headerCharset = null;

@@ -385,7 +385,7 @@ class nsZenWorkspaces {
       const defaultSelectedContainer = this.workspaceElement(this.activeWorkspace)?.querySelector(
         ".zen-workspace-normal-tabs-section"
       );
-      const pinnedContainer = this.workspaceElement(this.activeWorkspace).querySelector(
+      const pinnedContainer = this.workspaceElement(this.activeWorkspace)?.querySelector(
         ".zen-workspace-pinned-tabs-section"
       );
       // New profile with no workspaces does not have a default selected container
@@ -1001,7 +1001,6 @@ class nsZenWorkspaces {
       this._shouldHaveWorkspaces =
         chromeFlags & Ci.nsIWebBrowserChrome.CHROME_TOOLBAR ||
         chromeFlags & Ci.nsIWebBrowserChrome.CHROME_MENUBAR;
-      return this._shouldHaveWorkspaces;
     }
     return this._shouldHaveWorkspaces && !document.documentElement.hasAttribute("taskbartab");
   }
@@ -1119,7 +1118,9 @@ class nsZenWorkspaces {
       // We don't want to depend on this by mistake
       delete workspace.hasCollapsedPinnedTabs;
     }
-    this.#hasInitialized = true;
+    promise.finally(() => {
+      this.#hasInitialized = true;
+    });
     return promise;
   }
 
@@ -1826,7 +1827,7 @@ class nsZenWorkspaces {
     this.#inChangingWorkspace = true;
     try {
       this.log("Changing workspace to", workspace?.uuid);
-      await this._performWorkspaceChange(workspace, ...args);
+      await this.#performWorkspaceChange(workspace, ...args);
     } catch (e) {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }
@@ -1837,7 +1838,7 @@ class nsZenWorkspaces {
     this._animateTabs(this.getActiveWorkspaceFromCache(), true);
   }
 
-  async _performWorkspaceChange(
+  async #performWorkspaceChange(
     workspace,
     { onInit = false, alwaysChange = false, whileScrolling = false } = {}
   ) {
@@ -1878,7 +1879,7 @@ class nsZenWorkspaces {
 
     // Update UI and state
     const previousWorkspaceIndex = workspaces.findIndex((w) => w.uuid === previousWorkspace.uuid);
-    await this._updateWorkspaceState(workspace, onInit, tabToSelect, {
+    await this.#updateWorkspaceState(workspace, onInit, tabToSelect, {
       previousWorkspaceIndex,
       previousWorkspace,
     });
@@ -2244,8 +2245,10 @@ class nsZenWorkspaces {
           Math.abs(newWorkspaceIndex - (isGoingLeft ? firstWorkspaceIndex : lastWorkspaceIndex)) +
           1;
         const usingSameContainer =
-          newWorkspaceEssentialsContainer.workspaces.some((w) => w.uuid === newWorkspace.uuid) &&
-          newWorkspaceEssentialsContainer.workspaces.some((w) => w.uuid === previousWorkspace.uuid);
+          newWorkspaceEssentialsContainer?.workspaces.some((w) => w.uuid === newWorkspace.uuid) &&
+          newWorkspaceEssentialsContainer?.workspaces.some(
+            (w) => w.uuid === previousWorkspace.uuid
+          );
         let newOffset =
           -(
             newWorkspaceIndex -
@@ -2483,7 +2486,7 @@ class nsZenWorkspaces {
     return tabToSelect;
   }
 
-  async _updateWorkspaceState(
+  async #updateWorkspaceState(
     workspace,
     onInit,
     tabToSelect,

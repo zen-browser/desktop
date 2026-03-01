@@ -281,15 +281,10 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   addTabs(tabs) {
     super.addTabs(tabs);
     if (this.collapsed && !gZenFolders._sessionRestoring && this.isLiveFolder && tabs.length) {
-      let activeTabs = this.activeTabs;
-      activeTabs.push(...tabs);
-      gZenFolders._dontAnimateFolder = true;
-      this.collapsed = false;
-      for (let tab of activeTabs) {
+      tabs.forEach((tab) => {
         tab.setAttribute("folder-active", "true");
-      }
-      this.collapsed = true;
-      delete gZenFolders._dontAnimateFolder;
+      });
+      gZenFolders.animateCollapse(this);
     }
   }
 

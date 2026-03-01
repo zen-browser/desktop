@@ -1263,7 +1263,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         if (group.tabs.length >= this.MAX_TABS) {
           return;
         }
-        if (gridTypeChange || !newTabsAdded) {
+        if (gridTypeChange && !newTabsAdded) {
           // reset layout
           group.gridType = gridType;
           group.layoutTree = this.calculateLayoutTree(
@@ -1496,8 +1496,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     header.classList.add("zen-view-splitter-header");
     const removeButton = document.createXULElement("toolbarbutton");
     removeButton.classList.add("zen-tab-unsplit-button");
-    removeButton.addEventListener("click", () => {
-      this.removeTabFromSplit(container);
+    removeButton.addEventListener("click", (event) => {
+      this.removeTabFromSplit(event, container);
     });
     const rearrangeButton = document.createXULElement("toolbarbutton");
     rearrangeButton.classList.add("zen-tab-rearrange-button");
@@ -1846,9 +1846,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    * @description removes the tab from the split
+   * @param {Event} event - The click event
    * @param {Element} container - The container element
    */
-  removeTabFromSplit = (container) => {
+  removeTabFromSplit = (event, container) => {
     const browser = container.querySelector("browser");
     if (browser) {
       const tab = gBrowser.getTabForBrowser(browser);
@@ -1858,8 +1859,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         if (groupIndex >= 0) {
           this.removeTabFromGroup(tab, groupIndex, { forUnsplit: true });
         }
-        gBrowser.selectedTab = tab;
-        tab._selected = true;
+        if (!event.shiftKey) {
+          gBrowser.selectedTab = tab;
+          tab._selected = true;
+        }
       }
     }
   };

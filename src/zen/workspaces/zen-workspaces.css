@@ -46,10 +46,10 @@
       pointer-events: none;
       line-height: 0;
       position: absolute;
-      font-size: 14px;
+      font-size: 12px;
 
-      @media (-moz-platform: linux) {
-        font-size: 12px;
+      @media (-moz-platform: macos) {
+        font-size: 14px;
       }
 
       &:is(img) {

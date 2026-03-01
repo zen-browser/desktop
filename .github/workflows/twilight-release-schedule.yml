@@ -2,7 +2,7 @@ name: Zen Twilight Scheduled Releases
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 23 */2 * *"
   workflow_dispatch:
     inputs:
       create_release:

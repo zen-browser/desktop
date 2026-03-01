@@ -1,5 +1,5 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..78e705366d74d1ce5aec3ab9e41d1e7dfbc19153 100644
+index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..099e825c251d4edf99b41f59160e276f5325217d 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
 @@ -82,6 +82,7 @@
@@ -10,29 +10,14 @@ index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..78e705366d74d1ce5aec3ab9e41d1e7d
  #include "nsCSSProps.h"
  #include "nsCSSRendering.h"
  #include "nsCSSRenderingGradients.h"
-@@ -1158,6 +1159,11 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
-   state->mFirstFrameMarkedForDisplay = mFramesMarkedForDisplay.Length();
-   state->mFirstFrameWithOOFData = mFramesWithOOFData.Length();
+@@ -1212,6 +1213,10 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
+     docShell->GetWindowDraggingAllowed(&mWindowDraggingAllowed);
+   }
  
-+  // Ignore on anonymous content documents.
-+  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
-+    zenBackend->onPresShellEntered(state->mPresShell->GetPresContext());
++  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance(); zenBackend && !mIsInChromePresContext) {
++    zenBackend->onPresShellEntered(pc->Document());
 +  }
 +
-   ScrollContainerFrame* sf = state->mPresShell->GetRootScrollContainerFrame();
-   if (sf && IsInSubdocument()) {
-     // We are forcing a rebuild of nsDisplayCanvasBackgroundColor to make sure
-@@ -1343,6 +1349,13 @@ void nsDisplayListBuilder::LeavePresShell(const nsIFrame* aReferenceFrame,
-   ResetMarkedFramesForDisplayList(aReferenceFrame);
-   mPresShellStates.RemoveLastElement();
+   state->mTouchEventPrefEnabledDoc = dom::TouchEvent::PrefEnabled(docShell);
  
-+  if (auto zenBackend = zen::nsZenBoostsBackend::GetInstance()) {
-+    zenBackend->onPresShellLeave(
-+      mPresShellStates.IsEmpty()
-+          ? nullptr
-+          : CurrentPresShellState()->mPresShell->GetPresContext());
-+  }
-+
-   if (!mPresShellStates.IsEmpty()) {
-     nsPresContext* pc = CurrentPresContext();
-     nsIDocShell* docShell = pc->GetDocShell();
+   if (auto* vt = pc->Document()->GetActiveViewTransition()) {

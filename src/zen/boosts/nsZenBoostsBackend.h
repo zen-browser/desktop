@@ -52,27 +52,11 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * @brief Called when a presshell is entered during rendering.
    * @param aPresContext The presentation context that was entered.
    */
-  auto onPresShellEntered(nsPresContext* aPresContext) -> void;
-
-  /**
-   * @brief Called when a presshell is left during rendering.
-   * @param aPresContext The presentation context that was left.
-   */
-  auto onPresShellLeave(nsPresContext* aPresContext) -> void;
-
-  /**
-   * @brief Recomputes browsing context dependent data, including Zen boost
-   * data. Triggers a restyle if the boost data has changed.
-   * @param aPresContext The presentation context to update.
-   * @param aBrowsingContext The browsing context containing the boost data.
-   */
-  void RecomputeBrowsingContextDependentData(
-      nsPresContext* aPresContext,
-      mozilla::dom::BrowsingContext* aBrowsingContext);
+  auto onPresShellEntered(mozilla::dom::Document* aDocument) -> void;
 
   [[nodiscard]]
-  auto GetCurrentPresContext() const {
-    return mCurrentPresContext;
+  inline auto GetCurrentBrowsingContext() const {
+    return mCurrentBrowsingContext;
   }
 
   NS_DECL_NSIZENBOOSTSBACKEND
@@ -82,7 +66,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
   /**
    * The presshell of the current document being rendered.
    */
-  RefPtr<nsPresContext> mCurrentPresContext;
+  RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
 
  public:
   /**

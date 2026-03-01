@@ -15,17 +15,5 @@ interface nsIZenBoostsBackend : nsISupports {
      * for context.
      */
     auto onPresShellEntered(nsPresContext* aPresContext) -> void;
-
-    /*
-     * @brief Called when the presshell is exited.
-     */
-    auto onPresShellLeave(nsPresContext* aPresContext) -> void;
-
-    /*
-     * Recomputes the data dependent on the browsing context, like zoom and text
-     * zoom. We use it to store Zen boosts related data too.
-     */
-    void RecomputeBrowsingContextDependentData(nsPresContext* aPresContext,
-                                              mozilla::dom::BrowsingContext* aBrowsingContext);
   %}
 };

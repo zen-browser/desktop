@@ -14,6 +14,7 @@
 #include "mozilla/MediaFeatureChange.h"
 
 #include "mozilla/dom/Document.h"
+#include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContext.h"
 
 #define COLOR_CHANNEL_MIDPOINT 128
@@ -24,7 +25,29 @@
 // serialization/deserialization between parent and content processes.
 #define NS_GET_CONTRAST(_c) NS_GET_A(_c)
 
+#define MARK_MEDIA_FEATURE_CHANGED(_pc) \
+  (_pc)->MediaFeatureValuesChanged(                                     \
+      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,  \
+      mozilla::MediaFeatureChangeReason::PreferenceChange},             \
+      mozilla::MediaFeatureChangePropagation::All);
+
+#define TRIGGER_PRES_CONTEXT_RESTYLE()        \
+  WalkPresContexts([&](nsPresContext* aPc) {  \
+    MARK_MEDIA_FEATURE_CHANGED(aPc);          \
+  });
+
 using BrowsingContext = mozilla::dom::BrowsingContext;
+
+template <typename Callback>
+void BrowsingContext::WalkPresContexts(Callback&& aCallback) {
+  PreOrderWalk([&](BrowsingContext* aContext) {
+    if (nsIDocShell* shell = aContext->GetDocShell()) {
+      if (RefPtr pc = shell->GetPresContext()) {
+        aCallback(pc.get());
+      }
+    }
+  });
+}
 
 /**
  * @brief Called when the ZenBoostsData field is set on a browsing context.
@@ -38,6 +61,7 @@ void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
     return;
   }
   PresContextAffectingFieldChanged();
+  TRIGGER_PRES_CONTEXT_RESTYLE();
 }
 
 /**
@@ -52,6 +76,7 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
     return;
   }
   PresContextAffectingFieldChanged();
+  TRIGGER_PRES_CONTEXT_RESTYLE();
 }
 
 namespace zen {
@@ -194,11 +219,15 @@ inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
     return;
   }
   if (aPresContext) {
-    *aData = aPresContext->mZenBoostsPresContextData;
-    *aIsInverted = aPresContext->mZenBoostsInvert;
-  } else if (auto currentPresContext = zenBoosts->GetCurrentPresContext()) {
-    *aData = currentPresContext->mZenBoostsPresContextData;
-    *aIsInverted = currentPresContext->mZenBoostsInvert;
+    if (auto document = aPresContext->Document()) {
+      if (auto browsingContext = document->GetBrowsingContext()) {
+        *aData = browsingContext->ZenBoostsData();
+        *aIsInverted = browsingContext->IsZenBoostsInverted();
+      }
+    }
+  } else if (auto currentBrowsingContext = zenBoosts->GetCurrentBrowsingContext()) {
+    *aData = currentBrowsingContext->ZenBoostsData();
+    *aIsInverted = currentBrowsingContext->IsZenBoostsInverted();
   }
 }
 
@@ -214,47 +243,26 @@ auto nsZenBoostsBackend::GetInstance() -> nsCOMPtr<nsZenBoostsBackend> {
   return zenBoosts;
 }
 
-auto nsZenBoostsBackend::onPresShellEntered(nsPresContext* aPresContext)
+auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
     -> void {
-  // Note that aPresContext can be null when entering anonymous content frames.
+  // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
-  mCurrentPresContext = aPresContext;
-}
-
-auto nsZenBoostsBackend::onPresShellLeave(nsPresContext* aPresContext)
-    -> void {
-  // TODO: We should set it as a null as well, but this prevents borders and
-  // shadows from being drawn into our Zen boosts modifications.
-  if (!aPresContext) {
+  auto browsingContext = aDocument ? aDocument->GetBrowsingContext() : nullptr;
+  if (!browsingContext) {
     return;
   }
-  mCurrentPresContext = aPresContext;
-}
-
-auto nsZenBoostsBackend::RecomputeBrowsingContextDependentData(
-    nsPresContext* aPresContext,
-    mozilla::dom::BrowsingContext* aBrowsingContext) -> void {
-  if (!aPresContext || aPresContext->IsChrome()) {
-    return;
-  }
-
-  auto previousData = aPresContext->mZenBoostsPresContextData;
-  auto previousInvert = aPresContext->mZenBoostsInvert;
-  aPresContext->mZenBoostsPresContextData = aBrowsingContext->ZenBoostsData();
-  aPresContext->mZenBoostsInvert = aBrowsingContext->IsZenBoostsInverted();
-  if (previousData != aPresContext->mZenBoostsPresContextData ||
-      previousInvert != aPresContext->mZenBoostsInvert) {
-    // Lets ask the prescontext to restyle the document
-    aPresContext->MediaFeatureValuesChanged(
-        {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,
-         mozilla::MediaFeatureChangeReason::PreferenceChange},
-        mozilla::MediaFeatureChangePropagation::JustThisDocument);
-  }
+  mCurrentBrowsingContext = browsingContext;
 }
 
 auto nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
     nsPresContext* aPresContext) -> nscolor {
+  if (!XRE_IsContentProcess()) {
+    // Zen boosts are only supported in content, so if we somehow end up here
+    // without a prescontext or in the parent process, just return the original
+    // color.
+    return aColor;
+  }
   ZenBoostData accentNS = 0;
   bool invertColors = false;
   GetZenBoostsDataFromBrowsingContext(&accentNS, &invertColors, aPresContext);

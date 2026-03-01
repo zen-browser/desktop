@@ -92,9 +92,20 @@ index 2e6e2be9d7e28c3f189131ec19a26d552d13af99..101b5a3a70c24f28a755f2ca6630a6bc
 +
 +  get zenStrippedURI() {
 +    let strippedURI = null;
++    let activeBrowser = this.window.gBrowser.selectedBrowser;
++    let uriString = activeBrowser.userTypedValue || 
++                    (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "");
++
++    // Convert the string back into a URI object so Firefox's strippers can read it
++    let uri;
++    try {
++      uri = Services.io.newURI(uriString);
++    } catch (e) {
++      // Fallback if the provisional string isn't a valid URI yet
++      uri = activeBrowser.currentURI;
++    }
 +
 +    // Error check occurs during isClipboardURIValid
-+    let uri = this.window.gBrowser.currentURI;
 +    try {
 +      strippedURI = lazy.QueryStringStripper.stripForCopyOrShare(uri);
 +    } catch (e) {

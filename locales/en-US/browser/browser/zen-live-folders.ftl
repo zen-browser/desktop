@@ -96,3 +96,6 @@ zen-live-folder-github-issues =
 
 zen-live-folder-github-option-repo-list-note =
     .label = This list is generated based on your currently active pull requests.
+
+zen-live-folders-promotion-title = Live Folder Created!
+zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.

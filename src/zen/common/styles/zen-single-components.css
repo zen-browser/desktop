@@ -9,6 +9,7 @@
   position: absolute !important;
   top: 3%;
   right: 1.5%;
+  z-index: 2;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -83,6 +84,13 @@
 
     & #PanelUI-zen-emojis-picker-pages > vbox[emojis="true"] {
       display: none;
+    }
+  }
+
+  &[hide-none-option="true"] {
+    & #PanelUI-zen-emojis-picker-none {
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
@@ -163,6 +171,7 @@
     width: 22px;
     height: 22px;
     appearance: none;
+    transition: opacity 0.08s ease-in-out;
 
     &:hover {
       background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -612,4 +621,27 @@
 /* Sidebar notification */
 :root:not([zen-sidebar-expanded="true"]) zen-sidebar-notification {
   display: none;
+}
+
+/* Feature allouts */
+#feature-callout {
+  #mainContentHeader {
+    --special-color: color-mix(in srgb, light-dark(white, black), currentColor 50%);
+    --specia-color-2: color-mix(in srgb, light-dark(white, black), currentColor 90%);
+    background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2));
+    background-size: 400%;
+    background-clip: text;
+    /* Still works on firefox */
+    -webkit-text-fill-color: transparent;
+    animation: zen-text-gradient 5s linear infinite;
+    font-size: initial;
+  }
+
+  #mainContentSubheader {
+    text-wrap: balance;
+  }
+
+  #multi-stage-message-welcome-text {
+    gap: 4px;
+  }
 }

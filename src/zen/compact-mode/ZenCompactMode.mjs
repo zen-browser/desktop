@@ -589,7 +589,9 @@ window.gZenCompactModeManager = {
       {
         element: this.sidebar,
         screenEdge: this.sidebarIsOnRight ? "right" : "left",
-        keepHoverDuration: 100,
+        keepHoverDuration: Services.prefs.getIntPref(
+          "zen.view.compact.sidebar-keep-hover.duration"
+        ),
       },
       {
         element: document.getElementById("zen-appcontent-navbar-wrapper"),

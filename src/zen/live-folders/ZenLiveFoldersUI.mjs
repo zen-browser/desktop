@@ -25,10 +25,11 @@ class nsZenLiveFoldersUI {
       }
     });
 
-    window.gZenWorkspaces.promiseInitialized.finally(() => {
-      const manager = lazy.ZenLiveFoldersManager;
-
-      for (const liveFolder of manager.liveFolders.values()) {
+    Promise.all([
+      window.gZenWorkspaces.promiseInitialized,
+      lazy.ZenLiveFoldersManager.stateRestored.promise,
+    ]).then(() => {
+      for (const liveFolder of lazy.ZenLiveFoldersManager.liveFolders.values()) {
         this.#restoreUIStateForLiveFolder(liveFolder);
       }
     });

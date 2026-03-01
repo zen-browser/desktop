@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+  RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
@@ -217,7 +218,8 @@ class nsZenWindowSync {
     if (
       !forcedSync &&
       (hasUnsyncedArg ||
-        (typeof aWindow.arguments[0] === "string" &&
+        !aWindow.gZenWorkspaces.shouldHaveWorkspaces ||
+        (typeof aWindow.arguments?.[0] === "string" &&
           aWindow.arguments.length > 1 &&
           !!this.#browserWindowsList.length))
     ) {
@@ -734,12 +736,14 @@ class nsZenWindowSync {
         aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
 
         // Swap permanent keys
-        const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
-        const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
-        aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
-        aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
-        aOurTab.permanentKey = otherPermanentKey;
-        aOtherTab.permanentKey = ourPermanentKey;
+        if (!onClose) {
+          const ourPermanentKey = aOurTab.linkedBrowser.permanentKey;
+          const otherPermanentKey = aOtherTab.linkedBrowser.permanentKey;
+          aOurTab.linkedBrowser.permanentKey = otherPermanentKey;
+          aOtherTab.linkedBrowser.permanentKey = ourPermanentKey;
+          aOurTab.permanentKey = otherPermanentKey;
+          aOtherTab.permanentKey = ourPermanentKey;
+        }
 
         // Since we are moving progress listeners around, there's a chance that we
         // trigger a load while making the switch, and since we remove the previous
@@ -1257,37 +1261,45 @@ class nsZenWindowSync {
     });
   }
 
-  async on_focus(aEvent) {
+  on_focus(aEvent) {
     if (typeof aEvent.target !== "object") {
       return;
     }
-    await this.#docShellSwitchPromise;
     const window = Services.focus.activeWindow;
     if (
       !window?.gBrowser ||
       this.#lastFocusedWindow?.deref() === window ||
       window.closing ||
-      !window.toolbar.visible
+      !window.toolbar.visible ||
+      lazy.RunState.isQuitting
     ) {
       return;
     }
+    let promise = this.#docShellSwitchPromise;
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    return (this.#docShellSwitchPromise = this.#onTabSwitchOrWindowFocus(window));
+    // eslint-disable-next-line no-async-promise-executor
+    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+      await promise;
+      await this.#onTabSwitchOrWindowFocus(window);
+      resolve();
+    });
   }
 
-  async on_TabSelect(aEvent) {
-    await this.#docShellSwitchPromise;
+  on_TabSelect(aEvent) {
     const tab = aEvent.target;
     if (this.#lastSelectedTab?.deref() === tab) {
       return;
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    return (this.#docShellSwitchPromise = this.#onTabSwitchOrWindowFocus(
-      aEvent.target.ownerGlobal,
-      previousTab
-    ));
+    let promise = this.#docShellSwitchPromise;
+    // eslint-disable-next-line no-async-promise-executor
+    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+      await promise;
+      await this.#onTabSwitchOrWindowFocus(tab.ownerGlobal, previousTab);
+      resolve();
+    });
   }
 
   on_SSWindowClosing(aEvent) {

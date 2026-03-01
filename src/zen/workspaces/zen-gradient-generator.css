@@ -266,7 +266,6 @@
     }
     cursor: pointer;
     border: 3px solid #ffffff;
-    animation: zen-theme-picker-dot-animation 0.5s;
     transform: translate(-50%, -50%);
     pointer-events: none;
     transform-origin: left top;

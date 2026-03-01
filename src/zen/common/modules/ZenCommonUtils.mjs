@@ -84,22 +84,8 @@ export class nsZenPreloadedFeature {
 
 window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
-
-    const activeBrowser = gBrowser.selectedBrowser;
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    
-    let displaySpec = activeBrowser.userTypedValue || 
-                      gURLBar.untrimmedValue || 
-                      (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "") || 
-                      currentUrl.displaySpec;
-
-    if (displaySpec === "about:blank" || displaySpec === "") {
-      const tabLabel = gBrowser.selectedTab.label;
-      if (tabLabel && tabLabel !== "New Tab") {
-         displaySpec = tabLabel;
-      }
-    }
-
+    const displaySpec = currentUrl.displaySpec;
     ClipboardHelper.copyString(displaySpec);
     let button;
     /* eslint-disable mozilla/valid-services */
@@ -125,23 +111,9 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const activeBrowser = gBrowser.selectedBrowser;
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-
-    let displaySpec = activeBrowser.userTypedValue || 
-                      gURLBar.untrimmedValue || 
-                      (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "") || 
-                      currentUrl.displaySpec;
-
-    if (displaySpec === "about:blank" || displaySpec === "") {
-      const tabLabel = gBrowser.selectedTab.label;
-      if (tabLabel && tabLabel !== "New Tab") {
-         displaySpec = tabLabel;
-      }
-    }
-
-    const tabTitle = gBrowser.selectedTab.label || displaySpec;
-    const markdownLink = `[${tabTitle}](${displaySpec})`;
+    const tabTitle = gBrowser.selectedTab.label;
+    const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
     gZenUIManager.showToast("zen-copy-current-url-confirmation", { timeout: 3000 });
   },

@@ -13,6 +13,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
 });
 
 export class nsZenSiteDataPanel {
@@ -63,6 +64,7 @@ export class nsZenSiteDataPanel {
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
+    this.#initBrowserListeners();
     this.#initUnifiedExtensionsManageHook();
     this.#maybeShowFeatureCallout();
   }
@@ -76,6 +78,7 @@ export class nsZenSiteDataPanel {
       "zen-site-data-header-share",
       "zen-site-data-header-bookmark",
       "zen-site-data-security-info",
+      "zen-site-data-boost",
       "zen-site-data-actions",
       "zen-site-data-new-addon-button",
     ];
@@ -85,6 +88,50 @@ export class nsZenSiteDataPanel {
     }
 
     this.#initContextMenuEventListener();
+  }
+
+  #initBrowserListeners() {
+    Services.obs.addObserver(this, "zen-boosts-update");
+    this.window.gBrowser.addProgressListener({
+      onLocationChange: (aWebProgress) => {
+        if (aWebProgress.isTopLevel) {
+          this.checkIfTabIsBoosted();
+        }
+      },
+    });
+    this.window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(this, "zen-boosts-update");
+      },
+      { once: true }
+    );
+  }
+
+  observe(subject, topic) {
+    switch (topic) {
+      case "zen-boosts-update":
+        this.checkIfTabIsBoosted();
+        break;
+    }
+  }
+
+  #getCurrentDomain() {
+    try {
+      return this.window.gBrowser.currentURI.host;
+    } catch {
+      return "";
+    }
+  }
+
+  checkIfTabIsBoosted() {
+    const domain = this.#getCurrentDomain();
+    const isBoosted = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
+    if (isBoosted) {
+      this.anchor.setAttribute("boosting", "true");
+    } else {
+      this.anchor.removeAttribute("boosting");
+    }
   }
 
   #initCopyUrlButton() {
@@ -172,10 +219,129 @@ export class nsZenSiteDataPanel {
   }
 
   #preparePanel() {
+    this.#resetSiteOptionsList();
+    this.#setSiteBoost();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
     this.#setAddonsOverflow();
+  }
+
+  #setSiteBoost() {
+    const domain = this.#getCurrentDomain();
+    const uri = this.window.gBrowser.currentURI;
+    const canBoostSite = lazy.gZenBoostsManager.canBoostSite(uri);
+
+    const list = this.document.getElementById("zen-site-data-boost-list");
+    const section = list.closest(".zen-site-data-section");
+    section.hidden = true;
+
+    const boostButton = this.document.getElementById("zen-site-data-boost");
+    if (!canBoostSite) {
+      boostButton.removeAttribute("boosting");
+    }
+
+    if (!canBoostSite) {
+      return;
+    }
+
+    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
+      boostButton.setAttribute("boosting", "true");
+    } else {
+      boostButton.removeAttribute("boosting");
+    }
+
+    /* Boosts panel */
+
+    const boosts = lazy.gZenBoostsManager.loadBoostsFromStore(domain);
+    let validBoostCount = 0;
+
+    if (boosts) {
+      const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
+      boosts.forEach((boost) => {
+        const boostData = boost.boostEntry.boostData;
+        if (!boostData.changeWasMade) {
+          return;
+        }
+        validBoostCount++;
+
+        const enabled = boost.id === activeBoostId;
+        list.appendChild(
+          this.#createBoostPanelItem(
+            "boost-brush",
+            boostData.boostName,
+            enabled ? "Enabled" : "Disabled",
+            "zen-site-data-toggle-boost",
+            boost,
+            enabled
+          )
+        );
+      });
+    }
+    section.hidden = validBoostCount === 0;
+  }
+
+  #updateSiteBoost() {
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
+
+    this.#setSiteBoost();
+  }
+
+  #createBoostPanelItem(iconClass, title, description, actionId, boost = null, enabled = false) {
+    const container = this.document.createXULElement("hbox");
+    container.classList.add("permission-popup-boost-item");
+
+    container.setAttribute("align", "center");
+    container.setAttribute("role", "group");
+    container.setAttribute("data-action-id", actionId);
+    container.setAttribute("state", "enabled");
+
+    if (boost) {
+      container.setAttribute("data-boost-id", boost.id);
+      container.setAttribute("state", enabled ? "enabled" : "disabled");
+    }
+
+    const img = this.document.createXULElement("toolbarbutton");
+    img.classList.add("permission-popup-boost-icon", "zen-site-data-boost-icon");
+    img.setAttribute("closemenu", "none");
+    img.classList.add(iconClass);
+
+    const labelContainer = this.document.createXULElement("vbox");
+    labelContainer.setAttribute("flex", "1");
+    labelContainer.setAttribute("align", "start");
+    labelContainer.classList.add("permission-popup-boost-label-container");
+
+    const nameLabel = this.document.createXULElement("label");
+    nameLabel.setAttribute("flex", "1");
+    nameLabel.setAttribute("class", "permission-popup-boost-label");
+    nameLabel.textContent = title || "";
+    labelContainer.appendChild(nameLabel);
+
+    const stateLabel = this.document.createXULElement("label");
+    stateLabel.setAttribute("class", "zen-permission-popup-boost-state-label");
+    stateLabel.textContent = description || "";
+    labelContainer.appendChild(stateLabel);
+
+    container.appendChild(img);
+    container.appendChild(labelContainer);
+
+    if (boost) {
+      const editorButton = this.document.createXULElement("toolbarbutton");
+      editorButton.setAttribute("data-action-id", "zen-site-data-edit-boost");
+      editorButton.setAttribute("data-boost-id", boost.id);
+      editorButton.classList.add("zen-permission-popup-boost-editor-button");
+      container.appendChild(editorButton);
+
+      editorButton.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevents the container event
+        this.#onBoostClick(event);
+      });
+    }
+
+    container.addEventListener("click", this.#onBoostClick.bind(this));
+
+    return container;
   }
 
   #setAddonsOverflow() {
@@ -240,6 +406,13 @@ export class nsZenSiteDataPanel {
     }
 
     return uri.scheme.startsWith("http");
+  }
+
+  #resetSiteOptionsList() {
+    const settingsList = this.document.getElementById("zen-site-data-settings-list");
+    settingsList.innerHTML = "";
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
   }
 
   #setSiteSecurityInfo() {
@@ -380,7 +553,6 @@ export class nsZenSiteDataPanel {
     }
 
     const separator = this.document.createXULElement("toolbarseparator");
-    list.innerHTML = "";
     list.appendChild(separator);
     const settingElements = [];
     const crossSiteCookieElements = [];
@@ -517,6 +689,13 @@ export class nsZenSiteDataPanel {
         this.window.gIdentityHandler._openPopup(event);
         break;
       }
+      case "zen-site-data-boost": {
+        const domain = this.#getCurrentDomain();
+        const uri = this.window.gBrowser.currentURI;
+        const boost = lazy.gZenBoostsManager.createNewBoost(domain);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
+        break;
+      }
       case "zen-site-data-actions": {
         const button = this.document.getElementById("zen-site-data-actions");
         const popup = this.document.getElementById("zenSiteDataActions");
@@ -595,6 +774,34 @@ export class nsZenSiteDataPanel {
       label
         .querySelector(".zen-permission-popup-permission-state-label")
         .setAttribute("data-l10n-id", this.#getPermissionStateLabelId(label._permission));
+    }
+  }
+
+  #onBoostClick(event) {
+    const target = event.target.closest("[data-action-id]");
+    if (!target) {
+      return;
+    }
+
+    const actionId = target.getAttribute("data-action-id");
+    const domain = this.#getCurrentDomain();
+
+    switch (actionId) {
+      case "zen-site-data-toggle-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+
+        lazy.gZenBoostsManager.toggleBoostActiveForDomain(domain, boostId);
+        this.#updateSiteBoost();
+        break;
+      }
+      case "zen-site-data-edit-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+        const uri = this.window.gBrowser.currentURI;
+        const boost = lazy.gZenBoostsManager.loadBoostFromStore(domain, boostId);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
+        this.unifiedPanel.hidePopup();
+        break;
+      }
     }
   }
 

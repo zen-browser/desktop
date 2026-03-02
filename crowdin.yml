@@ -20,3 +20,5 @@ files:
     translation: browser/browser/preferences/zen-preferences.ftl
   - source: en-US/browser/browser/zen-folders.ftl
     translation: browser/browser/zen-folders.ftl
+  - source: en-US/browser/browser/zen-boosts.ftl
+    translation: browser/browser/zen-boosts.ftl

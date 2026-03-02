@@ -1,0 +1,31 @@
+diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
+index 42e3b22a366db0a8c470b458696d81e4bdbd537c..5d82dae436f502fa087f94f6baa7a280736d0b3e 100644
+--- a/docshell/base/BrowsingContext.h
++++ b/docshell/base/BrowsingContext.h
+@@ -264,6 +264,8 @@ struct EmbedderColorSchemes {
+   FIELD(IsInBFCache, bool)                                                    \
+   FIELD(HasRestoreData, bool)                                                 \
+   FIELD(SessionStoreEpoch, uint32_t)                                          \
++  FIELD(ZenBoostsData, nscolor)                                               \
++  FIELD(IsZenBoostsInverted, bool)                                            \
+   /* Whether we can execute scripts in this BrowsingContext. Has no effect    \
+    * unless scripts are also allowed in the parent WindowContext. */          \
+   FIELD(AllowJavascript, bool)                                                \
+@@ -665,6 +667,8 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+ 
+   bool FullscreenAllowed() const;
+ 
++  auto ZenBoostsData() const { return GetZenBoostsData(); }
++  auto IsZenBoostsInverted() const { return GetIsZenBoostsInverted(); }
+   float FullZoom() const { return GetFullZoom(); }
+   float TextZoom() const { return GetTextZoom(); }
+ 
+@@ -1233,6 +1237,8 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+   }
+ 
+   void DidSet(FieldIndex<IDX_SessionStoreEpoch>, uint32_t aOldValue);
++  void DidSet(FieldIndex<IDX_ZenBoostsData>, nscolor aOldValue);
++  void DidSet(FieldIndex<IDX_IsZenBoostsInverted>, bool aOldValue);
+ 
+   using CanSetResult = syncedcontext::CanSetResult;
+ 

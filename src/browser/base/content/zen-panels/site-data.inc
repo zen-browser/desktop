@@ -77,6 +77,18 @@
       </vbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
+          <label data-l10n-id="zen-site-data-boosts" flex="1" />
+#if 0
+          <!-- This can later be used to open Zen Library on the Boosts tab to display a list of all boosts -->
+          <label data-l10n-id="zen-generic-more" id="zen-site-data-boosts-more" hidden="true" />
+#endif
+        </hbox>
+        <vbox id="zen-site-data-boost-list">
+          <!-- settings will be inserted here -->
+        </vbox>
+      </vbox>
+      <vbox class="zen-site-data-section">
+        <hbox class="zen-site-data-section-header">
           <label data-l10n-id="zen-site-data-settings" flex="1" />
           <label data-l10n-id="zen-generic-more" id="zen-site-data-settings-more" />
         </hbox>
@@ -86,6 +98,8 @@
       </vbox>
       <hbox id="zen-site-data-footer">
         <toolbarbutton id="zen-site-data-security-info"
+                       class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-boost" data-l10n-id="zen-site-data-create-boost"
                        class="subviewbutton zen-interactive-button" />
         <toolbarbutton id="zen-site-data-actions"
                        class="subviewbutton zen-interactive-button"

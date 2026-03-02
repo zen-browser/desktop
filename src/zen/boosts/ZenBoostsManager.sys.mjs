@@ -448,7 +448,6 @@ class nsZenBoostsManager {
     for (const [domain, entry] of Object.entries(raw)) {
       const boostsMap = new Map();
       for (const [id, boostEntry] of Object.entries(entry.boostEntries ?? {})) {
-
         // Reuinite the user css with the boost data if any exists
         const userCSS = await this.#readBoostCSS(id);
         if (userCSS) {
@@ -485,7 +484,7 @@ class nsZenBoostsManager {
       const css = await IOUtils.readUTF8(savePath);
       return css;
     }
-    
+
     return null;
   }
 
@@ -501,11 +500,10 @@ class nsZenBoostsManager {
     for (const [domain, entry] of map) {
       const boostsObj = {};
       for (const [id, boostEntry] of entry.boostEntries) {
-        
         // Split the user css from the boost data
         boostsObj[id] = structuredClone(boostEntry);
         delete boostsObj[id].boostData.customCSS;
-        
+
         this.#writeBoostCSS(id, boostEntry.boostData.customCSS);
       }
       obj[domain] = {

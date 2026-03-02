@@ -19,10 +19,7 @@
   width: min-content;
   font-family: system-ui !important;
 
-  height: 94px;
-  @media (-moz-platform: macos) {
-    height: 98px;
-  }
+  height: 98px;
 
   pointer-events: auto !important;
 
@@ -33,19 +30,19 @@
   z-index: 9999;
 
   background-color: #f5f7fb;
-  border: 1px solid #dad9e2;
+  margin: 4px;
 
   border-radius: 12px;
   @media (-moz-platform: macos) {
     border-radius: 24px;
   }
 
-  box-shadow: 0px 0px 20px#00000020;
+  box-shadow: 0px 0px 20px#00000050;
 
   scale: 1;
   opacity: 1;
 
-  @media (-moz-platform: macos) {
+  @media not (-moz-platform: windows) {
     &[is-appearing="true"] {
       scale: 0;
       opacity: 0;
@@ -117,7 +114,7 @@
 
   gap: 10px;
   padding: 10px;
-  @media (-moz-platform: macos) {
+  @media not (-moz-platform: windows) {
     gap: 12px;
     padding: 12px;
   }
@@ -141,7 +138,7 @@
       linear-gradient(to right, transparent var(--related-elements-value), gray var(--related-elements-value)),
       linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
 
-    @media (-moz-platform: macos) {
+    @media not (-moz-platform: windows) {
       box-shadow: 0px 0px 20px #00000077;
     }
   }
@@ -197,4 +194,7 @@
   border-radius: 6px;
 
   background-color: #c2b72046;
+
+  transition: 0.1s all ease-out;
+  will-change: left, top, width, height;
 }

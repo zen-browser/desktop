@@ -91,9 +91,6 @@ zen-live-folder-github-option-repo =
 zen-live-folder-github-pull-requests =
     .label = Pull Requests
 
-zen-live-folder-github-issues =
-    .label = Issues
-
 zen-live-folder-github-option-repo-list-note =
     .label = This list is generated based on your currently active pull requests.
 

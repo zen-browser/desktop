@@ -123,8 +123,6 @@ export class nsZenLiveFolderProvider {
 
   fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
     const uri = lazy.NetUtil.newURI(url);
-    // TODO: Support userContextId when fetching, it should be inherited from the folder's
-    // current space context ID.
     let userContextId = 0;
     let folder = this.manager.getFolderForLiveFolder(this);
     if (folder) {

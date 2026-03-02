@@ -7,7 +7,6 @@
 
 #include "nsColor.h"
 #include "nsPresContext.h"
-#include "nsIZenBoostsBackend.h"
 
 #include "mozilla/RefPtr.h"
 
@@ -17,11 +16,9 @@ using ZenBoostData = nscolor;  // For now, Zen boosts data is just a color.
 
 namespace zen {
 
-class nsZenBoostsBackend final : public nsIZenBoostsBackend {
-  NS_DECL_ISUPPORTS
-
+class nsZenBoostsBackend final {
  public:
-  explicit nsZenBoostsBackend();
+  explicit nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -59,7 +56,6 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
     return mCurrentBrowsingContext;
   }
 
-  NS_DECL_NSIZENBOOSTSBACKEND
  private:
   ~nsZenBoostsBackend() = default;
 
@@ -73,7 +69,7 @@ class nsZenBoostsBackend final : public nsIZenBoostsBackend {
    * @brief Get the singleton instance of the ZenBoostsBackend.
    * @return The singleton instance.
    */
-  static auto GetInstance() -> nsCOMPtr<nsZenBoostsBackend>;
+  static auto GetInstance() -> nsZenBoostsBackend*;
 };
 
 }  // namespace zen

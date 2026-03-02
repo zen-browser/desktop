@@ -76,7 +76,7 @@ export class nsZenBoostStyles {
 
     if (fontCase != "" || fontFamily != "") {
       style += `/* Text Format */\n`;
-      style += `body :is(p, h1, h2, h3, h4, h5, a, span, textarea, input) {\n`;
+      style += `body * {\n`;
       style += `${fontFamily}\n`;
       style += `${fontCase}\n`;
       style += `}\n`;

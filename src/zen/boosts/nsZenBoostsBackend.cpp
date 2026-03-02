@@ -233,13 +233,16 @@ inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
 
 }  // namespace
 
-// Use the macro to inject all of the definitions for nsISupports.
-NS_IMPL_ISUPPORTS(nsZenBoostsBackend, nsIZenBoostsBackend)
-nsZenBoostsBackend::nsZenBoostsBackend() {};
-
-auto nsZenBoostsBackend::GetInstance() -> nsCOMPtr<nsZenBoostsBackend> {
-  static nsCOMPtr<zen::nsZenBoostsBackend> zenBoosts(
-      do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID));
+auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
+  static nsZenBoostsBackend* zenBoosts;
+  if (!XRE_IsContentProcess()) {
+    // Zen boosts are only supported in content, so if we're in the parent process,
+    // just return null.
+    return nullptr;
+  }
+  if (!zenBoosts) {
+    zenBoosts = new nsZenBoostsBackend();
+  }
   return zenBoosts;
 }
 
@@ -248,7 +251,9 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
   // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
-  auto browsingContext = aDocument ? aDocument->GetBrowsingContext() : nullptr;
+  mozilla::dom::BrowsingContext* browsingContext = aDocument
+    ? aDocument->GetBrowsingContext()
+    : nullptr;
   if (!browsingContext) {
     return;
   }

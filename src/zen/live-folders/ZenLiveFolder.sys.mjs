@@ -121,7 +121,7 @@ export class nsZenLiveFolderProvider {
     this.manager.saveState();
   }
 
-  fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
+  fetch(url, { maxContentLength = 5 * 1024 * 1024, method = "GET", body = null } = {}) {
     const uri = lazy.NetUtil.newURI(url);
     let userContextId = 0;
     let folder = this.manager.getFolderForLiveFolder(this);
@@ -151,6 +151,27 @@ export class nsZenLiveFolderProvider {
     let httpStatus = null;
     let contentType = "";
     let headerCharset = null;
+
+    if (method === "POST") {
+      const uploadChannel = channel
+        .QueryInterface(Ci.nsIHttpChannel)
+        .QueryInterface(Ci.nsIUploadChannel2);
+
+      if (body === null) {
+        body = "";
+      } else if (typeof body !== "string") {
+        body = JSON.stringify(body);
+      }
+
+      const stream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
+        Ci.nsIStringInputStream
+      );
+
+      stream.setByteStringData(body);
+      uploadChannel.explicitSetUploadStream(stream, "application/json", -1, method, false);
+
+      channel.requestMethod = method;
+    }
 
     const { promise, resolve, reject } = Promise.withResolvers();
 

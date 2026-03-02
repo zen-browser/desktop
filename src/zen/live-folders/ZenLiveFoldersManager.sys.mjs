@@ -27,6 +27,10 @@ const providers = [
     path: "resource:///modules/zen/GithubLiveFolder.sys.mjs",
     module: "nsGithubLiveFolderProvider",
   },
+  {
+    path: "resource:///modules/zen/GitlabLiveFolder.sys.mjs",
+    module: "nsGitlabLiveFolderProvider",
+  },
 ];
 
 class nsZenLiveFoldersManager {

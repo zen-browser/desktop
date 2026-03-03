@@ -10,7 +10,9 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   constructor({ id, state, manager }) {
     super({ id, state, manager });
 
-    this.state.url = "https://github.com/pulls/assigned";
+    this.state.url = "https://github.com/issues/assigned";
+    this.state.type = state.type;
+
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
     this.state.options.repoExcludes = new Set(state.options.repoExcludes ?? []);
@@ -38,34 +40,37 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       const document = new DOMParser().parseFromString(text, "text/html");
-      const pull_requests = document.querySelectorAll("div[class^=Description-module__container]");
+      const issues = document.querySelectorAll(
+        "div[class^=IssueItem-module__defaultRepoContainer]"
+      );
       const items = [];
       const activeRepos = new Set();
 
-      if (pull_requests.length) {
-        const authors = document.querySelectorAll(
-          "div[class^=MainContent-module__inner] [data-testid='timestamp-container'] span:nth-child(2)"
-        );
+      if (issues.length) {
+        const authors = document.querySelectorAll("a[class^=IssueItem-module__authorCreatedLink]");
         const titles = document.querySelectorAll("div[class^=Title-module__container]");
-        const links = document.querySelectorAll("a[class^=Title-module__anchor]");
+        const links = document.querySelectorAll('[data-testid="issue-pr-title-link"]');
 
-        for (let i = 0; i < pull_requests.length; i++) {
-          const repo = pull_requests[i].childNodes[0].textContent;
-          const prNum = pull_requests[i].childNodes[4].textContent;
-          const author = authors[i]?.firstChild?.textContent;
+        for (let i = 0; i < issues.length; i++) {
+          const [rawRepo, rawNumber] = issues[i].childNodes;
+          const author = authors[i]?.textContent;
           const title = titles[i]?.textContent;
-          const prUrl = links[i]?.href;
+          const issueUrl = links[i]?.href;
 
+          const repo = rawRepo.textContent?.trim();
           if (repo) {
             activeRepos.add(repo);
           }
+
+          const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
+          const number = numberMatch?.[0] ?? "";
 
           items.push({
             title,
             subtitle: author,
             icon: "chrome://browser/content/zen-images/favicons/github.svg",
-            url: new URL(prUrl, this.state.url).href,
-            id: `${repo}#${prNum}`,
+            url: "https://github.com" + issueUrl,
+            id: `${repo}#${number}`,
           });
         }
       }
@@ -83,7 +88,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     let searchParams = new URLSearchParams();
     const options = [
       {
-        value: "is:open",
+        value: "state:open",
         enabled: true,
       },
       {
@@ -93,7 +98,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       [
         {
           value: "is:pr",
-          enabled: true,
+          enabled: this.state.type === "pull-requests",
+        },
+        {
+          value: "is:issue",
+          enabled: this.state.type === "issues",
         },
       ],
       [
@@ -177,6 +186,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-github-option-review-requested",
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
+        hidden: this.state.type === "issues",
       },
       { type: "separator" },
       {

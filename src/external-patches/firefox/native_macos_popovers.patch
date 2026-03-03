@@ -1,7 +1,31 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -556,10 +556,11 @@
+@@ -193,10 +193,11 @@
+   <!-- Starting point for selection actions -->
+   <panel class="panel-no-padding"
+          id="selection-shortcut-action-panel"
+          noautofocus="true"
+          consumeoutsideclicks="never"
++         nonnativepopover="true"
+          type="arrow">
+     <hbox class="panel-subview-body">
+       <html:moz-button id="ai-action-button"/>
+     </hbox>
+   </panel>
+@@ -204,10 +205,11 @@
+ 
+   <!-- Shortcut options for Gen AI action -->
+   <panel class="panel-no-padding"
+          id="chat-shortcuts-options-panel"
+          noautofocus="true"
++         nonnativepopover="true"
+          type="arrow">
+     <vbox class="panel-subview-body"/>
+   </panel>
+ 
+   <html:template id="screenshotsPagePanelTemplate">
+@@ -556,10 +558,11 @@
           type="arrow"
           orient="vertical"
           noautofocus="true"
@@ -43,6 +67,40 @@ diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/brows
                    viewCacheId="appMenu-viewCache">
    </panelmultiview>
  </panel>
+diff --git a/dom/xul/XULPopupElement.cpp b/dom/xul/XULPopupElement.cpp
+--- a/dom/xul/XULPopupElement.cpp
++++ b/dom/xul/XULPopupElement.cpp
+@@ -84,10 +84,15 @@
+ 
+ void XULPopupElement::OpenPopupAtScreen(int32_t aXPos, int32_t aYPos,
+                                         bool aIsContextMenu,
+                                         Event* aTriggerEvent) {
+   nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
++  // TODO(cheff): We do the same at nsCocoaWindow::Show but it doesn't seem
++  //   to trigger a restyle so `appearance: auto` doesn't apply the native
++  //   popover style. We should remove this and use the other implementation
++  //   because this is a bit of a hack, not sure how reliable it is.
++  SetXULBoolAttr(nsGkAtoms::nonnativepopover, true, IgnoreErrors());
+   if (pm) {
+     pm->ShowPopupAtScreen(this, aXPos, aYPos, aIsContextMenu, aTriggerEvent);
+   }
+ }
+ 
+@@ -96,10 +101,14 @@
+                                             int32_t aWidth, int32_t aHeight,
+                                             bool aIsContextMenu,
+                                             bool aAttributesOverride,
+                                             Event* aTriggerEvent) {
+   nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
++  // TODO: See OpenPopupAtScreen. We should remove this and use the other
++  // implementation because this is a bit of a hacky way to determine whether to
++  // use a native popover or not.
++  SetXULBoolAttr(nsGkAtoms::nonnativepopover, true, IgnoreErrors());
+   if (pm) {
+     pm->ShowPopupAtScreenRect(
+         this, aPosition, nsIntRect(aXPos, aYPos, aWidth, aHeight),
+         aIsContextMenu, aAttributesOverride, aTriggerEvent);
+   }
 diff --git a/layout/xul/nsMenuPopupFrame.h b/layout/xul/nsMenuPopupFrame.h
 --- a/layout/xul/nsMenuPopupFrame.h
 +++ b/layout/xul/nsMenuPopupFrame.h
@@ -176,7 +234,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
  @interface BorderlessWindow : BaseWindow {
  }
  
-@@ -201,10 +216,13 @@
+@@ -201,10 +216,14 @@
    typedef nsIWidget Inherited;
  
   public:
@@ -184,6 +242,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
  
 +  // Check if this window should use NSPopover for popup/menu display
 +  bool ShouldUseNSPopover() const;
++  bool ShouldShowAsNSPopover() const override;
 +
    [[nodiscard]] nsresult Create(nsIWidget* aParent, const DesktopIntRect& aRect,
                                  const InitData&) override;
@@ -281,18 +340,32 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5227,10 +5282,63 @@
+@@ -5185,10 +5240,17 @@
+   }
+ 
+   NSWindow* nativeParentWindow =
+       mParent ? (NSWindow*)mParent->GetNativeData(NS_NATIVE_WINDOW) : nil;
+ 
++  bool shouldUseNativePopover = false;
++  if (mWindowType == WindowType::Popup && aState) {
++    nsMenuPopupFrame* popupFrame = GetPopupFrame();
++    popupFrame->PopupElement().SetXULBoolAttr(
++        nsGkAtoms::nonnativepopover, !ShouldShowAsNSPopover(), IgnoreErrors());
++  }
++
+   if (aState && !mBounds.IsEmpty()) {
+     // If we had set the activationPolicy to accessory, then right now we won't
+     // have a dock icon. Make sure that we undo that and show a dock icon now
+     // that we're going to show a window.
+     if (NSApp.activationPolicy != NSApplicationActivationPolicyRegular) {
+@@ -5227,10 +5289,54 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
        }
        NS_OBJC_END_TRY_IGNORE_BLOCK;
-+      nsMenuPopupFrame* popupFrame = GetPopupFrame();
-+      if ([mWindow isKindOfClass:[PopupWindow class]] &&
-+          [(PopupWindow*)mWindow usePopover] && popupFrame &&
-+          popupFrame->ShouldFollowAnchor() &&
-+          !popupFrame->PopupElement().GetBoolAttr(
-+              nsGkAtoms::nonnativepopover)) {
++      if (ShouldShowAsNSPopover()) {
++        nsMenuPopupFrame* popupFrame = GetPopupFrame();
 +        if (nativeParentWindow) {
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
@@ -335,17 +408,12 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +        }
 +        return;
 +      }
-+      if (popupFrame) {
-+        mozilla::ErrorResult rv;
-+        popupFrame->PopupElement().SetXULBoolAttr(nsGkAtoms::nonnativepopover,
-+                                                  true, rv);
-+      }
        // If our popup window is a non-native context menu, tell the OS (and
        // other programs) that a menu has opened.  This is how the OS knows to
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5301,10 +5409,15 @@
+@@ -5301,10 +5407,15 @@
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
        [nativeParentWindow removeChildWindow:mWindow];
@@ -361,7 +429,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5351,10 +5464,17 @@
+@@ -5351,10 +5462,28 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -370,8 +438,19 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +bool nsCocoaWindow::ShouldUseNSPopover() const {
 +  // Use NSPopover for panel popups when the preference is enabled
 +  // But not for detached popups - they should use traditional window logic
-+  return mWindowType == WindowType::Popup && mPopupType == PopupType::Panel &&
-+         mozilla::StaticPrefs::widget_macos_native_popovers();
++  return (mWindowType == WindowType::Popup && mPopupType == PopupType::Panel &&
++          mozilla::StaticPrefs::widget_macos_native_popovers());
++}
++
++bool nsCocoaWindow::ShouldShowAsNSPopover() const {
++  if (!ShouldUseNSPopover()) {
++    return false;
++  }
++  nsMenuPopupFrame* popupFrame = GetPopupFrame();
++  return [mWindow isKindOfClass:[PopupWindow class]] &&
++         [(PopupWindow*)mWindow usePopover] && popupFrame &&
++         popupFrame->ShouldFollowAnchor() &&
++         !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover);
 +}
 +
  TransparencyMode nsCocoaWindow::GetTransparencyMode() {
@@ -379,7 +458,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6313,10 +6433,20 @@
+@@ -6313,10 +6442,20 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
@@ -400,7 +479,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
    DoResize(aRect.x, aRect.y, aRect.width, aRect.height, aRepaint, false);
-@@ -8277,18 +8407,27 @@
+@@ -8277,18 +8416,27 @@
                    backing:(NSBackingStoreType)bufferingType
                      defer:(BOOL)deferCreation {
    NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -428,7 +507,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8342,10 +8481,120 @@
+@@ -8342,10 +8490,120 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;
@@ -549,6 +628,25 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    return NO;
  }
  
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -836,10 +836,15 @@
+   virtual void SuppressAnimation(bool aSuppress) {}
+ 
+   /** Sets windows-specific mica backdrop on this widget. */
+   virtual void SetMicaBackdrop(bool) {}
+ 
++  /**
++   * Determine whether this widget should be shown as an NSPopover.
++   */
++  virtual bool ShouldShowAsNSPopover() const { return false; }
++
+   /**
+    * Return size mode (minimized, maximized, normalized).
+    * Returns a value from nsSizeMode (see nsIWidgetListener.h)
+    */
+   virtual nsSizeMode SizeMode() = 0;
 diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
 --- a/xpcom/ds/StaticAtoms.py
 +++ b/xpcom/ds/StaticAtoms.py

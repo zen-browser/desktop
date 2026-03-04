@@ -98,6 +98,10 @@ class nsZenLiveFoldersManager {
             this.createFolder("github:pull-requests");
             break;
           }
+          case "zen-live-folder-github-issues": {
+            this.createFolder("github:issues");
+            break;
+          }
           case "zen-live-folder-type-rss": {
             this.createFolder("rss");
             break;

@@ -1137,7 +1137,8 @@
   position: absolute;
 
   :root[zen-single-toolbar="true"] &:not(:empty) {
-    padding-top: 4px;
+    padding-top: 6px;
+    padding-bottom: 2px;
   }
 
   &[hidden="true"] {

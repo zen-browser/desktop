@@ -47,6 +47,7 @@ pictureinpicture-minimize-btn =
 zen-panel-ui-gradient-generator-custom-color = Custom Color
 
 zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 
 zen-general-cancel-label =
     .label = Cancel

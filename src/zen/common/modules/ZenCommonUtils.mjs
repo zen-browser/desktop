@@ -115,7 +115,7 @@ window.gZenCommonActions = {
     const tabTitle = gBrowser.selectedTab.label;
     const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
-    gZenUIManager.showToast("zen-copy-current-url-confirmation", { timeout: 3000 });
+    gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", { timeout: 3000 });
   },
 
   throttle(f, delay) {

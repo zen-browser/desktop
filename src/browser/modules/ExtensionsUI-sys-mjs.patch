@@ -6,8 +6,8 @@ index 31229b3bc1b93565a57c2c0b0307ceeb594c3936..30456ef5d3c58e96717cd292f861a04a
          eventCallback,
          removeOnDismissal: true,
          popupOptions: {
--          position: "bottomright topright",
-+          position: window.gZenUIManager.panelUIPosition(),
+-          position: window.gZenUIManager.panelUIPosition(),
++          position: window.gZenUIManager.panelUIPosition() || "bottomright topright",
          },
          // Pass additional options used internally by the
          // addon-webext-permissions-notification custom element

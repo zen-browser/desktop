@@ -28,7 +28,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#disableDefaultCtrlTab();
     this.#setupKeyboardListeners();
     this.#setupLazyGetters();
-    this.#createUI();
     this.#observeTabChanges();
     this.#setupShutdownObserver();
     this.#initializeRecentlyUsedTabs();
@@ -44,6 +43,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     );
   }
 
+  /**
+   * Initializes the recently used tabs list with the currently selected tab.
+   *
+   * @returns {void}
+   */
   #initializeRecentlyUsedTabs() {
     if (gBrowser && gBrowser.selectedTab) {
       this.#recentlyUsedTabs = [gBrowser.selectedTab];
@@ -54,6 +58,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     Services.obs.addObserver(this, "quit-application-granted");
   }
 
+  /**
+   * Disables or enables the default Firefox Ctrl+Tab behavior based on the feature preference.
+   * When ZenTabSwitcher is enabled, the default behavior is disabled.
+   *
+   * @returns {void}
+   */
   #disableDefaultCtrlTab() {
     const enabled = Services.prefs.getBoolPref("zen.tabs.tab-switcher.enabled", true);
     const method = enabled ? "uninit" : "readPref";
@@ -78,7 +88,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     Services.prefs.addObserver("zen.tabs.tab-switcher.enabled", this);
   }
 
-  // Called when system events occur (browser shutdown or preference changes).
+  /**
+   * Called when system events occur (browser shutdown or preference changes).
+   * Handles cleanup on shutdown and preference change reactions.
+   *
+   * @returns {void}
+   */
   observe(subject, topic, data) {
     if (topic === "quit-application-granted") {
       this.#recentlyUsedTabs = [];
@@ -87,19 +102,24 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * Sets up keyboard event listeners for Ctrl+Tab navigation and Escape key handling.
+   * Also handles window blur events to close the switcher when focus is lost.
+   *
+   * @returns {void}
+   */
   #setupKeyboardListeners() {
     window.addEventListener("keydown", (e) => this.#handleKeyDown(e), true);
     window.addEventListener("keyup", (e) => this.#handleKeyUp(e), true);
     window.addEventListener("blur", () => this.#isOpen && this.#forceClose());
   }
 
-  #createUI() {
-    // Elements are defined via lazy getters
-    if (!this.panel) {
-      console.error("ZenTabSwitcher: UI elements not found");
-    }
-  }
-
+  /**
+   * Registers event listeners for various tab-related events.
+   * Handles tab open, close, attribute changes, moves, and selections.
+   *
+   * @returns {void}
+   */
   #observeTabChanges() {
     window.addEventListener("TabOpen", () => this.#clearThumbnailsCache());
     window.addEventListener("TabClose", () => {
@@ -113,9 +133,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Update recently-used order list whenever a user clicks/switches to tab.
-   * Maintains an MRU (most-recently-used) list by moving the selected tab to the front.
+   * Maintains an most-recently-used list of tabs by moving the selected tab to the front.
    *
-   * @param {Event} event - The TabSelect event containing the selected tab in event.target.
+   * @param {Event} event - The tab selection event.
    * @returns {void}
    */
   #onTabSelect(event) {
@@ -124,7 +144,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       return;
     }
 
-    // Remove tab from its current position when selected and add it to the front
     const index = this.#recentlyUsedTabs.indexOf(tab);
     if (index !== -1) {
       this.#recentlyUsedTabs.splice(index, 1);
@@ -137,14 +156,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Remove tabs that no longer exist from the recently-used list.
+  /**
+   * Remove tabs that no longer exist from the recently-used list.
+   * Filters out closed tabs and tabs not present in the browser's tab list.
+   *
+   * @returns {void}
+   */
   #cleanupRecentlyUsedTabs() {
     this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(
       (tab) => tab && !tab.closing && gBrowser.tabs.includes(tab)
     );
   }
 
-  // Clear all cached tab screenshots so they'll be regenerated.
+  /**
+   * Clear all cached tab screenshots so they'll be regenerated.
+   *
+   * @returns {void}
+   */
   #clearThumbnailsCache() {
     this.#thumbnailCache.clear();
   }
@@ -153,7 +181,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * Process keyboard input when keys are pressed down.
    * Handles Escape (to close panel) and Ctrl+Tab (to open/navigate panel).
    *
-   * @param {KeyboardEvent} event - The keydown event containing key information and modifiers.
+   * @param {KeyboardEvent} event - The key press event.
+   * @returns {void}
    */
   #handleKeyDown(event) {
     if (!this.#lazyPrefs.enabled) {
@@ -187,7 +216,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * Processes keyboard input when keys are released.
    * Detects when Control key is released to close the panel and switch to selected tab.
    *
-   * @param {KeyboardEvent} event - The keyup event containing information about which key was released.
+   * @param {KeyboardEvent} event - The key release event.
    * @returns {void}
    */
   #handleKeyUp(event) {
@@ -196,7 +225,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     if (event.key === "Control") {
-      // If window doesn't have focus, close without switching tabs
       document.hasFocus() ? this.close() : this.#forceClose();
     }
   }
@@ -218,16 +246,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
     this.#isOpen = true;
 
-    // Decide which tab index is selected initially
     if (this.#lazyPrefs.useRecentOrder) {
-      // In recent order mode, forward goes to next recent (index 1), backward goes to last
       this.#currentIndex = shiftKey ? this.#tabList.length - 1 : 1;
     } else {
       const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
 
       // Determine which tab to initially highlight when opening switcher
-      // If current tab is in the list and ctrl+shift+tab: Select previous tab
-      // + this.#tablist.length ensures subtraction never goes negative before modulo
       // Example: If at index 0 in a 5-tab list, (0 - 1 + 5) % 5 = 4 (wraps to end of list)
       if (shiftKey) {
         this.#currentIndex =
@@ -235,7 +259,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
             ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length
             : this.#tabList.length - 1;
         // If current tab is in the list and ctrl+tab: Select the next tab
-        // Uses modulo to wrap around to index 0 if at the end
         // If current tab not found: default to first tab (index 0)
       } else {
         this.#currentIndex =
@@ -247,7 +270,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#renderTabs();
 
-    // Use PanelMultiView API and anchor to toolbar like other panels
     PanelMultiView.openPopup(this.panel, this.toolbox, {
       position: "overlap",
       triggerEvent: null,
@@ -255,13 +277,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       y: 0,
     });
 
-    // Scroll to selected tab - firstPress flag ensures instant scroll
     setTimeout(() => this.#scrollToSelected(), 0);
 
     this.#preCacheThumbnails();
   }
 
-  // Closes the tab switcher and switches to the selected tab.
+  /**
+   * Closes the tab switcher and switches to the selected tab.
+   *
+   * @returns {void}
+   */
   close() {
     if (!this.#isOpen) {
       return;
@@ -275,7 +300,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#resetState();
   }
 
-  // Closes the switcher without switching tabs (used for Escape key).
+  /**
+   * Closes the switcher without switching tabs (used for Escape key).
+   *
+   * @returns {void}
+   */
   #forceClose() {
     if (!this.#isOpen) {
       return;
@@ -283,7 +312,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#resetState();
   }
 
-  // Resets the switcher state.
+  /**
+   * Resets the switcher state to default values.
+   * Hides the panel and clears internal state variables.
+   *
+   * @returns {void}
+   */
   #resetState() {
     this.panel.hidePopup();
     this.#isOpen = false;
@@ -292,13 +326,22 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#firstPress = true;
   }
 
-  // Captures screenshots for all tabs in the background.
+  /**
+   * Captures screenshots for all tabs in the background.
+   * Initiates thumbnail capture for every tab in the current tab list.
+   *
+   * @returns {void}
+   */
   #preCacheThumbnails() {
     this.#tabList.forEach((tab) => this.#captureThumbnail(tab));
   }
 
-  /* Captures screenshots only for tabs that are currently visible on screen
-   * This is async so it waits for all thumbnails before showing the panel */
+  /**
+   * Captures screenshots only for tabs that are currently visible on screen.
+   * This is async so it waits for all thumbnails before showing the panel.
+   *
+   * @returns {Promise<void>} Resolves when all visible thumbnails are captured.
+   */
   async #preCacheThumbnailsForVisible() {
     // Step 1: Get the index of the first tab that should be visible on the current page
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
@@ -346,27 +389,35 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Creates the list of tabs to show in the switcher.
+  /**
+   * Creates the list of tabs to show in the switcher.
+   * Filters tabs based on the selected order mode (recent or visual) and excludes closing/hidden tabs.
+   *
+   * @returns {void}
+   */
   #buildTabList() {
     if (this.#lazyPrefs.useRecentOrder) {
       this.#cleanupRecentlyUsedTabs();
     }
 
     const tabs = this.#lazyPrefs.useRecentOrder ? this.#recentlyUsedTabs : gBrowser.tabs;
-    // #tabList contains only valid tabs in the chosen order (recent/visual)
     this.#tabList = [...tabs].filter(
       (tab) => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
     );
   }
 
-  // Creates the visual tab cards and adds them to the DOM.
+  /**
+   * Creates the visual tab cards and adds them to the DOM.
+   * Clears existing cards and renders new ones based on the current tab list.
+   *
+   * @returns {void}
+   */
   #renderTabs() {
     if (!this.tabsContainer) {
       return;
     }
-    // Remove old cards for fresh render
-    this.tabsContainer.innerHTML = "";
 
+    this.tabsContainer.innerHTML = "";
     const totalTabs = this.#tabList.length;
     // Prevent showing more cards than tabs exist
     this.#actualVisibleCards = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
@@ -476,16 +527,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     return tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel) || null;
   }
 
-  // Updates the visual appearance when selection changes.
+  /**
+   * Updates the visual appearance when selection changes.
+   * Highlights the selected card and updates title colors.
+   *
+   * @returns {void}
+   */
   #updateSelection() {
     if (!this.tabsContainer) {
       return;
     }
 
-    // Select all tab card elements
     this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
       // Check if current card is selected
-      // Convert data attribute string to base 10
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
       const isSelected = cardIndex === this.#currentIndex;
       const title = card.querySelector(".zen-tab-switcher-title");
@@ -506,9 +560,13 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#scrollToSelected();
   }
 
-  /* Scrolls the tab container to show the selected card.
+  /**
+   * Scrolls the tab container to show the selected card.
    * Uses page-based scrolling (shows full pages of cards, never cuts off).
-   * First press uses instant scroll, subsequent ones use smooth. */
+   * First press uses instant scroll, subsequent ones use smooth.
+   *
+   * @returns {void}
+   */
   #scrollToSelected() {
     if (!this.tabsContainer) {
       return;
@@ -520,8 +578,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
     const pageStartIndex = this.#getPageStartIndex(cardIndex);
-    // Multiply the page start index by card width to get pixel offset
-    // Example: If pageStartIndex = 5, scroll position = 5 * 200 = 1000px from the left edge
+    // Multiply the page start index by card width to get pixel offset from left edge
     const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
 
     // Scroll the container horizontally to show the selected tab's page
@@ -555,9 +612,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const remainingCards = totalTabs - pageStartIndex;
 
     // Solution: When remaining cards < maxVisible, shift the page backwards to always show a full page
-    // totalTabs - maxVisible ensures last maxVisible cards are shown
     // Example: 12 - 5 = 7, so show cards 7-11 (5 full cards)
-    // Math.max(0, ...) prevents negative index if totalTabs < maxVisible
     if (remainingCards < maxVisible && totalTabs > maxVisible) {
       pageStartIndex = Math.max(0, totalTabs - maxVisible);
     }
@@ -565,19 +620,24 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     return pageStartIndex;
   }
 
+  /**
+   * Navigates forward to the next tab in the list.
+   * Wraps around to the first tab if at the end of the list.
+   *
+   * @returns {void}
+   */
   #navigateForward() {
-    // this.#currentIndex + 1 - Moves to next tab
-    // % this.#tabList.length - Wraps around to start if at the end of the list
-    // Example: In a 5-tab list, if currentIndex is 4 (last tab), (4 + 1) % 5 = 0 (wraps to first tab)
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection();
   }
 
+  /**
+   * Navigates backward to the previous tab in the list.
+   * Wraps around to the last tab if at the start of the list.
+   *
+   * @returns {void}
+   */
   #navigateBackward() {
-    // this.#currentIndex - 1 - Moves to previous tab
-    // + this.#tabList.length - Ensures positive result before modulo
-    // % this.#tabList.length - Wraps around to end if at the start of the list
-    // Example: In a 5-tab list, if currentIndex is 0 (first tab), (0 - 1 + 5) % 5 = 4 (wraps to last tab)
     this.#currentIndex = (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;
     this.#updateSelection();
   }

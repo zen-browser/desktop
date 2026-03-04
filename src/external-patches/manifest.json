@@ -18,7 +18,8 @@
       // Specifically trying to target FeatureCallout.sys.mjs's change.
       // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
       //    syncing from upstream, as this is a critical part of the patch.
-      "+            nonnativepopover=\"true\"": "+ "
+      "+            nonnativepopover=\"true\"": "+ ",
+      "body,": ".browser-toolbox-background,"
     }
   },
   {

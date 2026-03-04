@@ -78,7 +78,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       this.state.repos = activeRepos;
 
       return items;
-    } catch {
+    } catch (error) {
+      console.error("Error fetching or parsing GitHub issues:", error);
       return "zen-live-folder-failed-fetch";
     }
   }
@@ -142,7 +143,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
     }
 
-    searchParams.set("q", outputString);
+    searchParams.set("q", outputString.trim().replace(/ +(?= )/g, ""));
     return searchParams.toString();
   }
 

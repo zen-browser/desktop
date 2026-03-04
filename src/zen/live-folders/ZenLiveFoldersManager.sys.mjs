@@ -39,7 +39,6 @@ class nsZenLiveFoldersManager {
     this.liveFolders = new Map();
     this.registry = new Map();
     this.dismissedItems = new Set();
-    this.folderRefs = new WeakMap();
   }
 
   get window() {
@@ -217,7 +216,6 @@ class nsZenLiveFoldersManager {
     });
 
     this.liveFolders.set(folder.id, liveFolder);
-    this.folderRefs.set(liveFolder, folder);
 
     liveFolder.start();
     this.saveState();
@@ -384,6 +382,14 @@ class nsZenLiveFoldersManager {
       }
     }
 
+    let userContextId = 0;
+    let space = folder.ownerGlobal.gZenWorkspaces.getWorkspaceFromId(
+      folder.getAttribute("zen-workspace-id")
+    );
+    if (space) {
+      userContextId = space.containerTabId || 0;
+    }
+
     // Only add the items that are not already in the folder and was not dismissed by the user
     const newItems = items
       .filter((item) => {
@@ -397,6 +403,7 @@ class nsZenLiveFoldersManager {
           skipAnimation: true,
           noInitialLabel: true,
           lazyTabTitle: item.title,
+          userContextId,
         });
         // createLazyBrowser can't be pinned by default
         this.window.gBrowser.pinTab(tab);
@@ -458,20 +465,14 @@ class nsZenLiveFoldersManager {
   }
 
   getFolderForLiveFolder(liveFolder) {
-    if (this.folderRefs.has(liveFolder)) {
-      return this.folderRefs.get(liveFolder);
-    }
-
     if (!this.window) {
       return null;
     }
-
     const folder = lazy.ZenWindowSync.getItemFromWindow(this.window, liveFolder.id);
     if (folder?.isZenFolder) {
-      this.folderRefs.set(liveFolder, folder);
+      return folder;
     }
-
-    return folder;
+    return null;
   }
 
   #makeCompositeId(folderId, itemId) {
@@ -578,7 +579,6 @@ class nsZenLiveFoldersManager {
       });
 
       this.liveFolders.set(entry.id, liveFolder);
-      this.folderRefs.set(liveFolder, folder);
       liveFolder.tabsState = entry.tabsState || [];
       liveFolder.state.lastErrorId = entry.data.state.lastErrorId;
       if (entry.dismissedItems && Array.isArray(entry.dismissedItems)) {

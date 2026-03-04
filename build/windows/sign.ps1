@@ -23,6 +23,9 @@ mkdir windsign-temp -ErrorAction SilentlyContinue
 #    echo "Downloaded git objects repo to"
 #} -Verbose -ArgumentList $PWD -Debug
 
+$env:SURFER_MOZCONFIG_ONLY="1"
+$env:SURFER_SIGNING_MODE=""
+
 Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     param($PWD)
     cd $PWD
@@ -31,14 +34,11 @@ Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     echo "Fetched l10n and Firefox's one"
 } -Verbose -ArgumentList $PWD -Debug
 
-Start-Job -Name "SurferInit" -ScriptBlock {
-    param($PWD)
-    cd $PWD
-    npm run import -- --verbose
-    $surferJson = Get-Content surfer.json | ConvertFrom-Json
-    $version = $surferJson.brands.release.release.displayVersion
-    npm run ci -- $version
-} -Verbose -ArgumentList $PWD -Debug
+$surferJson = Get-Content surfer.json | ConvertFrom-Json
+$version = $surferJson.brands.release.release.displayVersion
+npm run ci -- $version
+npm run import -- --verbose
+npm run build
 
 echo "Downloading artifacts info"
 $artifactsInfo=gh api repos/zen-browser/desktop/actions/runs/$GithubRunId/artifacts
@@ -120,7 +120,6 @@ signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $fi
 $env:ZEN_RELEASE="true"
 $env:SURFER_SIGNING_MODE="true"
 $env:SCCACHE_GHA_ENABLED="false"
-Wait-Job -Name "SurferInit"
 Wait-Job -Name "DownloadGitl10n"
 
 function SignAndPackage($name) {

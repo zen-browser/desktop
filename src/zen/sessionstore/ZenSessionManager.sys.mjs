@@ -34,6 +34,8 @@ XPCOMUtils.defineLazyPreferenceGetter(
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
+const LAST_BUILD_ID_PREF = "zen.session-store.last-build-id";
+
 // 'browser.startup.page' preference value to resume the previous session.
 const BROWSER_STARTUP_RESUME_SESSION = 3;
 
@@ -221,7 +223,7 @@ export class nsZenSessionManager {
     try {
       await this.#file.load();
       this._dataFromFile = this.#file.data;
-      if (!this._dataFromFile?.spaces) {
+      if (!this._dataFromFile?.spaces?.length) {
         // Go to the catch block to try to recover from backup files
         // if the file is empty or has invalid data, as it can happen if the app
         // crashes while writing the session file.
@@ -232,6 +234,9 @@ export class nsZenSessionManager {
         try {
           let data = await IOUtils.readJSON(backupFile, { decompress: true });
           this.log(`Recovered data from backup file ${backupFile}`);
+          if (!data?.spaces?.length) {
+            continue;
+          }
           this._dataFromFile = data;
           break;
         } catch (e) {
@@ -274,6 +279,19 @@ export class nsZenSessionManager {
   }
 
   get #shouldRestoreOnlyPinned() {
+    let buildId = Services.appinfo.platformBuildID;
+    let lastBuildId = Services.prefs.getStringPref(LAST_BUILD_ID_PREF, "");
+    let buildIdChanged = buildId !== lastBuildId;
+    if (buildIdChanged) {
+      // If the build ID has changed since the last session, it means the user has updated the app,
+      // so we should not remove the unpinned tabs as they might want to keep them after the update.
+      this.log("Build ID has changed since last session, not restoring only pinned tabs", {
+        buildId,
+        lastBuildId,
+      });
+      Services.prefs.setStringPref(LAST_BUILD_ID_PREF, buildId);
+      return false;
+    }
     return (
       Services.prefs.getIntPref("browser.startup.page", 1) !== BROWSER_STARTUP_RESUME_SESSION ||
       lazy.PrivateBrowsingUtils.permanentPrivateBrowsing
@@ -447,7 +465,8 @@ export class nsZenSessionManager {
       ];
     }
     for (const winData of initialState?.windows || []) {
-      winData.spaces = winData.spaces || this._migrationData?.spaces || [];
+      winData.spaces =
+        (winData.spaces?.length ? winData.spaces : this._migrationData?.spaces) || [];
       if (winData.tabs) {
         for (const tabData of winData.tabs) {
           let storeId = tabData.zenSyncId || tabData.zenPinnedId;
@@ -710,6 +729,12 @@ export class nsZenSessionManager {
     // Folders are always pinned, so we dont need to check for the pinned state here.
     aWindowData.folders = sidebar.folders;
     aWindowData.spaces = sidebar.spaces;
+    this.log("Restored sidebar data into window", {
+      tabs: aWindowData.tabs?.length || 0,
+      groups: aWindowData.groups?.length || 0,
+      folders: aWindowData.folders?.length || 0,
+      spaces: aWindowData.spaces?.length || 0,
+    });
   }
 
   /**

@@ -270,11 +270,20 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     this.#renderTabs();
 
-    PanelMultiView.openPopup(this.panel, this.toolbox, {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    const estimatedPanelWidth = (nsZenTabSwitcher.CARD_WIDTH * Math.min(this.#tabList.length, this.#actualVisibleCards)) + 50;
+    const estimatedPanelHeight = 200; 
+    
+    const centerX = (windowWidth - estimatedPanelWidth) / 2;
+    const centerY = (windowHeight - estimatedPanelHeight) / 2;
+
+    PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",
       triggerEvent: null,
-      x: 0,
-      y: 0,
+      x: centerX,
+      y: centerY,
     });
 
     setTimeout(() => this.#scrollToSelected(), 0);

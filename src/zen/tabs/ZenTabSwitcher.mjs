@@ -272,10 +272,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-    
-    const estimatedPanelWidth = (nsZenTabSwitcher.CARD_WIDTH * Math.min(this.#tabList.length, this.#actualVisibleCards)) + 50;
-    const estimatedPanelHeight = 200; 
-    
+
+    const estimatedPanelWidth =
+      nsZenTabSwitcher.CARD_WIDTH * Math.min(this.#tabList.length, this.#actualVisibleCards) + 50;
+    const estimatedPanelHeight = 200;
+
     const centerX = (windowWidth - estimatedPanelWidth) / 2;
     const centerY = (windowHeight - estimatedPanelHeight) / 2;
 

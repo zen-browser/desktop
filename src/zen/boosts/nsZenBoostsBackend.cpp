@@ -82,6 +82,46 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
 namespace zen {
 namespace {
 
+/** 
+ * Inherited from the Oklab blog
+ * Source: https://bottosson.github.io/posts/oklab/
+ */
+
+struct Lab {float L; float a; float b;};
+struct RGB {float r; float g; float b;};
+
+Lab rgb2oklab(RGB c)  {
+  float l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
+	float m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
+	float s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
+
+  float l_ = cbrtf(l);
+  float m_ = cbrtf(m);
+  float s_ = cbrtf(s);
+
+  return {
+      0.2104542553f*l_ + 0.7936177850f*m_ - 0.0040720468f*s_,
+      1.9779984951f*l_ - 2.4285922050f*m_ + 0.4505937099f*s_,
+      0.0259040371f*l_ + 0.7827717662f*m_ - 0.8086757660f*s_,
+  };
+}
+
+RGB oklab2rgb(Lab c) {
+  float l_ = c.L + 0.3963377774f * c.a + 0.2158037573f * c.b;
+  float m_ = c.L - 0.1055613458f * c.a - 0.0638541728f * c.b;
+  float s_ = c.L - 0.0894841775f * c.a - 1.2914855480f * c.b;
+
+  float l = l_*l_*l_;
+  float m = m_*m_*m_;
+  float s = s_*s_*s_;
+
+  return {
+  +4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s,
+  -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s,
+  -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s,
+  };
+}
+
 /**
  * @brief Clamps a value to the range [0, 255] using branchless operations.
  * @param v The value to clamp.
@@ -126,51 +166,43 @@ static nscolor zenFilterColorChannel(nscolor aOriginalColor,
   // serialization/deserialization between parent and content processes.
   const auto contrast = NS_GET_CONTRAST(aAccentColor);
 
-  // Approximate perceived luminance in sRGB space
-  // Coefficients per Rec.709; gamma correction ignored for speed
-  const double origLum = 0.2126 * r1 + 0.7152 * g1 + 0.0722 * b1;
-  const double accentLum = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
+  RGB originalRgb(r1 / 255.0, g1 / 255.0, b1 / 255.0);
+  const auto originalOklab = rgb2oklab(originalRgb);
 
-  double scale = 1.0;
-  // The scale explodes for very small values of the luminance
-  // so to counteract that we simply don't calculate it
-  if (accentLum > 1e-5) {
-    scale = origLum / accentLum;
-    // Limit the scale factor
-    scale = std::clamp(scale, 0.0, 4.0);
-  }
+  RGB accentRgb(r2 / 255.0, g2 / 255.0, b2 / 255.0);
+  const auto accentOklab = rgb2oklab(accentRgb);
+  
+  double tintStrength = 0.6; // Decides how strongly the accent should influence the original color
+  double aBlend = (1.0 - tintStrength) * originalOklab.a + tintStrength * accentOklab.a;
+  double bBlend = (1.0 - tintStrength) * originalOklab.b + tintStrength * accentOklab.b;
 
-  double fr = r2 * scale;
-  double fg = g2 * scale;
-  double fb = b2 * scale;
+  // Calculating chroma with the length of the vector of (a b)
+  double chromaBlend = sqrt(aBlend * aBlend + bBlend * bBlend);
+  
+  // Normalizing against 0.4 since usually Oklab chroma maxes out around there
+  double vibranceAmount = 1 - ((contrast - 128.0) / 128.0);
+  double vibranceFactor = 1.0 + vibranceAmount * (1.0 - std::clamp(chromaBlend / 0.4, 0.0, 1.0));
 
-  // Apply contrast adjustment: map contrast from 0–255 to -1.0–+1.0
-  // contrast = 0: maximum darkening (mix toward black)
-  // contrast = 127.5: no change
-  // contrast = 255: maximum lightening (mix toward white)
-  const double contrastFactor = (contrast - 128.0) / 128.0;
+  // Essentially the equivalent of 'hue' for Oklab
+  double chromaMixed = chromaBlend * vibranceFactor;
+  double scale = (chromaBlend > 1e-6) ? (chromaMixed / chromaBlend) : 1.0;
 
-  // Compute perceived luminance for the filtered color
-  const double lum = 0.2126 * fr + 0.7152 * fg + 0.0722 * fb;
+  double aMixed = aBlend * scale;
+  double bMixed = bBlend * scale;
 
-  // If it's bright, mix toward white; if dark, mix toward black
-  if (lum >= COLOR_CHANNEL_MIDPOINT) {
-    const double mix = (lum - COLOR_CHANNEL_MIDPOINT) / COLOR_CHANNEL_MIDPOINT;
-    const double amount = contrastFactor * mix;
-    fr = fr + (255.0 - fr) * amount;
-    fg = fg + (255.0 - fg) * amount;
-    fb = fb + (255.0 - fb) * amount;
-  } else {
-    const double mix = (COLOR_CHANNEL_MIDPOINT - lum) / COLOR_CHANNEL_MIDPOINT;
-    const double amount = -contrastFactor * mix;
-    fr = fr * (1.0 - amount);
-    fg = fg * (1.0 - amount);
-    fb = fb * (1.0 - amount);
-  }
+  // Lightness contrast
+  double contrastFactor = 1.0 + vibranceAmount * 0.5;
 
-  const uint8_t fr8 = clamp255(fr);
-  const uint8_t fg8 = clamp255(fg);
-  const uint8_t fb8 = clamp255(fb);
+  // Lightness factor
+  double LMixed = 0.5 + (originalOklab.L - 0.5) * contrastFactor;
+  LMixed = std::clamp(LMixed * (0.25 + accentOklab.L), 0.0, 1.0);
+  
+  Lab tintedOklab(LMixed, aMixed, bMixed);
+
+  auto tintedRgb = oklab2rgb(tintedOklab);
+  const uint8_t fr8 = clamp255(tintedRgb.r * 255);
+  const uint8_t fg8 = clamp255(tintedRgb.g * 255);
+  const uint8_t fb8 = clamp255(tintedRgb.b * 255);
 
   return NS_RGBA(fr8, fg8, fb8, a1);
 }

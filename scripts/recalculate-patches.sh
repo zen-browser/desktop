@@ -12,6 +12,9 @@ IGNORE_FILES=(
   "shared.nsh"
   "ignorePrefs.json"
   "moz.configure"
+  "AsyncShutdown.sys.mjs"
+  "Info.plist.in"
+  "firefox.js"
 )
 
 # Recursively find all .patch files in the current directory and its subdirectories

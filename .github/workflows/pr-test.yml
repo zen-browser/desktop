@@ -43,6 +43,9 @@ jobs:
       - name: Run Bootstrap
         run: npm run bootstrap
 
+      - name: Add .hgignore file to the engine dir
+        run: touch engine/.hgignore
+
       - name: Import patches
         run: npm run import
 

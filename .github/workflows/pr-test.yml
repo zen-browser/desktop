@@ -33,11 +33,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .surfer/engine/*.tar
-          key: surfer-engine-${{ runner.os }}-${{ hashFiles('surfer.json') }}
+          key: surfer-engine-${{ hashFiles('surfer.json') }}
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Download Firefox and dependencies
-        env:
-          ZEN_DOWNLOAD_DONT_INIT_GIT: "1"
         run: npm run download
 
       - name: Run Bootstrap

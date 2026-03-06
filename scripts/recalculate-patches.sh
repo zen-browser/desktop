@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,6 +12,9 @@ IGNORE_FILES=(
   "shared.nsh"
   "ignorePrefs.json"
   "moz.configure"
+  "AsyncShutdown.sys.mjs"
+  "Info.plist.in"
+  "firefox.js"
 )
 
 # Recursively find all .patch files in the current directory and its subdirectories

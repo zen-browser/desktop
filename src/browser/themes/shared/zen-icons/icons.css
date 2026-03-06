@@ -499,7 +499,7 @@
     pointer-events: none;
   }
 
-  &:is([open], [starred]) image {
+  &:where([starred]) image {
     list-style-image: url("permissions-fill.svg");
   }
 }

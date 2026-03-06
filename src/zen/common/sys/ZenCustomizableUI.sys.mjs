@@ -8,7 +8,7 @@ export const ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = "toolbar";
-  defaultSidebarIcons = ["downloads-button", "zen-workspaces-button", "zen-create-new-button"];
+  defaultSidebarIcons = ["zen-library-button", "zen-workspaces-button", "zen-create-new-button"];
 
   startup(CustomizableUIInternal) {
     CustomizableUIInternal.registerArea(

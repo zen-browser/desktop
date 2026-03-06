@@ -137,6 +137,14 @@ document.addEventListener(
           ZenLiveFoldersManager.handleEvent(event);
           break;
         }
+        case "cmd_zenToggleLibrary": {
+          const { ZenLibrary } = ChromeUtils.importESModule(
+            "moz-src:///zen/library/ZenLibrary.mjs",
+            { global: "current" }
+          );
+          ZenLibrary.toggle();
+          break;
+        }
         default:
           gZenGlanceManager.handleMainCommandSet(event);
           if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

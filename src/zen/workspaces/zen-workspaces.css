@@ -109,7 +109,7 @@
       scale: 1 !important;
     }
 
-    /* Inlcude separately since ther'es a bug in the
+    /* Include separately since ther'es a bug in the
      * rendering of XUL in firefox */
     & toolbarbutton:not([active='true']) {
 %include overflow-icons.inc.css

@@ -275,9 +275,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const estimatedPanelWidth =
       nsZenTabSwitcher.CARD_WIDTH * Math.min(this.#tabList.length, this.#actualVisibleCards) + 50;
+    const actualPanelWidth = Math.min(estimatedPanelWidth, windowWidth);
     const estimatedPanelHeight = 200;
 
-    const centerX = (windowWidth - estimatedPanelWidth) / 2;
+    const centerX = (windowWidth - actualPanelWidth) / 2;
     const centerY = (windowHeight - estimatedPanelHeight) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {

@@ -17,7 +17,7 @@
 #zen-tab-switcher-panel {
   --panel-padding: var(--zen-tab-switcher-padding);
   min-width: fit-content;
-  max-width: 90vw;
+  max-width: 100vw;
 }
 
 #zen-tab-switcher-panel .panel-viewcontainer,

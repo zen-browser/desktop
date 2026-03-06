@@ -33,6 +33,9 @@ jobs:
           ZEN_DOWNLOAD_DONT_INIT_GIT: "1"
         run: npm run download
 
+      - name: Run Bootstrap
+        run: npm run bootstrap
+
       - name: Run linting
         run: npm run lint
 

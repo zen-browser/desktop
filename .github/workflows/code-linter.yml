@@ -37,5 +37,8 @@ jobs:
         run: |
           npm run download
 
+      - name: Run Bootstrap
+        run: npm run bootstrap
+
       - name: Lint
         run: npm run lint

@@ -44,6 +44,9 @@ jobs:
         run: |
           npm run download
 
+      - name: Import patches
+        run: npm run import
+
       - name: Run Bootstrap
         run: npm run bootstrap
 

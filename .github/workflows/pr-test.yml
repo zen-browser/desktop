@@ -43,8 +43,8 @@ jobs:
       - name: Run Bootstrap
         run: npm run bootstrap
 
-      - name: Run linting
-        run: npm run lint
-
       - name: Import patches
         run: npm run import
+
+      - name: Run linting
+        run: npm run lint

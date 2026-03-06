@@ -31,6 +31,6 @@ class nsZenModsBackend final : public nsIZenModsBackend {
   bool mEnabled = false;
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

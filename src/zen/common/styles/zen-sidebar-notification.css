@@ -107,8 +107,8 @@
 
     & .zen-sidebar-notification-link-icon {
       pointer-events: none;
-      width: 16px;
-      height: 16px;
+      width: var(--size-item-small);
+      height: var(--size-item-small);
       -moz-context-properties: fill, fill-opacity;
       fill: var(--special-color, currentColor);
     }

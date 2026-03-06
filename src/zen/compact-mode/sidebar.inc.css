@@ -50,7 +50,7 @@
   #navigator-toolbox {
     --zen-toolbox-max-width: 74px !important;
     --zen-compact-float: var(--zen-element-separation);
- 
+
     :root[zen-no-padding='true'] & {
       --zen-compact-float: 10px;
       --zen-compact-top-toolbar-hidden-fix: var(--zen-compact-float);
@@ -78,7 +78,7 @@
       }
       :root:not([zen-single-toolbar='true']) & {
         bottom: calc(var(--zen-compact-float) / 2);
-        height: calc(100% - var(--zen-toolbar-height-with-bookmarks)); 
+        height: calc(100% - var(--zen-toolbar-height-with-bookmarks));
         @media -moz-pref('zen.view.compact.hide-toolbar') {
           height: calc(100% - var(--zen-compact-top-toolbar-hidden-fix, 0px));
         }
@@ -145,9 +145,9 @@
   }
 
   #navigator-toolbox:is(
-    [zen-has-hover], [zen-user-show], 
+    [zen-has-hover], [zen-user-show],
     [zen-has-empty-tab], [flash-popup],
-    [has-popup-menu], [movingtab], 
+    [has-popup-menu], [movingtab],
     [zen-compact-mode-active]
   ),
   &[zen-renaming-tab='true'] #navigator-toolbox {

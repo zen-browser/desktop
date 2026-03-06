@@ -62,7 +62,6 @@
   display: none;
   background: var(--zen-branding-bg);
   border-radius: 1em;
-  overflow: hidden;
   position: relative;
   width: 60%;
   height: 60%;
@@ -83,7 +82,7 @@
   @media (max-width: 1000px) {
     width: 100%;
     height: 100%;
-    border-radius: 0px;
+    border-radius: 0;
   }
 
   #zen-welcome-page-sidebar {

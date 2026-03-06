@@ -60,8 +60,8 @@ zen-workspace-creation {
 
         & .zen-workspace-creation-icon-label {
           position: relative;
-          width: 24px;
-          height: 20px;
+          width: var(--size-item-medium);
+          height: var(--icon-size-medium);
           justify-content: center;
           align-items: center;
           cursor: pointer;
@@ -73,8 +73,8 @@ zen-workspace-creation {
 
           & image {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: var(--size-item-small);
+            height: var(--size-item-small);
             -moz-context-properties: fill-opacity, fill;
             fill: currentColor;
           }
@@ -132,7 +132,6 @@ zen-workspace-creation {
         & .zen-workspace-creation-profile {
           margin: 0;
           padding: 6px !important;
-          border-radius: 99px;
           padding-inline-end: 0;
           appearance: none;
           background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));

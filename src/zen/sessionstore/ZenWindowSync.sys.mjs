@@ -716,7 +716,6 @@ class nsZenWindowSync {
    * @param {object} options - Options object.
    * @param {boolean} options.focus - Indicates if the tab should be focused after the swap.
    * @param {boolean} options.onClose - Indicates if the swap is done during a tab close operation.
-   * @returns {Promise|null} A promise that resolves when the tab state is flushed, or null if the swap cannot be performed.
    */
   #swapBrowserDocShellsInner(aOurTab, aOtherTab, { focus = true, onClose = false } = {}) {
     // Can't swap between chrome and content processes.
@@ -724,7 +723,7 @@ class nsZenWindowSync {
       this.log(
         `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
       );
-      return null;
+      return;
     }
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
     // the operation, so it doesn't really care about cleaning up the other tab.

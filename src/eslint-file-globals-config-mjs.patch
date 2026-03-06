@@ -1,0 +1,22 @@
+diff --git a/eslint-file-globals.config.mjs b/eslint-file-globals.config.mjs
+index 00e49fce00efecab254aa1b8f0f0fe9ed2c24057..e9f390e15537d3d03a87f1c87099cb34698aee49 100644
+--- a/eslint-file-globals.config.mjs
++++ b/eslint-file-globals.config.mjs
+@@ -22,6 +22,7 @@
+ 
+ import globals from "globals";
+ import mozilla from "eslint-plugin-mozilla";
++import zenGlobals from "./zen/zen.globals.mjs";
+ 
+ export default [
+   {
+@@ -550,4 +551,9 @@ export default [
+     ],
+     languageOptions: { globals: globals.worker },
+   },
++  {
++    name: "zen-globals",
++    files: ["zen/**/!(*.sys).mjs", "zen/**/*.js"],
++    languageOptions: { globals: zenGlobals.reduce((acc, name) => ({ ...acc, [name]: "readonly" }), {}) },
++  }
+ ];

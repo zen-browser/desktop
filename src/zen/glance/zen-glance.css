@@ -23,8 +23,8 @@
   }
 
   & toolbarbutton {
-    width: 32px;
-    height: 32px;
+    width: var(--size-item-large);
+    height: var(--size-item-large);
     background: color-mix(in srgb, light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%, var(--zen-primary-color));
     transition:
       background 0.05s ease,
@@ -65,7 +65,7 @@
     width: fit-content;
     & label {
       display: block;
-      max-width: 0px;
+      max-width: 0;
       margin: 0;
       overflow: hidden;
       transition:

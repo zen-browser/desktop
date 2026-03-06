@@ -22,12 +22,14 @@
       }
     }
 
+    /* stylelint-disable-next-line media-query-no-invalid */
     @media not -moz-pref("layout.css.prefers-color-scheme.content-override", 2) {
       & browser[type="content"] {
         color-scheme: env(-moz-content-preferred-color-scheme);
       }
     }
 
+    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-elements") {
       & browser[type="content"] {
         /* For the rendering engine to apply layering optimizations. This
@@ -37,6 +39,7 @@
     }
   }
 
+  /* stylelint-disable-next-line media-query-no-invalid */
   @media (not -moz-pref("zen.view.shift-down-site-on-hover")) and (not ((-moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("zen.view.hide-window-controls"))) and -moz-pref("zen.view.use-single-toolbar"))) {
     .browserSidebarContainer:is(.deck-selected, [zen-split="true"]) .browserContainer {
       transition: margin var(--zen-hidden-toolbar-transition);

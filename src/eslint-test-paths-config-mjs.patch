@@ -1,0 +1,12 @@
+diff --git a/eslint-test-paths.config.mjs b/eslint-test-paths.config.mjs
+index 53d97521a676d04212abb0263cb166da06c889e0..fa8c261de7a8663a369fb41671476d314722c025 100644
+--- a/eslint-test-paths.config.mjs
++++ b/eslint-test-paths.config.mjs
+@@ -218,6 +218,7 @@ const extraBrowserTestPaths = [
+   "toolkit/components/windowwatcher/test/",
+   "toolkit/mozapps/extensions/test/xpinstall/",
+   "uriloader/exthandler/tests/mochitest/",
++  "zen/tests/",
+ ];
+ 
+ // DO NOT add more items to this list. Please see the note at the top

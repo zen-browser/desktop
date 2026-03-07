@@ -388,7 +388,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       canvas.width = 320;
       canvas.height = 180;
 
-      await lazy.PageThumbs.captureToCanvas(browser, canvas);
+      await lazy.PageThumbs.captureToCanvas(browser, canvas, {
+        fullViewport: true,
+      });
       const dataUrl = canvas.toDataURL("image/png");
       this.#thumbnailCache.set(tabId, dataUrl);
 

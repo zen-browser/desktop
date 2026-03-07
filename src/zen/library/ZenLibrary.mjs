@@ -56,11 +56,19 @@ export class ZenLibrary extends MozLitElement {
     // Add connected call back and make `appContentWrapper` transform translate the oposite of this element
     this.#resizeObserver = new ResizeObserver(() => {
       requestAnimationFrame(() => {
-        let width = window.windowUtils.getBoundsWithoutFlushing(this).width;
-        if (gZenVerticalTabsManager._prefsRightSide) {
-          width = -width;
+        let isRightSide = gZenVerticalTabsManager._prefsRightSide;
+        let translateX = window.windowUtils.getBoundsWithoutFlushing(this)[
+          isRightSide ? "left" : "right"
+        ];
+        let contentPosition = window.windowUtils.getBoundsWithoutFlushing(lazy.appContentWrapper)[
+          isRightSide ? "right" : "left"
+        ]
+        let existingTransform = new DOMMatrix(lazy.appContentWrapper.style.transform).m41;
+        translateX = translateX-contentPosition + existingTransform;
+        if (isRightSide) {
+          translateX = -translateX;
         }
-        lazy.appContentWrapper.style.transform = `translateX(${width}px)`;
+        lazy.appContentWrapper.style.transform = `translateX(${translateX}px)`;
       });
     });
     this.#resizeObserver.observe(this);
@@ -139,7 +147,7 @@ export class ZenLibrary extends MozLitElement {
     let instance = this.getInstance();
     instance.toggleAttribute("open");
     if (!instance.isOpen) {
-      gNavToolbox.style.display = "";
+      gNavToolbox.removeAttribute("zen-library-open");
       lazy.appContentWrapper.style.transform = "";
       if (!instance._deletionIdleCallbackId) {
       instance._deletionIdleCallbackId = requestIdleCallback(() => {
@@ -151,7 +159,7 @@ export class ZenLibrary extends MozLitElement {
         cancelIdleCallback(instance._deletionIdleCallbackId);
         instance._deletionIdleCallbackId = null;
       }
-      gNavToolbox.style.display = "none";
+      gNavToolbox.setAttribute("zen-library-open", "true");
     }
   }
 }

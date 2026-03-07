@@ -12,6 +12,12 @@
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
   --inactive-titlebar-opacity: 0.8;
+
+  &[zen-library-open="true"] {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 #nav-bar,

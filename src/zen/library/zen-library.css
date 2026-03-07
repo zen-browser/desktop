@@ -5,8 +5,8 @@
  */
 
 :host {
-  transition: max-width 0.1s ease-in-out;
-  max-width: 0;
+  transition: transform 0.1s ease-in-out;
+  transform: translateX(-100%);
   z-index: 1;
   display: block;
   position: absolute;
@@ -14,8 +14,8 @@
 }
 
 :host([open]) {
-    max-width: 100%;
-  }
+  transform: translateX(0);
+}
 
 #zen-library-sidebar {
   display: flex;

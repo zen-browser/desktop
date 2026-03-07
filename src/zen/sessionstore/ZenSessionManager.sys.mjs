@@ -34,6 +34,8 @@ XPCOMUtils.defineLazyPreferenceGetter(
 const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
+const LAST_BUILD_ID_PREF = "zen.session-store.last-build-id";
+
 // 'browser.startup.page' preference value to resume the previous session.
 const BROWSER_STARTUP_RESUME_SESSION = 3;
 
@@ -277,6 +279,19 @@ export class nsZenSessionManager {
   }
 
   get #shouldRestoreOnlyPinned() {
+    let buildId = Services.appinfo.platformBuildID;
+    let lastBuildId = Services.prefs.getStringPref(LAST_BUILD_ID_PREF, "");
+    let buildIdChanged = buildId !== lastBuildId;
+    if (buildIdChanged) {
+      // If the build ID has changed since the last session, it means the user has updated the app,
+      // so we should not remove the unpinned tabs as they might want to keep them after the update.
+      this.log("Build ID has changed since last session, not restoring only pinned tabs", {
+        buildId,
+        lastBuildId,
+      });
+      Services.prefs.setStringPref(LAST_BUILD_ID_PREF, buildId);
+      return false;
+    }
     return (
       Services.prefs.getIntPref("browser.startup.page", 1) !== BROWSER_STARTUP_RESUME_SESSION ||
       lazy.PrivateBrowsingUtils.permanentPrivateBrowsing

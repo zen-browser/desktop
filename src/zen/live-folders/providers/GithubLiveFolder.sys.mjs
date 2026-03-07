@@ -143,7 +143,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
     }
 
-    searchParams.set("q", outputString);
+    searchParams.set("q", outputString.trim().replace(/ +(?= )/g, ""));
     return searchParams.toString();
   }
 

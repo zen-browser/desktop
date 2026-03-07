@@ -18,4 +18,4 @@
   value: 1000
 
 - name: zen.splitView.drag-over-split-threshold
-  value: 25
+  value: 40

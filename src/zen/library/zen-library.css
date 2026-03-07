@@ -5,4 +5,74 @@
  */
 
 :host {
+  transition: max-width 0.1s ease-in-out;
+  max-width: 0;
+  z-index: 1;
+  display: block;
+  position: absolute;
+  height: 100%;
+}
+
+:host([open]) {
+    max-width: 100%;
+  }
+
+#zen-library-sidebar {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  justify-content: space-between;
+  height: 100%;
+  width: 84px;
+  -moz-window-dragging: drag;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.025);
+}
+
+#zen-library-content {
+  display: flex;
+  transition: width 0.15s ease-in-out;
+  width: 45vw;
+  max-width: 100%;
+
+  &[large-content] {
+    width: 80vw;
+  }
+}
+
+#zen-library-sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -moz-window-dragging: no-drag;
+}
+
+.zen-library-tab {
+  display: flex;
+  padding: 12px 0;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  position: relative;
+  font-weight: 600;
+
+  &::before {
+    content: "";
+    inset: 0;
+    border-radius: 6px;
+    transition: transform 0.1s ease-in-out;
+    position: absolute;
+  }
+
+  &:hover::before {
+    background: color-mix(in srgb, currentColor 5%, transparent);
+  }
+
+  &[active]::before {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  &:active:hover::before {
+    transform: scale(0.95);
+  }
 }

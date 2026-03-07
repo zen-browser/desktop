@@ -9,13 +9,19 @@ support-files = [
 ]
 
 ["browser_basic_workspaces.js"]
-["browser_workspace_bookmarks.js"]
-["browser_double_click_newtab.js"]
-["browser_overflow_scrollbox.js"]
 
-["browser_issue_8699.js"]
-["browser_issue_9900.js"]
+["browser_double_click_newtab.js"]
+
 ["browser_issue_10455.js"]
 
+["browser_issue_8699.js"]
+
+["browser_issue_9900.js"]
+
+["browser_overflow_scrollbox.js"]
+
 ["browser_private_mode.js"]
+
 ["browser_private_mode_startup.js"]
+
+["browser_workspace_bookmarks.js"]

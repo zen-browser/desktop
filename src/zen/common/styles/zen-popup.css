@@ -92,8 +92,8 @@ panel {
 #appMenu-fxa-label2::before {
   content: "";
   display: -moz-box;
-  height: 16px;
-  width: 16px;
+  height: var(--size-item-small);
+  width: var(--size-item-small);
   background: var(--avatar-image-url) 0/16px;
   scale: 1.25;
   border-radius: 99px;
@@ -139,7 +139,7 @@ panel {
   border-inline-start: 1px solid var(--panel-separator-color);
   display: block;
   position: relative;
-  height: 32px;
+  height: var(--size-item-large);
   margin-block: calc(var(--uc-panel-zoom-button-padding) * -1);
   transform: translateX(
     calc(var(--uc-panel-zoom-button-inline-padding) * -1 - (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) - 1px)
@@ -147,8 +147,8 @@ panel {
 }
 
 #appMenu-zoomReset-button2 {
-  height: calc(16px + var(--uc-panel-zoom-button-padding) * 2);
-  min-height: calc(16px + var(--uc-panel-zoom-button-padding) * 2);
+  height: calc(var(--size-item-small) + var(--uc-panel-zoom-button-padding) * 2);
+  min-height: calc(var(--size-item-small) + var(--uc-panel-zoom-button-padding) * 2);
 }
 
 #appMenu-zoomReduce-button2:not([disabled], [open], :active):is(:hover),
@@ -191,7 +191,7 @@ panel {
 #identity-popup-mainView-panel-header,
 #protections-popup-mainView-panel-header,
 .panel-header {
-  min-height: calc((var(--arrowpanel-menuitem-padding-block) + 4px) * 2 + 16px);
+  min-height: calc((var(--arrowpanel-menuitem-padding-block) + 4px) * 2 + var(--size-item-small));
 }
 
 /* URL bar popup */
@@ -223,7 +223,7 @@ panel {
 .permission-popup-permission-item,
 #permission-popup-storage-access-permission-list-header {
   padding-block: 4px;
-  margin-block: 0px;
+  margin-block: 0;
 }
 
 #editBookmarkPanel > #editBookmarkHeaderSeparator,
@@ -353,7 +353,7 @@ menuseparator {
     padding: var(--zen-toast-padding);
     border-radius: 10px;
     background: linear-gradient(to bottom, var(--zen-primary-color) -40%, color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%));
-    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0px 0px 22px 2px;
+    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px;
     border: none;
     display: flex;
     font-weight: 600;
@@ -386,10 +386,10 @@ menuseparator {
 
     & button {
       width: min-content;
-      padding: 0px 8px !important;
+      padding: 0 8px !important;
       min-width: unset !important;
       min-height: 28px;
-      margin: 0px !important;
+      margin: 0 !important;
       border-radius: 6px !important;
       border-top: 2px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
       color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;

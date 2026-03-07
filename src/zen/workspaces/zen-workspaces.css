@@ -55,7 +55,7 @@
       &:is(img) {
         width: 14px;
       }
-   
+
       &[no-icon='true'] {
         width: 6px;
         height: 6px;
@@ -109,7 +109,7 @@
       scale: 1 !important;
     }
 
-    /* Inlcude separately since ther'es a bug in the 
+    /* Include separately since ther'es a bug in the
      * rendering of XUL in firefox */
     & toolbarbutton:not([active='true']) {
 %include overflow-icons.inc.css
@@ -298,7 +298,7 @@
   }
 
   :root[zen-unsynced-window='true']
-    #navigator-toolbox[zen-has-implicit-hover='true'] 
+    #navigator-toolbox[zen-has-implicit-hover='true']
     & .zen-workspaces-actions,
   :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
   & .zen-workspaces-actions[open='true'] {

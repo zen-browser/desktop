@@ -28,10 +28,11 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
   auto GetDragImageOpacity() const { return mDragImageOpacity; }
 
   /**
-   * @brief Get the singleton instance of nsZenDragAndDrop. There may be occasions
-   * where it won't be available (e.g. on the content process), so this may return
-   * nullptr.
-   * @return nsZenDragAndDrop* The singleton instance, or nullptr if not available
+   * @brief Get the singleton instance of nsZenDragAndDrop. There may be
+   * occasions where it won't be available (e.g. on the content process), so
+   * this may return nullptr.
+   * @return nsZenDragAndDrop* The singleton instance, or nullptr if not
+   * available
    */
   static auto GetZenDragAndDropInstance() -> nsCOMPtr<nsZenDragAndDrop>;
 
@@ -40,6 +41,6 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
   float mDragImageOpacity{};
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

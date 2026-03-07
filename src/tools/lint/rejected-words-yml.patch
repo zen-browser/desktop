@@ -1,0 +1,12 @@
+diff --git a/tools/lint/rejected-words.yml b/tools/lint/rejected-words.yml
+index d5ca2e05fb335fcd17d1559d5332ec4a43d7cd1d..1f34e8d5e05508fc541bc7aa6a779cd98206032a 100644
+--- a/tools/lint/rejected-words.yml
++++ b/tools/lint/rejected-words.yml
+@@ -8,7 +8,6 @@ avoid-blacklist-and-whitelist:
+     ignore-case: true
+     # Based on codespell with idl and webidl added.
+     extensions:
+-        - js
+         - mjs
+         - jsx
+         - idl

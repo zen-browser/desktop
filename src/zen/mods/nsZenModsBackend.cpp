@@ -23,14 +23,12 @@ namespace {
 static auto GetZenStyleSheetCache() -> ZenStyleSheetCache* {
   return ZenStyleSheetCache::Singleton();
 }
-}
+}  // namespace
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenModsBackend, nsIZenModsBackend)
 
-nsZenModsBackend::nsZenModsBackend() {
-  (void)CheckEnabled();
-}
+nsZenModsBackend::nsZenModsBackend() { (void)CheckEnabled(); }
 
 auto nsZenModsBackend::CheckEnabled() -> void {
   // Check if the mods backend is enabled based on the preference.
@@ -44,17 +42,19 @@ auto nsZenModsBackend::CheckEnabled() -> void {
              !mozilla::Preferences::GetBool("zen.themes.disable-all", false);
 }
 
-auto nsZenModsBackend::RebuildModsStyles(const nsACString& aContents) -> nsresult {
+auto nsZenModsBackend::RebuildModsStyles(const nsACString& aContents)
+    -> nsresult {
   // Notify that the mods stylesheets have been rebuilt.
   return GetZenStyleSheetCache()->RebuildModsStylesheets(aContents);
 }
 
-} // namespace: zen
+}  // namespace zen
 
 auto nsStyleSheetService::ZenMarkStylesAsChanged() -> void {
   for (auto& presShell : mPresShells) {
     if (presShell) {
-      if (auto doc = presShell->GetDocument(); doc && doc->IsInChromeDocShell()) {
+      if (auto doc = presShell->GetDocument();
+          doc && doc->IsInChromeDocShell()) {
         // Notify the document that styles have changed.
         doc->ApplicableStylesChanged();
       }

@@ -57,7 +57,31 @@ class nsZenMediaController {
     this.onDeactivated = this._onDeactivated.bind(this);
     this.onPipModeChange = this._onPictureInPictureModeChange.bind(this);
 
+    Services.obs.addObserver(this, "zen-mpris-volume-changed");
+
     this.#initEventListeners();
+  }
+
+  observe(subject, topic, data) {
+    if (topic === "zen-mpris-volume-changed") {
+      this.updateVolume(parseFloat(data));
+    }
+  }
+
+  updateVolume(volume) {
+    if (!this._currentBrowser) return;
+
+    const processContext = (context) => {
+      try {
+        let actor = context.currentWindowGlobal?.getActor("ZenMedia");
+        if (actor) {
+          actor.sendAsyncMessage("ZenMedia:SetVolume", { volume });
+        }
+      } catch (e) {
+      }
+      context.children.forEach(processContext);
+    };
+    processContext(this._currentBrowser.browsingContext);
   }
 
   #initEventListeners() {

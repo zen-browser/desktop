@@ -57,6 +57,16 @@ let JSWINDOWACTORS = {
     matches: ["*://*/*"],
     enablePreference: "zen.glance.enabled",
   },
+  ZenMedia: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenMediaParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenMediaChild.sys.mjs",
+    },
+    matches: ["*://*/*"],
+    allFrames: true,
+  },
 };
 
 export let gZenActorsManager = {

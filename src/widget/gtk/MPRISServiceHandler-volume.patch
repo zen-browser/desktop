@@ -1,0 +1,111 @@
+diff --git a/widget/gtk/MPRISServiceHandler.h b/widget/gtk/MPRISServiceHandler.h
+--- a/widget/gtk/MPRISServiceHandler.h
++++ b/widget/gtk/MPRISServiceHandler.h
+@@ -82,6 +82,9 @@
+   void SetPositionState(const Maybe<dom::PositionState>& aState) override;
+   double GetPositionSeconds() const;
+   double GetPlaybackRate() const;
++
++  double GetVolume() const { return mVolume; }
++  void SetVolume(double aVolume);
+
+   bool IsMediaKeySupported(dom::MediaControlKey aKey) const;
+
+@@ -104,6 +107,7 @@
+   bool mInitialized = false;
+   nsAutoCString mIdentity;
+   nsAutoCString mDesktopEntry;
++  double mVolume = 1.0;
+
+diff --git a/widget/gtk/MPRISServiceHandler.cpp b/widget/gtk/MPRISServiceHandler.cpp
+--- a/widget/gtk/MPRISServiceHandler.cpp
++++ b/widget/gtk/MPRISServiceHandler.cpp
+@@ -17,6 +17,7 @@
+ #include "mozilla/Maybe.h"
+ #include "mozilla/ScopeExit.h"
+ #include "mozilla/Sprintf.h"
++#include "mozilla/Services.h"
+ #include "mozilla/XREAppData.h"
+ #include "nsXULAppAPI.h"
+ #include "nsIXULAppInfo.h"
+@@ -27,6 +28,7 @@
+ #include "WidgetUtilsGtk.h"
+ #include "AsyncDBus.h"
+ #include "prio.h"
++#include "nsIObserverService.h"
+ #include "nsAppRunner.h"
+
+ #define LOGMPRIS(msg, ...)                   \
+@@ -128,6 +130,7 @@
+   eGetMetadata,
+   eGetPosition,
+   eGetRate,
++  eVolume,
+ };
+
+ static inline Maybe<dom::MediaControlKey> GetPairedKey(Property aProperty) {
+@@ -173,7 +176,8 @@
+       {"PlaybackStatus", Property::eGetPlaybackStatus},
+       {"Metadata", Property::eGetMetadata},
+       {"Position", Property::eGetPosition},
+-      {"Rate", Property::eGetRate}};
++      {"Rate", Property::eGetRate},
++      {"Volume", Property::eVolume}};
+
+   auto it = map.find(aPropertyName);
+   return (it == map.end() ? Nothing() : Some(it->second));
+@@ -212,6 +216,8 @@
+     }
+     case Property::eGetRate:
+       return g_variant_new_double(handler->GetPlaybackRate());
++    case Property::eVolume:
++      return g_variant_new_double(handler->GetVolume());
+     case Property::eIdentity:
+       return g_variant_new_string(handler->Identity());
+     case Property::eDesktopEntry:
+@@ -237,6 +243,18 @@
+                                   GError** aError, gpointer aUserData) {
+   MOZ_ASSERT(aUserData);
+   MOZ_ASSERT(NS_IsMainThread());
++
++  Maybe<Property> property = GetProperty(aPropertyName);
++  if (property.isSome() && property.value() == Property::eVolume) {
++    if (!g_variant_is_of_type(aValue, G_VARIANT_TYPE_DOUBLE)) {
++      g_set_error(aError, G_DBUS_ERROR, G_DBUS_ERROR_INVALID_ARGS,
++                  "Volume must be a double");
++      return false;
++    }
++    static_cast<MPRISServiceHandler*>(aUserData)->SetVolume(g_variant_get_double(aValue));
++    return true;
++  }
++
+   g_set_error(aError, G_IO_ERROR, G_IO_ERROR_FAILED,
+               "%s:%s setting is not supported", aInterfaceName, aPropertyName);
+   return false;
+@@ -628,6 +646,26 @@
+   }
+ }
+
++void MPRISServiceHandler::SetVolume(double aVolume) {
++  if (mVolume == aVolume) {
++    return;
++  }
++  mVolume = aVolume;
++
++  GVariantBuilder builder;
++  g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
++  g_variant_builder_add(&builder, "{sv}", "Volume", g_variant_new_double(mVolume));
++  GVariant* parameters = g_variant_new("(sa{sv}as)", DBUS_MPRIS_PLAYER_INTERFACE, &builder, nullptr);
++  EmitPropertiesChangedSignal(parameters);
++
++  nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
++  if (obs) {
++    nsAutoString volStr;
++    volStr.AppendFloat(mVolume);
++    obs->NotifyObservers(nullptr, "zen-mpris-volume-changed", volStr.get());
++  }
++}
++
+ struct InterfaceProperty {
+   const char* interface;
+   const char* property;

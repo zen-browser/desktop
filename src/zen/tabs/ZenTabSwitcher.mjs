@@ -92,6 +92,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * Called when system events occur (browser shutdown or preference changes).
    * Handles cleanup on shutdown and preference change reactions.
    *
+   * @param {nsISupports} subject
+   * @param {string} topic
+   * @param {string} data
    * @returns {void}
    */
   observe(subject, topic, data) {

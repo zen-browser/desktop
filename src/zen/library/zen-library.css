@@ -4,16 +4,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-:host {
+:host(zen-library) {
   transition: transform 0.1s ease-in-out;
   transform: translateX(-100%);
   z-index: 1;
-  display: block;
+  display: flex;
   position: absolute;
   height: 100%;
 }
 
-:host([open]) {
+:host(zen-library[open]) {
   transform: translateX(0);
 }
 
@@ -26,17 +26,23 @@
   height: 100%;
   width: 84px;
   -moz-window-dragging: drag;
-    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.025);
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.02);
 }
 
 #zen-library-content {
   display: flex;
-  transition: width 0.15s ease-in-out;
-  width: 45vw;
-  max-width: 100%;
+  transition: min-width 0.15s ease-in-out;
+  min-width: 35rem;
+  max-width: 80vh;
 
   &[large-content] {
-    width: 80vw;
+    min-width: 75rem;
+  }
+
+  & > * {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -74,5 +80,15 @@
 
   &:active:hover::before {
     transform: scale(0.95);
+  }
+}
+
+/* Section: Search Component */
+
+.search-section {
+  flex: 1;
+
+  & .search-input {
+    width: 100%;
   }
 }

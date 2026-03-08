@@ -31,6 +31,7 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 export class ZenLibrary extends MozLitElement {
   #initialized = false;
   #resizeObserver = null;
+  #sections = [];
   _deletionIdleCallbackId = null;
 
   static properties = {
@@ -72,12 +73,20 @@ export class ZenLibrary extends MozLitElement {
       });
     });
     this.#resizeObserver.observe(this);
+    for (const Section of Object.values(lazy.ZenLibrarySections)) {
+      let section = new Section();
+      this.#sections.push(section);
+    }
     this.#initialized = true;
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("keydown", this);
+    for (const section of this.#sections) {
+      section.remove();
+    }
+    this.#sections = [];
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect();
       this.#resizeObserver = null;
@@ -106,7 +115,7 @@ export class ZenLibrary extends MozLitElement {
         <vbox id="zen-library-sidebar-footer"></vbox>
       </vbox>
       <vbox id="zen-library-content" flex="1" ?large-content=${lazy.ZenLibrarySections[this.activeTab].largeContent}>
-        
+        ${this.#sections.find(section => section.constructor.id === this.activeTab)}
       </vbox>
     `;
   }

@@ -24,3 +24,4 @@ target/
 locales/firefox-l10n/
 
 !src/toolkit/themes/shared/design-system/dist/
+.DS_Store

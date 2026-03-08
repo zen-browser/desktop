@@ -9,7 +9,7 @@
   display: flex;
   gap: 8px;
   padding: 8px 2px;
-  padding-bottom: 0px;
+  padding-bottom: 0;
 
   & .unified-extensions-item {
     flex: 1;

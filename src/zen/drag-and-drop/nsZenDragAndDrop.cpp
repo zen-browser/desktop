@@ -10,26 +10,25 @@ namespace {
 
 static constexpr auto kZenDefaultDragImageOpacity =
 #if defined(MOZ_WIDGET_GTK)
-// For GTK, the default is 0.5 (DRAG_IMAGE_ALPHA_LEVEL) to match 
-// the native behavior. Make sure its synced with the following variable:
-// https://searchfox.org/firefox-main/rev/14c08f0368ead8bfdddec62f43e0bb5c8fd61289/widget/gtk/nsDragService.cpp#75
+    // For GTK, the default is 0.5 (DRAG_IMAGE_ALPHA_LEVEL) to match
+    // the native behavior. Make sure its synced with the following variable:
+    // https://searchfox.org/firefox-main/rev/14c08f0368ead8bfdddec62f43e0bb5c8fd61289/widget/gtk/nsDragService.cpp#75
     0.5f;
 #else
-// For other platforms, the default is whatever the value of DRAG_TRANSLUCENCY
-// is, defined in nsBaseDragService.h
+    // For other platforms, the default is whatever the value of
+    // DRAG_TRANSLUCENCY is, defined in nsBaseDragService.h
     DRAG_TRANSLUCENCY;
 #endif
 
-} // namespace: <empty>
+}  // namespace
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(nsZenDragAndDrop, nsIZenDragAndDrop)
 
-nsZenDragAndDrop::nsZenDragAndDrop() {
-  (void)this->OnDragEnd();
-}
+nsZenDragAndDrop::nsZenDragAndDrop() { (void)this->OnDragEnd(); }
 
-auto nsZenDragAndDrop::GetZenDragAndDropInstance() -> nsCOMPtr<nsZenDragAndDrop> {
+auto nsZenDragAndDrop::GetZenDragAndDropInstance()
+    -> nsCOMPtr<nsZenDragAndDrop> {
   return do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID);
 }
 
@@ -45,4 +44,4 @@ nsZenDragAndDrop::OnDragEnd() {
   return NS_OK;
 }
 
-} // namespace: zen
+}  // namespace zen

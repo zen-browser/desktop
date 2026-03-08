@@ -40,9 +40,9 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
    * @returns A promise that resolves when the share is complete.
    */
   static auto ShareInternal(nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* url,
-      const nsACString& title, const nsACString& text, uint32_t aX, uint32_t aY,
-      uint32_t aWidth, uint32_t aHeight)
-    -> nsresult;
+                            const nsACString& title, const nsACString& text,
+                            uint32_t aX, uint32_t aY, uint32_t aWidth,
+                            uint32_t aHeight) -> nsresult;
   /**
    * @brief Helper function to play haptic feedback.
    */
@@ -56,6 +56,6 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
 #endif
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

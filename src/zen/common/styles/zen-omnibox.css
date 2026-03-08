@@ -119,7 +119,7 @@
 }
 
 #urlbar .urlbar-input {
-  border-radius: 0px !important;
+  border-radius: 0 !important;
 }
 
 #urlbar .urlbar-input-box {
@@ -174,7 +174,7 @@
 
   & #identity-box {
     order: 999;
-    margin: 0px !important;
+    margin: 0 !important;
   }
 }
 
@@ -189,12 +189,14 @@
   }
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.urlbar.single-toolbar-show-copy-url", false) {
   :root[zen-single-toolbar="true"] #zen-copy-url-button {
     display: none !important;
   }
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-pip-button") {
   #picture-in-picture-button {
     display: none !important;
@@ -259,14 +261,17 @@
 
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
+    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-elements") {
       --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
     }
     background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
-    box-shadow: 0px 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
+    box-shadow: 0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
     outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
+
+    /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-elements") {
       backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
     }
@@ -324,8 +329,8 @@
     & > image {
       margin-top: auto;
       margin-bottom: auto;
-      height: 24px; /* double 12px */
-      width: 24px;
+      height: var(--size-item-medium); /* double 12px */
+      width: var(--size-item-medium);
       padding: 4px !important;
 
       &:hover {
@@ -502,13 +507,14 @@
     height: var(--urlbar-height) !important;
     margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar="true"]) & {
-      max-height: 32px !important;
+      max-height: var(--size-item-large) !important;
       min-height: unset !important;
       margin-block: -1px !important;
     }
   }
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-protections-icon") {
   #tracking-protection-icon-container {
     display: none !important;
@@ -573,8 +579,8 @@
   & img {
     -moz-context-properties: fill;
     fill: currentColor;
-    width: 16px;
-    height: 16px;
+    width: var(--size-item-small);
+    height: var(--size-item-small);
   }
 
   &[hidden] {
@@ -702,7 +708,7 @@
   }
 
   #identity-box {
-    margin-inline-end: 0px;
+    margin-inline-end: 0;
   }
 }
 
@@ -714,7 +720,7 @@
 
 #urlbar-search-mode-indicator-title {
   font-weight: 600;
-  padding: 0px;
+  padding: 0;
 }
 
 /* These are buttons that we dont need to be
@@ -727,6 +733,7 @@
   display: none !important;
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-contextual-id") {
   #userContext-icons {
     display: none !important;

@@ -22,7 +22,7 @@ panel[type="arrow"]:not(#feature-callout) {
     transition-duration: 0s !important;
 
     &::part(content) {
-      /* Refrain from animating for now as we haven't found a 
+      /* Refrain from animating for now as we haven't found a
        * way to properly animate the popup without having the mica
        * backdrop staying still while the popup animates */
       animation: none !important;
@@ -45,7 +45,7 @@ panel[type="arrow"]:not(#feature-callout) {
 
     /* Remove the shadow for the native panels, as macos already
      * adds the shadows to the window. This is specially important
-     * on Tahoe, where we *dont* apply an image mask, meaning that 
+     * on Tahoe, where we *don't* apply an image mask, meaning that
      * trying to render a shadow would end up in having weird borders
      * around the panel */
     --panel-shadow: none;

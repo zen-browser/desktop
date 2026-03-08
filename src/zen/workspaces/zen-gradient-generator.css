@@ -158,8 +158,8 @@
       background: var(--zen-theme-picker-dot-color);
       border: 1px solid var(--zen-colors-border);
       border-radius: 5px;
-      width: 20px;
-      height: 20px;
+      width: var(--icon-size-medium);
+      height: var(--icon-size-medium);
       margin-right: 10px;
     }
 
@@ -200,7 +200,7 @@
     content: "";
     position: absolute;
     width: calc(100% - 8px);
-    height: 16px;
+    height: var(--size-item-small);
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
     border-radius: 999px;
     pointer-events: none;
@@ -257,8 +257,8 @@
   & .zen-theme-picker-dot {
     position: fixed;
     z-index: 2;
-    width: 20px;
-    height: 20px;
+    width: var(--icon-size-medium);
+    height: var(--icon-size-medium);
     border-radius: 50%;
     background: var(--zen-theme-picker-dot-color);
     @media (-prefers-color-scheme: dark) {
@@ -275,7 +275,6 @@
       width: 38px;
       height: 38px;
       border-width: 4px;
-      z-index: 2;
       pointer-events: all;
       transition: transform 0.2s;
       z-index: 999;
@@ -314,7 +313,7 @@
 #PanelUI-zen-gradient-generator-scheme {
   display: flex;
   position: absolute;
-  bottom: 12px;
+  bottom: var(--size-item-xsmall);
   left: 50%;
   z-index: 1;
   transform: translateX(-50%);
@@ -323,7 +322,6 @@
   & button {
     border: none !important;
     padding: 0 !important;
-    min-width: fit-content !important;
     transition: background 0.2s;
     appearance: none;
     max-height: 30px;
@@ -353,9 +351,10 @@
 
 #PanelUI-zen-gradient-generator-scheme {
   top: 15px;
-  max-height: 32px;
+  max-height: var(--size-item-large);
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.gradient.show-custom-colors") {
   #PanelUI-zen-gradient-generator-custom-colors {
     display: none !important;
@@ -420,7 +419,7 @@
 
   & #PanelUI-zen-gradient-generator-texture-handler {
     width: 6px;
-    height: 12px;
+    height: var(--size-item-xsmall);
     background: light-dark(#757575, #d1d1d1);
     position: absolute;
     transition: height 0.1s;

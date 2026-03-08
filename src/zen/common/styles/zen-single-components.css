@@ -24,6 +24,7 @@
   display: none !important;
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.disable-lightweight") {
   #customization-lwtheme-link {
     display: none !important;
@@ -60,7 +61,7 @@
   #PanelUI-zen-emojis-picker-header {
     gap: 10px;
     align-items: center;
-    padding: 0px 10px;
+    padding: 0 10px;
     padding-bottom: 6px;
   }
 
@@ -147,7 +148,7 @@
 
     .zen-emojis-picker-emoji {
       font-size: 14px;
-      padding: 0px !important;
+      padding: 0 !important;
       & image {
         display: none;
       }
@@ -262,6 +263,7 @@
 
 /* Status panel */
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media (-moz-pref("zen.theme.styled-status-panel")) {
   #statuspanel {
     padding: 6px;
@@ -334,8 +336,8 @@
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 48px;
-      height: 32px;
+      width: var(--size-item-xlarge);
+      height: var(--size-item-large);
       margin: 0;
       justify-content: center;
       align-items: center;
@@ -416,7 +418,7 @@
 }
 
 .permission-popup-permission-label {
-  margin: 0px;
+  margin: 0;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -447,8 +449,8 @@
     position: absolute;
     inset: 1px;
     border-radius: 99px;
-    width: 32px;
-    height: 32px;
+    width: var(--size-item-large);
+    height: var(--size-item-large);
     background: var(--button-background-color-primary);
     opacity: 0.6;
     transition:
@@ -491,12 +493,14 @@
   }
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.hide-unified-extensions-button") {
   #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
+/* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.hide-unified-extensions-button") {
   #zen-site-data-section-addons {
     display: none;
@@ -519,8 +523,8 @@
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    width: 48px;
-    height: 32px;
+    width: var(--size-item-xlarge);
+    height: var(--size-item-large);
     position: relative;
 
     &[disabled] {
@@ -547,8 +551,8 @@
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 
         box-shadow:
-          0px 1px 2px rgba(0, 0, 0, 0.1),
-          inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
+          0 1px 2px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
         --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
         border: 0.5px solid light-dark(var(--base-border-color), rgb(21, 21, 21));

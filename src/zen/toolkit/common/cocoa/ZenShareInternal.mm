@@ -26,8 +26,8 @@ using ::mozilla::widget::WidgetUtils;
  * @param a_nativeWindow The pointer to the native NSWindow.
  * @return NS_OK on success, or an error code on failure.
  */
-static nsresult GetNativeWindowPointerFromDOMWindow(mozIDOMWindowProxy* a_window,
-                                             NSWindow** a_nativeWindow) {
+static nsresult GetNativeWindowPointerFromDOMWindow(
+    mozIDOMWindowProxy* a_window, NSWindow** a_nativeWindow) {
   *a_nativeWindow = nil;
   if (!a_window) return NS_ERROR_INVALID_ARG;
   nsPIDOMWindowOuter* win = nsPIDOMWindowOuter::From(a_window);
@@ -38,12 +38,12 @@ static nsresult GetNativeWindowPointerFromDOMWindow(mozIDOMWindowProxy* a_window
   *a_nativeWindow = (NSWindow*)widget->GetNativeData(NS_NATIVE_WINDOW);
   return NS_OK;
 }
-}
+}  // namespace zen
 
-auto nsZenNativeShareInternal::ShowNativeDialog(nsCOMPtr<mozIDOMWindowProxy>& aWindow, 
-      nsIURI* aUrl, const nsACString& aTitle, const nsACString& aText, uint32_t aX, uint32_t aY,
-      uint32_t aWidth, uint32_t aHeight)
-    -> nsresult {
+auto nsZenNativeShareInternal::ShowNativeDialog(
+    nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* aUrl,
+    const nsACString& aTitle, const nsACString& aText, uint32_t aX, uint32_t aY,
+    uint32_t aWidth, uint32_t aHeight) -> nsresult {
   // Just use the URL since apple doesn't support sharing text
   // and title in the share dialog
   nsAutoCString pageUrlAsStringTemp;
@@ -53,9 +53,8 @@ auto nsZenNativeShareInternal::ShowNativeDialog(nsCOMPtr<mozIDOMWindowProxy>& aW
   } else {
     pageUrlAsStringTemp.SetIsVoid(true);
   }
-  NSURL* pageUrl = nsCocoaUtils::ToNSURL(
-    NS_ConvertUTF8toUTF16(pageUrlAsStringTemp)
-  );
+  NSURL* pageUrl =
+      nsCocoaUtils::ToNSURL(NS_ConvertUTF8toUTF16(pageUrlAsStringTemp));
   if (!pageUrl || (![pageUrl.scheme isEqualToString:@"https"] &&
                    ![pageUrl.scheme isEqualToString:@"http"])) {
     return NS_ERROR_FAILURE;

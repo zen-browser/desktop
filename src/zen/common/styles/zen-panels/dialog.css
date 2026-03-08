@@ -4,7 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 .dialogBox {
-  border: none;
   outline: 1px solid light-dark(transparent, #646464);
   animation: zen-dialog-fade-in 0.3s ease-out;
   border-radius: 12px !important;

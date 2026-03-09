@@ -361,7 +361,8 @@ export class nsZenWorkspace extends MozXULElement {
   #onGradientCacheChanged() {
     const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
       gZenThemePicker.getGradientForWorkspace(
-        gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid)
+        gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),
+        { getGradient: false }
       );
     if (isExplicitMode) {
       this.style.colorScheme = isDarkMode ? "dark" : "light";

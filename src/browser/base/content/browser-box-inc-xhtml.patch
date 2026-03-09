@@ -1,8 +1,18 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 2faed30e09511c381051bc40910a883d1d7bc10d..6ba2d0d91235ed33e4b4bad281c974b5960beaa2 100644
+index 2faed30e09511c381051bc40910a883d1d7bc10d..3b8c89902502aa384473dd6f43be7ec49bad06ac 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -25,7 +25,13 @@
+@@ -3,6 +3,9 @@
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+ <hbox flex="1" id="browser">
++  <html:div id="zen-browser-background" class="zen-browser-generic-background">
++    <html:div class="zen-browser-grain" />
++  </html:div>
+   <box context="sidebar-context-menu" id="sidebar-main" hidden="true">
+     <html:sidebar-main flex="1">
+       <box id="vertical-tabs" slot="tabstrip" customizable="true" contextmenu="toolbar-context-menu"></box>
+@@ -25,7 +28,13 @@
      </stack>
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
@@ -16,7 +26,7 @@ index 2faed30e09511c381051bc40910a883d1d7bc10d..6ba2d0d91235ed33e4b4bad281c974b5
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
    <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" hidden="true"/>
-@@ -34,3 +40,5 @@
+@@ -34,3 +43,5 @@
      </stack>
    </vbox>
  </hbox>

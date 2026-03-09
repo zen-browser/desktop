@@ -187,7 +187,7 @@ window.gZenCompactModeManager = {
     // This function is called after exiting DOM fullscreen mode,
     // so we do a bit of a hack to re-calculate the URL height
     if (aInstant) {
-      gZenVerticalTabsManager.recalculateURLBarHeight();
+      gZenVerticalTabsManager.recalculateURLBarHeight(true);
     }
     if (
       !aInstant &&
@@ -330,7 +330,6 @@ window.gZenCompactModeManager = {
       await this.animateCompactMode();
       this.callAllEventListeners();
     }
-    gZenUIManager.updateTabsToolbar();
     if (isUrlbarFocused) {
       gURLBar.focus();
     }

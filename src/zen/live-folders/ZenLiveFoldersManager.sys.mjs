@@ -407,6 +407,9 @@ class nsZenLiveFoldersManager {
         });
         // createLazyBrowser can't be pinned by default
         this.window.gBrowser.pinTab(tab);
+        if (userContextId) {
+          tab.setAttribute("zenDefaultUserContextId", "true");
+        }
         if (item.icon) {
           this.window.gBrowser.setIcon(tab, item.icon);
           if (tab.linkedBrowser) {

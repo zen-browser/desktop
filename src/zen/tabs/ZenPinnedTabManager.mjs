@@ -111,6 +111,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
     this._resetTabToStoredState(tab);
+    gBrowser.selectedTab = tab;
   }
 
   get enabled() {

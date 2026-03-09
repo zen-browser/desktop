@@ -1413,15 +1413,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       if (!skipUpdate) {
-        browser.gZenThemePicker.browserBackgroundElement.style.setProperty(
+        let backgroundElement = browser.gZenThemePicker.browserBackgroundElement;
+        let toolbarElement = browser.gZenThemePicker.toolbarBackgroundElement;
+        backgroundElement.style.setProperty(
           "--zen-main-browser-background-old",
-          docElement.style.getPropertyValue("--zen-main-browser-background")
+          backgroundElement.style.getPropertyValue("--zen-main-browser-background")
         );
-        browser.gZenThemePicker.toolbarBackgroundElement.style.setProperty(
+        toolbarElement.style.setProperty(
           "--zen-main-browser-background-toolbar-old",
-          docElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
+          toolbarElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
         );
-        [browser.gZenThemePicker.browserBackgroundElement, browser.gZenThemePicker.toolbarBackgroundElement].forEach((element) => {
+        [backgroundElement, toolbarElement].forEach((element) => {
           element.style.setProperty(
             "--zen-background-opacity",
             browser.gZenThemePicker.previousBackgroundOpacity ?? 1

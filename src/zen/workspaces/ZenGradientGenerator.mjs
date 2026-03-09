@@ -1362,6 +1362,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
   }
 
+  get browserBackgroundElement() {
+    return lazy.browserBackgroundElement;
+  }
+
+  get toolbarBackgroundElement() {
+    return lazy.toolbarBackgroundElement;
+  }
+
   onWorkspaceChange(workspace, skipUpdate = false, theme = null) {
     const uuid = workspace.uuid;
     // Use theme from workspace object or passed theme
@@ -1405,15 +1413,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       if (!skipUpdate) {
-        lazy.browserBackgroundElement.style.setProperty(
+        browser.gZenThemePicker.browserBackgroundElement.style.setProperty(
           "--zen-main-browser-background-old",
           docElement.style.getPropertyValue("--zen-main-browser-background")
         );
-        lazy.toolbarBackgroundElement.style.setProperty(
+        browser.gZenThemePicker.toolbarBackgroundElement.style.setProperty(
           "--zen-main-browser-background-toolbar-old",
           docElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
         );
-        [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach((element) => {
+        [browser.gZenThemePicker.browserBackgroundElement, browser.gZenThemePicker.toolbarBackgroundElement].forEach((element) => {
           element.style.setProperty(
             "--zen-background-opacity",
             browser.gZenThemePicker.previousBackgroundOpacity ?? 1
@@ -1542,8 +1550,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      lazy.toolbarBackgroundElement.style.setProperty("--zen-main-browser-background-toolbar", gradientToolbar);
-      lazy.browserBackgroundElement.style.setProperty("--zen-main-browser-background", gradient);
+      browser.gZenThemePicker.toolbarBackgroundElement
+        .style
+        .setProperty("--zen-main-browser-background-toolbar", gradientToolbar);
+      browser.gZenThemePicker.browserBackgroundElement
+        .style
+        .setProperty("--zen-main-browser-background", gradient);
       const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
       if (isDefaultTheme) {
         docElement.setAttribute("zen-default-theme", "true");
@@ -1745,7 +1757,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   invalidateGradientCache(uuid) {
     delete this.#gradientsCache[uuid];
-    window.dispatchEvent(new Event("ZenGradientCacheChanged", { bubbles: true, detail: { uuid } }));
+    window.dispatchEvent(new Event("ZenGradientCacheChanged", { bubbles: true }));
   }
 
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8b4f0fffe 100644
+index e2e0526a0ddd617291f1f6c17bcfb807954b481f..7a4c3f95e9590d1f83f470f59052174d5f43f805 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -60,7 +60,44 @@ index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4809,6 +4817,9 @@ var ConfirmationHint = {
+@@ -4074,8 +4082,10 @@ function safeModeRestart() {
+  *  "window"      new window
+  *
+  * delta is the offset to the history entry that you want to load.
++ * 
++ * onRestore is called after the new tab is restored properly.
+  */
+-function duplicateTabIn(aTab, where, delta) {
++function duplicateTabIn(aTab, where, delta, onRestore = () => {}) {
+   switch (where) {
+     case "window": {
+       let otherWin = OpenBrowserWindow({
+@@ -4089,7 +4099,7 @@ function duplicateTabIn(aTab, where, delta) {
+           Services.obs.removeObserver(delayedStartupFinished, topic);
+           let otherGBrowser = otherWin.gBrowser;
+           let otherTab = otherGBrowser.selectedTab;
+-          SessionStore.duplicateTab(otherWin, aTab, delta);
++          SessionStore.duplicateTab(otherWin, aTab, delta, true, {}, onRestore);
+           otherGBrowser.removeTab(otherTab, { animate: false });
+         }
+       };
+@@ -4101,13 +4111,13 @@ function duplicateTabIn(aTab, where, delta) {
+       break;
+     }
+     case "tabshifted":
+-      SessionStore.duplicateTab(window, aTab, delta);
++      SessionStore.duplicateTab(window, aTab, delta, true, {}, onRestore);
+       // A background tab has been opened, nothing else to do here.
+       break;
+     case "tab":
+       SessionStore.duplicateTab(window, aTab, delta, true, {
+         inBackground: false,
+-      });
++      }, onRestore);
+       break;
+   }
+   if (aTab.group) {
+@@ -4809,6 +4819,9 @@ var ConfirmationHint = {
      MozXULElement.insertFTLIfNeeded("toolkit/branding/brandings.ftl");
      MozXULElement.insertFTLIfNeeded("browser/confirmationHints.ftl");
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 836bee14d2b63604688ebe477a5d915a5e99b305..7e105a1ae07657b0a0e664a8e3d9d2eb894fa1d4 100644
+index 836bee14d2b63604688ebe477a5d915a5e99b305..922c1233fadab5bc0c0ea41ae86be63d8b4565ad 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -110,7 +110,28 @@ index 836bee14d2b63604688ebe477a5d915a5e99b305..7e105a1ae07657b0a0e664a8e3d9d2eb
      }
  
      get splitview() {
-@@ -489,6 +515,8 @@
+@@ -444,6 +470,12 @@
+         : this;
+       gBrowser.warmupTab(tabToWarm);
+ 
++      if (event.target.classList.contains("tab-reset-pin-button")) {
++        gZenPinnedTabManager.updateTabWithResetPinButtonHovered(event.target.closest("tab"), event);
++      } else {
++        gZenPinnedTabManager.updateTabWithResetPinButtonHovered(null, event);
++      }
++      
+       // If the previous target wasn't part of this tab then this is a mouseenter event.
+       if (!this.contains(event.relatedTarget)) {
+         this._mouseenter();
+@@ -455,6 +487,7 @@
+       if (!this.contains(event.relatedTarget)) {
+         this._mouseleave();
+       }
++      gZenPinnedTabManager.updateTabWithResetPinButtonHovered(null, event);
+     }
+ 
+     on_dragstart(event) {
+@@ -489,6 +522,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -119,7 +140,7 @@ index 836bee14d2b63604688ebe477a5d915a5e99b305..7e105a1ae07657b0a0e664a8e3d9d2eb
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -543,6 +571,10 @@
+@@ -543,16 +578,17 @@
        this.style.MozUserFocus = "";
      }
  
@@ -130,22 +151,63 @@ index 836bee14d2b63604688ebe477a5d915a5e99b305..7e105a1ae07657b0a0e664a8e3d9d2eb
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -603,6 +635,14 @@
+       }
+ 
+-      if (event.getModifierState("Accel") || event.shiftKey) {
+-        return;
+-      }
+-
+       if (
++        !((event.getModifierState("Accel") || event.shiftKey)) &&
+         gBrowser.multiSelectedTabsCount > 0 &&
+         !event.target.classList.contains("tab-close-button") &&
+         !event.target.classList.contains("tab-icon-overlay") &&
+@@ -564,8 +600,9 @@
+       }
+ 
+       if (
+-        event.target.classList.contains("tab-icon-overlay") ||
+-        event.target.classList.contains("tab-audio-button")
++        !((event.getModifierState("Accel") || event.shiftKey)) &&
++        (event.target.classList.contains("tab-icon-overlay") ||
++        event.target.classList.contains("tab-audio-button"))
+       ) {
+         if (this.activeMediaBlocked) {
+           if (this.multiselected) {
+@@ -583,7 +620,10 @@
+         return;
+       }
+ 
+-      if (event.target.classList.contains("tab-close-button")) {
++      if (
++        !((event.getModifierState("Accel") || event.shiftKey)) &&
++        event.target.classList.contains("tab-close-button")
++      ) {
+         if (this.multiselected) {
+           gBrowser.removeMultiSelectedTabs(
+             lazy.TabMetrics.userTriggeredContext(
+@@ -603,6 +643,20 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
 +
-+      if (event.target.classList.contains("tab-reset-pin-button")) {
++      if (
++        !event.shiftKey && 
++        event.target.classList.contains("tab-reset-pin-button")
++      ) {
 +        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
 +        gBrowser.tabContainer._blockDblClick = true;
-+      } else if (event.target.classList.contains("tab-reset-button")) {
++      } else if (
++        !((event.getModifierState("Accel") || event.shiftKey)) &&
++        event.target.classList.contains("tab-reset-button")
++      ) {
 +        gZenPinnedTabManager.onCloseTabShortcut(event, this);
 +        gBrowser.tabContainer._blockDblClick = true;
 +      }
      }
  
      on_dblclick(event) {
-@@ -626,6 +666,8 @@
+@@ -626,6 +680,8 @@
            animate: true,
            triggeringEvent: event,
          });

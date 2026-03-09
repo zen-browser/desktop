@@ -74,6 +74,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
+    this._zenKeyDownEventListener = this._onKeyDown.bind(this);
+    this._zenKeyUpEventListener = this._onKeyUp.bind(this);
+    this._tabWithResetPinButtonHovered = null;
 
     gZenWorkspaces._resolvePinnedInitialized();
     if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
@@ -110,8 +113,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    this._resetTabToStoredState(tab);
-    gBrowser.selectedTab = tab;
+    if (event.getModifierState("Accel")) {
+      window.duplicateTabIn(tab, "tabshifted", 0, () => {
+        this._resetTabToStoredState(tab);
+        gBrowser.selectedTab = tab;
+      });
+    } else {
+      this._resetTabToStoredState(tab);
+      gBrowser.selectedTab = tab;
+    }
   }
 
   get enabled() {
@@ -134,13 +144,25 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     switch (action) {
       case "TabPinned":
         tab._zenClickEventListener = this._zenClickEventListener;
+        tab._zenKeyDownEventListener = this._zenKeyDownEventListener;
+        tab._zenKeyUpEventListener = this._zenKeyUpEventListener;
         tab.addEventListener("click", tab._zenClickEventListener);
+        window.addEventListener("keydown", tab._zenKeyDownEventListener);
+        window.addEventListener("keyup", tab._zenKeyUpEventListener);
         break;
       // [Fall through]
       case "TabUnpinned":
         if (tab._zenClickEventListener) {
           tab.removeEventListener("click", tab._zenClickEventListener);
           delete tab._zenClickEventListener;
+        }
+        if (tab._zenKeyDownEventListener) {
+          window.removeEventListener("keydown", tab._zenKeyDownEventListener);
+          delete tab._zenKeyDownEventListener;
+        }
+        if (tab._zenKeyUpEventListener) {
+          window.removeEventListener("keyup", tab._zenKeyUpEventListener);
+          delete tab._zenKeyUpEventListener;
         }
         this.resetPinChangedUrl(tab);
         break;
@@ -160,6 +182,39 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       await this.onCloseTabShortcut(e, tab, {
         closeIfPending: Services.prefs.getBoolPref("zen.pinned-tab-manager.wheel-close-if-pending"),
       });
+    }
+  }
+
+  async _onKeyDown(e) {
+    this._updateZenTabSublabel(e);
+  }
+
+  async _onKeyUp(e) {
+    this._updateZenTabSublabel(e);
+  }
+
+  _updateZenTabSublabel(e) {
+    let label = this._tabWithResetPinButtonHovered?.querySelector(".zen-tab-sublabel")
+    if (label, e.getModifierState("Accel") || (e.metaKey && e.type == "keydown")) {
+      window.document.l10n.setArgs(label, {
+        tabSubtitle: "zen-default-pinned-cmd",
+      });
+    } else if (label) {
+      window.document.l10n.setArgs(label, {
+        tabSubtitle: "zen-default-pinned",
+      });
+    }
+  }
+
+  updateTabWithResetPinButtonHovered(tab, event) {
+    if (!tab) {
+      // reset subtitle first
+      this._updateZenTabSublabel(event);
+    }
+    this._tabWithResetPinButtonHovered = tab
+    if (tab) {
+      // now update subtitle
+      this._updateZenTabSublabel(event);
     }
   }
 

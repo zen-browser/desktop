@@ -1510,7 +1510,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const textureSelectWrapper = browser.document.getElementById(
         "PanelUI-zen-gradient-generator-texture-wrapper"
       );
-      const textureWrapperWidth = window.windowUtils.getBoundsWithoutFlushing(textureSelectWrapper).width;
+      const textureWrapperWidth = browser.windowUtils.getBoundsWithoutFlushing(textureSelectWrapper).width;
       // Dont show when hidden
       if (textureWrapperWidth) {
         // rotate and trasnform relative to the wrapper width depending on the texture value

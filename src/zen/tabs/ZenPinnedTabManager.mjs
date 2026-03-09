@@ -74,6 +74,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
+    this._resetPinButtonHovered = false;
+    this._onAccelKeyChangeBound = this._onAccelKeyChange.bind(this);
 
     gZenWorkspaces._resolvePinnedInitialized();
     if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
@@ -110,8 +112,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    this._resetTabToStoredState(tab);
-    gBrowser.selectedTab = tab;
+    if (event.getModifierState("Accel")) {
+      let newTab = gBrowser.duplicateTab(tab, true);
+      newTab.addEventListener("SSTabRestored", () => {
+        this._resetTabToStoredState(tab);
+        gBrowser.selectedTab = tab;
+      }, { once: true });
+    } else {
+      this._resetTabToStoredState(tab);
+      gBrowser.selectedTab = tab;
+    }
   }
 
   get enabled() {
@@ -161,6 +171,42 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         closeIfPending: Services.prefs.getBoolPref("zen.pinned-tab-manager.wheel-close-if-pending"),
       });
     }
+  }
+
+  _onAccelKeyChange(e) {
+    let hoveredButton = document.querySelector(".tab-reset-pin-button:hover");
+    let tab = hoveredButton?.closest("tab");
+    if (tab) {
+      let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
+      this._setResetPinSublabel(tab, accelHeld);
+    }
+  }
+
+  _setResetPinSublabel(tab, accelHeld) {
+    let label = tab.querySelector(".zen-tab-sublabel");
+    if (label) {
+      window.document.l10n.setArgs(label, {
+        tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
+      });
+    }
+  }
+
+  onResetPinButtonMouseOver(tab, event) {
+    if (!this._resetPinButtonHovered) {
+      this._resetPinButtonHovered = true;
+      window.addEventListener("keydown", this._onAccelKeyChangeBound);
+      window.addEventListener("keyup", this._onAccelKeyChangeBound);
+    }
+    this._setResetPinSublabel(tab, event.getModifierState("Accel"));
+  }
+
+  onResetPinButtonMouseOut(tab) {
+    if (this._resetPinButtonHovered) {
+      this._resetPinButtonHovered = false;
+      window.removeEventListener("keydown", this._onAccelKeyChangeBound);
+      window.removeEventListener("keyup", this._onAccelKeyChangeBound);
+    }
+    this._setResetPinSublabel(tab, false);
   }
 
   resetPinnedTab(tab) {

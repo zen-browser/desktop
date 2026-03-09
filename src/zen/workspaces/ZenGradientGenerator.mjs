@@ -1748,8 +1748,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     window.dispatchEvent(new Event("ZenGradientCacheChanged", { bubbles: true, detail: { uuid } }));
   }
 
-  getGradientForWorkspace(workspace, {
-    getGradient = true} = {}) {
+  getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
     let cachedData = this.#gradientsCache[uuid];
     if (cachedData && !(getGradient && !cachedData.gradient)) {

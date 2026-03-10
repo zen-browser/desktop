@@ -438,6 +438,12 @@ window.gZenUIManager = {
       return false;
     }
 
+    // Close the new tab popup on cmd/ctrl + t
+    if (gURLBar.hasAttribute("zen-newtab")) {
+      this.handleUrlbarClose(false, false);
+      return true;
+    }
+
     // Clear any existing timeout
     if (this._clearTimeout) {
       clearTimeout(this._clearTimeout);

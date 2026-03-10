@@ -5,11 +5,23 @@
 - name: zen.splitView.enable-tab-drop
   value: true
 
+- name: zen.splitView.enable-link-drop
+  value: true
+
 - name: zen.splitView.min-resize-width
   value: 7
 
 - name: zen.splitView.rearrange-hover-size
   value: 24
+
+- name: zen.splitView.tab-drop-threshold
+  value: 300
+
+- name: zen.splitView.link-drop-threshold
+  value: 150
+
+- name: zen.splitView.link-drop-window-size
+  value: 150
 
 - name: zen.splitView.enable-drag-over-split
   value: true

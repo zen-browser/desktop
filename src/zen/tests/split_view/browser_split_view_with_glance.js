@@ -9,7 +9,7 @@ const { openGlanceOnTab } = ChromeUtils.importESModule(
 
 add_task(async function test_Basic_Split_View_Glance() {
   await basicSplitNTabs(async () => {
-    await openGlanceOnTab(window, async (glanceTab) => {
+    await openGlanceOnTab(window, async glanceTab => {
       ok(
         glanceTab.hasAttribute("zen-glance-tab"),
         "The glance tab should have the zen-glance-tab attribute"
@@ -23,23 +23,28 @@ add_task(async function test_Basic_Split_View_Glance() {
 });
 
 add_task(async function test_Basic_Split_View_Glance_Expand() {
-  await basicSplitNTabs(async (tabs) => {
+  await basicSplitNTabs(async tabs => {
     await openGlanceOnTab(
       window,
-      async (glanceTab) => {
+      async glanceTab => {
         await gZenGlanceManager.fullyOpenGlance();
         ok(
           !glanceTab.hasAttribute("zen-glance-tab"),
           "The glance tab should not have the zen-glance-tab attribute after expanding"
         );
-        ok(!glanceTab.group, "The glance tab should not be in a split group after expanding");
+        ok(
+          !glanceTab.group,
+          "The glance tab should not be in a split group after expanding"
+        );
         for (const tab of tabs) {
           ok(
             tab.group.hasAttribute("split-view-group"),
             "All tabs in the split view should still be in a split group after expanding glance"
           );
         }
-        const selectedBrowser = document.querySelectorAll(".browserSidebarContainer.deck-selected");
+        const selectedBrowser = document.querySelectorAll(
+          ".browserSidebarContainer.deck-selected"
+        );
         Assert.equal(
           selectedBrowser.length,
           1,
@@ -57,7 +62,9 @@ add_task(async function test_Basic_Split_View_Glance_No_More_Split() {
     async () => {
       await openGlanceOnTab(window, () => {
         Assert.strictEqual(
-          document.getElementById("cmd_zenGlanceSplit").getAttribute("disabled"),
+          document
+            .getElementById("cmd_zenGlanceSplit")
+            .getAttribute("disabled"),
           "true",
           "The split command should be disabled when glance is open"
         );
@@ -73,7 +80,7 @@ add_task(async function test_Basic_Split_View_Glance_Split() {
   gBrowser.selectedTab = tab;
   await openGlanceOnTab(
     window,
-    async (glanceTab) => {
+    async glanceTab => {
       const waitForSplitPromise = BrowserTestUtils.waitForEvent(
         window,
         "ZenViewSplitter:SplitViewActivated"

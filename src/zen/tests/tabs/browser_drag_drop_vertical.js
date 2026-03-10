@@ -9,8 +9,12 @@ const URL3 = "data:text/plain,tab3";
 
 const threshold = Math.min(
   1.0,
-  Math.max(0.5, Services.prefs.getIntPref("browser.tabs.dragDrop.moveOverThresholdPercent") / 100) +
-    0.01
+  Math.max(
+    0.5,
+    Services.prefs.getIntPref(
+      "browser.tabs.dragDrop.moveOverThresholdPercent"
+    ) / 100
+  ) + 0.01
 );
 
 /**
@@ -36,7 +40,7 @@ async function drop(source, target, clientX, clientY, win) {
  * @param {Element} el
  * @returns {DOMRect}
  */
-const bounds = (el) => window.windowUtils.getBoundsWithoutFlushing(el);
+const bounds = el => window.windowUtils.getBoundsWithoutFlushing(el);
 
 /**
  * Virtually drag and drop one tab strip item after another.
@@ -71,7 +75,9 @@ async function dropBefore(itemToDrag, itemToDropBefore, win) {
   const midline = rect.left + 0.5 * rect.width;
   // Point where top edge of `itemToDrag` overlaps `itemToDropBefore` enough
   // for `itemToDrag` to come before.
-  const beforePoint = Math.floor(rect.top + (1 - threshold - 0.5) * rect.height);
+  const beforePoint = Math.floor(
+    rect.top + (1 - threshold - 0.5) * rect.height
+  );
   const dragTo = beforePoint + sourceRect.height / 2;
   await drop(itemToDrag, itemToDropBefore, midline, dragTo, win);
 }
@@ -81,7 +87,9 @@ async function dropBefore(itemToDrag, itemToDropBefore, win) {
  */
 async function ensureNotOverflowing() {
   const tabHeight = Number.parseFloat(
-    getComputedStyle(gBrowser.tabs[0]).getPropertyValue("--tab-height-with-margin-padding")
+    getComputedStyle(gBrowser.tabs[0]).getPropertyValue(
+      "--tab-height-with-margin-padding"
+    )
   );
   const requiredTabSpace = tabHeight * gBrowser.tabs.length;
   const scrollboxWidth = gBrowser.tabContainer.arrowScrollbox.scrollSize;
@@ -118,7 +126,11 @@ add_setup(async () => {
   BrowserTestUtils.removeTab(tabToRemove);
   const emptyTab = gBrowser.tabs[0];
 
-  Assert.deepEqual(gBrowser.tabs, [emptyTab, tab1, tab2, tab3], "confirm tabs' starting order");
+  Assert.deepEqual(
+    gBrowser.tabs,
+    [emptyTab, tab1, tab2, tab3],
+    "confirm tabs' starting order"
+  );
 
   await ensureNotOverflowing();
 

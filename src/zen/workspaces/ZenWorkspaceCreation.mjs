@@ -5,7 +5,7 @@
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
 
-  promiseInitialized = new Promise((resolve) => {
+  promiseInitialized = new Promise(resolve => {
     this.resolveInitialized = resolve;
   });
 
@@ -96,8 +96,12 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.inputName = this.querySelector(".zen-workspace-creation-name");
     this.inputIcon = this.querySelector(".zen-workspace-creation-icon-label");
     this.inputProfile = this.querySelector(".zen-workspace-creation-profile");
-    this.createButton = this.querySelector(".zen-workspace-creation-create-button");
-    this.cancelButton = this.querySelector(".zen-workspace-creation-cancel-button");
+    this.createButton = this.querySelector(
+      ".zen-workspace-creation-create-button"
+    );
+    this.cancelButton = this.querySelector(
+      ".zen-workspace-creation-cancel-button"
+    );
 
     for (const element of this.elementsToAnimate) {
       element.style.opacity = 0;
@@ -114,7 +118,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
       .getInterface(Ci.nsIAppWindow)
       .rollupAllPopups();
 
-    this.handleZenWorkspacesChangeBind = this.handleZenWorkspacesChange.bind(this);
+    this.handleZenWorkspacesChangeBind =
+      this.handleZenWorkspacesChange.bind(this);
 
     for (const element of this.parentElement.children) {
       if (element !== this) {
@@ -130,8 +135,14 @@ class nsZenWorkspaceCreation extends MozXULElement {
       }
     }
 
-    this.createButton.addEventListener("command", this.onCreateButtonCommand.bind(this));
-    this.cancelButton.addEventListener("command", this.onCancelButtonCommand.bind(this));
+    this.createButton.addEventListener(
+      "command",
+      this.onCreateButtonCommand.bind(this)
+    );
+    this.cancelButton.addEventListener(
+      "command",
+      this.onCancelButtonCommand.bind(this)
+    );
 
     this.inputName.addEventListener("input", () => {
       this.createButton.disabled = !this.inputName.value.trim();
@@ -139,12 +150,23 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
-    this.profilesPopup = this.querySelector(".zen-workspace-creation-profiles-popup");
+    this.profilesPopup = this.querySelector(
+      ".zen-workspace-creation-profiles-popup"
+    );
 
     if (gZenWorkspaces.shouldShowContainers) {
-      this.inputProfile.addEventListener("command", this.onProfileCommand.bind(this));
-      this.profilesPopup.addEventListener("popupshown", this.onProfilePopupShown.bind(this));
-      this.profilesPopup.addEventListener("command", this.onProfilePopupCommand.bind(this));
+      this.inputProfile.addEventListener(
+        "command",
+        this.onProfileCommand.bind(this)
+      );
+      this.profilesPopup.addEventListener(
+        "popupshown",
+        this.onProfilePopupShown.bind(this)
+      );
+      this.profilesPopup.addEventListener(
+        "command",
+        this.onProfilePopupCommand.bind(this)
+      );
 
       this.currentProfile = {
         id: 0,
@@ -154,7 +176,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.inputProfile.parentNode.hidden = true;
     }
 
-    document.getElementById("zen-sidebar-splitter").style.pointerEvents = "none";
+    document.getElementById("zen-sidebar-splitter").style.pointerEvents =
+      "none";
 
     gZenUIManager.motion
       .animate(
@@ -220,7 +243,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   onIconCommand(event) {
     gZenEmojiPicker.open(event.target, {
       closeOnSelect: false,
-      onSelect: async (icon) => {
+      onSelect: async icon => {
         const isSvg = icon && icon.endsWith(".svg");
         if (isSvg) {
           this.inputIcon.label = "";
@@ -256,7 +279,9 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   onProfilePopupCommand(event) {
-    let userContextId = parseInt(event.target.getAttribute("data-usercontextid"));
+    let userContextId = parseInt(
+      event.target.getAttribute("data-usercontextid")
+    );
     if (isNaN(userContextId)) {
       return;
     }
@@ -267,7 +292,9 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   finishSetup() {
-    gZenWorkspaces.addChangeListeners(this.handleZenWorkspacesChangeBind, { once: true });
+    gZenWorkspaces.addChangeListeners(this.handleZenWorkspacesChangeBind, {
+      once: true,
+    });
   }
 
   async handleZenWorkspacesChange() {

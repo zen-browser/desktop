@@ -16,7 +16,11 @@ add_task(async function test_Invalid_Workspace_Emoji() {
     name: "👍 test test",
   };
   const icon = gZenWorkspaces.getWorkspaceIcon(fakeWorkspace);
-  Assert.equal(icon, "👍", "Emoji icon should match the first character of the workspace name");
+  Assert.equal(
+    icon,
+    "👍",
+    "Emoji icon should match the first character of the workspace name"
+  );
 });
 
 add_task(async function test_Invalid_Workspace_Name() {
@@ -24,7 +28,11 @@ add_task(async function test_Invalid_Workspace_Name() {
     name: "my workspace",
   };
   const icon = gZenWorkspaces.getWorkspaceIcon(fakeWorkspace);
-  Assert.equal(icon, "M", "Icon should match the first character of the workspace name");
+  Assert.equal(
+    icon,
+    "M",
+    "Icon should match the first character of the workspace name"
+  );
 });
 
 add_task(async function test_Invalid_Workspace_Name() {

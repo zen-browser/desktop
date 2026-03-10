@@ -51,7 +51,9 @@ class nsZenLiveFoldersManager {
     }
 
     for (const provider of providers) {
-      const module = ChromeUtils.importESModule(provider.path, { global: "current" });
+      const module = ChromeUtils.importESModule(provider.path, {
+        global: "current",
+      });
       const ProviderClass = module[provider.module];
       this.registry.set(ProviderClass.type, ProviderClass);
     }
@@ -114,7 +116,8 @@ class nsZenLiveFoldersManager {
   #onTabDismiss(event) {
     const itemIdAttr = "zen-live-folder-item-id";
     const itemId =
-      event.target.getAttribute(itemIdAttr) || event.detail?.getAttribute?.(itemIdAttr);
+      event.target.getAttribute(itemIdAttr) ||
+      event.detail?.getAttribute?.(itemIdAttr);
 
     if (itemId) {
       if (event.type === "TabUngrouped") {
@@ -139,7 +142,9 @@ class nsZenLiveFoldersManager {
 
   #onActionButtonClick(event) {
     const liveFolderId = event.target.getAttribute("live-folder-action");
-    this.getFolder(liveFolderId)?.onActionButtonClick(event.target.getAttribute("data-l10n-id"));
+    this.getFolder(liveFolderId)?.onActionButtonClick(
+      event.target.getAttribute("data-l10n-id")
+    );
   }
 
   #onTabGroupRemoved(event) {
@@ -317,7 +322,9 @@ class nsZenLiveFoldersManager {
 
     // Remove the dismissed items associated with the folder from the set
     this.dismissedItems = new Set(
-      Array.from(this.dismissedItems).filter((itemId) => !itemId.startsWith(prefix))
+      Array.from(this.dismissedItems).filter(
+        itemId => !itemId.startsWith(prefix)
+      )
     );
 
     if (deleteFolder) {
@@ -351,7 +358,9 @@ class nsZenLiveFoldersManager {
     }
 
     // itemid -> id:itemid
-    const itemIds = new Set(items.map((item) => this.#makeCompositeId(liveFolder.id, item.id)));
+    const itemIds = new Set(
+      items.map(item => this.#makeCompositeId(liveFolder.id, item.id))
+    );
 
     const outdatedTabs = [];
     const existingItemIds = new Set();
@@ -377,7 +386,10 @@ class nsZenLiveFoldersManager {
 
     // Remove the dismissed items that are no longer in the given list
     for (const dismissedItemId of this.dismissedItems) {
-      if (dismissedItemId.startsWith(`${liveFolder.id}:`) && !itemIds.has(dismissedItemId)) {
+      if (
+        dismissedItemId.startsWith(`${liveFolder.id}:`) &&
+        !itemIds.has(dismissedItemId)
+      ) {
         this.dismissedItems.delete(dismissedItemId);
       }
     }
@@ -392,11 +404,14 @@ class nsZenLiveFoldersManager {
 
     // Only add the items that are not already in the folder and was not dismissed by the user
     const newItems = items
-      .filter((item) => {
+      .filter(item => {
         const compositeId = this.#makeCompositeId(liveFolder.id, item.id);
-        return !existingItemIds.has(compositeId) && !this.dismissedItems.has(compositeId);
+        return (
+          !existingItemIds.has(compositeId) &&
+          !this.dismissedItems.has(compositeId)
+        );
       })
-      .map((item) => {
+      .map(item => {
         const tab = this.window.gBrowser.addTrustedTab(item.url, {
           createLazyBrowser: true,
           inBackground: true,
@@ -418,7 +433,10 @@ class nsZenLiveFoldersManager {
             });
           }
         }
-        tab.setAttribute("zen-live-folder-item-id", this.#makeCompositeId(liveFolder.id, item.id));
+        tab.setAttribute(
+          "zen-live-folder-item-id",
+          this.#makeCompositeId(liveFolder.id, item.id)
+        );
         if (item.subtitle) {
           tab.setAttribute("zen-show-sublabel", item.subtitle);
           const tabLabel = tab.querySelector(".zen-tab-sublabel");
@@ -471,7 +489,10 @@ class nsZenLiveFoldersManager {
     if (!this.window) {
       return null;
     }
-    const folder = lazy.ZenWindowSync.getItemFromWindow(this.window, liveFolder.id);
+    const folder = lazy.ZenWindowSync.getItemFromWindow(
+      this.window,
+      liveFolder.id
+    );
     if (folder?.isZenFolder) {
       return folder;
     }
@@ -516,7 +537,7 @@ class nsZenLiveFoldersManager {
     let data = [];
     for (let [id, liveFolder] of this.liveFolders) {
       const prefix = `${id}:`;
-      const dismissedItems = Array.from(this.dismissedItems).filter((itemId) =>
+      const dismissedItems = Array.from(this.dismissedItems).filter(itemId =>
         itemId.startsWith(prefix)
       );
 
@@ -568,7 +589,7 @@ class nsZenLiveFoldersManager {
         continue;
       }
 
-      const folder = folders.find((x) => x.id === entry.id);
+      const folder = folders.find(x => x.id === entry.id);
       if (!folder) {
         // No point restore if the live folder can't find its folder
         continue;
@@ -585,7 +606,7 @@ class nsZenLiveFoldersManager {
       liveFolder.tabsState = entry.tabsState || [];
       liveFolder.state.lastErrorId = entry.data.state.lastErrorId;
       if (entry.dismissedItems && Array.isArray(entry.dismissedItems)) {
-        entry.dismissedItems.forEach((id) => this.dismissedItems.add(id));
+        entry.dismissedItems.forEach(id => this.dismissedItems.add(id));
       }
 
       liveFolder.start();

@@ -4,14 +4,19 @@
 "use strict";
 
 add_task(async function test_Glance_Select_Parent() {
-  await openGlanceOnTab(async (glanceTab) => {
+  await openGlanceOnTab(async glanceTab => {
     ok(
       glanceTab.hasAttribute("zen-glance-tab"),
       "The glance tab should have the zen-glance-tab attribute"
     );
-    await BrowserTestUtils.openNewForegroundTab(window.gBrowser, "https://example.com/", true, {
-      skipAnimation: true,
-    });
+    await BrowserTestUtils.openNewForegroundTab(
+      window.gBrowser,
+      "https://example.com/",
+      true,
+      {
+        skipAnimation: true,
+      }
+    );
     const tabToRemove = gBrowser.selectedTab;
     gBrowser.selectedTab = gZenGlanceManager.getTabOrGlanceParent(glanceTab);
     await BrowserTestUtils.waitForCondition(() => {

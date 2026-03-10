@@ -21,7 +21,11 @@ async function openFolderContextMenu(folder) {
   await menuEvent;
 }
 
-async function addTabTo(targetBrowser, url = "http://mochi.test:8888/", params = {}) {
+async function addTabTo(
+  targetBrowser,
+  url = "http://mochi.test:8888/",
+  params = {}
+) {
   params.skipAnimation = true;
   const tab = BrowserTestUtils.addTab(targetBrowser, url, params);
   const browser = targetBrowser.getBrowserForTab(tab);

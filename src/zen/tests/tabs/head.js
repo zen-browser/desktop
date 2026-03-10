@@ -37,7 +37,11 @@ function updateTabContextMenu(tab) {
   var evt = new Event("");
   tab.dispatchEvent(evt);
   menu.openPopup(tab, "end_after", 0, 0, true, false, evt);
-  is(window.TabContextMenu.contextTab, tab, "TabContextMenu context is the expected tab");
+  is(
+    window.TabContextMenu.contextTab,
+    tab,
+    "TabContextMenu context is the expected tab"
+  );
   menu.hidePopup();
 }
 
@@ -63,7 +67,11 @@ async function addTab(url = "http://mochi.test:8888/", params) {
   return addTabTo(gBrowser, url, params);
 }
 
-async function addTabTo(targetBrowser, url = "http://mochi.test:8888/", params = {}) {
+async function addTabTo(
+  targetBrowser,
+  url = "http://mochi.test:8888/",
+  params = {}
+) {
   params.skipAnimation = true;
   const tab = BrowserTestUtils.addTab(targetBrowser, url, params);
   const browser = targetBrowser.getBrowserForTab(tab);
@@ -106,7 +114,7 @@ async function wait_for_tab_playing_event(tab, expectPlaying) {
     ok(true, "The tab should " + (expectPlaying ? "" : "not ") + "be playing");
     return true;
   }
-  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, event => {
     if (event.detail.changed.includes("soundplaying")) {
       is(
         tab.hasAttribute("soundplaying"),
@@ -126,20 +134,29 @@ async function wait_for_tab_playing_event(tab, expectPlaying) {
 
 async function wait_for_tab_media_blocked_event(tab, expectMediaBlocked) {
   if (tab.activeMediaBlocked == expectMediaBlocked) {
-    ok(true, "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked");
+    ok(
+      true,
+      "The tab should " +
+        (expectMediaBlocked ? "" : "not ") +
+        "be activemedia-blocked"
+    );
     return true;
   }
-  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, event => {
     if (event.detail.changed.includes("activemedia-blocked")) {
       is(
         tab.hasAttribute("activemedia-blocked"),
         expectMediaBlocked,
-        "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked"
+        "The tab should " +
+          (expectMediaBlocked ? "" : "not ") +
+          "be activemedia-blocked"
       );
       is(
         tab.activeMediaBlocked,
         expectMediaBlocked,
-        "The tab should " + (expectMediaBlocked ? "" : "not ") + "be activemedia-blocked"
+        "The tab should " +
+          (expectMediaBlocked ? "" : "not ") +
+          "be activemedia-blocked"
       );
       return true;
     }
@@ -212,7 +229,7 @@ function leave_icon(icon) {
 let everMutedTabs = new WeakSet();
 
 function get_wait_for_mute_promise(tab, expectMuted) {
-  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, (event) => {
+  return BrowserTestUtils.waitForEvent(tab, "TabAttrModified", false, event => {
     if (
       event.detail.changed.includes("muted") ||
       event.detail.changed.includes("activemedia-blocked")
@@ -232,7 +249,11 @@ function get_wait_for_mute_promise(tab, expectMuted) {
         everMutedTabs.add(tab);
         is(tab.muteReason, null, "The tab should have a null muteReason value");
       } else {
-        is(tab.muteReason, undefined, "The tab should have an undefined muteReason value");
+        is(
+          tab.muteReason,
+          undefined,
+          "The tab should have an undefined muteReason value"
+        );
       }
       return true;
     }
@@ -306,7 +327,10 @@ async function dragAndDrop(
       return tab1.elementIndex != originalIndex;
     }, "Waiting for tab position to be updated");
   } else if (destWindow != origWindow) {
-    await BrowserTestUtils.waitForCondition(() => tab1.closing, "Waiting for tab closing");
+    await BrowserTestUtils.waitForCondition(
+      () => tab1.closing,
+      "Waiting for tab closing"
+    );
   }
 }
 
@@ -360,7 +384,8 @@ function test_url_for_process_types({
   const CHROME_PROCESS = E10SUtils.NOT_REMOTE;
   const WEB_CONTENT_PROCESS = E10SUtils.WEB_REMOTE_TYPE;
   const PRIVILEGEDABOUT_CONTENT_PROCESS = E10SUtils.PRIVILEGEDABOUT_REMOTE_TYPE;
-  const PRIVILEGEDMOZILLA_CONTENT_PROCESS = E10SUtils.PRIVILEGEDMOZILLA_REMOTE_TYPE;
+  const PRIVILEGEDMOZILLA_CONTENT_PROCESS =
+    E10SUtils.PRIVILEGEDMOZILLA_REMOTE_TYPE;
   const EXTENSION_PROCESS = E10SUtils.EXTENSION_REMOTE_TYPE;
 
   is(
@@ -369,33 +394,57 @@ function test_url_for_process_types({
     "Check URL in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url,
+      /* fission */ false,
+      WEB_CONTENT_PROCESS
+    ),
     webContentResult,
     "Check URL in web content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, PRIVILEGEDABOUT_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url,
+      /* fission */ false,
+      PRIVILEGEDABOUT_CONTENT_PROCESS
+    ),
     privilegedAboutContentResult,
     "Check URL in privileged about content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, PRIVILEGEDMOZILLA_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url,
+      /* fission */ false,
+      PRIVILEGEDMOZILLA_CONTENT_PROCESS
+    ),
     privilegedMozillaContentResult,
     "Check URL in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url, /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url,
+      /* fission */ false,
+      EXTENSION_PROCESS
+    ),
     extensionProcessResult,
     "Check URL in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "#foo",
+      /* fission */ false,
+      CHROME_PROCESS
+    ),
     chromeResult,
     "Check URL with ref in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "#foo",
+      /* fission */ false,
+      WEB_CONTENT_PROCESS
+    ),
     webContentResult,
     "Check URL with ref in web content process."
   );
@@ -418,18 +467,30 @@ function test_url_for_process_types({
     "Check URL with ref in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "#foo", /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "#foo",
+      /* fission */ false,
+      EXTENSION_PROCESS
+    ),
     extensionProcessResult,
     "Check URL with ref in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo",
+      /* fission */ false,
+      CHROME_PROCESS
+    ),
     chromeResult,
     "Check URL with query in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo",
+      /* fission */ false,
+      WEB_CONTENT_PROCESS
+    ),
     webContentResult,
     "Check URL with query in web content process."
   );
@@ -452,18 +513,30 @@ function test_url_for_process_types({
     "Check URL with query in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo", /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo",
+      /* fission */ false,
+      EXTENSION_PROCESS
+    ),
     extensionProcessResult,
     "Check URL with query in extension process."
   );
 
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, CHROME_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo#bar",
+      /* fission */ false,
+      CHROME_PROCESS
+    ),
     chromeResult,
     "Check URL with query and ref in chrome process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, WEB_CONTENT_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo#bar",
+      /* fission */ false,
+      WEB_CONTENT_PROCESS
+    ),
     webContentResult,
     "Check URL with query and ref in web content process."
   );
@@ -486,7 +559,11 @@ function test_url_for_process_types({
     "Check URL with query and ref in privileged mozilla content process."
   );
   is(
-    E10SUtils.canLoadURIInRemoteType(url + "?foo#bar", /* fission */ false, EXTENSION_PROCESS),
+    E10SUtils.canLoadURIInRemoteType(
+      url + "?foo#bar",
+      /* fission */ false,
+      EXTENSION_PROCESS
+    ),
     extensionProcessResult,
     "Check URL with query and ref in extension process."
   );
@@ -505,7 +582,10 @@ function fileURL(filename) {
  * Get a http URL for the local file name.
  */
 function httpURL(filename, host = "https://example.com/") {
-  let root = getRootDirectory(gTestPath).replace("chrome://mochitests/content/", host);
+  let root = getRootDirectory(gTestPath).replace(
+    "chrome://mochitests/content/",
+    host
+  );
   return root + filename;
 }
 
@@ -533,9 +613,16 @@ async function getContextMenu(triggerNode, contextMenuId) {
   let win = triggerNode.ownerGlobal;
   triggerNode.scrollIntoView({ behavior: "instant" });
   const contextMenu = win.document.getElementById(contextMenuId);
-  const contextMenuShown = BrowserTestUtils.waitForPopupEvent(contextMenu, "shown");
+  const contextMenuShown = BrowserTestUtils.waitForPopupEvent(
+    contextMenu,
+    "shown"
+  );
 
-  EventUtils.synthesizeMouseAtCenter(triggerNode, { type: "contextmenu", button: 2 }, win);
+  EventUtils.synthesizeMouseAtCenter(
+    triggerNode,
+    { type: "contextmenu", button: 2 },
+    win
+  );
   await contextMenuShown;
   return contextMenu;
 }

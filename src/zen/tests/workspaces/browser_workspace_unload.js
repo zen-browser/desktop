@@ -5,7 +5,8 @@
 
 // verify that workspace unloading works
 add_task(async function test_UnloadWorkspace_WithMultipleTabs() {
-  const workspaceId = await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 1");
+  const workspaceId =
+    await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 1");
   const tabs = [];
   for (let i = 0; i < 3; i++) {
     const tab = await BrowserTestUtils.openNewForegroundTab(
@@ -35,7 +36,8 @@ add_task(async function test_UnloadWorkspace_WithMultipleTabs() {
 
 // verify that essential tabs are not unloaded
 add_task(async function test_UnloadWorkspace_WithEssentialTabs() {
-  const workspaceId = await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
+  const workspaceId =
+    await gZenWorkspaces.createAndSaveWorkspace("Test Workspace 2");
 
   const regularTab = await BrowserTestUtils.openNewForegroundTab(
     window.gBrowser,
@@ -59,7 +61,10 @@ add_task(async function test_UnloadWorkspace_WithEssentialTabs() {
   ok(regularTab.hasAttribute("pending"), "Regular tab should be unloaded");
   ok(!regularTab.linkedPanel, "Regular tab should not have linked panel");
 
-  ok(!essentialTab.hasAttribute("pending"), "Essential tab should not be unloaded");
+  ok(
+    !essentialTab.hasAttribute("pending"),
+    "Essential tab should not be unloaded"
+  );
   ok(essentialTab.linkedPanel, "Essential tab should still have linked panel");
 
   await gZenWorkspaces.removeWorkspace(workspaceId);
@@ -70,7 +75,9 @@ add_task(async function test_UnloadWorkspace_TargetedWorkspaceIsolation() {
   const inActiveWorkspaceId = await gZenWorkspaces.createAndSaveWorkspace(
     "Test In-Active Workspace"
   );
-  const activeWorkspaceId = await gZenWorkspaces.createAndSaveWorkspace("Test Active Workspace");
+  const activeWorkspaceId = await gZenWorkspaces.createAndSaveWorkspace(
+    "Test Active Workspace"
+  );
 
   const inActiveWorkspaceTabs = [];
   for (let i = 0; i < 2; i++) {
@@ -99,13 +106,25 @@ add_task(async function test_UnloadWorkspace_TargetedWorkspaceIsolation() {
   await gZenWorkspaces.unloadWorkspace(); // this unloads the latest created workspace -> activeWorkspaceId
 
   for (const tab of activeWorkspaceTabs) {
-    ok(tab.hasAttribute("pending"), "Active workspace tab should be pending after unload");
-    ok(!tab.linkedPanel, "Active workspace tab should not have linked panel after unload");
+    ok(
+      tab.hasAttribute("pending"),
+      "Active workspace tab should be pending after unload"
+    );
+    ok(
+      !tab.linkedPanel,
+      "Active workspace tab should not have linked panel after unload"
+    );
   }
 
   for (const tab of inActiveWorkspaceTabs) {
-    ok(!tab.hasAttribute("pending"), "In-Active workspace tab should NOT be pending after unload");
-    ok(tab.linkedPanel, "In-Active workspace tab should still have linked panel after unload");
+    ok(
+      !tab.hasAttribute("pending"),
+      "In-Active workspace tab should NOT be pending after unload"
+    );
+    ok(
+      tab.linkedPanel,
+      "In-Active workspace tab should still have linked panel after unload"
+    );
   }
 
   await gZenWorkspaces.removeWorkspace(inActiveWorkspaceId);

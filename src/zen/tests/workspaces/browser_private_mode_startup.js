@@ -8,7 +8,7 @@ add_task(async function test_Private_Mode_Startup() {
     private: true,
   });
   await privateWindow.gZenWorkspaces.promiseInitialized;
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     /* eslint-disable-next-line mozilla/no-arbitrary-setTimeout */
     setTimeout(() => {
       Assert.equal(

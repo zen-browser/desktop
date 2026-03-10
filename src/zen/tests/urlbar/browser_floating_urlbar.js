@@ -18,7 +18,10 @@ add_task(async function test_Floating_Urlbar() {
     value: "https://example.com/",
   });
 
-  ok(gURLBar.textbox.hasAttribute("zen-floating-urlbar"), "URL bar should be in floating mode");
+  ok(
+    gURLBar.textbox.hasAttribute("zen-floating-urlbar"),
+    "URL bar should be in floating mode"
+  );
 });
 
 add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {

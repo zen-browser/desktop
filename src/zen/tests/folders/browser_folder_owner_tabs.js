@@ -13,7 +13,8 @@ add_task(async function test_Duplicate_Tab_Inside_Folder() {
     renameFolder: false,
   });
   gBrowser.selectedTab = tab;
-  const triggeringPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+  const triggeringPrincipal =
+    Services.scriptSecurityManager.getSystemPrincipal();
   gBrowser.addTab("https://example.com", {
     tabIndex: undefined,
     relatedToCurrent: true,
@@ -28,7 +29,7 @@ add_task(async function test_Duplicate_Tab_Inside_Folder() {
   );
 
   /* eslint-disable mozilla/no-arbitrary-setTimeout */
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   for (const t of folder.tabs) {
     ok(t.pinned, "All tabs in the folder should be pinned");
@@ -49,7 +50,8 @@ add_task(async function test_Duplicate_Tab_Inside_Folder_Unpinned() {
     renameFolder: false,
   });
   gBrowser.selectedTab = tab;
-  const triggeringPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+  const triggeringPrincipal =
+    Services.scriptSecurityManager.getSystemPrincipal();
   let newTab = gBrowser.addTab("https://example.com", {
     tabIndex: undefined,
     relatedToCurrent: true,

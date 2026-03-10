@@ -22,7 +22,9 @@ class nsZenCollapsiblePins extends nsZenFolder {
   get groupStartElement() {
     // Fetch this instead of the tab-group-start since it is not guaranteed this
     // element will be the first child of the pinned tabs container.
-    return this.#spaceElement.pinnedTabsContainer.querySelector(".space-fake-collapsible-start");
+    return this.#spaceElement.pinnedTabsContainer.querySelector(
+      ".space-fake-collapsible-start"
+    );
   }
 
   get collapsed() {
@@ -114,12 +116,17 @@ export class nsZenWorkspace extends MozXULElement {
     this.#hasConnected = true;
     this.appendChild(this.constructor.fragment);
 
-    this.tabsContainer = this.querySelector(".zen-workspace-normal-tabs-section");
-    this.indicator = this.querySelector(".zen-current-workspace-indicator");
-    this.pinnedTabsContainer = this.querySelector(".zen-workspace-pinned-tabs-section");
-    this.pinnedTabsContainer.separatorElement = this.pinnedTabsContainer.querySelector(
-      ".pinned-tabs-container-separator"
+    this.tabsContainer = this.querySelector(
+      ".zen-workspace-normal-tabs-section"
     );
+    this.indicator = this.querySelector(".zen-current-workspace-indicator");
+    this.pinnedTabsContainer = this.querySelector(
+      ".zen-workspace-pinned-tabs-section"
+    );
+    this.pinnedTabsContainer.separatorElement =
+      this.pinnedTabsContainer.querySelector(
+        ".pinned-tabs-container-separator"
+      );
     this.initializeAttributeInheritance();
 
     this.scrollbox = this.querySelector("arrowscrollbox");
@@ -132,9 +139,11 @@ export class nsZenWorkspace extends MozXULElement {
     this.scrollbox.addEventListener("underflow", this);
     this.scrollbox.addEventListener("overflow", this);
 
-    const indicatorName = this.indicator.querySelector(".zen-current-workspace-indicator-name");
+    const indicatorName = this.indicator.querySelector(
+      ".zen-current-workspace-indicator-name"
+    );
     indicatorName.onRenameFinished = this.onIndicatorRenameFinished.bind(this);
-    indicatorName.addEventListener("dblclick", (event) => {
+    indicatorName.addEventListener("dblclick", event => {
       if (this.hasPinnedTabs) {
         // Prevent renaming when there are pinned tabs
         event.stopPropagation();
@@ -142,7 +151,8 @@ export class nsZenWorkspace extends MozXULElement {
     });
 
     this.pinnedTabsContainer.scrollbox = this.scrollbox;
-    this.#initialPinnedElementChildrenCount = this.pinnedTabsContainer.children.length;
+    this.#initialPinnedElementChildrenCount =
+      this.pinnedTabsContainer.children.length;
 
     if (document.documentElement.hasAttribute("zen-unsynced-window")) {
       this.indicator.removeAttribute("context");
@@ -154,7 +164,7 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.indicator
       .querySelector(".zen-current-workspace-indicator-icon")
-      .addEventListener("dblclick", (event) => {
+      .addEventListener("dblclick", event => {
         if (this.hasPinnedTabs) {
           return;
         }
@@ -162,7 +172,7 @@ export class nsZenWorkspace extends MozXULElement {
         gZenWorkspaces.changeWorkspaceIcon();
       });
 
-    this.indicator.addEventListener("click", (event) => {
+    this.indicator.addEventListener("click", event => {
       if (this.hasPinnedTabs && event.button === 0) {
         event.stopPropagation();
         this.collapsiblePins.toggle();
@@ -170,27 +180,36 @@ export class nsZenWorkspace extends MozXULElement {
     });
 
     if (!gZenWorkspaces.currentWindowIsSyncing) {
-      let actionsButton = this.indicator.querySelector(".zen-workspaces-actions");
+      let actionsButton = this.indicator.querySelector(
+        ".zen-workspaces-actions"
+      );
       const moveTabToFragment = window.MozXULElement.parseXULToFragment(
         nsZenWorkspace.moveTabToButtonMarkup
       );
       actionsButton.after(moveTabToFragment);
       actionsButton.setAttribute("hidden", "true");
       actionsButton = actionsButton.nextElementSibling;
-      actionsButton.addEventListener("command", (event) => {
+      actionsButton.addEventListener("command", event => {
         event.stopPropagation();
         this.#openMoveTabsToWorkspacePanel(event.target);
       });
     }
 
     this.scrollbox._getScrollableElements = () => {
-      const children = [...this.pinnedTabsContainer.children, ...this.tabsContainer.children];
-      if (Services.prefs.getBoolPref("zen.view.show-newtab-button-top", false)) {
+      const children = [
+        ...this.pinnedTabsContainer.children,
+        ...this.tabsContainer.children,
+      ];
+      if (
+        Services.prefs.getBoolPref("zen.view.show-newtab-button-top", false)
+      ) {
         // Move the perifery to the first non-pinned tab
-        const periphery = this.tabsContainer.querySelector("#tabbrowser-arrowscrollbox-periphery");
+        const periphery = this.tabsContainer.querySelector(
+          "#tabbrowser-arrowscrollbox-periphery"
+        );
         if (periphery) {
           const firstNonPinnedTabIndex = children.findIndex(
-            (child) => gBrowser.isTab(child) && !child.pinned
+            child => gBrowser.isTab(child) && !child.pinned
           );
           if (firstNonPinnedTabIndex > -1) {
             // Change to new location and remove from the old one on the list
@@ -209,7 +228,7 @@ export class nsZenWorkspace extends MozXULElement {
       );
     };
 
-    this.scrollbox._canScrollToElement = (element) => {
+    this.scrollbox._canScrollToElement = element => {
       if (gBrowser.isTab(element)) {
         return (
           !element.hasAttribute("zen-essential") &&
@@ -242,13 +261,18 @@ export class nsZenWorkspace extends MozXULElement {
     this.tabsContainer.setAttribute("zen-workspace-id", this.id);
     this.pinnedTabsContainer.setAttribute("zen-workspace-id", this.id);
 
-    this.collapsiblePins = document.createXULElement("zen-workspace-collapsible-pins");
+    this.collapsiblePins = document.createXULElement(
+      "zen-workspace-collapsible-pins"
+    );
     this.prepend(this.collapsiblePins);
 
     this.#updateOverflow();
 
     this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
-    window.addEventListener("ZenGradientCacheChanged", this.onGradientCacheChanged);
+    window.addEventListener(
+      "ZenGradientCacheChanged",
+      this.onGradientCacheChanged
+    );
 
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
@@ -263,7 +287,7 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.addEventListener("TabPinned", tabPinCallback);
     this.addEventListener("TabUnpinned", tabPinCallback);
-    this.addEventListener("TabClose", (event) => {
+    this.addEventListener("TabClose", event => {
       if (event.target.pinned) {
         tabPinCallback();
       }
@@ -271,7 +295,10 @@ export class nsZenWorkspace extends MozXULElement {
   }
 
   disconnectedCallback() {
-    window.removeEventListener("ZenGradientCacheChanged", this.onGradientCacheChanged);
+    window.removeEventListener(
+      "ZenGradientCacheChanged",
+      this.onGradientCacheChanged
+    );
   }
 
   get active() {
@@ -329,10 +356,14 @@ export class nsZenWorkspace extends MozXULElement {
       return;
     }
     let workspaces = gZenWorkspaces.getWorkspaces();
-    let workspaceData = workspaces.find((workspace) => workspace.uuid === this.workspaceUuid);
+    let workspaceData = workspaces.find(
+      workspace => workspace.uuid === this.workspaceUuid
+    );
     workspaceData.name = newName;
     await gZenWorkspaces.saveWorkspace(workspaceData);
-    this.indicator.querySelector(".zen-current-workspace-indicator-name").textContent = newName;
+    this.indicator.querySelector(
+      ".zen-current-workspace-indicator-name"
+    ).textContent = newName;
     gZenUIManager.showToast("zen-workspace-renamed-toast");
   }
 
@@ -342,7 +373,7 @@ export class nsZenWorkspace extends MozXULElement {
     const target = event.target;
     target.setAttribute("open", "true");
     this.indicator.setAttribute("open", "true");
-    const handlePopupHidden = (event) => {
+    const handlePopupHidden = event => {
       if (event.target !== popup) {
         return;
       }
@@ -369,12 +400,18 @@ export class nsZenWorkspace extends MozXULElement {
     } else {
       this.style.colorScheme = "";
     }
-    this.style.setProperty("--toolbox-textcolor", `rgb(${toolbarColor.join(",")})`);
+    this.style.setProperty(
+      "--toolbox-textcolor",
+      `rgb(${toolbarColor.join(",")})`
+    );
     this.style.setProperty("--zen-primary-color", primaryColor);
   }
 
   checkPinsExistence() {
-    if (this.pinnedTabsContainer.children.length > this.#initialPinnedElementChildrenCount) {
+    if (
+      this.pinnedTabsContainer.children.length >
+      this.#initialPinnedElementChildrenCount
+    ) {
       this.setAttribute("haspinnedtabs", "true");
     } else {
       this.removeAttribute("haspinnedtabs");

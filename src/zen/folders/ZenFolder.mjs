@@ -4,7 +4,8 @@
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+  ZenLiveFoldersManager:
+    "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
 });
 
 export class nsZenFolder extends MozTabbrowserTabGroup {
@@ -77,7 +78,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
     this.labelElement.parentElement.setAttribute("context", "zenFolderActions");
 
-    this.labelElement.onRenameFinished = (newLabel) => {
+    this.labelElement.onRenameFinished = newLabel => {
       this.name = newLabel.trim() || "Folder";
       const event = new CustomEvent("ZenFolderRenamed", {
         bubbles: true,
@@ -127,7 +128,9 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   get childActiveGroups() {
     if (this.tagName === "zen-workspace-collapsible-pins") {
-      return Array.from(this.parentElement.querySelectorAll("zen-folder[has-active]"));
+      return Array.from(
+        this.parentElement.querySelectorAll("zen-folder[has-active]")
+      );
     }
     return Array.from(this.querySelectorAll("zen-folder[has-active]"));
   }
@@ -193,7 +196,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   get allItems() {
     return [...this.groupContainer.children].filter(
-      (child) =>
+      child =>
         !(
           child.classList.contains("zen-tab-group-start") ||
           child.classList.contains("pinned-tabs-container-separator")
@@ -227,7 +230,9 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     } else {
       const folders = new Map();
       for (let tab of this._activeTabs) {
-        const group = tab?.group?.hasAttribute("split-view-group") ? tab?.group?.group : tab?.group;
+        const group = tab?.group?.hasAttribute("split-view-group")
+          ? tab?.group?.group
+          : tab?.group;
         if (!folders.has(group?.id)) {
           folders.set(group?.id, group?.activeGroups?.at(-1));
         }
@@ -247,7 +252,10 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get resetButton() {
-    return this.labelElement.parentElement?.querySelector(".tab-reset-button") ?? null;
+    return (
+      this.labelElement.parentElement?.querySelector(".tab-reset-button") ??
+      null
+    );
   }
 
   unloadAllTabs(event) {
@@ -280,8 +288,13 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   addTabs(tabs) {
     super.addTabs(tabs);
-    if (this.collapsed && !gZenFolders._sessionRestoring && this.isLiveFolder && tabs.length) {
-      tabs.forEach((tab) => {
+    if (
+      this.collapsed &&
+      !gZenFolders._sessionRestoring &&
+      this.isLiveFolder &&
+      tabs.length
+    ) {
+      tabs.forEach(tab => {
         tab.setAttribute("folder-active", "true");
       });
       gZenFolders.animateCollapse(this);

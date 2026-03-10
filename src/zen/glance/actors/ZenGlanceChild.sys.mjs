@@ -17,7 +17,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery("ZenGlance:GetActivationMethod");
+    this.#activationMethod = await this.sendQuery(
+      "ZenGlance:GetActivationMethod"
+    );
   }
 
   #ensureOnlyKeyModifiers(event) {
@@ -114,7 +116,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     }
     this.sendAsyncMessage("ZenGlance:CloseGlance", {
-      hasFocused: this.contentWindow.document.activeElement !== this.contentWindow.document.body,
+      hasFocused:
+        this.contentWindow.document.activeElement !==
+        this.contentWindow.document.body,
     });
   }
 

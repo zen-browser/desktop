@@ -47,9 +47,15 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const activeRepos = new Set();
 
       if (issues.length) {
-        const authors = document.querySelectorAll("a[class^=IssueItem-module__authorCreatedLink]");
-        const titles = document.querySelectorAll("div[class^=Title-module__container]");
-        const links = document.querySelectorAll('[data-testid="issue-pr-title-link"]');
+        const authors = document.querySelectorAll(
+          "a[class^=IssueItem-module__authorCreatedLink]"
+        );
+        const titles = document.querySelectorAll(
+          "div[class^=Title-module__container]"
+        );
+        const links = document.querySelectorAll(
+          '[data-testid="issue-pr-title-link"]'
+        );
 
         for (let i = 0; i < issues.length; i++) {
           const [rawRepo, rawNumber] = issues[i].childNodes;
@@ -131,7 +137,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     let outputString = "";
     for (const option of options) {
       if (Array.isArray(option)) {
-        const enabledOptions = option.filter((x) => x.enabled).map((x) => x.value);
+        const enabledOptions = option.filter(x => x.enabled).map(x => x.value);
         if (enabledOptions.length) {
           outputString += ` (${enabledOptions.join(" OR ")}) `;
         }
@@ -151,7 +157,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     const excluded = this.state.options.repoExcludes;
     const repoOptions = Array.from(this.state.repos.union(excluded))
       .sort((a, b) => a.localeCompare(b))
-      .map((repo) => ({
+      .map(repo => ({
         l10nId: "zen-live-folder-github-option-repo",
         l10nArgs: { repo },
 
@@ -204,7 +210,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     const key = option.getAttribute("option-key");
     const checked = option.getAttribute("checked") === "true";
-    if (!this.options.some((x) => x.key === key)) {
+    if (!this.options.some(x => x.key === key)) {
       return;
     }
 
@@ -235,7 +241,9 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const tab = this.manager.window.gBrowser.addTrustedTab("https://github.com/login");
+        const tab = this.manager.window.gBrowser.addTrustedTab(
+          "https://github.com/login"
+        );
         this.manager.window.gBrowser.selectedTab = tab;
         break;
       }

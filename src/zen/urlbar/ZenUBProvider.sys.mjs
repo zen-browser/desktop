@@ -7,7 +7,8 @@ import { UrlbarProvidersManager } from "moz-src:///browser/components/urlbar/Url
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   /* eslint-disable mozilla/valid-lazy */
-  ZenUrlbarProviderGlobalActions: "resource:///modules/ZenUBActionsProvider.sys.mjs",
+  ZenUrlbarProviderGlobalActions:
+    "resource:///modules/ZenUBActionsProvider.sys.mjs",
 });
 
 export function registerZenUrlbarProviders() {

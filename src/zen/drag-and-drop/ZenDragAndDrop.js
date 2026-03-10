@@ -8,9 +8,10 @@
 
 // Wrap in a block to prevent leaking to window scope.
 {
-  const isTab = (element) => gBrowser.isTab(element);
-  const isTabGroupLabel = (element) => gBrowser.isTabGroupLabel(element);
-  const isEssentialsPromo = (element) => element?.tagName.toUpperCase() == "ZEN-ESSENTIALS-PROMO";
+  const isTab = element => gBrowser.isTab(element);
+  const isTabGroupLabel = element => gBrowser.isTabGroupLabel(element);
+  const isEssentialsPromo = element =>
+    element?.tagName.toUpperCase() == "ZEN-ESSENTIALS-PROMO";
 
   /**
    * The elements in the tab strip from `this.ariaFocusableItems` that contain
@@ -34,7 +35,7 @@
    * @param {MozTabbrowserTab|typeof MozTabbrowserTabGroup.labelElement} element
    * @returns {MozTabbrowserTab|vbox}
    */
-  const elementToMove = (element) => {
+  const elementToMove = element => {
     if (
       !element ||
       element.closest(".zen-current-workspace-indicator") ||
@@ -118,9 +119,13 @@
     init() {
       super.init();
       this.handle_windowDragEnter = this.handle_windowDragEnter.bind(this);
-      window.addEventListener("dragleave", this.handle_windowDragLeave.bind(this), {
-        capture: true,
-      });
+      window.addEventListener(
+        "dragleave",
+        this.handle_windowDragLeave.bind(this),
+        {
+          capture: true,
+        }
+      );
     }
 
     startTabDrag(event, tab, ...args) {
@@ -133,7 +138,11 @@
         tab = tab.group;
       }
       const draggingTabs = tab.multiselected ? gBrowser.selectedTabs : [tab];
-      const { offsetX, offsetY } = this.#getDragImageOffset(event, tab, draggingTabs);
+      const { offsetX, offsetY } = this.#getDragImageOffset(
+        event,
+        tab,
+        draggingTabs
+      );
       const dragImage = this.#createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
       dt.setDragImage(...this.originalDragImageArgs);
@@ -146,7 +155,9 @@
       const periphery = gZenWorkspaces.activeWorkspaceElement.querySelector(
         "#tabbrowser-arrowscrollbox-periphery"
       );
-      const tabRect = window.windowUtils.getBoundsWithoutFlushing(movingTabs[0]);
+      const tabRect = window.windowUtils.getBoundsWithoutFlushing(
+        movingTabs[0]
+      );
       const wrapper = document.createElement("div");
       let movingTabsCount = Math.min(movingTabs.length, 3);
       wrapper.style.width = tabRect.width + "px";
@@ -160,7 +171,8 @@
         if (tab.hasAttribute("zen-essential")) {
           const rect = tab.getBoundingClientRect();
           tabClone.style.minWidth = tabClone.style.maxWidth = `${rect.width}px`;
-          tabClone.style.minHeight = tabClone.style.maxHeight = `${rect.height}px`;
+          tabClone.style.minHeight =
+            tabClone.style.maxHeight = `${rect.height}px`;
           if (tabClone.hasAttribute("visuallyselected")) {
             tabClone.style.transform = "translate(-50%, -50%)";
           }
@@ -181,9 +193,16 @@
         if (isTab(tabClone)) {
           // We need to limit the label content so the drag image doesn't grow too big.
           const label = tabClone.textLabel;
-          const tabLabelParentWidth = label.parentElement.getBoundingClientRect().width;
-          label.textContent = label.textContent.slice(0, Math.floor(tabLabelParentWidth / 6));
-        } else if (gBrowser.isTabGroup(tabClone) && tabClone.hasAttribute("split-view-group")) {
+          const tabLabelParentWidth =
+            label.parentElement.getBoundingClientRect().width;
+          label.textContent = label.textContent.slice(
+            0,
+            Math.floor(tabLabelParentWidth / 6)
+          );
+        } else if (
+          gBrowser.isTabGroup(tabClone) &&
+          tabClone.hasAttribute("split-view-group")
+        ) {
           let tabs = tab.tabs;
           for (let j = 0; j < tabs.length; j++) {
             const tabInGroup = tabs[j];
@@ -220,7 +239,10 @@
     // eslint-disable-next-line complexity
     _animateTabMove(event) {
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (event.target.closest("#zen-essentials") && !isEssentialsPromo(event.target)) {
+      if (
+        event.target.closest("#zen-essentials") &&
+        !isEssentialsPromo(event.target)
+      ) {
         if (!isTab(draggedTab)) {
           this.clearDragOverVisuals();
           return;
@@ -242,7 +264,9 @@
         tabs = [...movingTabs];
       }
 
-      let screen = this._tabbrowserTabs.verticalMode ? event.screenY : event.screenX;
+      let screen = this._tabbrowserTabs.verticalMode
+        ? event.screenY
+        : event.screenX;
       if (screen == dragData.animLastScreenPos) {
         return;
       }
@@ -255,9 +279,11 @@
         tabs.reverse();
       }
 
-      let bounds = (ele) => window.windowUtils.getBoundsWithoutFlushing(ele);
+      let bounds = ele => window.windowUtils.getBoundsWithoutFlushing(ele);
       let logicalForward = screenForward != this._rtlMode;
-      let screenAxis = this._tabbrowserTabs.verticalMode ? "screenY" : "screenX";
+      let screenAxis = this._tabbrowserTabs.verticalMode
+        ? "screenY"
+        : "screenX";
       let size = this._tabbrowserTabs.verticalMode ? "height" : "width";
       let { width: tabWidth, height: tabHeight } = bounds(draggedTab);
       let tabSize = this._tabbrowserTabs.verticalMode ? tabHeight : tabWidth;
@@ -275,7 +301,7 @@
       );
       let lastMovingTab = movingTabs.at(-1);
       let firstMovingTab = movingTabs[0];
-      let endEdge = (ele) => ele[screenAxis] + bounds(ele)[size];
+      let endEdge = ele => ele[screenAxis] + bounds(ele)[size];
       let lastMovingTabScreen = endEdge(lastMovingTab);
       let firstMovingTabScreen = firstMovingTab[screenAxis];
       let shiftSize = lastMovingTabScreen - firstMovingTabScreen;
@@ -298,7 +324,8 @@
       // Center the tab under the cursor if the tab is not under the cursor while dragging
       let draggedTabScreenAxis = draggedTab[screenAxis] + translate;
       if (
-        (screen < draggedTabScreenAxis || screen > draggedTabScreenAxis + tabSize) &&
+        (screen < draggedTabScreenAxis ||
+          screen > draggedTabScreenAxis + tabSize) &&
         draggedTabScreenAxis + tabSize < endBound &&
         draggedTabScreenAxis > startBound
       ) {
@@ -309,7 +336,7 @@
 
       dragData.translatePos = translate;
 
-      tabs = tabs.filter((t) => !movingTabsSet.has(t) || t == draggedTab);
+      tabs = tabs.filter(t => !movingTabsSet.has(t) || t == draggedTab);
 
       /**
        * When the `draggedTab` is just starting to move, the `draggedTab` is in
@@ -333,16 +360,23 @@
        * @returns {number}
        */
       let getTabShift = (item, dropElementIndex) => {
-        if (item.elementIndex < draggedTab.elementIndex && item.elementIndex >= dropElementIndex) {
+        if (
+          item.elementIndex < draggedTab.elementIndex &&
+          item.elementIndex >= dropElementIndex
+        ) {
           return this._rtlMode ? -shiftSize : shiftSize;
         }
-        if (item.elementIndex > draggedTab.elementIndex && item.elementIndex < dropElementIndex) {
+        if (
+          item.elementIndex > draggedTab.elementIndex &&
+          item.elementIndex < dropElementIndex
+        ) {
           return this._rtlMode ? shiftSize : -shiftSize;
         }
         return 0;
       };
 
-      let oldDropElementIndex = dragData.animDropElementIndex ?? movingTabs[0].elementIndex;
+      let oldDropElementIndex =
+        dragData.animDropElementIndex ?? movingTabs[0].elementIndex;
 
       /**
        * Returns the higher % by which one element overlaps another
@@ -423,7 +457,9 @@
        *   time.
        */
       let getOverlappedElement = () => {
-        let point = (screenForward ? lastMovingTabScreen : firstMovingTabScreen) + translate;
+        let point =
+          (screenForward ? lastMovingTabScreen : firstMovingTabScreen) +
+          translate;
         let low = 0;
         let high = tabs.length - 1;
         while (low <= high) {
@@ -433,7 +469,9 @@
           }
           let element = tabs[mid];
           let elementForSize = elementToMove(element);
-          screen = elementForSize[screenAxis] + getTabShift(element, oldDropElementIndex);
+          screen =
+            elementForSize[screenAxis] +
+            getTabShift(element, oldDropElementIndex);
 
           if (screen > point) {
             high = mid - 1;
@@ -489,11 +527,18 @@
         // 4) we just started dragging and the `oldDropElementIndex` has its default
         //    valuë of `movingTabs[0].elementIndex`. In this case, the drop element
         //    shouldn't be a moving tab, so keep it `undefined`.
-        let lastPossibleDropElement = this._rtlMode ? tabs.find((t) => t != draggedTab) : undefined;
-        let maxElementIndexForDropElement = lastPossibleDropElement?.elementIndex;
+        let lastPossibleDropElement = this._rtlMode
+          ? tabs.find(t => t != draggedTab)
+          : undefined;
+        let maxElementIndexForDropElement =
+          lastPossibleDropElement?.elementIndex;
         if (Number.isInteger(maxElementIndexForDropElement)) {
-          let index = Math.min(oldDropElementIndex, maxElementIndexForDropElement);
-          let oldDropElementCandidate = this._tabbrowserTabs.ariaFocusableItems.at(index);
+          let index = Math.min(
+            oldDropElementIndex,
+            maxElementIndexForDropElement
+          );
+          let oldDropElementCandidate =
+            this._tabbrowserTabs.ariaFocusableItems.at(index);
           if (!movingTabsSet.has(oldDropElementCandidate)) {
             dropElement = oldDropElementCandidate;
           }
@@ -507,7 +552,8 @@
         let dropElementForOverlap = elementToMove(dropElement);
 
         let dropElementScreen = dropElementForOverlap[screenAxis];
-        let dropElementPos = dropElementScreen + getTabShift(dropElement, oldDropElementIndex);
+        let dropElementPos =
+          dropElementScreen + getTabShift(dropElement, oldDropElementIndex);
         let dropElementSize = bounds(dropElementForOverlap)[size];
         let firstMovingTabPos = firstMovingTabScreen + translate;
         overlapPercent = greatestOverlap(
@@ -518,7 +564,9 @@
         );
 
         moveOverThreshold = gBrowser._tabGroupsEnabled
-          ? Services.prefs.getIntPref("browser.tabs.dragDrop.moveOverThresholdPercent") / 100
+          ? Services.prefs.getIntPref(
+              "browser.tabs.dragDrop.moveOverThresholdPercent"
+            ) / 100
           : 0.5;
         moveOverThreshold = Math.min(1, Math.max(0, moveOverThreshold));
         let shouldMoveOver = overlapPercent > moveOverThreshold;
@@ -536,7 +584,8 @@
 
         // Recalculate the overlap with the updated drop index for when the
         // drop element moves over.
-        dropElementPos = dropElementScreen + getTabShift(dropElement, newDropElementIndex);
+        dropElementPos =
+          dropElementScreen + getTabShift(dropElement, newDropElementIndex);
         overlapPercent = greatestOverlap(
           firstMovingTabPos,
           shiftSize,
@@ -611,17 +660,25 @@
     }
 
     #shouldSwitchSpace(event) {
-      const padding = Services.prefs.getIntPref("zen.workspaces.dnd-switch-padding");
+      const padding = Services.prefs.getIntPref(
+        "zen.workspaces.dnd-switch-padding"
+      );
       // If we are hovering over the edges of the gNavToolbox or the splitter, we
       // can change the workspace after a short delay.
       const splitter = document.getElementById("zen-sidebar-splitter");
       let rect = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox);
-      if (!(gZenCompactModeManager.preference && gZenCompactModeManager.canHideSidebar)) {
-        rect.width += window.windowUtils.getBoundsWithoutFlushing(splitter).width;
+      if (!(
+        gZenCompactModeManager.preference &&
+        gZenCompactModeManager.canHideSidebar
+      )) {
+        rect.width +=
+          window.windowUtils.getBoundsWithoutFlushing(splitter).width;
       }
       const { clientX } = event;
-      const isNearLeftEdge = clientX >= rect.left - padding && clientX <= rect.left + padding;
-      const isNearRightEdge = clientX >= rect.right - padding && clientX <= rect.right + padding;
+      const isNearLeftEdge =
+        clientX >= rect.left - padding && clientX <= rect.left + padding;
+      const isNearRightEdge =
+        clientX >= rect.right - padding && clientX <= rect.right + padding;
       return { isNearLeftEdge, isNearRightEdge };
     }
 
@@ -639,14 +696,19 @@
         this.clearSpaceSwitchTimer();
         return;
       }
-      const { isNearLeftEdge, isNearRightEdge } = this.#shouldSwitchSpace(event);
+      const { isNearLeftEdge, isNearRightEdge } =
+        this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
         if (!this.#changeSpaceTimer) {
           this.#changeSpaceTimer = setTimeout(() => {
             this.clearDragOverVisuals();
             gZenWorkspaces
-              .changeWorkspaceShortcut(isNearLeftEdge ? -1 : 1, false, /* Disable wrapping */ true)
-              .then((spaceChanged) => {
+              .changeWorkspaceShortcut(
+                isNearLeftEdge ? -1 : 1,
+                false,
+                /* Disable wrapping */ true
+              )
+              .then(spaceChanged => {
                 if (AppConstants.platform !== "macosx") {
                   // See the hack in #createDragImageForTabs for more details which
                   // explains why we need to do this on non-macOS platforms.
@@ -654,7 +716,9 @@
                 }
                 let tabs = this.originalDragImageArgs[0].children;
                 const { isDarkMode, isExplicitMode } =
-                  gZenThemePicker.getGradientForWorkspace(spaceChanged, { getGradient: false });
+                  gZenThemePicker.getGradientForWorkspace(spaceChanged, {
+                    getGradient: false,
+                  });
                 for (let tab of tabs) {
                   if (isExplicitMode) {
                     tab.style.colorScheme = isDarkMode ? "dark" : "light";
@@ -725,7 +789,10 @@
       const edgeZoneThreshold = this._dndSplitThreshold / 100;
 
       const overlapRatioY = (clientY - targetTop) / targetHeight;
-      if (overlapRatioY < edgeZoneThreshold || overlapRatioY > 1 - edgeZoneThreshold) {
+      if (
+        overlapRatioY < edgeZoneThreshold ||
+        overlapRatioY > 1 - edgeZoneThreshold
+      ) {
         this._clearDragOverSplit();
         return;
       }
@@ -815,7 +882,10 @@
         return;
       }
       const { innerWidth: winWidth, innerHeight: winHeight } = window;
-      let allowedMargin = Services.prefs.getIntPref("zen.tabs.dnd-outside-window-margin", 5);
+      let allowedMargin = Services.prefs.getIntPref(
+        "zen.tabs.dnd-outside-window-margin",
+        5
+      );
       const isOutOfWindow =
         clientX <= allowedMargin ||
         clientX >= winWidth - allowedMargin ||
@@ -881,7 +951,9 @@
             gBrowser.selectedTab = draggedTab;
           } else if (isTabGroupLabel(draggedTab)) {
             draggedTab = draggedTab.group;
-            gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, { hasDndSwitch: true });
+            gZenFolders.changeFolderToSpace(draggedTab, activeWorkspace, {
+              hasDndSwitch: true,
+            });
           }
         }
       }
@@ -922,7 +994,8 @@
       }
       if (
         isTabGroupLabel(draggedTab) ||
-        (isTab(draggedTab) && draggedTab.group?.hasAttribute("split-view-group"))
+        (isTab(draggedTab) &&
+          draggedTab.group?.hasAttribute("split-view-group"))
       ) {
         draggedTab = draggedTab.group;
       }
@@ -939,7 +1012,8 @@
           !dropElement ||
           dropElement.hasAttribute("zen-essential") ||
           draggedTab.hasAttribute("zen-essential") ||
-          draggedTab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace ||
+          draggedTab.getAttribute("zen-workspace-id") !=
+            gZenWorkspaces.activeWorkspace ||
           !dropElement.visible ||
           !draggedTab.visible ||
           draggedTab.ownerGlobal !== window
@@ -949,7 +1023,7 @@
         this.#isAnimatingTabMove = true;
         const animateElement = (ele, translateY) => {
           ele.style.transform = `translateY(${translateY}px)`;
-          let animateInternal = (resolve) => {
+          let animateInternal = resolve => {
             const clearStyles = () => {
               ele.style.transform = "";
               ele.style.zIndex = "";
@@ -960,7 +1034,11 @@
               return;
             }
             gZenUIManager
-              .elementAnimate(ele, { y: [translateY, 0] }, { duration: 100, easing: "ease-out" })
+              .elementAnimate(
+                ele,
+                { y: [translateY, 0] },
+                { duration: 100, easing: "ease-out" }
+              )
               .then(() => {
                 clearStyles();
               })
@@ -969,7 +1047,7 @@
           // Wait for the next event loop tick to ensure the initial transform style is applied.
           // We need to ensure the element has already been moved in the DOM before starting the animation.
           animations.push(
-            new Promise((resolve) =>
+            new Promise(resolve =>
               setTimeout(() => {
                 setTimeout(() => animateInternal(resolve), 0);
               })
@@ -1025,7 +1103,9 @@
             : -rect.height * tabsInBetween.length;
         draggedTabTranslateY +=
           extraTranslate *
-          (focusableDraggedTab.elementIndex > focusableDropElement.elementIndex ? 1 : -1);
+          (focusableDraggedTab.elementIndex > focusableDropElement.elementIndex
+            ? 1
+            : -1);
         draggedTab.style.zIndex = "9";
         animateElement(draggedTab, draggedTabTranslateY);
       } catch (e) {
@@ -1043,7 +1123,8 @@
       let ownerGlobal = draggedTab?.ownerGlobal;
       draggedTab.style.visibility = "";
       let thisFromGlobal = ownerGlobal?.gBrowser.tabContainer.tabDragAndDrop;
-      let currentEssenialContainer = ownerGlobal.gZenWorkspaces.getCurrentEssentialsContainer();
+      let currentEssenialContainer =
+        ownerGlobal.gZenWorkspaces.getCurrentEssentialsContainer();
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
       }
@@ -1057,9 +1138,13 @@
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
-      window.removeEventListener("dragenter", thisFromGlobal.handle_windowDragEnter, {
-        capture: true,
-      });
+      window.removeEventListener(
+        "dragenter",
+        thisFromGlobal.handle_windowDragEnter,
+        {
+          capture: true,
+        }
+      );
       this.#isOutOfWindow = false;
       if (thisFromGlobal._browserDragImageWrapper) {
         thisFromGlobal._browserDragImageWrapper.remove();
@@ -1119,8 +1204,13 @@
         return true;
       }
       if (folder.isLiveFolder) {
-        const liveFolderItemId = draggedTab.getAttribute("zen-live-folder-item-id");
-        if (!liveFolderItemId || !liveFolderItemId.startsWith(`${folder.id}:`)) {
+        const liveFolderItemId = draggedTab.getAttribute(
+          "zen-live-folder-item-id"
+        );
+        if (
+          !liveFolderItemId ||
+          !liveFolderItemId.startsWith(`${folder.id}:`)
+        ) {
           return false;
         }
       }
@@ -1144,12 +1234,16 @@
         let hoveringPeriphery = !!event.target.closest(
           ":is(#tabbrowser-arrowscrollbox-periphery, .pinned-tabs-container-separator)"
         );
-        if (event.target.classList.contains("zen-workspace-empty-space") || hoveringPeriphery) {
+        if (
+          event.target.classList.contains("zen-workspace-empty-space") ||
+          hoveringPeriphery
+        ) {
           let lastTab = gBrowser.tabs.at(-1);
           let pinnedTabsCount = gBrowser._numVisiblePinTabsWithoutCollapsed;
 
           // Only if there are no normal tabs to drop after
-          showIndicatorUnderNewTabButton = lastTab.hasAttribute("zen-empty-tab");
+          showIndicatorUnderNewTabButton =
+            lastTab.hasAttribute("zen-empty-tab");
           let useLastPinnd =
             (hoveringPeriphery ||
               (showIndicatorUnderNewTabButton &&
@@ -1187,12 +1281,18 @@
       let possibleFolderElement = dropElement.parentElement;
       let isZenFolder = possibleFolderElement?.isZenFolder;
       let canHightlightGroup =
-        gZenFolders.highlightGroupOnDragOver(possibleFolderElement, movingTabs) || !isZenFolder;
+        gZenFolders.highlightGroupOnDragOver(
+          possibleFolderElement,
+          movingTabs
+        ) || !isZenFolder;
       let rect = window.windowUtils.getBoundsWithoutFlushing(dropElement);
       const overlapPercent = (event.clientY - rect.top) / rect.height;
       // We wan't to leave a small threshold (20% for example) so we can drag tabs below and above
       // a folder label without dragging into the folder.
-      let threshold = Services.prefs.getIntPref("zen.tabs.folder-dragover-threshold-percent") / 100;
+      let threshold =
+        Services.prefs.getIntPref(
+          "zen.tabs.folder-dragover-threshold-percent"
+        ) / 100;
       let dropIntoFolder =
         isZenFolder &&
         (overlapPercent < threshold ||
@@ -1211,7 +1311,8 @@
       if (
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&
-        (((isTab(dropElement) || dropElement.hasAttribute("split-view-group")) &&
+        (((isTab(dropElement) ||
+          dropElement.hasAttribute("split-view-group")) &&
           (!dropElement.pinned || dropElement.hasAttribute("zen-essential"))) ||
           showIndicatorUnderNewTabButton)
       ) {
@@ -1226,12 +1327,16 @@
         dropElement.hasAttribute("split-view-group")
       ) {
         if (showIndicatorUnderNewTabButton) {
-          rect = window.windowUtils.getBoundsWithoutFlushing(this.#dragShiftableItems.at(-1));
+          rect = window.windowUtils.getBoundsWithoutFlushing(
+            this.#dragShiftableItems.at(-1)
+          );
         }
         const indicator = gZenPinnedTabManager.dragIndicator;
         let top = 0;
         threshold =
-          Services.prefs.getIntPref("browser.tabs.dragDrop.moveOverThresholdPercent") / 100;
+          Services.prefs.getIntPref(
+            "browser.tabs.dragDrop.moveOverThresholdPercent"
+          ) / 100;
         if (overlapPercent > threshold || showIndicatorUnderNewTabButton) {
           top = Math.round(rect.top + rect.height) + "px";
           dropBefore = false;
@@ -1243,23 +1348,36 @@
           shouldPlayHapticFeedback = true;
         }
         indicator.setAttribute("orientation", "horizontal");
-        indicator.style.setProperty("--indicator-left", rect.left + separation / 2 + "px");
-        indicator.style.setProperty("--indicator-width", rect.width - separation + "px");
+        indicator.style.setProperty(
+          "--indicator-left",
+          rect.left + separation / 2 + "px"
+        );
+        indicator.style.setProperty(
+          "--indicator-width",
+          rect.width - separation + "px"
+        );
         indicator.style.top = top;
         indicator.style.removeProperty("left");
         this.#removeDragOverBackground();
         if (!isTab(dropElement) && dropElement?.parentElement?.isZenFolder) {
           dropElement = dropElement.parentElement;
         }
-      } else if (dropElement.classList.contains("zen-drop-target") && canHightlightGroup) {
+      } else if (
+        dropElement.classList.contains("zen-drop-target") &&
+        canHightlightGroup
+      ) {
         shouldPlayHapticFeedback =
-          this.#applyDragOverBackground(dropElement) && !gZenPinnedTabManager._dragIndicator;
+          this.#applyDragOverBackground(dropElement) &&
+          !gZenPinnedTabManager._dragIndicator;
         gZenPinnedTabManager.removeTabContainersDragoverClass();
         dropElement = dropElement.parentElement?.labelElement || dropElement;
         if (dropElement.classList.contains("zen-current-workspace-indicator")) {
           dropElement =
-            elementToMove(this._tabbrowserTabs.ariaFocusableItems.at(gBrowser._numZenEssentials)) ||
-            dropElement;
+            elementToMove(
+              this._tabbrowserTabs.ariaFocusableItems.at(
+                gBrowser._numZenEssentials
+              )
+            ) || dropElement;
           dropBefore = true;
         }
       }
@@ -1305,12 +1423,17 @@
 
       if (!this._fakeEssentialTab) {
         const numEssentials = gBrowser._numZenEssentials;
-        let pinnedTabs = this._tabbrowserTabs.ariaFocusableItems.slice(0, numEssentials);
+        let pinnedTabs = this._tabbrowserTabs.ariaFocusableItems.slice(
+          0,
+          numEssentials
+        );
         this._fakeEssentialTab = document.createXULElement("vbox");
         this._fakeEssentialTab.elementIndex = numEssentials;
         delete dragData.animDropElementIndex;
         if (!draggedTab.hasAttribute("zen-essential")) {
-          event.target.closest(".zen-essentials-container").appendChild(this._fakeEssentialTab);
+          event.target
+            .closest(".zen-essentials-container")
+            .appendChild(this._fakeEssentialTab);
           gZenWorkspaces.updateTabsContainers();
           pinnedTabs.push(this._fakeEssentialTab);
           this._fakeEssentialTab.getBoundingClientRect(); // Initialize layout
@@ -1318,8 +1441,9 @@
         this.#makeDragImageEssential(event);
         let tabsPerRow = 0;
         let position = RTL_UI
-          ? window.windowUtils.getBoundsWithoutFlushing(this._tabbrowserTabs.pinnedTabsContainer)
-              .right
+          ? window.windowUtils.getBoundsWithoutFlushing(
+              this._tabbrowserTabs.pinnedTabsContainer
+            ).right
           : 0;
         for (let pinnedTab of pinnedTabs) {
           let tabPosition;
@@ -1341,13 +1465,19 @@
         this.#maxTabsPerRow = tabsPerRow;
       }
       let usingFakeElement = !!this._fakeEssentialTab.parentElement;
-      let elementMoving = usingFakeElement ? this._fakeEssentialTab : draggedTab;
+      let elementMoving = usingFakeElement
+        ? this._fakeEssentialTab
+        : draggedTab;
       if (usingFakeElement) {
         movingTabs = [this._fakeEssentialTab];
       }
 
-      let dragDataScreenX = usingFakeElement ? this._fakeEssentialTab.screenX : dragData.screenX;
-      let dragDataScreenY = usingFakeElement ? this._fakeEssentialTab.screenY : dragData.screenY;
+      let dragDataScreenX = usingFakeElement
+        ? this._fakeEssentialTab.screenX
+        : dragData.screenX;
+      let dragDataScreenY = usingFakeElement
+        ? this._fakeEssentialTab.screenY
+        : dragData.screenY;
 
       dragData.animLastScreenX ??= dragDataScreenX;
       dragData.animLastScreenY ??= dragDataScreenY;
@@ -1355,11 +1485,17 @@
       let screenX = event.screenX;
       let screenY = event.screenY;
 
-      if (screenY == dragData.animLastScreenY && screenX == dragData.animLastScreenX) {
+      if (
+        screenY == dragData.animLastScreenY &&
+        screenX == dragData.animLastScreenX
+      ) {
         return;
       }
 
-      let tabs = this._tabbrowserTabs.visibleTabs.slice(0, gBrowser._numZenEssentials);
+      let tabs = this._tabbrowserTabs.visibleTabs.slice(
+        0,
+        gBrowser._numZenEssentials
+      );
       if (usingFakeElement) {
         tabs.push(this._fakeEssentialTab);
       }
@@ -1369,7 +1505,8 @@
       dragData.animLastScreenY = screenY;
       dragData.animLastScreenX = screenX;
 
-      let { width: tabWidth, height: tabHeight } = elementMoving.getBoundingClientRect();
+      let { width: tabWidth, height: tabHeight } =
+        elementMoving.getBoundingClientRect();
       tabWidth += 4; // Add 6px to account for the gap
       tabHeight += 4;
       let shiftSizeX = tabWidth;
@@ -1383,11 +1520,16 @@
       let lastTab = tabs.at(-1);
       if (RTL_UI) {
         firstTabInRow =
-          tabs.length >= this.#maxTabsPerRow ? tabs[this.#maxTabsPerRow - 1] : lastTab;
+          tabs.length >= this.#maxTabsPerRow
+            ? tabs[this.#maxTabsPerRow - 1]
+            : lastTab;
         lastTabInRow = tabs[0];
       } else {
         firstTabInRow = tabs[0];
-        lastTabInRow = tabs.length >= this.#maxTabsPerRow ? tabs[this.#maxTabsPerRow - 1] : lastTab;
+        lastTabInRow =
+          tabs.length >= this.#maxTabsPerRow
+            ? tabs[this.#maxTabsPerRow - 1]
+            : lastTab;
       }
       let lastMovingTabScreenX = movingTabs.at(-1).screenX;
       let lastMovingTabScreenY = movingTabs.at(-1).screenY;
@@ -1436,7 +1578,7 @@
       // * We're doing a binary search in order to reduce the amount of
       //   tabs we need to check.
 
-      tabs = tabs.filter((t) => !movingTabs.includes(t) || t == elementMoving);
+      tabs = tabs.filter(t => !movingTabs.includes(t) || t == elementMoving);
       let firstTabCenterX = firstMovingTabScreenX + translateX + tabWidth / 2;
       let lastTabCenterX = lastMovingTabScreenX + translateX + tabWidth / 2;
       let tabCenterX = directionX ? lastTabCenterX : firstTabCenterX;
@@ -1447,25 +1589,37 @@
       let shiftNumber = this.#maxTabsPerRow - movingTabs.length;
 
       let getTabShift = (tab, dropIndex) => {
-        if (tab.elementIndex < elementMoving.elementIndex && tab.elementIndex >= dropIndex) {
+        if (
+          tab.elementIndex < elementMoving.elementIndex &&
+          tab.elementIndex >= dropIndex
+        ) {
           // If tab is at the end of a row, shift back and down
           let tabRow = Math.ceil((tab.elementIndex + 1) / this.#maxTabsPerRow);
           let shiftedTabRow = Math.ceil(
             (tab.elementIndex + 1 + movingTabs.length) / this.#maxTabsPerRow
           );
           if (tab.elementIndex && tabRow != shiftedTabRow) {
-            return [RTL_UI ? tabWidth * shiftNumber : -tabWidth * shiftNumber, shiftSizeY];
+            return [
+              RTL_UI ? tabWidth * shiftNumber : -tabWidth * shiftNumber,
+              shiftSizeY,
+            ];
           }
           return [RTL_UI ? -shiftSizeX : shiftSizeX, 0];
         }
-        if (tab.elementIndex > elementMoving.elementIndex && tab.elementIndex < dropIndex) {
+        if (
+          tab.elementIndex > elementMoving.elementIndex &&
+          tab.elementIndex < dropIndex
+        ) {
           // If tab is not index 0 and at the start of a row, shift across and up
           let tabRow = Math.floor(tab.elementIndex / this.#maxTabsPerRow);
           let shiftedTabRow = Math.floor(
             (tab.elementIndex - movingTabs.length) / this.#maxTabsPerRow
           );
           if (tab.elementIndex && tabRow != shiftedTabRow) {
-            return [RTL_UI ? -tabWidth * shiftNumber : tabWidth * shiftNumber, -shiftSizeY];
+            return [
+              RTL_UI ? -tabWidth * shiftNumber : tabWidth * shiftNumber,
+              -shiftSizeY,
+            ];
           }
           return [RTL_UI ? shiftSizeX : -shiftSizeX, 0];
         }
@@ -1475,7 +1629,8 @@
       let low = 0;
       let high = tabs.length - 1;
       let newIndex = -1;
-      let oldIndex = dragData.animDropElementIndex ?? movingTabs[0].elementIndex;
+      let oldIndex =
+        dragData.animDropElementIndex ?? movingTabs[0].elementIndex;
       while (low <= high) {
         let mid = Math.floor((low + high) / 2);
         if (tabs[mid] == elementMoving && ++mid > high) {
@@ -1489,9 +1644,13 @@
           low = mid + 1;
         } else if (screenY > tabCenterY) {
           high = mid - 1;
-        } else if (RTL_UI ? screenX + tabWidth < tabCenterX : screenX > tabCenterX) {
+        } else if (
+          RTL_UI ? screenX + tabWidth < tabCenterX : screenX > tabCenterX
+        ) {
           high = mid - 1;
-        } else if (RTL_UI ? screenX > tabCenterX : screenX + tabWidth < tabCenterX) {
+        } else if (
+          RTL_UI ? screenX > tabCenterX : screenX + tabWidth < tabCenterX
+        ) {
           low = mid + 1;
         } else {
           newIndex = tabs[mid].elementIndex;
@@ -1523,7 +1682,8 @@
       for (let tab of tabs) {
         if (tab != draggedTab) {
           let [shiftX, shiftY] = getTabShift(tab, newIndex);
-          tab.style.transform = shiftX || shiftY ? `translate(${shiftX}px, ${shiftY}px)` : "";
+          tab.style.transform =
+            shiftX || shiftY ? `translate(${shiftX}px, ${shiftY}px)` : "";
         }
       }
     }
@@ -1532,7 +1692,10 @@
       if (this._fakeEssentialTab) {
         this._fakeEssentialTab.remove();
         delete this._fakeEssentialTab;
-        for (let tab of this._tabbrowserTabs.visibleTabs.slice(0, gBrowser._numZenEssentials)) {
+        for (let tab of this._tabbrowserTabs.visibleTabs.slice(
+          0,
+          gBrowser._numZenEssentials
+        )) {
           tab.style.transform = "";
         }
         gZenWorkspaces.updateTabsContainers();
@@ -1551,8 +1714,13 @@
       tab.setAttribute("zen-essential", "true");
       tab.setAttribute("pinned", "true");
       tab.setAttribute("selected", "true");
-      const draggedTabRect = window.windowUtils.getBoundsWithoutFlushing(this._fakeEssentialTab);
-      tab.style.minWidth = tab.style.maxWidth = wrapper.style.width = draggedTabRect.width + "px";
+      const draggedTabRect = window.windowUtils.getBoundsWithoutFlushing(
+        this._fakeEssentialTab
+      );
+      tab.style.minWidth =
+        tab.style.maxWidth =
+        wrapper.style.width =
+          draggedTabRect.width + "px";
       tab.style.minHeight =
         tab.style.maxHeight =
         wrapper.style.height =

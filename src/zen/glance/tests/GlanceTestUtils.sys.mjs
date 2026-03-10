@@ -4,7 +4,7 @@
 
 export function openGlanceOnTab(window, callback, close = true) {
   // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
+  return new Promise(async resolve => {
     window.gZenGlanceManager
       .openGlance({
         url: "https://example.com",
@@ -13,7 +13,7 @@ export function openGlanceOnTab(window, callback, close = true) {
         width: 0,
         height: 0,
       })
-      .then(async (glanceTab) => {
+      .then(async glanceTab => {
         await callback(glanceTab);
         if (close) {
           window.gZenGlanceManager

@@ -26,13 +26,17 @@ add_task(async function test_Restore_Closed_Tabs() {
   gBrowser.removeTabs(tabsToClose);
   gBrowser.selectedTab = selected;
   await TabStateFlusher.flushWindow(window);
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     Assert.equal(
       gBrowser.selectedTab,
       selected,
       "Current tab should still be selected after closing tabs"
     );
-    Assert.equal(gBrowser.tabs.length, 2, "There should be one tab left after closing all tabs");
+    Assert.equal(
+      gBrowser.tabs.length,
+      2,
+      "There should be one tab left after closing all tabs"
+    );
     SessionWindowUI.restoreLastClosedTabOrWindowOrSession(window);
     ok(!selected.selected, "Current tab should not be selected after restore");
     Assert.equal(
@@ -42,10 +46,15 @@ add_task(async function test_Restore_Closed_Tabs() {
     );
     resolve();
   });
-  await BrowserTestUtils.openNewForegroundTab(window.gBrowser, "about:blank", true, {
-    skipAnimation: true,
-  });
-  for (const tab of gBrowser.tabs.filter((t) => !tabsToIgnore.includes(t))) {
+  await BrowserTestUtils.openNewForegroundTab(
+    window.gBrowser,
+    "about:blank",
+    true,
+    {
+      skipAnimation: true,
+    }
+  );
+  for (const tab of gBrowser.tabs.filter(t => !tabsToIgnore.includes(t))) {
     await BrowserTestUtils.removeTab(tab);
   }
 });

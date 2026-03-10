@@ -6,7 +6,9 @@
 add_task(async function test_Basic_Split_View_Inset() {
   let viewsToCheck = [];
   await basicSplitNTabs(() => {
-    viewsToCheck = document.querySelectorAll('.browserSidebarContainer[zen-split="true"]');
+    viewsToCheck = document.querySelectorAll(
+      '.browserSidebarContainer[zen-split="true"]'
+    );
     ok(viewsToCheck.length, "There should be split views present");
     Assert.equal(
       viewsToCheck[0].style.inset,
@@ -20,13 +22,19 @@ add_task(async function test_Basic_Split_View_Inset() {
     );
   });
   for (const view of viewsToCheck) {
-    Assert.equal(view.style.inset, "", "The unsplit view should not have correct inset style");
+    Assert.equal(
+      view.style.inset,
+      "",
+      "The unsplit view should not have correct inset style"
+    );
   }
 });
 
 add_task(async function test_Horizontal_Split_Inset() {
   await basicSplitNTabs(() => {
-    const viewsToCheck = document.querySelectorAll('.browserSidebarContainer[zen-split="true"]');
+    const viewsToCheck = document.querySelectorAll(
+      '.browserSidebarContainer[zen-split="true"]'
+    );
     ok(viewsToCheck.length, "There should be split views present");
     Assert.equal(
       viewsToCheck[0].style.inset,
@@ -44,7 +52,9 @@ add_task(async function test_Horizontal_Split_Inset() {
 add_task(async function test_3_Splits_Grid_Inset() {
   await basicSplitNTabs(
     () => {
-      const viewsToCheck = document.querySelectorAll('.browserSidebarContainer[zen-split="true"]');
+      const viewsToCheck = document.querySelectorAll(
+        '.browserSidebarContainer[zen-split="true"]'
+      );
       ok(viewsToCheck.length, "There should be split views present");
       Assert.equal(
         viewsToCheck[0].style.inset,

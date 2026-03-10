@@ -21,7 +21,7 @@
     "sync:raw": "surfer update",
     "sync:rc": "python3 scripts/update_ff.py --rc",
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
-    "lint": "cd engine && ./mach lint zen/",
+    "lint": "cd engine && ./mach lint zen",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
     "reset-ff": "surfer reset",
@@ -50,11 +50,14 @@
   "homepage": "https://github.com/zen-browser/desktop#readme",
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
-    "@zen-browser/surfer": "^1.13.1",
+    "@zen-browser/prettier": "^3.9.3",
+    "@zen-browser/surfer": "^1.13.4",
     "formal-git": "^1.2.9",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "notes(private)": "We don't want to publish to npm, so this is marked as private",
+  "private": true
 }

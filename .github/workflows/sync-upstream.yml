@@ -60,6 +60,13 @@ jobs:
             npm run surfer -- ci --brand release 
           fi
 
+      - name: Restore Surfer engine cache
+        id: surfer-engine-cache
+        uses: actions/cache@v5
+        with:
+          path: .surfer/engine/
+          key: surfer-engine-${{ hashFiles('surfer.json') }}
+
       - name: Download Firefox and dependencies
         if: steps.check-upstream-branch.outputs.branch_exists == 'false'
         run: npm run download

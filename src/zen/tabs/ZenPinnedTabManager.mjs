@@ -74,7 +74,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
-    this._resetPinButtonHovered = false;
     this._onAccelKeyChangeBound = this._onAccelKeyChange.bind(this);
 
     gZenWorkspaces._resolvePinnedInitialized();
@@ -179,33 +178,27 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (tab) {
       let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
       this._setResetPinSublabel(tab, accelHeld);
+      // Up <-> down events until the mouse leaves the button.
+      let nextEvent = e.type == "keydown" ? "keyup" : "keydown";
+      window.addEventListener(nextEvent, this._onAccelKeyChangeBound, { once: true });
     }
   }
 
   _setResetPinSublabel(tab, accelHeld) {
     let label = tab.querySelector(".zen-tab-sublabel");
     if (label) {
-      window.document.l10n.setArgs(label, {
+      document.l10n.setArgs(label, {
         tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
       });
     }
   }
 
   onResetPinButtonMouseOver(tab, event) {
-    if (!this._resetPinButtonHovered) {
-      this._resetPinButtonHovered = true;
-      window.addEventListener("keydown", this._onAccelKeyChangeBound);
-      window.addEventListener("keyup", this._onAccelKeyChangeBound);
-    }
+    window.addEventListener("keydown", this._onAccelKeyChangeBound, { once: true });
     this._setResetPinSublabel(tab, event.getModifierState("Accel"));
   }
 
   onResetPinButtonMouseOut(tab) {
-    if (this._resetPinButtonHovered) {
-      this._resetPinButtonHovered = false;
-      window.removeEventListener("keydown", this._onAccelKeyChangeBound);
-      window.removeEventListener("keyup", this._onAccelKeyChangeBound);
-    }
     this._setResetPinSublabel(tab, false);
   }
 
@@ -810,7 +803,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         tab.removeAttribute("zen-show-sublabel");
 
         const label = tab.querySelector(".zen-tab-sublabel");
-        window.document.l10n.setArgs(label, {
+        document.l10n.setArgs(label, {
           tabSubtitle: "zen-default-pinned",
         });
       }

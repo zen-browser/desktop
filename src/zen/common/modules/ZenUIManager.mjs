@@ -221,11 +221,11 @@ window.gZenUIManager = {
     const kUrlbarHeight = 335;
     gURLBar.style.setProperty(
       "--zen-urlbar-top",
-      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, gURLBar.getBoundingClientRect().height) / 2}px`
+      `${window.innerHeight / 2 - Math.max(kUrlbarHeight, window.windowUtils.getBoundsWithoutFlushing(gURLBar).height) / 2}px`
     );
     gURLBar.style.setProperty("--zen-urlbar-width", `${Math.min(window.innerWidth / 2, 750)}px`);
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute("zen-has-hover");
-    gZenVerticalTabsManager.recalculateURLBarHeight();
+    gZenVerticalTabsManager.recalculateURLBarHeight(true);
     if (!this._preventToolbarRebuild) {
       setTimeout(() => {
         gZenWorkspaces.updateTabsContainers();
@@ -1052,7 +1052,7 @@ window.gZenVerticalTabsManager = {
     }
   },
 
-  recalculateURLBarHeight() {
+  recalculateURLBarHeight(updateFormat = false) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         gURLBar.removeAttribute("--urlbar-height");
@@ -1065,7 +1065,9 @@ window.gZenVerticalTabsManager = {
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);
         }
-        gURLBar.zenFormatURLValue();
+        if (updateFormat) {
+          gURLBar.zenFormatURLValue();
+        }
       });
     });
   },
@@ -1176,11 +1178,11 @@ window.gZenVerticalTabsManager = {
           appContentNavbarContaienr.append(windowButtons);
         }
         if (isCompactMode) {
-          titlebar.prepend(navBar);
-          titlebar.prepend(topButtons);
+          titlebar.moveBefore(navBar, titlebar.firstChild);
+          titlebar.moveBefore(topButtons, titlebar.firstChild);
         } else {
-          titlebar.before(topButtons);
-          titlebar.before(navBar);
+          titlebar.parentNode.moveBefore(topButtons, titlebar);
+          titlebar.parentNode.moveBefore(navBar, titlebar);
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
         this._hasSetSingleToolbar = true;

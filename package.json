@@ -21,7 +21,7 @@
     "sync:raw": "surfer update",
     "sync:rc": "python3 scripts/update_ff.py --rc",
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
-    "lint": "cd engine && ./mach lint zen",
+    "lint": "cd engine && ./mach lint zen/",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
     "reset-ff": "surfer reset",

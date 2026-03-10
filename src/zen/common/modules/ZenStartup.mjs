@@ -14,7 +14,6 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#initBrowserBackground();
     this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
@@ -24,20 +23,6 @@ class ZenStartup {
       Services.prefs.getBoolPref("zen.watermark.enabled", false) &&
       gZenWorkspaces.shouldHaveWorkspaces
     );
-  }
-
-  #initBrowserBackground() {
-    const background = document.createXULElement("box");
-    background.id = "zen-browser-background";
-    background.classList.add("zen-browser-generic-background");
-    const grain = document.createXULElement("box");
-    grain.classList.add("zen-browser-grain");
-    background.appendChild(grain);
-    document.getElementById("browser").prepend(background);
-    const toolbarBackground = background.cloneNode(true);
-    toolbarBackground.removeAttribute("id");
-    toolbarBackground.classList.add("zen-toolbar-background");
-    document.getElementById("titlebar").prepend(toolbarBackground);
   }
 
   #zenInitBrowserLayout() {

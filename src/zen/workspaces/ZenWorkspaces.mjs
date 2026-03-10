@@ -12,6 +12,14 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
+ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
+  return document.getElementById("zen-browser-background");
+});
+
+ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
+  return document.getElementById("zen-toolbar-background");
+});
+
 /**
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
@@ -636,7 +644,9 @@ class nsZenWorkspaces {
         Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
         document.documentElement.removeAttribute("swipe-gesture");
         gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-        document.documentElement.style.setProperty("--zen-background-opacity", "1");
+        [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach((element) => {
+          element.style.setProperty("--zen-background-opacity", "1");
+        });
         delete this._hasAnimatedBackgrounds;
         this.updateTabsContainers();
         document.removeEventListener("popupshown", this.popupOpenHandler, { once: true });
@@ -1555,6 +1565,7 @@ class nsZenWorkspaces {
         glanceTab.setAttribute("zen-workspace-id", workspaceID);
       }
     }
+    gBrowser.tabContainer._invalidateCachedTabs();
     return true;
   }
 
@@ -1781,14 +1792,16 @@ class nsZenWorkspaces {
         } = gZenThemePicker.getGradientForWorkspace(nextWorkspace);
         const existingGrain = gZenThemePicker.getGradientForWorkspace(workspace).grain;
         const percentage = Math.abs(offsetPixels) / 200;
-        document.documentElement.style.setProperty("--zen-background-opacity", 1 - percentage);
+        [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach((element) => {
+          element.style.setProperty("--zen-background-opacity", 1 - percentage);
+        });
         if (!this._hasAnimatedBackgrounds) {
           this._hasAnimatedBackgrounds = true;
-          document.documentElement.style.setProperty(
+          lazy.browserBackgroundElement.style.setProperty(
             "--zen-main-browser-background-old",
             nextGradient
           );
-          document.documentElement.style.setProperty(
+          lazy.toolbarBackgroundElement.style.setProperty(
             "--zen-main-browser-background-toolbar-old",
             nextToolbarGradient
           );
@@ -1885,7 +1898,7 @@ class nsZenWorkspaces {
     }
     document.documentElement.setAttribute("animating-background", "true");
     if (shouldAnimate && previousWorkspace) {
-      let previousBackgroundOpacity = document.documentElement.style.getPropertyValue(
+      let previousBackgroundOpacity = lazy.browserBackgroundElement.style.getPropertyValue(
         "--zen-background-opacity"
       );
       try {
@@ -1902,13 +1915,16 @@ class nsZenWorkspaces {
         previousBackgroundOpacity = 1 - previousBackgroundOpacity;
       }
       gZenThemePicker.previousBackgroundOpacity = previousBackgroundOpacity;
-      document.documentElement.style.setProperty(
-        "--zen-background-opacity",
-        previousBackgroundOpacity
-      );
+      let elements = [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement];
+      elements.forEach((element) => {
+        element.style.setProperty(
+          "--zen-background-opacity",
+          previousBackgroundOpacity
+        );
+      });
       animations.push(
         gZenUIManager.motion.animate(
-          document.documentElement,
+          elements,
           {
             "--zen-background-opacity": [previousBackgroundOpacity, 1],
           },
@@ -2153,7 +2169,7 @@ class nsZenWorkspaces {
   }
 
   _shouldChangeToTab(aTab) {
-    return !(aTab?.pinned && aTab?.hasAttribute("pending"));
+    return !(aTab?.pinned && aTab?.hasAttribute("pending")) && !aTab?.closing;
   }
 
   async #shouldShowTabInCurrentWorkspace(tab) {

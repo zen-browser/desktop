@@ -53,6 +53,14 @@ ChromeUtils.defineLazyGetter(lazy, "MIN_OPACITY", () => {
   return parseFloat(document.getElementById("PanelUI-zen-gradient-generator-opacity").min);
 });
 
+ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
+  return document.getElementById("zen-browser-background");
+});
+
+ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
+  return document.getElementById("zen-toolbar-background");
+});
+
 const EXPLICIT_LIGHTNESS_TYPE = "explicit-lightness";
 const EXPLICIT_BLACKWHITE_TYPE = "explicit-black-white";
 
@@ -295,7 +303,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   initTextureInput() {
     const wrapper = document.getElementById("PanelUI-zen-gradient-generator-texture-wrapper");
-    const wrapperWidth = wrapper.getBoundingClientRect().width;
+    const wrapperWidth = window.windowUtils.getBoundsWithoutFlushing(wrapper).width;
     // Add elements in a circular pattern, where the center is the center of the wrapper
     for (let i = 0; i < 16; i++) {
       const dot = document.createElement("div");
@@ -322,7 +330,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   onTextureMouseMove(event) {
     event.preventDefault();
     const wrapper = document.getElementById("PanelUI-zen-gradient-generator-texture-wrapper");
-    const wrapperRect = wrapper.getBoundingClientRect();
+    const wrapperRect = window.windowUtils.getBoundsWithoutFlushing(wrapper);
     // Determine how much rotation there is based on the mouse position and the center of the wrapper
     const rotation = Math.atan2(
       event.clientY - wrapperRect.top - wrapperRect.height / 2,
@@ -471,7 +479,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   getColorFromPosition(x, y, type = undefined) {
     // Return a color as hsl based on the position in the gradient
     const gradient = this.panel.querySelector(".zen-theme-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
+    const rect = window.windowUtils.getBoundsWithoutFlushing(gradient);
     const padding = 30; // each side
     const dotHalfSize = 29; // half the size of the dot. -11 for correct centering
     x += dotHalfSize;
@@ -747,7 +755,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
 
     const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
-    const rect = dotPad.getBoundingClientRect();
+    const rect = window.windowUtils.getBoundsWithoutFlushing(dotPad);
     const padding = 0;
 
     let updatedDots = [...dots];
@@ -927,7 +935,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
 
     const gradient = this.panel.querySelector(".zen-theme-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
+    const rect = window.windowUtils.getBoundsWithoutFlushing(gradient);
     const padding = 0;
 
     const centerX = rect.left + rect.width / 2 - padding;
@@ -1059,7 +1067,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   onDotMouseMove(event) {
     if (this.dragging) {
       event.preventDefault();
-      const rect = this.panel.querySelector(".zen-theme-picker-gradient").getBoundingClientRect();
+      const rect = window.windowUtils.getBoundsWithoutFlushing(this.panel.querySelector(".zen-theme-picker-gradient"));
       const padding = 0; // each side
       // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
       // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
@@ -1354,6 +1362,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
   }
 
+  get browserBackgroundElement() {
+    return lazy.browserBackgroundElement;
+  }
+
+  get toolbarBackgroundElement() {
+    return lazy.toolbarBackgroundElement;
+  }
+
   onWorkspaceChange(workspace, skipUpdate = false, theme = null) {
     const uuid = workspace.uuid;
     // Use theme from workspace object or passed theme
@@ -1369,14 +1385,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
-      if (theme === null) {
-        browser.gZenThemePicker.invalidateGradientCache();
-      }
-
       // Do not rebuild if the workspace is not the same as the current one
       const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
       if (windowWorkspace.uuid !== uuid) {
         return;
+      }
+
+      if (theme === null) {
+        browser.gZenThemePicker.invalidateGradientCache(uuid);
       }
 
       // get the theme from the window
@@ -1397,18 +1413,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
 
       if (!skipUpdate) {
-        docElement.style.setProperty(
+        let backgroundElement = browser.gZenThemePicker.browserBackgroundElement;
+        let toolbarElement = browser.gZenThemePicker.toolbarBackgroundElement;
+        backgroundElement.style.setProperty(
           "--zen-main-browser-background-old",
-          docElement.style.getPropertyValue("--zen-main-browser-background")
+          backgroundElement.style.getPropertyValue("--zen-main-browser-background")
         );
-        docElement.style.setProperty(
+        toolbarElement.style.setProperty(
           "--zen-main-browser-background-toolbar-old",
-          docElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
+          toolbarElement.style.getPropertyValue("--zen-main-browser-background-toolbar")
         );
-        docElement.style.setProperty(
-          "--zen-background-opacity",
-          browser.gZenThemePicker.previousBackgroundOpacity ?? 1
-        );
+        [backgroundElement, toolbarElement].forEach((element) => {
+          element.style.setProperty(
+            "--zen-background-opacity",
+            browser.gZenThemePicker.previousBackgroundOpacity ?? 1
+          );
+        });
         if (browser.gZenThemePicker.previousBackgroundResolve) {
           browser.gZenThemePicker.previousBackgroundResolve();
         }
@@ -1490,7 +1510,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const textureSelectWrapper = browser.document.getElementById(
         "PanelUI-zen-gradient-generator-texture-wrapper"
       );
-      const textureWrapperWidth = textureSelectWrapper.getBoundingClientRect().width;
+      const textureWrapperWidth = browser.windowUtils.getBoundsWithoutFlushing(textureSelectWrapper).width;
       // Dont show when hidden
       if (textureWrapperWidth) {
         // rotate and trasnform relative to the wrapper width depending on the texture value
@@ -1532,8 +1552,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         }
       }
 
-      docElement.style.setProperty("--zen-main-browser-background-toolbar", gradientToolbar);
-      docElement.style.setProperty("--zen-main-browser-background", gradient);
+      browser.gZenThemePicker.toolbarBackgroundElement
+        .style
+        .setProperty("--zen-main-browser-background-toolbar", gradientToolbar);
+      browser.gZenThemePicker.browserBackgroundElement
+        .style
+        .setProperty("--zen-main-browser-background", gradient);
       const isDarkModeWindow = browser.gZenThemePicker.isDarkMode;
       if (isDefaultTheme) {
         docElement.setAttribute("zen-default-theme", "true");
@@ -1588,9 +1612,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
     let rgb;
     if (accentColor === "AccentColor") {
-      const rawRgb = window.getComputedStyle(
-        document.getElementById("zen-browser-background")
-      ).color;
+      const rawRgb = window.getComputedStyle(lazy.browserBackgroundElement).color;
       rgb = rawRgb.match(/\d+/g).map(Number);
       // Match our theme a bit more, since we can't always expect the OS
       // to give us a color matching our theme scheme
@@ -1735,23 +1757,28 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return newPathData.trim();
   }
 
-  invalidateGradientCache() {
-    this.#gradientsCache = {};
+  invalidateGradientCache(uuid) {
+    delete this.#gradientsCache[uuid];
     window.dispatchEvent(new Event("ZenGradientCacheChanged", { bubbles: true }));
   }
 
-  getGradientForWorkspace(workspace) {
+  getGradientForWorkspace(workspace, { getGradient = true } = {}) {
     const uuid = workspace.uuid;
-    if (this.#gradientsCache[uuid]) {
-      return this.#gradientsCache[uuid];
+    let cachedData = this.#gradientsCache[uuid];
+    if (cachedData && !(getGradient && !cachedData.gradient)) {
+      return cachedData;
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
     const theme = workspace.theme;
     this.currentOpacity = theme.opacity ?? 0.5;
     this.#currentLightness = theme.lightness ?? 50;
-    const gradient = this.getGradient(theme.gradientColors);
-    const toolbarGradient = this.getGradient(theme.gradientColors, true);
+    let gradient;
+    let toolbarGradient;
+    if (getGradient) {
+       gradient = this.getGradient(theme.gradientColors);
+       toolbarGradient = this.getGradient(theme.gradientColors, true);
+    }
     let dominantColor = this.getMostDominantColor(theme.gradientColors);
     const isDefaultTheme = !dominantColor;
     if (isDefaultTheme) {

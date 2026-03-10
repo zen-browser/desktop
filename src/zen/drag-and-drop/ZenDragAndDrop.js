@@ -654,7 +654,7 @@
                 }
                 let tabs = this.originalDragImageArgs[0].children;
                 const { isDarkMode, isExplicitMode } =
-                  gZenThemePicker.getGradientForWorkspace(spaceChanged);
+                  gZenThemePicker.getGradientForWorkspace(spaceChanged, { getGradient: false });
                 for (let tab of tabs) {
                   if (isExplicitMode) {
                     tab.style.colorScheme = isDarkMode ? "dark" : "light";

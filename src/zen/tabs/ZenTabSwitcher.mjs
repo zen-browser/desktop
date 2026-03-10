@@ -401,11 +401,43 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#thumbnailCache.set(tabId, dataUrl);
 
       if (this.#isOpen) {
-        this.#renderTabs();
+        this.#updateCardThumbnail(tabId, dataUrl);
       }
     } catch (e) {
       console.warn("Failed to pre-cache thumbnail:", e);
     }
+  }
+
+  /**
+   * Updates the thumbnail for a specific card without re-rendering all cards.
+   *
+   * @param {string} tabId - The linkedPanel ID of the tab.
+   * @param {string} dataUrl - The thumbnail data URL.
+   * @returns {void}
+   */
+  #updateCardThumbnail(tabId, dataUrl) {
+    if (!this.tabsContainer) {
+      return;
+    }
+
+    const card = this.tabsContainer.querySelector(`[data-tab-id="${tabId}"]`);
+    if (!card) {
+      return;
+    }
+
+    const thumbnailContainer = card.querySelector(".zen-tab-switcher-thumbnail");
+    if (!thumbnailContainer) {
+      return;
+    }
+
+    // Remove existing image or placeholder
+    thumbnailContainer.innerHTML = "";
+    card.classList.remove("zen-tab-switcher-no-thumbnail");
+
+    // Add the thumbnail image
+    const img = document.createXULElement("image");
+    img.setAttribute("src", dataUrl);
+    thumbnailContainer.appendChild(img);
   }
 
   /**
@@ -470,12 +502,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const card = document.createXULElement("vbox");
     card.className = "zen-tab-switcher-card";
     card.setAttribute("data-index", index);
+    card.setAttribute("data-tab-id", tab.linkedPanel);
 
     const thumbnailContainer = document.createXULElement("box");
     thumbnailContainer.className = "zen-tab-switcher-thumbnail";
 
-    const isPending = tab.hasAttribute("pending");
-    const thumbnail = isPending ? null : this.#getTabThumbnail(tab);
+    const thumbnail = this.#getTabThumbnail(tab);
 
     if (thumbnail) {
       const img = document.createXULElement("image");

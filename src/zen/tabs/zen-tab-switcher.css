@@ -17,6 +17,12 @@
   --panel-padding: var(--zen-tab-switcher-padding);
   min-width: fit-content;
   max-width: 100vw;
+
+  /* Disable Mica on Windows to prevent desktop background bleed-through */
+  @media (-moz-platform: windows) {
+    background: var(--arrowpanel-background) !important;
+    backdrop-filter: none !important;
+  }
 }
 
 #zen-tab-switcher-panel .panel-viewcontainer,

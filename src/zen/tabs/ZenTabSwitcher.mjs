@@ -13,6 +13,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
   static MAX_RECENT_TABS = 50;
+  static PANEL_PADDING = 30; // 15 * 2 
+  static PANEL_HEIGHT = 200; // 15 * 2 + 170
 
   #isOpen = false;
   #currentIndex = 0;
@@ -269,6 +271,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       }
     }
 
+    this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
+
     await this.#preCacheThumbnailsForVisible();
 
     this.#renderTabs();
@@ -276,13 +280,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    const estimatedPanelWidth =
-      nsZenTabSwitcher.CARD_WIDTH * Math.min(this.#tabList.length, this.#actualVisibleCards) + 50;
-    const actualPanelWidth = Math.min(estimatedPanelWidth, windowWidth);
-    const estimatedPanelHeight = 200;
+    const containerWidth = nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards;
+    // Ensure panel width doesn't exceed window width to prevent cutoff at screen edges
+    const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_PADDING, windowWidth);
 
-    const centerX = (windowWidth - actualPanelWidth) / 2;
-    const centerY = (windowHeight - estimatedPanelHeight) / 2;
+    const centerX = (windowWidth - panelWidth) / 2;
+    const centerY = (windowHeight - nsZenTabSwitcher.PANEL_HEIGHT) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",

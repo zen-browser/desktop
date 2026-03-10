@@ -4,14 +4,13 @@
 
 :root {
   --zen-tab-switcher-card-width: 200px;
-  --zen-tab-switcher-card-height: 167px;
-  --zen-tab-switcher-card-border-radius: 14px;
-  --zen-tab-switcher-card-inner-padding: 11px;
-  --zen-tab-switcher-thumbnail-height: 122px;
+  --zen-tab-switcher-card-height: 170px;
+  --zen-tab-switcher-card-border-radius: 15px;
+  --zen-tab-switcher-card-inner-padding: 12px;
+  --zen-tab-switcher-thumbnail-height: 120px;
   --zen-tab-switcher-thumbnail-border-radius: 8px;
-  --zen-tab-switcher-gap: 0px;
   --zen-tab-switcher-border-radius: 25px;
-  --zen-tab-switcher-padding: 7px;
+  --zen-tab-switcher-padding: 15px;
 }
 
 #zen-tab-switcher-panel {
@@ -27,19 +26,11 @@
   width: 100%;
 }
 
-#zen-tab-switcher-view {
-  padding: var(--zen-tab-switcher-padding);
-}
-
 #zen-tab-switcher-tabs {
   display: flex;
   flex-direction: row;
-  gap: var(--zen-tab-switcher-gap);
   overflow-x: hidden;
   overflow-y: hidden;
-  /*Tiny padding to hide random fractional seams*/
-  padding-right: 1px;
-  padding-bottom: 1px;
   scrollbar-width: none;
   position: relative;
   box-sizing: border-box;

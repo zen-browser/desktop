@@ -7,6 +7,7 @@
 /** Zen Decks - ONLY USED FOR SPLIT VIEWS, DO NOT USE THIS CLASS FOR ANY OTHER PURPOSE **/
 
 %include zen-split-group.inc.css
+
 #tabbrowser-tabpanels[zen-split-view="true"] {
   display: flex;
   flex-direction: row;
@@ -264,6 +265,3 @@ zen-split-fake-tab {
   flex: 1;
 }
 
-:root[inDOMFullscreen="true"] #tabbrowser-tabpanels[zen-split-view="true"] {
-  display: block !important;
-}

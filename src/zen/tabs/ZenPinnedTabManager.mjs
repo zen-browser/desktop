@@ -173,33 +173,32 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   _onAccelKeyChange(e) {
-    let hoveredButton = document.querySelector(".tab-reset-pin-button:hover");
-    let tab = hoveredButton?.closest("tab");
+    let tab = this._tabWithResetPinButtonHovered;
     if (tab) {
       let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
       this._setResetPinSublabel(tab, accelHeld);
       // Up <-> down events until the mouse leaves the button.
-      let nextEvent = e.type == "keydown" ? "keyup" : "keydown";
+      // When hovered with accelHeld, we should listen to the next keyup event
+      let nextEvent = accelHeld ? "keyup" : "keydown";
       window.addEventListener(nextEvent, this._onAccelKeyChangeBound, { once: true });
     }
   }
 
   _setResetPinSublabel(tab, accelHeld) {
     let label = tab.querySelector(".zen-tab-sublabel");
-    if (label) {
-      document.l10n.setArgs(label, {
-        tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
-      });
-    }
+    document.l10n.setArgs(label, {
+      tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
+    });
   }
 
   onResetPinButtonMouseOver(tab, event) {
-    window.addEventListener("keydown", this._onAccelKeyChangeBound, { once: true });
-    this._setResetPinSublabel(tab, event.getModifierState("Accel"));
+    this._tabWithResetPinButtonHovered = tab;
+    this._onAccelKeyChange(event);
   }
 
   onResetPinButtonMouseOut(tab) {
     this._setResetPinSublabel(tab, false);
+    delete this._tabWithResetPinButtonHovered;
   }
 
   resetPinnedTab(tab) {

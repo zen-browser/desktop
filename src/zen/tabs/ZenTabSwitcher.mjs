@@ -131,7 +131,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#clearThumbnailsCache();
       this.#cleanupRecentlyUsedTabs();
     });
-    window.addEventListener("TabAttrModified", () => this.#clearThumbnailsCache());
+    window.addEventListener("TabAttrModified", () => {
+      this.#clearThumbnailsCache();
+      this.#cleanupRecentlyUsedTabs();
+    });
     window.addEventListener("TabMove", () => this.#clearThumbnailsCache());
     window.addEventListener("TabSelect", (event) => this.#onTabSelect(event));
   }
@@ -157,13 +160,13 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Remove tabs that no longer exist from the recently-used list.
+   * Remove tabs that no longer exist or are unloaded from the recently-used list.
    *
    * @returns {void}
    */
   #cleanupRecentlyUsedTabs() {
     this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(
-      (tab) => tab && !tab.closing && gBrowser.tabs.includes(tab)
+      (tab) => tab && !tab.closing && !tab.hasAttribute("pending") && gBrowser.tabs.includes(tab)
     );
   }
 

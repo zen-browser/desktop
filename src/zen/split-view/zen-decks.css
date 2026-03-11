@@ -7,7 +7,6 @@
 /** Zen Decks - ONLY USED FOR SPLIT VIEWS, DO NOT USE THIS CLASS FOR ANY OTHER PURPOSE **/
 
 %include zen-split-group.inc.css
-
 #tabbrowser-tabpanels[zen-split-view="true"] {
   display: flex;
   flex-direction: row;
@@ -253,4 +252,20 @@ zen-split-fake-tab {
   background-color: color-mix(in srgb, var(--button-background-color-primary), transparent 40%);
   margin: var(--tab-block-margin);
   flex: 1;
+}
+
+:root[inDOMFullscreen="true"] #tabbrowser-tabpanels[zen-split-view="true"] {
+  display: block !important;
+}
+
+:root[zen-split-fullscreen] .browserSidebarContainer[is-zen-split="true"]:not([zen-fullscreen="true"]) {
+  display: none !important;
+}
+
+:root[zen-split-fullscreen] .browserSidebarContainer[is-zen-split="true"][zen-fullscreen="true"] {
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  z-index: 1000 !important;
 }

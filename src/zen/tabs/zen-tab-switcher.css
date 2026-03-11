@@ -23,6 +23,12 @@
     background: var(--arrowpanel-background) !important;
     backdrop-filter: none !important;
   }
+
+  /* Disable fade-in on Linux */
+  @media (-moz-platform: linux) {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 #zen-tab-switcher-panel .panel-viewcontainer,
@@ -139,10 +145,8 @@
   min-width: 0;
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info {
-  color: white !important;
-}
-
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info,
 .zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
+  color: white !important;
   -moz-text-fill-color: white !important;
 }

@@ -102,22 +102,12 @@
   background: color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent);
 }
 
-.zen-tab-switcher-favicon-large {
-  width: 48px;
-  height: 48px;
-  opacity: 0.3;
-  -moz-context-properties: fill, stroke, fill-opacity;
-  fill: currentColor;
-}
-
 .zen-tab-switcher-info {
   padding: 0;
-  background: transparent;
   display: flex;
   align-items: center;
   gap: 6px;
   min-height: 22px;
-  border-top: none;
 }
 
 .zen-tab-switcher-favicon {
@@ -125,18 +115,16 @@
   height: 18px;
   flex-shrink: 0;
   margin-left: 4px;
-  -moz-context-properties: fill, stroke, fill-opacity;
+  -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
   fill-opacity: var(--urlbar-icon-fill-opacity);
 }
 
-.zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
-.zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
+.zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen {
   filter: light-dark(brightness(0), brightness(0) invert(1));
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen,
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon-large.zen-tab-switcher-favicon-zen {
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen {
   filter: brightness(0) invert(1);
 }
 
@@ -151,8 +139,10 @@
   min-width: 0;
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info,
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info {
   color: white !important;
+}
+
+.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
   -moz-text-fill-color: white !important;
 }

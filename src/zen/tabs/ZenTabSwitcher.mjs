@@ -13,8 +13,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
   static MAX_RECENT_TABS = 50;
-  static PANEL_PADDING = 30; // 15 * 2 
-  static PANEL_HEIGHT = 200; // 15 * 2 + 170
+  static PANEL_HORIZONTAL_PADDING = 30;
+  static PANEL_HEIGHT = 200;
+  static THUMBNAIL_CAPTURE_WIDTH = 320;
+  static THUMBNAIL_CAPTURE_HEIGHT = 180;
 
   #isOpen = false;
   #currentIndex = 0;
@@ -138,7 +140,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Update recently-used order list whenever a user clicks/switches to tab.
-   * Maintains an most-recently-used list of tabs by moving the selected tab to the front.
    *
    * @param {Event} event - The tab selection event.
    * @returns {void}
@@ -163,7 +164,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Remove tabs that no longer exist from the recently-used list.
-   * Filters out closed tabs and tabs not present in the browser's tab list.
    *
    * @returns {void}
    */
@@ -184,7 +184,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Process keyboard input when keys are pressed down.
-   * Handles Escape (to close panel) and Ctrl+Tab (to open/navigate panel).
+   * Handles Escape (to close panel) and Ctrl+Tab/Shift+Ctrl+Tab (to open/navigate panel).
    *
    * @param {KeyboardEvent} event - The key press event.
    * @returns {void}
@@ -282,7 +282,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const containerWidth = nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards;
     // Ensure panel width doesn't exceed window width to prevent cutoff at screen edges
-    const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_PADDING, windowWidth);
+    const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_HORIZONTAL_PADDING, windowWidth);
 
     const centerX = (windowWidth - panelWidth) / 2;
     const centerY = (windowHeight - nsZenTabSwitcher.PANEL_HEIGHT) / 2;
@@ -330,8 +330,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Resets the switcher state to default values.
-   * Hides the panel and clears internal state variables.
+   * Hides the panel and resets internal state variables.
    *
    * @returns {void}
    */
@@ -344,8 +343,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Captures screenshots for all tabs in the background.
-   * Initiates thumbnail capture for every tab in the current tab list.
+   * Capture thumbnails for every tab in the current tab list.
    *
    * @returns {void}
    */
@@ -391,8 +389,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     try {
       const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-      canvas.width = 320;
-      canvas.height = 180;
+      canvas.width = nsZenTabSwitcher.THUMBNAIL_CAPTURE_WIDTH;
+      canvas.height = nsZenTabSwitcher.THUMBNAIL_CAPTURE_HEIGHT;
 
       await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,
@@ -442,7 +440,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Creates the list of tabs to show in the switcher.
-   * Filters tabs based on the selected order mode (recent or visual) and excludes closing/hidden tabs.
    *
    * @returns {void}
    */
@@ -579,8 +576,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Updates the visual appearance when selection changes.
-   * Highlights the selected card and updates title colors.
+   * Updates the card appearance when selection changes.
    *
    * @returns {void}
    */
@@ -590,22 +586,9 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
-      // Check if current card is selected
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
       const isSelected = cardIndex === this.#currentIndex;
-      const title = card.querySelector(".zen-tab-switcher-title");
-
       card.classList.toggle("zen-tab-switcher-selected", isSelected);
-
-      if (title) {
-        if (isSelected) {
-          title.style.setProperty("color", "white", "important");
-          title.style.setProperty("-moz-text-fill-color", "white", "important");
-        } else {
-          title.style.color = "";
-          title.style.removeProperty("-moz-text-fill-color");
-        }
-      }
     });
 
     this.#scrollToSelected();

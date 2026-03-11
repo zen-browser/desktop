@@ -81,7 +81,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   dropZone;
   _edgeHoverSize;
   minResizeWidth;
-  _wasSplitBeforeFullscreen = false;
+
   _lastOpenedTab = null;
 
   MAX_TABS = 4;
@@ -115,43 +115,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       "TabBrowserDiscarded",
       this.handleTabBrowserDiscarded.bind(this)
     );
-
     window.addEventListener("TabSelect", this.onTabSelect.bind(this));
     this.initializeContextMenu();
     this.insertIntoContextMenu();
-
-    window.addEventListener("fullscreenchange", () => {
-      const isFullscreen = !!document.fullscreenElement;
-      if (this.splitViewActive) {
-        document.documentElement.toggleAttribute(
-          "zen-split-fullscreen",
-          isFullscreen
-        );
-
-        const currentViewBrowsers = this.splitViewBrowsers;
-        const fullscreenBrowser = document.fullscreenElement;
-
-        for (const browser of currentViewBrowsers) {
-          const container = browser.closest(".browserSidebarContainer");
-          const isThisFullscreen =
-            isFullscreen &&
-            (browser === fullscreenBrowser ||
-              browser.contains(fullscreenBrowser));
-
-          if (container) {
-            if (isThisFullscreen) {
-              container.setAttribute("zen-fullscreen", "true");
-            } else {
-              container.removeAttribute("zen-fullscreen");
-            }
-          }
-
-          const isActive = !isFullscreen || isThisFullscreen;
-          browser.zenModeActive = isActive;
-          browser.docShellIsActive = isActive;
-        }
-      }
-    });
 
     window.addEventListener(
       "AfterWorkspacesSessionRestore",
@@ -1146,7 +1112,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest(".browserSidebarContainer");
     container.removeAttribute("is-zen-split");
-    container.removeAttribute("zen-fullscreen");
     container.style.inset = "";
     this._removeHeader(container);
     this.resetContainerStyle(container);
@@ -1515,7 +1480,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (this.currentView < 0) {
       return;
     }
-    document.documentElement.removeAttribute("zen-split-fullscreen");
     this.setTabsDocShellState(this._data[this.currentView].tabs, false);
     for (const tab of this._data[this.currentView].tabs) {
       const container = tab.linkedBrowser.closest(".browserSidebarContainer");

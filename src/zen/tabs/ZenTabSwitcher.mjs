@@ -41,7 +41,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     ChromeUtils.defineLazyGetter(this, "panel", () =>
       document.getElementById("zen-tab-switcher-panel")
     );
-    ChromeUtils.defineLazyGetter(this, "toolbox", () => document.getElementById("TabsToolbar"));
     ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
       document.getElementById("zen-tab-switcher-tabs")
     );
@@ -63,8 +62,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Disables or enables the default Firefox Ctrl+Tab behavior based on the feature preference.
-   * When ZenTabSwitcher is enabled, the default behavior is disabled.
+   * Disables or enables the default Firefox Ctrl+Tab behavior based on user preference.
    *
    * @returns {void}
    */
@@ -118,7 +116,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #setupKeyboardListeners() {
     window.addEventListener("keydown", (e) => this.#handleKeyDown(e), true);
     window.addEventListener("keyup", (e) => this.#handleKeyUp(e), true);
-    window.addEventListener("blur", () => this.#isOpen && this.#forceClose());
+    window.addEventListener("blur", () => this.#isOpen && this.close(false));
   }
 
   /**
@@ -150,11 +148,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const index = this.#recentlyUsedTabs.indexOf(tab);
-    if (index !== -1) {
-      this.#recentlyUsedTabs.splice(index, 1);
-    }
-
+    this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(t => t !== tab);
     this.#recentlyUsedTabs.unshift(tab);
 
     if (this.#recentlyUsedTabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
@@ -194,20 +188,18 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const stopEvent = () => {
+    if (event.key === "Escape" && this.#isOpen) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-    };
-
-    if (event.key === "Escape" && this.#isOpen) {
-      stopEvent();
-      this.#forceClose();
+      this.close(false);
       return;
     }
 
     if (event.ctrlKey && event.key === "Tab") {
-      stopEvent();
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       if (!this.#isOpen) {
         this.open(event.shiftKey);
@@ -225,12 +217,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #handleKeyUp(event) {
-    if (!this.#isOpen) {
-      return;
-    }
-
-    if (event.key === "Control") {
-      document.hasFocus() ? this.close() : this.#forceClose();
+    if (this.#isOpen && event.key === "Control") {
+      this.close(document.hasFocus());
     }
   }
 
@@ -255,16 +243,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#currentIndex = shiftKey ? this.#tabList.length - 1 : 1;
     } else {
       const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
-
-      // Determine which tab to initially highlight when opening switcher
-      // Example: If at index 0 in a 5-tab list, (0 - 1 + 5) % 5 = 4 (wraps to end of list)
+      
       if (shiftKey) {
         this.#currentIndex =
           currentTabIndex >= 0
             ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length
             : this.#tabList.length - 1;
-        // If current tab is in the list and ctrl+tab: Select the next tab
-        // If current tab not found: default to first tab (index 0)
       } else {
         this.#currentIndex =
           currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
@@ -281,7 +265,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const windowHeight = window.innerHeight;
 
     const containerWidth = nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards;
-    // Ensure panel width doesn't exceed window width to prevent cutoff at screen edges
     const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_HORIZONTAL_PADDING, windowWidth);
 
     const centerX = (windowWidth - panelWidth) / 2;
@@ -300,32 +283,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Closes the tab switcher and switches to the selected tab.
+   * Closes the tab switcher and optionally switches to the selected tab.
    *
+   * @param {boolean} switchTab - Whether to switch to the selected tab.
    * @returns {void}
    */
-  close() {
+  close(switchTab = true) {
     if (!this.#isOpen) {
       return;
     }
 
-    const selectedTab = this.#tabList[this.#currentIndex];
-    if (selectedTab && selectedTab !== gBrowser.selectedTab) {
-      gBrowser.selectedTab = selectedTab;
+    if (switchTab) {
+      const selectedTab = this.#tabList[this.#currentIndex];
+      if (selectedTab && selectedTab !== gBrowser.selectedTab) {
+        gBrowser.selectedTab = selectedTab;
+      }
     }
 
-    this.#resetState();
-  }
-
-  /**
-   * Closes the switcher without switching tabs (used for Escape key).
-   *
-   * @returns {void}
-   */
-  #forceClose() {
-    if (!this.#isOpen) {
-      return;
-    }
     this.#resetState();
   }
 
@@ -358,14 +332,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {Promise<void>} Resolves when all visible thumbnails are captured.
    */
   async #preCacheThumbnailsForVisible() {
-    // Step 1: Get the index of the first tab that should be visible on the current page
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
-    // Step 2: Get the tabs that should be visible on the current page based on the start index and max visible cards
     const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
-    // Step 3: Capture thumbnails for those tabs and ensure they are all captured before showing panel
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
-    const tasks = tabsToCache.map((tab) => this.#captureThumbnail(tab));
-    await Promise.all(tasks);
+    await Promise.all(tabsToCache.map((tab) => this.#captureThumbnail(tab)));
   }
 
   /**
@@ -414,25 +384,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #updateCardThumbnail(tabId, dataUrl) {
-    if (!this.tabsContainer) {
-      return;
-    }
-
-    const card = this.tabsContainer.querySelector(`[data-tab-id="${tabId}"]`);
-    if (!card) {
-      return;
-    }
-
-    const thumbnailContainer = card.querySelector(".zen-tab-switcher-thumbnail");
+    const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
+    const thumbnailContainer = card?.querySelector(".zen-tab-switcher-thumbnail");
+    
     if (!thumbnailContainer) {
       return;
     }
 
-    // Remove existing image or placeholder
     thumbnailContainer.innerHTML = "";
     card.classList.remove("zen-tab-switcher-no-thumbnail");
 
-    // Add the thumbnail image
     const img = document.createXULElement("image");
     img.setAttribute("src", dataUrl);
     thumbnailContainer.appendChild(img);
@@ -466,16 +427,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     this.tabsContainer.innerHTML = "";
-    const totalTabs = this.#tabList.length;
-    // Prevent showing more cards than tabs exist
-    this.#actualVisibleCards = Math.min(totalTabs, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
     const containerWidth = `${nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards}px`;
-
-    Object.assign(this.tabsContainer.style, {
-      width: containerWidth,
-      maxWidth: containerWidth,
-      minWidth: containerWidth,
-    });
+    this.tabsContainer.style.width = containerWidth;
 
     this.#tabList.forEach((tab, index) => {
       const tabCard = this.#createTabCard(tab, index);
@@ -572,7 +525,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {string|null} The thumbnail data URL, or null if not available.
    */
   #getTabThumbnail(tab) {
-    return tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel) || null;
+    if (tab.hasAttribute("pending")) {
+      return null;
+    }
+    return this.#thumbnailCache.get(tab.linkedPanel);
   }
 
   /**
@@ -596,7 +552,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Scrolls the tab container to show the selected card.
-   * Uses page-based scrolling (shows full pages of cards, never cuts off).
    * First press uses instant scroll, subsequent ones use smooth.
    *
    * @returns {void}
@@ -612,14 +567,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
     const pageStartIndex = this.#getPageStartIndex(cardIndex);
-    // Multiply the page start index by card width to get pixel offset from left edge
     const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
 
-    // Scroll the container horizontally to show the selected tab's page
     this.tabsContainer.scrollTo({
-      // Set horizontal scroll position in pixels
       left: scrollPosition,
-      // Instant scroll on first open, smooth animation afterwards
       behavior: this.#firstPress ? "auto" : "smooth",
     });
 
@@ -627,8 +578,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Calculates which card should be at the left edge for pagination.
-   * Ensures the page shows full cards without cutoff at the end.
+   * Calculates which card should be at the left edge for pagination logic.
    *
    * @param {number} cardIndex - The index of the card.
    * @returns {number} The start index for the current page.
@@ -636,17 +586,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #getPageStartIndex(cardIndex) {
     const totalTabs = this.#tabList.length;
     const maxVisible = this.#actualVisibleCards;
-    // Determine which page contains the card
-    // Example: If cardIndex = 7 and maxVisible = 5, currentPage = 1 (second page), pageStartIndex = 5
     const currentPage = Math.floor(cardIndex / maxVisible);
     let pageStartIndex = currentPage * maxVisible;
 
-    // Edge case: Adjustment for last page
-    // Example: 12 total tabs with 5 visible means last page starts at index 10 which would only show 2 tabs (10 and 11)
     const remainingCards = totalTabs - pageStartIndex;
 
-    // Solution: When remaining cards < maxVisible, shift the page backwards to always show a full page
-    // Example: 12 - 5 = 7, so show cards 7-11 (5 full cards)
+    // Adjust for last page to always show full page of cards
     if (remainingCards < maxVisible && totalTabs > maxVisible) {
       pageStartIndex = Math.max(0, totalTabs - maxVisible);
     }

@@ -440,7 +440,7 @@ window.gZenUIManager = {
 
     // Close the new tab popup on cmd/ctrl + t
     if (gURLBar.hasAttribute("zen-newtab")) {
-      this.handleUrlbarClose(false, false);
+      this.handleUrlbarClose();
       return true;
     }
 

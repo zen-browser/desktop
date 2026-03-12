@@ -147,7 +147,8 @@ export class nsZenLiveFolderProvider {
       contentPolicyType: Ci.nsIContentPolicy.TYPE_SAVEAS_DOWNLOAD,
       loadingPrincipal: principal,
       securityFlags:
-        Ci.nsILoadInfo.SEC_REQUIRE_CORS_INHERITS_SEC_CONTEXT | Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
+        Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_SEC_CONTEXT_IS_NULL |
+        Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
       triggeringPrincipal: principal,
     }).QueryInterface(Ci.nsIHttpChannel);
 

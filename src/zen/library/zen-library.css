@@ -5,46 +5,71 @@
  */
 
 :host(zen-library) {
-  transition: transform 0.1s ease-in-out;
-  transform: translateX(-100%);
-  z-index: 1;
+
+  @media (-moz-platform: windows) {
+    --border-radius-medium: 6px;
+    --tab-border-radius: 4px;
+  }
+
+  @media (-moz-platform: macos) {
+    --border-radius-medium: 12px;
+    --tab-border-radius: 8px;
+    font-size: 1.25rem; /* Slightly larger font on macOS */
+  }
+
   display: flex;
   position: absolute;
   height: 100%;
+  z-index: 1;
+  transform: translateX(-100%);
+  transition: transform 0.15s ease-in-out;
 }
 
 :host(zen-library[open]) {
   transform: translateX(0);
 }
 
+/* Layout Components */
+
 #zen-library-sidebar {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px;
   justify-content: space-between;
-  height: 100%;
   width: 84px;
+  height: 100%;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--zen-big-shadow);
   -moz-window-dragging: drag;
-  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.02);
 }
 
 #zen-library-content {
   display: flex;
-  transition: min-width 0.15s ease-in-out;
-  min-width: 35rem;
+  width: 25rem;
   max-width: 80vh;
+  overflow: hidden;
+  transition: width 0.15s ease-in-out;
 
   &[large-content] {
-    min-width: 75rem;
+    width: 75rem;
   }
 
   & > * {
-    flex: 1;
+    /*
+     * Fixed width so inner content does not stretch or squish while the
+     * outer container animates. flex-shrink: 0 prevents flexbox from
+     * compressing it below this value during the width transition.
+     */
     display: flex;
     flex-direction: column;
+    width: 25rem;
+    min-width: 25rem;
+    flex-shrink: 0;
+    overflow: hidden;
   }
 }
+
+/* Sidebar Tabs */
 
 #zen-library-sidebar-tabs {
   display: flex;
@@ -55,19 +80,19 @@
 
 .zen-library-tab {
   display: flex;
-  padding: 12px 0;
+  position: relative;
   justify-content: center;
   align-items: center;
+  padding: 12px 0;
   background: transparent;
-  position: relative;
   font-weight: 600;
 
   &::before {
     content: "";
+    position: absolute;
     inset: 0;
     border-radius: 6px;
     transition: transform 0.1s ease-in-out;
-    position: absolute;
   }
 
   &:hover::before {
@@ -83,12 +108,308 @@
   }
 }
 
-/* Section: Search Component */
+/* Search Bar */
 
-.search-section {
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  margin: 8px 6px;
+  padding: 0;
+  box-sizing: border-box;
+
+  @media (-moz-platform: macos) {
+    font-size: 1.25rem; /* Slightly larger font on macOS */
+  }
+}
+
+.search-urlbar {
+  display: flex;
+  position: relative;
   flex: 1;
+  align-items: stretch;
+  min-width: 0;
+  height: 38px;
+  margin-inline: 2px;
+  background: transparent;
+  border-radius: var(--border-radius-medium);
+  box-sizing: border-box;
+}
+
+.search-urlbar-background {
+  position: absolute;
+  inset: 0;
+  background: var(--zen-toolbar-element-bg);
+  border-radius: var(--border-radius-medium);
+  pointer-events: none;
+}
+
+.search-urlbar:hover .search-urlbar-background {
+  background: var(--zen-toolbar-element-bg-hover);
+}
+
+.search-input-container {
+  display: flex;
+  position: relative;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  gap: 0;
+  padding-inline: var(--urlbar-icon-padding, 9px);
+  padding-block: var(--urlbar-padding-block, 4px);
+  box-sizing: border-box;
+  overflow: hidden;
+
+  & .search-icon {
+    width: 16px;
+    height: 16px;
+    margin-inline-end: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+    fill: currentColor;
+    opacity: 0.5;
+    -moz-context-properties: fill, fill-opacity;
+  }
 
   & .search-input {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    height: calc(var(--urlbar-height, 38px) - 2 * var(--urlbar-padding-block, 4px));
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--toolbar-field-color, rgba(0,0,0,0.8));
+    font-weight: 500;
+    line-height: var(--tab-label-line-height);
+
+    &::placeholder {
+      color: inherit;
+      opacity: 0.5;
+    }
   }
+
+  &:focus-within .search-input {
+    color: var(--toolbar-field-focus-color, light-dark(black, rgb(251,251,254)));
+  }
+
+  & .search-clear-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    margin-inline-start: 6px;
+    padding: 12px;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--border-radius-medium) - 2px);
+    color: inherit;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: none;
+    flex-shrink: 0;
+    fill: currentColor;
+    -moz-context-properties: fill, fill-opacity;
+
+    &:hover {
+      background: var(--urlbar-box-hover-bgcolor, light-dark(rgba(0,0,0,0.08), rgba(255,255,255,0.1)));
+    }
+  }
+
+  &:has(.search-input:not(:placeholder-shown)) .search-clear-button {
+    opacity: 0.5;
+    pointer-events: auto;
+  }
+}
+
+.search-filter-button {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  height: var(--urlbar-height, 38px);
+  margin-inline: 2px;
+  padding: 0 8px;
+  background: var(--zen-toolbar-element-bg);
+  border: none;
+  border-radius: var(--border-radius-medium);
+  color: inherit;
+  font-weight: 500;
+  line-height: var(--tab-label-line-height);
+  cursor: pointer;
+  fill: currentColor;
+  fill-opacity: 0.5;
+  -moz-context-properties: fill, fill-opacity;
+
+  &:hover {
+    background: var(--zen-toolbar-element-bg-hover);
+  }
+
+  &:active {
+    background: var(--toolbarbutton-active-background, color-mix(in srgb, light-dark(#101010,#e2e2e2) 7%, transparent 93%));
+  }
+}
+
+/* List */
+
+.search-results {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--tab-inline-padding);
+  padding-top: 0 !important;
+  overflow-y: auto;
+  scrollbar-width: auto;
+  scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent;
+
+  @media (-moz-platform: macos) {
+    font-size: 1.25rem; /* Slightly larger font on macOS */
+  }
+}
+
+/* unfinished */
+.library-date-separator {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 4px;
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+
+  /* I am not sure if we should keep the separator line or not, I'll ask cheffy later */
+  /*&::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    opacity: 0.5;
+    background: var(--toolbarseparator-color);
+  }*/
+}
+
+.library-item {
+  --tab-label-mask-size: 1em;
+  
+  display: flex;
+  align-items: stretch;
+  margin: 2px 0;
+  appearance: none;
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 0;
+  color: inherit;
+  color-scheme: unset;
+  overflow: clip;
+
+  &:active {
+    scale: var(--zen-active-tab-scale);
+  }
+}
+
+.library-item-stack {
+  display: grid;
+  position: relative;
+  width: 100%;
+}
+
+.library-item-background {
+  position: absolute;
+  inset: 0;
+  min-height: var(--tab-min-height);
+  background-color: transparent;
+  border-radius: var(--border-radius-medium) !important;
+  outline: var(--tab-outline);
+  outline-offset: var(--tab-outline-offset);
+  overflow: hidden;
+}
+
+.library-item:hover .library-item-background {
+  background-color: var(--tab-hover-background-color);
+  outline-color: var(--tab-hover-outline-color);
+}
+
+.library-item-content {
+  display: flex;
+  position: relative;
+  align-items: center;
+  min-width: 0;
+  height: 36px;
+  padding: 0 var(--tab-inline-padding);
+}
+
+.library-item-icon-stack {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.library-item-icon-image {
+  flex-shrink: 0;
+  width: var(--size-item-small);
+  height: var(--size-item-small);
+  margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 3) !important;
+  margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+  padding: 0 !important;
+  border-radius: 4px;
+  fill: currentColor;
+  -moz-context-properties: fill, stroke;
+}
+
+.library-item-label-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  opacity: 1;
+  direction: ltr;
+  mask-image: linear-gradient(to left, transparent, black var(--tab-label-mask-size));
+  overflow: hidden;
+}
+
+.library-item-label {
+  margin-inline: 0;
+  line-height: var(--tab-label-line-height);
+  white-space: nowrap;
+}
+
+/* finished (i hope so) */
+.library-item-sublabel {
+  margin: 0;
+  font-size: x-small;
+  white-space: nowrap;
+  opacity: 0.65; /* what opacity should i keep? */
+  transform: translateY(-4px);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* unfinished */
+.library-item-time {
+  flex-shrink: 0;
+  margin-inline-start: calc(var(--toolbarbutton-inner-padding) - 0.5em); /* idk why this calc makes sense to me 
+  but it is inconsistant so please fix it if you have an idea */
+  padding-inline-end: calc(var(--toolbarbutton-inner-padding) / 3);
+  font-size: x-small;
+  white-space: nowrap;
+  opacity: 0.65;
+}
+
+/* unfinished */
+.empty-state {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  font-weight: 600;
+  opacity: 0.5;
 }

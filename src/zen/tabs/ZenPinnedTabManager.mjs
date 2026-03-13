@@ -74,7 +74,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
-    this._onAccelKeyChangeBound = this._onAccelKeyChange.bind(this);
 
     gZenWorkspaces._resolvePinnedInitialized();
     if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
@@ -115,12 +114,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       let newTab = gBrowser.duplicateTab(tab, true);
       newTab.addEventListener("SSTabRestored", () => {
         this._resetTabToStoredState(tab);
-        gBrowser.selectedTab = tab;
       }, { once: true });
     } else {
       this._resetTabToStoredState(tab);
-      gBrowser.selectedTab = tab;
     }
+    gBrowser.selectedTab = tab;
   }
 
   get enabled() {
@@ -174,14 +172,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onAccelKeyChange(e) {
     let tab = this._tabWithResetPinButtonHovered;
-    if (tab) {
-      let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
-      this._setResetPinSublabel(tab, accelHeld);
-      // Up <-> down events until the mouse leaves the button.
-      // When hovered with accelHeld, we should listen to the next keyup event
-      let nextEvent = accelHeld ? "keyup" : "keydown";
-      window.addEventListener(nextEvent, this._onAccelKeyChangeBound, { once: true });
+    if (!tab) {
+      return;
     }
+    let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
+    this._setResetPinSublabel(tab, accelHeld);
+    // Up <-> down events until the mouse leaves the button.
+    // When hovered with accelHeld, we should listen to the next keyup event
+    let nextEvent = accelHeld ? "keyup" : "keydown";
+    let handler = (nextE) => this._onAccelKeyChange(nextE);
+    window.addEventListener(nextEvent, handler, { once: true });
   }
 
   _setResetPinSublabel(tab, accelHeld) {

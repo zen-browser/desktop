@@ -12,18 +12,18 @@ ChromeUtils.defineESModuleGetters(lazy, {
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
-  static MAX_RECENT_TABS = 50;
+  static MAX_RECENT_TABS = 20;
   static PANEL_HORIZONTAL_PADDING = 30;
   static PANEL_HEIGHT = 200;
-  static THUMBNAIL_CAPTURE_WIDTH = 320;
-  static THUMBNAIL_CAPTURE_HEIGHT = 180;
+  static THUMBNAIL_CANVAS_WIDTH = 320;
+  static THUMBNAIL_CANVAS_HEIGHT = 180;
 
   #isOpen = false;
   #currentIndex = 0;
   #tabList = [];
   #thumbnailCache = new Map();
   #lazyPrefs = {};
-  #recentlyUsedTabs = [];
+  #recentlyUsedTabsByWorkspace = new Map();
   #actualVisibleCards = nsZenTabSwitcher.MAX_VISIBLE_CARDS;
   #firstPress = true;
 
@@ -47,17 +47,31 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Initializes the recently used tabs list with the currently selected tab.
+   * Initializes the recently used tabs list for the current workspace with the selected tab.
    *
    * @returns {void}
    */
   #initializeRecentlyUsedTabs() {
+    if (!this.#lazyPrefs.useRecentOrder) {
+      return;
+    }
+    
     if (gBrowser && gBrowser.selectedTab) {
-      this.#recentlyUsedTabs = [gBrowser.selectedTab];
+      const workspaceId = gZenWorkspaces?.activeWorkspace || "default";
+      this.#recentlyUsedTabsByWorkspace.set(workspaceId, [gBrowser.selectedTab]);
     }
   }
 
+  /**
+   * Registers an observer to handle application shutdown events.
+   *
+   * @returns {void}
+   */
   #setupShutdownObserver() {
+    try {
+      Services.obs.removeObserver(this, "quit-application-granted");
+    } catch (e) {
+    }
     Services.obs.addObserver(this, "quit-application-granted");
   }
 
@@ -87,7 +101,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       false
     );
 
+    try {
+      Services.prefs.removeObserver("zen.tabs.tab-switcher.enabled", this);
+      Services.prefs.removeObserver("zen.tabs.tab-switcher.use-recent-order", this);
+    } catch (e) {
+    }
+    
     Services.prefs.addObserver("zen.tabs.tab-switcher.enabled", this);
+    Services.prefs.addObserver("zen.tabs.tab-switcher.use-recent-order", this);
   }
 
   /**
@@ -101,9 +122,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    */
   observe(subject, topic, data) {
     if (topic === "quit-application-granted") {
-      this.#recentlyUsedTabs = [];
+      this.#recentlyUsedTabsByWorkspace.clear();
     } else if (data === "zen.tabs.tab-switcher.enabled") {
       this.#disableDefaultCtrlTab();
+      if (!this.#lazyPrefs.enabled) {
+        this.#recentlyUsedTabsByWorkspace.clear();
+        console.log("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
+      }
+    } else if (data === "zen.tabs.tab-switcher.use-recent-order") {
+      this.#recentlyUsedTabsByWorkspace.clear();
+      console.log("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
+      if (this.#lazyPrefs.useRecentOrder) {
+        this.#initializeRecentlyUsedTabs();
+      }
     }
   }
 
@@ -126,57 +157,78 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #observeTabChanges() {
-    window.addEventListener("TabOpen", () => this.#clearThumbnailsCache());
+    window.addEventListener("TabOpen", () => this.#thumbnailCache.clear());
     window.addEventListener("TabClose", () => {
-      this.#clearThumbnailsCache();
+      this.#thumbnailCache.clear();
       this.#cleanupRecentlyUsedTabs();
     });
     window.addEventListener("TabAttrModified", () => {
-      this.#clearThumbnailsCache();
-      this.#cleanupRecentlyUsedTabs();
+      this.#thumbnailCache.clear();
     });
-    window.addEventListener("TabMove", () => this.#clearThumbnailsCache());
+    window.addEventListener("TabMove", () => this.#thumbnailCache.clear());
     window.addEventListener("TabSelect", (event) => this.#onTabSelect(event));
+    window.addEventListener("ZenWorkspacesUIUpdate", () => {
+      this.#thumbnailCache.clear();
+    });
   }
 
   /**
-   * Update recently-used order list whenever a user clicks/switches to tab.
+   * Update recently-used order list for the current workspace whenever a user clicks/switches to tab.
    *
    * @param {Event} event - The tab selection event.
    * @returns {void}
    */
   #onTabSelect(event) {
+    if (!this.#lazyPrefs.enabled || !this.#lazyPrefs.useRecentOrder) {
+      return;
+    }
+    
     const tab = event.target;
     if (!tab || tab.closing || tab.hidden) {
       return;
     }
 
-    this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(t => t !== tab);
-    this.#recentlyUsedTabs.unshift(tab);
-
-    if (this.#recentlyUsedTabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
-      this.#recentlyUsedTabs.pop();
-    }
+    const workspaceId = gZenWorkspaces?.activeWorkspace || "default";
+    
+    this.#updateWorkspaceRecentList(workspaceId, tab);
   }
 
   /**
-   * Remove tabs that no longer exist or are unloaded from the recently-used list.
+   * Helper to update a specific workspace's recently used tabs list.
+   *
+   * @param {string} workspaceId - The workspace ID.
+   * @param {Tab} tab - The tab to add.
+   * @returns {void}
+   */
+  #updateWorkspaceRecentList(workspaceId, tab) {
+    let recentTabs = this.#recentlyUsedTabsByWorkspace.get(workspaceId) || [];
+    recentTabs = recentTabs.filter(t => t !== tab);
+    recentTabs.unshift(tab);
+
+    if (recentTabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
+      recentTabs.pop();
+    }
+
+    this.#recentlyUsedTabsByWorkspace.set(workspaceId, recentTabs);
+    console.log(`ZenTabSwitcher: Updated and saved recently used tabs list for workspace ${workspaceId}`);
+  }
+
+  /**
+   * Remove tabs that no longer exist or are unloaded from all workspace recently-used lists.
    *
    * @returns {void}
    */
   #cleanupRecentlyUsedTabs() {
-    this.#recentlyUsedTabs = this.#recentlyUsedTabs.filter(
-      (tab) => tab && !tab.closing && !tab.hasAttribute("pending") && gBrowser.tabs.includes(tab)
-    );
-  }
+    if (!this.#lazyPrefs.useRecentOrder) {
+      return;
+    }
 
-  /**
-   * Clear all cached tab screenshots so they'll be regenerated.
-   *
-   * @returns {void}
-   */
-  #clearThumbnailsCache() {
-    this.#thumbnailCache.clear();
+    for (const [workspaceId, recentTabs] of this.#recentlyUsedTabsByWorkspace) {
+      const cleanedTabs = recentTabs.filter(
+        (tab) => tab && !tab.closing && !tab.hasAttribute("pending") && tab.isConnected
+      );
+      this.#recentlyUsedTabsByWorkspace.set(workspaceId, cleanedTabs);
+    }
   }
 
   /**
@@ -226,8 +278,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Initialize the panel UI and display it to the user.
-   * This is async because it waits for thumbnails to be captured before showing the panel.
+   * Initialize the panel UI. 
    *
    * @param {boolean} shiftKey - Whether Shift was pressed, determining initial navigation direction (false = forward, true = backward).
    * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.
@@ -268,6 +319,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const windowHeight = window.innerHeight;
 
     const containerWidth = nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards;
+    // Ensure the panel doesn't get cut off by screen edge (always shows full panel on screen)
     const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_HORIZONTAL_PADDING, windowWidth);
 
     const centerX = (windowWidth - panelWidth) / 2;
@@ -282,7 +334,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     setTimeout(() => this.#scrollToSelected(), 0);
 
-    this.#preCacheThumbnails();
+    this.#tabList.forEach((tab) => this.#captureThumbnail(tab));
   }
 
   /**
@@ -320,15 +372,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Capture thumbnails for every tab in the current tab list.
-   *
-   * @returns {void}
-   */
-  #preCacheThumbnails() {
-    this.#tabList.forEach((tab) => this.#captureThumbnail(tab));
-  }
-
-  /**
    * Captures screenshots only for tabs that are currently visible on screen.
    * This is async so it waits for all thumbnails before showing the panel.
    *
@@ -362,8 +405,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
     try {
       const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-      canvas.width = nsZenTabSwitcher.THUMBNAIL_CAPTURE_WIDTH;
-      canvas.height = nsZenTabSwitcher.THUMBNAIL_CAPTURE_HEIGHT;
+      canvas.width = nsZenTabSwitcher.THUMBNAIL_CANVAS_WIDTH;
+      canvas.height = nsZenTabSwitcher.THUMBNAIL_CANVAS_HEIGHT;
 
       await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,
@@ -375,7 +418,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         this.#updateCardThumbnail(tabId, dataUrl);
       }
     } catch (e) {
-      console.warn("Failed to pre-cache thumbnail:", e);
+      console.warn("ZenTabSwitcher: Failed to cache thumbnail:", e);
     }
   }
 
@@ -412,10 +455,29 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#cleanupRecentlyUsedTabs();
     }
 
-    const tabs = this.#lazyPrefs.useRecentOrder ? this.#recentlyUsedTabs : gBrowser.tabs;
-    this.#tabList = [...tabs].filter(
-      (tab) => !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab")
-    );
+    let tabs;
+    if (this.#lazyPrefs.useRecentOrder) {
+      const currentWorkspace = gZenWorkspaces?.activeWorkspace || "default";
+      const workspaceTabs = this.#recentlyUsedTabsByWorkspace.get(currentWorkspace) || [];
+      
+      tabs = [...workspaceTabs];
+      
+      if (tabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
+        tabs = tabs.slice(0, nsZenTabSwitcher.MAX_RECENT_TABS);
+      }
+    } else {
+      tabs = gBrowser.tabs;
+    }
+
+    this.#tabList = [...tabs].filter((tab) => {
+      if (tab.closing || tab.hidden || tab.hasAttribute("zen-empty-tab")) {
+        return false;
+      }
+      if (this.#lazyPrefs.useRecentOrder && tab.hasAttribute("pending")) {
+        return false;
+      }
+      return true;
+    });
   }
 
   /**

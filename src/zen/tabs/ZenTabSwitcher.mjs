@@ -127,11 +127,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#disableDefaultCtrlTab();
       if (!this.#lazyPrefs.enabled) {
         this.#recentlyUsedTabsByWorkspace.clear();
-        console.log("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
+        console.warn("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
       }
     } else if (data === "zen.tabs.tab-switcher.use-recent-order") {
       this.#recentlyUsedTabsByWorkspace.clear();
-      console.log("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
+      console.warn("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
       if (this.#lazyPrefs.useRecentOrder) {
         this.#initializeRecentlyUsedTabs();
       }
@@ -210,7 +210,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     this.#recentlyUsedTabsByWorkspace.set(workspaceId, recentTabs);
-    console.log(`ZenTabSwitcher: Updated and saved recently used tabs list for workspace ${workspaceId}`);
+    console.warn(`ZenTabSwitcher: Updated and saved recently used tabs list for workspace ${workspaceId}`);
   }
 
   /**

@@ -5,7 +5,7 @@
 /* eslint-disable no-shadow */
 
 import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
-import { ZenSpacesSwipe } from "./ZenSpacesSwipe.mjs";
+import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 
 const lazy = {};
 
@@ -651,8 +651,6 @@ class nsZenWorkspaces {
       this._cancelSwipeAnimation();
     }
   }
-
-  // Swipe-specific behavior is implemented in ZenSpacesSwipe.
 
   get activeWorkspace() {
     return this.#activeWorkspace;

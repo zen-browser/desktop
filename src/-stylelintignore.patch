@@ -1,5 +1,5 @@
 diff --git a/.stylelintignore b/.stylelintignore
-index 185490999507b8a5032977237af50f5e61c71df1..e887fafa90b881e852a287ed8898638c995861ab 100644
+index 185490999507b8a5032977237af50f5e61c71df1..d535178552c6a744022be1d0bfff5fbb8bf9a5ef 100644
 --- a/.stylelintignore
 +++ b/.stylelintignore
 @@ -106,3 +106,19 @@ build/pgo/blueprint/**/*.css
@@ -18,7 +18,7 @@ index 185490999507b8a5032977237af50f5e61c71df1..e887fafa90b881e852a287ed8898638c
 +zen/compact-mode/zen-compact-mode.css
 +
 +zen/split-view/zen-decks.css
-+zen/workspaces/zen-workspaces.css
++zen/spaces/zen-workspaces.css
 +zen/common/styles/zen-toolbar.css
 +
 +*.inc

@@ -15,7 +15,7 @@ index b80d1049bb6ae305f2ac9c4c35fe975fd508031c..9bc80194d4e35f663b5c15baae55fa48
      on_wheel(event) {
        // Don't consume the event if we can't scroll.
 -      if (!this.overflowing) {
-+      if (!this.overflowing || this.id === 'tabbrowser-arrowscrollbox' || ((event.deltaY == 0 || window.gZenWorkspaces?._swipeState?.isGestureActive) && this.classList.contains('workspace-arrowscrollbox'))) {
++      if (!this.overflowing || this.id === 'tabbrowser-arrowscrollbox' || ((event.deltaY == 0 || window.gZenWorkspaces?._swipeManager?._swipeState?.isGestureActive) && this.classList.contains('workspace-arrowscrollbox'))) {
          return;
        }
  

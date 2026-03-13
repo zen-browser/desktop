@@ -13,7 +13,6 @@
   font-size: x-small;
   margin: 0 3px;
   padding: 0;
-  appearance: auto;
 
   position: relative;
   -moz-window-dragging: no-drag;
@@ -243,7 +242,6 @@
 
   .zen-current-workspace-indicator-name {
     display: block;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: auto;

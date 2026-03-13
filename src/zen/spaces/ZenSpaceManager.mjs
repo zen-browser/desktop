@@ -1493,7 +1493,7 @@ class nsZenWorkspaces {
     await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
   }
 
-  async unloadAllOtherWorkspace(){
+  async unloadAllOtherWorkspace() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
 

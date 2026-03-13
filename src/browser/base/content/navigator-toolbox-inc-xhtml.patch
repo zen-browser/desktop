@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 4d4223c508560136aba220adb18528aac913a188..c29194057efe15e6144f5114d7977a0e11619092 100644
+index 4d4223c508560136aba220adb18528aac913a188..10d4d9cecbb0e7cec9191d78fb81a57376b37ff1 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -55,13 +55,3 @@ index 4d4223c508560136aba220adb18528aac913a188..c29194057efe15e6144f5114d7977a0e
  
    <toolbar id="nav-bar"
             class="browser-toolbar chromeclass-location"
-@@ -510,7 +518,8 @@
-            context="toolbar-context-menu"
-            data-l10n-id="bookmarks-toolbar"
-            data-l10n-attrs="toolbarname"
--           customizable="true">
-+           customizable="true"
-+           fullscreentoolbar="true">
-     <toolbartabstop skipintoolbarset="true"/>
- 
-     <hbox id="personal-toolbar-empty" skipintoolbarset="true" removable="false" hidden="true" role="alert">

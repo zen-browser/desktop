@@ -23,7 +23,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #tabList = [];
   #thumbnailCache = new Map();
   #lazyPrefs = {};
-  #recentlyUsedTabsByWorkspace = new Map();
   #actualVisibleCards = nsZenTabSwitcher.MAX_VISIBLE_CARDS;
   #firstPress = true;
 
@@ -33,8 +32,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.#setupKeyboardListeners();
     this.#setupLazyGetters();
     this.#observeTabChanges();
-    this.#setupShutdownObserver();
-    this.#initializeRecentlyUsedTabs();
   }
 
   #setupLazyGetters() {
@@ -44,35 +41,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
       document.getElementById("zen-tab-switcher-tabs")
     );
-  }
-
-  /**
-   * Initializes the recently used tabs list for the current workspace with the selected tab.
-   *
-   * @returns {void}
-   */
-  #initializeRecentlyUsedTabs() {
-    if (!this.#lazyPrefs.useRecentOrder) {
-      return;
-    }
-    
-    if (gBrowser && gBrowser.selectedTab) {
-      const workspaceId = gZenWorkspaces?.activeWorkspace || "default";
-      this.#recentlyUsedTabsByWorkspace.set(workspaceId, [gBrowser.selectedTab]);
-    }
-  }
-
-  /**
-   * Registers an observer to handle application shutdown events.
-   *
-   * @returns {void}
-   */
-  #setupShutdownObserver() {
-    try {
-      Services.obs.removeObserver(this, "quit-application-granted");
-    } catch (e) {
-    }
-    Services.obs.addObserver(this, "quit-application-granted");
   }
 
   /**
@@ -94,25 +62,15 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       true
     );
 
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this.#lazyPrefs,
-      "useRecentOrder",
-      "zen.tabs.tab-switcher.use-recent-order",
-      false
-    );
-
     try {
       Services.prefs.removeObserver("zen.tabs.tab-switcher.enabled", this);
-      Services.prefs.removeObserver("zen.tabs.tab-switcher.use-recent-order", this);
     } catch (e) {
     }
     
     Services.prefs.addObserver("zen.tabs.tab-switcher.enabled", this);
-    Services.prefs.addObserver("zen.tabs.tab-switcher.use-recent-order", this);
   }
 
   /**
-   * Called when system events occur (browser shutdown or preference changes).
    * Handles cleanup on shutdown and preference change reactions.
    *
    * @param {nsISupports} subject
@@ -121,20 +79,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   observe(subject, topic, data) {
-    if (topic === "quit-application-granted") {
-      this.#recentlyUsedTabsByWorkspace.clear();
-    } else if (data === "zen.tabs.tab-switcher.enabled") {
+    if (data === "zen.tabs.tab-switcher.enabled") {
       this.#disableDefaultCtrlTab();
-      if (!this.#lazyPrefs.enabled) {
-        this.#recentlyUsedTabsByWorkspace.clear();
-        console.warn("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
-      }
-    } else if (data === "zen.tabs.tab-switcher.use-recent-order") {
-      this.#recentlyUsedTabsByWorkspace.clear();
-      console.warn("ZenTabSwitcher: Cleared recently used tabs lists and stopped tracking changes");
-      if (this.#lazyPrefs.useRecentOrder) {
-        this.#initializeRecentlyUsedTabs();
-      }
     }
   }
 
@@ -151,88 +97,24 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Registers event listeners for various tab-related events.
-   * Handles tab open, close, attribute changes, moves, and selections.
+   * Observes tab open, close, attribute changes, moves, and selection events.
+   * Updates the thumbnail cache to reflect current changes and modifies recently used list.
    *
    * @returns {void}
    */
   #observeTabChanges() {
     window.addEventListener("TabOpen", () => this.#thumbnailCache.clear());
-    window.addEventListener("TabClose", () => {
-      this.#thumbnailCache.clear();
-      this.#cleanupRecentlyUsedTabs();
-    });
+    window.addEventListener("TabClose", () => this.#thumbnailCache.clear());
     window.addEventListener("TabAttrModified", () => {
       this.#thumbnailCache.clear();
     });
     window.addEventListener("TabMove", () => this.#thumbnailCache.clear());
-    window.addEventListener("TabSelect", (event) => this.#onTabSelect(event));
     window.addEventListener("ZenWorkspacesUIUpdate", () => {
       this.#thumbnailCache.clear();
     });
   }
 
   /**
-   * Update recently-used order list for the current workspace whenever a user clicks/switches to tab.
-   *
-   * @param {Event} event - The tab selection event.
-   * @returns {void}
-   */
-  #onTabSelect(event) {
-    if (!this.#lazyPrefs.enabled || !this.#lazyPrefs.useRecentOrder) {
-      return;
-    }
-    
-    const tab = event.target;
-    if (!tab || tab.closing || tab.hidden) {
-      return;
-    }
-
-    const workspaceId = gZenWorkspaces?.activeWorkspace || "default";
-    
-    this.#updateWorkspaceRecentList(workspaceId, tab);
-  }
-
-  /**
-   * Helper to update a specific workspace's recently used tabs list.
-   *
-   * @param {string} workspaceId - The workspace ID.
-   * @param {Tab} tab - The tab to add.
-   * @returns {void}
-   */
-  #updateWorkspaceRecentList(workspaceId, tab) {
-    let recentTabs = this.#recentlyUsedTabsByWorkspace.get(workspaceId) || [];
-    recentTabs = recentTabs.filter(t => t !== tab);
-    recentTabs.unshift(tab);
-
-    if (recentTabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
-      recentTabs.pop();
-    }
-
-    this.#recentlyUsedTabsByWorkspace.set(workspaceId, recentTabs);
-    console.warn(`ZenTabSwitcher: Updated and saved recently used tabs list for workspace ${workspaceId}`);
-  }
-
-  /**
-   * Remove tabs that no longer exist or are unloaded from all workspace recently-used lists.
-   *
-   * @returns {void}
-   */
-  #cleanupRecentlyUsedTabs() {
-    if (!this.#lazyPrefs.useRecentOrder) {
-      return;
-    }
-
-    for (const [workspaceId, recentTabs] of this.#recentlyUsedTabsByWorkspace) {
-      const cleanedTabs = recentTabs.filter(
-        (tab) => tab && !tab.closing && !tab.hasAttribute("pending") && tab.isConnected
-      );
-      this.#recentlyUsedTabsByWorkspace.set(workspaceId, cleanedTabs);
-    }
-  }
-
-  /**
-   * Process keyboard input when keys are pressed down.
    * Handles Escape (to close panel) and Ctrl+Tab/Shift+Ctrl+Tab (to open/navigate panel).
    *
    * @param {KeyboardEvent} event - The key press event.
@@ -265,7 +147,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Processes keyboard input when keys are released.
    * Detects when Control key is released to close the panel and switch to selected tab.
    *
    * @param {KeyboardEvent} event - The key release event.
@@ -278,9 +159,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Initialize the panel UI. 
+   * Determines the initial tab index selection. Waits for visible tab thumbnails before showing panel, 
+   * then captures remaining thumbnails in background.
    *
-   * @param {boolean} shiftKey - Whether Shift was pressed, determining initial navigation direction (false = forward, true = backward).
+   * @param {boolean} shiftKey 
    * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.
    */
   async open(shiftKey = false) {
@@ -293,27 +175,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
     this.#isOpen = true;
 
-    if (this.#lazyPrefs.useRecentOrder) {
-      this.#currentIndex = shiftKey ? this.#tabList.length - 1 : 1;
+    const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
+    
+    if (shiftKey) {
+      this.#currentIndex =
+        currentTabIndex >= 0
+          ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length
+          : this.#tabList.length - 1;
     } else {
-      const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
-      
-      if (shiftKey) {
-        this.#currentIndex =
-          currentTabIndex >= 0
-            ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length
-            : this.#tabList.length - 1;
-      } else {
-        this.#currentIndex =
-          currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
-      }
+      this.#currentIndex =
+        currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
     }
 
     this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
 
-    await this.#preCacheThumbnailsForVisible();
+    await this.#cacheThumbnailsForVisible();
 
-    this.#renderTabs();
+    this.#createTabCards();
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -332,13 +210,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       y: centerY,
     });
 
+    this.panel.addEventListener("popuphiding", () => {
+      if (this.#isOpen) {
+        this.close(false);
+      }
+    }, { once: true });
+
     setTimeout(() => this.#scrollToSelected(), 0);
 
     this.#tabList.forEach((tab) => this.#captureThumbnail(tab));
   }
 
   /**
-   * Closes the tab switcher and optionally switches to the selected tab.
+   * Closes the tab switcher and switches to the selected tab.
    *
    * @param {boolean} switchTab - Whether to switch to the selected tab.
    * @returns {void}
@@ -364,20 +248,19 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #resetState() {
-    this.panel.hidePopup();
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
     this.#firstPress = true;
+    this.panel.hidePopup();
   }
 
   /**
    * Captures screenshots only for tabs that are currently visible on screen.
-   * This is async so it waits for all thumbnails before showing the panel.
    *
    * @returns {Promise<void>} Resolves when all visible thumbnails are captured.
    */
-  async #preCacheThumbnailsForVisible() {
+  async #cacheThumbnailsForVisible() {
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
     const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
@@ -386,6 +269,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   /**
    * Captures a screenshot of the given tab and stores it in the thumbnail cache.
+   * If the panel is open, updates the card thumbnail in the DOM.
    *
    * @param {object} tab - The tab to capture a thumbnail for.
    * @returns {Promise<void>} Resolves when the thumbnail is captured or skipped.
@@ -415,34 +299,21 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#thumbnailCache.set(tabId, dataUrl);
 
       if (this.#isOpen) {
-        this.#updateCardThumbnail(tabId, dataUrl);
+        const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
+        const thumbnailContainer = card?.querySelector(".zen-tab-switcher-thumbnail");
+        
+        if (thumbnailContainer) {
+          thumbnailContainer.innerHTML = "";
+          card.classList.remove("zen-tab-switcher-no-thumbnail");
+
+          const img = document.createXULElement("image");
+          img.setAttribute("src", dataUrl);
+          thumbnailContainer.appendChild(img);
+        }
       }
     } catch (e) {
       console.warn("ZenTabSwitcher: Failed to cache thumbnail:", e);
     }
-  }
-
-  /**
-   * Updates the thumbnail for a specific card without re-rendering all cards.
-   *
-   * @param {string} tabId - The linkedPanel ID of the tab.
-   * @param {string} dataUrl - The thumbnail data URL.
-   * @returns {void}
-   */
-  #updateCardThumbnail(tabId, dataUrl) {
-    const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
-    const thumbnailContainer = card?.querySelector(".zen-tab-switcher-thumbnail");
-    
-    if (!thumbnailContainer) {
-      return;
-    }
-
-    thumbnailContainer.innerHTML = "";
-    card.classList.remove("zen-tab-switcher-no-thumbnail");
-
-    const img = document.createXULElement("image");
-    img.setAttribute("src", dataUrl);
-    thumbnailContainer.appendChild(img);
   }
 
   /**
@@ -451,32 +322,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #buildTabList() {
-    if (this.#lazyPrefs.useRecentOrder) {
-      this.#cleanupRecentlyUsedTabs();
-    }
-
-    let tabs;
-    if (this.#lazyPrefs.useRecentOrder) {
-      const currentWorkspace = gZenWorkspaces?.activeWorkspace || "default";
-      const workspaceTabs = this.#recentlyUsedTabsByWorkspace.get(currentWorkspace) || [];
-      
-      tabs = [...workspaceTabs];
-      
-      if (tabs.length > nsZenTabSwitcher.MAX_RECENT_TABS) {
-        tabs = tabs.slice(0, nsZenTabSwitcher.MAX_RECENT_TABS);
-      }
-    } else {
-      tabs = gBrowser.tabs;
-    }
-
-    this.#tabList = [...tabs].filter((tab) => {
-      if (tab.closing || tab.hidden || tab.hasAttribute("zen-empty-tab")) {
-        return false;
-      }
-      if (this.#lazyPrefs.useRecentOrder && tab.hasAttribute("pending")) {
-        return false;
-      }
-      return true;
+    this.#tabList = [...gBrowser.tabs].filter((tab) => {
+      return !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab");
     });
   }
 
@@ -486,7 +333,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    *
    * @returns {void}
    */
-  #renderTabs() {
+  #createTabCards() {
     if (!this.tabsContainer) {
       return;
     }
@@ -496,104 +343,78 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     this.tabsContainer.style.width = containerWidth;
 
     this.#tabList.forEach((tab, index) => {
-      const tabCard = this.#createTabCard(tab, index);
+      const card = document.createXULElement("vbox");
+      card.className = "zen-tab-switcher-card";
+      card.setAttribute("data-index", index);
+      card.setAttribute("data-tab-id", tab.linkedPanel);
+
+      const thumbnailContainer = document.createXULElement("box");
+      thumbnailContainer.className = "zen-tab-switcher-thumbnail";
+
+      const thumbnail = tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel);
+
+      if (thumbnail) {
+        const img = document.createXULElement("image");
+        img.setAttribute("src", thumbnail);
+        thumbnailContainer.appendChild(img);
+      } else {
+        card.classList.add("zen-tab-switcher-no-thumbnail");
+      }
+
+      card.appendChild(thumbnailContainer);
+
+      const infoContainer = document.createXULElement("hbox");
+      infoContainer.className = "zen-tab-switcher-info";
+
+      const favicon = document.createXULElement("image");
+      favicon.className = "zen-tab-switcher-favicon";
+
+      const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
+      let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
+
+      if (iconSrc.startsWith("chrome://branding/content/")) {
+        iconSrc = "chrome://browser/skin/zen-icons/new-tab-image.svg";
+      }
+
+      favicon.setAttribute("src", iconSrc);
+
+      if (
+        iconSrc === defaultFavicon ||
+        iconSrc.startsWith("page-icon:") ||
+        iconSrc === "chrome://browser/skin/zen-icons/new-tab-image.svg" ||
+        iconSrc === "chrome://global/skin/icons/settings.svg" ||
+        iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
+      ) {
+        favicon.classList.add("zen-tab-switcher-favicon-zen");
+      }
+
+      infoContainer.appendChild(favicon);
+      const title = document.createXULElement("label");
+      title.className = "zen-tab-switcher-title";
+      title.setAttribute("value", tab.label || "");
+      title.setAttribute("crop", "end");
+      infoContainer.appendChild(title);
+      card.appendChild(infoContainer);
+
+      if (tab.hasAttribute("pending")) {
+        card.classList.add("zen-tab-switcher-pending");
+      }
 
       if (index === this.#currentIndex) {
-        tabCard.classList.add("zen-tab-switcher-selected");
+        card.classList.add("zen-tab-switcher-selected");
       }
 
-      this.tabsContainer.appendChild(tabCard);
+      card.addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.#currentIndex = index;
+          this.close();
+        }
+      });
+
+      this.tabsContainer.appendChild(card);
     });
-  }
-
-  /**
-   * Creates a single tab card element with thumbnail, favicon, and title.
-   *
-   * @param {object} tab - The tab to create a card for.
-   * @param {number} index - The index of the tab in the list.
-   * @returns {Element} XUL <vbox> element representing the tab card.
-   */
-  #createTabCard(tab, index) {
-    const card = document.createXULElement("vbox");
-    card.className = "zen-tab-switcher-card";
-    card.setAttribute("data-index", index);
-    card.setAttribute("data-tab-id", tab.linkedPanel);
-
-    const thumbnailContainer = document.createXULElement("box");
-    thumbnailContainer.className = "zen-tab-switcher-thumbnail";
-
-    const thumbnail = this.#getTabThumbnail(tab);
-
-    if (thumbnail) {
-      const img = document.createXULElement("image");
-      img.setAttribute("src", thumbnail);
-      thumbnailContainer.appendChild(img);
-    } else {
-      card.classList.add("zen-tab-switcher-no-thumbnail");
-    }
-
-    card.appendChild(thumbnailContainer);
-
-    const infoContainer = document.createXULElement("hbox");
-    infoContainer.className = "zen-tab-switcher-info";
-
-    const favicon = document.createXULElement("image");
-    favicon.className = "zen-tab-switcher-favicon";
-
-    const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
-    let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
-
-    if (iconSrc.startsWith("chrome://branding/content/")) {
-      iconSrc = "chrome://browser/skin/zen-icons/new-tab-image.svg";
-    }
-
-    favicon.setAttribute("src", iconSrc);
-
-    if (
-      iconSrc === defaultFavicon ||
-      iconSrc.startsWith("page-icon:") ||
-      iconSrc === "chrome://browser/skin/zen-icons/new-tab-image.svg" ||
-      iconSrc === "chrome://global/skin/icons/settings.svg" ||
-      iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
-    ) {
-      favicon.classList.add("zen-tab-switcher-favicon-zen");
-    }
-
-    infoContainer.appendChild(favicon);
-    const title = document.createXULElement("label");
-    title.className = "zen-tab-switcher-title";
-    title.setAttribute("value", tab.label || "");
-    title.setAttribute("crop", "end");
-    infoContainer.appendChild(title);
-    card.appendChild(infoContainer);
-
-    if (tab.hasAttribute("pending")) {
-      card.classList.add("zen-tab-switcher-pending");
-    }
-
-    card.addEventListener("click", (event) => {
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.#currentIndex = index;
-        this.close();
-      }
-    });
-
-    return card;
-  }
-
-  /**
-   * Retrieves a cached screenshot for a tab.
-   *
-   * @param {object} tab - The tab to get the thumbnail for.
-   * @returns {string|null} The thumbnail data URL, or null if not available.
-   */
-  #getTabThumbnail(tab) {
-    if (tab.hasAttribute("pending")) {
-      return null;
-    }
-    return this.#thumbnailCache.get(tab.linkedPanel);
   }
 
   /**

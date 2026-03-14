@@ -58,6 +58,3 @@
 
 - name: zen.tabs.tab-switcher.enabled
   value: true
-
-- name: zen.tabs.tab-switcher.use-recent-order
-  value: false

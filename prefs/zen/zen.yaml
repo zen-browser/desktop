@@ -56,5 +56,5 @@
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
 
-- name: zen.tabs.tab-switcher.enabled
+- name: zen.tabs.ctrl-tab-panel.enabled
   value: true

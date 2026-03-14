@@ -9,7 +9,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PageThumbs: "resource://gre/modules/PageThumbs.sys.mjs",
 });
 
-class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
+class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
   static PANEL_HORIZONTAL_PADDING = 30;
@@ -21,7 +21,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   #tabList = [];
   #thumbnailCache = new Map();
   #lazyPrefs = {};
-  #actualVisibleCards = nsZenTabSwitcher.MAX_VISIBLE_CARDS;
+  #actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
   #firstPress = true;
 
   init() {
@@ -34,10 +34,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
   #setupLazyGetters() {
     ChromeUtils.defineLazyGetter(this, "panel", () =>
-      document.getElementById("zen-tab-switcher-panel")
+      document.getElementById("zen-ctrl-tab-panel")
     );
     ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
-      document.getElementById("zen-tab-switcher-tabs")
+      document.getElementById("zen-ctrl-tab-panel-tabs")
     );
   }
 
@@ -47,7 +47,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #disableDefaultCtrlTab() {
-    const enabled = Services.prefs.getBoolPref("zen.tabs.tab-switcher.enabled", true);
+    const enabled = Services.prefs.getBoolPref("zen.tabs.ctrl-tab-panel.enabled", true);
     const method = enabled ? "uninit" : "readPref";
     window.ctrlTab?.[method]?.();
   }
@@ -56,16 +56,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     XPCOMUtils.defineLazyPreferenceGetter(
       this.#lazyPrefs,
       "enabled",
-      "zen.tabs.tab-switcher.enabled",
+      "zen.tabs.ctrl-tab-panel.enabled",
       true
     );
 
     try {
-      Services.prefs.removeObserver("zen.tabs.tab-switcher.enabled", this);
+      Services.prefs.removeObserver("zen.tabs.ctrl-tab-panel.enabled", this);
     } catch (e) {
     }
     
-    Services.prefs.addObserver("zen.tabs.tab-switcher.enabled", this);
+    Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
   }
 
   /**
@@ -77,7 +77,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   observe(subject, topic, data) {
-    if (data === "zen.tabs.tab-switcher.enabled") {
+    if (data === "zen.tabs.ctrl-tab-panel.enabled") {
       this.#disableDefaultCtrlTab();
     }
   }
@@ -107,9 +107,6 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       this.#thumbnailCache.clear();
     });
     window.addEventListener("TabMove", () => this.#thumbnailCache.clear());
-    window.addEventListener("ZenWorkspacesUIUpdate", () => {
-      this.#thumbnailCache.clear();
-    });
   }
 
   /**
@@ -185,7 +182,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
     }
 
-    this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenTabSwitcher.MAX_VISIBLE_CARDS);
+    this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenCtrlTabPanel.MAX_VISIBLE_CARDS);
 
     await this.#cacheThumbnailsForVisible();
 
@@ -194,12 +191,12 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    const containerWidth = nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards;
+    const containerWidth = nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards;
     // Ensure the panel doesn't get cut off by screen edge (always shows full panel on screen)
-    const panelWidth = Math.min(containerWidth + nsZenTabSwitcher.PANEL_HORIZONTAL_PADDING, windowWidth);
+    const panelWidth = Math.min(containerWidth + nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING, windowWidth);
 
     const centerX = (windowWidth - panelWidth) / 2;
-    const centerY = (windowHeight - nsZenTabSwitcher.PANEL_HEIGHT) / 2;
+    const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",
@@ -288,7 +285,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     try {
       // Calculate canvas dimensions based on window viewport aspect ratio
       const viewportAspect = window.innerWidth / window.innerHeight;
-      const targetHeight = nsZenTabSwitcher.THUMBNAIL_CANVAS_HEIGHT;
+      const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);
       
       const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
@@ -303,11 +300,11 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
 
       if (this.#isOpen) {
         const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
-        const thumbnailContainer = card?.querySelector(".zen-tab-switcher-thumbnail");
+        const thumbnailContainer = card?.querySelector(".zen-ctrl-tab-panel-thumbnail");
         
         if (thumbnailContainer) {
           thumbnailContainer.innerHTML = "";
-          card.classList.remove("zen-tab-switcher-no-thumbnail");
+          card.classList.remove("zen-ctrl-tab-panel-no-thumbnail");
 
           const img = document.createXULElement("image");
           img.setAttribute("src", dataUrl);
@@ -315,7 +312,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         }
       }
     } catch (e) {
-      console.warn("ZenTabSwitcher: Failed to cache thumbnail:", e);
+      console.warn("ZenCtrlTabPanel: Failed to cache thumbnail:", e);
     }
   }
 
@@ -342,17 +339,17 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     this.tabsContainer.innerHTML = "";
-    const containerWidth = `${nsZenTabSwitcher.CARD_WIDTH * this.#actualVisibleCards}px`;
+    const containerWidth = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
     this.tabsContainer.style.width = containerWidth;
 
     this.#tabList.forEach((tab, index) => {
       const card = document.createXULElement("vbox");
-      card.className = "zen-tab-switcher-card";
+      card.className = "zen-ctrl-tab-panel-card";
       card.setAttribute("data-index", index);
       card.setAttribute("data-tab-id", tab.linkedPanel);
 
       const thumbnailContainer = document.createXULElement("box");
-      thumbnailContainer.className = "zen-tab-switcher-thumbnail";
+      thumbnailContainer.className = "zen-ctrl-tab-panel-thumbnail";
 
       const thumbnail = tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel);
 
@@ -361,16 +358,16 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         img.setAttribute("src", thumbnail);
         thumbnailContainer.appendChild(img);
       } else {
-        card.classList.add("zen-tab-switcher-no-thumbnail");
+        card.classList.add("zen-ctrl-tab-panel-no-thumbnail");
       }
 
       card.appendChild(thumbnailContainer);
 
       const infoContainer = document.createXULElement("hbox");
-      infoContainer.className = "zen-tab-switcher-info";
+      infoContainer.className = "zen-ctrl-tab-panel-info";
 
       const favicon = document.createXULElement("image");
-      favicon.className = "zen-tab-switcher-favicon";
+      favicon.className = "zen-ctrl-tab-panel-favicon";
 
       const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
       let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
@@ -388,23 +385,23 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
         iconSrc === "chrome://global/skin/icons/settings.svg" ||
         iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
       ) {
-        favicon.classList.add("zen-tab-switcher-favicon-zen");
+        favicon.classList.add("zen-ctrl-tab-panel-favicon-zen");
       }
 
       infoContainer.appendChild(favicon);
       const title = document.createXULElement("label");
-      title.className = "zen-tab-switcher-title";
+      title.className = "zen-ctrl-tab-panel-title";
       title.setAttribute("value", tab.label || "");
       title.setAttribute("crop", "end");
       infoContainer.appendChild(title);
       card.appendChild(infoContainer);
 
       if (tab.hasAttribute("pending")) {
-        card.classList.add("zen-tab-switcher-pending");
+        card.classList.add("zen-ctrl-tab-panel-pending");
       }
 
       if (index === this.#currentIndex) {
-        card.classList.add("zen-tab-switcher-selected");
+        card.classList.add("zen-ctrl-tab-panel-selected");
       }
 
       card.addEventListener("click", (event) => {
@@ -430,10 +427,10 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.tabsContainer.querySelectorAll(".zen-tab-switcher-card").forEach((card) => {
+    this.tabsContainer.querySelectorAll(".zen-ctrl-tab-panel-card").forEach((card) => {
       const cardIndex = parseInt(card.getAttribute("data-index"), 10);
       const isSelected = cardIndex === this.#currentIndex;
-      card.classList.toggle("zen-tab-switcher-selected", isSelected);
+      card.classList.toggle("zen-ctrl-tab-panel-selected", isSelected);
     });
 
     this.#scrollToSelected();
@@ -449,14 +446,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     if (!this.tabsContainer) {
       return;
     }
-    const selectedCard = this.tabsContainer.querySelector(".zen-tab-switcher-selected");
+    const selectedCard = this.tabsContainer.querySelector(".zen-ctrl-tab-panel-selected");
     if (!selectedCard) {
       return;
     }
 
     const cardIndex = parseInt(selectedCard.getAttribute("data-index"), 10);
     const pageStartIndex = this.#getPageStartIndex(cardIndex);
-    const scrollPosition = pageStartIndex * nsZenTabSwitcher.CARD_WIDTH;
+    const scrollPosition = pageStartIndex * nsZenCtrlTabPanel.CARD_WIDTH;
 
     this.tabsContainer.scrollTo({
       left: scrollPosition,
@@ -511,4 +508,4 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 }
 
-export var gZenTabSwitcher = new nsZenTabSwitcher();
+export var gZenCtrlTabPanel = new nsZenCtrlTabPanel();

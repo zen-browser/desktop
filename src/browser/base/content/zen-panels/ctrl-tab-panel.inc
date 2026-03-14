@@ -2,17 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-<panel id="zen-tab-switcher-panel"
+<panel id="zen-ctrl-tab-panel"
         role="group"
         type="arrow"
         hidepopovertail="true"
         noautofocus="true">
-  <panelmultiview id="zen-tab-switcher-multiview"
-                  mainViewId="zen-tab-switcher-view">
-    <panelview id="zen-tab-switcher-view"
+  <panelmultiview id="zen-ctrl-tab-panel-multiview"
+                  mainViewId="zen-ctrl-tab-panel-view">
+    <panelview id="zen-ctrl-tab-panel-view"
                 class="cui-widget-panelview"
                 mainview-with-header="true">
-      <hbox id="zen-tab-switcher-tabs" class="zen-tab-switcher-tabs">
+      <hbox id="zen-ctrl-tab-panel-tabs" class="zen-ctrl-tab-panel-tabs">
         <!-- Tab cards will be dynamically inserted here -->
       </hbox>
     </panelview>

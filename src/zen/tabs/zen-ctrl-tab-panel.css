@@ -3,18 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 :root {
-  --zen-tab-switcher-card-width: 200px;
-  --zen-tab-switcher-card-height: 170px;
-  --zen-tab-switcher-card-border-radius: 14px;
-  --zen-tab-switcher-card-inner-padding: 11px;
-  --zen-tab-switcher-thumbnail-height: 120px;
-  --zen-tab-switcher-thumbnail-border-radius: 8px;
-  --zen-tab-switcher-border-radius: 25px;
-  --zen-tab-switcher-padding: 15px;
+  --zen-ctrl-tab-panel-card-width: 200px;
+  --zen-ctrl-tab-panel-card-height: 170px;
+  --zen-ctrl-tab-panel-card-border-radius: 14px;
+  --zen-ctrl-tab-panel-card-inner-padding: 11px;
+  --zen-ctrl-tab-panel-thumbnail-height: 120px;
+  --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
+  --zen-ctrl-tab-panel-border-radius: 25px;
+  --zen-ctrl-tab-panel-padding: 15px;
 }
 
-#zen-tab-switcher-panel {
-  --panel-padding: var(--zen-tab-switcher-padding);
+#zen-ctrl-tab-panel {
+  --panel-padding: var(--zen-ctrl-tab-panel-padding);
   min-width: fit-content;
   max-width: 100vw;
 
@@ -31,14 +31,14 @@
   }
 }
 
-#zen-tab-switcher-panel .panel-viewcontainer,
-#zen-tab-switcher-panel .panel-viewstack {
+#zen-ctrl-tab-panel .panel-viewcontainer,
+#zen-ctrl-tab-panel .panel-viewstack {
   display: flex;
   flex-direction: row;
   width: 100%;
 }
 
-#zen-tab-switcher-tabs {
+#zen-ctrl-tab-panel-tabs {
   display: flex;
   flex-direction: row;
   overflow-x: hidden;
@@ -49,14 +49,14 @@
   flex-shrink: 0;
 }
 
-.zen-tab-switcher-card {
+.zen-ctrl-tab-panel-card {
   flex-shrink: 0;
-  width: var(--zen-tab-switcher-card-width);
-  height: var(--zen-tab-switcher-card-height);
+  width: var(--zen-ctrl-tab-panel-card-width);
+  height: var(--zen-ctrl-tab-panel-card-height);
   background: transparent;
   border: none;
-  border-radius: var(--zen-tab-switcher-card-border-radius);
-  padding: var(--zen-tab-switcher-card-inner-padding);
+  border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
+  padding: var(--zen-ctrl-tab-panel-card-inner-padding);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -64,51 +64,51 @@
   box-sizing: border-box;
 }
 
-.zen-tab-switcher-card:hover {
+.zen-ctrl-tab-panel-card:hover {
   background: var(--toolbarbutton-hover-background);
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
   background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white !important;
 }
 
-.zen-tab-switcher-thumbnail {
+.zen-ctrl-tab-panel-thumbnail {
   width: 100%;
-  height: var(--zen-tab-switcher-thumbnail-height);
+  height: var(--zen-ctrl-tab-panel-thumbnail-height);
   background: color-mix(in srgb, var(--zen-branding-bg), transparent 10%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   position: relative;
-  border-radius: var(--zen-tab-switcher-thumbnail-border-radius);
+  border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
   border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
   box-sizing: border-box;
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-thumbnail {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail {
   background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
   border: none;
 }
 
-.zen-tab-switcher-thumbnail:has(image) {
+.zen-ctrl-tab-panel-thumbnail:has(image) {
   border: none;
 }
 
-.zen-tab-switcher-thumbnail image {
+.zen-ctrl-tab-panel-thumbnail image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--zen-tab-switcher-thumbnail-border-radius);
+  border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-pending .zen-tab-switcher-thumbnail,
-.zen-tab-switcher-card.zen-tab-switcher-no-thumbnail .zen-tab-switcher-thumbnail {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
   background: color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent);
 }
 
-.zen-tab-switcher-info {
+.zen-ctrl-tab-panel-info {
   padding: 0;
   display: flex;
   align-items: center;
@@ -116,7 +116,7 @@
   min-height: 22px;
 }
 
-.zen-tab-switcher-favicon {
+.zen-ctrl-tab-panel-favicon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
@@ -126,15 +126,15 @@
   fill-opacity: var(--urlbar-icon-fill-opacity);
 }
 
-.zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen {
+.zen-ctrl-tab-panel-favicon.zen-ctrl-tab-panel-favicon-zen {
   filter: light-dark(brightness(0), brightness(0) invert(1));
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-favicon.zen-tab-switcher-favicon-zen {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-favicon.zen-ctrl-tab-panel-favicon-zen {
   filter: brightness(0) invert(1);
 }
 
-.zen-tab-switcher-title {
+.zen-ctrl-tab-panel-title {
   flex: 1;
   font-size: 15px;
   font-weight: 600;
@@ -145,8 +145,8 @@
   min-width: 0;
 }
 
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-info,
-.zen-tab-switcher-card.zen-tab-switcher-selected .zen-tab-switcher-title {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
   color: white !important;
   -moz-text-fill-color: white !important;
 }

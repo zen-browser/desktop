@@ -115,7 +115,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    this._resetTabToStoredState(tab);
+    if (event.getModifierState("Accel")) {
+      let newTab = gBrowser.duplicateTab(tab, true);
+      newTab.addEventListener("SSTabRestored", () => {
+        this._resetTabToStoredState(tab);
+      }, { once: true });
+    } else {
+      this._resetTabToStoredState(tab);
+    }
     gBrowser.selectedTab = tab;
   }
 
@@ -168,6 +175,37 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         ),
       });
     }
+  }
+
+  _onAccelKeyChange(e) {
+    let tab = this._tabWithResetPinButtonHovered;
+    if (!tab) {
+      return;
+    }
+    let accelHeld = e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
+    this._setResetPinSublabel(tab, accelHeld);
+    // Up <-> down events until the mouse leaves the button.
+    // When hovered with accelHeld, we should listen to the next keyup event
+    let nextEvent = accelHeld ? "keyup" : "keydown";
+    let handler = (nextE) => this._onAccelKeyChange(nextE);
+    window.addEventListener(nextEvent, handler, { once: true });
+  }
+
+  _setResetPinSublabel(tab, accelHeld) {
+    let label = tab.querySelector(".zen-tab-sublabel");
+    document.l10n.setArgs(label, {
+      tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
+    });
+  }
+
+  onResetPinButtonMouseOver(tab, event) {
+    this._tabWithResetPinButtonHovered = tab;
+    this._onAccelKeyChange(event);
+  }
+
+  onResetPinButtonMouseOut(tab) {
+    this._setResetPinSublabel(tab, false);
+    delete this._tabWithResetPinButtonHovered;
   }
 
   resetPinnedTab(tab) {
@@ -812,7 +850,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         tab.removeAttribute("zen-show-sublabel");
 
         const label = tab.querySelector(".zen-tab-sublabel");
-        window.document.l10n.setArgs(label, {
+        document.l10n.setArgs(label, {
           tabSubtitle: "zen-default-pinned",
         });
       }

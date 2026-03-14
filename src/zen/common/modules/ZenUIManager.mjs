@@ -76,6 +76,10 @@ window.gZenUIManager = {
     this._initBookmarkCollapseListener();
 
     gURLBar._setPlaceholder(null);
+
+    document
+      .getElementById("PersonalToolbar")
+      .setAttribute("fullscreentoolbar", "true");
   },
 
   /**

@@ -130,7 +130,7 @@ document.addEventListener(
             break;
           }
           case "cmd_zenUnloadAllOtherWorkspace": {
-            gZenWorkspaces.unloadAllOtherWorkspace();
+            gZenWorkspaces.unloadAllOtherWorkspaces();
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

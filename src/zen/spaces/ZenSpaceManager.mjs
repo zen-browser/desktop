@@ -1493,7 +1493,7 @@ class nsZenWorkspaces {
     await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
   }
 
-  async unloadAllOtherWorkspace() {
+  async unloadAllOtherWorkspaces() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
 
@@ -1504,12 +1504,6 @@ class nsZenWorkspaces {
         !tab.hasAttribute("zen-essential") &&
         !tab.hasAttribute("pending")
     );
-
-    if (tabsToUnload.length === 0) {
-      return;
-    }
-
-    this.log("Unloading all workspaces except", workspaceId);
 
     await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
   }

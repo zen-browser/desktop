@@ -15,8 +15,7 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static MAX_RECENT_TABS = 20;
   static PANEL_HORIZONTAL_PADDING = 30;
   static PANEL_HEIGHT = 200;
-  static THUMBNAIL_CANVAS_WIDTH = 320;
-  static THUMBNAIL_CANVAS_HEIGHT = 180;
+  static THUMBNAIL_CANVAS_HEIGHT = 200;
 
   #isOpen = false;
   #currentIndex = 0;
@@ -288,9 +287,14 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
     }
 
     try {
+      // Calculate canvas dimensions based on window viewport aspect ratio
+      const viewportAspect = window.innerWidth / window.innerHeight;
+      const targetHeight = nsZenTabSwitcher.THUMBNAIL_CANVAS_HEIGHT;
+      const targetWidth = Math.round(targetHeight * viewportAspect);
+      
       const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-      canvas.width = nsZenTabSwitcher.THUMBNAIL_CANVAS_WIDTH;
-      canvas.height = nsZenTabSwitcher.THUMBNAIL_CANVAS_HEIGHT;
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
 
       await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,

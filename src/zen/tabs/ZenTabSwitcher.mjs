@@ -12,7 +12,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
 class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
-  static MAX_RECENT_TABS = 20;
   static PANEL_HORIZONTAL_PADDING = 30;
   static PANEL_HEIGHT = 200;
   static THUMBNAIL_CANVAS_HEIGHT = 200;
@@ -158,8 +157,8 @@ class nsZenTabSwitcher extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Determines the initial tab index selection. Waits for visible tab thumbnails before showing panel, 
-   * then captures remaining thumbnails in background.
+   * Initializes tab switcher panel. 
+   * Captures visible tab thumbnails before showing panel, then captures remaining thumbnails in background.
    *
    * @param {boolean} shiftKey 
    * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.

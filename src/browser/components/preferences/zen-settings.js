@@ -1020,6 +1020,24 @@ var gZenCKSSettings = {
     let shortcut;
     if (event.code && event.code.startsWith("Key")) {
       shortcut = event.code.slice(3);
+    } else if (event.code && event.code.startsWith("Digit")) {
+      shortcut = event.code.slice(5);
+    } else if (AppConstants.platform === "macosx") {
+      // On macOS, we want to use the physical key for symbols to avoid alt-codes.
+      const CODE_TO_KEY_MAP = {
+        Comma: ",",
+        Period: ".",
+        Slash: "/",
+        Semicolon: ";",
+        Quote: "'",
+        BracketLeft: "[",
+        BracketRight: "]",
+        Backslash: "\\",
+        Backquote: "`",
+        Minus: "-",
+        Equal: "=",
+      };
+      shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
     } else {
       shortcut = event.key;
     }

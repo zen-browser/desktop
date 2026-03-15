@@ -1,0 +1,100 @@
+name: PR XPCShell Tests
+
+on:
+  pull_request:
+    branches:
+      - dev
+    paths:
+      - 'src/toolkit/components/extensions/NativeManifests-sys-mjs.patch'
+      - 'src/zen/tests/mochitests/extensions/**'
+      - '.github/workflows/pr-xpcshell-tests.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  xpcshell-tests:
+    name: XPCShell tests (Linux)
+    runs-on: blacksmith-8vcpu-ubuntu-2404
+
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: useblacksmith/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore Surfer engine cache
+        id: surfer-engine-cache
+        uses: actions/cache@v5
+        with:
+          path: .surfer/engine/
+          key: surfer-engine-${{ hashFiles('surfer.json') }}
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download Firefox source
+        run: npm run download
+
+      - name: Import patches
+        run: npm run import
+
+      - name: Setup Surfer CI config (twilight/dev build)
+        run: npm run surfer -- ci --brand twilight
+        env:
+          SURFER_COMPAT: x86_64
+
+      - name: Install Firefox build dependencies
+        run: |
+          cd engine
+          export SURFER_PLATFORM="linux"
+          ./mach --no-interactive bootstrap --application-choice browser
+
+      - name: Restore build cache
+        uses: actions/cache@v5
+        with:
+          path: engine/obj-*
+          key: xpcshell-objdir-${{ hashFiles('surfer.json') }}-${{ github.sha }}
+          restore-keys: |
+            xpcshell-objdir-${{ hashFiles('surfer.json') }}-
+
+      - name: Build (faster target — JS + xpcshell only)
+        run: |
+          cd engine
+          ./mach build faster
+        env:
+          SURFER_PLATFORM: linux
+
+      - name: Run native messaging xpcshell tests
+        run: |
+          cd engine
+          ./mach xpcshell-test --tag native-messaging
+        env:
+          SURFER_PLATFORM: linux
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpcshell-test-logs
+          path: engine/obj-*/tests/xpcshell.log
+          retention-days: 7

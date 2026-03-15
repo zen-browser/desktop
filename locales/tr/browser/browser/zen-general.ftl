@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = mevcut profil
 unified-extensions-description = Uzantılar { -brand-short-name }'e daha fazla ek işlevsellik kazandırmak için kullanılır.
 tab-context-zen-reset-pinned-tab = 
-    .label = Sabitlenen Sekmeyi Sıfırla
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Temel Sekmelere Ekle
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Temel Sekmelerden Kaldır
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Sabitlenen URL'yi Mevcut İle Değiştir
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Etiketi Değiştir...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Küçült
 zen-panel-ui-gradient-generator-custom-color = Özel Renk
 zen-copy-current-url-confirmation = Geçerli URL kopyalandı!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = İptal
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Pencerelerinizi senkronize tutun
 zen-window-sync-migration-dialog-message = Zen artık aynı cihazdaki pencereleri senkronize ediyor; böylece bir pencerede yapılan değişiklikler anında diğer pencerelere yansıyor.
 zen-window-sync-migration-dialog-learn-more = Daha fazla bilgi
 zen-window-sync-migration-dialog-accept = Anladım
+zen-appmenu-new-blank-window = 
+    .label = New blank window

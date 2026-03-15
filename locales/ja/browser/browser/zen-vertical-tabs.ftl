@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] タブをリセットして固定する
            *[other] タブをリセットして{ $tabCount }つタブを固定する
         }
-tab-reset-pin-label = 固定したURLに戻る
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

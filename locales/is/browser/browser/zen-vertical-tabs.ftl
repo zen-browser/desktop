@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Endurstilla og festa flipa
            *[other] Endurstilla og festa { $tabCount } flipa
         }
-tab-reset-pin-label = Til baka á festa slóð
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = fyrirliggjandi notkunarsnið
 unified-extensions-description = Forritsaukar eru notaðir til að auðga notagildi í { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Endursetja festan flipa
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Bæta við aðalflipa
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Fjarlægja úr aðalflipum
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Skipta út festri slóð með núverandi
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = P
 tab-context-zen-edit-title = 
     .label = Skipta um merkingu...
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Lágmarka
 zen-panel-ui-gradient-generator-custom-color = Sérsniðinn litur
 zen-copy-current-url-confirmation = Afritaði fyrirliggjandi slóð!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Hætta við
 zen-general-confirm = 
@@ -111,3 +120,5 @@ zen-window-sync-migration-dialog-title = Samstilltu gluggana þína
 zen-window-sync-migration-dialog-message = Zen samstillir núna glugga á sama tæki, þannig að breytingar í einum glugga endurspeglast samstundis í hinum.
 zen-window-sync-migration-dialog-learn-more = Frekari upplýsingar
 zen-window-sync-migration-dialog-accept = Skilið
+zen-appmenu-new-blank-window = 
+    .label = New blank window

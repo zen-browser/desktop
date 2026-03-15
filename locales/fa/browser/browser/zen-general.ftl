@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = نمایهٔ کنونی
 unified-extensions-description = افزونه‌های در حال استفاده عملکردهای بیشتری به { -brand-short-name } می‌دهند.
 tab-context-zen-reset-pinned-tab = 
-    .label = بازنشانی زبانهٔ سنجاق شده
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = ب
 tab-context-zen-add-essential = 
     .label = Add to Essentials
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Remove from Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = جایگزینی URL سنجاق شده با فعلی
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Change Label...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = کمینه
 zen-panel-ui-gradient-generator-custom-color = رنگ دلخواه
 zen-copy-current-url-confirmation = رونوشت از URL فعلی!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = لغو
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Learn More
 zen-window-sync-migration-dialog-accept = Got It
+zen-appmenu-new-blank-window = 
+    .label = New blank window
